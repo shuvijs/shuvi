@@ -1,0 +1,20 @@
+{
+  "name": "shuvi",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liximomo/shuvi.git"
+  },
+  "scripts": {
+    "dev": "lerna run dev --stream --parallel"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "lerna": "^3.18.4",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.7.2"
+  }
+}

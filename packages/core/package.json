@@ -1,0 +1,20 @@
+{
+  "name": "@shuvi/core",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liximomo/shuvi.git",
+    "directory": "packages/core"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsc -w"
+  },
+  "engines": {
+    "node": ">= 8.0.0"
+  }
+}
