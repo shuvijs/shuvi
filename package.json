@@ -9,7 +9,8 @@
     "url": "git+https://github.com/liximomo/shuvi.git"
   },
   "scripts": {
-    "dev": "lerna run dev --stream --parallel"
+    "dev": "lerna run dev --stream --parallel",
+    "start": "cd packages/shuvi && node dist/cli.js start"
   },
   "devDependencies": {
     "jest": "^24.9.0",

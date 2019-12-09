@@ -1,14 +1,13 @@
 {
-  "name": "@shuvi/core",
+  "name": "@shuvi/utils",
   "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
-    "directory": "packages/core"
+    "directory": "packages/utils"
   },
   "author": "liximomo",
   "license": "MIT",
-  "main": "./dist/index.js",
   "files": [
     "dist"
   ],
@@ -17,10 +16,5 @@
   },
   "engines": {
     "node": ">= 8.0.0"
-  },
-  "dependencies": {
-    "@shuvi/shared": "0.0.0",
-    "@shuvi/toolpack": "0.0.0",
-    "@shuvi/utils": "0.0.0"
   }
 }

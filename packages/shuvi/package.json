@@ -1,14 +1,16 @@
 {
-  "name": "@shuvi/core",
+  "name": "shuvi",
   "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
-    "directory": "packages/core"
+    "directory": "packages/shuvi"
   },
   "author": "liximomo",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "bin": {
+    "shuvi": "./dist/cli"
+  },
   "files": [
     "dist"
   ],
@@ -19,8 +21,13 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
+    "@shuvi/core": "^0.0.0",
     "@shuvi/shared": "0.0.0",
-    "@shuvi/toolpack": "0.0.0",
-    "@shuvi/utils": "0.0.0"
+    "@shuvi/toolpack": "^0.0.0",
+    "commander": "^4.0.1",
+    "cross-spawn": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.1"
   }
 }
