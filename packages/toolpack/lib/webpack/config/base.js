@@ -3,15 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
 const webpack_chain_1 = __importDefault(require("webpack-chain"));
 exports.WebpackChain = webpack_chain_1.default;
 const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin"));
 const webpack_1 = __importDefault(require("webpack"));
 const path_1 = __importDefault(require("path"));
-const resolve_1 = __importDefault(require("resolve"));
-const resolveLoader = (name) => path_1.default.join(__dirname, `../loaders/${name}`);
-const resolvePlugin = (name) => path_1.default.join(__dirname, `../plugins/${name}`);
+const chunk_names_plugin_1 = __importDefault(require("../plugins/chunk-names-plugin"));
+const typeScript_1 = require("../../utils/typeScript");
+const resolveLocalLoader = (name) => path_1.default.join(__dirname, `../loaders/${name}`);
 const terserOptions = {
     parse: {
         ecma: 8
@@ -33,15 +32,7 @@ const terserOptions = {
     }
 };
 function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {} }) {
-    let typeScriptPath;
-    try {
-        typeScriptPath = resolve_1.default.sync("typescript", {
-            basedir: projectRoot
-        });
-    }
-    catch (_) { }
-    const tsConfigPath = path_1.default.join(projectRoot, "tsconfig.json");
-    const useTypeScript = Boolean(typeScriptPath && fs_1.default.existsSync(tsConfigPath));
+    const { typeScriptPath, tsConfigPath, useTypeScript } = typeScript_1.getProjectInfo(projectRoot);
     const config = new webpack_chain_1.default();
     config.mode(dev ? "development" : "production");
     config.performance.hints(false).end();
@@ -51,6 +42,7 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
         nodeEnv: false,
         splitChunks: false,
         runtimeChunk: undefined,
+        moduleIds: dev ? "named" : "deterministic",
         minimize: !dev
     });
     config.optimization.minimizer("terser").use(terser_webpack_plugin_1.default, [
@@ -92,9 +84,9 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
         .include.merge(srcDirs)
         .end()
         .use("babel-loader")
-        .loader(resolveLoader("babel-loader"))
+        .loader(resolveLocalLoader("babel-loader"))
         .options({
-        isServer: false,
+        isNode: false,
         // TODO:
         cacheDirectory: false
     });
@@ -103,14 +95,14 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
         .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
         .end()
         .use("file-loader")
+        .loader(require.resolve("file-loader"))
         .options({
         name: mediaOutputPath
-        // name: "static/media/[name].[hash:8].[ext]"
     });
     // @ts-ignore
-    config.plugin("chunk-names").use(resolvePlugin("chunk-names-plugin"));
+    config.plugin("private/chunk-names").use(chunk_names_plugin_1.default);
     config
-        .plugin("ignore-moment")
+        .plugin("private/ignore")
         .use(webpack_1.default.IgnorePlugin, [/^\.\/locale$/, /moment$/]);
     config.plugin("define").use(webpack_1.default.DefinePlugin, [
         Object.assign(Object.assign({}, Object.keys(env).reduce((acc, key) => {
@@ -120,9 +112,12 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
             return Object.assign(Object.assign({}, acc), { [`process.env.${key}`]: JSON.stringify(env[key]) });
         }, {})), { "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production") })
     ]);
+    if (dev) {
+        config.plugin("private/hmr").use(webpack_1.default.HotModuleReplacementPlugin);
+    }
     if (useTypeScript) {
         config
-            .plugin("fork-ts-checker")
+            .plugin("private/fork-ts-checker-webpack-plugin")
             // @ts-ignore
             .use(require.resolve("fork-ts-checker-webpack-plugin"), [
             {

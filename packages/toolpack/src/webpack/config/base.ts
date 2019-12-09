@@ -1,14 +1,14 @@
-import fs from "fs";
 import WebpackChain from "webpack-chain";
 import TerserPlugin from "terser-webpack-plugin";
 import webpack from "webpack";
 import path from "path";
-import resolve from "resolve";
+import ChunkNamesPlugin from "../plugins/chunk-names-plugin";
+import { getProjectInfo } from "../../utils/typeScript";
 
-const resolveLoader = (name: string) =>
+const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);
-const resolvePlugin = (name: string) =>
-  path.join(__dirname, `../plugins/${name}`);
+// const resolvePlugin = (name: string) =>
+//   path.join(__dirname, `../plugins/${name}`);
 
 export interface BaseOptions {
   dev: boolean;
@@ -50,15 +50,9 @@ export function baseWebpackChain({
   mediaOutputPath,
   env = {}
 }: BaseOptions): WebpackChain {
-  let typeScriptPath;
-  try {
-    typeScriptPath = resolve.sync("typescript", {
-      basedir: projectRoot
-    });
-  } catch (_) {}
-  const tsConfigPath = path.join(projectRoot, "tsconfig.json");
-  const useTypeScript = Boolean(typeScriptPath && fs.existsSync(tsConfigPath));
-
+  const { typeScriptPath, tsConfigPath, useTypeScript } = getProjectInfo(
+    projectRoot
+  );
   const config = new WebpackChain();
 
   config.mode(dev ? "development" : "production");
@@ -70,6 +64,7 @@ export function baseWebpackChain({
     nodeEnv: false,
     splitChunks: false,
     runtimeChunk: undefined,
+    moduleIds: dev ? "named" : "deterministic",
     minimize: !dev
   });
   config.optimization.minimizer("terser").use(TerserPlugin, [
@@ -117,9 +112,9 @@ export function baseWebpackChain({
     .include.merge(srcDirs)
     .end()
     .use("babel-loader")
-    .loader(resolveLoader("babel-loader"))
+    .loader(resolveLocalLoader("babel-loader"))
     .options({
-      isServer: false,
+      isNode: false,
       // TODO:
       cacheDirectory: false
     });
@@ -128,15 +123,15 @@ export function baseWebpackChain({
     .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
     .end()
     .use("file-loader")
+    .loader(require.resolve("file-loader"))
     .options({
       name: mediaOutputPath
-      // name: "static/media/[name].[hash:8].[ext]"
     });
 
   // @ts-ignore
-  config.plugin("chunk-names").use(resolvePlugin("chunk-names-plugin"));
+  config.plugin("private/chunk-names").use(ChunkNamesPlugin);
   config
-    .plugin("ignore-moment")
+    .plugin("private/ignore")
     .use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/]);
   config.plugin("define").use(webpack.DefinePlugin, [
     {
@@ -153,9 +148,12 @@ export function baseWebpackChain({
       "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production")
     }
   ]);
+  if (dev) {
+    config.plugin("private/hmr").use(webpack.HotModuleReplacementPlugin);
+  }
   if (useTypeScript) {
     config
-      .plugin("fork-ts-checker")
+      .plugin("private/fork-ts-checker-webpack-plugin")
       // @ts-ignore
       .use(require.resolve("fork-ts-checker-webpack-plugin"), [
         {

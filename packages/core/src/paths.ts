@@ -23,6 +23,6 @@ export function getPaths(opts: PathsOpts): Paths {
     srcDir: toAbsolute("src"),
     pagesDir,
     pageDocument: join(pagesDir, "document"),
-    tmpDir: tmpDirPath
+    // tmpDir: tmpDirPath
   };
 }

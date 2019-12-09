@@ -1,11 +1,11 @@
-import { ShuviConfig, ShuviCore, Paths } from "./types";
+import { ShuviConfig, Shuvi, Paths } from "./types";
 import { getPaths } from "./paths";
 
 export interface ShuviOptions {
   config: ShuviConfig;
 }
 
-class ShuviCoreImpl implements ShuviCore {
+class ShuviCoreImpl implements Shuvi {
   public config: ShuviConfig;
   public paths: Paths;
 

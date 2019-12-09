@@ -1,13 +1,15 @@
 {
-  "name": "@shuvi/shared",
+  "name": "@shuvi/runtime-react",
   "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
-    "directory": "packages/shared"
+    "directory": "packages/core"
   },
   "author": "liximomo",
   "license": "MIT",
+  "sideEffects": false,
+  "main": "./dist/index.js",
   "files": [
     "dist"
   ],
@@ -16,5 +18,10 @@
   },
   "engines": {
     "node": ">= 8.0.0"
+  },
+  "dependencies": {
+    "@shuvi/libs": "0.0.0",
+    "@shuvi/toolpack": "0.0.0",
+    "@shuvi/utils": "0.0.0"
   }
 }

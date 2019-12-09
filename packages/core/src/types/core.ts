@@ -4,7 +4,7 @@ export interface Paths {
   srcDir: string;
   pagesDir: string;
   pageDocument: string;
-  tmpDir: string;
+  // tmpDir: string;
 }
 
 export interface ShuviConfig {
