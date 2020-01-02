@@ -1,5 +1,5 @@
 import path from "path";
-import { ShuviConfig, constants } from "@shuvi/core";
+import { ApplicationConfig, constants } from "@shuvi/core";
 
 interface LoadConfigOption<T> {
   overrides?: T;
@@ -26,5 +26,5 @@ export async function loadConfigFromFile<T>(
 }
 
 export async function loadConfig() {
-  return await loadConfigFromFile<Partial<ShuviConfig>>(constants.CONFIG_FILE);
+  return await loadConfigFromFile<Partial<ApplicationConfig>>(constants.CONFIG_FILE);
 }

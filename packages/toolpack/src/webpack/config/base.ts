@@ -129,9 +129,9 @@ export function baseWebpackChain({
     });
 
   // @ts-ignore
-  config.plugin("private/chunk-names").use(ChunkNamesPlugin);
+  config.plugin("private/chunk-names-plugin").use(ChunkNamesPlugin);
   config
-    .plugin("private/ignore")
+    .plugin("private/ignore-plugin")
     .use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/]);
   config.plugin("define").use(webpack.DefinePlugin, [
     {
@@ -149,7 +149,7 @@ export function baseWebpackChain({
     }
   ]);
   if (dev) {
-    config.plugin("private/hmr").use(webpack.HotModuleReplacementPlugin);
+    config.plugin("private/hmr-plugin").use(webpack.HotModuleReplacementPlugin);
   }
   if (useTypeScript) {
     config

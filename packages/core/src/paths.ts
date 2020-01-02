@@ -1,5 +1,5 @@
 import { join } from "path";
-import { Paths } from "./types";
+import { Paths } from "./types/application";
 import { NAME } from "./constants";
 
 interface PathsOpts {
@@ -12,17 +12,17 @@ export function getPaths(opts: PathsOpts): Paths {
   const env = process.env.NODE_ENV;
   const toAbsolute = (p: string) => join(cwd, p);
 
-  const outputDir = toAbsolute(outputPath || "./build");
-  const tmpDirPath = toAbsolute(`.${NAME}/${env}/temp`);
+  const buildDir = toAbsolute(outputPath || "./build");
   const pagesDir = toAbsolute("src/pages");
 
   return {
     projectDir: cwd,
-    outputDir,
+    buildDir,
     // nodeModulesDir: toAbsolute("node_modules"),
     srcDir: toAbsolute("src"),
-    pagesDir,
-    pageDocument: join(pagesDir, "document"),
+    appDir: toAbsolute(`.${NAME}/${env}/app`),
+    pagesDir
+    // pageDocument: join(pagesDir, "document")
     // tmpDir: tmpDirPath
   };
 }

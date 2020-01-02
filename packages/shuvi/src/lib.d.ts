@@ -5,3 +5,5 @@ declare module "webpack-dev-middleware" {
 declare module "webpack-hot-middleware" {
   export default any;
 }
+
+declare module "@shuvi-app/*"

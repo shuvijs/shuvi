@@ -1,13 +1,13 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "allowJs": true,
     "baseUrl": ".",
     "paths": {
       "@shuvi/*": ["packages/*/src"],
       "@shuvi/toolpack/lib/*": ["packages/toolpack/src/*"],
       "@shuvi/utils/lib/*": ["packages/utils/src/*"],
       "@shuvi/libs/lib/*": ["packages/libs/src/*"],
+      "@shuvi/runtime-react/lib/*": ["packages/runtime-react/src/*"],
       "shuvi/*": ["packages/shuvi/src"]
     }
   }

@@ -22,17 +22,18 @@
   },
   "dependencies": {
     "@shuvi/core": "^0.0.0",
-    "@shuvi/libs": "0.0.0",
+    "@shuvi/libs": "^0.0.0",
+    "@shuvi/runtime-react": "^0.0.0",
     "@shuvi/toolpack": "^0.0.0",
-    "commander": "^4.0.1",
-    "cross-spawn": "^7.0.1",
+    "commander": "4.0.1",
+    "cross-spawn": "7.0.1",
     "express": "^4.17.1",
-    "webpack": "^4.41.2",
-    "webpack-dev-middleware": "^3.7.2",
-    "webpack-hot-middleware": "^2.25.0"
+    "webpack": "4.41.2",
+    "webpack-dev-middleware": "3.7.2",
+    "webpack-hot-middleware": "2.25.0"
   },
   "devDependencies": {
-    "@types/cross-spawn": "^6.0.1",
-    "@types/express": "^4.17.2"
+    "@types/cross-spawn": "6.0.1",
+    "@types/express": "4.17.2"
   }
 }

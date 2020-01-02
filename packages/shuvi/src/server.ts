@@ -5,7 +5,7 @@ import ForkTsCheckerWebpackPlugin, {
 import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
 import { createLaunchEditorMiddleware } from "@shuvi/toolpack/lib/utils/errorOverlayMiddleware";
 import { MultiCompiler, Compiler } from "webpack";
-import Express, { Application } from "express";
+import Express from "express";
 import WebpackDevMiddleware from "webpack-dev-middleware";
 import WebpackHotMiddleware from "webpack-hot-middleware";
 import { ROUTE_PREFIX, LAUNCH_EDITOR_ENDPOINT } from "./constants";
@@ -18,14 +18,14 @@ type CompilerDiagnostics = {
 interface Config {
   host: string;
   port: number;
-  useTypeScript: boolean;
 }
 
 export default class Server {
   private _compiler: MultiCompiler;
-  private _app: Application;
+  private _app: Express.Application;
   private _config: Config;
   private _webpackHotMiddleware: any;
+  private _middlewares: Express.RequestHandler[] = [];
 
   constructor(compiler: MultiCompiler, config: Config) {
     this._config = config;
@@ -44,19 +44,9 @@ export default class Server {
 
   start() {
     const { _app: app, _compiler: compiler } = this;
-    this._watchCompiler(compiler.compilers[0], {
-      useTypeScript: this._config.useTypeScript,
-      log: console.log.bind(console)
-    });
-    this._watchCompiler(compiler.compilers[0], {
-      useTypeScript: false,
-      log() {
-        // noop
-      }
-    });
 
     app.use(
-      WebpackDevMiddleware(compiler.compilers[0], {
+      WebpackDevMiddleware(compiler, {
         publicPath: `${ROUTE_PREFIX}/webpack`,
         noInfo: true,
         logLevel: "silent",
@@ -73,6 +63,10 @@ export default class Server {
     app.use(this._webpackHotMiddleware);
     app.use(createLaunchEditorMiddleware(LAUNCH_EDITOR_ENDPOINT));
 
+    this._middlewares.forEach(m => {
+      this._app.use(m);
+    });
+
     app.listen(this._config.port, this._config.host, err => {
       if (err) {
         return console.log(err);
@@ -82,7 +76,7 @@ export default class Server {
     });
   }
 
-  private _watchCompiler(
+  watchCompiler(
     compiler: Compiler,
     {
       useTypeScript,
@@ -184,5 +178,10 @@ export default class Server {
         log(messages.warnings.join("\n\n"));
       }
     });
+  }
+
+  use(handle: Express.RequestHandler) {
+    this._middlewares.push(handle);
+    return this._app;
   }
 }

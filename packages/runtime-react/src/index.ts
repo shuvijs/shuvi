@@ -1,9 +1,33 @@
-import { join } from "path";
+import React from "react";
+import { Runtime, Application } from "@shuvi/core";
+import { renderDocument, renderApp } from "./renderer";
+import { resolveSource } from "./paths";
 
-const resolveSource = (relativePath: string, ext = "js") =>
-  `${join(__dirname, "source", relativePath)}.${ext}`;
+export default class ReactRuntime
+  implements Runtime.Runtime<React.ComponentType<any>> {
+  install(app: Application): void {
+    console.log('install react runtime');
+  }
 
-export const Source = {
-  document: resolveSource("document"),
-  main: resolveSource("main")
-};
+  renderDocument(
+    Document: React.ComponentType<any>,
+    options: Runtime.RenderDocumentOptions
+  ): string {
+    return renderDocument(Document, options);
+  }
+
+  renderApp(
+    App: React.ComponentType<any>,
+    options: Runtime.RenderAppOptions
+  ): string {
+    return renderApp(App, options);
+  }
+
+  getDocumentModulePath(): string {
+    return resolveSource("document");
+  }
+
+  getBootstrapModulePath(): string {
+    return resolveSource("bootstrap");
+  }
+}

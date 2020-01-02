@@ -100,9 +100,9 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
         name: mediaOutputPath
     });
     // @ts-ignore
-    config.plugin("private/chunk-names").use(chunk_names_plugin_1.default);
+    config.plugin("private/chunk-names-plugin").use(chunk_names_plugin_1.default);
     config
-        .plugin("private/ignore")
+        .plugin("private/ignore-plugin")
         .use(webpack_1.default.IgnorePlugin, [/^\.\/locale$/, /moment$/]);
     config.plugin("define").use(webpack_1.default.DefinePlugin, [
         Object.assign(Object.assign({}, Object.keys(env).reduce((acc, key) => {
@@ -113,7 +113,7 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
         }, {})), { "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production") })
     ]);
     if (dev) {
-        config.plugin("private/hmr").use(webpack_1.default.HotModuleReplacementPlugin);
+        config.plugin("private/hmr-plugin").use(webpack_1.default.HotModuleReplacementPlugin);
     }
     if (useTypeScript) {
         config
