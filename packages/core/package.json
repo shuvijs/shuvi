@@ -8,9 +8,9 @@
   },
   "author": "liximomo",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./lib/index.js",
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w"
@@ -21,6 +21,11 @@
   "dependencies": {
     "@shuvi/libs": "0.0.0",
     "@shuvi/toolpack": "0.0.0",
-    "@shuvi/utils": "0.0.0"
+    "@shuvi/utils": "0.0.0",
+    "fs-extra": "^8.1.0",
+    "handlebars": "^4.5.3"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1"
   }
 }

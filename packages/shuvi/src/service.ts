@@ -8,13 +8,12 @@ import {
   Runtime
 } from "@shuvi/core";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
-import { renderDocument } from "@shuvi/runtime-react/lib/renderer";
-import Document from "@shuvi/runtime-react/lib/source/document";
+import ReactRuntime from "@shuvi/runtime-react";
 import Express from "express";
 import FsRouterService from "./services/fsRouterService";
 import { getClientEntries } from "./helpers/getEntries";
 import { getBuildPath } from "./helpers/paths";
-import { getWebpackConfig } from "./getWebpackConfig";
+import { getWebpackConfig } from "./helpers/getWebpackConfig";
 import {
   ENTRY_CLIENT_PATH,
   BUILD_MANIFEST_PATH,
@@ -40,6 +39,8 @@ export default class Service {
   }
 
   async start() {
+    this._setupRuntime();
+
     const clientConfig = getWebpackConfig(this._app, { node: false });
     clientConfig.name = "client";
     clientConfig.entry = getClientEntries(this._app);
@@ -51,7 +52,8 @@ export default class Service {
     const compiler = webpack([clientConfig]);
     const server = new Server(compiler, {
       port: 4000,
-      host: "0.0.0.0"
+      host: "0.0.0.0",
+      publicPath: this._config.publicPath
     });
     server.watchCompiler(compiler.compilers[0], {
       useTypeScript,
@@ -66,8 +68,13 @@ export default class Service {
 
     server.use(this._handlePage.bind(this));
 
-    await this._app.buildResources();
+    await this._app.build();
     server.start();
+  }
+
+  private _setupRuntime() {
+    const bootstrap = this._app.getBootstrapModule();
+    bootstrap.setMainFile(ReactRuntime.getBootstrapFilePath());
   }
 
   private get _paths() {
@@ -89,7 +96,8 @@ export default class Service {
 
     const tags = this._getDocumentTags();
     console.log("tags", tags);
-    const html = renderDocument(Document, {
+    const Document = require(ReactRuntime.getDocumentFilePath());
+    const html = ReactRuntime.renderDocument(Document.default || Document, {
       appData: {},
       documentProps: {
         appHtml: "",
@@ -104,11 +112,12 @@ export default class Service {
     bodyTags: Runtime.DocumentProps["bodyTags"];
     headTags: Runtime.DocumentProps["headTags"];
   } {
-    const { entrypoints } = require(getBuildPath(
+    const assetsMap = require(getBuildPath(
       this._paths.buildDir,
       BUILD_MANIFEST_PATH
     ));
 
+    const entrypoints = assetsMap[BUILD_CLIENT_RUNTIME_MAIN_PATH];
     const bodyTags: Runtime.DocumentProps["bodyTags"] = [];
     const headTags: Runtime.DocumentProps["headTags"] = [];
     entrypoints.forEach((asset: string) => {

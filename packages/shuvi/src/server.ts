@@ -18,6 +18,7 @@ type CompilerDiagnostics = {
 interface Config {
   host: string;
   port: number;
+  publicPath: string;
 }
 
 export default class Server {
@@ -47,7 +48,7 @@ export default class Server {
 
     app.use(
       WebpackDevMiddleware(compiler, {
-        publicPath: `${ROUTE_PREFIX}/webpack`,
+        publicPath: this._config.publicPath,
         noInfo: true,
         logLevel: "silent",
         watchOptions: {

@@ -9,9 +9,9 @@
   "author": "liximomo",
   "license": "MIT",
   "sideEffects": false,
-  "main": "./dist/index.js",
+  "main": "./lib/index.js",
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w"
@@ -20,12 +20,16 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@shuvi/core": "^0.0.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "@shuvi/core": "^0.0.0"
   },
   "devDependencies": {
     "@types/react": "^16.9.16",
-    "@types/react-dom": "^16.9.4"
+    "@types/react-dom": "^16.9.4",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "peerDependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   }
 }

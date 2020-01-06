@@ -2,7 +2,7 @@ import { Compiler } from "webpack";
 import { RawSource } from "webpack-sources";
 
 interface AssetMap {
-  entrypoints: string[];
+  [s: string]: string[];
 }
 
 // This plugin creates a build-manifest.json for all assets that are being output
@@ -16,7 +16,7 @@ export default class BuildManifestPlugin {
 
   apply(compiler: Compiler) {
     compiler.hooks.emit.tapAsync("BuildManifest", (compilation, callback) => {
-      const assetMap: AssetMap = { entrypoints: [] };
+      const assetMap: AssetMap = {};
 
       // compilation.entrypoints is a Map object, so iterating over it 0 is the key and 1 is the value
       for (const [, entrypoint] of compilation.entrypoints.entries()) {
@@ -41,7 +41,7 @@ export default class BuildManifestPlugin {
           }
         }
 
-        assetMap.entrypoints = [...filesForEntry];
+        assetMap[entrypoint.name] = [...filesForEntry];
       }
 
       compilation.assets[this.filename] = new RawSource(

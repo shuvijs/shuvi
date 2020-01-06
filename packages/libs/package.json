@@ -9,12 +9,14 @@
   "author": "liximomo",
   "license": "MIT",
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w"
   },
   "engines": {
     "node": ">= 8.0.0"
-  }
+  },
+  "devDependencies": {},
+  "dependencies": {}
 }

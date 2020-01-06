@@ -9,9 +9,9 @@ export const ResourceType = {
   Entry: "shuvi_entry"
 };
 
-export const CLIENT_GLOBAL_NAME = `__${constants.NAME}`;
-
 export const ROUTE_PREFIX = `/_${constants.NAME}`;
+
+export const DEV_PUBLIC_PATH = `${ROUTE_PREFIX}/static/webpack`;
 
 export const LAUNCH_EDITOR_ENDPOINT = `${ROUTE_PREFIX}/development/open-stack-frame-in-editor`;
 

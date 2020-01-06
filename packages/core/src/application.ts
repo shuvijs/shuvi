@@ -1,21 +1,25 @@
 import path from "path";
-import { ApplicationConfig, Paths } from "./types/application";
-import {
-  Resource,
-  ResourceType,
-  CommonResourceOptions
-} from "./types/resource";
-import { templateResource, derivativeResource } from "./resource";
+import fse from "fs-extra";
+import { Paths } from "./types";
+import { Resource } from "./resource";
+import { Bootstrap } from "./bootstrap";
 import { getPaths } from "./paths";
+
+export interface ApplicationConfig {
+  cwd: string;
+  outputPath: string;
+  publicPath: string;
+}
 
 export interface ApplicationOptions {
   config: ApplicationConfig;
 }
 
-export class Application {
+class ApplicationClass {
   public config: ApplicationConfig;
   public paths: Paths;
-  public resourceMap = new Map<ResourceType, Resource[]>();
+
+  private _bootstrap: Bootstrap = new Bootstrap();
 
   constructor({ config }: ApplicationOptions) {
     this.config = config;
@@ -31,65 +35,74 @@ export class Application {
     return `${stripEndSlash}/${stripBeginSlash}`;
   }
 
-  addTemplate(res: CommonResourceOptions): this {
-    return this._addResource(templateResource(res));
+  getBootstrapModule(): Bootstrap {
+    return this._bootstrap;
   }
 
-  addDerivative(res: CommonResourceOptions): this {
-    return this._addResource(derivativeResource(res));
+  async build(): Promise<void> {
+    await fse.emptyDir(this.paths.appDir);
+    await this._bootstrap.build(this);
+    // await Promise.all(this.getResources().map(r => r.build(this)));
+    return;
   }
 
-  async buildResources(): Promise<void> {
-    await Promise.all(this.getResources().map(r => r.build()));
+  async buildResource(moduleName: string, res: Resource): Promise<void> {
+    const content = await res.build(this);
+    const output = path.join(this.paths.appDir, moduleName, res.name);
+    await fse.ensureDir(path.dirname(output));
+    return fse.writeFile(output, content, { encoding: "utf8" });
   }
 
-  getResources(type?: string) {
-    if (type) {
-      return this.resourceMap.get(type) || [];
-    }
+  // getResources(type?: string) {
+  //   // if (type) {
+  //   //   return this.resourceMap.get(type) || [];
+  //   // }
 
-    const res: Resource[] = [];
-    for (const [_, resources] of this.resourceMap.entries()) {
-      Array.prototype.push.apply(res, resources);
-    }
-    return res;
-  }
+  //   // const res: Resource[] = [];
+  //   // for (const [_, resources] of this.resourceMap.entries()) {
+  //   //   Array.prototype.push.apply(res, resources);
+  //   // }
+  //   // return res;
+  //   return []
+  // }
 
-  private _addResource(res: Resource): this {
-    let { type, name } = res;
-    if (!this.resourceMap.has(type)) {
-      this.resourceMap.set(type, []);
-    }
+  // private _addResource(res: Resource): this {
+  //   let { type, name } = res;
+  //   if (!this.resourceMap.has(type)) {
+  //     this.resourceMap.set(type, []);
+  //   }
 
-    if (path.isAbsolute(name)) {
-      // TODO: warning
-    } else {
-      name = path.join(this.paths.appDir, name);
-    }
+  //   if (path.isAbsolute(name)) {
+  //     // TODO: warning
+  //   } else {
+  //     name = path.join(this.paths.appDir, name);
+  //   }
 
-    const list = this.resourceMap.get(type)!;
-    list.push({
-      ...res,
-      name
-    });
-    return this;
-  }
+  //   const list = this.resourceMap.get(type)!;
+  //   list.push({
+  //     ...res,
+  //     name
+  //   });
+  //   return this;
+  // }
 
-  /**
-   * resource path format: [namespcae//]path
-   */
-  private _resolveResourcePath(res: Resource): this {
-    const { type } = res;
-    if (!this.resourceMap.has(type)) {
-      this.resourceMap.set(type, []);
-    }
+  // /**
+  //  * resource path format: [namespcae//]path
+  //  */
+  // private _resolveResourcePath(res: Resource): this {
+  //   const { type } = res;
+  //   if (!this.resourceMap.has(type)) {
+  //     this.resourceMap.set(type, []);
+  //   }
 
-    const list = this.resourceMap.get(type)!;
-    list.push(res);
-    return this;
-  }
+  //   const list = this.resourceMap.get(type)!;
+  //   list.push(res);
+  //   return this;
+  // }
 }
 
+export type Application = ApplicationClass;
+
 export function app(options: ApplicationOptions) {
-  return new Application(options);
+  return new ApplicationClass(options);
 }

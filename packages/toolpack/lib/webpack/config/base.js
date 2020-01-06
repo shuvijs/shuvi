@@ -31,7 +31,7 @@ const terserOptions = {
         ascii_only: true
     }
 };
-function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {} }) {
+function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, publicPath = '/', env = {} }) {
     const { typeScriptPath, tsConfigPath, useTypeScript } = typeScript_1.getProjectInfo(projectRoot);
     const config = new webpack_chain_1.default();
     config.mode(dev ? "development" : "production");
@@ -53,6 +53,7 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
         }
     ]);
     config.output.merge({
+        publicPath,
         hotUpdateChunkFilename: "static/webpack/[id].[hash].hot-update.js",
         hotUpdateMainFilename: "static/webpack/[hash].hot-update.json",
         // This saves chunks with the name given via `import()`
@@ -60,7 +61,7 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env = {}
         strictModuleExceptionHandling: true,
         // crossOriginLoading: crossOrigin,
         futureEmitAssets: !dev,
-        webassemblyModuleFilename: "static/wasm/[modulehash].wasm"
+        webassemblyModuleFilename: "static/wasm/[modulehash].wasm",
     });
     // Support for NODE_PATH
     const nodePathList = (process.env.NODE_PATH || "")

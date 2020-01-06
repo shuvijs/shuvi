@@ -10,7 +10,7 @@ class BuildManifestPlugin {
     }
     apply(compiler) {
         compiler.hooks.emit.tapAsync("BuildManifest", (compilation, callback) => {
-            const assetMap = { entrypoints: [] };
+            const assetMap = {};
             // compilation.entrypoints is a Map object, so iterating over it 0 is the key and 1 is the value
             for (const [, entrypoint] of compilation.entrypoints.entries()) {
                 const filesForEntry = [];
@@ -30,7 +30,7 @@ class BuildManifestPlugin {
                         filesForEntry.push(file.replace(/\\/g, "/"));
                     }
                 }
-                assetMap.entrypoints = [...filesForEntry];
+                assetMap[entrypoint.name] = [...filesForEntry];
             }
             compilation.assets[this.filename] = new webpack_sources_1.RawSource(JSON.stringify(assetMap, null, 2));
             callback();

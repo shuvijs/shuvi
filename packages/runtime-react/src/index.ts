@@ -3,10 +3,9 @@ import { Runtime, Application } from "@shuvi/core";
 import { renderDocument, renderApp } from "./renderer";
 import { resolveSource } from "./paths";
 
-export default class ReactRuntime
-  implements Runtime.Runtime<React.ComponentType<any>> {
+class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
   install(app: Application): void {
-    console.log('install react runtime');
+    console.log("install react runtime");
   }
 
   renderDocument(
@@ -23,11 +22,13 @@ export default class ReactRuntime
     return renderApp(App, options);
   }
 
-  getDocumentModulePath(): string {
+  getDocumentFilePath(): string {
     return resolveSource("document");
   }
 
-  getBootstrapModulePath(): string {
+  getBootstrapFilePath(): string {
     return resolveSource("bootstrap");
   }
 }
+
+export default new ReactRuntime();

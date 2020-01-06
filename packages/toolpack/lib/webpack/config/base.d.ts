@@ -4,9 +4,10 @@ export interface BaseOptions {
     projectRoot: string;
     srcDirs: string[];
     mediaOutputPath: string;
+    publicPath?: string;
     env?: {
         [x: string]: string;
     };
 }
 export { WebpackChain };
-export declare function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, env }: BaseOptions): WebpackChain;
+export declare function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, publicPath, env }: BaseOptions): WebpackChain;

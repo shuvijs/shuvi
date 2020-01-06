@@ -18,7 +18,9 @@ function Html(props: any) {
 
 function Head() {
   const { documentProps } = useContext(DocumentContext);
-  const essentialTags = documentProps.headTags.map(tag => <HtmlTag {...tag} />);
+  const essentialTags = documentProps.headTags.map((tag, index) => (
+    <HtmlTag key={index} {...tag} />
+  ));
 
   return <>{essentialTags}</>;
 }
@@ -36,7 +38,9 @@ function Main() {
 
 const BodyScripts: FunctionComponent<any> = () => {
   const { documentProps } = useContext(DocumentContext);
-  const essentialTags = documentProps.bodyTags.map(tag => <HtmlTag {...tag} />);
+  const essentialTags = documentProps.bodyTags.map((tag, index) => (
+    <HtmlTag key={index} {...tag} />
+  ));
 
   return <>{essentialTags}</>;
 };

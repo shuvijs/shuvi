@@ -1,3 +1,4 @@
+import React from "react";
 import { Runtime } from "@shuvi/core";
-export declare const renderDocument: Runtime.RenderDocument;
-export declare const renderApp: Runtime.RenderApp;
+export declare function renderDocument(Document: React.ComponentType<any>, options: Runtime.RenderDocumentOptions): string;
+export declare function renderApp(App: React.ComponentType<any>, options: Runtime.RenderAppOptions): string;

@@ -44,7 +44,7 @@ export interface Runtime<T = unknown> {
 
   renderApp(App: T, options: RenderAppOptions): string;
 
-  getDocumentModulePath(): string;
+  getDocumentFilePath(): string;
 
-  getBootstrapModulePath(): string;
+  getBootstrapFilePath(): string;
 }

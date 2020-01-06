@@ -15,6 +15,7 @@ export interface BaseOptions {
   projectRoot: string;
   srcDirs: string[];
   mediaOutputPath: string;
+  publicPath?: string;
   env?: {
     [x: string]: string;
   };
@@ -48,6 +49,7 @@ export function baseWebpackChain({
   projectRoot,
   srcDirs,
   mediaOutputPath,
+  publicPath = '/',
   env = {}
 }: BaseOptions): WebpackChain {
   const { typeScriptPath, tsConfigPath, useTypeScript } = getProjectInfo(
@@ -76,6 +78,7 @@ export function baseWebpackChain({
   ]);
 
   config.output.merge({
+    publicPath,
     hotUpdateChunkFilename: "static/webpack/[id].[hash].hot-update.js",
     hotUpdateMainFilename: "static/webpack/[hash].hot-update.json",
     // This saves chunks with the name given via `import()`
@@ -85,7 +88,7 @@ export function baseWebpackChain({
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
     futureEmitAssets: !dev,
-    webassemblyModuleFilename: "static/wasm/[modulehash].wasm"
+    webassemblyModuleFilename: "static/wasm/[modulehash].wasm",
   });
 
   // Support for NODE_PATH

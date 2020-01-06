@@ -1,5 +1,5 @@
 import { join } from "path";
-import { Paths } from "./types/application";
+import { Paths } from "./types";
 import { NAME } from "./constants";
 
 interface PathsOpts {
