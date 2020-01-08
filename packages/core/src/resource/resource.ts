@@ -1,30 +1,61 @@
-type Application = import("../application").Application;
-
 export type ResourceId = number;
 
-export type ResourceSrc = string;
+export type ResourceBuiltInType = "file";
 
-export interface ResourceConstructionOptions {
-  name: string;
-  src: ResourceSrc;
-}
+export type ResourceBuiltInTypeProps = {
+  file: {
+    name: string;
+    content: string;
+  };
+};
 
-export type BuildResourceFn = (app: Application) => Promise<void>;
+export type ResourceType<P = {}> = Resource<P> | ResourceBuiltInType;
+
+export type ResourceElement<P = {}> = {
+  type: ResourceType<P>;
+  props: P;
+};
+
+export type ResourceNode<P = {}> =
+  | ResourceElement<P>
+  | string
+  | null
+  | undefined;
 
 let uid = 0;
-export class Resource {
-  id: ResourceId = uid++;
+export abstract class Resource<Props = {}> {
+  id: ResourceId = ++uid;
 
-  src: ResourceSrc;
+  props: Props;
 
-  name: string;
-
-  constructor({ name, src }: ResourceConstructionOptions) {
-    this.name = name;
-    this.src = src;
+  constructor(props: Props) {
+    this.props = props;
   }
 
-  async build(app: Application): Promise<string> {
-    return "";
+  abstract build(): ResourceNode | ResourceNode[];
+}
+
+type Children<Props> = Props extends { children: infer C } ? C : never;
+
+type GetPropsFromType<T> = T extends ResourceBuiltInType
+  ? ResourceBuiltInTypeProps[ResourceBuiltInType]
+  : T extends Resource<infer P>
+  ? P
+  : {};
+
+export function createElement<T extends ResourceType>(
+  type: T,
+  config: GetPropsFromType<T> | null,
+  children?: Children<GetPropsFromType<T>>
+): ResourceElement {
+  const props = {} as GetPropsFromType<T>;
+  if (config !== null) {
+    Object.assign(props, config);
   }
+
+  if (children) {
+    (props as any).children = children;
+  }
+
+  return { type: type as any, props };
 }

@@ -3,7 +3,7 @@ import {
   TemplateResource,
   TemplateResourceClass,
   TemplateResourceConstructionOptions
-} from "./templateResource";
+} from "./TemplateFile";
 
 export function createResource(opts: ResourceConstructionOptions): Resource {
   return new Resource(opts);

@@ -1,10 +1,10 @@
-export { Resource, ResourceSrc } from "./resource";
+export { Resource } from "./resource";
 
 export {
   TemplateContextData,
   TemplateContext,
   createTemplateContext,
   TemplateResource
-} from "./templateResource";
+} from "./TemplateFile";
 
 export * from "./factory";

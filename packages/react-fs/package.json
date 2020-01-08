@@ -1,0 +1,34 @@
+{
+  "name": "@shuvi/react-fs",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liximomo/shuvi.git",
+    "directory": "packages/react-fs"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "dev": "tsc -p tsconfig.build.json -w"
+  },
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "react": "^16.12.0",
+    "react-reconciler": "^0.24.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/react": "^16.9.17",
+    "@types/react-reconciler": "^0.18.0"
+  },
+  "peerDependencies": {
+    "react": "^16.12.0"
+  }
+}
