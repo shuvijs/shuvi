@@ -29,13 +29,13 @@ function getWebpackConfig(app, opts) {
     chain.output.set("filename", ({ chunk }) => {
         // Use `[name]-[contenthash].js` in production
         if (!isDev &&
-            (chunk.name === constants_1.BUILD_CLIENT_RUNTIME_MAIN_PATH ||
-                chunk.name === constants_1.BUILD_CLIENT_RUNTIME_WEBPACK_PATH)) {
+            (chunk.name === constants_1.BUILD_CLIENT_RUNTIME_MAIN ||
+                chunk.name === constants_1.BUILD_CLIENT_RUNTIME_WEBPACK)) {
             return chunk.name.replace(/\.js$/, "-[contenthash].js");
         }
         return "[name]";
     });
-    chain.optimization.runtimeChunk({ name: constants_1.BUILD_CLIENT_RUNTIME_WEBPACK_PATH });
+    chain.optimization.runtimeChunk({ name: constants_1.BUILD_CLIENT_RUNTIME_WEBPACK });
     return chain.toConfig();
 }
 exports.getWebpackConfig = getWebpackConfig;

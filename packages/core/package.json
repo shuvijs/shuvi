@@ -19,11 +19,15 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@shuvi/libs": "0.0.0",
-    "@shuvi/toolpack": "0.0.0",
-    "@shuvi/utils": "0.0.0",
-    "fs-extra": "^8.1.0",
-    "handlebars": "^4.5.3"
+    "@shuvi/libs": "^0.0.0",
+    "@shuvi/react-fs": "^0.0.0",
+    "@shuvi/toolpack": "^0.0.0",
+    "@shuvi/utils": "^0.0.0",
+    "fs-extra": "8.1.0",
+    "handlebars": "4.5.3",
+    "immer": "5.2.1",
+    "react": "16.12.0",
+    "zustand": "2.2.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1"

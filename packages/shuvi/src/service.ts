@@ -15,9 +15,10 @@ import { getClientEntries } from "./helpers/getEntries";
 import { getBuildPath } from "./helpers/paths";
 import { getWebpackConfig } from "./helpers/getWebpackConfig";
 import {
-  ENTRY_CLIENT_PATH,
+  CLIENT_ENTRY_PATH,
   BUILD_MANIFEST_PATH,
-  BUILD_CLIENT_RUNTIME_MAIN_PATH,
+  BUILD_CLIENT_RUNTIME_MAIN,
+  BUILD_SERVER_DOCUMENT,
   ResourceType
 } from "./constants";
 import Server from "./server";
@@ -43,13 +44,22 @@ export default class Service {
 
     const clientConfig = getWebpackConfig(this._app, { node: false });
     clientConfig.name = "client";
-    clientConfig.entry = getClientEntries(this._app);
+    clientConfig.entry = {
+      [BUILD_CLIENT_RUNTIME_MAIN]: getClientEntries(this._app)
+    };
     console.log("client webpack config:");
     console.dir(clientConfig, { depth: null });
 
     const { useTypeScript } = getProjectInfo(this._paths.projectDir);
-    // const serverConfig = getWebpackConfig(this._app, { node: true });
-    const compiler = webpack([clientConfig]);
+    const serverConfig = getWebpackConfig(this._app, { node: true });
+    serverConfig.name = "server";
+    serverConfig.entry = {
+      [BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"]
+    };
+    console.log("client webpack config:");
+    console.dir(serverConfig, { depth: null });
+
+    const compiler = webpack([clientConfig, serverConfig]);
     const server = new Server(compiler, {
       port: 4000,
       host: "0.0.0.0",
@@ -59,22 +69,24 @@ export default class Service {
       useTypeScript,
       log: console.log.bind(console)
     });
-    // server.watchCompiler(compiler.compilers[1], {
-    //   useTypeScript: false,
-    //   log() {
-    //     // noop
-    //   }
-    // });
+    server.watchCompiler(compiler.compilers[1], {
+      useTypeScript: false,
+      log: console.log.bind(console)
+    });
 
     server.use(this._handlePage.bind(this));
 
-    await this._app.build();
+    await this._app.build({
+      bootstrapSrc: ReactRuntime.getBootstrapFilePath()
+    });
     server.start();
   }
 
   private _setupRuntime() {
-    const bootstrap = this._app.getBootstrapModule();
-    bootstrap.setMainFile(ReactRuntime.getBootstrapFilePath());
+    this._app.addGatewayFile("document.js", [
+      this._app.getSrcPath("document.js"),
+      ReactRuntime.getDocumentFilePath()
+    ]);
   }
 
   private get _paths() {
@@ -117,7 +129,7 @@ export default class Service {
       BUILD_MANIFEST_PATH
     ));
 
-    const entrypoints = assetsMap[BUILD_CLIENT_RUNTIME_MAIN_PATH];
+    const entrypoints = assetsMap[BUILD_CLIENT_RUNTIME_MAIN];
     const bodyTags: Runtime.DocumentProps["bodyTags"] = [];
     const headTags: Runtime.DocumentProps["headTags"] = [];
     entrypoints.forEach((asset: string) => {

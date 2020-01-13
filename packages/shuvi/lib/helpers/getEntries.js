@@ -14,14 +14,12 @@ const constants_1 = require("../constants");
 //   })}!`;
 // };
 function getClientEntries(app) {
-    const entry = {
-        [constants_1.BUILD_CLIENT_RUNTIME_MAIN_PATH]: [constants_1.ENTRY_CLIENT_PATH]
-    };
+    const entries = [constants_1.CLIENT_ENTRY_PATH];
     if (process.env.NODE_ENV === "development") {
         const hotClient = require.resolve("@shuvi/toolpack/lib/utils/webpackHotDevClient");
-        entry[constants_1.BUILD_CLIENT_RUNTIME_MAIN_PATH].unshift(`${hotClient}?launchEditorEndpoint=${constants_1.LAUNCH_EDITOR_ENDPOINT}`);
+        entries.unshift(`${hotClient}?launchEditorEndpoint=${constants_1.LAUNCH_EDITOR_ENDPOINT}`);
     }
-    return entry;
+    return entries;
 }
 exports.getClientEntries = getClientEntries;
 function getServerEntries() { }

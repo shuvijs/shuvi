@@ -1,8 +1,5 @@
-import ReactFS, { BuiltInElements } from "./reconciler";
-declare global {
-    namespace JSX {
-        interface IntrinsicElements extends BuiltInElements {
-        }
-    }
-}
+import ReactFS from "./reconciler";
+export { default as File } from "./components/File";
+export { default as Dir } from "./components/Dir";
+export { FileProps, DirProps } from "./internal";
 export default ReactFS;

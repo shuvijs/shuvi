@@ -1,6 +1,6 @@
 import path from "path";
 import React from "react";
-import ReactFS from "..";
+import ReactFS, { File, Dir } from "..";
 
 class App extends React.Component<{}, { createB: boolean }> {
   state = {
@@ -22,13 +22,13 @@ class App extends React.Component<{}, { createB: boolean }> {
   render() {
     return (
       <>
-        <dir name={this.state.aName}>
-          <file name={this.state.a1Name} content="s" />
-          <dir name="dirA_A">
-            <file name="A_A1" content="s" />
-          </dir>
-        </dir>
-        {this.state.createB && <dir name="dirB" />}
+        <Dir name={this.state.aName}>
+          <File name={this.state.a1Name} content="s" />
+          <Dir name="dirA_A">
+            <File name="A_A1" content="s" />
+          </Dir>
+        </Dir>
+        {this.state.createB && <Dir name="dirB" />}
       </>
     );
   }

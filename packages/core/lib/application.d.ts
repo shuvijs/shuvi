@@ -1,6 +1,4 @@
 import { Paths } from "./types";
-import { Resource } from "./resource";
-import { Bootstrap } from "./bootstrap";
 export interface ApplicationConfig {
     cwd: string;
     outputPath: string;
@@ -9,15 +7,18 @@ export interface ApplicationConfig {
 export interface ApplicationOptions {
     config: ApplicationConfig;
 }
+export interface BuildOptions {
+    bootstrapSrc: string;
+}
 declare class ApplicationClass {
     config: ApplicationConfig;
     paths: Paths;
-    private _bootstrap;
     constructor({ config }: ApplicationOptions);
+    getAppPath(filename: string): string;
+    getSrcPath(filename: string): string;
     getPublicPath(buildPath: string): string;
-    getBootstrapModule(): Bootstrap;
-    build(): Promise<void>;
-    buildResource(moduleName: string, res: Resource): Promise<void>;
+    addGatewayFile(path: string, files: string[]): void;
+    build(options: BuildOptions): Promise<void>;
 }
 export declare type Application = ApplicationClass;
 export declare function app(options: ApplicationOptions): ApplicationClass;

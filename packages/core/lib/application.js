@@ -12,41 +12,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __importDefault(require("path"));
+const react_1 = __importDefault(require("react"));
+const react_fs_1 = __importDefault(require("@shuvi/react-fs"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
-const bootstrap_1 = require("./bootstrap");
+const App_1 = __importDefault(require("./App"));
 const paths_1 = require("./paths");
+const store_1 = require("./store");
+const utils_1 = require("./utils");
 class ApplicationClass {
     constructor({ config }) {
-        this._bootstrap = new bootstrap_1.Bootstrap();
         this.config = config;
         this.paths = paths_1.getPaths({
             cwd: this.config.cwd,
             outputPath: this.config.outputPath
         });
     }
+    getAppPath(filename) {
+        return utils_1.joinPath(this.paths.appDir, filename);
+    }
+    getSrcPath(filename) {
+        return utils_1.joinPath(this.paths.srcDir, filename);
+    }
     getPublicPath(buildPath) {
-        const stripEndSlash = this.config.publicPath.replace(/\/+$/, "");
-        const stripBeginSlash = buildPath.replace(/^\/+/, "");
-        return `${stripEndSlash}/${stripBeginSlash}`;
+        return utils_1.joinPath(this.config.publicPath, buildPath);
     }
-    getBootstrapModule() {
-        return this._bootstrap;
+    addGatewayFile(path, files) {
+        store_1.addGatewayFile(path, files);
     }
-    build() {
+    build(options) {
         return __awaiter(this, void 0, void 0, function* () {
+            store_1.initBootstrap({ bootstrapSrc: options.bootstrapSrc });
             yield fs_extra_1.default.emptyDir(this.paths.appDir);
-            yield this._bootstrap.build(this);
-            // await Promise.all(this.getResources().map(r => r.build(this)));
-            return;
-        });
-    }
-    buildResource(moduleName, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const content = yield res.build(this);
-            const output = path_1.default.join(this.paths.appDir, moduleName, res.name);
-            yield fs_extra_1.default.ensureDir(path_1.default.dirname(output));
-            return fs_extra_1.default.writeFile(output, content, { encoding: "utf8" });
+            return new Promise(resolve => {
+                react_fs_1.default.render(react_1.default.createElement(App_1.default, null), this.paths.appDir, () => {
+                    resolve();
+                });
+            });
         });
     }
 }

@@ -3,17 +3,6 @@ import path from "path";
 import fse from "fs-extra";
 import ReactReconciler, { OpaqueHandle } from "react-reconciler";
 
-export interface BuiltInElements {
-  file: {
-    name: string;
-    content: string;
-  };
-  dir: {
-    name: string;
-    children?: JSX.Element | JSX.Element[] | null;
-  };
-}
-
 type Type = "file" | "dir";
 type Props = {
   name: string;

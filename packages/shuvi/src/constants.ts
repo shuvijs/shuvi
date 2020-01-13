@@ -21,8 +21,12 @@ export const BUILD_MANIFEST_PATH = "build-manifest.json";
 
 const BUILD_CLIENT_DIR = "client";
 
-export const BUILD_CLIENT_RUNTIME_MAIN_PATH = `${BUILD_CLIENT_DIR}/runtime/main.js`;
+export const BUILD_CLIENT_RUNTIME_MAIN = `${BUILD_CLIENT_DIR}/runtime/main.js`;
 
-export const BUILD_CLIENT_RUNTIME_WEBPACK_PATH = `${BUILD_CLIENT_DIR}/runtime/webpack.js`;
+export const BUILD_CLIENT_RUNTIME_WEBPACK = `${BUILD_CLIENT_DIR}/runtime/webpack.js`;
 
-export const ENTRY_CLIENT_PATH = resolveSource("client/index");
+export const CLIENT_ENTRY_PATH = resolveSource("client/index");
+
+const BUILD_SERVER_DIR = "server";
+
+export const BUILD_SERVER_DOCUMENT = `${BUILD_SERVER_DIR}/document.js`;

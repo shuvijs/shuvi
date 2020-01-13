@@ -3,8 +3,7 @@ import { Application } from "@shuvi/core";
 // import qs from "querystring";
 import {
   LAUNCH_EDITOR_ENDPOINT,
-  BUILD_CLIENT_RUNTIME_MAIN_PATH,
-  ENTRY_CLIENT_PATH
+  CLIENT_ENTRY_PATH
   // CLIENT_GLOBAL_NAME
 } from "../constants";
 
@@ -20,21 +19,19 @@ import {
 //   })}!`;
 // };
 
-export function getClientEntries(app: Application): { [x: string]: string[] } {
-  const entry = {
-    [BUILD_CLIENT_RUNTIME_MAIN_PATH]: [ENTRY_CLIENT_PATH]
-  };
+export function getClientEntries(app: Application): string[] {
+  const entries = [CLIENT_ENTRY_PATH];
 
   if (process.env.NODE_ENV === "development") {
     const hotClient = require.resolve(
       "@shuvi/toolpack/lib/utils/webpackHotDevClient"
     );
-    entry[BUILD_CLIENT_RUNTIME_MAIN_PATH].unshift(
+    entries.unshift(
       `${hotClient}?launchEditorEndpoint=${LAUNCH_EDITOR_ENDPOINT}`
     );
   }
 
-  return entry;
+  return entries;
 }
 
 export function getServerEntries() {}

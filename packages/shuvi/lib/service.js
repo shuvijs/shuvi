@@ -37,12 +37,20 @@ class Service {
             this._setupRuntime();
             const clientConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: false });
             clientConfig.name = "client";
-            clientConfig.entry = getEntries_1.getClientEntries(this._app);
+            clientConfig.entry = {
+                [constants_1.BUILD_CLIENT_RUNTIME_MAIN]: getEntries_1.getClientEntries(this._app)
+            };
             console.log("client webpack config:");
             console.dir(clientConfig, { depth: null });
             const { useTypeScript } = typeScript_1.getProjectInfo(this._paths.projectDir);
-            // const serverConfig = getWebpackConfig(this._app, { node: true });
-            const compiler = webpack_1.default([clientConfig]);
+            const serverConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: true });
+            serverConfig.name = "server";
+            serverConfig.entry = {
+                [constants_1.BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"]
+            };
+            console.log("client webpack config:");
+            console.dir(serverConfig, { depth: null });
+            const compiler = webpack_1.default([clientConfig, serverConfig]);
             const server = new server_1.default(compiler, {
                 port: 4000,
                 host: "0.0.0.0",
@@ -52,20 +60,22 @@ class Service {
                 useTypeScript,
                 log: console.log.bind(console)
             });
-            // server.watchCompiler(compiler.compilers[1], {
-            //   useTypeScript: false,
-            //   log() {
-            //     // noop
-            //   }
-            // });
+            server.watchCompiler(compiler.compilers[1], {
+                useTypeScript: false,
+                log: console.log.bind(console)
+            });
             server.use(this._handlePage.bind(this));
-            yield this._app.build();
+            yield this._app.build({
+                bootstrapSrc: runtime_react_1.default.getBootstrapFilePath()
+            });
             server.start();
         });
     }
     _setupRuntime() {
-        const bootstrap = this._app.getBootstrapModule();
-        bootstrap.setMainFile(runtime_react_1.default.getBootstrapFilePath());
+        this._app.addGatewayFile("document.js", [
+            this._app.getSrcPath("document.js"),
+            runtime_react_1.default.getDocumentFilePath()
+        ]);
     }
     get _paths() {
         return this._app.paths;
@@ -92,7 +102,7 @@ class Service {
     }
     _getDocumentTags() {
         const assetsMap = require(paths_1.getBuildPath(this._paths.buildDir, constants_1.BUILD_MANIFEST_PATH));
-        const entrypoints = assetsMap[constants_1.BUILD_CLIENT_RUNTIME_MAIN_PATH];
+        const entrypoints = assetsMap[constants_1.BUILD_CLIENT_RUNTIME_MAIN];
         const bodyTags = [];
         const headTags = [];
         entrypoints.forEach((asset) => {

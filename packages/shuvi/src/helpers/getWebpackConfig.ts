@@ -7,8 +7,8 @@ import { Application } from "@shuvi/core";
 import {
   BUILD_MEDIA_PATH,
   BUILD_MANIFEST_PATH,
-  BUILD_CLIENT_RUNTIME_MAIN_PATH,
-  BUILD_CLIENT_RUNTIME_WEBPACK_PATH,
+  BUILD_CLIENT_RUNTIME_MAIN,
+  BUILD_CLIENT_RUNTIME_WEBPACK,
 } from "../constants";
 
 interface Options {
@@ -44,15 +44,15 @@ export function getWebpackConfig(app: Application, opts: Options) {
     // Use `[name]-[contenthash].js` in production
     if (
       !isDev &&
-      (chunk.name === BUILD_CLIENT_RUNTIME_MAIN_PATH ||
-        chunk.name === BUILD_CLIENT_RUNTIME_WEBPACK_PATH)
+      (chunk.name === BUILD_CLIENT_RUNTIME_MAIN ||
+        chunk.name === BUILD_CLIENT_RUNTIME_WEBPACK)
     ) {
       return chunk.name.replace(/\.js$/, "-[contenthash].js");
     }
 
     return "[name]";
   });
-  chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK_PATH });
+  chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
 
   return chain.toConfig();
 }
