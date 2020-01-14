@@ -36,8 +36,8 @@ class ApplicationClass {
     getPublicPath(buildPath) {
         return utils_1.joinPath(this.config.publicPath, buildPath);
     }
-    addGatewayFile(path, files) {
-        store_1.addGatewayFile(path, files);
+    addSelectorFile(path, selectFileList, fallbackFile) {
+        store_1.addSelectorFile(path, selectFileList, fallbackFile);
     }
     build(options) {
         return __awaiter(this, void 0, void 0, function* () {

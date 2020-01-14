@@ -2,7 +2,7 @@
  * Copyright (c) 2019 Alexander Reardon
  */
 
-function areInputsEqual(
+export function arrayEqual(
   newInputs: readonly unknown[],
   lastInputs: readonly unknown[]
 ): boolean {
@@ -29,7 +29,7 @@ export function memoizeOne<
   // Need to use 'any' rather than 'unknown' here as it has
   // The correct Generic narrowing behaviour.
   ResultFn extends (this: any, ...newArgs: any[]) => ReturnType<ResultFn>
->(resultFn: ResultFn, isEqual: EqualityFn = areInputsEqual): ResultFn {
+>(resultFn: ResultFn, isEqual: EqualityFn = arrayEqual): ResultFn {
   let lastThis: unknown;
   let lastArgs: unknown[] = [];
   let lastResult: ReturnType<ResultFn>;

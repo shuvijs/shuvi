@@ -12,7 +12,7 @@ export interface Props {
   data?: TemplateData;
 }
 
-export default class TemplateFile extends React.Component<Props> {
+export default class FileTemplate extends React.Component<Props> {
   private _compileTemplate = memoizeOne((template: string) =>
     Handlebars.compile(template)
   );
@@ -29,7 +29,6 @@ export default class TemplateFile extends React.Component<Props> {
   render() {
     const { templateSrc, template } = this.props;
 
-    let content: string;
     if (template) {
       return this._renderTemplate(template);
     }

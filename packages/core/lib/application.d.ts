@@ -17,7 +17,7 @@ declare class ApplicationClass {
     getAppPath(filename: string): string;
     getSrcPath(filename: string): string;
     getPublicPath(buildPath: string): string;
-    addGatewayFile(path: string, files: string[]): void;
+    addSelectorFile(path: string, selectFileList: string[], fallbackFile: string): void;
     build(options: BuildOptions): Promise<void>;
 }
 export declare type Application = ApplicationClass;

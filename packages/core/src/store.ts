@@ -1,15 +1,20 @@
 import create from "zustand";
 import produce from "immer";
-import { FileNode, TemplateData } from "./types/file";
+import { FileNode, TemplateData, FileType, FileNodeType } from "./types/file";
 
 interface State {
   bootstrapSrc: string;
   files: FileNode[];
 }
 
+interface FileProps {
+  type: FileType;
+  [x: string]: any;
+}
+
 interface Actions {
   set(fn: (state: State) => void): void;
-  addFile(path: string, props: any): void;
+  addFile(path: string, props: FileProps): void;
 }
 
 function getDirAndName(path: string) {
@@ -63,7 +68,7 @@ function ensureDir(path: string, files: FileNode[]): void {
 
 function addFile(
   path: string,
-  type: "file" | "dir",
+  type: FileNodeType,
   props: any,
   files: FileNode[]
 ) {
@@ -128,10 +133,11 @@ export function initBootstrap(options: { bootstrapSrc: string }) {
   updateStore(state => (state.bootstrapSrc = options.bootstrapSrc));
 }
 
-export function addGatewayFile(path: string, files: string[]) {
+export function addSelectorFile(path: string, files: string[], fallbackFile: string) {
   store.getState().addFile(path, {
     files,
-    type: "gateway"
+    fallbackFile,
+    type: "selector"
   });
 }
 

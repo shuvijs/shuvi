@@ -8,7 +8,7 @@ const react_fs_1 = require("@shuvi/react-fs");
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const handlebars_1 = __importDefault(require("handlebars"));
 const utils_1 = require("../utils");
-class TemplateFile extends react_1.default.Component {
+class FileTemplate extends react_1.default.Component {
     constructor() {
         super(...arguments);
         this._compileTemplate = utils_1.memoizeOne((template) => handlebars_1.default.compile(template));
@@ -21,7 +21,6 @@ class TemplateFile extends react_1.default.Component {
     }
     render() {
         const { templateSrc, template } = this.props;
-        let content;
         if (template) {
             return this._renderTemplate(template);
         }
@@ -32,4 +31,4 @@ class TemplateFile extends react_1.default.Component {
         return null;
     }
 }
-exports.default = TemplateFile;
+exports.default = FileTemplate;

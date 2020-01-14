@@ -98,10 +98,11 @@ function initBootstrap(options) {
     updateStore(state => (state.bootstrapSrc = options.bootstrapSrc));
 }
 exports.initBootstrap = initBootstrap;
-function addGatewayFile(path, files) {
+function addSelectorFile(path, files, fallbackFile) {
     store.getState().addFile(path, {
         files,
-        type: "gateway"
+        fallbackFile,
+        type: "selector"
     });
 }
-exports.addGatewayFile = addGatewayFile;
+exports.addSelectorFile = addSelectorFile;

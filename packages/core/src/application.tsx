@@ -4,7 +4,7 @@ import fse from "fs-extra";
 import { Paths } from "./types";
 import App from "./App";
 import { getPaths } from "./paths";
-import { initBootstrap, addGatewayFile } from "./store";
+import { initBootstrap, addSelectorFile } from "./store";
 import { joinPath } from "./utils";
 
 export interface ApplicationConfig {
@@ -45,8 +45,8 @@ class ApplicationClass {
     return joinPath(this.config.publicPath, buildPath);
   }
 
-  addGatewayFile(path: string, files: string[]): void {
-    addGatewayFile(path, files);
+  addSelectorFile(path: string, selectFileList: string[], fallbackFile: string): void {
+    addSelectorFile(path, selectFileList, fallbackFile);
   }
 
   async build(options: BuildOptions): Promise<void> {

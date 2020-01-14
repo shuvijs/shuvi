@@ -17,7 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
 const react_fs_1 = require("@shuvi/react-fs");
 const FileTemplate_1 = __importDefault(require("./FileTemplate"));
-const FileGateway_1 = __importDefault(require("./FileGateway"));
+const FileSelector_1 = __importDefault(require("./FileSelector"));
 class FileNode extends react_1.default.Component {
     constructor(props) {
         super(props);
@@ -31,8 +31,8 @@ class FileNode extends react_1.default.Component {
             case "template":
                 Comp = FileTemplate_1.default;
                 break;
-            case "gateway":
-                Comp = FileGateway_1.default;
+            case "selector":
+                Comp = FileSelector_1.default;
                 break;
             default:
                 return null;

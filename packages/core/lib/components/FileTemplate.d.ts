@@ -6,7 +6,7 @@ export interface Props {
     template?: string;
     data?: TemplateData;
 }
-export default class TemplateFile extends React.Component<Props> {
+export default class FileTemplate extends React.Component<Props> {
     private _compileTemplate;
     private _readFile;
     private _renderTemplate;

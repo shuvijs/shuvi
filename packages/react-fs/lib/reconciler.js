@@ -103,6 +103,7 @@ const ReactFileSystem = react_reconciler_1.default({
         const fsPath = path_1.default.join(instance.dir, instance.name);
         if (updatePayload.newContent) {
             if (instance.fd) {
+                fs_extra_1.default.ftruncateSync(instance.fd, 0);
                 fs_extra_1.default.writeSync(instance.fd, updatePayload.newContent, 0);
             }
             else {
@@ -137,7 +138,7 @@ exports.default = {
         let root = rootsMap.get(rootDir);
         // Create a root Container if it doesnt exist
         if (!root) {
-            root = ReactFileSystem.createContainer({ dir: rootDir }, false, false);
+            root = ReactFileSystem.createContainer({ dir: rootDir, }, false, false);
             rootsMap.set(rootDir, root);
         }
         // update the root Container

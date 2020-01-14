@@ -6,7 +6,7 @@ import {
   FileNode as FileNodeSpec
 } from "../types/file";
 import FileTemplate from "./FileTemplate";
-import FileGateway from "./FileGateway";
+import FileSelector from "./FileSelector";
 
 interface Props {
   file: FileNodeSpec;
@@ -27,8 +27,8 @@ export default class FileNode extends React.Component<Props> {
       case "template":
         Comp = FileTemplate;
         break;
-      case "gateway":
-        Comp = FileGateway;
+      case "selector":
+        Comp = FileSelector;
         break;
       default:
         return null;

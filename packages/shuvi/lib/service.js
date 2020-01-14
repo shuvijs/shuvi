@@ -72,10 +72,7 @@ class Service {
         });
     }
     _setupRuntime() {
-        this._app.addGatewayFile("document.js", [
-            this._app.getSrcPath("document.js"),
-            runtime_react_1.default.getDocumentFilePath()
-        ]);
+        this._app.addSelectorFile("document.js", [this._app.getSrcPath("document.js")], runtime_react_1.default.getDocumentFilePath());
     }
     get _paths() {
         return this._app.paths;

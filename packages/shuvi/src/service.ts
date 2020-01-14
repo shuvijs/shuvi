@@ -83,10 +83,11 @@ export default class Service {
   }
 
   private _setupRuntime() {
-    this._app.addGatewayFile("document.js", [
-      this._app.getSrcPath("document.js"),
+    this._app.addSelectorFile(
+      "document.js",
+      [this._app.getSrcPath("document.js")],
       ReactRuntime.getDocumentFilePath()
-    ]);
+    );
   }
 
   private get _paths() {

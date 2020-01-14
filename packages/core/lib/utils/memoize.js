@@ -3,7 +3,7 @@
  * Copyright (c) 2019 Alexander Reardon
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-function areInputsEqual(newInputs, lastInputs) {
+function arrayEqual(newInputs, lastInputs) {
     // no checks needed if the inputs length has changed
     if (newInputs.length !== lastInputs.length) {
         return false;
@@ -18,7 +18,8 @@ function areInputsEqual(newInputs, lastInputs) {
     }
     return true;
 }
-function memoizeOne(resultFn, isEqual = areInputsEqual) {
+exports.arrayEqual = arrayEqual;
+function memoizeOne(resultFn, isEqual = arrayEqual) {
     let lastThis;
     let lastArgs = [];
     let lastResult;
