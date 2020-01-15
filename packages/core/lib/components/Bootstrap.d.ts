@@ -1,5 +1,8 @@
+import { BaseComponent } from "./Base";
 interface Props {
     src: string;
 }
-export default function Bootstrap({ src }: Props): JSX.Element;
+export default class Bootstrap extends BaseComponent<Props> {
+    render(): JSX.Element;
+}
 export {};

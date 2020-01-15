@@ -5,6 +5,7 @@ import { Paths } from "./types";
 import App from "./App";
 import { getPaths } from "./paths";
 import { initBootstrap, addSelectorFile } from "./store";
+import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
 import { joinPath } from "./utils";
 
 export interface ApplicationConfig {
@@ -41,11 +42,19 @@ class ApplicationClass {
     return joinPath(this.paths.srcDir, filename);
   }
 
+  getOutputPath(filename: string): string {
+    return joinPath(this.paths.buildDir, filename);
+  }
+
   getPublicPath(buildPath: string): string {
     return joinPath(this.config.publicPath, buildPath);
   }
 
-  addSelectorFile(path: string, selectFileList: string[], fallbackFile: string): void {
+  addSelectorFile(
+    path: string,
+    selectFileList: string[],
+    fallbackFile: string
+  ): void {
     addSelectorFile(path, selectFileList, fallbackFile);
   }
 
@@ -58,6 +67,15 @@ class ApplicationClass {
         resolve();
       });
     });
+  }
+
+  async buildOnce(options: BuildOptions): Promise<void> {
+    swtichOffLifeCycle();
+    try {
+      await this.build(options);
+    } finally {
+      swtichOnLifeCycle();
+    }
   }
 }
 

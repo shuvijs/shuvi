@@ -8,7 +8,7 @@ import {
   BUILD_MEDIA_PATH,
   BUILD_MANIFEST_PATH,
   BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_WEBPACK,
+  BUILD_CLIENT_RUNTIME_WEBPACK
 } from "../constants";
 
 interface Options {
@@ -19,6 +19,7 @@ export function getWebpackConfig(app: Application, opts: Options) {
   const { paths } = app;
   let chain: WebpackChain;
   const isDev = process.env.NODE_ENV === "development";
+
   if (opts.node) {
     chain = createNodeWebpackChain({
       dev: isDev,
@@ -35,10 +36,10 @@ export function getWebpackConfig(app: Application, opts: Options) {
       mediaOutputPath: BUILD_MEDIA_PATH,
       publicPath: app.config.publicPath
     });
+    chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
   }
 
   chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
-
   chain.output.path(paths.buildDir);
   chain.output.set("filename", ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
@@ -52,7 +53,6 @@ export function getWebpackConfig(app: Application, opts: Options) {
 
     return "[name]";
   });
-  chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
 
   return chain.toConfig();
 }

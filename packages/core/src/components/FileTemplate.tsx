@@ -4,6 +4,7 @@ import fse from "fs-extra";
 import Handlebars from "handlebars";
 import { memoizeOne } from "../utils";
 import { TemplateData } from "../types/file";
+import { BaseComponent } from "./Base";
 
 export interface Props {
   name: string;
@@ -12,7 +13,7 @@ export interface Props {
   data?: TemplateData;
 }
 
-export default class FileTemplate extends React.Component<Props> {
+export default class FileTemplate extends BaseComponent<Props> {
   private _compileTemplate = memoizeOne((template: string) =>
     Handlebars.compile(template)
   );

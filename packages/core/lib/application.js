@@ -18,6 +18,7 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const App_1 = __importDefault(require("./App"));
 const paths_1 = require("./paths");
 const store_1 = require("./store");
+const Base_1 = require("./components/Base");
 const utils_1 = require("./utils");
 class ApplicationClass {
     constructor({ config }) {
@@ -32,6 +33,9 @@ class ApplicationClass {
     }
     getSrcPath(filename) {
         return utils_1.joinPath(this.paths.srcDir, filename);
+    }
+    getOutputPath(filename) {
+        return utils_1.joinPath(this.paths.buildDir, filename);
     }
     getPublicPath(buildPath) {
         return utils_1.joinPath(this.config.publicPath, buildPath);
@@ -48,6 +52,17 @@ class ApplicationClass {
                     resolve();
                 });
             });
+        });
+    }
+    buildOnce(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            Base_1.swtichOffLifeCycle();
+            try {
+                yield this.build(options);
+            }
+            finally {
+                Base_1.swtichOnLifeCycle();
+            }
         });
     }
 }

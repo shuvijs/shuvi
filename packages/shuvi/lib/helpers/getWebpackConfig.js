@@ -23,6 +23,7 @@ function getWebpackConfig(app, opts) {
             mediaOutputPath: constants_1.BUILD_MEDIA_PATH,
             publicPath: app.config.publicPath
         });
+        chain.optimization.runtimeChunk({ name: constants_1.BUILD_CLIENT_RUNTIME_WEBPACK });
     }
     chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
     chain.output.path(paths.buildDir);
@@ -35,7 +36,6 @@ function getWebpackConfig(app, opts) {
         }
         return "[name]";
     });
-    chain.optimization.runtimeChunk({ name: constants_1.BUILD_CLIENT_RUNTIME_WEBPACK });
     return chain.toConfig();
 }
 exports.getWebpackConfig = getWebpackConfig;

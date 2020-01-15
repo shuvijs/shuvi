@@ -18,7 +18,8 @@ const react_1 = __importDefault(require("react"));
 const react_fs_1 = require("@shuvi/react-fs");
 const FileTemplate_1 = __importDefault(require("./FileTemplate"));
 const FileSelector_1 = __importDefault(require("./FileSelector"));
-class FileNode extends react_1.default.Component {
+const base_1 = require("./base");
+class FileNode extends base_1.BaseComponent {
     constructor(props) {
         super(props);
         this._renderNode = this._renderNode.bind(this);

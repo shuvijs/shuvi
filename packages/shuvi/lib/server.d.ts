@@ -14,9 +14,10 @@ export default class Server {
     constructor(compiler: MultiCompiler, config: Config);
     send(action: string, payload?: any): void;
     start(): void;
-    watchCompiler(compiler: Compiler, { useTypeScript, log }: {
+    watchCompiler(compiler: Compiler, { useTypeScript, log, onFirstSuccess }: {
         useTypeScript: boolean;
         log: (...args: any[]) => void;
+        onFirstSuccess?: () => void;
     }): void;
     use(handle: Express.RequestHandler): Express.Application;
 }

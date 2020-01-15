@@ -12,6 +12,7 @@ export function createBrowserWebpackChain({
 }: BrowserOptions): WebpackChain {
   const chain = baseWebpackChain(baseOptions);
 
+  chain.target("web");
   chain
     .plugin("private/build-manifest")
     .use(BuildManifestPlugin, [{ filename: buildManifestFilename }]);

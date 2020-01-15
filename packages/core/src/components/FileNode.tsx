@@ -7,12 +7,13 @@ import {
 } from "../types/file";
 import FileTemplate from "./FileTemplate";
 import FileSelector from "./FileSelector";
+import { BaseComponent } from "./base";
 
 interface Props {
   file: FileNodeSpec;
 }
 
-export default class FileNode extends React.Component<Props> {
+export default class FileNode extends BaseComponent<Props> {
   constructor(props: Props) {
     super(props);
 

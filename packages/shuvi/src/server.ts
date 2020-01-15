@@ -81,15 +81,23 @@ export default class Server {
     compiler: Compiler,
     {
       useTypeScript,
-      log
-    }: { useTypeScript: boolean; log: (...args: any[]) => void }
+      log,
+      onFirstSuccess
+    }: {
+      useTypeScript: boolean;
+      log: (...args: any[]) => void;
+      onFirstSuccess?: () => void;
+    }
   ) {
+    const name = compiler.options.name;
+    let onFirstSuccessHandle: any = null;
     let isFirstSuccessfulCompile = true;
     let tsMessagesPromise: Promise<CompilerDiagnostics> | undefined;
     let tsMessagesResolver: (diagnostics: CompilerDiagnostics) => void;
 
+    const _log = (...args: string[]) => log(`[${name}]`, ...args);
     compiler.hooks.invalid.tap(`invalid`, () => {
-      log("Compiling...");
+      _log("Compiling...");
     });
 
     if (useTypeScript) {
@@ -137,7 +145,7 @@ export default class Server {
 
       if (useTypeScript && statsData.errors.length === 0) {
         const delayedMsg = setTimeout(() => {
-          log("Files successfully emitted, waiting for typecheck results...");
+          _log("Files successfully emitted, waiting for typecheck results...");
         }, 100);
 
         const messages = await tsMessagesPromise;
@@ -154,10 +162,15 @@ export default class Server {
       const messages = formatWebpackMessages(statsData);
       const isSuccessful = !messages.errors.length && !messages.warnings.length;
       if (isSuccessful) {
-        log("Compiled successfully!");
+        _log("Compiled successfully!");
         if (isFirstSuccessfulCompile) {
-          isFirstSuccessfulCompile = false;
-          log(`app in running on: http://localhost:${this._config.port}`);
+          if (onFirstSuccessHandle) {
+            clearTimeout(onFirstSuccessHandle);
+          }
+          onFirstSuccessHandle = setTimeout(() => {
+            isFirstSuccessfulCompile = false;
+            onFirstSuccess && onFirstSuccess();
+          }, 1000);
         }
       }
 
@@ -168,15 +181,15 @@ export default class Server {
         if (messages.errors.length > 1) {
           messages.errors.length = 1;
         }
-        log("Failed to compile.\n");
-        log(messages.errors.join("\n\n"));
+        _log("Failed to compile.\n");
+        _log(messages.errors.join("\n\n"));
         return;
       }
 
       // Show warnings if no errors were found.
       if (messages.warnings.length) {
-        log("Compiled with warnings.\n");
-        log(messages.warnings.join("\n\n"));
+        _log("Compiled with warnings.\n");
+        _log(messages.warnings.join("\n\n"));
       }
     });
   }

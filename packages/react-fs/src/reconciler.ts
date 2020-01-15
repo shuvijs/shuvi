@@ -1,4 +1,3 @@
-import React from "react";
 import path from "path";
 import fse from "fs-extra";
 import ReactReconciler, { OpaqueHandle } from "react-reconciler";
@@ -66,7 +65,7 @@ function removeChild(child: Instance) {
   fse.removeSync(fsPath);
 }
 
-const ReactFileSystem = ReactReconciler(({
+export const ReactFsReconciler = ReactReconciler(({
   supportsMutation: true,
   getPublicInstance(instance: Instance): PublicInstance {
     return instance;
@@ -206,24 +205,3 @@ const ReactFileSystem = ReactReconciler(({
   resetAfterCommit(containerInfo: Container): void {}
 } as any) as ReactReconciler.HostConfig<Type, Props, Container, Instance, TextInstance, HydratableInstance, PublicInstance, HostContext, UpdatePayload, unknown, unknown, unknown>);
 
-const rootsMap = new Map<string, ReactReconciler.FiberRoot>();
-
-export default {
-  render(
-    reactElement: React.ReactElement,
-    rootDir: string,
-    callback?: () => void | null | undefined
-  ) {
-    let root = rootsMap.get(rootDir);
-    // Create a root Container if it doesnt exist
-    if (!root) {
-      root = ReactFileSystem.createContainer({ dir: rootDir, }, false, false);
-      rootsMap.set(rootDir, root!);
-    }
-
-    // update the root Container
-    return ReactFileSystem.updateContainer(reactElement, root, null, () => {
-      callback && callback();
-    });
-  }
-};

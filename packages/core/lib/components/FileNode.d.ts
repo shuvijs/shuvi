@@ -1,9 +1,9 @@
-import React from "react";
 import { FileNode as FileNodeSpec } from "../types/file";
+import { BaseComponent } from "./base";
 interface Props {
     file: FileNodeSpec;
 }
-export default class FileNode extends React.Component<Props> {
+export default class FileNode extends BaseComponent<Props> {
     constructor(props: Props);
     private _renderFile;
     private _renderDir;

@@ -3,6 +3,7 @@ import { File } from "@shuvi/react-fs";
 import fse from "fs-extra";
 import { watch, WatchEvent } from "../helper/watcher";
 import { arrayEqual } from "../utils";
+import { BaseComponent } from "./Base";
 
 export interface Props {
   name: string;
@@ -25,7 +26,7 @@ function findFirstExistedFile(files: string[]): string | null {
   return null;
 }
 
-export default class FileSelector extends React.Component<Props, State> {
+export default class FileSelector extends BaseComponent<Props, State> {
   private _watcherHandle: (() => void) | undefined;
   private _knownFiles = new Map<string, true>();
 
@@ -47,8 +48,6 @@ export default class FileSelector extends React.Component<Props, State> {
   }
 
   _onFilesChange({ removals, changes }: WatchEvent) {
-    console.log('changes', changes);
-    console.log('removals', removals);
     for (let index = 0; index < changes.length; index++) {
       const existed = changes[index];
       this._knownFiles.set(existed, true);
@@ -69,7 +68,6 @@ export default class FileSelector extends React.Component<Props, State> {
     }
 
     if (selectedFile !== this.state.file) {
-      console.log("update selected file", selectedFile);
       this.setState({
         file: selectedFile
       });
@@ -91,6 +89,7 @@ export default class FileSelector extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    console.log('componentDidMount');
     this._createWatcher();
   }
 

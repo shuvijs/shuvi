@@ -15,16 +15,6 @@ const options = {
     // ignored: /regexp/ - a regular expression for files or folders that should not be watched
     // All subdirectories are ignored too
 };
-function getFiles(files, knownFiles) {
-    const res = [];
-    for (const file of files) {
-        // const timeInfo = knownFiles.get(file);
-        // if (timeInfo && timeInfo.accuracy !== undefined) {
-        res.push(file);
-        // }
-    }
-    return res;
-}
 function watch({ files, directories }, cb) {
     const wp = new watchpack_1.default(options);
     wp.on("aggregated", (changes, removals) => {

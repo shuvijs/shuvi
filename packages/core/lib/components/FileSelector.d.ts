@@ -1,5 +1,5 @@
-import React from "react";
 import { WatchEvent } from "../helper/watcher";
+import { BaseComponent } from "./Base";
 export interface Props {
     name: string;
     files: [string, ...string[]];
@@ -8,7 +8,7 @@ export interface Props {
 interface State {
     file: string;
 }
-export default class FileSelector extends React.Component<Props, State> {
+export default class FileSelector extends BaseComponent<Props, State> {
     private _watcherHandle;
     private _knownFiles;
     constructor(props: Props);

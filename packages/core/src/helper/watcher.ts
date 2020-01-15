@@ -23,18 +23,6 @@ const options = {
   // All subdirectories are ignored too
 };
 
-function getFiles(files: Set<string>, knownFiles: Map<string, TimeInfo>) {
-  const res: string[] = [];
-  for (const file of files) {
-    // const timeInfo = knownFiles.get(file);
-    // if (timeInfo && timeInfo.accuracy !== undefined) {
-    res.push(file);
-    // }
-  }
-
-  return res;
-}
-
 export function watch(
   {
     files,

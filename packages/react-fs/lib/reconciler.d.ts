@@ -1,5 +1,14 @@
-import React from "react";
-declare const _default: {
-    render(reactElement: React.ReactElement<any, string | ((props: any) => React.ReactElement<any, string | any | (new (props: any) => React.Component<any, any, any>)> | null) | (new (props: any) => React.Component<any, any, any>)>, rootDir: string, callback?: (() => void | null | undefined) | undefined): number;
+import ReactReconciler from "react-reconciler";
+declare type Type = "file" | "dir";
+declare type Container = {
+    dir: string;
 };
-export default _default;
+declare type Instance = {
+    type: Type;
+    dir: string;
+    name: string;
+    fd?: number;
+    content?: string;
+};
+export declare const ReactFsReconciler: ReactReconciler.Reconciler<Instance, null, Container, Instance>;
+export {};

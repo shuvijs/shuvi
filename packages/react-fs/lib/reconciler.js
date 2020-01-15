@@ -40,7 +40,7 @@ function removeChild(child) {
     const fsPath = path_1.default.join(child.dir, child.name);
     fs_extra_1.default.removeSync(fsPath);
 }
-const ReactFileSystem = react_reconciler_1.default({
+exports.ReactFsReconciler = react_reconciler_1.default({
     supportsMutation: true,
     getPublicInstance(instance) {
         return instance;
@@ -132,18 +132,3 @@ const ReactFileSystem = react_reconciler_1.default({
     prepareForCommit(containerInfo) { },
     resetAfterCommit(containerInfo) { }
 });
-const rootsMap = new Map();
-exports.default = {
-    render(reactElement, rootDir, callback) {
-        let root = rootsMap.get(rootDir);
-        // Create a root Container if it doesnt exist
-        if (!root) {
-            root = ReactFileSystem.createContainer({ dir: rootDir, }, false, false);
-            rootsMap.set(rootDir, root);
-        }
-        // update the root Container
-        return ReactFileSystem.updateContainer(reactElement, root, null, () => {
-            callback && callback();
-        });
-    }
-};

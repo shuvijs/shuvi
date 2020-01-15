@@ -69,12 +69,15 @@ class Server {
             console.log("Starting the development server...\n");
         });
     }
-    watchCompiler(compiler, { useTypeScript, log }) {
+    watchCompiler(compiler, { useTypeScript, log, onFirstSuccess }) {
+        const name = compiler.options.name;
+        let onFirstSuccessHandle = null;
         let isFirstSuccessfulCompile = true;
         let tsMessagesPromise;
         let tsMessagesResolver;
+        const _log = (...args) => log(`[${name}]`, ...args);
         compiler.hooks.invalid.tap(`invalid`, () => {
-            log("Compiling...");
+            _log("Compiling...");
         });
         if (useTypeScript) {
             const typescriptFormatter = forkTsCheckerWebpackPlugin_1.createCodeframeFormatter({});
@@ -113,7 +116,7 @@ class Server {
             });
             if (useTypeScript && statsData.errors.length === 0) {
                 const delayedMsg = setTimeout(() => {
-                    log("Files successfully emitted, waiting for typecheck results...");
+                    _log("Files successfully emitted, waiting for typecheck results...");
                 }, 100);
                 const messages = yield tsMessagesPromise;
                 clearTimeout(delayedMsg);
@@ -129,10 +132,15 @@ class Server {
             const messages = formatWebpackMessages_1.default(statsData);
             const isSuccessful = !messages.errors.length && !messages.warnings.length;
             if (isSuccessful) {
-                log("Compiled successfully!");
+                _log("Compiled successfully!");
                 if (isFirstSuccessfulCompile) {
-                    isFirstSuccessfulCompile = false;
-                    log(`app in running on: http://localhost:${this._config.port}`);
+                    if (onFirstSuccessHandle) {
+                        clearTimeout(onFirstSuccessHandle);
+                    }
+                    onFirstSuccessHandle = setTimeout(() => {
+                        isFirstSuccessfulCompile = false;
+                        onFirstSuccess && onFirstSuccess();
+                    }, 1000);
                 }
             }
             // If errors exist, only show errors.
@@ -142,14 +150,14 @@ class Server {
                 if (messages.errors.length > 1) {
                     messages.errors.length = 1;
                 }
-                log("Failed to compile.\n");
-                log(messages.errors.join("\n\n"));
+                _log("Failed to compile.\n");
+                _log(messages.errors.join("\n\n"));
                 return;
             }
             // Show warnings if no errors were found.
             if (messages.warnings.length) {
-                log("Compiled with warnings.\n");
-                log(messages.warnings.join("\n\n"));
+                _log("Compiled with warnings.\n");
+                _log(messages.warnings.join("\n\n"));
             }
         }));
     }

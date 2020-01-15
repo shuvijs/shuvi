@@ -15,6 +15,14 @@ const base_1 = require("./base");
 function createNodeWebpackChain(_a) {
     var baseOptions = __rest(_a, []);
     const chain = base_1.baseWebpackChain(baseOptions);
+    chain.target("node");
+    chain.output
+        .libraryTarget("commonjs2")
+        .chunkFilename(baseOptions.dev ? "[name]" : "[name].[contenthash].js");
+    chain.module
+        .rule("src")
+        .use("babel-loader")
+        .tap(options => (Object.assign(Object.assign({}, options), { isNode: true })));
     return chain;
 }
 exports.createNodeWebpackChain = createNodeWebpackChain;

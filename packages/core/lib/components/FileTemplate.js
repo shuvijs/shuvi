@@ -8,7 +8,8 @@ const react_fs_1 = require("@shuvi/react-fs");
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const handlebars_1 = __importDefault(require("handlebars"));
 const utils_1 = require("../utils");
-class FileTemplate extends react_1.default.Component {
+const Base_1 = require("./Base");
+class FileTemplate extends Base_1.BaseComponent {
     constructor() {
         super(...arguments);
         this._compileTemplate = utils_1.memoizeOne((template) => handlebars_1.default.compile(template));

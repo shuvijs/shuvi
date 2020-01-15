@@ -17,8 +17,7 @@ const core_1 = require("@shuvi/core");
 const typeScript_1 = require("@shuvi/toolpack/lib/utils/typeScript");
 const runtime_react_1 = __importDefault(require("@shuvi/runtime-react"));
 const fsRouterService_1 = __importDefault(require("./services/fsRouterService"));
-const getEntries_1 = require("./helpers/getEntries");
-const paths_1 = require("./helpers/paths");
+const getWebpackEntries_1 = require("./helpers/getWebpackEntries");
 const getWebpackConfig_1 = require("./helpers/getWebpackConfig");
 const constants_1 = require("./constants");
 const server_1 = __importDefault(require("./server"));
@@ -38,10 +37,10 @@ class Service {
             const clientConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: false });
             clientConfig.name = "client";
             clientConfig.entry = {
-                [constants_1.BUILD_CLIENT_RUNTIME_MAIN]: getEntries_1.getClientEntries(this._app)
+                [constants_1.BUILD_CLIENT_RUNTIME_MAIN]: getWebpackEntries_1.getClientEntries(this._app)
             };
-            console.log("client webpack config:");
-            console.dir(clientConfig, { depth: null });
+            // console.log("client webpack config:");
+            // console.dir(clientConfig, { depth: null });
             const { useTypeScript } = typeScript_1.getProjectInfo(this._paths.projectDir);
             const serverConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: true });
             serverConfig.name = "server";
@@ -56,13 +55,21 @@ class Service {
                 host: "0.0.0.0",
                 publicPath: this._config.publicPath
             });
+            let count = 0;
+            const onFirstSuccess = () => {
+                if (++count >= 2) {
+                    console.log(`app in running on: http://localhost:4000`);
+                }
+            };
             server.watchCompiler(compiler.compilers[0], {
                 useTypeScript,
-                log: console.log.bind(console)
+                log: console.log.bind(console),
+                onFirstSuccess
             });
             server.watchCompiler(compiler.compilers[1], {
                 useTypeScript: false,
-                log: console.log.bind(console)
+                log: console.log.bind(console),
+                onFirstSuccess
             });
             server.use(this._handlePage.bind(this));
             yield this._app.build({
@@ -85,8 +92,8 @@ class Service {
             return next();
         }
         const tags = this._getDocumentTags();
-        console.log("tags", tags);
-        const Document = require(runtime_react_1.default.getDocumentFilePath());
+        console.debug("tags", tags);
+        const Document = require(this._app.getOutputPath(constants_1.BUILD_SERVER_DOCUMENT));
         const html = runtime_react_1.default.renderDocument(Document.default || Document, {
             appData: {},
             documentProps: {
@@ -98,8 +105,8 @@ class Service {
         res.end(html);
     }
     _getDocumentTags() {
-        const assetsMap = require(paths_1.getBuildPath(this._paths.buildDir, constants_1.BUILD_MANIFEST_PATH));
-        const entrypoints = assetsMap[constants_1.BUILD_CLIENT_RUNTIME_MAIN];
+        const assetsMap = require(this._app.getOutputPath(constants_1.BUILD_MANIFEST_PATH));
+        const entrypoints = assetsMap.entries[constants_1.BUILD_CLIENT_RUNTIME_MAIN];
         const bodyTags = [];
         const headTags = [];
         entrypoints.forEach((asset) => {

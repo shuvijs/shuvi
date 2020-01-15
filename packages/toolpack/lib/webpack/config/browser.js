@@ -19,6 +19,7 @@ const base_1 = require("./base");
 function createBrowserWebpackChain(_a) {
     var { buildManifestFilename } = _a, baseOptions = __rest(_a, ["buildManifestFilename"]);
     const chain = base_1.baseWebpackChain(baseOptions);
+    chain.target("web");
     chain
         .plugin("private/build-manifest")
         .use(build_manifest_plugin_1.default, [{ filename: buildManifestFilename }]);

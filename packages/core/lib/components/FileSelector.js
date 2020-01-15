@@ -8,6 +8,7 @@ const react_fs_1 = require("@shuvi/react-fs");
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const watcher_1 = require("../helper/watcher");
 const utils_1 = require("../utils");
+const Base_1 = require("./Base");
 function findFirstExistedFile(files) {
     for (let index = 0; index < files.length; index++) {
         const file = files[index];
@@ -17,7 +18,7 @@ function findFirstExistedFile(files) {
     }
     return null;
 }
-class FileSelector extends react_1.default.Component {
+class FileSelector extends Base_1.BaseComponent {
     constructor(props) {
         super(props);
         this._knownFiles = new Map();
@@ -36,8 +37,6 @@ class FileSelector extends react_1.default.Component {
         this._onFilesChange = this._onFilesChange.bind(this);
     }
     _onFilesChange({ removals, changes }) {
-        console.log('changes', changes);
-        console.log('removals', removals);
         for (let index = 0; index < changes.length; index++) {
             const existed = changes[index];
             this._knownFiles.set(existed, true);
@@ -56,7 +55,6 @@ class FileSelector extends react_1.default.Component {
             }
         }
         if (selectedFile !== this.state.file) {
-            console.log("update selected file", selectedFile);
             this.setState({
                 file: selectedFile
             });
@@ -72,6 +70,7 @@ class FileSelector extends react_1.default.Component {
         this._watcherHandle = watcher_1.watch({ files: this.props.files }, this._onFilesChange);
     }
     componentDidMount() {
+        console.log('componentDidMount');
         this._createWatcher();
     }
     componentWillUnmount() {
