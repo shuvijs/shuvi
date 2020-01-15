@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/libs",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
@@ -16,7 +16,5 @@
   },
   "engines": {
     "node": ">= 8.0.0"
-  },
-  "devDependencies": {},
-  "dependencies": {}
+  }
 }
