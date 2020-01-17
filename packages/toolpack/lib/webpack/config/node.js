@@ -12,6 +12,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("./base");
+const external_1 = require("./parts/external");
 function createNodeWebpackChain(_a) {
     var baseOptions = __rest(_a, []);
     const chain = base_1.baseWebpackChain(baseOptions);
@@ -19,6 +20,7 @@ function createNodeWebpackChain(_a) {
     chain.output
         .libraryTarget("commonjs2")
         .chunkFilename(baseOptions.dev ? "[name]" : "[name].[contenthash].js");
+    chain.externals(external_1.nodeExternals({ projectRoot: baseOptions.projectRoot }));
     chain.module
         .rule("src")
         .use("babel-loader")

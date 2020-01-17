@@ -2,10 +2,6 @@ declare module "babel-loader" {
   export default any
 }
 
-declare module "resolve" {
-  export default any
-}
-
 declare module "terser-webpack-plugin" {
   export default class TerserPlugin {
     constructor(options?: any);

@@ -19,7 +19,6 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@shuvi/libs": "^0.0.1-alpha.0",
     "@shuvi/react-fs": "^0.0.1-alpha.0",
     "@shuvi/toolpack": "^0.0.1-alpha.0",
     "@shuvi/utils": "^0.0.1-alpha.0",
