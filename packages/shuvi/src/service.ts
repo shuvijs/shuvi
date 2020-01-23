@@ -18,10 +18,10 @@ import {
   CLIENT_ENTRY_PATH,
   BUILD_MANIFEST_PATH,
   BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_SERVER_DOCUMENT,
-  ResourceType
+  BUILD_SERVER_DOCUMENT
 } from "./constants";
 import Server from "./server";
+import { acceptsHtml } from "./utils";
 
 const defaultConfig: ApplicationConfig = {
   cwd: process.cwd(),
@@ -56,7 +56,7 @@ export default class Service {
     serverConfig.entry = {
       [BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"]
     };
-    console.log("client webpack config:");
+    console.log("server webpack config:");
     console.dir(serverConfig, { depth: null });
 
     const compiler = webpack([clientConfig, serverConfig]);
@@ -91,6 +91,7 @@ export default class Service {
   }
 
   private _setupRuntime() {
+    ReactRuntime.install(this._app);
     this._app.addSelectorFile(
       "document.js",
       [this._app.getSrcPath("document.js")],
@@ -111,7 +112,14 @@ export default class Service {
     res: Express.Response,
     next: Express.NextFunction
   ) {
-    if (req.method.toLowerCase() !== "get") {
+    const headers = req.headers;
+    if (req.method !== "GET") {
+      return next();
+    } else if (!headers || typeof headers.accept !== "string") {
+      return next();
+    } else if (headers.accept.indexOf("application/json") === 0) {
+      return next();
+    } else if (!acceptsHtml(headers.accept)) {
       return next();
     }
 

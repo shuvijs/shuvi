@@ -21,7 +21,6 @@ export function nodeExternals({
 
     let res;
     try {
-      console.log('context', context);
       res = resolve.sync(request, { basedir: context });
     } catch (err) {
       // If the request cannot be resolved, we need to tell webpack to
@@ -52,6 +51,8 @@ export function nodeExternals({
     // runtime have to be transpiled
     if (
       res.match(/node_modules[/\\]@shuvi[/\\]runtime/) ||
+      // runtime path with yarn link
+      res.match(/shuvi[/\\]packages[/\\]runtime/) ||
       res.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/)
     ) {
       return callback(null, undefined);

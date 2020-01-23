@@ -1,7 +1,7 @@
 interface ProjectInfo {
-    typeScriptPath: string;
     useTypeScript: boolean;
-    tsConfigPath: string;
+    typeScriptPath?: string;
+    tsConfigPath?: string;
 }
 export declare function getProjectInfo(projectRoot: string): ProjectInfo;
 export {};

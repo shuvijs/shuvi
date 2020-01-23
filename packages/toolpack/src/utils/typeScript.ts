@@ -3,14 +3,14 @@ import path from "path";
 import fs from "fs";
 
 interface ProjectInfo {
-  typeScriptPath: string;
   useTypeScript: boolean;
-  tsConfigPath: string;
+  typeScriptPath?: string;
+  tsConfigPath?: string;
 }
 
 const cache: Record<string, ProjectInfo> = Object.create(null);
 
-export function getProjectInfo(projectRoot: string) {
+export function getProjectInfo(projectRoot: string): ProjectInfo {
   let info = cache[projectRoot];
   if (!info) {
     let typeScriptPath;
@@ -24,8 +24,8 @@ export function getProjectInfo(projectRoot: string) {
       typeScriptPath && fs.existsSync(tsConfigPath)
     );
     info = {
-      typeScriptPath,
       useTypeScript,
+      typeScriptPath,
       tsConfigPath
     };
   }

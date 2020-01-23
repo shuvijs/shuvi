@@ -1,15 +1,13 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
-const core_1 = require("@shuvi/core");
+const constants_1 = require("./shared/constants");
+__export(require("./shared/constants"));
 const resolveSource = (relativePath, ext = "js") => `${path_1.join(__dirname, relativePath)}.${ext}`;
-exports.ResourceType = {
-    Component: "shuvi_component",
-    Entry: "shuvi_entry"
-};
-exports.ROUTE_PREFIX = `/_${core_1.constants.NAME}`;
-exports.DEV_PUBLIC_PATH = `${exports.ROUTE_PREFIX}/static/webpack`;
-exports.LAUNCH_EDITOR_ENDPOINT = `${exports.ROUTE_PREFIX}/development/open-stack-frame-in-editor`;
+exports.DEV_PUBLIC_PATH = `${constants_1.ROUTE_PREFIX}/static/webpack/`;
 exports.BUILD_MEDIA_PATH = "static/media/[name].[hash:8].[ext]";
 exports.BUILD_MANIFEST_PATH = "build-manifest.json";
 const BUILD_CLIENT_DIR = "client";

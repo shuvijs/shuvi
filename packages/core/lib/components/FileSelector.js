@@ -70,7 +70,6 @@ class FileSelector extends Base_1.BaseComponent {
         this._watcherHandle = watcher_1.watch({ files: this.props.files }, this._onFilesChange);
     }
     componentDidMount() {
-        console.log('componentDidMount');
         this._createWatcher();
     }
     componentWillUnmount() {

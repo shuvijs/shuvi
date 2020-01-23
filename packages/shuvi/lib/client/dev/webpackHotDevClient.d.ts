@@ -1,4 +1,4 @@
-declare function _default(options: any): {
+declare function _default(options?: {}): {
     subscribeToHmrEvent(handler: any): void;
     reportRuntimeError(err: any): void;
     prepareError(err: any): Error;

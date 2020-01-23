@@ -33,8 +33,8 @@ class Server {
         this._config = config;
         this._compiler = compiler;
         this._app = express_1.default();
-        this._webpackHotMiddleware = webpack_hot_middleware_1.default(compiler, {
-            path: `${constants_1.ROUTE_PREFIX}/webpack-hmr`,
+        this._webpackHotMiddleware = webpack_hot_middleware_1.default(compiler.compilers[0], {
+            path: constants_1.HOT_MIDDLEWARE_PATH,
             log: false,
             heartbeat: 2500
         });
@@ -58,7 +58,7 @@ class Server {
             writeToDisk: true
         }));
         app.use(this._webpackHotMiddleware);
-        app.use(errorOverlayMiddleware_1.createLaunchEditorMiddleware(constants_1.LAUNCH_EDITOR_ENDPOINT));
+        app.use(errorOverlayMiddleware_1.createLaunchEditorMiddleware(constants_1.HOT_LAUNCH_EDITOR_ENDPOINT));
         this._middlewares.forEach(m => {
             this._app.use(m);
         });

@@ -38,6 +38,8 @@ function nodeExternals({ projectRoot }) {
         }
         // runtime have to be transpiled
         if (res.match(/node_modules[/\\]@shuvi[/\\]runtime/) ||
+            // runtime path with yarn link
+            res.match(/shuvi[/\\]packages[/\\]runtime/) ||
             res.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/)) {
             return callback(null, undefined);
         }

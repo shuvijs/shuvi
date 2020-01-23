@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const hotDevClient_1 = __importDefault(require("./hotDevClient"));
-exports.default = options => {
-    const devClient = hotDevClient_1.default(options);
+const hotDevClient_1 = __importDefault(require("@shuvi/toolpack/lib/utils/hotDevClient"));
+const constants_1 = require("../../shared/constants");
+exports.default = (options = {}) => {
+    const devClient = hotDevClient_1.default(Object.assign(Object.assign({}, options), { launchEditorEndpoint: constants_1.HOT_LAUNCH_EDITOR_ENDPOINT, path: constants_1.HOT_MIDDLEWARE_PATH }));
     devClient.subscribeToHmrEvent(obj => {
         // if (obj.action === "reloadPage") {
         //   return window.location.reload();

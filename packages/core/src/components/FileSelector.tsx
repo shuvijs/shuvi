@@ -89,7 +89,6 @@ export default class FileSelector extends BaseComponent<Props, State> {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     this._createWatcher();
   }
 

@@ -151,9 +151,6 @@ export function baseWebpackChain({
       "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production")
     }
   ]);
-  if (dev) {
-    config.plugin("private/hmr-plugin").use(webpack.HotModuleReplacementPlugin);
-  }
   if (useTypeScript) {
     config
       .plugin("private/fork-ts-checker-webpack-plugin")

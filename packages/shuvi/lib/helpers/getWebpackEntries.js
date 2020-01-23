@@ -15,10 +15,6 @@ const constants_1 = require("../constants");
 // };
 function getClientEntries(app) {
     const entries = [constants_1.CLIENT_ENTRY_PATH];
-    if (process.env.NODE_ENV === "development") {
-        const hotClient = require.resolve("@shuvi/toolpack/lib/utils/webpackHotDevClient");
-        entries.unshift(`${hotClient}?launchEditorEndpoint=${constants_1.LAUNCH_EDITOR_ENDPOINT}`);
-    }
     return entries;
 }
 exports.getClientEntries = getClientEntries;

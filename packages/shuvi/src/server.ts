@@ -8,7 +8,7 @@ import { MultiCompiler, Compiler } from "webpack";
 import Express from "express";
 import WebpackDevMiddleware from "webpack-dev-middleware";
 import WebpackHotMiddleware from "webpack-hot-middleware";
-import { ROUTE_PREFIX, LAUNCH_EDITOR_ENDPOINT } from "./constants";
+import { HOT_LAUNCH_EDITOR_ENDPOINT, HOT_MIDDLEWARE_PATH } from "./constants";
 
 type CompilerDiagnostics = {
   errors: string[];
@@ -32,8 +32,8 @@ export default class Server {
     this._config = config;
     this._compiler = compiler;
     this._app = Express();
-    this._webpackHotMiddleware = WebpackHotMiddleware(compiler, {
-      path: `${ROUTE_PREFIX}/webpack-hmr`,
+    this._webpackHotMiddleware = WebpackHotMiddleware(compiler.compilers[0], {
+      path: HOT_MIDDLEWARE_PATH,
       log: false,
       heartbeat: 2500
     });
@@ -62,7 +62,7 @@ export default class Server {
       })
     );
     app.use(this._webpackHotMiddleware);
-    app.use(createLaunchEditorMiddleware(LAUNCH_EDITOR_ENDPOINT));
+    app.use(createLaunchEditorMiddleware(HOT_LAUNCH_EDITOR_ENDPOINT));
 
     this._middlewares.forEach(m => {
       this._app.use(m);

@@ -1,3 +1,4 @@
+import webpack from "webpack";
 import WebpackChain from "webpack-chain";
 import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import { baseWebpackChain, BaseOptions } from "./base";
@@ -13,9 +14,11 @@ export function createBrowserWebpackChain({
   const chain = baseWebpackChain(baseOptions);
 
   chain.target("web");
+  if (baseOptions.dev) {
+    chain.plugin("private/hmr-plugin").use(webpack.HotModuleReplacementPlugin);
+  }
   chain
     .plugin("private/build-manifest")
     .use(BuildManifestPlugin, [{ filename: buildManifestFilename }]);
-
   return chain;
 }

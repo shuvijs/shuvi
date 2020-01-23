@@ -21,6 +21,7 @@ const getWebpackEntries_1 = require("./helpers/getWebpackEntries");
 const getWebpackConfig_1 = require("./helpers/getWebpackConfig");
 const constants_1 = require("./constants");
 const server_1 = __importDefault(require("./server"));
+const utils_1 = require("./utils");
 const defaultConfig = {
     cwd: process.cwd(),
     outputPath: "dist",
@@ -47,7 +48,7 @@ class Service {
             serverConfig.entry = {
                 [constants_1.BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"]
             };
-            console.log("client webpack config:");
+            console.log("server webpack config:");
             console.dir(serverConfig, { depth: null });
             const compiler = webpack_1.default([clientConfig, serverConfig]);
             const server = new server_1.default(compiler, {
@@ -79,6 +80,7 @@ class Service {
         });
     }
     _setupRuntime() {
+        runtime_react_1.default.install(this._app);
         this._app.addSelectorFile("document.js", [this._app.getSrcPath("document.js")], runtime_react_1.default.getDocumentFilePath());
     }
     get _paths() {
@@ -88,7 +90,17 @@ class Service {
         return this._app.config;
     }
     _handlePage(req, res, next) {
-        if (req.method.toLowerCase() !== "get") {
+        const headers = req.headers;
+        if (req.method !== "GET") {
+            return next();
+        }
+        else if (!headers || typeof headers.accept !== "string") {
+            return next();
+        }
+        else if (headers.accept.indexOf("application/json") === 0) {
+            return next();
+        }
+        else if (!utils_1.acceptsHtml(headers.accept)) {
             return next();
         }
         const tags = this._getDocumentTags();

@@ -20,8 +20,8 @@ function getProjectInfo(projectRoot) {
         const tsConfigPath = path_1.default.join(projectRoot, "tsconfig.json");
         const useTypeScript = Boolean(typeScriptPath && fs_1.default.existsSync(tsConfigPath));
         info = {
-            typeScriptPath,
             useTypeScript,
+            typeScriptPath,
             tsConfigPath
         };
     }

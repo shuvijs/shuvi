@@ -113,9 +113,6 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, publicPa
             return Object.assign(Object.assign({}, acc), { [`process.env.${key}`]: JSON.stringify(env[key]) });
         }, {})), { "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production") })
     ]);
-    if (dev) {
-        config.plugin("private/hmr-plugin").use(webpack_1.default.HotModuleReplacementPlugin);
-    }
     if (useTypeScript) {
         config
             .plugin("private/fork-ts-checker-webpack-plugin")
