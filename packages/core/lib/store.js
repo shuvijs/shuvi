@@ -43,10 +43,10 @@ function ensureDir(path, files) {
     else {
         const { dirname, name } = getDirAndName(path);
         ensureDir(dirname, files);
-        addFile(name, "dir", { children: [] }, files);
+        addFileNode(name, "dir", { children: [] }, files);
     }
 }
-function addFile(path, type, props, files) {
+function addFileNode(path, type, props, files) {
     const { dirname, name } = getDirAndName(path);
     const node = findByPath(dirname, files);
     if (!node || node.$$type !== "dir")
@@ -58,14 +58,14 @@ const [useStore, store] = zustand_1.default(_set => {
         fn(state);
     }));
     return {
-        bootstrapSrc: "",
+        bootstrapFile: "",
         files: [],
         set,
-        addFile(path, props) {
+        addFileNode(path, props) {
             set(state => {
-                const { dirname, name } = getDirAndName(path);
+                const { dirname } = getDirAndName(path);
                 ensureDir(dirname, state.files);
-                addFile(path, "file", props, state.files);
+                addFileNode(path, "file", props, state.files);
             });
         },
         removeFile(path) {
@@ -95,14 +95,26 @@ function updateStore(fn) {
     store.getState().set(fn);
 }
 function initBootstrap(options) {
-    updateStore(state => (state.bootstrapSrc = options.bootstrapSrc));
+    updateStore(state => (state.bootstrapFile = options.bootstrapFile));
 }
 exports.initBootstrap = initBootstrap;
 function addSelectorFile(path, files, fallbackFile) {
-    store.getState().addFile(path, {
+    store.getState().addFileNode(path, {
         files,
         fallbackFile,
         type: "selector"
     });
 }
 exports.addSelectorFile = addSelectorFile;
+function addTemplateFile(path, templateFile, data) {
+    store.getState().addFileNode(path, {
+        templateFile,
+        data,
+        type: "template"
+    });
+}
+exports.addTemplateFile = addTemplateFile;
+function addFile(path, content) {
+    store.getState().addFileNode(path, { type: "normal", content });
+}
+exports.addFile = addFile;

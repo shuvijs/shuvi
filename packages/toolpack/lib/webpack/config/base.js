@@ -9,6 +9,7 @@ const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin")
 const webpack_1 = __importDefault(require("webpack"));
 const path_1 = __importDefault(require("path"));
 const chunk_names_plugin_1 = __importDefault(require("../plugins/chunk-names-plugin"));
+const build_manifest_plugin_1 = __importDefault(require("../plugins/build-manifest-plugin"));
 const typeScript_1 = require("../../utils/typeScript");
 const resolveLocalLoader = (name) => path_1.default.join(__dirname, `../loaders/${name}`);
 const terserOptions = {
@@ -31,7 +32,7 @@ const terserOptions = {
         ascii_only: true
     }
 };
-function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, publicPath = '/', env = {} }) {
+function baseWebpackChain({ dev, projectRoot, srcDirs, mediaFilename, buildManifestFilename, publicPath = "/", env = {} }) {
     const { typeScriptPath, tsConfigPath, useTypeScript } = typeScript_1.getProjectInfo(projectRoot);
     const config = new webpack_chain_1.default();
     config.mode(dev ? "development" : "production");
@@ -61,7 +62,7 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, publicPa
         strictModuleExceptionHandling: true,
         // crossOriginLoading: crossOrigin,
         futureEmitAssets: !dev,
-        webassemblyModuleFilename: "static/wasm/[modulehash].wasm",
+        webassemblyModuleFilename: "static/wasm/[modulehash].wasm"
     });
     // Support for NODE_PATH
     const nodePathList = (process.env.NODE_PATH || "")
@@ -98,7 +99,7 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, publicPa
         .use("file-loader")
         .loader(require.resolve("file-loader"))
         .options({
-        name: mediaOutputPath
+        name: mediaFilename
     });
     // @ts-ignore
     config.plugin("private/chunk-names-plugin").use(chunk_names_plugin_1.default);
@@ -113,6 +114,9 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaOutputPath, publicPa
             return Object.assign(Object.assign({}, acc), { [`process.env.${key}`]: JSON.stringify(env[key]) });
         }, {})), { "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production") })
     ]);
+    config
+        .plugin("private/build-manifest")
+        .use(build_manifest_plugin_1.default, [{ filename: buildManifestFilename }]);
     if (useTypeScript) {
         config
             .plugin("private/fork-ts-checker-webpack-plugin")

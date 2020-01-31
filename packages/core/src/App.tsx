@@ -1,18 +1,28 @@
-import React from "react";
+import React, { ErrorInfo } from "react";
 import FileNode from "./components/FileNode";
 import Bootstrap from "./components/Bootstrap";
 import { useStore } from "./store";
 
-export default function App() {
+function App() {
   const files = useStore(state => state.files);
-  const bootstrapSrc = useStore(state => state.bootstrapSrc);
+  const bootstrapFile = useStore(state => state.bootstrapFile);
 
   return (
     <>
-      <Bootstrap src={bootstrapSrc} />
+      <Bootstrap file={bootstrapFile} />
       {files.map(file => (
         <FileNode key={file.name} file={file} />
       ))}
     </>
   );
+}
+
+export default class AppContainer extends React.Component {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("error", error);
+  }
+
+  render() {
+    return <App />;
+  }
 }

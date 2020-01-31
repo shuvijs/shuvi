@@ -1,4 +1,6 @@
+import { IncomingMessage, ServerResponse } from "http";
 import { Application } from "../../application";
+import { RouteMatch, RouteConfig } from "../services/routerService";
 // #document
 
 export type HtmlAttrs = { innerHtml?: string } & {
@@ -37,12 +39,20 @@ export interface BootstrapOptions<T = unknown> {
 
 export type Bootstrap<T = unknown> = (options: BootstrapOptions<T>) => void;
 
-export interface Runtime<T = unknown> {
+export interface Runtime<CompType = unknown> {
   install(app: Application): void;
 
-  renderDocument(Document: T, options: RenderDocumentOptions): string;
+  renderDocument(
+    req: IncomingMessage,
+    res: ServerResponse,
+    Document: CompType,
+    App: CompType | null,
+    options: RenderDocumentOptions
+  ): Promise<string>;
 
-  renderApp(App: T, options: RenderAppOptions): string;
+  matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[];
+
+  // renderComponent(App: T, options: RenderAppOptions): string;
 
   getDocumentFilePath(): string;
 

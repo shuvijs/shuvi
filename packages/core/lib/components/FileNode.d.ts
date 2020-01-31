@@ -1,7 +1,7 @@
-import { FileNode as FileNodeSpec } from "../types/file";
+import { FileNode as IFileNode } from "../types/file";
 import { BaseComponent } from "./base";
 interface Props {
-    file: FileNodeSpec;
+    file: IFileNode;
 }
 export default class FileNode extends BaseComponent<Props> {
     constructor(props: Props);

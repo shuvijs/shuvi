@@ -9,4 +9,4 @@ const webpackHotDevClient_1 = __importDefault(require("./dev/webpackHotDevClient
 // type Comp = any;
 // const shuvi: ShuviGlobal = (window as any)[CLIENT_GLOBAL_NAME];
 webpackHotDevClient_1.default();
-bootstrap_1.bootstrap({ App: () => "hello" });
+bootstrap_1.bootstrap();

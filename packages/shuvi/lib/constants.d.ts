@@ -1,8 +1,11 @@
-export * from './shared/constants';
+export * from "./shared/constants";
 export declare const DEV_PUBLIC_PATH: string;
-export declare const BUILD_MEDIA_PATH = "static/media/[name].[hash:8].[ext]";
 export declare const BUILD_MANIFEST_PATH = "build-manifest.json";
-export declare const BUILD_CLIENT_RUNTIME_MAIN: string;
-export declare const BUILD_CLIENT_RUNTIME_WEBPACK: string;
+export declare const BUILD_MEDIA_PATH = "static/media/[name].[hash:8].[ext]";
+export declare const BUILD_CLIENT_DIR = "client";
+export declare const BUILD_CLIENT_RUNTIME_MAIN = "static/runtime/main.js";
+export declare const BUILD_CLIENT_RUNTIME_WEBPACK = "static/runtime/webpack.js";
 export declare const CLIENT_ENTRY_PATH: string;
-export declare const BUILD_SERVER_DOCUMENT: string;
+export declare const BUILD_SERVER_DIR = "server";
+export declare const BUILD_SERVER_DOCUMENT = "document.js";
+export declare const BUILD_SERVER_APP = "app.js";

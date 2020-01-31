@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importStar(require("react"));
-const documentContext_1 = require("./helper/documentContext");
+const documentContext_1 = require("../../documentContext");
 function HtmlTag({ tagName, attrs = {} }) {
     const { innerHtml } = attrs, rest = __rest(attrs, ["innerHtml"]);
     return react_1.default.createElement(tagName, Object.assign(Object.assign({}, rest), { dangerouslySetInnerHTML: {

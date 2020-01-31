@@ -1,6 +1,6 @@
 import React, { Component, FunctionComponent, useContext } from "react";
 import { Runtime } from "@shuvi/core";
-import { DocumentContext, DocumentContextType } from "./helper/documentContext";
+import { DocumentContext, DocumentContextType } from "../../documentContext";
 
 function HtmlTag({ tagName, attrs = {} }: Runtime.HtmlTag) {
   const { innerHtml, ...rest } = attrs;

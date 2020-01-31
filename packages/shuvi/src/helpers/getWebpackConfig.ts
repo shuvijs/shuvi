@@ -8,7 +8,9 @@ import {
   BUILD_MEDIA_PATH,
   BUILD_MANIFEST_PATH,
   BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_WEBPACK
+  BUILD_CLIENT_RUNTIME_WEBPACK,
+  BUILD_CLIENT_DIR,
+  BUILD_SERVER_DIR
 } from "../constants";
 
 interface Options {
@@ -25,22 +27,24 @@ export function getWebpackConfig(app: Application, opts: Options) {
       dev: isDev,
       projectRoot: paths.projectDir,
       srcDirs: [paths.srcDir],
-      mediaOutputPath: BUILD_MEDIA_PATH
+      buildManifestFilename: BUILD_MANIFEST_PATH,
+      mediaFilename: BUILD_MEDIA_PATH
     });
+    chain.output.path(`${paths.buildDir}/${BUILD_SERVER_DIR}`);
   } else {
     chain = createBrowserWebpackChain({
       dev: isDev,
       projectRoot: paths.projectDir,
       srcDirs: [paths.srcDir],
       buildManifestFilename: BUILD_MANIFEST_PATH,
-      mediaOutputPath: BUILD_MEDIA_PATH,
+      mediaFilename: BUILD_MEDIA_PATH,
       publicPath: app.config.publicPath
     });
+    chain.output.path(`${paths.buildDir}/${BUILD_CLIENT_DIR}`);
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
   }
 
   chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
-  chain.output.path(paths.buildDir);
   chain.output.set("filename", ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
     if (

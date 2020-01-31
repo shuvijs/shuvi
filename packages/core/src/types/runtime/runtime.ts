@@ -1,5 +1,4 @@
 // #document
-
 export type HtmlAttrs = { innerHtml?: string } & {
   [x: string]: string;
 };

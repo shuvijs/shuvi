@@ -29,7 +29,7 @@ import * as ErrorOverlay from "react-error-overlay";
 import stripAnsi from "strip-ansi";
 import formatWebpackMessages from "../formatWebpackMessages";
 import { getEventSourceWrapper } from "./eventsource";
-import { rewriteStacktrace } from "./sourceMapSupport";
+// import { rewriteStacktrace } from "./sourceMapSupport";
 
 // This alternative WebpackDevServer combines the functionality of:
 // https://github.com/webpack/webpack-dev-server/blob/webpack-1/client/index.js
@@ -113,7 +113,7 @@ export default function connect(options) {
       error.name = err.name;
       error.stack = err.stack;
       // __NEXT_DIST_DIR is provided by webpack
-      rewriteStacktrace(error, process.env.__NEXT_DIST_DIR);
+      // rewriteStacktrace(error, process.env.__NEXT_DIST_DIR);
       return error;
     }
   };
@@ -248,24 +248,16 @@ function processMessage(e) {
       handleSuccess();
       break;
     }
-    case "typeChecked": {
-      const [{ errors, warnings }] = obj.data;
-      const hasErrors = Boolean(errors && errors.length);
-
-      const hasWarnings = Boolean(warnings && warnings.length);
-
-      if (hasErrors) {
-        if (canApplyUpdates()) {
-          handleErrors(errors);
-        } else {
-          deferredBuildError = () => handleErrors(errors);
-        }
-      } else if (hasWarnings) {
-        handleWarnings(warnings);
-      }
-
+    case "warnings":
+      handleWarnings(message.data);
       break;
-    }
+    case "errors":
+      if (canApplyUpdates()) {
+        handleErrors(message.data);
+      } else {
+        deferredBuildError = () => handleErrors(message.data);
+      }
+      break;
     default: {
       if (customHmrEventHandler) {
         customHmrEventHandler(obj);
@@ -329,16 +321,20 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   // https://webpack.github.io/docs/hot-module-replacement.html#check
-  // try {
+  try {
     const updatedModules = await module.hot.check(
       /* autoApply */ {
         ignoreUnaccepted: true
       }
     );
-    if (updatedModules) {
-      handleApplyUpdates(null, updatedModules);
+    if (!updatedModules || updatedModules.length <= 0) {
+      console.warn("[HMR] Cannot find update (Full reload needed)");
+      window.location.reload();
+      return;
     }
-  // } catch (err) {
-  //   handleApplyUpdates(err, null);
-  // }
+
+    handleApplyUpdates(null, updatedModules);
+  } catch (err) {
+    handleApplyUpdates(err, null);
+  }
 }

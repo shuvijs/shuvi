@@ -1,10 +1,30 @@
-export interface Route {
-  path: string;
-  component: string;
+export interface RouteConfig {
+  path?: string | string[];
+  exact?: boolean;
+  routes?: RouteConfig[];
+  component?: any;
+  // componentFile: string;
+  [x: string]: any;
 }
 
-export type RouteConfig = Route[];
+export interface MatchedRoute<Params extends { [K in keyof Params]?: string }> {
+  route: RouteConfig;
+  match: {
+    params: Params;
+    isExact: boolean;
+    path: string;
+    url: string;
+  };
+}
+
+export interface RouteMatch {
+  route: RouteConfig;
+  match: {
+    url: string;
+    isExact: boolean;
+  };
+}
 
 export interface RouterService {
-  getRouteConfig(): Promise<RouteConfig> | RouteConfig;
+  getRoutes(): Promise<RouteConfig[]> | RouteConfig[];
 }

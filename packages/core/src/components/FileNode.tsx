@@ -1,16 +1,16 @@
 import React from "react";
-import { Dir as CompDir } from "@shuvi/react-fs";
+import { Dir, File } from "@shuvi/react-fs";
 import {
-  File as FileSpec,
-  Dir as DirSpec,
-  FileNode as FileNodeSpec
+  File as IFile,
+  Dir as IDir,
+  FileNode as IFileNode
 } from "../types/file";
 import FileTemplate from "./FileTemplate";
 import FileSelector from "./FileSelector";
 import { BaseComponent } from "./base";
 
 interface Props {
-  file: FileNodeSpec;
+  file: IFileNode;
 }
 
 export default class FileNode extends BaseComponent<Props> {
@@ -21,7 +21,7 @@ export default class FileNode extends BaseComponent<Props> {
     this._renderFile = this._renderFile.bind(this);
   }
 
-  private _renderFile(file: FileSpec) {
+  private _renderFile(file: IFile) {
     const { type, ...props } = file;
     let Comp: React.ComponentType<any>;
     switch (type) {
@@ -32,21 +32,21 @@ export default class FileNode extends BaseComponent<Props> {
         Comp = FileSelector;
         break;
       default:
-        return null;
+        Comp = File;
     }
 
     return <Comp {...props} />;
   }
 
-  private _renderDir(dir: DirSpec) {
+  private _renderDir(dir: IDir) {
     return (
-      <CompDir name={dir.name}>
+      <Dir name={dir.name}>
         {dir.children?.map(node => this._renderNode(node))}
-      </CompDir>
+      </Dir>
     );
   }
 
-  private _renderNode(node: FileNodeSpec) {
+  private _renderNode(node: IFileNode) {
     if (node.$$type === "dir") {
       return this._renderDir(node);
     } else if (node.$$type === "file") {

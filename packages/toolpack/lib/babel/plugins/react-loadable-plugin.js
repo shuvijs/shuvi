@@ -21,18 +21,16 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWAR
 */
 // This file is https://github.com/jamiebuilds/react-loadable/blob/master/src/babel.js
-// Modified to also look for `next/dynamic`
-// Modified to put `webpack` and `modules` under `loadableGenerated` to be backwards compatible with next/dynamic which has a `modules` key
-// Modified to support `dynamic(import('something'))` and `dynamic(import('something'), options)
+// Modified to also look for `shuvi/dynamic`
 Object.defineProperty(exports, "__esModule", { value: true });
 function default_1({ types: t }) {
     return {
         visitor: {
             ImportDeclaration(path) {
                 let source = path.node.source.value;
-                if (source !== 'lastjs/dynamic')
+                if (source !== "@shuvi/runtime-react/dynamic")
                     return;
-                let defaultSpecifier = path.get('specifiers').find(specifier => {
+                let defaultSpecifier = path.get("specifiers").find(specifier => {
                     return specifier.isImportDefaultSpecifier();
                 });
                 if (!defaultSpecifier)
@@ -46,17 +44,17 @@ function default_1({ types: t }) {
                     let callExpression = refPath.parentPath;
                     if (callExpression.isMemberExpression() &&
                         callExpression.node.computed === false) {
-                        const property = callExpression.get('property');
+                        const property = callExpression.get("property");
                         if (!Array.isArray(property) &&
-                            property.isIdentifier({ name: 'Map' })) {
+                            property.isIdentifier({ name: "Map" })) {
                             callExpression = callExpression.parentPath;
                         }
                     }
                     if (!callExpression.isCallExpression())
                         return;
-                    let args = callExpression.get('arguments');
+                    let args = callExpression.get("arguments");
                     if (args.length > 2) {
-                        throw callExpression.buildCodeFrameError('next/dynamic only accepts 2 arguments');
+                        throw callExpression.buildCodeFrameError("shuvi/dynamic only accepts 2 arguments");
                     }
                     if (!args[0]) {
                         return;
@@ -70,61 +68,40 @@ function default_1({ types: t }) {
                         if (!args[1]) {
                             callExpression.node.arguments.push(t.objectExpression([]));
                         }
-                        // This is needed as the code is modified above
-                        // TODO: remove ignore statement
-                        // @ts-ignore
-                        args = callExpression.get('arguments');
+                        args = callExpression.get("arguments");
                         loader = args[0];
                         options = args[1];
                     }
                     if (!options.isObjectExpression())
                         return;
-                    let properties = options.get('properties');
+                    let properties = options.get("properties");
                     let propertiesMap = {};
                     properties.forEach(property => {
-                        const key = property.get('key');
+                        const key = property.get("key");
                         propertiesMap[key.node.name] = property;
                     });
-                    if (propertiesMap.loadableGenerated) {
-                        return;
-                    }
-                    if (propertiesMap.loader) {
-                        loader = propertiesMap.loader.get('value');
-                    }
-                    if (propertiesMap.modules) {
-                        loader = propertiesMap.modules.get('value');
-                    }
-                    if (!loader || Array.isArray(loader)) {
+                    if (propertiesMap.webpack) {
                         return;
                     }
                     const dynamicImports = [];
                     loader.traverse({
                         Import(path) {
-                            const args = path.parentPath.get('arguments');
+                            const args = path.parentPath.get("arguments");
                             if (!Array.isArray(args))
                                 return;
                             const node = args[0].node;
                             dynamicImports.push(node);
-                        },
+                        }
                     });
                     if (!dynamicImports.length)
                         return;
-                    options.node.properties.push(t.objectProperty(t.identifier('loadableGenerated'), t.objectExpression([
-                        t.objectProperty(t.identifier('webpack'), t.arrowFunctionExpression([], t.arrayExpression(dynamicImports.map(dynamicImport => {
-                            return t.callExpression(t.memberExpression(t.identifier('require'), t.identifier('resolveWeak')), [dynamicImport]);
-                        })))),
-                        t.objectProperty(t.identifier('modules'), t.arrayExpression(dynamicImports)),
-                    ])));
-                    // Turns `dynamic(import('something'))` into `dynamic(() => import('something'))` for backwards compat.
-                    // This is the replicate the behavior in versions below Next.js 7 where we magically handled not executing the `import()` too.
-                    // We'll deprecate this behavior and provide a codemod for it in 7.1.
-                    if (loader.isCallExpression()) {
-                        const arrowFunction = t.arrowFunctionExpression([], loader.node);
-                        loader.replaceWith(arrowFunction);
-                    }
+                    options.node.properties.push(t.objectProperty(t.identifier("webpack"), t.arrowFunctionExpression([], t.arrayExpression(dynamicImports.map(dynamicImport => {
+                        return t.callExpression(t.memberExpression(t.identifier("require"), t.identifier("resolveWeak")), [dynamicImport]);
+                    })))));
+                    options.node.properties.push(t.objectProperty(t.identifier("modules"), t.arrayExpression(dynamicImports)));
                 });
-            },
-        },
+            }
+        }
     };
 }
 exports.default = default_1;

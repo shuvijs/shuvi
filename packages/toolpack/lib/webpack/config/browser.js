@@ -15,18 +15,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const webpack_1 = __importDefault(require("webpack"));
-const build_manifest_plugin_1 = __importDefault(require("../plugins/build-manifest-plugin"));
+// import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 const base_1 = require("./base");
 function createBrowserWebpackChain(_a) {
-    var { buildManifestFilename } = _a, baseOptions = __rest(_a, ["buildManifestFilename"]);
+    var baseOptions = __rest(_a, []);
     const chain = base_1.baseWebpackChain(baseOptions);
     chain.target("web");
     if (baseOptions.dev) {
         chain.plugin("private/hmr-plugin").use(webpack_1.default.HotModuleReplacementPlugin);
     }
-    chain
-        .plugin("private/build-manifest")
-        .use(build_manifest_plugin_1.default, [{ filename: buildManifestFilename }]);
     return chain;
 }
 exports.createBrowserWebpackChain = createBrowserWebpackChain;

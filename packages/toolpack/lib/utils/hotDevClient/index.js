@@ -49,7 +49,7 @@ const ErrorOverlay = __importStar(require("react-error-overlay"));
 const strip_ansi_1 = __importDefault(require("strip-ansi"));
 const formatWebpackMessages_1 = __importDefault(require("../formatWebpackMessages"));
 const eventsource_1 = require("./eventsource");
-const sourceMapSupport_1 = require("./sourceMapSupport");
+// import { rewriteStacktrace } from "./sourceMapSupport";
 // This alternative WebpackDevServer combines the functionality of:
 // https://github.com/webpack/webpack-dev-server/blob/webpack-1/client/index.js
 // https://github.com/webpack/webpack/blob/webpack-1/hot/dev-server.js
@@ -120,7 +120,7 @@ function connect(options) {
             error.name = err.name;
             error.stack = err.stack;
             // __NEXT_DIST_DIR is provided by webpack
-            sourceMapSupport_1.rewriteStacktrace(error, process.env.__NEXT_DIST_DIR);
+            // rewriteStacktrace(error, process.env.__NEXT_DIST_DIR);
             return error;
         }
     };
@@ -233,23 +233,17 @@ function processMessage(e) {
             handleSuccess();
             break;
         }
-        case "typeChecked": {
-            const [{ errors, warnings }] = obj.data;
-            const hasErrors = Boolean(errors && errors.length);
-            const hasWarnings = Boolean(warnings && warnings.length);
-            if (hasErrors) {
-                if (canApplyUpdates()) {
-                    handleErrors(errors);
-                }
-                else {
-                    deferredBuildError = () => handleErrors(errors);
-                }
+        case "warnings":
+            handleWarnings(message.data);
+            break;
+        case "errors":
+            if (canApplyUpdates()) {
+                handleErrors(message.data);
             }
-            else if (hasWarnings) {
-                handleWarnings(warnings);
+            else {
+                deferredBuildError = () => handleErrors(message.data);
             }
             break;
-        }
         default: {
             if (customHmrEventHandler) {
                 customHmrEventHandler(obj);
@@ -304,16 +298,20 @@ function tryApplyUpdates(onHotUpdateSuccess) {
             }
         }
         // https://webpack.github.io/docs/hot-module-replacement.html#check
-        // try {
-        const updatedModules = yield module.hot.check(
-        /* autoApply */ {
-            ignoreUnaccepted: true
-        });
-        if (updatedModules) {
+        try {
+            const updatedModules = yield module.hot.check(
+            /* autoApply */ {
+                ignoreUnaccepted: true
+            });
+            if (!updatedModules || updatedModules.length <= 0) {
+                console.warn("[HMR] Cannot find update (Full reload needed)");
+                window.location.reload();
+                return;
+            }
             handleApplyUpdates(null, updatedModules);
         }
-        // } catch (err) {
-        //   handleApplyUpdates(err, null);
-        // }
+        catch (err) {
+            handleApplyUpdates(err, null);
+        }
     });
 }

@@ -1,4 +1,5 @@
+/// <reference types="node" />
 import React from "react";
+import { IncomingMessage, ServerResponse } from "http";
 import { Runtime } from "@shuvi/core";
-export declare function renderDocument(Document: React.ComponentType<any>, options: Runtime.RenderDocumentOptions): string;
-export declare function renderApp(App: React.ComponentType<any>, options: Runtime.RenderAppOptions): string;
+export declare function renderDocument(req: IncomingMessage, res: ServerResponse, Document: React.ComponentType<Runtime.DocumentProps>, App: React.ComponentType<any> | null, options: Runtime.RenderDocumentOptions): Promise<string>;

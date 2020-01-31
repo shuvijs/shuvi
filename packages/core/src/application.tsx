@@ -2,9 +2,16 @@ import React from "react";
 import ReactFS from "@shuvi/react-fs";
 import fse from "fs-extra";
 import { Paths } from "./types";
+import { TemplateData } from "./types/file";
+import { RouterService, RouteConfig } from "./types/services/routerService";
 import App from "./App";
 import { getPaths } from "./paths";
-import { initBootstrap, addSelectorFile } from "./store";
+import {
+  initBootstrap,
+  addSelectorFile,
+  addTemplateFile,
+  addFile
+} from "./store";
 import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
 import { joinPath } from "./utils";
 
@@ -16,22 +23,29 @@ export interface ApplicationConfig {
 
 export interface ApplicationOptions {
   config: ApplicationConfig;
+  routerService: RouterService;
 }
 
 export interface BuildOptions {
-  bootstrapSrc: string;
+  bootstrapFile: string;
+}
+
+export interface RouterConfig {
+  routes: RouteConfig[];
 }
 
 class ApplicationClass {
   public config: ApplicationConfig;
   public paths: Paths;
+  private _routerService: RouterService;
 
-  constructor({ config }: ApplicationOptions) {
+  constructor({ config, routerService }: ApplicationOptions) {
     this.config = config;
     this.paths = getPaths({
       cwd: this.config.cwd,
       outputPath: this.config.outputPath
     });
+    this._routerService = routerService;
   }
 
   getAppPath(filename: string): string {
@@ -58,8 +72,27 @@ class ApplicationClass {
     addSelectorFile(path, selectFileList, fallbackFile);
   }
 
+  addTemplateFile(
+    path: string,
+    templateFile: string,
+    data: TemplateData = {}
+  ): void {
+    addTemplateFile(path, templateFile, data);
+  }
+
+  addFile(path: string, { content }: { content: string }): void {
+    addFile(path, content);
+  }
+
+  async getRouterConfig(): Promise<RouterConfig> {
+    const routes = await this._routerService.getRoutes();
+    return {
+      routes
+    };
+  }
+
   async build(options: BuildOptions): Promise<void> {
-    initBootstrap({ bootstrapSrc: options.bootstrapSrc });
+    initBootstrap({ bootstrapFile: options.bootstrapFile });
     await fse.emptyDir(this.paths.appDir);
 
     return new Promise(resolve => {

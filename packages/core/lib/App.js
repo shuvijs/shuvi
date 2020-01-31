@@ -9,9 +9,17 @@ const Bootstrap_1 = __importDefault(require("./components/Bootstrap"));
 const store_1 = require("./store");
 function App() {
     const files = store_1.useStore(state => state.files);
-    const bootstrapSrc = store_1.useStore(state => state.bootstrapSrc);
+    const bootstrapFile = store_1.useStore(state => state.bootstrapFile);
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(Bootstrap_1.default, { src: bootstrapSrc }),
+        react_1.default.createElement(Bootstrap_1.default, { file: bootstrapFile }),
         files.map(file => (react_1.default.createElement(FileNode_1.default, { key: file.name, file: file })))));
 }
-exports.default = App;
+class AppContainer extends react_1.default.Component {
+    componentDidCatch(error, errorInfo) {
+        console.error("error", error);
+    }
+    render() {
+        return react_1.default.createElement(App, null);
+    }
+}
+exports.default = AppContainer;

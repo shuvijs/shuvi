@@ -8,8 +8,8 @@ const FileTemplate_1 = __importDefault(require("./FileTemplate"));
 const Base_1 = require("./Base");
 class Bootstrap extends Base_1.BaseComponent {
     render() {
-        const { src } = this.props;
-        return react_1.default.createElement(FileTemplate_1.default, { name: "bootstrap.js", templateSrc: src });
+        const { file } = this.props;
+        return react_1.default.createElement(FileTemplate_1.default, { name: "bootstrap.js", templateFile: file });
     }
 }
 exports.default = Bootstrap;

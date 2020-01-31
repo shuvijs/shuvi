@@ -1,4 +1,7 @@
+/// <reference types="node" />
+import { IncomingMessage, ServerResponse } from "http";
 import { Application } from "../../application";
+import { RouteMatch, RouteConfig } from "../services/routerService";
 export declare type HtmlAttrs = {
     innerHtml?: string;
 } & {
@@ -28,10 +31,10 @@ export interface BootstrapOptions<T = unknown> {
     App: T;
 }
 export declare type Bootstrap<T = unknown> = (options: BootstrapOptions<T>) => void;
-export interface Runtime<T = unknown> {
+export interface Runtime<CompType = unknown> {
     install(app: Application): void;
-    renderDocument(Document: T, options: RenderDocumentOptions): string;
-    renderApp(App: T, options: RenderAppOptions): string;
+    renderDocument(req: IncomingMessage, res: ServerResponse, Document: CompType, App: CompType | null, options: RenderDocumentOptions): Promise<string>;
+    matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[];
     getDocumentFilePath(): string;
     getBootstrapFilePath(): string;
 }

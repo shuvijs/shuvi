@@ -3,6 +3,7 @@ import TerserPlugin from "terser-webpack-plugin";
 import webpack from "webpack";
 import path from "path";
 import ChunkNamesPlugin from "../plugins/chunk-names-plugin";
+import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import { getProjectInfo } from "../../utils/typeScript";
 
 const resolveLocalLoader = (name: string) =>
@@ -14,7 +15,8 @@ export interface BaseOptions {
   dev: boolean;
   projectRoot: string;
   srcDirs: string[];
-  mediaOutputPath: string;
+  mediaFilename: string;
+  buildManifestFilename: string;
   publicPath?: string;
   env?: {
     [x: string]: string;
@@ -48,8 +50,9 @@ export function baseWebpackChain({
   dev,
   projectRoot,
   srcDirs,
-  mediaOutputPath,
-  publicPath = '/',
+  mediaFilename,
+  buildManifestFilename,
+  publicPath = "/",
   env = {}
 }: BaseOptions): WebpackChain {
   const { typeScriptPath, tsConfigPath, useTypeScript } = getProjectInfo(
@@ -88,7 +91,7 @@ export function baseWebpackChain({
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
     futureEmitAssets: !dev,
-    webassemblyModuleFilename: "static/wasm/[modulehash].wasm",
+    webassemblyModuleFilename: "static/wasm/[modulehash].wasm"
   });
 
   // Support for NODE_PATH
@@ -128,7 +131,7 @@ export function baseWebpackChain({
     .use("file-loader")
     .loader(require.resolve("file-loader"))
     .options({
-      name: mediaOutputPath
+      name: mediaFilename
     });
 
   // @ts-ignore
@@ -151,6 +154,10 @@ export function baseWebpackChain({
       "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production")
     }
   ]);
+  config
+    .plugin("private/build-manifest")
+    .use(BuildManifestPlugin, [{ filename: buildManifestFilename }]);
+
   if (useTypeScript) {
     config
       .plugin("private/fork-ts-checker-webpack-plugin")

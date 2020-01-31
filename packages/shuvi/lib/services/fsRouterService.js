@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// const PlaceHolderComp = null as any;
 class RouterServiceImpl {
-    getRouteConfig() {
+    getRoutes() {
         return [
             {
                 path: "/",
-                component: ""
+                // component: PlaceHolderComp,
+                componentFile: "/Users/lixi/Workspace/github/shuvi-test/src/pages/index.js"
             }
         ];
     }

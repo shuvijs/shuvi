@@ -2,12 +2,12 @@ export interface TemplateData {
   [x: string]: any;
 }
 
-export type FileType = "template" | "selector";
+export type FileType = "template" | "selector" | "normal";
 
 export type FileNodeType = "file" | "dir";
 
 export interface TemplateFile {
-  $$type: 'file',
+  $$type: "file";
   type: "template";
   name: string;
   template: string;
@@ -15,7 +15,7 @@ export interface TemplateFile {
 }
 
 export interface SelectorFile {
-  $$type: 'file',
+  $$type: "file";
   type: "selector";
   name: string;
   files: string[];
@@ -24,7 +24,7 @@ export interface SelectorFile {
 export type File = TemplateFile | SelectorFile;
 
 export interface Dir {
-  $$type: 'dir',
+  $$type: "dir";
   name: string;
   children: Array<File | Dir>;
 }

@@ -50,9 +50,9 @@ export function nodeExternals({
 
     // runtime have to be transpiled
     if (
-      res.match(/node_modules[/\\]@shuvi[/\\]runtime/) ||
+      res.match(/node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]runtime[/\\]/) ||
       // runtime path with yarn link
-      res.match(/shuvi[/\\]packages[/\\]runtime/) ||
+      res.match(/shuvi[/\\]packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]runtime[/\\]/) ||
       res.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/)
     ) {
       return callback(null, undefined);

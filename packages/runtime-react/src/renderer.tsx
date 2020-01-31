@@ -1,19 +1,30 @@
 import React from "react";
+import { IncomingMessage, ServerResponse } from "http";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import { Runtime } from "@shuvi/core";
+import { StaticRouter } from "react-router-dom";
+import Loadable from "./loadable";
 
-export function renderDocument(
-  Document: React.ComponentType<any>,
+export async function renderDocument(
+  req: IncomingMessage,
+  res: ServerResponse,
+  Document: React.ComponentType<Runtime.DocumentProps>,
+  App: React.ComponentType<any> | null,
   options: Runtime.RenderDocumentOptions
-) {
-  return `<!DOCTYPE html>${renderToStaticMarkup(
-    <Document {...options.documentProps} />
-  )}`;
-}
+): Promise<string> {
+  let htmlContent = "";
+  if (App) {
+    await Loadable.preloadAll();
 
-export function renderApp(
-  App: React.ComponentType<any>,
-  options: Runtime.RenderAppOptions
-) {
-  return renderToString(<App />);
+    const context = {};
+    htmlContent = renderToString(
+      <StaticRouter location={req.url} context={context}>
+        <App />
+      </StaticRouter>
+    );
+  }
+
+  return `<!DOCTYPE html>${renderToStaticMarkup(
+    <Document {...options.documentProps} appHtml={htmlContent} />
+  )}`;
 }

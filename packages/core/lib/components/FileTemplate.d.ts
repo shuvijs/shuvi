@@ -2,7 +2,7 @@ import { TemplateData } from "../types/file";
 import { BaseComponent } from "./Base";
 export interface Props {
     name: string;
-    templateSrc?: string;
+    templateFile?: string;
     template?: string;
     data?: TemplateData;
 }

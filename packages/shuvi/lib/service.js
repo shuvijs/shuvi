@@ -19,6 +19,7 @@ const runtime_react_1 = __importDefault(require("@shuvi/runtime-react"));
 const fsRouterService_1 = __importDefault(require("./services/fsRouterService"));
 const getWebpackEntries_1 = require("./helpers/getWebpackEntries");
 const getWebpackConfig_1 = require("./helpers/getWebpackConfig");
+const BuildRequier_1 = __importDefault(require("./helpers/BuildRequier"));
 const constants_1 = require("./constants");
 const server_1 = __importDefault(require("./server"));
 const utils_1 = require("./utils");
@@ -29,12 +30,17 @@ const defaultConfig = {
 };
 class Service {
     constructor({ config }) {
-        this._app = core_1.app({ config: Object.assign(Object.assign({}, defaultConfig), config) });
-        this._routerService = new fsRouterService_1.default();
+        this._app = core_1.app({
+            config: Object.assign(Object.assign({}, defaultConfig), config),
+            routerService: new fsRouterService_1.default()
+        });
+        this._buildRequier = new BuildRequier_1.default({
+            buildDir: this._app.paths.buildDir
+        });
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
-            this._setupRuntime();
+            yield this._setupRuntime();
             const clientConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: false });
             clientConfig.name = "client";
             clientConfig.entry = {
@@ -46,7 +52,8 @@ class Service {
             const serverConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: true });
             serverConfig.name = "server";
             serverConfig.entry = {
-                [constants_1.BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"]
+                [constants_1.BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"],
+                [constants_1.BUILD_SERVER_APP]: ["@shuvi-app/app"]
             };
             console.log("server webpack config:");
             console.dir(serverConfig, { depth: null });
@@ -74,14 +81,24 @@ class Service {
             });
             server.use(this._handlePage.bind(this));
             yield this._app.build({
-                bootstrapSrc: runtime_react_1.default.getBootstrapFilePath()
+                bootstrapFile: runtime_react_1.default.getBootstrapFilePath()
             });
             server.start();
         });
     }
     _setupRuntime() {
-        runtime_react_1.default.install(this._app);
-        this._app.addSelectorFile("document.js", [this._app.getSrcPath("document.js")], runtime_react_1.default.getDocumentFilePath());
+        return __awaiter(this, void 0, void 0, function* () {
+            const app = this._app;
+            app.addFile("bootstrap.js", {
+                content: `export * from "${runtime_react_1.default.getBootstrapFilePath()}"`
+            });
+            app.addSelectorFile("app.js", [app.getSrcPath("app.js")], runtime_react_1.default.getAppFilePath());
+            // app.addTemplateFile("routes.js", resolveTemplate("routes"), {
+            //   routes: serializeRoutes(routeConfig.routes)
+            // });
+            app.addSelectorFile("document.js", [app.getSrcPath("document.js")], runtime_react_1.default.getDocumentFilePath());
+            runtime_react_1.default.install(this._app);
+        });
     }
     get _paths() {
         return this._app.paths;
@@ -90,35 +107,37 @@ class Service {
         return this._app.config;
     }
     _handlePage(req, res, next) {
-        const headers = req.headers;
-        if (req.method !== "GET") {
-            return next();
-        }
-        else if (!headers || typeof headers.accept !== "string") {
-            return next();
-        }
-        else if (headers.accept.indexOf("application/json") === 0) {
-            return next();
-        }
-        else if (!utils_1.acceptsHtml(headers.accept)) {
-            return next();
-        }
-        const tags = this._getDocumentTags();
-        console.debug("tags", tags);
-        const Document = require(this._app.getOutputPath(constants_1.BUILD_SERVER_DOCUMENT));
-        const html = runtime_react_1.default.renderDocument(Document.default || Document, {
-            appData: {},
-            documentProps: {
-                appHtml: "",
-                bodyTags: tags.bodyTags,
-                headTags: tags.headTags
+        return __awaiter(this, void 0, void 0, function* () {
+            const headers = req.headers;
+            if (req.method !== "GET") {
+                return next();
             }
+            else if (!headers || typeof headers.accept !== "string") {
+                return next();
+            }
+            else if (headers.accept.indexOf("application/json") === 0) {
+                return next();
+            }
+            else if (!utils_1.acceptsHtml(headers.accept)) {
+                return next();
+            }
+            const tags = this._getDocumentTags();
+            console.debug("tags", tags);
+            const Document = this._buildRequier.requireDocument();
+            const App = this._buildRequier.requireApp();
+            const html = yield runtime_react_1.default.renderDocument(req, res, Document.default || Document, App.default || App, {
+                appData: {},
+                documentProps: {
+                    appHtml: "",
+                    bodyTags: tags.bodyTags,
+                    headTags: tags.headTags
+                }
+            });
+            res.end(html);
         });
-        res.end(html);
     }
     _getDocumentTags() {
-        const assetsMap = require(this._app.getOutputPath(constants_1.BUILD_MANIFEST_PATH));
-        const entrypoints = assetsMap.entries[constants_1.BUILD_CLIENT_RUNTIME_MAIN];
+        const entrypoints = this._buildRequier.getEntryAssets(constants_1.BUILD_CLIENT_RUNTIME_MAIN);
         const bodyTags = [];
         const headTags = [];
         entrypoints.forEach((asset) => {

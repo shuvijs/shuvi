@@ -67,7 +67,9 @@ class FileSelector extends Base_1.BaseComponent {
     }
     _createWatcher() {
         this._destoryWatcher();
-        this._watcherHandle = watcher_1.watch({ files: this.props.files }, this._onFilesChange);
+        if (this.props.files.length) {
+            this._watcherHandle = watcher_1.watch({ files: this.props.files }, this._onFilesChange);
+        }
     }
     componentDidMount() {
         this._createWatcher();
@@ -83,10 +85,7 @@ class FileSelector extends Base_1.BaseComponent {
     render() {
         const { name } = this.props;
         const { file } = this.state;
-        return (react_1.default.createElement(react_fs_1.File, { name: name, content: `
-export { default } from "${file}";
-export * from "${file}";
-        `.trim() }));
+        return (react_1.default.createElement(react_fs_1.File, { name: name, content: `module.exports = require("${file}");` }));
     }
 }
 exports.default = FileSelector;

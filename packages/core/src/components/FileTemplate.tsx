@@ -8,7 +8,7 @@ import { BaseComponent } from "./Base";
 
 export interface Props {
   name: string;
-  templateSrc?: string;
+  templateFile?: string;
   template?: string;
   data?: TemplateData;
 }
@@ -28,14 +28,13 @@ export default class FileTemplate extends BaseComponent<Props> {
   }
 
   render() {
-    const { templateSrc, template } = this.props;
-
+    const { templateFile, template } = this.props;
     if (template) {
       return this._renderTemplate(template);
     }
 
-    if (templateSrc) {
-      const tmplContent = this._readFile(templateSrc);
+    if (templateFile) {
+      const tmplContent = this._readFile(templateFile);
       return this._renderTemplate(tmplContent);
     }
 

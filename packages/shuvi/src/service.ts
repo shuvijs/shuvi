@@ -1,24 +1,18 @@
 import path from "path";
 import webpack from "webpack";
-import {
-  app,
-  Application,
-  ApplicationConfig,
-  RouterService,
-  Runtime
-} from "@shuvi/core";
+import { app, Application, ApplicationConfig, Runtime } from "@shuvi/core";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
 import ReactRuntime from "@shuvi/runtime-react";
 import Express from "express";
 import FsRouterService from "./services/fsRouterService";
 import { getClientEntries } from "./helpers/getWebpackEntries";
-import { waitN } from "./helpers/wait";
 import { getWebpackConfig } from "./helpers/getWebpackConfig";
+import { resolveTemplate } from "./helpers/paths";
+import BuildRequier from "./helpers/BuildRequier";
 import {
-  CLIENT_ENTRY_PATH,
-  BUILD_MANIFEST_PATH,
   BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_SERVER_DOCUMENT
+  BUILD_SERVER_DOCUMENT,
+  BUILD_SERVER_APP
 } from "./constants";
 import Server from "./server";
 import { acceptsHtml } from "./utils";
@@ -31,16 +25,20 @@ const defaultConfig: ApplicationConfig = {
 
 export default class Service {
   private _app: Application;
-  private _routerService: RouterService.RouterService;
+  private _buildRequier: BuildRequier;
 
   constructor({ config }: { config: Partial<ApplicationConfig> }) {
-    this._app = app({ config: { ...defaultConfig, ...config } });
-
-    this._routerService = new FsRouterService();
+    this._app = app({
+      config: { ...defaultConfig, ...config },
+      routerService: new FsRouterService()
+    });
+    this._buildRequier = new BuildRequier({
+      buildDir: this._app.paths.buildDir
+    });
   }
 
   async start() {
-    this._setupRuntime();
+    await this._setupRuntime();
 
     const clientConfig = getWebpackConfig(this._app, { node: false });
     clientConfig.name = "client";
@@ -54,7 +52,8 @@ export default class Service {
     const serverConfig = getWebpackConfig(this._app, { node: true });
     serverConfig.name = "server";
     serverConfig.entry = {
-      [BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"]
+      [BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"],
+      [BUILD_SERVER_APP]: ["@shuvi-app/app"]
     };
     console.log("server webpack config:");
     console.dir(serverConfig, { depth: null });
@@ -85,18 +84,30 @@ export default class Service {
     server.use(this._handlePage.bind(this));
 
     await this._app.build({
-      bootstrapSrc: ReactRuntime.getBootstrapFilePath()
+      bootstrapFile: ReactRuntime.getBootstrapFilePath()
     });
     server.start();
   }
 
-  private _setupRuntime() {
-    ReactRuntime.install(this._app);
-    this._app.addSelectorFile(
+  private async _setupRuntime() {
+    const app = this._app;
+    app.addFile("bootstrap.js", {
+      content: `export * from "${ReactRuntime.getBootstrapFilePath()}"`
+    });
+    app.addSelectorFile(
+      "app.js",
+      [app.getSrcPath("app.js")],
+      ReactRuntime.getAppFilePath()
+    );
+    // app.addTemplateFile("routes.js", resolveTemplate("routes"), {
+    //   routes: serializeRoutes(routeConfig.routes)
+    // });
+    app.addSelectorFile(
       "document.js",
-      [this._app.getSrcPath("document.js")],
+      [app.getSrcPath("document.js")],
       ReactRuntime.getDocumentFilePath()
     );
+    ReactRuntime.install(this._app);
   }
 
   private get _paths() {
@@ -107,7 +118,7 @@ export default class Service {
     return this._app.config;
   }
 
-  private _handlePage(
+  private async _handlePage(
     req: Express.Request,
     res: Express.Response,
     next: Express.NextFunction
@@ -125,15 +136,22 @@ export default class Service {
 
     const tags = this._getDocumentTags();
     console.debug("tags", tags);
-    const Document = require(this._app.getOutputPath(BUILD_SERVER_DOCUMENT));
-    const html = ReactRuntime.renderDocument(Document.default || Document, {
-      appData: {},
-      documentProps: {
-        appHtml: "",
-        bodyTags: tags.bodyTags,
-        headTags: tags.headTags
+    const Document = this._buildRequier.requireDocument();
+    const App = this._buildRequier.requireApp();
+    const html = await ReactRuntime.renderDocument(
+      req,
+      res,
+      Document.default || Document,
+      App.default || App,
+      {
+        appData: {},
+        documentProps: {
+          appHtml: "",
+          bodyTags: tags.bodyTags,
+          headTags: tags.headTags
+        }
       }
-    });
+    );
     res.end(html);
   }
 
@@ -141,9 +159,9 @@ export default class Service {
     bodyTags: Runtime.DocumentProps["bodyTags"];
     headTags: Runtime.DocumentProps["headTags"];
   } {
-    const assetsMap = require(this._app.getOutputPath(BUILD_MANIFEST_PATH));
-
-    const entrypoints = assetsMap.entries[BUILD_CLIENT_RUNTIME_MAIN];
+    const entrypoints = this._buildRequier.getEntryAssets(
+      BUILD_CLIENT_RUNTIME_MAIN
+    );
     const bodyTags: Runtime.DocumentProps["bodyTags"] = [];
     const headTags: Runtime.DocumentProps["headTags"] = [];
     entrypoints.forEach((asset: string) => {

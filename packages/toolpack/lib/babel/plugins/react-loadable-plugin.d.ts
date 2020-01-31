@@ -18,8 +18,8 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWAR
 */
-import { PluginObj } from '@babel/core';
-import * as BabelTypes from '@babel/types';
+import { PluginObj } from "@babel/core";
+import * as BabelTypes from "@babel/types";
 export default function ({ types: t }: {
     types: typeof BabelTypes;
 }): PluginObj;

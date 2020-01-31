@@ -10,9 +10,7 @@ export function createNodeWebpackChain({
   const chain = baseWebpackChain(baseOptions);
 
   chain.target("node");
-  chain.output
-    .libraryTarget("commonjs2")
-    .chunkFilename(baseOptions.dev ? "[name]" : "[name].[contenthash].js");
+  chain.output.libraryTarget("commonjs2");
 
   chain.externals(nodeExternals({ projectRoot: baseOptions.projectRoot }));
 

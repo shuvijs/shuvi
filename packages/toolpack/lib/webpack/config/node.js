@@ -17,9 +17,7 @@ function createNodeWebpackChain(_a) {
     var baseOptions = __rest(_a, []);
     const chain = base_1.baseWebpackChain(baseOptions);
     chain.target("node");
-    chain.output
-        .libraryTarget("commonjs2")
-        .chunkFilename(baseOptions.dev ? "[name]" : "[name].[contenthash].js");
+    chain.output.libraryTarget("commonjs2");
     chain.externals(external_1.nodeExternals({ projectRoot: baseOptions.projectRoot }));
     chain.module
         .rule("src")

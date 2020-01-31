@@ -21,12 +21,12 @@ class FileTemplate extends Base_1.BaseComponent {
         return react_1.default.createElement(react_fs_1.File, { name: this.props.name, content: content });
     }
     render() {
-        const { templateSrc, template } = this.props;
+        const { templateFile, template } = this.props;
         if (template) {
             return this._renderTemplate(template);
         }
-        if (templateSrc) {
-            const tmplContent = this._readFile(templateSrc);
+        if (templateFile) {
+            const tmplContent = this._readFile(templateFile);
             return this._renderTemplate(tmplContent);
         }
         return null;

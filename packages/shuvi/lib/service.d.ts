@@ -1,7 +1,7 @@
 import { ApplicationConfig } from "@shuvi/core";
 export default class Service {
     private _app;
-    private _routerService;
+    private _buildRequier;
     constructor({ config }: {
         config: Partial<ApplicationConfig>;
     });

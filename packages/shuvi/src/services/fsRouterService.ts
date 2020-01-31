@@ -1,11 +1,15 @@
 import { RouterService } from "@shuvi/core";
 
+// const PlaceHolderComp = null as any;
+
 export default class RouterServiceImpl implements RouterService.RouterService {
-  getRouteConfig() {
+  getRoutes() {
     return [
       {
         path: "/",
-        component: ""
+        // component: PlaceHolderComp,
+        componentFile:
+          "/Users/lixi/Workspace/github/shuvi-test/src/pages/index.js"
       }
     ];
   }

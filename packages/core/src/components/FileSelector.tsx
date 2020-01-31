@@ -82,10 +82,12 @@ export default class FileSelector extends BaseComponent<Props, State> {
 
   _createWatcher() {
     this._destoryWatcher();
-    this._watcherHandle = watch(
-      { files: this.props.files },
-      this._onFilesChange
-    );
+    if (this.props.files.length) {
+      this._watcherHandle = watch(
+        { files: this.props.files },
+        this._onFilesChange
+      );
+    }
   }
 
   componentDidMount() {
@@ -107,13 +109,7 @@ export default class FileSelector extends BaseComponent<Props, State> {
     const { file } = this.state;
 
     return (
-      <File
-        name={name}
-        content={`
-export { default } from "${file}";
-export * from "${file}";
-        `.trim()}
-      />
+      <File name={name} content={`module.exports = require("${file}");`} />
     );
   }
 }

@@ -5,4 +5,4 @@ import initWebpackHMR from "./dev/webpackHotDevClient";
 // const shuvi: ShuviGlobal = (window as any)[CLIENT_GLOBAL_NAME];
 
 initWebpackHMR();
-bootstrap({ App: () => "hello" });
+bootstrap();

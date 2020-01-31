@@ -1,7 +1,7 @@
 import { RouterService } from "@shuvi/core";
 export default class RouterServiceImpl implements RouterService.RouterService {
-    getRouteConfig(): {
+    getRoutes(): {
         path: string;
-        component: string;
+        componentFile: string;
     }[];
 }

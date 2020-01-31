@@ -36,7 +36,7 @@ class FileNode extends base_1.BaseComponent {
                 Comp = FileSelector_1.default;
                 break;
             default:
-                return null;
+                Comp = react_fs_1.File;
         }
         return react_1.default.createElement(Comp, Object.assign({}, props));
     }

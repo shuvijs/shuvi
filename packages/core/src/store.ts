@@ -1,20 +1,20 @@
 import create from "zustand";
 import produce from "immer";
-import { FileNode, TemplateData, FileType, FileNodeType } from "./types/file";
+import { FileNode, FileType, FileNodeType, TemplateData } from "./types/file";
 
 interface State {
-  bootstrapSrc: string;
+  bootstrapFile: string;
   files: FileNode[];
 }
 
-interface FileProps {
+interface FileNodeOptions {
   type: FileType;
   [x: string]: any;
 }
 
 interface Actions {
   set(fn: (state: State) => void): void;
-  addFile(path: string, props: FileProps): void;
+  addFileNode(path: string, options: FileNodeOptions): void;
 }
 
 function getDirAndName(path: string) {
@@ -62,11 +62,11 @@ function ensureDir(path: string, files: FileNode[]): void {
   } else {
     const { dirname, name } = getDirAndName(path);
     ensureDir(dirname, files);
-    addFile(name, "dir", { children: [] }, files);
+    addFileNode(name, "dir", { children: [] }, files);
   }
 }
 
-function addFile(
+function addFileNode(
   path: string,
   type: FileNodeType,
   props: any,
@@ -92,14 +92,14 @@ const [useStore, store] = create<State & Actions>(_set => {
     );
 
   return {
-    bootstrapSrc: "",
+    bootstrapFile: "",
     files: [],
     set,
-    addFile(path: string, props: any) {
+    addFileNode(path: string, props: FileNodeOptions) {
       set(state => {
-        const { dirname, name } = getDirAndName(path);
+        const { dirname } = getDirAndName(path);
         ensureDir(dirname, state.files);
-        addFile(path, "file", props, state.files);
+        addFileNode(path, "file", props, state.files);
       });
     },
     removeFile(path: string) {
@@ -129,16 +129,36 @@ function updateStore(fn: (state: State) => void) {
   store.getState().set(fn);
 }
 
-export function initBootstrap(options: { bootstrapSrc: string }) {
-  updateStore(state => (state.bootstrapSrc = options.bootstrapSrc));
+export function initBootstrap(options: { bootstrapFile: string }) {
+  updateStore(state => (state.bootstrapFile = options.bootstrapFile));
 }
 
-export function addSelectorFile(path: string, files: string[], fallbackFile: string) {
-  store.getState().addFile(path, {
+export function addSelectorFile(
+  path: string,
+  files: string[],
+  fallbackFile: string
+) {
+  store.getState().addFileNode(path, {
     files,
     fallbackFile,
     type: "selector"
   });
+}
+
+export function addTemplateFile(
+  path: string,
+  templateFile: string,
+  data: TemplateData
+) {
+  store.getState().addFileNode(path, {
+    templateFile,
+    data,
+    type: "template"
+  });
+}
+
+export function addFile(path: string, content: string) {
+  store.getState().addFileNode(path, { type: "normal", content });
 }
 
 export { useStore };
