@@ -1,4 +1,4 @@
-/// <reference types="@shuvi/core/shuvi-app" />
+/// <reference path="../../../client-env.d.ts" />
 
 import React from "react";
 import { renderRoutes } from "@shuvi/runtime-react/dep/react-router-config";

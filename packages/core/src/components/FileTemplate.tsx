@@ -1,9 +1,9 @@
 import React from "react";
 import { File } from "@shuvi/react-fs";
+import { TemplateData } from "@shuvi/types/core";
 import fse from "fs-extra";
 import Handlebars from "handlebars";
 import { memoizeOne } from "../utils";
-import { TemplateData } from "../types/file";
 import { BaseComponent } from "./Base";
 
 export interface Props {

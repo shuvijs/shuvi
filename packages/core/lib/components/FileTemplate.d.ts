@@ -1,4 +1,4 @@
-import { TemplateData } from "../types/file";
+import { TemplateData } from "@shuvi/types/core";
 import { BaseComponent } from "./Base";
 export interface Props {
     name: string;

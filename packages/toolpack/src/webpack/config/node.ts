@@ -13,6 +13,12 @@ export function createNodeWebpackChain({
   chain.output.libraryTarget("commonjs2");
 
   chain.externals(nodeExternals({ projectRoot: baseOptions.projectRoot }));
+  chain.plugin("private/build-manifest").tap(([options]) => [
+    {
+      ...options,
+      modules: false
+    }
+  ]);
 
   chain.module
     .rule("src")

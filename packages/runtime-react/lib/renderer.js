@@ -11,21 +11,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
 const server_1 = require("react-dom/server");
 const react_router_dom_1 = require("react-router-dom");
-const loadable_1 = __importDefault(require("./loadable"));
-function renderDocument(req, res, Document, App, options) {
+const loadable_1 = __importStar(require("./loadable"));
+function renderDocument(Document, options) {
     return __awaiter(this, void 0, void 0, function* () {
-        let htmlContent = "";
-        if (App) {
-            yield loadable_1.default.preloadAll();
-            const context = {};
-            htmlContent = server_1.renderToString(react_1.default.createElement(react_router_dom_1.StaticRouter, { location: req.url, context: context },
-                react_1.default.createElement(App, null)));
-        }
-        return `<!DOCTYPE html>${server_1.renderToStaticMarkup(react_1.default.createElement(Document, Object.assign({}, options.documentProps, { appHtml: htmlContent })))}`;
+        return `<!DOCTYPE html>${server_1.renderToStaticMarkup(react_1.default.createElement(Document, Object.assign({}, options.documentProps)))}`;
     });
 }
 exports.renderDocument = renderDocument;
+function renderApp(App, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { url, context } = options;
+        yield loadable_1.default.preloadAll();
+        const htmlContent = server_1.renderToString(react_1.default.createElement(react_router_dom_1.StaticRouter, { location: url, context: context },
+            react_1.default.createElement(loadable_1.LoadableContext.Provider, { value: moduleName => context.loadableModules.push(moduleName) },
+                react_1.default.createElement(App, null))));
+        return htmlContent;
+    });
+}
+exports.renderApp = renderApp;

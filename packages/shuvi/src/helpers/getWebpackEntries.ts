@@ -1,4 +1,4 @@
-import { Application } from "@shuvi/core";
+import { AppCore } from "@shuvi/types/core";
 // import path from "path";
 // import qs from "querystring";
 import {
@@ -20,7 +20,7 @@ import {
 //   })}!`;
 // };
 
-export function getClientEntries(app: Application): string[] {
+export function getClientEntries(app: AppCore): string[] {
   const entries = [CLIENT_ENTRY_PATH];
   return entries;
 }

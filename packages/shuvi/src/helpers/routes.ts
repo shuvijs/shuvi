@@ -1,8 +1,6 @@
-import { RouterService } from "@shuvi/core";
+import { RouteConfig } from "@shuvi/types/core";
 
-export function normalizeRoutes(
-  routes: RouterService.RouteConfig[]
-): RouterService.RouteConfig[] {
+export function normalizeRoutes(routes: RouteConfig[]): RouteConfig[] {
   return routes.map(route => {
     const res = {
       ...route
@@ -11,6 +9,6 @@ export function normalizeRoutes(
       res.routes = normalizeRoutes(res.routes);
     }
 
-    return res
+    return res;
   });
 }

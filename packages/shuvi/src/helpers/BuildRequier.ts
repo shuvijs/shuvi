@@ -1,11 +1,11 @@
 import path from "path";
+import { ModuleManifest } from "@shuvi/types/build";
 import {
   BUILD_CLIENT_DIR,
   BUILD_SERVER_DIR,
   BUILD_MANIFEST_PATH,
   BUILD_SERVER_DOCUMENT,
-  BUILD_SERVER_APP,
-  BUILD_CLIENT_RUNTIME_MAIN
+  BUILD_SERVER_APP
 } from "../constants";
 
 interface BuildRequireConstructionOptions {
@@ -32,6 +32,11 @@ export default class BuildRequire {
   getEntryAssets(name: string): string[] {
     const manifest = this._getClientManifest();
     return manifest.entries[name];
+  }
+
+  getModules(): { [moduleId: string]: ModuleManifest[] } {
+    const manifest = this._getClientManifest();
+    return manifest.modules;
   }
 
   private _resolveServerModule(name: string) {

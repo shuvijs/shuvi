@@ -9,3 +9,15 @@ function acceptsHtml(header, { htmlAcceptHeaders = ["text/html", "*/*"] } = {}) 
     return false;
 }
 exports.acceptsHtml = acceptsHtml;
+function dedupe(bundles, prop) {
+    const files = new Set();
+    const kept = [];
+    for (const bundle of bundles) {
+        if (files.has(bundle[prop]))
+            continue;
+        files.add(bundle[prop]);
+        kept.push(bundle);
+    }
+    return kept;
+}
+exports.dedupe = dedupe;

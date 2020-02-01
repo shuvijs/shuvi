@@ -15,7 +15,7 @@ const paths_1 = require("./paths");
 function serializeRoutes(routes) {
     const res = JSON.stringify(routes);
     // Loadble(() => import("${res.componentFile}"))
-    return res.replace(/"componentFile":\w*"([^"]+)"/gi, (match, filePath) => `"component": dynamic(() => import("${filePath}"))`);
+    return res.replace(/"componentFile":\w*"([^"]+)"/gi, (match, filePath) => `"component": dynamic(() => import("${filePath}"), { ssr: true })`);
 }
 class ReactRuntime {
     install(app) {
@@ -45,20 +45,19 @@ class ReactRuntime {
             console.log("install react runtime");
         });
     }
-    renderDocument(req, res, Document, App, options) {
+    renderDocument(Document, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            return renderer_1.renderDocument(req, res, Document, App, options);
+            return renderer_1.renderDocument(Document, options);
+        });
+    }
+    renderApp(App, options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return renderer_1.renderApp(App, options);
         });
     }
     matchRoutes(routes, pathname) {
         return react_router_config_1.matchRoutes(routes, pathname);
     }
-    // renderApp(
-    //   App: React.ComponentType<any>,
-    //   options: Runtime.RenderAppOptions
-    // ): string {
-    //   return renderApp(App, options);
-    // }
     getBootstrapFilePath() {
         return paths_1.resolveRuntime("client/bootstrap");
     }

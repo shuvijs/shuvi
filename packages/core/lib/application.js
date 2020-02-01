@@ -20,7 +20,7 @@ const paths_1 = require("./paths");
 const store_1 = require("./store");
 const Base_1 = require("./components/Base");
 const utils_1 = require("./utils");
-class ApplicationClass {
+class AppCoreImpl {
     constructor({ config, routerService }) {
         this.config = config;
         this.paths = paths_1.getPaths({
@@ -29,16 +29,16 @@ class ApplicationClass {
         });
         this._routerService = routerService;
     }
-    getAppPath(filename) {
+    resolveAppFile(filename) {
         return utils_1.joinPath(this.paths.appDir, filename);
     }
-    getSrcPath(filename) {
+    resolveSrcFile(filename) {
         return utils_1.joinPath(this.paths.srcDir, filename);
     }
-    getOutputPath(filename) {
+    resolveBuildFile(filename) {
         return utils_1.joinPath(this.paths.buildDir, filename);
     }
-    getPublicPath(buildPath) {
+    getPublicUrlPath(buildPath) {
         return utils_1.joinPath(this.config.publicPath, buildPath);
     }
     addSelectorFile(path, selectFileList, fallbackFile) {
@@ -82,6 +82,6 @@ class ApplicationClass {
     }
 }
 function app(options) {
-    return new ApplicationClass(options);
+    return new AppCoreImpl(options);
 }
 exports.app = app;

@@ -1,9 +1,15 @@
 import React from "react";
 import ReactFS from "@shuvi/react-fs";
 import fse from "fs-extra";
-import { Paths } from "./types";
-import { TemplateData } from "./types/file";
-import { RouterService, RouteConfig } from "./types/services/routerService";
+import {
+  AppCore,
+  Paths,
+  TemplateData,
+  BuildOptions,
+  RouterConfig,
+  AppConfig,
+  RouterService
+} from "@shuvi/types/core";
 import App from "./App";
 import { getPaths } from "./paths";
 import {
@@ -15,31 +21,17 @@ import {
 import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
 import { joinPath } from "./utils";
 
-export interface ApplicationConfig {
-  cwd: string;
-  outputPath: string;
-  publicPath: string;
-}
-
-export interface ApplicationOptions {
-  config: ApplicationConfig;
+export interface AppOptions {
+  config: AppConfig;
   routerService: RouterService;
 }
 
-export interface BuildOptions {
-  bootstrapFile: string;
-}
-
-export interface RouterConfig {
-  routes: RouteConfig[];
-}
-
-class ApplicationClass {
-  public config: ApplicationConfig;
+class AppCoreImpl implements AppCore {
+  public config: AppConfig;
   public paths: Paths;
   private _routerService: RouterService;
 
-  constructor({ config, routerService }: ApplicationOptions) {
+  constructor({ config, routerService }: AppOptions) {
     this.config = config;
     this.paths = getPaths({
       cwd: this.config.cwd,
@@ -48,19 +40,19 @@ class ApplicationClass {
     this._routerService = routerService;
   }
 
-  getAppPath(filename: string): string {
+  resolveAppFile(filename: string): string {
     return joinPath(this.paths.appDir, filename);
   }
 
-  getSrcPath(filename: string): string {
+  resolveSrcFile(filename: string): string {
     return joinPath(this.paths.srcDir, filename);
   }
 
-  getOutputPath(filename: string): string {
+  resolveBuildFile(filename: string): string {
     return joinPath(this.paths.buildDir, filename);
   }
 
-  getPublicPath(buildPath: string): string {
+  getPublicUrlPath(buildPath: string): string {
     return joinPath(this.config.publicPath, buildPath);
   }
 
@@ -112,8 +104,6 @@ class ApplicationClass {
   }
 }
 
-export type Application = ApplicationClass;
-
-export function app(options: ApplicationOptions) {
-  return new ApplicationClass(options);
+export function app(options: AppOptions): AppCore {
+  return new AppCoreImpl(options);
 }

@@ -22,26 +22,30 @@ const react_1 = __importStar(require("react"));
 const documentContext_1 = require("../../documentContext");
 function HtmlTag({ tagName, attrs = {} }) {
     const { innerHtml } = attrs, rest = __rest(attrs, ["innerHtml"]);
-    return react_1.default.createElement(tagName, Object.assign(Object.assign({}, rest), { dangerouslySetInnerHTML: {
-            __html: innerHtml
-        } }));
+    if (innerHtml) {
+        return react_1.default.createElement(tagName, Object.assign(Object.assign({}, rest), { dangerouslySetInnerHTML: {
+                __html: innerHtml
+            } }));
+    }
+    return react_1.default.createElement(tagName, attrs);
 }
 function Html(props) {
     return react_1.default.createElement("html", Object.assign({}, props));
 }
+function Tags(tags) {
+    return (react_1.default.createElement(react_1.default.Fragment, null, tags.map((tag, index) => (react_1.default.createElement(HtmlTag, Object.assign({ key: index }, tag))))));
+}
 function Head() {
     const { documentProps } = react_1.useContext(documentContext_1.DocumentContext);
-    const essentialTags = documentProps.headTags.map((tag, index) => (react_1.default.createElement(HtmlTag, Object.assign({ key: index }, tag))));
-    return react_1.default.createElement(react_1.default.Fragment, null, essentialTags);
+    return Tags(documentProps.headTags);
 }
-function Main() {
+function Content() {
     const { documentProps } = react_1.useContext(documentContext_1.DocumentContext);
-    return (react_1.default.createElement("div", { id: "__app", dangerouslySetInnerHTML: { __html: documentProps.appHtml } }));
+    return Tags(documentProps.contentTags);
 }
-const BodyScripts = () => {
+const Scripts = () => {
     const { documentProps } = react_1.useContext(documentContext_1.DocumentContext);
-    const essentialTags = documentProps.bodyTags.map((tag, index) => (react_1.default.createElement(HtmlTag, Object.assign({ key: index }, tag))));
-    return react_1.default.createElement(react_1.default.Fragment, null, essentialTags);
+    return Tags(documentProps.scriptTags);
 };
 class Document extends react_1.Component {
     getContextValue() {
@@ -54,8 +58,8 @@ class Document extends react_1.Component {
             react_1.default.createElement(Html, null,
                 react_1.default.createElement(Head, null),
                 react_1.default.createElement("body", null,
-                    react_1.default.createElement(Main, null),
-                    react_1.default.createElement(BodyScripts, null)))));
+                    react_1.default.createElement(Content, null),
+                    react_1.default.createElement(Scripts, null)))));
     }
 }
 exports.default = Document;

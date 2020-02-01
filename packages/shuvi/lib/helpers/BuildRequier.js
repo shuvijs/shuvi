@@ -19,6 +19,10 @@ class BuildRequire {
         const manifest = this._getClientManifest();
         return manifest.entries[name];
     }
+    getModules() {
+        const manifest = this._getClientManifest();
+        return manifest.modules;
+    }
     _resolveServerModule(name) {
         const manifest = this._getServerManifest();
         return path_1.default.join(this._options.buildDir, constants_1.BUILD_SERVER_DIR, manifest.chunks[name]);

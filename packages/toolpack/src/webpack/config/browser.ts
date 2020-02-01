@@ -14,5 +14,11 @@ export function createBrowserWebpackChain({
   if (baseOptions.dev) {
     chain.plugin("private/hmr-plugin").use(webpack.HotModuleReplacementPlugin);
   }
+  chain.plugin("private/build-manifest").tap(([options]) => [
+    {
+      ...options,
+      modules: true
+    }
+  ]);
   return chain;
 }

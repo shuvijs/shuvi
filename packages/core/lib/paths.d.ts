@@ -1,4 +1,4 @@
-import { Paths } from "./types";
+import { Paths } from "@shuvi/types/core";
 interface PathsOpts {
     cwd: string;
     outputPath: string;

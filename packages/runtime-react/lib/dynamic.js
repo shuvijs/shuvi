@@ -52,21 +52,15 @@ function dynamic(dynamicOptions, options) {
     loadableOptions = Object.assign(Object.assign({}, loadableOptions), options);
     if (typeof dynamicOptions === "object" &&
         !(dynamicOptions instanceof Promise)) {
-        // show deprecation warning for `modules` key in development
-        if (process.env.NODE_ENV !== "production") {
-            if (dynamicOptions.modules) {
-                console.warn("The modules option for next/dynamic has been deprecated. See here for more info https://err.sh/zeit/next.js/next-dynamic-modules");
-            }
-        }
-        // Support for `render` when using a mapping, eg: `dynamic({ modules: () => {return {HelloWorld: import('../hello-world')}, render(props, loaded) {} } })
+        // Support for `render` when using a mapping, eg: `dynamic({ loaders: () => {return {HelloWorld: import('../hello-world')}, render(props, loaded) {} } })
         if (dynamicOptions.render) {
             loadableOptions.render = (loaded, props) => dynamicOptions.render(props, loaded);
         }
-        // Support for `modules` when using a mapping, eg: `dynamic({ modules: () => {return {HelloWorld: import('../hello-world')}, render(props, loaded) {} } })
+        // Support for `loaders` when using a mapping, eg: `dynamic({ loaders: () => {return {HelloWorld: import('../hello-world')}, render(props, loaded) {} } })
         if (dynamicOptions.loaders) {
             loadableFn = loadable_1.default.Map;
             const loadModules = {};
-            const modules = dynamicOptions.modules();
+            const modules = dynamicOptions.loaders;
             Object.keys(modules).forEach(key => {
                 const value = modules[key];
                 if (typeof value.then === "function") {

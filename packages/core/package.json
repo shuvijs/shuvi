@@ -31,5 +31,8 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1"
+  },
+  "peerDependencies": {
+    "@shuvi/types": "^0.0.1-alpha.1"
   }
 }

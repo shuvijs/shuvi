@@ -1,4 +1,4 @@
-import { FileNode, FileType, TemplateData } from "./types/file";
+import { FileNode, FileType, TemplateData } from "@shuvi/types/core";
 interface State {
     bootstrapFile: string;
     files: FileNode[];

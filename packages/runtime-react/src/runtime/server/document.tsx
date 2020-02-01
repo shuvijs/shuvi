@@ -1,48 +1,48 @@
 import React, { Component, FunctionComponent, useContext } from "react";
-import { Runtime } from "@shuvi/core";
+import * as Runtime from "@shuvi/types/runtime";
 import { DocumentContext, DocumentContextType } from "../../documentContext";
 
 function HtmlTag({ tagName, attrs = {} }: Runtime.HtmlTag) {
   const { innerHtml, ...rest } = attrs;
-  return React.createElement(tagName, {
-    ...rest,
-    dangerouslySetInnerHTML: {
-      __html: innerHtml
-    }
-  });
+  if (innerHtml) {
+    return React.createElement(tagName, {
+      ...rest,
+      dangerouslySetInnerHTML: {
+        __html: innerHtml
+      }
+    });
+  }
+
+  return React.createElement(tagName, attrs);
 }
 
 function Html(props: any) {
   return <html {...props} />;
 }
 
-function Head() {
-  const { documentProps } = useContext(DocumentContext);
-  const essentialTags = documentProps.headTags.map((tag, index) => (
-    <HtmlTag key={index} {...tag} />
-  ));
-
-  return <>{essentialTags}</>;
-}
-
-function Main() {
-  const { documentProps } = useContext(DocumentContext);
-
+function Tags(tags: Runtime.HtmlTag[]) {
   return (
-    <div
-      id="__app"
-      dangerouslySetInnerHTML={{ __html: documentProps.appHtml }}
-    />
+    <>
+      {tags.map((tag, index) => (
+        <HtmlTag key={index} {...tag} />
+      ))}
+    </>
   );
 }
 
-const BodyScripts: FunctionComponent<any> = () => {
+function Head() {
   const { documentProps } = useContext(DocumentContext);
-  const essentialTags = documentProps.bodyTags.map((tag, index) => (
-    <HtmlTag key={index} {...tag} />
-  ));
+  return Tags(documentProps.headTags);
+}
 
-  return <>{essentialTags}</>;
+function Content() {
+  const { documentProps } = useContext(DocumentContext);
+  return Tags(documentProps.contentTags);
+}
+
+const Scripts: FunctionComponent<any> = () => {
+  const { documentProps } = useContext(DocumentContext);
+  return Tags(documentProps.scriptTags);
 };
 
 export default class Document extends Component<Runtime.DocumentProps> {
@@ -60,8 +60,8 @@ export default class Document extends Component<Runtime.DocumentProps> {
         <Html>
           <Head />
           <body>
-            <Main />
-            <BodyScripts />
+            <Content />
+            <Scripts />
           </body>
         </Html>
       </DocumentContext.Provider>

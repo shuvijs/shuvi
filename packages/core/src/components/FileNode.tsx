@@ -4,7 +4,7 @@ import {
   File as IFile,
   Dir as IDir,
   FileNode as IFileNode
-} from "../types/file";
+} from "@shuvi/types/core";
 import FileTemplate from "./FileTemplate";
 import FileSelector from "./FileSelector";
 import { BaseComponent } from "./base";

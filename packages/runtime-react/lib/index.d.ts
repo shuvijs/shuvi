@@ -1,11 +1,11 @@
-/// <reference types="node" />
-import { IncomingMessage, ServerResponse } from "http";
 import React from "react";
-import { Runtime, Application, RouterService } from "@shuvi/core";
+import * as Runtime from "@shuvi/types/runtime";
+import { AppCore, RouteConfig } from "@shuvi/types/core";
 declare class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
-    install(app: Application): Promise<void>;
-    renderDocument(req: IncomingMessage, res: ServerResponse, Document: React.ComponentType<Runtime.DocumentProps>, App: React.ComponentType<any> | null, options: Runtime.RenderDocumentOptions): Promise<string>;
-    matchRoutes(routes: RouterService.RouteConfig[], pathname: string): import("react-router-config").MatchedRoute<{}>[];
+    install(app: AppCore): Promise<void>;
+    renderDocument(Document: React.ComponentType<Runtime.DocumentProps>, options: Runtime.RenderDocumentOptions): Promise<string>;
+    renderApp(App: React.ComponentType<Runtime.AppProps>, options: Runtime.RenderAppOptions): Promise<string>;
+    matchRoutes(routes: RouteConfig[], pathname: string): import("react-router-config").MatchedRoute<{}>[];
     getBootstrapFilePath(): string;
     getDocumentFilePath(): string;
     getAppFilePath(): string;

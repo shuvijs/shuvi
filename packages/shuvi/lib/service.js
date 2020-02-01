@@ -20,6 +20,7 @@ const fsRouterService_1 = __importDefault(require("./services/fsRouterService"))
 const getWebpackEntries_1 = require("./helpers/getWebpackEntries");
 const getWebpackConfig_1 = require("./helpers/getWebpackConfig");
 const BuildRequier_1 = __importDefault(require("./helpers/BuildRequier"));
+const htmlescape_1 = require("./helpers/htmlescape");
 const constants_1 = require("./constants");
 const server_1 = __importDefault(require("./server"));
 const utils_1 = require("./utils");
@@ -92,11 +93,11 @@ class Service {
             app.addFile("bootstrap.js", {
                 content: `export * from "${runtime_react_1.default.getBootstrapFilePath()}"`
             });
-            app.addSelectorFile("app.js", [app.getSrcPath("app.js")], runtime_react_1.default.getAppFilePath());
+            app.addSelectorFile("app.js", [app.resolveSrcFile("app.js")], runtime_react_1.default.getAppFilePath());
             // app.addTemplateFile("routes.js", resolveTemplate("routes"), {
             //   routes: serializeRoutes(routeConfig.routes)
             // });
-            app.addSelectorFile("document.js", [app.getSrcPath("document.js")], runtime_react_1.default.getDocumentFilePath());
+            app.addSelectorFile("document.js", [app.resolveSrcFile("document.js")], runtime_react_1.default.getDocumentFilePath());
             runtime_react_1.default.install(this._app);
         });
     }
@@ -121,47 +122,98 @@ class Service {
             else if (!utils_1.acceptsHtml(headers.accept)) {
                 return next();
             }
-            const tags = this._getDocumentTags();
-            console.debug("tags", tags);
-            const Document = this._buildRequier.requireDocument();
+            const context = {
+                loadableModules: []
+            };
             const App = this._buildRequier.requireApp();
-            const html = yield runtime_react_1.default.renderDocument(req, res, Document.default || Document, App.default || App, {
-                appData: {},
-                documentProps: {
-                    appHtml: "",
-                    bodyTags: tags.bodyTags,
-                    headTags: tags.headTags
+            const loadableManifest = this._buildRequier.getModules();
+            const appHtml = yield runtime_react_1.default.renderApp(App.default || App, {
+                url: req.url,
+                context
+            });
+            const dynamicImportIdSet = new Set();
+            const dynamicImports = [];
+            for (const mod of context.loadableModules) {
+                const manifestItem = loadableManifest[mod];
+                if (manifestItem) {
+                    manifestItem.forEach(item => {
+                        dynamicImports.push(item);
+                        dynamicImportIdSet.add(item.id);
+                    });
                 }
+            }
+            const documentProps = this._getDocumentProps({
+                appHtml,
+                dynamicImports,
+                dynamicImportIds: [...dynamicImportIdSet]
+            });
+            const Document = this._buildRequier.requireDocument();
+            const html = yield runtime_react_1.default.renderDocument(Document.default || Document, {
+                documentProps
             });
             res.end(html);
         });
     }
-    _getDocumentTags() {
+    _getDocumentProps({ appHtml, dynamicImports, dynamicImportIds }) {
+        const styles = [];
+        const scripts = [];
         const entrypoints = this._buildRequier.getEntryAssets(constants_1.BUILD_CLIENT_RUNTIME_MAIN);
-        const bodyTags = [];
-        const headTags = [];
         entrypoints.forEach((asset) => {
             if (/\.js$/.test(asset)) {
-                bodyTags.push({
+                scripts.push({
                     tagName: "script",
                     attrs: {
-                        src: this._app.getPublicPath(asset)
+                        src: this._app.getPublicUrlPath(asset)
                     }
                 });
             }
             else if (/\.css$/.test(asset)) {
-                headTags.push({
+                styles.push({
                     tagName: "link",
                     attrs: {
                         rel: "stylesheet",
-                        href: this._app.getPublicPath(asset)
+                        href: this._app.getPublicUrlPath(asset)
                     }
                 });
             }
         });
+        const preloadDynamicChunks = utils_1.dedupe(dynamicImports, "file").map((bundle) => {
+            return {
+                tagName: "link",
+                attrs: {
+                    rel: "preload",
+                    href: this._app.getPublicUrlPath(bundle.file),
+                    as: "script"
+                }
+            };
+        });
+        const inlineAppData = this._getDocumentInlineAppData({
+            dynamicIds: dynamicImportIds
+        });
         return {
-            bodyTags,
-            headTags
+            headTags: [...styles, ...preloadDynamicChunks],
+            contentTags: [this._getDocumentContent(appHtml)],
+            scriptTags: [inlineAppData, ...scripts]
+        };
+    }
+    _getDocumentInlineAppData(appData) {
+        const data = JSON.stringify(appData);
+        return {
+            tagName: "script",
+            attrs: {
+                id: constants_1.CLIENT_APPDATA_ID,
+                type: "application/json",
+                innerHtml: htmlescape_1.htmlEscapeJsonString(data)
+            }
+        };
+    }
+    _getDocumentContent(html) {
+        return {
+            tagName: "div",
+            attrs: {
+                id: constants_1.CLIENT_CONTAINER_ID,
+                innerHtml: html
+            }
         };
     }
     _startServer() {

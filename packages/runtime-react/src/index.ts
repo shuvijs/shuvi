@@ -1,21 +1,21 @@
-import { IncomingMessage, ServerResponse } from "http";
 import React from "react";
-import { Runtime, Application, RouterService } from "@shuvi/core";
+import * as Runtime from "@shuvi/types/runtime";
+import { AppCore, RouteConfig } from "@shuvi/types/core";
 import { matchRoutes } from "react-router-config";
-import { renderDocument } from "./renderer";
+import { renderDocument, renderApp } from "./renderer";
 import { resolveRuntime, resolveTemplate } from "./paths";
 
-function serializeRoutes(routes: RouterService.RouteConfig[]): string {
+function serializeRoutes(routes: RouteConfig[]): string {
   const res = JSON.stringify(routes);
   // Loadble(() => import("${res.componentFile}"))
   return res.replace(
     /"componentFile":\w*"([^"]+)"/gi,
-    (match, filePath) => `"component": dynamic(() => import("${filePath}"))`
+    (match, filePath) => `"component": dynamic(() => import("${filePath}"), { ssr: true })`
   );
 }
 
 class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
-  async install(app: Application): Promise<void> {
+  async install(app: AppCore): Promise<void> {
     // fix yarn link with react hooks
     if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE) {
       const path = require("path");
@@ -59,25 +59,22 @@ class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
   }
 
   async renderDocument(
-    req: IncomingMessage,
-    res: ServerResponse,
     Document: React.ComponentType<Runtime.DocumentProps>,
-    App: React.ComponentType<any> | null,
     options: Runtime.RenderDocumentOptions
   ): Promise<string> {
-    return renderDocument(req, res, Document, App, options);
+    return renderDocument(Document, options);
   }
 
-  matchRoutes(routes: RouterService.RouteConfig[], pathname: string) {
+  async renderApp(
+    App: React.ComponentType<Runtime.AppProps>,
+    options: Runtime.RenderAppOptions
+  ): Promise<string> {
+    return renderApp(App, options);
+  }
+
+  matchRoutes(routes: RouteConfig[], pathname: string) {
     return matchRoutes(routes, pathname);
   }
-
-  // renderApp(
-  //   App: React.ComponentType<any>,
-  //   options: Runtime.RenderAppOptions
-  // ): string {
-  //   return renderApp(App, options);
-  // }
 
   getBootstrapFilePath(): string {
     return resolveRuntime("client/bootstrap");

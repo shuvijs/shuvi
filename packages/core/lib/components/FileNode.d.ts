@@ -1,4 +1,4 @@
-import { FileNode as IFileNode } from "../types/file";
+import { FileNode as IFileNode } from "@shuvi/types/core";
 import { BaseComponent } from "./base";
 interface Props {
     file: IFileNode;

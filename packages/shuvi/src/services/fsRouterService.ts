@@ -1,8 +1,8 @@
-import { RouterService } from "@shuvi/core";
+import { RouterService } from "@shuvi/types/core";
 
 // const PlaceHolderComp = null as any;
 
-export default class RouterServiceImpl implements RouterService.RouterService {
+export default class RouterServiceImpl implements RouterService {
   getRoutes() {
     return [
       {

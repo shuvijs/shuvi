@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@shuvi/core": "^0.0.1-alpha.1",
+    "@shuvi/types": "^0.0.1-alpha.1",
     "@shuvi/runtime-react": "^0.0.1-alpha.1",
     "@shuvi/toolpack": "^0.0.1-alpha.1",
     "commander": "4.0.1",

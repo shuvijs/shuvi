@@ -1,15 +1,16 @@
 /* tslint:disable */
-import React from 'react'
+import React from "react";
 
 declare namespace LoadableExport {
   interface ILoadable {
-    <P = {}>(opts: any): React.ComponentClass<P>
-    Map<P = {}>(opts: any): React.ComponentType<P>
-    preloadAll(): Promise<any>
+    <P = {}>(opts: any): React.ComponentClass<P>;
+    Map<P = {}>(opts: any): React.ComponentType<P>;
+    preloadAll(): Promise<any>;
+    preloadReady(ids: Array<string | number>): Promise<any>;
   }
 }
 
 // eslint-disable-next-line no-redeclare
-declare const LoadableExport: LoadableExport.ILoadable
+declare const LoadableExport: LoadableExport.ILoadable;
 
-export = LoadableExport
+export = LoadableExport;

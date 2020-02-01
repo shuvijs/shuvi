@@ -9,9 +9,5 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const constants = __importStar(require("./constants"));
 exports.constants = constants;
-const Runtime = __importStar(require("./types/runtime"));
-exports.Runtime = Runtime;
-const RouterService = __importStar(require("./types/services/routerService"));
-exports.RouterService = RouterService;
 var application_1 = require("./application");
 exports.app = application_1.app;

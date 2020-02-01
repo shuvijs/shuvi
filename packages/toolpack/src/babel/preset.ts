@@ -78,7 +78,7 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
         }
       ],
       require("@babel/plugin-syntax-dynamic-import"),
-      require("./plugins/react-loadable-plugin"),
+      require("./plugins/loadable-plugin"),
       require("@babel/plugin-proposal-class-properties"),
       [
         require("@babel/plugin-proposal-object-rest-spread"),

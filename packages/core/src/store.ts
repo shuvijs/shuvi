@@ -1,6 +1,6 @@
 import create from "zustand";
 import produce from "immer";
-import { FileNode, FileType, FileNodeType, TemplateData } from "./types/file";
+import { FileNode, FileType, FileNodeType, TemplateData } from "@shuvi/types/core";
 
 interface State {
   bootstrapFile: string;

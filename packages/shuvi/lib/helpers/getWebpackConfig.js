@@ -6,11 +6,12 @@ function getWebpackConfig(app, opts) {
     const { paths } = app;
     let chain;
     const isDev = process.env.NODE_ENV === "development";
+    const srcDirs = [paths.appDir, paths.srcDir];
     if (opts.node) {
         chain = config_1.createNodeWebpackChain({
+            srcDirs,
             dev: isDev,
             projectRoot: paths.projectDir,
-            srcDirs: [paths.srcDir],
             buildManifestFilename: constants_1.BUILD_MANIFEST_PATH,
             mediaFilename: constants_1.BUILD_MEDIA_PATH
         });
@@ -18,9 +19,9 @@ function getWebpackConfig(app, opts) {
     }
     else {
         chain = config_1.createBrowserWebpackChain({
+            srcDirs,
             dev: isDev,
             projectRoot: paths.projectDir,
-            srcDirs: [paths.srcDir],
             buildManifestFilename: constants_1.BUILD_MANIFEST_PATH,
             mediaFilename: constants_1.BUILD_MEDIA_PATH,
             publicPath: app.config.publicPath

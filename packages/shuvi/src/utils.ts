@@ -11,3 +11,18 @@ export function acceptsHtml(
   }
   return false;
 }
+
+export function dedupe<T extends Record<string, any>, K extends keyof T>(
+  bundles: T[],
+  prop: K
+): any[] {
+  const files = new Set();
+  const kept = [];
+
+  for (const bundle of bundles) {
+    if (files.has(bundle[prop])) continue;
+    files.add(bundle[prop]);
+    kept.push(bundle);
+  }
+  return kept;
+}

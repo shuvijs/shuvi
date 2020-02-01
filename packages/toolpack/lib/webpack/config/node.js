@@ -19,6 +19,9 @@ function createNodeWebpackChain(_a) {
     chain.target("node");
     chain.output.libraryTarget("commonjs2");
     chain.externals(external_1.nodeExternals({ projectRoot: baseOptions.projectRoot }));
+    chain.plugin("private/build-manifest").tap(([options]) => [
+        Object.assign(Object.assign({}, options), { modules: false })
+    ]);
     chain.module
         .rule("src")
         .use("babel-loader")

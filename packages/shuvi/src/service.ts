@@ -1,33 +1,39 @@
-import path from "path";
 import webpack from "webpack";
-import { app, Application, ApplicationConfig, Runtime } from "@shuvi/core";
+import { app } from "@shuvi/core";
+import { AppCore, AppConfig } from "@shuvi/types/core";
+import * as Runtime from "@shuvi/types/Runtime";
+import { ModuleManifest } from "@shuvi/types/build";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
 import ReactRuntime from "@shuvi/runtime-react";
 import Express from "express";
 import FsRouterService from "./services/fsRouterService";
 import { getClientEntries } from "./helpers/getWebpackEntries";
 import { getWebpackConfig } from "./helpers/getWebpackConfig";
-import { resolveTemplate } from "./helpers/paths";
 import BuildRequier from "./helpers/BuildRequier";
+import { htmlEscapeJsonString } from "./helpers/htmlescape";
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_SERVER_DOCUMENT,
-  BUILD_SERVER_APP
+  BUILD_SERVER_APP,
+  CLIENT_CONTAINER_ID,
+  CLIENT_APPDATA_ID,
 } from "./constants";
 import Server from "./server";
-import { acceptsHtml } from "./utils";
+import { acceptsHtml, dedupe } from "./utils";
 
-const defaultConfig: ApplicationConfig = {
+import AppData = Runtime.AppData;
+
+const defaultConfig: AppConfig = {
   cwd: process.cwd(),
   outputPath: "dist",
   publicPath: "/"
 };
 
 export default class Service {
-  private _app: Application;
+  private _app: AppCore;
   private _buildRequier: BuildRequier;
 
-  constructor({ config }: { config: Partial<ApplicationConfig> }) {
+  constructor({ config }: { config: Partial<AppConfig> }) {
     this._app = app({
       config: { ...defaultConfig, ...config },
       routerService: new FsRouterService()
@@ -96,7 +102,7 @@ export default class Service {
     });
     app.addSelectorFile(
       "app.js",
-      [app.getSrcPath("app.js")],
+      [app.resolveSrcFile("app.js")],
       ReactRuntime.getAppFilePath()
     );
     // app.addTemplateFile("routes.js", resolveTemplate("routes"), {
@@ -104,7 +110,7 @@ export default class Service {
     // });
     app.addSelectorFile(
       "document.js",
-      [app.getSrcPath("document.js")],
+      [app.resolveSrcFile("document.js")],
       ReactRuntime.getDocumentFilePath()
     );
     ReactRuntime.install(this._app);
@@ -134,58 +140,124 @@ export default class Service {
       return next();
     }
 
-    const tags = this._getDocumentTags();
-    console.debug("tags", tags);
-    const Document = this._buildRequier.requireDocument();
+    const context: {
+      loadableModules: string[];
+    } = {
+      loadableModules: []
+    };
     const App = this._buildRequier.requireApp();
+    const loadableManifest = this._buildRequier.getModules();
+    const appHtml = await ReactRuntime.renderApp(App.default || App, {
+      url: req.url,
+      context
+    });
+    const dynamicImportIdSet = new Set<string>();
+    const dynamicImports: ModuleManifest[] = [];
+    for (const mod of context.loadableModules) {
+      const manifestItem = loadableManifest[mod];
+      if (manifestItem) {
+        manifestItem.forEach(item => {
+          dynamicImports.push(item);
+          dynamicImportIdSet.add(item.id as string);
+        });
+      }
+    }
+
+    const documentProps = this._getDocumentProps({
+      appHtml,
+      dynamicImports,
+      dynamicImportIds: [...dynamicImportIdSet]
+    });
+    const Document = this._buildRequier.requireDocument();
     const html = await ReactRuntime.renderDocument(
-      req,
-      res,
       Document.default || Document,
-      App.default || App,
       {
-        appData: {},
-        documentProps: {
-          appHtml: "",
-          bodyTags: tags.bodyTags,
-          headTags: tags.headTags
-        }
+        documentProps
       }
     );
+
     res.end(html);
   }
 
-  private _getDocumentTags(): {
-    bodyTags: Runtime.DocumentProps["bodyTags"];
-    headTags: Runtime.DocumentProps["headTags"];
-  } {
+  private _getDocumentProps({
+    appHtml,
+    dynamicImports,
+    dynamicImportIds
+  }: {
+    appHtml: string;
+    dynamicImports: ModuleManifest[];
+    dynamicImportIds: Array<string | number>;
+  }): Runtime.DocumentProps {
+    const styles: Runtime.HtmlTag<"link">[] = [];
+    const scripts: Runtime.HtmlTag<"script">[] = [];
     const entrypoints = this._buildRequier.getEntryAssets(
       BUILD_CLIENT_RUNTIME_MAIN
     );
-    const bodyTags: Runtime.DocumentProps["bodyTags"] = [];
-    const headTags: Runtime.DocumentProps["headTags"] = [];
     entrypoints.forEach((asset: string) => {
       if (/\.js$/.test(asset)) {
-        bodyTags.push({
+        scripts.push({
           tagName: "script",
           attrs: {
-            src: this._app.getPublicPath(asset)
+            src: this._app.getPublicUrlPath(asset)
           }
         });
       } else if (/\.css$/.test(asset)) {
-        headTags.push({
+        styles.push({
           tagName: "link",
           attrs: {
             rel: "stylesheet",
-            href: this._app.getPublicPath(asset)
+            href: this._app.getPublicUrlPath(asset)
           }
         });
       }
     });
 
+    const preloadDynamicChunks: Runtime.HtmlTag<"link">[] = dedupe(
+      dynamicImports,
+      "file"
+    ).map((bundle: any) => {
+      return {
+        tagName: "link",
+        attrs: {
+          rel: "preload",
+          href: this._app.getPublicUrlPath(bundle.file),
+          as: "script"
+        }
+      };
+    });
+
+    const inlineAppData = this._getDocumentInlineAppData({
+      dynamicIds: dynamicImportIds
+    });
+
     return {
-      bodyTags,
-      headTags
+      headTags: [...styles, ...preloadDynamicChunks],
+      contentTags: [this._getDocumentContent(appHtml)],
+      scriptTags: [inlineAppData, ...scripts]
+    };
+  }
+
+  private _getDocumentInlineAppData(
+    appData: AppData
+  ): Runtime.HtmlTag<"script"> {
+    const data = JSON.stringify(appData);
+    return {
+      tagName: "script",
+      attrs: {
+        id: CLIENT_APPDATA_ID,
+        type: "application/json",
+        innerHtml: htmlEscapeJsonString(data)
+      }
+    };
+  }
+
+  private _getDocumentContent(html: string): Runtime.HtmlTag<"div"> {
+    return {
+      tagName: "div",
+      attrs: {
+        id: CLIENT_CONTAINER_ID,
+        innerHtml: html
+      }
     };
   }
 

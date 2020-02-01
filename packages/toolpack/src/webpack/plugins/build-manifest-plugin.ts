@@ -1,6 +1,13 @@
-import path from "path";
-import { Compiler } from "webpack";
+import url from "url";
+import { Compiler, compilation } from "webpack";
 import { RawSource } from "webpack-sources";
+
+interface Module {
+  id: string;
+  name: string;
+  file: string;
+  publicPath: string;
+}
 
 interface AssetMap {
   entries: {
@@ -9,23 +16,107 @@ interface AssetMap {
   chunks: {
     [s: string]: string;
   };
+  modules: {
+    [s: string]: Module[];
+  };
+}
+
+const defaultOptions = {
+  filename: "build-manifest.json",
+  modules: false
+};
+
+interface Options {
+  filename: string;
+  modules: boolean;
+}
+
+function getModules(compiler: Compiler, compilation: compilation.Compilation) {
+  let context = compiler.options.context;
+  let manifest: { [k: string]: Module[] } = {};
+
+  compilation.chunkGroups.forEach(chunkGroup => {
+    if (chunkGroup.isInitial()) {
+      return;
+    }
+
+    chunkGroup.origins.forEach((chunkGroupOrigin: any) => {
+      const { request } = chunkGroupOrigin;
+
+      chunkGroup.chunks.forEach((chunk: any) => {
+        chunk.files.forEach((file: string) => {
+          if (!file.match(/\.js$/) || !file.match(/^static\/chunks\//)) {
+            return;
+          }
+
+          let publicPath = url.resolve(
+            compilation.outputOptions.publicPath || "",
+            file
+          );
+
+          for (const module of chunk.modulesIterable) {
+            let id = module.id;
+            let name =
+              typeof module.libIdent === "function"
+                ? module.libIdent({ context })
+                : null;
+
+            if (!manifest[request]) {
+              manifest[request] = [];
+            }
+
+            // Avoid duplicate files
+            if (
+              manifest[request].some(
+                item => item.id === id && item.file === file
+              )
+            ) {
+              continue;
+            }
+
+            manifest[request].push({
+              id,
+              name,
+              file,
+              publicPath
+            });
+          }
+        });
+      });
+    });
+  });
+
+  manifest = Object.keys(manifest)
+    .sort()
+    // eslint-disable-next-line no-sequences
+    .reduce((a, c) => ((a[c] = manifest[c]), a), {} as any);
+
+  return manifest;
 }
 
 // This plugin creates a build-manifest.json for all assets that are being output
 // It has a mapping of "entry" filename to real filename. Because the real filename can be hashed in production
 export default class BuildManifestPlugin {
-  private filename: string = "build-manifest.json";
+  private _options: Options;
 
-  constructor(options: { filename: string }) {
-    this.filename = options.filename;
+  constructor(options: Partial<Options> = {}) {
+    this._options = {
+      ...defaultOptions,
+      ...options
+    };
   }
 
   apply(compiler: Compiler) {
     compiler.hooks.emit.tapAsync("BuildManifest", (compilation, callback) => {
       const assetMap: AssetMap = {
         entries: {},
-        chunks: {}
+        chunks: {},
+        modules: {}
       };
+
+      if (this._options.modules) {
+        assetMap.modules = getModules(compiler, compilation);
+      }
 
       // compilation.entrypoints is a Map object, so iterating over it 0 is the key and 1 is the value
       for (const [, entrypoint] of compilation.entrypoints.entries()) {
@@ -52,15 +143,6 @@ export default class BuildManifestPlugin {
 
         assetMap.entries[entrypoint.name] = [...filesForEntry];
       }
-
-      const stats = compilation.getStats().toJson({
-        // Disable data generation of everything we don't use
-        all: false,
-        // Add asset Information
-        assets: true,
-        // Show cached assets (setting this to `false` only shows emitted files)
-        cachedAssets: true
-      });
 
       let files = [];
       for (let index = 0; index < compilation.chunks.length; index++) {
@@ -92,7 +174,7 @@ export default class BuildManifestPlugin {
         assetMap.chunks[file.name] = file.filepath;
       });
 
-      compilation.assets[this.filename] = new RawSource(
+      compilation.assets[this._options.filename] = new RawSource(
         JSON.stringify(assetMap, null, 2)
       );
 
