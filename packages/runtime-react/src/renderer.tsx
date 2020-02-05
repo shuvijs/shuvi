@@ -1,7 +1,9 @@
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import * as Runtime from "@shuvi/types/runtime";
-import { StaticRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
+import { createServerHistory } from "./router/history";
+import { setHistory } from "./router/router";
 import Loadable, { LoadableContext } from "./loadable";
 
 export async function renderDocument(
@@ -17,17 +19,25 @@ export async function renderApp(
   App: React.ComponentType<Runtime.AppProps>,
   options: Runtime.RenderAppOptions
 ): Promise<string> {
-  const { url, context } = options;
   await Loadable.preloadAll();
 
+  const { url, context } = options;
+  const history = createServerHistory({
+    basename: "/",
+    location: url,
+    context
+  });
+  setHistory(history);
+
   const htmlContent = renderToString(
-    <StaticRouter location={url} context={context}>
+    // @ts-ignore staticContext is not declared in @types/react-router-dom
+    <Router history={history} staticContext={context}>
       <LoadableContext.Provider
         value={moduleName => context.loadableModules.push(moduleName)}
       >
         <App />
       </LoadableContext.Provider>
-    </StaticRouter>
+    </Router>
   );
 
   return htmlContent;

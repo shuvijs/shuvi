@@ -1,3 +1,6 @@
+import { IncomingMessage, ServerResponse } from "http";
+import { ParsedUrlQuery } from 'querystring'
+
 export interface TemplateData {
   [x: string]: any;
 }
@@ -46,11 +49,12 @@ export interface Paths {
 }
 
 export interface RouteConfig {
+  id: string;
   path?: string | string[];
   exact?: boolean;
   routes?: RouteConfig[];
   component?: any;
-  // componentFile: string;
+  componentFile: string;
   [x: string]: any;
 }
 
@@ -89,6 +93,18 @@ export interface BuildOptions {
 export interface RouterConfig {
   routes: RouteConfig[];
 }
+
+export interface RouteComponentContext {
+  isServer: boolean;
+  pathname: string;
+  query: ParsedUrlQuery;
+  req?: IncomingMessage;
+  res?: ServerResponse;
+}
+
+export type RouteComponent<T, P = {}> = T & {
+  getInitialProps?(context: RouteComponentContext): P | Promise<P>;
+};
 
 export interface AppCore {
   config: AppConfig;

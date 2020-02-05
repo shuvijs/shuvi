@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "./runtime",
+    "outDir": "./lib/runtime"
+  },
+  "include": ["runtime"],
+}

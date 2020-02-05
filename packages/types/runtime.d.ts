@@ -5,7 +5,7 @@ export interface AppData {
 }
 
 export type HtmlAttrs = { innerHtml?: string } & {
-  [x: string]: string;
+  [x: string]: string | number | undefined;
 };
 
 export interface HtmlTag<TagNames = string> {
@@ -35,7 +35,7 @@ export interface RenderAppOptions {
 export interface BootstrapOptions {
   hydrate?: boolean;
   appContainer: HTMLElement;
-  appData: AppData,
+  appData: AppData;
 }
 
 export type Bootstrap = (options: BootstrapOptions) => void;

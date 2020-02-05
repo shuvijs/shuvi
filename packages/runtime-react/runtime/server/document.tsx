@@ -1,8 +1,11 @@
 import React, { Component, FunctionComponent, useContext } from "react";
 import * as Runtime from "@shuvi/types/runtime";
-import { DocumentContext, DocumentContextType } from "../../documentContext";
+import {
+  DocumentContext,
+  DocumentContextType
+} from "@shuvi/runtime-react/lib/documentContext";
 
-function HtmlTag({ tagName, attrs = {} }: Runtime.HtmlTag) {
+function renderTag({ tagName, attrs = {} }: Runtime.HtmlTag) {
   const { innerHtml, ...rest } = attrs;
   if (innerHtml) {
     return React.createElement(tagName, {
@@ -13,7 +16,7 @@ function HtmlTag({ tagName, attrs = {} }: Runtime.HtmlTag) {
     });
   }
 
-  return React.createElement(tagName, attrs);
+  return React.createElement(tagName, rest);
 }
 
 function Html(props: any) {
@@ -23,9 +26,9 @@ function Html(props: any) {
 function Tags(tags: Runtime.HtmlTag[]) {
   return (
     <>
-      {tags.map((tag, index) => (
-        <HtmlTag key={index} {...tag} />
-      ))}
+      {tags.map(({ tagName, attrs }, index) =>
+        renderTag({ tagName, attrs: { key: index, ...attrs } })
+      )}
     </>
   );
 }

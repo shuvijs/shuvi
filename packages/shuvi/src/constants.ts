@@ -1,10 +1,7 @@
-import { join } from "path";
 import { ROUTE_PREFIX } from "./shared/constants";
+import { resolvePackageFile } from "./helpers/paths";
 
 export * from "./shared/constants";
-
-const resolveSource = (relativePath: string, ext = "js") =>
-  `${join(__dirname, relativePath)}.${ext}`;
 
 export const DEV_PUBLIC_PATH = `${ROUTE_PREFIX}/static/webpack/`;
 
@@ -18,7 +15,7 @@ export const BUILD_CLIENT_RUNTIME_MAIN = `static/runtime/main.js`;
 
 export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack.js`;
 
-export const CLIENT_ENTRY_PATH = resolveSource("client/index");
+export const CLIENT_ENTRY_PATH = resolvePackageFile("lib/client/index");
 
 export const BUILD_SERVER_DIR = "server";
 

@@ -19,21 +19,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importStar(require("react"));
-const documentContext_1 = require("../../documentContext");
-function HtmlTag({ tagName, attrs = {} }) {
+const documentContext_1 = require("@shuvi/runtime-react/lib/documentContext");
+function renderTag({ tagName, attrs = {} }) {
     const { innerHtml } = attrs, rest = __rest(attrs, ["innerHtml"]);
     if (innerHtml) {
         return react_1.default.createElement(tagName, Object.assign(Object.assign({}, rest), { dangerouslySetInnerHTML: {
                 __html: innerHtml
             } }));
     }
-    return react_1.default.createElement(tagName, attrs);
+    return react_1.default.createElement(tagName, rest);
 }
 function Html(props) {
     return react_1.default.createElement("html", Object.assign({}, props));
 }
 function Tags(tags) {
-    return (react_1.default.createElement(react_1.default.Fragment, null, tags.map((tag, index) => (react_1.default.createElement(HtmlTag, Object.assign({ key: index }, tag))))));
+    return (react_1.default.createElement(react_1.default.Fragment, null, tags.map(({ tagName, attrs }, index) => renderTag({ tagName, attrs: Object.assign({ key: index }, attrs) }))));
 }
 function Head() {
     const { documentProps } = react_1.useContext(documentContext_1.DocumentContext);

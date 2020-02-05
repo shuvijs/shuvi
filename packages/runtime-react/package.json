@@ -19,12 +19,16 @@
     "dynamic.js"
   ],
   "scripts": {
-    "dev": "tsc -p tsconfig.build.json -w"
+    "dev": "run-p watch:*",
+    "watch:src": "tsc -p tsconfig.build.json -w",
+    "watch:runtime": "tsc -p tsconfig.build.runtime.json -w"
   },
   "engines": {
     "node": ">= 8.0.0"
   },
   "dependencies": {
+    "@shuvi/utils": "^0.0.1-alpha.1",
+    "history": "^4.10.1",
     "react-router-config": "5.1.1",
     "react-router-dom": "5.1.2",
     "use-subscription": "^1.3.0"

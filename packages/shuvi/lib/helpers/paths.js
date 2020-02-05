@@ -1,4 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
-exports.resolveTemplate = (relativePath, ext = "tpl") => `${path_1.resolve(__dirname, "..", "..", "template", relativePath)}.${ext}`;
+exports.resolvePackageFile = (...paths) => `${path_1.resolve(__dirname, "..", "..", ...paths)}`;
+exports.resolveTemplate = (relativePath, ext = "tpl") => exports.resolvePackageFile("template", `${relativePath}.${ext}`);

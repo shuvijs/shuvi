@@ -1,5 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
 const config_1 = require("@shuvi/toolpack/lib/webpack/config");
 const constants_1 = require("../constants");
 function getWebpackConfig(app, opts) {
@@ -29,7 +33,10 @@ function getWebpackConfig(app, opts) {
         chain.output.path(`${paths.buildDir}/${constants_1.BUILD_CLIENT_DIR}`);
         chain.optimization.runtimeChunk({ name: constants_1.BUILD_CLIENT_RUNTIME_WEBPACK });
     }
+    console.log('require.resolve("@babel/runtime/package.json")');
     chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
+    chain.resolve.alias.set("@babel/runtime", path_1.default.dirname(require.resolve("@babel/runtime/package.json")));
+    chain.resolve.alias.set("@babel/runtime-corejs2", path_1.default.dirname(require.resolve("@babel/runtime-corejs2/package.json")));
     chain.output.set("filename", ({ chunk }) => {
         // Use `[name]-[contenthash].js` in production
         if (!isDev &&

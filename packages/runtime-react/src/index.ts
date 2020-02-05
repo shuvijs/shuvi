@@ -1,6 +1,6 @@
 import React from "react";
 import * as Runtime from "@shuvi/types/runtime";
-import { AppCore, RouteConfig } from "@shuvi/types/core";
+import { AppCore, RouteConfig, RouteMatch } from "@shuvi/types/core";
 import { matchRoutes } from "react-router-config";
 import { renderDocument, renderApp } from "./renderer";
 import { resolveRuntime, resolveTemplate } from "./paths";
@@ -10,7 +10,8 @@ function serializeRoutes(routes: RouteConfig[]): string {
   // Loadble(() => import("${res.componentFile}"))
   return res.replace(
     /"componentFile":\w*"([^"]+)"/gi,
-    (match, filePath) => `"component": dynamic(() => import("${filePath}"), { ssr: true })`
+    (match, filePath) =>
+      `"component": dynamic(() => import("${filePath}"), { ssr: true })`
   );
 }
 
@@ -72,8 +73,8 @@ class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
     return renderApp(App, options);
   }
 
-  matchRoutes(routes: RouteConfig[], pathname: string) {
-    return matchRoutes(routes, pathname);
+  matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[] {
+    return (matchRoutes(routes, pathname) as any) as RouteMatch[];
   }
 
   getBootstrapFilePath(): string {

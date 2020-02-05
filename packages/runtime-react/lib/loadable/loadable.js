@@ -1,4 +1,5 @@
 "use strict";
+// @ts-nocheck
 /**
 @copyright (c) 2017-present James Kyle <me@thejameskyle.com>
  MIT License
@@ -36,7 +37,7 @@ function load(loader) {
     let state = {
         loading: true,
         loaded: null,
-        error: null,
+        error: null
     };
     state.promise = promise
         .then(loaded => {
@@ -55,7 +56,7 @@ function loadMap(obj) {
     let state = {
         loading: false,
         loaded: {},
-        error: null,
+        error: null
     };
     let promises = [];
     try {
@@ -106,7 +107,7 @@ function createLoadableComponent(loadFn, options) {
         timeout: null,
         render: render,
         webpack: null,
-        modules: null,
+        modules: null
     }, options);
     let subscription = null;
     function init() {
@@ -116,19 +117,19 @@ function createLoadableComponent(loadFn, options) {
                 getCurrentValue: sub.getCurrentValue.bind(sub),
                 subscribe: sub.subscribe.bind(sub),
                 retry: sub.retry.bind(sub),
-                promise: sub.promise.bind(sub),
+                promise: sub.promise.bind(sub)
             };
         }
         return subscription.promise();
     }
     // Server only
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
         ALL_INITIALIZERS.push(init);
     }
     // Client only
     if (!initialized &&
-        typeof window !== 'undefined' &&
-        typeof opts.webpack === 'function') {
+        typeof window !== "undefined" &&
+        typeof opts.webpack === "function") {
         const moduleIds = opts.webpack();
         READY_INITIALIZERS.push(ids => {
             for (const moduleId of moduleIds) {
@@ -143,7 +144,7 @@ function createLoadableComponent(loadFn, options) {
         const context = react_1.default.useContext(loadable_context_1.LoadableContext);
         const state = use_subscription_1.useSubscription(subscription);
         react_1.default.useImperativeHandle(ref, () => ({
-            retry: subscription.retry,
+            retry: subscription.retry
         }));
         if (context && Array.isArray(opts.modules)) {
             opts.modules.forEach(moduleName => {
@@ -156,7 +157,7 @@ function createLoadableComponent(loadFn, options) {
                 pastDelay: state.pastDelay,
                 timedOut: state.timedOut,
                 error: state.error,
-                retry: subscription.retry,
+                retry: subscription.retry
             });
         }
         else if (state.loaded) {
@@ -167,7 +168,7 @@ function createLoadableComponent(loadFn, options) {
         }
     };
     LoadableComponent.preload = () => init();
-    LoadableComponent.displayName = 'LoadableComponent';
+    LoadableComponent.displayName = "LoadableComponent";
     return react_1.default.forwardRef(LoadableComponent);
 }
 class LoadableSubscription {
@@ -187,23 +188,23 @@ class LoadableSubscription {
         this._res = this._loadFn(this._opts.loader);
         this._state = {
             pastDelay: false,
-            timedOut: false,
+            timedOut: false
         };
         const { _res: res, _opts: opts } = this;
         if (res.loading) {
-            if (typeof opts.delay === 'number') {
+            if (typeof opts.delay === "number") {
                 if (opts.delay === 0) {
                     this._state.pastDelay = true;
                 }
                 else {
                     this._delay = setTimeout(() => {
                         this._update({
-                            pastDelay: true,
+                            pastDelay: true
                         });
                     }, opts.delay);
                 }
             }
-            if (typeof opts.timeout === 'number') {
+            if (typeof opts.timeout === "number") {
                 this._timeout = setTimeout(() => {
                     this._update({ timedOut: true });
                 }, opts.timeout);
@@ -243,8 +244,8 @@ function Loadable(opts) {
     return createLoadableComponent(load, opts);
 }
 function LoadableMap(opts) {
-    if (typeof opts.render !== 'function') {
-        throw new Error('LoadableMap requires a `render(loaded, props)` function');
+    if (typeof opts.render !== "function") {
+        throw new Error("LoadableMap requires a `render(loaded, props)` function");
     }
     return createLoadableComponent(loadMap, opts);
 }
