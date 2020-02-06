@@ -62,7 +62,7 @@ exports.default = (api, options = {}) => {
             ],
             [
                 require("@babel/plugin-transform-runtime"),
-                Object.assign({ corejs: 2, helpers: true, regenerator: true, useESModules: supportsESM && presetEnvConfig.modules !== "commonjs", absoluteRuntime: process.versions.pnp
+                Object.assign({ corejs: 2, version: require('@babel/runtime-corejs2/package.json').version, helpers: true, regenerator: true, useESModules: supportsESM && presetEnvConfig.modules !== "commonjs", absoluteRuntime: process.versions.pnp
                         ? __dirname
                         : undefined }, options["transform-runtime"])
             ],

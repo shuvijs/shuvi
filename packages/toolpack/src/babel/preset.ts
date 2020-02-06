@@ -31,7 +31,7 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
     // In production/development this option is set to `false` so that webpack can handle import/export with tree-shaking
     modules: "auto",
     exclude: ["transform-typeof-symbol"],
-    ...options["preset-env"]
+    ...options["preset-env"],
   };
 
   // When transpiling for the server or tests, target the current Node version
@@ -90,6 +90,7 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
         require("@babel/plugin-transform-runtime"),
         {
           corejs: 2,
+          version: require('@babel/runtime-corejs2/package.json').version,
           helpers: true,
           regenerator: true,
           useESModules: supportsESM && presetEnvConfig.modules !== "commonjs",

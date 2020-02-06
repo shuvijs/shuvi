@@ -48,14 +48,11 @@ export function getWebpackConfig(app: AppCore, opts: Options) {
 
   console.log('require.resolve("@babel/runtime/package.json")');
   chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
-  chain.resolve.alias.set(
-    "@babel/runtime",
-    path.dirname(require.resolve("@babel/runtime/package.json"))
-  );
-  chain.resolve.alias.set(
-    "@babel/runtime-corejs2",
-    path.dirname(require.resolve("@babel/runtime-corejs2/package.json"))
-  );
+  chain.resolve.alias.merge({
+    "@babel/runtime-corejs2": path.dirname(
+      require.resolve("@babel/runtime-corejs2/package.json")
+    )
+  });
   chain.output.set("filename", ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
     if (

@@ -10,8 +10,8 @@ function serializeRoutes(routes: RouteConfig[]): string {
   // Loadble(() => import("${res.componentFile}"))
   return res.replace(
     /"componentFile":\w*"([^"]+)"/gi,
-    (match, filePath) =>
-      `"component": dynamic(() => import("${filePath}"), { ssr: true })`
+    (_match, filePath) =>
+      `"component": loadRouteComponent(() => import("${filePath}"))`
   );
 }
 

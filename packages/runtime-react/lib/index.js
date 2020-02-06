@@ -15,7 +15,7 @@ const paths_1 = require("./paths");
 function serializeRoutes(routes) {
     const res = JSON.stringify(routes);
     // Loadble(() => import("${res.componentFile}"))
-    return res.replace(/"componentFile":\w*"([^"]+)"/gi, (match, filePath) => `"component": dynamic(() => import("${filePath}"), { ssr: true })`);
+    return res.replace(/"componentFile":\w*"([^"]+)"/gi, (_match, filePath) => `"component": loadRouteComponent(() => import("${filePath}"))`);
 }
 class ReactRuntime {
     install(app) {

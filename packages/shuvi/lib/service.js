@@ -127,10 +127,17 @@ class Service {
             };
             const App = this._buildRequier.requireApp();
             const loadableManifest = this._buildRequier.getModules();
-            const appHtml = yield runtime_react_1.default.renderApp(App.default || App, {
-                url: req.url,
-                context
-            });
+            let appHtml;
+            try {
+                appHtml = yield runtime_react_1.default.renderApp(App.default || App, {
+                    url: req.url,
+                    context
+                });
+            }
+            catch (error) {
+                appHtml = "";
+                console.error("renderApp error", error);
+            }
             const dynamicImportIdSet = new Set();
             const dynamicImports = [];
             for (const mod of context.loadableModules) {

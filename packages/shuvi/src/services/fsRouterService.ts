@@ -14,12 +14,14 @@ export default class RouterServiceImpl implements RouterService {
       {
         id: uuid(),
         path: "/",
+        exact: true,
         componentFile:
           "/Users/lixi/Workspace/github/shuvi-test/src/pages/index.js"
       },
       {
         id: uuid(),
-        path: "/users",
+        path: "/users/:id",
+        exact: true,
         componentFile:
           "/Users/lixi/Workspace/github/shuvi-test/src/pages/users.js"
       }

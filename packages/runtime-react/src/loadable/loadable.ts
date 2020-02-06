@@ -333,8 +333,4 @@ Loadable.preloadReady = (ids: Array<string | number> = []): Promise<void> => {
   });
 };
 
-// if (typeof window !== 'undefined') {
-//   window.__NEXT_PRELOADREADY = Loadable.preloadReady
-// }
-
 export default Loadable;

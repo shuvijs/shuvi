@@ -35,8 +35,9 @@ function getWebpackConfig(app, opts) {
     }
     console.log('require.resolve("@babel/runtime/package.json")');
     chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
-    chain.resolve.alias.set("@babel/runtime", path_1.default.dirname(require.resolve("@babel/runtime/package.json")));
-    chain.resolve.alias.set("@babel/runtime-corejs2", path_1.default.dirname(require.resolve("@babel/runtime-corejs2/package.json")));
+    chain.resolve.alias.merge({
+        "@babel/runtime-corejs2": path_1.default.dirname(require.resolve("@babel/runtime-corejs2/package.json"))
+    });
     chain.output.set("filename", ({ chunk }) => {
         // Use `[name]-[contenthash].js` in production
         if (!isDev &&

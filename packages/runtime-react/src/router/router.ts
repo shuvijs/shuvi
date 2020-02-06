@@ -6,6 +6,8 @@ import {
   Action
 } from "history";
 
+export { RouteProps } from 'react-router-dom';
+
 export { Location, Action };
 
 export type Router = Pick<

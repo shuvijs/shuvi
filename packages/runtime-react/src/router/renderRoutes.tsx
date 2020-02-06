@@ -6,67 +6,71 @@ import { RouteConfig, RouteComponent } from "@shuvi/types/core";
 
 type Data = Record<string, any>;
 
-type Props = RouteComponentProps & {
-  component: RouteComponent<React.ComponentType<any>>;
-  initialProps?: Data;
-};
+// type Props = RouteComponentProps & {
+//   component: RouteComponent<React.ComponentType<any>>;
+//   initialProps?: Data;
+// };
 
-class RouteWithInitialProps extends React.Component<
-  Props,
-  { propsPending: boolean; initialProps: Data }
-> {
-  private _unlisten!: () => void;
+// class RouteWithInitialProps extends React.Component<
+//   Props,
+//   { propsResolved: boolean; initialProps: Data }
+// > {
+//   private _unlisten!: () => void;
 
-  constructor(props: Props) {
-    super(props);
+//   constructor(props: Props) {
+//     super(props);
 
-    this.state = {
-      propsPending: typeof props.initialProps === "undefined",
-      initialProps: props.initialProps || {}
-    };
+//     const propsResolved = typeof props.initialProps !== "undefined";
+//     this.state = {
+//       propsResolved: propsResolved,
+//       initialProps: props.initialProps || {}
+//     };
+//     if (!propsResolved) {
+//       this._getInitialProps();
+//     }
 
-    this._handleLocationChange = this._handleLocationChange.bind(this);
-  }
+//     this._handleLocationChange = this._handleLocationChange.bind(this);
+//   }
 
-  async componentDidMount() {
-    const { history } = this.props;
-    this._unlisten = history.listen(this._handleLocationChange);
-    if (history.action !== "POP") {
-      this._getInitialProps();
-    }
-  }
+//   async componentDidMount() {
+//     const { history } = this.props;
+//     this._unlisten = history.listen(this._handleLocationChange);
+//     if (history.action !== "POP") {
+//       this._getInitialProps();
+//     }
+//   }
 
-  componentWillUnmount() {
-    this._unlisten();
-  }
+//   componentWillUnmount() {
+//     this._unlisten();
+//   }
 
-  private async _getInitialProps() {
-    const { match, location, component } = this.props;
-    const initialProps = await component.getInitialProps!({
-      isServer: false,
-      pathname: location.pathname,
-      query: match.params
-    });
-    this.setState({
-      initialProps
-    });
-  }
+//   private async _getInitialProps() {
+//     const { match, location, component } = this.props;
+//     const initialProps = await component.getInitialProps!({
+//       isServer: false,
+//       pathname: location.pathname,
+//       query: match.params
+//     });
+//     this.setState({
+//       initialProps
+//     });
+//   }
 
-  private _handleLocationChange() {
-    this._getInitialProps();
-  }
+//   private _handleLocationChange() {
+//     this._getInitialProps();
+//   }
 
-  render() {
-    if (this.state.propsPending) {
-      return null;
-    }
+//   render() {
+//     if (!this.state.propsResolved) {
+//       return null;
+//     }
 
-    return React.createElement(this.props.component, {
-      ...this.props,
-      ...this.state.initialProps
-    });
-  }
-}
+//     return React.createElement(this.props.component, {
+//       ...this.props,
+//       ...this.state.initialProps
+//     });
+//   }
+// }
 
 function renderRoutes(
   routes?: RouteConfig[],
@@ -86,17 +90,8 @@ function renderRoutes(
             const childRoutes = renderRoutes(route.routes, initialProps, {
               location: props.location
             });
-            if (route.component) {
-              let { component: Component } = route;
-              const isBrowser = typeof window !== "undefined";
-              if (isBrowser && Component.getInitialProps) {
-                return (
-                  <RouteWithInitialProps {...props} component={Component}>
-                    {childRoutes}
-                  </RouteWithInitialProps>
-                );
-              }
-
+            let { component: Component } = route;
+            if (Component) {
               return <Component {...props}>{childRoutes}</Component>;
             }
 

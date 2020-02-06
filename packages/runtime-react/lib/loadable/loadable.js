@@ -277,7 +277,4 @@ Loadable.preloadReady = (ids = []) => {
         flushInitializers(READY_INITIALIZERS, ids).then(res, res);
     });
 };
-// if (typeof window !== 'undefined') {
-//   window.__NEXT_PRELOADREADY = Loadable.preloadReady
-// }
 exports.default = Loadable;

@@ -16,7 +16,7 @@ import {
   BUILD_SERVER_DOCUMENT,
   BUILD_SERVER_APP,
   CLIENT_CONTAINER_ID,
-  CLIENT_APPDATA_ID,
+  CLIENT_APPDATA_ID
 } from "./constants";
 import Server from "./server";
 import { acceptsHtml, dedupe } from "./utils";
@@ -147,10 +147,17 @@ export default class Service {
     };
     const App = this._buildRequier.requireApp();
     const loadableManifest = this._buildRequier.getModules();
-    const appHtml = await ReactRuntime.renderApp(App.default || App, {
-      url: req.url,
-      context
-    });
+    let appHtml: string;
+    try {
+      appHtml = await ReactRuntime.renderApp(App.default || App, {
+        url: req.url,
+        context
+      });
+    } catch (error) {
+      appHtml = "";
+      console.error("renderApp error", error);
+    }
+
     const dynamicImportIdSet = new Set<string>();
     const dynamicImports: ModuleManifest[] = [];
     for (const mod of context.loadableModules) {
