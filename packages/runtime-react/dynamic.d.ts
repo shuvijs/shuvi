@@ -1,2 +1,2 @@
-export * from './lib/dynamic'
-export { default } from './lib/dynamic'
+export * from './lib/runtime/dynamic'
+export { default } from './lib/runtime/dynamic'

@@ -76,10 +76,6 @@ export interface RouteMatch {
   };
 }
 
-export interface RouterService {
-  getRoutes(): Promise<RouteConfig[]> | RouteConfig[];
-}
-
 export interface AppConfig {
   cwd: string;
   outputPath: string;
@@ -87,11 +83,7 @@ export interface AppConfig {
 }
 
 export interface BuildOptions {
-  bootstrapFile: string;
-}
-
-export interface RouterConfig {
-  routes: RouteConfig[];
+  bootstrapFilePath: string;
 }
 
 export interface RouteComponentContext {
@@ -132,7 +124,7 @@ export interface AppCore {
 
   addFile(path: string, { content }: { content: string }): void;
 
-  getRouterConfig(): Promise<RouterConfig>;
+  setRoutesSource(content: string): void;
 
   build(options: BuildOptions): Promise<void>;
 

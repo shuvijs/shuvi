@@ -1,9 +1,15 @@
 import create from "zustand";
 import produce from "immer";
-import { FileNode, FileType, FileNodeType, TemplateData } from "@shuvi/types/core";
+import {
+  FileNode,
+  FileType,
+  FileNodeType,
+  TemplateData
+} from "@shuvi/types/core";
 
 interface State {
-  bootstrapFile: string;
+  bootstrapFilePath: string;
+  routesSource: string;
   files: FileNode[];
 }
 
@@ -92,8 +98,9 @@ const [useStore, store] = create<State & Actions>(_set => {
     );
 
   return {
-    bootstrapFile: "",
+    bootstrapFilePath: "",
     files: [],
+    routesSource: "export default []",
     set,
     addFileNode(path: string, props: FileNodeOptions) {
       set(state => {
@@ -129,8 +136,8 @@ function updateStore(fn: (state: State) => void) {
   store.getState().set(fn);
 }
 
-export function initBootstrap(options: { bootstrapFile: string }) {
-  updateStore(state => (state.bootstrapFile = options.bootstrapFile));
+export function initBootstrap(options: { bootstrapFilePath: string }) {
+  updateStore(state => (state.bootstrapFilePath = options.bootstrapFilePath));
 }
 
 export function addSelectorFile(
@@ -159,6 +166,10 @@ export function addTemplateFile(
 
 export function addFile(path: string, content: string) {
   store.getState().addFileNode(path, { type: "normal", content });
+}
+
+export function setRoutesSource(content: string) {
+  updateStore(state => (state.routesSource = content));
 }
 
 export { useStore };

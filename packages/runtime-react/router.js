@@ -1,1 +1,1 @@
-module.exports = require("./lib/router/router");
+module.exports = require("./lib/runtime/router/router");

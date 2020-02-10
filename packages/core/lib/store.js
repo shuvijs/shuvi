@@ -58,8 +58,9 @@ const [useStore, store] = zustand_1.default(_set => {
         fn(state);
     }));
     return {
-        bootstrapFile: "",
+        bootstrapFilePath: "",
         files: [],
+        routesSource: "export default []",
         set,
         addFileNode(path, props) {
             set(state => {
@@ -95,7 +96,7 @@ function updateStore(fn) {
     store.getState().set(fn);
 }
 function initBootstrap(options) {
-    updateStore(state => (state.bootstrapFile = options.bootstrapFile));
+    updateStore(state => (state.bootstrapFilePath = options.bootstrapFilePath));
 }
 exports.initBootstrap = initBootstrap;
 function addSelectorFile(path, files, fallbackFile) {
@@ -118,3 +119,7 @@ function addFile(path, content) {
     store.getState().addFileNode(path, { type: "normal", content });
 }
 exports.addFile = addFile;
+function setRoutesSource(content) {
+    updateStore(state => (state.routesSource = content));
+}
+exports.setRoutesSource = setRoutesSource;

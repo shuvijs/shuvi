@@ -4,16 +4,23 @@ import resolve from "resolve";
 type Test = string | RegExp;
 
 function match(value: string, tests: Test[]) {
+  let matched: boolean = false;
   for (let index = 0; index < tests.length; index++) {
     const test = tests[index];
     if (typeof test === "string") {
-      return test === value;
+      matched = test === value;
+    } else {
+      matched = value.match(test) !== null;
     }
 
-    return value.match(test);
+    if (matched) {
+      return true;
+    } else {
+      continue;
+    }
   }
 
-  return false;
+  return matched;
 }
 
 export function nodeExternals({
@@ -44,7 +51,7 @@ export function nodeExternals({
 
     // fix hooks not work when using yarn link
     if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE === "true") {
-      if (match(request, ["react"])) {
+      if (match(request, ["react", "react-router-dom"])) {
         return external();
       }
     }
@@ -54,7 +61,7 @@ export function nodeExternals({
     // Absolute requires (require('/foo')) are extremely uncommon, but
     // also have no need for customization as they're already resolved.
     const start = request.charAt(0);
-    if (start === "." || start === "/") {
+    if (start === ".") {
       return transpiled();
     }
 
@@ -75,12 +82,8 @@ export function nodeExternals({
     // fix hooks not work when using yarn link
     if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE === "true") {
       if (
-        match(res, [
-          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]/
-        ]) &&
-        !match(res, [
-          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]runtime[/\\]/
-        ])
+        match(res, [/packages[/\\]runtime-[^/\\]+[/\\]/]) &&
+        !match(res, [/packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/])
       ) {
         return external();
       }
@@ -98,7 +101,7 @@ export function nodeExternals({
     // runtime have to be transpiled
     if (
       res.match(
-        /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]runtime[/\\]/
+        /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/
       ) ||
       res.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/) ||
       (context.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/) &&

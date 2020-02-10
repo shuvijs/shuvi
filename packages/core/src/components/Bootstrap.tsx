@@ -9,6 +9,8 @@ interface Props {
 export default class Bootstrap extends BaseComponent<Props> {
   render() {
     const { file } = this.props;
-    return <FileTemplate name="bootstrap.js" templateFile={file} />;
+    return (
+      <FileTemplate name="bootstrap.js" template={`export * from "${file}"`} />
+    );
   }
 }

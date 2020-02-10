@@ -71,6 +71,18 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
     ],
     plugins: [
       [
+        require('./plugins/jsx-pragma'),
+        {
+          // This produces the following injected import for modules containing JSX:
+          //   import React from 'react';
+          //   var __jsx = React.createElement;
+          module: 'react',
+          importAs: 'React',
+          pragma: '__jsx',
+          property: 'createElement',
+        },
+      ],
+      [
         require("./plugins/optimize-hook-destructuring"),
         {
           // only optimize hook functions imported from React/Preact

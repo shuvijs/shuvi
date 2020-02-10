@@ -83,6 +83,9 @@ function default_1({ types: t }) {
                     if (propertiesMap.webpack) {
                         return;
                     }
+                    if (propertiesMap.loader) {
+                        loader = propertiesMap.loader.get("value");
+                    }
                     const dynamicImports = [];
                     loader.traverse({
                         Import(path) {

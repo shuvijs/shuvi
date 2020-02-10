@@ -15,14 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const webpack_1 = __importDefault(require("webpack"));
 const core_1 = require("@shuvi/core");
 const typeScript_1 = require("@shuvi/toolpack/lib/utils/typeScript");
-const runtime_react_1 = __importDefault(require("@shuvi/runtime-react"));
-const fsRouterService_1 = __importDefault(require("./services/fsRouterService"));
 const getWebpackEntries_1 = require("./helpers/getWebpackEntries");
 const getWebpackConfig_1 = require("./helpers/getWebpackConfig");
 const BuildRequier_1 = __importDefault(require("./helpers/BuildRequier"));
 const htmlescape_1 = require("./helpers/htmlescape");
+const devServer_1 = __importDefault(require("./server/devServer"));
 const constants_1 = require("./constants");
-const server_1 = __importDefault(require("./server"));
+const routerService_1 = __importDefault(require("./routerService"));
+const runtime_1 = require("./runtime");
 const utils_1 = require("./utils");
 const defaultConfig = {
     cwd: process.cwd(),
@@ -32,16 +32,16 @@ const defaultConfig = {
 class Service {
     constructor({ config }) {
         this._app = core_1.app({
-            config: Object.assign(Object.assign({}, defaultConfig), config),
-            routerService: new fsRouterService_1.default()
+            config: Object.assign(Object.assign({}, defaultConfig), config)
         });
+        this._routerService = new routerService_1.default(this._app.paths.pagesDir);
         this._buildRequier = new BuildRequier_1.default({
             buildDir: this._app.paths.buildDir
         });
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._setupRuntime();
+            yield this._setupApp();
             const clientConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: false });
             clientConfig.name = "client";
             clientConfig.entry = {
@@ -59,7 +59,7 @@ class Service {
             console.log("server webpack config:");
             console.dir(serverConfig, { depth: null });
             const compiler = webpack_1.default([clientConfig, serverConfig]);
-            const server = new server_1.default(compiler, {
+            const server = new devServer_1.default(compiler, {
                 port: 4000,
                 host: "0.0.0.0",
                 publicPath: this._config.publicPath
@@ -82,23 +82,21 @@ class Service {
             });
             server.use(this._handlePage.bind(this));
             yield this._app.build({
-                bootstrapFile: runtime_react_1.default.getBootstrapFilePath()
+                bootstrapFilePath: runtime_1.runtime.getBootstrapFilePath()
             });
             server.start();
         });
     }
-    _setupRuntime() {
+    _setupApp() {
         return __awaiter(this, void 0, void 0, function* () {
+            // core files
             const app = this._app;
-            app.addFile("bootstrap.js", {
-                content: `export * from "${runtime_react_1.default.getBootstrapFilePath()}"`
-            });
-            app.addSelectorFile("app.js", [app.resolveSrcFile("app.js")], runtime_react_1.default.getAppFilePath());
-            // app.addTemplateFile("routes.js", resolveTemplate("routes"), {
-            //   routes: serializeRoutes(routeConfig.routes)
-            // });
-            app.addSelectorFile("document.js", [app.resolveSrcFile("document.js")], runtime_react_1.default.getDocumentFilePath());
-            runtime_react_1.default.install(this._app);
+            app.addSelectorFile("app.js", [app.resolveSrcFile("app.js")], runtime_1.runtime.getAppFilePath());
+            app.addSelectorFile("document.js", [app.resolveSrcFile("document.js")], runtime_1.runtime.getDocumentFilePath());
+            const routes = yield this._routerService.getRoutes();
+            this._app.setRoutesSource(runtime_1.runtime.generateRoutesSource(routes));
+            // runtime files
+            yield runtime_1.runtime.install(this._app);
         });
     }
     get _paths() {
@@ -119,25 +117,29 @@ class Service {
             else if (headers.accept.indexOf("application/json") === 0) {
                 return next();
             }
-            else if (!utils_1.acceptsHtml(headers.accept)) {
+            else if (!utils_1.acceptsHtml(headers.accept, { htmlAcceptHeaders: ["text/html"] })) {
                 return next();
             }
+            try {
+                yield this._renderPage(req, res);
+            }
+            catch (error) {
+                console.warn("render fail");
+                console.error(error);
+            }
+        });
+    }
+    _renderPage(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
             const context = {
                 loadableModules: []
             };
             const App = this._buildRequier.requireApp();
             const loadableManifest = this._buildRequier.getModules();
-            let appHtml;
-            try {
-                appHtml = yield runtime_react_1.default.renderApp(App.default || App, {
-                    url: req.url,
-                    context
-                });
-            }
-            catch (error) {
-                appHtml = "";
-                console.error("renderApp error", error);
-            }
+            const appHtml = yield runtime_1.runtime.renderApp(App.default || App, {
+                url: req.url || "/",
+                context
+            });
             const dynamicImportIdSet = new Set();
             const dynamicImports = [];
             for (const mod of context.loadableModules) {
@@ -155,7 +157,7 @@ class Service {
                 dynamicImportIds: [...dynamicImportIdSet]
             });
             const Document = this._buildRequier.requireDocument();
-            const html = yield runtime_react_1.default.renderDocument(Document.default || Document, {
+            const html = yield runtime_1.runtime.renderDocument(Document.default || Document, {
                 documentProps
             });
             res.end(html);

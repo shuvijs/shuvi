@@ -1,7 +1,7 @@
 import React from "react";
 import { File } from "@shuvi/react-fs";
+import { watch, WatchEvent } from "@shuvi/utils/lib/fileWatcher";
 import fse from "fs-extra";
-import { watch, WatchEvent } from "../helper/watcher";
 import { arrayEqual } from "../utils";
 import { BaseComponent } from "./Base";
 

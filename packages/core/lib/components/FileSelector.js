@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
 const react_fs_1 = require("@shuvi/react-fs");
+const fileWatcher_1 = require("@shuvi/utils/lib/fileWatcher");
 const fs_extra_1 = __importDefault(require("fs-extra"));
-const watcher_1 = require("../helper/watcher");
 const utils_1 = require("../utils");
 const Base_1 = require("./Base");
 function findFirstExistedFile(files) {
@@ -68,7 +68,7 @@ class FileSelector extends Base_1.BaseComponent {
     _createWatcher() {
         this._destoryWatcher();
         if (this.props.files.length) {
-            this._watcherHandle = watcher_1.watch({ files: this.props.files }, this._onFilesChange);
+            this._watcherHandle = fileWatcher_1.watch({ files: this.props.files }, this._onFilesChange);
         }
     }
     componentDidMount() {

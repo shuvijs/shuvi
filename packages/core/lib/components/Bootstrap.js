@@ -9,7 +9,7 @@ const Base_1 = require("./Base");
 class Bootstrap extends Base_1.BaseComponent {
     render() {
         const { file } = this.props;
-        return react_1.default.createElement(FileTemplate_1.default, { name: "bootstrap.js", templateFile: file });
+        return (react_1.default.createElement(FileTemplate_1.default, { name: "bootstrap.js", template: `export * from "${file}"` }));
     }
 }
 exports.default = Bootstrap;

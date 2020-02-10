@@ -1,6 +1,7 @@
 import { FileNode, FileType, TemplateData } from "@shuvi/types/core";
 interface State {
-    bootstrapFile: string;
+    bootstrapFilePath: string;
+    routesSource: string;
     files: FileNode[];
 }
 interface FileNodeOptions {
@@ -13,9 +14,10 @@ interface Actions {
 }
 declare const useStore: import("zustand").UseStore<State & Actions>;
 export declare function initBootstrap(options: {
-    bootstrapFile: string;
+    bootstrapFilePath: string;
 }): void;
 export declare function addSelectorFile(path: string, files: string[], fallbackFile: string): void;
 export declare function addTemplateFile(path: string, templateFile: string, data: TemplateData): void;
 export declare function addFile(path: string, content: string): void;
+export declare function setRoutesSource(content: string): void;
 export { useStore };

@@ -33,7 +33,6 @@ function getWebpackConfig(app, opts) {
         chain.output.path(`${paths.buildDir}/${constants_1.BUILD_CLIENT_DIR}`);
         chain.optimization.runtimeChunk({ name: constants_1.BUILD_CLIENT_RUNTIME_WEBPACK });
     }
-    console.log('require.resolve("@babel/runtime/package.json")');
     chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
     chain.resolve.alias.merge({
         "@babel/runtime-corejs2": path_1.default.dirname(require.resolve("@babel/runtime-corejs2/package.json"))

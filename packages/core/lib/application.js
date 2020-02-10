@@ -21,13 +21,12 @@ const store_1 = require("./store");
 const Base_1 = require("./components/Base");
 const utils_1 = require("./utils");
 class AppCoreImpl {
-    constructor({ config, routerService }) {
+    constructor({ config }) {
         this.config = config;
         this.paths = paths_1.getPaths({
             cwd: this.config.cwd,
             outputPath: this.config.outputPath
         });
-        this._routerService = routerService;
     }
     resolveAppFile(filename) {
         return utils_1.joinPath(this.paths.appDir, filename);
@@ -50,17 +49,12 @@ class AppCoreImpl {
     addFile(path, { content }) {
         store_1.addFile(path, content);
     }
-    getRouterConfig() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const routes = yield this._routerService.getRoutes();
-            return {
-                routes
-            };
-        });
+    setRoutesSource(content) {
+        store_1.setRoutesSource(content);
     }
     build(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            store_1.initBootstrap({ bootstrapFile: options.bootstrapFile });
+            store_1.initBootstrap({ bootstrapFilePath: options.bootstrapFilePath });
             yield fs_extra_1.default.emptyDir(this.paths.appDir);
             return new Promise(resolve => {
                 react_fs_1.default.render(react_1.default.createElement(App_1.default, null), this.paths.appDir, () => {

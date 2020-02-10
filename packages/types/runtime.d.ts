@@ -50,9 +50,11 @@ export interface Runtime<CompType = unknown> {
 
   renderApp(App: CompType, options: RenderAppOptions): Promise<string>;
 
+  generateRoutesSource(routes: RouteConfig[]): string;
+
   matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[];
 
-  // renderComponent(App: T, options: RenderAppOptions): string;
+  getAppFilePath(): string;
 
   getDocumentFilePath(): string;
 

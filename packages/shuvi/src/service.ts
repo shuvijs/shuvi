@@ -1,16 +1,17 @@
+import { IncomingMessage, ServerResponse } from "http";
 import webpack from "webpack";
 import { app } from "@shuvi/core";
 import { AppCore, AppConfig } from "@shuvi/types/core";
 import * as Runtime from "@shuvi/types/Runtime";
 import { ModuleManifest } from "@shuvi/types/build";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
-import ReactRuntime from "@shuvi/runtime-react";
 import Express from "express";
-import FsRouterService from "./services/fsRouterService";
 import { getClientEntries } from "./helpers/getWebpackEntries";
 import { getWebpackConfig } from "./helpers/getWebpackConfig";
 import BuildRequier from "./helpers/BuildRequier";
 import { htmlEscapeJsonString } from "./helpers/htmlescape";
+import Server from "./server/devServer";
+import { RouterService } from "./types/routeService";
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_SERVER_DOCUMENT,
@@ -18,7 +19,8 @@ import {
   CLIENT_CONTAINER_ID,
   CLIENT_APPDATA_ID
 } from "./constants";
-import Server from "./server";
+import FsRouterService from "./routerService";
+import { runtime } from "./runtime";
 import { acceptsHtml, dedupe } from "./utils";
 
 import AppData = Runtime.AppData;
@@ -32,19 +34,20 @@ const defaultConfig: AppConfig = {
 export default class Service {
   private _app: AppCore;
   private _buildRequier: BuildRequier;
+  private _routerService: RouterService;
 
   constructor({ config }: { config: Partial<AppConfig> }) {
     this._app = app({
-      config: { ...defaultConfig, ...config },
-      routerService: new FsRouterService()
+      config: { ...defaultConfig, ...config }
     });
+    this._routerService = new FsRouterService(this._app.paths.pagesDir);
     this._buildRequier = new BuildRequier({
       buildDir: this._app.paths.buildDir
     });
   }
 
   async start() {
-    await this._setupRuntime();
+    await this._setupApp();
 
     const clientConfig = getWebpackConfig(this._app, { node: false });
     clientConfig.name = "client";
@@ -90,30 +93,29 @@ export default class Service {
     server.use(this._handlePage.bind(this));
 
     await this._app.build({
-      bootstrapFile: ReactRuntime.getBootstrapFilePath()
+      bootstrapFilePath: runtime.getBootstrapFilePath()
     });
     server.start();
   }
 
-  private async _setupRuntime() {
+  private async _setupApp() {
+    // core files
     const app = this._app;
-    app.addFile("bootstrap.js", {
-      content: `export * from "${ReactRuntime.getBootstrapFilePath()}"`
-    });
     app.addSelectorFile(
       "app.js",
       [app.resolveSrcFile("app.js")],
-      ReactRuntime.getAppFilePath()
+      runtime.getAppFilePath()
     );
-    // app.addTemplateFile("routes.js", resolveTemplate("routes"), {
-    //   routes: serializeRoutes(routeConfig.routes)
-    // });
     app.addSelectorFile(
       "document.js",
       [app.resolveSrcFile("document.js")],
-      ReactRuntime.getDocumentFilePath()
+      runtime.getDocumentFilePath()
     );
-    ReactRuntime.install(this._app);
+    const routes = await this._routerService.getRoutes();
+    this._app.setRoutesSource(runtime.generateRoutesSource(routes));
+
+    // runtime files
+    await runtime.install(this._app);
   }
 
   private get _paths() {
@@ -136,10 +138,24 @@ export default class Service {
       return next();
     } else if (headers.accept.indexOf("application/json") === 0) {
       return next();
-    } else if (!acceptsHtml(headers.accept)) {
+    } else if (
+      !acceptsHtml(headers.accept, { htmlAcceptHeaders: ["text/html"] })
+    ) {
       return next();
     }
 
+    try {
+      await this._renderPage(req, res);
+    } catch (error) {
+      console.warn("render fail");
+      console.error(error);
+    }
+  }
+
+  private async _renderPage(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<void> {
     const context: {
       loadableModules: string[];
     } = {
@@ -147,16 +163,10 @@ export default class Service {
     };
     const App = this._buildRequier.requireApp();
     const loadableManifest = this._buildRequier.getModules();
-    let appHtml: string;
-    try {
-      appHtml = await ReactRuntime.renderApp(App.default || App, {
-        url: req.url,
-        context
-      });
-    } catch (error) {
-      appHtml = "";
-      console.error("renderApp error", error);
-    }
+    const appHtml = await runtime.renderApp(App.default || App, {
+      url: req.url || "/",
+      context
+    });
 
     const dynamicImportIdSet = new Set<string>();
     const dynamicImports: ModuleManifest[] = [];
@@ -176,12 +186,9 @@ export default class Service {
       dynamicImportIds: [...dynamicImportIdSet]
     });
     const Document = this._buildRequier.requireDocument();
-    const html = await ReactRuntime.renderDocument(
-      Document.default || Document,
-      {
-        documentProps
-      }
-    );
+    const html = await runtime.renderDocument(Document.default || Document, {
+      documentProps
+    });
 
     res.end(html);
   }

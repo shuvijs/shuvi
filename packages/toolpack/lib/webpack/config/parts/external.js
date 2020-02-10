@@ -5,14 +5,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const resolve_1 = __importDefault(require("resolve"));
 function match(value, tests) {
+    let matched = false;
     for (let index = 0; index < tests.length; index++) {
         const test = tests[index];
         if (typeof test === "string") {
-            return test === value;
+            matched = test === value;
         }
-        return value.match(test);
+        else {
+            matched = value.match(test) !== null;
+        }
+        if (matched) {
+            return true;
+        }
+        else {
+            continue;
+        }
     }
-    return false;
+    return matched;
 }
 function nodeExternals({ projectRoot }) {
     const externals = [];
@@ -29,7 +38,7 @@ function nodeExternals({ projectRoot }) {
         }
         // fix hooks not work when using yarn link
         if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE === "true") {
-            if (match(request, ["react"])) {
+            if (match(request, ["react", "react-router-dom"])) {
                 return external();
             }
         }
@@ -38,7 +47,7 @@ function nodeExternals({ projectRoot }) {
         // Absolute requires (require('/foo')) are extremely uncommon, but
         // also have no need for customization as they're already resolved.
         const start = request.charAt(0);
-        if (start === "." || start === "/") {
+        if (start === ".") {
             return transpiled();
         }
         let res;
@@ -56,12 +65,8 @@ function nodeExternals({ projectRoot }) {
         }
         // fix hooks not work when using yarn link
         if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE === "true") {
-            if (match(res, [
-                /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]/
-            ]) &&
-                !match(res, [
-                    /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]runtime[/\\]/
-                ])) {
+            if (match(res, [/packages[/\\]runtime-[^/\\]+[/\\]/]) &&
+                !match(res, [/packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/])) {
                 return external();
             }
         }
@@ -74,7 +79,7 @@ function nodeExternals({ projectRoot }) {
             return transpiled();
         }
         // runtime have to be transpiled
-        if (res.match(/node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]runtime[/\\]/) ||
+        if (res.match(/node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/) ||
             res.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/) ||
             (context.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/) &&
                 res.match(/node_modules[/\\]core-js[/\\]/))) {

@@ -6,9 +6,7 @@ import {
   Paths,
   TemplateData,
   BuildOptions,
-  RouterConfig,
-  AppConfig,
-  RouterService
+  AppConfig
 } from "@shuvi/types/core";
 import App from "./App";
 import { getPaths } from "./paths";
@@ -16,28 +14,26 @@ import {
   initBootstrap,
   addSelectorFile,
   addTemplateFile,
-  addFile
+  addFile,
+  setRoutesSource
 } from "./store";
 import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
 import { joinPath } from "./utils";
 
 export interface AppOptions {
   config: AppConfig;
-  routerService: RouterService;
 }
 
 class AppCoreImpl implements AppCore {
   public config: AppConfig;
   public paths: Paths;
-  private _routerService: RouterService;
 
-  constructor({ config, routerService }: AppOptions) {
+  constructor({ config }: AppOptions) {
     this.config = config;
     this.paths = getPaths({
       cwd: this.config.cwd,
       outputPath: this.config.outputPath
     });
-    this._routerService = routerService;
   }
 
   resolveAppFile(filename: string): string {
@@ -76,15 +72,12 @@ class AppCoreImpl implements AppCore {
     addFile(path, content);
   }
 
-  async getRouterConfig(): Promise<RouterConfig> {
-    const routes = await this._routerService.getRoutes();
-    return {
-      routes
-    };
+  setRoutesSource(content: string): void {
+    setRoutesSource(content);
   }
 
   async build(options: BuildOptions): Promise<void> {
-    initBootstrap({ bootstrapFile: options.bootstrapFile });
+    initBootstrap({ bootstrapFilePath: options.bootstrapFilePath });
     await fse.emptyDir(this.paths.appDir);
 
     return new Promise(resolve => {

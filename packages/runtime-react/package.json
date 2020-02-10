@@ -9,19 +9,24 @@
   "author": "liximomo",
   "license": "MIT",
   "sideEffects": false,
-  "main": "./lib/index.js",
+  "main": "./index.js",
   "files": [
     "dep",
     "lib",
-    "runtime",
     "template",
     "dynamic.d.ts",
-    "dynamic.js"
+    "dynamic.js",
+    "index.d.ts",
+    "index.js",
+    "link.d.ts",
+    "link.js",
+    "router.d.ts",
+    "router.js"
   ],
   "scripts": {
     "dev": "run-p watch:*",
-    "watch:src": "tsc -p tsconfig.build.json -w",
-    "watch:runtime": "tsc -p tsconfig.build.runtime.json -w"
+    "watch:runtime": "tsc -p tsconfig.build.json -w",
+    "watch:client": "tsc -p tsconfig.build.client.json -w"
   },
   "engines": {
     "node": ">= 8.0.0"

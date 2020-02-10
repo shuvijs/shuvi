@@ -1,4 +1,4 @@
-import { WatchEvent } from "../helper/watcher";
+import { WatchEvent } from "@shuvi/utils/lib/fileWatcher";
 import { BaseComponent } from "./Base";
 export interface Props {
     name: string;

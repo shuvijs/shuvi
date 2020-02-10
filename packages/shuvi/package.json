@@ -26,10 +26,12 @@
     "@shuvi/runtime-react": "^0.0.1-alpha.1",
     "@shuvi/toolpack": "^0.0.1-alpha.1",
     "@shuvi/types": "^0.0.1-alpha.1",
+    "@shuvi/utils": "^0.0.1-alpha.1",
     "commander": "4.0.1",
     "cross-spawn": "7.0.1",
     "express": "4.17.1",
     "fs-extra": "8.1.0",
+    "path-to-regexp": "^6.1.0",
     "webpack": "4.41.2",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "2.25.0"

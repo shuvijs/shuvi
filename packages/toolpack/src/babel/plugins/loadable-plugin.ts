@@ -109,6 +109,10 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
             return;
           }
 
+          if (propertiesMap.loader) {
+            loader = propertiesMap.loader.get("value");
+          }
+
           const dynamicImports: BabelTypes.StringLiteral[] = [];
 
           loader.traverse({

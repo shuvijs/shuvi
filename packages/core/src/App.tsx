@@ -1,15 +1,18 @@
 import React, { ErrorInfo } from "react";
+import { File } from "@shuvi/react-fs";
 import FileNode from "./components/FileNode";
 import Bootstrap from "./components/Bootstrap";
 import { useStore } from "./store";
 
 function App() {
   const files = useStore(state => state.files);
-  const bootstrapFile = useStore(state => state.bootstrapFile);
+  const bootstrapFilePath = useStore(state => state.bootstrapFilePath);
+  const routesSource = useStore(state => state.routesSource);
 
   return (
     <>
-      <Bootstrap file={bootstrapFile} />
+      <Bootstrap file={bootstrapFilePath} />
+      <File name="routes.js" content={routesSource} />
       {files.map(file => (
         <FileNode key={file.name} file={file} />
       ))}
