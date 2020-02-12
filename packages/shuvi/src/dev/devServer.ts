@@ -1,4 +1,3 @@
-import { constants } from "@shuvi/core";
 import ForkTsCheckerWebpackPlugin, {
   createCodeframeFormatter
 } from "@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin";
@@ -22,16 +21,25 @@ interface Config {
 }
 
 export default class Server {
-  private _compiler: MultiCompiler;
   private _app: Express.Application;
   private _config: Config;
+  private _webpackDevMiddleware: any;
   private _webpackHotMiddleware: any;
-  private _middlewares: Express.RequestHandler[] = [];
+  private _beforeMiddlewares: Express.RequestHandler[] = [];
+  private _afterMiddlewares: Express.RequestHandler[] = [];
 
   constructor(compiler: MultiCompiler, config: Config) {
     this._config = config;
-    this._compiler = compiler;
     this._app = Express();
+    this._webpackDevMiddleware = WebpackDevMiddleware(compiler, {
+      publicPath: this._config.publicPath,
+      noInfo: true,
+      logLevel: "silent",
+      watchOptions: {
+        ignored: [/[\\/]\.git[\\/]/, /[\\/]node_modules[\\/]/]
+      },
+      writeToDisk: true
+    });
     this._webpackHotMiddleware = WebpackHotMiddleware(compiler.compilers[0], {
       path: HOT_MIDDLEWARE_PATH,
       log: false,
@@ -44,27 +52,17 @@ export default class Server {
   }
 
   start() {
-    const { _app: app, _compiler: compiler } = this;
+    const { _app: app } = this;
 
-    app.use(
-      WebpackDevMiddleware(compiler, {
-        publicPath: this._config.publicPath,
-        noInfo: true,
-        logLevel: "silent",
-        watchOptions: {
-          ignored: [
-            /[\\/]\.git[\\/]/,
-            /[\\/]node_modules[\\/]/,
-            RegExp(`[\\\\/].${constants.NAME}[\\\\/]`)
-          ]
-        },
-        writeToDisk: true
-      })
-    );
+    this._beforeMiddlewares.forEach(m => {
+      this._app.use(m);
+    });
+
+    app.use(this._webpackDevMiddleware);
     app.use(this._webpackHotMiddleware);
     app.use(createLaunchEditorMiddleware(HOT_LAUNCH_EDITOR_ENDPOINT));
 
-    this._middlewares.forEach(m => {
+    this._afterMiddlewares.forEach(m => {
       this._app.use(m);
     });
 
@@ -194,8 +192,29 @@ export default class Server {
     });
   }
 
+  invalidate() {
+    this._webpackDevMiddleware.invalidate();
+  }
+
+  waitUntilValid(force: boolean = false) {
+    const middleware = this._webpackDevMiddleware;
+    if (force) {
+      // private api
+      // we know that there must be a rebuild so it's safe to do this
+      middleware.context.state = false;
+    }
+    return new Promise(resolve => {
+      middleware.waitUntilValid(resolve);
+    });
+  }
+
+  before(handle: Express.RequestHandler) {
+    this._beforeMiddlewares.push(handle);
+    return this._app;
+  }
+
   use(handle: Express.RequestHandler) {
-    this._middlewares.push(handle);
+    this._afterMiddlewares.push(handle);
     return this._app;
   }
 }

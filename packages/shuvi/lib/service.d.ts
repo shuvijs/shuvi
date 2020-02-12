@@ -3,6 +3,8 @@ export default class Service {
     private _app;
     private _buildRequier;
     private _routerService;
+    private _onDemandRouteManager;
+    private _devServer;
     constructor({ config }: {
         config: Partial<AppConfig>;
     });
@@ -10,10 +12,10 @@ export default class Service {
     private _setupApp;
     private get _paths();
     private get _config();
-    private _handlePage;
+    private _onDemandRouteMiddleware;
+    private _pageMiddleware;
     private _renderPage;
     private _getDocumentProps;
     private _getDocumentInlineAppData;
     private _getDocumentContent;
-    private _startServer;
 }

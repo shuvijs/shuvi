@@ -33,10 +33,13 @@ function renderDocument(Document, options) {
 exports.renderDocument = renderDocument;
 function renderApp(App, options) {
     return __awaiter(this, void 0, void 0, function* () {
+        // TODO: Fix Cannot read property 'call' of undefined
+        // import(() => modulename) modulename 变了,导致旧的模块丢失
+        // 客户端,服务器端都会有次错误, 如何使 modulename 不变?
         yield loadable_1.default.preloadAll();
         const { url, context } = options;
         const history = history_1.createServerHistory({
-            basename: "/",
+            basename: "",
             location: url,
             context
         });

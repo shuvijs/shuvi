@@ -19,9 +19,10 @@ const getWebpackEntries_1 = require("./helpers/getWebpackEntries");
 const getWebpackConfig_1 = require("./helpers/getWebpackConfig");
 const BuildRequier_1 = __importDefault(require("./helpers/BuildRequier"));
 const htmlescape_1 = require("./helpers/htmlescape");
-const devServer_1 = __importDefault(require("./server/devServer"));
+const devServer_1 = __importDefault(require("./dev/devServer"));
 const constants_1 = require("./constants");
 const routerService_1 = __importDefault(require("./routerService"));
+const onDemandRouteManager_1 = require("./onDemandRouteManager");
 const runtime_1 = require("./runtime");
 const utils_1 = require("./utils");
 const defaultConfig = {
@@ -38,10 +39,15 @@ class Service {
         this._buildRequier = new BuildRequier_1.default({
             buildDir: this._app.paths.buildDir
         });
+        this._onDemandRouteManager = new onDemandRouteManager_1.OnDemandRouteManager({ app: this._app });
+        this._devServer = null;
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this._setupApp();
+            yield this._app.build({
+                bootstrapFilePath: runtime_1.runtime.getBootstrapFilePath()
+            });
             const clientConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: false });
             clientConfig.name = "client";
             clientConfig.entry = {
@@ -56,14 +62,15 @@ class Service {
                 [constants_1.BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"],
                 [constants_1.BUILD_SERVER_APP]: ["@shuvi-app/app"]
             };
-            console.log("server webpack config:");
-            console.dir(serverConfig, { depth: null });
+            // console.log("server webpack config:");
+            // console.dir(serverConfig, { depth: null });
             const compiler = webpack_1.default([clientConfig, serverConfig]);
-            const server = new devServer_1.default(compiler, {
+            const server = (this._devServer = new devServer_1.default(compiler, {
                 port: 4000,
                 host: "0.0.0.0",
                 publicPath: this._config.publicPath
-            });
+            }));
+            this._onDemandRouteManager.devServer = this._devServer;
             let count = 0;
             const onFirstSuccess = () => {
                 if (++count >= 2) {
@@ -80,10 +87,8 @@ class Service {
                 log: console.log.bind(console),
                 onFirstSuccess
             });
-            server.use(this._handlePage.bind(this));
-            yield this._app.build({
-                bootstrapFilePath: runtime_1.runtime.getBootstrapFilePath()
-            });
+            server.before(this._onDemandRouteMiddleware.bind(this));
+            server.use(this._pageMiddleware.bind(this));
             server.start();
         });
     }
@@ -93,8 +98,7 @@ class Service {
             const app = this._app;
             app.addSelectorFile("app.js", [app.resolveSrcFile("app.js")], runtime_1.runtime.getAppFilePath());
             app.addSelectorFile("document.js", [app.resolveSrcFile("document.js")], runtime_1.runtime.getDocumentFilePath());
-            const routes = yield this._routerService.getRoutes();
-            this._app.setRoutesSource(runtime_1.runtime.generateRoutesSource(routes));
+            this._onDemandRouteManager.run(this._routerService);
             // runtime files
             yield runtime_1.runtime.install(this._app);
         });
@@ -105,7 +109,18 @@ class Service {
     get _config() {
         return this._app.config;
     }
-    _handlePage(req, res, next) {
+    _onDemandRouteMiddleware(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const match = req.url.match(constants_1.PAGE_STATIC_REGEXP);
+            if (!match) {
+                return next();
+            }
+            const routeId = match[1];
+            yield this._onDemandRouteManager.activateRoute(routeId);
+            next();
+        });
+    }
+    _pageMiddleware(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const headers = req.headers;
             if (req.method !== "GET") {
@@ -120,6 +135,7 @@ class Service {
             else if (!utils_1.acceptsHtml(headers.accept, { htmlAcceptHeaders: ["text/html"] })) {
                 return next();
             }
+            yield this._onDemandRouteManager.ensureRoutes(req.url || "/");
             try {
                 yield this._renderPage(req, res);
             }
@@ -127,6 +143,7 @@ class Service {
                 console.warn("render fail");
                 console.error(error);
             }
+            next();
         });
     }
     _renderPage(req, res) {
@@ -134,9 +151,10 @@ class Service {
             const context = {
                 loadableModules: []
             };
-            const App = this._buildRequier.requireApp();
+            // TODO: getInitialProps
+            const { App } = this._buildRequier.requireApp();
             const loadableManifest = this._buildRequier.getModules();
-            const appHtml = yield runtime_1.runtime.renderApp(App.default || App, {
+            const appHtml = yield runtime_1.runtime.renderApp(App, {
                 url: req.url || "/",
                 context
             });
@@ -224,9 +242,6 @@ class Service {
                 innerHtml: html
             }
         };
-    }
-    _startServer() {
-        return __awaiter(this, void 0, void 0, function* () { });
     }
 }
 exports.default = Service;

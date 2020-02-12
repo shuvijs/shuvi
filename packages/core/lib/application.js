@@ -22,6 +22,7 @@ const Base_1 = require("./components/Base");
 const utils_1 = require("./utils");
 class AppCoreImpl {
     constructor({ config }) {
+        this._onBuildDoneCbs = [];
         this.config = config;
         this.paths = paths_1.getPaths({
             cwd: this.config.cwd,
@@ -52,12 +53,17 @@ class AppCoreImpl {
     setRoutesSource(content) {
         store_1.setRoutesSource(content);
     }
+    waitUntilBuild() {
+        return new Promise(resolve => {
+            this._onBuildDoneCbs.push(resolve);
+        });
+    }
     build(options) {
         return __awaiter(this, void 0, void 0, function* () {
             store_1.initBootstrap({ bootstrapFilePath: options.bootstrapFilePath });
             yield fs_extra_1.default.emptyDir(this.paths.appDir);
             return new Promise(resolve => {
-                react_fs_1.default.render(react_1.default.createElement(App_1.default, null), this.paths.appDir, () => {
+                react_fs_1.default.render(react_1.default.createElement(App_1.default, { onDidUpdate: this._onBuildDone.bind(this) }), this.paths.appDir, () => {
                     resolve();
                 });
             });
@@ -73,6 +79,12 @@ class AppCoreImpl {
                 Base_1.swtichOnLifeCycle();
             }
         });
+    }
+    _onBuildDone() {
+        while (this._onBuildDoneCbs.length) {
+            const cb = this._onBuildDoneCbs.shift();
+            cb();
+        }
     }
 }
 function app(options) {

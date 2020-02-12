@@ -18,19 +18,19 @@ const options = {
 function watch({ files, directories }, cb) {
     const wp = new watchpack_1.default(options);
     wp.on("aggregated", (changes, removals) => {
-        // const knownFiles = wp.getTimeInfoEntries();
+        const knownFiles = wp.getTimeInfoEntries();
         cb({
             changes: Array.from(changes),
-            removals: Array.from(removals)
-            // getAllFiles() {
-            //   const map: KnownFiles = new Map();
-            //   for (const [file, timeinfo] of knownFiles.entries()) {
-            //     if (timeinfo && timeinfo.accuracy !== undefined) {
-            //       map.set(file, timeinfo);
-            //     }
-            //   }
-            //   return map;
-            // }
+            removals: Array.from(removals),
+            getAllFiles() {
+                const res = [];
+                for (const [file, timeinfo] of knownFiles.entries()) {
+                    if (timeinfo && timeinfo.accuracy !== undefined) {
+                        res.push(file);
+                    }
+                }
+                return res;
+            }
         });
     });
     wp.watch({ files, directories });

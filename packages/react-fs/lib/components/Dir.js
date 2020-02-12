@@ -4,8 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
-function Dir(props) {
-    return react_1.default.createElement("dir", props);
+class Dir extends react_1.default.PureComponent {
+    render() {
+        return react_1.default.createElement("dir", this.props);
+    }
 }
 exports.default = Dir;
-Dir.displayName = 'Dir';

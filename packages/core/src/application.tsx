@@ -27,6 +27,7 @@ export interface AppOptions {
 class AppCoreImpl implements AppCore {
   public config: AppConfig;
   public paths: Paths;
+  private _onBuildDoneCbs: Array<() => void> = [];
 
   constructor({ config }: AppOptions) {
     this.config = config;
@@ -76,14 +77,24 @@ class AppCoreImpl implements AppCore {
     setRoutesSource(content);
   }
 
+  waitUntilBuild(): Promise<void> {
+    return new Promise(resolve => {
+      this._onBuildDoneCbs.push(resolve);
+    });
+  }
+
   async build(options: BuildOptions): Promise<void> {
     initBootstrap({ bootstrapFilePath: options.bootstrapFilePath });
     await fse.emptyDir(this.paths.appDir);
 
     return new Promise(resolve => {
-      ReactFS.render(<App />, this.paths.appDir, () => {
-        resolve();
-      });
+      ReactFS.render(
+        <App onDidUpdate={this._onBuildDone.bind(this)} />,
+        this.paths.appDir,
+        () => {
+          resolve();
+        }
+      );
     });
   }
 
@@ -93,6 +104,13 @@ class AppCoreImpl implements AppCore {
       await this.build(options);
     } finally {
       swtichOnLifeCycle();
+    }
+  }
+
+  private _onBuildDone() {
+    while (this._onBuildDoneCbs.length) {
+      const cb = this._onBuildDoneCbs.shift()!;
+      cb();
     }
   }
 }

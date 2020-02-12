@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { ParsedUrlQuery } from 'querystring'
+import { ParsedUrlQuery } from "querystring";
 
 export interface TemplateData {
   [x: string]: any;
@@ -125,6 +125,8 @@ export interface AppCore {
   addFile(path: string, { content }: { content: string }): void;
 
   setRoutesSource(content: string): void;
+
+  waitUntilBuild(): Promise<void>;
 
   build(options: BuildOptions): Promise<void>;
 

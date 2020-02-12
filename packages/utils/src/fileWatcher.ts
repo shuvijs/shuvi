@@ -1,12 +1,12 @@
 import Watchpack, { TimeInfo } from "watchpack";
 
+export { TimeInfo };
+
 export interface WatchEvent {
   changes: string[];
   removals: string[];
-  // getAllFiles: () => KnownFiles;
+  getAllFiles: () => string[];
 }
-
-export type KnownFiles = Map<string, TimeInfo>;
 
 export interface WatchOptions {
   files?: string[];
@@ -34,20 +34,20 @@ export function watch(
 ): () => void {
   const wp = new Watchpack(options);
   wp.on("aggregated", (changes: Set<string>, removals: Set<string>) => {
-    // const knownFiles = wp.getTimeInfoEntries();
+    const knownFiles = wp.getTimeInfoEntries();
     cb({
       changes: Array.from(changes),
-      removals: Array.from(removals)
-      // getAllFiles() {
-      //   const map: KnownFiles = new Map();
-      //   for (const [file, timeinfo] of knownFiles.entries()) {
-      //     if (timeinfo && timeinfo.accuracy !== undefined) {
-      //       map.set(file, timeinfo);
-      //     }
-      //   }
+      removals: Array.from(removals),
+      getAllFiles() {
+        const res: string[] = [];
+        for (const [file, timeinfo] of knownFiles.entries()) {
+          if (timeinfo && timeinfo.accuracy !== undefined) {
+            res.push(file);
+          }
+        }
 
-      //   return map;
-      // }
+        return res;
+      }
     });
   });
   wp.watch({ files, directories });

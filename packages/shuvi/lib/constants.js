@@ -16,3 +16,4 @@ exports.CLIENT_ENTRY_PATH = paths_1.resolvePackageFile("lib/client/index");
 exports.BUILD_SERVER_DIR = "server";
 exports.BUILD_SERVER_DOCUMENT = `document.js`;
 exports.BUILD_SERVER_APP = `app.js`;
+exports.PAGE_STATIC_REGEXP = new RegExp(`^${exports.DEV_PUBLIC_PATH}static/chunks/(page-\\w+)\\.js`);

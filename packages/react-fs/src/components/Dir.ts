@@ -1,8 +1,8 @@
-import react from "react";
+import React from "react";
 import { DirProps } from "../internal";
 
-export default function Dir(props: DirProps) {
-  return react.createElement<DirProps>("dir", props);
+export default class Dir extends React.PureComponent<DirProps> {
+  render() {
+    return React.createElement<DirProps>("dir", this.props);
+  }
 }
-
-Dir.displayName = 'Dir';

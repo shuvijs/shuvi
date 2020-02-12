@@ -4,8 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
-function File(props) {
-    return react_1.default.createElement("file", props);
+class File extends react_1.default.Component {
+    shouldComponentUpdate(nextProps) {
+        return (nextProps.name !== this.props.name ||
+            nextProps.content !== this.props.content);
+    }
+    render() {
+        return react_1.default.createElement("file", this.props);
+    }
 }
 exports.default = File;
-File.displayName = 'File';

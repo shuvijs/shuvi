@@ -97,11 +97,11 @@ export function loadRouteComponent(
     () =>
       loader().then(mod => {
         const comp = mod.default || mod;
-        if (comp.getInitialProps) {
+        const isBrowser = typeof window !== "undefined";
+        if (isBrowser && comp.getInitialProps) {
           (dynamicComp as RouteComponent<React.ComponentType>).getInitialProps =
             comp.getInitialProps;
-          const isBrowser = typeof window !== "undefined";
-          return isBrowser ? withInitialProps(comp) : comp;
+          return withInitialProps(comp);
         }
 
         return comp;

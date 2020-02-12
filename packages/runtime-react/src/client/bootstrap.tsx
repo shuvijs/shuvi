@@ -8,7 +8,7 @@ import Loadable from "@shuvi/runtime-react/lib/runtime/loadable";
 import { createBrowserHistory } from "@shuvi/runtime-react/lib/runtime/router/history";
 // @ts-ignore
 import { setHistory } from "@shuvi/runtime-react/lib/runtime/router/router";
-import App from "./app";
+import { App } from "./app";
 
 export const bootstrap: Runtime.Bootstrap = async ({
   appData,

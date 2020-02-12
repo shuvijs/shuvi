@@ -79,11 +79,11 @@ exports.withInitialProps = withInitialProps;
 function loadRouteComponent(loader, options) {
     const dynamicComp = dynamic_1.default(() => loader().then(mod => {
         const comp = mod.default || mod;
-        if (comp.getInitialProps) {
+        const isBrowser = typeof window !== "undefined";
+        if (isBrowser && comp.getInitialProps) {
             dynamicComp.getInitialProps =
                 comp.getInitialProps;
-            const isBrowser = typeof window !== "undefined";
-            return isBrowser ? withInitialProps(comp) : comp;
+            return withInitialProps(comp);
         }
         return comp;
     }), options);

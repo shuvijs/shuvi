@@ -4,7 +4,11 @@ import webpack from "webpack";
 import path from "path";
 import ChunkNamesPlugin from "../plugins/chunk-names-plugin";
 import BuildManifestPlugin from "../plugins/build-manifest-plugin";
+import ModuleReplacePlugin from "../plugins/module-replace-plugin";
+import RequireCacheHotReloaderPlugin from "../plugins/require-cache-hot-reloader-plugin";
 import { getProjectInfo } from "../../utils/typeScript";
+
+const dumpRouteComponent = require.resolve("../../utils/emptyComponent");
 
 const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);
@@ -111,6 +115,16 @@ export function baseWebpackChain({
     }
   });
 
+  config.resolveLoader.merge({
+    alias: ["babel-loader", "route-component-loader"].reduce(
+      (alias, loader) => {
+        alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
+        return alias;
+      },
+      {} as Record<string, string>
+    )
+  });
+
   config.module.set("strictExportPresence", true);
   config.module
     .rule("src")
@@ -118,7 +132,7 @@ export function baseWebpackChain({
     .include.merge(srcDirs)
     .end()
     .use("babel-loader")
-    .loader(resolveLocalLoader("babel-loader"))
+    .loader("@shuvi/babel-loader")
     .options({
       isNode: false,
       // TODO:
@@ -175,6 +189,24 @@ export function baseWebpackChain({
           formatter: "codeframe"
         }
       ]);
+  }
+
+  if (dev) {
+    config.plugin("private/module-replace-plugin").use(ModuleReplacePlugin, [
+      {
+        modules: [
+          {
+            test: /\?__shuvi-route/,
+            module: dumpRouteComponent
+          }
+        ]
+      }
+    ]);
+    // Even though require.cache is server only we have to clear assets from both compilations
+    // This is because the client compilation generates the build manifest that's used on the server side
+    config
+      .plugin("private/require-cache-hot-reloader")
+      .use(RequireCacheHotReloaderPlugin);
   }
 
   return config;

@@ -1,3 +1,5 @@
 /// <reference path="../../client-env.d.ts" />
 /// <reference types="react" />
-export default function App(): JSX.Element;
+import routes from "@shuvi-app/routes";
+export { routes };
+export declare function App(): JSX.Element;

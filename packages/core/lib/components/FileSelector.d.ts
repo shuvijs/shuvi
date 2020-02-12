@@ -18,6 +18,7 @@ export default class FileSelector extends BaseComponent<Props, State> {
     componentDidMount(): void;
     componentWillUnmount(): void;
     componentDidUpdate(prevProps: Props): void;
+    shouldComponentUpdate(nextProps: Props): boolean;
     render(): JSX.Element;
 }
 export {};

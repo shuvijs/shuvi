@@ -10,7 +10,10 @@ const webpack_1 = __importDefault(require("webpack"));
 const path_1 = __importDefault(require("path"));
 const chunk_names_plugin_1 = __importDefault(require("../plugins/chunk-names-plugin"));
 const build_manifest_plugin_1 = __importDefault(require("../plugins/build-manifest-plugin"));
+const module_replace_plugin_1 = __importDefault(require("../plugins/module-replace-plugin"));
+const require_cache_hot_reloader_plugin_1 = __importDefault(require("../plugins/require-cache-hot-reloader-plugin"));
 const typeScript_1 = require("../../utils/typeScript");
+const dumpRouteComponent = require.resolve("../../utils/emptyComponent");
 const resolveLocalLoader = (name) => path_1.default.join(__dirname, `../loaders/${name}`);
 const terserOptions = {
     parse: {
@@ -79,6 +82,12 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaFilename, buildManif
         // Which makes bundles slightly smaller, but also skips parsing a module that we know will result in this alias
         }
     });
+    config.resolveLoader.merge({
+        alias: ["babel-loader", "route-component-loader"].reduce((alias, loader) => {
+            alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
+            return alias;
+        }, {})
+    });
     config.module.set("strictExportPresence", true);
     config.module
         .rule("src")
@@ -86,7 +95,7 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaFilename, buildManif
         .include.merge(srcDirs)
         .end()
         .use("babel-loader")
-        .loader(resolveLocalLoader("babel-loader"))
+        .loader("@shuvi/babel-loader")
         .options({
         isNode: false,
         // TODO:
@@ -134,6 +143,23 @@ function baseWebpackChain({ dev, projectRoot, srcDirs, mediaFilename, buildManif
                 formatter: "codeframe"
             }
         ]);
+    }
+    if (dev) {
+        config.plugin("private/module-replace-plugin").use(module_replace_plugin_1.default, [
+            {
+                modules: [
+                    {
+                        test: /\?__shuvi-route/,
+                        module: dumpRouteComponent
+                    }
+                ]
+            }
+        ]);
+        // Even though require.cache is server only we have to clear assets from both compilations
+        // This is because the client compilation generates the build manifest that's used on the server side
+        config
+            .plugin("private/require-cache-hot-reloader")
+            .use(require_cache_hot_reloader_plugin_1.default);
     }
     return config;
 }

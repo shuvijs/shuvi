@@ -13,7 +13,7 @@ class BuildRequire {
         return this._requireDefault(this._resolveServerModule(constants_1.BUILD_SERVER_DOCUMENT));
     }
     requireApp() {
-        return this._requireDefault(this._resolveServerModule(constants_1.BUILD_SERVER_APP));
+        return require(this._resolveServerModule(constants_1.BUILD_SERVER_APP));
     }
     getEntryAssets(name) {
         const manifest = this._getClientManifest();

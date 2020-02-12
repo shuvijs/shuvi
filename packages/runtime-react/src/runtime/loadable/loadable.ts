@@ -134,6 +134,7 @@ function createLoadableComponent(loadFn, options) {
         getCurrentValue: sub.getCurrentValue.bind(sub),
         subscribe: sub.subscribe.bind(sub),
         retry: sub.retry.bind(sub),
+        replace: sub.replace.bind(sub),
         promise: sub.promise.bind(sub)
       };
     }
@@ -168,7 +169,8 @@ function createLoadableComponent(loadFn, options) {
     const state = useSubscription(subscription);
 
     React.useImperativeHandle(ref, () => ({
-      retry: subscription.retry
+      retry: subscription.retry,
+      replace: subscription.replace
     }));
 
     if (context && Array.isArray(opts.modules)) {
@@ -255,6 +257,11 @@ class LoadableSubscription {
         this._clearTimeouts();
       });
     this._update({});
+  }
+
+  replace(loadad) {
+    this._res.loaded = loadad;
+    this._update();
   }
 
   _update(partial) {

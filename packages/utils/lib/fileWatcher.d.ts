@@ -1,9 +1,10 @@
 import { TimeInfo } from "watchpack";
+export { TimeInfo };
 export interface WatchEvent {
     changes: string[];
     removals: string[];
+    getAllFiles: () => string[];
 }
-export declare type KnownFiles = Map<string, TimeInfo>;
 export interface WatchOptions {
     files?: string[];
     directories?: string[];

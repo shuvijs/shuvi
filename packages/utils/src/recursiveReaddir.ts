@@ -5,6 +5,16 @@ import { promisify } from "util";
 const fsReaddir = promisify(fs.readdir);
 const fsStat = promisify(fs.stat);
 
+type Test = RegExp | ((v: string) => boolean);
+
+function runTest(test: Test, v: string) {
+  if (typeof test === "function") {
+    return test(v);
+  }
+
+  return test.test(v);
+}
+
 /**
  * Recursively read directory
  * @param {string} dir Directory to read
@@ -23,7 +33,7 @@ export async function recursiveReadDir(
     rootDir = dir,
     arr = []
   }: {
-    filter?: RegExp;
+    filter?: Test;
     ignore?: RegExp;
     rootDir?: string;
     arr?: string[];
@@ -45,7 +55,7 @@ export async function recursiveReadDir(
         return;
       }
 
-      if (filter && !filter.test(part)) {
+      if (filter && !runTest(filter, part)) {
         return;
       }
       arr.push(pp);

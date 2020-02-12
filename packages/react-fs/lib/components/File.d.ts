@@ -1,7 +1,6 @@
-import react from "react";
+import React from "react";
 import { FileProps } from "../internal";
-declare function File(props: FileProps): react.ReactElement<FileProps, string | ((props: any) => react.ReactElement<any, string | any | (new (props: any) => react.Component<any, any, any>)> | null) | (new (props: any) => react.Component<any, any, any>)>;
-declare namespace File {
-    var displayName: string;
+export default class File extends React.Component<FileProps> {
+    shouldComponentUpdate(nextProps: FileProps): boolean;
+    render(): React.ReactElement<FileProps, string | ((props: any) => React.ReactElement<any, string | any | (new (props: any) => React.Component<any, any, any>)> | null) | (new (props: any) => React.Component<any, any, any>)>;
 }
-export default File;

@@ -82,6 +82,10 @@ class FileSelector extends Base_1.BaseComponent {
             this._createWatcher();
         }
     }
+    shouldComponentUpdate(nextProps) {
+        return (this.props.fallbackFile !== nextProps.fallbackFile ||
+            !utils_1.arrayEqual(this.props.files, nextProps.files));
+    }
     render() {
         const { name } = this.props;
         const { file } = this.state;

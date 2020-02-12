@@ -1,8 +1,15 @@
-import react from "react";
+import React from "react";
 import { FileProps } from "../internal";
 
-export default function File(props: FileProps) {
-  return react.createElement<FileProps>("file", props);
-}
+export default class File extends React.Component<FileProps> {
+  shouldComponentUpdate(nextProps: FileProps) {
+    return (
+      nextProps.name !== this.props.name ||
+      nextProps.content !== this.props.content
+    );
+  }
 
-File.displayName = 'File';
+  render() {
+    return React.createElement<FileProps>("file", this.props);
+  }
+}

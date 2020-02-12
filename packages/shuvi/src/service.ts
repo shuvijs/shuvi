@@ -10,16 +10,18 @@ import { getClientEntries } from "./helpers/getWebpackEntries";
 import { getWebpackConfig } from "./helpers/getWebpackConfig";
 import BuildRequier from "./helpers/BuildRequier";
 import { htmlEscapeJsonString } from "./helpers/htmlescape";
-import Server from "./server/devServer";
+import DevServer from "./dev/devServer";
 import { RouterService } from "./types/routeService";
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_SERVER_DOCUMENT,
   BUILD_SERVER_APP,
   CLIENT_CONTAINER_ID,
-  CLIENT_APPDATA_ID
+  CLIENT_APPDATA_ID,
+  PAGE_STATIC_REGEXP
 } from "./constants";
 import FsRouterService from "./routerService";
+import { OnDemandRouteManager } from "./onDemandRouteManager";
 import { runtime } from "./runtime";
 import { acceptsHtml, dedupe } from "./utils";
 
@@ -35,6 +37,8 @@ export default class Service {
   private _app: AppCore;
   private _buildRequier: BuildRequier;
   private _routerService: RouterService;
+  private _onDemandRouteManager: OnDemandRouteManager;
+  private _devServer: DevServer | null;
 
   constructor({ config }: { config: Partial<AppConfig> }) {
     this._app = app({
@@ -44,10 +48,15 @@ export default class Service {
     this._buildRequier = new BuildRequier({
       buildDir: this._app.paths.buildDir
     });
+    this._onDemandRouteManager = new OnDemandRouteManager({ app: this._app });
+    this._devServer = null;
   }
 
   async start() {
     await this._setupApp();
+    await this._app.build({
+      bootstrapFilePath: runtime.getBootstrapFilePath()
+    });
 
     const clientConfig = getWebpackConfig(this._app, { node: false });
     clientConfig.name = "client";
@@ -64,15 +73,17 @@ export default class Service {
       [BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"],
       [BUILD_SERVER_APP]: ["@shuvi-app/app"]
     };
-    console.log("server webpack config:");
-    console.dir(serverConfig, { depth: null });
+    // console.log("server webpack config:");
+    // console.dir(serverConfig, { depth: null });
 
     const compiler = webpack([clientConfig, serverConfig]);
-    const server = new Server(compiler, {
+    const server = (this._devServer = new DevServer(compiler, {
       port: 4000,
       host: "0.0.0.0",
       publicPath: this._config.publicPath
-    });
+    }));
+    this._onDemandRouteManager.devServer = this._devServer;
+
     let count = 0;
     const onFirstSuccess = () => {
       if (++count >= 2) {
@@ -90,11 +101,9 @@ export default class Service {
       onFirstSuccess
     });
 
-    server.use(this._handlePage.bind(this));
+    server.before(this._onDemandRouteMiddleware.bind(this));
+    server.use(this._pageMiddleware.bind(this));
 
-    await this._app.build({
-      bootstrapFilePath: runtime.getBootstrapFilePath()
-    });
     server.start();
   }
 
@@ -111,8 +120,7 @@ export default class Service {
       [app.resolveSrcFile("document.js")],
       runtime.getDocumentFilePath()
     );
-    const routes = await this._routerService.getRoutes();
-    this._app.setRoutesSource(runtime.generateRoutesSource(routes));
+    this._onDemandRouteManager.run(this._routerService);
 
     // runtime files
     await runtime.install(this._app);
@@ -126,7 +134,22 @@ export default class Service {
     return this._app.config;
   }
 
-  private async _handlePage(
+  private async _onDemandRouteMiddleware(
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) {
+    const match = req.url.match(PAGE_STATIC_REGEXP);
+    if (!match) {
+      return next();
+    }
+
+    const routeId = match[1];
+    await this._onDemandRouteManager.activateRoute(routeId);
+    next();
+  }
+
+  private async _pageMiddleware(
     req: Express.Request,
     res: Express.Response,
     next: Express.NextFunction
@@ -144,12 +167,16 @@ export default class Service {
       return next();
     }
 
+    await this._onDemandRouteManager.ensureRoutes(req.url || "/");
+
     try {
       await this._renderPage(req, res);
     } catch (error) {
       console.warn("render fail");
       console.error(error);
     }
+
+    next();
   }
 
   private async _renderPage(
@@ -161,13 +188,13 @@ export default class Service {
     } = {
       loadableModules: []
     };
-    const App = this._buildRequier.requireApp();
+    // TODO: getInitialProps
+    const { App } = this._buildRequier.requireApp();
     const loadableManifest = this._buildRequier.getModules();
-    const appHtml = await runtime.renderApp(App.default || App, {
+    const appHtml = await runtime.renderApp(App, {
       url: req.url || "/",
       context
     });
-
     const dynamicImportIdSet = new Set<string>();
     const dynamicImports: ModuleManifest[] = [];
     for (const mod of context.loadableModules) {
@@ -274,6 +301,4 @@ export default class Service {
       }
     };
   }
-
-  private async _startServer() {}
 }

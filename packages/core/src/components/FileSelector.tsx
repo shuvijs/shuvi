@@ -104,6 +104,13 @@ export default class FileSelector extends BaseComponent<Props, State> {
     }
   }
 
+  shouldComponentUpdate(nextProps: Props) {
+    return (
+      this.props.fallbackFile !== nextProps.fallbackFile ||
+      !arrayEqual(this.props.files, nextProps.files)
+    );
+  }
+
   render() {
     const { name } = this.props;
     const { file } = this.state;

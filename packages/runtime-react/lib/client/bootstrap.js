@@ -20,7 +20,7 @@ const loadable_1 = __importDefault(require("@shuvi/runtime-react/lib/runtime/loa
 const history_1 = require("@shuvi/runtime-react/lib/runtime/router/history");
 // @ts-ignore
 const router_1 = require("@shuvi/runtime-react/lib/runtime/router/router");
-const app_1 = __importDefault(require("./app"));
+const app_1 = require("./app");
 exports.bootstrap = ({ appData, appContainer }) => __awaiter(void 0, void 0, void 0, function* () {
     yield loadable_1.default.preloadReady(appData.dynamicIds);
     // TODO: hash history(tree shaking)
@@ -28,5 +28,5 @@ exports.bootstrap = ({ appData, appContainer }) => __awaiter(void 0, void 0, voi
     const history = history_1.createBrowserHistory({ basename: "/" });
     router_1.setHistory(history);
     return react_dom_1.default.render(react_1.default.createElement(react_router_dom_1.Router, { history: history },
-        react_1.default.createElement(app_1.default, null)), appContainer);
+        react_1.default.createElement(app_1.App, null)), appContainer);
 });

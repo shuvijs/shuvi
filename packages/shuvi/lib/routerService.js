@@ -13,32 +13,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
+const crypto_1 = require("crypto");
+const tiny_invariant_1 = __importDefault(require("tiny-invariant"));
 const fileWatcher_1 = require("@shuvi/utils/lib/fileWatcher");
 const eventEmitter_1 = __importDefault(require("@shuvi/utils/lib/eventEmitter"));
 const recursiveReaddir_1 = require("@shuvi/utils/lib/recursiveReaddir");
+function createId(filepath) {
+    const id = crypto_1.createHash("md4")
+        .update(filepath)
+        .digest("base64")
+        .substr(0, 4);
+    return `page-${id}`;
+}
 const unixPath = path_1.posix;
-let uid = 0;
-function uuid() {
-    return `${++uid}`;
-}
 const jsExtensions = ["js", "jsx", "ts", "tsx"];
-function isLayout(routePath) {
-    return routePath.endsWith("_layout");
+const RouteRegExp = new RegExp(`\\.(?:${jsExtensions.join("|")})$`);
+function isLayout(filepath) {
+    return filepath.endsWith("_layout");
 }
-function getLayoutRoutePath(routePath) {
-    return routePath
-        .split("/")
-        .slice(0, -1)
-        .join("/");
+function isStaicRouter(filepath) {
+    return unixPath.basename(filepath).charAt(0) !== "$";
 }
-function fileToRoutePath(filepath) {
-    let routePath = filepath
+function getLayoutFile(filepath) {
+    return filepath.replace(/\/\w+$/, "/_layout");
+}
+function normalizeFilePath(filepath) {
+    const res = filepath
         // Remove the file extension from the end
         .replace(/\.\w+$/, "")
         // Convert to unix path
         .replace(/\\/g, "/");
+    return res.charAt(0) !== "/" ? "/" + res : res;
+}
+function normalizeRoutePath(rawPath) {
     // /xxxx/index -> /xxxx/
-    routePath = routePath.replace(/\/index$/, "/");
+    let routePath = rawPath.replace(/\/index$/, "/");
     // remove the last slash
     // e.g. /abc/ -> /abc
     if (routePath !== "/" && routePath.slice(-1) === "/") {
@@ -50,6 +59,41 @@ function fileToRoutePath(filepath) {
     }
     return routePath;
 }
+function filterRouteFile(name) {
+    if (name.charAt(0) === ".")
+        return false;
+    return RouteRegExp.test(name);
+}
+function getRouteWeight(route) {
+    const meta = route.__meta;
+    const weights = ["0", "0"];
+    if (meta.isStaticRoute) {
+        weights[0] = "1";
+    }
+    else if (route.exact) {
+        weights[1] = "1";
+    }
+    return Number(weights.join(""));
+}
+function sortRoutes(routes) {
+    const res = routes
+        .slice()
+        .sort((a, b) => getRouteWeight(b) - getRouteWeight(a));
+    let paramsRouteNum = 0;
+    for (let index = 0; index < res.length; index++) {
+        const route = res[index];
+        if (!route.__meta.isStaticRoute) {
+            paramsRouteNum += 1;
+        }
+        if (route.routes && route.routes.length > 0) {
+            // @ts-ignore
+            route.routes = sortRoutes(route.routes);
+        }
+        delete route.__meta;
+    }
+    tiny_invariant_1.default(paramsRouteNum <= 1, `We should not have multiple dynamic routes under a directory.`);
+    return res;
+}
 class RouterServiceImpl {
     constructor(pagesDir) {
         this._event = eventEmitter_1.default();
@@ -58,12 +102,12 @@ class RouterServiceImpl {
     getRoutes() {
         return __awaiter(this, void 0, void 0, function* () {
             const files = yield recursiveReaddir_1.recursiveReadDir(this._pagesDir, {
-                filter: new RegExp(`\\.(?:${jsExtensions.join("|")})$`)
+                filter: filterRouteFile
             });
             return this._getRoutes(files);
         });
     }
-    onChange(listener) {
+    subscribe(listener) {
         this._event.on("change", listener);
         if (!this._unwatch) {
             this._unwatch = this._createWatcher();
@@ -76,70 +120,61 @@ class RouterServiceImpl {
             routes: []
         };
         const routeMap = new Map();
-        const routePaths = [];
-        const findParentRoute = (routePath) => {
-            let layoutRoute;
-            let layoutPath = routePath;
-            do {
-                layoutPath = getLayoutRoutePath(layoutPath);
-                layoutRoute = routeMap.get(layoutPath);
-            } while (layoutRoute && layoutPath);
-            if (!layoutRoute) {
-                throw new Error("fail to generate route, can't find parent route");
-            }
-            return layoutRoute;
-        };
+        const normalizedFiles = [];
         for (let index = 0; index < files.length; index++) {
-            const file = files[index];
-            const routePath = fileToRoutePath(file);
-            routePaths.push(routePath);
-            if (isLayout(routePath)) {
-                routeMap.set(routePath, {
-                    id: file,
-                    path: routePath.replace(/\/_layout$/, ""),
+            const rawfile = files[index];
+            const file = normalizeFilePath(rawfile);
+            normalizedFiles.push(file);
+            if (isLayout(file)) {
+                const layoutRoute = {
+                    id: createId(file),
+                    path: normalizeRoutePath(file.replace(/\/_layout$/, "/")),
                     exact: false,
-                    componentFile: path_1.join(this._pagesDir, file)
-                });
+                    componentFile: path_1.join(this._pagesDir, rawfile),
+                    __meta: {
+                        isStaticRoute: isStaicRouter(file)
+                    }
+                };
+                routeMap.set(file, layoutRoute);
             }
             else {
-                routeMap.set(getLayoutRoutePath(routePath), rootRoute);
+                routeMap.set(file, rootRoute);
             }
         }
-        for (let index = 0; index < routePaths.length; index++) {
-            const file = files[index];
-            const routePath = routePaths[index];
-            const routeId = file;
+        for (let index = 0; index < normalizedFiles.length; index++) {
+            const rawFile = files[index];
+            const file = normalizedFiles[index];
+            const routePath = normalizeRoutePath(file);
             const route = {
-                id: routeId,
+                id: createId(file),
                 path: routePath,
-                exact: !isLayout(routePath),
-                componentFile: path_1.join(this._pagesDir, file)
+                exact: !isLayout(file),
+                componentFile: path_1.join(this._pagesDir, rawFile),
+                __meta: {
+                    isStaticRoute: isStaicRouter(file)
+                }
             };
-            const layoutRoute = findParentRoute(routePath);
-            layoutRoute.routes = layoutRoute.routes || [];
-            layoutRoute.routes.push(route);
+            const layoutFile = getLayoutFile(file);
+            const parentRoute = routeMap.has(layoutFile)
+                ? routeMap.get(layoutFile)
+                : rootRoute;
+            parentRoute.routes = parentRoute.routes || [];
+            parentRoute.routes.push(route);
         }
-        return rootRoute.routes;
-        // return [
-        //   {
-        //     id: uuid(),
-        //     path: "/",
-        //     exact: true,
-        //     componentFile:
-        //       "/Users/lixi/Workspace/github/shuvi-test/src/pages/index.js"
-        //   },
-        //   {
-        //     id: uuid(),
-        //     path: "/users/:id",
-        //     exact: true,
-        //     componentFile:
-        //       "/Users/lixi/Workspace/github/shuvi-test/src/pages/users.js"
-        //   }
-        // ];
+        return sortRoutes(rootRoute.routes);
     }
     _createWatcher() {
-        return fileWatcher_1.watch({ directories: [] }, () => {
-            this._event.emit("change", this._getRoutes([]));
+        return fileWatcher_1.watch({ directories: [this._pagesDir] }, ({ getAllFiles }) => {
+            const files = [];
+            const rawFiles = getAllFiles();
+            for (let index = 0; index < rawFiles.length; index++) {
+                const absPath = rawFiles[index];
+                const relativePath = path_1.relative(this._pagesDir, absPath);
+                if (filterRouteFile(relativePath)) {
+                    files.push(relativePath);
+                }
+            }
+            this._event.emit("change", this._getRoutes(files));
         });
     }
 }

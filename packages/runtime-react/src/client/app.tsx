@@ -4,6 +4,8 @@ import React from "react";
 import routes from "@shuvi-app/routes";
 import renderRoutes from "@shuvi/runtime-react/lib/runtime/router/renderRoutes";
 
-export default function App() {
+export { routes };
+
+export function App() {
   return <>{renderRoutes(routes)}</>;
 }

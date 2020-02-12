@@ -1,13 +1,21 @@
-import React, { ErrorInfo } from "react";
+import React, { ErrorInfo, useEffect } from "react";
 import { File } from "@shuvi/react-fs";
 import FileNode from "./components/FileNode";
 import Bootstrap from "./components/Bootstrap";
 import { useStore } from "./store";
 
-function App() {
+interface AppProps {
+  onDidUpdate: () => void;
+}
+
+function App(props: AppProps) {
   const files = useStore(state => state.files);
   const bootstrapFilePath = useStore(state => state.bootstrapFilePath);
   const routesSource = useStore(state => state.routesSource);
+
+  useEffect(() => {
+    props.onDidUpdate();
+  });
 
   return (
     <>
@@ -20,12 +28,16 @@ function App() {
   );
 }
 
-export default class AppContainer extends React.Component {
+export default class AppContainer extends React.Component<AppProps> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("error", error);
   }
 
+  componentDidUpdate() {
+    this.props.onDidUpdate();
+  }
+
   render() {
-    return <App />;
+    return <App {...this.props} />;
   }
 }

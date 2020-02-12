@@ -17,6 +17,12 @@ const path_1 = __importDefault(require("path"));
 const util_1 = require("util");
 const fsReaddir = util_1.promisify(fs_1.default.readdir);
 const fsStat = util_1.promisify(fs_1.default.stat);
+function runTest(test, v) {
+    if (typeof test === "function") {
+        return test(v);
+    }
+    return test.test(v);
+}
 /**
  * Recursively read directory
  * @param {string} dir Directory to read
@@ -41,7 +47,7 @@ function recursiveReadDir(dir, { filter, ignore, rootDir = dir, arr = [] } = {})
                 yield recursiveReadDir(absolutePath, { filter, ignore, arr, rootDir });
                 return;
             }
-            if (filter && !filter.test(part)) {
+            if (filter && !runTest(filter, part)) {
                 return;
             }
             arr.push(pp);

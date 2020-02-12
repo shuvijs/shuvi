@@ -19,11 +19,14 @@ export async function renderApp(
   App: React.ComponentType<Runtime.AppProps>,
   options: Runtime.RenderAppOptions
 ): Promise<string> {
+  // TODO: Fix Cannot read property 'call' of undefined
+  // import(() => modulename) modulename 变了,导致旧的模块丢失
+  // 客户端,服务器端都会有次错误, 如何使 modulename 不变?
   await Loadable.preloadAll();
 
   const { url, context } = options;
   const history = createServerHistory({
-    basename: "/",
+    basename: "",
     location: url,
     context
   });

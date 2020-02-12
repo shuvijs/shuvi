@@ -1,7 +1,5 @@
-import react from "react";
+import React from "react";
 import { DirProps } from "../internal";
-declare function Dir(props: DirProps): react.ReactElement<DirProps, string | ((props: any) => react.ReactElement<any, string | any | (new (props: any) => react.Component<any, any, any>)> | null) | (new (props: any) => react.Component<any, any, any>)>;
-declare namespace Dir {
-    var displayName: string;
+export default class Dir extends React.PureComponent<DirProps> {
+    render(): React.ReactElement<DirProps, string | ((props: any) => React.ReactElement<any, string | any | (new (props: any) => React.Component<any, any, any>)> | null) | (new (props: any) => React.Component<any, any, any>)>;
 }
-export default Dir;

@@ -9,3 +9,4 @@ export declare const CLIENT_ENTRY_PATH: string;
 export declare const BUILD_SERVER_DIR = "server";
 export declare const BUILD_SERVER_DOCUMENT = "document.js";
 export declare const BUILD_SERVER_APP = "app.js";
+export declare const PAGE_STATIC_REGEXP: RegExp;

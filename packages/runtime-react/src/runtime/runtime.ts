@@ -6,17 +6,46 @@ import { renderDocument, renderApp } from "./renderer";
 import { resolveDistFile } from "./paths";
 
 function serializeRoutes(routes: RouteConfig[]): string {
-  const res = JSON.stringify(routes);
-  return res.replace(/"componentFile":\w*"([^"]+)"/gi, (_match, filePath) => {
-    const routeComponent = `
-loadRouteComponent(() => import("${filePath}"), {
-  webpack: () => [require.resolveWeak("${filePath}")],
-  modules: ["${filePath}"],
+  let res = "";
+  for (let index = 0; index < routes.length; index++) {
+    const { routes: childRoutes, ...route } = routes[index];
+    if (childRoutes && childRoutes.length > 0) {
+      serializeRoutes(childRoutes);
+    }
+
+    let strRoute = "";
+    const keys = Object.keys(route);
+    for (let index = 0; index < keys.length; index++) {
+      const key = keys[index];
+      if (key === "componentFile") {
+        const filepath = route[key];
+        strRoute += "component: ";
+        strRoute += `
+loadRouteComponent(() => import(/* webpackChunkName: "${route.id}" */"${filepath}"), {
+  webpack: () => [require.resolveWeak("${filepath}")],
+  modules: ["${filepath}"],
 })`.trim();
-//     const routeComponent = `
-// dynamic(() => import("${filePath}"))`.trim();
-    return `"component": ${routeComponent}`;
-  });
+      } else {
+        strRoute += `${key}: ${JSON.stringify(route[key])}`;
+      }
+
+      strRoute += `,\n`;
+    }
+    res += `{${strRoute}},\n`;
+  }
+
+  return `[${res}]`;
+
+  //   return res.replace(/"componentFile":\w*"([^"]+)"/gi, (_match, filePath) => {
+  //     const routeComponent = `
+  // loadRouteComponent(() => import(/* webpackChunkName: "" */"${filePath}"), {
+  //   webpack: () => [require.resolveWeak("${filePath}")],
+  //   modules: ["${filePath}"],
+  // })`.trim();
+  //     const routeComponent = `
+  // dynamic(() => import("${filePath}"))`.trim();
+  // return `"component": ${routeComponent}`;
+  // });
 }
 
 class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {

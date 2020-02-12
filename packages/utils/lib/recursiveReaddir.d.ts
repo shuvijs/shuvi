@@ -1,3 +1,4 @@
+declare type Test = RegExp | ((v: string) => boolean);
 /**
  * Recursively read directory
  * @param {string} dir Directory to read
@@ -9,7 +10,7 @@
  * @returns {Promise<string[]>} Promise array holding all relative paths
  */
 export declare function recursiveReadDir(dir: string, { filter, ignore, rootDir, arr }?: {
-    filter?: RegExp;
+    filter?: Test;
     ignore?: RegExp;
     rootDir?: string;
     arr?: string[];
@@ -30,3 +31,4 @@ export declare function recursiveReadDirSync(dir: string, { filter, ignore, root
     rootDir?: string;
     arr?: string[];
 }): string[];
+export {};

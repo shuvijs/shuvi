@@ -7,6 +7,7 @@ import {
   BUILD_SERVER_DOCUMENT,
   BUILD_SERVER_APP
 } from "../constants";
+import { RouteConfig } from "@shuvi/types/core";
 
 interface BuildRequireConstructionOptions {
   buildDir: string;
@@ -25,8 +26,8 @@ export default class BuildRequire {
     );
   }
 
-  requireApp(): any {
-    return this._requireDefault(this._resolveServerModule(BUILD_SERVER_APP));
+  requireApp(): { App: any; routes: RouteConfig[] } {
+    return require(this._resolveServerModule(BUILD_SERVER_APP));
   }
 
   getEntryAssets(name: string): string[] {

@@ -23,3 +23,6 @@ export const BUILD_SERVER_DOCUMENT = `document.js`;
 
 export const BUILD_SERVER_APP = `app.js`;
 
+export const PAGE_STATIC_REGEXP = new RegExp(
+  `^${DEV_PUBLIC_PATH}static/chunks/(page-\\w+)\\.js`
+);
