@@ -207,6 +207,7 @@ class LoadableSubscription {
     this._callbacks = new Set();
     this._delay = null;
     this._timeout = null;
+    this._value = null;
 
     this.retry();
   }
@@ -269,6 +270,12 @@ class LoadableSubscription {
       ...this._state,
       ...partial
     };
+    this._value = {
+      ...this._state,
+      error: this._res.error,
+      loaded: this._res.loaded,
+      loading: this._res.loading
+    }
     this._callbacks.forEach(callback => callback());
   }
 
@@ -278,12 +285,7 @@ class LoadableSubscription {
   }
 
   getCurrentValue() {
-    return {
-      ...this._state,
-      error: this._res.error,
-      loaded: this._res.loaded,
-      loading: this._res.loading
-    };
+    return this._value;
   }
 
   subscribe(callback) {

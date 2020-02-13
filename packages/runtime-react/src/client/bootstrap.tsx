@@ -23,7 +23,7 @@ export const bootstrap: Runtime.Bootstrap = async ({
 
   return ReactDom.render(
     <Router history={history}>
-      <App />
+      <App routeProps={appData.routeProps} />
     </Router>,
     appContainer
   );

@@ -11,20 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
 const server_1 = require("react-dom/server");
 const react_router_dom_1 = require("react-router-dom");
+const react_router_config_1 = require("react-router-config");
 const history_1 = require("./router/history");
 const router_1 = require("./router/router");
-const loadable_1 = __importStar(require("./loadable"));
+const loadable_1 = require("./loadable");
+function matchRoutes(routes, pathname) {
+    return react_router_config_1.matchRoutes(routes, pathname);
+}
+exports.matchRoutes = matchRoutes;
 function renderDocument(Document, options) {
     return __awaiter(this, void 0, void 0, function* () {
         return `<!DOCTYPE html>${server_1.renderToStaticMarkup(react_1.default.createElement(Document, Object.assign({}, options.documentProps)))}`;
@@ -33,14 +31,10 @@ function renderDocument(Document, options) {
 exports.renderDocument = renderDocument;
 function renderApp(App, options) {
     return __awaiter(this, void 0, void 0, function* () {
-        // TODO: Fix Cannot read property 'call' of undefined
-        // import(() => modulename) modulename 变了,导致旧的模块丢失
-        // 客户端,服务器端都会有次错误, 如何使 modulename 不变?
-        yield loadable_1.default.preloadAll();
-        const { url, context } = options;
+        const { pathname, context, routeProps } = options;
         const history = history_1.createServerHistory({
             basename: "",
-            location: url,
+            location: pathname,
             context
         });
         router_1.setHistory(history);
@@ -48,8 +42,10 @@ function renderApp(App, options) {
         // @ts-ignore staticContext is not declared in @types/react-router-dom
         react_1.default.createElement(react_router_dom_1.Router, { history: history, staticContext: context },
             react_1.default.createElement(loadable_1.LoadableContext.Provider, { value: moduleName => context.loadableModules.push(moduleName) },
-                react_1.default.createElement(App, null))));
-        return htmlContent;
+                react_1.default.createElement(App, { routeProps: routeProps }))));
+        return {
+            appHtml: htmlContent
+        };
     });
 }
 exports.renderApp = renderApp;

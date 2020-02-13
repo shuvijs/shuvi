@@ -4,7 +4,8 @@ import { AppCore, RouteConfig, RouteMatch } from "@shuvi/types/core";
 declare class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
     install(app: AppCore): Promise<void>;
     renderDocument(Document: React.ComponentType<Runtime.DocumentProps>, options: Runtime.RenderDocumentOptions): Promise<string>;
-    renderApp(App: React.ComponentType<Runtime.AppProps>, options: Runtime.RenderAppOptions): Promise<string>;
+    prepareRenderApp(): Promise<void>;
+    renderApp(App: React.ComponentType<Runtime.AppProps>, options: Runtime.RenderAppOptions): Promise<Runtime.RenderAppResult>;
     generateRoutesSource(routes: RouteConfig[]): string;
     matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[];
     getDocumentFilePath(): string;

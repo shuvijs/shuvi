@@ -7,10 +7,21 @@ import { getDisplayName } from "./utils";
 type Data = Record<string, any>;
 
 type Props = RouteComponentProps & {
-  initialProps?: Data;
+  __initialProps?: Data;
 };
 
-export function withInitialProps<P = {}>(
+function withInitialPropsServer(
+  WrappedComponent: RouteComponent<React.ComponentType<any>>
+): RouteComponent<React.ComponentType<Props>> {
+  return ({ __initialProps, ...rest }: Props) => {
+    return React.createElement(WrappedComponent, {
+      ...rest,
+      ...__initialProps
+    });
+  };
+}
+
+function withInitialPropsClient<P = {}>(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
 ): RouteComponent<React.ComponentClass<Props & P>> {
   const hoc: RouteComponent<React.ComponentClass<
@@ -23,22 +34,22 @@ export function withInitialProps<P = {}>(
       WrappedComponent
     )})`;
 
-    static getSnapshotBeforeUpdate(prevProps: Props) {
-      return prevProps.match;
-    }
-
     constructor(props: Props & P) {
       super(props);
 
-      const propsResolved = typeof props.initialProps !== "undefined";
+      const propsResolved = typeof props.__initialProps !== "undefined";
       this.state = {
         propsResolved: propsResolved,
-        initialProps: props.initialProps || {}
+        initialProps: props.__initialProps || {}
       };
 
       if (!propsResolved) {
         this._getInitialProps();
       }
+    }
+
+    getSnapshotBeforeUpdate(prevProps: Props) {
+      return prevProps.match;
     }
 
     componentDidUpdate(prevProps: Readonly<Props>) {
@@ -75,8 +86,10 @@ export function withInitialProps<P = {}>(
         return null;
       }
 
+      const { __initialProps, ...rest } = this.props;
+
       return React.createElement(WrappedComponent, {
-        ...this.props,
+        ...rest,
         ...this.state.initialProps
       });
     }
@@ -97,11 +110,16 @@ export function loadRouteComponent(
     () =>
       loader().then(mod => {
         const comp = mod.default || mod;
-        const isBrowser = typeof window !== "undefined";
-        if (isBrowser && comp.getInitialProps) {
+        if (comp.getInitialProps) {
           (dynamicComp as RouteComponent<React.ComponentType>).getInitialProps =
             comp.getInitialProps;
-          return withInitialProps(comp);
+
+          // make getInitialProps work in browser
+          if (typeof window !== "undefined") {
+            return withInitialPropsClient(comp);
+          }
+
+          return withInitialPropsServer(comp);
         }
 
         return comp;

@@ -13,7 +13,7 @@ function renderRoutes(routes, initialProps = {}, switchProps = {}) {
             });
             let { component: Component } = route;
             if (Component) {
-                return react_1.default.createElement(Component, Object.assign({}, props), childRoutes);
+                return (react_1.default.createElement(Component, Object.assign({ __initialProps: initialProps[route.id] }, props), childRoutes));
             }
             return childRoutes;
         } }))))) : null;

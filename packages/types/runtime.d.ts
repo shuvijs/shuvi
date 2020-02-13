@@ -1,6 +1,11 @@
 import { AppCore, RouteMatch, RouteConfig } from "./core";
 
+export type RouteProps = {
+  [x: string]: any;
+};
+
 export interface AppData {
+  routeProps: RouteProps,
   dynamicIds: Array<string | number>;
 }
 
@@ -23,13 +28,21 @@ export interface RenderDocumentOptions {
   documentProps: DocumentProps;
 }
 
-export interface AppProps {}
+export interface AppProps {
+  routeProps: RouteProps;
+}
 
 export interface RenderAppOptions {
-  url: string;
+  pathname: string;
+  routeProps: RouteProps;
   context: {
-    [x: string]: any;
+    loadableModules: string[];
+    // [x: string]: any;
   };
+}
+
+export interface RenderAppResult {
+  appHtml: string;
 }
 
 export interface BootstrapOptions {
@@ -48,7 +61,9 @@ export interface Runtime<CompType = unknown> {
     options: RenderDocumentOptions
   ): Promise<string>;
 
-  renderApp(App: CompType, options: RenderAppOptions): Promise<string>;
+  prepareRenderApp(): Promise<void>;
+
+  renderApp(App: CompType, options: RenderAppOptions): Promise<RenderAppResult>;
 
   generateRoutesSource(routes: RouteConfig[]): string;
 

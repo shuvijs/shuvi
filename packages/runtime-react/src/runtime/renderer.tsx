@@ -1,10 +1,19 @@
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import * as Runtime from "@shuvi/types/runtime";
+import { RouteConfig, RouteMatch } from "@shuvi/types/core";
 import { Router } from "react-router-dom";
+import { matchRoutes as reactRouterMatchRoutes } from "react-router-config";
 import { createServerHistory } from "./router/history";
 import { setHistory } from "./router/router";
 import Loadable, { LoadableContext } from "./loadable";
+
+export function matchRoutes(
+  routes: RouteConfig[],
+  pathname: string
+): RouteMatch[] {
+  return (reactRouterMatchRoutes(routes, pathname) as any) as RouteMatch[];
+}
 
 export async function renderDocument(
   Document: React.ComponentType<Runtime.DocumentProps>,
@@ -18,16 +27,12 @@ export async function renderDocument(
 export async function renderApp(
   App: React.ComponentType<Runtime.AppProps>,
   options: Runtime.RenderAppOptions
-): Promise<string> {
-  // TODO: Fix Cannot read property 'call' of undefined
-  // import(() => modulename) modulename 变了,导致旧的模块丢失
-  // 客户端,服务器端都会有次错误, 如何使 modulename 不变?
-  await Loadable.preloadAll();
+): Promise<Runtime.RenderAppResult> {
+  const { pathname, context, routeProps } = options;
 
-  const { url, context } = options;
   const history = createServerHistory({
     basename: "",
-    location: url,
+    location: pathname,
     context
   });
   setHistory(history);
@@ -38,10 +43,12 @@ export async function renderApp(
       <LoadableContext.Provider
         value={moduleName => context.loadableModules.push(moduleName)}
       >
-        <App />
+        <App routeProps={routeProps} />
       </LoadableContext.Provider>
     </Router>
   );
 
-  return htmlContent;
+  return {
+    appHtml: htmlContent
+  };
 }

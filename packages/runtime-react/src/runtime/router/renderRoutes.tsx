@@ -26,7 +26,11 @@ function renderRoutes(
             });
             let { component: Component } = route;
             if (Component) {
-              return <Component {...props}>{childRoutes}</Component>;
+              return (
+                <Component __initialProps={initialProps[route.id]} {...props}>
+                  {childRoutes}
+                </Component>
+              );
             }
 
             return childRoutes;

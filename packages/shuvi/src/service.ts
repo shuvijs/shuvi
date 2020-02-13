@@ -1,7 +1,8 @@
+import { parse as parseUrl } from "url";
 import { IncomingMessage, ServerResponse } from "http";
 import webpack from "webpack";
 import { app } from "@shuvi/core";
-import { AppCore, AppConfig } from "@shuvi/types/core";
+import { AppCore, AppConfig, RouteComponent } from "@shuvi/types/core";
 import * as Runtime from "@shuvi/types/Runtime";
 import { ModuleManifest } from "@shuvi/types/build";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
@@ -183,17 +184,48 @@ export default class Service {
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<void> {
+    const parsedUrl = parseUrl(req.url!, true);
     const context: {
       loadableModules: string[];
     } = {
       loadableModules: []
     };
-    // TODO: getInitialProps
-    const { App } = this._buildRequier.requireApp();
+
+    const pathname = parsedUrl.pathname! || "/";
+    const { App, routes } = this._buildRequier.requireApp();
+
+    // prepre render after App module loaded
+    await runtime.prepareRenderApp();
+
+    const routeProps: { [x: string]: any } = {};
+    const matchedRoutes = runtime.matchRoutes(routes, pathname);
+    const pendingDataFetchs: Array<() => Promise<void>> = [];
+    for (let index = 0; index < matchedRoutes.length; index++) {
+      const { route } = matchedRoutes[index];
+      const comp = route.component as
+        | RouteComponent<React.Component, any>
+        | undefined;
+      if (comp && comp.getInitialProps) {
+        pendingDataFetchs.push(async () => {
+          const props = await comp.getInitialProps!({
+            pathname: pathname,
+            query: parsedUrl.query,
+            isServer: true,
+            req,
+            res
+          });
+          routeProps[route.id] = props || {};
+        });
+      }
+    }
+
+    await Promise.all(pendingDataFetchs.map(fn => fn()));
+
     const loadableManifest = this._buildRequier.getModules();
-    const appHtml = await runtime.renderApp(App, {
-      url: req.url || "/",
-      context
+    const { appHtml } = await runtime.renderApp(App, {
+      pathname,
+      context,
+      routeProps
     });
     const dynamicImportIdSet = new Set<string>();
     const dynamicImports: ModuleManifest[] = [];
@@ -209,6 +241,7 @@ export default class Service {
 
     const documentProps = this._getDocumentProps({
       appHtml,
+      routeProps,
       dynamicImports,
       dynamicImportIds: [...dynamicImportIdSet]
     });
@@ -223,9 +256,11 @@ export default class Service {
   private _getDocumentProps({
     appHtml,
     dynamicImports,
-    dynamicImportIds
+    dynamicImportIds,
+    routeProps
   }: {
     appHtml: string;
+    routeProps: Runtime.RouteProps;
     dynamicImports: ModuleManifest[];
     dynamicImportIds: Array<string | number>;
   }): Runtime.DocumentProps {
@@ -268,6 +303,7 @@ export default class Service {
     });
 
     const inlineAppData = this._getDocumentInlineAppData({
+      routeProps,
       dynamicIds: dynamicImportIds
     });
 

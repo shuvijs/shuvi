@@ -1,9 +1,9 @@
 import React from "react";
 import * as Runtime from "@shuvi/types/runtime";
 import { AppCore, RouteConfig, RouteMatch } from "@shuvi/types/core";
-import { matchRoutes } from "react-router-config";
-import { renderDocument, renderApp } from "./renderer";
+import { renderDocument, renderApp, matchRoutes } from "./renderer";
 import { resolveDistFile } from "./paths";
+import Loadable from "./loadable";
 
 function serializeRoutes(routes: RouteConfig[]): string {
   let res = "";
@@ -95,10 +95,14 @@ class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
     return renderDocument(Document, options);
   }
 
+  async prepareRenderApp() {
+    return Loadable.preloadAll();
+  }
+
   async renderApp(
     App: React.ComponentType<Runtime.AppProps>,
     options: Runtime.RenderAppOptions
-  ): Promise<string> {
+  ): Promise<Runtime.RenderAppResult> {
     return renderApp(App, options);
   }
 
@@ -112,7 +116,7 @@ export default ${routesExport}
   }
 
   matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[] {
-    return (matchRoutes(routes, pathname) as any) as RouteMatch[];
+    return matchRoutes(routes, pathname);
   }
 
   getDocumentFilePath(): string {

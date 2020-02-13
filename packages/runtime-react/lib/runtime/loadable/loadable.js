@@ -180,6 +180,7 @@ class LoadableSubscription {
         this._callbacks = new Set();
         this._delay = null;
         this._timeout = null;
+        this._value = null;
         this.retry();
     }
     promise() {
@@ -230,6 +231,7 @@ class LoadableSubscription {
     }
     _update(partial) {
         this._state = Object.assign(Object.assign({}, this._state), partial);
+        this._value = Object.assign(Object.assign({}, this._state), { error: this._res.error, loaded: this._res.loaded, loading: this._res.loading });
         this._callbacks.forEach(callback => callback());
     }
     _clearTimeouts() {
@@ -237,7 +239,7 @@ class LoadableSubscription {
         clearTimeout(this._timeout);
     }
     getCurrentValue() {
-        return Object.assign(Object.assign({}, this._state), { error: this._res.error, loaded: this._res.loaded, loading: this._res.loading });
+        return this._value;
     }
     subscribe(callback) {
         this._callbacks.add(callback);

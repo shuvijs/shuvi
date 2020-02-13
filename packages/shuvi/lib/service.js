@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const url_1 = require("url");
 const webpack_1 = __importDefault(require("webpack"));
 const core_1 = require("@shuvi/core");
 const typeScript_1 = require("@shuvi/toolpack/lib/utils/typeScript");
@@ -148,15 +149,39 @@ class Service {
     }
     _renderPage(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const parsedUrl = url_1.parse(req.url, true);
             const context = {
                 loadableModules: []
             };
-            // TODO: getInitialProps
-            const { App } = this._buildRequier.requireApp();
+            const pathname = parsedUrl.pathname || "/";
+            const { App, routes } = this._buildRequier.requireApp();
+            // prepre render after App module loaded
+            yield runtime_1.runtime.prepareRenderApp();
+            const routeProps = {};
+            const matchedRoutes = runtime_1.runtime.matchRoutes(routes, pathname);
+            const pendingDataFetchs = [];
+            for (let index = 0; index < matchedRoutes.length; index++) {
+                const { route } = matchedRoutes[index];
+                const comp = route.component;
+                if (comp && comp.getInitialProps) {
+                    pendingDataFetchs.push(() => __awaiter(this, void 0, void 0, function* () {
+                        const props = yield comp.getInitialProps({
+                            pathname: pathname,
+                            query: parsedUrl.query,
+                            isServer: true,
+                            req,
+                            res
+                        });
+                        routeProps[route.id] = props || {};
+                    }));
+                }
+            }
+            yield Promise.all(pendingDataFetchs.map(fn => fn()));
             const loadableManifest = this._buildRequier.getModules();
-            const appHtml = yield runtime_1.runtime.renderApp(App, {
-                url: req.url || "/",
-                context
+            const { appHtml } = yield runtime_1.runtime.renderApp(App, {
+                pathname,
+                context,
+                routeProps
             });
             const dynamicImportIdSet = new Set();
             const dynamicImports = [];
@@ -171,6 +196,7 @@ class Service {
             }
             const documentProps = this._getDocumentProps({
                 appHtml,
+                routeProps,
                 dynamicImports,
                 dynamicImportIds: [...dynamicImportIdSet]
             });
@@ -181,7 +207,7 @@ class Service {
             res.end(html);
         });
     }
-    _getDocumentProps({ appHtml, dynamicImports, dynamicImportIds }) {
+    _getDocumentProps({ appHtml, dynamicImports, dynamicImportIds, routeProps }) {
         const styles = [];
         const scripts = [];
         const entrypoints = this._buildRequier.getEntryAssets(constants_1.BUILD_CLIENT_RUNTIME_MAIN);
@@ -215,6 +241,7 @@ class Service {
             };
         });
         const inlineAppData = this._getDocumentInlineAppData({
+            routeProps,
             dynamicIds: dynamicImportIds
         });
         return {

@@ -28,5 +28,5 @@ exports.bootstrap = ({ appData, appContainer }) => __awaiter(void 0, void 0, voi
     const history = history_1.createBrowserHistory({ basename: "/" });
     router_1.setHistory(history);
     return react_dom_1.default.render(react_1.default.createElement(react_router_dom_1.Router, { history: history },
-        react_1.default.createElement(app_1.App, null)), appContainer);
+        react_1.default.createElement(app_1.App, { routeProps: appData.routeProps })), appContainer);
 });

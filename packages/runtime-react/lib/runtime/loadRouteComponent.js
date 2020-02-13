@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,21 +26,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
 const dynamic_1 = __importDefault(require("./dynamic"));
 const utils_1 = require("./utils");
-function withInitialProps(WrappedComponent) {
+function withInitialPropsServer(WrappedComponent) {
+    return (_a) => {
+        var { __initialProps } = _a, rest = __rest(_a, ["__initialProps"]);
+        return react_1.default.createElement(WrappedComponent, Object.assign(Object.assign({}, rest), __initialProps));
+    };
+}
+function withInitialPropsClient(WrappedComponent) {
     var _a;
     const hoc = (_a = class WithInitialProps extends react_1.default.Component {
             constructor(props) {
                 super(props);
-                const propsResolved = typeof props.initialProps !== "undefined";
+                const propsResolved = typeof props.__initialProps !== "undefined";
                 this.state = {
                     propsResolved: propsResolved,
-                    initialProps: props.initialProps || {}
+                    initialProps: props.__initialProps || {}
                 };
                 if (!propsResolved) {
                     this._getInitialProps();
                 }
             }
-            static getSnapshotBeforeUpdate(prevProps) {
+            getSnapshotBeforeUpdate(prevProps) {
                 return prevProps.match;
             }
             componentDidUpdate(prevProps) {
@@ -65,7 +82,8 @@ function withInitialProps(WrappedComponent) {
                 if (!this.state.propsResolved) {
                     return null;
                 }
-                return react_1.default.createElement(WrappedComponent, Object.assign(Object.assign({}, this.props), this.state.initialProps));
+                const _a = this.props, { __initialProps } = _a, rest = __rest(_a, ["__initialProps"]);
+                return react_1.default.createElement(WrappedComponent, Object.assign(Object.assign({}, rest), this.state.initialProps));
             }
         },
         _a.displayName = `WithInitialProps(${utils_1.getDisplayName(WrappedComponent)})`,
@@ -75,15 +93,17 @@ function withInitialProps(WrappedComponent) {
     }
     return hoc;
 }
-exports.withInitialProps = withInitialProps;
 function loadRouteComponent(loader, options) {
     const dynamicComp = dynamic_1.default(() => loader().then(mod => {
         const comp = mod.default || mod;
-        const isBrowser = typeof window !== "undefined";
-        if (isBrowser && comp.getInitialProps) {
+        if (comp.getInitialProps) {
             dynamicComp.getInitialProps =
                 comp.getInitialProps;
-            return withInitialProps(comp);
+            // make getInitialProps work in browser
+            if (typeof window !== "undefined") {
+                return withInitialPropsClient(comp);
+            }
+            return withInitialPropsServer(comp);
         }
         return comp;
     }), options);

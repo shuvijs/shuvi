@@ -19,10 +19,13 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const react_router_config_1 = require("react-router-config");
 const renderer_1 = require("./renderer");
 const paths_1 = require("./paths");
+const loadable_1 = __importDefault(require("./loadable"));
 function serializeRoutes(routes) {
     let res = "";
     for (let index = 0; index < routes.length; index++) {
@@ -91,6 +94,11 @@ class ReactRuntime {
             return renderer_1.renderDocument(Document, options);
         });
     }
+    prepareRenderApp() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return loadable_1.default.preloadAll();
+        });
+    }
     renderApp(App, options) {
         return __awaiter(this, void 0, void 0, function* () {
             return renderer_1.renderApp(App, options);
@@ -104,7 +112,7 @@ export default ${routesExport}
 `.trim();
     }
     matchRoutes(routes, pathname) {
-        return react_router_config_1.matchRoutes(routes, pathname);
+        return renderer_1.matchRoutes(routes, pathname);
     }
     getDocumentFilePath() {
         return paths_1.resolveDistFile("client/document");

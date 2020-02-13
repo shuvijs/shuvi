@@ -8,7 +8,7 @@ const react_1 = __importDefault(require("react"));
 const routes_1 = __importDefault(require("@shuvi-app/routes"));
 exports.routes = routes_1.default;
 const renderRoutes_1 = __importDefault(require("@shuvi/runtime-react/lib/runtime/router/renderRoutes"));
-function App() {
-    return react_1.default.createElement(react_1.default.Fragment, null, renderRoutes_1.default(routes_1.default));
+function App(props) {
+    return react_1.default.createElement(react_1.default.Fragment, null, renderRoutes_1.default(routes_1.default, props.routeProps));
 }
 exports.App = App;
