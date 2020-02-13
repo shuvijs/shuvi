@@ -1,6 +1,6 @@
 {
   "name": "shuvi",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
@@ -22,11 +22,11 @@
   },
   "dependencies": {
     "@babel/runtime-corejs2": "7.8.4",
-    "@shuvi/core": "^0.0.1-alpha.1",
-    "@shuvi/runtime-react": "^0.0.1-alpha.1",
-    "@shuvi/toolpack": "^0.0.1-alpha.1",
-    "@shuvi/types": "^0.0.1-alpha.1",
-    "@shuvi/utils": "^0.0.1-alpha.1",
+    "@shuvi/core": "^0.0.1-alpha.2",
+    "@shuvi/runtime-react": "^0.0.1-alpha.2",
+    "@shuvi/toolpack": "^0.0.1-alpha.2",
+    "@shuvi/types": "^0.0.1-alpha.2",
+    "@shuvi/utils": "^0.0.1-alpha.2",
     "commander": "4.0.1",
     "cross-spawn": "7.0.1",
     "express": "4.17.1",
