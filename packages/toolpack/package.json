@@ -9,7 +9,7 @@
   "author": "liximomo",
   "license": "MIT",
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w"

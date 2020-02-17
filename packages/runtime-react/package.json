@@ -13,7 +13,6 @@
   "files": [
     "dep",
     "lib",
-    "template",
     "dynamic.d.ts",
     "dynamic.js",
     "index.d.ts",
