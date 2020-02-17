@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const constants_1 = require("./shared/constants");
 const paths_1 = require("./helpers/paths");
 __export(require("./shared/constants"));
+exports.WEBPACK_CONFIG_CLIENT = 'client';
+exports.WEBPACK_CONFIG_SERVER = 'client';
 exports.DEV_PUBLIC_PATH = `${constants_1.ROUTE_PREFIX}/static/webpack/`;
 exports.BUILD_MANIFEST_PATH = "build-manifest.json";
 exports.BUILD_MEDIA_PATH = "static/media/[name].[hash:8].[ext]";

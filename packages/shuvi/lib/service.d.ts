@@ -1,9 +1,9 @@
 import { AppConfig } from "@shuvi/types/core";
 export default class Service {
     private _app;
-    private _buildRequier;
+    private _webpackDistModuleLoader;
     private _routerService;
-    private _onDemandRouteManager;
+    private _onDemandRouteMgr;
     private _devServer;
     constructor({ config }: {
         config: Partial<AppConfig>;

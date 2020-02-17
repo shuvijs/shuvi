@@ -1,4 +1,6 @@
 export * from "./shared/constants";
+export declare const WEBPACK_CONFIG_CLIENT = "client";
+export declare const WEBPACK_CONFIG_SERVER = "client";
 export declare const DEV_PUBLIC_PATH: string;
 export declare const BUILD_MANIFEST_PATH = "build-manifest.json";
 export declare const BUILD_MEDIA_PATH = "static/media/[name].[hash:8].[ext]";

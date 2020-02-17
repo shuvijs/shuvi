@@ -3,6 +3,10 @@ import { resolvePackageFile } from "./helpers/paths";
 
 export * from "./shared/constants";
 
+export const WEBPACK_CONFIG_CLIENT = 'client';
+
+export const WEBPACK_CONFIG_SERVER = 'client';
+
 export const DEV_PUBLIC_PATH = `${ROUTE_PREFIX}/static/webpack/`;
 
 export const BUILD_MANIFEST_PATH = "build-manifest.json";

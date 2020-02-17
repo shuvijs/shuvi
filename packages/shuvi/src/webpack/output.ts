@@ -9,14 +9,14 @@ import {
 } from "../constants";
 import { RouteConfig } from "@shuvi/types/core";
 
-interface BuildRequireConstructionOptions {
+interface ModuleLoaderConstructionOptions {
   buildDir: string;
 }
 
-export default class BuildRequire {
-  private _options: BuildRequireConstructionOptions;
+export class ModuleLoader {
+  private _options: ModuleLoaderConstructionOptions;
 
-  constructor(options: BuildRequireConstructionOptions) {
+  constructor(options: ModuleLoaderConstructionOptions) {
     this._options = options;
   }
 

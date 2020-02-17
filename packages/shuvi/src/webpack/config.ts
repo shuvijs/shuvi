@@ -11,14 +11,22 @@ import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_WEBPACK,
   BUILD_CLIENT_DIR,
-  BUILD_SERVER_DIR
+  BUILD_SERVER_DIR,
+  CLIENT_ENTRY_PATH,
+  BUILD_SERVER_DOCUMENT,
+  BUILD_SERVER_APP
 } from "../constants";
 
-interface Options {
+export interface WebpackEntry {
+  [x: string]: string[];
+}
+
+interface WebpackConfigOptions {
+  name: string;
   node: boolean;
 }
 
-export function getWebpackConfig(app: AppCore, opts: Options) {
+export function createWepbackConfig(app: AppCore, opts: WebpackConfigOptions) {
   const { paths } = app;
   let chain: WebpackChain;
   const isDev = process.env.NODE_ENV === "development";
@@ -46,6 +54,7 @@ export function getWebpackConfig(app: AppCore, opts: Options) {
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
   }
 
+  chain.name(opts.name)
   chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
   chain.resolve.alias.merge({
     "@babel/runtime-corejs2": path.dirname(
@@ -66,4 +75,18 @@ export function getWebpackConfig(app: AppCore, opts: Options) {
   });
 
   return chain.toConfig();
+}
+
+export function getClientEntry(): WebpackEntry {
+  return {
+    [BUILD_CLIENT_RUNTIME_MAIN]: [CLIENT_ENTRY_PATH]
+  };
+}
+
+export function getServerEntry(): WebpackEntry {
+  return {
+    [BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"],
+    // TODO: ssr only
+    [BUILD_SERVER_APP]: ["@shuvi-app/app"]
+  };
 }
