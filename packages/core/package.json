@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/core",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
@@ -21,7 +21,7 @@
   "dependencies": {
     "@shuvi/react-fs": "^0.0.1-alpha.2",
     "@shuvi/toolpack": "^0.0.1-alpha.3",
-    "@shuvi/utils": "^0.0.1-alpha.2",
+    "@shuvi/utils": "^0.0.1-alpha.3",
     "fs-extra": "8.1.0",
     "handlebars": "4.5.3",
     "immer": "5.2.1",
