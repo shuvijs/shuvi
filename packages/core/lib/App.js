@@ -14,17 +14,28 @@ const react_1 = __importStar(require("react"));
 const react_fs_1 = require("@shuvi/react-fs");
 const FileNode_1 = __importDefault(require("./components/FileNode"));
 const Bootstrap_1 = __importDefault(require("./components/Bootstrap"));
-const store_1 = require("./store");
+const FilePriorityFile_1 = __importDefault(require("./components/FilePriorityFile"));
+const store_1 = require("./models/store");
 function App(props) {
-    const files = store_1.useStore(state => state.files);
-    const bootstrapFilePath = store_1.useStore(state => state.bootstrapFilePath);
-    const routesSource = store_1.useStore(state => state.routesSource);
+    const files = store_1.useSelector(state => state.extraFiles);
+    const bootstrap = store_1.useSelector(state => state.bootstrapModule);
+    const app = store_1.useSelector(state => ({
+        fallbackFile: state.appModuleFallback,
+        lookupFiles: state.appModuleLookups
+    }));
+    const document = store_1.useSelector(state => ({
+        fallbackFile: state.documentModuleFallback,
+        lookupFiles: state.documentModuleLookups
+    }));
+    const routesContent = store_1.useSelector(state => state.routesContent);
     react_1.useEffect(() => {
         props.onDidUpdate();
     });
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(Bootstrap_1.default, { file: bootstrapFilePath }),
-        react_1.default.createElement(react_fs_1.File, { name: "routes.js", content: routesSource }),
+        react_1.default.createElement(Bootstrap_1.default, { module: bootstrap }),
+        react_1.default.createElement(FilePriorityFile_1.default, Object.assign({ name: "app.js" }, app)),
+        react_1.default.createElement(FilePriorityFile_1.default, Object.assign({ name: "document.js" }, document)),
+        react_1.default.createElement(react_fs_1.File, { name: "routes.js", content: routesContent }),
         files.map(file => (react_1.default.createElement(FileNode_1.default, { key: file.name, file: file })))));
 }
 class AppContainer extends react_1.default.Component {

@@ -1,24 +1,14 @@
 "use strict";
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
 const react_fs_1 = require("@shuvi/react-fs");
-const FileTemplate_1 = __importDefault(require("./FileTemplate"));
-const FileSelector_1 = __importDefault(require("./FileSelector"));
+const FileTemplateFile_1 = __importDefault(require("./FileTemplateFile"));
+const FilePriorityFile_1 = __importDefault(require("./FilePriorityFile"));
 const base_1 = require("./base");
+const files_1 = require("../models/files");
 class FileNode extends base_1.BaseComponent {
     constructor(props) {
         super(props);
@@ -26,29 +16,27 @@ class FileNode extends base_1.BaseComponent {
         this._renderFile = this._renderFile.bind(this);
     }
     _renderFile(file) {
-        const { type } = file, props = __rest(file, ["type"]);
         let Comp;
-        switch (type) {
-            case "template":
-                Comp = FileTemplate_1.default;
-                break;
-            case "selector":
-                Comp = FileSelector_1.default;
-                break;
-            default:
-                Comp = react_fs_1.File;
+        if (files_1.isTemplateFile(file)) {
+            Comp = FileTemplateFile_1.default;
         }
-        return react_1.default.createElement(Comp, Object.assign({}, props));
+        else if (files_1.isPriorityFile(file)) {
+            Comp = FilePriorityFile_1.default;
+        }
+        else {
+            Comp = react_fs_1.File;
+        }
+        return react_1.default.createElement(Comp, Object.assign({}, file));
     }
     _renderDir(dir) {
         var _a;
         return (react_1.default.createElement(react_fs_1.Dir, { name: dir.name }, (_a = dir.children) === null || _a === void 0 ? void 0 : _a.map(node => this._renderNode(node))));
     }
     _renderNode(node) {
-        if (node.$$type === "dir") {
+        if (files_1.isDir(node)) {
             return this._renderDir(node);
         }
-        else if (node.$$type === "file") {
+        else if (files_1.isFile(node)) {
             return this._renderFile(node);
         }
         return null;

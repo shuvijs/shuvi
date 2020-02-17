@@ -1,16 +1,16 @@
 import React from "react";
-import FileTemplate from "./FileTemplate";
+import FileTemplate from "./FileTemplateFile";
 import { BaseComponent } from "./Base";
 
 interface Props {
-  file: string;
+  module: string;
 }
 
 export default class Bootstrap extends BaseComponent<Props> {
   render() {
-    const { file } = this.props;
+    const { module } = this.props;
     return (
-      <FileTemplate name="bootstrap.js" template={`export * from "${file}"`} />
+      <FileTemplate name="bootstrap.js" template={`export * from "${module}"`} />
     );
   }
 }

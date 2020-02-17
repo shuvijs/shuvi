@@ -1,5 +1,7 @@
 import { Compiler, Plugin } from "webpack";
 
+const REPLACED = Symbol("replaced");
+
 export type ConfigItem = {
   test: Function | RegExp;
   module: string;
@@ -101,15 +103,18 @@ export default class ModuleReplacePlugin implements Plugin {
     }
 
     if (moduleInfo.status === ModuleStatus.REPLACED) {
-      moduleInfo.loaders = wpModule.loaders;
-      wpModule.loaders = [
-        {
-          loader: stubLoader,
-          options: {
-            module: moduleInfo.replacedModule
+      if (wpModule.loaders && wpModule.loaders[REPLACED] !== true) {
+        moduleInfo.loaders = wpModule.loaders;
+        wpModule.loaders = [
+          {
+            loader: stubLoader,
+            options: {
+              module: moduleInfo.replacedModule
+            }
           }
-        }
-      ];
+        ];
+        wpModule.loaders[REPLACED] = true;
+      }
     }
   }
 

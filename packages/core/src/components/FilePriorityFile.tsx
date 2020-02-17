@@ -7,7 +7,7 @@ import { BaseComponent } from "./Base";
 
 export interface Props {
   name: string;
-  files: [string, ...string[]];
+  lookupFiles: string[];
   fallbackFile: string;
 }
 
@@ -33,7 +33,7 @@ export default class FileSelector extends BaseComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const file = findFirstExistedFile(props.files);
+    const file = findFirstExistedFile(props.lookupFiles);
     let selectedFile: string;
     if (file) {
       selectedFile = file;
@@ -57,10 +57,10 @@ export default class FileSelector extends BaseComponent<Props, State> {
       this._knownFiles.delete(removed);
     }
 
-    const { files, fallbackFile } = this.props;
+    const { lookupFiles, fallbackFile } = this.props;
     let selectedFile: string = fallbackFile;
-    for (let index = 0; index < files.length; index++) {
-      const file = files[index];
+    for (let index = 0; index < lookupFiles.length; index++) {
+      const file = lookupFiles[index];
       if (this._knownFiles.has(file)) {
         selectedFile = file;
         break;
@@ -82,9 +82,9 @@ export default class FileSelector extends BaseComponent<Props, State> {
 
   _createWatcher() {
     this._destoryWatcher();
-    if (this.props.files.length) {
+    if (this.props.lookupFiles.length) {
       this._watcherHandle = watch(
-        { files: this.props.files },
+        { files: this.props.lookupFiles },
         this._onFilesChange
       );
     }
@@ -99,15 +99,16 @@ export default class FileSelector extends BaseComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (!arrayEqual(prevProps.files, this.props.files)) {
+    if (!arrayEqual(prevProps.lookupFiles, this.props.lookupFiles)) {
       this._createWatcher();
     }
   }
 
-  shouldComponentUpdate(nextProps: Props) {
+  shouldComponentUpdate(nextProps: Props, nextState: State) {
     return (
+      this.state !== nextState ||
       this.props.fallbackFile !== nextProps.fallbackFile ||
-      !arrayEqual(this.props.files, nextProps.files)
+        !arrayEqual(this.props.lookupFiles, nextProps.lookupFiles)
     );
   }
 

@@ -9,7 +9,7 @@
   "author": "liximomo",
   "license": "MIT",
   "bin": {
-    "shuvi": "./lib/cli"
+    "shuvi": "./lib/cli.js"
   },
   "files": [
     "lib"

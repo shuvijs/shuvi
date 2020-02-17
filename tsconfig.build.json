@@ -19,7 +19,8 @@
     "downlevelIteration": true,
     "noUnusedLocals": false,
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "experimentalDecorators": true
   },
   "exclude": []
 }

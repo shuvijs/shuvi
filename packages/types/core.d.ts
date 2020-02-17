@@ -5,35 +5,6 @@ export interface TemplateData {
   [x: string]: any;
 }
 
-export type FileType = "template" | "selector" | "normal";
-
-export type FileNodeType = "file" | "dir";
-
-export interface TemplateFile {
-  $$type: "file";
-  type: "template";
-  name: string;
-  template: string;
-  data: TemplateData;
-}
-
-export interface SelectorFile {
-  $$type: "file";
-  type: "selector";
-  name: string;
-  files: string[];
-}
-
-export type File = TemplateFile | SelectorFile;
-
-export interface Dir {
-  $$type: "dir";
-  name: string;
-  children: Array<File | Dir>;
-}
-
-export type FileNode = File | Dir;
-
 export interface Paths {
   projectDir: string;
   buildDir: string;
@@ -82,9 +53,7 @@ export interface AppConfig {
   publicPath: string;
 }
 
-export interface BuildOptions {
-  bootstrapFilePath: string;
-}
+export interface BuildOptions {}
 
 export interface RouteComponentContext {
   isServer: boolean;
@@ -110,19 +79,11 @@ export interface AppCore {
 
   getPublicUrlPath(...paths: string[]): string;
 
-  addSelectorFile(
-    path: string,
-    selectFileList: string[],
-    fallbackFile: string
-  ): void;
+  setBootstrapModule(module: string): void;
 
-  addTemplateFile(
-    path: string,
-    templateFile: string,
-    data?: TemplateData
-  ): void;
+  setAppModule(lookups: string[], fallback: string): void;
 
-  addFile(path: string, { content }: { content: string }): void;
+  setDocumentModule(lookups: string[], fallback: string): void;
 
   setRoutesSource(content: string): void;
 

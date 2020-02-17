@@ -1,22 +1,12 @@
 import React from "react";
+import { useStaticRendering } from "mobx-react";
 import ReactFS from "@shuvi/react-fs";
 import fse from "fs-extra";
-import {
-  AppCore,
-  Paths,
-  TemplateData,
-  BuildOptions,
-  AppConfig
-} from "@shuvi/types/core";
+import { AppCore, Paths, BuildOptions, AppConfig } from "@shuvi/types/core";
 import App from "./App";
 import { getPaths } from "./paths";
-import {
-  initBootstrap,
-  addSelectorFile,
-  addTemplateFile,
-  addFile,
-  setRoutesSource
-} from "./store";
+import { File } from "./models/files";
+import { store } from "./models/store";
 import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
 import { joinPath } from "./utils";
 
@@ -53,28 +43,22 @@ class AppCoreImpl implements AppCore {
     return joinPath(this.config.publicPath, buildPath);
   }
 
-  addSelectorFile(
-    path: string,
-    selectFileList: string[],
-    fallbackFile: string
-  ): void {
-    addSelectorFile(path, selectFileList, fallbackFile);
+  setBootstrapModule(module: string) {
+    store.bootstrapModule = module;
   }
 
-  addTemplateFile(
-    path: string,
-    templateFile: string,
-    data: TemplateData = {}
-  ): void {
-    addTemplateFile(path, templateFile, data);
+  setAppModule(lookups: string[], fallback: string) {
+    store.appModuleFallback = fallback;
+    store.appModuleLookups = lookups;
   }
 
-  addFile(path: string, { content }: { content: string }): void {
-    addFile(path, content);
+  setDocumentModule(lookups: string[], fallback: string) {
+    store.documentModuleFallback = fallback;
+    store.documentModuleLookups = lookups;
   }
 
   setRoutesSource(content: string): void {
-    setRoutesSource(content);
+    store.routesContent = content;
   }
 
   waitUntilBuild(): Promise<void> {
@@ -84,7 +68,6 @@ class AppCoreImpl implements AppCore {
   }
 
   async build(options: BuildOptions): Promise<void> {
-    initBootstrap({ bootstrapFilePath: options.bootstrapFilePath });
     await fse.emptyDir(this.paths.appDir);
 
     return new Promise(resolve => {
@@ -99,11 +82,13 @@ class AppCoreImpl implements AppCore {
   }
 
   async buildOnce(options: BuildOptions): Promise<void> {
+    useStaticRendering(true);
     swtichOffLifeCycle();
     try {
       await this.build(options);
     } finally {
       swtichOnLifeCycle();
+      useStaticRendering(false);
     }
   }
 

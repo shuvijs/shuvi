@@ -1,13 +1,17 @@
 import React from "react";
 import { Dir, File } from "@shuvi/react-fs";
+import FileTemplate from "./FileTemplateFile";
+import FileSelector from "./FilePriorityFile";
+import { BaseComponent } from "./base";
 import {
+  FileNode as IFileNode,
   File as IFile,
   Dir as IDir,
-  FileNode as IFileNode
-} from "@shuvi/types/core";
-import FileTemplate from "./FileTemplate";
-import FileSelector from "./FileSelector";
-import { BaseComponent } from "./base";
+  isDir,
+  isTemplateFile,
+  isPriorityFile,
+  isFile
+} from "../models/files";
 
 interface Props {
   file: IFileNode;
@@ -22,20 +26,16 @@ export default class FileNode extends BaseComponent<Props> {
   }
 
   private _renderFile(file: IFile) {
-    const { type, ...props } = file;
     let Comp: React.ComponentType<any>;
-    switch (type) {
-      case "template":
-        Comp = FileTemplate;
-        break;
-      case "selector":
-        Comp = FileSelector;
-        break;
-      default:
-        Comp = File;
+    if (isTemplateFile(file)) {
+      Comp = FileTemplate;
+    } else if (isPriorityFile(file)) {
+      Comp = FileSelector;
+    } else {
+      Comp = File;
     }
 
-    return <Comp {...props} />;
+    return <Comp {...file} />;
   }
 
   private _renderDir(dir: IDir) {
@@ -47,9 +47,9 @@ export default class FileNode extends BaseComponent<Props> {
   }
 
   private _renderNode(node: IFileNode) {
-    if (node.$$type === "dir") {
+    if (isDir(node)) {
       return this._renderDir(node);
-    } else if (node.$$type === "file") {
+    } else if (isFile(node)) {
       return this._renderFile(node);
     }
 

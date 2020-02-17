@@ -13,11 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
+const mobx_react_1 = require("mobx-react");
 const react_fs_1 = __importDefault(require("@shuvi/react-fs"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const App_1 = __importDefault(require("./App"));
 const paths_1 = require("./paths");
-const store_1 = require("./store");
+const store_1 = require("./models/store");
 const Base_1 = require("./components/Base");
 const utils_1 = require("./utils");
 class AppCoreImpl {
@@ -41,17 +42,19 @@ class AppCoreImpl {
     getPublicUrlPath(buildPath) {
         return utils_1.joinPath(this.config.publicPath, buildPath);
     }
-    addSelectorFile(path, selectFileList, fallbackFile) {
-        store_1.addSelectorFile(path, selectFileList, fallbackFile);
+    setBootstrapModule(module) {
+        store_1.store.bootstrapModule = module;
     }
-    addTemplateFile(path, templateFile, data = {}) {
-        store_1.addTemplateFile(path, templateFile, data);
+    setAppModule(lookups, fallback) {
+        store_1.store.appModuleFallback = fallback;
+        store_1.store.appModuleLookups = lookups;
     }
-    addFile(path, { content }) {
-        store_1.addFile(path, content);
+    setDocumentModule(lookups, fallback) {
+        store_1.store.documentModuleFallback = fallback;
+        store_1.store.documentModuleLookups = lookups;
     }
     setRoutesSource(content) {
-        store_1.setRoutesSource(content);
+        store_1.store.routesContent = content;
     }
     waitUntilBuild() {
         return new Promise(resolve => {
@@ -60,7 +63,6 @@ class AppCoreImpl {
     }
     build(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            store_1.initBootstrap({ bootstrapFilePath: options.bootstrapFilePath });
             yield fs_extra_1.default.emptyDir(this.paths.appDir);
             return new Promise(resolve => {
                 react_fs_1.default.render(react_1.default.createElement(App_1.default, { onDidUpdate: this._onBuildDone.bind(this) }), this.paths.appDir, () => {
@@ -71,12 +73,14 @@ class AppCoreImpl {
     }
     buildOnce(options) {
         return __awaiter(this, void 0, void 0, function* () {
+            mobx_react_1.useStaticRendering(true);
             Base_1.swtichOffLifeCycle();
             try {
                 yield this.build(options);
             }
             finally {
                 Base_1.swtichOnLifeCycle();
+                mobx_react_1.useStaticRendering(false);
             }
         });
     }

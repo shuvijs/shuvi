@@ -52,7 +52,7 @@ export class OnDemandRouteManager {
     if (!this.devServer) {
       return;
     }
-
+    
     const toActivate: string[] = [];
     for (let index = 0; index < routeIds.length; index++) {
       const id = routeIds[index];
@@ -108,9 +108,13 @@ export class OnDemandRouteManager {
         this._routesMap.set(id, { componentFile: newRoute.componentFile });
       } else {
         deleted.add(id);
-        this._routesMap.delete(id);
       }
     }
+
+    deleted.forEach(id => {
+      this._activedRouteIds.delete(id);
+      this._routesMap.delete(id);
+    });
 
     added.forEach(id =>
       this._routesMap.set(id, {

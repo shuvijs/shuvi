@@ -46,9 +46,7 @@ class Service {
     start() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this._setupApp();
-            yield this._app.build({
-                bootstrapFilePath: runtime_1.runtime.getBootstrapFilePath()
-            });
+            yield this._app.build({});
             const clientConfig = getWebpackConfig_1.getWebpackConfig(this._app, { node: false });
             clientConfig.name = "client";
             clientConfig.entry = {
@@ -97,8 +95,9 @@ class Service {
         return __awaiter(this, void 0, void 0, function* () {
             // core files
             const app = this._app;
-            app.addSelectorFile("app.js", [app.resolveSrcFile("app.js")], runtime_1.runtime.getAppFilePath());
-            app.addSelectorFile("document.js", [app.resolveSrcFile("document.js")], runtime_1.runtime.getDocumentFilePath());
+            app.setBootstrapModule(runtime_1.runtime.getBootstrapFilePath());
+            app.setAppModule([app.resolveSrcFile("app.js")], runtime_1.runtime.getAppFilePath());
+            app.setDocumentModule([app.resolveSrcFile("document.js")], runtime_1.runtime.getDocumentFilePath());
             this._onDemandRouteManager.run(this._routerService);
             // runtime files
             yield runtime_1.runtime.install(this._app);

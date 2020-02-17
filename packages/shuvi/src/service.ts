@@ -55,9 +55,7 @@ export default class Service {
 
   async start() {
     await this._setupApp();
-    await this._app.build({
-      bootstrapFilePath: runtime.getBootstrapFilePath()
-    });
+    await this._app.build({});
 
     const clientConfig = getWebpackConfig(this._app, { node: false });
     clientConfig.name = "client";
@@ -111,13 +109,9 @@ export default class Service {
   private async _setupApp() {
     // core files
     const app = this._app;
-    app.addSelectorFile(
-      "app.js",
-      [app.resolveSrcFile("app.js")],
-      runtime.getAppFilePath()
-    );
-    app.addSelectorFile(
-      "document.js",
+    app.setBootstrapModule(runtime.getBootstrapFilePath());
+    app.setAppModule([app.resolveSrcFile("app.js")], runtime.getAppFilePath());
+    app.setDocumentModule(
       [app.resolveSrcFile("document.js")],
       runtime.getDocumentFilePath()
     );

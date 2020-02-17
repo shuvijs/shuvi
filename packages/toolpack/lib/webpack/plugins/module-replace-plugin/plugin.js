@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const REPLACED = Symbol("replaced");
 const toString = Object.prototype.toString;
 function isRegExp(target) {
     return toString.call(target) === `[object RegExp]`;
@@ -56,15 +57,18 @@ class ModuleReplacePlugin {
             return;
         }
         if (moduleInfo.status === ModuleStatus.REPLACED) {
-            moduleInfo.loaders = wpModule.loaders;
-            wpModule.loaders = [
-                {
-                    loader: stubLoader,
-                    options: {
-                        module: moduleInfo.replacedModule
+            if (wpModule.loaders && wpModule.loaders[REPLACED] !== true) {
+                moduleInfo.loaders = wpModule.loaders;
+                wpModule.loaders = [
+                    {
+                        loader: stubLoader,
+                        options: {
+                            module: moduleInfo.replacedModule
+                        }
                     }
-                }
-            ];
+                ];
+                wpModule.loaders[REPLACED] = true;
+            }
         }
     }
     _collectModules(compiler, wpModule) {

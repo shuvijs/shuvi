@@ -21,7 +21,7 @@ const recursiveReaddir_1 = require("@shuvi/utils/lib/recursiveReaddir");
 function createId(filepath) {
     const id = crypto_1.createHash("md4")
         .update(filepath)
-        .digest("base64")
+        .digest("hex")
         .substr(0, 4);
     return `page-${id}`;
 }

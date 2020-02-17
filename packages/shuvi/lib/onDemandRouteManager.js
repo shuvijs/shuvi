@@ -105,9 +105,12 @@ class OnDemandRouteManager {
             }
             else {
                 deleted.add(id);
-                this._routesMap.delete(id);
             }
         }
+        deleted.forEach(id => {
+            this._activedRouteIds.delete(id);
+            this._routesMap.delete(id);
+        });
         added.forEach(id => this._routesMap.set(id, {
             componentFile: newRouteMap.get(id).componentFile
         }));

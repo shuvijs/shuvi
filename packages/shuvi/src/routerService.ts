@@ -10,7 +10,7 @@ import { RouterService, SubscribeFn } from "./types/routeService";
 function createId(filepath: string) {
   const id = createHash("md4")
     .update(filepath)
-    .digest("base64")
+    .digest("hex")
     .substr(0, 4);
 
   return `page-${id}`;
