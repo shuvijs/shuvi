@@ -7,6 +7,7 @@ import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import ModuleReplacePlugin from "../plugins/module-replace-plugin";
 import RequireCacheHotReloaderPlugin from "../plugins/require-cache-hot-reloader-plugin";
 import { getProjectInfo } from "../../utils/typeScript";
+import { InternalSourceRegexs } from "../../constants";
 
 const dumpRouteComponent = require.resolve("../../utils/emptyComponent");
 
@@ -65,7 +66,9 @@ export function baseWebpackChain({
   const config = new WebpackChain();
 
   config.mode(dev ? "development" : "production");
-  config.performance.hints(false).end();
+  config.bail(!dev);
+  config.performance.hints(false);
+  config.context(projectRoot);
 
   config.optimization.merge({
     noEmitOnErrors: dev,
@@ -73,16 +76,20 @@ export function baseWebpackChain({
     nodeEnv: false,
     splitChunks: false,
     runtimeChunk: undefined,
-    moduleIds: dev ? "named" : "deterministic",
     minimize: !dev
   });
-  config.optimization.minimizer("terser").use(TerserPlugin, [
-    {
-      parallel: true,
-      // cache: "path/to/cache",
-      terserOptions
-    }
-  ]);
+  if (!dev) {
+    config.optimization.minimizer("terser").use(TerserPlugin, [
+      {
+        extractComments: false,
+        parallel: true,
+        cache: true,
+        // cache: "path/to/cache",
+        sourceMap: false,
+        terserOptions
+      }
+    ]);
+  }
 
   config.output.merge({
     publicPath,
@@ -90,12 +97,12 @@ export function baseWebpackChain({
     hotUpdateMainFilename: "static/webpack/[hash].hot-update.json",
     // This saves chunks with the name given via `import()`
     chunkFilename: `static/chunks/${
-      dev ? "[name]" : "[name].[contenthash]"
+      dev ? "[name]" : "[name].[contenthash:8]"
     }.js`,
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
     futureEmitAssets: !dev,
-    webassemblyModuleFilename: "static/wasm/[modulehash].wasm"
+    webassemblyModuleFilename: "static/wasm/[modulehash:8].wasm"
   });
 
   // Support for NODE_PATH
@@ -129,14 +136,22 @@ export function baseWebpackChain({
   config.module
     .rule("src")
     .test(/\.(tsx|ts|js|mjs|jsx)$/)
-    .include.merge(srcDirs)
+    .include.merge([...srcDirs, ...InternalSourceRegexs])
+    .end()
+    .exclude.add((path: string) => {
+      if (InternalSourceRegexs.some(r => r.test(path))) {
+        return false;
+      }
+      return /node_modules/.test(path);
+    })
     .end()
     .use("babel-loader")
     .loader("@shuvi/babel-loader")
     .options({
       isNode: false,
       // TODO:
-      cacheDirectory: false
+      cacheDirectory: false,
+      cacheCompression: false
     });
   config.module
     .rule("media")
@@ -207,6 +222,10 @@ export function baseWebpackChain({
     config
       .plugin("private/require-cache-hot-reloader")
       .use(RequireCacheHotReloaderPlugin);
+  } else {
+    config
+      .plugin("private/module-replace-plugin")
+      .use(webpack.HashedModuleIdsPlugin);
   }
 
   return config;

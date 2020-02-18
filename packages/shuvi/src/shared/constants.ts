@@ -1,8 +1,10 @@
 import { NAME } from "@shuvi/core/lib/constants";
 
-export const CLIENT_CONTAINER_ID = '__APP';
+export { NAME };
 
-export const CLIENT_APPDATA_ID = '__APP_DATA';
+export const CLIENT_CONTAINER_ID = "__APP";
+
+export const CLIENT_APPDATA_ID = "__APP_DATA";
 
 export const ROUTE_PREFIX = `/_${NAME}`;
 

@@ -10,8 +10,9 @@ export function createNodeWebpackChain({
   const chain = baseWebpackChain(baseOptions);
 
   chain.target("node");
+  chain.devtool(false);
   chain.output.libraryTarget("commonjs2");
-
+  chain.optimization.minimize(false);
   chain.externals(nodeExternals({ projectRoot: baseOptions.projectRoot }));
   chain.plugin("private/build-manifest").tap(([options]) => [
     {

@@ -189,17 +189,24 @@ export default class RouterServiceImpl implements RouterService {
   }
 
   private _createWatcher() {
-    return watch({ directories: [this._pagesDir] }, ({ getAllFiles }) => {
-      const files: string[] = [];
-      const rawFiles = getAllFiles();
-      for (let index = 0; index < rawFiles.length; index++) {
-        const absPath = rawFiles[index];
-        const relativePath = relative(this._pagesDir, absPath);
-        if (filterRouteFile(relativePath)) {
-          files.push(relativePath);
+    return watch(
+      { directories: [this._pagesDir] },
+      ({ changes, removals, getAllFiles }) => {
+        // BUG: sometimes not trigger after creating watcher
+        const files: string[] = [];
+        const rawFiles = getAllFiles();
+        console.log("changes", changes);
+        console.log("removals", removals);
+        console.log("rawFiles", rawFiles);
+        for (let index = 0; index < rawFiles.length; index++) {
+          const absPath = rawFiles[index];
+          const relativePath = relative(this._pagesDir, absPath);
+          if (filterRouteFile(relativePath)) {
+            files.push(relativePath);
+          }
         }
+        this._event.emit("change", this._getRoutes(files));
       }
-      this._event.emit("change", this._getRoutes(files));
-    });
+    );
   }
 }

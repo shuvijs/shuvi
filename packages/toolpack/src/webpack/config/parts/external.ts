@@ -1,5 +1,6 @@
 import { ExternalsElement, ExternalsFunctionElement } from "webpack";
 import resolve from "resolve";
+import { InternalSourceRegexs } from "../../../constants";
 
 type Test = string | RegExp;
 
@@ -44,6 +45,12 @@ export function nodeExternals({
     }
 
     const notExternalModules: Test[] = [];
+
+    // make sure we don't externalize anything that is
+    // supposed to be transpiled
+    if (match(request, InternalSourceRegexs)) {
+      return transpiled();
+    }
 
     if (match(request, notExternalModules)) {
       return transpiled();

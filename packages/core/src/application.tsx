@@ -40,7 +40,7 @@ class AppCoreImpl implements AppCore {
   }
 
   getPublicUrlPath(buildPath: string): string {
-    return joinPath(this.config.publicPath, buildPath);
+    return joinPath(this.config.publicUrl, buildPath);
   }
 
   setBootstrapModule(module: string) {
@@ -100,6 +100,6 @@ class AppCoreImpl implements AppCore {
   }
 }
 
-export function app(options: AppOptions): AppCore {
+export function createApp(options: AppOptions): AppCore {
   return new AppCoreImpl(options);
 }

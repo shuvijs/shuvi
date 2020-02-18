@@ -1,6 +1,6 @@
 import { parse as parseUrl } from "url";
 import { IncomingMessage, ServerResponse } from "http";
-import { app } from "@shuvi/core";
+import { createApp } from "@shuvi/core";
 import { AppCore, AppConfig, RouteComponent } from "@shuvi/types/core";
 import * as Runtime from "@shuvi/types/Runtime";
 import { ModuleManifest } from "@shuvi/types/build";
@@ -8,7 +8,7 @@ import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
 import Express from "express";
 import { htmlEscapeJsonString } from "./helpers/htmlescape";
 import DevServer from "./dev/devServer";
-import { RouterService } from "./types/routeService";
+import { RouterService as IRouterService } from "./types/routeService";
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
   CLIENT_CONTAINER_ID,
@@ -17,13 +17,8 @@ import {
   WEBPACK_CONFIG_CLIENT,
   WEBPACK_CONFIG_SERVER
 } from "./constants";
-import FsRouterService from "./routerService";
-import {
-  createWepbackConfig,
-  getClientEntry,
-  getServerEntry
-} from "./webpack/config";
-import { createCompilerHelper } from "./webpack/compiler";
+import RouterService from "./routerService";
+import { getWebpackManager } from "./webpack/webpackManager";
 import { ModuleLoader } from "./webpack/output";
 import { OnDemandRouteManager } from "./onDemandRouteManager";
 import { runtime } from "./runtime";
@@ -31,24 +26,18 @@ import { acceptsHtml, dedupe } from "./utils";
 
 import AppData = Runtime.AppData;
 
-const defaultConfig: AppConfig = {
-  cwd: process.cwd(),
-  outputPath: "dist",
-  publicPath: "/"
-};
-
 export default class Service {
   private _app: AppCore;
   private _webpackDistModuleLoader: ModuleLoader;
-  private _routerService: RouterService;
+  private _routerService: IRouterService;
   private _onDemandRouteMgr: OnDemandRouteManager;
   private _devServer: DevServer | null;
 
-  constructor({ config }: { config: Partial<AppConfig> }) {
-    this._app = app({
-      config: { ...defaultConfig, ...config }
+  constructor({ config }: { config: AppConfig }) {
+    this._app = createApp({
+      config
     });
-    this._routerService = new FsRouterService(this._app.paths.pagesDir);
+    this._routerService = new RouterService(this._app.paths.pagesDir);
     this._webpackDistModuleLoader = new ModuleLoader({
       buildDir: this._app.paths.buildDir
     });
@@ -60,28 +49,12 @@ export default class Service {
     await this._setupApp();
     await this._app.build({});
 
-    const clientConfig = createWepbackConfig(this._app, {
-      name: WEBPACK_CONFIG_CLIENT,
-      node: false
-    });
-    clientConfig.entry = getClientEntry();
-
-    const serverConfig = createWepbackConfig(this._app, {
-      name: WEBPACK_CONFIG_SERVER,
-      node: true
-    });
-    serverConfig.entry = getServerEntry();
-
-    const compilerHelper = createCompilerHelper();
-    compilerHelper.addConfig(clientConfig).addConfig(serverConfig);
-    const server = (this._devServer = new DevServer(
-      compilerHelper.getCompiler(),
-      {
-        port: 4000,
-        host: "0.0.0.0",
-        publicPath: this._config.publicPath
-      }
-    ));
+    const webpackMgr = getWebpackManager(this._app);
+    const server = (this._devServer = new DevServer(webpackMgr.getCompiler(), {
+      port: 4000,
+      host: "0.0.0.0",
+      publicPath: this._config.publicUrl
+    }));
     this._onDemandRouteMgr.devServer = this._devServer;
 
     const { useTypeScript } = getProjectInfo(this._paths.projectDir);
@@ -91,22 +64,16 @@ export default class Service {
         console.log(`app in running on: http://localhost:4000`);
       }
     };
-    server.watchCompiler(
-      compilerHelper.getSubCompiler(WEBPACK_CONFIG_CLIENT)!,
-      {
-        useTypeScript,
-        log: console.log.bind(console),
-        onFirstSuccess
-      }
-    );
-    server.watchCompiler(
-      compilerHelper.getSubCompiler(WEBPACK_CONFIG_SERVER)!,
-      {
-        useTypeScript: false,
-        log: console.log.bind(console),
-        onFirstSuccess
-      }
-    );
+    server.watchCompiler(webpackMgr.getSubCompiler(WEBPACK_CONFIG_CLIENT)!, {
+      useTypeScript,
+      log: console.log.bind(console),
+      onFirstSuccess
+    });
+    server.watchCompiler(webpackMgr.getSubCompiler(WEBPACK_CONFIG_SERVER)!, {
+      useTypeScript: false,
+      log: console.log.bind(console),
+      onFirstSuccess
+    });
 
     server.before(this._onDemandRouteMiddleware.bind(this));
     server.use(this._pageMiddleware.bind(this));

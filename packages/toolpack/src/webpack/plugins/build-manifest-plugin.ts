@@ -42,8 +42,11 @@ function getModules(compiler: Compiler, compilation: compilation.Compilation) {
 
     chunkGroup.origins.forEach((chunkGroupOrigin: any) => {
       const { request } = chunkGroupOrigin;
-
       chunkGroup.chunks.forEach((chunk: any) => {
+        if (chunk.canBeInitial()) {
+          return;
+        }
+
         chunk.files.forEach((file: string) => {
           if (!file.match(/\.js$/) || !file.match(/^static\/chunks\//)) {
             return;

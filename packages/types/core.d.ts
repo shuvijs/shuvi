@@ -50,7 +50,7 @@ export interface RouteMatch {
 export interface AppConfig {
   cwd: string;
   outputPath: string;
-  publicPath: string;
+  publicUrl: string;
 }
 
 export interface BuildOptions {}

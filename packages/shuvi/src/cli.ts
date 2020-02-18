@@ -11,25 +11,33 @@ type CommandName = typeof Commands[number];
 program
   .name("shuvi")
   .version(pkgInfo.version)
-  .usage("<cmd> [option]");
+  .usage("<cmd> [options]");
 
-program.parse(process.argv);
-
-const [cmd, ...args] = program.args.length ? program.args : ["start"];
+const args = process.argv.slice(2);
+const [cmd, ...commandArgs] = args.length ? args : ["start"];
 
 if (!Commands.includes(cmd as CommandName)) {
   console.log('Unknown command "' + cmd + '".');
   process.exit(1);
 }
 
-const result = spawn.sync("node", [require.resolve("./cmds/" + cmd), ...args], {
-  stdio: "inherit",
-  cwd: process.env.SHUVI_DIR,
-  env: {
-    ...process.env,
-    NODE_ENV: "development"
+let nodeEnv = "development";
+if (cmd === "build") {
+  nodeEnv = "production";
+}
+
+const result = spawn.sync(
+  "node",
+  [require.resolve("./cmds/" + cmd), ...commandArgs],
+  {
+    stdio: "inherit",
+    cwd: process.env.SHUVI_DIR,
+    env: {
+      ...process.env,
+      NODE_ENV: nodeEnv
+    }
   }
-});
+);
 if (result.signal) {
   if (result.signal === "SIGKILL") {
     console.log(

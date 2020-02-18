@@ -1,11 +1,11 @@
-import { ROUTE_PREFIX } from "./shared/constants";
+import { NAME, ROUTE_PREFIX } from "./shared/constants";
 import { resolvePackageFile } from "./helpers/paths";
 
 export * from "./shared/constants";
 
-export const WEBPACK_CONFIG_CLIENT = 'client';
+export const WEBPACK_CONFIG_CLIENT = `${NAME}/client`;
 
-export const WEBPACK_CONFIG_SERVER = 'client';
+export const WEBPACK_CONFIG_SERVER = `${NAME}/server`;
 
 export const DEV_PUBLIC_PATH = `${ROUTE_PREFIX}/static/webpack/`;
 

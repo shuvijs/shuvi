@@ -97,6 +97,14 @@ module.exports = babelLoader.custom((babel: any) => {
 
       options.plugins = options.plugins || [];
 
+      options.plugins.push([
+        require.resolve("babel-plugin-transform-define"),
+        {
+          "typeof window": isNode ? "undefined" : "object"
+        },
+        "shuvi-transform-define-instance"
+      ]);
+
       return options;
     }
   };

@@ -59,7 +59,7 @@ export class ModelApp {
   @observable appModuleLookups!: string[];
   @observable documentModuleFallback!:string;
   @observable documentModuleLookups!:string[];
-  @observable routesContent!: string;
+  @observable routesContent: string = 'export default []';
   @observable extraFiles: FileNode[] = [];
 
   @action

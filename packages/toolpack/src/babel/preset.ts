@@ -1,3 +1,4 @@
+import path from "path";
 import { PluginItem } from "@babel/core";
 
 const env = process.env.NODE_ENV;
@@ -31,7 +32,7 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
     // In production/development this option is set to `false` so that webpack can handle import/export with tree-shaking
     modules: "auto",
     exclude: ["transform-typeof-symbol"],
-    ...options["preset-env"],
+    ...options["preset-env"]
   };
 
   // When transpiling for the server or tests, target the current Node version
@@ -71,16 +72,16 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
     ],
     plugins: [
       [
-        require('./plugins/jsx-pragma'),
+        require("./plugins/jsx-pragma"),
         {
           // This produces the following injected import for modules containing JSX:
           //   import React from 'react';
           //   var __jsx = React.createElement;
-          module: 'react',
-          importAs: 'React',
-          pragma: '__jsx',
-          property: 'createElement',
-        },
+          module: "react",
+          importAs: "React",
+          pragma: "__jsx",
+          property: "createElement"
+        }
       ],
       [
         require("./plugins/optimize-hook-destructuring"),
@@ -98,17 +99,19 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
           useBuiltIns: true
         }
       ],
-      [
+      !isNode && [
         require("@babel/plugin-transform-runtime"),
         {
-          corejs: 2,
-          version: require('@babel/runtime-corejs2/package.json').version,
+          version: require("@babel/runtime/package.json").version,
           helpers: true,
           regenerator: true,
           useESModules: supportsESM && presetEnvConfig.modules !== "commonjs",
-          absoluteRuntime: (process.versions as any).pnp
-            ? __dirname
-            : undefined,
+          // Undocumented option that lets us encapsulate our runtime, ensuring
+          // the correct version is used
+          // https://github.com/babel/babel/blob/090c364a90fe73d36a30707fc612ce037bdbbb24/packages/babel-plugin-transform-runtime/src/index.js#L35-L42
+          absoluteRuntime: path.dirname(
+            require.resolve("@babel/runtime/package.json")
+          ),
           ...options["transform-runtime"]
         }
       ],
