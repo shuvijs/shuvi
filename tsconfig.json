@@ -8,6 +8,7 @@
       "@shuvi/utils/lib/*": ["packages/utils/src/*"],
       "@shuvi/libs/lib/*": ["packages/libs/src/*"],
       "@shuvi/runtime-react/lib/*": ["packages/runtime-react/src/*"],
+      "@shuvi/shared/lib/*": ["packages/shared/src/*"],
       "shuvi/*": ["packages/shuvi/src"]
     }
   }

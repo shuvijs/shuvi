@@ -19,7 +19,7 @@ export interface HtmlTag<TagNames = string> {
 }
 
 export interface DocumentProps {
-  headTags: HtmlTag<"meta" | "link" | "script" | "style">[];
+  headTags: HtmlTag<"meta"|"link"|"style"|"script"|"noscript"|"title">[];
   contentTags: HtmlTag[];
   scriptTags: HtmlTag<"script">[];
 }

@@ -133,8 +133,9 @@ export function baseWebpackChain({
   });
 
   config.module.set("strictExportPresence", true);
-  config.module
-    .rule("src")
+  const mainRule = config.module.rule("main");
+  mainRule
+    .oneOf("js")
     .test(/\.(tsx|ts|js|mjs|jsx)$/)
     .include.merge([...srcDirs, ...InternalSourceRegexs])
     .end()
@@ -153,8 +154,8 @@ export function baseWebpackChain({
       cacheDirectory: false,
       cacheCompression: false
     });
-  config.module
-    .rule("media")
+  mainRule
+    .oneOf("media")
     .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
     .end()
     .use("file-loader")

@@ -3,6 +3,7 @@ import webpack from "webpack";
 import WebpackChain from "webpack-chain";
 // import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import { baseWebpackChain, BaseOptions } from "./base";
+import { withStyle } from "./parts/style";
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
@@ -11,11 +12,12 @@ export interface BrowserOptions extends BaseOptions {}
 export function createBrowserWebpackChain({
   ...baseOptions
 }: BrowserOptions): WebpackChain {
+  const { dev } = baseOptions;
   const chain = baseWebpackChain(baseOptions);
 
   chain.target("web");
-  chain.devtool(baseOptions.dev ? "cheap-module-source-map" : false);
-  if (baseOptions.dev) {
+  chain.devtool(dev ? "cheap-module-source-map" : false);
+  if (dev) {
     chain.plugin("private/hmr-plugin").use(webpack.HotModuleReplacementPlugin);
   } else {
     chain.optimization.splitChunks({
@@ -93,7 +95,7 @@ export function createBrowserWebpackChain({
         }
       },
       maxInitialRequests: 12,
-      minSize: 20000,
+      minSize: 20000
     });
   }
   chain.plugin("private/build-manifest").tap(([options]) => [
@@ -102,5 +104,6 @@ export function createBrowserWebpackChain({
       modules: true
     }
   ]);
-  return chain;
+
+  return withStyle(chain, { extractCss: !dev });
 }

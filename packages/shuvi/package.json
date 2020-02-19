@@ -23,6 +23,7 @@
   "dependencies": {
     "@shuvi/core": "^0.0.1-alpha.6",
     "@shuvi/runtime-react": "^0.0.1-alpha.5",
+    "@shuvi/shared": "^0.0.1-alpha.0",
     "@shuvi/toolpack": "^0.0.1-alpha.5",
     "@shuvi/types": "^0.0.1-alpha.4",
     "@shuvi/utils": "^0.0.1-alpha.4",
@@ -31,6 +32,7 @@
     "express": "4.17.1",
     "fs-extra": "8.1.0",
     "path-to-regexp": "^6.1.0",
+    "send": "0.17.1",
     "tiny-invariant": "1.1.0",
     "webpack": "4.41.2",
     "webpack-dev-middleware": "3.7.2",

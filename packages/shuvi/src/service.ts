@@ -3,8 +3,8 @@ import { IncomingMessage, ServerResponse } from "http";
 import { createApp } from "@shuvi/core";
 import { AppCore, AppConfig, RouteComponent } from "@shuvi/types/core";
 import * as Runtime from "@shuvi/types/Runtime";
-import { ModuleManifest } from "@shuvi/types/build";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
+import { DEV_STYLE_ANCHOR_ID } from "@shuvi/shared/lib/constants";
 import Express from "express";
 import { htmlEscapeJsonString } from "./helpers/htmlescape";
 import DevServer from "./dev/devServer";
@@ -22,9 +22,11 @@ import { getWebpackManager } from "./webpack/webpackManager";
 import { ModuleLoader } from "./webpack/output";
 import { OnDemandRouteManager } from "./onDemandRouteManager";
 import { runtime } from "./runtime";
-import { acceptsHtml, dedupe } from "./utils";
+import { acceptsHtml } from "./utils";
 
 import AppData = Runtime.AppData;
+
+const isDev = process.env.NODE_ENV === "development";
 
 export default class Service {
   private _app: AppCore;
@@ -149,10 +151,7 @@ export default class Service {
     next();
   }
 
-  async renderPage(
-    req: IncomingMessage,
-    res: ServerResponse
-  ): Promise<void> {
+  async renderPage(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const parsedUrl = parseUrl(req.url!, true);
     const context: {
       loadableModules: string[];
@@ -197,12 +196,14 @@ export default class Service {
       routeProps
     });
     const dynamicImportIdSet = new Set<string>();
-    const dynamicImports: ModuleManifest[] = [];
+    const dynamicImportChunkSet = new Set<string>();
     for (const mod of context.loadableModules) {
       const manifestItem = loadableManifest[mod];
       if (manifestItem) {
-        manifestItem.forEach(item => {
-          dynamicImports.push(item);
+        manifestItem.files.forEach(file => {
+          dynamicImportChunkSet.add(file);
+        });
+        manifestItem.children.forEach(item => {
           dynamicImportIdSet.add(item.id as string);
         });
       }
@@ -211,8 +212,8 @@ export default class Service {
     const documentProps = this._getDocumentProps({
       appHtml,
       routeProps,
-      dynamicImports,
-      dynamicImportIds: [...dynamicImportIdSet]
+      dynamicImportIds: [...dynamicImportIdSet],
+      dynamicImportAssets: [...dynamicImportChunkSet]
     });
     const Document = this._webpackDistModuleLoader.requireDocument();
     const html = await runtime.renderDocument(Document.default || Document, {
@@ -224,62 +225,95 @@ export default class Service {
 
   private _getDocumentProps({
     appHtml,
-    dynamicImports,
+    routeProps,
     dynamicImportIds,
-    routeProps
+    dynamicImportAssets
   }: {
     appHtml: string;
     routeProps: Runtime.RouteProps;
-    dynamicImports: ModuleManifest[];
     dynamicImportIds: Array<string | number>;
+    dynamicImportAssets: string[];
   }): Runtime.DocumentProps {
-    const styles: Runtime.HtmlTag<"link">[] = [];
-    const scripts: Runtime.HtmlTag<"script">[] = [];
+    const mainStyles: Runtime.HtmlTag<"link" | "style">[] = [];
+    const mainScripts: Runtime.HtmlTag<"script">[] = [];
     const entrypoints = this._webpackDistModuleLoader.getEntryAssets(
       BUILD_CLIENT_RUNTIME_MAIN
     );
-    entrypoints.forEach((asset: string) => {
-      if (/\.js$/.test(asset)) {
-        scripts.push({
-          tagName: "script",
-          attrs: {
-            src: this._app.getPublicUrlPath(asset)
-          }
-        });
-      } else if (/\.css$/.test(asset)) {
-        styles.push({
+    entrypoints.js.forEach((asset: string) => {
+      mainScripts.push({
+        tagName: "script",
+        attrs: {
+          src: this._app.getPublicUrlPath(asset)
+        }
+      });
+    });
+    if (entrypoints.css) {
+      entrypoints.css.forEach((asset: string) => {
+        mainStyles.push({
           tagName: "link",
           attrs: {
             rel: "stylesheet",
             href: this._app.getPublicUrlPath(asset)
           }
         });
-      }
-    });
+      });
+    }
 
-    const preloadDynamicChunks: Runtime.HtmlTag<"link">[] = dedupe(
-      dynamicImports,
-      "file"
-    ).map((bundle: any) => {
-      return {
-        tagName: "link",
-        attrs: {
-          rel: "preload",
-          href: this._app.getPublicUrlPath(bundle.file),
-          as: "script"
-        }
-      };
-    });
+    const preloadDynamicChunks: Runtime.HtmlTag<"link">[] = [];
+
+    for (const file of dynamicImportAssets) {
+      if (/\.js$/.test(file)) {
+        preloadDynamicChunks.push({
+          tagName: "link",
+          attrs: {
+            rel: "preload",
+            href: this._app.getPublicUrlPath(file),
+            as: "script"
+          }
+        });
+      } else if (/\.css$/.test(file)) {
+        mainStyles.push({
+          tagName: "link",
+          attrs: {
+            rel: "stylesheet",
+            href: this._app.getPublicUrlPath(file)
+          }
+        });
+      }
+    }
 
     const inlineAppData = this._getDocumentInlineAppData({
       routeProps,
       dynamicIds: dynamicImportIds
     });
 
+    const headTags = [...preloadDynamicChunks, ...mainStyles];
+    if (isDev) {
+      headTags.push(
+        {
+          tagName: "style",
+          attrs: {
+            innerHtml: "body{display:none}"
+          }
+        },
+        /**
+         * this element is used to mount development styles so the
+         * ordering matches production
+         * (by default, style-loader injects at the bottom of <head />)
+         */
+        {
+          tagName: "style",
+          attrs: {
+            id: DEV_STYLE_ANCHOR_ID
+          }
+        }
+      );
+    }
+
     return {
-      headTags: [...styles, ...preloadDynamicChunks],
+      headTags,
       contentTags: [this._getDocumentContent(appHtml)],
-      scriptTags: [inlineAppData, ...scripts]
+      scriptTags: [inlineAppData, ...mainScripts]
     };
   }
 

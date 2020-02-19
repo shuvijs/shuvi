@@ -55,13 +55,15 @@ class WebpackManagerImpl {
     });
     clientConfig.entry = getClientEntry();
     // console.log("clientConfig");
-    // console.dir(clientConfig);
+    // console.dir(clientConfig.module?.rules);
 
     const serverConfig = createWepbackConfig(this._app, {
       name: WEBPACK_CONFIG_SERVER,
       node: true
     });
     serverConfig.entry = getServerEntry();
+    // console.log("serverConfig");
+
 
     return [clientConfig, serverConfig];
   }

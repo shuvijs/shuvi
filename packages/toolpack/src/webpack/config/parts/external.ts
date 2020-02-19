@@ -116,8 +116,8 @@ export function nodeExternals({
       res.match(
         /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/
       ) ||
-      res.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/) ||
-      (context.match(/node_modules[/\\]@babel[/\\]runtime-corejs2[/\\]/) &&
+      res.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) ||
+      (context.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) &&
         res.match(/node_modules[/\\]core-js[/\\]/))
     ) {
       return transpiled();

@@ -15,7 +15,7 @@ export function acceptsHtml(
 export function dedupe<T extends Record<string, any>, K extends keyof T>(
   bundles: T[],
   prop: K
-): any[] {
+): T[] {
   const files = new Set();
   const kept = [];
 

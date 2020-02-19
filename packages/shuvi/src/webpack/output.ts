@@ -1,5 +1,9 @@
 import path from "path";
-import { ModuleManifest } from "@shuvi/types/build";
+import {
+  Manifest,
+  Module,
+  AssetMap
+} from "@shuvi/toolpack/lib/webpack/plugins/build-manifest-plugin";
 import {
   BUILD_CLIENT_DIR,
   BUILD_SERVER_DIR,
@@ -8,6 +12,8 @@ import {
   BUILD_SERVER_APP
 } from "../constants";
 import { RouteConfig } from "@shuvi/types/core";
+
+export type ModuleManifest = Module;
 
 interface ModuleLoaderConstructionOptions {
   buildDir: string;
@@ -30,12 +36,12 @@ export class ModuleLoader {
     return require(this._resolveServerModule(BUILD_SERVER_APP));
   }
 
-  getEntryAssets(name: string): string[] {
+  getEntryAssets(name: string): AssetMap {
     const manifest = this._getClientManifest();
     return manifest.entries[name];
   }
 
-  getModules(): { [moduleId: string]: ModuleManifest[] } {
+  getModules(): { [moduleId: string]: Module } {
     const manifest = this._getClientManifest();
     return manifest.modules;
   }
@@ -54,15 +60,15 @@ export class ModuleLoader {
     return mod.default || mod;
   }
 
-  private _getServerManifest() {
+  private _getServerManifest(): Manifest {
     return this._getManifest(BUILD_SERVER_DIR);
   }
 
-  private _getClientManifest() {
+  private _getClientManifest(): Manifest {
     return this._getManifest(BUILD_CLIENT_DIR);
   }
 
-  private _getManifest(dir: string) {
+  private _getManifest(dir: string): Manifest {
     return require(path.join(this._options.buildDir, dir, BUILD_MANIFEST_PATH));
   }
 }
