@@ -140,7 +140,7 @@ export default class Service {
     await this._onDemandRouteMgr.ensureRoutes(req.url || "/");
 
     try {
-      await this._renderPage(req, res);
+      await this.renderPage(req, res);
     } catch (error) {
       console.warn("render fail");
       console.error(error);
@@ -149,7 +149,7 @@ export default class Service {
     next();
   }
 
-  private async _renderPage(
+  async renderPage(
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<void> {

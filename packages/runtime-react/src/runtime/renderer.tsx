@@ -6,7 +6,7 @@ import { Router } from "react-router-dom";
 import { matchRoutes as reactRouterMatchRoutes } from "react-router-config";
 import { createServerHistory } from "./router/history";
 import { setHistory } from "./router/router";
-import Loadable, { LoadableContext } from "./loadable";
+import { LoadableContext } from "./loadable";
 
 export function matchRoutes(
   routes: RouteConfig[],

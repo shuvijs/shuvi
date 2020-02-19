@@ -4,7 +4,7 @@ import spawn from "cross-spawn";
 //@ts-ignore
 import pkgInfo from "../package.json";
 
-const Commands = ["build", "start"] as const;
+const Commands = ["build", "start", "serve"] as const;
 
 type CommandName = typeof Commands[number];
 
@@ -22,7 +22,7 @@ if (!Commands.includes(cmd as CommandName)) {
 }
 
 let nodeEnv = "development";
-if (cmd === "build") {
+if (cmd === "build" || cmd === "serve") {
   nodeEnv = "production";
 }
 

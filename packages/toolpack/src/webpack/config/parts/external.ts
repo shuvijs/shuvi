@@ -89,8 +89,14 @@ export function nodeExternals({
     // fix hooks not work when using yarn link
     if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE === "true") {
       if (
-        match(res, [/packages[/\\]runtime-[^/\\]+[/\\]/]) &&
-        !match(res, [/packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/])
+        match(res, [
+          /packages[/\\]runtime-[^/\\]+[/\\]/,
+          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]/
+        ]) &&
+        !match(res, [
+          /packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/,
+          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/
+        ])
       ) {
         return external();
       }

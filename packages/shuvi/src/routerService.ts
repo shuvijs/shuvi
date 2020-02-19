@@ -188,16 +188,17 @@ export default class RouterServiceImpl implements RouterService {
     return sortRoutes(rootRoute.routes!);
   }
 
-  private _createWatcher() {
+  private async _createWatcher() {
+    // BUG: watcher won't trigger initial event if the dir depth is less than 2
+    // so we fire the initial event manually.
+    const initialRoutes = await this.getRoutes();
+    this._event.emit("change", initialRoutes);
+
     return watch(
       { directories: [this._pagesDir] },
       ({ changes, removals, getAllFiles }) => {
-        // BUG: sometimes not trigger after creating watcher
         const files: string[] = [];
         const rawFiles = getAllFiles();
-        console.log("changes", changes);
-        console.log("removals", removals);
-        console.log("rawFiles", rawFiles);
         for (let index = 0; index < rawFiles.length; index++) {
           const absPath = rawFiles[index];
           const relativePath = relative(this._pagesDir, absPath);
