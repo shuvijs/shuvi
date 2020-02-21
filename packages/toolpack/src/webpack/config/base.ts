@@ -22,6 +22,7 @@ export interface BaseOptions {
   srcDirs: string[];
   mediaFilename: string;
   buildManifestFilename: string;
+  target?: string;
   publicPath?: string;
   env?: {
     [x: string]: string;

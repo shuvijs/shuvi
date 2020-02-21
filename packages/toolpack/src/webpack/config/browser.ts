@@ -4,6 +4,8 @@ import WebpackChain from "webpack-chain";
 // import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import { baseWebpackChain, BaseOptions } from "./base";
 import { withStyle } from "./parts/style";
+import { resolvePreferTarget } from "./parts/resolve";
+import { getProjectInfo } from "../../utils/typeScript";
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
@@ -14,9 +16,23 @@ export function createBrowserWebpackChain({
 }: BrowserOptions): WebpackChain {
   const { dev } = baseOptions;
   const chain = baseWebpackChain(baseOptions);
+  const { useTypeScript } = getProjectInfo(baseOptions.projectRoot);
 
   chain.target("web");
   chain.devtool(dev ? "cheap-module-source-map" : false);
+  const extensions = [
+    ...(useTypeScript ? [".tsx", ".ts"] : []),
+    ".mjs",
+    ".js",
+    ".jsx",
+    ".json",
+    ".wasm"
+  ];
+  chain.resolve.extensions.merge(
+    baseOptions.target
+      ? resolvePreferTarget(baseOptions.target, extensions)
+      : extensions
+  );
   if (dev) {
     chain.plugin("private/hmr-plugin").use(webpack.HotModuleReplacementPlugin);
   } else {

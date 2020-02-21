@@ -55,7 +55,7 @@ class WebpackManagerImpl {
     });
     clientConfig.entry = getClientEntry();
     // console.log("clientConfig");
-    // console.dir(clientConfig.module?.rules);
+    // console.dir(clientConfig.resolve?.extensions);
 
     const serverConfig = createWepbackConfig(this._app, {
       name: WEBPACK_CONFIG_SERVER,
