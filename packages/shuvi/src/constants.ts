@@ -1,7 +1,6 @@
-import { NAME, ROUTE_PREFIX } from "./shared/constants";
-import { resolvePackageFile } from "./helpers/paths";
+import { NAME, ROUTE_PREFIX } from "@shuvi/shared/lib/constants";
 
-export * from "./shared/constants";
+export * from "@shuvi/shared/lib/constants";
 
 export const WEBPACK_CONFIG_CLIENT = `${NAME}/client`;
 
@@ -18,8 +17,6 @@ export const BUILD_CLIENT_DIR = "client";
 export const BUILD_CLIENT_RUNTIME_MAIN = `static/runtime/main.js`;
 
 export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack.js`;
-
-export const CLIENT_ENTRY_PATH = resolvePackageFile("lib/client/index");
 
 export const BUILD_SERVER_DIR = "server";
 

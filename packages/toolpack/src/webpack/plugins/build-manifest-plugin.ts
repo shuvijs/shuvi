@@ -32,7 +32,7 @@ export interface Manifest {
   chunks: {
     [s: string]: string;
   };
-  modules: {
+  loadble: {
     [s: string]: Module;
   };
 }
@@ -89,7 +89,7 @@ export default class BuildManifestPlugin {
         entries: {},
         routes: {},
         chunks: {},
-        modules: {}
+        loadble: {}
       });
 
       compilation.chunkGroups.forEach(chunkGroup => {
@@ -105,10 +105,10 @@ export default class BuildManifestPlugin {
         }
       });
 
-      this._manifest.modules = Object.keys(this._manifest.modules)
+      this._manifest.loadble = Object.keys(this._manifest.loadble)
         .sort()
         // eslint-disable-next-line no-sequences
-        .reduce((a, c) => ((a[c] = this._manifest.modules[c]), a), {} as any);
+        .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
 
       for (const chunk of compilation.chunks) {
         if (!chunk.name || !chunk.files) {
@@ -180,7 +180,7 @@ export default class BuildManifestPlugin {
           } else {
             return;
           }
-          this._pushModules(request, file);
+          this._pushLoadableModules(request, file);
         });
 
         for (const module of chunk.modulesIterable) {
@@ -198,7 +198,7 @@ export default class BuildManifestPlugin {
             continue;
           }
 
-          this._pushModules(request, {
+          this._pushLoadableModules(request, {
             id,
             name
           });
@@ -240,10 +240,10 @@ export default class BuildManifestPlugin {
     chunks[name] = value;
   }
 
-  private _pushModules(request: string, module: ModuleItem): void;
-  private _pushModules(request: string, module: string): void;
-  private _pushModules(request: string, value: string | ModuleItem) {
-    const modules = this._manifest.modules;
+  private _pushLoadableModules(request: string, module: ModuleItem): void;
+  private _pushLoadableModules(request: string, module: string): void;
+  private _pushLoadableModules(request: string, value: string | ModuleItem) {
+    const modules = this._manifest.loadble;
     if (!modules[request]) {
       modules[request] = {
         files: [],

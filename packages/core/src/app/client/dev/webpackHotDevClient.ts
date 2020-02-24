@@ -2,7 +2,12 @@ import connect from "@shuvi/toolpack/lib/utils/hotDevClient";
 import {
   HOT_MIDDLEWARE_PATH,
   HOT_LAUNCH_EDITOR_ENDPOINT
-} from "../../shared/constants";
+} from "@shuvi/shared/lib/constants";
+
+interface Event {
+  action: string;
+  [x: string]: any;
+}
 
 export default (options = {}) => {
   const devClient = connect({
@@ -11,7 +16,7 @@ export default (options = {}) => {
     path: HOT_MIDDLEWARE_PATH
   });
 
-  devClient.subscribeToHmrEvent(obj => {
+  devClient.subscribeToHmrEvent((event: Event) => {
     // if (obj.action === "reloadPage") {
     //   return window.location.reload();
     // }

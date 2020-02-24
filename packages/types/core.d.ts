@@ -71,13 +71,7 @@ export interface AppCore {
   config: AppConfig;
   paths: Paths;
 
-  resolveAppFile(...paths: string[]): string;
-
-  resolveSrcFile(...paths: string[]): string;
-
-  resolveBuildFile(...paths: string[]): string;
-
-  getPublicUrlPath(...paths: string[]): string;
+  resolveInternalFile(...paths: string[]): string;
 
   setBootstrapModule(module: string): void;
 

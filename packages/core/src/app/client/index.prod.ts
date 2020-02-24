@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 
 import { bootstrap } from "@shuvi-app/bootstrap";
-import { CLIENT_CONTAINER_ID } from "../shared/constants";
+import { CLIENT_CONTAINER_ID } from "@shuvi/shared/lib/constants";
 import { getAppData } from "./helpers/getAppData";
 
 bootstrap({

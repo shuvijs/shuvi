@@ -25,7 +25,7 @@
   "scripts": {
     "dev": "run-p watch:*",
     "watch:runtime": "tsc -p tsconfig.build.json -w",
-    "watch:client": "tsc -p tsconfig.build.client.json -w"
+    "watch:app": "tsc -p tsconfig.build.app.json -w"
   },
   "engines": {
     "node": ">= 8.0.0"

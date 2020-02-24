@@ -94,8 +94,8 @@ export function nodeExternals({
           /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]/
         ]) &&
         !match(res, [
-          /packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/,
-          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/
+          /packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/,
+          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/
         ])
       ) {
         return external();
@@ -113,9 +113,10 @@ export function nodeExternals({
 
     // runtime have to be transpiled
     if (
-      res.match(
-        /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]client[/\\]/
-      ) ||
+      match(res, [
+        /node_modules[/\\]@shuvi[/\\]core[/\\]lib[/\\]app[/\\]/,
+        /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/,
+      ]) ||
       res.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) ||
       (context.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) &&
         res.match(/node_modules[/\\]core-js[/\\]/))

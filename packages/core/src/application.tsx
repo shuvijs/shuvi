@@ -1,14 +1,13 @@
 import React from "react";
+import path from "path";
 import { useStaticRendering } from "mobx-react";
 import ReactFS from "@shuvi/react-fs";
 import fse from "fs-extra";
 import { AppCore, Paths, BuildOptions, AppConfig } from "@shuvi/types/core";
 import App from "./App";
 import { getPaths } from "./paths";
-import { File } from "./models/files";
 import { store } from "./models/store";
 import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
-import { joinPath } from "./utils";
 
 export interface AppOptions {
   config: AppConfig;
@@ -27,20 +26,8 @@ class AppCoreImpl implements AppCore {
     });
   }
 
-  resolveAppFile(filename: string): string {
-    return joinPath(this.paths.appDir, filename);
-  }
-
-  resolveSrcFile(filename: string): string {
-    return joinPath(this.paths.srcDir, filename);
-  }
-
-  resolveBuildFile(filename: string): string {
-    return joinPath(this.paths.buildDir, filename);
-  }
-
-  getPublicUrlPath(buildPath: string): string {
-    return joinPath(this.config.publicUrl, buildPath);
+  resolveInternalFile(...paths: string[]): string {
+    return path.join(__dirname, "app", ...paths);
   }
 
   setBootstrapModule(module: string) {

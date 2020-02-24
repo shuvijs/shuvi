@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@shuvi/react-fs": "^0.0.1-alpha.3",
+    "@shuvi/shared": "^0.0.1-alpha.0",
     "@shuvi/toolpack": "^0.0.1-alpha.5",
     "@shuvi/utils": "^0.0.1-alpha.4",
     "fs-extra": "8.1.0",

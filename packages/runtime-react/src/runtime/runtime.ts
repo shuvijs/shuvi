@@ -120,15 +120,15 @@ export default ${routesExport}
   }
 
   getDocumentFilePath(): string {
-    return resolveDistFile("client/document");
+    return resolveDistFile("app/document");
   }
 
   getBootstrapFilePath(): string {
-    return resolveDistFile("client/bootstrap");
+    return resolveDistFile("app/bootstrap");
   }
 
   getAppFilePath(): string {
-    return resolveDistFile("client/app");
+    return resolveDistFile("app/app");
   }
 }
 

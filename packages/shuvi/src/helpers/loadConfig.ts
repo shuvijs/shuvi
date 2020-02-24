@@ -1,5 +1,5 @@
 import path from "path";
-import { constants } from "@shuvi/core";
+import { CONFIG_FILE } from "../constants";
 import { AppConfig } from "@shuvi/types/core";
 
 const defaultConfig: AppConfig = {
@@ -17,9 +17,7 @@ export async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 }
 
 export async function loadConfig(): Promise<AppConfig> {
-  const config = await loadConfigFromFile<Partial<AppConfig>>(
-    constants.CONFIG_FILE
-  );
+  const config = await loadConfigFromFile<Partial<AppConfig>>(CONFIG_FILE);
 
   return {
     ...defaultConfig,

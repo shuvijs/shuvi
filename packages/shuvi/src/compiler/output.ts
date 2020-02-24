@@ -41,9 +41,9 @@ export class ModuleLoader {
     return manifest.entries[name];
   }
 
-  getModules(): { [moduleId: string]: Module } {
+  getLoadableManifest(): Manifest['loadble'] {
     const manifest = this._getClientManifest();
-    return manifest.modules;
+    return manifest.loadble;
   }
 
   private _resolveServerModule(name: string) {

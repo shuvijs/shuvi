@@ -1,7 +1,6 @@
 /// <reference lib="dom" />
 import { bootstrap } from "@shuvi-app/bootstrap";
-import { DEV_STYLE_ANCHOR_ID } from "@shuvi/shared/lib/constants";
-import { CLIENT_CONTAINER_ID } from "../shared/constants";
+import { DEV_STYLE_ANCHOR_ID, CLIENT_CONTAINER_ID } from "@shuvi/shared/lib/constants";
 import initWebpackHMR from "./dev/webpackHotDevClient";
 import { getAppData } from "./helpers/getAppData";
 

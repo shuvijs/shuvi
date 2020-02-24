@@ -3,7 +3,7 @@ import path from "path";
 import http from "http";
 import { parse } from "url";
 import { loadConfig } from "../helpers/loadConfig";
-import Service from "../Service";
+import Service from "../service/devService";
 import { serveStatic } from "../helpers/serveStatic";
 //@ts-ignore
 import pkgInfo from "../../package.json";

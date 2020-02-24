@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 // This file is based on https://github.com/facebook/create-react-app/blob/v1.1.4/packages/react-dev-utils/webpackHotDevClient.js
-// It's been edited to rely on webpack-hot-middleware and to be more compatible with SSR / Next.js
+// It's been edited to rely on webpack-hot-middleware.
 
 import * as ErrorOverlay from "react-error-overlay";
 import stripAnsi from "strip-ansi";
@@ -249,13 +249,14 @@ function processMessage(e) {
       break;
     }
     case "warnings":
-      handleWarnings(message.data);
+      console.log('warnings', obj);
+      handleWarnings(obj.data);
       break;
     case "errors":
       if (canApplyUpdates()) {
-        handleErrors(message.data);
+        handleErrors(obj.data);
       } else {
-        deferredBuildError = () => handleErrors(message.data);
+        deferredBuildError = () => handleErrors(obj.data);
       }
       break;
     default: {

@@ -2,12 +2,9 @@ import program from "commander";
 import fse from "fs-extra";
 import { AppConfig } from "@shuvi/types/core";
 import { loadConfig } from "../helpers/loadConfig";
-import { createApp } from "@shuvi/core";
 import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
-import { getWebpackManager } from "../webpack/webpackManager";
-import { runCompiler } from "../webpack/build";
-import { runtime } from "../runtime";
-import RouterService from "../routerService";
+import { getCompiler } from "../compiler/compiler";
+import { getApp } from "../app";
 //@ts-ignore
 import pkgInfo from "../../package.json";
 
@@ -46,27 +43,15 @@ async function main() {
   const config = await loadConfig();
   applyCliOptions(program, config);
 
-  const app = createApp({
-    config
-  });
-  const routerService = new RouterService(app.paths.pagesDir);
-  app.setBootstrapModule(runtime.getBootstrapFilePath());
-  app.setAppModule([app.resolveSrcFile("app.js")], runtime.getAppFilePath());
-  app.setDocumentModule(
-    [app.resolveSrcFile("document.js")],
-    runtime.getDocumentFilePath()
-  );
-  const routes = await routerService.getRoutes();
-  app.setRoutesSource(runtime.generateRoutesSource(routes));
-  await app.buildOnce({});
+  const app = getApp(config);
+  await app.build();
 
   // Remove all content but keep the directory so that
   // if you're in it, you don't end up in Trash
   fse.emptyDirSync(app.paths.buildDir);
 
-  const webpackMgr = getWebpackManager(app);
-  const compiler = webpackMgr.getCompiler();
-  const result = await runCompiler(compiler);
+  const compiler = getCompiler(app);
+  const result = await compiler.run();
   const messages = formatWebpackMessages(result);
 
   // If errors exist, only show errors.

@@ -1,8 +1,8 @@
-import { AppCore, RouteConfig } from "@shuvi/types/core";
+import { RouteConfig } from "@shuvi/types/core";
 import ModuleReplacePlugin from "@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin";
-import { RouterService } from "./types/routeService";
 import DevServer from "./dev/devServer";
 import { runtime } from "./runtime";
+import { App } from "./app";
 
 function traverse(routes: RouteConfig[], cb: (route: RouteConfig) => void) {
   for (let index = 0; index < routes.length; index++) {
@@ -20,23 +20,17 @@ export class OnDemandRouteManager {
   private _activedRouteIds = new Set<string>();
   private _routesMap = new Map<string, { componentFile: string }>();
   private _routes: RouteConfig[] = [];
-  private _app: AppCore;
+  private _app: App;
   public devServer: DevServer | null = null;
 
-  constructor({ app }: { app: AppCore }) {
+  constructor({ app }: { app: App }) {
     this._app = app;
-  }
-
-  run(routeService: RouterService) {
-    routeService.subscribe(routes => {
+    this._app.on("routes", routes => {
       this._routes = routes;
       this._onRoutesChange(routes);
-      this._app.setRoutesSource(
-        runtime.generateRoutesSource(this._replaceComponentFile(routes))
-      );
+      this._replaceComponentFile(routes);
     });
   }
-
   async ensureRoutes(pathname: string): Promise<void> {
     const matchRouteIds = runtime
       .matchRoutes(this._routes, pathname)
@@ -52,7 +46,7 @@ export class OnDemandRouteManager {
     if (!this.devServer) {
       return;
     }
-    
+
     const toActivate: string[] = [];
     for (let index = 0; index < routeIds.length; index++) {
       const id = routeIds[index];
