@@ -1,6 +1,6 @@
 import { RouteConfig } from "@shuvi/core";
 import ModuleReplacePlugin from "@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin";
-import DevServer from "./dev/devServer";
+import DevServer from "./devServer";
 import { runtime } from "./runtime";
 import { App } from "./app";
 

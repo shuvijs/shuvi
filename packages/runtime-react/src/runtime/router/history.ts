@@ -10,6 +10,8 @@ import {
   createHashHistory as defaultCreateHashHistory
 } from "history";
 
+export { History };
+
 interface HistoryOptions {
   basename: string;
 }

@@ -31,7 +31,7 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
     visitor: {
       ImportDeclaration(path: NodePath<BabelTypes.ImportDeclaration>) {
         let source = path.node.source.value;
-        if (source !== "@shuvi/runtime-react/dynamic") return;
+        if (source !== "@shuvi/app/dynamic") return;
 
         let defaultSpecifier = path.get("specifiers").find(specifier => {
           return specifier.isImportDefaultSpecifier();

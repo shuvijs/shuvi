@@ -7,9 +7,14 @@ import loaderUtils from "loader-utils";
 import path from "path";
 
 interface StyleOptions {
+  publicPath?: string;
   extractCss?: boolean;
   sourceMap?: boolean;
   remove?: boolean;
+}
+
+function shouldUseRelativeAssetPaths(publicPath: string) {
+  return publicPath === "./";
 }
 
 function getCSSModuleLocalIdent(
@@ -49,12 +54,14 @@ const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 function cssRule({
+  publicPath,
   test,
   cssModule,
   extractCss,
   sourceMap,
   scss
 }: {
+  publicPath?: string;
   test: any;
   cssModule?: boolean;
   extractCss?: boolean;
@@ -74,8 +81,12 @@ function cssRule({
       .use("extract-loader")
       .loader(MiniCssExtractPlugin.loader)
       .options({
-        // TODO: rewrite publicPath in standalone spa output
-        // publicPath,
+        ...(publicPath && shouldUseRelativeAssetPaths(publicPath)
+          ? {
+              // path relative to outdir from the generated css file
+              publicPath: "../../"
+            }
+          : {})
       });
   } else {
     rule
@@ -135,7 +146,7 @@ function cssRule({
 
 export function withStyle(
   chain: Config,
-  { extractCss, sourceMap, remove }: StyleOptions
+  { extractCss, sourceMap, remove, publicPath }: StyleOptions
 ): Config {
   const oneOfs = chain.module.rule("main").oneOfs;
   if (remove) {
@@ -166,7 +177,8 @@ export function withStyle(
       cssModule: false,
       scss: false,
       extractCss,
-      sourceMap
+      sourceMap,
+      publicPath
     }).after("js")
   );
   oneOfs.set(
@@ -177,7 +189,8 @@ export function withStyle(
       cssModule: true,
       scss: false,
       extractCss,
-      sourceMap
+      sourceMap,
+      publicPath
     }).after("css")
   );
   oneOfs.set(
@@ -188,7 +201,8 @@ export function withStyle(
       cssModule: false,
       scss: true,
       extractCss,
-      sourceMap
+      sourceMap,
+      publicPath
     }).after("css-module")
   );
   oneOfs.set(
@@ -199,7 +213,8 @@ export function withStyle(
       cssModule: true,
       scss: true,
       extractCss,
-      sourceMap
+      sourceMap,
+      publicPath
     }).after("scss")
   );
 

@@ -1,5 +1,5 @@
 import { loadConfig } from "../helpers/loadConfig";
-import DevService from "../service/devService";
+import DevService from "../devService";
 
 async function main() {
   const config = await loadConfig();

@@ -1,7 +1,7 @@
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import { Runtime } from "@shuvi/core";
-import { RouteConfig, RouteMatch } from "@shuvi/core";
+import { RouteConfig, MatchedRoute } from "@shuvi/core";
 import { Router } from "react-router-dom";
 import { matchRoutes as reactRouterMatchRoutes } from "react-router-config";
 import { createServerHistory } from "./router/history";
@@ -11,8 +11,8 @@ import { LoadableContext } from "./loadable";
 export function matchRoutes(
   routes: RouteConfig[],
   pathname: string
-): RouteMatch[] {
-  return (reactRouterMatchRoutes(routes, pathname) as any) as RouteMatch[];
+): MatchedRoute[] {
+  return (reactRouterMatchRoutes(routes, pathname) as any) as MatchedRoute[];
 }
 
 export async function renderDocument(

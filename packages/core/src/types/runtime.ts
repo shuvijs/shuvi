@@ -1,4 +1,4 @@
-import { AppCore, RouteMatch, RouteConfig } from "./core";
+import { AppCore, MatchedRoute, RouteConfig } from "./core";
 
 export type RouteProps = {
   [x: string]: any;
@@ -69,7 +69,7 @@ export interface Runtime<CompType = unknown> {
 
   generateRoutesSource(routes: RouteConfig[]): string;
 
-  matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[];
+  matchRoutes(routes: RouteConfig[], pathname: string): MatchedRoute[];
 
   getAppFilePath(): string;
 

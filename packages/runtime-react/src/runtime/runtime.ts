@@ -1,5 +1,5 @@
 import React from "react";
-import { AppCore, RouteConfig, RouteMatch, Runtime, File } from "@shuvi/core";
+import { AppCore, RouteConfig, MatchedRoute, Runtime, File } from "@shuvi/core";
 import { renderDocument, renderApp, matchRoutes } from "./renderer";
 import { resolveDistFile } from "./paths";
 import Loadable from "./loadable";
@@ -72,11 +72,28 @@ loadRouteComponent(() => import(/* webpackChunkName: "${route.id}" */"${filepath
 }
 
 class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
+  private _app!: AppCore;
+
   async install(app: AppCore): Promise<void> {
-    app.addFile(File.file("dynamic.js", { content: "module.exports = require('@shuvi/runtime-react/lib/runtime/dynamic')"}))
-    app.addFile(File.file("router.js", { content: "module.exports = require('@shuvi/runtime-react/lib/runtime/router')"}))
-    app.addFile(File.file("link.js", { content: "module.exports = require('@shuvi/runtime-react/dep/react-router-dom').Link;"}))
-    console.log("install react runtime");
+    this._app = app;
+    app.addFile(
+      File.file("dynamic.js", {
+        content:
+          "module.exports = require('@shuvi/runtime-react/lib/runtime/dynamic')"
+      })
+    );
+    app.addFile(
+      File.file("router.js", {
+        content:
+          "module.exports = require('@shuvi/runtime-react/lib/runtime/router')"
+      })
+    );
+    app.addFile(
+      File.file("link.js", {
+        content:
+          "module.exports = require('@shuvi/runtime-react/dep/react-router-dom').Link;"
+      })
+    );
   }
 
   async renderDocument(
@@ -106,7 +123,7 @@ export default ${routesExport}
 `.trim();
   }
 
-  matchRoutes(routes: RouteConfig[], pathname: string): RouteMatch[] {
+  matchRoutes(routes: RouteConfig[], pathname: string): MatchedRoute[] {
     return matchRoutes(routes, pathname);
   }
 
@@ -115,7 +132,15 @@ export default ${routesExport}
   }
 
   getBootstrapFilePath(): string {
-    return resolveDistFile("app/bootstrap");
+    if (this._app.config.ssr) {
+      return resolveDistFile("app/bootstrap.ssr");
+    }
+
+    if (this._app.config.router.history === "hash") {
+      return resolveDistFile("app/bootstrap.hash");
+    }
+
+    return resolveDistFile("app/bootstrap.browser");
   }
 
   getAppFilePath(): string {

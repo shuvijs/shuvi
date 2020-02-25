@@ -9,6 +9,7 @@ import { DEV_PUBLIC_PATH } from "./constants";
 
 export interface App {
   publicUrl: string;
+  ssr: boolean;
   paths: Paths;
   watch(): void;
   build(): Promise<void>;
@@ -34,8 +35,8 @@ class AppImpl implements App {
     this._routerService = new RouterService(this._app.paths.pagesDir);
   }
 
-  on(event: string, listener: (x: any) => void) {
-    this._event.on(event, listener);
+  get ssr() {
+    return this._app.config.ssr;
   }
 
   get publicUrl() {
@@ -52,8 +53,8 @@ class AppImpl implements App {
 
   async watch() {
     const { _app: app } = this;
-    await this._setupApp();
     await runtime.install(app);
+    await this._setupApp();
 
     this._routerService.subscribe(routes => {
       this._event.emit("routes", routes);
@@ -65,8 +66,8 @@ class AppImpl implements App {
 
   async build() {
     const { _app: app, _routerService: routerService } = this;
-    await this._setupApp();
     await runtime.install(app);
+    await this._setupApp();
 
     const routes = await routerService.getRoutes();
     this._event.emit("routes", routes);
@@ -93,6 +94,10 @@ class AppImpl implements App {
 
   getPublicUrlPath(buildPath: string): string {
     return joinPath(this.publicUrl, buildPath);
+  }
+
+  on(event: string, listener: (x: any) => void) {
+    this._event.on(event, listener);
   }
 
   private async _setupApp() {

@@ -26,7 +26,9 @@ export interface RouteConfig {
   [x: string]: any;
 }
 
-export interface MatchedRoute<Params extends { [K in keyof Params]?: string }> {
+export interface MatchedRoute<
+  Params extends { [K in keyof Params]?: string } = {}
+> {
   route: RouteConfig;
   match: {
     params: Params;
@@ -36,18 +38,14 @@ export interface MatchedRoute<Params extends { [K in keyof Params]?: string }> {
   };
 }
 
-export interface RouteMatch {
-  route: RouteConfig;
-  match: {
-    url: string;
-    isExact: boolean;
-  };
-}
-
 export interface AppConfig {
+  ssr: boolean;
   cwd: string;
   outputPath: string;
   publicUrl: string;
+  router: {
+    history: 'browser' | 'hash'
+  }
 }
 
 export interface BuildOptions {}
@@ -56,8 +54,9 @@ export interface RouteComponentContext {
   isServer: boolean;
   pathname: string;
   query: ParsedUrlQuery;
-  req?: IncomingMessage;
-  res?: ServerResponse;
+  params: ParsedUrlQuery;
+  req?: { url: string };
+  // res?: ServerResponse;
 }
 
 export type RouteComponent<T, P = {}> = T & {

@@ -59,8 +59,8 @@ class CompilerImpl {
       node: false
     });
     clientConfig.entry = getClientEntry(this._app);
-    console.log("clientConfig");
-    console.dir(clientConfig);
+    // console.log("clientConfig");
+    // console.dir(clientConfig);
 
     const serverConfig = createWepbackConfig(this._app, {
       name: WEBPACK_CONFIG_SERVER,

@@ -14,7 +14,7 @@ export interface BrowserOptions extends BaseOptions {}
 export function createBrowserWebpackChain({
   ...baseOptions
 }: BrowserOptions): WebpackChain {
-  const { dev } = baseOptions;
+  const { dev, publicPath } = baseOptions;
   const chain = baseWebpackChain(baseOptions);
   const { useTypeScript } = getProjectInfo(baseOptions.projectRoot);
 
@@ -121,5 +121,5 @@ export function createBrowserWebpackChain({
     }
   ]);
 
-  return withStyle(chain, { extractCss: !dev });
+  return withStyle(chain, { extractCss: !dev, publicPath });
 }

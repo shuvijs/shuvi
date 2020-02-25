@@ -3,7 +3,8 @@ import path from "path";
 import http from "http";
 import { parse } from "url";
 import { loadConfig } from "../helpers/loadConfig";
-import Service from "../service/devService";
+import { getDocumentService } from "../documentService";
+import { getApp } from "../app";
 import { serveStatic } from "../helpers/serveStatic";
 //@ts-ignore
 import pkgInfo from "../../package.json";
@@ -34,7 +35,8 @@ function set(obj: any, path: string, value: any) {
 
 async function main() {
   const config = await loadConfig();
-  const service = new Service({ config });
+  const app = getApp(config);
+  const documentService = getDocumentService({ app });
   const server = http.createServer((req, res) => {
     const parsedUrl = parse(req.url!, true);
     const pathname = parsedUrl.pathname || "/";
@@ -47,7 +49,7 @@ async function main() {
       return;
     }
 
-    service.renderPage(req, res);
+    documentService.handleRequest(req, res);
   });
   server.listen(program.port, program.host, () => {
     console.log(`listening on http://${program.host}:${program.port}`);

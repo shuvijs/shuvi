@@ -1,4 +1,5 @@
 import React from "react";
+import { parse as parseQuerystring } from "querystring";
 import { RouteComponentProps } from "react-router-dom";
 import { RouteComponent } from "@shuvi/core";
 import dynamic, { DynamicOptions } from "./dynamic";
@@ -73,7 +74,8 @@ function withInitialPropsClient<P = {}>(
       const initialProps = await WrappedComponent.getInitialProps!({
         isServer: false,
         pathname: location.pathname,
-        query: match.params
+        query: parseQuerystring(location.search),
+        params: match.params
       });
       this.setState({
         propsResolved: true,

@@ -16,12 +16,11 @@ export const bootstrap: Runtime.Bootstrap = async ({
 }) => {
   await Loadable.preloadReady(appData.dynamicIds);
 
-  // TODO: hash history(tree shaking)
   // TODO: config basename
   const history = createBrowserHistory({ basename: "/" });
   setHistory(history);
 
-  return ReactDom.render(
+  return ReactDom.hydrate(
     <Router history={history}>
       <App routeProps={appData.routeProps} />
     </Router>,

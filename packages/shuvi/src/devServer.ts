@@ -7,7 +7,7 @@ import { MultiCompiler, Compiler } from "webpack";
 import Express from "express";
 import WebpackDevMiddleware from "webpack-dev-middleware";
 import WebpackHotMiddleware from "webpack-hot-middleware";
-import { HOT_LAUNCH_EDITOR_ENDPOINT, HOT_MIDDLEWARE_PATH } from "../constants";
+import { HOT_LAUNCH_EDITOR_ENDPOINT, HOT_MIDDLEWARE_PATH } from "./constants";
 
 type CompilerDiagnostics = {
   errors: string[];
