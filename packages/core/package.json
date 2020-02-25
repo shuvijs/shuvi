@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/core",
-  "version": "0.0.1-alpha.6",
+  "version": "0.0.1-alpha.7",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
@@ -20,10 +20,10 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@shuvi/react-fs": "^0.0.1-alpha.3",
-    "@shuvi/shared": "^0.0.1-alpha.0",
-    "@shuvi/toolpack": "^0.0.1-alpha.5",
-    "@shuvi/utils": "^0.0.1-alpha.4",
+    "@shuvi/react-fs": "^0.0.1-alpha.4",
+    "@shuvi/shared": "^0.0.1-alpha.1",
+    "@shuvi/toolpack": "^0.0.1-alpha.6",
+    "@shuvi/utils": "^0.0.1-alpha.5",
     "fs-extra": "8.1.0",
     "handlebars": "4.5.3",
     "mobx": "^5.15.4",
