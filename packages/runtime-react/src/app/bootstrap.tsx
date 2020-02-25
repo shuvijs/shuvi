@@ -2,8 +2,8 @@
 
 import React from "react";
 import ReactDom from "react-dom";
-import * as Runtime from "@shuvi/types/runtime";
-import { Router } from "react-router-dom";
+import { Router } from "@shuvi/runtime-react/dep/react-router-dom";
+import { Runtime } from "@shuvi/core/types";
 import Loadable from "@shuvi/runtime-react/lib/runtime/loadable";
 import { createBrowserHistory } from "@shuvi/runtime-react/lib/runtime/router/history";
 // @ts-ignore

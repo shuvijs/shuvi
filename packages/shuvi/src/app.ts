@@ -1,5 +1,5 @@
 import { createApp } from "@shuvi/core";
-import { AppCore, AppConfig, Paths, RouteConfig } from "@shuvi/types/core";
+import { AppCore, AppConfig, Paths, RouteConfig } from "@shuvi/core";
 import eventEmitter from "@shuvi/utils/lib/eventEmitter";
 import { joinPath } from "@shuvi/utils/lib/string";
 import { RouterService as IRouterService } from "./types/routeService";
@@ -76,7 +76,7 @@ class AppImpl implements App {
   }
 
   getClientIndex(): string {
-    return this._app.resolveInternalFile("client", "index");
+    return require.resolve("@shuvi/runtime-core/lib/client/index");
   }
 
   resolveAppFile(...paths: string[]): string {

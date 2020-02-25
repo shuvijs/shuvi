@@ -13,6 +13,7 @@
     "start": "cd packages/shuvi && node dist/cli.js start"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
     "@types/send": "^0.14.5",
     "jest": "^24.9.0",
     "lerna": "^3.18.4",

@@ -1,5 +1,5 @@
 import React, { Component, FunctionComponent, useContext } from "react";
-import * as Runtime from "@shuvi/types/runtime";
+import { Runtime } from "@shuvi/core/types";
 import {
   DocumentContext,
   DocumentContextType

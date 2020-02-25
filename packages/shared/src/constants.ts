@@ -16,5 +16,3 @@ export const HOT_MIDDLEWARE_PATH = `${ROUTE_PREFIX}/webpack-hmr`;
 
 export const HOT_LAUNCH_EDITOR_ENDPOINT = `${ROUTE_PREFIX}/development/open-stack-frame-in-editor`;
 
-// TODO: remove
-export const ROUTE_REGEXP = /^page-[0-9A-Fa-f]{4,4}$/;

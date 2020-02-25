@@ -54,7 +54,7 @@ export function createWepbackConfig(app: App, opts: WebpackConfigOptions) {
   }
 
   chain.name(opts.name);
-  chain.resolve.alias.set("@shuvi-app", app.paths.appDir);
+  chain.resolve.alias.set("@shuvi/app", app.paths.appDir);
   chain.output.set("filename", ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
     if (
@@ -79,8 +79,8 @@ export function getClientEntry(app: App): WebpackEntry {
 
 export function getServerEntry(_app: App): WebpackEntry {
   return {
-    [BUILD_SERVER_DOCUMENT]: ["@shuvi-app/document"],
+    [BUILD_SERVER_DOCUMENT]: ["@shuvi/app/document"],
     // TODO: ssr only
-    [BUILD_SERVER_APP]: ["@shuvi-app/app"]
+    [BUILD_SERVER_APP]: ["@shuvi/app/app"]
   };
 }

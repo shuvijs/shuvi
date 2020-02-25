@@ -1,20 +1,12 @@
 import { join, relative, posix } from "path";
-import { createHash } from "crypto";
 import invariant from "tiny-invariant";
-import { RouteConfig } from "@shuvi/types/core";
+import { RouteConfig } from "@shuvi/core";
+import { genRouteId } from "@shuvi/shared/lib/router";
 import { watch } from "@shuvi/utils/lib/fileWatcher";
 import eventEmitter from "@shuvi/utils/lib/eventEmitter";
 import { recursiveReadDir } from "@shuvi/utils/lib/recursiveReaddir";
 import { RouterService, SubscribeFn } from "./types/routeService";
 
-function createId(filepath: string) {
-  const id = createHash("md4")
-    .update(filepath)
-    .digest("hex")
-    .substr(0, 4);
-
-  return `page-${id}`;
-}
 
 interface InternalRouteConfig extends RouteConfig {
   routes?: InternalRouteConfig[];
@@ -26,7 +18,7 @@ interface InternalRouteConfig extends RouteConfig {
 const unixPath = posix;
 const jsExtensions = ["js", "jsx", "ts", "tsx"];
 
-const RouteRegExp = new RegExp(`\\.(?:${jsExtensions.join("|")})$`);
+const RouteFileRegExp = new RegExp(`\\.(?:${jsExtensions.join("|")})$`);
 
 function isLayout(filepath: string) {
   return filepath.endsWith("_layout");
@@ -71,7 +63,7 @@ function normalizeRoutePath(rawPath: string) {
 function filterRouteFile(name: string) {
   if (name.charAt(0) === ".") return false;
 
-  return RouteRegExp.test(name);
+  return RouteFileRegExp.test(name);
 }
 
 function getRouteWeight(route: InternalRouteConfig): number {
@@ -150,7 +142,7 @@ export default class RouterServiceImpl implements RouterService {
       normalizedFiles.push(file);
       if (isLayout(file)) {
         const layoutRoute: InternalRouteConfig = {
-          id: createId(file),
+          id: genRouteId(file),
           path: normalizeRoutePath(file.replace(/\/_layout$/, "/")),
           exact: false,
           componentFile: join(this._pagesDir, rawfile),
@@ -169,7 +161,7 @@ export default class RouterServiceImpl implements RouterService {
       const file = normalizedFiles[index];
       const routePath = normalizeRoutePath(file);
       const route: InternalRouteConfig = {
-        id: createId(file),
+        id: genRouteId(file),
         path: routePath,
         exact: !isLayout(file),
         componentFile: join(this._pagesDir, rawFile),

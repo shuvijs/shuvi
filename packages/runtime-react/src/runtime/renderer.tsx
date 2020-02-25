@@ -1,7 +1,7 @@
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
-import * as Runtime from "@shuvi/types/runtime";
-import { RouteConfig, RouteMatch } from "@shuvi/types/core";
+import { Runtime } from "@shuvi/core";
+import { RouteConfig, RouteMatch } from "@shuvi/core";
 import { Router } from "react-router-dom";
 import { matchRoutes as reactRouterMatchRoutes } from "react-router-config";
 import { createServerHistory } from "./router/history";

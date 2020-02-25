@@ -11,7 +11,7 @@ import {
   BUILD_SERVER_DOCUMENT,
   BUILD_SERVER_APP
 } from "../constants";
-import { RouteConfig } from "@shuvi/types/core";
+import { RouteConfig } from "@shuvi/core";
 
 export type ModuleManifest = Module;
 

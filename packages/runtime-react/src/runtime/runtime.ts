@@ -1,6 +1,5 @@
 import React from "react";
-import * as Runtime from "@shuvi/types/runtime";
-import { AppCore, RouteConfig, RouteMatch } from "@shuvi/types/core";
+import { AppCore, RouteConfig, RouteMatch, Runtime, File } from "@shuvi/core";
 import { renderDocument, renderApp, matchRoutes } from "./renderer";
 import { resolveDistFile } from "./paths";
 import Loadable from "./loadable";
@@ -70,21 +69,13 @@ loadRouteComponent(() => import(/* webpackChunkName: "${route.id}" */"${filepath
   }
 
   return `[${res}]`;
-
-  //   return res.replace(/"componentFile":\w*"([^"]+)"/gi, (_match, filePath) => {
-  //     const routeComponent = `
-  // loadRouteComponent(() => import(/* webpackChunkName: "" */"${filePath}"), {
-  //   webpack: () => [require.resolveWeak("${filePath}")],
-  //   modules: ["${filePath}"],
-  // })`.trim();
-  //     const routeComponent = `
-  // dynamic(() => import("${filePath}"))`.trim();
-  // return `"component": ${routeComponent}`;
-  // });
 }
 
 class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
   async install(app: AppCore): Promise<void> {
+    app.addFile(File.file("dynamic.js", { content: "module.exports = require('@shuvi/runtime-react/lib/runtime/dynamic')"}))
+    app.addFile(File.file("router.js", { content: "module.exports = require('@shuvi/runtime-react/lib/runtime/router')"}))
+    app.addFile(File.file("link.js", { content: "module.exports = require('@shuvi/runtime-react/dep/react-router-dom').Link;"}))
     console.log("install react runtime");
   }
 

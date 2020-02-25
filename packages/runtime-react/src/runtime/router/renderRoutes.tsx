@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Switch, Route } from "react-router-dom";
-import { RouteConfig } from "@shuvi/types/core";
+import { RouteConfig } from "@shuvi/core";
 
 type Data = Record<string, any>;
 

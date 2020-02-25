@@ -1,15 +1,15 @@
 import React from "react";
 import { File } from "@shuvi/react-fs";
-import { TemplateData } from "@shuvi/types/core";
 import fse from "fs-extra";
 import Handlebars from "handlebars";
+import { TemplateData } from "../models/files";
 import { memoizeOne } from "../utils";
 import { BaseComponent } from "./Base";
 
 export interface Props {
   name: string;
-  templateFile?: string;
-  template?: string;
+  file?: string;
+  content?: string;
   data?: TemplateData;
 }
 
@@ -28,13 +28,13 @@ export default class FileTemplate extends BaseComponent<Props> {
   }
 
   render() {
-    const { templateFile, template } = this.props;
-    if (template) {
-      return this._renderTemplate(template);
+    const { file, content } = this.props;
+    if (content) {
+      return this._renderTemplate(content);
     }
 
-    if (templateFile) {
-      const tmplContent = this._readFile(templateFile);
+    if (file) {
+      const tmplContent = this._readFile(file);
       return this._renderTemplate(tmplContent);
     }
 

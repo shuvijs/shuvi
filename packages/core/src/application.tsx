@@ -1,12 +1,12 @@
 import React from "react";
-import path from "path";
 import { useStaticRendering } from "mobx-react";
 import ReactFS from "@shuvi/react-fs";
 import fse from "fs-extra";
-import { AppCore, Paths, BuildOptions, AppConfig } from "@shuvi/types/core";
+import { AppCore, Paths, BuildOptions, AppConfig } from "./types/core";
 import App from "./App";
 import { getPaths } from "./paths";
 import { store } from "./models/store";
+import { File } from "./models/files";
 import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
 
 export interface AppOptions {
@@ -26,10 +26,6 @@ class AppCoreImpl implements AppCore {
     });
   }
 
-  resolveInternalFile(...paths: string[]): string {
-    return path.join(__dirname, "app", ...paths);
-  }
-
   setBootstrapModule(module: string) {
     store.bootstrapModule = module;
   }
@@ -46,6 +42,10 @@ class AppCoreImpl implements AppCore {
 
   setRoutesSource(content: string): void {
     store.routesContent = content;
+  }
+
+  addFile(file: File): void {
+    store.addFile(file);
   }
 
   waitUntilBuild(): Promise<void> {

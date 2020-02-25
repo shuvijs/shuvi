@@ -1,10 +1,13 @@
-import { ModelFile, ModelFileOptions } from "./ModelFile";
+import { ModelFile, ModelFileOptions, TemplateData } from "./ModelFile";
 import {
   ModelPriorityFile,
   ModelPriorityFileOptions
 } from "./ModelPriorityFile";
 
-export { File, Dir, FileNode, isDir, isFile } from "./FileNode";
+export { TemplateData };
+export { Dir, FileNode, isDir, isFile } from "./FileNode";
+
+export type File = ModelFile | ModelPriorityFile;
 
 export function createFile(name: string, options: ModelFileOptions) {
   return new ModelFile(name, options);

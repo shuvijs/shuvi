@@ -12,19 +12,11 @@
   "main": "./index.js",
   "files": [
     "dep",
-    "lib",
-    "dynamic.d.ts",
-    "dynamic.js",
-    "index.d.ts",
-    "index.js",
-    "link.d.ts",
-    "link.js",
-    "router.d.ts",
-    "router.js"
+    "lib"
   ],
   "scripts": {
     "dev": "run-p watch:*",
-    "watch:runtime": "tsc -p tsconfig.build.json -w",
+    "watch:runtime": "tsc -p tsconfig.build.runtime.json -w",
     "watch:app": "tsc -p tsconfig.build.app.json -w"
   },
   "engines": {
@@ -46,7 +38,8 @@
     "react-dom": "^16.12.0"
   },
   "peerDependencies": {
-    "@shuvi/types": "^0.0.1-alpha.1",
+    "@shuvi/app": "^0.0.1-alpha.0",
+    "@shuvi/core": "^0.0.1-alpha.6",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   }

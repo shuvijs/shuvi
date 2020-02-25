@@ -1,0 +1,28 @@
+{
+  "name": "@shuvi/runtime-core",
+  "version": "0.0.1-alpha.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liximomo/shuvi.git",
+    "directory": "packages/core"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "dev": "tsc -p tsconfig.build.json -w"
+  },
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "dependencies": {
+    "@shuvi/shared": "^0.0.1-alpha.0",
+    "@shuvi/toolpack": "^0.0.1-alpha.5"
+  },
+  "peerDependencies": {
+    "@shuvi/app": "^0.0.1-alpha.0"
+  }
+}

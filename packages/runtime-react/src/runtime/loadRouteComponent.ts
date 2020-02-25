@@ -1,6 +1,6 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { RouteComponent } from "@shuvi/types/core";
+import { RouteComponent } from "@shuvi/core";
 import dynamic, { DynamicOptions } from "./dynamic";
 import { getDisplayName } from "./utils";
 

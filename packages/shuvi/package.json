@@ -21,11 +21,12 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
+    "@shuvi/app": "^0.0.1-alpha.0",
     "@shuvi/core": "^0.0.1-alpha.6",
+    "@shuvi/runtime-core": "^0.0.1-alpha.0",
     "@shuvi/runtime-react": "^0.0.1-alpha.5",
     "@shuvi/shared": "^0.0.1-alpha.0",
     "@shuvi/toolpack": "^0.0.1-alpha.5",
-    "@shuvi/types": "^0.0.1-alpha.4",
     "@shuvi/utils": "^0.0.1-alpha.4",
     "commander": "4.0.1",
     "cross-spawn": "7.0.1",
@@ -40,7 +41,6 @@
   },
   "devDependencies": {
     "@types/cross-spawn": "6.0.1",
-    "@types/express": "4.17.2",
-    "@types/fs-extra": "^8.0.1"
+    "@types/express": "4.17.2"
   }
 }

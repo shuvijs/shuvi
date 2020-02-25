@@ -23,7 +23,6 @@
     "react-reconciler": "0.24.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.0.1",
     "@types/react": "^16.9.17",
     "@types/react-reconciler": "^0.18.0",
     "react": "^16.12.0"

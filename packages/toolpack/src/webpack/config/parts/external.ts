@@ -1,6 +1,6 @@
 import { ExternalsElement, ExternalsFunctionElement } from "webpack";
 import resolve from "resolve";
-import { InternalSourceRegexs } from "../../../constants";
+import { AppSourceRegexs } from "../../../constants";
 
 type Test = string | RegExp;
 
@@ -48,7 +48,7 @@ export function nodeExternals({
 
     // make sure we don't externalize anything that is
     // supposed to be transpiled
-    if (match(request, InternalSourceRegexs)) {
+    if (match(request, AppSourceRegexs)) {
       return transpiled();
     }
 
@@ -68,7 +68,7 @@ export function nodeExternals({
     // Absolute requires (require('/foo')) are extremely uncommon, but
     // also have no need for customization as they're already resolved.
     const start = request.charAt(0);
-    if (start === ".") {
+    if (start === "." || request.startsWith('/')) {
       return transpiled();
     }
 
@@ -114,8 +114,8 @@ export function nodeExternals({
     // runtime have to be transpiled
     if (
       match(res, [
-        /node_modules[/\\]@shuvi[/\\]core[/\\]lib[/\\]app[/\\]/,
-        /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/,
+        /node_modules[/\\]@shuvi[/\\]runtime-core[/\\]lib[/\\]/,
+        /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/
       ]) ||
       res.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) ||
       (context.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) &&

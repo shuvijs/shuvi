@@ -1,6 +1,6 @@
 import path from "path";
 import { CONFIG_FILE } from "../constants";
-import { AppConfig } from "@shuvi/types/core";
+import { AppConfig } from "@shuvi/core";
 
 const defaultConfig: AppConfig = {
   cwd: process.cwd(),

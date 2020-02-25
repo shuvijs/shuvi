@@ -7,7 +7,7 @@ import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import ModuleReplacePlugin from "../plugins/module-replace-plugin";
 import RequireCacheHotReloaderPlugin from "../plugins/require-cache-hot-reloader-plugin";
 import { getProjectInfo } from "../../utils/typeScript";
-import { InternalSourceRegexs } from "../../constants";
+import { AppSourceRegexs } from "../../constants";
 
 const dumpRouteComponent = require.resolve("../../utils/emptyComponent");
 
@@ -138,10 +138,10 @@ export function baseWebpackChain({
   mainRule
     .oneOf("js")
     .test(/\.(tsx|ts|js|mjs|jsx)$/)
-    .include.merge([...srcDirs, ...InternalSourceRegexs])
+    .include.merge([...srcDirs, ...AppSourceRegexs])
     .end()
     .exclude.add((path: string) => {
-      if (InternalSourceRegexs.some(r => r.test(path))) {
+      if (AppSourceRegexs.some(r => r.test(path))) {
         return false;
       }
       return /node_modules/.test(path);

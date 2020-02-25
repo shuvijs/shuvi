@@ -1,4 +1,4 @@
-import { RouteConfig } from "@shuvi/types/core";
+import { RouteConfig } from "@shuvi/core";
 
 export type SubscribeFn = (v: RouteConfig[]) => void;
 

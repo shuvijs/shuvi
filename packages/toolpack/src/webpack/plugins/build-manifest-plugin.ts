@@ -1,6 +1,5 @@
-import { ROUTE_REGEXP } from "@shuvi/shared/lib/constants";
-import url from "url";
-import { Compiler, compilation } from "webpack";
+import { ROUTE_ID_REGEXP } from "@shuvi/shared/lib/router";
+import { Compiler } from "webpack";
 // @ts-ignore
 import Entrypoint from "webpack/lib/Entrypoint";
 import { RawSource } from "webpack-sources";
@@ -123,8 +122,8 @@ export default class BuildManifestPlugin {
           const ext = getFileExt(file);
           const normalizedPath = file.replace(/\\/g, "/");
 
-          // page chunk
-          if (ROUTE_REGEXP.test(chunk.name)) {
+          // route chunk
+          if (ROUTE_ID_REGEXP.test(chunk.name)) {
             this._pushRoute(chunk.name, ext, normalizedPath);
             continue;
           }

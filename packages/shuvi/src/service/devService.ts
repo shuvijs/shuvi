@@ -1,7 +1,7 @@
 import { parse as parseUrl } from "url";
 import { IncomingMessage, ServerResponse } from "http";
-import { AppConfig, RouteComponent } from "@shuvi/types/core";
-import * as Runtime from "@shuvi/types/Runtime";
+import { AppConfig, RouteComponent } from "@shuvi/core";
+import { Runtime } from "@shuvi/core";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
 import {
   DEV_STYLE_ANCHOR_ID,
@@ -49,11 +49,14 @@ export default class Service {
     await this._app.watch();
 
     const compiler = getCompiler(this._app);
-    const server = (this._devServer = new DevServer(compiler.getWebpackCompiler(), {
-      port: 4000,
-      host: "0.0.0.0",
-      publicPath: this._config.publicUrl
-    }));
+    const server = (this._devServer = new DevServer(
+      compiler.getWebpackCompiler(),
+      {
+        port: 4000,
+        host: "0.0.0.0",
+        publicPath: this._config.publicUrl
+      }
+    ));
     this._onDemandRouteMgr.devServer = this._devServer;
 
     const { useTypeScript } = getProjectInfo(this._app.paths.projectDir);

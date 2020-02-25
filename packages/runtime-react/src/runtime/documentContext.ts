@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import * as Runtime from "@shuvi/types/runtime";
+import { Runtime } from "@shuvi/core";
 
 export interface DocumentContextType {
   readonly documentProps: Runtime.DocumentProps;

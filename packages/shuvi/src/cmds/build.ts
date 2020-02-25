@@ -1,6 +1,6 @@
 import program from "commander";
 import fse from "fs-extra";
-import { AppConfig } from "@shuvi/types/core";
+import { AppConfig } from "@shuvi/core";
 import { loadConfig } from "../helpers/loadConfig";
 import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
 import { getCompiler } from "../compiler/compiler";
