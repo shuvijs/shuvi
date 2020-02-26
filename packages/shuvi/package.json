@@ -1,6 +1,6 @@
 {
   "name": "shuvi",
-  "version": "0.0.1-alpha.8",
+  "version": "0.0.1-alpha.9",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
@@ -24,7 +24,7 @@
     "@shuvi/app": "^0.0.1-alpha.2",
     "@shuvi/app-shell": "^0.0.1-alpha.1",
     "@shuvi/runtime-core": "^0.0.1-alpha.2",
-    "@shuvi/runtime-react": "^0.0.1-alpha.7",
+    "@shuvi/runtime-react": "^0.0.1-alpha.8",
     "@shuvi/shared": "^0.0.1-alpha.2",
     "@shuvi/toolpack": "^0.0.1-alpha.7",
     "@shuvi/utils": "^0.0.1-alpha.5",
