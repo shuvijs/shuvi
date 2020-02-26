@@ -12,7 +12,11 @@
   "main": "./index.js",
   "files": [
     "dep",
-    "lib"
+    "lib",
+    "client-env.d.ts",
+    "index.d.ts",
+    "index.js",
+    "shuvi-app.d.ts"
   ],
   "scripts": {
     "dev": "run-p watch:*",

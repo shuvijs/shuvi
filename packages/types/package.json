@@ -9,12 +9,6 @@
   "author": "liximomo",
   "license": "MIT",
   "main": "index.d.js",
-  "files": [
-    "core",
-    "runtime",
-    "shuvi",
-    "index.d.ts"
-  ],
   "engines": {
     "node": ">= 8.0.0"
   }
