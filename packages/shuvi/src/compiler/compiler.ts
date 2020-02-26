@@ -3,13 +3,13 @@ import webpack, {
   Compiler as WebapckCompiler,
   Configuration
 } from "webpack";
+import { App } from "@shuvi/types";
 import {
   createWepbackConfig,
   getClientEntry,
   getServerEntry
 } from "./internal/config";
 import { runCompiler, CompilerResult } from "./internal/runCompiler";
-import { App } from "../app";
 import { WEBPACK_CONFIG_CLIENT, WEBPACK_CONFIG_SERVER } from "../constants";
 
 class CompilerImpl {

@@ -23,14 +23,13 @@
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@shuvi/utils": "^0.0.1-alpha.5",
+    "@shuvi/types": "^0.0.1-alpha.7",
     "history": "^4.10.1",
     "react-router-config": "5.1.1",
     "react-router-dom": "5.1.2",
     "use-subscription": "^1.3.0"
   },
   "devDependencies": {
-    "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
     "@types/react-router-config": "^5.0.1",
     "@types/react-router-dom": "^5.1.3",
@@ -38,8 +37,7 @@
     "react-dom": "^16.12.0"
   },
   "peerDependencies": {
-    "@shuvi/app": "^0.0.1-alpha.0",
-    "@shuvi/core": "^0.0.1-alpha.6",
+    "@shuvi/app": "^0.0.1-alpha.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   }

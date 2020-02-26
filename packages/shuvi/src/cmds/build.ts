@@ -1,13 +1,13 @@
 import path from "path";
 import program from "commander";
 import fse from "fs-extra";
-import { AppConfig } from "@shuvi/core";
-import { loadConfig } from "../helpers/loadConfig";
+import { App } from "@shuvi/types";
 import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
 import { getCompiler } from "../compiler/compiler";
-import { getApp, App } from "../app";
+import { getApp } from "../app";
 import { getDocumentService } from "../documentService";
 import { BUILD_CLIENT_DIR } from "../constants";
+import { loadConfig, AppConfig } from "../config";
 //@ts-ignore
 import pkgInfo from "../../package.json";
 
@@ -17,7 +17,10 @@ program
   .helpOption()
   .option("--public-url <url>", "specify the public network URL")
   .option("--target <target>", "specify the app output target. eg: spa")
-  .option("--router-history <history>", "specify the hisotry type. 'browser' or 'hash'")
+  .option(
+    "--router-history <history>",
+    "specify the hisotry type. 'browser' or 'hash'"
+  )
   .parse(process.argv);
 
 interface CliOptions {
@@ -27,7 +30,7 @@ interface CliOptions {
 
 const CliConfigMap: Record<string, string | ((config: any) => void)> = {
   publicUrl: "publicUrl",
-  routerHistory: 'router.history',
+  routerHistory: "router.history",
   target(config) {
     config.ssr = false;
   }

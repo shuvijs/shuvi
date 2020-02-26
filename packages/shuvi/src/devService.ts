@@ -1,4 +1,4 @@
-import { AppConfig } from "@shuvi/core";
+import { App } from "@shuvi/types";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
 import Express from "express";
 import DevServer from "./devServer";
@@ -11,7 +11,8 @@ import { getCompiler } from "./compiler/compiler";
 import { OnDemandRouteManager } from "./onDemandRouteManager";
 import { getDocumentService, DocumentService } from "./documentService";
 import { acceptsHtml } from "./utils";
-import { App, getApp } from "./app";
+import { getApp } from "./app";
+import { AppConfig } from "./config";
 
 export default class Service {
   private _config: AppConfig;

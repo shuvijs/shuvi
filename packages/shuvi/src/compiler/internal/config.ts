@@ -3,7 +3,7 @@ import {
   createBrowserWebpackChain,
   createNodeWebpackChain
 } from "@shuvi/toolpack/lib/webpack/config";
-import { App } from "../../app";
+import { App } from "@shuvi/types";
 import {
   BUILD_MEDIA_PATH,
   BUILD_MANIFEST_PATH,

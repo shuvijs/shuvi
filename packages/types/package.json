@@ -1,20 +1,20 @@
 {
-  "name": "@shuvi/shared",
-  "version": "0.0.1-alpha.1",
+  "name": "@shuvi/types",
+  "version": "0.0.1-alpha.7",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
-    "directory": "packages/shared"
+    "directory": "packages/type"
   },
   "author": "liximomo",
   "license": "MIT",
+  "main": "index.d.js",
   "files": [
-    "lib"
+    "core",
+    "runtime",
+    "shuvi",
+    "index.d.ts"
   ],
-  "sideEffects": false,
-  "scripts": {
-    "dev": "tsc -p tsconfig.build.json -w"
-  },
   "engines": {
     "node": ">= 8.0.0"
   }

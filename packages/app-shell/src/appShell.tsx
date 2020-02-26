@@ -2,50 +2,40 @@ import React from "react";
 import { useStaticRendering } from "mobx-react";
 import ReactFS from "@shuvi/react-fs";
 import fse from "fs-extra";
-import { AppCore, Paths, BuildOptions, AppConfig } from "./types/core";
 import App from "./App";
-import { getPaths } from "./paths";
-import { store } from "./models/store";
 import { File } from "./models/files";
+import { Store, createStore, StoreProvider } from "./models/store";
 import { swtichOffLifeCycle, swtichOnLifeCycle } from "./components/Base";
+import { AppShell, BuildOptions } from "./types";
 
-export interface AppOptions {
-  config: AppConfig;
-}
-
-class AppCoreImpl implements AppCore {
-  public config: AppConfig;
-  public paths: Paths;
+class AppCoreImpl implements AppShell {
+  private _store: Store;
   private _onBuildDoneCbs: Array<() => void> = [];
 
-  constructor({ config }: AppOptions) {
-    this.config = config;
-    this.paths = getPaths({
-      cwd: this.config.cwd,
-      outputPath: this.config.outputPath
-    });
+  constructor() {
+    this._store = createStore();
   }
 
   setBootstrapModule(module: string) {
-    store.bootstrapModule = module;
+    this._store.bootstrapModule = module;
   }
 
   setAppModule(lookups: string[], fallback: string) {
-    store.appModuleFallback = fallback;
-    store.appModuleLookups = lookups;
+    this._store.appModuleFallback = fallback;
+    this._store.appModuleLookups = lookups;
   }
 
   setDocumentModule(lookups: string[], fallback: string) {
-    store.documentModuleFallback = fallback;
-    store.documentModuleLookups = lookups;
+    this._store.documentModuleFallback = fallback;
+    this._store.documentModuleLookups = lookups;
   }
 
   setRoutesSource(content: string): void {
-    store.routesContent = content;
+    this._store.routesContent = content;
   }
 
   addFile(file: File): void {
-    store.addFile(file);
+    this._store.addFile(file);
   }
 
   waitUntilBuild(): Promise<void> {
@@ -55,12 +45,14 @@ class AppCoreImpl implements AppCore {
   }
 
   async build(options: BuildOptions): Promise<void> {
-    await fse.emptyDir(this.paths.appDir);
+    await fse.emptyDir(options.dir);
 
     return new Promise(resolve => {
       ReactFS.render(
-        <App onDidUpdate={this._onBuildDone.bind(this)} />,
-        this.paths.appDir,
+        <StoreProvider store={this._store}>
+          <App onDidRender={this._onBuildDone.bind(this)} />
+        </StoreProvider>,
+        options.dir,
         () => {
           resolve();
         }
@@ -87,6 +79,6 @@ class AppCoreImpl implements AppCore {
   }
 }
 
-export function createApp(options: AppOptions): AppCore {
-  return new AppCoreImpl(options);
+export function appShell(): AppShell {
+  return new AppCoreImpl();
 }

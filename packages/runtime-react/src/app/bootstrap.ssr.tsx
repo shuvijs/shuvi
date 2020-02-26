@@ -3,7 +3,7 @@
 import React from "react";
 import ReactDom from "react-dom";
 import { Router } from "@shuvi/runtime-react/dep/react-router-dom";
-import { Runtime } from "@shuvi/core/types";
+import { Runtime } from "@shuvi/types";
 import Loadable from "@shuvi/runtime-react/lib/runtime/loadable";
 import { createBrowserHistory } from "@shuvi/runtime-react/lib/runtime/router/history";
 // @ts-ignore

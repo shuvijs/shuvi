@@ -1,79 +1,84 @@
-import { createApp } from "@shuvi/core";
-import { AppCore, AppConfig, Paths, RouteConfig } from "@shuvi/core";
+import { appShell, AppShell, FileType } from "@shuvi/app-shell";
+import { App, Paths } from "@shuvi/types";
 import eventEmitter from "@shuvi/utils/lib/eventEmitter";
 import { joinPath } from "@shuvi/utils/lib/string";
-import { RouterService as IRouterService } from "./types/routeService";
+import { getPaths } from "./paths";
 import RouterService from "./routerService";
 import { runtime } from "./runtime";
+import { AppConfig } from "./config";
 import { DEV_PUBLIC_PATH } from "./constants";
-
-export interface App {
-  publicUrl: string;
-  ssr: boolean;
-  paths: Paths;
-  watch(): void;
-  build(): Promise<void>;
-  on(event: "routes", listener: (routes: RouteConfig[]) => void): void;
-  getClientIndex(): string;
-  resolveAppFile(...paths: string[]): string;
-  resolveUserFile(...paths: string[]): string;
-  resolveBuildFile(...paths: string[]): string;
-  getPublicUrlPath(...paths: string[]): string;
-}
 
 const isDev = process.env.NODE_ENV === "development";
 
-class AppImpl implements App {
+class AppImpl implements App<FileType> {
+  public paths: Paths;
+
+  private _config: AppConfig;
+  private _appShell: AppShell;
+  private _routerService: RouterService;
   private _event = eventEmitter();
-  private _app: AppCore;
-  public _routerService: IRouterService;
 
   constructor({ config }: { config: AppConfig }) {
-    this._app = createApp({
-      config
+    this._config = config;
+    this._appShell = appShell();
+    this.paths = getPaths({
+      cwd: config.cwd,
+      outputPath: config.outputPath
     });
-    this._routerService = new RouterService(this._app.paths.pagesDir);
+    this._routerService = new RouterService(this.paths.pagesDir);
   }
 
   get ssr() {
-    return this._app.config.ssr;
+    return this._config.ssr;
+  }
+
+  get router() {
+    const config = this._config;
+    let { history } = config.router;
+    if (history === "auto") {
+      history = this.ssr ? "browser" : "hash";
+    }
+
+    return {
+      history
+    };
   }
 
   get publicUrl() {
-    return isDev ? DEV_PUBLIC_PATH : this._app.config.publicUrl;
+    return isDev ? DEV_PUBLIC_PATH : this._config.publicUrl;
   }
 
-  get paths() {
-    return this._app.paths;
+  addFile(file: FileType) {
+    this._appShell.addFile(file);
   }
-
-  // get config() {
-  //   return this._app.config;
-  // }
 
   async watch() {
-    const { _app: app } = this;
-    await runtime.install(app);
+    const { _appShell: appShell } = this;
+    await runtime.install(this);
     await this._setupApp();
 
     this._routerService.subscribe(routes => {
       this._event.emit("routes", routes);
-      app.setRoutesSource(runtime.generateRoutesSource(routes));
+      appShell.setRoutesSource(runtime.generateRoutesSource(routes));
     });
 
-    await this._app.build({});
+    await appShell.build({
+      dir: this.paths.appDir
+    });
   }
 
   async build() {
-    const { _app: app, _routerService: routerService } = this;
-    await runtime.install(app);
+    const { _appShell: appShell, _routerService: routerService } = this;
+    await runtime.install(this);
     await this._setupApp();
 
     const routes = await routerService.getRoutes();
     this._event.emit("routes", routes);
-    app.setRoutesSource(runtime.generateRoutesSource(routes));
+    appShell.setRoutesSource(runtime.generateRoutesSource(routes));
 
-    await app.buildOnce({});
+    await appShell.buildOnce({
+      dir: this.paths.appDir
+    });
   }
 
   getClientIndex(): string {
@@ -102,19 +107,19 @@ class AppImpl implements App {
 
   private async _setupApp() {
     // core files
-    const { _app: app } = this;
-    app.setBootstrapModule(runtime.getBootstrapFilePath());
-    app.setAppModule(
+    const { _appShell: appShell } = this;
+    appShell.setBootstrapModule(runtime.getBootstrapFilePath());
+    appShell.setAppModule(
       [this.resolveUserFile("app.js")],
       runtime.getAppFilePath()
     );
-    app.setDocumentModule(
+    appShell.setDocumentModule(
       [this.resolveUserFile("document.js")],
       runtime.getDocumentFilePath()
     );
   }
 }
 
-export function getApp(config: AppConfig): App {
+export function getApp(config: AppConfig): App<FileType> {
   return new AppImpl({ config });
 }

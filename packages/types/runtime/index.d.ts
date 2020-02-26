@@ -1,4 +1,40 @@
-import { AppCore, MatchedRoute, RouteConfig } from "./core";
+import { ParsedUrlQuery } from "querystring";
+import { App } from "../shuvi";
+
+export interface RouteConfig {
+  id: string;
+  path?: string | string[];
+  exact?: boolean;
+  routes?: RouteConfig[];
+  component?: any;
+  componentFile: string;
+  [x: string]: any;
+}
+
+export interface MatchedRoute<
+  Params extends { [K in keyof Params]?: string } = {}
+> {
+  route: RouteConfig;
+  match: {
+    params: Params;
+    isExact: boolean;
+    path: string;
+    url: string;
+  };
+}
+
+export interface RouteComponentContext {
+  isServer: boolean;
+  pathname: string;
+  query: ParsedUrlQuery;
+  params: ParsedUrlQuery;
+  req?: { url: string };
+  // res?: ServerResponse;
+}
+
+export type RouteComponent<T, P = {}> = T & {
+  getInitialProps?(context: RouteComponentContext): P | Promise<P>;
+};
 
 export type RouteProps = {
   [x: string]: any;
@@ -56,7 +92,7 @@ export interface BootstrapOptions {
 export type Bootstrap = (options: BootstrapOptions) => void;
 
 export interface Runtime<CompType = unknown> {
-  install(app: AppCore): void;
+  install(app: App): void;
 
   renderDocument(
     Document: CompType,

@@ -12,6 +12,6 @@
     "node": ">= 8.0.0"
   },
   "peerDependencies": {
-    "@shuvi/core": "^0.0.1-alpha.6"
+    "@shuvi/types": "^0.0.1-alpha.7"
   }
 }

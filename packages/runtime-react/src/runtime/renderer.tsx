@@ -1,12 +1,14 @@
 import React from "react";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
-import { Runtime } from "@shuvi/core";
-import { RouteConfig, MatchedRoute } from "@shuvi/core";
+import { Runtime } from "@shuvi/types";
 import { Router } from "react-router-dom";
 import { matchRoutes as reactRouterMatchRoutes } from "react-router-config";
 import { createServerHistory } from "./router/history";
 import { setHistory } from "./router/router";
 import { LoadableContext } from "./loadable";
+
+import RouteConfig = Runtime.RouteConfig;
+import MatchedRoute = Runtime.MatchedRoute;
 
 export function matchRoutes(
   routes: RouteConfig[],

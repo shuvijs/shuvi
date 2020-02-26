@@ -1,6 +1,6 @@
 import { join } from "path";
-import { Paths } from "./types/core";
 import { NAME } from "@shuvi/shared/lib/constants";
+import { Paths } from "@shuvi/types";
 
 interface PathsOpts {
   cwd: string;

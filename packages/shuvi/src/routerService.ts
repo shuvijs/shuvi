@@ -1,12 +1,14 @@
 import { join, relative, posix } from "path";
 import invariant from "tiny-invariant";
-import { RouteConfig } from "@shuvi/core";
 import { genRouteId } from "@shuvi/shared/lib/router";
 import { watch } from "@shuvi/utils/lib/fileWatcher";
 import eventEmitter from "@shuvi/utils/lib/eventEmitter";
 import { recursiveReadDir } from "@shuvi/utils/lib/recursiveReaddir";
-import { RouterService, SubscribeFn } from "./types/routeService";
+import { Runtime } from "@shuvi/types";
 
+import RouteConfig = Runtime.RouteConfig;
+
+export type SubscribeFn = (v: RouteConfig[]) => void;
 
 interface InternalRouteConfig extends RouteConfig {
   routes?: InternalRouteConfig[];
@@ -104,7 +106,7 @@ function sortRoutes(routes: InternalRouteConfig[]): RouteConfig[] {
   return res;
 }
 
-export default class RouterServiceImpl implements RouterService {
+export default class RouterService {
   private _pagesDir: string;
   private _unwatch: any;
   private _event = eventEmitter();

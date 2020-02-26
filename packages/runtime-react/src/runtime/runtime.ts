@@ -1,8 +1,12 @@
 import React from "react";
-import { AppCore, RouteConfig, MatchedRoute, Runtime, File } from "@shuvi/core";
+import { App, Runtime } from "@shuvi/types";
+import { File } from "@shuvi/app-shell";
 import { renderDocument, renderApp, matchRoutes } from "./renderer";
 import { resolveDistFile } from "./paths";
 import Loadable from "./loadable";
+
+import RouteConfig =  Runtime.RouteConfig;
+import MatchedRoute =  Runtime.MatchedRoute;
 
 // fix yarn link with react hooks
 if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE) {
@@ -72,9 +76,9 @@ loadRouteComponent(() => import(/* webpackChunkName: "${route.id}" */"${filepath
 }
 
 class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
-  private _app!: AppCore;
+  private _app!: App;
 
-  async install(app: AppCore): Promise<void> {
+  async install(app: App): Promise<void> {
     this._app = app;
     app.addFile(
       File.file("dynamic.js", {
@@ -132,11 +136,11 @@ export default ${routesExport}
   }
 
   getBootstrapFilePath(): string {
-    if (this._app.config.ssr) {
+    if (this._app.ssr) {
       return resolveDistFile("app/bootstrap.ssr");
     }
 
-    if (this._app.config.router.history === "hash") {
+    if (this._app.router.history === "hash") {
       return resolveDistFile("app/bootstrap.hash");
     }
 

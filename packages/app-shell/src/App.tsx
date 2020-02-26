@@ -6,7 +6,7 @@ import PriorityFile from "./components/FilePriorityFile";
 import { useSelector } from "./models/store";
 
 interface AppProps {
-  onDidUpdate: () => void;
+  onDidRender: () => void;
 }
 
 function App(props: AppProps) {
@@ -23,7 +23,7 @@ function App(props: AppProps) {
   const routesContent = useSelector(state => state.routesContent);
 
   useEffect(() => {
-    props.onDidUpdate();
+    props.onDidRender();
   });
 
   return (
@@ -45,7 +45,7 @@ export default class AppContainer extends React.Component<AppProps> {
   }
 
   componentDidUpdate() {
-    this.props.onDidUpdate();
+    this.props.onDidRender();
   }
 
   render() {

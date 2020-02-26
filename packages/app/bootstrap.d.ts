@@ -1,3 +1,3 @@
-import { Runtime } from "@shuvi/core/types";
+import { Runtime } from "@shuvi/types";
 
 export const bootstrap: Runtime.Bootstrap;

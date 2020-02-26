@@ -2,7 +2,7 @@ import program from "commander";
 import path from "path";
 import http from "http";
 import { parse } from "url";
-import { loadConfig } from "../helpers/loadConfig";
+import { loadConfig } from "../config";
 import { getDocumentService } from "../documentService";
 import { getApp } from "../app";
 import { serveStatic } from "../helpers/serveStatic";

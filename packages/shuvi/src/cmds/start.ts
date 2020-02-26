@@ -1,4 +1,4 @@
-import { loadConfig } from "../helpers/loadConfig";
+import { loadConfig } from "../config";
 import DevService from "../devService";
 
 async function main() {

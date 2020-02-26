@@ -1,8 +1,9 @@
-import { RouteConfig } from "@shuvi/core";
+import { Runtime, App } from "@shuvi/types";
 import ModuleReplacePlugin from "@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin";
 import DevServer from "./devServer";
 import { runtime } from "./runtime";
-import { App } from "./app";
+
+import RouteConfig = Runtime.RouteConfig;
 
 function traverse(routes: RouteConfig[], cb: (route: RouteConfig) => void) {
   for (let index = 0; index < routes.length; index++) {
@@ -13,8 +14,6 @@ function traverse(routes: RouteConfig[], cb: (route: RouteConfig) => void) {
     cb(route);
   }
 }
-
-// const routeLoader = "@shuvi/route-component-loader";
 
 export class OnDemandRouteManager {
   private _activedRouteIds = new Set<string>();

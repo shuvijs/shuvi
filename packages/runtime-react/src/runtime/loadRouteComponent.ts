@@ -1,9 +1,11 @@
 import React from "react";
 import { parse as parseQuerystring } from "querystring";
 import { RouteComponentProps } from "react-router-dom";
-import { RouteComponent } from "@shuvi/core";
+import { Runtime } from "@shuvi/types";
 import dynamic, { DynamicOptions } from "./dynamic";
 import { getDisplayName } from "./utils";
+
+import RouteComponent = Runtime.RouteComponent
 
 type Data = Record<string, any>;
 

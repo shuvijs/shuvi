@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Switch, Route } from "react-router-dom";
-import { RouteConfig } from "@shuvi/core";
+import { Runtime } from "@shuvi/types";
 
 type Data = Record<string, any>;
 
 function renderRoutes(
-  routes?: RouteConfig[],
+  routes?: Runtime.RouteConfig[],
   initialProps: Data = {},
   switchProps: Data = {}
 ) {

@@ -1,5 +1,5 @@
-import { RouteConfig } from "@shuvi/core/types";
+import { Runtime } from "@shuvi/types";
 
-declare var routes: RouteConfig[];
+declare var routes: Runtime.RouteConfig[];
 
 export default routes;

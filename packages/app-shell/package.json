@@ -1,17 +1,16 @@
 {
-  "name": "@shuvi/core",
-  "version": "0.0.1-alpha.7",
+  "name": "@shuvi/app-shell",
+  "version": "0.0.1-alpha.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
-    "directory": "packages/core"
+    "directory": "packages/app-shell"
   },
   "author": "liximomo",
   "license": "MIT",
   "main": "./lib/index.js",
   "files": [
-    "lib",
-    "types.d.ts"
+    "lib"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w"
@@ -22,7 +21,6 @@
   "dependencies": {
     "@shuvi/react-fs": "^0.0.1-alpha.4",
     "@shuvi/shared": "^0.0.1-alpha.1",
-    "@shuvi/toolpack": "^0.0.1-alpha.6",
     "@shuvi/utils": "^0.0.1-alpha.5",
     "fs-extra": "8.1.0",
     "handlebars": "4.5.3",

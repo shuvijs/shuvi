@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@shuvi/app": "^0.0.1-alpha.1",
-    "@shuvi/core": "^0.0.1-alpha.7",
+    "@shuvi/app-shell": "^0.0.1-alpha.0",
     "@shuvi/runtime-core": "^0.0.1-alpha.1",
     "@shuvi/runtime-react": "^0.0.1-alpha.6",
     "@shuvi/shared": "^0.0.1-alpha.1",

@@ -11,7 +11,9 @@ import {
   BUILD_SERVER_DOCUMENT,
   BUILD_SERVER_APP
 } from "../constants";
-import { RouteConfig } from "@shuvi/core";
+import { Runtime } from "@shuvi/types";
+
+import RouteConfig = Runtime.RouteConfig;
 
 export type ModuleManifest = Module;
 
@@ -41,7 +43,7 @@ export class ModuleLoader {
     return manifest.entries[name];
   }
 
-  getLoadableManifest(): Manifest['loadble'] {
+  getLoadableManifest(): Manifest["loadble"] {
     const manifest = this._getClientManifest();
     return manifest.loadble;
   }

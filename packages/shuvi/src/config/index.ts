@@ -1,6 +1,16 @@
+import { RouterHistoryMode } from "@shuvi/types";
 import path from "path";
 import { CONFIG_FILE } from "../constants";
-import { AppConfig } from "@shuvi/core";
+
+export interface AppConfig {
+  ssr: boolean;
+  cwd: string;
+  outputPath: string;
+  publicUrl: string;
+  router: {
+    history: RouterHistoryMode;
+  };
+}
 
 function deepMerge(...args: any[]) {
   function mergeTwoObject(origin: any, target: any) {
@@ -31,7 +41,7 @@ const defaultConfig: AppConfig = {
   outputPath: "dist",
   publicUrl: "/",
   router: {
-    history: "browser"
+    history: "auto"
   }
 };
 

@@ -1,9 +1,8 @@
 import { parse as parseUrl } from "url";
 import { IncomingMessage, ServerResponse } from "http";
-import { RouteComponent, Runtime } from "@shuvi/core";
+import { Runtime, App } from "@shuvi/types";
 import { ModuleLoader } from "./compiler/output";
 import { htmlEscapeJsonString } from "./helpers/htmlescape";
-import { App } from "./app";
 import { runtime } from "./runtime";
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
@@ -11,6 +10,8 @@ import {
   CLIENT_APPDATA_ID,
   CLIENT_CONTAINER_ID
 } from "./constants";
+
+import RouteComponent = Runtime.RouteComponent;
 import AppData = Runtime.AppData;
 
 const isDev = process.env.NODE_ENV === "development";
