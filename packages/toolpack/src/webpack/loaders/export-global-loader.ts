@@ -9,20 +9,23 @@ export type ClientPagesLoaderOptions = {
 const nextClientPagesLoader: loader.Loader = function() {
   const { absolutePath, exportName, globalName } = loaderUtils.getOptions(this);
 
-  const quotedGlobalName = JSON.stringify(globalName);
-  const quotedAbsolutePagePath = JSON.stringify(absolutePath);
-  const quotedExportName = JSON.stringify(exportName);
+  const stringifyGlobalName = JSON.stringify(globalName);
+  const stringifyAbsolutePath = loaderUtils.stringifyRequest(
+    this,
+    absolutePath
+  );
+  const stringifyName = JSON.stringify(exportName);
 
   return `
-var mod = require(${quotedAbsolutePagePath})
-(window[${quotedGlobalName}] = window[${quotedGlobalName}] || {})[${quotedExportName}] = mod.default || mod
+var mod = require(${stringifyAbsolutePath})
+(window[${stringifyGlobalName}] = window[${stringifyGlobalName}] || {})[${stringifyName}] = mod.default || mod
 
 if(module.hot) {
-  module.hot.accept(${quotedAbsolutePagePath}, function() {
-    if(!${quotedGlobalName} in window) return
+  module.hot.accept(${stringifyAbsolutePath}, function() {
+    if(!${stringifyGlobalName} in window) return
 
-    var updatedMod = require(${quotedAbsolutePagePath})
-    window[${quotedGlobalName}] = updatedMod.default || updatedMod
+    var updatedMod = require(${stringifyAbsolutePath})
+    window[${stringifyGlobalName}] = updatedMod.default || updatedMod
   })
 }
 `;

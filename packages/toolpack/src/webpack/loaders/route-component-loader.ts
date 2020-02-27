@@ -9,8 +9,13 @@ export type RouteComponentLoaderOptions = {
 const routeComponentLoader: loader.Loader = function() {
   const { componentAbsolutePath }: any = loaderUtils.getOptions(this);
 
+  const stringifyRequest = loaderUtils.stringifyRequest(
+    this,
+    `${componentAbsolutePath}?__shuvi-route`
+  );
+
   return `
-const = require("${componentAbsolutePath}?__shuvi-route")
+const = require(${stringifyRequest})
 `.trim();
 };
 
