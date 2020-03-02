@@ -1,59 +1,55 @@
 import { RouterHistoryMode } from "@shuvi/types";
+import { merge } from "@shuvi/utils/lib/merge";
 import path from "path";
-import { CONFIG_FILE } from "../constants";
+import { CONFIG_FILE, ASSET_PREFIX } from "../constants";
 
-export interface AppConfig {
+export interface ShuviConfig {
   ssr: boolean;
-  cwd: string;
+  rootDir: string;
   outputPath: string;
-  publicUrl: string;
+  assetPrefix: string;
   router: {
     history: RouterHistoryMode;
   };
 }
 
-function deepMerge(...args: any[]) {
-  function mergeTwoObject(origin: any, target: any) {
-    if (target === null || typeof target === "undefined") {
-      return origin;
-    }
-
-    Object.keys(target).forEach(key => {
-      const originValue = origin[key];
-      const targetValye = target[key];
-      if (typeof originValue === "object" && typeof targetValye === "object") {
-        origin[key] = deepMerge(originValue, targetValye);
-      } else if (typeof targetValye === "object") {
-        origin[key] = deepMerge({}, targetValye);
-      } else {
-        origin[key] = targetValye;
-      }
-    });
-    return origin;
-  }
-
-  return args.reduce(mergeTwoObject, {});
-}
-
-const defaultConfig: AppConfig = {
+const defaultConfig: ShuviConfig = {
   ssr: false,
-  cwd: process.cwd(),
+  rootDir: process.cwd(),
   outputPath: "dist",
-  publicUrl: "/",
+  assetPrefix: ASSET_PREFIX,
   router: {
     history: "auto"
   }
 };
 
-export async function loadConfigFromFile<T>(configPath: string): Promise<T> {
+async function loadConfigFromFile<T>(configPath: string): Promise<T> {
   const absolutePath = path.isAbsolute(configPath)
     ? configPath
     : path.resolve(configPath);
-  const config: T = require(absolutePath);
+  let config = {} as T;
+
+  try {
+    config = require(absolutePath);
+    config = (config as any).default || config;
+  } catch (err) {
+    // Ignore MODULE_NOT_FOUND
+    if (err.code !== "MODULE_NOT_FOUND") {
+      throw err;
+    }
+  }
+
   return config;
 }
 
-export async function loadConfig(): Promise<AppConfig> {
-  const config = await loadConfigFromFile<Partial<AppConfig>>(CONFIG_FILE);
-  return deepMerge(defaultConfig, config);
+export async function loadConfig(
+  dir: string = process.cwd()
+): Promise<ShuviConfig> {
+  const config = await loadConfigFromFile<Partial<ShuviConfig>>(
+    path.join(dir, CONFIG_FILE)
+  );
+
+  config.rootDir = dir;
+
+  return merge(defaultConfig, config);
 }

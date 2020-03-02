@@ -1,0 +1,36 @@
+{
+  "entries": {
+    "static/runtime/main.js": {
+      "js": [
+        "static/runtime/webpack-e2bf8cf124f094a9759c.js",
+        "static/chunks/framework.a35871a7.js",
+        "static/runtime/main-7e76035c04d6d9d91ee7.js"
+      ]
+    }
+  },
+  "routes": {
+    "page-84b4": {
+      "js": [
+        "static/chunks/page-84b4.f8ede11b.js"
+      ]
+    }
+  },
+  "chunks": {
+    "framework": "static/chunks/framework.a35871a7.js",
+    "static/runtime/main.js": "static/runtime/main-7e76035c04d6d9d91ee7.js",
+    "static/runtime/webpack.js": "static/runtime/webpack-e2bf8cf124f094a9759c.js"
+  },
+  "loadble": {
+    "/Users/lixi/Workspace/github/shuvi/test/fixtures/basic/src/pages/index.jsx": {
+      "files": [
+        "static/chunks/page-84b4.f8ede11b.js"
+      ],
+      "children": [
+        {
+          "id": "Dtc0",
+          "name": "./src/pages/index.jsx"
+        }
+      ]
+    }
+  }
+}

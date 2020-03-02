@@ -1,7 +1,7 @@
 import connect from "@shuvi/toolpack/lib/utils/hotDevClient";
 import {
-  HOT_MIDDLEWARE_PATH,
-  HOT_LAUNCH_EDITOR_ENDPOINT
+  DEV_HOT_MIDDLEWARE_PATH,
+  DEV_HOT_LAUNCH_EDITOR_ENDPOINT
 } from "@shuvi/shared/lib/constants";
 
 interface Event {
@@ -12,8 +12,8 @@ interface Event {
 export default (options = {}) => {
   const devClient = connect({
     ...options,
-    launchEditorEndpoint: HOT_LAUNCH_EDITOR_ENDPOINT,
-    path: HOT_MIDDLEWARE_PATH
+    launchEditorEndpoint: DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
+    path: DEV_HOT_MIDDLEWARE_PATH
   });
 
   devClient.subscribeToHmrEvent((event: Event) => {

@@ -17,7 +17,7 @@
     "noImplicitThis": true,
     "stripInternal": true,
     "downlevelIteration": true,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "declaration": true,
     "outDir": "dist",
     "experimentalDecorators": true

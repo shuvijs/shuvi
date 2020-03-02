@@ -24,17 +24,15 @@ interface WebpackConfigOptions {
   node: boolean;
 }
 
-const isDev = process.env.NODE_ENV === "development";
-
 export function createWepbackConfig(app: App, opts: WebpackConfigOptions) {
-  const { paths } = app;
+  const { paths, dev } = app;
   let chain: WebpackChain;
 
   const srcDirs = [paths.appDir, paths.srcDir];
   if (opts.node) {
     chain = createNodeWebpackChain({
       srcDirs,
-      dev: isDev,
+      dev,
       projectRoot: paths.projectDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
       mediaFilename: BUILD_MEDIA_PATH
@@ -43,11 +41,11 @@ export function createWepbackConfig(app: App, opts: WebpackConfigOptions) {
   } else {
     chain = createBrowserWebpackChain({
       srcDirs,
-      dev: isDev,
+      dev,
       projectRoot: paths.projectDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
       mediaFilename: BUILD_MEDIA_PATH,
-      publicPath: app.publicUrl
+      publicPath: app.assetPublicPath
     });
     chain.output.path(`${paths.buildDir}/${BUILD_CLIENT_DIR}`);
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
@@ -58,7 +56,7 @@ export function createWepbackConfig(app: App, opts: WebpackConfigOptions) {
   chain.output.set("filename", ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
     if (
-      !isDev &&
+      !dev &&
       (chunk.name === BUILD_CLIENT_RUNTIME_MAIN ||
         chunk.name === BUILD_CLIENT_RUNTIME_WEBPACK)
     ) {

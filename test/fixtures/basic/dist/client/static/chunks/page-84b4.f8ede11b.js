@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[1],{Dtc0:function(e,s,i){"use strict";i.r(s);var t=i("r0ML"),a=i.n(t);a.a.createElement;s.default=()=>a.a.createElement("div",{__source:{fileName:"/Users/lixi/Workspace/github/shuvi/test/fixtures/basic/src/pages/index.jsx",lineNumber:1},__self:void 0},"index")}}]);

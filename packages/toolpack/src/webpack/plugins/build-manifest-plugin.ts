@@ -52,22 +52,22 @@ function getFileExt(filepath: string): string {
   return match[1];
 }
 
-function findEntrypointName(chunkGorup: any): string[] {
-  const entrypoints: any[] = [];
-  const queue: any[] = [chunkGorup];
-  while (queue.length) {
-    const item = queue.shift();
-    for (const parent of item.getParents()) {
-      if (parent instanceof Entrypoint) {
-        entrypoints.push(parent.name);
-      } else {
-        queue.push(parent);
-      }
-    }
-  }
+// function findEntrypointName(chunkGorup: any): string[] {
+//   const entrypoints: any[] = [];
+//   const queue: any[] = [chunkGorup];
+//   while (queue.length) {
+//     const item = queue.shift();
+//     for (const parent of item.getParents()) {
+//       if (parent instanceof Entrypoint) {
+//         entrypoints.push(parent.name);
+//       } else {
+//         queue.push(parent);
+//       }
+//     }
+//   }
 
-  return entrypoints;
-}
+//   return entrypoints;
+// }
 
 // This plugin creates a build-manifest.json for all assets that are being output
 // It has a mapping of "entry" filename to real filename. Because the real filename can be hashed in production
@@ -171,15 +171,11 @@ export default class BuildManifestPlugin {
         }
 
         chunk.files.forEach((file: string) => {
-          let moduleType: "javascript" | "css";
-          if (file.match(/\.js$/) && file.match(/^static\/chunks\//)) {
-            moduleType = "javascript";
-          } else if (file.match(/\.css$/) && file.match(/^static\/css\//)) {
-            moduleType = "css";
-          } else {
-            return;
+          const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
+          const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
+          if (isJs || isCss) {
+            this._pushLoadableModules(request, file);
           }
-          this._pushLoadableModules(request, file);
         });
 
         for (const module of chunk.modulesIterable) {

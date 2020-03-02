@@ -1,0 +1,26 @@
+{
+  "entries": {
+    "document.js": {
+      "js": [
+        "document.js"
+      ]
+    },
+    "app.js": {
+      "js": [
+        "app.js"
+      ]
+    }
+  },
+  "routes": {
+    "page-84b4": {
+      "js": [
+        "static/chunks/page-84b4.bab13314.js"
+      ]
+    }
+  },
+  "chunks": {
+    "app.js": "app.js",
+    "document.js": "document.js"
+  },
+  "loadble": {}
+}

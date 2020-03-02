@@ -7,7 +7,7 @@ import { getCompiler } from "../compiler/compiler";
 import { getApp } from "../app";
 import { getDocumentService } from "../documentService";
 import { BUILD_CLIENT_DIR } from "../constants";
-import { loadConfig, AppConfig } from "../config";
+import { loadConfig, ShuviConfig } from "../config";
 //@ts-ignore
 import pkgInfo from "../../package.json";
 
@@ -15,7 +15,7 @@ program
   .name(pkgInfo.name)
   .usage(`build [options]`)
   .helpOption()
-  .option("--public-url <url>", "specify the public network URL")
+  .option("--asset-prefix <prefix>", "specify the asset prefix. eg: https://some.cdn.com")
   .option("--target <target>", "specify the app output target. eg: spa")
   .option(
     "--router-history <history>",
@@ -24,12 +24,12 @@ program
   .parse(process.argv);
 
 interface CliOptions {
-  publicUrl?: string;
+  assetPrefix?: string;
   target?: "spa";
 }
 
 const CliConfigMap: Record<string, string | ((config: any) => void)> = {
-  publicUrl: "publicUrl",
+  assetPrefix: "assetPrefix",
   routerHistory: "router.history",
   target(config) {
     config.ssr = false;
@@ -48,7 +48,7 @@ function set(obj: any, path: string, value: any) {
   obj[final] = value;
 }
 
-function applyCliOptions(cliOptions: Record<string, any>, config: AppConfig) {
+function applyCliOptions(cliOptions: Record<string, any>, config: ShuviConfig) {
   Object.keys(CliConfigMap).forEach(key => {
     if (typeof program[key] !== "undefined") {
       const value = CliConfigMap[key];

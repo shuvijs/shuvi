@@ -5,24 +5,28 @@ import { joinPath } from "@shuvi/utils/lib/string";
 import { getPaths } from "./paths";
 import RouterService from "./routerService";
 import { runtime } from "./runtime";
-import { AppConfig } from "./config";
+import { ShuviConfig } from "./config";
 import { DEV_PUBLIC_PATH } from "./constants";
-
-const isDev = process.env.NODE_ENV === "development";
 
 class AppImpl implements App<FileType> {
   public paths: Paths;
 
-  private _config: AppConfig;
+  public dev: boolean = false;
+
+  private _config: ShuviConfig;
+
   private _appShell: AppShell;
+
   private _routerService: RouterService;
+
   private _event = eventEmitter();
 
-  constructor({ config }: { config: AppConfig }) {
+  constructor({ dev = false, config }: { dev: boolean; config: ShuviConfig }) {
+    this.dev = dev;
     this._config = config;
     this._appShell = appShell();
     this.paths = getPaths({
-      cwd: config.cwd,
+      rootDir: config.rootDir,
       outputPath: config.outputPath
     });
     this._routerService = new RouterService(this.paths.pagesDir);
@@ -44,8 +48,14 @@ class AppImpl implements App<FileType> {
     };
   }
 
-  get publicUrl() {
-    return isDev ? DEV_PUBLIC_PATH : this._config.publicUrl;
+  get assetPublicPath() {
+    let prefix = this.dev ? DEV_PUBLIC_PATH : this._config.assetPrefix;
+
+    if (!prefix.endsWith("/")) {
+      prefix += "/";
+    }
+
+    return prefix;
   }
 
   addFile(file: FileType) {
@@ -97,8 +107,8 @@ class AppImpl implements App<FileType> {
     return joinPath(this.paths.buildDir, ...paths);
   }
 
-  getPublicUrlPath(buildPath: string): string {
-    return joinPath(this.publicUrl, buildPath);
+  getAssetPublicUrl(...paths: string[]): string {
+    return joinPath(this.assetPublicPath, ...paths);
   }
 
   on(event: string, listener: (x: any) => void) {
@@ -120,6 +130,9 @@ class AppImpl implements App<FileType> {
   }
 }
 
-export function getApp(config: AppConfig): App<FileType> {
-  return new AppImpl({ config });
+export function getApp(
+  config: ShuviConfig,
+  { dev = false }: { dev?: boolean } = {}
+): App<FileType> {
+  return new AppImpl({ config, dev });
 }

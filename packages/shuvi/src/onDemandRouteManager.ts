@@ -1,6 +1,6 @@
 import { Runtime, App } from "@shuvi/types";
 import ModuleReplacePlugin from "@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin";
-import DevServer from "./devServer";
+import { DevMiddleware } from "./devMiddleware";
 import { runtime } from "./runtime";
 
 import RouteConfig = Runtime.RouteConfig;
@@ -19,17 +19,16 @@ export class OnDemandRouteManager {
   private _activedRouteIds = new Set<string>();
   private _routesMap = new Map<string, { componentFile: string }>();
   private _routes: RouteConfig[] = [];
-  private _app: App;
-  public devServer: DevServer | null = null;
+  public devMiddleware: DevMiddleware | null = null;
 
-  constructor({ app }: { app: App }) {
-    this._app = app;
-    this._app.on("routes", routes => {
+  listen(app: App) {
+    app.on("routes", routes => {
       this._routes = routes;
       this._onRoutesChange(routes);
       this._replaceComponentFile(routes);
     });
   }
+
   async ensureRoutes(pathname: string): Promise<void> {
     const matchRouteIds = runtime
       .matchRoutes(this._routes, pathname)
@@ -42,7 +41,7 @@ export class OnDemandRouteManager {
   }
 
   async _activateRoutes(routeIds: string[]): Promise<void> {
-    if (!this.devServer) {
+    if (!this.devMiddleware) {
       return;
     }
 
@@ -67,8 +66,8 @@ export class OnDemandRouteManager {
       );
       this._activedRouteIds.add(id);
     });
-    this.devServer.invalidate();
-    await this.devServer.waitUntilValid();
+    this.devMiddleware.invalidate();
+    await this.devMiddleware.waitUntilValid();
   }
 
   private _replaceComponentFile(routes: RouteConfig[]) {

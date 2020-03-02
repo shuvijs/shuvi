@@ -1,0 +1,1 @@
+module.exports = require("/Users/lixi/Workspace/github/shuvi/packages/runtime-react/lib/app/app");

@@ -1,11 +1,6 @@
 import program from "commander";
-import path from "path";
-import http from "http";
-import { parse } from "url";
 import { loadConfig } from "../config";
-import { getDocumentService } from "../documentService";
-import { getApp } from "../app";
-import { serveStatic } from "../helpers/serveStatic";
+import { startServer } from "../helpers/startServer";
 //@ts-ignore
 import pkgInfo from "../../package.json";
 
@@ -13,47 +8,22 @@ program
   .name(pkgInfo.name)
   .usage(`serve [options]`)
   .helpOption()
-  .option("--host <host>", "specify host", "0.0.0.0")
-  .option("--port <port>", "specify port", "4000")
+  .option("--host <host>", "specify host")
+  .option("--port <port>", "specify port")
   .parse(process.argv);
 
-const CliConfigMap: Record<string, string> = {
-  publicUrl: "publicUrl"
-};
-
-function set(obj: any, path: string, value: any) {
-  const segments = path.split(".");
-  const final = segments.pop()!;
-  for (var i = 0; i < segments.length; i++) {
-    if (!obj) {
-      return;
-    }
-    obj = obj[segments[i]];
-  }
-  obj[final] = value;
-}
+const port = program.port || 3000;
+const host = program.host || "localhost";
 
 async function main() {
   const config = await loadConfig();
-  const app = getApp(config);
-  const documentService = getDocumentService({ app });
-  const server = http.createServer((req, res) => {
-    const parsedUrl = parse(req.url!, true);
-    const pathname = parsedUrl.pathname || "/";
-    if (pathname.startsWith("/static")) {
-      serveStatic(
-        req,
-        res,
-        path.join(config.outputPath, "client", encodeURIComponent(pathname))
-      );
-      return;
-    }
-
-    documentService.handleRequest(req, res);
-  });
-  server.listen(program.port, program.host, () => {
-    console.log(`listening on http://${program.host}:${program.port}`);
-  });
+  try {
+    await startServer({ config }, port, host);
+    console.log(`Ready on http://${host}:${port}`);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 }
 
 main();

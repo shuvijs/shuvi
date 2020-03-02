@@ -10,10 +10,13 @@
   },
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
-    "start": "cd packages/shuvi && node dist/cli.js start"
+    "test:unit": "jest packages",
+    "test:fixtures": "jest test/fixtures",
+    "test:e2e": "jest test/e2e"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",
+    "@types/jest": "^25.1.3",
     "@types/react": "^16.9.23",
     "@types/send": "^0.14.5",
     "jest": "^24.9.0",

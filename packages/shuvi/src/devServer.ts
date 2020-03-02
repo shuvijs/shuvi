@@ -4,35 +4,36 @@ import ForkTsCheckerWebpackPlugin, {
 import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
 import { createLaunchEditorMiddleware } from "@shuvi/toolpack/lib/utils/errorOverlayMiddleware";
 import { MultiCompiler, Compiler } from "webpack";
-import Express from "express";
 import WebpackDevMiddleware from "webpack-dev-middleware";
 import WebpackHotMiddleware from "webpack-hot-middleware";
-import { HOT_LAUNCH_EDITOR_ENDPOINT, HOT_MIDDLEWARE_PATH } from "./constants";
+import { createServer, Server, RequestHandle } from "./server";
+import { DEV_HOT_LAUNCH_EDITOR_ENDPOINT, DEV_HOT_MIDDLEWARE_PATH } from "./constants";
 
 type CompilerDiagnostics = {
   errors: string[];
   warnings: string[];
 };
 
-interface Config {
+interface Options {
   host: string;
   port: number;
   publicPath: string;
 }
 
-export default class Server {
-  private _app: Express.Application;
-  private _config: Config;
+export default class DevServer {
+  private _inited: boolean = false;
+  private _app: Server;
+  private _options: Options;
   private _webpackDevMiddleware: any;
   private _webpackHotMiddleware: any;
-  private _beforeMiddlewares: Express.RequestHandler[] = [];
-  private _afterMiddlewares: Express.RequestHandler[] = [];
+  private _beforeMiddlewares: RequestHandle[] = [];
+  private _afterMiddlewares: RequestHandle[] = [];
 
-  constructor(compiler: MultiCompiler, config: Config) {
-    this._config = config;
-    this._app = Express();
+  constructor(compiler: MultiCompiler, options: Options) {
+    this._options = options;
+    this._app = createServer();
     this._webpackDevMiddleware = WebpackDevMiddleware(compiler, {
-      publicPath: this._config.publicPath,
+      publicPath: this._options.publicPath,
       noInfo: true,
       logLevel: "silent",
       watchOptions: {
@@ -41,7 +42,7 @@ export default class Server {
       writeToDisk: true
     });
     this._webpackHotMiddleware = WebpackHotMiddleware(compiler.compilers[0], {
-      path: HOT_MIDDLEWARE_PATH,
+      path: DEV_HOT_MIDDLEWARE_PATH,
       log: false,
       heartbeat: 2500
     });
@@ -51,8 +52,12 @@ export default class Server {
     this._webpackHotMiddleware.publish({ action, data: payload });
   }
 
-  start() {
+  getRequestHandler() {
     const { _app: app } = this;
+
+    if (this._inited) {
+      return app;
+    }
 
     this._beforeMiddlewares.forEach(m => {
       this._app.use(m);
@@ -60,19 +65,13 @@ export default class Server {
 
     app.use(this._webpackDevMiddleware);
     app.use(this._webpackHotMiddleware);
-    app.use(createLaunchEditorMiddleware(HOT_LAUNCH_EDITOR_ENDPOINT));
+    app.use(createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT));
 
     this._afterMiddlewares.forEach(m => {
       this._app.use(m);
     });
 
-    app.listen(this._config.port, this._config.host, err => {
-      if (err) {
-        return console.log(err);
-      }
-
-      console.log("Starting the development server...\n");
-    });
+    return app;
   }
 
   watchCompiler(
@@ -208,12 +207,12 @@ export default class Server {
     });
   }
 
-  before(handle: Express.RequestHandler) {
+  before(handle: RequestHandle) {
     this._beforeMiddlewares.push(handle);
     return this._app;
   }
 
-  use(handle: Express.RequestHandler) {
+  use(handle: RequestHandle) {
     this._afterMiddlewares.push(handle);
     return this._app;
   }

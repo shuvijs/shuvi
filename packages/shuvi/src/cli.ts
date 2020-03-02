@@ -4,7 +4,7 @@ import spawn from "cross-spawn";
 //@ts-ignore
 import pkgInfo from "../package.json";
 
-const Commands = ["build", "start", "serve"] as const;
+const Commands = ["dev", "build", "serve"] as const;
 
 type CommandName = typeof Commands[number];
 
@@ -14,17 +14,14 @@ program
   .usage("<cmd> [options]");
 
 const args = process.argv.slice(2);
-const [cmd, ...commandArgs] = args.length ? args : ["start"];
+const [cmd, ...commandArgs] = args.length ? args : ["dev"];
 
 if (!Commands.includes(cmd as CommandName)) {
   console.log('Unknown command "' + cmd + '".');
   process.exit(1);
 }
 
-let nodeEnv = "development";
-if (cmd === "build" || cmd === "serve") {
-  nodeEnv = "production";
-}
+const nodeEnv = cmd === "dev" ? "development" : "production";
 
 const result = spawn.sync(
   "node",

@@ -1,5 +1,4 @@
 import * as Runtime from "./runtime";
-import { RouteConfig } from "../runtime";
 
 export { Runtime };
 
@@ -20,7 +19,9 @@ export interface Paths {
 export type RouterHistoryMode = "browser" | "hash" | "auto";
 
 export interface App<File = unknown> {
-  publicUrl: string;
+  dev: boolean;
+
+  assetPublicPath: string;
 
   ssr: boolean;
 
@@ -36,7 +37,7 @@ export interface App<File = unknown> {
 
   build(): Promise<void>;
 
-  on(event: "routes", listener: (routes: RouteConfig[]) => void): void;
+  on(event: "routes", listener: (routes: Runtime.RouteConfig[]) => void): void;
 
   getClientIndex(): string;
 
@@ -46,5 +47,5 @@ export interface App<File = unknown> {
 
   resolveBuildFile(...paths: string[]): string;
 
-  getPublicUrlPath(...paths: string[]): string;
+  getAssetPublicUrl(...paths: string[]): string;
 }

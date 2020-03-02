@@ -1,5 +1,4 @@
-import { parse as parseUrl } from "url";
-import { IncomingMessage, ServerResponse } from "http";
+import { parse as parseUrl, UrlWithParsedQuery } from "url";
 import { Runtime, App } from "@shuvi/types";
 import { ModuleLoader } from "./compiler/output";
 import { htmlEscapeJsonString } from "./helpers/htmlescape";
@@ -14,8 +13,6 @@ import {
 import RouteComponent = Runtime.RouteComponent;
 import AppData = Runtime.AppData;
 
-const isDev = process.env.NODE_ENV === "development";
-
 class DocumentServiceImpl {
   private _app: App;
   private _distModuleLoader: ModuleLoader;
@@ -27,26 +24,27 @@ class DocumentServiceImpl {
     });
   }
 
-  async handleRequest(
-    req: IncomingMessage,
-    res: ServerResponse
-  ): Promise<void> {
-    const html = await this.renderDocument({ url: req.url || "/" });
-    res.end(html);
-  }
-
-  async renderDocument(req: { url: string }): Promise<string> {
+  async renderDocument(req: {
+    url?: string;
+    parsedUrl?: UrlWithParsedQuery;
+  }): Promise<string> {
+    let { parsedUrl } = req;
+    if (!parsedUrl) {
+      parsedUrl = parseUrl(req.url || "", true);
+    }
     let html: string;
     if (this._app.ssr) {
-      html = await this._getSSRDocument(req);
+      html = await this._getSSRDocument({ url: parsedUrl });
     } else {
-      html = await this._getDocument(req);
+      html = await this._getDocument({ url: parsedUrl });
     }
 
     return html;
   }
 
-  private async _getDocument(_req: { url: string }): Promise<string> {
+  private async _getDocument(_req: {
+    url: UrlWithParsedQuery;
+  }): Promise<string> {
     const mainAssetsTags = this._getMainAssetTags();
     return this._renderDocument({
       headTags: [...mainAssetsTags.styles],
@@ -55,8 +53,10 @@ class DocumentServiceImpl {
     });
   }
 
-  private async _getSSRDocument(req: { url: string }): Promise<string> {
-    const parsedUrl = parseUrl(req.url, true);
+  private async _getSSRDocument(req: {
+    url: UrlWithParsedQuery;
+  }): Promise<string> {
+    const parsedUrl = req.url;
     const context: {
       loadableModules: string[];
     } = {
@@ -84,7 +84,9 @@ class DocumentServiceImpl {
             query: parsedUrl.query,
             params: match.params,
             isServer: true,
-            req
+            req: {
+              url: parsedUrl.href!
+            }
             // res: res as any
           });
           routeProps[route.id] = props || {};
@@ -143,7 +145,7 @@ class DocumentServiceImpl {
           tagName: "link",
           attrs: {
             rel: "preload",
-            href: this._app.getPublicUrlPath(file),
+            href: this._app.getAssetPublicUrl(file),
             as: "script"
           }
         });
@@ -152,7 +154,7 @@ class DocumentServiceImpl {
           tagName: "link",
           attrs: {
             rel: "stylesheet",
-            href: this._app.getPublicUrlPath(file)
+            href: this._app.getAssetPublicUrl(file)
           }
         });
       }
@@ -163,7 +165,7 @@ class DocumentServiceImpl {
     });
 
     const headTags = [...preloadDynamicChunks, ...mainAssetsTags.styles];
-    if (isDev) {
+    if (this._app.dev) {
       headTags.push(
         {
           tagName: "style",
@@ -213,7 +215,7 @@ class DocumentServiceImpl {
       scripts.push({
         tagName: "script",
         attrs: {
-          src: this._app.getPublicUrlPath(asset)
+          src: this._app.getAssetPublicUrl(asset)
         }
       });
     });
@@ -223,7 +225,7 @@ class DocumentServiceImpl {
           tagName: "link",
           attrs: {
             rel: "stylesheet",
-            href: this._app.getPublicUrlPath(asset)
+            href: this._app.getAssetPublicUrl(asset)
           }
         });
       });

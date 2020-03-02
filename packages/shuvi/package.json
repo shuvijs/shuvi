@@ -8,6 +8,7 @@
   },
   "author": "liximomo",
   "license": "MIT",
+  "main": "./lib/index.js",
   "bin": {
     "shuvi": "./lib/cli.js"
   },
@@ -29,8 +30,8 @@
     "@shuvi/toolpack": "^0.0.1-alpha.7",
     "@shuvi/utils": "^0.0.1-alpha.5",
     "commander": "4.0.1",
+    "connect": "3.7.0",
     "cross-spawn": "7.0.1",
-    "express": "4.17.1",
     "fs-extra": "8.1.0",
     "path-to-regexp": "^6.1.0",
     "send": "0.17.1",
@@ -40,7 +41,7 @@
     "webpack-hot-middleware": "2.25.0"
   },
   "devDependencies": {
-    "@types/cross-spawn": "6.0.1",
-    "@types/express": "4.17.2"
+    "@types/connect": "^3.4.33",
+    "@types/cross-spawn": "6.0.1"
   }
 }
