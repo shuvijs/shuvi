@@ -5,7 +5,7 @@ import { App } from "@shuvi/types";
 import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
 import { getCompiler } from "../compiler/compiler";
 import { getApp } from "../app";
-import { getDocumentService } from "../documentService";
+import { Renderer } from "../renderer";
 import { BUILD_CLIENT_DIR } from "../constants";
 import { loadConfig, ShuviConfig } from "../config";
 //@ts-ignore
@@ -95,7 +95,7 @@ async function buildHtml({
   pathname: string;
   filename: string;
 }) {
-  const html = await getDocumentService({ app }).renderDocument({
+  const html = await new Renderer({ app }).renderDocument({
     url: pathname
   });
   await fse.writeFile(

@@ -32,6 +32,7 @@
     "commander": "4.0.1",
     "connect": "3.7.0",
     "cross-spawn": "7.0.1",
+    "ejs": "3.0.1",
     "fs-extra": "8.1.0",
     "path-to-regexp": "^6.1.0",
     "send": "0.17.1",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@types/connect": "^3.4.33",
-    "@types/cross-spawn": "6.0.1"
+    "@types/cross-spawn": "6.0.1",
+    "@types/ejs": "^3.0.1"
   }
 }

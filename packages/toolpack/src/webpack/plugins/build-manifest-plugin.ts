@@ -1,40 +1,12 @@
 import { ROUTE_ID_REGEXP } from "@shuvi/shared/lib/router";
-import { Compiler } from "webpack";
+import { Compiler } from "@shuvi/types";
+import { Compiler as WebpackCompiler } from "webpack";
 // @ts-ignore
 import Entrypoint from "webpack/lib/Entrypoint";
 import { RawSource } from "webpack-sources";
 
-export interface ModuleItem {
-  id: string;
-  name: string;
-}
-
-export interface Module {
-  files: string[];
-  children: ModuleItem[];
-}
-
-export type AssetMap = {
-  js: string[];
-  css?: string[];
-} & {
-  [ext: string]: string[];
-};
-
-export interface Manifest {
-  entries: {
-    [s: string]: AssetMap;
-  };
-  routes: {
-    [s: string]: AssetMap;
-  };
-  chunks: {
-    [s: string]: string;
-  };
-  loadble: {
-    [s: string]: Module;
-  };
-}
+import ModuleItem = Compiler.ModuleItem;
+import Manifest = Compiler.Manifest;
 
 const defaultOptions = {
   filename: "build-manifest.json",
@@ -82,7 +54,7 @@ export default class BuildManifestPlugin {
     };
   }
 
-  apply(compiler: Compiler) {
+  apply(compiler: WebpackCompiler) {
     compiler.hooks.emit.tapAsync("BuildManifest", (compilation, callback) => {
       const assetMap = (this._manifest = {
         entries: {},
@@ -161,7 +133,7 @@ export default class BuildManifestPlugin {
     }
   }
 
-  private _collectModules(chunkGroup: any, compiler: Compiler): void {
+  private _collectModules(chunkGroup: any, compiler: WebpackCompiler): void {
     const context = compiler.options.context;
     chunkGroup.origins.forEach((chunkGroupOrigin: any) => {
       const { request } = chunkGroupOrigin;

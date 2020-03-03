@@ -1,5 +1,5 @@
 import { ParsedUrlQuery } from "querystring";
-import { App } from "../shuvi";
+import { App } from "../index";
 
 export interface RouteConfig {
   id: string;
@@ -45,26 +45,6 @@ export interface AppData {
   dynamicIds: Array<string | number>;
 }
 
-export type HtmlAttrs = { innerHtml?: string } & {
-  [x: string]: string | number | undefined;
-};
-
-export interface HtmlTag<TagNames = string> {
-  tagName: TagNames;
-  attrs?: HtmlAttrs;
-}
-
-export interface DocumentProps {
-  headTags: HtmlTag<
-    "meta" | "link" | "style" | "script" | "noscript" | "title"
-  >[];
-  contentTags: HtmlTag[];
-  scriptTags: HtmlTag<"script">[];
-}
-
-export interface RenderDocumentOptions {
-  documentProps: DocumentProps;
-}
 
 export interface AppProps {
   routeProps: RouteProps;
@@ -93,11 +73,6 @@ export type Bootstrap = (options: BootstrapOptions) => void;
 
 export interface Runtime<CompType = unknown> {
   install(app: App): void;
-
-  renderDocument(
-    Document: CompType,
-    options: RenderDocumentOptions
-  ): Promise<string>;
 
   prepareRenderApp(): Promise<void>;
 

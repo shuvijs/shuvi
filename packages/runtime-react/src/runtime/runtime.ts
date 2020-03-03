@@ -1,7 +1,7 @@
 import React from "react";
 import { App, Runtime } from "@shuvi/types";
 import { File } from "@shuvi/app-shell";
-import { renderDocument, renderApp, matchRoutes } from "./renderer";
+import { renderApp, matchRoutes } from "./renderer";
 import { resolveDistFile } from "./paths";
 import Loadable from "./loadable";
 
@@ -98,13 +98,6 @@ class ReactRuntime implements Runtime.Runtime<React.ComponentType<any>> {
           "module.exports = require('@shuvi/runtime-react/dep/react-router-dom').Link;"
       })
     );
-  }
-
-  async renderDocument(
-    Document: React.ComponentType<Runtime.DocumentProps>,
-    options: Runtime.RenderDocumentOptions
-  ): Promise<string> {
-    return renderDocument(Document, options);
   }
 
   async prepareRenderApp() {

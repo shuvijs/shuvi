@@ -1,15 +1,18 @@
 import { appShell, AppShell, FileType } from "@shuvi/app-shell";
-import { App, Paths } from "@shuvi/types";
+import { App, Paths, Resources } from "@shuvi/types";
 import eventEmitter from "@shuvi/utils/lib/eventEmitter";
 import { joinPath } from "@shuvi/utils/lib/string";
-import { getPaths } from "./paths";
-import RouterService from "./routerService";
-import { runtime } from "./runtime";
-import { ShuviConfig } from "./config";
-import { DEV_PUBLIC_PATH } from "./constants";
+import { getPaths } from "../paths";
+import RouterService from "../routerService";
+import { runtime } from "../runtime";
+import { ShuviConfig } from "../config";
+import { DEV_PUBLIC_PATH } from "../constants";
+import { initBuiltInResources } from "./resource";
 
 class AppImpl implements App<FileType> {
   public paths: Paths;
+
+  public resources: Resources = {} as Resources;
 
   public dev: boolean = false;
 
@@ -30,6 +33,7 @@ class AppImpl implements App<FileType> {
       outputPath: config.outputPath
     });
     this._routerService = new RouterService(this.paths.pagesDir);
+    initBuiltInResources(this);
   }
 
   get ssr() {
@@ -89,10 +93,6 @@ class AppImpl implements App<FileType> {
     await appShell.buildOnce({
       dir: this.paths.appDir
     });
-  }
-
-  getClientIndex(): string {
-    return require.resolve("@shuvi/runtime-core/lib/client/index");
   }
 
   resolveAppFile(...paths: string[]): string {

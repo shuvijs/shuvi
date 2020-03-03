@@ -1,5 +1,5 @@
 import React from "react";
-import { renderToString, renderToStaticMarkup } from "react-dom/server";
+import { renderToString } from "react-dom/server";
 import { Runtime } from "@shuvi/types";
 import { Router } from "react-router-dom";
 import { matchRoutes as reactRouterMatchRoutes } from "react-router-config";
@@ -15,15 +15,6 @@ export function matchRoutes(
   pathname: string
 ): MatchedRoute[] {
   return (reactRouterMatchRoutes(routes, pathname) as any) as MatchedRoute[];
-}
-
-export async function renderDocument(
-  Document: React.ComponentType<Runtime.DocumentProps>,
-  options: Runtime.RenderDocumentOptions
-): Promise<string> {
-  return `<!DOCTYPE html>${renderToStaticMarkup(
-    <Document {...options.documentProps} />
-  )}`;
 }
 
 export async function renderApp(

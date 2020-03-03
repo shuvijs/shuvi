@@ -1,6 +1,7 @@
 import * as Runtime from "./runtime";
+import * as Compiler from "./compiler";
 
-export { Runtime };
+export { Runtime, Compiler };
 
 export interface Paths {
   projectDir: string;
@@ -18,6 +19,15 @@ export interface Paths {
 
 export type RouterHistoryMode = "browser" | "hash" | "auto";
 
+export type BuillInResources = {
+  app: any;
+  documentTemplate: any;
+  clientManifest: Compiler.Manifest;
+  serverManifest: Compiler.Manifest;
+};
+
+export type Resources = BuillInResources & Record<string, any>;
+
 export interface App<File = unknown> {
   dev: boolean;
 
@@ -31,6 +41,8 @@ export interface App<File = unknown> {
 
   paths: Paths;
 
+  resources: Resources;
+
   addFile(file: File): void;
 
   watch(): void;
@@ -38,8 +50,6 @@ export interface App<File = unknown> {
   build(): Promise<void>;
 
   on(event: "routes", listener: (routes: Runtime.RouteConfig[]) => void): void;
-
-  getClientIndex(): string;
 
   resolveAppFile(...paths: string[]): string;
 

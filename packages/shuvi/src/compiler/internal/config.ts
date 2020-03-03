@@ -11,7 +11,6 @@ import {
   BUILD_CLIENT_RUNTIME_WEBPACK,
   BUILD_CLIENT_DIR,
   BUILD_SERVER_DIR,
-  BUILD_SERVER_DOCUMENT,
   BUILD_SERVER_APP
 } from "../../constants";
 
@@ -69,15 +68,14 @@ export function createWepbackConfig(app: App, opts: WebpackConfigOptions) {
   return chain.toConfig();
 }
 
-export function getClientEntry(app: App): WebpackEntry {
+export function getClientEntry(_app: App): WebpackEntry {
   return {
-    [BUILD_CLIENT_RUNTIME_MAIN]: [app.getClientIndex()]
+    [BUILD_CLIENT_RUNTIME_MAIN]: [require.resolve("@shuvi/runtime-core/lib/client/index")]
   };
 }
 
 export function getServerEntry(_app: App): WebpackEntry {
   return {
-    [BUILD_SERVER_DOCUMENT]: ["@shuvi/app/document"],
     // TODO: ssr only
     [BUILD_SERVER_APP]: ["@shuvi/app/app"]
   };

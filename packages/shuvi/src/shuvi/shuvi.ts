@@ -1,6 +1,6 @@
 import { App } from "@shuvi/types";
 import { parse as parseUrl, UrlWithParsedQuery } from "url";
-import { getDocumentService, DocumentService } from "../documentService";
+import { Renderer } from "../renderer";
 import {
   createServer,
   Server,
@@ -22,13 +22,13 @@ export type HTTPRequestHandler = (
 export default abstract class Shuvi {
   protected _app: App;
 
-  private _documentService: DocumentService;
+  private _renderer: Renderer;
   private _serverApp: Server;
 
   constructor(app: App) {
     this._app = app;
     this._serverApp = createServer();
-    this._documentService = getDocumentService({ app });
+    this._renderer = new Renderer({ app });
 
     this._serverApp.use(
       (req: IncomingMessage, _res: ServerResponse, next: NextFunction) => {
@@ -58,7 +58,7 @@ export default abstract class Shuvi {
     res: ServerResponse
   ): Promise<void> {
     const enhancedReq = req as EnhancedIncomingMessage;
-    const html = await this._documentService.renderDocument({
+    const html = await this._renderer.renderDocument({
       url: enhancedReq.url,
       parsedUrl: enhancedReq.parsedUrl
     });
