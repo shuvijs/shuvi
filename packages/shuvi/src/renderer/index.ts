@@ -1,22 +1,24 @@
 import { UrlWithParsedQuery } from "url";
-import { ServerContext } from "./types";
+import { IServerContext } from "./types";
 import { BaseRenderer } from "./base";
 import { SpaRenderer } from "./spa";
 import { SsrRenderer } from "./ssr";
 
+export * from "./types";
+
 export class Renderer {
-  protected _serverCtx: ServerContext;
+  protected _serverCtx: IServerContext;
   private _ssrRenderer: BaseRenderer;
   private _spaRenderer: BaseRenderer;
 
-  constructor(serverContext: ServerContext) {
+  constructor(serverContext: IServerContext) {
     this._serverCtx = serverContext;
     this._ssrRenderer = new SsrRenderer(serverContext);
     this._spaRenderer = new SpaRenderer(serverContext);
   }
 
   renderDocument(req: { url?: string; parsedUrl?: UrlWithParsedQuery }) {
-    if (this._serverCtx.app.ssr) {
+    if (this._serverCtx.api.config.ssr) {
       return this._ssrRenderer.renderDocument(req);
     }
 

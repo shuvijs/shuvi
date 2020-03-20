@@ -1,5 +1,5 @@
-import { App } from "@shuvi/types";
+import { Api } from "../api";
 
-export interface ServerContext {
-  app: App;
+export interface IServerContext {
+  api: Api;
 }

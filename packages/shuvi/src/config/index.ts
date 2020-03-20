@@ -1,20 +1,11 @@
-import { RouterHistoryMode } from "@shuvi/types";
-import { merge } from "@shuvi/utils/lib/merge";
+import { IConfig } from "@shuvi/types";
+import { deepmerge } from "@shuvi/utils/lib/deepmerge";
 import path from "path";
 import { CONFIG_FILE, ASSET_PREFIX } from "../constants";
 
-export interface ShuviConfig {
-  ssr: boolean;
-  rootDir: string;
-  outputPath: string;
-  assetPrefix: string;
-  router: {
-    history: RouterHistoryMode;
-  };
-}
-
-const defaultConfig: ShuviConfig = {
+const defaultConfig: IConfig = {
   ssr: false,
+  env: {},
   rootDir: process.cwd(),
   outputPath: "dist",
   assetPrefix: ASSET_PREFIX,
@@ -44,12 +35,12 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 
 export async function loadConfig(
   dir: string = process.cwd()
-): Promise<ShuviConfig> {
-  const config = await loadConfigFromFile<Partial<ShuviConfig>>(
+): Promise<IConfig> {
+  const config = await loadConfigFromFile<Partial<IConfig>>(
     path.join(dir, CONFIG_FILE)
   );
 
   config.rootDir = dir;
 
-  return merge(defaultConfig, config);
+  return deepmerge(defaultConfig, config);
 }

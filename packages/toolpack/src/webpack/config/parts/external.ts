@@ -68,7 +68,7 @@ export function nodeExternals({
     // Absolute requires (require('/foo')) are extremely uncommon, but
     // also have no need for customization as they're already resolved.
     const start = request.charAt(0);
-    if (start === "." || request.startsWith('/')) {
+    if (start === "." || request.startsWith("/")) {
       return transpiled();
     }
 
@@ -86,41 +86,12 @@ export function nodeExternals({
       return transpiled();
     }
 
-    // fix hooks not work when using yarn link
-    if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE === "true") {
-      if (
-        match(res, [
-          /packages[/\\]runtime-[^/\\]+[/\\]/,
-          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]/
-        ]) &&
-        !match(res, [
-          /packages[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/,
-          /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/
-        ])
-      ) {
-        return external();
-      }
-    }
-
     let baseRes;
     try {
       baseRes = resolve.sync(request, { basedir: projectRoot });
     } catch (err) {}
 
     if (baseRes !== res) {
-      return transpiled();
-    }
-
-    // runtime have to be transpiled
-    if (
-      match(res, [
-        /node_modules[/\\]@shuvi[/\\]runtime-core[/\\]lib[/\\]/,
-        /node_modules[/\\]@shuvi[/\\]runtime-[^/\\]+[/\\]lib[/\\]app[/\\]/
-      ]) ||
-      res.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) ||
-      (context.match(/node_modules[/\\]@babel[/\\]runtime[/\\]/) &&
-        res.match(/node_modules[/\\]core-js[/\\]/))
-    ) {
       return transpiled();
     }
 

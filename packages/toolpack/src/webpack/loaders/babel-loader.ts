@@ -1,10 +1,5 @@
 import babelLoader from "babel-loader";
-import path from "path";
 import babelPreset from "../../babel/preset";
-
-const env = process.env.NODE_ENV;
-const isDevelopment = env === "development";
-const isProduction = env === "production";
 
 interface BabeLoaderlOption {
   cacheDirectory: string | false;
@@ -12,24 +7,6 @@ interface BabeLoaderlOption {
 
 interface CustomOption {
   isNode: boolean;
-}
-
-function getCacheIdentifier(
-  environment: string | false,
-  runtime: "server" | "client",
-  packages: string[]
-) {
-  environment = environment == null ? "" : environment.toString();
-  let cacheIdentifier = `${environment}-${runtime}`;
-  for (const packageName of packages) {
-    cacheIdentifier += `:${packageName}@`;
-    try {
-      cacheIdentifier += require(`${packageName}/package.json`).version;
-    } catch (_) {
-      // ignored
-    }
-  }
-  return cacheIdentifier;
 }
 
 module.exports = babelLoader.custom((babel: any) => {
@@ -47,13 +24,7 @@ module.exports = babelLoader.custom((babel: any) => {
       const loader = Object.assign(
         opts.cacheDirectory
           ? {
-              cacheCompression: false,
-              cacheDirectory: path.join(opts.cacheDirectory, "babel-loader"),
-              cacheIdentifier: getCacheIdentifier(
-                isProduction ? "production" : isDevelopment && "development",
-                opts.isNode ? "server" : "client",
-                ["@shuvi/toolpack"]
-              )
+              cacheCompression: false
             }
           : {
               cacheDirectory: false
@@ -62,7 +33,6 @@ module.exports = babelLoader.custom((babel: any) => {
       );
 
       delete loader.isNode;
-      delete loader.cacheDirectory;
       return { loader, custom };
     },
     config(

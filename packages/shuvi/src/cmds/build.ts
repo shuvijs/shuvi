@@ -1,27 +1,15 @@
 import path from "path";
 import program from "commander";
 import fse from "fs-extra";
-import { App } from "@shuvi/types";
+import { IConfig } from "@shuvi/types";
 import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
-import { getCompiler } from "../compiler/compiler";
-import { getApp } from "../app";
+import { Api } from "../api/api";
+import { getBundler } from "../bundler/bundler";
 import { Renderer } from "../renderer";
 import { BUILD_CLIENT_DIR } from "../constants";
-import { loadConfig, ShuviConfig } from "../config";
+import { loadConfig } from "../config";
 //@ts-ignore
 import pkgInfo from "../../package.json";
-
-program
-  .name(pkgInfo.name)
-  .usage(`build [options]`)
-  .helpOption()
-  .option("--asset-prefix <prefix>", "specify the asset prefix. eg: https://some.cdn.com")
-  .option("--target <target>", "specify the app output target. eg: spa")
-  .option(
-    "--router-history <history>",
-    "specify the hisotry type. 'browser' or 'hash'"
-  )
-  .parse(process.argv);
 
 interface CliOptions {
   assetPrefix?: string;
@@ -48,7 +36,7 @@ function set(obj: any, path: string, value: any) {
   obj[final] = value;
 }
 
-function applyCliOptions(cliOptions: Record<string, any>, config: ShuviConfig) {
+function applyCliOptions(cliOptions: Record<string, any>, config: IConfig) {
   Object.keys(CliConfigMap).forEach(key => {
     if (typeof program[key] !== "undefined") {
       const value = CliConfigMap[key];
@@ -61,9 +49,9 @@ function applyCliOptions(cliOptions: Record<string, any>, config: ShuviConfig) {
   });
 }
 
-async function compile({ app }: { app: App }) {
-  const compiler = getCompiler(app);
-  const result = await compiler.run();
+async function bundle({ api }: { api: Api }) {
+  const bundler = getBundler(api);
+  const result = await bundler.build();
   const messages = formatWebpackMessages(result);
 
   // If errors exist, only show errors.
@@ -87,40 +75,53 @@ async function compile({ app }: { app: App }) {
 }
 
 async function buildHtml({
-  app,
+  api,
   pathname,
   filename
 }: {
-  app: App;
+  api: Api;
   pathname: string;
   filename: string;
 }) {
-  const html = await new Renderer({ app }).renderDocument({
+  const html = await new Renderer({ api }).renderDocument({
     url: pathname
   });
   await fse.writeFile(
-    path.resolve(app.paths.buildDir, BUILD_CLIENT_DIR, filename),
+    path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
     html
   );
 }
 
-async function main() {
+export default async function main(argv: string[]) {
+  program
+    .name(pkgInfo.name)
+    .usage(`build [options]`)
+    .helpOption()
+    .option(
+      "--asset-prefix <prefix>",
+      "specify the asset prefix. eg: https://some.cdn.com"
+    )
+    .option("--target <target>", "specify the app output target. eg: spa")
+    .option(
+      "--router-history <history>",
+      "specify the hisotry type. 'browser' or 'hash'"
+    )
+    .parse(argv);
+
   const cliOpts = program as CliOptions;
   const config = await loadConfig();
   applyCliOptions(cliOpts, config);
 
-  const app = getApp(config);
-  await app.build();
+  const api = new Api({ mode: "production", config });
+  await api.buildApp();
 
   // Remove all content but keep the directory so that
   // if you're in it, you don't end up in Trash
-  fse.emptyDirSync(app.paths.buildDir);
+  fse.emptyDirSync(api.paths.buildDir);
 
-  await compile({ app });
+  await bundle({ api });
 
   if (cliOpts.target === "spa") {
-    await buildHtml({ app, pathname: "/", filename: "index.html" });
+    await buildHtml({ api, pathname: "/", filename: "index.html" });
   }
 }
-
-main();

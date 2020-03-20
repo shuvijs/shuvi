@@ -1,61 +1,77 @@
-import * as Runtime from "./runtime";
-import * as Compiler from "./compiler";
+import { IConfig as IConfigCore, IFile, Service } from "@shuvi/core";
+import * as Runtime from "./src/runtime";
+import * as Bundler from "./src/bundler";
+import * as Hooks from "./src/hooks";
 
-export { Runtime, Compiler };
+export { Runtime, Bundler, Hooks };
 
-export interface Paths {
-  projectDir: string;
-  buildDir: string;
+export type IRouterHistoryMode = "browser" | "hash" | "auto";
 
-  // user src dir
-  srcDir: string;
+export type IPluginConfig =
+  | string
+  | [
+      string /* plugin module */,
+      any? /* plugin, options */,
+      string? /* identifier */
+    ]
+  | {
+      apply(api: IApi): void;
+    };
 
-  // dir to store shuvi generated src files
-  appDir: string;
+export type IRuntimeConfig = Record<string, string>;
 
-  pagesDir: string;
-  // pageDocument: string;
+export interface IConfig extends IConfigCore {
+  rootDir: string;
+  ssr: boolean;
+  assetPrefix: string;
+  env: Record<string, string>;
+  router: {
+    history: IRouterHistoryMode;
+  };
+  runtimeConfig?: IRuntimeConfig | (() => IRuntimeConfig);
+  plugins?: IPluginConfig[];
 }
 
-export type RouterHistoryMode = "browser" | "hash" | "auto";
+export interface IHookOpts<InitValue = void, Args extends any[] = any[]> {
+  name: string;
+  fn: InitValue extends void
+    ? (...args: Args) => void
+    : (init: InitValue, ...args: Args) => void;
+  before?: string;
+  stage?: number;
+}
 
-export type BuillInResources = {
-  app: any;
-  documentTemplate: any;
-  clientManifest: Compiler.Manifest;
-  serverManifest: Compiler.Manifest;
-};
+export interface ICallHookOpts<Name extends string = string, InitV = unknown> {
+  name: Name;
+  bail?: boolean;
+  parallel?: boolean;
+  initialValue?: InitV;
+}
 
-export type Resources = BuillInResources & Record<string, any>;
-
-export interface App<File = unknown> {
-  dev: boolean;
-
+// api for plugins
+export interface IApi {
+  mode: typeof Service.prototype.mode;
+  config: IConfig;
   assetPublicPath: string;
 
-  ssr: boolean;
+  tap<Config extends Hooks.IHookConfig>(
+    hook: Config["name"],
+    opts: IHookOpts<Config["initialValue"], Config["args"]>
+  ): void;
 
-  router: {
-    history: RouterHistoryMode;
-  };
+  callHook<Config extends Hooks.IHookConfig>(
+    name: Config["name"],
+    ...args: Config["args"]
+  ): Promise<void>;
+  callHook<Config extends Hooks.IHookConfig>(
+    options: ICallHookOpts<Config["name"], Config["initialValue"]>,
+    ...args: Config["args"]
+  ): Promise<Config["initialValue"]>;
 
-  paths: Paths;
-
-  resources: Resources;
-
-  addFile(file: File): void;
-
-  watch(): void;
-
-  build(): Promise<void>;
-
-  on(event: "routes", listener: (routes: Runtime.RouteConfig[]) => void): void;
+  addFile(file: IFile, dir?: string): void;
 
   resolveAppFile(...paths: string[]): string;
-
   resolveUserFile(...paths: string[]): string;
-
   resolveBuildFile(...paths: string[]): string;
-
   getAssetPublicUrl(...paths: string[]): string;
 }

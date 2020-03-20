@@ -19,30 +19,27 @@
     "shuvi-app.d.ts"
   ],
   "scripts": {
-    "dev": "run-p watch:*",
-    "watch:runtime": "tsc -p tsconfig.build.runtime.json -w",
-    "watch:app": "tsc -p tsconfig.build.app.json -w"
+    "dev": "tsc -p tsconfig.build.json -w"
   },
   "engines": {
     "node": ">= 8.0.0"
   },
   "dependencies": {
-    "@shuvi/types": "^0.0.1-alpha.9",
+    "@shuvi/utils": "^0.0.1-alpha.5",
     "history": "^4.10.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "react-router-config": "5.1.1",
     "react-router-dom": "5.1.2",
     "use-subscription": "^1.3.0"
   },
   "devDependencies": {
+    "@shuvi/types": "^0.0.1-alpha.9",
     "@types/react-dom": "^16.9.4",
     "@types/react-router-config": "^5.0.1",
-    "@types/react-router-dom": "^5.1.3",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "@types/react-router-dom": "^5.1.3"
   },
   "peerDependencies": {
-    "@shuvi/app": "^0.0.1-alpha.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "@shuvi/app": "^0.0.1-alpha.1"
   }
 }

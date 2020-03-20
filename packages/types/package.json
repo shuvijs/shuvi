@@ -8,8 +8,14 @@
   },
   "author": "liximomo",
   "license": "MIT",
-  "main": "index.d.js",
+  "main": "index.js",
+  "types": "index.d.js",
   "engines": {
     "node": ">= 8.0.0"
+  },
+  "dependencies": {
+    "@shuvi/core": "^0.0.1-alpha.6",
+    "@types/webpack": "4.41.0",
+    "webpack-chain": "6.4.0"
   }
 }

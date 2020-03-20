@@ -1,12 +1,12 @@
 import { ROUTE_ID_REGEXP } from "@shuvi/shared/lib/router";
-import { Compiler } from "@shuvi/types";
+import { Bundler } from "@shuvi/types";
 import { Compiler as WebpackCompiler } from "webpack";
 // @ts-ignore
 import Entrypoint from "webpack/lib/Entrypoint";
 import { RawSource } from "webpack-sources";
 
-import ModuleItem = Compiler.ModuleItem;
-import Manifest = Compiler.Manifest;
+import ModuleItem = Bundler.IModuleItem;
+import Manifest = Bundler.IManifest;
 
 const defaultOptions = {
   filename: "build-manifest.json",

@@ -85,7 +85,6 @@ export function baseWebpackChain({
         extractComments: false,
         parallel: true,
         cache: true,
-        // cache: "path/to/cache",
         sourceMap: false,
         terserOptions
       }
@@ -151,9 +150,7 @@ export function baseWebpackChain({
     .loader("@shuvi/babel-loader")
     .options({
       isNode: false,
-      // TODO:
-      cacheDirectory: false,
-      cacheCompression: false
+      cacheDirectory: true
     });
   mainRule
     .oneOf("media")
@@ -165,7 +162,6 @@ export function baseWebpackChain({
       name: mediaFilename
     });
 
-  // @ts-ignore
   config.plugin("private/chunk-names-plugin").use(ChunkNamesPlugin);
   config
     .plugin("private/ignore-plugin")
@@ -192,7 +188,6 @@ export function baseWebpackChain({
   if (useTypeScript) {
     config
       .plugin("private/fork-ts-checker-webpack-plugin")
-      // @ts-ignore
       .use(require.resolve("fork-ts-checker-webpack-plugin"), [
         {
           typescript: typeScriptPath,

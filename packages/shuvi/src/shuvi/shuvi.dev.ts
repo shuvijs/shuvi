@@ -1,70 +1,85 @@
-import { IncomingMessage, ServerResponse } from "http";
+import { Hooks } from "@shuvi/types";
+import { IIncomingMessage, IServerResponse, INextFunction } from "@shuvi/core";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
-import { DevMiddleware } from "../devMiddleware";
-import { NextFunction } from "../server";
+import { getDevMiddleware } from "../lib/devMiddleware";
 import {
   DEV_PAGE_STATIC_REGEXP,
   WEBPACK_CONFIG_CLIENT,
   WEBPACK_CONFIG_SERVER
 } from "../constants";
-import { getCompiler } from "../compiler/compiler";
-import { OnDemandRouteManager } from "../onDemandRouteManager";
-import { acceptsHtml } from "../utils";
-import { getApp } from "../app";
-import { ShuviConfig } from "../config";
-import Shuvi from "./shuvi";
+import { OnDemandRouteManager } from "../lib/onDemandRouteManager";
+import { acceptsHtml } from "../lib/utils";
+import Base, { IShuviConstructorOptions } from "./shuvi";
 
-export default class ShuviDev extends Shuvi {
+export default class ShuviDev extends Base {
   private _onDemandRouteMgr: OnDemandRouteManager;
 
-  constructor({ config }: { config: ShuviConfig }) {
-    super(getApp(config, { dev: true }));
-    this._onDemandRouteMgr = new OnDemandRouteManager();
+  constructor(options: IShuviConstructorOptions) {
+    super(options);
+    this._onDemandRouteMgr = new OnDemandRouteManager(this._api);
   }
 
-  async ready() {
-    this._onDemandRouteMgr.listen(this._app);
-    await this._app.watch();
+  async init() {
+    const api = this._api;
 
-    const compiler = getCompiler(this._app);
-    const devMiddleware = DevMiddleware(compiler.getWebpackCompiler(), {
-      publicPath: this._app.assetPublicPath
+    // prepare app
+    await api.buildApp();
+
+    // prepare server
+    const devMiddleware = await getDevMiddleware({
+      api
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
-    const { useTypeScript } = getProjectInfo(this._app.paths.projectDir);
-    let count = 0;
-    const onFirstSuccess = () => {
-      if (++count >= 2) {
-        console.log(`app in ready`);
-      }
-    };
-    devMiddleware.watchCompiler(
-      compiler.getSubCompiler(WEBPACK_CONFIG_CLIENT)!,
-      {
-        useTypeScript,
-        log: console.log.bind(console),
-        onFirstSuccess
-      }
-    );
-    devMiddleware.watchCompiler(
-      compiler.getSubCompiler(WEBPACK_CONFIG_SERVER)!,
-      {
-        useTypeScript: false,
-        log: console.log.bind(console),
-        onFirstSuccess
-      }
-    );
+    const { useTypeScript } = getProjectInfo(api.paths.rootDir);
+    devMiddleware.watchCompiler(WEBPACK_CONFIG_CLIENT, {
+      useTypeScript,
+      log: console.log.bind(console)
+    });
+    devMiddleware.watchCompiler(WEBPACK_CONFIG_SERVER, {
+      useTypeScript: false,
+      log: console.log.bind(console)
+    });
 
-    this._use(this._onDemandRouteMiddleware.bind(this));
-    this._use(devMiddleware);
-    this._use(this._pageMiddleware.bind(this));
+    // keep the order
+    api.server.use(this._onDemandRouteMiddleware.bind(this));
+    devMiddleware.apply();
+    api.server.use(this._pageMiddleware.bind(this));
+  }
+
+  async listen(port: number, hostname?: string): Promise<void> {
+    const status = {
+      [WEBPACK_CONFIG_CLIENT]: false,
+      [WEBPACK_CONFIG_SERVER]: false
+    };
+    this._api.tap<Hooks.IBuildDone>("build:done", {
+      name: "shuvi",
+      fn: ({ first, name }) => {
+        status[name] = true;
+        if (
+          first &&
+          status[WEBPACK_CONFIG_CLIENT] &&
+          status[WEBPACK_CONFIG_SERVER]
+        ) {
+          const localUrl = `http://${
+            hostname === "0.0.0.0" ? "localhost" : hostname
+          }:${port}`;
+          console.log(`Ready on ${localUrl}`);
+        }
+      }
+    });
+
+    super.listen(port, hostname);
+  }
+
+  protected getServiceMode() {
+    return "development" as const;
   }
 
   private async _onDemandRouteMiddleware(
-    req: IncomingMessage,
-    res: ServerResponse,
-    next: NextFunction
+    req: IIncomingMessage,
+    res: IServerResponse,
+    next: INextFunction
   ) {
     const match = req.url!.match(DEV_PAGE_STATIC_REGEXP);
     if (!match) {
@@ -77,9 +92,9 @@ export default class ShuviDev extends Shuvi {
   }
 
   private async _pageMiddleware(
-    req: IncomingMessage,
-    res: ServerResponse,
-    next: NextFunction
+    req: IIncomingMessage,
+    res: IServerResponse,
+    next: INextFunction
   ) {
     const headers = req.headers;
     if (req.method !== "GET") {

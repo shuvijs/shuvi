@@ -2,7 +2,7 @@
 
 import { bootstrap } from "@shuvi/app/bootstrap";
 import { CLIENT_CONTAINER_ID } from "@shuvi/shared/lib/constants";
-import { getAppData } from "./helpers/getAppData";
+import { getAppData } from "./getAppData";
 
 bootstrap({
   appData: getAppData(),

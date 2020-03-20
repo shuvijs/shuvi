@@ -11,5 +11,5 @@ module.exports = {
 
   roots: ["<rootDir>/packages", "<rootDir>/test"],
 
-  testMatch: ["**/*.test.{js,ts}"],
+  testMatch: ["**/*.test.{js,jsx,ts,tsx}"],
 };

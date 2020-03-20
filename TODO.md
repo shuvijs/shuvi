@@ -1,7 +1,5 @@
 ## node 端定制 模块解析
-不希望用户再次安装相关依赖, 如 react
 
-## polyfill
+* react 模块解析策略，优先本地，其次内置
 
-
-## 
+* config.env

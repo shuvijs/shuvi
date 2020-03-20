@@ -1,13 +1,5 @@
-export type HtmlAttrs = { innerHtml?: string } & {
-  [x: string]: string | number | undefined | boolean;
-};
-
-export interface HtmlTag<TagNames = string> {
-  tagName: TagNames;
-  voidTag: boolean;
-  attrs: HtmlAttrs;
-  innerHTML?: string;
-}
+import { Runtime } from "@shuvi/types";
+import { htmlEscapeContent } from "@shuvi/utils/lib/htmlescape";
 
 /**
  * All html tag elements which must not contain innerHTML
@@ -31,39 +23,52 @@ const voidTags = [
   "wbr"
 ];
 
-export function stringifyTag(tag: HtmlTag) {
-  const attrNames = Object.keys(tag.attrs);
-  const attrs: string[] = [];
+// the result will have an extra leading space
+export function stringifyAttrs(attrs: Runtime.IHtmlAttrs): string {
+  const attrNames = Object.keys(attrs);
+  const res: string[] = [""];
   for (let index = 0; index < attrNames.length; index++) {
     const attributeName = attrNames[index];
-    if (tag.attrs[attributeName] === false) {
+
+    if (attributeName === "textContent") continue;
+    if (attrs[attributeName] === false) {
       continue;
     }
 
-    if (tag.attrs[attributeName] === true) {
-      attrs.push(attributeName);
+    if (attrs[attributeName] === true) {
+      res.push(attributeName);
     } else {
-      attrs.push(`${attributeName}="${tag.attrs[attributeName]}"`);
+      res.push(`${attributeName}="${attrs[attributeName]}"`);
     }
   }
 
-  const begin = `<${[tag.tagName].concat(attrs).join(" ")} ${
-    tag.voidTag ? "/" : ""
-  }>`;
-  const inner = tag.innerHTML || "";
-  const end = tag.voidTag ? "" : "</" + tag.tagName + ">";
+  return res.join(" ");
+}
 
-  return `${begin}${inner}${end}`;
+export function stringifyTag(tag: Runtime.IHtmlTag) {
+  const attr = stringifyAttrs(tag.attrs);
+  const voidTag = voidTags.indexOf(tag.tagName) !== -1;
+
+  let res: string = `<${tag.tagName}${attr}`;
+  if (voidTag) {
+    return `${res} />`;
+  }
+
+  res += ">";
+  res +=
+    tag.innerHTML ||
+    (tag.attrs.textContent ? htmlEscapeContent(tag.attrs.textContent) : "");
+  res += "</" + tag.tagName + ">";
+  return res;
 }
 
 export function tag<T extends string>(
   tagName: T,
-  attrs: HtmlAttrs,
+  attrs: Runtime.IHtmlAttrs,
   innerHTML?: string
-): HtmlTag<T> {
+): Runtime.IHtmlTag<T> {
   return {
     tagName: tagName,
-    voidTag: voidTags.indexOf(tagName) !== -1,
     attrs: attrs || {},
     innerHTML
   };

@@ -1,27 +1,25 @@
+import { Runtime } from "@shuvi/types";
 import { parse as parseUrl, UrlWithParsedQuery } from "url";
-import { BUILD_CLIENT_RUNTIME_MAIN } from "../constants";
-import { renderTemplate } from "./view";
-import { tag, stringifyTag, HtmlTag } from "./htmlTag";
-import { CLIENT_CONTAINER_ID } from "../constants";
-import { ServerContext } from "./types";
+import {
+  CLIENT_CONTAINER_ID,
+  BUILD_CLIENT_RUNTIME_MAIN,
+  DEV_STYLE_ANCHOR_ID
+} from "../constants";
+import { renderTemplate } from "../lib/viewTemplate";
+import { tag, stringifyTag, stringifyAttrs } from "./htmlTag";
+import { IServerContext } from "./types";
+import { IBuiltResource } from "../api";
 
-export type HtmlAttrs = {
-  [x: string]: string | number | undefined;
-};
-
-export interface DocumentProps {
-  headTags: HtmlTag<
-    "meta" | "link" | "style" | "script" | "noscript" | "title"
-  >[];
-  mainTags: HtmlTag[];
-  scriptTags: HtmlTag<"script">[];
-}
+import IHtmlTag = Runtime.IHtmlTag;
+import IDocumentProps = Runtime.IDocumentProps;
 
 export abstract class BaseRenderer {
-  protected _serverCtx: ServerContext;
+  protected _serverCtx: IServerContext;
+  protected _resources: IBuiltResource;
 
-  constructor(serverContext: ServerContext) {
+  constructor(serverContext: IServerContext) {
     this._serverCtx = serverContext;
+    this._resources = serverContext.api.resources;
   }
 
   async renderDocument(req: {
@@ -32,27 +30,35 @@ export abstract class BaseRenderer {
     if (!parsedUrl) {
       parsedUrl = parseUrl(req.url || "", true);
     }
+    const { document } = this._resources.server;
+
     const docProps = await this.getDocumentProps({ url: parsedUrl });
-    return this._renderDocument(docProps);
+    if (document.onDocumentProps) {
+      document.onDocumentProps(docProps);
+    }
+    return this._renderDocument(
+      docProps,
+      document.getTemplateData ? document.getTemplateData() : {}
+    );
   }
 
   protected abstract getDocumentProps(req: {
     url: UrlWithParsedQuery;
-  }): Promise<DocumentProps> | DocumentProps;
+  }): Promise<IDocumentProps> | IDocumentProps;
 
   protected _getMainAssetTags(): {
-    styles: HtmlTag<any>[];
-    scripts: HtmlTag<any>[];
+    styles: IHtmlTag<any>[];
+    scripts: IHtmlTag<any>[];
   } {
-    const styles: HtmlTag<"link" | "style">[] = [];
-    const scripts: HtmlTag<"script">[] = [];
-    const entrypoints = this._serverCtx.app.resources.clientManifest.entries[
+    const styles: IHtmlTag<"link" | "style">[] = [];
+    const scripts: IHtmlTag<"script">[] = [];
+    const entrypoints = this._serverCtx.api.resources.clientManifest.entries[
       BUILD_CLIENT_RUNTIME_MAIN
     ];
     entrypoints.js.forEach((asset: string) => {
       scripts.push(
         tag("script", {
-          src: this._serverCtx.app.getAssetPublicUrl(asset)
+          src: this._serverCtx.api.getAssetPublicUrl(asset)
         })
       );
     });
@@ -61,10 +67,24 @@ export abstract class BaseRenderer {
         styles.push(
           tag("link", {
             rel: "stylesheet",
-            href: this._serverCtx.app.getAssetPublicUrl(asset)
+            href: this._serverCtx.api.getAssetPublicUrl(asset)
           })
         );
       });
+    }
+    if (this._serverCtx.api.mode === "development") {
+      styles.push(
+        tag("style", {}, "body{display:none}"),
+
+        /**
+         * this element is used to mount development styles so the
+         * ordering matches production
+         * (by default, style-loader injects at the bottom of <head />)
+         */
+        tag("style", {
+          id: DEV_STYLE_ANCHOR_ID
+        })
+      );
     }
 
     return {
@@ -73,7 +93,7 @@ export abstract class BaseRenderer {
     };
   }
 
-  protected _getAppContainTag(html: string = ""): HtmlTag<"div"> {
+  protected _getAppContainerTag(html: string = ""): IHtmlTag<"div"> {
     return tag(
       "div",
       {
@@ -83,17 +103,23 @@ export abstract class BaseRenderer {
     );
   }
 
-  private _renderDocument(documentProps: DocumentProps) {
+  private _renderDocument(
+    documentProps: IDocumentProps,
+    templateData: Runtime.ITemplateData = {}
+  ) {
+    const htmlAttrs = stringifyAttrs(documentProps.htmlAttrs);
     const head = documentProps.headTags.map(tag => stringifyTag(tag)).join("");
     const main = documentProps.mainTags.map(tag => stringifyTag(tag)).join("");
     const script = documentProps.scriptTags
       .map(tag => stringifyTag(tag))
       .join("");
 
-    return renderTemplate(this._serverCtx.app.resources.documentTemplate, {
+    return renderTemplate(this._serverCtx.api.resources.documentTemplate, {
+      htmlAttrs,
       head,
       main,
-      script
+      script,
+      ...templateData
     });
   }
 }

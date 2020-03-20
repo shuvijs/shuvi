@@ -25,10 +25,13 @@ const nodeEnv = cmd === "dev" ? "development" : "production";
 
 const result = spawn.sync(
   "node",
-  [require.resolve("./cmds/" + cmd), ...commandArgs],
+  [
+    require.resolve("./cmds/_agent"),
+    require.resolve("./cmds/" + cmd),
+    ...commandArgs
+  ],
   {
     stdio: "inherit",
-    cwd: process.env.SHUVI_DIR,
     env: {
       ...process.env,
       NODE_ENV: nodeEnv

@@ -1,25 +1,25 @@
 import program from "commander";
 import { loadConfig } from "../config";
-import { startServer } from "../helpers/startServer";
+import { shuvi } from "../shuvi";
 //@ts-ignore
 import pkgInfo from "../../package.json";
 
-program
-  .name(pkgInfo.name)
-  .usage(`dev [options]`)
-  .helpOption()
-  .option("--host <host>", "specify host")
-  .option("--port <port>", "specify port")
-  .parse(process.argv);
+export default async function main(argv: string[]) {
+  program
+    .name(pkgInfo.name)
+    .usage(`dev [options]`)
+    .helpOption()
+    .option("--host <host>", "specify host")
+    .option("--port <port>", "specify port")
+    .parse(argv);
 
-const port = program.port || 3000;
-const host = program.host || "localhost";
+  const port = program.port || 3000;
+  const host = program.host || "localhost";
 
-async function main() {
   const config = await loadConfig();
+  const shuviApp = shuvi({ dev: true, config });
   try {
-    await startServer({ dev: true, config }, port, host);
-    console.log(`waiting on http://${host}:${port}`);
+    await shuviApp.listen(port, host);
   } catch (err) {
     if (err.code === "EADDRINUSE") {
       let errorMessage = `Port ${port} is already in use.`;
@@ -33,5 +33,3 @@ async function main() {
     process.nextTick(() => process.exit(1));
   }
 }
-
-main();

@@ -1,66 +1,67 @@
-import { App } from "@shuvi/types";
-import { parse as parseUrl, UrlWithParsedQuery } from "url";
-import { Renderer } from "../renderer";
+import http from "http";
+import { IConfig } from "@shuvi/types";
 import {
-  createServer,
-  Server,
-  RequestHandle,
-  IncomingMessage,
-  ServerResponse,
-  NextFunction
-} from "../server";
+  IHTTPRequestHandler,
+  IIncomingMessage,
+  IServerResponse,
+  IServiceMode
+} from "@shuvi/core";
+import { Api } from "../api";
+import { Renderer } from "../renderer";
 
-export interface EnhancedIncomingMessage extends IncomingMessage {
-  parsedUrl: UrlWithParsedQuery;
+export interface IShuviConstructorOptions {
+  config: IConfig;
 }
 
-export type HTTPRequestHandler = (
-  req: IncomingMessage,
-  res: ServerResponse
-) => void;
-
 export default abstract class Shuvi {
-  protected _app: App;
-
+  protected _api: Api;
   private _renderer: Renderer;
-  private _serverApp: Server;
 
-  constructor(app: App) {
-    this._app = app;
-    this._serverApp = createServer();
-    this._renderer = new Renderer({ app });
-
-    this._serverApp.use(
-      (req: IncomingMessage, _res: ServerResponse, next: NextFunction) => {
-        req.parsedUrl = parseUrl(req.url || "", true);
-        next();
-      }
-    );
+  constructor({ config }: IShuviConstructorOptions) {
+    this._api = new Api({
+      mode: this.getServiceMode(),
+      config
+    });
+    this._renderer = new Renderer({ api: this._api });
   }
 
-  abstract ready(): void;
-
-  getRequestHandler(): HTTPRequestHandler {
-    return this._serverApp;
+  async ready(): Promise<void> {
+    await this.init();
   }
 
-  public handle404(req: IncomingMessage, res: ServerResponse) {
+  getRequestHandler(): IHTTPRequestHandler {
+    return this._api.server.getRequestHandler();
+  }
+
+  async listen(port: number, hostname?: string): Promise<void> {
+    const srv = http.createServer(this.getRequestHandler());
+    await new Promise((resolve, reject) => {
+      // This code catches EADDRINUSE error if the port is already in use
+      srv.on("error", reject);
+      srv.on("listening", async () => {
+        await this.ready();
+        resolve();
+      });
+      srv.listen(port, hostname);
+    });
+  }
+
+  protected abstract getServiceMode(): IServiceMode;
+
+  protected abstract init(): Promise<void> | void;
+
+  protected _handle404(req: IIncomingMessage, res: IServerResponse) {
     res.statusCode = 404;
     res.end();
   }
 
-  protected async _use(handle: RequestHandle): Promise<void> {
-    this._serverApp.use(handle);
-  }
-
   protected async _handlePageRequest(
-    req: IncomingMessage,
-    res: ServerResponse
+    req: IIncomingMessage,
+    res: IServerResponse
   ): Promise<void> {
-    const enhancedReq = req as EnhancedIncomingMessage;
     const html = await this._renderer.renderDocument({
-      url: enhancedReq.url,
-      parsedUrl: enhancedReq.parsedUrl
+      url: req.url,
+      parsedUrl: req.parsedUrl
     });
     res.end(html);
   }

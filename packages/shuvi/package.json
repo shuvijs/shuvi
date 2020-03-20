@@ -23,11 +23,12 @@
   },
   "dependencies": {
     "@shuvi/app": "^0.0.1-alpha.2",
-    "@shuvi/app-shell": "^0.0.1-alpha.1",
+    "@shuvi/core": "^0.0.1-alpha.6",
     "@shuvi/runtime-core": "^0.0.1-alpha.2",
     "@shuvi/runtime-react": "^0.0.1-alpha.8",
     "@shuvi/shared": "^0.0.1-alpha.2",
     "@shuvi/toolpack": "^0.0.1-alpha.7",
+    "@shuvi/types": "^0.0.1-alpha.9",
     "@shuvi/utils": "^0.0.1-alpha.5",
     "commander": "4.0.1",
     "connect": "3.7.0",
@@ -36,7 +37,6 @@
     "fs-extra": "8.1.0",
     "path-to-regexp": "^6.1.0",
     "send": "0.17.1",
-    "tiny-invariant": "1.1.0",
     "webpack": "4.41.2",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "2.25.0"

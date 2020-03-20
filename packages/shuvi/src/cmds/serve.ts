@@ -1,29 +1,28 @@
 import program from "commander";
 import { loadConfig } from "../config";
-import { startServer } from "../helpers/startServer";
+import { shuvi } from "../shuvi";
 //@ts-ignore
 import pkgInfo from "../../package.json";
 
-program
-  .name(pkgInfo.name)
-  .usage(`serve [options]`)
-  .helpOption()
-  .option("--host <host>", "specify host")
-  .option("--port <port>", "specify port")
-  .parse(process.argv);
+export default async function main(argv: string[]) {
+  program
+    .name(pkgInfo.name)
+    .usage(`serve [options]`)
+    .helpOption()
+    .option("--host <host>", "specify host")
+    .option("--port <port>", "specify port")
+    .parse(argv);
 
-const port = program.port || 3000;
-const host = program.host || "localhost";
+  const port = program.port || 3000;
+  const host = program.host || "localhost";
 
-async function main() {
   const config = await loadConfig();
+  const shuviApp = shuvi({ config });
   try {
-    await startServer({ config }, port, host);
+    await shuviApp.listen(port, host);
     console.log(`Ready on http://${host}:${port}`);
   } catch (err) {
     console.error(err);
     process.exit(1);
   }
 }
-
-main();

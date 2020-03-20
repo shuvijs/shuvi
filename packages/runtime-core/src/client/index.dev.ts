@@ -2,8 +2,9 @@
 import { bootstrap } from "@shuvi/app/bootstrap";
 import { DEV_STYLE_ANCHOR_ID, CLIENT_CONTAINER_ID } from "@shuvi/shared/lib/constants";
 import initWebpackHMR from "./dev/webpackHotDevClient";
-import { getAppData } from "./helpers/getAppData";
+import { getAppData } from "./getAppData";
 
+// FIXTHIS: this does not work as expected
 const styleReady = new Promise(resolve => {
   (window.requestAnimationFrame || setTimeout)(() => {
     const el = document.querySelector(`#${DEV_STYLE_ANCHOR_ID}`)

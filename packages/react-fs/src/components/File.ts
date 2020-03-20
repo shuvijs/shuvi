@@ -1,5 +1,5 @@
 import React from "react";
-import { FileProps } from "../internal";
+import { FileProps } from "../types";
 
 export default class File extends React.Component<FileProps> {
   shouldComponentUpdate(nextProps: FileProps) {

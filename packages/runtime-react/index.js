@@ -1,1 +1,1 @@
-module.exports = require("./lib/runtime/runtime");
+module.exports = require("./lib/runtime");

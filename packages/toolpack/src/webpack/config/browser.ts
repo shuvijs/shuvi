@@ -114,6 +114,14 @@ export function createBrowserWebpackChain({
       minSize: 20000
     });
   }
+
+  chain.plugin("define").tap(([options]) => [
+    {
+      ...options,
+      // prevent errof of destructing process.env
+      "process.env": JSON.stringify("{}")
+    }
+  ]);
   chain.plugin("private/build-manifest").tap(([options]) => [
     {
       ...options,

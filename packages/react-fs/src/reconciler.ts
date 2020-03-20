@@ -1,8 +1,8 @@
 import path from "path";
 import fse from "fs-extra";
 import ReactReconciler, { OpaqueHandle } from "react-reconciler";
+import { Type } from "./types";
 
-type Type = "file" | "dir";
 type Props = {
   name: string;
 } & {
