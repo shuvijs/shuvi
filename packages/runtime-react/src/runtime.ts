@@ -3,6 +3,7 @@ import { IApi, Runtime, Hooks } from "@shuvi/types";
 import { File } from "@shuvi/core";
 import { resolveDistFile } from "./paths";
 import { matchRoutes } from "./router/matchRoutes";
+import { config as configBundler } from "./bundler/config";
 
 import RouteConfig = Runtime.IRouteConfig;
 
@@ -52,6 +53,8 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
           "module.exports = require('@shuvi/runtime-react/dep/react-router-dom').Link;"
       })
     );
+
+    configBundler(api);
 
     api.tap<Hooks.IAppRoutes>("app:routes", {
       name: "runtime-react",

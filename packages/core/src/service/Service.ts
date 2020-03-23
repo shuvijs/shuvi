@@ -1,8 +1,8 @@
 import { joinPath } from "@shuvi/utils/lib/string";
 import { logger } from "../lib/logger";
 import { Server } from "../server";
-import { getPaths, IPaths } from "./paths";
-import { IConfig } from "./types";
+import { getPaths } from "./paths";
+import { IConfig, IPaths } from "./types";
 
 const log = logger("shuvi:core:service");
 

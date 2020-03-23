@@ -56,13 +56,6 @@ export function nodeExternals({
       return transpiled();
     }
 
-    // fix hooks not work when using yarn link
-    if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE === "true") {
-      if (match(request, ["react", "react-router-dom"])) {
-        return external();
-      }
-    }
-
     // Relative requires don't need custom resolution, because they
     // are relative to requests we've already resolved here.
     // Absolute requires (require('/foo')) are extremely uncommon, but

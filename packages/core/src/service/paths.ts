@@ -1,19 +1,6 @@
 import { join } from "path";
 import { NAME } from "@shuvi/shared/lib/constants";
-
-export interface IPaths {
-  rootDir: string;
-  buildDir: string;
-
-  // dir to store shuvi generated src files
-  appDir: string;
-
-  // user src dir
-  srcDir: string;
-
-  // functional dirs
-  pagesDir: string;
-}
+import { IPaths } from "./types";
 
 interface IPathsOpts {
   rootDir: string;

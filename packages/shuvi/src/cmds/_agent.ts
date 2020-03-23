@@ -1,7 +1,7 @@
 type Command = (argv: string[]) => void;
 
 // fix yarn link with react hooks
-if (process.env.SHUVI__SECRET_DO_NOT_USE__LINKED_PACKAGE) {
+if (process.env.SHUVI__SECRET_FIX_LOCAL_RESOLVE) {
   const path = require("path");
   const resolveNodeModule = (req: string) =>
     path.resolve(__dirname, "../../../../node_modules", req);

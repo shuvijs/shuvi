@@ -1,4 +1,4 @@
-import { IConfig as IConfigCore, IFile, Service } from "@shuvi/core";
+import { IConfig as IConfigCore, IFile, Service, IPaths } from "@shuvi/core";
 import * as Runtime from "./src/runtime";
 import * as Bundler from "./src/bundler";
 import * as Hooks from "./src/hooks";
@@ -36,7 +36,7 @@ export interface IHookOpts<InitValue = void, Args extends any[] = any[]> {
   name: string;
   fn: InitValue extends void
     ? (...args: Args) => void
-    : (init: InitValue, ...args: Args) => void;
+    : (init: InitValue, ...args: Args) => InitValue;
   before?: string;
   stage?: number;
 }
@@ -51,6 +51,7 @@ export interface ICallHookOpts<Name extends string = string, InitV = unknown> {
 // api for plugins
 export interface IApi {
   mode: typeof Service.prototype.mode;
+  paths: IPaths;
   config: IConfig;
   assetPublicPath: string;
 

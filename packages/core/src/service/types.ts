@@ -1,12 +1,15 @@
 export interface IPaths {
-  projectDir: string;
+  rootDir: string;
   buildDir: string;
+
+  // dir to store shuvi generated src files
+  appDir: string;
 
   // user src dir
   srcDir: string;
 
-  // dir to store shuvi generated src files
-  appDir: string;
+  // functional dirs
+  pagesDir: string;
 }
 
 export interface IConfig {
