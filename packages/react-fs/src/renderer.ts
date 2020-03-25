@@ -43,7 +43,10 @@ export async function renderOnce(
   } else {
     await fse.mkdirp(rootDir);
   }
-  const vnodeTree = TestRenderer.create(reactElement).toJSON();
+
+  const testRenderer = TestRenderer.create(reactElement);
+  const vnodeTree = testRenderer.toJSON();
+  testRenderer.unmount();
   if (Array.isArray(vnodeTree)) {
     await renderVnodes(vnodeTree, rootDir);
   } else {

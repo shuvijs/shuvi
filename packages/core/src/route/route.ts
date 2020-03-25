@@ -181,7 +181,7 @@ export class Route {
   }
 
   private async _createWatcher() {
-    // BUG: watcher won't trigger initial event if the dir depth is less than 2
+    // watcher won't trigger the initial event
     // so we fire the initial event manually.
     const initialRoutes = await this.getRoutes();
     this._event.emit("change", initialRoutes);

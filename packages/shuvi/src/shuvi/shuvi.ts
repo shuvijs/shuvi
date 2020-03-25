@@ -16,6 +16,7 @@ export interface IShuviConstructorOptions {
 export default abstract class Shuvi {
   protected _api: Api;
   private _renderer: Renderer;
+  private _server: http.Server | null = null;
 
   constructor({ config }: IShuviConstructorOptions) {
     this._api = new Api({
@@ -33,8 +34,18 @@ export default abstract class Shuvi {
     return this._api.server.getRequestHandler();
   }
 
+  close() {
+    if (this._server) {
+      this._server.close();
+    }
+  }
+
   async listen(port: number, hostname?: string): Promise<void> {
-    const srv = http.createServer(this.getRequestHandler());
+    if (this._server) {
+      return;
+    }
+
+    const srv = (this._server = http.createServer(this.getRequestHandler()));
     await new Promise((resolve, reject) => {
       // This code catches EADDRINUSE error if the port is already in use
       srv.on("error", reject);

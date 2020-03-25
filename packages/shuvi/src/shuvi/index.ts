@@ -1,6 +1,8 @@
 import { IConfig } from "@shuvi/types";
 import Shuvi, { IShuviConstructorOptions } from "./shuvi";
 
+export { Shuvi };
+
 export interface ShuviOptions {
   dev?: boolean;
   config: IConfig;

@@ -47,7 +47,7 @@ export default class ShuviDev extends Base {
     api.server.use(this._pageMiddleware.bind(this));
   }
 
-  async listen(port: number, hostname?: string): Promise<void> {
+  async listen(port: number, hostname: string = "localhost"): Promise<void> {
     const status = {
       [WEBPACK_CONFIG_CLIENT]: false,
       [WEBPACK_CONFIG_SERVER]: false

@@ -126,9 +126,9 @@ export class Api implements IApi {
     await setupApp(this);
 
     if (this.mode === "production") {
-      this._app.buildOnce({ dir: this.paths.appDir });
+      await this._app.buildOnce({ dir: this.paths.appDir });
     } else {
-      this._app.build({ dir: this.paths.appDir });
+      await this._app.build({ dir: this.paths.appDir });
     }
   }
 
@@ -136,14 +136,27 @@ export class Api implements IApi {
     const cacheable = this.mode === "production";
     // TODO: warn exitsed identifier
     if (cacheable) {
-      this._resources[identifier] = loader();
+      Object.defineProperty(this._resources, identifier, {
+        get() {
+          const value = loader();
+          Object.defineProperty(this._resources, identifier, {
+            value,
+            enumerable: true,
+            configurable: true,
+            writable: false
+          });
+          return value;
+        },
+        enumerable: true,
+        configurable: true
+      });
     } else {
       Object.defineProperty(this._resources, identifier, {
         get() {
           return loader();
         },
         enumerable: true,
-        configurable: false
+        configurable: true
       });
     }
   }

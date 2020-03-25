@@ -57,6 +57,7 @@ export function useFileByOrder(...files: string[]) {
 
       if (nextFile !== file.current) {
         file.current = nextFile;
+        // @ts-ignore
         forceupdate({});
       }
     });

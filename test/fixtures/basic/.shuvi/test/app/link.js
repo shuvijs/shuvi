@@ -1,1 +1,0 @@
-module.exports = require('@shuvi/runtime-react/dep/react-router-dom').Link;
