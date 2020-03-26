@@ -1,4 +1,4 @@
-import { setRuntimeConfig } from "@shuvi/app/config";
+import { setRuntimeConfig, router } from "@shuvi/app";
 import { getAppData } from "./getAppData";
 
 const appData = getAppData();
@@ -10,3 +10,7 @@ if (process.env.NODE_ENV === "development") {
 } else {
   require("./index.prod");
 }
+
+(window as any).__SHUVI = {
+  router
+};

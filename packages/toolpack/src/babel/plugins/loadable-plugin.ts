@@ -31,15 +31,15 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
     visitor: {
       ImportDeclaration(path: NodePath<BabelTypes.ImportDeclaration>) {
         let source = path.node.source.value;
-        if (source !== "@shuvi/app/dynamic") return;
+        if (source !== "@shuvi/app") return;
 
-        let defaultSpecifier = path.get("specifiers").find(specifier => {
-          return specifier.isImportDefaultSpecifier();
+        let dynamicSpecifier = path.get("specifiers").find(specifier => {
+          return specifier.node.imported.name === 'dynamic'
         });
 
-        if (!defaultSpecifier) return;
+        if (!dynamicSpecifier) return;
 
-        const bindingName = defaultSpecifier.node.local.name;
+        const bindingName = dynamicSpecifier.node.local.name;
         const binding = path.scope.getBinding(bindingName);
 
         if (!binding) {

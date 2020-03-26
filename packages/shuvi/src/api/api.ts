@@ -3,7 +3,8 @@ import {
   IApi,
   ICallHookOpts,
   IHookOpts,
-  Hooks as IHooks
+  Hooks as IHooks,
+  ISpecifier
 } from "@shuvi/types";
 import { Service, IServiceMode, App, IRouteConfig, IFile } from "@shuvi/core";
 import { joinPath } from "@shuvi/utils/lib/string";
@@ -105,8 +106,8 @@ export class Api implements IApi {
     this._app.setBootstrapModule(path);
   }
 
-  setAppModule(path: string) {
-    this._app.setAppModule(path);
+  setAppModule(module: string | string[]) {
+    this._app.setAppModule(module);
   }
 
   async setRoutes(routes: IRouteConfig[]) {
@@ -161,8 +162,15 @@ export class Api implements IApi {
     }
   }
 
-  addFile(file: IFile, dir = ""): void {
+  addAppFile(file: IFile, dir = ""): void {
     this._app.addFile(file, dir.startsWith("/") ? dir : `/${dir}`);
+  }
+
+  addAppExport(
+    source: string,
+    specifier: ISpecifier | ISpecifier[] | true
+  ): void {
+    this._app.addExport(source, specifier);
   }
 
   getAssetPublicUrl(...paths: string[]): string {

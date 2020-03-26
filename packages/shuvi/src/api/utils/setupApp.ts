@@ -6,22 +6,31 @@ export async function setupApp(api: Api) {
   runtime.install(api.getPluginApi());
 
   api.setBootstrapModule(runtime.getBootstrapModulePath());
-  api.setAppModule(runtime.getAppModulePath());
-  api.addFile(
-    File.file("config.js", {
-      content: [
-        'import getConfig from "shuvi/lib/lib/runtime-config"',
-        "export default getConfig",
-        'export * from "shuvi/lib/lib/runtime-config"'
-      ].join("\n")
-    })
-  );
-  api.addFile(
+  api.setAppModule([api.resolveUserFile("app.js"), runtime.getAppModulePath()]);
+
+  api.addAppExport(runtime.getAppModulePath(), "App");
+  api.addAppExport(runtime.getRouterModulePath(), {
+    imported: "default",
+    local: "router"
+  });
+  api.addAppExport(api.resolveAppFile("core", "routes"), {
+    imported: "default",
+    local: "routes"
+  });
+  api.addAppExport("shuvi/lib/lib/runtime-config", [
+    "setRuntimeConfig",
+    {
+      imported: "default",
+      local: "getRuntimeConfig"
+    }
+  ]);
+
+  api.addAppFile(
     File.moduleCollection("server.js", {
       modules: {
+        app: api.resolveAppFile("core", "app"),
+        routes: api.resolveAppFile("core", "routes"),
         // TODO: extension support eg: jsx/ts/tsx
-        app: [api.resolveUserFile("app.js"), runtime.getAppModulePath()],
-        routes: api.resolveAppFile("routes"),
         document: [
           api.resolveUserFile("document.js"),
           require.resolve("@shuvi/runtime-core/lib/noop")

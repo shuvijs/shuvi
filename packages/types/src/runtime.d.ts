@@ -61,7 +61,7 @@ export type IAppData<Data = {}> = { runtimeConfig: { [k: string]: string } } & {
 };
 
 export interface IBootstrapOptions<Data = {}> {
-  hydrate?: boolean;
+  AppComponent: any;
   appContainer: HTMLElement;
   appData: IAppData<Data>;
 }
@@ -103,10 +103,34 @@ export type IRenderAppResult<Data = {}> = {
   appData: Data;
 };
 
+export type IRouterAction = "PUSH" | "POP" | "REPLACE";
+
+export interface IRouterListener {
+  (location: IRouterLocation, action: IRouterAction): void;
+}
+
+export interface IRouterLocation {
+  pathname: string;
+  search: string;
+  state: any;
+  hash: string;
+}
+
+export interface IRouter {
+  push(path: string, state?: any): void;
+  replace(path: string, state?: any): void;
+  go(n: number): void;
+  goBack(): void;
+  goForward(): void;
+  onChange(listener: IRouterListener): () => void;
+}
+
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;
 
   matchRoutes(routes: IRouteConfig[], pathname: string): IMatchedRoute[];
+
+  getRouterModulePath(): string;
 
   getAppModulePath(): string;
 

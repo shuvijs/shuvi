@@ -1,5 +1,5 @@
 import { Runtime } from "@shuvi/types";
 
-declare var routes: Runtime.IRoute[];
+declare const routes: Runtime.IRoute[];
 
 export default routes;

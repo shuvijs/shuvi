@@ -1,5 +1,6 @@
 import { observable, action } from "mobx";
 import { IFileNode, Dir, isDir, File } from "./files/FileNode";
+import { ISpecifier } from "../types";
 
 function getDirAndName(path: string) {
   const segs = path.split("/");
@@ -55,9 +56,17 @@ function addFileNode(dir: string, file: IFileNode, files: IFileNode[]) {
 
 export class ModelApp {
   @observable bootstrapModule!: string;
-  @observable appModule!: string;
-  @observable routesContent: string = 'export default []';
+  @observable appModule!: string | string[];
+  @observable routesContent: string = "export default []";
   @observable extraFiles: IFileNode[] = [];
+  @observable exports: {
+    [source: string]: ISpecifier[] | true /* exportAll */;
+  } = {};
+
+  @action
+  addExport(source: string, specifier: ISpecifier[] | true) {
+    this.exports[source] = specifier;
+  }
 
   @action
   addFile(file: File, dir: string = "/") {

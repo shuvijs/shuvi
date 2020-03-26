@@ -6,15 +6,24 @@ type Module = string | string[];
 
 export interface Props {
   name: string;
-  from: string | string[];
+  source: string | string[];
+  defaultExport?: boolean;
 }
 
-function Module({ name, from }: Props) {
-  const file = Array.isArray(from)
-    ? useFileByOrder(...from)
-    : useFileByOrder(from);
+function Module({ name, source, defaultExport }: Props) {
+  const file = Array.isArray(source)
+    ? useFileByOrder(...source)
+    : useFileByOrder(source);
 
-  return <File name={name} content={`export * from "${file}"`} />;
+  let statements: string[] = [];
+  if (defaultExport) {
+    statements.push(`import temp from "${file}"`);
+    statements.push(`export default temp`);
+  } else {
+    statements.push(`export * from "${file}"`);
+  }
+
+  return <File name={name} content={statements.join("\n")} />;
 }
 
 export default React.memo(Module);

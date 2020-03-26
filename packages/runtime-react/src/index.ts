@@ -1,6 +1,5 @@
 import React from "react";
 import { IApi, Runtime, Hooks } from "@shuvi/types";
-import { File } from "@shuvi/core";
 import { resolveDistFile } from "./paths";
 import { matchRoutes } from "./router/matchRoutes";
 import { config as configBundler } from "./bundler/config";
@@ -31,28 +30,15 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
   async install(api: IApi): Promise<void> {
     this._api = api;
 
-    api.addFile(
-      File.file("head.js", {
-        content:
-          "module.exports = require('@shuvi/runtime-react/lib/head/head');"
-      })
-    );
-    api.addFile(
-      File.file("dynamic.js", {
-        content: "module.exports = require('@shuvi/runtime-react/lib/dynamic')"
-      })
-    );
-    api.addFile(
-      File.file("router.js", {
-        content: "module.exports = require('@shuvi/runtime-react/lib/router')"
-      })
-    );
-    api.addFile(
-      File.file("link.js", {
-        content:
-          "module.exports = require('@shuvi/runtime-react/dep/react-router-dom').Link;"
-      })
-    );
+    api.addAppExport("@shuvi/runtime-react/lib/head/head", {
+      imported: "default",
+      local: "Head"
+    });
+    api.addAppExport("@shuvi/runtime-react/lib/dynamic", {
+      imported: "default",
+      local: "dynamic"
+    });
+    api.addAppExport("@shuvi/runtime-react/dep/react-router-dom", "Link");
 
     configBundler(api);
 
@@ -104,6 +90,10 @@ ${fileContent}
 
   getAppModulePath(): string {
     return resolveDistFile("app");
+  }
+
+  getRouterModulePath(): string {
+    return resolveDistFile("router/router");
   }
 }
 

@@ -1,9 +1,16 @@
-import { IConfig as IConfigCore, IFile, Service, IPaths } from "@shuvi/core";
+import {
+  IConfig as IConfigCore,
+  IFile,
+  Service,
+  IPaths,
+  App,
+  ISpecifier
+} from "@shuvi/core";
 import * as Runtime from "./src/runtime";
 import * as Bundler from "./src/bundler";
 import * as Hooks from "./src/hooks";
 
-export { Runtime, Bundler, Hooks };
+export { Runtime, Bundler, Hooks, IFile, ISpecifier };
 
 export type IRouterHistoryMode = "browser" | "hash" | "auto";
 
@@ -69,7 +76,8 @@ export interface IApi {
     ...args: Config["args"]
   ): Promise<Config["initialValue"]>;
 
-  addFile(file: IFile, dir?: string): void;
+  addAppFile: typeof App.prototype.addFile;
+  addAppExport: typeof App.prototype.addExport;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

@@ -11,7 +11,7 @@ export { default as React } from "react";
 
 export { logger, Logger } from "./lib/logger";
 
-export { App, IFile, File } from "./app";
+export { App, IFile, File, ISpecifier } from "./app";
 
 export { Service, IServiceMode } from "./service/service";
 

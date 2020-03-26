@@ -5,6 +5,7 @@ import ModuleCollection, {
   IModules,
   Props as ModuleCollectionProps
 } from "../../components/files/ModuleCollection";
+import Module, { Props as ModuleProps } from "../../components/files/Module";
 import { File } from "./FileNode";
 
 export { Dir, IFileNode, isDir, isFile, File } from "./FileNode";
@@ -14,6 +15,10 @@ export function createFile(
   props: Omit<TemplateFileProps, "name">
 ) {
   return new File(name, TemplateFile, props);
+}
+
+export function createModule(name: string, props: Omit<ModuleProps, "name">) {
+  return new File(name, Module, props);
 }
 
 export function createModuleCollection<T extends IModules = {}>(

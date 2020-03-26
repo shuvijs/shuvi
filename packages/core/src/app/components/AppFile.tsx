@@ -1,11 +1,11 @@
 import React from "react";
-import { File } from "@shuvi/react-fs";
+import Module from "./files/Module";
 import { useSelector } from "../models/store";
 
 function App() {
-  const app = useSelector(state => state.appModule);
+  const source = useSelector(state => state.appModule);
 
-  return <File name="app.js" content={`export * from "${app}"`} />;
+  return <Module name="app.js" source={source} />;
 }
 
 export default React.memo(App);

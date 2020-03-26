@@ -4,7 +4,7 @@ import ReactFS from "@shuvi/react-fs";
 import AppComponent from "./AppComponent";
 import { File } from "./models/files";
 import { Store, createStore, StoreProvider } from "./models/store";
-import { IBuildOptions } from "./types";
+import { IBuildOptions, ISpecifier } from "./types";
 
 export class App {
   private _store: Store;
@@ -18,7 +18,7 @@ export class App {
     this._store.bootstrapModule = module;
   }
 
-  setAppModule(module: string) {
+  setAppModule(module: string | string[]) {
     this._store.appModule = module;
   }
 
@@ -28,6 +28,14 @@ export class App {
 
   addFile(file: File, dir: string = "/"): void {
     this._store.addFile(file, dir);
+  }
+
+  addExport(source: string, specifier: ISpecifier | ISpecifier[] | true): void {
+    if (specifier === true) {
+      this._store.addExport(source, specifier);
+    } else {
+      this._store.addExport(source, ([] as ISpecifier[]).concat(specifier));
+    }
   }
 
   waitUntilBuild(): Promise<void> {

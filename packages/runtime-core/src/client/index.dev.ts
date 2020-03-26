@@ -1,6 +1,10 @@
 /// <reference lib="dom" />
-import { bootstrap } from "@shuvi/app/bootstrap";
-import { DEV_STYLE_ANCHOR_ID, CLIENT_CONTAINER_ID } from "@shuvi/shared/lib/constants";
+import { bootstrap } from "@shuvi/app/core/bootstrap";
+import { App } from "@shuvi/app/core/app";
+import {
+  DEV_STYLE_ANCHOR_ID,
+  CLIENT_CONTAINER_ID
+} from "@shuvi/shared/lib/constants";
 import initWebpackHMR from "./dev/webpackHotDevClient";
 import { getAppData } from "./getAppData";
 
@@ -19,6 +23,7 @@ const styleReady = new Promise(resolve => {
 styleReady!.then(() => {
   initWebpackHMR();
   bootstrap({
+    AppComponent: App,
     appData: getAppData(),
     appContainer: document.getElementById(CLIENT_CONTAINER_ID)!
   });

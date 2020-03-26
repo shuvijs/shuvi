@@ -8,7 +8,6 @@ import { History } from "./router/history";
 import { setHistory } from "./router/router";
 import AppContainer from "./AppContainer";
 import { IReactAppData } from "./types";
-import { App } from "./app";
 import { HeadManager, HeadManagerContext } from "./head";
 
 const headManager = new HeadManager();
@@ -26,12 +25,12 @@ export function createBootstrap({
   const history = historyCreator({ basename: "/" });
   setHistory(history);
 
-  return async ({ appData, appContainer }) => {
+  return async ({ appData, appContainer, AppComponent }) => {
     const root = (
       <Router history={history}>
         <AppContainer routeProps={appData.routeProps}>
           <HeadManagerContext.Provider value={headManager.updateHead}>
-            <App />
+            <AppComponent />
           </HeadManagerContext.Provider>
         </AppContainer>
       </Router>
