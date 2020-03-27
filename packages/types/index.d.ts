@@ -9,6 +9,10 @@ import {
 import * as Runtime from "./src/runtime";
 import * as Bundler from "./src/bundler";
 import * as Hooks from "./src/hooks";
+import WebpackChain from "webpack-chain";
+import webpack from "webpack";
+
+export { webpack, WebpackChain };
 
 export { Runtime, Bundler, Hooks, IFile, ISpecifier };
 

@@ -40,19 +40,38 @@ const ModuleStatus = {
   ORIGINAL: 2
 } as const;
 
+interface Handler {
+  resolve(): void;
+  finish: Map<Compiler, boolean>;
+}
+
 const knownModules = new Map<string, ModuleInfo>();
+const moduleHandlers = new Map<string, Handler>();
 
 export default class ModuleReplacePlugin implements Plugin {
   private _options: ModuleReplacePluginOptions;
 
-  static restoreModule(id: string) {
+  static restoreModule(id: string): false | Promise<any> {
     const moduleInfo = knownModules.get(id);
-    if (moduleInfo) {
-      moduleInfo.status = ModuleStatus.ORIGINAL;
-      moduleInfo.compilers.forEach(compiler =>
-        compiler.hooks.invalid.call("noop", new Date())
-      );
+    if (!moduleInfo) {
+      return false;
     }
+
+    moduleInfo.status = ModuleStatus.ORIGINAL;
+    const handler: Handler = {
+      resolve: null as any,
+      finish: new Map()
+    };
+    moduleHandlers.set(id, handler);
+    const promise = new Promise(resolve => {
+      handler.resolve = resolve;
+    });
+    moduleInfo.compilers.forEach(compiler => {
+      handler.finish.set(compiler, false);
+      compiler.hooks.invalid.call("noop", new Date());
+    });
+
+    return promise;
   }
 
   constructor(options: Partial<ModuleReplacePluginOptions>) {
@@ -63,6 +82,25 @@ export default class ModuleReplacePlugin implements Plugin {
   }
 
   apply(compiler: Compiler) {
+    compiler.hooks.done.tap("done", () => {
+      const finished: string[] = [];
+      for (const [id, handler] of moduleHandlers) {
+        if (handler.finish.get(compiler)) {
+          handler.finish.delete(compiler);
+        }
+
+        if (handler.finish.size <= 0) {
+          handler.resolve();
+          finished.push(id);
+        }
+      }
+
+      for (const id of finished) {
+        knownModules.delete(id);
+        moduleHandlers.delete(id);
+      }
+    });
+
     compiler.hooks.beforeCompile.tapAsync(
       "ModuleReplacePlugin",
       ({ normalModuleFactory }: any, callback) => {
@@ -98,6 +136,8 @@ export default class ModuleReplacePlugin implements Plugin {
     }
 
     if (moduleInfo.status === ModuleStatus.ORIGINAL) {
+      const handler = moduleHandlers.get(id)!;
+      handler.finish.set(compiler, true);
       wpModule.loaders = moduleInfo.loaders;
       return;
     }

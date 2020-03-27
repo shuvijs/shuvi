@@ -2,9 +2,9 @@
 module.exports = {
   verbose: true,
 
-  forceExit: true,
+  // forceExit: true,
 
-  bail: true,
+  bail: false,
 
   globals: {
     "ts-jest": {

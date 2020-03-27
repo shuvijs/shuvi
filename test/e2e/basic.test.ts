@@ -20,9 +20,14 @@ describe("Basic Features", () => {
     await Promise.all([]);
   }, 1000 * 60 * 5);
   afterAll(async () => {
-    shuvi.close();
+    // shuvi.close();
     await page.close();
     await browser.close();
+  });
+
+  beforeEach(() => {
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
   });
 
   test("Open /", async () => {
@@ -33,5 +38,11 @@ describe("Basic Features", () => {
   test("Open /about", async () => {
     await page.goto(url("/about"));
     expect(await page.$text("div")).toBe("About Page");
+  });
+
+  test("process-env", async () => {
+    await page.shuvi.goto("/process-env");
+    await page.waitForSelector("#process-env");
+    expect(await page.$text("#process-env")).toBe("development");
   });
 });

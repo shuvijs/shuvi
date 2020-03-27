@@ -17,7 +17,6 @@ function traverse(routes: RouteConfig[], cb: (route: RouteConfig) => void) {
 }
 
 export class OnDemandRouteManager {
-  private _activedRouteIds = new Set<string>();
   private _routesMap = new Map<string, { componentFile: string }>();
   private _routes: RouteConfig[] = [];
   public devMiddleware: DevMiddleware | null = null;
@@ -50,29 +49,20 @@ export class OnDemandRouteManager {
       return;
     }
 
-    const toActivate: string[] = [];
-    for (let index = 0; index < routeIds.length; index++) {
-      const id = routeIds[index];
-      if (!this._activedRouteIds.has(id)) {
-        toActivate.push(id);
-      }
+    const tasks = routeIds
+      .map(id => {
+        const savedRoute = this._routesMap.get(id);
+        if (!savedRoute) return;
+
+        return ModuleReplacePlugin.restoreModule(
+          `${savedRoute.componentFile}?__shuvi-route`
+        );
+      })
+      .filter(Boolean);
+    if (tasks.length) {
+      this.devMiddleware.invalidate();
+      await Promise.all(tasks);
     }
-
-    if (toActivate.length <= 0) {
-      return;
-    }
-
-    toActivate.forEach(id => {
-      const savedRoute = this._routesMap.get(id);
-      if (!savedRoute) return;
-
-      ModuleReplacePlugin.restoreModule(
-        `${savedRoute.componentFile}?__shuvi-route`
-      );
-      this._activedRouteIds.add(id);
-    });
-    this.devMiddleware.invalidate();
-    await this.devMiddleware.waitUntilValid();
   }
 
   private _replaceComponentFile(routes: RouteConfig[]) {
@@ -109,7 +99,6 @@ export class OnDemandRouteManager {
     }
 
     deleted.forEach(id => {
-      this._activedRouteIds.delete(id);
       this._routesMap.delete(id);
     });
 

@@ -1,21 +1,9 @@
-import {
-  History,
-  LocationListener,
-  UnregisterCallback,
-  Location,
-  Action
-} from "history";
+import { Runtime } from "@shuvi/types";
+import { History } from "history";
 
-export { RouteProps } from 'react-router-dom';
+export { RouteProps } from "react-router-dom";
 
-export { Location, Action };
-
-export type Router = Pick<
-  History,
-  "push" | "replace" | "go" | "goBack" | "goForward"
-> & {
-  onChange(listener: LocationListener): UnregisterCallback;
-};
+export type Router = Runtime.IRouter;
 
 let history: History;
 
@@ -49,7 +37,7 @@ function goForward(...args: any[]) {
   history.goForward(...args);
 }
 
-function onChange(listener: LocationListener) {
+function onChange(listener: Runtime.IRouterListener) {
   return history.listen(listener);
 }
 

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import dynamic from "@shuvi/app/dynamic";
+import { dynamic } from "@shuvi/app";
 
 const Hello = dynamic(() =>
   import(/* webpackChunkName: 'hello1' */ "../../components/hello3")

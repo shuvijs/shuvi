@@ -7,6 +7,11 @@ import ChromeDetector from "./chrome";
 
 export interface Page extends puppeteer.Page {
   [x: string]: any;
+  html(): Promise<string>;
+
+  shuvi: {
+    goto(path: string): Promise<any>;
+  };
 }
 
 export default class Browser {
@@ -43,7 +48,7 @@ export default class Browser {
     if (!this._browser) {
       throw new Error("Please call start() before page(url)");
     }
-    const page: Page = await this._browser.newPage();
+    const page = (await this._browser.newPage()) as Page;
     if (url) {
       await page.goto(url);
     }
@@ -56,7 +61,7 @@ export default class Browser {
         selector,
         (el, trim) => {
           if (!el.textContent) {
-            return "";
+            return null;
           }
 
           return trim
@@ -89,59 +94,17 @@ export default class Browser {
         attr
       );
 
-    // page.$nuxtGlobalHandle = `window.$${globalName}`;
-    // page.$nuxt = await page.evaluateHandle(page.$nuxtGlobalHandle);
-
-    // page.nuxt = {
-    //   async navigate(path, waitEnd = true) {
-    //     const hook = page.evaluate(`
-    //       new Promise(resolve =>
-    //         ${page.$nuxtGlobalHandle}.$once('routeChanged', resolve)
-    //       ).then(() => new Promise(resolve => setTimeout(resolve, 50)))
-    //     `);
-    //     await page.evaluate(
-    //       ($nuxt, path) => $nuxt.$router.push(path),
-    //       page.$nuxt,
-    //       path
-    //     );
-    //     if (waitEnd) {
-    //       await hook;
-    //     }
-    //     return { hook };
-    //   },
-    //   async go(n, waitEnd = true) {
-    //     const hook = page.evaluate(`
-    //       new Promise(resolve =>
-    //         ${page.$nuxtGlobalHandle}.$once('routeChanged', resolve)
-    //       ).then(() => new Promise(resolve => setTimeout(resolve, 50)))
-    //     `);
-    //     await page.evaluate(($nuxt, n) => $nuxt.$router.go(n), page.$nuxt, n);
-    //     if (waitEnd) {
-    //       await hook;
-    //     }
-    //     return { hook };
-    //   },
-    //   routeData() {
-    //     return page.evaluate($nuxt => {
-    //       return {
-    //         path: $nuxt.$route.path,
-    //         query: $nuxt.$route.query
-    //       };
-    //     }, page.$nuxt);
-    //   },
-    //   loadingData() {
-    //     return page.evaluate($nuxt => $nuxt.$loading.$data, page.$nuxt);
-    //   },
-    //   errorData() {
-    //     return page.evaluate($nuxt => $nuxt.nuxt.err, page.$nuxt);
-    //   },
-    //   storeState() {
-    //     return page.evaluate($nuxt => $nuxt.$store.state, page.$nuxt);
-    //   },
-    //   transitionsData() {
-    //     return page.evaluate($nuxt => $nuxt.nuxt.transitions, page.$nuxt);
-    //   }
-    // };
+    const getShuvi = () => page.evaluateHandle("window.__SHUVI");
+    page.shuvi = {
+      async goto(path: string) {
+        const $shuvi = await getShuvi();
+        return page.evaluate(
+          ($shuvi, path: string) => $shuvi.router.push(path),
+          $shuvi,
+          path
+        );
+      }
+    };
     return page;
   }
 }

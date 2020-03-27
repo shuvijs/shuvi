@@ -1,8 +1,8 @@
-import React from 'react'
-import dynamic from '@shuvi/app/dynamic'
+import React from "react";
+import { dynamic } from "@shuvi/app";
 
-const HmrDynamic = dynamic(() => import('../../components/hmr/dynamic'))
+const HmrDynamic = dynamic(() => import("../../components/hmr/dynamic"));
 
 export default () => {
-  return <HmrDynamic />
-}
+  return <HmrDynamic />;
+};

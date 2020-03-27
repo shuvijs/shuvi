@@ -221,7 +221,7 @@ export function baseWebpackChain({
       .use(RequireCacheHotReloaderPlugin);
   } else {
     config
-      .plugin("private/module-replace-plugin")
+      .plugin("private/hashed-moduleids-plugin")
       .use(webpack.HashedModuleIdsPlugin);
   }
 

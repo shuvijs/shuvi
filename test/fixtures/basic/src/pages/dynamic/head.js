@@ -1,5 +1,4 @@
-import dynamic from '@shuvi/app/dynamic'
-import Head from '@shuvi/app/head'
+import { Head, dynamic } from "@shuvi/app";
 
 const Test = dynamic({
   loader: async () => {
@@ -15,16 +14,16 @@ const Test = dynamic({
               background-color: green;
               height: 200px;
             }
-          `,
+          `
               }}
             />
           </Head>
           test
         </div>
-      )
-    }
+      );
+    };
   },
-  ssr: false,
-})
+  ssr: false
+});
 
-export default Test
+export default Test;

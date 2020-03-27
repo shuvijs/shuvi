@@ -1,4 +1,4 @@
-import Link from "@shuvi/app/link";
+import { Link } from "@shuvi/app";
 
 export default function IndexPage() {
   return (
