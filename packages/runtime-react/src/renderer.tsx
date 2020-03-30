@@ -80,6 +80,7 @@ const renderApp: IReactRenderer = async ({
   } finally {
     head = Head.rewind() || defaultHead();
   }
+  // console.log("htmlContent", pathname, htmlContent);
   const headAnchor = {
     tagName: "meta",
     attrs: {

@@ -1,6 +1,6 @@
 import { dynamic } from '@shuvi/app'
 
-const BrowserLoaded = dynamic(async () => () => <div>Browser hydrated</div>, {
+const BrowserLoaded = dynamic(async () => () => <div id="BrowserLoaded">Browser hydrated</div>, {
   ssr: false,
 })
 

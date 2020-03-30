@@ -1,17 +1,30 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
 // @ts-ignore
-import puppeteer from "puppeteer-core";
+import puppeteer, {
+  DirectNavigationOptions,
+  ConsoleMessage
+} from "puppeteer-core";
 
 import ChromeDetector from "./chrome";
 
 export interface Page extends puppeteer.Page {
   [x: string]: any;
+
   html(): Promise<string>;
+  $text(selector: string, trim?: boolean): Promise<string>;
+  $$text(selector: string, trim?: boolean): Promise<(string | null)[]>;
+  $attr(selector: string, attr: string): Promise<string>;
+  $$attr(selector: string, attr: string): Promise<(string | null)[]>;
+  collectBrowserLog(): { texts: string[]; dispose: Function };
 
   shuvi: {
-    goto(path: string): Promise<any>;
+    navigate(path: string): Promise<any>;
   };
+}
+
+export interface PageOptions extends DirectNavigationOptions {
+  disableJavaScript?: boolean;
 }
 
 export default class Browser {
@@ -22,7 +35,7 @@ export default class Browser {
     this._detector = new ChromeDetector();
   }
 
-  async start(options = {}) {
+  async start(options: { baseURL?: string } = {}) {
     // https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions
     const _opts = {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -44,24 +57,41 @@ export default class Browser {
     await this._browser.close();
   }
 
-  async page(url?: string): Promise<Page> {
+  async page(url?: string, options: PageOptions = {}): Promise<Page> {
     if (!this._browser) {
       throw new Error("Please call start() before page(url)");
     }
     const page = (await this._browser.newPage()) as Page;
     if (url) {
-      await page.goto(url);
+      if (options.disableJavaScript) {
+        await page.setJavaScriptEnabled(false);
+      }
+      await page.goto(url, options);
     }
     // await page.waitForFunction(`!!${page.$nuxtGlobalHandle}`);
 
+    page.collectBrowserLog = () => {
+      const texts: string[] = [];
+      const onLogs = (msg: ConsoleMessage) => {
+        texts.push(msg.text());
+      };
+      page.on("console", onLogs);
+
+      return {
+        texts,
+        dispose: () => {
+          page.off("console", onLogs);
+        }
+      };
+    };
     page.html = () =>
       page.evaluate(() => window.document.documentElement.outerHTML);
     page.$text = (selector: string, trim: boolean) =>
       page.$eval(
         selector,
         (el, trim) => {
-          if (!el.textContent) {
-            return null;
+          if (el.textContent === null) {
+            throw Error("no matching element");
           }
 
           return trim
@@ -75,8 +105,8 @@ export default class Browser {
         selector,
         (els, trim) =>
           els.map(el => {
-            if (!el.textContent) {
-              return [];
+            if (el.textContent === null) {
+              return null;
             }
 
             return trim
@@ -86,7 +116,17 @@ export default class Browser {
         trim
       );
     page.$attr = (selector: string, attr: string) =>
-      page.$eval(selector, (el, attr) => el.getAttribute(attr), attr);
+      page.$eval(
+        selector,
+        (el, attr) => {
+          const val = el.getAttribute(attr);
+          if (val === null) {
+            throw Error(`"${el.tagName}" no attr "${attr}"`);
+          }
+          return val;
+        },
+        attr
+      );
     page.$$attr = (selector: string, attr: string) =>
       page.$$eval(
         selector,
@@ -96,7 +136,7 @@ export default class Browser {
 
     const getShuvi = () => page.evaluateHandle("window.__SHUVI");
     page.shuvi = {
-      async goto(path: string) {
+      async navigate(path: string) {
         const $shuvi = await getShuvi();
         return page.evaluate(
           ($shuvi, path: string) => $shuvi.router.push(path),

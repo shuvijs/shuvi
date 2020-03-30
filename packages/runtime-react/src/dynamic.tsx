@@ -47,6 +47,7 @@ export function noSSR<P = {}>(
 
   // This check is neccesary to prevent react-loadable from initializing on the server
   if (!isServerSide) {
+    console.log('11');
     return LoadableInitializer(dynamicOptions);
   }
 

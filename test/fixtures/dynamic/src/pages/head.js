@@ -5,9 +5,10 @@ const Test = dynamic({
     // component
     return () => {
       return (
-        <div className="dynamic-style">
+        <div id="head">
           <Head>
             <style
+              id="dynamic-style"
               dangerouslySetInnerHTML={{
                 __html: `
             .dynamic-style {

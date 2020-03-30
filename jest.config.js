@@ -2,7 +2,7 @@
 module.exports = {
   verbose: true,
 
-  // forceExit: true,
+  forceExit: false,
 
   bail: false,
 
