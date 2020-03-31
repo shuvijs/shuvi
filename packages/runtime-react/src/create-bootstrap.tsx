@@ -21,6 +21,7 @@ export function createBootstrap({
   historyCreator: HistoryCreator;
   ssr?: boolean;
 }): Runtime.IBootstrap<IReactAppData> {
+  let isInitialRender: Boolean = true;
   // TODO: config basename
   const history = historyCreator({ basename: "/" });
   setHistory(history);
@@ -36,10 +37,11 @@ export function createBootstrap({
       </Router>
     );
 
-    if (ssr) {
-      return ReactDOM.hydrate(root, appContainer);
+    if (ssr && isInitialRender) {
+      ReactDOM.hydrate(root, appContainer);
+      isInitialRender = false;
     } else {
-      return ReactDOM.render(root, appContainer);
+      ReactDOM.render(root, appContainer);
     }
   };
 }

@@ -21,10 +21,26 @@ const styleReady = new Promise(resolve => {
 });
 
 styleReady!.then(() => {
+  const appData = getAppData();
+  const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
+
   initWebpackHMR();
   bootstrap({
-    AppComponent: App,
-    appData: getAppData(),
-    appContainer: document.getElementById(CLIENT_CONTAINER_ID)!
+    appData,
+    appContainer,
+    AppComponent: App
   });
+
+  // @ts-ignore
+  if (module.hot) {
+    // @ts-ignore
+    module.hot.accept("@shuvi/app/core/app", () => {
+      const { App } = require("@shuvi/app/core/app");
+      bootstrap({
+        appData,
+        appContainer,
+        AppComponent: App
+      });
+    });
+  }
 });

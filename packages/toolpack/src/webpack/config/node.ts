@@ -1,6 +1,6 @@
 import WebpackChain from "webpack-chain";
 import { baseWebpackChain, BaseOptions } from "./base";
-// import { nodeExternals } from "./parts/external";
+import { nodeExternals } from "./parts/external";
 import { withStyle } from "./parts/style";
 import { resolvePreferTarget } from "./parts/resolve";
 import { getProjectInfo } from "../../utils/typeScript";
@@ -30,7 +30,7 @@ export function createNodeWebpackChain({
   );
   chain.output.libraryTarget("commonjs2");
   chain.optimization.minimize(false);
-  // chain.externals(nodeExternals({ projectRoot: baseOptions.projectRoot }));
+  chain.externals(nodeExternals({ projectRoot: baseOptions.projectRoot }));
 
   chain.module
     .rule("main")
