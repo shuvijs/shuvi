@@ -1,5 +1,5 @@
 import { UrlWithParsedQuery } from "url";
-import { IRouteConfig, IRoute } from "@shuvi/core";
+import { IRouteConfig, IRoute, ITemplateData } from "@shuvi/core";
 import { ParsedUrlQuery } from "querystring";
 import { IApi } from "../index";
 import { IManifest } from "./bundler";
@@ -21,8 +21,6 @@ export interface IMatchedRoute<
     url: string;
   };
 }
-
-export type ITemplateData = Record<string, any>;
 
 export type IHtmlAttrs = { textContent?: string } & {
   [x: string]: string | number | undefined | boolean;
@@ -76,17 +74,6 @@ export interface IBootstrapOptions<Data = {}> {
 
 export type IBootstrap<Data = {}> = (options: IBootstrapOptions<Data>) => void;
 
-export interface IAppModule {
-  App: any;
-}
-
-export interface IDocumentModule {
-  modifyDocumentProps(
-    documentProps: IDocumentProps
-  ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(): Promise<ITemplateData> | ITemplateData;
-}
-
 export interface IRenderAppOptions<CompType = any> {
   api: IApi;
   req: IRequest;
@@ -131,6 +118,17 @@ export interface IRouter {
   goBack(): void;
   goForward(): void;
   onChange(listener: IRouterListener): () => void;
+}
+
+export interface IAppModule {
+  App: any;
+}
+
+export interface IDocumentModule {
+  onDocumentProps(
+    documentProps: IDocumentProps
+  ): Promise<IDocumentProps> | IDocumentProps;
+  getTemplateData(): Promise<ITemplateData> | ITemplateData;
 }
 
 export interface IRuntime<CompType = unknown> {

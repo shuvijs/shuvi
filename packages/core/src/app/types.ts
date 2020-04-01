@@ -1,3 +1,7 @@
+export interface ITemplateData {
+  [x: string]: any;
+}
+
 export interface IBuildOptions {
   dir: string;
 }

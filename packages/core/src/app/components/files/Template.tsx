@@ -3,10 +3,7 @@ import { File } from "@shuvi/react-fs";
 import fse from "fs-extra";
 import Handlebars from "handlebars";
 import { memoizeOne } from "../../utils";
-
-export interface ITemplateData {
-  [x: string]: any;
-}
+import { ITemplateData } from "../../types";
 
 export interface Props {
   name: string;

@@ -17,6 +17,13 @@ describe("Runtime Config", () => {
     jest.resetModules();
   });
 
+  test("should render the custom app", async () => {
+    ctx = await launchFixture("custom-app");
+    page = await ctx.browser.page(ctx.url("/"));
+
+    expect(await page.$text("#pathname")).toBe("/");
+  });
+
   test("should render the custom template", async () => {
     ctx = await launchFixture("custom-document-template");
     page = await ctx.browser.page(ctx.url("/"));
@@ -24,10 +31,11 @@ describe("Runtime Config", () => {
     expect(await page.$attr("body", "test")).toBe("1");
   });
 
-  test("should render the custom app", async () => {
-    ctx = await launchFixture("custom-app");
+  test("should works with custom document", async () => {
+    ctx = await launchFixture("custom-document");
     page = await ctx.browser.page(ctx.url("/"));
 
-    expect(await page.$text("#pathname")).toBe("/");
+    expect(await page.$attr('meta[name="test"]', "content")).toBe("1");
+    expect(await page.$attr("body", "test")).toBe("1");
   });
 });

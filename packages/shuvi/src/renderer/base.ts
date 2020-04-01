@@ -1,4 +1,4 @@
-import { Runtime } from "@shuvi/types";
+import { Runtime, ITemplateData } from "@shuvi/types";
 import { parse as parseUrl, UrlWithParsedQuery } from "url";
 import {
   CLIENT_CONTAINER_ID,
@@ -105,7 +105,7 @@ export abstract class BaseRenderer {
 
   private _renderDocument(
     documentProps: IDocumentProps,
-    templateData: Runtime.ITemplateData = {}
+    templateData: ITemplateData = {}
   ) {
     const htmlAttrs = stringifyAttrs(documentProps.htmlAttrs);
     const head = documentProps.headTags.map(tag => stringifyTag(tag)).join("");

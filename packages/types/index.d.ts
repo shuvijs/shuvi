@@ -4,7 +4,8 @@ import {
   Service,
   IPaths,
   App,
-  ISpecifier
+  ISpecifier,
+  ITemplateData
 } from "@shuvi/core";
 import * as Runtime from "./src/runtime";
 import * as Bundler from "./src/bundler";
@@ -14,7 +15,7 @@ import webpack from "webpack";
 
 export { webpack, WebpackChain };
 
-export { Runtime, Bundler, Hooks, IFile, ISpecifier };
+export { Runtime, Bundler, Hooks, IFile, ISpecifier, ITemplateData };
 
 export type IRouterHistoryMode = "browser" | "hash" | "auto";
 
