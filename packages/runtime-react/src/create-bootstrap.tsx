@@ -31,7 +31,7 @@ export function createBootstrap({
       <Router history={history}>
         <AppContainer routeProps={appData.routeProps}>
           <HeadManagerContext.Provider value={headManager.updateHead}>
-            <AppComponent />
+            <AppComponent {...appData.appProps} />
           </HeadManagerContext.Provider>
         </AppContainer>
       </Router>

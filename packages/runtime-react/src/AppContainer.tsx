@@ -1,8 +1,8 @@
 import React, { createContext } from "react";
-import { IAppProps } from "./types";
+import { IRouteProps } from "./types";
 
 interface IAppContext {
-  appProps: IAppProps;
+  routeProps: IRouteProps;
 }
 
 // @ts-ignore
@@ -13,7 +13,7 @@ export { AppContext };
 export default function AppContainer({
   children,
   ...appProps
-}: IAppProps & {
+}: IAppContext & {
   children: React.ReactNode;
 }) {
   const appCtx = {

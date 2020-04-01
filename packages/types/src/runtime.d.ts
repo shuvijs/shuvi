@@ -43,6 +43,10 @@ export interface IDocumentProps {
   scriptTags: IHtmlTag<"script">[];
 }
 
+export interface IAppComponentContext {
+  req: IRequest;
+}
+
 export interface IRouteComponentContext {
   isServer: boolean;
   pathname: string;
@@ -52,7 +56,11 @@ export interface IRouteComponentContext {
   // res?: ServerResponse;
 }
 
-export type IRouteComponent<T, P = {}> = T & {
+export type IAppComponent<C, P = {}> = C & {
+  getInitialProps?(context: IAppComponentContext): P | Promise<P>;
+};
+
+export type IRouteComponent<C, P = {}> = C & {
   getInitialProps?(context: IRouteComponentContext): P | Promise<P>;
 };
 

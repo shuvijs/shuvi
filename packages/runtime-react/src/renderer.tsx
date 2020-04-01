@@ -7,9 +7,10 @@ import { matchRoutes } from "./router/matchRoutes";
 import { setHistory } from "./router/router";
 import Loadable, { LoadableContext } from "./loadable";
 import AppContainer from "./AppContainer";
-import { IReactRenderer } from "./types";
+import { IReactRenderer, IReactAppData } from "./types";
 import { Head, defaultHead } from "./head";
 
+import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
 import IHtmlTag = Runtime.IHtmlTag;
 
@@ -37,6 +38,22 @@ const renderApp: IReactRenderer = async ({
   const routeProps: { [x: string]: any } = {};
   const matchedRoutes = matchRoutes(routes, pathname);
   const pendingDataFetchs: Array<() => Promise<void>> = [];
+  let appInitialProps: { [x: string]: any } | undefined;
+  const appGetInitialProps = ((App as any) as IAppComponent<
+    React.Component,
+    any
+  >).getInitialProps;
+  if (appGetInitialProps) {
+    pendingDataFetchs.push(async () => {
+      appInitialProps = await appGetInitialProps({
+        req: {
+          url: parsedUrl
+        }
+        // res: res as any
+      });
+    });
+  }
+
   for (let index = 0; index < matchedRoutes.length; index++) {
     const { route, match } = matchedRoutes[index];
     const comp = route.component as
@@ -127,12 +144,20 @@ const renderApp: IReactRenderer = async ({
     }
   }
 
+  const appData: IReactAppData = {
+    routeProps,
+    dynamicIds: [...dynamicImportIdSet]
+  };
+  if (appInitialProps) {
+    appData.appProps = appInitialProps;
+  }
+  if (dynamicImportIdSet.size) {
+    appData.dynamicIds = Array.from(dynamicImportIdSet);
+  }
+
   return {
+    appData,
     appHtml: htmlContent,
-    appData: {
-      routeProps,
-      dynamicIds: [...dynamicImportIdSet]
-    },
     htmlAttrs: {},
     headBeginTags: [...head, headAnchor, ...preloadDynamicChunks],
     headEndTags: [...styles],

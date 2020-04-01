@@ -6,6 +6,6 @@ import renderRoutes from "./router/renderRoutes";
 import { AppContext } from "./AppContainer";
 
 export function App() {
-  const { appProps } = useContext(AppContext);
-  return <>{renderRoutes(routes, appProps.routeProps)}</>;
+  const { routeProps } = useContext(AppContext);
+  return <>{renderRoutes(routes, routeProps)}</>;
 }
