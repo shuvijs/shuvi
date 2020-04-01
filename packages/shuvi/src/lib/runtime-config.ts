@@ -2,12 +2,12 @@ import { IRuntimeConfig } from "@shuvi/types";
 
 const EMPTY = {};
 
-let getRuntimeConfig: () => IRuntimeConfig = () => EMPTY;
+let runtimeConfig: IRuntimeConfig = EMPTY;
 
 export default () => {
-  return getRuntimeConfig();
+  return runtimeConfig;
 };
 
-export function setRuntimeConfig(configGetter: () => IRuntimeConfig) {
-  getRuntimeConfig = configGetter;
+export function setRuntimeConfig(config: IRuntimeConfig) {
+  runtimeConfig = config;
 }

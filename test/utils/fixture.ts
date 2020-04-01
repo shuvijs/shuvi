@@ -2,8 +2,8 @@ import path from "path";
 import { IConfig } from "@shuvi/types";
 import { deepmerge } from "@shuvi/utils/lib/deepmerge";
 import { loadConfig } from "shuvi/lib/config";
-import { getBundler } from "shuvi/src/bundler";
-import { Api } from "shuvi/src/api";
+import { getBundler } from "shuvi/lib/bundler";
+import { Api } from "shuvi/lib/api";
 
 async function compile({ api }: { api: Api }) {
   const compiler = getBundler(api);

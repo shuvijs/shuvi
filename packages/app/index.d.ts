@@ -7,6 +7,6 @@ export const routes: Runtime.IRoute[];
 
 export const getRuntimeConfig: () => Record<string, string>;
 
-export function setRuntimeConfig(configGetter: () => IRuntimeConfig): void;
+export function setRuntimeConfig(config: IRuntimeConfig): void;
 
 export const router: Runtime.IRouter;

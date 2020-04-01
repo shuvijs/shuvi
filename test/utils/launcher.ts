@@ -1,4 +1,5 @@
-import { shuvi, Shuvi } from "shuvi/src/shuvi";
+import { IConfig } from "@shuvi/types";
+import { shuvi, Shuvi } from "shuvi";
 import { loadFixture } from "./fixture";
 import { findPort } from "./findPort";
 import Browser from "./browser";
@@ -9,11 +10,12 @@ export interface AppCtx {
   shuvi: Shuvi;
   browser: Browser;
   url: (x: string) => string;
+  close(): void;
 }
 
-export async function launchFixture(name: string): Promise<AppCtx> {
+export async function launchFixture(name: string, overrides?: Partial<IConfig>): Promise<AppCtx> {
   const port = await findPort();
-  const config = await loadFixture(name);
+  const config = await loadFixture(name, overrides);
   const shuviApp = shuvi({ dev: true, config });
 
   await shuviApp.listen(port);
@@ -25,6 +27,9 @@ export async function launchFixture(name: string): Promise<AppCtx> {
   return {
     shuvi: shuviApp,
     browser,
-    url
+    url,
+    close() {
+      browser.close();
+    }
   };
 }

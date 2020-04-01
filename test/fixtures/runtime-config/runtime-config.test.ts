@@ -1,3 +1,3 @@
 import { buildFixture } from "../../utils";
 
-buildFixture("plugin");
+buildFixture("runtime-config");

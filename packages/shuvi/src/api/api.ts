@@ -41,15 +41,8 @@ export class Api implements IApi {
 
     initCoreResource(this);
 
-    switch (typeof config.runtimeConfig) {
-      case "function":
-        setRuntimeConfig(config.runtimeConfig);
-        break;
-      case "object":
-        setRuntimeConfig(() => config.runtimeConfig as any);
-        break;
-      default:
-        break;
+    if (typeof config.runtimeConfig === "object") {
+      setRuntimeConfig(config.runtimeConfig);
     }
   }
 

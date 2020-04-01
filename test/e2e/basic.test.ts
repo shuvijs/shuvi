@@ -10,12 +10,11 @@ describe("Basic Features", () => {
     ctx = await launchFixture("basic");
   }, 1000 * 60 * 5);
   afterAll(async () => {
-    // shuvi.close();
     await page.close();
-    await ctx.browser.close();
+    await ctx.close();
   });
 
-  beforeEach(() => {
+  afterEach(() => {
     // force require to load file to make sure compiled file get load correctlly
     jest.resetModules();
   });

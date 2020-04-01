@@ -14,12 +14,12 @@ describe("Dynamic", () => {
     ctx = await launchFixture("dynamic");
   }, 1000 * 60 * 5);
   afterAll(async () => {
-    // shuvi.close();
     await page.close();
-    await ctx.browser.close();
+    await ctx.close();
   });
 
-  beforeEach(() => {
+  afterEach(async () => {
+    await page.close();
     // force require to load file to make sure compiled file get load correctlly
     jest.resetModules();
   });
@@ -32,8 +32,6 @@ describe("Dynamic", () => {
 
     expect(appData.dynamicIds.includes("./src/components/hello.js")).toBe(true);
     expect(await page.$text("div")).toBe("Hello World");
-
-    page.close();
   });
 
   test("should render even there are no physical chunk exists", async () => {
@@ -60,7 +58,6 @@ describe("Dynamic", () => {
     });
 
     log.dispose();
-    page.close();
   });
 
   test("should render the Head component", async () => {
@@ -73,8 +70,6 @@ describe("Dynamic", () => {
 
     expect(style).toMatch(/\.dynamic-style/);
     expect(style).toMatch(/background-color: green;/);
-
-    page.close();
   });
 
   test("should only render the component on client side", async () => {
@@ -85,8 +80,6 @@ describe("Dynamic", () => {
 
     expect(appData.dynamicIds).not.toContain("./src/components/hello.js");
     expect(await page.$text(`#${CLIENT_CONTAINER_ID}`)).toBe("");
-
-    page.close();
   });
 
   test("custom chunkfilename", async () => {
@@ -96,8 +89,6 @@ describe("Dynamic", () => {
     expect(await page.$$attr("script", "src")).toEqual(
       expect.arrayContaining([expect.stringMatching(/hello-world\.js/)])
     );
-
-    page.close();
   });
 
   describe("custom loading", () => {
@@ -107,8 +98,6 @@ describe("Dynamic", () => {
       });
 
       expect(await page.$text("p")).toBe("LOADING");
-
-      page.close();
     });
 
     test("should render the component on client side", async () => {
@@ -116,8 +105,6 @@ describe("Dynamic", () => {
       await page.waitForSelector("p");
 
       expect(await page.$text("p")).toBe("Hello World");
-
-      page.close();
     });
   });
 });
