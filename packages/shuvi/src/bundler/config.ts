@@ -13,6 +13,7 @@ import {
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER
 } from "../constants";
+import { runtimeDir } from "../runtime";
 
 export interface IWebpackEntry {
   [x: string]: string | string[];
@@ -31,7 +32,7 @@ export function createWepbackConfig(
   const dev = mode === "development";
   let chain: WebpackChain;
 
-  const srcDirs = [paths.appDir, paths.srcDir];
+  const srcDirs = [runtimeDir, paths.appDir, paths.srcDir];
   if (opts.node) {
     chain = createNodeWebpackChain({
       env: config.env,

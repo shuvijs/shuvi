@@ -88,7 +88,7 @@ const renderApp: IReactRenderer = async ({
         <LoadableContext.Provider
           value={moduleName => loadableModules.push(moduleName)}
         >
-          <AppContainer routeProps={routeProps}>
+          <AppContainer {...appInitialProps} routeProps={routeProps}>
             <App />
           </AppContainer>
         </LoadableContext.Provider>
@@ -97,6 +97,7 @@ const renderApp: IReactRenderer = async ({
   } finally {
     head = Head.rewind() || defaultHead();
   }
+
   // console.log("htmlContent", pathname, htmlContent);
   const headAnchor = {
     tagName: "meta",

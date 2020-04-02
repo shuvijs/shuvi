@@ -2,11 +2,11 @@ import WebpackChain from "webpack-chain";
 import TerserPlugin from "terser-webpack-plugin";
 import webpack from "webpack";
 import path from "path";
+import { getTypeScriptInfo } from "@shuvi/utils/lib/detectTypescript";
 import ChunkNamesPlugin from "../plugins/chunk-names-plugin";
 import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import ModuleReplacePlugin from "../plugins/module-replace-plugin";
 import RequireCacheHotReloaderPlugin from "../plugins/require-cache-hot-reloader-plugin";
-import { getProjectInfo } from "../../utils/typeScript";
 import { AppSourceRegexs } from "../../constants";
 
 const dumpRouteComponent = require.resolve("../../utils/emptyComponent");
@@ -61,7 +61,7 @@ export function baseWebpackChain({
   publicPath = "/",
   env = {}
 }: BaseOptions): WebpackChain {
-  const { typeScriptPath, tsConfigPath, useTypeScript } = getProjectInfo(
+  const { typeScriptPath, tsConfigPath, useTypeScript } = getTypeScriptInfo(
     projectRoot
   );
   const config = new WebpackChain();

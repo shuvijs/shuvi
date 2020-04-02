@@ -2,14 +2,6 @@ import { IApi, Hooks } from "@shuvi/types";
 // @ts-ignore
 import AliasPlugin from "enhanced-resolve/lib/AliasPlugin";
 
-// const external: webpack.ExternalsFunctionElement = (
-//   context,
-//   request,
-//   callback
-// ) => {
-//   ['react', 'react-dom', 'react-router', 'react-router-dom']
-// };
-
 export function config(api: IApi) {
   const resolveLocal = (m: string) => require.resolve(m);
   const resolveUser = (m: string) =>
@@ -18,8 +10,27 @@ export function config(api: IApi) {
   api.tap<Hooks.IBundlerConfig>("bundler:config", {
     name: "runtime-react",
     fn: config => {
-      // const oriExternals = config.get("externals");
-      // config.externals([external].concat(oriExternals));
+      // const oriExternal = config.get("externals");
+      // const external: webpack.ExternalsFunctionElement = (
+      //   context,
+      //   request,
+      //   callback
+      // ) => {
+      //   const externals = [
+      //     /@shuvi[/\/]runtime-react[/\/]lib[/\/]loadble/,
+      //     /@shuvi[/\/]runtime-react[/\/]es[/\/]loadble/
+      //   ];
+
+      //   function external() {
+      //     return callback(null, `commonjs ${request}`);
+      //   }
+
+      //   if (externals.some(test => test.test(request))) {
+      //     return external();
+      //   }
+      // };
+
+      // config.externals(external);
       // WEBPACK5: using alias in webpack5
       config.resolve.plugin("react-alias").use(AliasPlugin, [
         "described-resolve",

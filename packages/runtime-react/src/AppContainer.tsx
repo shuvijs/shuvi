@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useMemo } from "react";
 import { IRouteProps } from "./types";
 
 interface IAppContext {
@@ -12,13 +12,18 @@ export { AppContext };
 
 export default function AppContainer({
   children,
+  routeProps,
   ...appProps
 }: IAppContext & {
-  children: React.ReactNode;
+  children: React.ReactElement;
 }) {
-  const appCtx = {
-    appProps
-  };
-
-  return <AppContext.Provider value={appCtx}>{children}</AppContext.Provider>;
+  const appCtx: IAppContext = useMemo(() => ({ routeProps }), [routeProps]);
+  return (
+    <AppContext.Provider value={appCtx}>
+      {React.cloneElement(children, {
+        ...children.props,
+        ...appProps
+      })}
+    </AppContext.Provider>
+  );
 }

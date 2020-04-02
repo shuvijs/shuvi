@@ -5,22 +5,38 @@ let page: Page;
 
 jest.setTimeout(1000 * 60);
 
-describe("Runtime Config", () => {
+describe("Custom builtin", () => {
   afterAll(async () => {
     await ctx.close();
   });
-
   afterEach(async () => {
     await page.close();
     // force require to load file to make sure compiled file get load correctlly
     jest.resetModules();
   });
 
-  test("should render the custom app", async () => {
-    ctx = await launchFixture("custom-app");
-    page = await ctx.browser.page(ctx.url("/"));
+  describe("app", () => {
+    let localCtx: AppCtx;
+    beforeAll(async () => {
+      localCtx = await launchFixture("custom-app");
+    });
+    afterAll(async () => {
+      await localCtx.close();
+    });
 
-    expect(await page.$text("#pathname")).toBe("/");
+    test("should render the custom app", async () => {
+      page = await localCtx.browser.page(localCtx.url("/"));
+
+      expect(await page.$text("#pathname")).toBe("/");
+    });
+
+    test("App.getInitalProps should work in server side", async () => {
+      page = await localCtx.browser.page(localCtx.url("/"), {
+        disableJavaScript: true
+      });
+
+      expect(await page.$text("#pathname")).toBe("/");
+    });
   });
 
   test("should render the custom template", async () => {

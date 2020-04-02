@@ -1,11 +1,11 @@
 import crypto from "crypto";
 import webpack from "webpack";
 import WebpackChain from "webpack-chain";
+import { getTypeScriptInfo } from "@shuvi/utils/lib/detectTypescript";
 // import BuildManifestPlugin from "../plugins/build-manifest-plugin";
 import { baseWebpackChain, BaseOptions } from "./base";
 import { withStyle } from "./parts/style";
 import { resolvePreferTarget } from "./parts/resolve";
-import { getProjectInfo } from "../../utils/typeScript";
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
@@ -16,7 +16,7 @@ export function createBrowserWebpackChain({
 }: BrowserOptions): WebpackChain {
   const { dev, publicPath } = baseOptions;
   const chain = baseWebpackChain(baseOptions);
-  const { useTypeScript } = getProjectInfo(baseOptions.projectRoot);
+  const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
   chain.target("web");
   chain.devtool(dev ? "cheap-module-source-map" : false);
@@ -28,6 +28,8 @@ export function createBrowserWebpackChain({
     ".json",
     ".wasm"
   ];
+
+  // TODO: use a resolver plugin to replace this
   chain.resolve.extensions.merge(
     baseOptions.target
       ? resolvePreferTarget(baseOptions.target, extensions)

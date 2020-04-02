@@ -93,9 +93,9 @@ class BundlerImpl {
     const serverConfig = serverChain.toConfig();
 
     log.debug("Client Config");
-    log.debug(inspect(clientConfig, { depth: 4 }));
+    log.debug(inspect(clientConfig.module?.rules, { depth: 10 }));
     log.debug("Server Config");
-    log.debug(inspect(serverConfig), { depth: 4 });
+    log.debug(inspect(serverConfig.module?.rules, { depth: 10 }));
 
     return [clientConfig, serverConfig];
   }

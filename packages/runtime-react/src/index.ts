@@ -30,11 +30,11 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
   async install(api: IApi): Promise<void> {
     this._api = api;
 
-    api.addAppExport("@shuvi/runtime-react/lib/head/head", {
+    api.addAppExport("@shuvi/runtime-react/es/head/head", {
       imported: "default",
       local: "Head"
     });
-    api.addAppExport("@shuvi/runtime-react/lib/dynamic", {
+    api.addAppExport("@shuvi/runtime-react/es/dynamic", {
       imported: "default",
       local: "dynamic"
     });
@@ -52,7 +52,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       name: "runtime-react",
       fn: fileContent => {
         return `
-import { loadRouteComponent } from '@shuvi/runtime-react/lib/loadRouteComponent';
+import { loadRouteComponent } from '@shuvi/runtime-react/es/loadRouteComponent';
 ${fileContent}
 `.trim();
       }
@@ -90,6 +90,10 @@ ${fileContent}
 
   getAppModulePath(): string {
     return resolveDistFile("app");
+  }
+
+  get404ModulePath(): string {
+    return resolveDistFile("page404");
   }
 
   getRouterModulePath(): string {

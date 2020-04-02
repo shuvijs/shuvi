@@ -28,10 +28,8 @@ export function nodeExternals({
   projectRoot
 }: {
   projectRoot: string;
-}): ExternalsElement[] {
-  const externals: ExternalsElement[] = [];
-
-  const normalNodeExternal: ExternalsFunctionElement = (
+}): ExternalsElement {
+  const nodeExternal: ExternalsFunctionElement = (
     context,
     request,
     callback
@@ -113,6 +111,5 @@ export function nodeExternals({
     // transpiled();
   };
 
-  externals.push(normalNodeExternal);
-  return externals;
+  return nodeExternal;
 }

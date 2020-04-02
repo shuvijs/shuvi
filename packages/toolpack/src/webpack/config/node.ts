@@ -1,9 +1,9 @@
 import WebpackChain from "webpack-chain";
+import { getTypeScriptInfo } from "@shuvi/utils/lib/detectTypescript";
 import { baseWebpackChain, BaseOptions } from "./base";
 import { nodeExternals } from "./parts/external";
 import { withStyle } from "./parts/style";
 import { resolvePreferTarget } from "./parts/resolve";
-import { getProjectInfo } from "../../utils/typeScript";
 
 export interface NodeOptions extends BaseOptions {}
 
@@ -11,7 +11,7 @@ export function createNodeWebpackChain({
   ...baseOptions
 }: NodeOptions): WebpackChain {
   const chain = baseWebpackChain(baseOptions);
-  const { useTypeScript } = getProjectInfo(baseOptions.projectRoot);
+  const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
   chain.target("node");
   chain.devtool(false);
@@ -48,5 +48,5 @@ export function createNodeWebpackChain({
     }
   ]);
 
-  return withStyle(chain, { remove: true });
+  return withStyle(chain, { ssr: true });
 }

@@ -71,6 +71,7 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
       require("@babel/preset-typescript")
     ],
     plugins: [
+      require("./plugins/auto-css-modules"),
       [
         require("./plugins/jsx-pragma"),
         {

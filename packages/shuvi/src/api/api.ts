@@ -7,6 +7,7 @@ import {
   ISpecifier
 } from "@shuvi/types";
 import { Service, IServiceMode, App, IRouteConfig, IFile } from "@shuvi/core";
+import { genRouteId } from "@shuvi/shared/lib/router";
 import { joinPath } from "@shuvi/utils/lib/string";
 import { Hooks } from "../lib/hooks";
 import { setRuntimeConfig } from "../lib/runtime-config";
@@ -104,6 +105,12 @@ export class Api implements IApi {
   }
 
   async setRoutes(routes: IRouteConfig[]) {
+    // add fallback route
+    routes.push({
+      id: genRouteId("404"),
+      componentFile: this.resolveAppFile("pages", "404"),
+    });
+
     routes = await this.callHook<IHooks.IAppRoutes>({
       name: "app:routes",
       initialValue: routes

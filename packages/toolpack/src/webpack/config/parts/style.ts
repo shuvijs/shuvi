@@ -10,7 +10,7 @@ interface StyleOptions {
   publicPath?: string;
   extractCss?: boolean;
   sourceMap?: boolean;
-  remove?: boolean;
+  ssr?: boolean;
 }
 
 function shouldUseRelativeAssetPaths(publicPath: string) {
@@ -49,13 +49,53 @@ function getCSSModuleLocalIdent(
 
 // style files regexes
 const cssRegex = /\.css$/;
-const cssModuleRegex = /\.module\.css$/;
+const cssModuleQueryRegex = /cssmodules/;
 const sassRegex = /\.(scss|sass)$/;
-const sassModuleRegex = /\.module\.(scss|sass)$/;
+
+function ssrCssRule({
+  test,
+  resourceQuery,
+  scss
+}: {
+  test: any;
+  resourceQuery?: any;
+  scss?: boolean;
+}): Config.Rule {
+  const rule: Config.Rule = new Rule();
+  rule.test(test);
+  if (resourceQuery) {
+    rule.resourceQuery(resourceQuery);
+  }
+
+  rule
+    .use("css-loader")
+    .loader(require.resolve("css-loader"))
+    .options({
+      sourceMap: false,
+      importLoaders: scss ? 1 : 0,
+      esModule: true,
+      onlyLocals: true,
+      modules: {
+        getLocalIdent: getCSSModuleLocalIdent
+      }
+    });
+
+  if (scss) {
+    rule
+      .use("sass-loader")
+      .loader(require.resolve("sass-loader"))
+      .options({
+        sourceMap: false
+      });
+  }
+
+  return rule;
+}
 
 function cssRule({
   publicPath,
   test,
+  resourceQuery,
   cssModule,
   extractCss,
   sourceMap,
@@ -63,13 +103,18 @@ function cssRule({
 }: {
   publicPath?: string;
   test: any;
+  resourceQuery?: any;
   cssModule?: boolean;
   extractCss?: boolean;
   sourceMap?: boolean;
   scss?: boolean;
 }): Config.Rule {
-  const rule = new Rule();
+  const rule: Config.Rule = new Rule();
   rule.test(test);
+  if (resourceQuery) {
+    rule.resourceQuery(resourceQuery);
+  }
+
   // A global CSS import always has side effects. Webpack will tree
   // shake the CSS without this option if the issuer claims to have
   // no side-effects.
@@ -93,9 +138,23 @@ function cssRule({
       .use("style-loader")
       .loader(require.resolve("style-loader"))
       .options({
-        insertAt: {
-          before: `#${DEV_STYLE_ANCHOR_ID}`
-        }
+        insert: new Function(
+          "element",
+          `
+          // These elements should always exist. If they do not,
+          // this code should fail.
+          var anchorElement = document.querySelector(
+            '#${DEV_STYLE_ANCHOR_ID}'
+          )
+          var parentNode = anchorElement.parentNode // Normally <head>
+
+          // Each style tag should be placed right before our
+          // anchor. By inserting before and not after, we do not
+          // need to track the last inserted element.
+          parentNode.insertBefore(element, anchorElement)
+        `
+        ),
+        esModule: true
       });
   }
 
@@ -105,9 +164,12 @@ function cssRule({
     .options({
       sourceMap,
       importLoaders: scss ? 2 : 1,
+      esModule: true,
       ...(cssModule && {
-        modules: true,
-        getLocalIdent: getCSSModuleLocalIdent
+        // onlyLocals: true,
+        modules: {
+          getLocalIdent: getCSSModuleLocalIdent
+        }
       })
     });
 
@@ -146,16 +208,36 @@ function cssRule({
 
 export function withStyle(
   chain: Config,
-  { extractCss, sourceMap, remove, publicPath }: StyleOptions
+  { extractCss, sourceMap, ssr, publicPath }: StyleOptions
 ): Config {
   const oneOfs = chain.module.rule("main").oneOfs;
-  if (remove) {
-    const ignoreRule = new Rule();
+  if (ssr) {
+    oneOfs.set(
+      "css-module",
+      // @ts-ignore
+      ssrCssRule({
+        test: cssRegex,
+        resourceQuery: cssModuleQueryRegex,
+        scss: false
+      }).after("js")
+    );
+    oneOfs.set(
+      "scss-module",
+      // @ts-ignore
+      ssrCssRule({
+        test: sassRegex,
+        resourceQuery: cssModuleQueryRegex,
+        scss: true
+      }).after("css-module")
+    );
+    const ignoreRule: Config.Rule = new Rule();
     ignoreRule
-      .test([cssRegex, cssModuleRegex, sassRegex, sassModuleRegex])
+      .test([cssRegex, sassRegex])
       .use("ignore-loader")
       .loader(require.resolve("ignore-loader"))
-      .after("js");
+      .end()
+      .after("css-module");
+    // @ts-ignore
     oneOfs.set("ignore", ignoreRule);
     return chain;
   }
@@ -170,6 +252,19 @@ export function withStyle(
   }
 
   oneOfs.set(
+    "css-module",
+    // @ts-ignore
+    cssRule({
+      test: cssRegex,
+      resourceQuery: cssModuleQueryRegex,
+      cssModule: true,
+      scss: false,
+      extractCss,
+      sourceMap,
+      publicPath
+    }).after("js")
+  );
+  oneOfs.set(
     "css",
     // @ts-ignore
     cssRule({
@@ -179,15 +274,16 @@ export function withStyle(
       extractCss,
       sourceMap,
       publicPath
-    }).after("js")
+    }).after("css-module")
   );
   oneOfs.set(
-    "css-module",
+    "scss-module",
     // @ts-ignore
     cssRule({
-      test: cssModuleRegex,
+      test: sassRegex,
+      resourceQuery: cssModuleQueryRegex,
       cssModule: true,
-      scss: false,
+      scss: true,
       extractCss,
       sourceMap,
       publicPath
@@ -203,19 +299,7 @@ export function withStyle(
       extractCss,
       sourceMap,
       publicPath
-    }).after("css-module")
-  );
-  oneOfs.set(
-    "scss-module",
-    // @ts-ignore
-    cssRule({
-      test: sassModuleRegex,
-      cssModule: true,
-      scss: true,
-      extractCss,
-      sourceMap,
-      publicPath
-    }).after("scss")
+    }).after("scss-module")
   );
 
   return chain;

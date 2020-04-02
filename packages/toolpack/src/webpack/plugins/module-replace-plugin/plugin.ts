@@ -29,8 +29,7 @@ function isFunction(target: object): target is Function {
 }
 
 function getModuleId(wpModule: any) {
-  // return wpModule.resourceResolveData.path;
-  return wpModule.userRequest;
+  return wpModule.rawRequest;
 }
 
 const stubLoader = require.resolve("./stub-loader");

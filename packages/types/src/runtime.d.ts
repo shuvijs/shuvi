@@ -142,5 +142,7 @@ export interface IRuntime<CompType = unknown> {
 
   getBootstrapModulePath(): string;
 
+  get404ModulePath(): string;
+
   getRendererModulePath(): string;
 }

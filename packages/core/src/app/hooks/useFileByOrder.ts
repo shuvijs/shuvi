@@ -13,7 +13,6 @@ function findFirstExistedFile(files: string[]): string | null {
   return null;
 }
 
-// TODO: extension support eg: jsx/ts/tsx
 export function useFileByOrder(...files: string[]) {
   const fallbackFile = files.pop()!;
   const lookupFiles = files;
