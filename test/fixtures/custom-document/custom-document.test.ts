@@ -1,3 +1,3 @@
 import { buildFixture } from "../../utils";
 
-buildFixture("custom-app");
+buildFixture("custom-document");

@@ -16,7 +16,6 @@ describe("Runtime Config", () => {
     });
   });
   afterAll(async () => {
-    await page.close();
     await ctx.close();
   });
 

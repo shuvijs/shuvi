@@ -21,15 +21,11 @@ const jsExtensions = ["js", "jsx", "ts", "tsx"];
 const RouteFileRegExp = new RegExp(`\\.(?:${jsExtensions.join("|")})$`);
 
 function isLayout(filepath: string) {
-  return filepath.endsWith("_layout");
+  return filepath.endsWith("/_layout");
 }
 
 function isStaicRouter(filepath: string) {
   return unixPath.basename(filepath).charAt(0) !== "$";
-}
-
-function getLayoutFile(filepath: string) {
-  return filepath.replace(/\/\w+$/, "/_layout");
 }
 
 function normalizeFilePath(filepath: string) {
@@ -133,14 +129,26 @@ export class Route {
       componentFile: "",
       routes: []
     } as any) as InternalRouteConfig;
-    const routeMap = new Map<string, InternalRouteConfig>();
+    const layouts = new Map<string, InternalRouteConfig>();
     const normalizedFiles: string[] = [];
+
+    const getLayout = (filepath: string) => {
+      let layout: InternalRouteConfig | undefined;
+      while (filepath && filepath !== "/" && !layout) {
+        filepath = filepath.replace(/\/_layout$/, "").replace(/\/[^/]+$/, "");
+        layout = layouts.get(`${filepath}/_layout`);
+      }
+      return layout;
+    };
 
     for (let index = 0; index < files.length; index++) {
       const rawfile = files[index];
       const file = normalizeFilePath(rawfile);
       normalizedFiles.push(file);
-      if (isLayout(file)) {
+
+      if (file === "/_layout") {
+        console.warn("Top level _layout is not supported and will be ignored.");
+      } else if (isLayout(file)) {
         const layoutRoute: InternalRouteConfig = {
           id: genRouteId(file),
           path: normalizeRoutePath(file.replace(/\/_layout$/, "/")),
@@ -150,9 +158,7 @@ export class Route {
             isStaticRoute: isStaicRouter(file)
           }
         };
-        routeMap.set(file, layoutRoute);
-      } else {
-        routeMap.set(file, rootRoute);
+        layouts.set(file, layoutRoute);
       }
     }
 
@@ -160,19 +166,27 @@ export class Route {
       const rawFile = files[index];
       const file = normalizedFiles[index];
       const routePath = normalizeRoutePath(file);
-      const route: InternalRouteConfig = {
-        id: genRouteId(file),
-        path: routePath,
-        exact: !isLayout(file),
-        componentFile: join(this._pagesDir, rawFile),
-        __meta: {
-          isStaticRoute: isStaicRouter(file)
-        }
-      };
-      const layoutFile = getLayoutFile(file);
-      const parentRoute = routeMap.has(layoutFile)
-        ? routeMap.get(layoutFile)!
-        : rootRoute;
+      let route: InternalRouteConfig | undefined;
+      if (isLayout(file)) {
+        route = layouts.get(file);
+      } else {
+        route = {
+          id: genRouteId(file),
+          path: routePath,
+          exact: !isLayout(file),
+          componentFile: join(this._pagesDir, rawFile),
+          __meta: {
+            isStaticRoute: isStaicRouter(file)
+          }
+        };
+      }
+
+      if (!route) {
+        continue;
+      }
+
+      const layout = getLayout(file);
+      const parentRoute = layout || rootRoute;
       parentRoute.routes = parentRoute.routes || [];
       parentRoute.routes.push(route);
     }

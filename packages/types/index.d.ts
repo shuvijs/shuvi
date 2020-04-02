@@ -26,9 +26,7 @@ export type IPluginConfig =
       any? /* plugin, options */,
       string? /* identifier */
     ]
-  | {
-      apply(api: IApi): void;
-    };
+  | ((api: IApi) => void);
 
 export type IRuntimeConfig = Record<string, string>;
 

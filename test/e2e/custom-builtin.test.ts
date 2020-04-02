@@ -7,7 +7,6 @@ jest.setTimeout(1000 * 60);
 
 describe("Runtime Config", () => {
   afterAll(async () => {
-    await page.close();
     await ctx.close();
   });
 

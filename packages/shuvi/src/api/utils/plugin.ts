@@ -9,20 +9,32 @@ function resolvePlugin(plugin: IPluginConfig): IPlugin {
   let options: any;
 
   if (Array.isArray(plugin)) {
-    [pluginPath, name = "", options = {}] = plugin;
+    if (plugin.length === 2) {
+      pluginPath = plugin[0];
+      const nameOrOption = plugin[1];
+      if (typeof nameOrOption === "string") {
+        name = nameOrOption;
+        options = {};
+      } else {
+        options = nameOrOption;
+        name = "";
+      }
+    } else {
+      [pluginPath, options = {}, name = ""] = plugin;
+    }
   } else if (typeof plugin === "string") {
     pluginPath = plugin;
     name = "";
     options = {};
-  } else if (typeof plugin === "object" && typeof plugin.apply === "function") {
+  } else if (typeof plugin === "function") {
     return {
       id: `InlinePlugin${uid++}`,
       get: () => (api: IApi) => {
-        plugin.apply(api);
+        plugin(api);
       }
     };
   } else {
-    throw new Error(`Plugin must be one of type [string, array, object]`);
+    throw new Error(`Plugin must be one of type [string, array, function]`);
   }
 
   pluginPath = require.resolve(pluginPath);
