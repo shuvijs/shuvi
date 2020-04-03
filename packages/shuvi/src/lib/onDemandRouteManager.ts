@@ -1,4 +1,4 @@
-import { Runtime, Hooks } from "@shuvi/types";
+import { Runtime, IHookAppRoutes } from "@shuvi/types";
 import ModuleReplacePlugin from "@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin";
 import { DevMiddleware } from "./devMiddleware";
 import { runtime } from "../runtime";
@@ -22,7 +22,7 @@ export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
 
   constructor(api: Api) {
-    api.tap<Hooks.IAppRoutes>("app:routes", {
+    api.tap<IHookAppRoutes>("app:routes", {
       name: "OnDemandRouteManager",
       fn: (routes: RouteConfig[]) => {
         this._routes = routes;

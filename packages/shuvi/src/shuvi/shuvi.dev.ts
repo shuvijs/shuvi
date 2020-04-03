@@ -1,4 +1,4 @@
-import { Hooks } from "@shuvi/types";
+import { IEventBundlerDone } from "@shuvi/types";
 import { IIncomingMessage, IServerResponse, INextFunction } from "@shuvi/core";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
 import { getDevMiddleware } from "../lib/devMiddleware";
@@ -52,24 +52,23 @@ export default class ShuviDev extends Base {
       [WEBPACK_CONFIG_CLIENT]: false,
       [WEBPACK_CONFIG_SERVER]: false
     };
-    this._api.tap<Hooks.IBuildDone>("build:done", {
-      name: "shuvi",
-      fn: ({ first, name }) => {
-        status[name] = true;
-        if (
-          first &&
-          status[WEBPACK_CONFIG_CLIENT] &&
-          status[WEBPACK_CONFIG_SERVER]
-        ) {
-          const localUrl = `http://${
-            hostname === "0.0.0.0" ? "localhost" : hostname
-          }:${port}`;
-          console.log(`Ready on ${localUrl}`);
-        }
+    this._api.on<IEventBundlerDone>("bundler:done", ({ first, name }) => {
+      status[name] = true;
+      if (
+        first &&
+        status[WEBPACK_CONFIG_CLIENT] &&
+        status[WEBPACK_CONFIG_SERVER]
+      ) {
+        const localUrl = `http://${
+          hostname === "0.0.0.0" ? "localhost" : hostname
+        }:${port}`;
+        console.log(`Ready on ${localUrl}`);
       }
     });
 
-    super.listen(port, hostname);
+    console.log("Starting the development server...");
+
+    return super.listen(port, hostname);
   }
 
   protected getServiceMode() {

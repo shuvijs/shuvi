@@ -1,4 +1,4 @@
-import { Hooks } from "@shuvi/types";
+import { IEventBundlerDone } from "@shuvi/types";
 import ForkTsCheckerWebpackPlugin, {
   createCodeframeFormatter
 } from "@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin";
@@ -150,14 +150,11 @@ export async function getDevMiddleware({
       const isSuccessful = !messages.errors.length && !messages.warnings.length;
       if (isSuccessful) {
         _log("Compiled successfully!");
-        await api.callHook<Hooks.IBuildDone>(
-          { name: "build:done", parallel: true },
-          {
-            first: isFirstSuccessfulCompile,
-            name: compiler.name,
-            stats
-          }
-        );
+        await api.emitEvent<IEventBundlerDone>("bundler:done", {
+          first: isFirstSuccessfulCompile,
+          name: compiler.name,
+          stats
+        });
         isFirstSuccessfulCompile = false;
       }
 

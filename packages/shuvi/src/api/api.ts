@@ -2,8 +2,11 @@ import {
   IConfig,
   IApi,
   ICallHookOpts,
+  IHookConfig,
   IHookOpts,
-  Hooks as IHooks,
+  IEventAppReady,
+  IHookAppRoutes,
+  IHookAppRoutesFile,
   ISpecifier
 } from "@shuvi/types";
 import { Service, IServiceMode, App, IRouteConfig, IFile } from "@shuvi/core";
@@ -76,24 +79,36 @@ export class Api implements IApi {
     return this._resources;
   }
 
-  tap<Config extends IHooks.IHookConfig>(
+  tap<Config extends IHookConfig>(
     hook: Config["name"],
     opts: IHookOpts<Config["initialValue"], Config["args"]>
   ) {
     this._hooks.addHook(hook, opts);
   }
-
-  async callHook<Config extends IHooks.IHookConfig>(
+  async callHook<Config extends IHookConfig>(
     name: Config["name"],
     ...args: Config["args"]
   ): Promise<void>;
-  async callHook<Config extends IHooks.IHookConfig>(
+  async callHook<Config extends IHookConfig>(
     options: ICallHookOpts<Config["name"], Config["initialValue"]>,
     ...args: Config["args"]
   ): Promise<Config["initialValue"]>;
   // implement
   async callHook(options: string | ICallHookOpts<string>, ...args: any[]) {
     return this._hooks.callHook(options as any, ...args);
+  }
+
+  on<Config extends IHookConfig>(
+    event: Config["name"],
+    listener: (...args: Config["args"]) => void
+  ) {
+    this._hooks.addHook(event, { name: "listener", fn: listener });
+  }
+  emitEvent<Config extends IHookConfig>(
+    name: Config["name"],
+    ...args: Config["args"]
+  ): void {
+    this._hooks.callHook({ name, parallel: true }, ...args);
   }
 
   setBootstrapModule(path: string) {
@@ -108,15 +123,15 @@ export class Api implements IApi {
     // add fallback route
     routes.push({
       id: genRouteId("404"),
-      componentFile: this.resolveAppFile("pages", "404"),
+      componentFile: this.resolveAppFile("pages", "404")
     });
 
-    routes = await this.callHook<IHooks.IAppRoutes>({
+    routes = await this.callHook<IHookAppRoutes>({
       name: "app:routes",
       initialValue: routes
     });
     let content = `export default ${serializeRoutes(routes)}`;
-    content = await this.callHook<IHooks.IAppRoutesFile>({
+    content = await this.callHook<IHookAppRoutesFile>({
       name: "app:routes-file",
       initialValue: content
     });
@@ -131,6 +146,14 @@ export class Api implements IApi {
     } else {
       await this._app.build({ dir: this.paths.appDir });
     }
+
+    // prevent webpack watch running too early
+    // https://github.com/webpack/webpack/issues/7997
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000);
+    });
+
+    this.emitEvent<IEventAppReady>("app:ready");
   }
 
   addResoure(identifier: string, loader: () => any): void {

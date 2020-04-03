@@ -18,6 +18,7 @@ export default async function main(argv: string[]) {
 
   const config = await loadConfig();
   const shuviApp = shuvi({ dev: true, config });
+
   try {
     await shuviApp.listen(port, host);
   } catch (err) {

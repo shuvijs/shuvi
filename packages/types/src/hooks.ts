@@ -9,48 +9,43 @@ export interface IHookConfig {
   initialValue: any;
 }
 
-type IDefaultConfig = {
+type IDefaultHookConfig = {
   args: [];
   initialValue: void;
 };
 
-type defineHook<Name extends string, Config extends Partial<IHookConfig>> = {
+type defineHook<
+  Name extends string,
+  Config extends Partial<IHookConfig> = {}
+> = {
   name: Name;
 } & {
   [K in keyof Config]: Config[K];
 } &
   {
-    [K in Exclude<keyof IDefaultConfig, keyof Config>]: IDefaultConfig[K];
+    [K in Exclude<
+      keyof IDefaultHookConfig,
+      keyof Config
+    >]: IDefaultHookConfig[K];
   };
 
-export type IAppRoutes = defineHook<
+export type IHookAppRoutes = defineHook<
   "app:routes",
   {
     initialValue: IRouteConfig[];
   }
 >;
 
-export type IAppRoutesFile = defineHook<
+export type IHookAppRoutesFile = defineHook<
   "app:routes-file",
   {
     initialValue: string;
   }
 >;
 
-export type IBuildDone = defineHook<
-  "build:done",
-  {
-    args: [
-      {
-        first: boolean;
-        name: string;
-        stats: webpack.Stats;
-      }
-    ];
-  }
->;
+export type IEventAppReady = defineHook<"app:ready">;
 
-export type IBundlerConfig = defineHook<
+export type IHookBundlerConfig = defineHook<
   "bundler:config",
   {
     initialValue: WebpackChain;
@@ -59,6 +54,19 @@ export type IBundlerConfig = defineHook<
         name: string;
         mode: IServiceMode;
         webpack: typeof webpack;
+      }
+    ];
+  }
+>;
+
+export type IEventBundlerDone = defineHook<
+  "bundler:done",
+  {
+    args: [
+      {
+        first: boolean;
+        name: string;
+        stats: webpack.Stats;
       }
     ];
   }

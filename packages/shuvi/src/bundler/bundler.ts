@@ -1,4 +1,4 @@
-import { Hooks } from "@shuvi/types";
+import { IHookBundlerConfig } from "@shuvi/types";
 import { logger } from "@shuvi/core";
 import { inspect } from "util";
 import webpack, {
@@ -60,7 +60,7 @@ class BundlerImpl {
       node: false,
       entry: getClientEntry(this._api)
     });
-    clientChain = await this._api.callHook<Hooks.IBundlerConfig>(
+    clientChain = await this._api.callHook<IHookBundlerConfig>(
       {
         name: "bundler:config",
         initialValue: clientChain
@@ -77,7 +77,7 @@ class BundlerImpl {
       node: true,
       entry: getServerEntry(this._api)
     });
-    serverChain = await this._api.callHook<Hooks.IBundlerConfig>(
+    serverChain = await this._api.callHook<IHookBundlerConfig>(
       {
         name: "bundler:config",
         initialValue: serverChain

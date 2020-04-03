@@ -1,4 +1,4 @@
-import { IApi, Hooks } from "@shuvi/types";
+import { IApi, IHookBundlerConfig } from "@shuvi/types";
 // @ts-ignore
 import AliasPlugin from "enhanced-resolve/lib/AliasPlugin";
 
@@ -7,7 +7,7 @@ export function config(api: IApi) {
   const resolveUser = (m: string) =>
     require.resolve(m, { paths: [api.paths.rootDir] });
 
-  api.tap<Hooks.IBundlerConfig>("bundler:config", {
+  api.tap<IHookBundlerConfig>("bundler:config", {
     name: "runtime-react",
     fn: config => {
       // const oriExternal = config.get("externals");

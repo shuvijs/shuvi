@@ -9,13 +9,15 @@ import {
 } from "@shuvi/core";
 import * as Runtime from "./src/runtime";
 import * as Bundler from "./src/bundler";
-import * as Hooks from "./src/hooks";
+import { IHookConfig } from "./src/hooks";
 import WebpackChain from "webpack-chain";
 import webpack from "webpack";
 
+export * from "./src/hooks";
+
 export { webpack, WebpackChain };
 
-export { Runtime, Bundler, Hooks, IFile, ISpecifier, ITemplateData };
+export { Runtime, Bundler, IFile, ISpecifier, ITemplateData };
 
 export type IRouterHistoryMode = "browser" | "hash" | "auto";
 
@@ -65,19 +67,27 @@ export interface IApi {
   config: IConfig;
   assetPublicPath: string;
 
-  tap<Config extends Hooks.IHookConfig>(
+  tap<Config extends IHookConfig>(
     hook: Config["name"],
     opts: IHookOpts<Config["initialValue"], Config["args"]>
   ): void;
-
-  callHook<Config extends Hooks.IHookConfig>(
+  callHook<Config extends IHookConfig>(
     name: Config["name"],
     ...args: Config["args"]
   ): Promise<void>;
-  callHook<Config extends Hooks.IHookConfig>(
+  callHook<Config extends IHookConfig>(
     options: ICallHookOpts<Config["name"], Config["initialValue"]>,
     ...args: Config["args"]
   ): Promise<Config["initialValue"]>;
+
+  on<Config extends IHookConfig>(
+    hook: Config["name"],
+    listener: (...args: Config["args"]) => void
+  ): void;
+  emitEvent<Config extends IHookConfig>(
+    name: Config["name"],
+    ...args: Config["args"]
+  ): void;
 
   addAppFile: typeof App.prototype.addFile;
   addAppExport: typeof App.prototype.addExport;

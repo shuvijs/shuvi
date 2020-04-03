@@ -1,5 +1,5 @@
 import React from "react";
-import { IApi, Runtime, Hooks } from "@shuvi/types";
+import { IApi, Runtime, IHookAppRoutes, IHookAppRoutesFile } from "@shuvi/types";
 import { resolveDistFile } from "./paths";
 import { matchRoutes } from "./router/matchRoutes";
 import { config as configBundler } from "./bundler/config";
@@ -42,13 +42,13 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
 
     configBundler(api);
 
-    api.tap<Hooks.IAppRoutes>("app:routes", {
+    api.tap<IHookAppRoutes>("app:routes", {
       name: "runtime-react",
       fn: (routes: RouteConfig[]) => modifyRoutes(routes)
     });
 
     // add necessary imports
-    api.tap<Hooks.IAppRoutesFile>("app:routes-file", {
+    api.tap<IHookAppRoutesFile>("app:routes-file", {
       name: "runtime-react",
       fn: fileContent => {
         return `
