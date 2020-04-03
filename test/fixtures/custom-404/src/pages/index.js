@@ -1,1 +1,1 @@
-export default () => <div>Index Page</div>;
+export default () => <div id="index">Index Page</div>;

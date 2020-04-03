@@ -1,7 +1,7 @@
 import React from "react";
 // @ts-ignore
 import { Head } from "@shuvi/app";
-import style from "../style/page-404.css";
+import style from "../style/page404.css";
 
 export default function Page404() {
   return (

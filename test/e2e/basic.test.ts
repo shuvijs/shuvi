@@ -40,4 +40,10 @@ describe("Basic Features", () => {
     await page.waitForSelector("#head");
     expect(await page.title()).toBe("Test Title");
   });
+
+  test("404 Page", async () => {
+    await page.shuvi.navigate("/none-exist-page");
+    await page.waitForSelector("div[class*=page404]");
+    expect(await page.$text("body")).toMatch(/404/);
+  });
 });

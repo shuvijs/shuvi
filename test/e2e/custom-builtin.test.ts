@@ -53,4 +53,19 @@ describe("Custom builtin", () => {
     expect(await page.$attr('meta[name="test"]', "content")).toBe("1");
     expect(await page.$attr("body", "test")).toBe("1");
   });
+
+  test("should works with custom 404 page", async () => {
+    ctx = await launchFixture("custom-404");
+    page = await ctx.browser.page(ctx.url("/none-exist-page"));
+
+    expect(await page.$text("#custom-404")).toBe("404");
+
+    await page.shuvi.navigate("/");
+    await page.waitForSelector("#index");
+    expect(await page.$text("#index")).toBe("Index Page");
+
+    await page.shuvi.navigate("/none-exist-page");
+    await page.waitForSelector("#custom-404");
+    expect(await page.$text("#custom-404")).toBe("404");
+  });
 });
