@@ -1,3 +1,3 @@
 import { buildFixture } from "../../utils";
 
-buildFixture("custom-404");
+buildFixture("css");
