@@ -37,6 +37,7 @@ export async function setupApp(api: Api) {
       local: "getRuntimeConfig"
     }
   ]);
+  api.addAppExport("@shuvi/runtime-core/lib/getAppData", ["getAppData"]);
 
   api.addAppFile(
     File.module("404.js", {

@@ -108,7 +108,7 @@ export default class ShuviDev extends Base {
       return next();
     }
 
-    await this._onDemandRouteMgr.ensureRoutes(req.url || "/");
+    await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || "/");
 
     let err: Error | undefined;
     try {

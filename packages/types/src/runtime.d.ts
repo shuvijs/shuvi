@@ -41,8 +41,16 @@ export interface IDocumentProps {
   scriptTags: IHtmlTag<"script">[];
 }
 
+export interface IRedirectFn {
+  (status: number, path: string): void;
+  (path: string): void;
+}
+
 export interface IAppComponentContext {
-  req: IRequest;
+  isServer: boolean;
+
+  // server only
+  req?: IRequest;
 }
 
 export interface IRouteComponentContext {
@@ -50,8 +58,10 @@ export interface IRouteComponentContext {
   pathname: string;
   query: ParsedUrlQuery;
   params: ParsedUrlQuery;
+  redirect: IRedirectFn;
+
+  // server only
   req?: IRequest;
-  // res?: ServerResponse;
 }
 
 export type IAppComponent<C, P = {}> = C & {
@@ -62,17 +72,19 @@ export type IRouteComponent<C, P = {}> = C & {
   getInitialProps?(context: IRouteComponentContext): P | Promise<P>;
 };
 
-export type IAppData<Data = {}> = { runtimeConfig: { [k: string]: string } } & {
+export type IAppData<Data = {}> = {
+  runtimeConfig: { [k: string]: string };
+  ssr: boolean;
+} & {
   [K in keyof Data]: Data[K];
 };
 
-export interface IBootstrapOptions<Data = {}> {
+export interface IBootstrapOptions {
   AppComponent: any;
   appContainer: HTMLElement;
-  appData: IAppData<Data>;
 }
 
-export type IBootstrap<Data = {}> = (options: IBootstrapOptions<Data>) => void;
+export type IBootstrap = (options: IBootstrapOptions) => void;
 
 export interface IRenderAppOptions<CompType = any> {
   api: IApi;
@@ -86,6 +98,15 @@ export type IRenderer<CompType = any, Data = {}> = (
   options: IRenderAppOptions<CompType>
 ) => Promise<IRenderAppResult<Data>>;
 
+export interface IRedirectState {
+  status?: number;
+  path: string;
+}
+
+export interface IRenderResultRedirect extends IRedirectState {
+  $type: "redirect";
+}
+
 export type IRenderAppResult<Data = {}> = {
   htmlAttrs?: IHtmlAttrs;
   headBeginTags?: IHtmlTag[];
@@ -94,11 +115,16 @@ export type IRenderAppResult<Data = {}> = {
   mainEndTags?: IHtmlTag[];
   scriptBeginTags?: IHtmlTag[];
   scriptEndTags?: IHtmlTag[];
-  appHtml: string;
-  appData: Data;
+  appData?: Data;
+  appHtml?: string;
+  redirect?: IRedirectState;
 };
 
 export type IRouterAction = "PUSH" | "POP" | "REPLACE";
+
+export interface IRouterServerContext {
+  url?: string;
+}
 
 export interface IRouterListener {
   (location: IRouterLocation, action: IRouterAction): void;

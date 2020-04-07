@@ -1,3 +1,4 @@
+import { Runtime } from "@shuvi/types";
 import {
   Location,
   Action,
@@ -16,8 +17,13 @@ interface HistoryOptions {
   basename: string;
 }
 
+interface ServerHistoryContext extends Runtime.IRouterServerContext {
+  action?: Action;
+  location?: LocationDescriptor;
+}
+
 interface ServerHistoryOptions extends HistoryOptions {
-  context: any;
+  context: ServerHistoryContext;
   location: string;
 }
 
@@ -80,7 +86,7 @@ export function createServerHistory({
   const handleBlock = () => noop;
 
   return {
-    length: 6,
+    length: 1,
     createHref: (path: LocationDescriptorObject) =>
       addLeadingSlash(basename + createURL(path)),
     action: "POP",

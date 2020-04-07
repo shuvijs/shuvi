@@ -5,7 +5,7 @@ import puppeteer, {
   DirectNavigationOptions,
   ConsoleMessage
 } from "puppeteer-core";
-
+import qs from "querystring";
 import ChromeDetector from "./chrome";
 
 export interface Page extends puppeteer.Page {
@@ -19,7 +19,7 @@ export interface Page extends puppeteer.Page {
   collectBrowserLog(): { texts: string[]; dispose: Function };
 
   shuvi: {
-    navigate(path: string): Promise<any>;
+    navigate(path: string, query?: Record<string, any>): Promise<any>;
   };
 }
 
@@ -136,8 +136,11 @@ export default class Browser {
 
     const getShuvi = () => page.evaluateHandle("window.__SHUVI");
     page.shuvi = {
-      async navigate(path: string) {
+      async navigate(path: string, query: Record<string, any> = {}) {
         const $shuvi = await getShuvi();
+        if (query) {
+          path = path + "?" + qs.stringify(query);
+        }
         return page.evaluate(
           ($shuvi, path: string) => $shuvi.router.push(path),
           $shuvi,

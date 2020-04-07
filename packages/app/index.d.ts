@@ -10,3 +10,5 @@ export const getRuntimeConfig: () => Record<string, string>;
 export function setRuntimeConfig(config: IRuntimeConfig): void;
 
 export const router: Runtime.IRouter;
+
+export declare function getAppData(): Runtime.IAppData;

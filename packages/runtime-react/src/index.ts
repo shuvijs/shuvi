@@ -1,5 +1,10 @@
 import React from "react";
-import { IApi, Runtime, IHookAppRoutes, IHookAppRoutesFile } from "@shuvi/types";
+import {
+  IApi,
+  Runtime,
+  IHookAppRoutes,
+  IHookAppRoutesFile
+} from "@shuvi/types";
 import { resolveDistFile } from "./paths";
 import { matchRoutes } from "./router/matchRoutes";
 import { config as configBundler } from "./bundler/config";
@@ -75,10 +80,6 @@ ${fileContent}
 
     if (history === "auto") {
       history = ssr ? "browser" : "hash";
-    }
-
-    if (ssr) {
-      return resolveDistFile("bootstrap.ssr");
     }
 
     if (history === "hash") {

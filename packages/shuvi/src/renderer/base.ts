@@ -12,6 +12,11 @@ import { IBuiltResource } from "../api";
 
 import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
+import IRenderResultRedirect = Runtime.IRenderResultRedirect;
+
+export function isRedirect(obj: any): obj is IRenderResultRedirect {
+  return obj && (obj as IRenderResultRedirect).$type === "redirect";
+}
 
 export abstract class BaseRenderer {
   protected _serverCtx: IServerContext;
@@ -25,7 +30,7 @@ export abstract class BaseRenderer {
   async renderDocument(req: {
     url?: string;
     parsedUrl?: UrlWithParsedQuery;
-  }): Promise<string> {
+  }): Promise<string | IRenderResultRedirect> {
     let { parsedUrl } = req;
     if (!parsedUrl) {
       parsedUrl = parseUrl(req.url || "", true);
@@ -33,6 +38,10 @@ export abstract class BaseRenderer {
     const { document } = this._resources.server;
 
     const docProps = await this.getDocumentProps({ url: parsedUrl });
+    if (isRedirect(docProps)) {
+      return docProps;
+    }
+
     if (document.onDocumentProps) {
       document.onDocumentProps(docProps);
     }
@@ -44,7 +53,10 @@ export abstract class BaseRenderer {
 
   protected abstract getDocumentProps(req: {
     url: UrlWithParsedQuery;
-  }): Promise<IDocumentProps> | IDocumentProps;
+  }):
+    | Promise<IDocumentProps | IRenderResultRedirect>
+    | IDocumentProps
+    | IRenderResultRedirect;
 
   protected _getMainAssetTags(): {
     styles: IHtmlTag<any>[];

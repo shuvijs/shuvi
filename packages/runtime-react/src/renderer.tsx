@@ -9,6 +9,7 @@ import Loadable, { LoadableContext } from "./loadable";
 import AppContainer from "./AppContainer";
 import { IReactRenderer, IReactAppData } from "./types";
 import { Head, defaultHead } from "./head";
+import { createRedirector } from "./utils/createRedirector";
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -21,15 +22,16 @@ const renderApp: IReactRenderer = async ({
   routes,
   manifest
 }) => {
-  const context = {};
   await Loadable.preloadAll();
 
+  const redirector = createRedirector();
+  const routerContext = {};
   const parsedUrl = req.url;
   const pathname = parsedUrl.pathname!;
   const history = createServerHistory({
     basename: "",
     location: pathname,
-    context
+    context: routerContext
   });
 
   // sethistory before render to make router avaliable
@@ -46,10 +48,10 @@ const renderApp: IReactRenderer = async ({
   if (appGetInitialProps) {
     pendingDataFetchs.push(async () => {
       appInitialProps = await appGetInitialProps({
+        isServer: true,
         req: {
           url: parsedUrl
         }
-        // res: res as any
       });
     });
   }
@@ -65,11 +67,11 @@ const renderApp: IReactRenderer = async ({
           pathname: pathname,
           query: parsedUrl.query,
           params: match.params,
+          redirect: redirector.handler,
           isServer: true,
           req: {
             url: parsedUrl
           }
-          // res: res as any
         });
         routeProps[route.id] = props || {};
       });
@@ -78,13 +80,19 @@ const renderApp: IReactRenderer = async ({
 
   await Promise.all(pendingDataFetchs.map(fn => fn()));
 
+  if (redirector.redirected) {
+    return {
+      redirect: redirector.state
+    };
+  }
+
   const loadableModules: string[] = [];
   let htmlContent: string;
   let head: IHtmlTag[];
   try {
     htmlContent = renderToString(
       // @ts-ignore staticContext is not declared in @types/react-router-dom
-      <Router history={history} staticContext={context}>
+      <Router history={history}>
         <LoadableContext.Provider
           value={moduleName => loadableModules.push(moduleName)}
         >

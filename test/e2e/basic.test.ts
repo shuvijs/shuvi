@@ -8,7 +8,7 @@ jest.setTimeout(1000 * 60);
 describe("Basic Features", () => {
   beforeAll(async () => {
     ctx = await launchFixture("basic");
-  }, 1000 * 60 * 5);
+  });
   afterAll(async () => {
     await page.close();
     await ctx.close();
@@ -19,14 +19,15 @@ describe("Basic Features", () => {
     jest.resetModules();
   });
 
-  test("Open /", async () => {
+  test("Page /", async () => {
     page = await ctx.browser.page(ctx.url("/"));
     expect(await page.$text("div")).toBe("Index Page");
   });
 
-  test("Open /about", async () => {
+  test("Page /about", async () => {
     await page.goto(ctx.url("/about"));
-    expect(await page.$text("div")).toBe("About Page");
+    await page.waitForSelector("#about");
+    expect(await page.$text("#about")).toBe("About Page");
   });
 
   test("process-env", async () => {
@@ -45,5 +46,31 @@ describe("Basic Features", () => {
     await page.shuvi.navigate("/none-exist-page");
     await page.waitForSelector("div[class*=page404]");
     expect(await page.$text("body")).toMatch(/404/);
+  });
+
+  describe("redirect", () => {
+    let localCtx: AppCtx;
+    let localPage: Page;
+    afterAll(async () => {
+      await localCtx.close();
+    });
+    afterEach(async () => {
+      await localPage.close();
+    });
+
+    test("should work in server side", async () => {
+      localCtx = await launchFixture("basic");
+      localPage = await localCtx.browser.page(
+        localCtx.url("/redirect", { target: "/about" })
+      );
+      expect(await localPage.$text("div")).toBe("About Page");
+    });
+
+    test("should work in client side", async () => {
+      localPage = await localCtx.browser.page(localCtx.url("/"));
+      await localPage.shuvi.navigate("/redirect", { target: "/about" });
+      await localPage.waitForSelector("#about");
+      expect(await localPage.$text("#about")).toBe("About Page");
+    });
   });
 });

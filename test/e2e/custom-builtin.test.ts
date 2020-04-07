@@ -37,6 +37,14 @@ describe("Custom builtin", () => {
 
       expect(await page.$text("#pathname")).toBe("/");
     });
+
+    test("App.getInitalProps should work in client side", async () => {
+      localCtx = await launchFixture("custom-app", { ssr: false });
+      page = await localCtx.browser.page(localCtx.url("/"));
+      await page.waitForSelector("#pathname");
+
+      expect(await page.$text("#pathname")).toBe("/");
+    });
   });
 
   test("should render the custom template", async () => {

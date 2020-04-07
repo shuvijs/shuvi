@@ -1,1 +1,1 @@
-export default () => <div>About Page</div>;
+export default () => <div id="about">About Page</div>;

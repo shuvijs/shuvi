@@ -6,7 +6,6 @@ import {
   CLIENT_CONTAINER_ID
 } from "@shuvi/shared/lib/constants";
 import initWebpackHMR from "./dev/webpackHotDevClient";
-import { getAppData } from "./getAppData";
 
 // FIXTHIS: this does not work as expected
 const styleReady = new Promise(resolve => {
@@ -21,12 +20,10 @@ const styleReady = new Promise(resolve => {
 });
 
 styleReady!.then(() => {
-  const appData = getAppData();
   const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
 
   initWebpackHMR();
   bootstrap({
-    appData,
     appContainer,
     AppComponent: App
   });
@@ -37,7 +34,6 @@ styleReady!.then(() => {
     module.hot.accept("@shuvi/app/core/app", () => {
       const { App } = require("@shuvi/app/core/app");
       bootstrap({
-        appData,
         appContainer,
         AppComponent: App
       });

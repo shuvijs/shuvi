@@ -3,9 +3,10 @@ import { parse as parseQuerystring } from "querystring";
 import { RouteComponentProps } from "react-router-dom";
 import { Runtime } from "@shuvi/types";
 import dynamic, { DynamicOptions } from "./dynamic";
-import { getDisplayName } from "./utils";
+import { getDisplayName } from "./utils/getDisplayName";
+import { createRedirector } from "./utils/createRedirector";
 
-import RouteComponent = Runtime.IRouteComponent
+import RouteComponent = Runtime.IRouteComponent;
 
 type Data = Record<string, any>;
 
@@ -72,17 +73,23 @@ function withInitialPropsClient<P = {}>(
     }
 
     private async _getInitialProps() {
-      const { match, location } = this.props;
+      const { match, location, history } = this.props;
+      const redirector = createRedirector();
       const initialProps = await WrappedComponent.getInitialProps!({
         isServer: false,
         pathname: location.pathname,
-        query: parseQuerystring(location.search),
-        params: match.params
+        query: parseQuerystring(location.search.slice(1)),
+        params: match.params,
+        redirect: redirector.handler
       });
-      this.setState({
-        propsResolved: true,
-        initialProps
-      });
+      if (redirector.redirected) {
+        history.push(redirector.state!.path);
+      } else {
+        this.setState({
+          propsResolved: true,
+          initialProps
+        });
+      }
     }
 
     render() {

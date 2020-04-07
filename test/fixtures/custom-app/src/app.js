@@ -8,8 +8,15 @@ const MyApp = props => (
 );
 
 MyApp.getInitialProps = ctx => {
+  let pathname;
+  if (ctx.req) {
+    pathname = ctx.req.url.pathname;
+  } else {
+    pathname = window.location.pathname;
+  }
+
   return {
-    pathname: ctx.req.url.pathname
+    pathname
   };
 };
 

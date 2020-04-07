@@ -7,7 +7,7 @@ import {
   IServiceMode
 } from "@shuvi/core";
 import { Api } from "../api";
-import { Renderer } from "../renderer";
+import { Renderer, isRedirect } from "../renderer";
 
 export interface IShuviConstructorOptions {
   config: IConfig;
@@ -70,10 +70,17 @@ export default abstract class Shuvi {
     req: IIncomingMessage,
     res: IServerResponse
   ): Promise<void> {
-    const html = await this._renderer.renderDocument({
+    const result = await this._renderer.renderDocument({
       url: req.url,
       parsedUrl: req.parsedUrl
     });
-    res.end(html);
+
+    if (isRedirect(result)) {
+      res.writeHead(result.status ?? 302, { Location: result.path });
+      res.end();
+      return;
+    }
+
+    res.end(result);
   }
 }

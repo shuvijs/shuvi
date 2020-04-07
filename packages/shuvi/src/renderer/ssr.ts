@@ -29,6 +29,12 @@ export class SsrRenderer extends BaseRenderer {
       routes,
       manifest: api.resources.clientManifest
     });
+    if (result.redirect) {
+      return {
+        $type: "redirect",
+        ...result.redirect
+      } as const;
+    }
 
     const mainAssetsTags = this._getMainAssetTags();
     const documentProps = {
@@ -48,6 +54,7 @@ export class SsrRenderer extends BaseRenderer {
         // TODO: add appdata hook
         this._getInlineAppData({
           runtimeConfig: this._getPublicRuntimeConfig(),
+          ssr: api.config.ssr,
           ...result.appData
         }),
         ...mainAssetsTags.scripts,
