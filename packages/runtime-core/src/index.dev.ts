@@ -2,20 +2,16 @@
 import { bootstrap } from "@shuvi/app/core/bootstrap";
 import { App } from "@shuvi/app/core/app";
 import {
-  DEV_STYLE_ANCHOR_ID,
-  CLIENT_CONTAINER_ID
+  CLIENT_CONTAINER_ID,
+  DEV_STYLE_PREPARE
 } from "@shuvi/shared/lib/constants";
 import initWebpackHMR from "./dev/webpackHotDevClient";
 
-// FIXTHIS: this does not work as expected
+// reduce FOUC caused by style-loader
 const styleReady = new Promise(resolve => {
   (window.requestAnimationFrame || setTimeout)(() => {
-    const el = document.querySelector(`#${DEV_STYLE_ANCHOR_ID}`)
-      ?.previousElementSibling;
-    if (el) {
-      el.parentNode!.removeChild(el);
-    }
-    resolve();
+    const pendingInsert = (window as any)[DEV_STYLE_PREPARE];
+    resolve(pendingInsert);
   });
 });
 

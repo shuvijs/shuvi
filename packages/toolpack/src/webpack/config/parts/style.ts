@@ -1,4 +1,8 @@
-import { DEV_STYLE_ANCHOR_ID } from "@shuvi/shared/lib/constants";
+import {
+  DEV_STYLE_ANCHOR_ID,
+  DEV_STYLE_PREPARE,
+  DEV_STYLE_HIDE_FOUC
+} from "@shuvi/shared/lib/constants";
 import Config from "webpack-chain";
 // @ts-ignore
 import Rule from "webpack-chain/src/Rule";
@@ -143,15 +147,26 @@ function cssRule({
           `
           // These elements should always exist. If they do not,
           // this code should fail.
-          var anchorElement = document.querySelector(
-            '#${DEV_STYLE_ANCHOR_ID}'
-          )
-          var parentNode = anchorElement.parentNode // Normally <head>
+          var anchorElement = document.querySelector("#${DEV_STYLE_ANCHOR_ID}");
+          var parentNode = anchorElement.parentNode; // Normally <head>
 
           // Each style tag should be placed right before our
           // anchor. By inserting before and not after, we do not
           // need to track the last inserted element.
-          parentNode.insertBefore(element, anchorElement)
+          parentNode.insertBefore(element, anchorElement);
+
+          window["${DEV_STYLE_PREPARE}"] = new Promise(function(resolve) {
+            (window.requestAnimationFrame || setTimeout)(function() {
+              for (
+                var x = document.querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]'),
+                i = x.length;
+                i--;
+              ) {
+                x[i].parentNode.removeChild(x[i])
+              }
+              resolve();
+            });
+          });
         `
         ),
         esModule: true

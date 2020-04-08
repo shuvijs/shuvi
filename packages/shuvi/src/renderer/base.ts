@@ -4,7 +4,8 @@ import {
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
-  DEV_STYLE_ANCHOR_ID
+  DEV_STYLE_ANCHOR_ID,
+  DEV_STYLE_HIDE_FOUC
 } from "../constants";
 import { renderTemplate } from "../lib/viewTemplate";
 import { tag, stringifyTag, stringifyAttrs } from "./htmlTag";
@@ -92,7 +93,13 @@ export abstract class BaseRenderer {
     }
     if (this._serverCtx.api.mode === "development") {
       styles.push(
-        tag("style", {}, "body{display:none}"),
+        tag(
+          "style",
+          {
+            [DEV_STYLE_HIDE_FOUC]: true
+          },
+          "body{display:none}"
+        ),
 
         /**
          * this element is used to mount development styles so the
