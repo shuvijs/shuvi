@@ -30,12 +30,12 @@ export class App {
     this._store.addFile(file, dir);
   }
 
-  addExport(source: string, specifier: ISpecifier | ISpecifier[] | true): void {
-    if (specifier === true) {
-      this._store.addExport(source, specifier);
-    } else {
-      this._store.addExport(source, ([] as ISpecifier[]).concat(specifier));
-    }
+  addExport(source: string, specifier: ISpecifier | ISpecifier[]): void {
+    this._store.addExport(source, ([] as ISpecifier[]).concat(specifier));
+  }
+
+  addPolyfill(file: string): void {
+    this._store.addPolyfill(file);
   }
 
   waitUntilBuild(): Promise<void> {

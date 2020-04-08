@@ -9,6 +9,7 @@ import {
   BUILD_MANIFEST_PATH,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_WEBPACK,
+  BUILD_CLIENT_RUNTIME_POLYFILL,
   BUILD_CLIENT_DIR,
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER
@@ -67,8 +68,11 @@ export function createWepbackConfig(
     // Use `[name]-[contenthash].js` in production
     if (
       !dev &&
-      (chunk.name === BUILD_CLIENT_RUNTIME_MAIN ||
-        chunk.name === BUILD_CLIENT_RUNTIME_WEBPACK)
+      [
+        BUILD_CLIENT_RUNTIME_MAIN,
+        BUILD_CLIENT_RUNTIME_POLYFILL,
+        BUILD_CLIENT_RUNTIME_WEBPACK
+      ].includes(chunk.name)
     ) {
       return chunk.name.replace(/\.js$/, "-[contenthash].js");
     }
@@ -83,7 +87,8 @@ export function getClientEntry(_api: Api): IWebpackEntry {
   return {
     [BUILD_CLIENT_RUNTIME_MAIN]: [
       require.resolve("@shuvi/runtime-core/lib/index")
-    ]
+    ],
+    [BUILD_CLIENT_RUNTIME_POLYFILL]: ["@shuvi/app/core/polyfill"]
   };
 }
 

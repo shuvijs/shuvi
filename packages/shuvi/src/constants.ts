@@ -22,6 +22,8 @@ export const BUILD_CLIENT_RUNTIME_MAIN = `static/runtime/main.js`;
 
 export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack.js`;
 
+export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/runtime/polyfill.js`;
+
 export const BUILD_SERVER_DIR = "server";
 
 export const BUILD_SERVER_FILE_SERVER = `server.js`;

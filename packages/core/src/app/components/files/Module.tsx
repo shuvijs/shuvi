@@ -1,29 +1,34 @@
 import React from "react";
 import { File } from "@shuvi/react-fs";
-import { useFileByOrder } from "../../hooks/useFileByOrder";
-
-type Module = string | string[];
+import { ISpecifier } from "../../types";
 
 export interface Props {
   name: string;
-  source: string | string[];
-  defaultExport?: boolean;
+  exports: { [source: string]: ISpecifier | ISpecifier[] };
 }
 
-function Module({ name, source, defaultExport }: Props) {
-  const file = Array.isArray(source)
-    ? useFileByOrder(...source)
-    : useFileByOrder(source);
+function Module({ name, exports = {} }: Props) {
+  const statements: string[] = [];
+  const sources = Object.keys(exports);
 
-  let statements: string[] = [];
-  if (defaultExport) {
-    statements.push(`import temp from "${file}"`);
-    statements.push(`export default temp`);
-  } else {
-    statements.push(`export * from "${file}"`);
+  for (const source of sources) {
+    const specifiers = ([] as ISpecifier[]).concat(exports[source]);
+    for (const specifier of specifiers) {
+      if (specifier === true) {
+        statements.push(`export * from "${source}"`);
+      } else if (typeof specifier === "string") {
+        statements.push(`export { ${specifier} } from "${source}"`);
+      } else if (specifier.imported === "*") {
+        statements.push(`import * as ${specifier.local} from "${source}"`);
+        statements.push(`export { ${specifier.local} }`);
+      } else {
+        statements.push(
+          `export { ${specifier.imported} as ${specifier.local} } from "${source}"`
+        );
+      }
+    }
   }
-
-  return <File name={name} content={statements.join("\n")} />;
+  return <File name={name} content={`${statements.join("\n")}`} />;
 }
 
 export default React.memo(Module);

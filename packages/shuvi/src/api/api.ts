@@ -17,9 +17,9 @@ import { setRuntimeConfig } from "../lib/runtime-config";
 import { serializeRoutes } from "../lib/serializeRoutes";
 import { DEV_PUBLIC_PATH } from "../constants";
 import { IResources, IBuiltResource, IPlugin } from "./types";
-import { setupApp } from "./utils/setupApp";
-import { initCoreResource } from "./utils/initCoreResource";
-import { resolvePlugins } from "./utils/plugin";
+import { setupApp } from "./setupApp";
+import { initCoreResource } from "./initCoreResource";
+import { resolvePlugins } from "./plugin";
 
 export class Api implements IApi {
   config: IConfig;
@@ -123,7 +123,7 @@ export class Api implements IApi {
     // add fallback route
     routes.push({
       id: genRouteId("404"),
-      componentFile: this.resolveAppFile("pages", "404")
+      componentFile: this.resolveAppFile("core", "404")
     });
 
     routes = await this.callHook<IHookAppRoutes>({
@@ -194,6 +194,10 @@ export class Api implements IApi {
     specifier: ISpecifier | ISpecifier[] | true
   ): void {
     this._app.addExport(source, specifier);
+  }
+
+  addAppPolyfill(file: string): void {
+    this._app.addPolyfill(file);
   }
 
   getAssetPublicUrl(...paths: string[]): string {

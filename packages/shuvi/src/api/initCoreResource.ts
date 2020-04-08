@@ -1,13 +1,13 @@
 import path from "path";
 import fse from "fs-extra";
-import { parseTemplateFile } from "../../lib/viewTemplate";
+import { parseTemplateFile } from "../lib/viewTemplate";
 import {
   BUILD_CLIENT_DIR,
   BUILD_SERVER_DIR,
   BUILD_MANIFEST_PATH,
   BUILD_SERVER_FILE_SERVER
-} from "../../constants";
-import { Api } from "../api";
+} from "../constants";
+import { Api } from "./api";
 
 function resolveServerDist(api: Api, name: string) {
   const manifest = api.resources.serverManifest;

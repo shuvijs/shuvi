@@ -112,7 +112,7 @@ export function createBrowserWebpackChain({
           reuseExistingChunk: true
         }
       },
-      maxInitialRequests: 12,
+      maxInitialRequests: 25,
       minSize: 20000
     });
   }

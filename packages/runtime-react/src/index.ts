@@ -5,7 +5,7 @@ import {
   IHookAppRoutes,
   IHookAppRoutesFile
 } from "@shuvi/types";
-import { resolveDistFile } from "./paths";
+import { resolveDist, resolveDep } from "./paths";
 import { matchRoutes } from "./router/matchRoutes";
 import { config as configBundler } from "./bundler/config";
 
@@ -35,15 +35,16 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
   async install(api: IApi): Promise<void> {
     this._api = api;
 
-    api.addAppExport("@shuvi/runtime-react/es/head/head", {
+    api.addAppPolyfill(resolveDep("react-app-polyfill/ie11"));
+    api.addAppExport(resolveDist("head/head"), {
       imported: "default",
       local: "Head"
     });
-    api.addAppExport("@shuvi/runtime-react/es/dynamic", {
+    api.addAppExport(resolveDist("dynamic"), {
       imported: "default",
       local: "dynamic"
     });
-    api.addAppExport("@shuvi/runtime-react/dep/react-router-dom", "Link");
+    api.addAppExport(resolveDep("react-router-dom"), "Link");
 
     configBundler(api);
 
@@ -69,7 +70,7 @@ ${fileContent}
   }
 
   getRendererModulePath(): string {
-    return resolveDistFile("renderer");
+    return resolveDist("renderer");
   }
 
   getBootstrapModulePath(): string {
@@ -83,22 +84,22 @@ ${fileContent}
     }
 
     if (history === "hash") {
-      return resolveDistFile("bootstrap.hash");
+      return resolveDist("bootstrap.hash");
     }
 
-    return resolveDistFile("bootstrap.browser");
+    return resolveDist("bootstrap.browser");
   }
 
   getAppModulePath(): string {
-    return resolveDistFile("app");
+    return resolveDist("app");
   }
 
   get404ModulePath(): string {
-    return resolveDistFile("page404");
+    return resolveDist("page404");
   }
 
   getRouterModulePath(): string {
-    return resolveDistFile("router/router");
+    return resolveDist("router/router");
   }
 }
 

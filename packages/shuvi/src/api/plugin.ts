@@ -1,5 +1,5 @@
 import { IPluginConfig, IApi } from "@shuvi/types";
-import { IPlugin } from "../types";
+import { IPlugin } from "./types";
 
 let uid = 0;
 

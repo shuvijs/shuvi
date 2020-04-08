@@ -4,6 +4,7 @@ import FileNode from "./components/files/FileNode";
 import IndexFile from "./components/IndexFile";
 import BootstrapFile from "./components/BootstrapFile";
 import AppFile from "./components/AppFile";
+import Polyfill from "./components/PolyfillFile";
 
 import RoutesFile from "./components/RoutesFile";
 import { useSelector } from "./models/store";
@@ -26,6 +27,7 @@ function App(props: AppProps) {
         <BootstrapFile />
         <AppFile />
         <RoutesFile />
+        <Polyfill />
       </Dir>
       {files.map(file => (
         <FileNode key={file.name} file={file} />

@@ -1,11 +1,10 @@
 import TemplateFile, {
   Props as TemplateFileProps
 } from "../../components/files/Template";
-import ModuleCollection, {
-  IModules,
-  Props as ModuleCollectionProps
-} from "../../components/files/ModuleCollection";
 import Module, { Props as ModuleProps } from "../../components/files/Module";
+import ModuleProxy, {
+  Props as ModuleProxyProps
+} from "../../components/files/ModuleProxy";
 import { File } from "./FileNode";
 
 export { Dir, IFileNode, isDir, isFile, File } from "./FileNode";
@@ -21,11 +20,11 @@ export function createModule(name: string, props: Omit<ModuleProps, "name">) {
   return new File(name, Module, props);
 }
 
-export function createModuleCollection<T extends IModules = {}>(
+export function createModuleProxy(
   name: string,
-  props: Omit<ModuleCollectionProps<T>, "name">
+  props: Omit<ModuleProxyProps, "name">
 ) {
-  return new File(name, ModuleCollection, props);
+  return new File(name, ModuleProxy, props);
 }
 
 export function createCustomFile<Props = {}>(

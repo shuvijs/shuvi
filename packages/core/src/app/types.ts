@@ -7,8 +7,9 @@ export interface IBuildOptions {
 }
 
 export type ISpecifier =
-  | string
+  | true    // export all
+  | string  //  imported === local
   | {
-      local: string;
       imported: string;
+      local: string;
     };

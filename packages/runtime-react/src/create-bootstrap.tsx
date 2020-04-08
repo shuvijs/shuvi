@@ -2,8 +2,8 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { Router } from "@shuvi/runtime-react/dep/react-router-dom";
-import { getAppData } from "@shuvi/app";
+import { Router } from "react-router-dom";
+import { getAppData } from "@shuvi/app/core/utils";
 import { Runtime } from "@shuvi/types";
 import { History } from "./router/history";
 import { setHistory } from "./router/router";

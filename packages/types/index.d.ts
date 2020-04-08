@@ -91,6 +91,7 @@ export interface IApi {
 
   addAppFile: typeof App.prototype.addFile;
   addAppExport: typeof App.prototype.addExport;
+  addAppPolyfill: typeof App.prototype.addPolyfill;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

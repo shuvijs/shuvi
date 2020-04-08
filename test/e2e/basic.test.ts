@@ -1,32 +1,36 @@
 import { AppCtx, Page, launchFixture } from "../utils";
 
-let ctx: AppCtx;
-let page: Page;
-
 jest.setTimeout(1000 * 60);
 
+afterEach(() => {
+  // force require to load file to make sure compiled file get load correctlly
+  jest.resetModules();
+});
+
 describe("Basic Features", () => {
+  let ctx: AppCtx;
+  let page: Page;
+
   beforeAll(async () => {
-    ctx = await launchFixture("basic");
+    ctx = await launchFixture("basic", { ssr: true });
   });
   afterAll(async () => {
     await page.close();
     await ctx.close();
   });
 
-  afterEach(() => {
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
-
   test("Page /", async () => {
     page = await ctx.browser.page(ctx.url("/"));
+
+    expect(await page.$$attr("body script", "src")).toEqual(
+      expect.arrayContaining([expect.stringMatching(/polyfill\.js/)])
+    );
     expect(await page.$text("div")).toBe("Index Page");
   });
 
   test("Page /about", async () => {
-    await page.goto(ctx.url("/about"));
-    await page.waitForSelector("#about");
+    await page.close();
+    page = await ctx.browser.page(ctx.url("/about"));
     expect(await page.$text("#about")).toBe("About Page");
   });
 
@@ -49,25 +53,20 @@ describe("Basic Features", () => {
   });
 
   describe("redirect", () => {
-    let localCtx: AppCtx;
     let localPage: Page;
     afterAll(async () => {
-      await localCtx.close();
-    });
-    afterEach(async () => {
       await localPage.close();
     });
 
     test("should work in server side", async () => {
-      localCtx = await launchFixture("basic");
-      localPage = await localCtx.browser.page(
-        localCtx.url("/redirect", { target: "/about" })
+      localPage = await ctx.browser.page(
+        ctx.url("/redirect", { target: "/about" })
       );
       expect(await localPage.$text("div")).toBe("About Page");
     });
 
     test("should work in client side", async () => {
-      localPage = await localCtx.browser.page(localCtx.url("/"));
+      await localPage.goto(ctx.url("/"));
       await localPage.shuvi.navigate("/redirect", { target: "/about" });
       await localPage.waitForSelector("#about");
       expect(await localPage.$text("#about")).toBe("About Page");

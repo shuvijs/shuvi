@@ -1,5 +1,5 @@
 import React from "react";
-import Module from "./files/Module";
+import Module from "./files/ModuleProxy";
 import { useSelector } from "../models/store";
 
 function App() {

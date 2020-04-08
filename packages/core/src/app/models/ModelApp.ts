@@ -59,13 +59,21 @@ export class ModelApp {
   @observable appModule!: string | string[];
   @observable routesContent: string = "export default []";
   @observable extraFiles: IFileNode[] = [];
+  @observable polyfills: string[] = [];
   @observable exports: {
-    [source: string]: ISpecifier[] | true /* exportAll */;
+    [source: string]: ISpecifier[];
   } = {};
 
   @action
-  addExport(source: string, specifier: ISpecifier[] | true) {
+  addExport(source: string, specifier: ISpecifier[]) {
     this.exports[source] = specifier;
+  }
+
+  @action
+  addPolyfill(file: string) {
+    if (!this.polyfills.includes(file)) {
+      this.polyfills.push(file);
+    }
   }
 
   @action

@@ -1,7 +1,7 @@
 import { Route, File } from "@shuvi/core";
 import { getTypeScriptInfo } from "@shuvi/utils/lib/detectTypescript";
-import { runtime } from "../../runtime";
-import { Api } from "../api";
+import { runtime } from "../runtime";
+import { Api } from "./api";
 
 function withExts(file: string, extensions: string[]): string[] {
   return extensions.map(ext => `${file}.${ext}`);
@@ -21,6 +21,34 @@ export async function setupApp(api: Api) {
     runtime.getAppModulePath()
   ]);
 
+  api.addAppFile(
+    File.moduleProxy("404.js", {
+      source: [
+        ...withExts(api.resolveUserFile("404"), moduleFileExtensions),
+        runtime.get404ModulePath()
+      ],
+      defaultExport: true
+    }),
+    "core"
+  );
+  api.addAppFile(
+    File.moduleProxy("document.js", {
+      source: [
+        ...withExts(api.resolveUserFile("document"), moduleFileExtensions),
+        require.resolve("@shuvi/utils/lib/noop")
+      ]
+    }),
+    "core"
+  );
+  api.addAppFile(
+    File.module("utils.js", {
+      exports: {
+        [require.resolve("@shuvi/runtime-core/lib/getAppData")]: "getAppData"
+      }
+    }),
+    "core"
+  );
+
   api.addAppExport(runtime.getAppModulePath(), "App");
   api.addAppExport(runtime.getRouterModulePath(), {
     imported: "default",
@@ -37,30 +65,27 @@ export async function setupApp(api: Api) {
       local: "getRuntimeConfig"
     }
   ]);
-  api.addAppExport("@shuvi/runtime-core/lib/getAppData", ["getAppData"]);
 
   api.addAppFile(
-    File.module("404.js", {
-      source: [
-        ...withExts(api.resolveUserFile("404"), moduleFileExtensions),
-        runtime.get404ModulePath()
-      ],
-      defaultExport: true
-    }),
-    "pages"
-  );
-  api.addAppFile(
-    File.moduleCollection("server.js", {
-      modules: {
-        app: api.resolveAppFile("core", "app"),
-        routes: api.resolveAppFile("core", "routes"),
-        document: [
-          ...withExts(api.resolveUserFile("document"), moduleFileExtensions),
-          require.resolve("@shuvi/runtime-core/lib/noop")
-        ],
-        renderer: runtime.getRendererModulePath()
-      },
-      defaultExports: ["routes", "renderer"]
+    File.module("server.js", {
+      exports: {
+        [api.resolveAppFile("core", "app")]: {
+          imported: "*",
+          local: "app"
+        },
+        [api.resolveAppFile("core", "routes")]: {
+          imported: "default",
+          local: "routes"
+        },
+        [api.resolveAppFile("core", "document")]: {
+          imported: "*",
+          local: "document"
+        },
+        [runtime.getRendererModulePath()]: {
+          imported: "default",
+          local: "renderer"
+        }
+      }
     })
   );
   const route = new Route(api.paths.pagesDir);

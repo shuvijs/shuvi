@@ -3,6 +3,7 @@ import { parse as parseUrl, UrlWithParsedQuery } from "url";
 import {
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
+  BUILD_CLIENT_RUNTIME_POLYFILL,
   DEV_STYLE_ANCHOR_ID
 } from "../constants";
 import { renderTemplate } from "../lib/viewTemplate";
@@ -64,9 +65,14 @@ export abstract class BaseRenderer {
   } {
     const styles: IHtmlTag<"link" | "style">[] = [];
     const scripts: IHtmlTag<"script">[] = [];
-    const entrypoints = this._serverCtx.api.resources.clientManifest.entries[
-      BUILD_CLIENT_RUNTIME_MAIN
-    ];
+    const { clientManifest } = this._serverCtx.api.resources;
+    const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
+    const polyfill = clientManifest.chunks[BUILD_CLIENT_RUNTIME_POLYFILL];
+    scripts.push(
+      tag("script", {
+        src: this._serverCtx.api.getAssetPublicUrl(polyfill)
+      })
+    );
     entrypoints.js.forEach((asset: string) => {
       scripts.push(
         tag("script", {

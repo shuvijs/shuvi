@@ -1,6 +1,6 @@
 import {
   createFile,
-  createModuleCollection,
+  createModuleProxy,
   createCustomFile,
   createModule,
   File as FileClass
@@ -9,7 +9,7 @@ import {
 const File = {
   file: createFile,
   module: createModule,
-  moduleCollection: createModuleCollection,
+  moduleProxy: createModuleProxy,
   customFile: createCustomFile
 };
 
