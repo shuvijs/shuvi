@@ -1,77 +1,79 @@
-import { PluginObj } from '@babel/core'
-import { NodePath } from '@babel/traverse'
-import * as BabelTypes from '@babel/types'
+// Based on https://github.com/zeit/next.js
+// License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
+
+import { PluginObj, types as BabelTypes } from "@babel/core";
+import { NodePath } from "@babel/traverse";
 
 // matches any hook-like (the default)
-const isHook = /^use[A-Z]/
+const isHook = /^use[A-Z]/;
 
 // matches only built-in hooks provided by React et al
-const isBuiltInHook = /^use(Callback|Context|DebugValue|Effect|ImperativeHandle|LayoutEffect|Memo|Reducer|Ref|State)$/
+const isBuiltInHook = /^use(Callback|Context|DebugValue|Effect|ImperativeHandle|LayoutEffect|Memo|Reducer|Ref|State)$/;
 
 export default function({
-  types: t,
+  types: t
 }: {
-  types: typeof BabelTypes
+  types: typeof BabelTypes;
 }): PluginObj<any> {
   const visitor = {
     CallExpression(path: NodePath<BabelTypes.CallExpression>, state: any) {
-      const onlyBuiltIns = state.opts.onlyBuiltIns
+      const onlyBuiltIns = state.opts.onlyBuiltIns;
 
       // if specified, options.lib is a list of libraries that provide hook functions
       const libs =
         state.opts.lib &&
         (state.opts.lib === true
-          ? ['react', 'preact/hooks']
-          : [].concat(state.opts.lib))
+          ? ["react", "preact/hooks"]
+          : [].concat(state.opts.lib));
 
       // skip function calls that are not the init of a variable declaration:
-      if (!t.isVariableDeclarator(path.parent)) return
+      if (!t.isVariableDeclarator(path.parent)) return;
 
       // skip function calls where the return value is not Array-destructured:
-      if (!t.isArrayPattern(path.parent.id)) return
+      if (!t.isArrayPattern(path.parent.id)) return;
 
       // name of the (hook) function being called:
-      const hookName = (path.node.callee as BabelTypes.Identifier).name
+      const hookName = (path.node.callee as BabelTypes.Identifier).name;
 
       if (libs) {
-        const binding = path.scope.getBinding(hookName)
+        const binding = path.scope.getBinding(hookName);
         // not an import
-        if (!binding || binding.kind !== 'module') return
+        if (!binding || binding.kind !== "module") return;
 
         const specifier = (binding.path.parent as BabelTypes.ImportDeclaration)
-          .source.value
+          .source.value;
         // not a match
-        if (!libs.some(lib => lib === specifier)) return
+        if (!libs.some(lib => lib === specifier)) return;
       }
 
       // only match function calls with names that look like a hook
-      if (!(onlyBuiltIns ? isBuiltInHook : isHook).test(hookName)) return
+      if (!(onlyBuiltIns ? isBuiltInHook : isHook).test(hookName)) return;
 
       // @ts-ignore
       path.parent.id = t.objectPattern(
         path.parent.id.elements.reduce<Array<BabelTypes.ObjectProperty>>(
           (patterns, element, i) => {
             if (element === null) {
-              return patterns
+              return patterns;
             }
 
             return patterns.concat(
               t.objectProperty(t.numericLiteral(i), element)
-            )
+            );
           },
           []
         )
-      )
-    },
-  }
+      );
+    }
+  };
 
   return {
-    name: 'optimize-hook-destructuring',
+    name: "optimize-hook-destructuring",
     visitor: {
       // this is a workaround to run before preset-env destroys destructured assignments
       Program(path, state) {
-        path.traverse(visitor, state)
-      },
-    },
-  }
+        path.traverse(visitor, state);
+      }
+    }
+  };
 }

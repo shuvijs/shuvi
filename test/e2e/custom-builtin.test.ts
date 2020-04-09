@@ -3,7 +3,7 @@ import { AppCtx, Page, launchFixture } from "../utils";
 let ctx: AppCtx;
 let page: Page;
 
-jest.setTimeout(1000 * 60);
+jest.setTimeout(5 * 60 * 1000);
 
 describe("Custom builtin", () => {
   afterAll(async () => {

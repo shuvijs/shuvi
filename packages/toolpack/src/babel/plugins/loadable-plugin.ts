@@ -22,9 +22,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWAR
 // This file is https://github.com/jamiebuilds/react-loadable/blob/master/src/babel.js
 // Modified to also look for `shuvi/dynamic`
 
-import { PluginObj } from "@babel/core";
+import { PluginObj, types as BabelTypes } from "@babel/core";
 import { NodePath } from "@babel/traverse";
-import * as BabelTypes from "@babel/types";
 
 export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
   return {
@@ -34,7 +33,7 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
         if (source !== "@shuvi/app") return;
 
         let dynamicSpecifier = path.get("specifiers").find(specifier => {
-          return specifier.node.imported.name === 'dynamic'
+          return specifier.node.imported.name === "dynamic";
         });
 
         if (!dynamicSpecifier) return;
