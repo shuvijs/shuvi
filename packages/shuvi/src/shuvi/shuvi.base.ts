@@ -1,11 +1,10 @@
 import http from "http";
-import { IConfig } from "@shuvi/types";
+import { IConfig, IShuviMode } from "@shuvi/types";
 import {
   IHTTPRequestHandler,
   IIncomingMessage,
-  IServerResponse,
-  IServiceMode
-} from "@shuvi/core";
+  IServerResponse
+} from "../server";
 import { Api } from "../api";
 import { Renderer, isRedirect } from "../renderer";
 
@@ -20,7 +19,7 @@ export default abstract class Shuvi {
 
   constructor({ config }: IShuviConstructorOptions) {
     this._api = new Api({
-      mode: this.getServiceMode(),
+      mode: this.getMode(),
       config
     });
     this._renderer = new Renderer({ api: this._api });
@@ -57,7 +56,7 @@ export default abstract class Shuvi {
     });
   }
 
-  protected abstract getServiceMode(): IServiceMode;
+  protected abstract getMode(): IShuviMode;
 
   protected abstract init(): Promise<void> | void;
 

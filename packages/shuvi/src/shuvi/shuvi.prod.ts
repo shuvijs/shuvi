@@ -1,7 +1,7 @@
-import { IIncomingMessage, INextFunction, IServerResponse } from "@shuvi/core";
+import { IIncomingMessage, INextFunction, IServerResponse } from "../server";
 import { serveStatic } from "../lib/serveStatic";
-import Base from "./shuvi";
 import { BUILD_CLIENT_DIR } from "../constants";
+import Base from "./shuvi.base";
 
 export default class ShuviProd extends Base {
   async init() {
@@ -11,7 +11,7 @@ export default class ShuviProd extends Base {
     api.server.use(this._handlePageRequest.bind(this));
   }
 
-  protected getServiceMode() {
+  protected getMode() {
     return "production" as const;
   }
 

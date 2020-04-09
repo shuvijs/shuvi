@@ -1,7 +1,7 @@
 import { UrlWithParsedQuery } from "url";
 import { Runtime, IRuntimeConfig } from "@shuvi/types";
 import { htmlEscapeJsonString } from "@shuvi/utils/lib/htmlescape";
-import getRuntimeConfig from "../lib/runtime-config";
+import getRuntimeConfig from "../lib/runtimeConfig";
 import { CLIENT_APPDATA_ID } from "../constants";
 import { BaseRenderer } from "./base";
 import { tag } from "./htmlTag";

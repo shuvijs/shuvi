@@ -1,6 +1,6 @@
 import { join } from "path";
 import { NAME } from "@shuvi/shared/lib/constants";
-import { IPaths } from "./types";
+import { IPaths } from "@shuvi/types";
 
 interface IPathsOpts {
   rootDir: string;

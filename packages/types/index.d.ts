@@ -1,12 +1,4 @@
-import {
-  IConfig as IConfigCore,
-  IFile,
-  Service,
-  IPaths,
-  App,
-  ISpecifier,
-  ITemplateData
-} from "@shuvi/core";
+import { IFile, App, ISpecifier, ITemplateData } from "@shuvi/core";
 import * as Runtime from "./src/runtime";
 import * as Bundler from "./src/bundler";
 import { IHookConfig } from "./src/hooks";
@@ -18,6 +10,26 @@ export * from "./src/hooks";
 export { webpack, WebpackChain };
 
 export { Runtime, Bundler, IFile, ISpecifier, ITemplateData };
+
+export type IShuviMode = "development" | "production";
+
+export interface IPaths {
+  rootDir: string;
+  buildDir: string;
+
+  // dir to store shuvi generated src files
+  appDir: string;
+
+  // user src dir
+  srcDir: string;
+
+  // functional dirs
+  pagesDir: string;
+}
+
+export interface IConfigCore {
+  outputPath: string;
+}
 
 export type IRouterHistoryMode = "browser" | "hash" | "auto";
 
@@ -32,7 +44,8 @@ export type IPluginConfig =
 
 export type IRuntimeConfig = Record<string, string>;
 
-export interface IConfig extends IConfigCore {
+export interface IConfig {
+  outputPath: string;
   rootDir: string;
   ssr: boolean;
   assetPrefix: string;
@@ -62,7 +75,7 @@ export interface ICallHookOpts<Name extends string = string, InitV = unknown> {
 
 // api for plugins
 export interface IApi {
-  mode: typeof Service.prototype.mode;
+  mode: IShuviMode;
   paths: IPaths;
   config: IConfig;
   assetPublicPath: string;

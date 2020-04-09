@@ -1,4 +1,4 @@
-import { IServiceMode } from "@shuvi/core";
+import { IShuviMode } from "../";
 import webpack from "webpack";
 import WebpackChain from "webpack-chain";
 import { IRouteConfig } from "./runtime";
@@ -52,7 +52,7 @@ export type IHookBundlerConfig = defineHook<
     args: [
       {
         name: string;
-        mode: IServiceMode;
+        mode: IShuviMode;
         webpack: typeof webpack;
       }
     ];

@@ -1,5 +1,5 @@
 import { IHookBundlerConfig } from "@shuvi/types";
-import { logger } from "@shuvi/core";
+import Logger from "@shuvi/utils/lib/logger";
 import { inspect } from "util";
 import webpack, {
   MultiCompiler as WebapckMultiCompiler,
@@ -11,7 +11,7 @@ import { WEBPACK_CONFIG_CLIENT, WEBPACK_CONFIG_SERVER } from "../constants";
 import { createWepbackConfig, getClientEntry, getServerEntry } from "./config";
 import { runCompiler, BundlerResult } from "./runCompiler";
 
-const log = logger("shuvi:bundler");
+const logger = Logger("shuvi:bundler");
 
 class BundlerImpl {
   private _api: Api;
@@ -92,10 +92,10 @@ class BundlerImpl {
     const clientConfig = clientChain.toConfig();
     const serverConfig = serverChain.toConfig();
 
-    log.debug("Client Config");
-    log.debug(inspect(clientConfig.module?.rules, { depth: 10 }));
-    log.debug("Server Config");
-    log.debug(inspect(serverConfig.module?.rules, { depth: 10 }));
+    logger.debug("Client Config");
+    logger.debug(inspect(clientConfig.module?.rules, { depth: 10 }));
+    logger.debug("Server Config");
+    logger.debug(inspect(serverConfig.module?.rules, { depth: 10 }));
 
     return [clientConfig, serverConfig];
   }

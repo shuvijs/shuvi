@@ -1,15 +1,15 @@
 import { IEventBundlerDone } from "@shuvi/types";
-import { IIncomingMessage, IServerResponse, INextFunction } from "@shuvi/core";
 import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
+import { IIncomingMessage, IServerResponse, INextFunction } from "../server";
 import { getDevMiddleware } from "../lib/devMiddleware";
+import { OnDemandRouteManager } from "../lib/onDemandRouteManager";
+import { acceptsHtml } from "../lib/utils";
 import {
   DEV_PAGE_STATIC_REGEXP,
   WEBPACK_CONFIG_CLIENT,
   WEBPACK_CONFIG_SERVER
 } from "../constants";
-import { OnDemandRouteManager } from "../lib/onDemandRouteManager";
-import { acceptsHtml } from "../lib/utils";
-import Base, { IShuviConstructorOptions } from "./shuvi";
+import Base, { IShuviConstructorOptions } from "./shuvi.base";
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr: OnDemandRouteManager;
@@ -71,7 +71,7 @@ export default class ShuviDev extends Base {
     return super.listen(port, hostname);
   }
 
-  protected getServiceMode() {
+  protected getMode() {
     return "development" as const;
   }
 

@@ -7,37 +7,52 @@ import {
   IEventAppReady,
   IHookAppRoutes,
   IHookAppRoutesFile,
-  ISpecifier
+  ISpecifier,
+  IPaths,
+  IShuviMode
 } from "@shuvi/types";
-import { Service, IServiceMode, App, IRouteConfig, IFile } from "@shuvi/core";
+import { App, IRouteConfig, IFile } from "@shuvi/core";
 import { genRouteId } from "@shuvi/shared/lib/router";
 import { joinPath } from "@shuvi/utils/lib/string";
 import { Hooks } from "../lib/hooks";
-import { setRuntimeConfig } from "../lib/runtime-config";
+import { setRuntimeConfig } from "../lib/runtimeConfig";
 import { serializeRoutes } from "../lib/serializeRoutes";
 import { DEV_PUBLIC_PATH } from "../constants";
 import { IResources, IBuiltResource, IPlugin } from "./types";
+import { Server } from "../server";
 import { setupApp } from "./setupApp";
 import { initCoreResource } from "./initCoreResource";
 import { resolvePlugins } from "./plugin";
+import { getPaths } from "./paths";
+
+const ServiceModes: IShuviMode[] = ["development", "production"];
 
 export class Api implements IApi {
+  mode: IShuviMode;
+  paths: IPaths;
   config: IConfig;
 
   private _hooks: Hooks;
-  private _service: Service;
   private _app: App;
+  private _server!: Server;
   private _resources: IResources = {} as IResources;
   private _plugins: IPlugin[];
 
-  constructor({ mode, config }: { mode: IServiceMode; config: IConfig }) {
+  constructor({ mode, config }: { mode: IShuviMode; config: IConfig }) {
+    if (mode) {
+      this.mode = mode;
+    } else if (ServiceModes.includes(process.env.NODE_ENV as any)) {
+      this.mode = process.env.NODE_ENV as any;
+    } else {
+      this.mode = "production";
+    }
     this.config = config;
-    this._hooks = new Hooks();
-    this._service = new Service({
-      mode,
+    this.paths = getPaths({
       rootDir: config.rootDir,
-      config: config
+      outputPath: config.outputPath
     });
+
+    this._hooks = new Hooks();
     this._app = new App();
     this._plugins = resolvePlugins(config.plugins || []);
 
@@ -51,22 +66,17 @@ export class Api implements IApi {
   }
 
   get server() {
-    return this._service.getServer();
-  }
+    if (this._server) {
+      return this._server;
+    }
 
-  get paths() {
-    return this._service.paths;
-  }
-
-  get mode() {
-    return this._service.mode;
+    this._server = new Server();
+    return this._server;
   }
 
   get assetPublicPath(): string {
     let prefix =
-      this._service.mode === "development"
-        ? DEV_PUBLIC_PATH
-        : this.config.assetPrefix;
+      this.mode === "development" ? DEV_PUBLIC_PATH : this.config.assetPrefix;
 
     if (!prefix.endsWith("/")) {
       prefix += "/";
@@ -205,15 +215,15 @@ export class Api implements IApi {
   }
 
   resolveAppFile(...paths: string[]): string {
-    return this._service.resolveAppFile(...paths);
+    return joinPath(this.paths.appDir, ...paths);
   }
 
   resolveUserFile(...paths: string[]): string {
-    return this._service.resolveUserFile(...paths);
+    return joinPath(this.paths.srcDir, ...paths);
   }
 
   resolveBuildFile(...paths: string[]): string {
-    return this._service.resolveBuildFile(...paths);
+    return joinPath(this.paths.buildDir, ...paths);
   }
 
   getPluginApi() {

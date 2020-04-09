@@ -58,7 +58,7 @@ export async function setupApp(api: Api) {
     imported: "default",
     local: "routes"
   });
-  api.addAppExport("shuvi/lib/lib/runtime-config", [
+  api.addAppExport("shuvi/lib/lib/runtimeConfig", [
     "setRuntimeConfig",
     {
       imported: "default",

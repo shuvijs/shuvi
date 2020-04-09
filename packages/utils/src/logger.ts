@@ -31,8 +31,6 @@ class LoggerImpl implements Logger {
   }
 }
 
-function logger(namespace: string): Logger {
+export default function logger(namespace: string): Logger {
   return new LoggerImpl(namespace);
 }
-
-export { logger };

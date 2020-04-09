@@ -1,5 +1,5 @@
 import { IConfig } from "@shuvi/types";
-import Shuvi, { IShuviConstructorOptions } from "./shuvi";
+import Shuvi, { IShuviConstructorOptions } from "./shuvi.base";
 
 export { Shuvi };
 
