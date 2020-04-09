@@ -13,7 +13,9 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "dev": "tsc -p tsconfig.build.json -w"
+    "dev": "tsc -p tsconfig.build.json -w",
+    "prebuild": "rimraf lib",
+    "build": "tsc -p tsconfig.build.json"
   },
   "engines": {
     "node": ">= 8.0.0"

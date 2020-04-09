@@ -12,9 +12,9 @@
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "files": [
-    "dep",
     "lib",
     "es",
+    "style",
     "client-env.d.ts",
     "index.d.ts",
     "index.js",
@@ -24,6 +24,7 @@
     "dev": "run-p watch:*",
     "watch:es": "tsc -p tsconfig.build.json -w -m esnext --outDir es",
     "watch:lib": "tsc -p tsconfig.build.json -w -m commonjs --outDir lib",
+    "prebuild": "rimraf lib es",
     "build": "run-p build:*",
     "build:es": "tsc -p tsconfig.build.json -m esnext --outDir es",
     "build:lib": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
