@@ -1,31 +1,32 @@
-import path from "path";
-import program from "commander";
-import fse from "fs-extra";
-import { IConfig } from "@shuvi/types";
-import formatWebpackMessages from "@shuvi/toolpack/lib/utils/formatWebpackMessages";
-import { Api } from "../api/api";
-import { getBundler } from "../bundler/bundler";
-import { Renderer } from "../renderer";
-import { BUILD_CLIENT_DIR } from "../constants";
-import { loadConfig } from "../config";
+import path from 'path';
+import program from 'commander';
+import fse from 'fs-extra';
+import { IConfig } from '@shuvi/types';
+import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
+import { Api } from '../../api/api';
+import { getBundler } from '../../bundler/bundler';
+import { Renderer } from '../../renderer';
+import { BUILD_CLIENT_DIR } from '../../constants';
+import { loadConfig } from '../../config';
 //@ts-ignore
-import pkgInfo from "../../package.json";
+import pkgInfo from '../../../package.json';
+import { getProjectDir } from '../utils';
 
 interface CliOptions {
   assetPrefix?: string;
-  target?: "spa";
+  target?: 'spa';
 }
 
 const CliConfigMap: Record<string, string | ((config: any) => void)> = {
-  assetPrefix: "assetPrefix",
-  routerHistory: "router.history",
+  assetPrefix: 'assetPrefix',
+  routerHistory: 'router.history',
   target(config) {
     config.ssr = false;
-  }
+  },
 };
 
 function set(obj: any, path: string, value: any) {
-  const segments = path.split(".");
+  const segments = path.split('.');
   const final = segments.pop()!;
   for (var i = 0; i < segments.length; i++) {
     if (!obj) {
@@ -37,10 +38,10 @@ function set(obj: any, path: string, value: any) {
 }
 
 function applyCliOptions(cliOptions: Record<string, any>, config: IConfig) {
-  Object.keys(CliConfigMap).forEach(key => {
-    if (typeof program[key] !== "undefined") {
+  Object.keys(CliConfigMap).forEach((key) => {
+    if (typeof program[key] !== 'undefined') {
       const value = CliConfigMap[key];
-      if (typeof value === "function") {
+      if (typeof value === 'function') {
         value(config);
       } else {
         set(config, value, cliOptions[key]);
@@ -61,30 +62,30 @@ async function bundle({ api }: { api: Api }) {
     if (messages.errors.length > 1) {
       messages.errors.length = 1;
     }
-    console.log("Failed to compile.\n");
-    console.log(messages.errors.join("\n\n"));
+    console.log('Failed to compile.\n');
+    console.log(messages.errors.join('\n\n'));
     return;
   }
 
   // Show warnings if no errors were found.
   if (messages.warnings.length) {
-    console.log("Compiled with warnings.\n");
-    console.log(messages.warnings.join("\n\n"));
+    console.log('Compiled with warnings.\n');
+    console.log(messages.warnings.join('\n\n'));
   }
-  console.log("Compiled successfully!");
+  console.log('Compiled successfully!');
 }
 
 async function buildHtml({
   api,
   pathname,
-  filename
+  filename,
 }: {
   api: Api;
   pathname: string;
   filename: string;
 }) {
   const html = await new Renderer({ api }).renderDocument({
-    url: pathname
+    url: pathname,
   });
   await fse.writeFile(
     path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
@@ -95,24 +96,25 @@ async function buildHtml({
 export default async function main(argv: string[]) {
   program
     .name(pkgInfo.name)
-    .usage(`build [options]`)
+    .usage(`build [dir] [options]`)
     .helpOption()
     .option(
-      "--asset-prefix <prefix>",
-      "specify the asset prefix. eg: https://some.cdn.com"
+      '--asset-prefix <prefix>',
+      'specify the asset prefix. eg: https://some.cdn.com'
     )
-    .option("--target <target>", "specify the app output target. eg: spa")
+    .option('--target <target>', 'specify the app output target. eg: spa')
     .option(
-      "--router-history <history>",
+      '--router-history <history>',
       "specify the hisotry type. 'browser' or 'hash'"
     )
-    .parse(argv);
+    .parse(argv, { from: 'user' });
 
+  const dir = getProjectDir(program);
   const cliOpts = program as CliOptions;
-  const config = await loadConfig();
+  const config = await loadConfig(dir);
   applyCliOptions(cliOpts, config);
 
-  const api = new Api({ mode: "production", config });
+  const api = new Api({ mode: 'production', config });
   await api.buildApp();
 
   // Remove all content but keep the directory so that
@@ -121,7 +123,7 @@ export default async function main(argv: string[]) {
 
   await bundle({ api });
 
-  if (cliOpts.target === "spa") {
-    await buildHtml({ api, pathname: "/", filename: "index.html" });
+  if (cliOpts.target === 'spa') {
+    await buildHtml({ api, pathname: '/', filename: 'index.html' });
   }
 }

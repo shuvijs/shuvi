@@ -1,16 +1,14 @@
-import http from "http";
-import { UrlWithParsedQuery } from "url";
-import { Server, NextFunction } from "connect";
+import http from 'http';
+import { UrlWithParsedQuery } from 'url';
+import { Server, NextFunction } from 'connect';
 
 export interface IIncomingMessage extends http.IncomingMessage {
   parsedUrl: UrlWithParsedQuery;
-  originalUrl?: http.IncomingMessage["url"];
+  originalUrl?: http.IncomingMessage['url'];
   [x: string]: any;
 }
 
-export interface IServerResponse extends http.ServerResponse {
-  [x: string]: any;
-}
+export interface IServerResponse extends http.ServerResponse {}
 
 export type ISimpleHandleFunction = (
   req: IIncomingMessage,

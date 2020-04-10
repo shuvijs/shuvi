@@ -9,23 +9,23 @@ import {
   IHookAppRoutesFile,
   ISpecifier,
   IPaths,
-  IShuviMode
-} from "@shuvi/types";
-import { App, IRouteConfig, IFile } from "@shuvi/core";
-import { genRouteId } from "@shuvi/shared/lib/router";
-import { joinPath } from "@shuvi/utils/lib/string";
-import { Hooks } from "../lib/hooks";
-import { setRuntimeConfig } from "../lib/runtimeConfig";
-import { serializeRoutes } from "../lib/serializeRoutes";
-import { DEV_PUBLIC_PATH } from "../constants";
-import { IResources, IBuiltResource, IPlugin } from "./types";
-import { Server } from "../server";
-import { setupApp } from "./setupApp";
-import { initCoreResource } from "./initCoreResource";
-import { resolvePlugins } from "./plugin";
-import { getPaths } from "./paths";
+  IShuviMode,
+} from '@shuvi/types';
+import { App, IRouteConfig, IFile } from '@shuvi/core';
+import { genRouteId } from '@shuvi/shared/lib/router';
+import { joinPath } from '@shuvi/utils/lib/string';
+import { Hooks } from '../lib/hooks';
+import { setRuntimeConfig } from '../lib/runtimeConfig';
+import { serializeRoutes } from '../lib/serializeRoutes';
+import { DEV_PUBLIC_PATH } from '../constants';
+import { IResources, IBuiltResource, IPlugin } from './types';
+import { Server } from '../server';
+import { setupApp } from './setupApp';
+import { initCoreResource } from './initCoreResource';
+import { resolvePlugins } from './plugin';
+import { getPaths } from './paths';
 
-const ServiceModes: IShuviMode[] = ["development", "production"];
+const ServiceModes: IShuviMode[] = ['development', 'production'];
 
 export class Api implements IApi {
   mode: IShuviMode;
@@ -44,23 +44,23 @@ export class Api implements IApi {
     } else if (ServiceModes.includes(process.env.NODE_ENV as any)) {
       this.mode = process.env.NODE_ENV as any;
     } else {
-      this.mode = "production";
+      this.mode = 'production';
     }
     this.config = config;
     this.paths = getPaths({
       rootDir: config.rootDir,
-      outputPath: config.outputPath
+      outputPath: config.outputPath,
     });
 
     this._hooks = new Hooks();
     this._app = new App();
     this._plugins = resolvePlugins(config.plugins || []);
 
-    this._plugins.forEach(plugin => plugin.get()(this));
+    this._plugins.forEach((plugin) => plugin.get()(this));
 
     initCoreResource(this);
 
-    if (typeof config.runtimeConfig === "object") {
+    if (typeof config.runtimeConfig === 'object') {
       setRuntimeConfig(config.runtimeConfig);
     }
   }
@@ -70,16 +70,18 @@ export class Api implements IApi {
       return this._server;
     }
 
-    this._server = new Server();
+    this._server = new Server({
+      proxy: this.config.proxy,
+    });
     return this._server;
   }
 
   get assetPublicPath(): string {
     let prefix =
-      this.mode === "development" ? DEV_PUBLIC_PATH : this.config.assetPrefix;
+      this.mode === 'development' ? DEV_PUBLIC_PATH : this.config.assetPrefix;
 
-    if (!prefix.endsWith("/")) {
-      prefix += "/";
+    if (!prefix.endsWith('/')) {
+      prefix += '/';
     }
 
     return prefix;
@@ -90,33 +92,33 @@ export class Api implements IApi {
   }
 
   tap<Config extends IHookConfig>(
-    hook: Config["name"],
-    opts: IHookOpts<Config["initialValue"], Config["args"]>
+    hook: Config['name'],
+    opts: IHookOpts<Config['initialValue'], Config['args']>
   ) {
     this._hooks.addHook(hook, opts);
   }
   async callHook<Config extends IHookConfig>(
-    name: Config["name"],
-    ...args: Config["args"]
+    name: Config['name'],
+    ...args: Config['args']
   ): Promise<void>;
   async callHook<Config extends IHookConfig>(
-    options: ICallHookOpts<Config["name"], Config["initialValue"]>,
-    ...args: Config["args"]
-  ): Promise<Config["initialValue"]>;
+    options: ICallHookOpts<Config['name'], Config['initialValue']>,
+    ...args: Config['args']
+  ): Promise<Config['initialValue']>;
   // implement
   async callHook(options: string | ICallHookOpts<string>, ...args: any[]) {
     return this._hooks.callHook(options as any, ...args);
   }
 
   on<Config extends IHookConfig>(
-    event: Config["name"],
-    listener: (...args: Config["args"]) => void
+    event: Config['name'],
+    listener: (...args: Config['args']) => void
   ) {
-    this._hooks.addHook(event, { name: "listener", fn: listener });
+    this._hooks.addHook(event, { name: 'listener', fn: listener });
   }
   emitEvent<Config extends IHookConfig>(
-    name: Config["name"],
-    ...args: Config["args"]
+    name: Config['name'],
+    ...args: Config['args']
   ): void {
     this._hooks.callHook({ name, parallel: true }, ...args);
   }
@@ -132,18 +134,18 @@ export class Api implements IApi {
   async setRoutes(routes: IRouteConfig[]) {
     // add fallback route
     routes.push({
-      id: genRouteId("404"),
-      componentFile: this.resolveAppFile("core", "404")
+      id: genRouteId('404'),
+      componentFile: this.resolveAppFile('core', '404'),
     });
 
     routes = await this.callHook<IHookAppRoutes>({
-      name: "app:routes",
-      initialValue: routes
+      name: 'app:routes',
+      initialValue: routes,
     });
     let content = `export default ${serializeRoutes(routes)}`;
     content = await this.callHook<IHookAppRoutesFile>({
-      name: "app:routes-file",
-      initialValue: content
+      name: 'app:routes-file',
+      initialValue: content,
     });
     this._app.setRoutesContent(content);
   }
@@ -151,7 +153,7 @@ export class Api implements IApi {
   async buildApp(): Promise<void> {
     await setupApp(this);
 
-    if (this.mode === "production") {
+    if (this.mode === 'production') {
       await this._app.buildOnce({ dir: this.paths.appDir });
     } else {
       await this._app.build({ dir: this.paths.appDir });
@@ -163,11 +165,11 @@ export class Api implements IApi {
       setTimeout(resolve, 1000);
     });
 
-    this.emitEvent<IEventAppReady>("app:ready");
+    this.emitEvent<IEventAppReady>('app:ready');
   }
 
   addResoure(identifier: string, loader: () => any): void {
-    const cacheable = this.mode === "production";
+    const cacheable = this.mode === 'production';
     // TODO: warn exitsed identifier
     if (cacheable) {
       Object.defineProperty(this._resources, identifier, {
@@ -177,12 +179,12 @@ export class Api implements IApi {
             value,
             enumerable: true,
             configurable: true,
-            writable: false
+            writable: false,
           });
           return value;
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
       });
     } else {
       Object.defineProperty(this._resources, identifier, {
@@ -190,13 +192,13 @@ export class Api implements IApi {
           return loader();
         },
         enumerable: true,
-        configurable: true
+        configurable: true,
       });
     }
   }
 
-  addAppFile(file: IFile, dir = ""): void {
-    this._app.addFile(file, dir.startsWith("/") ? dir : `/${dir}`);
+  addAppFile(file: IFile, dir = ''): void {
+    this._app.addFile(file, dir.startsWith('/') ? dir : `/${dir}`);
   }
 
   addAppExport(

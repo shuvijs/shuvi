@@ -7,30 +7,37 @@ module.exports = {
   bail: false,
 
   globals: {
-    "ts-jest": {
+    'ts-jest': {
       tsConfig: {
-        jsx: "react",
+        jsx: 'react',
         allowJs: true,
-        target: "es6",
-        lib: ["esnext"],
-        module: "commonjs",
-        moduleResolution: "node",
+        target: 'es6',
+        lib: ['esnext'],
+        module: 'commonjs',
+        moduleResolution: 'node',
         skipLibCheck: true,
         esModuleInterop: true,
-        noUnusedLocals: false
-      }
-    }
+        noUnusedLocals: false,
+      },
+    },
   },
 
-  setupFilesAfterEnv: ["<rootDir>/test/setup.ts"],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
 
-  testEnvironment: "node",
+  testEnvironment: 'node',
 
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 
-  preset: "ts-jest/presets/js-with-ts",
+  preset: 'ts-jest/presets/js-with-ts',
 
-  roots: ["<rootDir>/packages", "<rootDir>/test"],
+  roots: ['<rootDir>/packages', '<rootDir>/test'],
 
-  testMatch: ["**/*.test.[jt]s?(x)", '**/__tests__/**/*.test.[jt]s?(x)']
+  testMatch: [
+    '<rootDir>/test/**/*.test.[jt]s?(x)',
+    '**/__tests__/**/*.test.[jt]s?(x)',
+  ],
+
+  moduleNameMapper: {
+    'test-utils': '<rootDir>/test/utils',
+  },
 };

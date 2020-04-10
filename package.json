@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
+    "shuvi": "node ./packages/shuvi/lib/cli/cli.js",
     "build": "lerna run build --stream",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
@@ -35,6 +36,7 @@
     "@types/react": "^16.9.23",
     "@types/send": "^0.14.5",
     "get-port": "^5.1.1",
+    "got": "^10.7.0",
     "husky": "^4.2.3",
     "is-wsl": "^2.1.1",
     "jest": "^24.9.0",
