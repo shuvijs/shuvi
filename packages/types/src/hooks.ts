@@ -1,7 +1,7 @@
-import { IShuviMode } from "../";
-import webpack from "webpack";
-import WebpackChain from "webpack-chain";
-import { IRouteConfig } from "./runtime";
+import { IShuviMode } from '../';
+import webpack from 'webpack';
+import WebpackChain from 'webpack-chain';
+import { IRouteConfig } from './runtime';
 
 export interface IHookConfig {
   name: string;
@@ -30,23 +30,23 @@ type defineHook<
   };
 
 export type IHookAppRoutes = defineHook<
-  "app:routes",
+  'app:routes',
   {
     initialValue: IRouteConfig[];
   }
 >;
 
 export type IHookAppRoutesFile = defineHook<
-  "app:routes-file",
+  'app:routes-file',
   {
     initialValue: string;
   }
 >;
 
-export type IEventAppReady = defineHook<"app:ready">;
+export type IEventAppReady = defineHook<'app:ready'>;
 
 export type IHookBundlerConfig = defineHook<
-  "bundler:config",
+  'bundler:config',
   {
     initialValue: WebpackChain;
     args: [
@@ -60,7 +60,7 @@ export type IHookBundlerConfig = defineHook<
 >;
 
 export type IEventBundlerDone = defineHook<
-  "bundler:done",
+  'bundler:done',
   {
     args: [
       {
@@ -71,3 +71,5 @@ export type IEventBundlerDone = defineHook<
     ];
   }
 >;
+
+export type IHookDestory = defineHook<'destory'>;

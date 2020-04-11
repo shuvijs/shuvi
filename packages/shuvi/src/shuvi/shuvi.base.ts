@@ -23,21 +23,16 @@ export default abstract class Shuvi {
     this._renderer = new Renderer({ api: this._api });
   }
 
-  async ready(): Promise<void> {
-    await this.init();
-  }
-
   getRequestHandler(): IHTTPRequestHandler {
     return this._api.server.getRequestHandler();
   }
 
-  close() {
-    this._api.server.close();
+  async close() {
+    await this._api.destory();
   }
 
   async listen(port: number, hostname?: string): Promise<void> {
-    await this._api.server.listen(port, hostname);
-    await this.ready();
+    await Promise.all([this._api.server.listen(port, hostname), this._ready()]);
   }
 
   protected abstract getMode(): IShuviMode;
@@ -65,5 +60,9 @@ export default abstract class Shuvi {
     }
 
     res.end(result);
+  }
+
+  private async _ready(): Promise<void> {
+    await this.init();
   }
 }

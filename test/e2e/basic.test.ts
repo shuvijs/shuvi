@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from "../utils";
+import { AppCtx, Page, launchFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -7,69 +7,106 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe("Basic Features", () => {
+describe('Basic Features', () => {
   let ctx: AppCtx;
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture("basic", { ssr: true });
+    ctx = await launchFixture('basic', { ssr: true });
   });
   afterAll(async () => {
     await page.close();
     await ctx.close();
   });
 
-  test("Page /", async () => {
-    page = await ctx.browser.page(ctx.url("/"));
+  test('Page /', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
 
-    expect(await page.$$attr("body script", "src")).toEqual(
+    expect(await page.$$attr('body script', 'src')).toEqual(
       expect.arrayContaining([expect.stringMatching(/polyfill\.js/)])
     );
-    expect(await page.$text("div")).toBe("Index Page");
+    expect(await page.$text('div')).toBe('Index Page');
   });
 
-  test("Page /about", async () => {
+  test('Page /about', async () => {
     await page.close();
-    page = await ctx.browser.page(ctx.url("/about"));
-    expect(await page.$text("#about")).toBe("About Page");
+    page = await ctx.browser.page(ctx.url('/about'));
+    expect(await page.$text('#about')).toBe('About Page');
   });
 
-  test("process-env", async () => {
-    await page.shuvi.navigate("/process-env");
-    await page.waitForSelector("#process-env");
-    expect(await page.$text("#process-env")).toBe("development");
+  test('should access process.env', async () => {
+    await page.shuvi.navigate('/process-env');
+    await page.waitForSelector('#process-env');
+    expect(await page.$text('#process-env')).toBe('development');
   });
 
-  test("Head Component", async () => {
-    await page.shuvi.navigate("/head");
-    await page.waitForSelector("#head");
-    expect(await page.title()).toBe("Test Title");
+  test('Head Component', async () => {
+    await page.shuvi.navigate('/head');
+    await page.waitForSelector('#head');
+    expect(await page.title()).toBe('Test Title');
   });
 
-  test("404 Page", async () => {
-    await page.shuvi.navigate("/none-exist-page");
-    await page.waitForSelector("div[class*=page404]");
-    expect(await page.$text("body")).toMatch(/404/);
+  test('404 Page', async () => {
+    await page.shuvi.navigate('/none-exist-page');
+    await page.waitForSelector('div[class*=page404]');
+    expect(await page.$text('body')).toMatch(/404/);
   });
 
-  describe("redirect", () => {
+  describe('redirect', () => {
     let localPage: Page;
     afterAll(async () => {
       await localPage.close();
     });
 
-    test("should work in server side", async () => {
+    test('should work in server side', async () => {
       localPage = await ctx.browser.page(
-        ctx.url("/redirect", { target: "/about" })
+        ctx.url('/redirect', { target: '/about' })
       );
-      expect(await localPage.$text("div")).toBe("About Page");
+      expect(await localPage.$text('div')).toBe('About Page');
     });
 
-    test("should work in client side", async () => {
-      await localPage.goto(ctx.url("/"));
-      await localPage.shuvi.navigate("/redirect", { target: "/about" });
-      await localPage.waitForSelector("#about");
-      expect(await localPage.$text("#about")).toBe("About Page");
+    test('should work in client side', async () => {
+      await localPage.goto(ctx.url('/'));
+      await localPage.shuvi.navigate('/redirect', { target: '/about' });
+      await localPage.waitForSelector('#about');
+      expect(await localPage.$text('#about')).toBe('About Page');
     });
+  });
+});
+
+describe('Basic Features: CSR', () => {
+  let ctx: AppCtx;
+  let page: Page;
+
+  beforeAll(async () => {
+    ctx = await launchFixture('basic', {
+      ssr: false,
+      router: { history: 'browser' },
+    });
+  });
+  afterAll(async () => {
+    await page.close();
+    await ctx.close();
+  });
+
+  test('Page /', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
+    expect(await page.$$attr('body script', 'src')).toEqual(
+      expect.arrayContaining([expect.stringMatching(/polyfill\.js/)])
+    );
+    await page.waitForSelector('#index');
+    expect(await page.$text('#index')).toBe('Index Page');
+  });
+
+  test('Page /about', async () => {
+    await page.goto(ctx.url('/about'));
+    await page.waitForSelector('#about');
+    expect(await page.$text('#about')).toBe('About Page');
+  });
+
+  test('process-env', async () => {
+    await page.shuvi.navigate('/process-env');
+    await page.waitForSelector('#process-env');
+    expect(await page.$text('#process-env')).toBe('development');
   });
 });

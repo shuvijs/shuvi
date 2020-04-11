@@ -1,10 +1,10 @@
-import React from "react";
-import { useStaticRendering } from "mobx-react";
-import ReactFS from "@shuvi/react-fs";
-import AppComponent from "./AppComponent";
-import { File } from "./models/files";
-import { Store, createStore, StoreProvider } from "./models/store";
-import { IBuildOptions, ISpecifier } from "./types";
+import React from 'react';
+import { useStaticRendering } from 'mobx-react';
+import ReactFS from '@shuvi/react-fs';
+import AppComponent from './AppComponent';
+import { File } from './models/files';
+import { Store, createStore, StoreProvider } from './models/store';
+import { IBuildOptions, ISpecifier } from './types';
 
 export class App {
   private _store: Store;
@@ -26,7 +26,7 @@ export class App {
     this._store.routesContent = content;
   }
 
-  addFile(file: File, dir: string = "/"): void {
+  addFile(file: File, dir: string = '/'): void {
     this._store.addFile(file, dir);
   }
 
@@ -39,17 +39,21 @@ export class App {
   }
 
   waitUntilBuild(): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this._onBuildDoneCbs.push(resolve);
     });
   }
 
   async build(options: IBuildOptions): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       ReactFS.render(this._getRootComp(), options.dir, () => {
         resolve();
       });
     });
+  }
+
+  stopBuild(dir: string) {
+    return ReactFS.unmount(dir);
   }
 
   async buildOnce(options: IBuildOptions): Promise<void> {

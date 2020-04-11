@@ -37,6 +37,8 @@ export interface IPaths {
 
   // functional dirs
   pagesDir: string;
+
+  publicDir: string;
 }
 
 export interface IConfigCore {
@@ -60,7 +62,7 @@ export interface IConfig {
   outputPath: string;
   rootDir: string;
   ssr: boolean;
-  assetPrefix: string;
+  publicPath: string;
   env: Record<string, string>;
   router: {
     history: IRouterHistoryMode;
@@ -73,8 +75,8 @@ export interface IConfig {
 export interface IHookOpts<InitValue = void, Args extends any[] = any[]> {
   name: string;
   fn: InitValue extends void
-    ? (...args: Args) => void
-    : (init: InitValue, ...args: Args) => InitValue;
+    ? (...args: Args) => void | Promise<void>
+    : (init: InitValue, ...args: Args) => InitValue | Promise<InitValue>;
   before?: string;
   stage?: number;
 }
@@ -122,5 +124,8 @@ export interface IApi {
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
   resolveBuildFile(...paths: string[]): string;
+  resolvePublicFile(...paths: string[]): string;
   getAssetPublicUrl(...paths: string[]): string;
+
+  destory(): Promise<void>;
 }

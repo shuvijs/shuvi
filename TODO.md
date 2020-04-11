@@ -17,3 +17,6 @@
 - ts support
 - ssr error handle (can do in user side)
 - nested getInitialProps ✅
+
+
+rename /core/App.tsx => /core/app.tsx

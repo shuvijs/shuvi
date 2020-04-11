@@ -1,7 +1,7 @@
-import path from "path";
-import fse from "fs-extra";
-import ReactReconciler, { OpaqueHandle } from "react-reconciler";
-import { Type } from "./types";
+import path from 'path';
+import fse from 'fs-extra';
+import ReactReconciler, { OpaqueHandle } from 'react-reconciler';
+import { Type } from './types';
 
 type Props = {
   name: string;
@@ -36,8 +36,8 @@ function traverseUp(tree: OpaqueHandle, visitor: (node: OpaqueHandle) => void) {
 
 function getDir(rootDir: string, internalInstanceHandle: OpaqueHandle) {
   let pathSegments: string[] = [];
-  traverseUp(internalInstanceHandle, node => {
-    if (node.elementType === "dir") {
+  traverseUp(internalInstanceHandle, (node) => {
+    if (node.elementType === 'dir') {
       pathSegments.push(node.memoizedProps.name);
     }
   });
@@ -47,12 +47,12 @@ function getDir(rootDir: string, internalInstanceHandle: OpaqueHandle) {
 function appendChild(child: Instance) {
   const fsPath = path.join(child.dir, child.name);
   switch (child.type) {
-    case "file":
+    case 'file':
       fse.ensureDirSync(child.dir);
-      const fd = (child.fd = fse.openSync(fsPath, "w+"));
+      const fd = (child.fd = fse.openSync(fsPath, 'w+'));
       fse.writeSync(fd, child.content, 0);
       break;
-    case "dir":
+    case 'dir':
       fse.ensureDirSync(fsPath);
       break;
     default:
@@ -66,13 +66,14 @@ function removeChild(child: Instance) {
 }
 
 export const ReactFsReconciler = ReactReconciler(({
+  isPrimaryRenderer: true,
   supportsMutation: true,
   getPublicInstance(instance: Instance): PublicInstance {
     return instance;
   },
   getRootHostContext(rootContainerInstance: Container): HostContext {
     return {
-      dir: rootContainerInstance.dir
+      dir: rootContainerInstance.dir,
     };
   },
   getChildHostContext(
@@ -80,9 +81,9 @@ export const ReactFsReconciler = ReactReconciler(({
     type: Type,
     rootContainerInstance: Container
   ): HostContext {
-    if (type === "dir") {
+    if (type === 'dir') {
       return {
-        dir: null
+        dir: null,
       };
     }
 
@@ -107,7 +108,7 @@ export const ReactFsReconciler = ReactReconciler(({
       dir: hostContext.dir,
       name: props.name,
       type: type,
-      content: props.content
+      content: props.content,
     };
   },
 
@@ -143,7 +144,7 @@ export const ReactFsReconciler = ReactReconciler(({
       updatePayload.newName = newProps.name;
     }
 
-    if (type === "file") {
+    if (type === 'file') {
       if (newProps.content !== oldProps.content) {
         hasUpdate = true;
         updatePayload.newContent = newProps.content;
@@ -202,6 +203,5 @@ export const ReactFsReconciler = ReactReconciler(({
   },
   resetTextContent(instance: Instance): void {},
   prepareForCommit(containerInfo: Container): void {},
-  resetAfterCommit(containerInfo: Container): void {}
+  resetAfterCommit(containerInfo: Container): void {},
 } as any) as ReactReconciler.HostConfig<Type, Props, Container, Instance, TextInstance, HydratableInstance, PublicInstance, HostContext, UpdatePayload, unknown, unknown, unknown>);
-

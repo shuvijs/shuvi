@@ -7,6 +7,7 @@ import {
   IEventAppReady,
   IHookAppRoutes,
   IHookAppRoutesFile,
+  IHookDestory,
   ISpecifier,
   IPaths,
   IShuviMode,
@@ -17,7 +18,7 @@ import { joinPath } from '@shuvi/utils/lib/string';
 import { Hooks } from '../lib/hooks';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes } from '../lib/serializeRoutes';
-import { DEV_PUBLIC_PATH } from '../constants';
+import { PUBLIC_PATH } from '../constants';
 import { IResources, IBuiltResource, IPlugin } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
@@ -78,7 +79,7 @@ export class Api implements IApi {
 
   get assetPublicPath(): string {
     let prefix =
-      this.mode === 'development' ? DEV_PUBLIC_PATH : this.config.assetPrefix;
+      this.mode === 'development' ? PUBLIC_PATH : this.config.publicPath;
 
     if (!prefix.endsWith('/')) {
       prefix += '/';
@@ -170,12 +171,13 @@ export class Api implements IApi {
 
   addResoure(identifier: string, loader: () => any): void {
     const cacheable = this.mode === 'production';
+    const api = this;
     // TODO: warn exitsed identifier
     if (cacheable) {
-      Object.defineProperty(this._resources, identifier, {
+      Object.defineProperty(api._resources, identifier, {
         get() {
           const value = loader();
-          Object.defineProperty(this._resources, identifier, {
+          Object.defineProperty(api._resources, identifier, {
             value,
             enumerable: true,
             configurable: true,
@@ -228,7 +230,19 @@ export class Api implements IApi {
     return joinPath(this.paths.buildDir, ...paths);
   }
 
+  resolvePublicFile(...paths: string[]): string {
+    return joinPath(this.paths.publicDir, ...paths);
+  }
+
   getPluginApi() {
     return this;
+  }
+
+  async destory() {
+    if (this._server) {
+      this._server.close();
+    }
+    this._app.stopBuild(this.paths.appDir);
+    await this.callHook<IHookDestory>('destory');
   }
 }

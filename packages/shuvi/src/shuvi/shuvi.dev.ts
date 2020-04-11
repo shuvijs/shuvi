@@ -1,15 +1,16 @@
-import { IEventBundlerDone } from "@shuvi/types";
-import { getProjectInfo } from "@shuvi/toolpack/lib/utils/typeScript";
-import { IIncomingMessage, IServerResponse, INextFunction } from "../server";
-import { getDevMiddleware } from "../lib/devMiddleware";
-import { OnDemandRouteManager } from "../lib/onDemandRouteManager";
-import { acceptsHtml } from "../lib/utils";
+import { IEventBundlerDone } from '@shuvi/types';
+import { getProjectInfo } from '@shuvi/toolpack/lib/utils/typeScript';
+import { IIncomingMessage, IServerResponse, INextFunction } from '../server';
+import { getDevMiddleware } from '../lib/devMiddleware';
+import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
+import { acceptsHtml } from '../lib/utils';
+import { serveStatic } from '../lib/serveStatic';
 import {
   DEV_PAGE_STATIC_REGEXP,
   WEBPACK_CONFIG_CLIENT,
-  WEBPACK_CONFIG_SERVER
-} from "../constants";
-import Base, { IShuviConstructorOptions } from "./shuvi.base";
+  WEBPACK_CONFIG_SERVER,
+} from '../constants';
+import Base, { IShuviConstructorOptions } from './shuvi.base';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr: OnDemandRouteManager;
@@ -27,32 +28,35 @@ export default class ShuviDev extends Base {
 
     // prepare server
     const devMiddleware = await getDevMiddleware({
-      api
+      api,
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
     const { useTypeScript } = getProjectInfo(api.paths.rootDir);
     devMiddleware.watchCompiler(WEBPACK_CONFIG_CLIENT, {
       useTypeScript,
-      log: console.log.bind(console)
+      log: console.log.bind(console),
     });
     devMiddleware.watchCompiler(WEBPACK_CONFIG_SERVER, {
       useTypeScript: false,
-      log: console.log.bind(console)
+      log: console.log.bind(console),
     });
 
     // keep the order
     api.server.use(this._onDemandRouteMiddleware.bind(this));
     devMiddleware.apply();
+    api.server.use(api.assetPublicPath, this._plubicDirMiddleware.bind(this));
     api.server.use(this._pageMiddleware.bind(this));
+
+    await devMiddleware.waitUntilValid();
   }
 
-  async listen(port: number, hostname: string = "localhost"): Promise<void> {
+  async listen(port: number, hostname: string = 'localhost'): Promise<void> {
     const status = {
       [WEBPACK_CONFIG_CLIENT]: false,
-      [WEBPACK_CONFIG_SERVER]: false
+      [WEBPACK_CONFIG_SERVER]: false,
     };
-    this._api.on<IEventBundlerDone>("bundler:done", ({ first, name }) => {
+    this._api.on<IEventBundlerDone>('bundler:done', ({ first, name }) => {
       status[name] = true;
       if (
         first &&
@@ -60,19 +64,19 @@ export default class ShuviDev extends Base {
         status[WEBPACK_CONFIG_SERVER]
       ) {
         const localUrl = `http://${
-          hostname === "0.0.0.0" ? "localhost" : hostname
+          hostname === '0.0.0.0' ? 'localhost' : hostname
         }:${port}`;
         console.log(`Ready on ${localUrl}`);
       }
     });
 
-    console.log("Starting the development server...");
+    console.log('Starting the development server...');
 
     return super.listen(port, hostname);
   }
 
   protected getMode() {
-    return "development" as const;
+    return 'development' as const;
   }
 
   private async _onDemandRouteMiddleware(
@@ -90,31 +94,51 @@ export default class ShuviDev extends Base {
     next();
   }
 
+  private async _plubicDirMiddleware(
+    req: IIncomingMessage,
+    res: IServerResponse
+  ) {
+    const api = this._api;
+    const asestAbsPath = api.resolvePublicFile(req.url!);
+    try {
+      await serveStatic(req, res, asestAbsPath);
+    } catch (err) {
+      if (err.code === 'ENOENT' || err.statusCode === 404) {
+        this._handle404(req, res);
+      } else if (err.statusCode === 412) {
+        res.statusCode = 412;
+        return res.end();
+      } else {
+        throw err;
+      }
+    }
+  }
+
   private async _pageMiddleware(
     req: IIncomingMessage,
     res: IServerResponse,
     next: INextFunction
   ) {
     const headers = req.headers;
-    if (req.method !== "GET") {
+    if (req.method !== 'GET') {
       return next();
-    } else if (!headers || typeof headers.accept !== "string") {
+    } else if (!headers || typeof headers.accept !== 'string') {
       return next();
-    } else if (headers.accept.indexOf("application/json") === 0) {
+    } else if (headers.accept.indexOf('application/json') === 0) {
       return next();
     } else if (
-      !acceptsHtml(headers.accept, { htmlAcceptHeaders: ["text/html"] })
+      !acceptsHtml(headers.accept, { htmlAcceptHeaders: ['text/html'] })
     ) {
       return next();
     }
 
-    await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || "/");
+    await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || '/');
 
     let err: Error | undefined;
     try {
       await this._handlePageRequest(req, res);
     } catch (error) {
-      console.warn("render fail");
+      console.error('render fail', error);
       err = error;
     }
 

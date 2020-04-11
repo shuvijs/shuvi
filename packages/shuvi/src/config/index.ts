@@ -1,17 +1,17 @@
-import { IConfig } from "@shuvi/types";
-import { deepmerge } from "@shuvi/utils/lib/deepmerge";
-import path from "path";
-import { CONFIG_FILE, ASSET_PREFIX } from "../constants";
+import { IConfig } from '@shuvi/types';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import path from 'path';
+import { CONFIG_FILE, PUBLIC_PATH } from '../constants';
 
 const defaultConfig: IConfig = {
-  ssr: false,
+  ssr: true,
   env: {},
   rootDir: process.cwd(),
-  outputPath: "dist",
-  assetPrefix: ASSET_PREFIX,
+  outputPath: 'dist',
+  publicPath: PUBLIC_PATH,
   router: {
-    history: "auto"
-  }
+    history: 'auto',
+  },
 };
 
 async function loadConfigFromFile<T>(configPath: string): Promise<T> {
@@ -25,7 +25,7 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
     config = (config as any).default || config;
   } catch (err) {
     // Ignore MODULE_NOT_FOUND
-    if (err.code !== "MODULE_NOT_FOUND") {
+    if (err.code !== 'MODULE_NOT_FOUND') {
       throw err;
     }
   }
