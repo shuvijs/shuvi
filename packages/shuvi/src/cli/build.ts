@@ -35,6 +35,10 @@ async function bundle({ api }: { api: Api }) {
 }
 
 function copyPublicFolder(api: Api) {
+  if (!fse.existsSync(api.paths.publicDir)) {
+    return;
+  }
+
   fse.copySync(
     api.paths.publicDir,
     path.join(api.paths.buildDir, BUILD_CLIENT_DIR),
