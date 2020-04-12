@@ -43,7 +43,7 @@ async function createTextContext(app: Shuvi) {
 
 export async function launchFixture(
   name: string,
-  overrides?: Partial<IConfig>
+  overrides: Partial<IConfig> = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
   const shuviApp = shuvi({ dev: true, config });
@@ -52,7 +52,7 @@ export async function launchFixture(
 
 export async function serveFixture(
   name: string,
-  overrides?: Partial<IConfig>
+  overrides: Partial<IConfig> = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
   await build(config);

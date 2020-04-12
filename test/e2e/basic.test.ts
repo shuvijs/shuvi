@@ -74,7 +74,7 @@ describe('Basic Features', () => {
   });
 });
 
-describe('Basic Features: CSR', () => {
+describe('[SPA] Basic Features', () => {
   let ctx: AppCtx;
   let page: Page;
 

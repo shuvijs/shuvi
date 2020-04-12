@@ -8,7 +8,7 @@
   },
   "author": "liximomo",
   "license": "MIT",
-  "main": "index.js",
+  "main": "lib/index.js",
   "files": [
     "lib",
     "template"
