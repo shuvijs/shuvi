@@ -13,6 +13,42 @@ Write less code, Let shuvi do more.
 `shuvi` is a monorepo, meaning it is divided into independent sub-packages.<br>
 These packages can be found in the [`packages/`](https://github.com/liximomo/shuvi/tree/master/packages) directory.
 
+### app
+
+Type definitions for shuvi application.
+
+### core
+
+Core components.
+
+### runtime-core
+
+Core runtime of application.
+
+### runtime-react
+
+React runtime for application.
+
+### shuvi
+
+Assemble other packages for setting up the development server, building production builds.
+
+### shared
+
+Reusable logic within the porject.
+
+### utils
+
+Generally reusable logi.
+
+### toolpack
+
+configuring for webpack, babel, etc.
+
+### types
+
+Type definitions for shuvi.
+
 ## Setting Up a Local Copy
 
 1. Clone the repo with `git clone https://github.com/liximomo/shuvi`
