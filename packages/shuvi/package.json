@@ -10,7 +10,7 @@
   "license": "MIT",
   "main": "./lib/index.js",
   "bin": {
-    "shuvi": "./lib/cli/index.js"
+    "shuvi": "./lib/cli/cli.js"
   },
   "files": [
     "lib"
