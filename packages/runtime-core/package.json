@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "@shuvi/shared": "^0.0.1-alpha.12",
-    "@shuvi/toolpack": "^0.0.1-alpha.12"
+    "@shuvi/toolpack": "^0.0.1-alpha.12",
+    "@shuvi/types": "^0.0.1-alpha.12"
   },
   "peerDependencies": {
     "@shuvi/app": "^0.0.1-alpha.0"
