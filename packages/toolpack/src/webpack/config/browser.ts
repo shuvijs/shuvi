@@ -1,11 +1,10 @@
-import crypto from "crypto";
-import webpack from "webpack";
-import WebpackChain from "webpack-chain";
-import { getTypeScriptInfo } from "@shuvi/utils/lib/detectTypescript";
-// import BuildManifestPlugin from "../plugins/build-manifest-plugin";
-import { baseWebpackChain, BaseOptions } from "./base";
-import { withStyle } from "./parts/style";
-import { resolvePreferTarget } from "./parts/resolve";
+import crypto from 'crypto';
+import webpack from 'webpack';
+import WebpackChain from 'webpack-chain';
+import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
+import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
+import { baseWebpackChain, BaseOptions } from './base';
+import { withStyle } from './parts/style';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
@@ -18,34 +17,33 @@ export function createBrowserWebpackChain({
   const chain = baseWebpackChain(baseOptions);
   const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
-  chain.target("web");
-  chain.devtool(dev ? "cheap-module-source-map" : false);
-  const extensions = [
-    ...(useTypeScript ? [".tsx", ".ts"] : []),
-    ".mjs",
-    ".js",
-    ".jsx",
-    ".json",
-    ".wasm"
-  ];
+  chain.target('web');
+  chain.devtool(dev ? 'cheap-module-source-map' : false);
+  chain.resolve.extensions.merge([
+    ...(useTypeScript ? ['.tsx', '.ts'] : []),
+    '.mjs',
+    '.js',
+    '.jsx',
+    '.json',
+    '.wasm',
+  ]);
+  if (baseOptions.target) {
+    chain.resolve
+      .plugin('private/prefer-resolver-plugin')
+      .use(PreferResolverPlugin, [{ suffix: baseOptions.target }]);
+  }
 
-  // TODO: use a resolver plugin to replace this
-  chain.resolve.extensions.merge(
-    baseOptions.target
-      ? resolvePreferTarget(baseOptions.target, extensions)
-      : extensions
-  );
   if (dev) {
-    chain.plugin("private/hmr-plugin").use(webpack.HotModuleReplacementPlugin);
+    chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
   } else {
     chain.optimization.splitChunks({
-      chunks: "all",
+      chunks: 'all',
       cacheGroups: {
         default: false,
         vendors: false,
         framework: {
-          chunks: "all",
-          name: "framework",
+          chunks: 'all',
+          name: 'framework',
           // This regex ignores nested copies of framework libraries so they're
           // bundled with their issuer.
           // https://github.com/zeit/next.js/pull/9012
@@ -53,7 +51,7 @@ export function createBrowserWebpackChain({
           priority: 40,
           // Don't let webpack eliminate this chunk (prevents this chunk from
           // becoming a part of the commons chunk)
-          enforce: true
+          enforce: true,
         },
         lib: {
           test(module: { size: Function; identifier: Function }): boolean {
@@ -67,7 +65,7 @@ export function createBrowserWebpackChain({
             libIdent?: Function;
             updateHash: (hash: crypto.Hash) => void;
           }): string {
-            const hash = crypto.createHash("sha1");
+            const hash = crypto.createHash('sha1');
             if (module.type === `css/mini-extract`) {
               module.updateHash(hash);
             } else {
@@ -82,53 +80,53 @@ export function createBrowserWebpackChain({
               );
             }
 
-            return hash.digest("hex").substring(0, 8);
+            return hash.digest('hex').substring(0, 8);
           },
           priority: 30,
           minChunks: 1,
-          reuseExistingChunk: true
+          reuseExistingChunk: true,
         },
         commons: {
-          name: "commons",
+          name: 'commons',
           minChunks: 2,
-          priority: 20
+          priority: 20,
         },
         shared: {
           name(module: any, chunks: any) {
             return crypto
-              .createHash("sha1")
+              .createHash('sha1')
               .update(
                 chunks.reduce(
                   (acc: string, chunk: webpack.compilation.Chunk) => {
                     return acc + chunk.name;
                   },
-                  ""
+                  ''
                 )
               )
-              .digest("hex");
+              .digest('hex');
           },
           priority: 10,
           minChunks: 2,
-          reuseExistingChunk: true
-        }
+          reuseExistingChunk: true,
+        },
       },
       maxInitialRequests: 25,
-      minSize: 20000
+      minSize: 20000,
     });
   }
 
-  chain.plugin("define").tap(([options]) => [
+  chain.plugin('define').tap(([options]) => [
     {
       ...options,
       // prevent errof of destructing process.env
-      "process.env": JSON.stringify("{}")
-    }
+      'process.env': JSON.stringify('{}'),
+    },
   ]);
-  chain.plugin("private/build-manifest").tap(([options]) => [
+  chain.plugin('private/build-manifest').tap(([options]) => [
     {
       ...options,
-      modules: true
-    }
+      modules: true,
+    },
   ]);
 
   return withStyle(chain, { extractCss: !dev, publicPath });
