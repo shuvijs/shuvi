@@ -1,15 +1,15 @@
-import WebpackChain from "webpack-chain";
-import TerserPlugin from "terser-webpack-plugin";
-import webpack from "webpack";
-import path from "path";
-import { getTypeScriptInfo } from "@shuvi/utils/lib/detectTypescript";
-import ChunkNamesPlugin from "../plugins/chunk-names-plugin";
-import BuildManifestPlugin from "../plugins/build-manifest-plugin";
-import ModuleReplacePlugin from "../plugins/module-replace-plugin";
-import RequireCacheHotReloaderPlugin from "../plugins/require-cache-hot-reloader-plugin";
-import { AppSourceRegexs } from "../../constants";
+import WebpackChain from 'webpack-chain';
+import TerserPlugin from 'terser-webpack-plugin';
+import webpack from 'webpack';
+import path from 'path';
+import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
+import ChunkNamesPlugin from '../plugins/chunk-names-plugin';
+import BuildManifestPlugin from '../plugins/build-manifest-plugin';
+import ModuleReplacePlugin from '../plugins/module-replace-plugin';
+import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
+import { AppSourceRegexs } from '../../constants';
 
-const dumpRouteComponent = require.resolve("../../utils/emptyComponent");
+const dumpRouteComponent = require.resolve('../../utils/emptyComponent');
 
 const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);
@@ -31,14 +31,14 @@ export interface BaseOptions {
 
 const terserOptions = {
   parse: {
-    ecma: 8
+    ecma: 8,
   },
   compress: {
     ecma: 5,
     warnings: false,
     // The following two options are known to break valid JavaScript code
     comparisons: false,
-    inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+    inline: 2, // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
   },
   mangle: { safari10: true },
   output: {
@@ -46,8 +46,8 @@ const terserOptions = {
     safari10: true,
     comments: false,
     // Fixes usage of Emoji and certain Regex
-    ascii_only: true
-  }
+    ascii_only: true,
+  },
 };
 
 export { WebpackChain };
@@ -58,15 +58,15 @@ export function baseWebpackChain({
   srcDirs,
   mediaFilename,
   buildManifestFilename,
-  publicPath = "/",
-  env = {}
+  publicPath = '/',
+  env = {},
 }: BaseOptions): WebpackChain {
   const { typeScriptPath, tsConfigPath, useTypeScript } = getTypeScriptInfo(
     projectRoot
   );
   const config = new WebpackChain();
 
-  config.mode(dev ? "development" : "production");
+  config.mode(dev ? 'development' : 'production');
   config.bail(!dev);
   config.performance.hints(false);
   config.context(projectRoot);
@@ -77,92 +77,92 @@ export function baseWebpackChain({
     nodeEnv: false,
     splitChunks: false,
     runtimeChunk: undefined,
-    minimize: !dev
+    minimize: !dev,
   });
   if (!dev) {
-    config.optimization.minimizer("terser").use(TerserPlugin, [
+    config.optimization.minimizer('terser').use(TerserPlugin, [
       {
         extractComments: false,
         parallel: true,
         cache: true,
         sourceMap: false,
-        terserOptions
-      }
+        terserOptions,
+      },
     ]);
   }
 
   config.output.merge({
     publicPath,
-    hotUpdateChunkFilename: "static/webpack/[id].[hash].hot-update.js",
-    hotUpdateMainFilename: "static/webpack/[hash].hot-update.json",
+    hotUpdateChunkFilename: 'static/webpack/[id].[hash].hot-update.js',
+    hotUpdateMainFilename: 'static/webpack/[hash].hot-update.json',
     // This saves chunks with the name given via `import()`
     chunkFilename: `static/chunks/${
-      dev ? "[name]" : "[name].[contenthash:8]"
+      dev ? '[name]' : '[name].[contenthash:8]'
     }.js`,
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
     futureEmitAssets: !dev,
-    webassemblyModuleFilename: "static/wasm/[modulehash:8].wasm"
+    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
   });
 
   // Support for NODE_PATH
-  const nodePathList = (process.env.NODE_PATH || "")
-    .split(process.platform === "win32" ? ";" : ":")
-    .filter(p => !!p);
+  const nodePathList = (process.env.NODE_PATH || '')
+    .split(process.platform === 'win32' ? ';' : ':')
+    .filter((p) => !!p);
 
   config.resolve.merge({
     modules: [
-      "node_modules",
-      ...nodePathList // Support for NODE_PATH environment variable
+      'node_modules',
+      ...nodePathList, // Support for NODE_PATH environment variable
     ],
-    alias: {}
+    alias: {},
   });
 
   config.resolveLoader.merge({
-    alias: ["babel-loader", "route-component-loader"].reduce(
+    alias: ['babel-loader', 'route-component-loader'].reduce(
       (alias, loader) => {
         alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
         return alias;
       },
       {} as Record<string, string>
-    )
+    ),
   });
 
-  config.module.set("strictExportPresence", true);
-  const mainRule = config.module.rule("main");
+  config.module.set('strictExportPresence', true);
+  const mainRule = config.module.rule('main');
   mainRule
-    .oneOf("js")
+    .oneOf('js')
     .test(/\.(tsx|ts|js|mjs|jsx)$/)
     .include.merge([...srcDirs, ...AppSourceRegexs])
     .end()
     .exclude.add((path: string) => {
-      if (AppSourceRegexs.some(r => r.test(path))) {
+      if (AppSourceRegexs.some((r) => r.test(path))) {
         return false;
       }
       return /node_modules/.test(path);
     })
     .end()
-    .use("babel-loader")
-    .loader("@shuvi/babel-loader")
+    .use('babel-loader')
+    .loader('@shuvi/babel-loader')
     .options({
       isNode: false,
-      cacheDirectory: true
+      cacheDirectory: true,
     });
   mainRule
-    .oneOf("media")
+    .oneOf('media')
     .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
     .end()
-    .use("file-loader")
-    .loader(require.resolve("file-loader"))
+    .use('file-loader')
+    .loader(require.resolve('file-loader'))
     .options({
-      name: mediaFilename
+      name: mediaFilename,
     });
 
-  config.plugin("private/chunk-names-plugin").use(ChunkNamesPlugin);
+  config.plugin('private/chunk-names-plugin').use(ChunkNamesPlugin);
   config
-    .plugin("private/ignore-plugin")
+    .plugin('private/ignore-plugin')
     .use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/]);
-  config.plugin("define").use(webpack.DefinePlugin, [
+  config.plugin('define').use(webpack.DefinePlugin, [
     {
       ...Object.keys(env).reduce((acc, key) => {
         if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
@@ -171,59 +171,57 @@ export function baseWebpackChain({
 
         return {
           ...acc,
-          [`process.env.${key}`]: JSON.stringify(env[key])
+          [`process.env.${key}`]: JSON.stringify(env[key]),
         };
       }, {}),
-      "process.env.NODE_ENV": JSON.stringify(dev ? "development" : "production")
-    }
+      'process.env.NODE_ENV': JSON.stringify(
+        dev ? 'development' : 'production'
+      ),
+    },
   ]);
   config
-    .plugin("private/build-manifest")
+    .plugin('private/build-manifest')
     .use(BuildManifestPlugin, [{ filename: buildManifestFilename }]);
 
   if (useTypeScript) {
     config
-      .plugin("private/fork-ts-checker-webpack-plugin")
-      .use(require.resolve("fork-ts-checker-webpack-plugin"), [
+      .plugin('private/fork-ts-checker-webpack-plugin')
+      .use(require.resolve('fork-ts-checker-webpack-plugin'), [
         {
           typescript: typeScriptPath,
           async: dev,
           useTypescriptIncrementalApi: true,
           checkSyntacticErrors: true,
           tsconfig: tsConfigPath,
-          reportFiles: ["**", "!**/__tests__/**", "!**/?(*.)(spec|test).*"],
+          reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
           compilerOptions: { isolatedModules: true, noEmit: true },
           silent: true,
-          formatter: "codeframe"
-        }
+          formatter: 'codeframe',
+        },
       ]);
   }
 
   if (dev) {
-    config.plugin("private/module-replace-plugin").use(ModuleReplacePlugin, [
+    config.plugin('private/module-replace-plugin').use(ModuleReplacePlugin, [
       {
         modules: [
           {
             test: /\?__shuvi-route/,
-            module: dumpRouteComponent
-          }
-        ]
-      }
+            module: dumpRouteComponent,
+          },
+        ],
+      },
     ]);
     // Even though require.cache is server only we have to clear assets from both compilations
     // This is because the client compilation generates the build manifest that's used on the server side
     config
-      .plugin("private/require-cache-hot-reloader")
+      .plugin('private/require-cache-hot-reloader')
       .use(RequireCacheHotReloaderPlugin);
   } else {
     config
-      .plugin("private/hashed-moduleids-plugin")
+      .plugin('private/hashed-moduleids-plugin')
       .use(webpack.HashedModuleIdsPlugin);
   }
 
   return config;
 }
-
-// export function createWebpackConfig(option: Option) {
-//   return createWebpackChain(option);
-// }
