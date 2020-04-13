@@ -6,7 +6,7 @@
   - [ ] app (liximomo)
 - [ ] @shuvi/runtime-react
   - [ ] dynamic (liximomo)
-  - [ ] head (liximomo)
+  - [ ] head (kayne)
 - [ ] @shuvi/utils (zhengyutay)
 - [ ] @shuvi/toolpack
 
