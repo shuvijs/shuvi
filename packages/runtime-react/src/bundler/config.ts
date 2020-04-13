@@ -36,8 +36,14 @@ export function config(api: IApi) {
         'described-resolve',
         [
           {
-            react$: [resolveUser('react'), resolveLocal('react')],
-            'react-dom$': [resolveUser('react-dom'), resolveLocal('react-dom')],
+            name: 'react',
+            onlyModule: true,
+            alias: [resolveUser('react'), resolveLocal('react')],
+          },
+          {
+            name: 'react-dom',
+            onlyModule: true,
+            alias: [resolveUser('react-dom'), resolveLocal('react-dom')],
           },
         ],
         'resolve',
