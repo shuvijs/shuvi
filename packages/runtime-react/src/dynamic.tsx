@@ -1,7 +1,7 @@
-import React from "react";
-import Loadable from "./loadable";
+import React from 'react';
+import Loadable from './loadable';
 
-const isServerSide = typeof window === "undefined";
+const isServerSide = typeof window === 'undefined';
 
 export type LoaderComponent<P = {}> = Promise<
   React.ComponentType<P> | { default: React.ComponentType<P> }
@@ -10,7 +10,7 @@ export type LoaderComponent<P = {}> = Promise<
 export type Loader<P = {}> = () => LoaderComponent<P>;
 
 export type LoadableGeneratedOptions = {
-  webpack?(): () => string[];
+  webpack?(): string[];
   modules?: string[];
 };
 
@@ -18,7 +18,7 @@ export type LoadableBaseOptions<P = {}> = LoadableGeneratedOptions & {
   loading?: ({
     error,
     isLoading,
-    pastDelay
+    pastDelay,
   }: {
     error?: Error | null;
     isLoading?: boolean;
@@ -66,7 +66,7 @@ export default function dynamic<P = {}>(
     // A loading component is not required, so we default it
     loading: ({ error, isLoading, pastDelay }) => {
       if (!pastDelay) return null;
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === 'development') {
         if (isLoading) {
           return null;
         }
@@ -82,20 +82,20 @@ export default function dynamic<P = {}>(
       }
 
       return null;
-    }
+    },
   };
 
-  if (typeof dynamicOptions === "function") {
+  if (typeof dynamicOptions === 'function') {
     loadableOptions.loader = dynamicOptions;
     // Support for having first argument being options, eg: dynamic({loader: import('../hello-world')})
-  } else if (typeof dynamicOptions === "object") {
+  } else if (typeof dynamicOptions === 'object') {
     loadableOptions = { ...loadableOptions, ...dynamicOptions };
   }
 
   // Support for passing options, eg: dynamic(import('../hello-world'), {loading: () => <p>Loading something</p>})
   loadableOptions = { ...loadableOptions, ...options };
 
-  if (typeof loadableOptions.ssr === "boolean") {
+  if (typeof loadableOptions.ssr === 'boolean') {
     if (!loadableOptions.ssr) {
       delete loadableOptions.ssr;
       return noSSR(loadableFn, loadableOptions);
