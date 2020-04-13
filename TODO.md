@@ -7,7 +7,7 @@
 - [ ] @shuvi/runtime-react
   - [ ] dynamic (liximomo)
   - [ ] head (liximomo)
-- [ ] @shuvi/utils
+- [ ] @shuvi/utils (zhengyutay)
 - [ ] @shuvi/toolpack
 
 ## e2e tests
