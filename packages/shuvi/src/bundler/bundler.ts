@@ -35,6 +35,7 @@ class BundlerImpl {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       const internalTargets = await this._getInternalTargets();
+      // TODO: add bundler:target hook, allow add extra compiler targer
       this._compiler = webpack([...internalTargets, ...this._configs]);
     }
 

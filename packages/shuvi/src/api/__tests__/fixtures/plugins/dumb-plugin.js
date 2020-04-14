@@ -1,7 +1,7 @@
 module.exports = class Plugin {
   constructor(options) {
     this.options = options;
-    this.name = "dumb";
+    this.name = 'dumb';
   }
 
   apply(api) {

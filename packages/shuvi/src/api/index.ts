@@ -1,5 +1,6 @@
-import { Api } from "./api";
+import { Api } from './api';
+import { PluginApi } from './pluginApi';
 
-export { Api };
+export { Api, PluginApi };
 
-export * from "./types";
+export * from './types';

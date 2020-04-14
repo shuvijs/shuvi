@@ -1,3 +1,5 @@
-export { shuvi, Shuvi } from "./shuvi";
+export { shuvi, Shuvi } from './shuvi';
 
-export { WEBPACK_CONFIG_CLIENT, WEBPACK_CONFIG_SERVER } from "./constants";
+export { PluginApi } from './api';
+
+export { WEBPACK_CONFIG_CLIENT, WEBPACK_CONFIG_SERVER } from './constants';

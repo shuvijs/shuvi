@@ -24,6 +24,7 @@ import { Server } from '../server';
 import { setupApp } from './setupApp';
 import { initCoreResource } from './initCoreResource';
 import { resolvePlugins } from './plugin';
+import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
@@ -38,8 +39,9 @@ export class Api implements IApi {
   private _server!: Server;
   private _resources: IResources = {} as IResources;
   private _plugins: IPlugin[];
+  private _pluginApi!: PluginApi;
 
-  constructor({ mode, config }: { mode: IShuviMode; config: IConfig }) {
+  constructor({ mode, config }: { mode?: IShuviMode; config: IConfig }) {
     if (mode) {
       this.mode = mode;
     } else if (ServiceModes.includes(process.env.NODE_ENV as any)) {
@@ -56,8 +58,7 @@ export class Api implements IApi {
     this._hooks = new Hooks();
     this._app = new App();
     this._plugins = resolvePlugins(config.plugins || []);
-
-    this._plugins.forEach((plugin) => plugin.get()(this));
+    this._plugins.forEach((plugin) => plugin.get()(this.getPluginApi()));
 
     initCoreResource(this);
 
@@ -67,13 +68,12 @@ export class Api implements IApi {
   }
 
   get server() {
-    if (this._server) {
-      return this._server;
+    if (!this._server) {
+      this._server = new Server({
+        proxy: this.config.proxy,
+      });
     }
 
-    this._server = new Server({
-      proxy: this.config.proxy,
-    });
     return this._server;
   }
 
@@ -234,8 +234,12 @@ export class Api implements IApi {
     return joinPath(this.paths.publicDir, ...paths);
   }
 
-  getPluginApi() {
-    return this;
+  getPluginApi(): PluginApi {
+    if (!this._pluginApi) {
+      this._pluginApi = createPluginApi(this);
+    }
+
+    return this._pluginApi;
   }
 
   async destory() {
