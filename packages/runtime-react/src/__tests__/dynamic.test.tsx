@@ -10,7 +10,7 @@ import {
   cleanup,
   act,
 } from '@testing-library/react';
-import { delay } from 'test-utils';
+import { wait } from 'test-utils';
 import dynamic from '../dynamic';
 
 afterEach(cleanup);
@@ -22,7 +22,7 @@ describe('dynamic', () => {
     // so wrapped the whole test in act
     act(async () => {
       const App = dynamic(async () => {
-        await delay(100);
+        await wait(100);
         return () => <h1>App</h1>;
       });
       const { container } = render(<App />);
@@ -36,7 +36,7 @@ describe('dynamic', () => {
     act(async () => {
       const App = dynamic({
         loader: async () => {
-          await delay(100);
+          await wait(100);
           return () => <h1>App</h1>;
         },
       });
@@ -51,7 +51,7 @@ describe('dynamic', () => {
     act(async () => {
       const App = dynamic(
         async () => {
-          await delay(100);
+          await wait(100);
           return () => <h1>App</h1>;
         },
         {

@@ -7,6 +7,6 @@ export * from './findPort';
 export * from './launcher';
 export * from './build';
 
-export function delay(timeout: number) {
+export function wait(timeout: number) {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 }
