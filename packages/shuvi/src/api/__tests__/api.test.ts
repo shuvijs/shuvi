@@ -1,6 +1,6 @@
 import { Api } from '../api';
 import { PluginApi } from '../pluginApi';
-import { shuviConfig, resolvePlugin } from './utils';
+import { shuviConfig } from './utils';
 
 describe('api', () => {
   let gApi: Api;
