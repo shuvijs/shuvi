@@ -32,6 +32,8 @@ module.exports = {
 
   roots: ['<rootDir>/packages', '<rootDir>/test'],
 
+  watchPathIgnorePatterns: ['/fixtures'],
+
   testMatch: [
     '<rootDir>/test/**/*.test.[jt]s?(x)',
     '**/__tests__/**/*.test.[jt]s?(x)',
