@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import { bootstrap } from '@shuvi/app/core/bootstrap';
-import { App } from '@shuvi/app/core/app';
+import App from '@shuvi/app/core/app';
 import {
   CLIENT_CONTAINER_ID,
   DEV_STYLE_HIDE_FOUC,

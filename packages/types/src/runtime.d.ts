@@ -1,8 +1,8 @@
-import { UrlWithParsedQuery } from "url";
-import { IRouteConfig, IRoute, ITemplateData } from "@shuvi/core";
-import { ParsedUrlQuery } from "querystring";
-import { IApi } from "../index";
-import { IManifest } from "./bundler";
+import { UrlWithParsedQuery } from 'url';
+import { IRouteConfig, IRoute, ITemplateData } from '@shuvi/core';
+import { ParsedUrlQuery } from 'querystring';
+import { IApi } from '../index';
+import { IManifest } from './bundler';
 
 export interface IRequest {
   url: UrlWithParsedQuery;
@@ -35,10 +35,10 @@ export interface IHtmlTag<TagNames = string> {
 export interface IDocumentProps {
   htmlAttrs: IHtmlAttrs;
   headTags: IHtmlTag<
-    "meta" | "link" | "style" | "script" | "noscript" | "title"
+    'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
   >[];
   mainTags: IHtmlTag[];
-  scriptTags: IHtmlTag<"script">[];
+  scriptTags: IHtmlTag<'script'>[];
 }
 
 export interface IRedirectFn {
@@ -104,7 +104,7 @@ export interface IRedirectState {
 }
 
 export interface IRenderResultRedirect extends IRedirectState {
-  $type: "redirect";
+  $type: 'redirect';
 }
 
 export type IRenderAppResult<Data = {}> = {
@@ -120,7 +120,7 @@ export type IRenderAppResult<Data = {}> = {
   redirect?: IRedirectState;
 };
 
-export type IRouterAction = "PUSH" | "POP" | "REPLACE";
+export type IRouterAction = 'PUSH' | 'POP' | 'REPLACE';
 
 export interface IRouterServerContext {
   url?: string;
@@ -144,10 +144,6 @@ export interface IRouter {
   goBack(): void;
   goForward(): void;
   onChange(listener: IRouterListener): () => void;
-}
-
-export interface IAppModule {
-  App: any;
 }
 
 export interface IDocumentModule {

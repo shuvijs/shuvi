@@ -91,7 +91,7 @@ ${fileContent}
   }
 
   getAppModulePath(): string {
-    return resolveDist('app');
+    return resolveDist('App');
   }
 
   get404ModulePath(): string {

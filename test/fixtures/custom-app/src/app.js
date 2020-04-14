@@ -1,13 +1,13 @@
-import { App } from "@shuvi/app";
+import { App } from '@shuvi/app';
 
-const MyApp = props => (
+const MyApp = (props) => (
   <div>
     <div id="pathname">{props.pathname}</div>
     <App />
   </div>
 );
 
-MyApp.getInitialProps = ctx => {
+MyApp.getInitialProps = (ctx) => {
   let pathname;
   if (ctx.req) {
     pathname = ctx.req.url.pathname;
@@ -16,8 +16,8 @@ MyApp.getInitialProps = ctx => {
   }
 
   return {
-    pathname
+    pathname,
   };
 };
 
-export { MyApp as App };
+export default MyApp;

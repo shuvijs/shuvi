@@ -30,7 +30,7 @@
     "build:lib": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 10.0.0"
   },
   "dependencies": {
     "@shuvi/utils": "^0.0.1-alpha.14",
