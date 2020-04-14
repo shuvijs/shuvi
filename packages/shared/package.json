@@ -18,7 +18,7 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 10.0.0"
   },
   "dependencies": {
     "@shuvi/types": "^0.0.1-alpha.14"

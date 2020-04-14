@@ -49,7 +49,10 @@ export async function setupApp(api: Api) {
     'core'
   );
 
-  api.addAppExport(runtime.getAppModulePath(), 'App');
+  api.addAppExport(runtime.getAppModulePath(), {
+    imported: 'default',
+    local: 'App',
+  });
   api.addAppExport(runtime.getRouterModulePath(), {
     imported: 'default',
     local: 'router',
@@ -75,8 +78,8 @@ export async function setupApp(api: Api) {
               local: 'document',
             },
             [api.resolveAppFile('core', 'app')]: {
-              imported: '*',
-              local: 'app',
+              imported: 'default',
+              local: 'App',
             },
             [api.resolveAppFile('core', 'routes')]: {
               imported: 'default',

@@ -1,2 +1,3 @@
-export const App: any;
+declare const App: any;
 
+export default App;
