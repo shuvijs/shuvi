@@ -1,6 +1,6 @@
-import fs from "fs";
-import { join } from "path";
-import { promisify } from "util";
+import fs from 'fs';
+import { join } from 'path';
+import { promisify } from 'util';
 
 const fsReaddir = promisify(fs.readdir);
 const fsStat = promisify(fs.stat);
@@ -13,17 +13,17 @@ const unlinkFile = async (p: string, t = 1): Promise<void> => {
     await fsUnlink(p);
   } catch (e) {
     if (
-      (e.code === "EBUSY" ||
-        e.code === "ENOTEMPTY" ||
-        e.code === "EPERM" ||
-        e.code === "EMFILE") &&
+      (e.code === 'EBUSY' ||
+        e.code === 'ENOTEMPTY' ||
+        e.code === 'EPERM' ||
+        e.code === 'EMFILE') &&
       t < 3
     ) {
       await sleep(t * 100);
       return unlinkFile(p, t++);
     }
 
-    if (e.code === "ENOENT") {
+    if (e.code === 'ENOENT') {
       return;
     }
 
@@ -44,7 +44,7 @@ export async function recursiveDelete(
   {
     filter,
     ignore,
-    rootDir = dir
+    rootDir = dir,
   }: {
     filter?: RegExp;
     ignore?: RegExp;
@@ -55,7 +55,7 @@ export async function recursiveDelete(
   try {
     result = await fsReaddir(dir);
   } catch (e) {
-    if (e.code === "ENOENT") {
+    if (e.code === 'ENOENT') {
       return;
     }
     throw e;
@@ -64,14 +64,14 @@ export async function recursiveDelete(
   await Promise.all(
     result.map(async (part: string) => {
       const absolutePath = join(dir, part);
-      const pathStat = await fsStat(absolutePath).catch(e => {
-        if (e.code !== "ENOENT") throw e;
+      const pathStat = await fsStat(absolutePath).catch((e) => {
+        if (e.code !== 'ENOENT') throw e;
       });
       if (!pathStat) {
         return;
       }
 
-      const pp = absolutePath.replace(rootDir, "");
+      const pp = absolutePath.replace(rootDir, '');
       if (ignore && ignore.test(pp)) {
         return;
       }
@@ -83,7 +83,7 @@ export async function recursiveDelete(
         await recursiveDelete(absolutePath, {
           filter,
           ignore,
-          rootDir: pp
+          rootDir: pp,
         });
         return fsRmdir(absolutePath);
       }
