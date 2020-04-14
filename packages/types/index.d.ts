@@ -93,7 +93,6 @@ export interface IApi {
   mode: IShuviMode;
   paths: IPaths;
   config: IConfig;
-  assetPublicPath: string;
 
   tap<Config extends IHookConfig>(
     hook: Config['name'],
@@ -126,6 +125,4 @@ export interface IApi {
   resolveBuildFile(...paths: string[]): string;
   resolvePublicFile(...paths: string[]): string;
   getAssetPublicUrl(...paths: string[]): string;
-
-  destory(): Promise<void>;
 }
