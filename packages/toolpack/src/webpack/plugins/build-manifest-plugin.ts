@@ -1,16 +1,16 @@
-import { ROUTE_ID_REGEXP } from "@shuvi/shared/lib/router";
-import { Bundler } from "@shuvi/types";
-import { Compiler as WebpackCompiler } from "webpack";
+import { ROUTE_ID_REGEXP } from '@shuvi/shared/lib/router';
+import { Bundler } from '@shuvi/types';
+import { Compiler as WebpackCompiler } from 'webpack';
 // @ts-ignore
-import Entrypoint from "webpack/lib/Entrypoint";
-import { RawSource } from "webpack-sources";
+import Entrypoint from 'webpack/lib/Entrypoint';
+import { RawSource } from 'webpack-sources';
 
 import ModuleItem = Bundler.IModuleItem;
 import Manifest = Bundler.IManifest;
 
 const defaultOptions = {
-  filename: "build-manifest.json",
-  modules: false
+  filename: 'build-manifest.json',
+  modules: false,
 };
 
 interface Options {
@@ -20,7 +20,7 @@ interface Options {
 
 function getFileExt(filepath: string): string {
   const match = filepath.match(/\.(\w+)$/);
-  if (!match) return "";
+  if (!match) return '';
   return match[1];
 }
 
@@ -50,20 +50,19 @@ export default class BuildManifestPlugin {
   constructor(options: Partial<Options> = {}) {
     this._options = {
       ...defaultOptions,
-      ...options
+      ...options,
     };
   }
 
   apply(compiler: WebpackCompiler) {
-    compiler.hooks.emit.tapAsync("BuildManifest", (compilation, callback) => {
+    compiler.hooks.emit.tapAsync('BuildManifest', (compilation, callback) => {
       const assetMap = (this._manifest = {
         entries: {},
         routes: {},
         chunks: {},
-        loadble: {}
+        loadble: {},
       });
-
-      compilation.chunkGroups.forEach(chunkGroup => {
+      compilation.chunkGroups.forEach((chunkGroup) => {
         if (chunkGroup instanceof Entrypoint) {
           this._collectEntries(chunkGroup);
           return;
@@ -92,7 +91,7 @@ export default class BuildManifestPlugin {
           }
 
           const ext = getFileExt(file);
-          const normalizedPath = file.replace(/\\/g, "/");
+          const normalizedPath = file.replace(/\\/g, '/');
 
           // route chunk
           if (ROUTE_ID_REGEXP.test(chunk.name)) {
@@ -101,7 +100,7 @@ export default class BuildManifestPlugin {
           }
 
           // normal chunk
-          if (ext === "js") {
+          if (ext === 'js') {
             this._pushChunk(chunk.name, normalizedPath);
           }
         }
@@ -128,7 +127,7 @@ export default class BuildManifestPlugin {
         }
 
         const ext = getFileExt(file);
-        this._pushEntries(entrypoint.name, ext, file.replace(/\\/g, "/"));
+        this._pushEntries(entrypoint.name, ext, file.replace(/\\/g, '/'));
       }
     }
   }
@@ -152,22 +151,22 @@ export default class BuildManifestPlugin {
 
         for (const module of chunk.modulesIterable) {
           let id = module.id;
-          if (!module.type.startsWith("javascript")) {
+          if (!module.type.startsWith('javascript')) {
             continue;
           }
 
           let name =
-            typeof module.libIdent === "function"
+            typeof module.libIdent === 'function'
               ? module.libIdent({ context })
               : null;
 
-          if (name.endsWith(".css")) {
+          if (name.endsWith('.css')) {
             continue;
           }
 
           this._pushLoadableModules(request, {
             id,
-            name
+            name,
           });
         }
       });
@@ -178,7 +177,7 @@ export default class BuildManifestPlugin {
     const entries = this._manifest.entries;
     if (!entries[name]) {
       entries[name] = {
-        js: []
+        js: [],
       };
     }
     if (!entries[name][ext]) {
@@ -192,7 +191,7 @@ export default class BuildManifestPlugin {
     const routes = this._manifest.routes;
     if (!routes[name]) {
       routes[name] = {
-        js: []
+        js: [],
       };
     }
     if (!routes[name][ext]) {
@@ -214,15 +213,15 @@ export default class BuildManifestPlugin {
     if (!modules[request]) {
       modules[request] = {
         files: [],
-        children: []
+        children: [],
       };
     }
 
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       modules[request].files.push(value);
     } else if (
       // Avoid duplicate files
-      !modules[request].children.some(item => item.id === module.id)
+      !modules[request].children.some((item) => item.id === module.id)
     ) {
       modules[request].children.push(value);
     }

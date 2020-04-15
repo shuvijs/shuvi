@@ -1,19 +1,26 @@
 const path = require('path');
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: {
-    'page-1234': path.resolve(__dirname, 'page-1234.js'),
-    index: path.resolve(__dirname, 'index.js'),
-    another: path.resolve(__dirname, 'entry2.js'),
+    main: path.resolve(__dirname, 'main.js'),
   },
   output: {
     filename: '[name].js',
+    chunkFilename: 'static/chunks/[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
   optimization: {
     splitChunks: {
       chunks: 'all',
+      cacheGroups: {
+        commons: {
+          chunks: 'all',
+          minChunks: 2,
+          minSize: 0, // This is example is too small to create commons chunks
+        },
+      },
     },
+    runtimeChunk: true,
   },
 };
