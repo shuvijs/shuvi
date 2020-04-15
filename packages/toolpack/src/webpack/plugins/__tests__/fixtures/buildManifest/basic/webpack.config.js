@@ -21,6 +21,8 @@ module.exports = {
         },
       },
     },
-    runtimeChunk: true,
+    runtimeChunk: {
+      name: 'runtime',
+    },
   },
 };

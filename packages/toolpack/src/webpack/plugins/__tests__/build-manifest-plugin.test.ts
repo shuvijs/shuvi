@@ -27,11 +27,11 @@ describe('build-manifest-plugin', () => {
     expect(JSON.parse(result)).toStrictEqual({
       chunks: {
         main: 'static/chunks/main.js',
-        'runtime~main': 'runtime~main.js',
+        runtime: 'runtime.js',
       },
       entries: {
         main: {
-          js: ['runtime~main.js', 'static/chunks/main.js'],
+          js: ['runtime.js', 'static/chunks/main.js'],
         },
       },
       loadble: {},
@@ -64,11 +64,11 @@ describe('build-manifest-plugin', () => {
     expect(JSON.parse(result)).toStrictEqual({
       chunks: {
         main: 'static/chunks/main.js',
-        'runtime~main': 'runtime~main.js',
+        runtime: 'runtime.js',
       },
       entries: {
         main: {
-          js: ['runtime~main.js', 'static/chunks/main.js'],
+          js: ['runtime.js', 'static/chunks/main.js'],
         },
       },
       loadble: {
