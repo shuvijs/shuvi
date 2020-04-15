@@ -3,8 +3,8 @@ import webpack, { Configuration } from 'webpack';
 import { runCompiler } from './helpers/runCompiler';
 import { resolveFixture } from './utils';
 
-describe.only('build-manifest-plugin', () => {
-  test.only('basic', async (done) => {
+describe('build-manifest-plugin', () => {
+  test('basic', async (done) => {
     const webpackConfig = require(resolveFixture(
       'buildManifest',
       'basic',
@@ -41,7 +41,7 @@ describe.only('build-manifest-plugin', () => {
     done();
   });
 
-  test.only('basic with modules', async (done) => {
+  test('basic with modules', async (done) => {
     const webpackConfig = require(resolveFixture(
       'buildManifest',
       'basic',
