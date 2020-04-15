@@ -19,22 +19,28 @@ describe.only('build-manifest-plugin', () => {
     const stats = await runCompiler(compiler);
 
     const result = stats.compilation.assets['build-manifest.json'].source();
-
-    expect(JSON.parse(result)).toMatchObject({
-      entries: {
-        index: {
-          js: ['index.bundle.js'],
-        },
-        another: {
-          js: ['another.bundle.js'],
-        },
-      },
-      routes: {},
+    expect(JSON.parse(result)).toStrictEqual({
       chunks: {
-        another: 'another.bundle.js',
-        index: 'index.bundle.js',
+        another: 'another.js',
+        index: 'index.js',
+      },
+      entries: {
+        another: {
+          js: ['another.js'],
+        },
+        index: {
+          js: ['index.js'],
+        },
+        'page-1234': {
+          js: ['page-1234.js'],
+        },
       },
       loadble: {},
+      routes: {
+        'page-1234': {
+          js: ['page-1234.js'],
+        },
+      },
     });
 
     done();
