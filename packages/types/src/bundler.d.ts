@@ -19,9 +19,6 @@ export interface IManifest {
   entries: {
     [s: string]: IAssetMap;
   };
-  routes: {
-    [s: string]: IAssetMap;
-  };
   chunks: {
     [s: string]: string;
   };

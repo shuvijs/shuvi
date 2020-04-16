@@ -1,4 +1,4 @@
-import { ROUTE_ID_REGEXP } from '@shuvi/shared/lib/router';
+// import { ROUTE_ID_REGEXP } from "@shuvi/shared/lib/router";
 import { Bundler } from '@shuvi/types';
 import { Compiler as WebpackCompiler } from 'webpack';
 // @ts-ignore
@@ -58,7 +58,6 @@ export default class BuildManifestPlugin {
     compiler.hooks.emit.tapAsync('BuildManifest', (compilation, callback) => {
       const assetMap = (this._manifest = {
         entries: {},
-        routes: {},
         chunks: {},
         loadble: {},
       });
@@ -93,11 +92,11 @@ export default class BuildManifestPlugin {
           const ext = getFileExt(file);
           const normalizedPath = file.replace(/\\/g, '/');
 
-          // route chunk
-          if (ROUTE_ID_REGEXP.test(chunk.name)) {
-            this._pushRoute(chunk.name, ext, normalizedPath);
-            continue;
-          }
+          // // route chunk
+          // if (ROUTE_ID_REGEXP.test(chunk.name)) {
+          //   this._pushRoute(chunk.name, ext, normalizedPath);
+          //   continue;
+          // }
 
           // normal chunk
           if (ext === 'js') {
@@ -187,19 +186,19 @@ export default class BuildManifestPlugin {
     }
   }
 
-  private _pushRoute(name: string, ext: string, value: string) {
-    const routes = this._manifest.routes;
-    if (!routes[name]) {
-      routes[name] = {
-        js: [],
-      };
-    }
-    if (!routes[name][ext]) {
-      routes[name][ext] = [value];
-    } else {
-      routes[name][ext].push(value);
-    }
-  }
+  // private _pushRoute(name: string, ext: string, value: string) {
+  //   const routes = this._manifest.routes;
+  //   if (!routes[name]) {
+  //     routes[name] = {
+  //       js: []
+  //     };
+  //   }
+  //   if (!routes[name][ext]) {
+  //     routes[name][ext] = [value];
+  //   } else {
+  //     routes[name][ext].push(value);
+  //   }
+  // }
 
   private _pushChunk(name: string, value: string) {
     const chunks = this._manifest.chunks;

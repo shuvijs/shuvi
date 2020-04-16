@@ -18,8 +18,6 @@ export async function buildFixture(
   fixture: string,
   overrides: Partial<IConfig> = {}
 ) {
-  test(`Build ${fixture}`, async () => {
-    const config = await loadFixture(fixture, overrides);
-    await build(config);
-  }, 120000);
+  const config = await loadFixture(fixture, overrides);
+  await build(config);
 }
