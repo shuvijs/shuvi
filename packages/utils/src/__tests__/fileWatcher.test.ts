@@ -59,7 +59,7 @@ describe('fileWatcher', () => {
         }
       );
 
-      fs.appendFileSync(fileTarget, '');
+      fs.writeFileSync(fileTarget, '');
     });
 
     test('delete a file', async (done) => {
@@ -148,7 +148,7 @@ describe('fileWatcher', () => {
           done();
         }
       );
-      fs.appendFileSync(fileTarget, ``, 'utf-8');
+      fs.writeFileSync(fileTarget, ``, 'utf-8');
     });
 
     /*
