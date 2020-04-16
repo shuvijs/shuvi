@@ -12,19 +12,19 @@ const cleanUp = () => {
 };
 
 describe('fileWatcher', () => {
-  beforeAll(async () => {
+  beforeAll(() => {
     // copy fixtures/_watchers to fixtures/watchers
     prepare();
   });
 
-  afterAll(async () => {
+  afterAll(() => {
     // delete fixtures/watchers
     cleanUp();
   });
 
   describe('watch file', () => {
     test('change a file', (done) => {
-      const fileTarget = resolveFixture('watchers/watcher.js');
+      const fileTarget = resolveFixture('watchers/watcher/watcher.js');
 
       let close = watch(
         {
@@ -32,13 +32,14 @@ describe('fileWatcher', () => {
         },
         ({ getAllFiles, changes, removals }) => {
           expect(changes.length).toBe(1);
-          expect(changes[0]).toContain('watchers/watcher.js');
+          expect(changes[0]).toContain('watchers/watcher/watcher.js');
           expect(getAllFiles().length).toBe(1);
           expect(removals.length).toBe(0);
           close();
           done();
         }
       );
+
       fs.writeFileSync(fileTarget, `Trigger watcher`, 'utf-8');
     });
 
@@ -124,6 +125,7 @@ describe('fileWatcher', () => {
           done();
         }
       );
+
       fs.writeFileSync(fileTarget, `Trigger watcher`, 'utf-8');
     });
 
