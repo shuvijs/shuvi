@@ -1,8 +1,8 @@
 import(
-  /* webpackChunkName: helperOne */
+  /* webpackChunkName:"helperOne" */
   './helpers/one'
 );
 import(
-  /* webpackChunkName: helperTwo */
+  /* webpackChunkName:"helperTwo" */
   './helpers/two'
 );

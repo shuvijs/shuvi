@@ -26,6 +26,8 @@ describe('build-manifest-plugin', () => {
 
     expect(JSON.parse(result)).toStrictEqual({
       chunks: {
+        helperOne: 'static/chunks/helperOne.js',
+        helperTwo: 'static/chunks/helperTwo.js',
         main: 'static/chunks/main.js',
         runtime: 'runtime.js',
       },
@@ -63,6 +65,8 @@ describe('build-manifest-plugin', () => {
 
     expect(JSON.parse(result)).toStrictEqual({
       chunks: {
+        helperOne: 'static/chunks/helperOne.js',
+        helperTwo: 'static/chunks/helperTwo.js',
         main: 'static/chunks/main.js',
         runtime: 'runtime.js',
       },
@@ -80,7 +84,7 @@ describe('build-manifest-plugin', () => {
                 './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/one.js',
             },
           ],
-          files: ['static/chunks/2.js'],
+          files: ['static/chunks/helperOne.js'],
         },
         './helpers/two': {
           children: [
@@ -90,7 +94,7 @@ describe('build-manifest-plugin', () => {
                 './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/two.js',
             },
           ],
-          files: ['static/chunks/3.js'],
+          files: ['static/chunks/helperTwo.js'],
         },
       },
       routes: {},
