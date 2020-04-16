@@ -5,11 +5,7 @@ import { resolveFixture } from './utils';
 
 describe('build-manifest-plugin', () => {
   test('basic', async (done) => {
-    const webpackConfig = require(resolveFixture(
-      'buildManifest',
-      'basic',
-      'webpack.config.js'
-    ));
+    const webpackConfig = require(resolveFixture('basic', 'webpack.config.js'));
 
     const compiler = webpack({
       ...webpackConfig,
@@ -43,11 +39,7 @@ describe('build-manifest-plugin', () => {
   });
 
   test('basic with modules', async (done) => {
-    const webpackConfig = require(resolveFixture(
-      'buildManifest',
-      'basic',
-      'webpack.config.js'
-    ));
+    const webpackConfig = require(resolveFixture('basic', 'webpack.config.js'));
 
     const compiler = webpack({
       ...webpackConfig,
@@ -80,7 +72,7 @@ describe('build-manifest-plugin', () => {
             {
               id: 1,
               name:
-                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/one.js',
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/basic/helpers/one.js',
             },
           ],
           files: ['static/chunks/helperOne.js'],
@@ -90,7 +82,7 @@ describe('build-manifest-plugin', () => {
             {
               id: 2,
               name:
-                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/two.js',
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/basic/helpers/two.js',
             },
           ],
           files: ['static/chunks/helperTwo.js'],

@@ -1,4 +1,4 @@
-import { Compiler } from 'webpack'
+import { Compiler } from 'webpack';
 
 // This plugin mirrors webpack 3 `filename` and `chunkfilename` behavior
 // This fixes https://github.com/webpack/webpack/issues/6598
@@ -11,27 +11,28 @@ export default class ChunkNamesPlugin {
         compilation.chunkTemplate.hooks.renderManifest.intercept({
           register(tapInfo: any) {
             if (tapInfo.name === 'JavascriptModulesPlugin') {
-              const originalMethod = tapInfo.fn
+              const originalMethod = tapInfo.fn;
               tapInfo.fn = (result: any, options: any) => {
-                let filenameTemplate
-                const chunk = options.chunk
-                const outputOptions = options.outputOptions
+                let filenameTemplate;
+                const chunk = options.chunk;
+                const outputOptions = options.outputOptions;
+
                 if (chunk.filenameTemplate) {
-                  filenameTemplate = chunk.filenameTemplate
+                  filenameTemplate = chunk.filenameTemplate;
                 } else if (chunk.hasEntryModule()) {
-                  filenameTemplate = outputOptions.filename
+                  filenameTemplate = outputOptions.filename;
                 } else {
-                  filenameTemplate = outputOptions.chunkFilename
+                  filenameTemplate = outputOptions.chunkFilename;
                 }
 
-                options.chunk.filenameTemplate = filenameTemplate
-                return originalMethod(result, options)
-              }
+                options.chunk.filenameTemplate = filenameTemplate;
+                return originalMethod(result, options);
+              };
             }
-            return tapInfo
+            return tapInfo;
           },
-        })
+        });
       }
-    )
+    );
   }
 }
