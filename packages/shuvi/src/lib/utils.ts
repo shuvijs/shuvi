@@ -1,7 +1,7 @@
 export function acceptsHtml(
-  header: any,
+  header: string,
   {
-    htmlAcceptHeaders = ["text/html", "*/*"]
+    htmlAcceptHeaders = ['text/html', '*/*'],
   }: { htmlAcceptHeaders?: string[] } = {}
 ) {
   for (var i = 0; i < htmlAcceptHeaders.length; i++) {

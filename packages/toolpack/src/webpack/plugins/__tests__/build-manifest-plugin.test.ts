@@ -37,7 +37,6 @@ describe('build-manifest-plugin', () => {
         },
       },
       loadble: {},
-      routes: {},
     });
 
     done();
@@ -97,7 +96,6 @@ describe('build-manifest-plugin', () => {
           files: ['static/chunks/helperTwo.js'],
         },
       },
-      routes: {},
     });
 
     done();

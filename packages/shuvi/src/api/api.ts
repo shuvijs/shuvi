@@ -162,7 +162,7 @@ export class Api implements IApi {
 
     // prevent webpack watch running too early
     // https://github.com/webpack/webpack/issues/7997
-    await new Promise((resolve, reject) => {
+    await new Promise((resolve) => {
       setTimeout(resolve, 1000);
     });
 
