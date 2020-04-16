@@ -1,2 +1,8 @@
-import('./helpers/1');
-import('./helpers/2');
+import(
+  /* webpackChunkName: helperOne */
+  './helpers/one'
+);
+import(
+  /* webpackChunkName: helperTwo */
+  './helpers/two'
+);
