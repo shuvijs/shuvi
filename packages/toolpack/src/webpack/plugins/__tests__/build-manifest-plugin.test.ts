@@ -72,22 +72,22 @@ describe('build-manifest-plugin', () => {
         },
       },
       loadble: {
-        './helpers/1': {
+        './helpers/one': {
           children: [
             {
               id: 1,
               name:
-                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/1.js',
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/one.js',
             },
           ],
           files: ['static/chunks/2.js'],
         },
-        './helpers/2': {
+        './helpers/two': {
           children: [
             {
               id: 2,
               name:
-                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/2.js',
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/buildManifest/basic/helpers/two.js',
             },
           ],
           files: ['static/chunks/3.js'],
