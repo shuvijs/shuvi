@@ -36,3 +36,23 @@ export const runCompiler = (compiler: Compiler): Promise<Stats> => {
     });
   });
 };
+
+export const watchCompiler = (
+  compiler: Compiler,
+  cb: Compiler.Handler
+): Promise<Compiler.Watching> => {
+  const webpackFs = ensureWebpackMemoryFs(createFsFromVolume(new Volume()));
+
+  compiler.outputFileSystem = webpackFs;
+
+  return new Promise((resolve) => {
+    const watcher = compiler.watch(
+      {
+        aggregateTimeout: 50,
+        poll: undefined,
+      },
+      cb
+    );
+    setTimeout(() => resolve(watcher), 500);
+  });
+};
