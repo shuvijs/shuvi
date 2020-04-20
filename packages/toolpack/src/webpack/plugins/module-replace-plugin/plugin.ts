@@ -52,7 +52,6 @@ export default class ModuleReplacePlugin implements Plugin {
 
   static restoreModule(id: string): false | Promise<any> {
     const moduleInfo = knownModules.get(id);
-
     if (!moduleInfo) {
       return false;
     }

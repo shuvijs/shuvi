@@ -1,8 +1,8 @@
 import(
   /* webpackChunkName:"helperOne" */
-  './helpers/one'
+  '../shared/one'
 );
 import(
   /* webpackChunkName:"helperTwo" */
-  './helpers/two'
+  '../shared/two'
 );
