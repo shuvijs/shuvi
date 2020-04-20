@@ -1,6 +1,6 @@
-import { Compiler, Plugin } from "webpack";
+import { Compiler, Plugin } from 'webpack';
 
-const REPLACED = Symbol("replaced");
+const REPLACED = Symbol('replaced');
 
 export type ConfigItem = {
   test: Function | RegExp;
@@ -32,11 +32,11 @@ function getModuleId(wpModule: any) {
   return wpModule.rawRequest;
 }
 
-const stubLoader = require.resolve("./stub-loader");
+const stubLoader = require.resolve('./stub-loader');
 
 const ModuleStatus = {
   REPLACED: 1,
-  ORIGINAL: 2
+  ORIGINAL: 2,
 } as const;
 
 interface Handler {
@@ -52,6 +52,7 @@ export default class ModuleReplacePlugin implements Plugin {
 
   static restoreModule(id: string): false | Promise<any> {
     const moduleInfo = knownModules.get(id);
+
     if (!moduleInfo) {
       return false;
     }
@@ -59,15 +60,15 @@ export default class ModuleReplacePlugin implements Plugin {
     moduleInfo.status = ModuleStatus.ORIGINAL;
     const handler: Handler = {
       resolve: null as any,
-      finish: new Map()
+      finish: new Map(),
     };
     moduleHandlers.set(id, handler);
-    const promise = new Promise(resolve => {
+    const promise = new Promise((resolve) => {
       handler.resolve = resolve;
     });
-    moduleInfo.compilers.forEach(compiler => {
+    moduleInfo.compilers.forEach((compiler) => {
       handler.finish.set(compiler, false);
-      compiler.hooks.invalid.call("noop", new Date());
+      compiler.hooks.invalid.call('noop', new Date());
     });
 
     return promise;
@@ -76,12 +77,12 @@ export default class ModuleReplacePlugin implements Plugin {
   constructor(options: Partial<ModuleReplacePluginOptions>) {
     this._options = {
       modules: [],
-      ...options
+      ...options,
     };
   }
 
   apply(compiler: Compiler) {
-    compiler.hooks.done.tap("done", () => {
+    compiler.hooks.done.tap('done', () => {
       const finished: string[] = [];
       for (const [id, handler] of moduleHandlers) {
         if (handler.finish.get(compiler)) {
@@ -101,18 +102,18 @@ export default class ModuleReplacePlugin implements Plugin {
     });
 
     compiler.hooks.beforeCompile.tapAsync(
-      "ModuleReplacePlugin",
+      'ModuleReplacePlugin',
       ({ normalModuleFactory }: any, callback) => {
         normalModuleFactory.hooks.afterResolve.tap(
-          "ModuleReplacePlugin",
+          'ModuleReplacePlugin',
           (wpModule: any) => this._collectModules(compiler, wpModule)
         );
         callback();
       }
     );
 
-    compiler.hooks.compilation.tap("ModuleReplacePlugin", compilation => {
-      compilation.hooks.buildModule.tap("ModuleReplacePlugin", wpModule =>
+    compiler.hooks.compilation.tap('ModuleReplacePlugin', (compilation) => {
+      compilation.hooks.buildModule.tap('ModuleReplacePlugin', (wpModule) =>
         this._handleBuildModule(compiler, wpModule)
       );
     });
@@ -148,9 +149,9 @@ export default class ModuleReplacePlugin implements Plugin {
           {
             loader: stubLoader,
             options: {
-              module: moduleInfo.replacedModule
-            }
-          }
+              module: moduleInfo.replacedModule,
+            },
+          },
         ];
         wpModule.loaders[REPLACED] = true;
       }
@@ -170,7 +171,7 @@ export default class ModuleReplacePlugin implements Plugin {
       knownModules.set(id, {
         status: ModuleStatus.REPLACED,
         replacedModule,
-        compilers: new Set([compiler])
+        compilers: new Set([compiler]),
       });
     }
   }
