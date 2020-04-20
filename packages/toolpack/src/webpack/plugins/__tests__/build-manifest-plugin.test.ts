@@ -1,25 +1,24 @@
 import BuildManifestPlugin from '../build-manifest-plugin';
-import webpack, { Configuration } from 'webpack';
-import { runCompiler } from './helpers/runCompiler';
+import { runCompiler } from './helpers/webpack';
 import { resolveFixture } from './utils';
 
 describe('build-manifest-plugin', () => {
   test('basic', async (done) => {
-    const webpackConfig = require(resolveFixture('basic', 'webpack.config.js'));
-
-    const compiler = webpack({
-      ...webpackConfig,
+    const stats = await runCompiler({
+      entry: resolveFixture('basic'),
+      optimization: {
+        runtimeChunk: {
+          name: 'runtime',
+        },
+      },
       plugins: [
         new BuildManifestPlugin({
           filename: 'build-manifest.json',
           modules: false,
         }),
       ],
-    } as Configuration);
-
-    const stats = await runCompiler(compiler);
+    });
     const result = stats.compilation.assets['build-manifest.json'].source();
-
     expect(JSON.parse(result)).toStrictEqual({
       chunks: {
         helperOne: 'static/chunks/helperOne.js',
@@ -39,21 +38,21 @@ describe('build-manifest-plugin', () => {
   });
 
   test('basic with modules', async (done) => {
-    const webpackConfig = require(resolveFixture('basic', 'webpack.config.js'));
-
-    const compiler = webpack({
-      ...webpackConfig,
+    const stats = await runCompiler({
+      entry: resolveFixture('basic'),
+      optimization: {
+        runtimeChunk: {
+          name: 'runtime',
+        },
+      },
       plugins: [
         new BuildManifestPlugin({
           filename: 'build-manifest.json',
           modules: true,
         }),
       ],
-    } as Configuration);
-
-    const stats = await runCompiler(compiler);
+    });
     const result = stats.compilation.assets['build-manifest.json'].source();
-
     expect(JSON.parse(result)).toStrictEqual({
       chunks: {
         helperOne: 'static/chunks/helperOne.js',
@@ -67,22 +66,24 @@ describe('build-manifest-plugin', () => {
         },
       },
       loadble: {
-        './helpers/one': {
+        '../shared/one': {
           children: [
             {
-              id: 1,
+              id:
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js',
               name:
-                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/basic/helpers/one.js',
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js',
             },
           ],
           files: ['static/chunks/helperOne.js'],
         },
-        './helpers/two': {
+        '../shared/two': {
           children: [
             {
-              id: 2,
+              id:
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js',
               name:
-                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/basic/helpers/two.js',
+                './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js',
             },
           ],
           files: ['static/chunks/helperTwo.js'],

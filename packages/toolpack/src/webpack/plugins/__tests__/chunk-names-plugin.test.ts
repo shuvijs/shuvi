@@ -1,14 +1,17 @@
 import ChunkNamesPlugin from '../chunk-names-plugin';
-import webpack, { Configuration } from 'webpack';
-import { runCompiler } from './helpers/runCompiler';
+import { runCompiler } from './helpers/webpack';
 import { resolveFixture } from './utils';
 
 describe('chunk-names-plugin', () => {
   test('without plugin, main is named as chunk', async (done) => {
-    const webpackConfig = require(resolveFixture('basic', 'webpack.config.js'));
-
-    const compiler = webpack(webpackConfig as Configuration);
-    const stats = await runCompiler(compiler);
+    const stats = await runCompiler({
+      entry: resolveFixture('basic'),
+      optimization: {
+        runtimeChunk: {
+          name: 'runtime',
+        },
+      },
+    });
     const result = stats.toJson();
 
     expect(result.assetsByChunkName).toMatchInlineSnapshot(`
@@ -24,14 +27,16 @@ describe('chunk-names-plugin', () => {
   });
 
   test('with plugin, main is not named as chunk', async (done) => {
-    const webpackConfig = require(resolveFixture('basic', 'webpack.config.js'));
-
-    const compiler = webpack({
-      ...webpackConfig,
+    const stats = await runCompiler({
+      entry: resolveFixture('basic'),
+      optimization: {
+        runtimeChunk: {
+          name: 'runtime',
+        },
+      },
       plugins: [new ChunkNamesPlugin()],
-    } as Configuration);
+    });
 
-    const stats = await runCompiler(compiler);
     const result = stats.toJson();
 
     expect(result.assetsByChunkName).toMatchInlineSnapshot(`

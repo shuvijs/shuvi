@@ -23,11 +23,13 @@ export default class PreferResolverPlugin {
             return callback();
           }
 
-          const requests = [innerRequest, `${innerRequest}.${suffix}`];
-          const resolveWithPrefer = (newRequest: string, cb: any) => {
+          const suffixList = [suffix];
+          const resolveWithPrefer = (append: string, cb: any) => {
             const obj = {
               ...request,
-              request: newRequest,
+              request: innerRequest + '.' + append,
+              relativePath:
+                request.relativePath && request.relativePath + '.' + append,
             };
             return resolver.doResolve(
               target,
@@ -51,11 +53,11 @@ export default class PreferResolverPlugin {
               return callback(err, result);
             }
 
-            const nextReuqest = requests.pop();
-            if (!nextReuqest) {
+            const nextSuffix = suffixList.pop();
+            if (!nextSuffix) {
               return callback();
             }
-            resolveWithPrefer(nextReuqest, next);
+            resolveWithPrefer(nextSuffix, next);
           };
 
           next(null);
