@@ -17,11 +17,11 @@ describe('loadable-plugin', () => {
     const output = babel(trim`
       import { dynamic } from '@shuvi/app'
 
-      dynamic(async () => import("./component"),{})
+      dynamic(() => import("./component"),{})
     `);
 
     expect(output).toMatchInlineSnapshot(
-      `"import{dynamic}from'@shuvi/app';dynamic(async()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]});"`
+      `"import{dynamic}from'@shuvi/app';dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]});"`
     );
   });
 
@@ -32,8 +32,8 @@ describe('loadable-plugin', () => {
 
       dynamic(async () => {
         await wait(500); 
-        return () => React.createElement('div', null,'123')
-      } ,{})
+        return () => React.createElement('div', null, '123')
+      }, {})
     `);
 
     expect(output).toMatchInlineSnapshot(
@@ -41,15 +41,18 @@ describe('loadable-plugin', () => {
     );
   });
 
-  test('should throw error when empty object supplied', () => {
-    expect(() =>
-      babel(trim`
+  test('should work with object options', () => {
+    const output = babel(trim`
       import React from 'react';
       import { dynamic } from '@shuvi/app'
 
-      dynamic({})
-    `)
-    ).toThrowError("Cannot read property 'traverse' of undefined");
+      dynamic({
+        loader: () => import("./component")
+      })
+    `);
+    expect(output).toMatchInlineSnapshot(
+      `"import React from'react';import{dynamic}from'@shuvi/app';dynamic({loader:()=>import(\\"./component\\"),webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]});"`
+    );
   });
 
   test('should throw error when more than 2 arguments supplied', () => {
@@ -57,7 +60,7 @@ describe('loadable-plugin', () => {
       babel(trim`
         import { dynamic } from '@shuvi/app'
 
-        dynamic(async () => () => 'sample',{},{})
+        dynamic(() => import('./component'), {}, {})
       `)
     ).toThrowError(`shuvi/dynamic only accepts 2 arguments`);
   });

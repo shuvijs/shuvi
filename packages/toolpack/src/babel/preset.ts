@@ -6,7 +6,7 @@ const isProduction = env === 'production';
 const isDevelopment = env === 'development';
 const isTest = env === 'test';
 
-export type CustomPresetOptions = {
+export type PresetOptions = {
   'preset-env'?: any;
   'preset-react'?: any;
   'transform-runtime'?: any;
@@ -24,7 +24,7 @@ function supportsStaticESM(caller: any) {
   return !!(caller && caller.supportsStaticESM);
 }
 
-export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
+export default (api: any, options: PresetOptions = {}): BabelPreset => {
   const supportsESM = api.caller(supportsStaticESM);
   const isNode = api.caller((caller: any) => !!caller && caller.isNode);
 

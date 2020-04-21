@@ -50,20 +50,7 @@ export default function ({
         }
 
         binding.referencePaths.forEach((refPath) => {
-          let callExpression = refPath.parentPath;
-
-          if (
-            callExpression.isMemberExpression() &&
-            callExpression.node.computed === false
-          ) {
-            const property = callExpression.get('property');
-            if (
-              !Array.isArray(property) &&
-              property.isIdentifier({ name: 'Map' })
-            ) {
-              callExpression = callExpression.parentPath;
-            }
-          }
+          const callExpression = refPath.parentPath;
 
           if (!callExpression.isCallExpression()) return;
 
@@ -116,6 +103,9 @@ export default function ({
             loader = propertiesMap.loader.get('value');
           }
 
+          if (!loader || Array.isArray(loader)) {
+            return;
+          }
           const dynamicImports: BabelTypes.StringLiteral[] = [];
 
           loader.traverse({
