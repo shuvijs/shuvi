@@ -1,5 +1,5 @@
 import { transform } from '@babel/core';
-import type { CustomPresetOptions } from '../preset';
+import type { PresetOptions } from '../preset';
 import { trim } from 'test-utils';
 
 const babel = (
@@ -8,7 +8,7 @@ const babel = (
     esm: false,
     isNode: true,
   },
-  presetOptions: CustomPresetOptions = {}
+  presetOptions: PresetOptions = {}
 ) =>
   transform(code, {
     filename: 'noop.js',

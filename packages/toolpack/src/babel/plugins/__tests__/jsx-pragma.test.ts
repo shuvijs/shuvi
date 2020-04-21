@@ -31,7 +31,7 @@ function babel(code: string) {
 }
 
 describe('jsx-pragma', () => {
-  it('should transform JSX to use a local identifier in modern mode', () => {
+  it('should transform JSX to use a local identifier', () => {
     const output = babel(`const a = () => <a href="/">home</a>;`);
 
     // it should add a React import:

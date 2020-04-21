@@ -1,5 +1,5 @@
-import babelLoader from "babel-loader";
-import babelPreset from "../../babel/preset";
+import babelLoader from 'babel-loader';
+import babelPreset from '../../babel/preset';
 
 interface BabeLoaderlOption {
   cacheDirectory: string | false;
@@ -9,9 +9,13 @@ interface CustomOption {
   isNode: boolean;
 }
 
+function hasBuiltPreset(presets: { value: any }[]) {
+  return presets.some((preset) => preset && preset.value === babelPreset);
+}
+
 module.exports = babelLoader.custom((babel: any) => {
   const presetItem = babel.createConfigItem(babelPreset, {
-    type: "preset"
+    type: 'preset',
   });
 
   const configs = new Set();
@@ -19,15 +23,15 @@ module.exports = babelLoader.custom((babel: any) => {
   return {
     customOptions(opts: BabeLoaderlOption & CustomOption) {
       const custom = {
-        isNode: opts.isNode
+        isNode: opts.isNode,
       };
       const loader = Object.assign(
         opts.cacheDirectory
           ? {
-              cacheCompression: false
+              cacheCompression: false,
             }
           : {
-              cacheDirectory: false
+              cacheDirectory: false,
             },
         opts
       );
@@ -40,7 +44,7 @@ module.exports = babelLoader.custom((babel: any) => {
       cfg: any,
       {
         source,
-        customOptions: { isNode }
+        customOptions: { isNode },
       }: {
         source: any;
         customOptions: CustomOption;
@@ -59,7 +63,9 @@ module.exports = babelLoader.custom((babel: any) => {
         }
       } else {
         // Add our default preset if the no "babelrc" found.
-        options.presets = [...options.presets, presetItem];
+        if (!hasBuiltPreset(options.presets)) {
+          options.presets = [...options.presets, presetItem];
+        }
       }
 
       // pass option to babel-preset
@@ -68,14 +74,14 @@ module.exports = babelLoader.custom((babel: any) => {
       options.plugins = options.plugins || [];
 
       options.plugins.push([
-        require.resolve("babel-plugin-transform-define"),
+        require.resolve('babel-plugin-transform-define'),
         {
-          "typeof window": isNode ? "undefined" : "object"
+          'typeof window': isNode ? 'undefined' : 'object',
         },
-        "shuvi-transform-define-instance"
+        'shuvi-transform-define-instance',
       ]);
 
       return options;
-    }
+    },
   };
 });
