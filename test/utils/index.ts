@@ -11,6 +11,9 @@ export function wait(timeout: number) {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
-export function trim(s: TemplateStringsArray) {
+export function trim(s: TemplateStringsArray | string) {
+  if (typeof s === 'string') {
+    return s.trim().replace(/^\s+/gm, '');
+  }
   return s.join('\n').trim().replace(/^\s+/gm, '');
 }

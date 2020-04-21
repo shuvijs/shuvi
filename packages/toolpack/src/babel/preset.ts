@@ -6,7 +6,7 @@ const isProduction = env === 'production';
 const isDevelopment = env === 'development';
 const isTest = env === 'test';
 
-type CustomPresetOptions = {
+export type CustomPresetOptions = {
   'preset-env'?: any;
   'preset-react'?: any;
   'transform-runtime'?: any;
@@ -27,6 +27,7 @@ function supportsStaticESM(caller: any) {
 export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
   const supportsESM = api.caller(supportsStaticESM);
   const isNode = api.caller((caller: any) => !!caller && caller.isNode);
+
   const presetEnvConfig = {
     // In the test environment `modules` is often needed to be set to true, babel figures that out by itself using the `'auto'` option
     // In production/development this option is set to `false` so that webpack can handle import/export with tree-shaking
