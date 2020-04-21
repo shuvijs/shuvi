@@ -22,18 +22,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWAR
 // This file is https://github.com/jamiebuilds/react-loadable/blob/master/src/babel.js
 // Modified to also look for `shuvi/dynamic`
 
-import { PluginObj, types as BabelTypes } from "@babel/core";
-import { NodePath } from "@babel/traverse";
+import { PluginObj, types as BabelTypes } from '@babel/core';
+import { NodePath } from '@babel/traverse';
 
-export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
+export default function ({
+  types: t,
+}: {
+  types: typeof BabelTypes;
+}): PluginObj {
   return {
     visitor: {
       ImportDeclaration(path: NodePath<BabelTypes.ImportDeclaration>) {
         let source = path.node.source.value;
-        if (source !== "@shuvi/app") return;
+        if (source !== '@shuvi/app') return;
 
-        let dynamicSpecifier = path.get("specifiers").find(specifier => {
-          return specifier.node.imported.name === "dynamic";
+        let dynamicSpecifier = path.get('specifiers').find((specifier) => {
+          return specifier.node.imported.name === 'dynamic';
         });
 
         if (!dynamicSpecifier) return;
@@ -45,17 +49,17 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
           return;
         }
 
-        binding.referencePaths.forEach(refPath => {
+        binding.referencePaths.forEach((refPath) => {
           let callExpression = refPath.parentPath;
 
           if (
             callExpression.isMemberExpression() &&
             callExpression.node.computed === false
           ) {
-            const property = callExpression.get("property");
+            const property = callExpression.get('property');
             if (
               !Array.isArray(property) &&
-              property.isIdentifier({ name: "Map" })
+              property.isIdentifier({ name: 'Map' })
             ) {
               callExpression = callExpression.parentPath;
             }
@@ -63,10 +67,10 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
 
           if (!callExpression.isCallExpression()) return;
 
-          let args = callExpression.get("arguments");
+          let args = callExpression.get('arguments');
           if (args.length > 2) {
             throw callExpression.buildCodeFrameError(
-              "shuvi/dynamic only accepts 2 arguments"
+              'shuvi/dynamic only accepts 2 arguments'
             );
           }
 
@@ -83,14 +87,14 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
             if (!args[1]) {
               callExpression.node.arguments.push(t.objectExpression([]));
             }
-            args = callExpression.get("arguments");
+            args = callExpression.get('arguments');
             loader = args[0];
             options = args[1];
           }
 
           if (!options.isObjectExpression()) return;
 
-          let properties = options.get("properties");
+          let properties = options.get('properties');
           let propertiesMap: {
             [key: string]: NodePath<
               | BabelTypes.ObjectProperty
@@ -99,8 +103,8 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
             >;
           } = {};
 
-          properties.forEach(property => {
-            const key: any = property.get("key");
+          properties.forEach((property) => {
+            const key: any = property.get('key');
             propertiesMap[key.node.name] = property;
           });
 
@@ -109,33 +113,33 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
           }
 
           if (propertiesMap.loader) {
-            loader = propertiesMap.loader.get("value");
+            loader = propertiesMap.loader.get('value');
           }
 
           const dynamicImports: BabelTypes.StringLiteral[] = [];
 
           loader.traverse({
             Import(path) {
-              const args = path.parentPath.get("arguments");
+              const args = path.parentPath.get('arguments');
               if (!Array.isArray(args)) return;
               const node: any = args[0].node;
               dynamicImports.push(node);
-            }
+            },
           });
 
           if (!dynamicImports.length) return;
 
           options.node.properties.push(
             t.objectProperty(
-              t.identifier("webpack"),
+              t.identifier('webpack'),
               t.arrowFunctionExpression(
                 [],
                 t.arrayExpression(
-                  dynamicImports.map(dynamicImport => {
+                  dynamicImports.map((dynamicImport) => {
                     return t.callExpression(
                       t.memberExpression(
-                        t.identifier("require"),
-                        t.identifier("resolveWeak")
+                        t.identifier('require'),
+                        t.identifier('resolveWeak')
                       ),
                       [dynamicImport]
                     );
@@ -147,12 +151,12 @@ export default function({ types: t }: { types: typeof BabelTypes }): PluginObj {
 
           options.node.properties.push(
             t.objectProperty(
-              t.identifier("modules"),
+              t.identifier('modules'),
               t.arrayExpression(dynamicImports)
             )
           );
         });
-      }
-    }
+      },
+    },
   };
 }
