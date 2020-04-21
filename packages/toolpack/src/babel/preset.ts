@@ -1,21 +1,21 @@
-import path from "path";
-import { PluginItem } from "@babel/core";
+import path from 'path';
+import { PluginItem } from '@babel/core';
 
 const env = process.env.NODE_ENV;
-const isProduction = env === "production";
-const isDevelopment = env === "development";
-const isTest = env === "test";
+const isProduction = env === 'production';
+const isDevelopment = env === 'development';
+const isTest = env === 'test';
 
 type CustomPresetOptions = {
-  "preset-env"?: any;
-  "preset-react"?: any;
-  "transform-runtime"?: any;
+  'preset-env'?: any;
+  'preset-react'?: any;
+  'transform-runtime'?: any;
 };
 
 type BabelPreset = {
   presets?: PluginItem[] | null;
   plugins?: PluginItem[] | null;
-  sourceType?: "script" | "module" | "unambiguous";
+  sourceType?: 'script' | 'module' | 'unambiguous';
   overrides?: any[];
 };
 
@@ -30,9 +30,9 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
   const presetEnvConfig = {
     // In the test environment `modules` is often needed to be set to true, babel figures that out by itself using the `'auto'` option
     // In production/development this option is set to `false` so that webpack can handle import/export with tree-shaking
-    modules: "auto",
-    exclude: ["transform-typeof-symbol"],
-    ...options["preset-env"]
+    modules: 'auto',
+    exclude: ['transform-typeof-symbol'],
+    ...options['preset-env'],
   };
 
   // When transpiling for the server or tests, target the current Node version
@@ -41,87 +41,88 @@ export default (api: any, options: CustomPresetOptions = {}): BabelPreset => {
     (isNode || isTest) &&
     (!presetEnvConfig.targets ||
       !(
-        typeof presetEnvConfig.targets === "object" &&
-        "node" in presetEnvConfig.targets
+        typeof presetEnvConfig.targets === 'object' &&
+        'node' in presetEnvConfig.targets
       ))
   ) {
     presetEnvConfig.targets = {
       // Targets the current process' version of Node. This requires apps be
       // built and deployed on the same version of Node.
-      node: "current"
+      node: 'current',
     };
   }
 
   return {
-    sourceType: "unambiguous",
+    sourceType: 'unambiguous',
     presets: [
-      [require("@babel/preset-env").default, presetEnvConfig],
+      [require('@babel/preset-env').default, presetEnvConfig],
       [
-        require("@babel/preset-react"),
+        require('@babel/preset-react'),
         {
           // Adds component stack to warning messages
           // Adds __self attribute to JSX which React will use for some warnings
           development: isDevelopment || isTest,
+          pragma: '__jsx',
           // Will use the native built-in instead of trying to polyfill
           // behavior for any plugins that require one.
           useBuiltIns: true,
-          ...options["preset-react"]
-        }
+          ...options['preset-react'],
+        },
       ],
-      require("@babel/preset-typescript")
+      require('@babel/preset-typescript'),
     ],
     plugins: [
-      require("./plugins/auto-css-modules"),
+      require('./plugins/auto-css-modules'),
       [
-        require("./plugins/jsx-pragma"),
+        require('./plugins/jsx-pragma'),
         {
           // This produces the following injected import for modules containing JSX:
           //   import React from 'react';
           //   var __jsx = React.createElement;
-          module: "react",
-          importAs: "React",
-          pragma: "__jsx",
-          property: "createElement"
-        }
+          module: 'react',
+          importAs: 'React',
+          pragma: '__jsx',
+          property: 'createElement',
+        },
       ],
       [
-        require("./plugins/optimize-hook-destructuring"),
+        require('./plugins/optimize-hook-destructuring'),
         {
           // only optimize hook functions imported from React/Preact
-          lib: true
-        }
+          lib: true,
+        },
       ],
-      require("@babel/plugin-syntax-dynamic-import"),
-      require("./plugins/loadable-plugin"),
-      require("@babel/plugin-proposal-class-properties"),
+      require('@babel/plugin-syntax-dynamic-import'),
+      require('./plugins/loadable-plugin'),
+      require('@babel/plugin-proposal-class-properties'),
       [
-        require("@babel/plugin-proposal-object-rest-spread"),
+        require('@babel/plugin-proposal-object-rest-spread'),
         {
-          useBuiltIns: true
-        }
+          useBuiltIns: true,
+        },
       ],
       !isNode && [
-        require("@babel/plugin-transform-runtime"),
+        require('@babel/plugin-transform-runtime'),
         {
-          version: require("@babel/runtime/package.json").version,
+          version: require('@babel/runtime/package.json').version,
           helpers: true,
           regenerator: true,
-          useESModules: supportsESM && presetEnvConfig.modules !== "commonjs",
+          useESModules: supportsESM && presetEnvConfig.modules !== 'commonjs',
           // Undocumented option that lets us encapsulate our runtime, ensuring
           // the correct version is used
           // https://github.com/babel/babel/blob/090c364a90fe73d36a30707fc612ce037bdbbb24/packages/babel-plugin-transform-runtime/src/index.js#L35-L42
           absoluteRuntime: path.dirname(
-            require.resolve("@babel/runtime/package.json")
+            require.resolve('@babel/runtime/package.json')
           ),
-          ...options["transform-runtime"]
-        }
+          ...options['transform-runtime'],
+        },
       ],
       isProduction && [
-        require("babel-plugin-transform-react-remove-prop-types"),
+        require('babel-plugin-transform-react-remove-prop-types'),
         {
-          removeImport: true
-        }
-      ]
-    ].filter(Boolean)
+          removeImport: true,
+        },
+      ],
+    ].filter(Boolean),
   };
 };

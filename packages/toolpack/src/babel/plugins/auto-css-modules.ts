@@ -1,17 +1,17 @@
 // Based on https://github.com/umijs/umi/blob/83301f25a420daff69ca51a179134c6b1612f5b6/packages/babel-plugin-auto-css-modules/src/index.ts
 // License: https://github.com/umijs/umi/blob/83301f25a420daff69ca51a179134c6b1612f5b6/LICENSE
 
-import { NodePath, Visitor } from "@babel/core";
-import * as BabelTypes from "@babel/types";
-import { extname } from "path";
+import { NodePath, Visitor } from '@babel/core';
+import * as BabelTypes from '@babel/types';
+import { extname } from 'path';
 
 export interface IOpts {
   flag?: string;
 }
 
-const CSS_EXTNAMES = [".css", ".less", ".sass", ".scss"];
+const CSS_EXTNAMES = ['.css', '.less', '.sass', '.scss'];
 
-export default function() {
+export default function () {
   return {
     visitor: {
       ImportDeclaration(
@@ -21,16 +21,16 @@ export default function() {
         const {
           specifiers,
           source,
-          source: { value }
+          source: { value },
         } = path.node;
         if (specifiers.length && CSS_EXTNAMES.includes(extname(value))) {
-          if (value.indexOf("?") >= 0) {
-            source.value = `${value}&${opts.flag || "cssmodules"}`;
+          if (value.indexOf('?') >= 0) {
+            source.value = `${value}&${opts.flag || 'cssmodules'}`;
           } else {
-            source.value = `${value}?${opts.flag || "cssmodules"}`;
+            source.value = `${value}?${opts.flag || 'cssmodules'}`;
           }
         }
-      }
-    } as Visitor
+      },
+    } as Visitor,
   };
 }

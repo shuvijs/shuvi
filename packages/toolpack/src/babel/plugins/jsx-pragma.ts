@@ -1,26 +1,26 @@
-import { NodePath, PluginObj, types as BabelTypes } from "@babel/core";
+import { NodePath, PluginObj, types as BabelTypes } from '@babel/core';
 
-export default function({
-  types: t
+export default function ({
+  types: t,
 }: {
   types: typeof BabelTypes;
 }): PluginObj<any> {
   return {
-    inherits: require("babel-plugin-syntax-jsx"),
+    inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
       JSXElement(path, state) {
-        state.set("jsx", true);
+        state.set('jsx', true);
       },
 
       // Fragment syntax is still JSX since it compiles to createElement(),
       // but JSXFragment is not a JSXElement
       JSXFragment(path, state) {
-        state.set("jsx", true);
+        state.set('jsx', true);
       },
 
       Program: {
         exit(path: NodePath<BabelTypes.Program>, state) {
-          if (state.get("jsx")) {
+          if (state.get('jsx')) {
             const pragma = t.identifier(state.opts.pragma);
             let importAs = pragma;
 
@@ -35,17 +35,17 @@ export default function({
               if (state.opts.importAs) {
                 importAs = t.identifier(state.opts.importAs);
               } else {
-                importAs = path.scope.generateUidIdentifier("pragma");
+                importAs = path.scope.generateUidIdentifier('pragma');
               }
 
-              const mapping = t.variableDeclaration("var", [
+              const mapping = t.variableDeclaration('var', [
                 t.variableDeclarator(
                   pragma,
                   t.memberExpression(
                     importAs,
                     t.identifier(state.opts.property)
                   )
-                )
+                ),
               ]);
 
               // if the React binding came from a require('react'),
@@ -56,7 +56,7 @@ export default function({
                 t.isVariableDeclarator(existingBinding.path.node) &&
                 t.isCallExpression(existingBinding.path.node.init) &&
                 t.isIdentifier(existingBinding.path.node.init.callee) &&
-                existingBinding.path.node.init.callee.name === "require"
+                existingBinding.path.node.init.callee.name === 'require'
               ) {
                 [newPath] = existingBinding.path.parentPath.insertAfter(
                   // @ts-ignore
@@ -64,10 +64,10 @@ export default function({
                 );
               } else {
                 // @ts-ignore
-                [newPath] = path.unshiftContainer("body", mapping);
+                [newPath] = path.unshiftContainer('body', mapping);
               }
 
-              for (const declar of newPath.get("declarations")) {
+              for (const declar of newPath.get('declarations')) {
                 path.scope.registerBinding(newPath.node.kind, declar);
               }
             }
@@ -84,20 +84,20 @@ export default function({
                     : state.opts.importNamespace
                     ? t.importNamespaceSpecifier(importAs)
                     : // import _pragma from '$module'
-                      t.importDefaultSpecifier(importAs)
+                      t.importDefaultSpecifier(importAs),
                 ],
-                t.stringLiteral(state.opts.module || "react")
+                t.stringLiteral(state.opts.module || 'react')
               );
 
               // @ts-ignore
-              const [newPath] = path.unshiftContainer("body", importSpecifier);
-              for (const specifier of newPath.get("specifiers")) {
-                path.scope.registerBinding("module", specifier);
+              const [newPath] = path.unshiftContainer('body', importSpecifier);
+              for (const specifier of newPath.get('specifiers')) {
+                path.scope.registerBinding('module', specifier);
               }
             }
           }
-        }
-      }
-    }
+        },
+      },
+    },
   };
 }
