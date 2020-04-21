@@ -1,6 +1,6 @@
-import Head, { defaultHead } from "./head";
-import HeadManager from "./head-manager";
+import Head from './head';
+import HeadManager from './head-manager';
 
-export { HeadManagerContext } from "./head-manager-context";
+export { HeadManagerContext } from './head-manager-context';
 
-export { Head, HeadManager, defaultHead };
+export { Head, HeadManager };

@@ -1,26 +1,42 @@
-import React from "react";
-import { renderToString } from "react-dom/server";
-import { Runtime } from "@shuvi/types";
-import { Router } from "react-router-dom";
-import { createServerHistory } from "./router/history";
-import { matchRoutes } from "./router/matchRoutes";
-import { setHistory } from "./router/router";
-import Loadable, { LoadableContext } from "./loadable";
-import AppContainer from "./AppContainer";
-import { IReactRenderer, IReactAppData } from "./types";
-import { Head, defaultHead } from "./head";
-import { createRedirector } from "./utils/createRedirector";
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+import { Runtime } from '@shuvi/types';
+import { Router } from 'react-router-dom';
+import { createServerHistory } from './router/history';
+import { matchRoutes } from './router/matchRoutes';
+import { setHistory } from './router/router';
+import Loadable, { LoadableContext } from './loadable';
+import AppContainer from './AppContainer';
+import { IReactRenderer, IReactAppData } from './types';
+import { Head } from './head';
+import { createRedirector } from './utils/createRedirector';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
 import IHtmlTag = Runtime.IHtmlTag;
+
+const DEFAULT_HEAD = [
+  {
+    tagName: 'meta',
+    attrs: {
+      charset: 'utf-8',
+    },
+  },
+  {
+    tagName: 'meta',
+    attrs: {
+      name: 'viewport',
+      content: 'width=device-width,minimum-scale=1,initial-scale=1',
+    },
+  },
+];
 
 const renderApp: IReactRenderer = async ({
   api,
   req,
   App,
   routes,
-  manifest
+  manifest,
 }) => {
   await Loadable.preloadAll();
 
@@ -29,9 +45,9 @@ const renderApp: IReactRenderer = async ({
   const parsedUrl = req.url;
   const pathname = parsedUrl.pathname!;
   const history = createServerHistory({
-    basename: "",
+    basename: '',
     location: pathname,
-    context: routerContext
+    context: routerContext,
   });
 
   // sethistory before render to make router avaliable
@@ -50,8 +66,8 @@ const renderApp: IReactRenderer = async ({
       appInitialProps = await appGetInitialProps({
         isServer: true,
         req: {
-          url: parsedUrl
-        }
+          url: parsedUrl,
+        },
       });
     });
   }
@@ -70,19 +86,19 @@ const renderApp: IReactRenderer = async ({
           redirect: redirector.handler,
           isServer: true,
           req: {
-            url: parsedUrl
-          }
+            url: parsedUrl,
+          },
         });
         routeProps[route.id] = props || {};
       });
     }
   }
 
-  await Promise.all(pendingDataFetchs.map(fn => fn()));
+  await Promise.all(pendingDataFetchs.map((fn) => fn()));
 
   if (redirector.redirected) {
     return {
-      redirect: redirector.state
+      redirect: redirector.state,
     };
   }
 
@@ -94,7 +110,7 @@ const renderApp: IReactRenderer = async ({
       // @ts-ignore staticContext is not declared in @types/react-router-dom
       <Router history={history}>
         <LoadableContext.Provider
-          value={moduleName => loadableModules.push(moduleName)}
+          value={(moduleName) => loadableModules.push(moduleName)}
         >
           <AppContainer {...appInitialProps} routeProps={routeProps}>
             <App />
@@ -103,16 +119,15 @@ const renderApp: IReactRenderer = async ({
       </Router>
     );
   } finally {
-    head = Head.rewind() || defaultHead();
+    head = Head.rewind() || [];
   }
 
-  // console.log("htmlContent", pathname, htmlContent);
   const headAnchor = {
-    tagName: "meta",
+    tagName: 'meta',
     attrs: {
-      name: "shuvi-head-count",
-      content: String(head.length)
-    }
+      name: 'shuvi-head-count',
+      content: String(head.length),
+    },
   };
 
   const { loadble } = manifest;
@@ -121,41 +136,41 @@ const renderApp: IReactRenderer = async ({
   for (const mod of loadableModules) {
     const manifestItem = loadble[mod];
     if (manifestItem) {
-      manifestItem.files.forEach(file => {
+      manifestItem.files.forEach((file) => {
         dynamicImportChunkSet.add(file);
       });
-      manifestItem.children.forEach(item => {
+      manifestItem.children.forEach((item) => {
         dynamicImportIdSet.add(item.id as string);
       });
     }
   }
 
-  const preloadDynamicChunks: IHtmlTag<"link">[] = [];
-  const styles: IHtmlTag<"link">[] = [];
+  const preloadDynamicChunks: IHtmlTag<'link'>[] = [];
+  const styles: IHtmlTag<'link'>[] = [];
   for (const file of dynamicImportChunkSet) {
     if (/\.js$/.test(file)) {
       preloadDynamicChunks.push({
-        tagName: "link",
+        tagName: 'link',
         attrs: {
-          rel: "preload",
+          rel: 'preload',
           href: api.getAssetPublicUrl(file),
-          as: "script"
-        }
+          as: 'script',
+        },
       });
     } else if (/\.css$/.test(file)) {
       styles.push({
-        tagName: "link",
+        tagName: 'link',
         attrs: {
-          rel: "stylesheet",
-          href: api.getAssetPublicUrl(file)
-        }
+          rel: 'stylesheet',
+          href: api.getAssetPublicUrl(file),
+        },
       });
     }
   }
 
   const appData: IReactAppData = {
     routeProps,
-    dynamicIds: [...dynamicImportIdSet]
+    dynamicIds: [...dynamicImportIdSet],
   };
   if (appInitialProps) {
     appData.appProps = appInitialProps;
@@ -168,10 +183,15 @@ const renderApp: IReactRenderer = async ({
     appData,
     appHtml: htmlContent,
     htmlAttrs: {},
-    headBeginTags: [...head, headAnchor, ...preloadDynamicChunks],
+    headBeginTags: [
+      ...DEFAULT_HEAD,
+      ...head,
+      headAnchor,
+      ...preloadDynamicChunks,
+    ],
     headEndTags: [...styles],
     bodyBeginTags: [],
-    bodyEndTags: []
+    bodyEndTags: [],
   };
 };
 
