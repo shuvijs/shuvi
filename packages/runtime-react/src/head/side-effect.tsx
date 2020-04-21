@@ -1,10 +1,10 @@
 // Based on https://github.com/zeit/next.js
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
-import React, { Component } from "react";
-import { SideEffectProps, HeadState } from "./types";
+import React, { Component } from 'react';
+import { SideEffectProps, HeadState } from './types';
 
-const isServer = typeof window === "undefined";
+const isServer = typeof window === 'undefined';
 
 export default () => {
   const mountedInstances: Set<any> = new Set();

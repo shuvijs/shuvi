@@ -13,9 +13,9 @@ import {
 import { wait } from 'test-utils';
 import dynamic from '../dynamic';
 
-afterEach(cleanup);
-
 describe('dynamic', () => {
+  afterEach(cleanup);
+
   test('promise argument', async () => {
     // Normally we don't need wrap the whole test.
     // We can't control the update occured in dynamic interrnal,
