@@ -60,9 +60,9 @@ export async function renderOnce(
   const vnodeTree = testRenderer.toJSON();
   testRenderer.unmount();
   if (Array.isArray(vnodeTree)) {
-    await renderVnodes(vnodeTree, rootDir);
-  } else {
-    await renderVnode(vnodeTree, rootDir);
+    await renderVnodes(vnodeTree as VNode[], rootDir);
+  } else if (vnodeTree) {
+    await renderVnode(vnodeTree as VNode, rootDir);
   }
 }
 
