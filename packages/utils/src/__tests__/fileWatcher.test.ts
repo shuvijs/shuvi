@@ -1,7 +1,7 @@
 import { watch } from '../fileWatcher';
 import fs from 'fs';
 import { resolveFixture, copyDirectory, deleteDirectory } from './utils';
-import { wait } from 'test-utils';
+import { wait } from 'shuvi-test-utils';
 
 const prepare = () => {
   copyDirectory(resolveFixture('_watchers'), resolveFixture('watchers'));

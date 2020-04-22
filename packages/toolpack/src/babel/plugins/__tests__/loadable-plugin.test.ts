@@ -1,4 +1,4 @@
-import { trim } from 'test-utils';
+import { trim } from 'shuvi-test-utils';
 import { transform } from '@babel/core';
 
 function babel(code: string) {

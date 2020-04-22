@@ -17,9 +17,9 @@ module.exports = {
         moduleResolution: 'node',
         skipLibCheck: true,
         esModuleInterop: true,
-        noUnusedLocals: false,
-      },
-    },
+        noUnusedLocals: false
+      }
+    }
   },
 
   setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
@@ -36,10 +36,10 @@ module.exports = {
 
   testMatch: [
     '<rootDir>/test/**/*.test.[jt]s?(x)',
-    '**/__tests__/**/*.test.[jt]s?(x)',
+    '**/__tests__/**/*.test.[jt]s?(x)'
   ],
 
   moduleNameMapper: {
-    'test-utils': '<rootDir>/test/utils',
-  },
+    '^shuvi-test-utils(/?.*)$': '<rootDir>/test/utils/$1'
+  }
 };

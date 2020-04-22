@@ -1,7 +1,7 @@
 import React from 'react';
-import { create, act, ReactTestRenderer } from 'react-test-renderer';
 import fse from 'fs-extra';
-import { wait } from 'test-utils';
+import { wait } from 'shuvi-test-utils';
+import { render, cleanup, act } from 'shuvi-test-utils/reactTestRender';
 import { useFileByOrder } from '../useFileByOrder';
 import { resolveFixture } from './utils';
 
@@ -15,40 +15,13 @@ function DumpComp({}: any) {
 
 function TestComp({
   files = [],
-  fallback,
+  fallback
 }: {
   files?: string[];
   fallback: string;
 }) {
   const file = useFileByOrder(files, fallback);
   return <DumpComp value={file} />;
-}
-
-let currents: ReactTestRenderer[] = [];
-function render(el: React.ReactElement): ReactTestRenderer {
-  let root: ReactTestRenderer | undefined;
-  act(() => {
-    root = create(el);
-    currents.push(root);
-  });
-
-  if (!root) {
-    throw new Error();
-  }
-
-  const update = root.update;
-  root.update = (el: React.ReactElement) => {
-    act(() => {
-      update.call(root, el);
-    });
-  };
-  return root;
-}
-
-function cleanup() {
-  const instances = currents.slice();
-  currents.length = 0;
-  instances.forEach((c) => c.unmount());
 }
 
 function safeDelete(file: string) {
@@ -101,7 +74,7 @@ describe('useFileByOrder', () => {
 
       await act(async () => {
         fse.writeFileSync(unexistedFileC, '', 'utf8');
-        await wait(500);
+        await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
     } finally {
@@ -118,7 +91,7 @@ describe('useFileByOrder', () => {
 
       await act(async () => {
         fse.writeFileSync(unexistedFileC, '', 'utf8');
-        await wait(500);
+        await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
     } finally {
