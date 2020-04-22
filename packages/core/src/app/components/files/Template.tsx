@@ -1,9 +1,9 @@
-import React from "react";
-import { File } from "@shuvi/react-fs";
-import fse from "fs-extra";
-import Handlebars from "handlebars";
-import { memoizeOne } from "../../utils";
-import { ITemplateData } from "../../types";
+import React from 'react';
+import { File } from '@shuvi/react-fs';
+import fse from 'fs-extra';
+import ejs from 'ejs';
+import { memoizeOne } from '../../utils';
+import { ITemplateData } from '../../types';
 
 export interface Props {
   name: string;
@@ -14,10 +14,10 @@ export interface Props {
 
 export default class Template extends React.Component<Props> {
   private _compileTemplate = memoizeOne((template: string) =>
-    Handlebars.compile(template)
+    ejs.compile(template)
   );
   private _readFile = memoizeOne((path: string) =>
-    fse.readFileSync(path, "utf8")
+    fse.readFileSync(path, 'utf8')
   );
 
   private _renderTemplate(template: string) {

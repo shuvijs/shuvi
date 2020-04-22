@@ -8,66 +8,63 @@ import {
   render,
   waitFor,
   cleanup,
-  act,
+  act
 } from '@testing-library/react';
-import { wait } from 'test-utils';
+import { wait } from 'shuvi-test-utils';
 import dynamic from '../dynamic';
 
 describe('dynamic', () => {
   afterEach(cleanup);
 
   test('promise argument', async () => {
-    // Normally we don't need wrap the whole test.
-    // We can't control the update occured in dynamic interrnal,
-    // so wrapped the whole test in act
-    act(async () => {
-      const App = dynamic(async () => {
-        await wait(100);
-        return () => <h1>App</h1>;
-      });
-      const { container } = render(<App />);
-      expect(container.innerHTML).toEqual('');
-      await waitFor(() => getByText(container, 'App'));
-      expect(container.innerHTML).toEqual('<h1>App</h1>');
+    const App = dynamic(async () => {
+      await wait(100);
+      return () => <h1>App</h1>;
     });
+    const { container } = render(<App />);
+    expect(container.innerHTML).toEqual('');
+    await act(async () => {
+      await waitFor(() => getByText(container, 'App'));
+    });
+    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 
   test('object argument', async () => {
-    act(async () => {
-      const App = dynamic({
-        loader: async () => {
-          await wait(100);
-          return () => <h1>App</h1>;
-        },
-      });
-      const { container } = render(<App />);
-      expect(container.innerHTML).toEqual('');
-      await waitFor(() => getByText(container, 'App'));
-      expect(container.innerHTML).toEqual('<h1>App</h1>');
+    const App = dynamic({
+      loader: async () => {
+        await wait(100);
+        return () => <h1>App</h1>;
+      }
     });
+    const { container } = render(<App />);
+    expect(container.innerHTML).toEqual('');
+    await act(async () => {
+      await waitFor(() => getByText(container, 'App'));
+    });
+    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 
   test('custom loading', async () => {
-    act(async () => {
-      const App = dynamic(
-        async () => {
-          await wait(100);
-          return () => <h1>App</h1>;
-        },
-        {
-          loading: ({ isLoading }) => {
-            if (isLoading) {
-              return <p>loading...</p>;
-            }
+    const App = dynamic(
+      async () => {
+        await wait(100);
+        return () => <h1>App</h1>;
+      },
+      {
+        loading: ({ isLoading }) => {
+          if (isLoading) {
+            return <p>loading...</p>;
+          }
 
-            return null;
-          },
+          return null;
         }
-      );
-      const { container } = render(<App />);
-      expect(container.innerHTML).toEqual('<p>loading...</p>');
+      }
+    );
+    const { container } = render(<App />);
+    expect(container.innerHTML).toEqual('<p>loading...</p>');
+    await act(async () => {
       await waitFor(() => getByText(container, 'App'));
-      expect(container.innerHTML).toEqual('<h1>App</h1>');
     });
+    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 });

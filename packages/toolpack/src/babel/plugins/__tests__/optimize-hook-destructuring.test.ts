@@ -1,5 +1,5 @@
 import { transform } from '@babel/core';
-import { trim } from 'test-utils';
+import { trim } from 'shuvi-test-utils';
 
 function babel(code: string) {
   return transform(code, {

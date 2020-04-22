@@ -1,4 +1,4 @@
-import { findPort } from 'test-utils';
+import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { Server } from '../server';
 import { IServerResponse, IIncomingMessage } from '../types';
