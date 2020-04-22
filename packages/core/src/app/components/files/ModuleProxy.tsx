@@ -1,8 +1,6 @@
-import React from "react";
-import { File } from "@shuvi/react-fs";
-import { useFileByOrder } from "../../hooks/useFileByOrder";
-
-type Module = string | string[];
+import React, { useMemo } from 'react';
+import { File } from '@shuvi/react-fs';
+import { useFileByOrder } from '../../hooks/useFileByOrder';
 
 export interface Props {
   name: string;
@@ -10,10 +8,17 @@ export interface Props {
   defaultExport?: boolean;
 }
 
-function Module({ name, source, defaultExport }: Props) {
-  const file = Array.isArray(source)
-    ? useFileByOrder(...source)
-    : useFileByOrder(source);
+function ModuleProxy({ name, source, defaultExport }: Props) {
+  const lookups = useMemo(() => {
+    if (Array.isArray(source)) {
+      return source.slice(0, source.length - 1);
+    } else {
+      return [];
+    }
+  }, [source]);
+  const fallback = Array.isArray(source) ? source[source.length - 1] : source;
+
+  const file = useFileByOrder(lookups, fallback);
 
   let statements: string[] = [];
   if (defaultExport) {
@@ -23,7 +28,7 @@ function Module({ name, source, defaultExport }: Props) {
     statements.push(`export * from "${file}"`);
   }
 
-  return <File name={name} content={statements.join("\n")} />;
+  return <File name={name} content={statements.join('\n')} />;
 }
 
-export default React.memo(Module);
+export default React.memo(ModuleProxy);

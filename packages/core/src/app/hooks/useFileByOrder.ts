@@ -1,6 +1,6 @@
-import { useReducer, useEffect, useRef } from "react";
-import { watch } from "@shuvi/utils/lib/fileWatcher";
-import fse from "fs-extra";
+import { useReducer, useEffect, useRef } from 'react';
+import { watch } from '@shuvi/utils/lib/fileWatcher';
+import fse from 'fs-extra';
 
 function findFirstExistedFile(files: string[]): string | null {
   for (let index = 0; index < files.length; index++) {
@@ -13,10 +13,9 @@ function findFirstExistedFile(files: string[]): string | null {
   return null;
 }
 
-export function useFileByOrder(...files: string[]) {
-  const fallbackFile = files.pop()!;
+export function useFileByOrder(files: string[], fallbackFile: string) {
   const lookupFiles = files;
-  const forceupdate = useReducer(s => s * -1, 1)[1];
+  const forceupdate = useReducer((s) => s * -1, 1)[1];
   const existedFiles = useRef(new Map<string, true>());
   const file = useRef<string>();
   if (!file.current) {
@@ -60,7 +59,7 @@ export function useFileByOrder(...files: string[]) {
         forceupdate({});
       }
     });
-  }, [...lookupFiles]);
+  }, [files]);
 
   return file.current;
 }
