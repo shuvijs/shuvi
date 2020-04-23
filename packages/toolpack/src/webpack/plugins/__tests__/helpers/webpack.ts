@@ -2,7 +2,7 @@ import { createFsFromVolume, Volume } from 'memfs';
 import type {
   Stats,
   Compiler as WebpackCompiler,
-  Configuration,
+  Configuration
 } from 'webpack';
 import webpack from 'webpack';
 import { resolveFixture } from '../utils';
@@ -12,15 +12,12 @@ export interface WatchChainer {
   end(endFn: JestDoneCallback): void;
 }
 
-export interface Compiler extends WebpackCompiler {
-  __watching: WebpackCompiler.Watching;
-  watch(
-    watchOptions: WebpackCompiler.WatchOptions,
-    handler?: WebpackCompiler.Handler
-  ): WebpackCompiler.Watching;
+export type Compiler = Omit<WebpackCompiler, 'watch'> & {
+  watch(): Promise<Stats>;
+  close(cb?: () => void): void;
   forceCompile(): void;
   waitForCompile(cb: CompileDoneCallback): WatchChainer;
-}
+};
 
 export type CompileDoneCallback = (s: Stats) => any;
 export type JestDoneCallback = (e?: Error) => void;
@@ -51,7 +48,7 @@ function waitForCompile(compiler: Compiler, initialCb: CompileDoneCallback) {
 
   function finish(err?: Error) {
     const done = queue[queue.length - 1] as JestDoneCallback;
-    compiler.__watching.close(() => {
+    compiler.close(() => {
       if (done) {
         done(err);
       } else {
@@ -68,14 +65,16 @@ function waitForCompile(compiler: Compiler, initialCb: CompileDoneCallback) {
     end: (endFn: JestDoneCallback) => {
       queue.push(endFn);
       end = endFn;
-    },
+    }
   };
 
-  compiler.hooks.done.tap('waitForCompile', async (stats) => {
+  compiler.hooks.done.tap('waitForCompile', async stats => {
     if (!check) {
       check = true;
       if (!queue.length || !end) {
-        throw new Error('waitForCompile chain is missing .end(done)');
+        compiler.close(() => {
+          throw new Error('waitForCompile chain is missing .end(done)');
+        });
       }
     }
 
@@ -111,45 +110,54 @@ export function createCompiler(
 ): Compiler {
   let compiler: Compiler;
   if (!(value instanceof webpack.Compiler)) {
-    compiler = webpack({
+    compiler = (webpack({
       mode: 'development',
       output: {
         filename: '[name].js',
         chunkFilename: 'static/chunks/[name].js',
-        path: resolveFixture('dist'),
+        path: resolveFixture('dist')
       },
-      ...value,
-    }) as Compiler;
+      ...value
+    }) as any) as Compiler;
   } else {
-    compiler = value as Compiler;
+    compiler = (value as any) as Compiler;
   }
+
+  let watching: WebpackCompiler.Watching | null = null;
   const webpackFs = ensureWebpackMemoryFs(createFsFromVolume(new Volume()));
   compiler.outputFileSystem = webpackFs;
 
-  const originWatch = compiler.watch;
-  compiler.watch = function (
-    options: WebpackCompiler.WatchOptions,
-    handler?: WebpackCompiler.Handler
-  ) {
-    const watching = originWatch.call(
-      this,
-      {
-        aggregateTimeout: 500,
-        poll: false,
-        ...options,
-      },
-      (err, stats) => {
-        handler && handler(err, stats);
-      }
-    );
-    compiler.__watching = watching;
-    return watching;
+  const originWatch = (compiler.watch as any) as WebpackCompiler['watch'];
+  compiler.watch = function () {
+    return new Promise((resolve, reject) => {
+      watching = originWatch.call(
+        this,
+        {
+          aggregateTimeout: 500,
+          poll: false
+        },
+        (err, stats) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(stats);
+        }
+      );
+    });
+  };
+
+  compiler.close = cb => {
+    if (watching) {
+      watching.close(() => {
+        cb && cb();
+      });
+    }
   };
   compiler.forceCompile = () => {
     // delay to next tick, so we can call this in advance
     setImmediate(() => {
-      if (compiler.__watching) {
-        compiler.__watching.invalidate();
+      if (watching) {
+        watching.invalidate();
       }
     });
   };
@@ -179,7 +187,7 @@ export function runCompiler(
 
 export function watchCompiler(value: Configuration | Compiler): Compiler {
   const compiler = createCompiler(value);
-  compiler.watch({});
+  compiler.watch();
   return compiler;
 }
 
@@ -188,7 +196,7 @@ export function getModuleSource(
   request: string | RegExp
 ): string {
   return stats.compilation.modules
-    .find((m) =>
+    .find(m =>
       typeof request === 'string'
         ? m.userRequest === request
         : request.test(m.userRequest)

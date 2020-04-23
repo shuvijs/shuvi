@@ -5,11 +5,7 @@ import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
-import {
-  DEV_PAGE_STATIC_REGEXP,
-  WEBPACK_CONFIG_CLIENT,
-  WEBPACK_CONFIG_SERVER,
-} from '../constants';
+import { WEBPACK_CONFIG_CLIENT, WEBPACK_CONFIG_SERVER } from '../constants';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
 
 export default class ShuviDev extends Base {
@@ -28,22 +24,22 @@ export default class ShuviDev extends Base {
 
     // prepare server
     const devMiddleware = await getDevMiddleware({
-      api,
+      api
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
     const { useTypeScript } = getProjectInfo(api.paths.rootDir);
     devMiddleware.watchCompiler(WEBPACK_CONFIG_CLIENT, {
       useTypeScript,
-      log: console.log.bind(console),
+      log: console.log.bind(console)
     });
     devMiddleware.watchCompiler(WEBPACK_CONFIG_SERVER, {
       useTypeScript: false,
-      log: console.log.bind(console),
+      log: console.log.bind(console)
     });
 
     // keep the order
-    api.server.use(this._onDemandRouteMiddleware.bind(this));
+    api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
     api.server.use(api.assetPublicPath, this._plubicDirMiddleware.bind(this));
     api.server.use(this._pageMiddleware.bind(this));
@@ -54,7 +50,7 @@ export default class ShuviDev extends Base {
   async listen(port: number, hostname: string = 'localhost'): Promise<void> {
     const status = {
       [WEBPACK_CONFIG_CLIENT]: false,
-      [WEBPACK_CONFIG_SERVER]: false,
+      [WEBPACK_CONFIG_SERVER]: false
     };
     this._api.on<IEventBundlerDone>('bundler:done', ({ first, name }) => {
       status[name] = true;
@@ -77,21 +73,6 @@ export default class ShuviDev extends Base {
 
   protected getMode() {
     return 'development' as const;
-  }
-
-  private async _onDemandRouteMiddleware(
-    req: IIncomingMessage,
-    res: IServerResponse,
-    next: INextFunction
-  ) {
-    const match = req.url!.match(DEV_PAGE_STATIC_REGEXP);
-    if (!match) {
-      return next();
-    }
-
-    const routeId = match[1];
-    await this._onDemandRouteMgr.activateRoute(routeId);
-    next();
   }
 
   private async _plubicDirMiddleware(

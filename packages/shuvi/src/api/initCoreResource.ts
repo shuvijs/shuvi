@@ -11,7 +11,7 @@ import { Api } from "./api";
 
 function resolveServerDist(api: Api, name: string) {
   const manifest = api.resources.serverManifest;
-  return path.join(api.paths.buildDir, BUILD_SERVER_DIR, manifest.chunks[name]);
+  return path.join(api.paths.buildDir, BUILD_SERVER_DIR, manifest.bundles[name]);
 }
 
 function resolveDocument(api: Api) {

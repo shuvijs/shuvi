@@ -1,4 +1,3 @@
-// import { ROUTE_ID_REGEXP } from "@shuvi/shared/lib/router";
 import { Bundler } from '@shuvi/types';
 import { Compiler as WebpackCompiler } from 'webpack';
 // @ts-ignore
@@ -11,11 +10,13 @@ import Manifest = Bundler.IManifest;
 const defaultOptions = {
   filename: 'build-manifest.json',
   modules: false,
+  chunkRequest: false
 };
 
 interface Options {
   filename: string;
   modules: boolean;
+  chunkRequest: boolean;
 }
 
 function getFileExt(filepath: string): string {
@@ -50,7 +51,7 @@ export default class BuildManifestPlugin {
   constructor(options: Partial<Options> = {}) {
     this._options = {
       ...defaultOptions,
-      ...options,
+      ...options
     };
   }
 
@@ -58,52 +59,22 @@ export default class BuildManifestPlugin {
     compiler.hooks.emit.tapAsync('BuildManifest', (compilation, callback) => {
       const assetMap = (this._manifest = {
         entries: {},
-        chunks: {},
-        loadble: {},
+        bundles: {},
+        chunkRequest: {},
+        loadble: {}
       });
-      compilation.chunkGroups.forEach((chunkGroup) => {
+      compilation.chunkGroups.forEach(chunkGroup => {
         if (chunkGroup instanceof Entrypoint) {
           this._collectEntries(chunkGroup);
-          return;
         }
 
-        if (!chunkGroup.isInitial()) {
-          if (this._options.modules) {
-            this._collectModules(chunkGroup, compiler);
-          }
-        }
+        this._collect(chunkGroup, compiler);
       });
 
       this._manifest.loadble = Object.keys(this._manifest.loadble)
         .sort()
         // eslint-disable-next-line no-sequences
         .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
-
-      for (const chunk of compilation.chunks) {
-        if (!chunk.name || !chunk.files) {
-          continue;
-        }
-
-        for (const file of chunk.files) {
-          if (/\.map$/.test(file) || /\.hot-update\.js$/.test(file)) {
-            continue;
-          }
-
-          const ext = getFileExt(file);
-          const normalizedPath = file.replace(/\\/g, '/');
-
-          // // route chunk
-          // if (ROUTE_ID_REGEXP.test(chunk.name)) {
-          //   this._pushRoute(chunk.name, ext, normalizedPath);
-          //   continue;
-          // }
-
-          // normal chunk
-          if (ext === 'js') {
-            this._pushChunk(chunk.name, normalizedPath);
-          }
-        }
-      }
 
       compilation.assets[this._options.filename] = new RawSource(
         JSON.stringify(assetMap, null, 2)
@@ -131,52 +102,107 @@ export default class BuildManifestPlugin {
     }
   }
 
-  private _collectModules(chunkGroup: any, compiler: WebpackCompiler): void {
-    const context = compiler.options.context;
+  private _collect(chunkGroup: any, compiler: WebpackCompiler): void {
+    const collectModules = this._options.modules;
     chunkGroup.origins.forEach((chunkGroupOrigin: any) => {
       const { request } = chunkGroupOrigin;
+      const ctx = { request, compiler };
       chunkGroup.chunks.forEach((chunk: any) => {
-        if (chunk.canBeInitial()) {
-          return;
-        }
-
-        chunk.files.forEach((file: string) => {
-          const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
-          const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
-          if (isJs || isCss) {
-            this._pushLoadableModules(request, file);
-          }
-        });
-
-        for (const module of chunk.modulesIterable) {
-          let id = module.id;
-          if (!module.type.startsWith('javascript')) {
-            continue;
-          }
-
-          let name =
-            typeof module.libIdent === 'function'
-              ? module.libIdent({ context })
-              : null;
-
-          if (name.endsWith('.css')) {
-            continue;
-          }
-
-          this._pushLoadableModules(request, {
-            id,
-            name,
-          });
+        this._collectChunk(chunk, ctx);
+        if (collectModules) {
+          this._collectChunkModule(chunk, ctx);
         }
       });
     });
+  }
+
+  private _collectChunk(
+    chunk: any,
+    {
+      request
+    }: {
+      request: string;
+    }
+  ) {
+    if (!chunk.files) {
+      return;
+    }
+
+    for (const file of chunk.files) {
+      if (/\.map$/.test(file) || /\.hot-update\.js$/.test(file)) {
+        continue;
+      }
+
+      const ext = getFileExt(file);
+      const normalizedPath = file.replace(/\\/g, '/');
+
+      // normal chunk
+      if (ext === 'js') {
+        if (chunk.isOnlyInitial()) {
+          this._pushBundle({
+            name: chunk.name,
+            file: normalizedPath
+          });
+        }
+
+        this._pushChunkRequest({
+          file: normalizedPath,
+          request
+        });
+      }
+    }
+  }
+
+  private _collectChunkModule(
+    chunk: any,
+    {
+      request,
+      compiler
+    }: {
+      request: string;
+      compiler: WebpackCompiler;
+    }
+  ) {
+    if (chunk.canBeInitial()) {
+      return;
+    }
+
+    const context = compiler.options.context;
+    chunk.files.forEach((file: string) => {
+      const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
+      const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
+      if (isJs || isCss) {
+        this._pushLoadableModules(request, file);
+      }
+    });
+
+    for (const module of chunk.modulesIterable) {
+      let id = module.id;
+      if (!module.type.startsWith('javascript')) {
+        continue;
+      }
+
+      let name =
+        typeof module.libIdent === 'function'
+          ? module.libIdent({ context })
+          : null;
+
+      if (name.endsWith('.css')) {
+        continue;
+      }
+
+      this._pushLoadableModules(request, {
+        id,
+        name
+      });
+    }
   }
 
   private _pushEntries(name: string, ext: string, value: string) {
     const entries = this._manifest.entries;
     if (!entries[name]) {
       entries[name] = {
-        js: [],
+        js: []
       };
     }
     if (!entries[name][ext]) {
@@ -186,23 +212,22 @@ export default class BuildManifestPlugin {
     }
   }
 
-  // private _pushRoute(name: string, ext: string, value: string) {
-  //   const routes = this._manifest.routes;
-  //   if (!routes[name]) {
-  //     routes[name] = {
-  //       js: []
-  //     };
-  //   }
-  //   if (!routes[name][ext]) {
-  //     routes[name][ext] = [value];
-  //   } else {
-  //     routes[name][ext].push(value);
-  //   }
-  // }
+  private _pushBundle({ name, file }: { name: string; file: string }) {
+    if (name) {
+      this._manifest.bundles[name] = file;
+    }
+  }
 
-  private _pushChunk(name: string, value: string) {
-    const chunks = this._manifest.chunks;
-    chunks[name] = value;
+  private _pushChunkRequest({
+    file,
+    request
+  }: {
+    file: string;
+    request: string;
+  }) {
+    if (this._options.chunkRequest && request) {
+      this._manifest.chunkRequest[file] = request;
+    }
   }
 
   private _pushLoadableModules(request: string, module: ModuleItem): void;
@@ -212,7 +237,7 @@ export default class BuildManifestPlugin {
     if (!modules[request]) {
       modules[request] = {
         files: [],
-        children: [],
+        children: []
       };
     }
 
@@ -220,7 +245,7 @@ export default class BuildManifestPlugin {
       modules[request].files.push(value);
     } else if (
       // Avoid duplicate files
-      !modules[request].children.some((item) => item.id === module.id)
+      !modules[request].children.some(item => item.id === module.id)
     ) {
       modules[request].children.push(value);
     }

@@ -3,7 +3,6 @@ import invariant from "@shuvi/utils/lib/invariant";
 import { watch } from "@shuvi/utils/lib/fileWatcher";
 import eventEmitter from "@shuvi/utils/lib/eventEmitter";
 import { recursiveReadDir } from "@shuvi/utils/lib/recursiveReaddir";
-import { genRouteId } from "@shuvi/shared/lib/router";
 import { IRouteConfig } from "./types";
 
 export type SubscribeFn = (v: IRouteConfig[]) => void;
@@ -150,7 +149,6 @@ export class Route {
         console.warn("Top level _layout is not supported and will be ignored.");
       } else if (isLayout(file)) {
         const layoutRoute: InternalRouteConfig = {
-          id: genRouteId(file),
           path: normalizeRoutePath(file.replace(/\/_layout$/, "/")),
           exact: false,
           componentFile: join(this._pagesDir, rawfile),
@@ -171,7 +169,6 @@ export class Route {
         route = layouts.get(file);
       } else {
         route = {
-          id: genRouteId(file),
           path: routePath,
           exact: !isLayout(file),
           componentFile: join(this._pagesDir, rawFile),

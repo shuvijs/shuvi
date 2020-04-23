@@ -1,33 +1,10 @@
 import React from 'react';
-import {
-  IApi,
-  Runtime,
-  IHookAppRoutes,
-  IHookAppRoutesFile,
-} from '@shuvi/types';
+import { IApi, Runtime, IHookAppRoutesFile } from '@shuvi/types';
 import { resolveDist, resolveDep } from './paths';
 import { matchRoutes } from './router/matchRoutes';
 import { config as configBundler } from './bundler/config';
 
 import RouteConfig = Runtime.IRouteConfig;
-
-function modifyRoutes(routes: RouteConfig[]): RouteConfig[] {
-  for (const route of routes) {
-    if (route.routes && route.routes.length > 0) {
-      route.routes = modifyRoutes(route.routes);
-    }
-
-    const filepath = route.componentFile;
-    route.component = `
-loadRouteComponent(() => import(/* webpackChunkName: "${route.id}" */"${filepath}"), {
-  webpack: () => [require.resolveWeak("${filepath}")],
-  modules: ["${filepath}"],
-})
-`.trim();
-  }
-
-  return routes;
-}
 
 class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
   private _api!: IApi;
@@ -38,31 +15,37 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppExport(resolveDist('head/head'), {
       imported: 'default',
-      local: 'Head',
+      local: 'Head'
     });
     api.addAppExport(resolveDist('dynamic'), {
       imported: 'default',
-      local: 'dynamic',
+      local: 'dynamic'
     });
     api.addAppExport(resolveDep('react-router-dom'), 'Link');
 
     configBundler(api);
 
-    api.tap<IHookAppRoutes>('app:routes', {
-      name: 'runtime-react',
-      fn: (routes: RouteConfig[]) => modifyRoutes(routes),
-    });
-
     // add necessary imports
     api.tap<IHookAppRoutesFile>('app:routes-file', {
       name: 'runtime-react',
-      fn: (fileContent) => {
+      fn: fileContent => {
         return `
 import { loadRouteComponent } from '${resolveDist('loadRouteComponent')}';
 ${fileContent}
 `.trim();
-      },
+      }
     });
+  }
+
+  componentTemplate(
+    componentModule: string,
+    route: RouteConfig & { id: string }
+  ) {
+    return `
+loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${componentModule}"), {
+  webpack: () => [require.resolveWeak("${componentModule}")],
+  modules: ["${componentModule}"],
+})`.trim();
   }
 
   matchRoutes(routes: RouteConfig[], pathname: string) {
@@ -76,7 +59,7 @@ ${fileContent}
   getBootstrapModulePath(): string {
     let {
       ssr,
-      router: { history },
+      router: { history }
     } = this._api.config;
 
     if (history === 'auto') {

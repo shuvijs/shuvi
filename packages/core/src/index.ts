@@ -18,4 +18,4 @@ export {
   IBuildOptions
 } from "./app";
 
-export { Route, IRouteConfig, IRoute } from "./route";
+export { Route, IRouteConfig, IRoute, IRouteBase } from "./route";

@@ -15,12 +15,20 @@ export type IAssetMap = {
   [ext: string]: string[];
 };
 
+export interface IChunk {
+  file: string;
+  request: string;
+}
+
 export interface IManifest {
   entries: {
     [s: string]: IAssetMap;
   };
-  chunks: {
-    [s: string]: string;
+  bundles: {
+    [name: string]: string; // name => file
+  };
+  chunkRequest: {
+    [file: string]: string; // file => request
   };
   loadble: {
     [s: string]: IModule;

@@ -5,6 +5,8 @@ export const CONFIG_FILE = 'shuvi.config.js';
 
 export const PATH_PREFIX = `/_${NAME}`;
 
+export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route`;
+
 // app
 export const CLIENT_CONTAINER_ID = '__APP';
 

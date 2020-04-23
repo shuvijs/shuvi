@@ -41,7 +41,7 @@ const ModuleStatus = {
 
 interface Handler {
   resolve(): void;
-  finish: Map<Compiler, boolean>;
+  pending: Map<Compiler, boolean>;
 }
 
 const knownModules = new Map<string, ModuleInfo>();
@@ -59,14 +59,14 @@ export default class ModuleReplacePlugin implements Plugin {
     moduleInfo.status = ModuleStatus.ORIGINAL;
     const handler: Handler = {
       resolve: null as any,
-      finish: new Map(),
+      pending: new Map(),
     };
     moduleHandlers.set(id, handler);
     const promise = new Promise((resolve) => {
       handler.resolve = resolve;
     });
     moduleInfo.compilers.forEach((compiler) => {
-      handler.finish.set(compiler, false);
+      handler.pending.set(compiler, false);
       compiler.hooks.invalid.call('noop', new Date());
     });
 
@@ -84,11 +84,11 @@ export default class ModuleReplacePlugin implements Plugin {
     compiler.hooks.done.tap('done', () => {
       const finished: string[] = [];
       for (const [id, handler] of moduleHandlers) {
-        if (handler.finish.get(compiler)) {
-          handler.finish.delete(compiler);
+        if (handler.pending.get(compiler)) {
+          handler.pending.delete(compiler);
         }
 
-        if (handler.finish.size <= 0) {
+        if (handler.pending.size <= 0) {
           handler.resolve();
           finished.push(id);
         }
@@ -119,15 +119,6 @@ export default class ModuleReplacePlugin implements Plugin {
   }
 
   private _handleBuildModule(compiler: Compiler, wpModule: any) {
-    // const filename = wpModule.resource
-    //   ? wpModule.resource.replace(/\?.*$/, "")
-    //   : "";
-    // if (
-    //   filename === "/Users/lixi/Workspace/github/shuvi-test/src/pages/index.js"
-    // ) {
-    //   console.log("handleBuildModule", wpModule)
-    // }
-
     const id = getModuleId(wpModule);
     const moduleInfo = knownModules.get(id);
     if (!moduleInfo) {
@@ -136,7 +127,7 @@ export default class ModuleReplacePlugin implements Plugin {
 
     if (moduleInfo.status === ModuleStatus.ORIGINAL) {
       const handler = moduleHandlers.get(id)!;
-      handler.finish.set(compiler, true);
+      handler.pending.set(compiler, true);
       wpModule.loaders = moduleInfo.loaders;
       return;
     }
@@ -186,7 +177,7 @@ export default class ModuleReplacePlugin implements Plugin {
       if (isRegExp(test)) {
         shouldReplace = test.test(request);
       } else if (isFunction(test)) {
-        shouldReplace = test(request, wpModule);
+        shouldReplace = test(wpModule);
       }
 
       if (shouldReplace) return module;
