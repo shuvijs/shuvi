@@ -2,7 +2,7 @@ import { IConfig, IShuviMode } from '@shuvi/types';
 import {
   IHTTPRequestHandler,
   IIncomingMessage,
-  IServerResponse,
+  IServerResponse
 } from '../server';
 import { Api } from '../api';
 import { Renderer, isRedirect } from '../renderer';
@@ -18,9 +18,13 @@ export default abstract class Shuvi {
   constructor({ config }: IShuviConstructorOptions) {
     this._api = new Api({
       mode: this.getMode(),
-      config,
+      config
     });
     this._renderer = new Renderer({ api: this._api });
+  }
+
+  async ready(): Promise<void> {
+    await this.init();
   }
 
   getRequestHandler(): IHTTPRequestHandler {
@@ -32,7 +36,7 @@ export default abstract class Shuvi {
   }
 
   async listen(port: number, hostname?: string): Promise<void> {
-    await Promise.all([this._api.server.listen(port, hostname), this._ready()]);
+    await Promise.all([this._api.server.listen(port, hostname), this.ready()]);
   }
 
   protected abstract getMode(): IShuviMode;
@@ -50,7 +54,7 @@ export default abstract class Shuvi {
   ): Promise<void> {
     const result = await this._renderer.renderDocument({
       url: req.url,
-      parsedUrl: req.parsedUrl,
+      parsedUrl: req.parsedUrl
     });
 
     if (isRedirect(result)) {
@@ -60,9 +64,5 @@ export default abstract class Shuvi {
     }
 
     res.end(result);
-  }
-
-  private async _ready(): Promise<void> {
-    await this.init();
   }
 }

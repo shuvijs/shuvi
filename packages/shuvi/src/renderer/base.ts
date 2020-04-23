@@ -68,7 +68,7 @@ export abstract class BaseRenderer {
     const scripts: IHtmlTag<"script">[] = [];
     const { clientManifest } = this._serverCtx.api.resources;
     const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
-    const polyfill = clientManifest.chunks[BUILD_CLIENT_RUNTIME_POLYFILL];
+    const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
     scripts.push(
       tag("script", {
         src: this._serverCtx.api.getAssetPublicUrl(polyfill)

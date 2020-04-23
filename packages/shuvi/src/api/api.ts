@@ -13,7 +13,6 @@ import {
   IShuviMode,
 } from '@shuvi/types';
 import { App, IRouteConfig, IFile } from '@shuvi/core';
-import { genRouteId } from '@shuvi/shared/lib/router';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { Hooks } from '../lib/hooks';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
@@ -133,9 +132,7 @@ export class Api implements IApi {
   }
 
   async setRoutes(routes: IRouteConfig[]) {
-    // add fallback route
     routes.push({
-      id: genRouteId('404'),
       componentFile: this.resolveAppFile('core', '404'),
     });
 

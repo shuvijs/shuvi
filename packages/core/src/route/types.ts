@@ -1,6 +1,5 @@
-interface IRouteBase {
-  id: string;
-  path?: string | string[];
+export interface IRouteBase {
+  path?: string;
   exact?: boolean;
   componentFile: string;
   [x: string]: any;
@@ -12,6 +11,7 @@ export interface IRouteConfig extends IRouteBase {
 }
 
 export interface IRoute extends IRouteBase {
+  id: string;
   routes?: IRoute[];
   component?: any;
 }
