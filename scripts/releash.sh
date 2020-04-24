@@ -16,6 +16,6 @@ yarn run lerna version $@
 if [[ -z $RELEASE_TAG ]]; then
   yarn run lerna publish from-package --registry=https://registry.npmjs.org
 else
-  yarn run lerna publish from-package --registry=https://registry.npmjs.org --tag "$RELEASE_TAG"
+  yarn run lerna publish from-package --registry=https://registry.npmjs.org --dist-tag "$RELEASE_TAG"
 fi
 
