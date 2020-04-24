@@ -1,17 +1,17 @@
 export interface IRouteBase {
   path?: string;
   exact?: boolean;
-  componentFile: string;
+  routes?: IRouteBase[];
   [x: string]: any;
 }
 
 export interface IRouteConfig extends IRouteBase {
   routes?: IRouteConfig[];
-  component?: string;
+  component: string;
 }
 
 export interface IRoute extends IRouteBase {
   id: string;
+  component: any;
   routes?: IRoute[];
-  component?: any;
 }

@@ -10,14 +10,15 @@ import {
   IHookDestory,
   ISpecifier,
   IPaths,
-  IShuviMode,
+  IShuviMode
 } from '@shuvi/types';
 import { App, IRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { Hooks } from '../lib/hooks';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
-import { serializeRoutes } from '../lib/serializeRoutes';
-import { PUBLIC_PATH } from '../constants';
+import { serializeRoutes, normalizeRoutes } from '../lib/routes';
+import { PUBLIC_PATH, ROUTE_RESOURCE_QUERYSTRING } from '../constants';
+import { runtime } from '../runtime';
 import { IResources, IBuiltResource, IPlugin } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
@@ -51,13 +52,13 @@ export class Api implements IApi {
     this.config = config;
     this.paths = getPaths({
       rootDir: config.rootDir,
-      outputPath: config.outputPath,
+      outputPath: config.outputPath
     });
 
     this._hooks = new Hooks();
     this._app = new App();
     this._plugins = resolvePlugins(config.plugins || []);
-    this._plugins.forEach((plugin) => plugin.get()(this.getPluginApi()));
+    this._plugins.forEach(plugin => plugin.get()(this.getPluginApi()));
 
     initCoreResource(this);
 
@@ -69,7 +70,7 @@ export class Api implements IApi {
   get server() {
     if (!this._server) {
       this._server = new Server({
-        proxy: this.config.proxy,
+        proxy: this.config.proxy
       });
     }
 
@@ -132,18 +133,31 @@ export class Api implements IApi {
   }
 
   async setRoutes(routes: IRouteConfig[]) {
+    routes = normalizeRoutes(routes, {
+      componentDir: this.paths.pagesDir
+    });
+
     routes.push({
-      componentFile: this.resolveAppFile('core', '404'),
+      component: this.resolveAppFile('core', '404')
     });
 
     routes = await this.callHook<IHookAppRoutes>({
       name: 'app:routes',
-      initialValue: routes,
+      initialValue: routes
     });
-    let content = `export default ${serializeRoutes(routes)}`;
+
+    const serialized = serializeRoutes(routes, {
+      component(comp, route) {
+        return runtime.componentTemplate(
+          `${comp}?${ROUTE_RESOURCE_QUERYSTRING}`,
+          route
+        );
+      }
+    });
+    let content = `export default ${serialized}`;
     content = await this.callHook<IHookAppRoutesFile>({
       name: 'app:routes-file',
-      initialValue: content,
+      initialValue: content
     });
     this._app.setRoutesContent(content);
   }
@@ -159,7 +173,7 @@ export class Api implements IApi {
 
     // prevent webpack watch running too early
     // https://github.com/webpack/webpack/issues/7997
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       setTimeout(resolve, 1000);
     });
 
@@ -178,12 +192,12 @@ export class Api implements IApi {
             value,
             enumerable: true,
             configurable: true,
-            writable: false,
+            writable: false
           });
           return value;
         },
         enumerable: true,
-        configurable: true,
+        configurable: true
       });
     } else {
       Object.defineProperty(this._resources, identifier, {
@@ -191,7 +205,7 @@ export class Api implements IApi {
           return loader();
         },
         enumerable: true,
-        configurable: true,
+        configurable: true
       });
     }
   }

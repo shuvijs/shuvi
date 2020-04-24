@@ -125,7 +125,7 @@ export class Route {
   private _getRoutes(files: string[]): IRouteConfig[] {
     const rootRoute = ({
       id: "",
-      componentFile: "",
+      component: "",
       routes: []
     } as any) as InternalRouteConfig;
     const layouts = new Map<string, InternalRouteConfig>();
@@ -151,7 +151,7 @@ export class Route {
         const layoutRoute: InternalRouteConfig = {
           path: normalizeRoutePath(file.replace(/\/_layout$/, "/")),
           exact: false,
-          componentFile: join(this._pagesDir, rawfile),
+          component: join(this._pagesDir, rawfile),
           __meta: {
             isStaticRoute: isStaicRouter(file)
           }
@@ -171,7 +171,7 @@ export class Route {
         route = {
           path: routePath,
           exact: !isLayout(file),
-          componentFile: join(this._pagesDir, rawFile),
+          component: join(this._pagesDir, rawFile),
           __meta: {
             isStaticRoute: isStaicRouter(file)
           }
