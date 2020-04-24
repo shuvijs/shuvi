@@ -3,7 +3,7 @@ import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
 import {
   Options as ProxyOptions,
-  Filter as ProxyFilter,
+  Filter as ProxyFilter
 } from 'http-proxy-middleware';
 import * as Runtime from './src/runtime';
 import * as Bundler from './src/bundler';
@@ -67,6 +67,7 @@ export interface IConfig {
   router: {
     history: IRouterHistoryMode;
   };
+  routes?: Runtime.IRouteConfig[];
   runtimeConfig?: IRuntimeConfig | (() => IRuntimeConfig);
   proxy?: IServerProxyConfig;
   plugins?: IPluginConfig[];

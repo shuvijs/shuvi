@@ -13,7 +13,7 @@ export { IRouteBase, IRouteConfig, IRoute };
 export interface IMatchedRoute<
   Params extends { [K in keyof Params]?: string } = {}
 > {
-  route: IRouteConfig;
+  route: IRouteBase;
   match: {
     params: Params;
     isExact: boolean;
@@ -158,7 +158,7 @@ export interface IRuntime<CompType = unknown> {
 
   componentTemplate(componentModule: string, route: IRouteConfig & { id: string }): string;
 
-  matchRoutes(routes: IRouteBase[], pathname: string): IMatchedRoute[];
+  matchRoutes(routes: IRouteConfig[], pathname: string): IMatchedRoute[];
 
   getRouterModulePath(): string;
 

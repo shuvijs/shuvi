@@ -64,7 +64,7 @@ export class OnDemandRouteManager {
   async ensureRoutes(pathname: string): Promise<void> {
     const routeModule = runtime
       .matchRoutes(this._routes, pathname)
-      .map(m => `${m.route.componentFile}?${ROUTE_RESOURCE_QUERYSTRING}`);
+      .map(m => `${m.route.component}?${ROUTE_RESOURCE_QUERYSTRING}`);
     return this._activateModules(routeModule);
   }
 

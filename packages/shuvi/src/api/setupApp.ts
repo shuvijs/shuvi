@@ -4,7 +4,7 @@ import { runtime } from '../runtime';
 import { Api } from './api';
 
 function withExts(file: string, extensions: string[]): string[] {
-  return extensions.map((ext) => `${file}.${ext}`);
+  return extensions.map(ext => `${file}.${ext}`);
 }
 
 export async function setupApp(api: Api) {
@@ -18,16 +18,16 @@ export async function setupApp(api: Api) {
   api.setBootstrapModule(runtime.getBootstrapModulePath());
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
-    runtime.getAppModulePath(),
+    runtime.getAppModulePath()
   ]);
 
   api.addAppFile(
     File.moduleProxy('404.js', {
       source: [
         ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
-        runtime.get404ModulePath(),
+        runtime.get404ModulePath()
       ],
-      defaultExport: true,
+      defaultExport: true
     }),
     'core'
   );
@@ -35,38 +35,38 @@ export async function setupApp(api: Api) {
     File.moduleProxy('document.js', {
       source: [
         ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
-        require.resolve('@shuvi/utils/lib/noop'),
-      ],
+        require.resolve('@shuvi/utils/lib/noop')
+      ]
     }),
     'core'
   );
   api.addAppFile(
     File.module('utils.js', {
       exports: {
-        [require.resolve('@shuvi/runtime-core/lib/getAppData')]: 'getAppData',
-      },
+        [require.resolve('@shuvi/runtime-core/lib/getAppData')]: 'getAppData'
+      }
     }),
     'core'
   );
 
   api.addAppExport(runtime.getAppModulePath(), {
     imported: 'default',
-    local: 'App',
+    local: 'App'
   });
   api.addAppExport(runtime.getRouterModulePath(), {
     imported: 'default',
-    local: 'router',
+    local: 'router'
   });
   api.addAppExport(api.resolveAppFile('core', 'routes'), {
     imported: 'default',
-    local: 'routes',
+    local: 'routes'
   });
   api.addAppExport(require.resolve('shuvi/lib/lib/runtimeConfig'), [
     'setRuntimeConfig',
     {
       imported: 'default',
-      local: 'getRuntimeConfig',
-    },
+      local: 'getRuntimeConfig'
+    }
   ]);
 
   api.addAppFile(
@@ -75,36 +75,42 @@ export async function setupApp(api: Api) {
         ? {
             [api.resolveAppFile('core', 'document')]: {
               imported: '*',
-              local: 'document',
+              local: 'document'
             },
             [api.resolveAppFile('core', 'app')]: {
               imported: 'default',
-              local: 'App',
+              local: 'App'
             },
             [api.resolveAppFile('core', 'routes')]: {
               imported: 'default',
-              local: 'routes',
+              local: 'routes'
             },
             [runtime.getRendererModulePath()]: {
               imported: 'default',
-              local: 'renderer',
-            },
+              local: 'renderer'
+            }
           }
         : {
             [api.resolveAppFile('core', 'document')]: {
               imported: '*',
-              local: 'document',
-            },
-          },
+              local: 'document'
+            }
+          }
     })
   );
-  const route = new Route(api.paths.pagesDir);
-  if (api.mode === 'development') {
-    route.subscribe((routes) => {
-      api.setRoutes(routes);
-    });
-  } else {
-    const routes = await route.getRoutes();
+
+  const { routes } = api.config;
+  if (Array.isArray(routes) && routes.length) {
     api.setRoutes(routes);
+  } else {
+    const route = new Route(api.paths.pagesDir);
+    if (api.mode === 'development') {
+      route.subscribe(routes => {
+        api.setRoutes(routes);
+      });
+    } else {
+      const routes = await route.getRoutes();
+      api.setRoutes(routes);
+    }
   }
 }
