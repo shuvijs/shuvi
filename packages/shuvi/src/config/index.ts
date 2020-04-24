@@ -3,7 +3,7 @@ import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import path from 'path';
 import { CONFIG_FILE, PUBLIC_PATH } from '../constants';
 
-const defaultConfig: IConfig = {
+export const defaultConfig: IConfig = {
   ssr: true,
   env: {},
   rootDir: process.cwd(),
