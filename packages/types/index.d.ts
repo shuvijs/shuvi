@@ -58,7 +58,7 @@ export type IPluginConfig =
 
 export type IRuntimeConfig = Record<string, string>;
 
-export interface IConfig {
+export interface IApiConfig {
   outputPath: string;
   rootDir: string;
   ssr: boolean;
@@ -93,7 +93,7 @@ export interface ICallHookOpts<Name extends string = string, InitV = unknown> {
 export interface IApi {
   mode: IShuviMode;
   paths: IPaths;
-  config: IConfig;
+  config: IApiConfig;
 
   tap<Config extends IHookConfig>(
     hook: Config['name'],

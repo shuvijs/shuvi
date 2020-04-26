@@ -1,8 +1,8 @@
 import path from 'path';
 import fse from 'fs-extra';
-import { IConfig } from '@shuvi/types';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import { Api } from '../../api/api';
+import { IConfig } from '../../config';
 import { getBundler } from '../../bundler/bundler';
 import { Renderer } from '../../renderer';
 import { BUILD_CLIENT_DIR } from '../../constants';
@@ -12,7 +12,7 @@ export interface IBuildOptions {
 }
 
 const defaultBuildOptions = {
-  target: 'ssr',
+  target: 'ssr'
 } as const;
 
 async function bundle({ api }: { api: Api }) {
@@ -43,7 +43,7 @@ function copyPublicFolder(api: Api) {
     api.paths.publicDir,
     path.join(api.paths.buildDir, BUILD_CLIENT_DIR),
     {
-      dereference: true,
+      dereference: true
     }
   );
 }
@@ -51,14 +51,14 @@ function copyPublicFolder(api: Api) {
 async function buildHtml({
   api,
   pathname,
-  filename,
+  filename
 }: {
   api: Api;
   pathname: string;
   filename: string;
 }) {
   const html = await new Renderer({ api }).renderDocument({
-    url: pathname,
+    url: pathname
   });
   await fse.writeFile(
     path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
@@ -72,7 +72,7 @@ export async function build(
 ) {
   const opts: IBuildOptions = {
     ...defaultBuildOptions,
-    ...options,
+    ...options
   };
   const api = new Api({ mode: 'production', config });
 

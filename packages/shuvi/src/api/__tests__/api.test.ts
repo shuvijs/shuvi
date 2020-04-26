@@ -1,25 +1,24 @@
 import { Api } from '../api';
 import { PluginApi } from '../pluginApi';
-import { shuviConfig } from './utils';
 
 describe('api', () => {
   let gApi: Api;
   beforeAll(() => {
     gApi = new Api({
       mode: 'development',
-      config: shuviConfig(),
+      config: {},
     });
   });
 
   test('should has "production" be default mode', () => {
-    const prodApi = new Api({ config: shuviConfig() });
+    const prodApi = new Api({ config: {} });
     expect(prodApi.mode).toBe('production');
   });
 
   test('plugins', () => {
     let pluginApi: PluginApi;
     const api = new Api({
-      config: shuviConfig({ plugins: [(api) => (pluginApi = api)] }),
+      config: { plugins: [(api) => (pluginApi = api)] },
     });
     expect(pluginApi!).toBeDefined();
     expect(pluginApi!.paths).toBe(api.paths);

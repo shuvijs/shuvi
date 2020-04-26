@@ -1,5 +1,5 @@
 import qs from 'querystring';
-import { IConfig } from '@shuvi/types';
+import { IApiConfig } from '@shuvi/types';
 import { shuvi, Shuvi } from 'shuvi';
 import { loadFixture } from './fixture';
 import { build } from './build';
@@ -43,7 +43,7 @@ async function createTextContext(app: Shuvi) {
 
 export async function launchFixture(
   name: string,
-  overrides: Partial<IConfig> = {}
+  overrides: Partial<IApiConfig> = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
   const shuviApp = shuvi({ dev: true, config });
@@ -52,7 +52,7 @@ export async function launchFixture(
 
 export async function serveFixture(
   name: string,
-  overrides: Partial<IConfig> = {}
+  overrides: Partial<IApiConfig> = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
   await build(config);

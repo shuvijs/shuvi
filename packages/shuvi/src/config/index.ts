@@ -1,17 +1,18 @@
-import { IConfig } from '@shuvi/types';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import { IApiConfig } from '@shuvi/types';
 import path from 'path';
 import { CONFIG_FILE, PUBLIC_PATH } from '../constants';
 
-export const defaultConfig: IConfig = {
+export type IConfig = Partial<IApiConfig>
+
+export const defaultConfig: IApiConfig = {
   ssr: true,
   env: {},
   rootDir: process.cwd(),
   outputPath: 'dist',
   publicPath: PUBLIC_PATH,
   router: {
-    history: 'auto',
-  },
+    history: 'auto'
+  }
 };
 
 async function loadConfigFromFile<T>(configPath: string): Promise<T> {
@@ -36,11 +37,11 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 export async function loadConfig(
   dir: string = process.cwd()
 ): Promise<IConfig> {
-  const config = await loadConfigFromFile<Partial<IConfig>>(
+  const config = await loadConfigFromFile<IConfig>(
     path.join(dir, CONFIG_FILE)
   );
 
   config.rootDir = dir;
 
-  return deepmerge(defaultConfig, config);
+  return config;
 }
