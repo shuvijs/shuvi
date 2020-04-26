@@ -77,7 +77,7 @@ describe("Dynamic", () => {
     });
     const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
 
-    expect(appData.dynamicIds).not.toContain("./src/components/hello.js");
+    expect(appData.dynamicIds).not.toContain("./src/components/client-only.js");
     expect(await page.$text(`#${CLIENT_CONTAINER_ID}`)).toBe("");
   });
 

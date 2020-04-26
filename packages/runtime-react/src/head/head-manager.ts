@@ -26,7 +26,7 @@ export default class HeadManager {
 
   private _doUpdateHead() {
     const tags: { [tagName: string]: HeadItem[] } = {};
-    this._head.forEach((h) => {
+    this._head.forEach(h => {
       (tags[h.tagName] || (tags[h.tagName] = [])).push(h);
     });
 
@@ -35,7 +35,7 @@ export default class HeadManager {
     }
 
     const types = ['meta', 'base', 'link', 'style', 'script'];
-    types.forEach((type) => {
+    types.forEach(type => {
       this._updateElements(type, tags[type] || []);
     });
   }
@@ -73,7 +73,7 @@ export default class HeadManager {
       curEle = curEle.previousElementSibling;
     }
 
-    const newTags = tags.map(tagToDOM).filter((newTag) => {
+    const newTags = tags.map(tagToDOM).filter(newTag => {
       for (let k = 0, len = oldTags.length; k < len; k++) {
         const oldTag = oldTags[k];
         if (oldTag.isEqualNode(newTag)) {
@@ -84,8 +84,8 @@ export default class HeadManager {
       return true;
     });
 
-    oldTags.forEach((t) => t.parentNode!.removeChild(t));
-    newTags.forEach((t) => headEl.insertBefore(t, headCountEl));
+    oldTags.forEach(t => t.parentNode!.removeChild(t));
+    newTags.forEach(t => headEl.insertBefore(t, headCountEl));
     headCountEl.content = (
       headCount -
       oldTags.length +
