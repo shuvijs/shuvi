@@ -1,7 +1,7 @@
 import program from 'commander';
 import { IConfig } from '@shuvi/types';
 import { loadConfig } from '../../config';
-import { build } from '../build';
+import { build } from '../apis/build';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
 import { getProjectDir } from '../utils';

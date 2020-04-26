@@ -2,10 +2,10 @@ import path from 'path';
 import fse from 'fs-extra';
 import { IConfig } from '@shuvi/types';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { Api } from '../api/api';
-import { getBundler } from '../bundler/bundler';
-import { Renderer } from '../renderer';
-import { BUILD_CLIENT_DIR } from '../constants';
+import { Api } from '../../api/api';
+import { getBundler } from '../../bundler/bundler';
+import { Renderer } from '../../renderer';
+import { BUILD_CLIENT_DIR } from '../../constants';
 
 export interface IBuildOptions {
   target: 'spa' | 'ssr';
