@@ -1,23 +1,24 @@
-import { Runtime, ITemplateData } from "@shuvi/types";
-import { parse as parseUrl, UrlWithParsedQuery } from "url";
+import { Runtime, ITemplateData } from '@shuvi/types';
+import { parse as parseUrl } from 'url';
 import {
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC
-} from "../constants";
-import { renderTemplate } from "../lib/viewTemplate";
-import { tag, stringifyTag, stringifyAttrs } from "./htmlTag";
-import { IServerContext } from "./types";
-import { IBuiltResource } from "../api";
+} from '../constants';
+import { renderTemplate } from '../lib/viewTemplate';
+import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
+import { IServerContext, IRenderRequest } from './types';
+import { IBuiltResource } from '../api';
 
 import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
 import IRenderResultRedirect = Runtime.IRenderResultRedirect;
+import IRequest = Runtime.IRequest;
 
 export function isRedirect(obj: any): obj is IRenderResultRedirect {
-  return obj && (obj as IRenderResultRedirect).$type === "redirect";
+  return obj && (obj as IRenderResultRedirect).$type === 'redirect';
 }
 
 export abstract class BaseRenderer {
@@ -29,17 +30,20 @@ export abstract class BaseRenderer {
     this._resources = serverContext.api.resources;
   }
 
-  async renderDocument(req: {
-    url?: string;
-    parsedUrl?: UrlWithParsedQuery;
-  }): Promise<string | IRenderResultRedirect> {
+  async renderDocument(
+    req: IRenderRequest
+  ): Promise<string | IRenderResultRedirect> {
     let { parsedUrl } = req;
     if (!parsedUrl) {
-      parsedUrl = parseUrl(req.url || "", true);
+      parsedUrl = parseUrl(req.url, true);
     }
     const { document } = this._resources.server;
 
-    const docProps = await this.getDocumentProps({ url: parsedUrl });
+    const docProps = await this.getDocumentProps({
+      ...req,
+      parsedUrl,
+      headers: req.headers || {}
+    });
     if (isRedirect(docProps)) {
       return docProps;
     }
@@ -53,9 +57,9 @@ export abstract class BaseRenderer {
     );
   }
 
-  protected abstract getDocumentProps(req: {
-    url: UrlWithParsedQuery;
-  }):
+  protected abstract getDocumentProps(
+    req: IRequest
+  ):
     | Promise<IDocumentProps | IRenderResultRedirect>
     | IDocumentProps
     | IRenderResultRedirect;
@@ -64,19 +68,19 @@ export abstract class BaseRenderer {
     styles: IHtmlTag<any>[];
     scripts: IHtmlTag<any>[];
   } {
-    const styles: IHtmlTag<"link" | "style">[] = [];
-    const scripts: IHtmlTag<"script">[] = [];
+    const styles: IHtmlTag<'link' | 'style'>[] = [];
+    const scripts: IHtmlTag<'script'>[] = [];
     const { clientManifest } = this._serverCtx.api.resources;
     const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
     const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
     scripts.push(
-      tag("script", {
+      tag('script', {
         src: this._serverCtx.api.getAssetPublicUrl(polyfill)
       })
     );
     entrypoints.js.forEach((asset: string) => {
       scripts.push(
-        tag("script", {
+        tag('script', {
           src: this._serverCtx.api.getAssetPublicUrl(asset)
         })
       );
@@ -84,21 +88,21 @@ export abstract class BaseRenderer {
     if (entrypoints.css) {
       entrypoints.css.forEach((asset: string) => {
         styles.push(
-          tag("link", {
-            rel: "stylesheet",
+          tag('link', {
+            rel: 'stylesheet',
             href: this._serverCtx.api.getAssetPublicUrl(asset)
           })
         );
       });
     }
-    if (this._serverCtx.api.mode === "development") {
+    if (this._serverCtx.api.mode === 'development') {
       styles.push(
         tag(
-          "style",
+          'style',
           {
             [DEV_STYLE_HIDE_FOUC]: true
           },
-          "body{display:none}"
+          'body{display:none}'
         ),
 
         /**
@@ -106,7 +110,7 @@ export abstract class BaseRenderer {
          * ordering matches production
          * (by default, style-loader injects at the bottom of <head />)
          */
-        tag("style", {
+        tag('style', {
           id: DEV_STYLE_ANCHOR_ID
         })
       );
@@ -118,9 +122,9 @@ export abstract class BaseRenderer {
     };
   }
 
-  protected _getAppContainerTag(html: string = ""): IHtmlTag<"div"> {
+  protected _getAppContainerTag(html: string = ''): IHtmlTag<'div'> {
     return tag(
-      "div",
+      'div',
       {
         id: CLIENT_CONTAINER_ID
       },
@@ -133,11 +137,11 @@ export abstract class BaseRenderer {
     templateData: ITemplateData = {}
   ) {
     const htmlAttrs = stringifyAttrs(documentProps.htmlAttrs);
-    const head = documentProps.headTags.map(tag => stringifyTag(tag)).join("");
-    const main = documentProps.mainTags.map(tag => stringifyTag(tag)).join("");
+    const head = documentProps.headTags.map(tag => stringifyTag(tag)).join('');
+    const main = documentProps.mainTags.map(tag => stringifyTag(tag)).join('');
     const script = documentProps.scriptTags
       .map(tag => stringifyTag(tag))
-      .join("");
+      .join('');
 
     return renderTemplate(this._serverCtx.api.resources.documentTemplate, {
       htmlAttrs,

@@ -10,7 +10,7 @@ const MyApp = (props) => (
 MyApp.getInitialProps = (ctx) => {
   let pathname;
   if (ctx.req) {
-    pathname = ctx.req.url.pathname;
+    pathname = ctx.req.parsedUrl.pathname;
   } else {
     pathname = window.location.pathname;
   }
