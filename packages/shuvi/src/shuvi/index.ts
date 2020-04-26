@@ -1,13 +1,11 @@
-import { IConfig } from '@shuvi/types';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { defaultConfig } from '../config';
+import { IConfig } from '../config';
 import Shuvi, { IShuviConstructorOptions } from './shuvi.base';
 
 export { Shuvi };
 
 export interface ShuviOptions {
   dev?: boolean;
-  config: Partial<IConfig>;
+  config: IConfig;
 }
 
 export function shuvi({ dev = false, config }: ShuviOptions): Shuvi {
@@ -18,5 +16,5 @@ export function shuvi({ dev = false, config }: ShuviOptions): Shuvi {
     ShuviCtor = require('./shuvi.prod').default;
   }
 
-  return new ShuviCtor({ config: deepmerge(defaultConfig, config) });
+  return new ShuviCtor({ config });
 }

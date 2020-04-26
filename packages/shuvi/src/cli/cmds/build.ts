@@ -1,6 +1,5 @@
 import program from 'commander';
-import { IConfig } from '@shuvi/types';
-import { loadConfig } from '../../config';
+import { loadConfig, IConfig } from '../../config';
 import { build } from '../apis/build';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
@@ -16,7 +15,7 @@ const CliConfigMap: Record<string, string | ((config: any) => void)> = {
   routerHistory: 'router.history',
   target(config) {
     config.ssr = false;
-  },
+  }
 };
 
 function set(obj: any, path: string, value: any) {
@@ -32,7 +31,7 @@ function set(obj: any, path: string, value: any) {
 }
 
 function applyCliOptions(cliOptions: Record<string, any>, config: IConfig) {
-  Object.keys(CliConfigMap).forEach((key) => {
+  Object.keys(CliConfigMap).forEach(key => {
     if (typeof program[key] !== 'undefined') {
       const value = CliConfigMap[key];
       if (typeof value === 'function') {

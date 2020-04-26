@@ -1,10 +1,11 @@
-import { IConfig, IShuviMode } from '@shuvi/types';
+import { IShuviMode } from '@shuvi/types';
 import {
   IHTTPRequestHandler,
   IIncomingMessage,
   IServerResponse
 } from '../server';
 import { Api } from '../api';
+import { IConfig } from '../config';
 import { Renderer, isRedirect } from '../renderer';
 
 export interface IShuviConstructorOptions {

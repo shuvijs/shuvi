@@ -1,5 +1,5 @@
 import {
-  IConfig,
+  IApiConfig,
   IApi,
   ICallHookOpts,
   IHookConfig,
@@ -14,11 +14,13 @@ import {
 } from '@shuvi/types';
 import { App, IRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { Hooks } from '../lib/hooks';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { PUBLIC_PATH, ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { runtime } from '../runtime';
+import { defaultConfig, IConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
@@ -32,7 +34,7 @@ const ServiceModes: IShuviMode[] = ['development', 'production'];
 export class Api implements IApi {
   mode: IShuviMode;
   paths: IPaths;
-  config: IConfig;
+  config: IApiConfig;
 
   private _hooks: Hooks;
   private _app: App;
@@ -49,21 +51,21 @@ export class Api implements IApi {
     } else {
       this.mode = 'production';
     }
-    this.config = config;
+    this.config = deepmerge(defaultConfig, config);
     this.paths = getPaths({
-      rootDir: config.rootDir,
-      outputPath: config.outputPath
+      rootDir: this.config.rootDir,
+      outputPath: this.config.outputPath
     });
 
     this._hooks = new Hooks();
     this._app = new App();
-    this._plugins = resolvePlugins(config.plugins || []);
+    this._plugins = resolvePlugins(this.config.plugins || []);
     this._plugins.forEach(plugin => plugin.get()(this.getPluginApi()));
 
     initCoreResource(this);
 
-    if (typeof config.runtimeConfig === 'object') {
-      setRuntimeConfig(config.runtimeConfig);
+    if (typeof this.config.runtimeConfig === 'object') {
+      setRuntimeConfig(this.config.runtimeConfig);
     }
   }
 
