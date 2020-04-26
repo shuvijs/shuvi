@@ -1,11 +1,14 @@
 import { UrlWithParsedQuery } from 'url';
+import { IncomingHttpHeaders } from 'http';
 import { IRouteBase, IRouteConfig, IRoute, ITemplateData } from '@shuvi/core';
 import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
 
 export interface IRequest {
-  url: UrlWithParsedQuery;
+  url: string;
+  parsedUrl: UrlWithParsedQuery;
+  headers: IncomingHttpHeaders;
 }
 
 export { IRouteBase, IRouteConfig, IRoute };
@@ -156,7 +159,10 @@ export interface IDocumentModule {
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;
 
-  componentTemplate(componentModule: string, route: IRouteConfig & { id: string }): string;
+  componentTemplate(
+    componentModule: string,
+    route: IRouteConfig & { id: string }
+  ): string;
 
   matchRoutes(routes: IRouteConfig[], pathname: string): IMatchedRoute[];
 

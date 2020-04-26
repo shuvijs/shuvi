@@ -1,4 +1,3 @@
-import { UrlWithParsedQuery } from 'url';
 import { Runtime, IRuntimeConfig } from '@shuvi/types';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import getRuntimeConfig from '../lib/runtimeConfig';
@@ -9,13 +8,14 @@ import { IServerContext } from './types';
 
 import IAppData = Runtime.IAppData;
 import IHtmlTag = Runtime.IHtmlTag;
+import IRequest = Runtime.IRequest;
 
 export class SsrRenderer extends BaseRenderer {
   constructor(ctx: IServerContext) {
     super(ctx);
   }
 
-  async getDocumentProps(req: { url: UrlWithParsedQuery }) {
+  async getDocumentProps(req: IRequest) {
     const { api } = this._serverCtx;
     const { renderer, App, routes } = api.resources.server;
     const result = await renderer({
@@ -23,12 +23,12 @@ export class SsrRenderer extends BaseRenderer {
       req,
       App,
       routes,
-      manifest: api.resources.clientManifest,
+      manifest: api.resources.clientManifest
     });
     if (result.redirect) {
       return {
         $type: 'redirect',
-        ...result.redirect,
+        ...result.redirect
       } as const;
     }
 
@@ -38,12 +38,12 @@ export class SsrRenderer extends BaseRenderer {
       headTags: [
         ...(result.headBeginTags || []),
         ...mainAssetsTags.styles,
-        ...(result.headEndTags || []),
+        ...(result.headEndTags || [])
       ],
       mainTags: [
         ...(result.mainBeginTags || []),
         this._getAppContainerTag(result.appHtml),
-        ...(result.mainEndTags || []),
+        ...(result.mainEndTags || [])
       ],
       scriptTags: [
         ...(result.scriptBeginTags || []),
@@ -51,11 +51,11 @@ export class SsrRenderer extends BaseRenderer {
         this._getInlineAppData({
           runtimeConfig: this._getPublicRuntimeConfig(),
           ssr: api.config.ssr,
-          ...result.appData,
+          ...result.appData
         }),
         ...mainAssetsTags.scripts,
-        ...(result.scriptEndTags || []),
-      ],
+        ...(result.scriptEndTags || [])
+      ]
     };
     return documentProps;
   }
@@ -66,7 +66,7 @@ export class SsrRenderer extends BaseRenderer {
       'script',
       {
         id: CLIENT_APPDATA_ID,
-        type: 'application/json',
+        type: 'application/json'
       },
       htmlEscapeJsonString(data)
     );

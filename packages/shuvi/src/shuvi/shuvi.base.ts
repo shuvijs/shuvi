@@ -54,7 +54,7 @@ export default abstract class Shuvi {
     res: IServerResponse
   ): Promise<void> {
     const result = await this._renderer.renderDocument({
-      url: req.url,
+      url: req.url!,
       parsedUrl: req.parsedUrl
     });
 

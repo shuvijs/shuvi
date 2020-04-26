@@ -1,10 +1,9 @@
-import { UrlWithParsedQuery } from "url";
-import { IServerContext } from "./types";
-import { BaseRenderer, isRedirect } from "./base";
-import { SpaRenderer } from "./spa";
-import { SsrRenderer } from "./ssr";
+import { IServerContext, IRenderRequest } from './types';
+import { BaseRenderer, isRedirect } from './base';
+import { SpaRenderer } from './spa';
+import { SsrRenderer } from './ssr';
 
-export * from "./types";
+export * from './types';
 
 export { isRedirect };
 
@@ -19,7 +18,7 @@ export class Renderer {
     this._spaRenderer = new SpaRenderer(serverContext);
   }
 
-  renderDocument(req: { url?: string; parsedUrl?: UrlWithParsedQuery }) {
+  renderDocument(req: IRenderRequest) {
     if (this._serverCtx.api.config.ssr) {
       return this._ssrRenderer.renderDocument(req);
     }
