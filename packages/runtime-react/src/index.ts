@@ -21,7 +21,11 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       imported: 'default',
       local: 'dynamic'
     });
-    api.addAppExport(resolveDep('react-router-dom'), 'Link');
+    api.addAppExport(resolveDep('react-router-dom'), [
+      'Link',
+      'useLocation',
+      'useParams'
+    ]);
 
     configBundler(api);
 
