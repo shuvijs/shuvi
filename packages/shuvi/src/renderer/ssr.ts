@@ -8,14 +8,14 @@ import { IServerContext } from './types';
 
 import IAppData = Runtime.IAppData;
 import IHtmlTag = Runtime.IHtmlTag;
-import IRequest = Runtime.IRequest;
+import IRendererContext = Runtime.IRendererContext;
 
 export class SsrRenderer extends BaseRenderer {
   constructor(ctx: IServerContext) {
     super(ctx);
   }
 
-  async getDocumentProps(req: IRequest) {
+  async getDocumentProps({ req }: IRendererContext) {
     const { api } = this._serverCtx;
     const { renderer, App, routes } = api.resources.server;
     const result = await renderer({

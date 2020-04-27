@@ -149,11 +149,16 @@ export interface IRouter {
   onChange(listener: IRouterListener): () => void;
 }
 
+export interface IRendererContext {
+  req: IRequest;
+}
+
 export interface IDocumentModule {
   onDocumentProps(
-    documentProps: IDocumentProps
+    documentProps: IDocumentProps,
+    ctx: IRendererContext
   ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(): Promise<ITemplateData> | ITemplateData;
+  getTemplateData(ctx: IRendererContext): Promise<ITemplateData> | ITemplateData;
 }
 
 export interface IRuntime<CompType = unknown> {

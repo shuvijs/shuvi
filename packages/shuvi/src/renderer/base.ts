@@ -15,7 +15,7 @@ import { IBuiltResource } from '../api';
 import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
 import IRenderResultRedirect = Runtime.IRenderResultRedirect;
-import IRequest = Runtime.IRequest;
+import IRendererContext = Runtime.IRendererContext;
 
 export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
@@ -38,27 +38,29 @@ export abstract class BaseRenderer {
       parsedUrl = parseUrl(req.url, true);
     }
     const { document } = this._resources.server;
-
-    const docProps = await this.getDocumentProps({
-      ...req,
-      parsedUrl,
-      headers: req.headers || {}
-    });
+    const ctx: IRendererContext = {
+      req: {
+        ...req,
+        parsedUrl,
+        headers: req.headers || {}
+      }
+    };
+    const docProps = await this.getDocumentProps(ctx);
     if (isRedirect(docProps)) {
       return docProps;
     }
 
     if (document.onDocumentProps) {
-      document.onDocumentProps(docProps);
+      document.onDocumentProps(docProps, ctx);
     }
     return this._renderDocument(
       docProps,
-      document.getTemplateData ? document.getTemplateData() : {}
+      document.getTemplateData ? document.getTemplateData(ctx) : {}
     );
   }
 
   protected abstract getDocumentProps(
-    req: IRequest
+    ctx: IRendererContext
   ):
     | Promise<IDocumentProps | IRenderResultRedirect>
     | IDocumentProps
