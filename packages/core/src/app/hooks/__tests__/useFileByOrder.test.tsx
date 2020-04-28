@@ -15,7 +15,7 @@ function DumpComp({}: any) {
 
 function TestComp({
   files = [],
-  fallback
+  fallback,
 }: {
   files?: string[];
   fallback: string;

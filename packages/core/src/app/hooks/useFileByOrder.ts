@@ -17,16 +17,12 @@ export function useFileByOrder(files: string[], fallbackFile: string) {
   const lookupFiles = files;
   const forceupdate = useReducer((s) => s * -1, 1)[1];
   const existedFiles = useRef(new Map<string, true>());
-  const file = useRef<string>();
-  if (!file.current) {
-    let initFile: string = fallbackFile;
-    const firstExistedFile = findFirstExistedFile(lookupFiles);
-    if (firstExistedFile) {
-      existedFiles.current.set(firstExistedFile, true);
-      initFile = firstExistedFile;
-    }
+  let file = fallbackFile;
 
-    file.current = initFile;
+  const firstExistedFile = findFirstExistedFile(lookupFiles);
+  if (firstExistedFile) {
+    existedFiles.current.set(firstExistedFile, true);
+    file = firstExistedFile;
   }
 
   useEffect(() => {
@@ -53,13 +49,13 @@ export function useFileByOrder(files: string[], fallbackFile: string) {
         }
       }
 
-      if (nextFile !== file.current) {
-        file.current = nextFile;
+      if (nextFile !== file) {
+        file = nextFile;
         // @ts-ignore
         forceupdate({});
       }
     });
   }, [files]);
 
-  return file.current;
+  return file;
 }
