@@ -1,4 +1,4 @@
-import React, { ErrorInfo, useEffect } from 'react';
+import React, { ErrorInfo } from 'react';
 import { Dir } from '@shuvi/react-fs';
 import IndexFile from './components/IndexFile';
 import BootstrapFile from './components/BootstrapFile';

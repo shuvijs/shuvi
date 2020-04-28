@@ -1,4 +1,4 @@
-import { observable, action, set } from 'mobx';
+import { observable, action } from 'mobx';
 import { IFileNode, Dir, isDir, File } from './files/FileNode';
 import { ISpecifier } from '../types';
 
@@ -60,13 +60,11 @@ export class ModelApp {
   @observable routesContent: string = 'export default []';
   @observable extraFiles: IFileNode[] = [];
   @observable polyfills: string[] = [];
-  @observable exports: {
-    [source: string]: ISpecifier[];
-  } = {};
+  @observable exports = new Map<string, ISpecifier[]>();
 
   @action
   addExport(source: string, specifier: ISpecifier[]) {
-    this.exports = { ...this.exports, [source]: specifier };
+    this.exports.set(source, specifier);
   }
 
   @action
