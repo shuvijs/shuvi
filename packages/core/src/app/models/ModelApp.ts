@@ -1,32 +1,32 @@
-import { observable, action } from "mobx";
-import { IFileNode, Dir, isDir, File } from "./files/FileNode";
-import { ISpecifier } from "../types";
+import { observable, action } from 'mobx';
+import { IFileNode, Dir, isDir, File } from './files/FileNode';
+import { ISpecifier } from '../types';
 
 function getDirAndName(path: string) {
-  const segs = path.split("/");
+  const segs = path.split('/');
   const [name] = segs.splice(-1, 1);
 
   return {
     name,
-    dirname: segs.join("/")
+    dirname: segs.join('/'),
   };
 }
 
 function findByPath(path: string, files: IFileNode[]): IFileNode | undefined {
-  path = path.replace(/^\//, "");
+  path = path.replace(/^\//, '');
 
-  let node: IFileNode | undefined = new Dir("root", files);
+  let node: IFileNode | undefined = new Dir('root', files);
 
-  if (path === "") {
+  if (path === '') {
     return node;
   }
 
-  const segs = path.split("/").reverse();
+  const segs = path.split('/').reverse();
   while (segs.length) {
     if (!node || !isDir(node)) return;
 
     const searchName = segs.pop();
-    node = node.children.find(file => file.name === searchName);
+    node = node.children.find((file) => file.name === searchName);
   }
 
   return node;
@@ -57,7 +57,7 @@ function addFileNode(dir: string, file: IFileNode, files: IFileNode[]) {
 export class ModelApp {
   @observable bootstrapModule!: string;
   @observable appModule!: string | string[];
-  @observable routesContent: string = "export default []";
+  @observable routesContent: string = 'export default []';
   @observable extraFiles: IFileNode[] = [];
   @observable polyfills: string[] = [];
   @observable exports: {
@@ -66,18 +66,18 @@ export class ModelApp {
 
   @action
   addExport(source: string, specifier: ISpecifier[]) {
-    this.exports[source] = specifier;
+    this.exports = { ...this.exports, [source]: specifier };
   }
 
   @action
   addPolyfill(file: string) {
     if (!this.polyfills.includes(file)) {
-      this.polyfills.push(file);
+      this.polyfills = this.polyfills.concat(file);
     }
   }
 
   @action
-  addFile(file: File, dir: string = "/") {
+  addFile(file: File, dir: string = '/') {
     const files = this.extraFiles;
     ensureDir(dir, files);
     addFileNode(dir, file, files);
@@ -90,7 +90,7 @@ export class ModelApp {
     const node = findByPath(dirname, files);
     if (!node || !isDir(node)) return;
 
-    const index = node.children.findIndex(file => file.name === name);
+    const index = node.children.findIndex((file) => file.name === name);
     if (index >= 0) {
       node.children.splice(index, 1);
     }
