@@ -96,7 +96,7 @@ class BundlerImpl {
     logger.debug('Client Config');
     logger.debug(inspect(clientConfig.resolve?.plugins, { depth: 10 }));
     logger.debug('Server Config');
-    logger.debug(inspect(serverConfig.resolve?.plugins, { depth: 10 }));
+    logger.debug(inspect(serverConfig.module, { depth: 10 }));
 
     return [clientConfig, serverConfig];
   }
