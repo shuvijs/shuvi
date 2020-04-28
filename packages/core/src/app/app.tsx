@@ -8,7 +8,6 @@ import { IBuildOptions, ISpecifier } from './types';
 
 export class App {
   private _store: Store;
-  private _onBuildDoneCbs: Array<() => void> = [];
 
   constructor() {
     this._store = createStore();
@@ -38,14 +37,8 @@ export class App {
     this._store.addPolyfill(file);
   }
 
-  waitUntilBuild(): Promise<void> {
-    return new Promise((resolve) => {
-      this._onBuildDoneCbs.push(resolve);
-    });
-  }
-
   async build(options: IBuildOptions): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       ReactFS.render(this._getRootComp(), options.dir, () => {
         resolve();
       });
@@ -68,15 +61,8 @@ export class App {
   private _getRootComp() {
     return (
       <StoreProvider store={this._store}>
-        <AppComponent onDidRender={this._onBuildDone.bind(this)} />
+        <AppComponent />
       </StoreProvider>
     );
-  }
-
-  private _onBuildDone() {
-    while (this._onBuildDoneCbs.length) {
-      const cb = this._onBuildDoneCbs.shift()!;
-      cb();
-    }
   }
 }

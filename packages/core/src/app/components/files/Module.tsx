@@ -31,4 +31,4 @@ function Module({ name, exports = {} }: Props) {
   return <File name={name} content={`${statements.join("\n")}`} />;
 }
 
-export default React.memo(Module);
+export default Module;
