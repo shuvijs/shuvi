@@ -13,8 +13,8 @@ export interface ModuleReplacePluginOptions {
 
 export interface ModuleInfo {
   status: typeof ModuleStatus[keyof typeof ModuleStatus];
+  compiler: Compiler;
   replacedModule: string;
-  compilers: Set<Compiler>;
   loaders?: { loader: string; options: Record<string, any> }[];
 }
 
@@ -36,7 +36,7 @@ const stubLoader = require.resolve('./stub-loader');
 
 const ModuleStatus = {
   REPLACED: 1,
-  ORIGINAL: 2,
+  ORIGINAL: 2
 } as const;
 
 interface Handler {
@@ -44,46 +44,71 @@ interface Handler {
   pending: Map<Compiler, boolean>;
 }
 
-const knownModules = new Map<string, ModuleInfo>();
-const moduleHandlers = new Map<string, Handler>();
+interface CompilerInfo {
+  modules: Map<string, ModuleInfo>;
+}
+
+// const knownModules = new Map<string, ModuleInfo>();
+const moduleHandler = new Map<string, Handler>();
+const compilerInfo = new Map<Compiler, CompilerInfo>();
+
+function getKnownModules(id: string): ModuleInfo[] {
+  const res: ModuleInfo[] = [];
+  for (const compiler of compilerInfo.values()) {
+    const module = compiler.modules.get(id);
+    if (module) {
+      res.push(module);
+    }
+  }
+  return res;
+}
+
+function deleteKnownModules(id: string) {
+  for (const compiler of compilerInfo.values()) {
+    compiler.modules.delete(id);
+  }
+}
 
 export default class ModuleReplacePlugin implements Plugin {
   private _options: ModuleReplacePluginOptions;
 
   static restoreModule(id: string): false | Promise<any> {
-    const moduleInfo = knownModules.get(id);
-    if (!moduleInfo) {
+    const moduleInfos = getKnownModules(id);
+    if (moduleInfos.length < 1) {
       return false;
     }
 
-    moduleInfo.status = ModuleStatus.ORIGINAL;
     const handler: Handler = {
       resolve: null as any,
-      pending: new Map(),
+      pending: new Map()
     };
-    moduleHandlers.set(id, handler);
-    const promise = new Promise((resolve) => {
+    moduleHandler.set(id, handler);
+    moduleInfos.forEach(moduleInfo => {
+      moduleInfo.status = ModuleStatus.ORIGINAL;
+      handler.pending.set(moduleInfo.compiler, false);
+      moduleInfo.compiler.hooks.invalid.call('noop', new Date());
+    });
+    return new Promise(resolve => {
       handler.resolve = resolve;
     });
-    moduleInfo.compilers.forEach((compiler) => {
-      handler.pending.set(compiler, false);
-      compiler.hooks.invalid.call('noop', new Date());
-    });
-
-    return promise;
   }
 
   constructor(options: Partial<ModuleReplacePluginOptions>) {
     this._options = {
       modules: [],
-      ...options,
+      ...options
     };
   }
 
   apply(compiler: Compiler) {
+    // init compiler info
+    compilerInfo.set(compiler, {
+      modules: new Map()
+    });
+
     compiler.hooks.done.tap('done', () => {
       const finished: string[] = [];
-      for (const [id, handler] of moduleHandlers) {
+      for (const [id, handler] of moduleHandler) {
         if (handler.pending.get(compiler)) {
           handler.pending.delete(compiler);
         }
@@ -95,8 +120,8 @@ export default class ModuleReplacePlugin implements Plugin {
       }
 
       for (const id of finished) {
-        knownModules.delete(id);
-        moduleHandlers.delete(id);
+        deleteKnownModules(id);
+        moduleHandler.delete(id);
       }
     });
 
@@ -111,14 +136,15 @@ export default class ModuleReplacePlugin implements Plugin {
       }
     );
 
-    compiler.hooks.compilation.tap('ModuleReplacePlugin', (compilation) => {
-      compilation.hooks.buildModule.tap('ModuleReplacePlugin', (wpModule) =>
+    compiler.hooks.compilation.tap('ModuleReplacePlugin', compilation => {
+      compilation.hooks.buildModule.tap('ModuleReplacePlugin', wpModule =>
         this._handleBuildModule(compiler, wpModule)
       );
     });
   }
 
   private _handleBuildModule(compiler: Compiler, wpModule: any) {
+    const knownModules = compilerInfo.get(compiler)!.modules;
     const id = getModuleId(wpModule);
     const moduleInfo = knownModules.get(id);
     if (!moduleInfo) {
@@ -126,7 +152,7 @@ export default class ModuleReplacePlugin implements Plugin {
     }
 
     if (moduleInfo.status === ModuleStatus.ORIGINAL) {
-      const handler = moduleHandlers.get(id)!;
+      const handler = moduleHandler.get(id)!;
       handler.pending.set(compiler, true);
       wpModule.loaders = moduleInfo.loaders;
       return;
@@ -139,9 +165,9 @@ export default class ModuleReplacePlugin implements Plugin {
           {
             loader: stubLoader,
             options: {
-              module: moduleInfo.replacedModule,
-            },
-          },
+              module: moduleInfo.replacedModule
+            }
+          }
         ];
         wpModule.loaders[REPLACED] = true;
       }
@@ -149,10 +175,9 @@ export default class ModuleReplacePlugin implements Plugin {
   }
 
   private _collectModules(compiler: Compiler, wpModule: any) {
+    const knownModules = compilerInfo.get(compiler)!.modules;
     const id = getModuleId(wpModule);
-    const moduleInfo = knownModules.get(id);
-    if (moduleInfo) {
-      moduleInfo.compilers.add(compiler);
+    if (knownModules.has(id)) {
       return;
     }
 
@@ -161,7 +186,7 @@ export default class ModuleReplacePlugin implements Plugin {
       knownModules.set(id, {
         status: ModuleStatus.REPLACED,
         replacedModule,
-        compilers: new Set([compiler]),
+        compiler
       });
     }
   }
