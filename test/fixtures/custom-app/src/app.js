@@ -7,13 +7,15 @@ const MyApp = (props) => (
   </div>
 );
 
-MyApp.getInitialProps = (ctx) => {
+MyApp.getInitialProps = async (ctx) => {
   let pathname;
   if (ctx.req) {
     pathname = ctx.req.parsedUrl.pathname;
   } else {
     pathname = window.location.pathname;
   }
+
+  await ctx.fetchInitialProps();
 
   return {
     pathname,

@@ -5,6 +5,8 @@ import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
 
+export type Query = ParsedUrlQuery;
+
 export interface IRequest {
   url: string;
   parsedUrl: UrlWithParsedQuery;
@@ -51,6 +53,7 @@ export interface IRedirectFn {
 
 export interface IAppComponentContext {
   isServer: boolean;
+  fetchInitialProps(): Promise<void>;
 
   // server only
   req?: IRequest;
@@ -59,8 +62,8 @@ export interface IAppComponentContext {
 export interface IRouteComponentContext {
   isServer: boolean;
   pathname: string;
-  query: ParsedUrlQuery;
-  params: ParsedUrlQuery;
+  query: Query;
+  params: Query;
   redirect: IRedirectFn;
 
   // server only
@@ -77,6 +80,7 @@ export type IRouteComponent<C, P = {}> = C & {
 
 export type IAppData<Data = {}> = {
   runtimeConfig: { [k: string]: string };
+  telestore: Record<string, any>;
   ssr: boolean;
 } & {
   [K in keyof Data]: Data[K];
@@ -89,16 +93,34 @@ export interface IBootstrapOptions {
 
 export type IBootstrap = (options: IBootstrapOptions) => void;
 
-export interface IRenderAppOptions<CompType = any> {
-  api: IApi;
+export interface ITelestore {
+  get<T = unknown>(key: string, defaultValue?: T): T | undefined;
+  set(key: string, value: any): void;
+  dump(): Record<string, any>;
+}
+
+// go throug document lifecycle
+export interface IServerContext {
   req: IRequest;
+  telestore: ITelestore;
+  [x: string]: any;
+}
+
+// go throug app lifecycle
+export interface IAppContext {
+  [x: string]: any;
+}
+
+export interface IRendererOptions<CompType = any> {
+  api: IApi;
   App: CompType;
   routes: IRoute[];
   manifest: IManifest;
+  context: IServerContext;
 }
 
 export type IRenderer<CompType = any, Data = {}> = (
-  options: IRenderAppOptions<CompType>
+  options: IRendererOptions<CompType>
 ) => Promise<IRenderAppResult<Data>>;
 
 export interface IRedirectState {
@@ -149,16 +171,12 @@ export interface IRouter {
   onChange(listener: IRouterListener): () => void;
 }
 
-export interface IRendererContext {
-  req: IRequest;
-}
-
 export interface IDocumentModule {
   onDocumentProps(
     documentProps: IDocumentProps,
-    ctx: IRendererContext
+    ctx: IServerContext
   ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(ctx: IRendererContext): Promise<ITemplateData> | ITemplateData;
+  getTemplateData(ctx: IServerContext): Promise<ITemplateData> | ITemplateData;
 }
 
 export interface IRuntime<CompType = unknown> {

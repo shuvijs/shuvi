@@ -1,11 +1,6 @@
-import { BaseRenderer } from "./base";
-import { IServerContext } from "./types";
+import { BaseRenderer } from './base';
 
 export class SpaRenderer extends BaseRenderer {
-  constructor(ctx: IServerContext) {
-    super(ctx);
-  }
-
   getDocumentProps() {
     const assets = this._getMainAssetTags();
     return {

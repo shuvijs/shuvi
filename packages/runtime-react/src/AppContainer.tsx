@@ -1,7 +1,7 @@
 import React, { createContext, useMemo } from "react";
 import { IRouteProps } from "./types";
 
-interface IAppContext {
+export interface IAppContext {
   routeProps: IRouteProps;
 }
 
