@@ -1,29 +1,22 @@
-import { Runtime, IRuntimeConfig } from '@shuvi/types';
-import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
-import getRuntimeConfig from '../lib/runtimeConfig';
-import { CLIENT_APPDATA_ID } from '../constants';
+import { Runtime } from '@shuvi/types';
 import { BaseRenderer } from './base';
-import { tag } from './htmlTag';
-import { IServerContext } from './types';
+import { IRendererContext } from './types';
 
-import IAppData = Runtime.IAppData;
-import IHtmlTag = Runtime.IHtmlTag;
-import IRendererContext = Runtime.IRendererContext;
+import IServerContext = Runtime.IServerContext;
 
 export class SsrRenderer extends BaseRenderer {
-  constructor(ctx: IServerContext) {
-    super(ctx);
-  }
-
-  async getDocumentProps({ req }: IRendererContext) {
-    const { api } = this._serverCtx;
+  async getDocumentProps(
+    serverCtx: IServerContext,
+    rendererCtx: IRendererContext
+  ) {
+    const api = this._api;
     const { renderer, App, routes } = api.resources.server;
     const result = await renderer({
       api,
-      req,
       App,
       routes,
-      manifest: api.resources.clientManifest
+      manifest: api.resources.clientManifest,
+      context: serverCtx
     });
     if (result.redirect) {
       return {
@@ -33,6 +26,7 @@ export class SsrRenderer extends BaseRenderer {
     }
 
     const mainAssetsTags = this._getMainAssetTags();
+    Object.assign(rendererCtx.appData, result.appData)
     const documentProps = {
       htmlAttrs: { ...result.htmlAttrs },
       headTags: [
@@ -47,41 +41,10 @@ export class SsrRenderer extends BaseRenderer {
       ],
       scriptTags: [
         ...(result.scriptBeginTags || []),
-        // TODO: add appdata hook
-        this._getInlineAppData({
-          runtimeConfig: this._getPublicRuntimeConfig(),
-          ssr: api.config.ssr,
-          ...result.appData
-        }),
         ...mainAssetsTags.scripts,
         ...(result.scriptEndTags || [])
       ]
     };
     return documentProps;
-  }
-
-  private _getInlineAppData(appData: IAppData): IHtmlTag<'script'> {
-    const data = JSON.stringify(appData);
-    return tag(
-      'script',
-      {
-        id: CLIENT_APPDATA_ID,
-        type: 'application/json'
-      },
-      htmlEscapeJsonString(data)
-    );
-  }
-
-  private _getPublicRuntimeConfig(): IRuntimeConfig {
-    const runtimeConfig = getRuntimeConfig() || {};
-    const keys = Object.keys(runtimeConfig);
-    const res: IRuntimeConfig = {};
-    for (let index = 0; index < keys.length; index++) {
-      const key = keys[index];
-      if (key.startsWith('$')) continue;
-
-      res[key] = runtimeConfig[key];
-    }
-    return res;
   }
 }

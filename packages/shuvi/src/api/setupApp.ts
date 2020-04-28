@@ -43,7 +43,9 @@ export async function setupApp(api: Api) {
   api.addAppFile(
     File.module('utils.js', {
       exports: {
-        [require.resolve('@shuvi/runtime-core/lib/getAppData')]: 'getAppData'
+        [require.resolve(
+          '@shuvi/runtime-core/lib/lib/getAppData'
+        )]: 'getAppData'
       }
     }),
     'core'
@@ -61,6 +63,10 @@ export async function setupApp(api: Api) {
     imported: 'default',
     local: 'routes'
   });
+  api.addAppExport(
+    require.resolve('@shuvi/runtime-core/lib/lib/telestore'),
+    'telestore'
+  );
   api.addAppExport(require.resolve('shuvi/lib/lib/runtimeConfig'), [
     'setRuntimeConfig',
     {

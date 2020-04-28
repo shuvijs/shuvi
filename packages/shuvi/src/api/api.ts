@@ -216,10 +216,7 @@ export class Api implements IApi {
     this._app.addFile(file, dir.startsWith('/') ? dir : `/${dir}`);
   }
 
-  addAppExport(
-    source: string,
-    specifier: ISpecifier | ISpecifier[] | true
-  ): void {
+  addAppExport(source: string, specifier: ISpecifier | ISpecifier[]): void {
     this._app.addExport(source, specifier);
   }
 

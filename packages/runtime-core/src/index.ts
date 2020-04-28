@@ -1,5 +1,5 @@
 import { setRuntimeConfig, router } from "@shuvi/app";
-import { getAppData } from "./getAppData";
+import { getAppData } from "./lib/getAppData";
 
 const appData = getAppData();
 

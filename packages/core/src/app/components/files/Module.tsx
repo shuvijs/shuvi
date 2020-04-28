@@ -14,7 +14,7 @@ function Module({ name, exports = {} }: Props) {
   for (const source of sources) {
     const specifiers = ([] as ISpecifier[]).concat(exports[source]);
     for (const specifier of specifiers) {
-      if (specifier === true) {
+      if (specifier === '*') {
         statements.push(`export * from "${source}"`);
       } else if (typeof specifier === "string") {
         statements.push(`export { ${specifier} } from "${source}"`);

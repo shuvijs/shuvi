@@ -33,13 +33,14 @@ const DEFAULT_HEAD = [
 
 const renderApp: IReactRenderer = async ({
   api,
-  req,
   App,
   routes,
-  manifest
+  manifest,
+  context
 }) => {
   await Loadable.preloadAll();
 
+  const { req } = context;
   const redirector = createRedirector();
   const routerContext = {};
   const parsedUrl = req.parsedUrl;
@@ -55,42 +56,43 @@ const renderApp: IReactRenderer = async ({
 
   const routeProps: { [x: string]: any } = {};
   const matchedRoutes = matchRoutes(routes, pathname);
-  const pendingDataFetchs: Array<() => Promise<void>> = [];
+  const fetchInitialProps = async () => {
+    const pendingDataFetchs: Array<() => Promise<void>> = [];
+    for (let index = 0; index < matchedRoutes.length; index++) {
+      const { route, match } = matchedRoutes[index];
+      const comp = route.component as
+        | IRouteComponent<React.Component, any>
+        | undefined;
+      if (comp && comp.getInitialProps) {
+        pendingDataFetchs.push(async () => {
+          const props = await comp.getInitialProps!({
+            isServer: true,
+            pathname: pathname,
+            query: parsedUrl.query,
+            params: match.params,
+            redirect: redirector.handler,
+            req
+          });
+          routeProps[route.id] = props || {};
+        });
+      }
+    }
+    await Promise.all(pendingDataFetchs.map(fn => fn()));
+  };
   let appInitialProps: { [x: string]: any } | undefined;
   const appGetInitialProps = ((App as any) as IAppComponent<
     React.Component,
     any
   >).getInitialProps;
   if (appGetInitialProps) {
-    pendingDataFetchs.push(async () => {
-      appInitialProps = await appGetInitialProps({
-        isServer: true,
-        req
-      });
+    appInitialProps = await appGetInitialProps({
+      isServer: true,
+      fetchInitialProps,
+      req
     });
+  } else {
+    await fetchInitialProps();
   }
-
-  for (let index = 0; index < matchedRoutes.length; index++) {
-    const { route, match } = matchedRoutes[index];
-    const comp = route.component as
-      | IRouteComponent<React.Component, any>
-      | undefined;
-    if (comp && comp.getInitialProps) {
-      pendingDataFetchs.push(async () => {
-        const props = await comp.getInitialProps!({
-          pathname: pathname,
-          query: parsedUrl.query,
-          params: match.params,
-          redirect: redirector.handler,
-          isServer: true,
-          req
-        });
-        routeProps[route.id] = props || {};
-      });
-    }
-  }
-
-  await Promise.all(pendingDataFetchs.map(fn => fn()));
 
   if (redirector.redirected) {
     return {
@@ -108,8 +110,8 @@ const renderApp: IReactRenderer = async ({
         <LoadableContext.Provider
           value={moduleName => loadableModules.push(moduleName)}
         >
-          <AppContainer {...appInitialProps} routeProps={routeProps}>
-            <App />
+          <AppContainer routeProps={routeProps}>
+            <App {...appInitialProps} />
           </AppContainer>
         </LoadableContext.Provider>
       </Router>

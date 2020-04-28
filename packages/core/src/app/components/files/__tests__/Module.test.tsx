@@ -36,7 +36,7 @@ describe('Module', () => {
   });
 
   test('export all', () => {
-    const { root } = render(<Module name="test.js" exports={{ a: true }} />);
+    const { root } = render(<Module name="test.js" exports={{ a: '*' }} />);
     const file = root.children[0] as ReactTestInstance;
     expect(file.props.name).toBe('test.js');
     expect(file.props.content).toBe('export * from "a"');
