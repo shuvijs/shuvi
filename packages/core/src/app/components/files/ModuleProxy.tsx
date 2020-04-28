@@ -31,4 +31,4 @@ function ModuleProxy({ name, source, defaultExport }: Props) {
   return <File name={name} content={statements.join('\n')} />;
 }
 
-export default React.memo(ModuleProxy);
+export default ModuleProxy;

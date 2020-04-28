@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, set } from 'mobx';
 import { IFileNode, Dir, isDir, File } from './files/FileNode';
 import { ISpecifier } from '../types';
 
@@ -8,7 +8,7 @@ function getDirAndName(path: string) {
 
   return {
     name,
-    dirname: segs.join('/'),
+    dirname: segs.join('/')
   };
 }
 
@@ -26,7 +26,7 @@ function findByPath(path: string, files: IFileNode[]): IFileNode | undefined {
     if (!node || !isDir(node)) return;
 
     const searchName = segs.pop();
-    node = node.children.find((file) => file.name === searchName);
+    node = node.children.find(file => file.name === searchName);
   }
 
   return node;
@@ -72,7 +72,7 @@ export class ModelApp {
   @action
   addPolyfill(file: string) {
     if (!this.polyfills.includes(file)) {
-      this.polyfills = this.polyfills.concat(file);
+      this.polyfills.push(file);
     }
   }
 
@@ -90,7 +90,7 @@ export class ModelApp {
     const node = findByPath(dirname, files);
     if (!node || !isDir(node)) return;
 
-    const index = node.children.findIndex((file) => file.name === name);
+    const index = node.children.findIndex(file => file.name === name);
     if (index >= 0) {
       node.children.splice(index, 1);
     }

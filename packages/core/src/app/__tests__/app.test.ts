@@ -28,8 +28,8 @@ describe('app', () => {
       app.setRoutesContent('routes content');
       app.setAppModule('appModules');
       app.setBootstrapModule('bootstrapModules');
-      app.addExport('something to export', '*');
       app.addPolyfill('path/toPolyfill');
+      app.addExport('something to export', '*');
 
       await app.build(dirOption);
 

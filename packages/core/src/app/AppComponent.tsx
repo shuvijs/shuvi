@@ -1,25 +1,13 @@
-import React, { ErrorInfo, useEffect } from "react";
-import { Dir } from "@shuvi/react-fs";
-import FileNode from "./components/files/FileNode";
-import IndexFile from "./components/IndexFile";
-import BootstrapFile from "./components/BootstrapFile";
-import AppFile from "./components/AppFile";
-import Polyfill from "./components/PolyfillFile";
+import React, { ErrorInfo, useEffect } from 'react';
+import { Dir } from '@shuvi/react-fs';
+import IndexFile from './components/IndexFile';
+import BootstrapFile from './components/BootstrapFile';
+import AppFile from './components/AppFile';
+import Polyfill from './components/PolyfillFile';
+import RoutesFile from './components/RoutesFile';
+import UserFiles from './components/UserFiles';
 
-import RoutesFile from "./components/RoutesFile";
-import { useSelector } from "./models/store";
-
-interface AppProps {
-  onDidRender: () => void;
-}
-
-function App(props: AppProps) {
-  const files = useSelector(state => state.extraFiles);
-
-  useEffect(() => {
-    props.onDidRender();
-  });
-
+function App() {
   return (
     <>
       <IndexFile />
@@ -29,23 +17,17 @@ function App(props: AppProps) {
         <RoutesFile />
         <Polyfill />
       </Dir>
-      {files.map(file => (
-        <FileNode key={file.name} file={file} />
-      ))}
+      <UserFiles />
     </>
   );
 }
 
-export default class AppContainer extends React.Component<AppProps> {
+export default class AppContainer extends React.Component {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("error", error);
-  }
-
-  componentDidUpdate() {
-    this.props.onDidRender();
+    console.error('error', error);
   }
 
   render() {
-    return <App {...this.props} />;
+    return <App />;
   }
 }
