@@ -59,7 +59,9 @@ export class Api implements IApi {
 
     this._hooks = new Hooks();
     this._app = new App();
-    this._plugins = resolvePlugins(this.config.plugins || []);
+    this._plugins = resolvePlugins(this.config.plugins || [], {
+      dir: this.paths.rootDir
+    });
     this._plugins.forEach(plugin => plugin.get()(this.getPluginApi()));
 
     initCoreResource(this);

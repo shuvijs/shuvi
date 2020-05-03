@@ -1,9 +1,17 @@
 import { IPluginConfig, IApi } from '@shuvi/types';
+import resolve from '@shuvi/utils/lib/resolve';
 import { IPlugin } from './types';
+
+export interface ResolvePluginOptions {
+  dir: string;
+}
 
 let uid = 0;
 
-function resolvePlugin(plugin: IPluginConfig): IPlugin {
+function resolvePlugin(
+  plugin: IPluginConfig,
+  resolveOptions: ResolvePluginOptions
+): IPlugin {
   let pluginPath: string;
   let name: string;
   let options: any;
@@ -31,13 +39,13 @@ function resolvePlugin(plugin: IPluginConfig): IPlugin {
       id: `InlinePlugin${uid++}`,
       get: () => (api: IApi) => {
         plugin(api);
-      },
+      }
     };
   } else {
     throw new Error(`Plugin must be one of type [string, array, function]`);
   }
 
-  pluginPath = require.resolve(pluginPath);
+  pluginPath = resolve.sync(pluginPath, { basedir: resolveOptions.dir });
 
   const id = name ? `${pluginPath}@${name}` : pluginPath;
   let pluginInst: any = null;
@@ -45,7 +53,15 @@ function resolvePlugin(plugin: IPluginConfig): IPlugin {
     if (!pluginInst) {
       let plugin = require(pluginPath);
       plugin = plugin.default || plugin;
-      pluginInst = new plugin(options);
+      if (plugin.prototype && typeof plugin.prototype.apply === 'function') {
+        pluginInst = new plugin(options);
+      } else {
+        pluginInst = {
+          apply(...args: any[]) {
+            plugin(...args);
+          }
+        };
+      }
     }
 
     pluginInst.apply(api);
@@ -53,10 +69,13 @@ function resolvePlugin(plugin: IPluginConfig): IPlugin {
 
   return {
     id,
-    get: () => pluginFn,
+    get: () => pluginFn
   };
 }
 
-export function resolvePlugins(plugins: IPluginConfig[]): IPlugin[] {
-  return plugins.map(resolvePlugin);
+export function resolvePlugins(
+  plugins: IPluginConfig[],
+  options: ResolvePluginOptions
+): IPlugin[] {
+  return plugins.map(plugin => resolvePlugin(plugin, options));
 }
