@@ -2,9 +2,9 @@ import { NAME, PATH_PREFIX } from '@shuvi/shared/lib/constants';
 
 export * from '@shuvi/shared/lib/constants';
 
-export const WEBPACK_CONFIG_CLIENT = `${NAME}/client`;
+export const BUNDLER_TARGET_CLIENT = `${NAME}/client`;
 
-export const WEBPACK_CONFIG_SERVER = `${NAME}/server`;
+export const BUNDLER_TARGET_SERVER = `${NAME}/server`;
 
 export const PUBLIC_PATH = `${PATH_PREFIX}/`;
 

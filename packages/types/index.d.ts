@@ -73,9 +73,9 @@ export interface IApiConfig {
   plugins?: IPluginConfig[];
 }
 
-export interface IHookOpts<InitValue = void, Args extends any[] = any[]> {
+export interface IHookOpts<InitValue = null, Args extends any[] = any[]> {
   name: string;
-  fn: InitValue extends void
+  fn: InitValue extends null
     ? (...args: Args) => void | Promise<void>
     : (init: InitValue, ...args: Args) => InitValue | Promise<InitValue>;
   before?: string;

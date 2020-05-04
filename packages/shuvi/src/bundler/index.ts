@@ -1,3 +1,3 @@
 export { BundlerResult } from "./runCompiler";
 
-export { Bundler, getBundler } from "./bundler";
+export { getBundler } from "./bundler";

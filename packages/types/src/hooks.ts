@@ -11,7 +11,7 @@ export interface IHookConfig {
 
 type IDefaultHookConfig = {
   args: [];
-  initialValue: void;
+  initialValue: null;
 };
 
 type defineHook<
@@ -45,8 +45,19 @@ export type IHookAppRoutesFile = defineHook<
 
 export type IEventAppReady = defineHook<'app:ready'>;
 
+export type IHookBundlerExtraTarget = defineHook<
+  'bundler:extra-target',
+  {
+    args: [
+      {
+        createConfig(options: any): any;
+      }
+    ];
+  }
+>;
+
 export type IHookBundlerConfig = defineHook<
-  'bundler:config',
+  'bundler:config-target',
   {
     initialValue: WebpackChain;
     args: [
@@ -59,14 +70,38 @@ export type IHookBundlerConfig = defineHook<
   }
 >;
 
-export type IEventBundlerDone = defineHook<
-  'bundler:done',
+export type IEventTargetDone = defineHook<
+  'bundler:target-done',
   {
     args: [
       {
         first: boolean;
         name: string;
         stats: webpack.Stats;
+      }
+    ];
+  }
+>;
+
+export type IEventBundlerDone = defineHook<
+  'bundler:done',
+  {
+    args: [
+      {
+        first: boolean;
+        stats: webpack.compilation.MultiStats;
+      }
+    ];
+  }
+>;
+
+export type IEventServerListen = defineHook<
+  'server:listen',
+  {
+    args: [
+      {
+        port: number;
+        hostname: string;
       }
     ];
   }

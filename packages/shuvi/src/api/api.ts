@@ -105,7 +105,7 @@ export class Api implements IApi {
   async callHook<Config extends IHookConfig>(
     name: Config['name'],
     ...args: Config['args']
-  ): Promise<void>;
+  ): Promise<unknown[]>;
   async callHook<Config extends IHookConfig>(
     options: ICallHookOpts<Config['name'], Config['initialValue']>,
     ...args: Config['args']

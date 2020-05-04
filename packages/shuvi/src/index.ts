@@ -1,5 +1,7 @@
 export { shuvi, Shuvi } from './shuvi';
 
-export { PluginApi } from './api';
+export { IFile, File, ISpecifier, ITemplateData } from '@shuvi/core';
 
-export { WEBPACK_CONFIG_CLIENT, WEBPACK_CONFIG_SERVER } from './constants';
+export type { PluginApi } from './api';
+
+export { BUNDLER_TARGET_CLIENT, BUNDLER_TARGET_SERVER } from './constants';
