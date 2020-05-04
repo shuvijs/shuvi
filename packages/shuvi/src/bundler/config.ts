@@ -1,7 +1,7 @@
 import {
   WebpackChain,
   createBrowserWebpackChain,
-  createNodeWebpackChain,
+  createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
 import { Api } from '../api';
 import {
@@ -10,9 +10,7 @@ import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_WEBPACK,
   BUILD_CLIENT_RUNTIME_POLYFILL,
-  BUILD_CLIENT_DIR,
-  BUILD_SERVER_DIR,
-  BUILD_SERVER_FILE_SERVER,
+  BUILD_SERVER_FILE_SERVER
 } from '../constants';
 import { runtimeDir } from '../runtime';
 
@@ -20,10 +18,11 @@ export interface IWebpackEntry {
   [x: string]: string | string[];
 }
 
-interface IWebpackConfigOptions {
+export interface IWebpackConfigOptions {
   name: string;
   node: boolean;
   entry: IWebpackEntry;
+  outputDir: string;
 }
 
 export function createWepbackConfig(
@@ -41,9 +40,9 @@ export function createWepbackConfig(
       dev,
       projectRoot: paths.rootDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
-      mediaFilename: BUILD_MEDIA_PATH,
+      mediaFilename: BUILD_MEDIA_PATH
     });
-    chain.output.path(`${paths.buildDir}/${BUILD_SERVER_DIR}`);
+    chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
   } else {
     chain = createBrowserWebpackChain({
       env: config.env,
@@ -52,15 +51,15 @@ export function createWepbackConfig(
       projectRoot: paths.rootDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
       mediaFilename: BUILD_MEDIA_PATH,
-      publicPath: assetPublicPath,
+      publicPath: assetPublicPath
     });
-    chain.output.path(`${paths.buildDir}/${BUILD_CLIENT_DIR}`);
+    chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
   }
 
   chain.name(opts.name);
   chain.merge({
-    entry: opts.entry,
+    entry: opts.entry
   });
 
   chain.resolve.alias.set('@shuvi/app', paths.appDir);
@@ -71,7 +70,7 @@ export function createWepbackConfig(
       [
         BUILD_CLIENT_RUNTIME_MAIN,
         BUILD_CLIENT_RUNTIME_POLYFILL,
-        BUILD_CLIENT_RUNTIME_WEBPACK,
+        BUILD_CLIENT_RUNTIME_WEBPACK
       ].includes(chunk.name)
     ) {
       return chunk.name.replace(/\.js$/, '-[contenthash].js');
@@ -86,14 +85,14 @@ export function createWepbackConfig(
 export function getClientEntry(_api: Api): IWebpackEntry {
   return {
     [BUILD_CLIENT_RUNTIME_MAIN]: [
-      require.resolve('@shuvi/runtime-core/lib/index'),
+      require.resolve('@shuvi/runtime-core/lib/index')
     ],
-    [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill'],
+    [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
   };
 }
 
 export function getServerEntry(_api: Api): IWebpackEntry {
   return {
-    [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/server'],
+    [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/server']
   };
 }

@@ -9,7 +9,7 @@ import {
   IServerResponse,
   INextFunction,
   IHTTPRequestHandler,
-  IHandleFunction,
+  IHandleFunction
 } from './types';
 
 interface IServerOptions {
@@ -25,7 +25,7 @@ function mergeDefaultProxyOptions(
     changeOrigin: true,
     ws: true,
     xfwd: true,
-    ...config,
+    ...config
   };
 }
 
@@ -35,19 +35,19 @@ function normalizeProxyConfig(
   const res: IServerProxyConfigItem[] = [];
 
   if (Array.isArray(proxyConfig)) {
-    proxyConfig.forEach((item) => res.push(mergeDefaultProxyOptions(item)));
+    proxyConfig.forEach(item => res.push(mergeDefaultProxyOptions(item)));
   } else if (typeof proxyConfig === 'object') {
-    Object.keys(proxyConfig).forEach((context) => {
+    Object.keys(proxyConfig).forEach(context => {
       const val = proxyConfig[context];
       const opts =
         typeof val === 'string'
           ? {
               target: val,
-              context,
+              context
             }
           : {
               ...val,
-              context,
+              context
             };
       res.push(mergeDefaultProxyOptions(opts));
     });

@@ -31,7 +31,7 @@
     "@shuvi/toolpack": "^0.0.1-beta.11",
     "@shuvi/types": "^0.0.1-beta.11",
     "@shuvi/utils": "^0.0.1-beta.11",
-    "commander": "5.0.0",
+    "commander": "5.1.0",
     "connect": "3.7.0",
     "cross-spawn": "7.0.1",
     "ejs": "3.0.1",

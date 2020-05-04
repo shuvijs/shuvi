@@ -1,4 +1,4 @@
-import { IShuviMode } from '@shuvi/types';
+import { IShuviMode, IEventServerListen } from '@shuvi/types';
 import {
   IHTTPRequestHandler,
   IIncomingMessage,
@@ -36,7 +36,11 @@ export default abstract class Shuvi {
     await this._api.destory();
   }
 
-  async listen(port: number, hostname?: string): Promise<void> {
+  async listen(port: number, hostname: string = 'localhost'): Promise<void> {
+    this._api.emitEvent<IEventServerListen>('server:listen', {
+      port,
+      hostname
+    });
     await Promise.all([this._api.server.listen(port, hostname), this.ready()]);
   }
 

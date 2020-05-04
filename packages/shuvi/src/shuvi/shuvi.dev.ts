@@ -1,11 +1,9 @@
 import { IEventBundlerDone } from '@shuvi/types';
-import { getProjectInfo } from '@shuvi/toolpack/lib/utils/typeScript';
 import { IIncomingMessage, IServerResponse, INextFunction } from '../server';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
-import { WEBPACK_CONFIG_CLIENT, WEBPACK_CONFIG_SERVER } from '../constants';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
 
 export default class ShuviDev extends Base {
@@ -28,16 +26,6 @@ export default class ShuviDev extends Base {
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
-    const { useTypeScript } = getProjectInfo(api.paths.rootDir);
-    devMiddleware.watchCompiler(WEBPACK_CONFIG_CLIENT, {
-      useTypeScript,
-      log: console.log.bind(console)
-    });
-    devMiddleware.watchCompiler(WEBPACK_CONFIG_SERVER, {
-      useTypeScript: false,
-      log: console.log.bind(console)
-    });
-
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
@@ -48,17 +36,8 @@ export default class ShuviDev extends Base {
   }
 
   async listen(port: number, hostname: string = 'localhost'): Promise<void> {
-    const status = {
-      [WEBPACK_CONFIG_CLIENT]: false,
-      [WEBPACK_CONFIG_SERVER]: false
-    };
-    this._api.on<IEventBundlerDone>('bundler:done', ({ first, name }) => {
-      status[name] = true;
-      if (
-        first &&
-        status[WEBPACK_CONFIG_CLIENT] &&
-        status[WEBPACK_CONFIG_SERVER]
-      ) {
+    this._api.on<IEventBundlerDone>('bundler:done', ({ first }) => {
+      if (first) {
         const localUrl = `http://${
           hostname === '0.0.0.0' ? 'localhost' : hostname
         }:${port}`;
