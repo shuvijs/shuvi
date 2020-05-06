@@ -7,6 +7,7 @@ import {
 import { Api } from '../api';
 import { IConfig } from '../config';
 import { Renderer, isRedirect } from '../renderer';
+import { sendHTML } from '../lib/sendHtml';
 
 export interface IShuviConstructorOptions {
   config: IConfig;
@@ -68,6 +69,6 @@ export default abstract class Shuvi {
       return;
     }
 
-    res.end(result);
+    sendHTML(req, res, result);
   }
 }

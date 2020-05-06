@@ -54,6 +54,7 @@ export interface IRedirectFn {
 export interface IAppComponentContext {
   isServer: boolean;
   fetchInitialProps(): Promise<void>;
+  redirect: IRedirectFn;
 
   // server only
   req?: IRequest;
