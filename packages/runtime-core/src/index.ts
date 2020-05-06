@@ -1,3 +1,4 @@
+import "./public-path";
 import { setRuntimeConfig, router } from "@shuvi/app";
 import { getAppData } from "./lib/getAppData";
 
