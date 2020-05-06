@@ -11,6 +11,7 @@ import AppContainer from './AppContainer';
 import { IReactAppData } from './types';
 import { HeadManager, HeadManagerContext } from './head';
 import Loadable from './loadable';
+import { createRedirector } from './utils/createRedirector';
 
 const appData = getAppData() as Runtime.IAppData<IReactAppData>;
 const headManager = new HeadManager();
@@ -31,6 +32,7 @@ export function createBootstrap({
   setHistory(history);
 
   return async ({ appContainer, AppComponent }) => {
+    const redirector = createRedirector();
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
     >;
@@ -41,10 +43,15 @@ export function createBootstrap({
     } else if (TypedAppComponent.getInitialProps) {
       appProps = await TypedAppComponent.getInitialProps({
         isServer: false,
+        redirect: redirector.handler,
         async fetchInitialProps() {
           // do nothing
         }
       });
+    }
+
+    if (redirector.redirected) {
+      history.push(redirector.state!.path);
     }
 
     const root = (
