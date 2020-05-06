@@ -64,7 +64,13 @@ export abstract class BaseRenderer {
       document.onDocumentProps(docProps, serverCtx);
     }
 
-    // TODO: add appdata hook
+    docProps.scriptTags.unshift(
+      tag(
+        'script',
+        {},
+        `var __SHUVI_ASSET_PUBLIC_PATH = "${this._api.assetPublicPath}"`
+      )
+    );
     docProps.scriptTags.unshift(
       this._getInlineAppData({
         runtimeConfig: this._getPublicRuntimeConfig(),
