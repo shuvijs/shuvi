@@ -25,7 +25,25 @@ describe('Dynamic', () => {
     // wati for style inserting
     await page.waitFor(1000);
     expect(
-      await page.$eval('#css', (el) => window.getComputedStyle(el).fontSize)
+      await page.$eval('#css', el => window.getComputedStyle(el).fontSize)
+    ).toBe('16px');
+  });
+
+  test('should import .sass files', async () => {
+    page = await ctx.browser.page(ctx.url('/sass'));
+    // wati for style inserting
+    await page.waitFor(1000);
+    expect(
+      await page.$eval('#css', el => window.getComputedStyle(el).fontSize)
+    ).toBe('16px');
+  });
+
+  test('should import .scss files', async () => {
+    page = await ctx.browser.page(ctx.url('/scss'));
+    // wati for style inserting
+    await page.waitFor(1000);
+    expect(
+      await page.$eval('#css', el => window.getComputedStyle(el).fontSize)
     ).toBe('16px');
   });
 
@@ -42,16 +60,18 @@ describe('Dynamic', () => {
     expect(
       await page.$eval(
         '#css-modules',
-        (el) => window.getComputedStyle(el).opacity
+        el => window.getComputedStyle(el).opacity
       )
     ).toBe('0.5');
   });
 
   test('should export class mapping for css modules on ssr', async () => {
-    page = await ctx.browser.page(ctx.url('/css-modules'), {
-      disableJavaScript: true,
+    page = await ctx.browser.page(ctx.url('/css-modules-ssr'), {
+      disableJavaScript: true
     });
-    expect(await page.$attr('#css-modules', 'class')).toMatch(/style/);
+    expect(await page.$attr('[data-test-id="css"]', 'class')).toMatch(/style/);
+    expect(await page.$attr('[data-test-id="sass"]', 'class')).toMatch(/style/);
+    expect(await page.$attr('[data-test-id="scss"]', 'class')).toMatch(/style/);
   });
 
   test('should remove FOUC style when no css', async () => {
@@ -60,7 +80,7 @@ describe('Dynamic', () => {
     page.waitForFunction(`document
    .querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`);
     expect(
-      await page.$eval('body', (el) => window.getComputedStyle(el).display)
+      await page.$eval('body', el => window.getComputedStyle(el).display)
     ).not.toBe('none');
   });
 });

@@ -22,9 +22,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 // https://github.com/jamiebuilds/react-loadable/blob/v5.5.0/src/index.js
 // Modified to be compatible with webpack 4 / Next.js
 
-import React from "react";
-import { useSubscription } from "use-subscription";
-import { LoadableContext } from "./loadable-context";
+import React from 'react';
+import { useSubscription } from 'use-subscription';
+import { LoadableContext } from './loadable-context';
 
 type Options = any;
 
@@ -142,15 +142,15 @@ function createLoadableComponent(loadFn, options) {
   }
 
   // Server only
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     ALL_INITIALIZERS.push(init);
   }
 
   // Client only
   if (
     !initialized &&
-    typeof window !== "undefined" &&
-    typeof opts.webpack === "function"
+    typeof window !== 'undefined' &&
+    typeof opts.webpack === 'function'
   ) {
     const moduleIds = opts.webpack();
     READY_INITIALIZERS.push(ids => {
@@ -162,7 +162,7 @@ function createLoadableComponent(loadFn, options) {
     });
   }
 
-  const LoadableComponent = (props, ref) => {
+  const LoadableComponent = React.forwardRef((props, ref) => {
     init();
 
     const context = React.useContext(LoadableContext);
@@ -192,12 +192,12 @@ function createLoadableComponent(loadFn, options) {
     } else {
       return null;
     }
-  };
+  });
 
   LoadableComponent.preload = () => init();
-  LoadableComponent.displayName = "LoadableComponent";
+  LoadableComponent.displayName = 'LoadableComponent';
 
-  return React.forwardRef(LoadableComponent);
+  return LoadableComponent;
 }
 
 class LoadableSubscription {
@@ -228,7 +228,7 @@ class LoadableSubscription {
     const { _res: res, _opts: opts } = this;
 
     if (res.loading) {
-      if (typeof opts.delay === "number") {
+      if (typeof opts.delay === 'number') {
         if (opts.delay === 0) {
           this._state.pastDelay = true;
         } else {
@@ -240,7 +240,7 @@ class LoadableSubscription {
         }
       }
 
-      if (typeof opts.timeout === "number") {
+      if (typeof opts.timeout === 'number') {
         this._timeout = setTimeout(() => {
           this._update({ timedOut: true });
         }, opts.timeout);
@@ -275,7 +275,7 @@ class LoadableSubscription {
       error: this._res.error,
       loaded: this._res.loaded,
       loading: this._res.loading
-    }
+    };
     this._callbacks.forEach(callback => callback());
   }
 
@@ -301,8 +301,8 @@ function Loadable<P>(opts: Options): React.ComponentType<P> {
 }
 
 function LoadableMap<P>(opts: Options): React.ComponentType<P> {
-  if (typeof opts.render !== "function") {
-    throw new Error("LoadableMap requires a `render(loaded, props)` function");
+  if (typeof opts.render !== 'function') {
+    throw new Error('LoadableMap requires a `render(loaded, props)` function');
   }
 
   return createLoadableComponent(loadMap, opts);

@@ -237,7 +237,7 @@ export function withStyle(
       .use('ignore-loader')
       .loader(require.resolve('ignore-loader'))
       .end()
-      .after('css-module');
+      .after('scss-module');
     // @ts-ignore
     oneOfs.set('ignore', ignoreRule);
     return chain;

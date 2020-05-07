@@ -40,11 +40,13 @@ const BASIC_APP = `
 describe('shuvi/babel', () => {
   const NODE_ENV = process.env.NODE_ENV;
   beforeAll(() => {
+    // @ts-ignore
     process.env.NODE_ENV = 'production';
   });
 
   afterAll(() => {
     jest.resetModules();
+    // @ts-ignore
     process.env.NODE_ENV = NODE_ENV;
   });
 

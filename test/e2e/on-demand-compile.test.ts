@@ -24,7 +24,7 @@ describe('On Demand Compile', () => {
   });
   afterAll(async () => {
     await page.close();
-    await ctx.close();
+    // await ctx.close();
   });
 
   test('should compile at first request', async () => {
@@ -35,6 +35,7 @@ describe('On Demand Compile', () => {
     expect(isPageCompiled('index')).toBe(false);
     page = await ctx.browser.page(ctx.url('/'));
     expect(isPageCompiled('index')).toBe(true);
+    expect(getCompiledPage().length).toEqual(1);
   });
 
   test('should compile while client navigate', async () => {
