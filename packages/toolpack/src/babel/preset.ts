@@ -33,7 +33,7 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
     // In production/development this option is set to `false` so that webpack can handle import/export with tree-shaking
     modules: 'auto',
     exclude: ['transform-typeof-symbol'],
-    ...options['preset-env'],
+    ...options['preset-env']
   };
 
   // When transpiling for the server or tests, target the current Node version
@@ -49,7 +49,7 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
     presetEnvConfig.targets = {
       // Targets the current process' version of Node. This requires apps be
       // built and deployed on the same version of Node.
-      node: 'current',
+      node: 'current'
     };
   }
 
@@ -67,10 +67,10 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
           // Will use the native built-in instead of trying to polyfill
           // behavior for any plugins that require one.
           useBuiltIns: true,
-          ...options['preset-react'],
-        },
+          ...options['preset-react']
+        }
       ],
-      require('@babel/preset-typescript'),
+      require('@babel/preset-typescript')
     ],
     plugins: [
       require('./plugins/auto-css-modules'),
@@ -83,15 +83,15 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
           module: 'react',
           importAs: 'React',
           pragma: '__jsx',
-          property: 'createElement',
-        },
+          property: 'createElement'
+        }
       ],
       [
         require('./plugins/optimize-hook-destructuring'),
         {
           // only optimize hook functions imported from React/Preact
-          lib: true,
-        },
+          lib: true
+        }
       ],
       require('@babel/plugin-syntax-dynamic-import'),
       require('./plugins/loadable-plugin'),
@@ -99,8 +99,8 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
       [
         require('@babel/plugin-proposal-object-rest-spread'),
         {
-          useBuiltIns: true,
-        },
+          useBuiltIns: true
+        }
       ],
       !isNode && [
         require('@babel/plugin-transform-runtime'),
@@ -115,15 +115,25 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
           absoluteRuntime: path.dirname(
             require.resolve('@babel/runtime/package.json')
           ),
-          ...options['transform-runtime'],
-        },
+          ...options['transform-runtime']
+        }
       ],
       isProduction && [
         require('babel-plugin-transform-react-remove-prop-types'),
         {
-          removeImport: true,
-        },
+          removeImport: true
+        }
       ],
+      require('@babel/plugin-proposal-optional-chaining'),
+      require('@babel/plugin-proposal-nullish-coalescing-operator'),
+      isNode && require('@babel/plugin-syntax-bigint'),
+      [require('@babel/plugin-proposal-numeric-separator').default, false]
     ].filter(Boolean),
+    overrides: [
+      {
+        test: /\.tsx?$/,
+        plugins: [require('@babel/plugin-proposal-numeric-separator').default]
+      }
+    ]
   };
 };

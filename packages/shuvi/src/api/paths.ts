@@ -9,7 +9,6 @@ interface IPathsOpts {
 
 export function getPaths(opts: IPathsOpts): IPaths {
   const { rootDir, outputPath } = opts;
-  const env = process.env.NODE_ENV;
   const toAbsolute = (p: string) => join(rootDir, p);
   const srcDir = toAbsolute('src');
   const srcChildDir = (p: string) => join(srcDir, p);
@@ -20,8 +19,8 @@ export function getPaths(opts: IPathsOpts): IPaths {
     rootDir,
     buildDir,
     srcDir,
-    appDir: toAbsolute(`.${NAME}/${env}/app`),
+    appDir: toAbsolute(`.${NAME}/app`),
     pagesDir: srcChildDir('pages'),
-    publicDir: toAbsolute('public'),
+    publicDir: toAbsolute('public')
   };
 }

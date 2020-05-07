@@ -13,7 +13,8 @@
     "shuvi": "./lib/cli/cli.js"
   },
   "files": [
-    "lib"
+    "lib",
+    "types"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",

@@ -24,6 +24,15 @@ export async function getDevMiddleware({
 }): Promise<DevMiddleware> {
   const bundler = getBundler(api);
   const compiler = await bundler.getWebpackCompiler();
+  // watch before pass compiler to WebpackDevMiddleware
+  bundler.watch({
+    onErrors(errros) {
+      send('errors', errros);
+    },
+    onWarns(warns) {
+      send('warns', warns);
+    }
+  });
   const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
     publicPath: api.assetPublicPath,
     noInfo: true,
@@ -42,15 +51,6 @@ export async function getDevMiddleware({
     }
   );
 
-  bundler.watch({
-    onErrors(errros) {
-      send('errors', errros);
-    },
-    onWarns(warns) {
-      send('warns', warns);
-    }
-  });
-
   const apply = () => {
     api.server.use(webpackDevMiddleware);
     api.server.use(webpackHotMiddleware);
@@ -60,7 +60,7 @@ export async function getDevMiddleware({
   };
 
   const send = (action: string, payload?: any) => {
-    webpackDevMiddleware.publish({ action, data: payload });
+    webpackHotMiddleware.publish({ action, data: payload });
   };
 
   const invalidate = () => {

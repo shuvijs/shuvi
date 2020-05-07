@@ -36,6 +36,7 @@ type CompilerDiagnostics = {
 };
 
 interface WatchTargetOptions {
+  typeChecking?: boolean;
   onErrors?(errors: string[]): void;
   onWarns?(warns: string[]): void;
 }
@@ -112,12 +113,20 @@ class WebpackBundler {
   }
 
   watch(options: WatchTargetOptions) {
+    if (!this._compiler) {
+      console.warn('please create compiler before watch');
+      return;
+    }
+
     [...this._internalTargets, ...this._extraTargets].forEach(({ name }) => {
       if (name === BUNDLER_TARGET_CLIENT) {
-        this._watchTarget(name, options);
-      } else {
         this._watchTarget(name, {
           ...options,
+          typeChecking: true
+        });
+      } else {
+        this._watchTarget(name, {
+          typeChecking: false,
           onErrors(errros) {
             console.log(errros[0]);
           },
@@ -148,6 +157,7 @@ class WebpackBundler {
 
     const _log = (...args: string[]) => console.log(`[${name}]`, ...args);
     compiler.hooks.invalid.tap(`invalid`, () => {
+      tsMessagesPromise = undefined;
       isInvalid = true;
       _log('Compiling...');
     });
@@ -155,7 +165,7 @@ class WebpackBundler {
     const useTypeScript = !!compiler.options.plugins?.find(
       plugin => plugin instanceof ForkTsCheckerWebpackPlugin
     );
-    if (useTypeScript) {
+    if (options.typeChecking && useTypeScript) {
       const typescriptFormatter = createCodeframeFormatter({});
 
       compiler.hooks.beforeCompile.tap('beforeCompile', () => {
@@ -187,6 +197,8 @@ class WebpackBundler {
     // "done" event fires when Webpack has finished recompiling the bundle.
     // Whether or not you have warnings or errors, you will get this event.
     compiler.hooks.done.tap('done', async stats => {
+      // if done is triggered without a preceding invalid event, just ignore it
+      // no real compile occurs in this situation
       if (!isInvalid) {
         return;
       }
@@ -202,14 +214,16 @@ class WebpackBundler {
         warnings: true,
         errors: true
       });
+      const hasErrors = !!statsData.errors.length;
+      const typePromise = tsMessagesPromise;
 
-      if (useTypeScript && statsData.errors.length === 0) {
-        const delayedMsg = setTimeout(() => {
-          _log('Files successfully emitted, waiting for typecheck results...');
-        }, 100);
-
+      if (options.typeChecking && useTypeScript && hasErrors) {
         const messages = await tsMessagesPromise;
-        clearTimeout(delayedMsg);
+        if (typePromise !== tsMessagesPromise) {
+          // a new compilation started so we don't care about this
+          return;
+        }
+
         if (messages) {
           if (
             messages.errors &&
