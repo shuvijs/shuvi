@@ -1,8 +1,8 @@
 /// <reference lib="dom" />
 
-import React from "react";
-import { Switch, Route } from "react-router-dom";
-import { Runtime } from "@shuvi/types";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
+import { Runtime } from '@shuvi/types';
 
 type Data = Record<string, any>;
 
@@ -20,9 +20,9 @@ function renderRoutes(
           exact={route.exact}
           strict={route.strict}
           sensitive={route.sensitive}
-          render={props => {
+          render={(props) => {
             const childRoutes = renderRoutes(route.routes, initialProps, {
-              location: props.location
+              location: props.location,
             });
             let { component: Component } = route;
             if (Component) {
