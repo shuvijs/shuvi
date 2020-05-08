@@ -106,6 +106,7 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
         require('@babel/plugin-transform-runtime'),
         {
           version: require('@babel/runtime/package.json').version,
+          false: false,
           helpers: true,
           regenerator: true,
           useESModules: supportsESM && presetEnvConfig.modules !== 'commonjs',

@@ -7,7 +7,7 @@
 
 'use strict';
 
-const chalk = require('chalk');
+const chalk = require('@shuvi/utils/lib/chalk').default;
 const friendlySyntaxErrorLabel = 'Syntax error:';
 
 function isLikelyASyntaxError(message) {

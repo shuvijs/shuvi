@@ -217,7 +217,7 @@ class WebpackBundler {
       const hasErrors = !!statsData.errors.length;
       const typePromise = tsMessagesPromise;
 
-      if (options.typeChecking && useTypeScript && hasErrors) {
+      if (options.typeChecking && useTypeScript && !hasErrors) {
         const messages = await tsMessagesPromise;
         if (typePromise !== tsMessagesPromise) {
           // a new compilation started so we don't care about this
