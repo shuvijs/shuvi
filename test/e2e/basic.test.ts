@@ -34,6 +34,16 @@ describe('Basic Features', () => {
     expect(await page.$text('#about')).toBe('About Page');
   });
 
+  test('should receive req in getInitialProps contenxt', async () => {
+    await page.close();
+    page = await ctx.browser.page(ctx.url('/req'));
+    const props = JSON.parse(await page.$text('[data-test-id="req"]'));
+    expect(props.headers).toBeDefined();
+    expect(typeof props.headers).toBe('object');
+    expect(props.url).toBe('/req');
+    expect(props.parsedUrl.href).toBe('/req');
+  });
+
   test('should access process.env', async () => {
     await page.shuvi.navigate('/process-env');
     await page.waitForSelector('#process-env');
@@ -81,7 +91,7 @@ describe('[SPA] Basic Features', () => {
   beforeAll(async () => {
     ctx = await launchFixture('basic', {
       ssr: false,
-      router: { history: 'browser' },
+      router: { history: 'browser' }
     });
   });
   afterAll(async () => {

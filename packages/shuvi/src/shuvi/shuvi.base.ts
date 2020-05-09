@@ -60,7 +60,8 @@ export default abstract class Shuvi {
   ): Promise<void> {
     const result = await this._renderer.renderDocument({
       url: req.url!,
-      parsedUrl: req.parsedUrl
+      parsedUrl: req.parsedUrl,
+      headers: req.headers,
     });
 
     if (isRedirect(result)) {
