@@ -1,4 +1,5 @@
 import React from 'react'
+// @ts-ignore FIXME
 import { useLocation } from '@shuvi/app'
 import { hello } from '../components/hello'
 import { World } from '../components/world'

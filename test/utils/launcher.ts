@@ -21,7 +21,7 @@ async function createTextContext(app: Shuvi) {
   const browser = new Browser();
   await browser.start();
 
-  const url = (route: string, query: Record<string, any> = {}) => {
+  const url = (route: string, query?: Record<string, any>) => {
     const path = 'http://localhost:' + port + route;
     if (query) {
       return path + '?' + qs.stringify(query);

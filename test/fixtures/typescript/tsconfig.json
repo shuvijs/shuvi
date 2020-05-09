@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "@shuvi/app": [".shuvi/app/index"]
+      "@shuvi/app1": [".shuvi/app/index"]
     }
   },
   "exclude": ["node_modules"],
