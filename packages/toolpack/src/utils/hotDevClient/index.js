@@ -329,8 +329,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
       }
     );
     if (!updatedModules || updatedModules.length <= 0) {
-      console.warn("[HMR] Cannot find update (Full reload needed)");
-      window.location.reload();
+      // the updated module is not used by current page, just do nothing
       return;
     }
 
