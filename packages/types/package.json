@@ -11,7 +11,7 @@
   "main": "index.js",
   "types": "index.d.js",
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 12.0.0"
   },
   "dependencies": {
     "@shuvi/core": "^0.0.1-beta.18",
