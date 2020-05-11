@@ -4,9 +4,9 @@
 import puppeteer, {
   DirectNavigationOptions,
   ConsoleMessage
-} from "puppeteer-core";
-import qs from "querystring";
-import ChromeDetector from "./chrome";
+} from 'puppeteer-core';
+import qs from 'querystring';
+import ChromeDetector from './chrome';
 
 export interface Page extends puppeteer.Page {
   [x: string]: any;
@@ -38,7 +38,7 @@ export default class Browser {
   async start(options: { baseURL?: string } = {}) {
     // https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions
     const _opts = {
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       ...options
     };
@@ -59,9 +59,10 @@ export default class Browser {
 
   async page(url?: string, options: PageOptions = {}): Promise<Page> {
     if (!this._browser) {
-      throw new Error("Please call start() before page(url)");
+      throw new Error('Please call start() before page(url)');
     }
     const page = (await this._browser.newPage()) as Page;
+    page.setDefaultTimeout(5 * 60 * 1000);
     if (url) {
       if (options.disableJavaScript) {
         await page.setJavaScriptEnabled(false);
@@ -75,12 +76,12 @@ export default class Browser {
       const onLogs = (msg: ConsoleMessage) => {
         texts.push(msg.text());
       };
-      page.on("console", onLogs);
+      page.on('console', onLogs);
 
       return {
         texts,
         dispose: () => {
-          page.off("console", onLogs);
+          page.off('console', onLogs);
         }
       };
     };
@@ -91,11 +92,11 @@ export default class Browser {
         selector,
         (el, trim) => {
           if (el.textContent === null) {
-            throw Error("no matching element");
+            throw Error('no matching element');
           }
 
           return trim
-            ? el.textContent.replace(/^\s+|\s+$/g, "")
+            ? el.textContent.replace(/^\s+|\s+$/g, '')
             : el.textContent;
         },
         trim
@@ -110,7 +111,7 @@ export default class Browser {
             }
 
             return trim
-              ? el.textContent.replace(/^\s+|\s+$/g, "")
+              ? el.textContent.replace(/^\s+|\s+$/g, '')
               : el.textContent;
           }),
         trim
@@ -134,12 +135,12 @@ export default class Browser {
         attr
       );
 
-    const getShuvi = () => page.evaluateHandle("window.__SHUVI");
+    const getShuvi = () => page.evaluateHandle('window.__SHUVI');
     page.shuvi = {
       async navigate(path: string, query: Record<string, any> = {}) {
         const $shuvi = await getShuvi();
         if (query) {
-          path = path + "?" + qs.stringify(query);
+          path = path + '?' + qs.stringify(query);
         }
         return page.evaluate(
           ($shuvi, path: string) => $shuvi.router.push(path),

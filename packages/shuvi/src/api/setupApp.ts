@@ -93,10 +93,6 @@ export async function setupApp(api: Api) {
     imported: 'default',
     local: 'router'
   });
-  api.addAppExport(api.resolveAppFile('core', 'routes'), {
-    imported: 'default',
-    local: 'routes'
-  });
   api.addAppExport(
     require.resolve('@shuvi/runtime-core/lib/lib/telestore'),
     'telestore'
