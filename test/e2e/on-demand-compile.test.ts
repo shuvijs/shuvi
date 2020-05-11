@@ -24,7 +24,7 @@ describe('On Demand Compile', () => {
   });
   afterAll(async () => {
     await page.close();
-    // await ctx.close();
+    await ctx.close();
   });
 
   test('should compile at first request', async () => {
