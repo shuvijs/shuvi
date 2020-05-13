@@ -45,17 +45,6 @@ export type IHookAppRoutesFile = defineHook<
 
 export type IEventAppReady = defineHook<'app:ready'>;
 
-export type IHookBundlerExtraTarget = defineHook<
-  'bundler:extra-target',
-  {
-    args: [
-      {
-        createConfig(options: any): any;
-      }
-    ];
-  }
->;
-
 export type IHookBundlerConfig = defineHook<
   'bundler:config-target',
   {
@@ -63,6 +52,19 @@ export type IHookBundlerConfig = defineHook<
     args: [
       {
         name: string;
+        mode: IShuviMode;
+        webpack: typeof webpack;
+      }
+    ];
+  }
+>;
+
+export type IHookBundlerExtraTarget = defineHook<
+  'bundler:extra-target',
+  {
+    args: [
+      {
+        createConfig(options: any): any;
         mode: IShuviMode;
         webpack: typeof webpack;
       }

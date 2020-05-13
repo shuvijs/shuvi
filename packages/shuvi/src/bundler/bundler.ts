@@ -61,14 +61,17 @@ class WebpackBundler {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
-      this._extraTargets = (
-        await this._api.callHook<IHookBundlerExtraTarget>(
-          'bundler:extra-target',
-          {
-            createConfig: this._createConfig.bind(this)
-          }
-        )
-      ).filter(Boolean) as Target[];
+      this._extraTargets = ((await this._api.callHook<IHookBundlerExtraTarget>(
+        {
+          name: 'bundler:extra-target',
+          parallel: true
+        },
+        {
+          createConfig: this._createConfig.bind(this),
+          mode: this._api.mode,
+          webpack
+        }
+      )) as any).filter(Boolean) as Target[];
       this._compiler = webpack(
         [...this._internalTargets, ...this._extraTargets].map(t => t.config)
       );
@@ -310,18 +313,19 @@ class WebpackBundler {
       }
     );
 
-    const clientConfig = clientChain.toConfig();
-    const serverConfig = serverChain.toConfig();
+    const targets: Target[] = [];
 
+    const clientConfig = clientChain.toConfig();
     logger.debug('Client Config');
     logger.debug(inspect(clientConfig.resolve?.plugins, { depth: 10 }));
+    targets.push({ name: BUNDLER_TARGET_CLIENT, config: clientConfig });
+
+    const serverConfig = serverChain.toConfig();
     logger.debug('Server Config');
     logger.debug(inspect(serverConfig.module, { depth: 10 }));
+    targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
 
-    return [
-      { name: BUNDLER_TARGET_CLIENT, config: clientConfig },
-      { name: BUNDLER_TARGET_SERVER, config: serverConfig }
-    ];
+    return targets;
   }
 }
 
