@@ -22,6 +22,7 @@ export interface IWebpackConfigOptions {
   name: string;
   node: boolean;
   entry: IWebpackEntry;
+  srcDirs?: string[];
   outputDir: string;
 }
 
@@ -32,7 +33,12 @@ export function createWepbackConfig(
   const dev = mode === 'development';
   let chain: WebpackChain;
 
-  const srcDirs = [runtimeDir, paths.appDir, paths.srcDir];
+  const srcDirs = [
+    runtimeDir,
+    paths.appDir,
+    paths.srcDir,
+    ...(opts.srcDirs || [])
+  ];
   if (opts.node) {
     chain = createNodeWebpackChain({
       env: config.env,
