@@ -53,8 +53,13 @@ export interface IRedirectFn {
 
 export interface IAppComponentContext {
   isServer: boolean;
-  fetchInitialProps(): Promise<void>;
+  pathname: string;
+  // TODO: wait react-router@6
+  // query: Query;
   redirect: IRedirectFn;
+
+  // special props
+  fetchInitialProps(): Promise<void>;
 
   // server only
   req?: IRequest;
@@ -87,12 +92,13 @@ export type IAppData<Data = {}> = {
   [K in keyof Data]: Data[K];
 };
 
-export interface IBootstrapOptions {
+export interface IClientRendererOptions<Data = {}> {
+  appData: IAppData<Data>,
   AppComponent: any;
   appContainer: HTMLElement;
 }
 
-export type IBootstrap = (options: IBootstrapOptions) => void;
+export type IClientRenderer<Data = {}> = (options: IClientRendererOptions<Data>) => void;
 
 export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
@@ -112,7 +118,7 @@ export interface IAppContext {
   [x: string]: any;
 }
 
-export interface IRendererOptions<CompType = any> {
+export interface IServerRendererOptions<CompType = any> {
   api: IApi;
   App: CompType;
   routes: IRoute[];
@@ -120,8 +126,8 @@ export interface IRendererOptions<CompType = any> {
   context: IServerContext;
 }
 
-export type IRenderer<CompType = any, Data = {}> = (
-  options: IRendererOptions<CompType>
+export type IServerRenderer<CompType = any, Data = {}> = (
+  options: IServerRendererOptions<CompType>
 ) => Promise<IRenderAppResult<Data>>;
 
 export interface IRedirectState {
@@ -164,6 +170,7 @@ export interface IRouterLocation {
 }
 
 export interface IRouter {
+  location: IRouterLocation;
   push(path: string, state?: any): void;
   replace(path: string, state?: any): void;
   go(n: number): void;
@@ -194,9 +201,9 @@ export interface IRuntime<CompType = unknown> {
 
   getAppModulePath(): string;
 
-  getBootstrapModulePath(): string;
-
   get404ModulePath(): string;
 
-  getRendererModulePath(): string;
+  getClientRendererModulePath(): string;
+
+  getServerRendererModulePath(): string;
 }

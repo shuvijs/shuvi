@@ -36,6 +36,7 @@ describe('api', () => {
       'callHook',
       'on',
       'emitEvent',
+      'addEntryCode',
       'addAppFile',
       'addAppExport',
       'addAppPolyfill',

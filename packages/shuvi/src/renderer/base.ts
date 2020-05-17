@@ -13,7 +13,7 @@ import {
 import getRuntimeConfig from '../lib/runtimeConfig';
 import { renderTemplate } from '../lib/viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IRendererOptions, IRenderRequest, IRendererContext } from './types';
+import { IServerRendererOptions, IRenderRequest, IServerRendererContext } from './types';
 import { Api, IBuiltResource } from '../api';
 
 import IAppData = Runtime.IAppData;
@@ -30,7 +30,7 @@ export abstract class BaseRenderer {
   protected _api: Api;
   protected _resources: IBuiltResource;
 
-  constructor({ api }: IRendererOptions) {
+  constructor({ api }: IServerRendererOptions) {
     this._api = api;
     this._resources = api.resources;
   }
@@ -44,7 +44,7 @@ export abstract class BaseRenderer {
     }
     const { document } = this._resources.server;
     const telestore = new Telestore({});
-    const rendererCtx: IRendererContext = {
+    const rendererCtx: IServerRendererContext = {
       appData: {}
     };
     const serverCtx: IServerContext = {
@@ -88,7 +88,7 @@ export abstract class BaseRenderer {
 
   protected abstract getDocumentProps(
     serverCtx: IServerContext,
-    rendererCtx: IRendererContext
+    rendererCtx: IServerRendererContext
   ):
     | Promise<IDocumentProps | IRenderResultRedirect>
     | IDocumentProps

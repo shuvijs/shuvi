@@ -9,6 +9,7 @@ const apiProps: Array<keyof IApi> = [
   'callHook',
   'on',
   'emitEvent',
+  'addEntryCode',
   'addAppFile',
   'addAppExport',
   'addAppPolyfill',
@@ -31,6 +32,7 @@ class PluginApi implements IApi {
   on: any;
   emitEvent: any;
 
+  addEntryCode: any;
   addAppFile: any;
   addAppExport: any;
   addAppPolyfill: any;

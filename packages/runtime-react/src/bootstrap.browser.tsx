@@ -1,6 +1,6 @@
 import { createBrowserHistory } from "./router/history";
-import { createBootstrap } from "./create-bootstrap";
+import { createClientRenderer } from "./createClientRenderer";
 
-export const bootstrap = createBootstrap({
+export const renderer = createClientRenderer({
   historyCreator: createBrowserHistory
 });

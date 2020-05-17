@@ -1,7 +1,7 @@
-import { Runtime } from "@shuvi/types";
-import { History } from "history";
+import { Runtime } from '@shuvi/types';
+import { History } from 'history';
 
-export { RouteProps } from "react-router-dom";
+export { RouteProps } from 'react-router-dom';
 
 export type Router = Runtime.IRouter;
 
@@ -42,6 +42,9 @@ function onChange(listener: Runtime.IRouterListener) {
 }
 
 const router: Router = {
+  get location() {
+    return history.location;
+  },
   push,
   replace,
   go,

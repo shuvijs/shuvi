@@ -6,7 +6,7 @@ export type IBuiltResource = {
     App: any;
     routes: IRoute[];
     document: Partial<Runtime.IDocumentModule>;
-    renderer: Runtime.IRenderer;
+    renderer: Runtime.IServerRenderer;
   };
   documentTemplate: any;
   clientManifest: Bundler.IManifest;

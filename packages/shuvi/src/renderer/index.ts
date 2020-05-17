@@ -1,4 +1,4 @@
-import { IRendererOptions, IRenderRequest } from './types';
+import { IServerRendererOptions, IRenderRequest } from './types';
 import { BaseRenderer, isRedirect } from './base';
 import { SpaRenderer } from './spa';
 import { SsrRenderer } from './ssr';
@@ -13,7 +13,7 @@ export class Renderer {
   private _ssrRenderer: BaseRenderer;
   private _spaRenderer: BaseRenderer;
 
-  constructor(options: IRendererOptions) {
+  constructor(options: IServerRendererOptions) {
     this._api = options.api;
     this._ssrRenderer = new SsrRenderer(options);
     this._spaRenderer = new SpaRenderer(options);

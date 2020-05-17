@@ -41,14 +41,14 @@ const babel = async (
         compact: true,
         caller: {
           name: 'tests',
-          supportsStaticESM: true,
+          supportsStaticESM: true
         },
         // loader opts
         cwd: dir,
         cacheDirectory: false,
         // extends loader opts
-        isNode,
-      },
+        isNode
+      }
     })(code, null);
 
     if (!isAsync) {
@@ -105,16 +105,25 @@ describe('babel-loader', () => {
 
     test('should replace typeof window expression top level', async () => {
       const code = await babel(`typeof window !== 'undefined';`, {
-        isNode: true,
+        isNode: true
       });
       expect(code).toMatchInlineSnapshot(`"false;"`);
     });
 
     test('should replace typeof window expression top level', async () => {
       const code = await babel(`typeof window !== 'object';`, {
-        isNode: true,
+        isNode: true
       });
       expect(code).toMatchInlineSnapshot(`"true;"`);
+    });
+  });
+
+  describe('syntax', () => {
+    test('should support exportDefaultFrom', async () => {
+      const code = await babel(`export { default as foo } from "bar"`);
+      expect(code).toMatchInlineSnapshot(
+        `"export{default as foo}from\\"bar\\";"`
+      );
     });
 
     test('should not drop unused exports by default', async () => {
@@ -162,7 +171,7 @@ describe('babel-loader', () => {
         `let hello;` +
           `export default () => hello?.world ? 'something' : 'nothing' `,
         {
-          resourcePath: pageFile,
+          resourcePath: pageFile
         }
       );
       expect(code).toMatchInlineSnapshot(
@@ -175,7 +184,7 @@ describe('babel-loader', () => {
         `let hello;` +
           `export default () => hello?.world ? 'something' : 'nothing' `,
         {
-          resourcePath: tsPageFile,
+          resourcePath: tsPageFile
         }
       );
       expect(code).toMatchInlineSnapshot(
@@ -197,7 +206,7 @@ describe('babel-loader', () => {
         export default () => 'hello'
         `,
         {
-          resourcePath: pageFile,
+          resourcePath: pageFile
         }
       );
       expect(code).toMatchInlineSnapshot(
@@ -219,7 +228,7 @@ describe('babel-loader', () => {
         export default () => 'hello'
         `,
         {
-          resourcePath: tsPageFile,
+          resourcePath: tsPageFile
         }
       );
       expect(code).toMatchInlineSnapshot(

@@ -13,8 +13,8 @@ export class App {
     this._store = createStore();
   }
 
-  setBootstrapModule(module: string) {
-    this._store.bootstrapModule = module;
+  setRendererModule(module: string) {
+    this._store.rendererModule = module;
   }
 
   setAppModule(module: string | string[]) {
@@ -23,6 +23,10 @@ export class App {
 
   setRoutesContent(content: string): void {
     this._store.routesContent = content;
+  }
+
+  addEntryCode(content: string): void {
+    this._store.addEntryCode(content);
   }
 
   addFile(file: File, dir: string = '/'): void {

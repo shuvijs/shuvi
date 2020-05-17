@@ -3,7 +3,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from 'react-router-dom';
-import { getAppData } from '@shuvi/app/core/utils';
 import { Runtime } from '@shuvi/types';
 import { History } from './router/history';
 import { setHistory } from './router/router';
@@ -13,25 +12,24 @@ import { HeadManager, HeadManagerContext } from './head';
 import Loadable from './loadable';
 import { createRedirector } from './utils/createRedirector';
 
-const appData = getAppData() as Runtime.IAppData<IReactAppData>;
 const headManager = new HeadManager();
 
 type HistoryCreator = (options: { basename: string }) => History;
 
 // TODO: config basename
 
-export function createBootstrap({
+export function createClientRenderer({
   historyCreator
 }: {
   historyCreator: HistoryCreator;
-}): Runtime.IBootstrap {
+}): Runtime.IClientRenderer<IReactAppData> {
   let isInitialRender: Boolean = true;
 
   // TODO: config basename
   const history = historyCreator({ basename: '/' });
   setHistory(history);
 
-  return async ({ appContainer, AppComponent }) => {
+  return async ({ appContainer, AppComponent, appData }) => {
     const redirector = createRedirector();
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
@@ -43,6 +41,7 @@ export function createBootstrap({
     } else if (TypedAppComponent.getInitialProps) {
       appProps = await TypedAppComponent.getInitialProps({
         isServer: false,
+        pathname: history.location.pathname,
         redirect: redirector.handler,
         async fetchInitialProps() {
           // do nothing

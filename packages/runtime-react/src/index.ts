@@ -21,11 +21,10 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       imported: 'default',
       local: 'dynamic'
     });
-    api.addAppExport(resolveDep('react-router-dom'), [
-      'Link',
-      'useLocation',
-      'useParams'
-    ]);
+    api.addAppExport(
+      resolveDep('react-router-dom'),
+      '{ Link, useLocation, useParams }'
+    );
 
     configBundler(api);
 
@@ -56,11 +55,11 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
     return matchRoutes(routes, pathname);
   }
 
-  getRendererModulePath(): string {
+  getServerRendererModulePath(): string {
     return resolveDist('renderer');
   }
 
-  getBootstrapModulePath(): string {
+  getClientRendererModulePath(): string {
     let {
       ssr,
       router: { history }
