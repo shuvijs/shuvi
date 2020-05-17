@@ -2,6 +2,7 @@ import path from 'path';
 import { IApi, IHookBundlerConfig } from '@shuvi/types';
 // @ts-ignore
 import AliasPlugin from 'enhanced-resolve/lib/AliasPlugin';
+import { PACKAGE_DIR } from '../paths';
 
 export function config(api: IApi) {
   const resolveLocal = (m: string) => require.resolve(m);
@@ -9,7 +10,7 @@ export function config(api: IApi) {
     path.join(api.paths.rootDir, 'node_modules', m);
   api.tap<IHookBundlerConfig>('bundler:config-target', {
     name: 'runtime-react',
-    fn: (config) => {
+    fn: config => {
       // const oriExternal = config.get("externals");
       // const external: webpack.ExternalsFunctionElement = (
       //   context,
@@ -31,6 +32,10 @@ export function config(api: IApi) {
       // };
 
       // config.externals(external);
+      // make sure we don't have multiple entity of following packages , becasue module variable will fail
+      config.resolve.alias.set('@shuvi/runtime-react', PACKAGE_DIR);
+      config.resolve.alias.set('react-router-dom$', resolveLocal('react-router-dom'));
+
       // WEBPACK5: using alias in webpack5
       config.resolve.plugin('react-alias').use(AliasPlugin, [
         'described-resolve',
@@ -38,17 +43,17 @@ export function config(api: IApi) {
           {
             name: 'react',
             onlyModule: true,
-            alias: [resolveUser('react'), resolveLocal('react')],
+            alias: [resolveUser('react'), resolveLocal('react')]
           },
           {
             name: 'react-dom',
             onlyModule: true,
-            alias: [resolveUser('react-dom'), resolveLocal('react-dom')],
-          },
+            alias: [resolveUser('react-dom'), resolveLocal('react-dom')]
+          }
         ],
-        'resolve',
+        'resolve'
       ]);
       return config;
-    },
+    }
   });
 }

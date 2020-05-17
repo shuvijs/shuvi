@@ -87,6 +87,7 @@ const renderApp: IReactRenderer = async ({
   if (appGetInitialProps) {
     appInitialProps = await appGetInitialProps({
       isServer: true,
+      pathname,
       fetchInitialProps,
       redirect: redirector.handler,
       req

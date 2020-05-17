@@ -1,13 +1,13 @@
 import { Runtime } from '@shuvi/types';
 import { BaseRenderer } from './base';
-import { IRendererContext } from './types';
+import { IServerRendererContext } from './types';
 
 import IServerContext = Runtime.IServerContext;
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps(
     serverCtx: IServerContext,
-    rendererCtx: IRendererContext
+    rendererCtx: IServerRendererContext
   ) {
     const api = this._api;
     const { renderer, App, routes } = api.resources.server;

@@ -17,7 +17,7 @@ function Module({ name, exports = {} }: Props) {
       if (specifier === '*') {
         statements.push(`export * from "${source}"`);
       } else if (typeof specifier === "string") {
-        statements.push(`export { ${specifier} } from "${source}"`);
+        statements.push(`export ${specifier} from "${source}"`);
       } else if (specifier.imported === "*") {
         statements.push(`import * as ${specifier.local} from "${source}"`);
         statements.push(`export { ${specifier.local} }`);

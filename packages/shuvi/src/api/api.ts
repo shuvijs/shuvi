@@ -128,8 +128,8 @@ export class Api implements IApi {
     this._hooks.callHook({ name, parallel: true }, ...args);
   }
 
-  setBootstrapModule(path: string) {
-    this._app.setBootstrapModule(path);
+  setRendererModule(path: string) {
+    this._app.setRendererModule(path);
   }
 
   setAppModule(module: string | string[]) {
@@ -212,6 +212,10 @@ export class Api implements IApi {
         configurable: true
       });
     }
+  }
+
+  addEntryCode(content: string): void {
+    this._app.addEntryCode(content);
   }
 
   addAppFile(file: IFile, dir = ''): void {

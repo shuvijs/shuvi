@@ -90,9 +90,7 @@ export function createWepbackConfig(
 
 export function getClientEntry(_api: Api): IWebpackEntry {
   return {
-    [BUILD_CLIENT_RUNTIME_MAIN]: [
-      require.resolve('@shuvi/runtime-core/lib/index')
-    ],
+    [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry'],
     [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
   };
 }

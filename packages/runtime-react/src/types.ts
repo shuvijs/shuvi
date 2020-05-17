@@ -18,7 +18,7 @@ export type IAppComponent = Runtime.IAppComponent<React.Component, any>;
 
 export type IRouteComponent = Runtime.IRouteComponent<React.Component, any>;
 
-export type IReactRenderer = Runtime.IRenderer<
+export type IReactRenderer = Runtime.IServerRenderer<
   React.ComponentType,
   IReactAppData
 >;

@@ -1,7 +1,8 @@
 import React, { ErrorInfo } from 'react';
 import { Dir } from '@shuvi/react-fs';
 import IndexFile from './components/IndexFile';
-import BootstrapFile from './components/BootstrapFile';
+import RendererFile from './components/RendererFile';
+import EntryFile from './components/EntryFile';
 import AppFile from './components/AppFile';
 import Polyfill from './components/PolyfillFile';
 import RoutesFile from './components/RoutesFile';
@@ -11,8 +12,9 @@ function App() {
   return (
     <>
       <IndexFile />
+      <EntryFile />
       <Dir name="core">
-        <BootstrapFile />
+        <RendererFile />
         <AppFile />
         <RoutesFile />
         <Polyfill />

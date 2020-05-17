@@ -9,11 +9,11 @@ export type IRenderRequest = {
   [x: string]: any;
 };
 
-export interface IRendererOptions {
+export interface IServerRendererOptions {
   api: Api;
 }
 
-export interface IRendererContext {
+export interface IServerRendererContext {
   appData: Record<string, any>;
 }
 

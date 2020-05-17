@@ -1,4 +1,5 @@
 import { Route, File } from '@shuvi/core';
+import coreRuntime from '@shuvi/runtime-core';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
@@ -47,9 +48,10 @@ export async function setupApp(api: Api) {
     ? ['tsx', 'ts', 'js', 'jsx']
     : ['js', 'jsx', 'tsx', 'ts'];
 
+  coreRuntime.install(api.getPluginApi());
   runtime.install(api.getPluginApi());
 
-  api.setBootstrapModule(runtime.getBootstrapModulePath());
+  api.setRendererModule(runtime.getClientRendererModulePath());
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
     runtime.getAppModulePath()
@@ -74,16 +76,6 @@ export async function setupApp(api: Api) {
     }),
     'core'
   );
-  api.addAppFile(
-    File.module('utils.js', {
-      exports: {
-        [require.resolve(
-          '@shuvi/runtime-core/lib/lib/getAppData'
-        )]: 'getAppData'
-      }
-    }),
-    'core'
-  );
 
   api.addAppExport(runtime.getAppModulePath(), {
     imported: 'default',
@@ -95,17 +87,14 @@ export async function setupApp(api: Api) {
   });
   api.addAppExport(
     require.resolve('@shuvi/runtime-core/lib/lib/telestore'),
-    'telestore'
+    '{ telestore }'
   );
 
   // don not use absolute path, this mpdule would't be bundle
-  api.addAppExport('shuvi/lib/lib/runtimeConfig', [
-    'setRuntimeConfig',
-    {
-      imported: 'default',
-      local: 'getRuntimeConfig'
-    }
-  ]);
+  api.addAppExport(
+    'shuvi/lib/lib/runtimeConfig',
+    '{ setRuntimeConfig, default as getRuntimeConfig }'
+  );
 
   api.addAppFile(
     File.module('server.js', {
@@ -123,7 +112,7 @@ export async function setupApp(api: Api) {
               imported: 'default',
               local: 'routes'
             },
-            [runtime.getRendererModulePath()]: {
+            [runtime.getServerRendererModulePath()]: {
               imported: 'default',
               local: 'renderer'
             }

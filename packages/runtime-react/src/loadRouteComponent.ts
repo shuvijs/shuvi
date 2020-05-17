@@ -1,10 +1,10 @@
-import React from "react";
-import { parse as parseQuerystring } from "querystring";
-import { RouteComponentProps } from "react-router-dom";
-import { Runtime } from "@shuvi/types";
-import dynamic, { DynamicOptions } from "./dynamic";
-import { getDisplayName } from "./utils/getDisplayName";
-import { createRedirector } from "./utils/createRedirector";
+import React from 'react';
+import { parse as parseQuerystring } from 'querystring';
+import { RouteComponentProps } from 'react-router-dom';
+import { Runtime } from '@shuvi/types';
+import dynamic, { DynamicOptions } from './dynamic';
+import { getDisplayName } from './utils/getDisplayName';
+import { createRedirector } from './utils/createRedirector';
 
 import RouteComponent = Runtime.IRouteComponent;
 
@@ -38,10 +38,12 @@ function withInitialPropsClient<P = {}>(
       WrappedComponent
     )})`;
 
+    private _unmount: boolean = false;
+
     constructor(props: Props & P) {
       super(props);
 
-      const propsResolved = typeof props.__initialProps !== "undefined";
+      const propsResolved = typeof props.__initialProps !== 'undefined';
       this.state = {
         propsResolved: propsResolved,
         initialProps: props.__initialProps || {}
@@ -82,6 +84,11 @@ function withInitialPropsClient<P = {}>(
         params: match.params,
         redirect: redirector.handler
       });
+
+      if (this._unmount) {
+        return;
+      }
+
       if (redirector.redirected) {
         history.push(redirector.state!.path);
       } else {
@@ -90,6 +97,10 @@ function withInitialPropsClient<P = {}>(
           initialProps
         });
       }
+    }
+
+    componentWillUnmount() {
+      this._unmount = true;
     }
 
     render() {
@@ -126,7 +137,7 @@ export function loadRouteComponent(
             comp.getInitialProps;
 
           // make getInitialProps work in browser
-          if (typeof window !== "undefined") {
+          if (typeof window !== 'undefined') {
             return withInitialPropsClient(comp);
           }
 

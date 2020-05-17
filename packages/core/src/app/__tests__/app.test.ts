@@ -1,137 +1,150 @@
-import { App } from '../app';
 import path from 'path';
-import { createFile } from '../models/files';
-import { readFileSync, existsSync } from 'fs';
 import { removeSync } from 'fs-extra';
+import { readFileSync, existsSync } from 'fs';
+import os from 'os';
+import { App } from '../app';
+import { createFile } from '../models/files';
 
-function resolveFixture(...paths: string[]) {
-  return path.join(__dirname, 'fixtures', ...paths);
+type TestRule = [string, string | RegExp];
+
+let app: App;
+
+const BUILD_DIR = path.join(__dirname, 'fixtures', 'app-build');
+
+function resolveBuildFile(...paths: string[]) {
+  return path.join(BUILD_DIR, ...paths);
 }
 
+function checkMatch(tests: TestRule[]) {
+  tests.forEach(([file, expected]) => {
+    if (typeof expected === 'string') {
+      expect(readFileSync(resolveBuildFile(file), 'utf8')).toBe(expected);
+    } else {
+      expect(readFileSync(resolveBuildFile(file), 'utf8')).toMatch(expected);
+    }
+  });
+}
+
+beforeEach(() => {
+  app = new App();
+});
+
+afterEach(() => {
+  app.stopBuild(BUILD_DIR);
+  removeSync(BUILD_DIR);
+});
+
 describe('app', () => {
-  describe('build', () => {
-    const app = new App();
+  test('should work', async () => {
+    app.addFile(
+      createFile('test.js', { content: 'export default () => "test page"' })
+    );
 
-    const dirOption = {
-      dir: resolveFixture('basic-build'),
-    };
+    app.addEntryCode('run()');
+    app.setRoutesContent('routes content');
+    app.setAppModule('appModules');
+    app.setRendererModule('rendererModules');
+    app.addPolyfill('path/toPolyfill');
+    app.addExport('something to export', '*');
 
-    afterAll(() => {
-      removeSync(dirOption.dir);
+    await app.build({
+      dir: BUILD_DIR
     });
 
-    test('should work', async (done) => {
-      app.addFile(
-        createFile('test.js', { content: 'export default () => "test page"' })
-      );
-
-      app.setRoutesContent('routes content');
-      app.setAppModule('appModules');
-      app.setBootstrapModule('bootstrapModules');
-      app.addPolyfill('path/toPolyfill');
-      app.addExport('something to export', '*');
-
-      await app.build(dirOption);
-
-      const filesToTest = [
-        ['index.js', 'export * from "something to export"'],
-        ['test.js', 'export default () => "test page"'],
-        ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-        ['core/bootstrap.js', 'export * from "bootstrapModules"'],
-        ['core/polyfill.js', 'import "path/toPolyfill"'],
-        ['core/routes.js', 'routes content'],
-      ];
-
-      filesToTest.forEach(([file, expected]) => {
-        expect({
-          [file]: readFileSync(resolveFixture('basic-build', file), 'utf8'),
-        }).toStrictEqual({ [file]: expected });
-      });
-
-      // Change modules and content
-      app.addPolyfill('path/toPolyfill2');
-      app.setRoutesContent('routes content 2');
-      app.setAppModule('123');
-      app.setBootstrapModule('bootstrapModules2');
-      app.addExport('export2', '*');
-
-      const filesToBeUpdated = [
-        [
-          'index.js',
-          'export * from "something to export"\nexport * from "export2"',
-        ],
-        ['test.js', 'export default () => "test page"'],
-        ['core/app.js', 'import temp from "123"\nexport default temp'],
-        ['core/bootstrap.js', 'export * from "bootstrapModules2"'],
-        [
-          'core/polyfill.js',
-          'import "path/toPolyfill"\nimport "path/toPolyfill2"',
-        ],
-        ['core/routes.js', 'routes content 2'],
-      ];
-
-      filesToBeUpdated.forEach(([file, result]) => {
-        expect(readFileSync(resolveFixture('basic-build', file), 'utf8')).toBe(
-          result
-        );
-      });
-
-      app.stopBuild(dirOption.dir);
-      expect(existsSync(resolveFixture('basic-build', 'index.js'))).toBe(false);
-      done();
-    });
+    checkMatch([
+      ['entry.js', /run()/],
+      ['index.js', 'export * from "something to export"'],
+      ['test.js', 'export default () => "test page"'],
+      ['core/app.js', 'import temp from "appModules"\nexport default temp'],
+      ['core/renderer.js', 'export * from "rendererModules"'],
+      ['core/polyfill.js', 'import "path/toPolyfill"'],
+      ['core/routes.js', 'routes content']
+    ]);
   });
 
-  describe('build once', () => {
-    const app = new App();
+  test('should reactive to state change', async () => {
+    app.addFile(
+      createFile('test.js', { content: 'export default () => "test page"' })
+    );
 
-    const dirOption = {
-      dir: resolveFixture('basic-build-once'),
-    };
+    app.addEntryCode('run()');
+    app.setRoutesContent('routes content');
+    app.setAppModule('appModules');
+    app.setRendererModule('rendererModules');
+    app.addPolyfill('path/toPolyfill');
+    app.addExport('something to export', '*');
 
-    afterAll(() => {
-      removeSync(dirOption.dir);
+    await app.build({
+      dir: BUILD_DIR
     });
 
-    test('should work', async (done) => {
-      app.addFile(
-        createFile('test.js', { content: 'export default () => "test page"' })
-      );
+    checkMatch([
+      ['entry.js', /run()/],
+      ['index.js', 'export * from "something to export"'],
+      ['test.js', 'export default () => "test page"'],
+      ['core/app.js', 'import temp from "appModules"\nexport default temp'],
+      ['core/renderer.js', 'export * from "rendererModules"'],
+      ['core/polyfill.js', 'import "path/toPolyfill"'],
+      ['core/routes.js', 'routes content']
+    ]);
 
-      app.setRoutesContent('routes content');
-      app.setAppModule('appModules');
-      app.setBootstrapModule('bootstrapModules');
-      app.addExport('something to export', '*');
-      app.addPolyfill('path/toPolyfill');
+    // Change modules and content
+    app.addEntryCode('const a = 1');
+    app.addPolyfill('path/toPolyfill2');
+    app.setRoutesContent('routes content 2');
+    app.setAppModule('123');
+    app.setRendererModule('rendererModules2');
+    app.addExport('export2', '*');
 
-      await app.buildOnce(dirOption);
+    checkMatch([
+      ['entry.js', /run().*const a = 1/s],
+      [
+        'index.js',
+        'export * from "something to export"\nexport * from "export2"'
+      ],
+      ['test.js', 'export default () => "test page"'],
+      ['core/app.js', 'import temp from "123"\nexport default temp'],
+      ['core/renderer.js', 'export * from "rendererModules2"'],
+      [
+        'core/polyfill.js',
+        'import "path/toPolyfill"\nimport "path/toPolyfill2"'
+      ],
+      ['core/routes.js', 'routes content 2']
+    ]);
 
-      const filesToTest = [
-        ['index.js', 'export * from "something to export"'],
-        ['test.js', 'export default () => "test page"'],
-        ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-        ['core/bootstrap.js', 'export * from "bootstrapModules"'],
-        ['core/polyfill.js', 'import "path/toPolyfill"'],
-        ['core/routes.js', 'routes content'],
-      ];
+    app.stopBuild(BUILD_DIR);
+    expect(existsSync(resolveBuildFile('index.js'))).toBe(false);
+  });
 
-      filesToTest.forEach(([file, result]) => {
-        expect(
-          readFileSync(resolveFixture('basic-build-once', file), 'utf8')
-        ).toBe(result);
-      });
+  test('build once', async () => {
+    app.addFile(
+      createFile('test.js', { content: 'export default () => "test page"' })
+    );
 
-      // should not make changes after build
-      app.setRoutesContent('other content');
+    app.setRoutesContent('routes content');
+    app.setAppModule('appModules');
+    app.setRendererModule('rendererModules');
+    app.addExport('something to export', '*');
+    app.addPolyfill('path/toPolyfill');
 
-      expect(
-        readFileSync(
-          resolveFixture('basic-build-once', 'core/routes.js'),
-          'utf8'
-        )
-      ).toBe('routes content');
-
-      done();
+    await app.buildOnce({
+      dir: BUILD_DIR
     });
+
+    checkMatch([
+      ['index.js', 'export * from "something to export"'],
+      ['test.js', 'export default () => "test page"'],
+      ['core/app.js', 'import temp from "appModules"\nexport default temp'],
+      ['core/renderer.js', 'export * from "rendererModules"'],
+      ['core/polyfill.js', 'import "path/toPolyfill"'],
+      ['core/routes.js', 'routes content']
+    ]);
+
+    // should not make changes after build
+    app.setRoutesContent('other content');
+
+    expect(readFileSync(resolveBuildFile('core/routes.js'), 'utf8')).toBe(
+      'routes content'
+    );
   });
 });

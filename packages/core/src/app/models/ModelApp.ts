@@ -1,5 +1,7 @@
-import { observable, action } from 'mobx';
+import os from 'os';
+import { observable, action, computed } from 'mobx';
 import { IFileNode, Dir, isDir, File } from './files/FileNode';
+import { getCodeSnippet } from '../libs/getCodeSnippet';
 import { ISpecifier } from '../types';
 
 function getDirAndName(path: string) {
@@ -55,12 +57,38 @@ function addFileNode(dir: string, file: IFileNode, files: IFileNode[]) {
 }
 
 export class ModelApp {
-  @observable bootstrapModule!: string;
+  @observable rendererModule!: string;
   @observable appModule!: string | string[];
+  @observable entryCodes: string[] = [];
   @observable routesContent: string = 'export default []';
   @observable extraFiles: IFileNode[] = [];
   @observable polyfills: string[] = [];
   @observable exports = new Map<string, ISpecifier[]>();
+
+  @computed
+  get entryConent(): string {
+    const codes = this.entryCodes;
+    let imports = '';
+    let body = '';
+    for (let index = 0; index < codes.length; index++) {
+      const code = codes[index];
+      const snippet = getCodeSnippet(code);
+      if (snippet.imports) {
+        imports += `${snippet.imports}${os.EOL}`;
+      }
+
+      if (snippet.body) {
+        body += `${snippet.body}${os.EOL}`;
+      }
+    }
+
+    return `${imports}${os.EOL}${body}`;
+  }
+
+  @action
+  addEntryCode(content: string) {
+    this.entryCodes.push(content);
+  }
 
   @action
   addExport(source: string, specifier: ISpecifier[]) {

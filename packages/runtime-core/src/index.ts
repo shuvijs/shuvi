@@ -1,17 +1,24 @@
-import "./public-path";
-import { setRuntimeConfig, router } from "@shuvi/app";
-import { getAppData } from "./lib/getAppData";
+import { IApi } from '@shuvi/types';
+import path from 'path';
 
-const appData = getAppData();
+export const PACKAGE_DIR = path.dirname(
+  require.resolve('@shuvi/runtime-core/package.json')
+);
 
-setRuntimeConfig(appData.runtimeConfig || {});
+export const resolveDist = (...paths: string[]) =>
+  `${path.join(PACKAGE_DIR, 'lib', ...paths)}`;
 
-(window as any).__SHUVI = {
-  router
-};
+const entryModule = resolveDist('entry');
 
-if (process.env.NODE_ENV === "development") {
-  require("./index.dev");
-} else {
-  require("./index.prod");
+class CoreRuntime {
+  async install(api: IApi): Promise<void> {
+    api.addEntryCode(`
+import { init, render } from "${entryModule}"
+
+//@code
+init().then(render)
+`);
+  }
 }
+
+export default new CoreRuntime();
