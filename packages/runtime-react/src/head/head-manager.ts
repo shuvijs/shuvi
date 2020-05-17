@@ -53,6 +53,8 @@ export default class HeadManager {
     );
     if (!headCountEl) {
       if (process.env.NODE_ENV !== 'production') {
+        // FIXME: shuvi-head-count is missing when ssr set to false
+        // suggest solution: special attr like data-shuvi-head
         console.error('Warning: shuvi-head-count is missing.');
       }
       return;

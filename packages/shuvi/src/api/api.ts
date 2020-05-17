@@ -40,6 +40,7 @@ export class Api implements IApi {
   private _app: App;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
+  private _routes: IRouteConfig[] = [];
   private _plugins: IPlugin[];
   private _pluginApi!: PluginApi;
 
@@ -137,18 +138,18 @@ export class Api implements IApi {
   }
 
   async setRoutes(routes: IRouteConfig[]) {
-    routes = normalizeRoutes(routes, {
-      componentDir: this.paths.pagesDir
-    });
-
-    routes.push({
-      component: this.resolveAppFile('core', '404')
-    });
-
     routes = await this.callHook<IHookAppRoutes>({
       name: 'app:routes',
       initialValue: routes
     });
+
+    routes = normalizeRoutes(routes, {
+      componentDir: this.paths.pagesDir
+    });
+    routes.push({
+      component: this.resolveAppFile('core', '404')
+    });
+    this._routes = routes;
 
     const serialized = serializeRoutes(routes, {
       component(comp, route) {
@@ -164,6 +165,10 @@ export class Api implements IApi {
       initialValue: content
     });
     this._app.setRoutesContent(content);
+  }
+
+  getRoutes() {
+    return this._routes;
   }
 
   async buildApp(): Promise<void> {
