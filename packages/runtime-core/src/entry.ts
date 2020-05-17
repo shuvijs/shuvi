@@ -51,8 +51,7 @@ export function render(options: Partial<Runtime.IClientRendererOptions>) {
   if (module.hot) {
     // @ts-ignore
     module.hot.accept('@shuvi/app/core/app', () => {
-      console.log('sss');
-      const { App } = require('@shuvi/app/core/app');
+      const App = require('@shuvi/app/core/app').default;
       renderer({
         appContainer,
         AppComponent: App,

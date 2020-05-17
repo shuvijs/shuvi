@@ -1,4 +1,3 @@
-import { Runtime, IHookAppRoutes } from '@shuvi/types';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import { DevMiddleware } from './devMiddleware';
 import { runtime } from '../runtime';
@@ -11,22 +10,12 @@ import {
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
 
-import RouteConfig = Runtime.IRouteConfig;
-
 export class OnDemandRouteManager {
-  private _routes: RouteConfig[] = [];
   public devMiddleware: DevMiddleware | null = null;
   public _api: Api;
 
   constructor(api: Api) {
     this._api = api;
-    api.tap<IHookAppRoutes>('app:routes', {
-      name: 'OnDemandRouteManager',
-      fn: (routes: RouteConfig[]) => {
-        this._routes = routes;
-        return routes;
-      }
-    });
   }
 
   getServerMiddleware(): IRequestHandle {
@@ -63,7 +52,7 @@ export class OnDemandRouteManager {
 
   async ensureRoutes(pathname: string): Promise<void> {
     const routeModule = runtime
-      .matchRoutes(this._routes, pathname)
+      .matchRoutes(this._api.getRoutes(), pathname)
       .map(m => `${m.route.component}?${ROUTE_RESOURCE_QUERYSTRING}`);
     return this._activateModules(routeModule);
   }
