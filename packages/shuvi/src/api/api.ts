@@ -84,7 +84,9 @@ export class Api implements IApi {
 
   get assetPublicPath(): string {
     let prefix =
-      this.mode === 'development' ? PUBLIC_PATH : this.config.publicPath;
+      this.mode === 'development'
+        ? PUBLIC_PATH
+        : this.config.publicPath || PUBLIC_PATH;
 
     if (!prefix.endsWith('/')) {
       prefix += '/';
