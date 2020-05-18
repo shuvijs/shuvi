@@ -33,14 +33,14 @@ export interface BaseOptions {
 
 const terserOptions = {
   parse: {
-    ecma: 8
+    ecma: 8,
   },
   compress: {
     ecma: 5,
     warnings: false,
     // The following two options are known to break valid JavaScript code
     comparisons: false,
-    inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+    inline: 2, // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
   },
   mangle: { safari10: true },
   output: {
@@ -48,8 +48,8 @@ const terserOptions = {
     safari10: true,
     comments: false,
     // Fixes usage of Emoji and certain Regex
-    ascii_only: true
-  }
+    ascii_only: true,
+  },
 };
 
 export { WebpackChain };
@@ -61,7 +61,7 @@ export function baseWebpackChain({
   mediaFilename,
   buildManifestFilename,
   publicPath = '/',
-  env = {}
+  env = {},
 }: BaseOptions): WebpackChain {
   const { typeScriptPath, tsConfigPath, useTypeScript } = getTypeScriptInfo(
     projectRoot
@@ -79,7 +79,7 @@ export function baseWebpackChain({
     nodeEnv: false,
     splitChunks: false,
     runtimeChunk: undefined,
-    minimize: !dev
+    minimize: !dev,
   });
   if (!dev) {
     config.optimization.minimizer('terser').use(TerserPlugin, [
@@ -88,8 +88,8 @@ export function baseWebpackChain({
         parallel: true,
         cache: true,
         sourceMap: false,
-        terserOptions
-      }
+        terserOptions,
+      },
     ]);
   }
 
@@ -104,20 +104,20 @@ export function baseWebpackChain({
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
     futureEmitAssets: !dev,
-    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm'
+    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
   });
 
   // Support for NODE_PATH
   const nodePathList = (process.env.NODE_PATH || '')
     .split(process.platform === 'win32' ? ';' : ':')
-    .filter(p => !!p);
+    .filter((p) => !!p);
 
   config.resolve.merge({
     modules: [
       'node_modules',
-      ...nodePathList // Support for NODE_PATH environment variable
+      ...nodePathList, // Support for NODE_PATH environment variable
     ],
-    alias: {}
+    alias: {},
   });
 
   config.resolveLoader.merge({
@@ -127,7 +127,7 @@ export function baseWebpackChain({
         return alias;
       },
       {} as Record<string, string>
-    )
+    ),
   });
 
   config.module.set('strictExportPresence', true);
@@ -138,7 +138,10 @@ export function baseWebpackChain({
     .include.merge([...srcDirs, ...AppSourceRegexs])
     .end()
     .exclude.add((path: string) => {
-      if (AppSourceRegexs.some(r => r.test(path))) {
+      if (AppSourceRegexs.some((r) => r.test(path))) {
+        return false;
+      }
+      if (srcDirs.some((src) => path.includes(src))) {
         return false;
       }
       return /node_modules/.test(path);
@@ -148,7 +151,7 @@ export function baseWebpackChain({
     .loader('@shuvi/babel-loader')
     .options({
       isNode: false,
-      cacheDirectory: true
+      cacheDirectory: true,
     });
   mainRule
     .oneOf('media')
@@ -157,7 +160,7 @@ export function baseWebpackChain({
     .use('file-loader')
     .loader(require.resolve('file-loader'))
     .options({
-      name: mediaFilename
+      name: mediaFilename,
     });
 
   config.plugin('private/chunk-names-plugin').use(ChunkNamesPlugin);
@@ -173,15 +176,19 @@ export function baseWebpackChain({
 
         return {
           ...acc,
-          [`process.env.${key}`]: JSON.stringify(env[key])
+          [`process.env.${key}`]: JSON.stringify(env[key]),
         };
       }, {}),
-      'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
-    }
+      'process.env.NODE_ENV': JSON.stringify(
+        dev ? 'development' : 'production'
+      ),
+    },
   ]);
   config
     .plugin('private/build-manifest')
-    .use(BuildManifestPlugin, [{ filename: buildManifestFilename, chunkRequest: dev }]);
+    .use(BuildManifestPlugin, [
+      { filename: buildManifestFilename, chunkRequest: dev },
+    ]);
 
   if (useTypeScript) {
     config
@@ -196,8 +203,8 @@ export function baseWebpackChain({
           reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
           compilerOptions: { isolatedModules: true, noEmit: true },
           silent: true,
-          formatter: 'codeframe'
-        }
+          formatter: 'codeframe',
+        },
       ]);
   }
 
@@ -207,10 +214,10 @@ export function baseWebpackChain({
         modules: [
           {
             test: RegExp(escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`)),
-            module: dumbRouteComponent
-          }
-        ]
-      }
+            module: dumbRouteComponent,
+          },
+        ],
+      },
     ]);
     // Even though require.cache is server only we have to clear assets from both compilations
     // This is because the client compilation generates the build manifest that's used on the server side
