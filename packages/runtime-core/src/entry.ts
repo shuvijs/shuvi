@@ -1,5 +1,6 @@
 /// <reference lib="dom" />
 import './public-path';
+import './setup';
 import { Runtime } from '@shuvi/types';
 import { renderer } from '@shuvi/app/core/renderer';
 import App from '@shuvi/app/core/app';
@@ -9,7 +10,7 @@ import {
   DEV_STYLE_PREPARE
 } from '@shuvi/shared/lib/constants';
 import initWebpackHMR from './dev/webpackHotDevClient';
-import { setRuntimeConfig, router } from '@shuvi/app';
+import { router } from '@shuvi/app';
 import { getAppData } from './lib/getAppData';
 
 (window as any).__SHUVI = {
@@ -35,8 +36,6 @@ export async function init() {
 
     await styleReady!;
   }
-
-  setRuntimeConfig(appData.runtimeConfig || {});
 }
 
 export function render(options: Partial<Runtime.IClientRendererOptions>) {
