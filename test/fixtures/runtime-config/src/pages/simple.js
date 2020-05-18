@@ -1,10 +1,11 @@
-import { getRuntimeConfig } from "@shuvi/app";
+import { getRuntimeConfig } from '@shuvi/app';
+import NoSSR from '../components/no-ssr';
 
 function App(props) {
   return (
     <div>
       <div id="server">{props.server}</div>
-      <div id="client">{getRuntimeConfig().client}</div>
+      <NoSSR />
     </div>
   );
 }
