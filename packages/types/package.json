@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/types",
-  "version": "0.0.1-beta.24",
+  "version": "0.0.1-beta.25",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
@@ -14,7 +14,7 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/core": "^0.0.1-beta.24",
+    "@shuvi/core": "^0.0.1-beta.25",
     "@types/webpack": "4.41.0",
     "http-proxy-middleware": "1.0.3",
     "webpack-chain": "6.4.0"
