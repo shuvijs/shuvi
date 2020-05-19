@@ -1,15 +1,15 @@
-import React from 'react';
-import { renderToString } from 'react-dom/server';
-import { Runtime } from '@shuvi/types';
-import { Router } from 'react-router-dom';
-import { createServerHistory } from './router/history';
-import { matchRoutes } from './router/matchRoutes';
-import { setHistory } from './router/router';
-import Loadable, { LoadableContext } from './loadable';
-import AppContainer from './AppContainer';
-import { IReactRenderer, IReactAppData } from './types';
-import { Head } from './head';
-import { createRedirector } from './utils/createRedirector';
+import React from "react";
+import { renderToString } from "react-dom/server";
+import { Runtime } from "@shuvi/types";
+import { Router } from "react-router-dom";
+import { createServerHistory } from "./router/history";
+import { matchRoutes } from "./router/matchRoutes";
+import { setHistory } from "./router/router";
+import Loadable, { LoadableContext } from "./loadable";
+import AppContainer from "./AppContainer";
+import { IReactRenderer, IReactAppData } from "./types";
+import { Head } from "./head";
+import { createRedirector } from "./utils/createRedirector";
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -17,16 +17,16 @@ import IHtmlTag = Runtime.IHtmlTag;
 
 const DEFAULT_HEAD = [
   {
-    tagName: 'meta',
+    tagName: "meta",
     attrs: {
-      charset: 'utf-8',
+      charset: "utf-8",
     },
   },
   {
-    tagName: 'meta',
+    tagName: "meta",
     attrs: {
-      name: 'viewport',
-      content: 'width=device-width,minimum-scale=1,initial-scale=1',
+      name: "viewport",
+      content: "width=device-width,minimum-scale=1,initial-scale=1",
     },
   },
 ];
@@ -46,7 +46,7 @@ const renderApp: IReactRenderer = async ({
   const parsedUrl = req.parsedUrl;
   const pathname = parsedUrl.pathname!;
   const history = createServerHistory({
-    basename: '',
+    basename: "",
     location: pathname,
     context: routerContext,
   });
@@ -137,23 +137,23 @@ const renderApp: IReactRenderer = async ({
     }
   }
 
-  const preloadDynamicChunks: IHtmlTag<'link'>[] = [];
-  const styles: IHtmlTag<'link'>[] = [];
+  const preloadDynamicChunks: IHtmlTag<"link">[] = [];
+  const styles: IHtmlTag<"link">[] = [];
   for (const file of dynamicImportChunkSet) {
     if (/\.js$/.test(file)) {
       preloadDynamicChunks.push({
-        tagName: 'link',
+        tagName: "link",
         attrs: {
-          rel: 'preload',
+          rel: "preload",
           href: api.getAssetPublicUrl(file),
-          as: 'script',
+          as: "script",
         },
       });
     } else if (/\.css$/.test(file)) {
       styles.push({
-        tagName: 'link',
+        tagName: "link",
         attrs: {
-          rel: 'stylesheet',
+          rel: "stylesheet",
           href: api.getAssetPublicUrl(file),
         },
       });
