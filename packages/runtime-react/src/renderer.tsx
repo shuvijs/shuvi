@@ -122,14 +122,6 @@ const renderApp: IReactRenderer = async ({
     head = Head.rewind() || [];
   }
 
-  const headAnchor = {
-    tagName: 'meta',
-    attrs: {
-      name: 'shuvi-head-count',
-      content: String(head.length)
-    }
-  };
-
   const { loadble } = manifest;
   const dynamicImportIdSet = new Set<string>();
   const dynamicImportChunkSet = new Set<string>();
@@ -183,12 +175,7 @@ const renderApp: IReactRenderer = async ({
     appData,
     appHtml: htmlContent,
     htmlAttrs: {},
-    headBeginTags: [
-      ...DEFAULT_HEAD,
-      ...head,
-      headAnchor,
-      ...preloadDynamicChunks
-    ],
+    headBeginTags: [...DEFAULT_HEAD, ...head, ...preloadDynamicChunks],
     headEndTags: [...styles],
     bodyBeginTags: [],
     bodyEndTags: []

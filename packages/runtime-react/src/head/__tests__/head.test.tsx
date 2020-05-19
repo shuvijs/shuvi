@@ -7,10 +7,11 @@ import {
   // getByText,
   render as testLibRender,
   // waitFor,
-  cleanup,
+  cleanup
   // act
 } from '@testing-library/react';
 import { Head, HeadManager, HeadManagerContext } from '../index';
+import { SHUVI_HEAD_ATTRIBUTE } from '../head';
 
 function HeadProvider({ children }: any) {
   const headManager = new HeadManager();
@@ -40,7 +41,7 @@ describe('Head', () => {
     headElement =
       headElement || document.head || document.querySelector('head');
     // resets DOM after each run
-    headElement.innerHTML = '<meta name="shuvi-head-count" content="0" />';
+    headElement.innerHTML = '';
   });
   afterEach(cleanup);
 
@@ -250,7 +251,7 @@ describe('Head', () => {
       const metaTags = document.querySelectorAll('meta[name="description"]');
       expect(metaTags.length).toEqual(1);
       expect(metaTags[0].outerHTML).toEqual(
-        '<meta name="description" content="Inner description">'
+        `<meta name="description" content="Inner description" ${SHUVI_HEAD_ATTRIBUTE}="true">`
       );
     });
   });
@@ -267,7 +268,7 @@ describe('Head', () => {
       const $tag = headElement.querySelector(`[data-test-id="1"]`);
       expect($tag).not.toBeNull();
       expect($tag?.outerHTML).toEqual(
-        '<link data-test-id="1" href="http://localhost" rel="canonical">'
+        `<link data-test-id="1" href="http://localhost" rel="canonical" ${SHUVI_HEAD_ATTRIBUTE}="true">`
       );
     });
 
@@ -352,7 +353,7 @@ describe('Head', () => {
       expect(head.length).toBe(1);
       expect(head[0].tagName).toBe('title');
       expect(head[0].attrs).toMatchObject({
-        textContent: 'Test Title',
+        textContent: 'Test Title'
       });
     });
   });
