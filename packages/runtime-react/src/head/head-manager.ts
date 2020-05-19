@@ -44,7 +44,10 @@ export default class HeadManager {
   private _updateTitle({ attrs }: HeadItem) {
     const title = attrs.textContent || '';
     if (title !== document.title) document.title = title;
-    assignAttributes(document.getElementsByTagName('title')[0], attrs);
+    const titleEle = document.getElementsByTagName('title')[0];
+    if (titleEle) {
+      assignAttributes(titleEle, attrs);
+    }
   }
 
   private _updateElements(type: string, tags: HeadItem[]) {
