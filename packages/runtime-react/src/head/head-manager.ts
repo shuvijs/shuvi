@@ -48,10 +48,13 @@ export default class HeadManager {
 
   private _updateElements(type: string, tags: HeadItem[]) {
     const headEl = document.getElementsByTagName('head')[0];
-    const oldNodes = headEl.querySelectorAll("[data-shuvi-head='true']");
-    const oldTags: Element[] = Array.from(oldNodes).filter(
-      Ele => Ele.tagName.toLowerCase() === type
-    );
+    const oldNodes = headEl.querySelectorAll(`${type}[data-shuvi-head='true']`);
+    const oldTags: Element[] = Array.from(oldNodes);
+
+    let divideElement: Element | null = null;
+    if (oldTags.length) {
+      divideElement = oldTags[oldTags.length - 1].nextElementSibling;
+    }
 
     const newTags = tags.map(tagToDOM).filter(newTag => {
       for (let k = 0, len = oldTags.length; k < len; k++) {
@@ -64,7 +67,13 @@ export default class HeadManager {
       return true;
     });
     oldTags.forEach(t => t.parentNode!.removeChild(t));
-    newTags.forEach(t => headEl.appendChild(t));
+    newTags.forEach(t => {
+      if (divideElement) {
+        headEl.insertBefore(t, divideElement);
+      } else {
+        headEl.appendChild(t);
+      }
+    });
   }
 }
 
