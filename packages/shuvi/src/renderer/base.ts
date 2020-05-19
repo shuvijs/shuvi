@@ -1,4 +1,4 @@
-import { Runtime, ITemplateData, IRuntimeConfig } from '@shuvi/types';
+import { Runtime, ITemplateData } from '@shuvi/types';
 import { Telestore } from '@shuvi/shared/lib/telestore';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import { parse as parseUrl } from 'url';
@@ -10,10 +10,15 @@ import {
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC
 } from '../constants';
-import getRuntimeConfig from '../lib/runtimeConfig';
+import getRuntimeConfig, { hasSetRuntimeConfig } from '../lib/runtimeConfig';
 import { renderTemplate } from '../lib/viewTemplate';
+import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IServerRendererOptions, IRenderRequest, IServerRendererContext } from './types';
+import {
+  IServerRendererOptions,
+  IRenderRequest,
+  IServerRendererContext
+} from './types';
 import { Api, IBuiltResource } from '../api';
 
 import IAppData = Runtime.IAppData;
@@ -38,6 +43,7 @@ export abstract class BaseRenderer {
   async renderDocument(
     req: IRenderRequest
   ): Promise<string | IRenderResultRedirect> {
+    const api = this._api;
     let { parsedUrl } = req;
     if (!parsedUrl) {
       parsedUrl = parseUrl(req.url, true);
@@ -68,17 +74,18 @@ export abstract class BaseRenderer {
       tag(
         'script',
         {},
-        `var __SHUVI_ASSET_PUBLIC_PATH = "${this._api.assetPublicPath}"`
+        `var __SHUVI_ASSET_PUBLIC_PATH = "${api.assetPublicPath}"`
       )
     );
-    docProps.scriptTags.unshift(
-      this._getInlineAppData({
-        runtimeConfig: this._getPublicRuntimeConfig(),
-        ssr: this._api.config.ssr,
-        telestore: telestore.dump(),
-        ...rendererCtx.appData
-      })
-    );
+    const appData: IAppData = {
+      ssr: api.config.ssr,
+      telestore: telestore.dump(),
+      ...rendererCtx.appData
+    };
+    if (api.config.ssr && hasSetRuntimeConfig()) {
+      appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
+    }
+    docProps.scriptTags.unshift(this._getInlineAppData(appData));
 
     return this._renderDocument(
       docProps,
@@ -172,19 +179,6 @@ export abstract class BaseRenderer {
       },
       htmlEscapeJsonString(data)
     );
-  }
-
-  private _getPublicRuntimeConfig(): IRuntimeConfig {
-    const runtimeConfig = getRuntimeConfig() || {};
-    const keys = Object.keys(runtimeConfig);
-    const res: IRuntimeConfig = {};
-    for (let index = 0; index < keys.length; index++) {
-      const key = keys[index];
-      if (key.startsWith('$')) continue;
-
-      res[key] = runtimeConfig[key];
-    }
-    return res;
   }
 
   private _renderDocument(

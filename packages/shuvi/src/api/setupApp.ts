@@ -4,6 +4,7 @@ import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
 import { runtime } from '../runtime';
+import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { Api } from './api';
 
 function withExts(file: string, extensions: string[]): string[] {
@@ -11,9 +12,10 @@ function withExts(file: string, extensions: string[]): string[] {
 }
 
 export async function setupApp(api: Api) {
+  const { paths, config } = api;
   await verifyTypeScriptSetup({
-    projectDir: api.paths.rootDir,
-    srcDir: api.paths.srcDir,
+    projectDir: paths.rootDir,
+    srcDir: paths.srcDir,
     onTsConfig(appTsConfig, parsedTsConfig, parsedCompilerOptions) {
       if (parsedCompilerOptions.baseUrl == null) {
         appTsConfig.compilerOptions.baseUrl = './';
@@ -25,11 +27,11 @@ export async function setupApp(api: Api) {
         '@shuvi/app': [
           path.relative(
             path.resolve(
-              api.paths.rootDir,
+              paths.rootDir,
               appTsConfig.compilerOptions.baseUrl ||
                 parsedCompilerOptions.baseUrl
             ),
-            api.paths.appDir
+            paths.appDir
           ) + '/index'
         ]
       };
@@ -43,7 +45,7 @@ export async function setupApp(api: Api) {
       }
     }
   });
-  const { useTypeScript } = await getTypeScriptInfo(api.paths.rootDir);
+  const { useTypeScript } = await getTypeScriptInfo(paths.rootDir);
   const moduleFileExtensions = useTypeScript
     ? ['tsx', 'ts', 'js', 'jsx']
     : ['js', 'jsx', 'tsx', 'ts'];
@@ -76,6 +78,26 @@ export async function setupApp(api: Api) {
     }),
     'core'
   );
+
+  if (!config.runtimeConfig || config.ssr) {
+    // with ssr, we get runtimeConfig from appData
+    api.addAppFile(
+      File.file('runtimeConfig.js', {
+        content: `export default null`
+      }),
+      'core'
+    );
+  } else if (config.runtimeConfig) {
+    // with none-ssr, we need create cruntimeConfig when build
+    api.addAppFile(
+      File.file('runtimeConfig.js', {
+        content: `export default ${JSON.stringify(
+          getPublicRuntimeConfig(config.runtimeConfig)
+        )}`
+      }),
+      'core'
+    );
+  }
 
   api.addAppExport(runtime.getAppModulePath(), {
     imported: 'default',
@@ -140,7 +162,7 @@ export async function setupApp(api: Api) {
   if (Array.isArray(routes) && routes.length) {
     api.setRoutes(routes);
   } else {
-    const route = new Route(api.paths.pagesDir);
+    const route = new Route(paths.pagesDir);
     if (api.mode === 'development') {
       route.subscribe(routes => {
         api.setRoutes(routes);

@@ -85,7 +85,7 @@ export type IRouteComponent<C, P = {}> = C & {
 };
 
 export type IAppData<Data = {}> = {
-  runtimeConfig: { [k: string]: string };
+  runtimeConfig?: { [k: string]: string };
   telestore: Record<string, any>;
   ssr: boolean;
 } & {
