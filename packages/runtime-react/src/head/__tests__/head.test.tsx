@@ -11,6 +11,7 @@ import {
   // act
 } from '@testing-library/react';
 import { Head, HeadManager, HeadManagerContext } from '../index';
+import { SHUVI_HEAD_ATTRIBUTE } from '../head';
 
 function HeadProvider({ children }: any) {
   const headManager = new HeadManager();
@@ -250,7 +251,7 @@ describe('Head', () => {
       const metaTags = document.querySelectorAll('meta[name="description"]');
       expect(metaTags.length).toEqual(1);
       expect(metaTags[0].outerHTML).toEqual(
-        '<meta name="description" content="Inner description" data-shuvi-head="true">'
+        `<meta name="description" content="Inner description" ${SHUVI_HEAD_ATTRIBUTE}="true">`
       );
     });
   });
@@ -267,7 +268,7 @@ describe('Head', () => {
       const $tag = headElement.querySelector(`[data-test-id="1"]`);
       expect($tag).not.toBeNull();
       expect($tag?.outerHTML).toEqual(
-        '<link data-test-id="1" href="http://localhost" rel="canonical" data-shuvi-head="true">'
+        `<link data-test-id="1" href="http://localhost" rel="canonical" ${SHUVI_HEAD_ATTRIBUTE}="true">`
       );
     });
 

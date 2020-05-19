@@ -2,6 +2,7 @@
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
 import { HeadState, HeadItem } from './types';
+import { SHUVI_HEAD_ATTRIBUTE } from './head';
 
 export default class HeadManager {
   private _pedningPromise: Promise<void> | null = null;
@@ -48,8 +49,10 @@ export default class HeadManager {
 
   private _updateElements(type: string, tags: HeadItem[]) {
     const headEl = document.getElementsByTagName('head')[0];
-    const oldNodes = headEl.querySelectorAll(`${type}[data-shuvi-head='true']`);
-    const oldTags: Element[] = Array.from(oldNodes);
+    const oldNodes = headEl.querySelectorAll(
+      `${type}[${SHUVI_HEAD_ATTRIBUTE}='true']`
+    );
+    const oldTags: Element[] = Array.prototype.slice.call(oldNodes);
 
     let divideElement: Element | null = null;
     if (oldTags.length) {

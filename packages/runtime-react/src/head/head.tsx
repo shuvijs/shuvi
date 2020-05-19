@@ -9,6 +9,8 @@ import { HeadElement, HeadState } from './types';
 
 import IHtmlTag = Runtime.IHtmlTag;
 
+export const SHUVI_HEAD_ATTRIBUTE = 'data-shuvi-head';
+
 const DOMAttributeNames: Record<string, string> = {
   acceptCharset: 'accept-charset',
   className: 'class',
@@ -172,7 +174,7 @@ function reduceComponents(
         type,
         props: {
           ...props,
-          'data-shuvi-head': 'true'
+          [SHUVI_HEAD_ATTRIBUTE]: 'true'
         }
       };
       return reactElementToTag(headElement);
