@@ -1,7 +1,7 @@
 // Based on https://github.com/zeit/next.js
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
-import { HeadState, HeadItem } from './types';
+import { HeadState, HeadItem } from "./types";
 
 export default class HeadManager {
   private _pedningPromise: Promise<void> | null = null;
@@ -34,20 +34,20 @@ export default class HeadManager {
       this._updateTitle(tags.title[0]);
     }
 
-    const types = ['meta', 'base', 'link', 'style', 'script'];
+    const types = ["meta", "base", "link", "style", "script"];
     types.forEach((type) => {
       this._updateElements(type, tags[type] || []);
     });
   }
 
   private _updateTitle({ attrs }: HeadItem) {
-    const title = attrs.textContent || '';
+    const title = attrs.textContent || "";
     if (title !== document.title) document.title = title;
-    assignAttributes(document.getElementsByTagName('title')[0], attrs);
+    assignAttributes(document.getElementsByTagName("title")[0], attrs);
   }
 
   private _updateElements(type: string, tags: HeadItem[]) {
-    const headEl = document.getElementsByTagName('head')[0];
+    const headEl = document.getElementsByTagName("head")[0];
     const oldNodes = headEl.querySelectorAll("[data-shuvi-head='true']");
     const oldTags: Element[] = Array.from(oldNodes).filter(
       (Ele) => Ele.tagName.toLowerCase() === type
@@ -68,10 +68,10 @@ export default class HeadManager {
   }
 }
 
-function assignAttributes(el: HTMLElement, attrs: HeadItem['attrs']) {
+function assignAttributes(el: HTMLElement, attrs: HeadItem["attrs"]) {
   for (const a in attrs) {
     if (!Object.prototype.hasOwnProperty.call(attrs, a)) continue;
-    if (a === 'textContent') continue;
+    if (a === "textContent") continue;
 
     // we don't render undefined props to the DOM
     if (attrs[a] === undefined) continue;
