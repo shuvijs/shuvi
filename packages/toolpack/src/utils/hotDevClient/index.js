@@ -25,11 +25,10 @@ SOFTWARE.
 // This file is based on https://github.com/facebook/create-react-app/blob/v1.1.4/packages/react-dev-utils/webpackHotDevClient.js
 // It's been edited to rely on webpack-hot-middleware.
 
-import * as ErrorOverlay from "react-error-overlay";
-import stripAnsi from "strip-ansi";
-import formatWebpackMessages from "../formatWebpackMessages";
-import { getEventSourceWrapper } from "./eventsource";
-// import { rewriteStacktrace } from "./sourceMapSupport";
+import * as ErrorOverlay from 'react-error-overlay';
+import stripAnsi from 'strip-ansi';
+import formatWebpackMessages from '../formatWebpackMessages';
+import { getEventSourceWrapper } from './eventsource';
 
 // This alternative WebpackDevServer combines the functionality of:
 // https://github.com/webpack/webpack-dev-server/blob/webpack-1/client/index.js
@@ -54,14 +53,17 @@ export default function connect(options) {
     colNumber
   }) {
     // Resolve invalid paths coming from react-error-overlay
-    const resolvedFilename = fileName.replace(/^webpack:\/\//, "");
+    const resolvedFilename = fileName.replace(
+      /^webpack:\/\/[^/]+/ /* webpack://namaspcae/resourcepath */,
+      ''
+    );
     fetch(
       options.launchEditorEndpoint +
-        "?fileName=" +
+        '?fileName=' +
         window.encodeURIComponent(resolvedFilename) +
-        "&lineNumber=" +
+        '&lineNumber=' +
         window.encodeURIComponent(lineNumber || 1) +
-        "&colNumber=" +
+        '&colNumber=' +
         window.encodeURIComponent(colNumber || 1)
     );
   });
@@ -73,13 +75,13 @@ export default function connect(options) {
   // change).
   // See https://github.com/facebook/create-react-app/issues/3096
   ErrorOverlay.startReportingRuntimeErrors({
-    onError: function() {
+    onError: function () {
       hadRuntimeError = true;
     }
   });
 
-  if (module.hot && typeof module.hot.dispose === "function") {
-    module.hot.dispose(function() {
+  if (module.hot && typeof module.hot.dispose === 'function') {
+    module.hot.dispose(function () {
       // TODO: why do we need this?
       ErrorOverlay.stopReportingRuntimeErrors();
     });
@@ -87,13 +89,13 @@ export default function connect(options) {
 
   getEventSourceWrapper(options).addMessageListener(event => {
     // This is the heartbeat event
-    if (event.data === "\uD83D\uDC93") {
+    if (event.data === '\uD83D\uDC93') {
       return;
     }
     try {
       processMessage(event);
     } catch (ex) {
-      console.warn("Invalid HMR message: " + event.data + "\n" + ex);
+      console.warn('Invalid HMR message: ' + event.data + '\n' + ex);
     }
   });
 
@@ -103,18 +105,6 @@ export default function connect(options) {
     },
     reportRuntimeError(err) {
       ErrorOverlay.reportRuntimeError(err);
-    },
-    prepareError(err) {
-      // Temporary workaround for https://github.com/facebook/create-react-app/issues/4760
-      // Should be removed once the fix lands
-      hadRuntimeError = true;
-      // react-error-overlay expects a type of `Error`
-      const error = new Error(err.message);
-      error.name = err.name;
-      error.stack = err.stack;
-      // __NEXT_DIST_DIR is provided by webpack
-      // rewriteStacktrace(error, process.env.__NEXT_DIST_DIR);
-      return error;
     }
   };
 }
@@ -127,7 +117,7 @@ let deferredBuildError = null;
 
 function clearOutdatedErrors() {
   // Clean up outdated compile errors, if any.
-  if (typeof console !== "undefined" && typeof console.clear === "function") {
+  if (typeof console !== 'undefined' && typeof console.clear === 'function') {
     if (hasCompileErrors) {
       console.clear();
     }
@@ -166,12 +156,12 @@ function handleWarnings(warnings) {
     errors: []
   });
 
-  if (typeof console !== "undefined" && typeof console.warn === "function") {
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     for (let i = 0; i < formatted.warnings.length; i++) {
       if (i === 5) {
         console.warn(
-          "There were more warnings in other files.\n" +
-            "You can find a complete log in the terminal."
+          'There were more warnings in other files.\n' +
+            'You can find a complete log in the terminal.'
         );
         break;
       }
@@ -197,7 +187,7 @@ function handleErrors(errors) {
   ErrorOverlay.reportBuildError(formatted.errors[0]);
 
   // Also log them to the console.
-  if (typeof console !== "undefined" && typeof console.error === "function") {
+  if (typeof console !== 'undefined' && typeof console.error === 'function') {
     for (var i = 0; i < formatted.errors.length; i++) {
       console.error(stripAnsi(formatted.errors[i]));
     }
@@ -214,14 +204,14 @@ function handleAvailableHash(hash) {
 function processMessage(e) {
   const obj = JSON.parse(e.data);
   switch (obj.action) {
-    case "building": {
+    case 'building': {
       console.log(
-        "[HMR] bundle " + (obj.name ? "'" + obj.name + "' " : "") + "rebuilding"
+        '[HMR] bundle ' + (obj.name ? "'" + obj.name + "' " : '') + 'rebuilding'
       );
       break;
     }
-    case "built":
-    case "sync": {
+    case 'built':
+    case 'sync': {
       clearOutdatedErrors();
 
       if (obj.hash) {
@@ -235,7 +225,7 @@ function processMessage(e) {
 
       if (hasErrors) {
         // When there is a compilation error coming from SSR we have to reload the page on next successful compile
-        if (obj.action === "sync") {
+        if (obj.action === 'sync') {
           hadRuntimeError = true;
         }
 
@@ -248,11 +238,11 @@ function processMessage(e) {
       handleSuccess();
       break;
     }
-    case "warnings":
+    case 'warnings':
       console.log('warnings', obj);
       handleWarnings(obj.data);
       break;
-    case "errors":
+    case 'errors':
       if (canApplyUpdates()) {
         handleErrors(obj.data);
       } else {
@@ -279,7 +269,7 @@ function isUpdateAvailable() {
 
 // Webpack disallows updates in other states.
 function canApplyUpdates() {
-  return module.hot.status() === "idle";
+  return module.hot.status() === 'idle';
 }
 
 // Attempt to update code on the fly, fall back to a hard reload.
@@ -287,7 +277,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   if (!module.hot) {
     // HotModuleReplacementPlugin is not in Webpack configuration.
     console.error(
-      "HotModuleReplacementPlugin is not in Webpack configuration."
+      'HotModuleReplacementPlugin is not in Webpack configuration.'
     );
     // window.location.reload();
     return;
@@ -301,16 +291,16 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   function handleApplyUpdates(err, updatedModules) {
     if (err || hadRuntimeError) {
       if (err) {
-        console.warn("Error while applying updates, reloading page", err);
+        console.warn('Error while applying updates, reloading page', err);
       }
       if (hadRuntimeError) {
-        console.warn("Had runtime error previously, reloading page");
+        console.warn('Had runtime error previously, reloading page');
       }
       window.location.reload();
       return;
     }
 
-    if (typeof onHotUpdateSuccess === "function") {
+    if (typeof onHotUpdateSuccess === 'function') {
       // Maybe we want to do something.
       onHotUpdateSuccess();
     }
