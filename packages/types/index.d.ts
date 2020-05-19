@@ -68,7 +68,7 @@ export interface IApiConfig {
     history: IRouterHistoryMode;
   };
   routes?: Runtime.IRouteConfig[];
-  runtimeConfig?: IRuntimeConfig | (() => IRuntimeConfig);
+  runtimeConfig?: IRuntimeConfig;
   proxy?: IServerProxyConfig;
   plugins?: IPluginConfig[];
 }
@@ -117,8 +117,7 @@ export interface IApi {
     ...args: Config['args']
   ): void;
 
-
-  addEntryCode:typeof App.prototype.addEntryCode;
+  addEntryCode: typeof App.prototype.addEntryCode;
   addAppFile: typeof App.prototype.addFile;
   addAppExport: typeof App.prototype.addExport;
   addAppPolyfill: typeof App.prototype.addPolyfill;

@@ -1,3 +1,4 @@
+import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 import { AppCtx, Page, launchFixture } from '../utils';
 
 let ctx: AppCtx;
@@ -5,12 +6,12 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('Runtime Config', () => {
+describe('SSR: Runtime Config', () => {
   beforeAll(async () => {
     ctx = await launchFixture('runtime-config', {
       runtimeConfig: {
-        client: 'client',
-        server: 'server',
+        a: 'a',
+        b: 'b',
         $serverOnly: 'server-only'
       }
     });
@@ -26,21 +27,58 @@ describe('Runtime Config', () => {
   });
 
   test('should works on server-side and client-sdie', async () => {
-    page = await ctx.browser.page(ctx.url('/simple'));
+    page = await ctx.browser.page(ctx.url('/basic'));
 
-    expect(await page.$text('#server')).toBe('server');
-    await page.waitFor('#client');
-    expect(await page.$text('#client')).toBe('client');
+    expect(await page.$text('#server-a')).toBe('a');
+    expect(await page.$text('#server-b')).toBe('b');
+    await page.waitFor('#client-a');
+    expect(await page.$text('#client-a')).toBe('a');
   });
 
   test('should get runtimeConfig on client-side (app.js side effect)', async () => {
-    page = await ctx.browser.page(ctx.url('/simple'));
+    page = await ctx.browser.page(ctx.url('/basic'));
 
-    expect(await page.$text('#app')).toBe('client');
+    expect(await page.$text('#app')).toBe('a');
   });
 
   test('should not access private config on client-side', async () => {
     page = await ctx.browser.page(ctx.url('/no-private'));
     expect(await page.$text('#no-private')).toBe('');
+  });
+});
+
+describe('CSR: Runtime Config', () => {
+  beforeAll(async () => {
+    ctx = await launchFixture('runtime-config', {
+      ssr: false,
+      router: {
+        history: 'browser'
+      },
+      runtimeConfig: {
+        a: 'a',
+        b: 'b',
+        $private: 'server-only'
+      }
+    });
+  });
+  afterAll(async () => {
+    await ctx.close();
+  });
+
+  afterEach(async () => {
+    await page.close();
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
+  });
+
+  test('should works', async () => {
+    page = await ctx.browser.page(ctx.url('/ssr-false'));
+
+    const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
+    expect(appData.runtimeConfig).toBeUndefined();
+
+    await page.waitFor('#a');
+    expect(await page.$text('#a')).toBe('a');
+    expect(await page.$text('#b')).toBe('b');
   });
 });

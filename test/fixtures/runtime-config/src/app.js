@@ -6,7 +6,7 @@ const runtimeConfig = getRuntimeConfig();
 
 const MyApp = () => (
   <div>
-    <div id="app">{isServer ? null : runtimeConfig.client}</div>
+    <div id="app">{isServer ? null : runtimeConfig.a}</div>
     <App />
   </div>
 );
