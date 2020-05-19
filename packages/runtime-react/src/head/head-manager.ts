@@ -26,7 +26,7 @@ export default class HeadManager {
 
   private _doUpdateHead() {
     const tags: { [tagName: string]: HeadItem[] } = {};
-    this._head.forEach((h) => {
+    this._head.forEach(h => {
       (tags[h.tagName] || (tags[h.tagName] = [])).push(h);
     });
 
@@ -35,7 +35,7 @@ export default class HeadManager {
     }
 
     const types = ['meta', 'base', 'link', 'style', 'script'];
-    types.forEach((type) => {
+    types.forEach(type => {
       this._updateElements(type, tags[type] || []);
     });
   }
@@ -50,10 +50,10 @@ export default class HeadManager {
     const headEl = document.getElementsByTagName('head')[0];
     const oldNodes = headEl.querySelectorAll("[data-shuvi-head='true']");
     const oldTags: Element[] = Array.from(oldNodes).filter(
-      (Ele) => Ele.tagName.toLowerCase() === type
+      Ele => Ele.tagName.toLowerCase() === type
     );
 
-    const newTags = tags.map(tagToDOM).filter((newTag) => {
+    const newTags = tags.map(tagToDOM).filter(newTag => {
       for (let k = 0, len = oldTags.length; k < len; k++) {
         const oldTag = oldTags[k];
         if (oldTag.isEqualNode(newTag)) {
@@ -63,8 +63,8 @@ export default class HeadManager {
       }
       return true;
     });
-    oldTags.forEach((t) => t.parentNode!.removeChild(t));
-    newTags.forEach((t) => headEl.appendChild(t));
+    oldTags.forEach(t => t.parentNode!.removeChild(t));
+    newTags.forEach(t => headEl.appendChild(t));
   }
 }
 

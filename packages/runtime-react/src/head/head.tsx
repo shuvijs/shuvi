@@ -13,13 +13,13 @@ const DOMAttributeNames: Record<string, string> = {
   acceptCharset: 'accept-charset',
   className: 'class',
   htmlFor: 'for',
-  httpEquiv: 'http-equiv',
+  httpEquiv: 'http-equiv'
 };
 
 function reactElementToTag({ type, props }: HeadElement): IHtmlTag {
   const tag: IHtmlTag = {
     tagName: type,
-    attrs: {},
+    attrs: {}
   };
   for (const p in props) {
     if (!props.hasOwnProperty(p)) continue;
@@ -166,14 +166,14 @@ function reduceComponents(
     .reverse()
     .filter(unique())
     .reverse()
-    .map((e) => {
+    .map(e => {
       const { type, props } = (e as any) as HeadElement;
       const headElement = {
         type,
         props: {
           ...props,
-          'data-shuvi-head': 'true',
-        },
+          'data-shuvi-head': 'true'
+        }
       };
       return reactElementToTag(headElement);
     });
@@ -188,7 +188,7 @@ const Effect = withSideEffect();
 function Head({ children }: { children?: React.ReactNode }) {
   return (
     <HeadManagerContext.Consumer>
-      {(updateHead) => (
+      {updateHead => (
         <Effect
           reduceComponentsToState={reduceComponents}
           handleStateChange={updateHead}

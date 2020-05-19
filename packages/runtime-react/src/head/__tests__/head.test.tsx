@@ -7,7 +7,7 @@ import {
   // getByText,
   render as testLibRender,
   // waitFor,
-  cleanup,
+  cleanup
   // act
 } from '@testing-library/react';
 import { Head, HeadManager, HeadManagerContext } from '../index';
@@ -352,7 +352,7 @@ describe('Head', () => {
       expect(head.length).toBe(1);
       expect(head[0].tagName).toBe('title');
       expect(head[0].attrs).toMatchObject({
-        textContent: 'Test Title',
+        textContent: 'Test Title'
       });
     });
   });
