@@ -2,6 +2,7 @@
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
 import { HeadState, HeadItem } from './types';
+import { SHUVI_HEAD_ATTRIBUTE } from './head';
 
 export default class HeadManager {
   private _pedningPromise: Promise<void> | null = null;
@@ -48,31 +49,14 @@ export default class HeadManager {
 
   private _updateElements(type: string, tags: HeadItem[]) {
     const headEl = document.getElementsByTagName('head')[0];
-    const headCountEl: HTMLMetaElement | null = headEl.querySelector(
-      'meta[name=shuvi-head-count]'
+    const oldNodes = headEl.querySelectorAll(
+      `${type}[${SHUVI_HEAD_ATTRIBUTE}='true']`
     );
-    if (!headCountEl) {
-      if (process.env.NODE_ENV !== 'production') {
-        // FIXME: shuvi-head-count is missing when ssr set to false
-        // suggest solution: special attr like data-shuvi-head
-        console.error('Warning: shuvi-head-count is missing.');
-      }
-      return;
-    }
+    const oldTags: Element[] = Array.prototype.slice.call(oldNodes);
 
-    const headCount = Number(headCountEl.content);
-    const oldTags: Element[] = [];
-
-    let curEle = headCountEl.previousElementSibling;
-    for (let i = 0; i < headCount; i++) {
-      if (!curEle) {
-        continue;
-      }
-
-      if (curEle.tagName.toLowerCase() === type) {
-        oldTags.push(curEle);
-      }
-      curEle = curEle.previousElementSibling;
+    let divideElement: Element | null = null;
+    if (oldTags.length) {
+      divideElement = oldTags[oldTags.length - 1].nextElementSibling;
     }
 
     const newTags = tags.map(tagToDOM).filter(newTag => {
@@ -85,14 +69,14 @@ export default class HeadManager {
       }
       return true;
     });
-
     oldTags.forEach(t => t.parentNode!.removeChild(t));
-    newTags.forEach(t => headEl.insertBefore(t, headCountEl));
-    headCountEl.content = (
-      headCount -
-      oldTags.length +
-      newTags.length
-    ).toString();
+    newTags.forEach(t => {
+      if (divideElement) {
+        headEl.insertBefore(t, divideElement);
+      } else {
+        headEl.appendChild(t);
+      }
+    });
   }
 }
 
