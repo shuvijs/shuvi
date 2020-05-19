@@ -26,7 +26,7 @@ export default class HeadManager {
 
   private _doUpdateHead() {
     const tags: { [tagName: string]: HeadItem[] } = {};
-    this._head.forEach(h => {
+    this._head.forEach((h) => {
       (tags[h.tagName] || (tags[h.tagName] = [])).push(h);
     });
 
@@ -35,7 +35,7 @@ export default class HeadManager {
     }
 
     const types = ['meta', 'base', 'link', 'style', 'script'];
-    types.forEach(type => {
+    types.forEach((type) => {
       this._updateElements(type, tags[type] || []);
     });
   }
@@ -48,34 +48,12 @@ export default class HeadManager {
 
   private _updateElements(type: string, tags: HeadItem[]) {
     const headEl = document.getElementsByTagName('head')[0];
-    const headCountEl: HTMLMetaElement | null = headEl.querySelector(
-      'meta[name=shuvi-head-count]'
+    const oldNodes = headEl.querySelectorAll("[data-shuvi-head='true']");
+    const oldTags: Element[] = Array.from(oldNodes).filter(
+      (Ele) => Ele.tagName.toLowerCase() === type
     );
-    if (!headCountEl) {
-      if (process.env.NODE_ENV !== 'production') {
-        // FIXME: shuvi-head-count is missing when ssr set to false
-        // suggest solution: special attr like data-shuvi-head
-        console.error('Warning: shuvi-head-count is missing.');
-      }
-      return;
-    }
 
-    const headCount = Number(headCountEl.content);
-    const oldTags: Element[] = [];
-
-    let curEle = headCountEl.previousElementSibling;
-    for (let i = 0; i < headCount; i++) {
-      if (!curEle) {
-        continue;
-      }
-
-      if (curEle.tagName.toLowerCase() === type) {
-        oldTags.push(curEle);
-      }
-      curEle = curEle.previousElementSibling;
-    }
-
-    const newTags = tags.map(tagToDOM).filter(newTag => {
+    const newTags = tags.map(tagToDOM).filter((newTag) => {
       for (let k = 0, len = oldTags.length; k < len; k++) {
         const oldTag = oldTags[k];
         if (oldTag.isEqualNode(newTag)) {
@@ -85,14 +63,8 @@ export default class HeadManager {
       }
       return true;
     });
-
-    oldTags.forEach(t => t.parentNode!.removeChild(t));
-    newTags.forEach(t => headEl.insertBefore(t, headCountEl));
-    headCountEl.content = (
-      headCount -
-      oldTags.length +
-      newTags.length
-    ).toString();
+    oldTags.forEach((t) => t.parentNode!.removeChild(t));
+    newTags.forEach((t) => headEl.appendChild(t));
   }
 }
 

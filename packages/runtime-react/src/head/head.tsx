@@ -166,7 +166,17 @@ function reduceComponents(
     .reverse()
     .filter(unique())
     .reverse()
-    .map((e) => reactElementToTag((e as any) as HeadElement));
+    .map((e) => {
+      const { type, props } = (e as any) as HeadElement;
+      const headElement = {
+        type,
+        props: {
+          ...props,
+          'data-shuvi-head': 'true',
+        },
+      };
+      return reactElementToTag(headElement);
+    });
 }
 
 const Effect = withSideEffect();

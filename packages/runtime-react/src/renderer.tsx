@@ -19,16 +19,16 @@ const DEFAULT_HEAD = [
   {
     tagName: 'meta',
     attrs: {
-      charset: 'utf-8'
-    }
+      charset: 'utf-8',
+    },
   },
   {
     tagName: 'meta',
     attrs: {
       name: 'viewport',
-      content: 'width=device-width,minimum-scale=1,initial-scale=1'
-    }
-  }
+      content: 'width=device-width,minimum-scale=1,initial-scale=1',
+    },
+  },
 ];
 
 const renderApp: IReactRenderer = async ({
@@ -36,7 +36,7 @@ const renderApp: IReactRenderer = async ({
   App,
   routes,
   manifest,
-  context
+  context,
 }) => {
   await Loadable.preloadAll();
 
@@ -48,7 +48,7 @@ const renderApp: IReactRenderer = async ({
   const history = createServerHistory({
     basename: '',
     location: pathname,
-    context: routerContext
+    context: routerContext,
   });
 
   // sethistory before render to make router avaliable
@@ -71,13 +71,13 @@ const renderApp: IReactRenderer = async ({
             query: parsedUrl.query,
             params: match.params,
             redirect: redirector.handler,
-            req
+            req,
           });
           routeProps[route.id] = props || {};
         });
       }
     }
-    await Promise.all(pendingDataFetchs.map(fn => fn()));
+    await Promise.all(pendingDataFetchs.map((fn) => fn()));
   };
   let appInitialProps: { [x: string]: any } | undefined;
   const appGetInitialProps = ((App as any) as IAppComponent<
@@ -90,7 +90,7 @@ const renderApp: IReactRenderer = async ({
       pathname,
       fetchInitialProps,
       redirect: redirector.handler,
-      req
+      req,
     });
   } else {
     await fetchInitialProps();
@@ -98,7 +98,7 @@ const renderApp: IReactRenderer = async ({
 
   if (redirector.redirected) {
     return {
-      redirect: redirector.state
+      redirect: redirector.state,
     };
   }
 
@@ -110,7 +110,7 @@ const renderApp: IReactRenderer = async ({
       // @ts-ignore staticContext is not declared in @types/react-router-dom
       <Router history={history}>
         <LoadableContext.Provider
-          value={moduleName => loadableModules.push(moduleName)}
+          value={(moduleName) => loadableModules.push(moduleName)}
         >
           <AppContainer routeProps={routeProps}>
             <App {...appInitialProps} />
@@ -122,24 +122,16 @@ const renderApp: IReactRenderer = async ({
     head = Head.rewind() || [];
   }
 
-  const headAnchor = {
-    tagName: 'meta',
-    attrs: {
-      name: 'shuvi-head-count',
-      content: String(head.length)
-    }
-  };
-
   const { loadble } = manifest;
   const dynamicImportIdSet = new Set<string>();
   const dynamicImportChunkSet = new Set<string>();
   for (const mod of loadableModules) {
     const manifestItem = loadble[mod];
     if (manifestItem) {
-      manifestItem.files.forEach(file => {
+      manifestItem.files.forEach((file) => {
         dynamicImportChunkSet.add(file);
       });
-      manifestItem.children.forEach(item => {
+      manifestItem.children.forEach((item) => {
         dynamicImportIdSet.add(item.id as string);
       });
     }
@@ -154,23 +146,23 @@ const renderApp: IReactRenderer = async ({
         attrs: {
           rel: 'preload',
           href: api.getAssetPublicUrl(file),
-          as: 'script'
-        }
+          as: 'script',
+        },
       });
     } else if (/\.css$/.test(file)) {
       styles.push({
         tagName: 'link',
         attrs: {
           rel: 'stylesheet',
-          href: api.getAssetPublicUrl(file)
-        }
+          href: api.getAssetPublicUrl(file),
+        },
       });
     }
   }
 
   const appData: IReactAppData = {
     routeProps,
-    dynamicIds: [...dynamicImportIdSet]
+    dynamicIds: [...dynamicImportIdSet],
   };
   if (appInitialProps) {
     appData.appProps = appInitialProps;
@@ -183,15 +175,10 @@ const renderApp: IReactRenderer = async ({
     appData,
     appHtml: htmlContent,
     htmlAttrs: {},
-    headBeginTags: [
-      ...DEFAULT_HEAD,
-      ...head,
-      headAnchor,
-      ...preloadDynamicChunks
-    ],
+    headBeginTags: [...DEFAULT_HEAD, ...head, ...preloadDynamicChunks],
     headEndTags: [...styles],
     bodyBeginTags: [],
-    bodyEndTags: []
+    bodyEndTags: [],
   };
 };
 
