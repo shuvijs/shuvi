@@ -5,7 +5,7 @@ import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
 
-export type Query = ParsedUrlQuery;
+export type IParams = ParsedUrlQuery;
 
 export interface IRequest {
   url: string;
@@ -54,8 +54,8 @@ export interface IRedirectFn {
 export interface IAppComponentContext {
   isServer: boolean;
   pathname: string;
-  // TODO: wait react-router@6
-  // query: Query;
+  query: IParams;
+  params: IParams;
   redirect: IRedirectFn;
 
   // special props
@@ -68,8 +68,8 @@ export interface IAppComponentContext {
 export interface IRouteComponentContext {
   isServer: boolean;
   pathname: string;
-  query: Query;
-  params: Query;
+  query: IParams;
+  params: IParams;
   redirect: IRedirectFn;
 
   // server only
@@ -94,7 +94,8 @@ export type IAppData<Data = {}> = {
 
 export interface IClientRendererOptions<Data = {}> {
   appData: IAppData<Data>,
-  AppComponent: any;
+  App: any;
+  routes: IRoute[];
   appContainer: HTMLElement;
 }
 
