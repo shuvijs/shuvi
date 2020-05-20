@@ -1,5 +1,5 @@
 import { Runtime } from '@shuvi/types';
-import { History } from 'history';
+import { History } from './history';
 
 export { RouteProps } from 'react-router-dom';
 
@@ -42,6 +42,9 @@ function onChange(listener: Runtime.IRouterListener) {
 }
 
 const router: Router = {
+  get query() {
+    return history.location.query
+  },
   get location() {
     return history.location;
   },

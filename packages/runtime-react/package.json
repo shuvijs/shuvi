@@ -34,7 +34,7 @@
   "dependencies": {
     "@shuvi/utils": "^0.0.1-beta.28",
     "enhanced-resolve": "5.0.0-beta.4",
-    "history": "4.10.1",
+    "history-with-query": "^4.10.3",
     "react": "16.13.0",
     "react-app-polyfill": "1.0.6",
     "react-dom": "16.13.0",

@@ -7,6 +7,8 @@ import { IManifest } from './bundler';
 
 export type IParams = ParsedUrlQuery;
 
+export type IQuery = ParsedUrlQuery;
+
 export interface IRequest {
   url: string;
   parsedUrl: UrlWithParsedQuery;
@@ -54,7 +56,7 @@ export interface IRedirectFn {
 export interface IAppComponentContext {
   isServer: boolean;
   pathname: string;
-  query: IParams;
+  query: IQuery;
   params: IParams;
   redirect: IRedirectFn;
 
@@ -68,7 +70,7 @@ export interface IAppComponentContext {
 export interface IRouteComponentContext {
   isServer: boolean;
   pathname: string;
-  query: IParams;
+  query: IQuery;
   params: IParams;
   redirect: IRedirectFn;
 
@@ -171,6 +173,7 @@ export interface IRouterLocation {
 }
 
 export interface IRouter {
+  query: IQuery;
   location: IRouterLocation;
   push(path: string, state?: any): void;
   replace(path: string, state?: any): void;
