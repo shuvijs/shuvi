@@ -14,7 +14,6 @@
   "files": [
     "lib",
     "es",
-    "style",
     "client-env.d.ts",
     "index.d.ts",
     "index.js",
