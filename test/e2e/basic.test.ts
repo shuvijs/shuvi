@@ -72,6 +72,25 @@ describe('Basic Features', () => {
       expect(await localPage.$text('#about')).toBe('About Page');
     });
   });
+
+  describe('router', () => {
+    let localPage: Page;
+    afterEach(async () => {
+      await localPage.close();
+    });
+
+    test('should have query object', async () => {
+      localPage = await ctx.browser.page(ctx.url('/query', { foo: 'bar' }));
+      const query = JSON.parse(await localPage.$text('#query'));
+      expect(query.foo).toMatch('bar');
+    });
+
+    test('should have query object even no query is provided', async () => {
+      localPage = await ctx.browser.page(ctx.url('/query'));
+      const query = JSON.parse(await localPage.$text('#query'));
+      expect(Object.keys(query).length).toBe(0);
+    });
+  });
 });
 
 describe('[SPA] Basic Features', () => {

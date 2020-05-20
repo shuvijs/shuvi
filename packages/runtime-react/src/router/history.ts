@@ -1,4 +1,4 @@
-import { Runtime } from "@shuvi/types";
+import { Runtime } from '@shuvi/types';
 import {
   Location,
   Action,
@@ -7,11 +7,19 @@ import {
   History,
   LocationDescriptor,
   LocationDescriptorObject,
-  createBrowserHistory as defaultCreateBrowserHistory,
-  createHashHistory as defaultCreateHashHistory
-} from "history";
+  createBrowserHistory as oldCreateBrowserHistory,
+  createHashHistory as oldCreateHashHistory
+} from 'history-with-query';
 
 export { History };
+
+declare module 'history-with-query' {
+  interface Location {
+    query: Runtime.IQuery;
+  }
+}
+
+export { MemoryHistory, createMemoryHistory } from 'history-with-query';
 
 interface HistoryOptions {
   basename: string;
@@ -28,7 +36,7 @@ interface ServerHistoryOptions extends HistoryOptions {
 }
 
 function addLeadingSlash(path: string) {
-  return path.charAt(0) === "/" ? path : "/" + path;
+  return path.charAt(0) === '/' ? path : '/' + path;
 }
 
 function addBasename(basename: string, location: LocationDescriptorObject) {
@@ -56,15 +64,15 @@ function stripBasename(basename: string, location: Location) {
 function noop() {}
 
 function createURL(location: LocationDescriptorObject) {
-  return typeof location === "string" ? location : createPath(location);
+  return typeof location === 'string' ? location : createPath(location);
 }
 
 export function createBrowserHistory(historyOptions: HistoryOptions) {
-  return defaultCreateBrowserHistory(historyOptions);
+  return oldCreateBrowserHistory(historyOptions);
 }
 
 export function createHashHistory(historyOptions: HistoryOptions) {
-  return defaultCreateHashHistory(historyOptions);
+  return oldCreateHashHistory(historyOptions);
 }
 
 export function createServerHistory({
@@ -79,9 +87,9 @@ export function createServerHistory({
   };
 
   const handlePush = (location: LocationDescriptor) =>
-    navigateTo(location, "PUSH");
+    navigateTo(location, 'PUSH');
   const handleReplace = (location: LocationDescriptor) =>
-    navigateTo(location, "REPLACE");
+    navigateTo(location, 'REPLACE');
   const handleListen = () => noop;
   const handleBlock = () => noop;
 
@@ -89,7 +97,7 @@ export function createServerHistory({
     length: 1,
     createHref: (path: LocationDescriptorObject) =>
       addLeadingSlash(basename + createURL(path)),
-    action: "POP",
+    action: 'POP',
     location: stripBasename(basename, createLocation(location)),
     push: handlePush,
     replace: handleReplace,

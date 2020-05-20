@@ -1,7 +1,7 @@
 import React from 'react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 import { render } from 'shuvi-test-utils/reactTestRender';
+import { createMemoryHistory, MemoryHistory } from '../history';
 
 // https://testing-library.com/docs/example-react-router#reducing-boilerplate
 export const renderWithRouter = (
