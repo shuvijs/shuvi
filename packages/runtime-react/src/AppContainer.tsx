@@ -1,7 +1,8 @@
 import React, { createContext, useMemo } from "react";
-import { IRouteProps } from "./types";
+import { IRouteProps, IRoute } from "./types";
 
 export interface IAppContext {
+  routes: IRoute[]
   routeProps: IRouteProps;
 }
 
@@ -13,11 +14,12 @@ export { AppContext };
 export default function AppContainer({
   children,
   routeProps,
+  routes,
   ...appProps
 }: IAppContext & {
   children: React.ReactElement;
 }) {
-  const appCtx: IAppContext = useMemo(() => ({ routeProps }), [routeProps]);
+  const appCtx: IAppContext = useMemo(() => ({ routeProps, routes }), [routes, routeProps]);
   return (
     <AppContext.Provider value={appCtx}>
       {React.cloneElement(children, {

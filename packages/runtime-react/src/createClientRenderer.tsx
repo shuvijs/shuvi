@@ -3,11 +3,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from 'react-router-dom';
+import qs from 'querystring';
 import { Runtime } from '@shuvi/types';
 import { History } from './router/history';
 import { setHistory } from './router/router';
+import { matchRoutes } from './router/matchRoutes';
 import AppContainer from './AppContainer';
-import { IReactAppData } from './types';
+import { IReactAppData, IRoute } from './types';
 import { HeadManager, HeadManagerContext } from './head';
 import Loadable from './loadable';
 import { createRedirector } from './utils/createRedirector';
@@ -15,6 +17,16 @@ import { createRedirector } from './utils/createRedirector';
 const headManager = new HeadManager();
 
 type HistoryCreator = (options: { basename: string }) => History;
+
+function getRouteParams(routes: IRoute[], pathname: string) {
+  const matchedRoutes = matchRoutes(routes, pathname);
+  const params: Runtime.IParams = {};
+  for (let index = 0; index < matchedRoutes.length; index++) {
+    const { match } = matchedRoutes[index];
+    Object.assign(params, match.params);
+  }
+  return params;
+}
 
 // TODO: config basename
 
@@ -29,19 +41,22 @@ export function createClientRenderer({
   const history = historyCreator({ basename: '/' });
   setHistory(history);
 
-  return async ({ appContainer, AppComponent, appData }) => {
+  return async ({ appContainer, App, appData, routes }) => {
     const redirector = createRedirector();
-    const TypedAppComponent = AppComponent as Runtime.IAppComponent<
-      React.ComponentType
-    >;
+    const TypedAppComponent = App as Runtime.IAppComponent<React.ComponentType>;
     let { ssr, appProps, dynamicIds, routeProps } = appData;
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else if (TypedAppComponent.getInitialProps) {
+      const { pathname } = history.location;
+      const query = qs.parse(history.location.search.slice(1));
+
       appProps = await TypedAppComponent.getInitialProps({
         isServer: false,
-        pathname: history.location.pathname,
+        pathname,
+        query,
+        params: getRouteParams(routes, pathname),
         redirect: redirector.handler,
         async fetchInitialProps() {
           // do nothing
@@ -56,7 +71,7 @@ export function createClientRenderer({
     const root = (
       <Router history={history}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer routeProps={routeProps}>
+          <AppContainer routes={routes} routeProps={routeProps}>
             <TypedAppComponent {...appProps} />
           </AppContainer>
         </HeadManagerContext.Provider>

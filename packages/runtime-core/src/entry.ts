@@ -4,6 +4,7 @@ import './setup';
 import { Runtime } from '@shuvi/types';
 import { renderer } from '@shuvi/app/core/renderer';
 import App from '@shuvi/app/core/app';
+import routes from '@shuvi/app/core/routes';
 import {
   CLIENT_CONTAINER_ID,
   DEV_STYLE_HIDE_FOUC,
@@ -41,7 +42,8 @@ export async function init() {
 export function render(options: Partial<Runtime.IClientRendererOptions>) {
   renderer({
     appContainer,
-    AppComponent: App,
+    App,
+    routes,
     appData,
     ...options
   });
@@ -53,7 +55,8 @@ export function render(options: Partial<Runtime.IClientRendererOptions>) {
       const App = require('@shuvi/app/core/app').default;
       renderer({
         appContainer,
-        AppComponent: App,
+        App,
+        routes,
         appData,
         ...options
       });

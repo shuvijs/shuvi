@@ -14,6 +14,7 @@ import { createRedirector } from './utils/createRedirector';
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
 import IHtmlTag = Runtime.IHtmlTag;
+import IParams = Runtime.IParams;
 
 const DEFAULT_HEAD = [
   {
@@ -47,7 +48,7 @@ const renderApp: IReactRenderer = async ({
   const pathname = parsedUrl.pathname!;
   const history = createServerHistory({
     basename: '',
-    location: pathname,
+    location: req.url,
     context: routerContext
   });
 
@@ -56,27 +57,29 @@ const renderApp: IReactRenderer = async ({
 
   const routeProps: { [x: string]: any } = {};
   const matchedRoutes = matchRoutes(routes, pathname);
-  const fetchInitialProps = async () => {
-    const pendingDataFetchs: Array<() => Promise<void>> = [];
-    for (let index = 0; index < matchedRoutes.length; index++) {
-      const { route, match } = matchedRoutes[index];
-      const comp = route.component as
-        | IRouteComponent<React.Component, any>
-        | undefined;
-      if (comp && comp.getInitialProps) {
-        pendingDataFetchs.push(async () => {
-          const props = await comp.getInitialProps!({
-            isServer: true,
-            pathname: pathname,
-            query: parsedUrl.query,
-            params: match.params,
-            redirect: redirector.handler,
-            req
-          });
-          routeProps[route.id] = props || {};
+  const pendingDataFetchs: Array<() => Promise<void>> = [];
+  const params: IParams = {};
+  for (let index = 0; index < matchedRoutes.length; index++) {
+    const { route, match } = matchedRoutes[index];
+    const comp = route.component as
+      | IRouteComponent<React.Component, any>
+      | undefined;
+    Object.assign(params, match.params);
+    if (comp && comp.getInitialProps) {
+      pendingDataFetchs.push(async () => {
+        const props = await comp.getInitialProps!({
+          isServer: true,
+          pathname: pathname,
+          query: parsedUrl.query,
+          params: match.params,
+          redirect: redirector.handler,
+          req
         });
-      }
+        routeProps[route.id] = props || {};
+      });
     }
+  }
+  const fetchInitialProps = async () => {
     await Promise.all(pendingDataFetchs.map(fn => fn()));
   };
   let appInitialProps: { [x: string]: any } | undefined;
@@ -88,6 +91,8 @@ const renderApp: IReactRenderer = async ({
     appInitialProps = await appGetInitialProps({
       isServer: true,
       pathname,
+      query: parsedUrl.query,
+      params,
       fetchInitialProps,
       redirect: redirector.handler,
       req
@@ -112,7 +117,7 @@ const renderApp: IReactRenderer = async ({
         <LoadableContext.Provider
           value={moduleName => loadableModules.push(moduleName)}
         >
-          <AppContainer routeProps={routeProps}>
+          <AppContainer routes={routes} routeProps={routeProps}>
             <App {...appInitialProps} />
           </AppContainer>
         </LoadableContext.Provider>
