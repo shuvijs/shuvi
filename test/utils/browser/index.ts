@@ -62,7 +62,7 @@ export default class Browser {
       throw new Error('Please call start() before page(url)');
     }
     const page = (await this._browser.newPage()) as Page;
-    page.setDefaultTimeout(5 * 60 * 1000);
+    page.setDefaultTimeout(30 * 1000);
     if (url) {
       if (options.disableJavaScript) {
         await page.setJavaScriptEnabled(false);

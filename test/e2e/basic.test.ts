@@ -58,7 +58,7 @@ describe('Basic Features', () => {
 
   test('404 Page', async () => {
     await page.shuvi.navigate('/none-exist-page');
-    await page.waitForSelector('div[class*=page404]');
+    await page.waitForSelector('div[style]');
     expect(await page.$text('body')).toMatch(/404/);
   });
 
