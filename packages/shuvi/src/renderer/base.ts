@@ -70,13 +70,6 @@ export abstract class BaseRenderer {
       document.onDocumentProps(docProps, serverCtx);
     }
 
-    docProps.scriptTags.unshift(
-      tag(
-        'script',
-        {},
-        `var __SHUVI_ASSET_PUBLIC_PATH = "${api.assetPublicPath}"`
-      )
-    );
     const appData: IAppData = {
       ssr: api.config.ssr,
       telestore: telestore.dump(),
@@ -85,7 +78,7 @@ export abstract class BaseRenderer {
     if (api.config.ssr && hasSetRuntimeConfig()) {
       appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
     }
-    docProps.scriptTags.unshift(this._getInlineAppData(appData));
+    docProps.mainTags.push(this._getInlineAppData(appData));
 
     return this._renderDocument(
       docProps,
@@ -169,13 +162,13 @@ export abstract class BaseRenderer {
     );
   }
 
-  private _getInlineAppData(appData: IAppData): IHtmlTag<'script'> {
+  private _getInlineAppData(appData: IAppData): IHtmlTag {
     const data = JSON.stringify(appData);
     return tag(
-      'script',
+      'textarea',
       {
         id: CLIENT_APPDATA_ID,
-        type: 'application/json'
+        style: 'display: none'
       },
       htmlEscapeJsonString(data)
     );
