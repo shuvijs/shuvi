@@ -1,4 +1,18 @@
-declare const __SHUVI_ASSET_PUBLIC_PATH: string;
+import {
+  IDENTITY_RUNTIME_PUBLICPATH,
+  IDENTITY_SSR_RUNTIME_PUBLICPATH
+} from '@shuvi/shared/lib/constants';
+
+const win = window as any;
+
 declare let __webpack_public_path__: string;
 
-__webpack_public_path__ = __SHUVI_ASSET_PUBLIC_PATH;
+// server runtime public path
+if (win[IDENTITY_SSR_RUNTIME_PUBLICPATH]) {
+  __webpack_public_path__ = win[IDENTITY_SSR_RUNTIME_PUBLICPATH];
+}
+
+// client runtime public path
+if (win[IDENTITY_RUNTIME_PUBLICPATH]) {
+  __webpack_public_path__ = win[IDENTITY_RUNTIME_PUBLICPATH];
+}

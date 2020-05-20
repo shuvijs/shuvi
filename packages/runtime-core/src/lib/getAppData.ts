@@ -11,7 +11,6 @@ export function getAppData(): Runtime.IAppData {
   const el = document.getElementById(CLIENT_APPDATA_ID);
   if (!el || !el.textContent) {
     return {
-      runtimeConfig: {},
       ssr: false,
       telestore: {}
     };

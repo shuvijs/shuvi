@@ -1,6 +1,8 @@
 import { Runtime } from '@shuvi/types';
+import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '../constants';
 import { BaseRenderer } from './base';
 import { IServerRendererContext } from './types';
+import { tag } from './htmlTag';
 
 import IServerContext = Runtime.IServerContext;
 
@@ -26,7 +28,7 @@ export class SsrRenderer extends BaseRenderer {
     }
 
     const mainAssetsTags = this._getMainAssetTags();
-    Object.assign(rendererCtx.appData, result.appData)
+    Object.assign(rendererCtx.appData, result.appData);
     const documentProps = {
       htmlAttrs: { ...result.htmlAttrs },
       headTags: [
@@ -40,6 +42,11 @@ export class SsrRenderer extends BaseRenderer {
         ...(result.mainEndTags || [])
       ],
       scriptTags: [
+        tag(
+          'script',
+          {},
+          `${IDENTITY_SSR_RUNTIME_PUBLICPATH} = "${api.assetPublicPath}"`
+        ),
         ...(result.scriptBeginTags || []),
         ...mainAssetsTags.scripts,
         ...(result.scriptEndTags || [])
