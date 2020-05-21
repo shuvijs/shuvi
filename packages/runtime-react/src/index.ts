@@ -23,7 +23,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     });
     api.addAppExport(
       resolveDep('react-router-dom'),
-      '{ Link, useLocation, useParams }'
+      '{ Link, useLocation, useParams, useHistory, useRouteMatch }'
     );
 
     configBundler(api);
