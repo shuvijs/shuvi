@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 import { NAME } from '@shuvi/shared/lib/constants';
 import { IPaths } from '@shuvi/types';
 
@@ -13,7 +13,10 @@ export function getPaths(opts: IPathsOpts): IPaths {
   const srcDir = toAbsolute('src');
   const srcChildDir = (p: string) => join(srcDir, p);
 
-  const buildDir = toAbsolute(outputPath || './build');
+  const buildDir =
+    outputPath && isAbsolute(outputPath)
+      ? outputPath
+      : toAbsolute(outputPath || './build');
 
   return {
     rootDir,
