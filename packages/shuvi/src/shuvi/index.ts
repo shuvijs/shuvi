@@ -5,10 +5,10 @@ export { Shuvi };
 
 export interface ShuviOptions {
   dev?: boolean;
-  config: IConfig;
+  config?: IConfig;
 }
 
-export function shuvi({ dev = false, config }: ShuviOptions): Shuvi {
+export function shuvi({ dev = false, config = {} }: ShuviOptions): Shuvi {
   let ShuviCtor: { new (options: IShuviConstructorOptions): Shuvi };
   if (dev) {
     ShuviCtor = require('./shuvi.dev').default;
