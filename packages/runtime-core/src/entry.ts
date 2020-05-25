@@ -18,9 +18,6 @@ import { getAppData } from './lib/getAppData';
   router
 };
 
-const appData = getAppData();
-const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
-
 export async function init() {
   if (process.env.NODE_ENV === 'development') {
     initWebpackHMR();
@@ -40,12 +37,15 @@ export async function init() {
 }
 
 export function render(options: Partial<Runtime.IClientRendererOptions>) {
+  const appData = options.appData || getAppData();
+  const appContainer =
+    options.appContainer || document.getElementById(CLIENT_CONTAINER_ID)!;
+
   renderer({
-    appContainer,
-    App,
-    routes,
+    App: options.App || App,
+    routes: options.routes || routes,
     appData,
-    ...options
+    appContainer
   });
 
   // @ts-ignore
