@@ -36,7 +36,7 @@ export async function init() {
   }
 }
 
-export function render(options: Partial<Runtime.IClientRendererOptions>) {
+export function render(options: Partial<Runtime.IClientRendererOptions> = {}) {
   const appData = options.appData || getAppData();
   const appContainer =
     options.appContainer || document.getElementById(CLIENT_CONTAINER_ID)!;
