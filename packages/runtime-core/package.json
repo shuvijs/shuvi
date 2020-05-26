@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/runtime-core",
-  "version": "0.0.1-beta.29",
+  "version": "0.0.1-beta.30",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liximomo/shuvi.git",
@@ -22,9 +22,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/shared": "^0.0.1-beta.29",
-    "@shuvi/toolpack": "^0.0.1-beta.29",
-    "@shuvi/types": "^0.0.1-beta.29"
+    "@shuvi/shared": "^0.0.1-beta.30",
+    "@shuvi/toolpack": "^0.0.1-beta.30",
+    "@shuvi/types": "^0.0.1-beta.30"
   },
   "peerDependencies": {
     "@shuvi/app": "^0.0.1-alpha.0"
