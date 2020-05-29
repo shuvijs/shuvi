@@ -15,7 +15,6 @@ class CoreRuntime {
     api.addEntryCode(`
 import { init, render } from "${entryModule}"
 
-//@code
 init().then(render)
 `);
   }
