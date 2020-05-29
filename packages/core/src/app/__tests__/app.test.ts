@@ -1,7 +1,6 @@
 import path from 'path';
 import { removeSync } from 'fs-extra';
 import { readFileSync, existsSync } from 'fs';
-import os from 'os';
 import { App } from '../app';
 import { createFile } from '../models/files';
 
@@ -97,7 +96,7 @@ describe('app', () => {
     app.addExport('export2', '*');
 
     checkMatch([
-      ['entry.js', /run().*const a = 1/s],
+      ['entry.js', /run().*const a=1/s],
       [
         'index.js',
         'export * from "something to export"\nexport * from "export2"'
