@@ -57,5 +57,8 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^25.3.1",
     "typescript": "^3.8.3"
+  },
+  "resolutions": {
+    "@babel/types": "7.10.1"
   }
 }

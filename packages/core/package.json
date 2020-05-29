@@ -22,7 +22,10 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@babel/core": "7.10.1",
+    "@babel/code-frame": "7.10.1",
+    "@babel/generator": "7.10.1",
+    "@babel/parser": "7.10.1",
+    "@babel/traverse": "7.10.1",
     "@shuvi/react-fs": "^0.0.1-beta.30",
     "@shuvi/shared": "^0.0.1-beta.30",
     "@shuvi/utils": "^0.0.1-beta.30",
@@ -33,7 +36,8 @@
     "react": "16.13.0"
   },
   "devDependencies": {
-    "@types/ejs": "^3.0.2",
+    "@types/babel__code-frame": "^7.0.1",
+    "@types/ejs": "3.0.4",
     "react-test-renderer": "^16.13.1"
   }
 }

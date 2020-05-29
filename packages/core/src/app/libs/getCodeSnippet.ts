@@ -1,25 +1,36 @@
+import { codeFrameColumns } from '@babel/code-frame';
 import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import generate from '@babel/generator';
-import * as babelTypes from '@babel/types';
+import * as BabelTypes from '@babel/types';
 import { ICodeSnippet } from '../types';
 
 export function getCodeSnippet(content: string): ICodeSnippet {
-  const ast = parse(content, {
-    sourceType: 'module',
-    plugins: ['jsx']
-  }) as any;
+  let ast: BabelTypes.File;
+  try {
+    ast = parse(content, {
+      sourceType: 'module',
+      plugins: ['jsx']
+    });
+  } catch (error) {
+    error.message = [
+      error.message,
+      '',
+      codeFrameColumns(content, { start: error.loc }, { highlightCode: true })
+    ].join('\n');
+    throw error;
+  }
 
-  let importPaths: babelTypes.Statement[] = [];
+  let importPaths: BabelTypes.Statement[] = [];
 
   traverse(ast, {
     ImportDeclaration(path) {
-      importPaths.push(path.node as babelTypes.ImportDeclaration);
+      importPaths.push(path.node as BabelTypes.ImportDeclaration);
       path.remove();
     }
   });
 
-  const importAst: babelTypes.Program = {
+  const importAst: BabelTypes.Program = {
     type: 'Program',
     body: importPaths,
     directives: [],
