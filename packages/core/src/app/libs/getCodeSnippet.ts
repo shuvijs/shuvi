@@ -1,22 +1,48 @@
+import { parse } from '@babel/parser';
+import traverse from '@babel/traverse';
+import generate from '@babel/generator';
+import * as babelTypes from '@babel/types';
 import { ICodeSnippet } from '../types';
 
-const SPLIT_MARK = '//@code';
-
-// TODO: optimize
 export function getCodeSnippet(content: string): ICodeSnippet {
-  const parts = content.split(SPLIT_MARK);
-  let imports: string;
-  let body: string;
-  if (parts.length === 1) {
-    imports = '';
-    body = parts[0].trim();
-  } else {
-    imports = parts[0].trim();;
-    body = parts[1].trim();;
-  }
+  const ast = parse(content, {
+    sourceType: 'module',
+    plugins: ['jsx']
+  }) as any;
+
+  let importPaths: babelTypes.Statement[] = [];
+
+  traverse(ast, {
+    ImportDeclaration(path) {
+      importPaths.push(path.node as babelTypes.ImportDeclaration);
+      path.remove();
+    }
+  });
+
+  const importAst: babelTypes.Program = {
+    type: 'Program',
+    body: importPaths,
+    directives: [],
+    sourceType: 'module',
+    interpreter: null,
+    sourceFile: '',
+    leadingComments: null,
+    end: null,
+    innerComments: null,
+    loc: null,
+    start: null,
+    trailingComments: null
+  };
+
+  const bodyAst = ast;
+
+  const generateOpt = {
+    compact: true
+  };
 
   return {
-    imports,
-    body
+    // @ts-ignore
+    imports: generate(importAst, generateOpt).code,
+    body: generate(bodyAst, generateOpt).code
   };
 }

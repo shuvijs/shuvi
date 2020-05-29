@@ -22,6 +22,7 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
+    "@babel/core": "7.10.1",
     "@shuvi/react-fs": "^0.0.1-beta.30",
     "@shuvi/shared": "^0.0.1-beta.30",
     "@shuvi/utils": "^0.0.1-beta.30",
