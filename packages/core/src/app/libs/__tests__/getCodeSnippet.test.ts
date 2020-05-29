@@ -9,18 +9,33 @@ describe('collectDeps', () => {
 
     expect(result.imports).toBe('');
     expect(result.body).toBe(trim`
-    const add = (a, b) => a + b
+    const add=(a,b)=>a+b;
   `);
   });
 
-  test('should split imports and code', () => {
+  test('should split single import and code', () => {
     const result = getCodeSnippet(trim`
     import React from 'react'
-    //@code
     const Hello = () => <div>hello</div>
   `);
 
-    expect(result.imports).toBe(`import React from 'react'`);
-    expect(result.body).toBe(trim`const Hello = () => <div>hello</div>`);
+    expect(result.imports).toBe(`import React from'react';`);
+    expect(result.body).toBe(trim`const Hello=()=><div>hello</div>;`);
+  });
+
+  test('should split multiple imports and multiple code', () => {
+    const result = getCodeSnippet(trim`
+    import React from 'react'
+    import _ from 'lodash'
+    const Hello = () => <div>hello</div>
+    document.write('hello')
+  `);
+
+    expect(result.imports).toBe(
+      `import React from'react';import _ from'lodash';`
+    );
+    expect(result.body).toBe(
+      trim`const Hello=()=><div>hello</div>;document.write('hello');`
+    );
   });
 });
