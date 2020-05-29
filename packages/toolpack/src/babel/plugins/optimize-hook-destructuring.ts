@@ -1,8 +1,7 @@
 // Based on https://github.com/zeit/next.js
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
-import { PluginObj, types as BabelTypes } from '@babel/core';
-import { NodePath } from '@babel/traverse';
+import { PluginObj, types as BabelTypes, NodePath } from '@babel/core';
 
 // matches any hook-like (the default)
 const isHook = /^use[A-Z]/;

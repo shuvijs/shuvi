@@ -1,8 +1,7 @@
 // Based on https://github.com/umijs/umi/blob/83301f25a420daff69ca51a179134c6b1612f5b6/packages/babel-plugin-auto-css-modules/src/index.ts
 // License: https://github.com/umijs/umi/blob/83301f25a420daff69ca51a179134c6b1612f5b6/LICENSE
 
-import { NodePath, Visitor } from '@babel/core';
-import * as BabelTypes from '@babel/types';
+import { NodePath, Visitor, types as BabelTypes } from '@babel/core';
 import { extname } from 'path';
 
 export interface IOpts {
