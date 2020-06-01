@@ -1,6 +1,6 @@
 import { Compiler, Plugin } from 'webpack';
 
-const REPLACED = Symbol('replaced');
+// const REPLACED = Symbol('replaced');
 
 export type ConfigItem = {
   test: Function | RegExp;
@@ -12,7 +12,7 @@ export interface ModuleReplacePluginOptions {
 }
 
 export interface ModuleInfo {
-  status: typeof ModuleStatus[keyof typeof ModuleStatus];
+  action: typeof ModuleAction[keyof typeof ModuleAction];
   compiler: Compiler;
   replacedModule: string;
   loaders?: { loader: string; options: Record<string, any> }[];
@@ -34,9 +34,9 @@ function getModuleId(wpModule: any) {
 
 const stubLoader = require.resolve('./stub-loader');
 
-const ModuleStatus = {
-  REPLACED: 1,
-  ORIGINAL: 2
+const ModuleAction = {
+  REPLACE: 'replace',
+  RESTORE: 'restore'
 } as const;
 
 interface Handler {
@@ -63,17 +63,22 @@ function getKnownModules(id: string): ModuleInfo[] {
   return res;
 }
 
-function deleteKnownModules(id: string) {
-  for (const compiler of compilerInfo.values()) {
-    compiler.modules.delete(id);
-  }
-}
+// function forEachModule(id: string, cb: (mod: ModuleInfo) => void) {
+//   for (const compiler of compilerInfo.values()) {
+//     const mod = compiler.modules.get(id);
+//     if (mod) {
+//       cb(mod);
+//     }
+//   }
+// }
 
 export default class ModuleReplacePlugin implements Plugin {
   private _options: ModuleReplacePluginOptions;
 
   static restoreModule(id: string): false | Promise<any> {
-    const moduleInfos = getKnownModules(id);
+    const moduleInfos = getKnownModules(id).filter(
+      m => m.action === ModuleAction.REPLACE
+    );
     if (moduleInfos.length < 1) {
       return false;
     }
@@ -84,7 +89,7 @@ export default class ModuleReplacePlugin implements Plugin {
     };
     moduleHandler.set(id, handler);
     moduleInfos.forEach(moduleInfo => {
-      moduleInfo.status = ModuleStatus.ORIGINAL;
+      moduleInfo.action = ModuleAction.RESTORE;
       handler.pending.set(moduleInfo.compiler, false);
       moduleInfo.compiler.hooks.invalid.call('noop', new Date());
     });
@@ -120,7 +125,6 @@ export default class ModuleReplacePlugin implements Plugin {
       }
 
       for (const id of finished) {
-        deleteKnownModules(id);
         moduleHandler.delete(id);
       }
     });
@@ -151,15 +155,17 @@ export default class ModuleReplacePlugin implements Plugin {
       return;
     }
 
-    if (moduleInfo.status === ModuleStatus.ORIGINAL) {
-      const handler = moduleHandler.get(id)!;
-      handler.pending.set(compiler, true);
-      wpModule.loaders = moduleInfo.loaders;
+    if (moduleInfo.action === ModuleAction.RESTORE) {
+      const handler = moduleHandler.get(id);
+      if (handler) {
+        handler.pending.set(compiler, true);
+        wpModule.loaders = moduleInfo.loaders;
+      }
       return;
     }
 
-    if (moduleInfo.status === ModuleStatus.REPLACED) {
-      if (wpModule.loaders && wpModule.loaders[REPLACED] !== true) {
+    if (moduleInfo.action === ModuleAction.REPLACE) {
+      if (wpModule.loaders) {
         moduleInfo.loaders = wpModule.loaders;
         wpModule.loaders = [
           {
@@ -169,7 +175,6 @@ export default class ModuleReplacePlugin implements Plugin {
             }
           }
         ];
-        wpModule.loaders[REPLACED] = true;
       }
     }
   }
@@ -184,7 +189,7 @@ export default class ModuleReplacePlugin implements Plugin {
     const replacedModule = this._getReplacedModule(wpModule);
     if (replacedModule) {
       knownModules.set(id, {
-        status: ModuleStatus.REPLACED,
+        action: ModuleAction.REPLACE,
         replacedModule,
         compiler
       });

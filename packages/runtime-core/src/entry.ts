@@ -51,8 +51,10 @@ export function render(options: Partial<Runtime.IClientRendererOptions> = {}) {
   // @ts-ignore
   if (module.hot) {
     // @ts-ignore
-    module.hot.accept('@shuvi/app/core/app', () => {
+    module.hot.accept(['@shuvi/app/core/app', '@shuvi/app/core/routes'], () => {
       const App = require('@shuvi/app/core/app').default;
+      const routes = require('@shuvi/app/core/routes').default;
+
       renderer({
         appContainer,
         App,
