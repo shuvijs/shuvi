@@ -7,6 +7,7 @@ import AppFile from './components/AppFile';
 import Polyfill from './components/PolyfillFile';
 import RoutesFile from './components/RoutesFile';
 import UserFiles from './components/UserFiles';
+import ApplicationFile from './components/ApplicationFile';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <IndexFile />
       <EntryFile />
       <Dir name="core">
+        <ApplicationFile />
         <RendererFile />
         <AppFile />
         <RoutesFile />

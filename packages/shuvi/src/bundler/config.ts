@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   WebpackChain,
   createBrowserWebpackChain,
@@ -69,6 +70,7 @@ export function createWepbackConfig(
   });
 
   chain.resolve.alias.set('@shuvi/app', paths.appDir);
+  chain.resolve.alias.set('@shuvi/runtime-core', path.dirname(require.resolve('@shuvi/runtime-core/package.json')));
   chain.output.set('filename', ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
     if (

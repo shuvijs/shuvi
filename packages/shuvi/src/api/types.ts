@@ -1,10 +1,8 @@
-import { IRoute } from '@shuvi/core';
 import { Bundler, IApi, Runtime } from '@shuvi/types';
 
 export type IBuiltResource = {
   server: {
-    App: any;
-    routes: IRoute[];
+    application: Runtime.IApplicationModule
     document: Partial<Runtime.IDocumentModule>;
     renderer: Runtime.IServerRenderer;
   };
