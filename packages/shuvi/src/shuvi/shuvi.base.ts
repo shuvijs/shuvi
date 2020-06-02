@@ -58,10 +58,17 @@ export default abstract class Shuvi {
     req: IIncomingMessage,
     res: IServerResponse
   ): Promise<void> {
+    const { application } = this._api.resources.server;
+    const app = application.create({
+      req,
+      res
+    });
+    app.run();
+
     const result = await this._renderer.renderDocument({
       url: req.url!,
       parsedUrl: req.parsedUrl,
-      headers: req.headers,
+      headers: req.headers
     });
 
     if (isRedirect(result)) {

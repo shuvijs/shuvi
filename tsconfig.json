@@ -6,7 +6,7 @@
       "@shuvi/toolpack/lib/*": ["packages/toolpack/src/*"],
       "@shuvi/utils/lib/*": ["packages/utils/src/*"],
       "@shuvi/libs/lib/*": ["packages/libs/src/*"],
-      "@shuvi/runtime-core/lib": ["packages/runtime-core/src/*"],
+      "@shuvi/runtime-core/lib/*": ["packages/runtime-core/src/*"],
       "@shuvi/runtime-react/lib/*": ["packages/runtime-react/src/*"],
       "@shuvi/shared/lib/*": ["packages/shared/src/*"],
       "@shuvi/*": ["packages/*/src"],

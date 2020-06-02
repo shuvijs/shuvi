@@ -7,8 +7,9 @@ import {
 } from 'http-proxy-middleware';
 import * as Runtime from './src/runtime';
 import * as Bundler from './src/bundler';
-import { IHookConfig } from './src/hooks';
+import { IHookable } from './src/hookable';
 
+export * from './src/hookable';
 export * from './src/hooks';
 
 export { webpack, WebpackChain };
@@ -74,49 +75,11 @@ export interface IApiConfig {
   plugins?: IPluginConfig[];
 }
 
-export interface IHookOpts<InitValue = null, Args extends any[] = any[]> {
-  name: string;
-  fn: InitValue extends null
-    ? (...args: Args) => void | Promise<void>
-    : (init: InitValue, ...args: Args) => InitValue | Promise<InitValue>;
-  before?: string;
-  stage?: number;
-}
-
-export interface ICallHookOpts<Name extends string = string, InitV = unknown> {
-  name: Name;
-  bail?: boolean;
-  parallel?: boolean;
-  initialValue?: InitV;
-}
-
 // api for plugins
-export interface IApi {
+export interface IApi extends IHookable {
   mode: IShuviMode;
   paths: IPaths;
   config: IApiConfig;
-
-  tap<Config extends IHookConfig>(
-    hook: Config['name'],
-    opts: IHookOpts<Config['initialValue'], Config['args']>
-  ): void;
-  callHook<Config extends IHookConfig>(
-    name: Config['name'],
-    ...args: Config['args']
-  ): Promise<void>;
-  callHook<Config extends IHookConfig>(
-    options: ICallHookOpts<Config['name'], Config['initialValue']>,
-    ...args: Config['args']
-  ): Promise<Config['initialValue']>;
-
-  on<Config extends IHookConfig>(
-    hook: Config['name'],
-    listener: (...args: Config['args']) => void
-  ): void;
-  emitEvent<Config extends IHookConfig>(
-    name: Config['name'],
-    ...args: Config['args']
-  ): void;
 
   addEntryCode: typeof App.prototype.addEntryCode;
   addAppFile: typeof App.prototype.addFile;

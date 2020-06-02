@@ -95,13 +95,15 @@ export type IAppData<Data = {}> = {
 };
 
 export interface IClientRendererOptions<Data = {}> {
-  appData: IAppData<Data>,
+  appData: IAppData<Data>;
   App: any;
   routes: IRoute[];
   appContainer: HTMLElement;
 }
 
-export type IClientRenderer<Data = {}> = (options: IClientRendererOptions<Data>) => void;
+export type IClientRenderer<Data = {}> = (
+  options: IClientRendererOptions<Data>
+) => void;
 
 export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
@@ -181,6 +183,10 @@ export interface IRouter {
   goBack(): void;
   goForward(): void;
   onChange(listener: IRouterListener): () => void;
+}
+
+export interface IApplicationModule {
+  create(context: any): any;
 }
 
 export interface IDocumentModule {

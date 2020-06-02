@@ -1,17 +1,12 @@
-import { IShuviMode } from '../';
+import { IShuviMode } from '..';
 import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
 import { IRouteConfig } from './runtime';
-
-export interface IHookConfig {
-  name: string;
-  args: any[];
-  initialValue: any;
-}
+import { IHookConfig, NoInitValue } from './hookable';
 
 type IDefaultHookConfig = {
   args: [];
-  initialValue: null;
+  initialValue: NoInitValue;
 };
 
 type defineHook<

@@ -136,13 +136,9 @@ export async function setupApp(api: Api) {
               imported: '*',
               local: 'document'
             },
-            [api.resolveAppFile('core', 'app')]: {
-              imported: 'default',
-              local: 'App'
-            },
-            [api.resolveAppFile('core', 'routes')]: {
-              imported: 'default',
-              local: 'routes'
+            [api.resolveAppFile('core', 'application')]: {
+              imported: '*',
+              local: 'application'
             },
             [runtime.getServerRendererModulePath()]: {
               imported: 'default',
