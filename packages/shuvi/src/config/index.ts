@@ -2,7 +2,7 @@ import { IApiConfig } from '@shuvi/types';
 import path from 'path';
 import { CONFIG_FILE, PUBLIC_PATH } from '../constants';
 
-export type IConfig = Partial<IApiConfig>
+export type IConfig = Partial<IApiConfig>;
 
 export const defaultConfig: IApiConfig = {
   ssr: true,
@@ -37,11 +37,11 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 export async function loadConfig(
   dir: string = process.cwd()
 ): Promise<IConfig> {
-  const config = await loadConfigFromFile<IConfig>(
-    path.join(dir, CONFIG_FILE)
-  );
+  const config = await loadConfigFromFile<IConfig>(path.join(dir, CONFIG_FILE));
 
-  config.rootDir = dir;
+  if (!config.rootDir) {
+    config.rootDir = dir;
+  }
 
   return config;
 }
