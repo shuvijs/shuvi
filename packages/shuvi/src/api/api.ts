@@ -55,7 +55,8 @@ export class Api implements IApi {
     this.config = deepmerge(defaultConfig, config);
     this.paths = getPaths({
       rootDir: this.config.rootDir,
-      outputPath: this.config.outputPath
+      outputPath: this.config.outputPath,
+      publicDir: this.config.publicDir,
     });
 
     this._hooks = new Hooks();

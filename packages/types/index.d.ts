@@ -62,6 +62,7 @@ export interface IApiConfig {
   outputPath: string;
   rootDir: string;
   ssr: boolean;
+  publicDir: string;
   publicPath: string;
   env: Record<string, string>;
   router: {

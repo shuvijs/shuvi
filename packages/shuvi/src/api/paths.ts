@@ -5,25 +5,21 @@ import { IPaths } from '@shuvi/types';
 interface IPathsOpts {
   rootDir: string;
   outputPath: string;
+  publicDir: string;
 }
 
 export function getPaths(opts: IPathsOpts): IPaths {
-  const { rootDir, outputPath } = opts;
-  const toAbsolute = (p: string) => join(rootDir, p);
+  const { rootDir, outputPath, publicDir } = opts;
+  const toAbsolute = (p: string) => (isAbsolute(p) ? p : join(rootDir, p));
   const srcDir = toAbsolute('src');
   const srcChildDir = (p: string) => join(srcDir, p);
 
-  const buildDir =
-    outputPath && isAbsolute(outputPath)
-      ? outputPath
-      : toAbsolute(outputPath || './build');
-
   return {
     rootDir,
-    buildDir,
     srcDir,
-    appDir: toAbsolute(`.${NAME}/app`),
     pagesDir: srcChildDir('pages'),
-    publicDir: toAbsolute('public')
+    appDir: toAbsolute(`.${NAME}/app`),
+    buildDir: toAbsolute(outputPath),
+    publicDir: toAbsolute(publicDir)
   };
 }
