@@ -9,6 +9,7 @@ export const defaultConfig: IApiConfig = {
   env: {},
   rootDir: process.cwd(),
   outputPath: 'dist',
+  publicDir: 'public',
   publicPath: PUBLIC_PATH,
   router: {
     history: 'auto'
