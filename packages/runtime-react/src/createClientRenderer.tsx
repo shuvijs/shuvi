@@ -28,22 +28,22 @@ function getRouteParams(routes: IRoute[], pathname: string) {
   return params;
 }
 
-// TODO: config basename
-
 export function createClientRenderer({
   historyCreator
 }: {
   historyCreator: HistoryCreator;
-}): Runtime.IClientRenderer<IReactAppData> {
+}): Runtime.IClientRenderer<React.ComponentType, IReactAppData> {
   let isInitialRender: Boolean = true;
 
   // TODO: config basename
   const history = historyCreator({ basename: '/' });
   setHistory(history);
 
-  return async ({ appContainer, App, appData, routes }) => {
+  return async ({ appContainer, AppComponent, appData, routes }) => {
     const redirector = createRedirector();
-    const TypedAppComponent = App as Runtime.IAppComponent<React.ComponentType>;
+    const TypedAppComponent = AppComponent as Runtime.IAppComponent<
+      React.ComponentType
+    >;
     let { ssr, appProps, dynamicIds, routeProps } = appData;
 
     if (ssr) {
@@ -52,6 +52,7 @@ export function createClientRenderer({
       const { pathname } = history.location;
       const query = qs.parse(history.location.search.slice(1));
 
+      // todo: pass appContext
       appProps = await TypedAppComponent.getInitialProps({
         isServer: false,
         pathname,

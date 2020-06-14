@@ -1,9 +1,4 @@
-import {
-  IHookBundlerConfig,
-  IHookBundlerExtraTarget,
-  IEventTargetDone,
-  IEventBundlerDone
-} from '@shuvi/types';
+import { APIHooks } from '@shuvi/types';
 import ForkTsCheckerWebpackPlugin, {
   createCodeframeFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
@@ -61,7 +56,7 @@ class WebpackBundler {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
-      this._extraTargets = ((await this._api.callHook<IHookBundlerExtraTarget>(
+      this._extraTargets = ((await this._api.callHook<APIHooks.IHookBundlerExtraTarget>(
         {
           name: 'bundler:extra-target',
           parallel: true
@@ -94,7 +89,7 @@ class WebpackBundler {
         if (isSuccessful) {
           setImmediate(first => {
             // make sure this event is fired after all bundler:target-done
-            this._api.emitEvent<IEventBundlerDone>('bundler:done', {
+            this._api.emitEvent<APIHooks.IEventBundlerDone>('bundler:done', {
               first,
               stats: stats
             });
@@ -248,7 +243,7 @@ class WebpackBundler {
       const isSuccessful = !messages.errors.length && !messages.warnings.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
-        await api.emitEvent<IEventTargetDone>('bundler:target-done', {
+        await api.emitEvent<APIHooks.IEventTargetDone>('bundler:target-done', {
           first: isFirstSuccessfulCompile,
           name: compiler.name,
           stats
@@ -283,7 +278,7 @@ class WebpackBundler {
       entry: getClientEntry(this._api),
       outputDir: BUILD_CLIENT_DIR
     });
-    clientChain = await this._api.callHook<IHookBundlerConfig>(
+    clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
         name: 'bundler:config-target',
         initialValue: clientChain
@@ -301,7 +296,7 @@ class WebpackBundler {
       entry: getServerEntry(this._api),
       outputDir: BUILD_SERVER_DIR
     });
-    serverChain = await this._api.callHook<IHookBundlerConfig>(
+    serverChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
         name: 'bundler:config-target',
         initialValue: serverChain

@@ -1,4 +1,4 @@
-import { IShuviMode, IEventServerListen } from '@shuvi/types';
+import { IShuviMode, APIHooks } from '@shuvi/types';
 import {
   IHTTPRequestHandler,
   IIncomingMessage,
@@ -6,8 +6,9 @@ import {
 } from '../server';
 import { Api } from '../api';
 import { IConfig } from '../config';
-import { Renderer, isRedirect } from '../renderer';
+import { IRenderRequest } from '../renderer';
 import { sendHTML } from '../lib/sendHtml';
+import { renderToHTML } from '../lib/renderToHTML';
 
 export interface IShuviConstructorOptions {
   config: IConfig;
@@ -15,14 +16,12 @@ export interface IShuviConstructorOptions {
 
 export default abstract class Shuvi {
   protected _api: Api;
-  private _renderer: Renderer;
 
   constructor({ config }: IShuviConstructorOptions) {
     this._api = new Api({
       mode: this.getMode(),
       config
     });
-    this._renderer = new Renderer({ api: this._api });
   }
 
   async ready(): Promise<void> {
@@ -38,7 +37,7 @@ export default abstract class Shuvi {
   }
 
   async listen(port: number, hostname: string = 'localhost'): Promise<void> {
-    this._api.emitEvent<IEventServerListen>('server:listen', {
+    this._api.emitEvent<APIHooks.IEventServerListen>('server:listen', {
       port,
       hostname
     });
@@ -58,25 +57,19 @@ export default abstract class Shuvi {
     req: IIncomingMessage,
     res: IServerResponse
   ): Promise<void> {
-    const { application } = this._api.resources.server;
-    const app = application.create({
-      req,
-      res
-    });
-    app.run();
-
-    const result = await this._renderer.renderDocument({
-      url: req.url!,
-      parsedUrl: req.parsedUrl,
-      headers: req.headers
+    req.url = req.url || '/';
+    const renderRequest = req as IRenderRequest;
+    const html = await renderToHTML({
+      api: this._api,
+      req: renderRequest,
+      onRedirect(redirect) {
+        res.writeHead(redirect.status ?? 302, { Location: redirect.path });
+        res.end();
+      }
     });
 
-    if (isRedirect(result)) {
-      res.writeHead(result.status ?? 302, { Location: result.path });
-      res.end();
-      return;
+    if (html) {
+      sendHTML(req, res, html);
     }
-
-    sendHTML(req, res, result);
   }
 }

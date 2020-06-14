@@ -33,15 +33,15 @@ const DEFAULT_HEAD = [
 ];
 
 const renderApp: IReactRenderer = async ({
-  api,
-  App,
+  req,
+  AppComponent,
   routes,
+  appContext,
   manifest,
-  context
+  getAssetPublicUrl
 }) => {
   await Loadable.preloadAll();
 
-  const { req } = context;
   const redirector = createRedirector();
   const routerContext = {};
   const parsedUrl = req.parsedUrl;
@@ -83,7 +83,7 @@ const renderApp: IReactRenderer = async ({
     await Promise.all(pendingDataFetchs.map(fn => fn()));
   };
   let appInitialProps: { [x: string]: any } | undefined;
-  const appGetInitialProps = ((App as any) as IAppComponent<
+  const appGetInitialProps = ((AppComponent as any) as IAppComponent<
     React.Component,
     any
   >).getInitialProps;
@@ -118,7 +118,7 @@ const renderApp: IReactRenderer = async ({
           value={moduleName => loadableModules.push(moduleName)}
         >
           <AppContainer routes={routes} routeProps={routeProps}>
-            <App {...appInitialProps} />
+            <AppComponent {...appInitialProps} />
           </AppContainer>
         </LoadableContext.Provider>
       </Router>
@@ -150,7 +150,7 @@ const renderApp: IReactRenderer = async ({
         tagName: 'link',
         attrs: {
           rel: 'preload',
-          href: api.getAssetPublicUrl(file),
+          href: getAssetPublicUrl(file),
           as: 'script'
         }
       });
@@ -159,7 +159,7 @@ const renderApp: IReactRenderer = async ({
         tagName: 'link',
         attrs: {
           rel: 'stylesheet',
-          href: api.getAssetPublicUrl(file)
+          href: getAssetPublicUrl(file)
         }
       });
     }

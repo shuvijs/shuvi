@@ -4,6 +4,7 @@ import { IRouteBase, IRouteConfig, IRoute, ITemplateData } from '@shuvi/core';
 import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
+import { Hookable } from '@shuvi/hooks';
 
 export type IParams = ParsedUrlQuery;
 
@@ -88,21 +89,25 @@ export type IRouteComponent<C, P = {}> = C & {
 
 export type IAppData<Data = {}> = {
   runtimeConfig?: { [k: string]: string };
-  telestore: Record<string, any>;
   ssr: boolean;
 } & {
   [K in keyof Data]: Data[K];
 };
 
-export interface IClientRendererOptions<Data = {}> {
-  appData: IAppData<Data>;
-  App: any;
+export interface IRendererOptions<CompType = any> {
+  AppComponent: CompType;
   routes: IRoute[];
-  appContainer: HTMLElement;
+  appContext: Record<string, any>;
 }
 
-export type IClientRenderer<Data = {}> = (
-  options: IClientRendererOptions<Data>
+export interface IClientRendererOptions<CompType = any, Data = {}>
+  extends IRendererOptions<CompType> {
+  appContainer: HTMLElement;
+  appData: IAppData<Data>;
+}
+
+export type IClientRenderer<CompType = any, Data = {}> = (
+  options: IClientRendererOptions<CompType, Data>
 ) => void;
 
 export interface ITelestore {
@@ -111,24 +116,11 @@ export interface ITelestore {
   dump(): Record<string, any>;
 }
 
-// go throug document lifecycle
-export interface IServerContext {
+export interface IServerRendererOptions<CompType = any>
+  extends IRendererOptions<CompType> {
   req: IRequest;
-  telestore: ITelestore;
-  [x: string]: any;
-}
-
-// go throug app lifecycle
-export interface IAppContext {
-  [x: string]: any;
-}
-
-export interface IServerRendererOptions<CompType = any> {
-  api: IApi;
-  App: CompType;
-  routes: IRoute[];
   manifest: IManifest;
-  context: IServerContext;
+  getAssetPublicUrl(path: string): string;
 }
 
 export type IServerRenderer<CompType = any, Data = {}> = (
@@ -185,16 +177,29 @@ export interface IRouter {
   onChange(listener: IRouterListener): () => void;
 }
 
+export interface IAppRenderFn {
+  (options: IRendererOptions): Promise<any>;
+}
+
 export interface IApplicationModule {
-  create(context: any): any;
+  create(
+    context: any,
+    options: {
+      render: IAppRenderFn;
+    }
+  ): IApplication;
 }
 
 export interface IDocumentModule {
   onDocumentProps(
-    documentProps: IDocumentProps,
-    ctx: IServerContext
+    documentProps: IDocumentProps
   ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(ctx: IServerContext): Promise<ITemplateData> | ITemplateData;
+  getTemplateData(): Promise<ITemplateData> | ITemplateData;
+}
+
+export interface IApplication extends Hookable {
+  run(): Promise<void>;
+  dispose(): Promise<void>;
 }
 
 export interface IRuntime<CompType = unknown> {

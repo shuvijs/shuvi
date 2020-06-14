@@ -1,13 +1,7 @@
 import {
   IApiConfig,
   IApi,
-  ICallHookOpts,
-  IHookConfig,
-  IHookOpts,
-  IEventAppReady,
-  IHookAppRoutes,
-  IHookAppRoutesFile,
-  IHookDestory,
+  APIHooks,
   ISpecifier,
   IPaths,
   IShuviMode
@@ -15,7 +9,7 @@ import {
 import { App, IRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { Hooks } from '../lib/hooks';
+import { Hookable } from '@shuvi/hooks';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { PUBLIC_PATH, ROUTE_RESOURCE_QUERYSTRING } from '../constants';
@@ -31,12 +25,11 @@ import { getPaths } from './paths';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
-export class Api implements IApi {
+export class Api extends Hookable implements IApi {
   mode: IShuviMode;
   paths: IPaths;
   config: IApiConfig;
 
-  private _hooks: Hooks;
   private _app: App;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
@@ -45,6 +38,7 @@ export class Api implements IApi {
   private _pluginApi!: PluginApi;
 
   constructor({ mode, config }: { mode?: IShuviMode; config: IConfig }) {
+    super();
     if (mode) {
       this.mode = mode;
     } else if (ServiceModes.includes(process.env.NODE_ENV as any)) {
@@ -56,10 +50,9 @@ export class Api implements IApi {
     this.paths = getPaths({
       rootDir: this.config.rootDir,
       outputPath: this.config.outputPath,
-      publicDir: this.config.publicDir,
+      publicDir: this.config.publicDir
     });
 
-    this._hooks = new Hooks();
     this._app = new App();
     this._plugins = resolvePlugins(this.config.plugins || [], {
       dir: this.paths.rootDir
@@ -100,38 +93,6 @@ export class Api implements IApi {
     return this._resources;
   }
 
-  tap<Config extends IHookConfig>(
-    hook: Config['name'],
-    opts: IHookOpts<Config['initialValue'], Config['args']>
-  ) {
-    this._hooks.addHook(hook, opts);
-  }
-  async callHook<Config extends IHookConfig>(
-    name: Config['name'],
-    ...args: Config['args']
-  ): Promise<unknown[]>;
-  async callHook<Config extends IHookConfig>(
-    options: ICallHookOpts<Config['name'], Config['initialValue']>,
-    ...args: Config['args']
-  ): Promise<Config['initialValue']>;
-  // implement
-  async callHook(options: string | ICallHookOpts<string>, ...args: any[]) {
-    return this._hooks.callHook(options as any, ...args);
-  }
-
-  on<Config extends IHookConfig>(
-    event: Config['name'],
-    listener: (...args: Config['args']) => void
-  ) {
-    this._hooks.addHook(event, { name: 'listener', fn: listener });
-  }
-  emitEvent<Config extends IHookConfig>(
-    name: Config['name'],
-    ...args: Config['args']
-  ): void {
-    this._hooks.callHook({ name, parallel: true }, ...args);
-  }
-
   setRendererModule(path: string) {
     this._app.setRendererModule(path);
   }
@@ -141,7 +102,7 @@ export class Api implements IApi {
   }
 
   async setRoutes(routes: IRouteConfig[]) {
-    routes = await this.callHook<IHookAppRoutes>({
+    routes = await this.callHook<APIHooks.IHookAppRoutes>({
       name: 'app:routes',
       initialValue: routes
     });
@@ -163,7 +124,7 @@ export class Api implements IApi {
       }
     });
     let content = `export default ${serialized}`;
-    content = await this.callHook<IHookAppRoutesFile>({
+    content = await this.callHook<APIHooks.IHookAppRoutesFile>({
       name: 'app:routes-file',
       initialValue: content
     });
@@ -189,7 +150,7 @@ export class Api implements IApi {
       setTimeout(resolve, 1000);
     });
 
-    this.emitEvent<IEventAppReady>('app:ready');
+    this.emitEvent<APIHooks.IEventAppReady>('app:ready');
   }
 
   addResoure(identifier: string, loader: () => any): void {
@@ -271,6 +232,6 @@ export class Api implements IApi {
       this._server.close();
     }
     this._app.stopBuild(this.paths.appDir);
-    await this.callHook<IHookDestory>('destory');
+    await this.callHook<APIHooks.IHookDestory>('destory');
   }
 }

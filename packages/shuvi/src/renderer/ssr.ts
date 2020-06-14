@@ -4,21 +4,29 @@ import { BaseRenderer } from './base';
 import { IServerRendererContext } from './types';
 import { tag } from './htmlTag';
 
-import IServerContext = Runtime.IServerContext;
+import IServerRendererOptions = Runtime.IServerRendererOptions;
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps(
-    serverCtx: IServerContext,
+    {
+      req,
+      AppComponent,
+      routes,
+      appContext,
+      getAssetPublicUrl,
+      manifest
+    }: IServerRendererOptions,
     rendererCtx: IServerRendererContext
   ) {
     const api = this._api;
-    const { renderer, App, routes } = api.resources.server;
+    const { renderer } = api.resources.server;
     const result = await renderer({
-      api,
-      App,
+      req,
+      AppComponent,
       routes,
-      manifest: api.resources.clientManifest,
-      context: serverCtx
+      appContext,
+      manifest,
+      getAssetPublicUrl
     });
     if (result.redirect) {
       return {

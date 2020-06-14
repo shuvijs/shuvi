@@ -1,4 +1,4 @@
-import { IHookDestory } from '@shuvi/types';
+import { APIHooks } from '@shuvi/types';
 import { createLaunchEditorMiddleware } from '@shuvi/toolpack/lib/utils/errorOverlayMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import WebpackHotMiddleware from 'webpack-hot-middleware';
@@ -78,7 +78,7 @@ export async function getDevMiddleware({
     });
   };
 
-  api.tap<IHookDestory>('destory', {
+  api.tap<APIHooks.IHookDestory>('destory', {
     name: 'DevMiddleware',
     fn() {
       return new Promise(resolve => {
