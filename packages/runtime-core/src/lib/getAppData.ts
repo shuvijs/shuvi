@@ -12,7 +12,6 @@ export function getAppData(): Runtime.IAppData {
   if (!el || !el.textContent) {
     return {
       ssr: false,
-      telestore: {}
     };
   }
 

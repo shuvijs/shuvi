@@ -1,28 +1,8 @@
-import { IShuviMode } from '..';
+import { IShuviMode } from '../..';
 import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
-import { IRouteConfig } from './runtime';
-import { IHookConfig, NoInitValue } from './hookable';
-
-type IDefaultHookConfig = {
-  args: [];
-  initialValue: NoInitValue;
-};
-
-type defineHook<
-  Name extends string,
-  Config extends Partial<IHookConfig> = {}
-> = {
-  name: Name;
-} & {
-  [K in keyof Config]: Config[K];
-} &
-  {
-    [K in Exclude<
-      keyof IDefaultHookConfig,
-      keyof Config
-    >]: IDefaultHookConfig[K];
-  };
+import { IRouteConfig } from '../runtime';
+import { defineHook } from './helper';
 
 export type IHookAppRoutes = defineHook<
   'app:routes',

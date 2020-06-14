@@ -1,5 +1,4 @@
 import { Runtime, ITemplateData } from '@shuvi/types';
-import { Telestore } from '@shuvi/shared/lib/telestore';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import { parse as parseUrl } from 'url';
 import {
@@ -15,8 +14,8 @@ import { renderTemplate } from '../lib/viewTemplate';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
 import {
-  IServerRendererOptions,
-  IRenderRequest,
+  IRendererConstructorOptions,
+  IRenderDocumentOptions,
   IServerRendererContext
 } from './types';
 import { Api, IBuiltResource } from '../api';
@@ -25,7 +24,7 @@ import IAppData = Runtime.IAppData;
 import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
 import IRenderResultRedirect = Runtime.IRenderResultRedirect;
-import IServerContext = Runtime.IServerContext;
+import IServerRendererOptions = Runtime.IServerRendererOptions;
 
 export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
@@ -35,44 +34,49 @@ export abstract class BaseRenderer {
   protected _api: Api;
   protected _resources: IBuiltResource;
 
-  constructor({ api }: IServerRendererOptions) {
+  constructor({ api }: IRendererConstructorOptions) {
     this._api = api;
     this._resources = api.resources;
   }
 
-  async renderDocument(
-    req: IRenderRequest
-  ): Promise<string | IRenderResultRedirect> {
+  async renderDocument({
+    req,
+    AppComponent,
+    routes,
+    appContext,
+  }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
     const api = this._api;
     let { parsedUrl } = req;
     if (!parsedUrl) {
       parsedUrl = parseUrl(req.url, true);
     }
-    const { document } = this._resources.server;
-    const telestore = new Telestore({});
     const rendererCtx: IServerRendererContext = {
       appData: {}
     };
-    const serverCtx: IServerContext = {
+    const rendererOptions: IServerRendererOptions = {
       req: {
         ...req,
         parsedUrl,
         headers: req.headers || {}
       },
-      telestore
+      AppComponent,
+      routes,
+      appContext,
+      manifest: this._resources.clientManifest,
+      getAssetPublicUrl: api.getAssetPublicUrl.bind(api),
     };
-    const docProps = await this.getDocumentProps(serverCtx, rendererCtx);
+    const docProps = await this.getDocumentProps(rendererOptions, rendererCtx);
     if (isRedirect(docProps)) {
       return docProps;
     }
 
-    if (document.onDocumentProps) {
-      document.onDocumentProps(docProps, serverCtx);
-    }
+    // todo: breaking previous version
+    // if (document.onDocumentProps) {
+    //   document.onDocumentProps(docProps, serverCtx);
+    // }
 
     const appData: IAppData = {
       ssr: api.config.ssr,
-      telestore: telestore.dump(),
       ...rendererCtx.appData
     };
     if (api.config.ssr && hasSetRuntimeConfig()) {
@@ -81,13 +85,14 @@ export abstract class BaseRenderer {
     docProps.mainTags.push(this._getInlineAppData(appData));
 
     return this._renderDocument(
-      docProps,
-      document.getTemplateData ? document.getTemplateData(serverCtx) : {}
+      docProps
+      // todo: breaking previous version
+      // document.getTemplateData ? document.getTemplateData(serverCtx) : {}
     );
   }
 
   protected abstract getDocumentProps(
-    serverCtx: IServerContext,
+    options: IServerRendererOptions,
     rendererCtx: IServerRendererContext
   ):
     | Promise<IDocumentProps | IRenderResultRedirect>

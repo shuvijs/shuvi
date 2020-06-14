@@ -4,8 +4,8 @@ import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessag
 import { Api } from '../../api/api';
 import { IConfig } from '../../config';
 import { getBundler } from '../../bundler/bundler';
-import { Renderer } from '../../renderer';
 import { BUILD_CLIENT_DIR } from '../../constants';
+import { renderToHTML } from '../../lib/renderToHTML';
 
 export interface IBuildOptions {
   target: 'spa' | 'ssr';
@@ -57,13 +57,19 @@ async function buildHtml({
   pathname: string;
   filename: string;
 }) {
-  const html = await new Renderer({ api }).renderDocument({
-    url: pathname
+  const html = await renderToHTML({
+    req: {
+      url: pathname
+    },
+    api
   });
-  await fse.writeFile(
-    path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
-    html
-  );
+
+  if (html) {
+    await fse.writeFile(
+      path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
+      html
+    );
+  }
 }
 
 export async function build(

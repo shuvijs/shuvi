@@ -1335,7 +1335,7 @@
     globals "^11.1.0"
     lodash "^4.17.13"
 
-"@babel/types@^7.0.0", "@babel/types@^7.10.1", "@babel/types@^7.3.0", "@babel/types@^7.4.4", "@babel/types@^7.7.0", "@babel/types@^7.7.2", "@babel/types@^7.7.4", "@babel/types@^7.8.3", "@babel/types@^7.8.6", "@babel/types@^7.9.0", "@babel/types@^7.9.5":
+"@babel/types@7.10.1", "@babel/types@^7.0.0", "@babel/types@^7.10.1", "@babel/types@^7.3.0", "@babel/types@^7.4.4", "@babel/types@^7.7.0", "@babel/types@^7.7.2", "@babel/types@^7.7.4", "@babel/types@^7.8.3", "@babel/types@^7.8.6", "@babel/types@^7.9.0", "@babel/types@^7.9.5":
   version "7.10.1"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.10.1.tgz#6886724d31c8022160a7db895e6731ca33483921"
   integrity sha512-L2yqUOpf3tzlW9GVuipgLEcZxnO+96SzR6fjXMuxxNkIgFJ5+07mHCZ+HkHqaeZu8+3LKnNJJ1bKbjBETQAsrA==
@@ -2363,10 +2363,10 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@shuvi/hooks@0.0.1-beta.34":
-  version "0.0.1-beta.34"
-  resolved "https://registry.yarnpkg.com/@shuvi/hooks/-/hooks-0.0.1-beta.34.tgz#d6dcb0831304b2db4212166126d7d9e5341b60fd"
-  integrity sha512-RQsBVkVRRQwrT769KOPp1fdAaHHX2mQwfEVncVwYvpugQe967b3vnHYB5ZAJnqLzKSs+LqhJkurLHvfNTinc2Q==
+"@shuvi/hooks@0.0.1-beta.35":
+  version "0.0.1-beta.35"
+  resolved "https://registry.yarnpkg.com/@shuvi/hooks/-/hooks-0.0.1-beta.35.tgz#46cf89649aa0db6caa8826f0b767f122cf7e10c4"
+  integrity sha512-sZA6sdglHQvsvruw5S2xFqkajGeFvh2DqLbk/iMrAzHMG7RteA5pW8eZRFOsfuS6aa0mHISA1s9clIf3iKUw3A==
 
 "@sindresorhus/is@^2.0.0":
   version "2.1.0"

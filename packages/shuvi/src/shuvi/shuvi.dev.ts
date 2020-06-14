@@ -1,4 +1,4 @@
-import { IEventBundlerDone } from '@shuvi/types';
+import { APIHooks } from '@shuvi/types';
 import { IIncomingMessage, IServerResponse, INextFunction } from '../server';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
@@ -36,7 +36,7 @@ export default class ShuviDev extends Base {
   }
 
   async listen(port: number, hostname: string = 'localhost'): Promise<void> {
-    this._api.on<IEventBundlerDone>('bundler:done', ({ first }) => {
+    this._api.on<APIHooks.IEventBundlerDone>('bundler:done', ({ first }) => {
       if (first) {
         const localUrl = `http://${
           hostname === '0.0.0.0' ? 'localhost' : hostname
