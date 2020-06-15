@@ -11,7 +11,7 @@ function Plugins() {
 
   plugins.forEach((value, name) => {
     content += `import ${name} from "${value}"\n`;
-    functionContent += `application.tap(...${name})\n`;
+    functionContent += `${name}(application)\n`;
   });
 
   content += `export default (application) => {

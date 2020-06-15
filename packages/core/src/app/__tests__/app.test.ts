@@ -61,7 +61,7 @@ describe('app', () => {
       ['core/routes.js', 'routes content'],
       [
         'core/plugins.js',
-        'import plugin1 from "path/toPlugin"\nexport default (application) => {\napplication.tap(plugin1)\n}'
+        'import plugin1 from "path/toPlugin"\nexport default (application) => {\nplugin1(application)\n}'
       ]
     ]);
   });
@@ -93,7 +93,7 @@ describe('app', () => {
       ['core/routes.js', 'routes content'],
       [
         'core/plugins.js',
-        'import plugin1 from "path/toPlugin"\nexport default (application) => {\napplication.tap(plugin1)\n}'
+        'import plugin1 from "path/toPlugin"\nexport default (application) => {\nplugin1(application)\n}'
       ]
     ]);
 
@@ -122,7 +122,7 @@ describe('app', () => {
       ['core/routes.js', 'routes content 2'],
       [
         'core/plugins.js',
-        'import plugin1 from "path/toPlugin"\nimport plugin2 from "path/toPlugin2"\nexport default (application) => {\napplication.tap(plugin1)\napplication.tap(plugin2)\n}'
+        'import plugin1 from "path/toPlugin"\nimport plugin2 from "path/toPlugin2"\nexport default (application) => {\nplugin1(application)\nplugin2(application)\n}'
       ]
     ]);
 
