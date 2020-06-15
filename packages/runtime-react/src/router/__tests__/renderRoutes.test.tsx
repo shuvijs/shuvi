@@ -30,22 +30,22 @@ const SHUVI_COMPONENT = createDummyComponent('shuvi');
 const initialPropsHash = {
   '0001': {
     test: true,
-    sample: 'asd',
+    sample: 'asd'
   },
   '0002': {
-    data: [1, 2, 3],
+    data: [1, 2, 3]
   },
   '0003': {
     data: {
-      error: 'error',
-    },
+      error: 'error'
+    }
   },
-  '0005': {},
+  '0005': {}
 };
 
 describe('renderRoutes', () => {
   it('return null for empty routes', () => {
-    const routes = renderRoutes();
+    const routes = renderRoutes([]);
     expect(routes).toBeNull();
   });
 
@@ -55,28 +55,30 @@ describe('renderRoutes', () => {
         id: '0001',
         component: HOME_COMPONENT,
         exact: true,
-        path: '/',
+        path: '/'
       },
       {
         id: '0002',
         component: ABOUT_COMPONENT,
         path: '/about',
-        exact: true,
-      },
+        exact: true
+      }
     ];
 
-    const routesComponent = renderRoutes(sampleRoutes, initialPropsHash)!;
+    const routesComponent = renderRoutes(sampleRoutes, {
+      initialProps: initialPropsHash
+    })!;
     let json, app;
 
     // render / page
     app = renderWithRouter(routesComponent, {
-      route: '/',
+      route: '/'
     });
     json = app.toJSON();
 
     expect(getInitialProps(app, HOME_COMPONENT)).toStrictEqual({
       sample: 'asd',
-      test: true,
+      test: true
     });
 
     expect(json).toMatchInlineSnapshot(`
@@ -87,12 +89,12 @@ describe('renderRoutes', () => {
 
     // render /about page
     app = renderWithRouter(routesComponent, {
-      route: '/about',
+      route: '/about'
     });
     json = app.toJSON();
 
     expect(getInitialProps(app, ABOUT_COMPONENT)).toStrictEqual({
-      data: [1, 2, 3],
+      data: [1, 2, 3]
     });
 
     expect(json).toMatchInlineSnapshot(`
@@ -108,7 +110,7 @@ describe('renderRoutes', () => {
         id: '0001',
         component: HOME_COMPONENT,
         exact: true,
-        path: '/',
+        path: '/'
       },
       {
         id: '0002',
@@ -120,28 +122,30 @@ describe('renderRoutes', () => {
             id: '0003',
             exact: true,
             component: HI_COMPONENT,
-            path: '/about/hi',
+            path: '/about/hi'
           },
           {
             id: '0004',
             exact: true,
             component: TEST_COMPONENT,
-            path: '/about/test',
-          },
-        ],
-      },
+            path: '/about/test'
+          }
+        ]
+      }
     ];
 
-    const routesComponent = renderRoutes(sampleRoutes, initialPropsHash)!;
+    const routesComponent = renderRoutes(sampleRoutes, {
+      initialProps: initialPropsHash
+    })!;
     let app, json;
 
     app = renderWithRouter(routesComponent, {
-      route: '/about',
+      route: '/about'
     });
     json = app.toJSON();
 
     expect(getInitialProps(app, ABOUT_COMPONENT)).toStrictEqual({
-      data: [1, 2, 3],
+      data: [1, 2, 3]
     });
 
     expect(json).toMatchInlineSnapshot(`
@@ -151,18 +155,18 @@ describe('renderRoutes', () => {
     `);
 
     app = renderWithRouter(routesComponent, {
-      route: '/about/hi',
+      route: '/about/hi'
     });
     json = app.toJSON();
 
     // expect nested initialProps is passed
     expect(getInitialProps(app, ABOUT_COMPONENT)).toStrictEqual({
-      data: [1, 2, 3],
+      data: [1, 2, 3]
     });
     expect(getInitialProps(app, HI_COMPONENT)).toStrictEqual({
       data: {
-        error: 'error',
-      },
+        error: 'error'
+      }
     });
 
     expect(json).toMatchInlineSnapshot(`
@@ -175,7 +179,7 @@ describe('renderRoutes', () => {
     `);
 
     app = renderWithRouter(routesComponent, {
-      route: '/about/test',
+      route: '/about/test'
     });
     json = app.toJSON();
 
@@ -192,7 +196,7 @@ describe('renderRoutes', () => {
 
     // fake route
     json = renderWithRouter(routesComponent, {
-      route: '/fake',
+      route: '/fake'
     }).toJSON();
 
     expect(json).toBeNull();
@@ -204,7 +208,7 @@ describe('renderRoutes', () => {
         id: '0001',
         component: HOME_COMPONENT,
         exact: true,
-        path: '/',
+        path: '/'
       },
       {
         id: '0002',
@@ -228,32 +232,34 @@ describe('renderRoutes', () => {
                     id: '0005',
                     exact: false,
                     component: SHUVI_COMPONENT,
-                    path: '/about/hi/cool/shuvi',
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
+                    path: '/about/hi/cool/shuvi'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     ];
 
-    const routesComponent = renderRoutes(sampleRoutes, initialPropsHash)!;
+    const routesComponent = renderRoutes(sampleRoutes, {
+      initialProps: initialPropsHash
+    })!;
     let app, json;
 
     app = renderWithRouter(routesComponent, {
-      route: '/about/hi/cool/shuvi',
+      route: '/about/hi/cool/shuvi'
     });
     json = app.toJSON();
 
     expect(getInitialProps(app, ABOUT_COMPONENT)).toStrictEqual({
-      data: [1, 2, 3],
+      data: [1, 2, 3]
     });
 
     expect(getInitialProps(app, HI_COMPONENT)).toStrictEqual({
       data: {
-        error: 'error',
-      },
+        error: 'error'
+      }
     });
 
     expect(getInitialProps(app, COOL_COMPONENT)).toBeUndefined();

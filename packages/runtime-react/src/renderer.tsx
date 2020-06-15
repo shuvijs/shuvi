@@ -73,7 +73,7 @@ const renderApp: IReactRenderer = async ({
           query: parsedUrl.query,
           params: match.params,
           redirect: redirector.handler,
-          req
+          appContext
         });
         routeProps[route.id] = props || {};
       });
@@ -95,7 +95,7 @@ const renderApp: IReactRenderer = async ({
       params,
       fetchInitialProps,
       redirect: redirector.handler,
-      req
+      appContext
     });
   } else {
     await fetchInitialProps();
@@ -117,7 +117,11 @@ const renderApp: IReactRenderer = async ({
         <LoadableContext.Provider
           value={moduleName => loadableModules.push(moduleName)}
         >
-          <AppContainer routes={routes} routeProps={routeProps}>
+          <AppContainer
+            routes={routes}
+            routeProps={routeProps}
+            appContext={appContext}
+          >
             <AppComponent {...appInitialProps} />
           </AppContainer>
         </LoadableContext.Provider>

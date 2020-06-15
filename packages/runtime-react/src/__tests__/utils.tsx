@@ -7,17 +7,25 @@ export const renderWithRoutes = (
   {
     routes = [],
     initialProps = {},
+    appContext = {}
   }: {
     routes?: Runtime.IRoute[];
     initialProps?: Record<string, any>;
+    appContext?: Record<string, any>;
   } = {},
   {
     route = '/',
-    history = createMemoryHistory({ initialEntries: [route] }),
+    history = createMemoryHistory({ initialEntries: [route] })
   }: { route?: string; history?: MemoryHistory } = {}
 ) => {
-  return renderWithRouter(renderRoutes(routes, initialProps)!, {
-    route,
-    history,
-  });
+  return renderWithRouter(
+    renderRoutes(routes, {
+      initialProps,
+      appContext
+    })!,
+    {
+      route,
+      history
+    }
+  );
 };
