@@ -39,7 +39,13 @@ export function createClientRenderer({
   const history = historyCreator({ basename: '/' });
   setHistory(history);
 
-  return async ({ appContainer, AppComponent, appData, routes }) => {
+  return async ({
+    appContainer,
+    AppComponent,
+    appData,
+    routes,
+    appContext
+  }) => {
     const redirector = createRedirector();
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
@@ -59,6 +65,7 @@ export function createClientRenderer({
         query,
         params: getRouteParams(routes, pathname),
         redirect: redirector.handler,
+        appContext,
         async fetchInitialProps() {
           // do nothing
         }
@@ -72,7 +79,11 @@ export function createClientRenderer({
     const root = (
       <Router history={history}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer routes={routes} routeProps={routeProps}>
+          <AppContainer
+            routes={routes}
+            routeProps={routeProps}
+            appContext={appContext}
+          >
             <TypedAppComponent {...appProps} />
           </AppContainer>
         </HeadManagerContext.Provider>

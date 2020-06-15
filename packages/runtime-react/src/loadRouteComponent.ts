@@ -10,14 +10,25 @@ import RouteComponent = Runtime.IRouteComponent;
 
 type Data = Record<string, any>;
 
-type Props = RouteComponentProps & {
+export type IRouteProps = RouteComponentProps & {
+  __appContext: Data;
   __initialProps?: Data;
 };
 
+function withoutInitialProps(
+  WrappedComponent: RouteComponent<React.ComponentType<any>>
+): RouteComponent<React.ComponentType<IRouteProps>> {
+  return ({ __appContext, ...rest }: IRouteProps) => {
+    return React.createElement(WrappedComponent, {
+      ...rest
+    });
+  };
+}
+
 function withInitialPropsServer(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
-): RouteComponent<React.ComponentType<Props>> {
-  return ({ __initialProps, ...rest }: Props) => {
+): RouteComponent<React.ComponentType<IRouteProps>> {
+  return ({ __initialProps, __appContext, ...rest }: IRouteProps) => {
     return React.createElement(WrappedComponent, {
       ...rest,
       ...__initialProps
@@ -27,11 +38,11 @@ function withInitialPropsServer(
 
 function withInitialPropsClient<P = {}>(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
-): RouteComponent<React.ComponentClass<Props & P>> {
+): RouteComponent<React.ComponentClass<IRouteProps & P>> {
   const hoc: RouteComponent<React.ComponentClass<
-    Props & P
+    IRouteProps & P
   >> = class WithInitialProps extends React.Component<
-    Props & P,
+    IRouteProps & P,
     { propsResolved: boolean; initialProps: Data }
   > {
     static displayName = `WithInitialProps(${getDisplayName(
@@ -40,7 +51,7 @@ function withInitialPropsClient<P = {}>(
 
     private _unmount: boolean = false;
 
-    constructor(props: Props & P) {
+    constructor(props: IRouteProps & P) {
       super(props);
 
       const propsResolved = typeof props.__initialProps !== 'undefined';
@@ -54,11 +65,11 @@ function withInitialPropsClient<P = {}>(
       }
     }
 
-    getSnapshotBeforeUpdate(prevProps: Props) {
+    getSnapshotBeforeUpdate(prevProps: IRouteProps) {
       return prevProps.match;
     }
 
-    componentDidUpdate(prevProps: Readonly<Props>) {
+    componentDidUpdate(prevProps: Readonly<IRouteProps>) {
       const shallow = false;
       const isUrlChanged = prevProps.match.url !== this.props.match.url;
       if (isUrlChanged) {
@@ -75,14 +86,16 @@ function withInitialPropsClient<P = {}>(
     }
 
     private async _getInitialProps() {
-      const { match, location, history } = this.props;
+      const { match, location, history, __appContext: appContext } = this.props;
       const redirector = createRedirector();
+      // TODO: pass app context
       const initialProps = await WrappedComponent.getInitialProps!({
         isServer: false,
         pathname: location.pathname,
         query: parseQuerystring(location.search.slice(1)),
         params: match.params,
-        redirect: redirector.handler
+        redirect: redirector.handler,
+        appContext
       });
 
       if (this._unmount) {
@@ -108,7 +121,7 @@ function withInitialPropsClient<P = {}>(
         return null;
       }
 
-      const { __initialProps, ...rest } = this.props;
+      const { __initialProps, __appContext, ...rest } = this.props;
 
       return React.createElement(WrappedComponent, {
         ...rest,
@@ -126,9 +139,9 @@ function withInitialPropsClient<P = {}>(
 
 export function loadRouteComponent(
   loader: () => Promise<any>,
-  options?: DynamicOptions
+  options?: DynamicOptions<any>
 ) {
-  const dynamicComp = dynamic(
+  const dynamicComp = dynamic<any>(
     () =>
       loader().then(mod => {
         const comp = mod.default || mod;
@@ -144,7 +157,7 @@ export function loadRouteComponent(
           return withInitialPropsServer(comp);
         }
 
-        return comp;
+        return withoutInitialProps(comp);
       }),
     options
   );

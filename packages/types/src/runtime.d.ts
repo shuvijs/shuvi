@@ -60,12 +60,14 @@ export interface IAppComponentContext {
   query: IQuery;
   params: IParams;
   redirect: IRedirectFn;
+  appContext: {
+    // server only
+    req?: IRequest;
+    [x: string]: any
+  };
 
   // special props
   fetchInitialProps(): Promise<void>;
-
-  // server only
-  req?: IRequest;
 }
 
 export interface IRouteComponentContext {
@@ -74,9 +76,11 @@ export interface IRouteComponentContext {
   query: IQuery;
   params: IParams;
   redirect: IRedirectFn;
-
-  // server only
-  req?: IRequest;
+  appContext: {
+    // server only
+    req?: IRequest;
+    [x: string]: any
+  };
 }
 
 export type IAppComponent<C, P = {}> = C & {
