@@ -198,7 +198,11 @@ export interface IDocumentModule {
 }
 
 export interface IApplication extends Hookable {
+  AppComponent: any;
+  routes: IRoute[];
+
   run(): Promise<void>;
+  rerender(): Promise<void>;
   dispose(): Promise<void>;
 }
 

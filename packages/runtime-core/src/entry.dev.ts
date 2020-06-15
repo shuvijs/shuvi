@@ -4,9 +4,9 @@ import {
   DEV_STYLE_PREPARE
 } from '@shuvi/shared/lib/constants';
 import initWebpackHMR from './dev/webpackHotDevClient';
-import { render } from './entry.shared';
+import { app } from './setup-app';
 
-export async function init() {
+async function init() {
   initWebpackHMR();
   // reduce FOUC caused by style-loader
   const styleReady = new Promise(resolve => {
@@ -22,4 +22,4 @@ export async function init() {
   await styleReady!;
 }
 
-export { render };
+init().then(() => app.run());
