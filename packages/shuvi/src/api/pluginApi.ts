@@ -13,11 +13,13 @@ const apiProps: Array<keyof IApi> = [
   'addAppFile',
   'addAppExport',
   'addAppPolyfill',
+  'addRuntimePlugin',
+  'addRuntimePluginFile',
   'resolveAppFile',
   'resolveUserFile',
   'resolveBuildFile',
   'resolvePublicFile',
-  'getAssetPublicUrl',
+  'getAssetPublicUrl'
 ];
 
 class PluginApi implements IApi {
@@ -36,6 +38,8 @@ class PluginApi implements IApi {
   addAppFile: any;
   addAppExport: any;
   addAppPolyfill: any;
+  addRuntimePlugin: any;
+  addRuntimePluginFile: any;
 
   resolveAppFile: any;
   resolveUserFile: any;
@@ -63,6 +67,6 @@ export function createPluginApi(api: Api): PluginApi {
 
       // @ts-ignore
       return target[prop];
-    },
+    }
   });
 }

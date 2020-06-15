@@ -64,6 +64,7 @@ export class ModelApp {
   @observable extraFiles: IFileNode[] = [];
   @observable polyfills: string[] = [];
   @observable exports = new Map<string, ISpecifier[]>();
+  @observable runtimePlugins = new Map<string, ISpecifier>();
 
   @computed
   get entryConent(): string {
@@ -107,6 +108,11 @@ export class ModelApp {
     const files = this.extraFiles;
     ensureDir(dir, files);
     addFileNode(dir, file, files);
+  }
+
+  @action
+  addRuntimePlugin(name: string, runtimePlugin: string) {
+    this.runtimePlugins.set(name, runtimePlugin);
   }
 
   @action

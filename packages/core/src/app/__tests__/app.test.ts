@@ -45,6 +45,7 @@ describe('app', () => {
     app.setRendererModule('rendererModules');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
+    app.addRuntimePlugin('plugin1', 'path/toPlugin');
 
     await app.build({
       dir: BUILD_DIR
@@ -57,7 +58,11 @@ describe('app', () => {
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       ['core/renderer.js', 'export * from "rendererModules"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content']
+      ['core/routes.js', 'routes content'],
+      [
+        'core/plugins.js',
+        'import plugin1 from "path/toPlugin"\nexport default (application) => {\napplication.tap(plugin1)\n}'
+      ]
     ]);
   });
 
@@ -72,6 +77,7 @@ describe('app', () => {
     app.setRendererModule('rendererModules');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
+    app.addRuntimePlugin('plugin1', 'path/toPlugin');
 
     await app.build({
       dir: BUILD_DIR
@@ -84,7 +90,11 @@ describe('app', () => {
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       ['core/renderer.js', 'export * from "rendererModules"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content']
+      ['core/routes.js', 'routes content'],
+      [
+        'core/plugins.js',
+        'import plugin1 from "path/toPlugin"\nexport default (application) => {\napplication.tap(plugin1)\n}'
+      ]
     ]);
 
     // Change modules and content
@@ -94,6 +104,7 @@ describe('app', () => {
     app.setAppModule('123');
     app.setRendererModule('rendererModules2');
     app.addExport('export2', '*');
+    app.addRuntimePlugin('plugin2', 'path/toPlugin2');
 
     checkMatch([
       ['entry.js', /run().*const a=1/s],
@@ -108,7 +119,11 @@ describe('app', () => {
         'core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
       ],
-      ['core/routes.js', 'routes content 2']
+      ['core/routes.js', 'routes content 2'],
+      [
+        'core/plugins.js',
+        'import plugin1 from "path/toPlugin"\nimport plugin2 from "path/toPlugin2"\nexport default (application) => {\napplication.tap(plugin1)\napplication.tap(plugin2)\n}'
+      ]
     ]);
 
     app.stopBuild(BUILD_DIR);
@@ -136,7 +151,8 @@ describe('app', () => {
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       ['core/renderer.js', 'export * from "rendererModules"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content']
+      ['core/routes.js', 'routes content'],
+      ['core/plugins.js', 'export default (application) => {\n}']
     ]);
 
     // should not make changes after build
