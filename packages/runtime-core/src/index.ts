@@ -12,11 +12,7 @@ const entryModule = resolveDist('entry');
 
 class CoreRuntime {
   async install(api: IApi): Promise<void> {
-    api.addEntryCode(`
-import { init, render } from "${entryModule}"
-
-init().then(render)
-`);
+    api.addEntryCode(`import "${entryModule}"`);
   }
 }
 

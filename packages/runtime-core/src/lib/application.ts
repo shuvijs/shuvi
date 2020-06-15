@@ -14,15 +14,16 @@ export interface IApplicationOptions<Context> {
 
 export class Application<Context extends {}> extends Hookable
   implements Runtime.IApplication {
+  AppComponent: any;
+  routes: Runtime.IRoute[];
+
   private _renderFn: Runtime.IAppRenderFn;
-  private _AppComponent: any;
-  private _routes: Runtime.IRoute[];
   private _context: IContext;
 
   constructor(options: IApplicationOptions<Context>) {
     super();
-    this._AppComponent = options.AppComponent;
-    this._routes = options.routes;
+    this.AppComponent = options.AppComponent;
+    this.routes = options.routes;
     this._context = options.context;
     this._renderFn = options.render;
   }
@@ -30,6 +31,10 @@ export class Application<Context extends {}> extends Hookable
   async run() {
     await this._init();
     await this._createApplicationContext();
+    await this._render();
+  }
+
+  async rerender() {
     await this._render();
   }
 
@@ -54,8 +59,8 @@ export class Application<Context extends {}> extends Hookable
   private async _render() {
     const result = await this._renderFn({
       appContext: this._context,
-      AppComponent: this._AppComponent,
-      routes: this._routes
+      AppComponent: this.AppComponent,
+      routes: this.routes
     });
     this.emitEvent<RuntimeHooks.IEventRenderDone>('render-done', result);
   }

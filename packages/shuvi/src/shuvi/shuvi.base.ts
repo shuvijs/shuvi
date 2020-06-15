@@ -59,6 +59,7 @@ export default abstract class Shuvi {
   ): Promise<void> {
     req.url = req.url || '/';
     const renderRequest = req as IRenderRequest;
+
     const html = await renderToHTML({
       api: this._api,
       req: renderRequest,

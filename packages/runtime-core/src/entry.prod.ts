@@ -1,6 +1,4 @@
 /// <reference lib="dom" />
-import { render } from './entry.shared';
+import { app } from './setup-app';
 
-export async function init() {}
-
-export { render };
+app.run();
