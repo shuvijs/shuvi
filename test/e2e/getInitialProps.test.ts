@@ -27,13 +27,15 @@ describe('GetInitialProps', () => {
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="getInitialProps"]')
       );
-      ['isServer', 'pathname', 'query', 'params', 'redirect', 'req'].forEach(
+      ['isServer', 'pathname', 'query', 'params', 'redirect', 'appContext'].forEach(
         key => {
           expect(initialPropsCtx[key]).toBeDefined();
         }
       );
 
-      const req = initialPropsCtx.req;
+      const appContext = initialPropsCtx.appContext;
+
+      const req = appContext.req;
       expect(typeof req.headers).toBe('object');
       expect(req.url).toBe('/test?a=2');
       expect(req.parsedUrl.href).toBe('/test?a=2');
@@ -54,13 +56,15 @@ describe('GetInitialProps', () => {
         'query',
         'params',
         'redirect',
-        'req',
+        'appContext',
         'fetchInitialProps'
       ].forEach(key => {
         expect(initialPropsCtx[key]).toBeDefined();
       });
 
-      const req = initialPropsCtx.req;
+      const appContext = initialPropsCtx.appContext;
+
+      const req = appContext.req;
       expect(typeof req.headers).toBe('object');
       expect(req.url).toBe('/test?a=2');
       expect(req.parsedUrl.href).toBe('/test?a=2');
@@ -91,7 +95,7 @@ describe('GetInitialProps', () => {
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="getInitialProps"]')
       );
-      ['isServer', 'pathname', 'query', 'params', 'redirect'].forEach(key => {
+      ['isServer', 'pathname', 'query', 'params', 'redirect', 'appContext'].forEach(key => {
         expect(initialPropsCtx[key]).toBeDefined();
       });
 
@@ -111,6 +115,7 @@ describe('GetInitialProps', () => {
         'query',
         'params',
         'redirect',
+        'appContext',
         'fetchInitialProps'
       ].forEach(key => {
         expect(initialPropsCtx[key]).toBeDefined();

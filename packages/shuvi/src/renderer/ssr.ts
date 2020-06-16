@@ -9,7 +9,7 @@ import IServerRendererOptions = Runtime.IServerRendererOptions;
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps(
     {
-      req,
+      url,
       AppComponent,
       routes,
       appContext,
@@ -21,7 +21,7 @@ export class SsrRenderer extends BaseRenderer {
     const api = this._api;
     const { renderer } = api.resources.server;
     const result = await renderer({
-      req,
+      url,
       AppComponent,
       routes,
       appContext,

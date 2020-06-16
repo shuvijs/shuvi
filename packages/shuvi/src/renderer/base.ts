@@ -1,6 +1,5 @@
 import { Runtime, ITemplateData } from '@shuvi/types';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
-import { parse as parseUrl } from 'url';
 import {
   CLIENT_APPDATA_ID,
   CLIENT_CONTAINER_ID,
@@ -40,40 +39,32 @@ export abstract class BaseRenderer {
   }
 
   async renderDocument({
-    req,
+    url,
     AppComponent,
     routes,
-    appContext,
+    appContext
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
     const api = this._api;
-    let { parsedUrl } = req;
-    if (!parsedUrl) {
-      parsedUrl = parseUrl(req.url, true);
-    }
     const rendererCtx: IServerRendererContext = {
       appData: {}
     };
     const rendererOptions: IServerRendererOptions = {
-      req: {
-        ...req,
-        parsedUrl,
-        headers: req.headers || {}
-      },
+      url,
       AppComponent,
       routes,
       appContext,
       manifest: this._resources.clientManifest,
-      getAssetPublicUrl: api.getAssetPublicUrl.bind(api),
+      getAssetPublicUrl: api.getAssetPublicUrl.bind(api)
     };
     const docProps = await this.getDocumentProps(rendererOptions, rendererCtx);
     if (isRedirect(docProps)) {
       return docProps;
     }
 
-    // todo: breaking previous version
-    // if (document.onDocumentProps) {
-    //   document.onDocumentProps(docProps, serverCtx);
-    // }
+    const { document } = this._resources.server;
+    if (document.onDocumentProps) {
+      document.onDocumentProps(docProps, appContext);
+    }
 
     const appData: IAppData = {
       ssr: api.config.ssr,
@@ -85,9 +76,8 @@ export abstract class BaseRenderer {
     docProps.mainTags.push(this._getInlineAppData(appData));
 
     return this._renderDocument(
-      docProps
-      // todo: breaking previous version
-      // document.getTemplateData ? document.getTemplateData(serverCtx) : {}
+      docProps,
+      document.getTemplateData ? document.getTemplateData(appContext) : {}
     );
   }
 

@@ -59,7 +59,8 @@ async function buildHtml({
 }) {
   const html = await renderToHTML({
     req: {
-      url: pathname
+      url: pathname,
+      headers: {}
     },
     api
   });
