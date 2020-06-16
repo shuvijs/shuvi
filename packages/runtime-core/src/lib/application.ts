@@ -45,6 +45,10 @@ export class Application<Context extends {}> extends Hookable
     });
   }
 
+  getContext() {
+    return this._context;
+  }
+
   private async _init() {
     await this.callHook<RuntimeHooks.IHookInit>('init');
   }
