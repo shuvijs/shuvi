@@ -29,6 +29,10 @@ export class App {
     this._store.addEntryCode(content);
   }
 
+  addRuntimePlugin(name: string, runtimePlugin: string): void {
+    this._store.addRuntimePlugin(name, runtimePlugin);
+  }
+
   addFile(file: File, dir: string = '/'): void {
     this._store.addFile(file, dir);
   }

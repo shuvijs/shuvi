@@ -199,6 +199,10 @@ export class Api extends Hookable implements IApi {
     this._app.addPolyfill(file);
   }
 
+  addRuntimePlugin(name: string, runtimePlugin: string): void {
+    this._app.addRuntimePlugin(name, runtimePlugin);
+  }
+
   getAssetPublicUrl(...paths: string[]): string {
     return joinPath(this.assetPublicPath, ...paths);
   }
