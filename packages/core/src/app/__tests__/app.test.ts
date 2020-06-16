@@ -57,11 +57,7 @@ describe('app', () => {
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       ['core/renderer.js', 'export * from "rendererModules"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content'],
-      [
-        'core/plugins.js',
-        'import plugin1 from "path/toPlugin"\nexport default (application) => {\nplugin1(application)\n}'
-      ]
+      ['core/routes.js', 'routes content']
     ]);
   });
 
