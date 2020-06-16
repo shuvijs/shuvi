@@ -2363,10 +2363,10 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@shuvi/hooks@0.0.1-beta.36":
-  version "0.0.1-beta.36"
-  resolved "https://registry.yarnpkg.com/@shuvi/hooks/-/hooks-0.0.1-beta.36.tgz#3ff2dd14b89d5280293714d6e9caad4f531bf2fb"
-  integrity sha512-LrunR5WdjglX771R0pHuZF5wzUh24xXundDIpapj0uSTj/LW70g8OF67LBvgo+e2/4Bnk0mzEYzVHY9eGbG5+Q==
+"@shuvi/hooks@0.0.1-beta.38":
+  version "0.0.1-beta.38"
+  resolved "https://registry.yarnpkg.com/@shuvi/hooks/-/hooks-0.0.1-beta.38.tgz#48e2fcb7a4227118236496adc0c2f5045fda8565"
+  integrity sha512-KlI7VuG4036UnOGFdD31bG69LY/MnnmBKTIZh1CAVNBfYkUY07ezKwGrZ8ZsNBoowRJGXgP5jWGBteh3dlEuug==
 
 "@sindresorhus/is@^2.0.0":
   version "2.1.0"

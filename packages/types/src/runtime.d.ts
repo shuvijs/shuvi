@@ -226,3 +226,13 @@ export interface IRuntime<CompType = unknown> {
 
   getServerRendererModulePath(): string;
 }
+
+export type Plugin = <O extends {}>(
+  tap: IApplication['tap'],
+  options?: O
+) => void;
+
+export type InitPlugins = (params: {
+  applyPluginOption: (name: string, options: unknown) => void;
+  registerPlugin: IApplication['tap'];
+}) => void;
