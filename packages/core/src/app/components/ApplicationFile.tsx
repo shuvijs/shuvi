@@ -26,7 +26,7 @@ export function create(context, options) {
     render: options.render
   });
   
-  runPlugins(app.tap);
+  runPlugins(app.tap.bind(app));
 
   return app;
 }
