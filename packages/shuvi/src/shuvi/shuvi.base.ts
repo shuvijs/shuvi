@@ -1,4 +1,4 @@
-import { IShuviMode, APIHooks } from '@shuvi/types';
+import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
 import {
   IHTTPRequestHandler,
   IIncomingMessage,
@@ -6,7 +6,6 @@ import {
 } from '../server';
 import { Api } from '../api';
 import { IConfig } from '../config';
-import { IRenderRequest } from '../renderer';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
 
@@ -58,11 +57,10 @@ export default abstract class Shuvi {
     res: IServerResponse
   ): Promise<void> {
     req.url = req.url || '/';
-    const renderRequest = req as IRenderRequest;
-
+    const renderRequest = req as Runtime.IRequest;
     const html = await renderToHTML({
-      api: this._api,
       req: renderRequest,
+      api: this._api,
       onRedirect(redirect) {
         res.writeHead(redirect.status ?? 302, { Location: redirect.path });
         res.end();

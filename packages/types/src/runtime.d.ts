@@ -1,4 +1,3 @@
-import { UrlWithParsedQuery } from 'url';
 import { IncomingHttpHeaders } from 'http';
 import { IRouteBase, IRouteConfig, IRoute, ITemplateData } from '@shuvi/core';
 import { ParsedUrlQuery } from 'querystring';
@@ -12,7 +11,6 @@ export type IQuery = ParsedUrlQuery;
 
 export interface IRequest {
   url: string;
-  parsedUrl: UrlWithParsedQuery;
   headers: IncomingHttpHeaders;
 }
 
@@ -54,6 +52,11 @@ export interface IRedirectFn {
   (path: string): void;
 }
 
+export interface ISeverAppContext {
+  req: IRequest;
+  [x: string]: any;
+}
+
 export interface IAppComponentContext {
   isServer: boolean;
   pathname: string;
@@ -63,7 +66,7 @@ export interface IAppComponentContext {
   appContext: {
     // server only
     req?: IRequest;
-    [x: string]: any
+    [x: string]: any;
   };
 
   // special props
@@ -79,7 +82,7 @@ export interface IRouteComponentContext {
   appContext: {
     // server only
     req?: IRequest;
-    [x: string]: any
+    [x: string]: any;
   };
 }
 
@@ -122,7 +125,7 @@ export interface ITelestore {
 
 export interface IServerRendererOptions<CompType = any>
   extends IRendererOptions<CompType> {
-  req: IRequest;
+  url: string;
   manifest: IManifest;
   getAssetPublicUrl(path: string): string;
 }
@@ -196,9 +199,10 @@ export interface IApplicationModule {
 
 export interface IDocumentModule {
   onDocumentProps(
-    documentProps: IDocumentProps
+    documentProps: IDocumentProps,
+    context: ISeverAppContext
   ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(): Promise<ITemplateData> | ITemplateData;
+  getTemplateData(context: ISeverAppContext): Promise<ITemplateData> | ITemplateData;
 }
 
 export interface IApplication extends Hookable {

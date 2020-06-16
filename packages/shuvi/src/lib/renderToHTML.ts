@@ -1,5 +1,5 @@
 import { Runtime } from '@shuvi/types';
-import { Renderer, IRenderRequest, isRedirect } from '../renderer';
+import { Renderer, isRedirect } from '../renderer';
 import { Api } from '../api';
 
 export async function renderToHTML({
@@ -7,7 +7,7 @@ export async function renderToHTML({
   api,
   onRedirect
 }: {
-  req: IRenderRequest;
+  req: Runtime.IRequest;
   api: Api;
   onRedirect?(redirect: Runtime.IRenderResultRedirect): void;
 }): Promise<null | string> {
@@ -21,7 +21,7 @@ export async function renderToHTML({
     {
       async render({ appContext, AppComponent, routes }) {
         const result = await renderer.renderDocument({
-          req,
+          url: req.url || '/',
           AppComponent,
           routes,
           appContext

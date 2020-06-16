@@ -33,7 +33,7 @@ const DEFAULT_HEAD = [
 ];
 
 const renderApp: IReactRenderer = async ({
-  req,
+  url,
   AppComponent,
   routes,
   appContext,
@@ -44,14 +44,12 @@ const renderApp: IReactRenderer = async ({
 
   const redirector = createRedirector();
   const routerContext = {};
-  const parsedUrl = req.parsedUrl;
-  const pathname = parsedUrl.pathname!;
   const history = createServerHistory({
     basename: '',
-    location: req.url,
+    location: url,
     context: routerContext
   });
-
+  const { pathname, query } = history.location;
   // sethistory before render to make router avaliable
   setHistory(history);
 
@@ -69,11 +67,11 @@ const renderApp: IReactRenderer = async ({
       pendingDataFetchs.push(async () => {
         const props = await comp.getInitialProps!({
           isServer: true,
-          pathname: pathname,
-          query: parsedUrl.query,
+          pathname,
+          query,
+          appContext,
           params: match.params,
-          redirect: redirector.handler,
-          appContext
+          redirect: redirector.handler
         });
         routeProps[route.id] = props || {};
       });
@@ -91,11 +89,11 @@ const renderApp: IReactRenderer = async ({
     appInitialProps = await appGetInitialProps({
       isServer: true,
       pathname,
-      query: parsedUrl.query,
+      query,
       params,
+      appContext,
       fetchInitialProps,
-      redirect: redirector.handler,
-      appContext
+      redirect: redirector.handler
     });
   } else {
     await fetchInitialProps();
