@@ -203,10 +203,6 @@ export class Api extends Hookable implements IApi {
     this._app.addRuntimePlugin(name, runtimePlugin);
   }
 
-  addRuntimePluginFile(file: IFile): void {
-    this.addAppFile(file, 'plugins');
-  }
-
   getAssetPublicUrl(...paths: string[]): string {
     return joinPath(this.assetPublicPath, ...paths);
   }

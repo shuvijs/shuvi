@@ -79,6 +79,17 @@ export async function setupApp(api: Api) {
     'core'
   );
 
+  api.addAppFile(
+    File.moduleProxy('userPlugin.js', {
+      source: [
+        ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
+        require.resolve('@shuvi/utils/lib/noop')
+      ],
+      defaultExport: true
+    }),
+    'core'
+  );
+
   if (!config.runtimeConfig || config.ssr) {
     // with ssr, we get runtimeConfig from appData
     api.addAppFile(

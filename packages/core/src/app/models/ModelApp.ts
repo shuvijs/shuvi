@@ -64,7 +64,7 @@ export class ModelApp {
   @observable extraFiles: IFileNode[] = [];
   @observable polyfills: string[] = [];
   @observable exports = new Map<string, ISpecifier[]>();
-  @observable runtimePlugins = new Map<string, ISpecifier>();
+  @observable runtimePlugins = new Map<string, string>();
 
   @computed
   get entryConent(): string {

@@ -8,7 +8,7 @@ import Polyfill from './components/PolyfillFile';
 import RoutesFile from './components/RoutesFile';
 import UserFiles from './components/UserFiles';
 import ApplicationFile from './components/ApplicationFile';
-import PluginsFile from './components/PluginsFile';
+import PluginFile from './components/PluginFile';
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
         <RendererFile />
         <AppFile />
         <RoutesFile />
-        <PluginsFile />
+        <PluginFile />
         <Polyfill />
       </Dir>
       <UserFiles />
