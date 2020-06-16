@@ -31,6 +31,22 @@ export default abstract class Shuvi {
     return this._api.server.getRequestHandler();
   }
 
+  async renderToHTML(
+    req: IIncomingMessage,
+    res: IServerResponse
+  ): Promise<string | null> {
+    req.url = req.url || '/';
+    const renderRequest = req as Runtime.IRequest;
+    return renderToHTML({
+      req: renderRequest,
+      api: this._api,
+      onRedirect(redirect) {
+        res.writeHead(redirect.status ?? 302, { Location: redirect.path });
+        res.end();
+      }
+    });
+  }
+
   async close() {
     await this._api.destory();
   }
@@ -56,17 +72,7 @@ export default abstract class Shuvi {
     req: IIncomingMessage,
     res: IServerResponse
   ): Promise<void> {
-    req.url = req.url || '/';
-    const renderRequest = req as Runtime.IRequest;
-    const html = await renderToHTML({
-      req: renderRequest,
-      api: this._api,
-      onRedirect(redirect) {
-        res.writeHead(redirect.status ?? 302, { Location: redirect.path });
-        res.end();
-      }
-    });
-
+    const html = await this.renderToHTML(req, res);
     if (html) {
       sendHTML(req, res, html);
     }
