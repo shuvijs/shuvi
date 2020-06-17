@@ -5,24 +5,24 @@ import { resolvePlugins } from '../plugin';
 function callPlugins(context: any, ...plugins: IPluginConfig[]) {
   resolvePlugins(plugins, {
     dir: path.join(__dirname, 'fixtures/plugins')
-  }).forEach(p => p.get()(context));
+  }).forEach(p => p.get().apply(context));
 }
 
 describe('plugin', () => {
   test('should accept class module as a plugin', () => {
     const api = {};
-    callPlugins(api, './dumb-plugin');
+    callPlugins(api, './simple-class');
     const plugins = (api as any).__plugins;
     expect(plugins.length).toBe(1);
-    expect(plugins[0].name).toBe('dumb');
+    expect(plugins[0].name).toBe('simple-class');
   });
 
   test('should accept function module as a plugin', () => {
     const api = {};
-    callPlugins(api, './dumb-plugin-function');
+    callPlugins(api, './simple-function');
     const plugins = (api as any).__plugins;
     expect(plugins.length).toBe(1);
-    expect(plugins[0].name).toBe('function-plugin');
+    expect(plugins[0].name).toBe('simple-function');
   });
 
   test('should accept inline function as a plugin', () => {
@@ -35,21 +35,21 @@ describe('plugin', () => {
   describe('array plugin', () => {
     test('should accept module and option', () => {
       const api = {};
-      callPlugins(api, ['./dumb-plugin', { test: 1 }]);
+      callPlugins(api, ['./simple-class', { test: 1 }]);
       const plugins = (api as any).__plugins;
 
       expect(plugins.length).toBe(1);
-      expect(plugins[0].name).toBe('dumb');
+      expect(plugins[0].name).toBe('simple-class');
       expect(plugins[0].options).toMatchObject({ test: 1 });
     });
 
     test('should accept module and name', () => {
       const api = {};
-      callPlugins(api, ['./dumb-plugin', 'one']);
+      callPlugins(api, ['./simple-class', 'one']);
       const plugins = (api as any).__plugins;
 
       expect(plugins.length).toBe(1);
-      expect(plugins[0].name).toBe('dumb');
+      expect(plugins[0].name).toBe('simple-class');
       expect(plugins[0].options).toMatchObject({});
     });
 
@@ -57,15 +57,15 @@ describe('plugin', () => {
       const api = {};
       callPlugins(
         api,
-        ['./dumb-plugin', { test: 1 }, 'one'],
-        ['./dumb-plugin', { test: 2 }, 'two']
+        ['./simple-class', { test: 1 }, 'one'],
+        ['./simple-class', { test: 2 }, 'two']
       );
       const plugins = (api as any).__plugins;
 
       expect(plugins.length).toBe(2);
-      expect(plugins[0].name).toBe('dumb');
+      expect(plugins[0].name).toBe('simple-class');
       expect(plugins[0].options).toMatchObject({ test: 1 });
-      expect(plugins[1].name).toBe('dumb');
+      expect(plugins[1].name).toBe('simple-class');
       expect(plugins[1].options).toMatchObject({ test: 2 });
     });
   });

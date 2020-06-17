@@ -31,11 +31,10 @@ interface IApiOPtions {
 }
 
 class Api extends Hookable implements IApi {
-  mode: IShuviMode;
-  paths!: IPaths;
-
-  private _config!: IApiConfig;
+  private _mode: IShuviMode;
   private _userConfig: IConfig;
+  private _config!: IApiConfig;
+  private _paths!: IPaths;
   private _app!: App;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
@@ -46,17 +45,25 @@ class Api extends Hookable implements IApi {
   constructor({ mode, config }: IApiOPtions) {
     super();
     if (mode) {
-      this.mode = mode;
+      this._mode = mode;
     } else if (ServiceModes.includes(process.env.NODE_ENV as any)) {
-      this.mode = process.env.NODE_ENV as any;
+      this._mode = process.env.NODE_ENV as any;
     } else {
-      this.mode = 'production';
+      this._mode = 'production';
     }
     this._userConfig = config;
   }
 
+  get mode() {
+    return this._mode;
+  }
+
   get config() {
     return this._config;
+  }
+
+  get paths() {
+    return this._paths;
   }
 
   async init() {
@@ -67,20 +74,51 @@ class Api extends Hookable implements IApi {
     this._plugins = resolvePlugins(config.plugins || [], {
       dir: config.rootDir
     });
-    this._plugins.forEach(plugin => plugin.get()(this.getPluginApi()));
 
+    let runPlugins = function runNext(
+      next?: Function,
+      cur: Function = () => void 0
+    ) {
+      if (next) {
+        return (n: Function) =>
+          runNext(n, () => {
+            cur();
+            next();
+          });
+      }
+      return cur();
+    };
+    for (const plugin of this._plugins) {
+      const pluginInst = plugin.get();
+      if (typeof pluginInst.modifyConfig === 'function') {
+        this.tap<APIHooks.IHookGetConfig>('getConfig', {
+          name: 'pluginModifyConfig',
+          fn(config) {
+            return pluginInst.modifyConfig!(config);
+          }
+        });
+      }
+      runPlugins = runPlugins(() => {
+        pluginInst.apply(this.getPluginApi());
+      });
+    }
+
+    // prepare all properties befofre run plugins, so plugin can use all api of Api
     this._config = await this.callHook<APIHooks.IHookGetConfig>({
       name: 'getConfig',
       initialValue: config
     });
-    // do not allow modify config
+    // do not allow to modify config
     Object.freeze(this._config);
-
-    this.paths = getPaths({
+    this._paths = getPaths({
       rootDir: this._config.rootDir,
       outputPath: this._config.outputPath,
       publicDir: this._config.publicDir
     });
+    // do not allow to modify paths
+    Object.freeze(this._paths);
+
+    runPlugins();
 
     initCoreResource(this);
     // TODO?: move into application

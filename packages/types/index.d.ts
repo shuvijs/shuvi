@@ -77,9 +77,9 @@ export interface IApiConfig {
 
 // api for plugins
 export interface IApi extends IHookable {
-  mode: IShuviMode;
-  paths: IPaths;
-  config: IApiConfig;
+  readonly mode: IShuviMode;
+  readonly paths: IPaths;
+  readonly config: IApiConfig;
 
   addEntryCode: typeof App.prototype.addEntryCode;
   addAppFile: typeof App.prototype.addFile;
