@@ -1,8 +1,8 @@
-import { Bundler, IApi, Runtime } from '@shuvi/types';
+import { Bundler, IApi, Runtime, IApiConfig } from '@shuvi/types';
 
 export type IBuiltResource = {
   server: {
-    application: Runtime.IApplicationModule
+    application: Runtime.IApplicationModule;
     document: Partial<Runtime.IDocumentModule>;
     renderer: Runtime.IServerRenderer;
   };
@@ -15,9 +15,12 @@ export type IResources<Extra = {}> = IBuiltResource & {
   [x: string]: any;
 } & { [K in keyof Extra]: Extra[K] };
 
-type PluginFn = (api: IApi) => void;
+export interface IPluginSpec {
+  modifyConfig?(config: IApiConfig): Promise<IApiConfig>;
+  apply(api: IApi): void;
+}
 
 export interface IPlugin {
   id: string;
-  get: () => PluginFn;
+  get: () => IPluginSpec;
 }

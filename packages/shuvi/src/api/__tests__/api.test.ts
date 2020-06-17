@@ -1,12 +1,14 @@
 import { getApi, Api } from '../api';
 import { PluginApi } from '../pluginApi';
+import { resolvePlugin } from './utils';
+import { IApiConfig, IPaths } from '@shuvi/types';
 
 describe('api', () => {
   let gApi: Api;
   beforeAll(async () => {
     gApi = await getApi({
       mode: 'development',
-      config: {},
+      config: {}
     });
   });
 
@@ -15,13 +17,47 @@ describe('api', () => {
     expect(prodApi.mode).toBe('production');
   });
 
-  test('plugins', async () => {
-    let pluginApi: PluginApi;
-    const api = await getApi({
-      config: { plugins: [(api) => (pluginApi = api)] },
+  describe('plugins', () => {
+    test('should work', async () => {
+      let pluginApi: PluginApi;
+      const api = await getApi({
+        config: { plugins: [api => (pluginApi = api)] }
+      });
+      expect(pluginApi!).toBeDefined();
+      expect(pluginApi!.paths).toBe(api.paths);
     });
-    expect(pluginApi!).toBeDefined();
-    expect(pluginApi!.paths).toBe(api.paths);
+
+    test('should modify config', async () => {
+      let pluginApi: PluginApi;
+      const api = await getApi({
+        config: {
+          plugins: [resolvePlugin('modify-config'), api => (pluginApi = api)]
+        }
+      });
+      const plugins = (pluginApi! as any).__plugins;
+      expect(plugins.length).toBe(1);
+      expect(plugins[0].name).toBe('modify-config');
+      expect(api.config.publicPath).toBe('/bar');
+    });
+
+    test('should access config and paths', async () => {
+      let config: IApiConfig;
+      let paths: IPaths;
+      await getApi({
+        config: {
+          rootDir: '/root',
+          publicPath: '/test',
+          plugins: [
+            api => {
+              config = api.config;
+              paths = api.paths;
+            }
+          ]
+        }
+      });
+      expect(config!.publicPath).toBe('/test');
+      expect(paths!.rootDir).toBe('/root');
+    });
   });
 
   test('getPluginApi', () => {
@@ -44,8 +80,8 @@ describe('api', () => {
       'resolveUserFile',
       'resolveBuildFile',
       'resolvePublicFile',
-      'getAssetPublicUrl',
-    ].forEach((method) => {
+      'getAssetPublicUrl'
+    ].forEach(method => {
       // @ts-ignore
       expect(typeof pluginApi[method]).toBe('function');
     });
