@@ -22,6 +22,7 @@ export default async function main(argv: string[]) {
   const shuviApp = shuvi({ dev: true, config });
 
   try {
+    console.log('Starting the development server...');
     await shuviApp.listen(port, host);
   } catch (err) {
     if (err.code === 'EADDRINUSE') {

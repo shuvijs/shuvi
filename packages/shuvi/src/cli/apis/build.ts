@@ -1,7 +1,7 @@
 import path from 'path';
 import fse from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { Api } from '../../api/api';
+import { Api, getApi } from '../../api/api';
 import { IConfig } from '../../config';
 import { getBundler } from '../../bundler/bundler';
 import { BUILD_CLIENT_DIR } from '../../constants';
@@ -81,7 +81,7 @@ export async function build(
     ...defaultBuildOptions,
     ...options
   };
-  const api = new Api({ mode: 'production', config });
+  const api = await getApi({ mode: 'production', config });
 
   // generate application
   await api.buildApp();

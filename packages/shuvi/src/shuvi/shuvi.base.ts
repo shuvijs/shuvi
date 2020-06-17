@@ -4,7 +4,7 @@ import {
   IIncomingMessage,
   IServerResponse
 } from '../server';
-import { Api } from '../api';
+import { getApi, Api } from '../api';
 import { IConfig } from '../config';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
@@ -14,16 +14,15 @@ export interface IShuviConstructorOptions {
 }
 
 export default abstract class Shuvi {
-  protected _api: Api;
+  protected _api!: Api;
+  private _config: IConfig;
 
   constructor({ config }: IShuviConstructorOptions) {
-    this._api = new Api({
-      mode: this.getMode(),
-      config
-    });
+    this._config = config;
   }
 
   async ready(): Promise<void> {
+    await this._ensureApiInited();
     await this.init();
   }
 
@@ -52,6 +51,7 @@ export default abstract class Shuvi {
   }
 
   async listen(port: number, hostname: string = 'localhost'): Promise<void> {
+    await this._ensureApiInited();
     this._api.emitEvent<APIHooks.IEventServerListen>('server:listen', {
       port,
       hostname
@@ -76,5 +76,16 @@ export default abstract class Shuvi {
     if (html) {
       sendHTML(req, res, html);
     }
+  }
+
+  private async _ensureApiInited() {
+    if (this._api) {
+      return;
+    }
+
+    this._api = await getApi({
+      mode: this.getMode(),
+      config: this._config
+    });
   }
 }

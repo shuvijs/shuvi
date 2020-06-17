@@ -57,6 +57,8 @@ function normalizeProxyConfig(
 }
 
 export class Server {
+  hostname: string | undefined;
+  port: number | undefined;
   private _connect: IConnect;
   private _server: http.Server | null = null;
 
@@ -79,6 +81,8 @@ export class Server {
       return;
     }
 
+    this.hostname = hostname;
+    this.port = port;
     const srv = (this._server = http.createServer(this.getRequestHandler()));
     await new Promise((resolve, reject) => {
       // This code catches EADDRINUSE error if the port is already in use

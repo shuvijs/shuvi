@@ -1,8 +1,15 @@
-import { IShuviMode } from '../..';
+import { IShuviMode, IApiConfig } from '../..';
 import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
 import { IRouteConfig } from '../runtime';
 import { defineHook } from './helper';
+
+export type IHookGetConfig = defineHook<
+  'getConfig',
+  {
+    initialValue: IApiConfig;
+  }
+>;
 
 export type IHookAppRoutes = defineHook<
   'app:routes',
