@@ -25,19 +25,25 @@ import { getPaths } from './paths';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
-export class Api extends Hookable implements IApi {
-  mode: IShuviMode;
-  paths: IPaths;
-  config: IApiConfig;
+interface IApiOPtions {
+  mode?: IShuviMode;
+  config: IConfig;
+}
 
-  private _app: App;
+class Api extends Hookable implements IApi {
+  mode: IShuviMode;
+  paths!: IPaths;
+
+  private _config!: IApiConfig;
+  private _userConfig: IConfig;
+  private _app!: App;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
   private _routes: IRouteConfig[] = [];
-  private _plugins: IPlugin[];
+  private _plugins!: IPlugin[];
   private _pluginApi!: PluginApi;
 
-  constructor({ mode, config }: { mode?: IShuviMode; config: IConfig }) {
+  constructor({ mode, config }: IApiOPtions) {
     super();
     if (mode) {
       this.mode = mode;
@@ -46,21 +52,38 @@ export class Api extends Hookable implements IApi {
     } else {
       this.mode = 'production';
     }
-    this.config = deepmerge(defaultConfig, config);
-    this.paths = getPaths({
-      rootDir: this.config.rootDir,
-      outputPath: this.config.outputPath,
-      publicDir: this.config.publicDir
-    });
+    this._userConfig = config;
+  }
 
+  get config() {
+    return this._config;
+  }
+
+  async init() {
     this._app = new App();
-    this._plugins = resolvePlugins(this.config.plugins || [], {
-      dir: this.paths.rootDir
+    const config: IApiConfig = deepmerge(defaultConfig, this._userConfig);
+
+    // init plugins
+    this._plugins = resolvePlugins(config.plugins || [], {
+      dir: config.rootDir
     });
     this._plugins.forEach(plugin => plugin.get()(this.getPluginApi()));
 
-    initCoreResource(this);
+    this._config = await this.callHook<APIHooks.IHookGetConfig>({
+      name: 'getConfig',
+      initialValue: config
+    });
+    // do not allow modify config
+    Object.freeze(this._config);
 
+    this.paths = getPaths({
+      rootDir: this._config.rootDir,
+      outputPath: this._config.outputPath,
+      publicDir: this._config.publicDir
+    });
+
+    initCoreResource(this);
+    // TODO?: move into application
     if (typeof this.config.runtimeConfig === 'object') {
       setRuntimeConfig(this.config.runtimeConfig);
     }
@@ -238,4 +261,12 @@ export class Api extends Hookable implements IApi {
     this._app.stopBuild(this.paths.appDir);
     await this.callHook<APIHooks.IHookDestory>('destory');
   }
+}
+
+export type { Api };
+
+export async function getApi({ mode, config }: IApiOPtions): Promise<Api> {
+  const api = new Api({ mode, config });
+  await api.init();
+  return api;
 }

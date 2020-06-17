@@ -7,15 +7,24 @@ import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
 
 export default class ShuviDev extends Base {
-  private _onDemandRouteMgr: OnDemandRouteManager;
+  private _onDemandRouteMgr!: OnDemandRouteManager;
 
   constructor(options: IShuviConstructorOptions) {
     super(options);
-    this._onDemandRouteMgr = new OnDemandRouteManager(this._api);
   }
 
   async init() {
     const api = this._api;
+    this._onDemandRouteMgr = new OnDemandRouteManager(api);
+
+    api.on<APIHooks.IEventBundlerDone>('bundler:done', ({ first }) => {
+      if (first) {
+        const localUrl = `http://${
+          api.server.hostname === '0.0.0.0' ? 'localhost' : api.server.hostname
+        }:${api.server.port}`;
+        console.log(`Ready on ${localUrl}`);
+      }
+    });
 
     // prepare app
     await api.buildApp();
@@ -33,21 +42,6 @@ export default class ShuviDev extends Base {
     api.server.use(this._pageMiddleware.bind(this));
 
     await devMiddleware.waitUntilValid();
-  }
-
-  async listen(port: number, hostname: string = 'localhost'): Promise<void> {
-    this._api.on<APIHooks.IEventBundlerDone>('bundler:done', ({ first }) => {
-      if (first) {
-        const localUrl = `http://${
-          hostname === '0.0.0.0' ? 'localhost' : hostname
-        }:${port}`;
-        console.log(`Ready on ${localUrl}`);
-      }
-    });
-
-    console.log('Starting the development server...');
-
-    return super.listen(port, hostname);
   }
 
   protected getMode() {

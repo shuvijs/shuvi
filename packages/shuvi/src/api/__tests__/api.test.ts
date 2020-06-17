@@ -1,23 +1,23 @@
-import { Api } from '../api';
+import { getApi, Api } from '../api';
 import { PluginApi } from '../pluginApi';
 
 describe('api', () => {
   let gApi: Api;
-  beforeAll(() => {
-    gApi = new Api({
+  beforeAll(async () => {
+    gApi = await getApi({
       mode: 'development',
       config: {},
     });
   });
 
-  test('should has "production" be default mode', () => {
-    const prodApi = new Api({ config: {} });
+  test('should has "production" be default mode', async () => {
+    const prodApi = await getApi({ config: {} });
     expect(prodApi.mode).toBe('production');
   });
 
-  test('plugins', () => {
+  test('plugins', async () => {
     let pluginApi: PluginApi;
-    const api = new Api({
+    const api = await getApi({
       config: { plugins: [(api) => (pluginApi = api)] },
     });
     expect(pluginApi!).toBeDefined();
