@@ -1,4 +1,3 @@
-import { APIHooks } from '@shuvi/types';
 import { IIncomingMessage, IServerResponse, INextFunction } from '../server';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
@@ -16,15 +15,6 @@ export default class ShuviDev extends Base {
   async init() {
     const api = this._api;
     this._onDemandRouteMgr = new OnDemandRouteManager(api);
-
-    api.on<APIHooks.IEventBundlerDone>('bundler:done', ({ first }) => {
-      if (first) {
-        const localUrl = `http://${
-          api.server.hostname === '0.0.0.0' ? 'localhost' : api.server.hostname
-        }:${api.server.port}`;
-        console.log(`Ready on ${localUrl}`);
-      }
-    });
 
     // prepare app
     await api.buildApp();

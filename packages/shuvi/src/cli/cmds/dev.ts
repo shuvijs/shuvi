@@ -24,6 +24,10 @@ export default async function main(argv: string[]) {
   try {
     console.log('Starting the development server...');
     await shuviApp.listen(port, host);
+    const localUrl = `http://${
+      host === '0.0.0.0' ? 'localhost' : host
+    }:${port}`;
+    console.log(`Ready on ${localUrl}`);
   } catch (err) {
     if (err.code === 'EADDRINUSE') {
       let errorMessage = `Port ${port} is already in use.`;
