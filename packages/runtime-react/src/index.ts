@@ -70,10 +70,10 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
     }
 
     if (history === 'hash') {
-      return resolveDist('bootstrap.hash');
+      return resolveDist('clientRender.hash');
     }
 
-    return resolveDist('bootstrap.browser');
+    return resolveDist('clientRender.browser');
   }
 
   getAppModulePath(): string {
