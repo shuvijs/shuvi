@@ -1,9 +1,8 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import { File } from '@shuvi/react-fs';
 
 function ApplicationFile() {
-  const template = `
+  const app = `
 import AppComponent from "@shuvi/app/core/app";
 import routes from "@shuvi/app/core/routes";
 import { Application } from "@shuvi/runtime-core/lib/lib/application";
@@ -42,7 +41,26 @@ if (module.hot) {
 }
 `;
 
-  return <File name="application.js" content={template} />;
+  const emptyApp = `
+import { Application } from "@shuvi/runtime-core/lib/lib/application";
+
+export function create(context, options) {
+  return new Application({
+    AppComponent: null,
+    routes: [],
+    context,
+    render: options.render
+  });
+  return app;
+}
+`;
+
+  return (
+    <>
+      <File name="application.js" content={app} />
+      <File name="application-spa-server.js" content={emptyApp} />
+    </>
+  );
 }
 
-export default observer(ApplicationFile);
+export default ApplicationFile;

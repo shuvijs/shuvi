@@ -53,5 +53,26 @@ describe('renderer', () => {
       const files = await recursiveReadDir('/');
       expect(files).toEqual(['a/a1', 'a/a2']);
     });
+
+    test('shuold support fragment in dir', async () => {
+      const Child = () => (
+        <>
+          <File name="b1" content="test" />
+          <File name="b2" content="test" />
+        </>
+      );
+      await renderOnce(
+        <>
+          <File name="a" content="test" />
+          <Dir name="b">
+            <Child />
+          </Dir>
+        </>,
+        '/'
+      );
+
+      const files = await recursiveReadDir('/');
+      expect(files).toEqual(['a', 'b/b1', 'b/b2']);
+    });
   });
 });

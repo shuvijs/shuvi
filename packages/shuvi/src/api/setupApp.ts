@@ -141,22 +141,31 @@ export async function setupApp(api: Api) {
 
   api.addAppFile(
     File.module('server.js', {
-      exports: {
-        [api.resolveAppFile('core', 'document')]: {
-          imported: '*',
-          local: 'document'
-        },
-        [api.resolveAppFile('core', 'application')]: {
-          imported: '*',
-          local: 'application'
-        },
-        ...(api.config.ssr && {
-          [runtime.getServerRendererModulePath()]: {
-            imported: 'default',
-            local: 'renderer'
+      exports: api.config.ssr
+        ? {
+            [api.resolveAppFile('core', 'document')]: {
+              imported: '*',
+              local: 'document'
+            },
+            [api.resolveAppFile('core', 'application')]: {
+              imported: '*',
+              local: 'application'
+            },
+            [runtime.getServerRendererModulePath()]: {
+              imported: 'default',
+              local: 'renderer'
+            }
           }
-        })
-      }
+        : {
+            [api.resolveAppFile('core', 'document')]: {
+              imported: '*',
+              local: 'document'
+            },
+            [api.resolveAppFile('core', 'application-spa-server')]: {
+              imported: '*',
+              local: 'application'
+            }
+          }
     })
   );
 
