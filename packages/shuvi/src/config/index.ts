@@ -1,6 +1,7 @@
 import { IApiConfig } from '@shuvi/types';
 import path from 'path';
 import { CONFIG_FILE, PUBLIC_PATH } from '../constants';
+import { loadDotenvConfig } from './loadDotenvConfig';
 
 export type IConfig = Partial<IApiConfig>;
 
@@ -38,6 +39,9 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 export async function loadConfig(
   dir: string = process.cwd()
 ): Promise<IConfig> {
+  // read dotenv so we can get env in shuvi.config.js
+  loadDotenvConfig(dir);
+
   const config = await loadConfigFromFile<IConfig>(path.join(dir, CONFIG_FILE));
 
   if (!config.rootDir) {
