@@ -27,15 +27,14 @@ const ServiceModes: IShuviMode[] = ['development', 'production'];
 
 interface IApiOPtions {
   mode?: IShuviMode;
-  config?: IConfig; // userConfig
+  config?: IConfig;
   configFile?: string;
 }
 
 class Api extends Hookable implements IApi {
   private _mode: IShuviMode;
-  private userConfig?: IConfig;
+  private _userConfig?: IConfig;
   private _config!: IApiConfig;
-  private _cliConfig: IConfig = {};
   private _configFile?: string;
   private _paths!: IPaths;
   private _app!: App;
@@ -56,7 +55,7 @@ class Api extends Hookable implements IApi {
     }
 
     this._configFile = configFile;
-    this.userConfig = config;
+    this._userConfig = config;
   }
 
   get mode() {
@@ -74,13 +73,9 @@ class Api extends Hookable implements IApi {
   async init() {
     this._app = new App();
 
-    const configFromFile = await loadConfig(this._configFile, this.userConfig);
+    const configFromFile = await loadConfig(this._configFile, this._userConfig);
 
-    const config: IApiConfig = deepmerge(
-      defaultConfig,
-      configFromFile,
-      this._cliConfig
-    );
+    const config: IApiConfig = deepmerge(defaultConfig, configFromFile);
 
     // init plugins
     this._plugins = resolvePlugins(config.plugins || [], {
@@ -172,10 +167,6 @@ class Api extends Hookable implements IApi {
 
   setAppModule(module: string | string[]) {
     this._app.setAppModule(module);
-  }
-
-  setCliConfig(cliConfig: IConfig) {
-    this._cliConfig = cliConfig;
   }
 
   async setRoutes(routes: IRouteConfig[]) {
@@ -319,14 +310,13 @@ class Api extends Hookable implements IApi {
 
 export type { Api };
 
-export async function getApi(
-  { mode, config, configFile }: IApiOPtions,
-  cliConfig?: IConfig
-): Promise<Api> {
+export async function getApi({
+  mode,
+  config,
+  configFile
+}: IApiOPtions): Promise<Api> {
   const api = new Api({ mode, config, configFile });
-  if (cliConfig) {
-    api.setCliConfig(cliConfig);
-  }
+
   await api.init();
   return api;
 }
