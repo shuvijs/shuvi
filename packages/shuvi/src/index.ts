@@ -1,4 +1,4 @@
-export { shuvi, Shuvi } from './shuvi';
+export { shuvi, Shuvi, IConfig } from './shuvi';
 
 export { IFile, File, ISpecifier, ITemplateData } from '@shuvi/core';
 

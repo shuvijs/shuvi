@@ -67,7 +67,7 @@ export default async function main(argv: string[]) {
   applyCliOptions(cliOpts, config);
 
   try {
-    await build(config, { target: cliOpts.target }, configFile);
+    await build({ config, target: cliOpts.target, configFile });
     console.log('Build successfully!');
   } catch (error) {
     console.error('Failed to build.\n');

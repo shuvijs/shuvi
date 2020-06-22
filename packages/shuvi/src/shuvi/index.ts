@@ -1,12 +1,12 @@
 import Shuvi, { IShuviConstructorOptions } from './shuvi.base';
 import { IConfig } from '../config';
 
-export { Shuvi };
+export { Shuvi, IConfig };
 
 export interface ShuviOptions {
   dev?: boolean;
   config?: IConfig;
-  configFile: string;
+  configFile?: string;
 }
 
 export function shuvi({
