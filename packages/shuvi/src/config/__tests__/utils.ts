@@ -9,12 +9,10 @@ export function resolveFixture(name: string) {
 
 export async function loadFixture(
   name: string,
-  userConfig?: IConfig,
+  userConfig: IConfig = {},
   configFile: boolean = true
 ) {
-  if (userConfig) {
-    userConfig.rootDir = resolveFixture(name);
-  }
+  userConfig.rootDir = resolveFixture(name);
   return loadConfig(
     configFile ? path.join(resolveFixture(name), CONFIG_FILE) : undefined,
     userConfig
