@@ -1,14 +1,19 @@
-import { IConfig } from '../config';
 import Shuvi, { IShuviConstructorOptions } from './shuvi.base';
+import { IConfig } from '../config';
 
 export { Shuvi };
 
 export interface ShuviOptions {
   dev?: boolean;
   config?: IConfig;
+  configFile: string;
 }
 
-export function shuvi({ dev = false, config = {} }: ShuviOptions): Shuvi {
+export function shuvi({
+  dev = false,
+  config = {},
+  configFile
+}: ShuviOptions): Shuvi {
   let ShuviCtor: { new (options: IShuviConstructorOptions): Shuvi };
   if (dev) {
     ShuviCtor = require('./shuvi.dev').default;
@@ -16,5 +21,5 @@ export function shuvi({ dev = false, config = {} }: ShuviOptions): Shuvi {
     ShuviCtor = require('./shuvi.prod').default;
   }
 
-  return new ShuviCtor({ config });
+  return new ShuviCtor({ config, configFile });
 }
