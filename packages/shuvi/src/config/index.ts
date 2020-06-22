@@ -1,6 +1,8 @@
 import { IApiConfig } from '@shuvi/types';
 import path from 'path';
 import { CONFIG_FILE, PUBLIC_PATH } from '../constants';
+import { loadDotenvConfig } from './loadDotenvConfig';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 
 export type IConfig = Partial<IApiConfig>;
 
@@ -36,13 +38,33 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 }
 
 export async function loadConfig(
-  dir: string = process.cwd()
+  configFile?: string,
+  userConfig?: IConfig
 ): Promise<IConfig> {
-  const config = await loadConfigFromFile<IConfig>(path.join(dir, CONFIG_FILE));
+  let rootDir = process.cwd();
 
-  if (!config.rootDir) {
-    config.rootDir = dir;
+  if (userConfig?.rootDir) {
+    rootDir = path.isAbsolute(userConfig.rootDir)
+      ? userConfig.rootDir
+      : path.resolve(userConfig.rootDir);
   }
 
-  return config;
+  // read dotenv so we can get env in shuvi.config.js
+  loadDotenvConfig(rootDir);
+
+  if (configFile && configFile.endsWith(CONFIG_FILE)) {
+    const config = await loadConfigFromFile<IConfig>(configFile);
+
+    if (!config.rootDir) {
+      config.rootDir = rootDir;
+    }
+
+    return deepmerge(config, userConfig || {});
+  } else if (userConfig) {
+    return userConfig;
+  } else {
+    throw new Error(
+      `configFile expect to end with '${CONFIG_FILE}', but recevied ${configFile}`
+    );
+  }
 }

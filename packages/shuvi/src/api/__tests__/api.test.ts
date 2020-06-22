@@ -2,6 +2,8 @@ import { getApi, Api } from '../api';
 import { PluginApi } from '../pluginApi';
 import { resolvePlugin } from './utils';
 import { IApiConfig, IPaths } from '@shuvi/types';
+import path from 'path';
+import { CONFIG_FILE } from '@shuvi/shared/lib/constants';
 
 describe('api', () => {
   let gApi: Api;
@@ -85,5 +87,15 @@ describe('api', () => {
       // @ts-ignore
       expect(typeof pluginApi[method]).toBe('function');
     });
+  });
+
+  test('should load dotEnv when init', async () => {
+    expect(process.env.READ_ENV).toBeUndefined();
+
+    await getApi({
+      configFile: path.join(__dirname, 'fixtures', 'dotenv', CONFIG_FILE)
+    });
+
+    expect(process.env.READ_ENV).toBe('true');
   });
 });

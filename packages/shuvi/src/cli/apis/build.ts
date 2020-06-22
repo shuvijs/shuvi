@@ -75,13 +75,14 @@ async function buildHtml({
 
 export async function build(
   config: IConfig,
-  options: Partial<IBuildOptions> = {}
+  options: Partial<IBuildOptions> = {},
+  configFile: string
 ) {
   const opts: IBuildOptions = {
     ...defaultBuildOptions,
     ...options
   };
-  const api = await getApi({ mode: 'production', config });
+  const api = await getApi({ mode: 'production', config, configFile });
 
   // generate application
   await api.buildApp();
