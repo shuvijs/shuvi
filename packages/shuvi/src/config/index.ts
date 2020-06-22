@@ -43,10 +43,10 @@ export async function loadConfig(
 ): Promise<IConfig> {
   let rootDir = process.cwd();
 
-  if (configFile) {
-    rootDir = path.join(configFile, '..');
-  } else if (userConfig?.rootDir) {
-    rootDir = userConfig.rootDir;
+  if (userConfig?.rootDir) {
+    rootDir = path.isAbsolute(userConfig.rootDir)
+      ? userConfig.rootDir
+      : path.resolve(userConfig.rootDir);
   }
 
   // read dotenv so we can get env in shuvi.config.js
