@@ -37,7 +37,7 @@ async function createTextContext(app: Shuvi) {
     async close() {
       await app.close();
       await browser.close();
-    },
+    }
   };
 }
 
@@ -55,7 +55,7 @@ export async function serveFixture(
   overrides: Partial<IApiConfig> = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  await build(config);
+  await build({ config });
   const shuviApp = shuvi({ dev: false, config });
   return createTextContext(shuviApp);
 }

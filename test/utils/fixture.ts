@@ -1,22 +1,15 @@
 import path from 'path';
 import { IApiConfig } from '@shuvi/types';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { loadConfig } from 'shuvi/lib/config';
+import { IConfig } from 'shuvi/src';
 import { build } from './build';
-import { CONFIG_FILE } from 'shuvi/src/constants';
 
 export function resolveFixture(...paths: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...paths);
 }
 
-export async function loadFixture(
-  fixture: string,
-  overrides: Partial<IApiConfig> = {}
-): Promise<IApiConfig> {
+export function loadFixture(fixture: string, overrides: IConfig = {}): IConfig {
   const rootDir = resolveFixture(fixture);
-  const config = await loadConfig(path.join(rootDir, CONFIG_FILE));
-
-  return deepmerge(config, overrides);
+  return { ...overrides, rootDir };
 }
 
 export async function buildFixture(
@@ -24,5 +17,5 @@ export async function buildFixture(
   overrides: Partial<IApiConfig> = {}
 ) {
   const config = await loadFixture(fixture, overrides);
-  await build(config);
+  await build({ config });
 }

@@ -8,11 +8,15 @@ import { BUILD_CLIENT_DIR } from '../../constants';
 import { renderToHTML } from '../../lib/renderToHTML';
 
 export interface IBuildOptions {
-  target: 'spa' | 'ssr';
+  config?: IConfig;
+  configFile?: string;
+  target?: 'spa' | 'ssr';
 }
 
 const defaultBuildOptions = {
-  target: 'ssr'
+  target: 'ssr',
+  config: {},
+  configFile: ''
 } as const;
 
 async function bundle({ api }: { api: Api }) {
@@ -73,16 +77,16 @@ async function buildHtml({
   }
 }
 
-export async function build(
-  config: IConfig,
-  options: Partial<IBuildOptions> = {},
-  configFile: string
-) {
-  const opts: IBuildOptions = {
+export async function build(options: IBuildOptions) {
+  const opts: Required<IBuildOptions> = {
     ...defaultBuildOptions,
     ...options
   };
-  const api = await getApi({ mode: 'production', config, configFile });
+  const api = await getApi({
+    mode: 'production',
+    config: opts.config,
+    configFile: opts.configFile
+  });
 
   // generate application
   await api.buildApp();
