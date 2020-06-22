@@ -1,6 +1,6 @@
 import { IApiConfig } from '@shuvi/types';
 import path from 'path';
-import { CONFIG_FILE, PUBLIC_PATH } from '../constants';
+import { PUBLIC_PATH } from '../constants';
 import { loadDotenvConfig } from './loadDotenvConfig';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 
@@ -39,40 +39,19 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 
 export async function loadConfig(
   configFile?: string,
-  userConfig?: IConfig
+  userConfig: IConfig = {}
 ): Promise<IConfig> {
-  let rootDir = process.cwd();
-
-  if (userConfig?.rootDir) {
-    rootDir = path.isAbsolute(userConfig.rootDir)
-      ? userConfig.rootDir
-      : path.resolve(userConfig.rootDir);
-  }
+  userConfig.rootDir = userConfig.rootDir
+    ? path.resolve(userConfig.rootDir)
+    : process.cwd();
 
   // read dotenv so we can get env in shuvi.config.js
-  loadDotenvConfig(rootDir);
+  loadDotenvConfig(userConfig.rootDir);
 
   if (configFile) {
-    if (configFile.endsWith(CONFIG_FILE)) {
-      const config = await loadConfigFromFile<IConfig>(configFile);
-
-      if (!config.rootDir) {
-        config.rootDir = rootDir;
-      }
-
-      return deepmerge(config, userConfig || {});
-    } else {
-      throw new Error(
-        `configFile expect to end with '${CONFIG_FILE}', but recevied '${configFile}'`
-      );
-    }
-  } else if (userConfig) {
-    if (!userConfig.rootDir) {
-      userConfig.rootDir = rootDir;
-    }
-
-    return userConfig;
-  } else {
-    throw new Error(`Expected either configFile or config to be defined.`);
+    const config = await loadConfigFromFile<IConfig>(configFile);
+    return deepmerge(config, userConfig);
   }
+
+  return userConfig;
 }
