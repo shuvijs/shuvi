@@ -15,7 +15,7 @@ export interface AppCtx {
   close(): Promise<void>;
 }
 
-async function createTextContext(app: Shuvi) {
+async function createTestContext(app: Shuvi) {
   const port = await findPort();
   await app.listen(port);
   const browser = new Browser();
@@ -45,17 +45,31 @@ export async function launchFixture(
   name: string,
   overrides: Partial<IApiConfig> = {}
 ): Promise<AppCtx> {
-  const config = await loadFixture(name, overrides);
-  const shuviApp = shuvi({ dev: true, config });
-  return await createTextContext(shuviApp);
+  const { rootDir, configFile } = loadFixture(name);
+  const shuviApp = shuvi({
+    dev: true,
+    config: {
+      ...overrides,
+      rootDir
+    },
+    configFile
+  });
+  return await createTestContext(shuviApp);
 }
 
 export async function serveFixture(
   name: string,
   overrides: Partial<IApiConfig> = {}
 ): Promise<AppCtx> {
-  const config = await loadFixture(name, overrides);
-  await build({ config });
-  const shuviApp = shuvi({ dev: false, config });
-  return createTextContext(shuviApp);
+  const { rootDir, configFile } = loadFixture(name);
+  const config = {
+    ...overrides,
+    rootDir
+  };
+  await build({
+    config,
+    configFile
+  });
+  const shuviApp = shuvi({ dev: false, config, configFile });
+  return createTestContext(shuviApp);
 }
