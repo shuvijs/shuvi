@@ -37,16 +37,29 @@ async function loadConfigFromFile<T>(configPath: string): Promise<T> {
 }
 
 export async function loadConfig(
-  dir: string = process.cwd()
+  configFile: string = path.join(process.cwd(), CONFIG_FILE),
+  userConfig?: IConfig
 ): Promise<IConfig> {
+  const rootDir = path.join(configFile, '..');
+
   // read dotenv so we can get env in shuvi.config.js
-  loadDotenvConfig(dir);
+  loadDotenvConfig(rootDir);
 
-  const config = await loadConfigFromFile<IConfig>(path.join(dir, CONFIG_FILE));
-
-  if (!config.rootDir) {
-    config.rootDir = dir;
+  if (userConfig) {
+    return userConfig;
   }
 
-  return config;
+  if (configFile.endsWith(CONFIG_FILE)) {
+    const config = await loadConfigFromFile<IConfig>(configFile);
+
+    if (!config.rootDir) {
+      config.rootDir = rootDir;
+    }
+
+    return config;
+  } else {
+    throw new Error(
+      `configFile expect to end with '${CONFIG_FILE}', but recevied ${configFile}`
+    );
+  }
 }

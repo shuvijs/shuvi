@@ -7,7 +7,7 @@ export const PATH_PREFIX = `/_${NAME}`;
 
 export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route`;
 
-export const SHUVI_PUBLIC_PREFIX = 'SHUVI_PUBLIC_';
+export const PUBLIC_ENV_PREFIX = 'SHUVI_PUBLIC_';
 
 // app
 export const CLIENT_CONTAINER_ID = '__APP';

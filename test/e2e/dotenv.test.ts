@@ -10,15 +10,6 @@ afterEach(() => {
 describe('Dotenv', () => {
   let ctx: AppCtx;
   let page: Page;
-  let beforeEnv: any;
-
-  beforeEach(() => {
-    beforeEnv = { ...process.env };
-  });
-
-  afterEach(() => {
-    process.env = beforeEnv;
-  });
 
   test('development, Page /', async () => {
     Object.assign(process.env, {

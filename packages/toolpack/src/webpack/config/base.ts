@@ -4,7 +4,7 @@ import webpack from 'webpack';
 import path from 'path';
 import {
   ROUTE_RESOURCE_QUERYSTRING,
-  SHUVI_PUBLIC_PREFIX
+  PUBLIC_ENV_PREFIX
 } from '@shuvi/shared/lib/constants';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
@@ -175,7 +175,7 @@ export function baseWebpackChain({
     {
       ...Object.keys(process.env).reduce(
         (prev: { [key: string]: string }, key: string) => {
-          if (key.startsWith(SHUVI_PUBLIC_PREFIX)) {
+          if (key.startsWith(PUBLIC_ENV_PREFIX)) {
             prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
           }
           return prev;

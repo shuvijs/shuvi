@@ -1,9 +1,11 @@
 import program from 'commander';
-import { loadConfig, IConfig } from '../../config';
+import path from 'path';
+import { IConfig } from '../../config';
 import { build } from '../apis/build';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
 import { getProjectDir } from '../utils';
+import { CONFIG_FILE } from '@shuvi/shared/lib/constants';
 
 interface CliOptions {
   publicPath?: string;
@@ -59,13 +61,13 @@ export default async function main(argv: string[]) {
     )
     .parse(argv, { from: 'user' });
 
-  const dir = getProjectDir(program);
+  const configFile = path.join(getProjectDir(program), CONFIG_FILE);
   const cliOpts = program as CliOptions;
-  const config = await loadConfig(dir);
-  applyCliOptions(cliOpts, config);
+  const cliConfig = {};
+  applyCliOptions(cliOpts, {});
 
   try {
-    await build(config, { target: cliOpts.target });
+    await build(cliConfig, { target: cliOpts.target }, configFile);
     console.log('Build successfully!');
   } catch (error) {
     console.error('Failed to build.\n');

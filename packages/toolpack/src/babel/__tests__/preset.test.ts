@@ -6,7 +6,7 @@ const babel = (
   code: string,
   { esm, isNode }: { esm: boolean; isNode: boolean } = {
     esm: false,
-    isNode: true,
+    isNode: true
   },
   presetOptions: PresetOptions = {}
 ) =>
@@ -20,8 +20,8 @@ const babel = (
     caller: {
       name: 'tests',
       supportsStaticESM: esm,
-      isNode,
-    } as any,
+      isNode
+    } as any
   })!.code;
 
 const BASIC_APP = `
@@ -39,12 +39,12 @@ const BASIC_APP = `
 
 describe('shuvi/babel', () => {
   const NODE_ENV = process.env.NODE_ENV;
-  beforeAll(() => {
+  beforeEach(() => {
     // @ts-ignore
     process.env.NODE_ENV = 'production';
   });
 
-  afterAll(() => {
+  afterEach(() => {
     jest.resetModules();
     // @ts-ignore
     process.env.NODE_ENV = NODE_ENV;

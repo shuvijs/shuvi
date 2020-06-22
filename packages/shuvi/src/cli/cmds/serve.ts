@@ -1,9 +1,10 @@
 import program from 'commander';
-import { loadConfig } from '../../config';
+import path from 'path';
 import { shuvi } from '../../shuvi';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
 import { getProjectDir } from '../utils';
+import { CONFIG_FILE } from '@shuvi/shared/lib/constants';
 
 export default async function main(argv: string[]) {
   program
@@ -14,12 +15,11 @@ export default async function main(argv: string[]) {
     .option('--port <port>', 'specify port')
     .parse(argv, { from: 'user' });
 
-  const dir = getProjectDir(program);
+  const configFile = path.join(getProjectDir(program), CONFIG_FILE);
   const port = program.port || 3000;
   const host = program.host || 'localhost';
 
-  const config = await loadConfig(dir);
-  const shuviApp = shuvi({ config });
+  const shuviApp = shuvi({ configFile });
   try {
     await shuviApp.listen(port, host);
     console.log(`Ready on http://${host}:${port}`);

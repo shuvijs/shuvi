@@ -14,7 +14,7 @@ import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { PUBLIC_PATH, ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { runtime } from '../runtime';
-import { defaultConfig, IConfig } from '../config';
+import { defaultConfig, IConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
@@ -27,13 +27,16 @@ const ServiceModes: IShuviMode[] = ['development', 'production'];
 
 interface IApiOPtions {
   mode?: IShuviMode;
-  config: IConfig;
+  config?: IConfig; // userConfig
+  configFile?: string;
 }
 
 class Api extends Hookable implements IApi {
   private _mode: IShuviMode;
-  private _userConfig: IConfig;
+  private userConfig?: IConfig;
   private _config!: IApiConfig;
+  private _cliConfig: IConfig = {};
+  private _configFile?: string;
   private _paths!: IPaths;
   private _app!: App;
   private _server!: Server;
@@ -42,7 +45,7 @@ class Api extends Hookable implements IApi {
   private _plugins!: IPlugin[];
   private _pluginApi!: PluginApi;
 
-  constructor({ mode, config }: IApiOPtions) {
+  constructor({ mode, config, configFile }: IApiOPtions) {
     super();
     if (mode) {
       this._mode = mode;
@@ -51,7 +54,9 @@ class Api extends Hookable implements IApi {
     } else {
       this._mode = 'production';
     }
-    this._userConfig = config;
+
+    this._configFile = configFile;
+    this.userConfig = config;
   }
 
   get mode() {
@@ -68,7 +73,14 @@ class Api extends Hookable implements IApi {
 
   async init() {
     this._app = new App();
-    const config: IApiConfig = deepmerge(defaultConfig, this._userConfig);
+
+    const configFromFile = await loadConfig(this._configFile, this.userConfig);
+
+    const config: IApiConfig = deepmerge(
+      defaultConfig,
+      configFromFile,
+      this._cliConfig
+    );
 
     // init plugins
     this._plugins = resolvePlugins(config.plugins || [], {
@@ -160,6 +172,10 @@ class Api extends Hookable implements IApi {
 
   setAppModule(module: string | string[]) {
     this._app.setAppModule(module);
+  }
+
+  setCliConfig(cliConfig: IConfig) {
+    this._cliConfig = cliConfig;
   }
 
   async setRoutes(routes: IRouteConfig[]) {
@@ -303,8 +319,14 @@ class Api extends Hookable implements IApi {
 
 export type { Api };
 
-export async function getApi({ mode, config }: IApiOPtions): Promise<Api> {
-  const api = new Api({ mode, config });
+export async function getApi(
+  { mode, config, configFile }: IApiOPtions,
+  cliConfig?: IConfig
+): Promise<Api> {
+  const api = new Api({ mode, config, configFile });
+  if (cliConfig) {
+    api.setCliConfig(cliConfig);
+  }
   await api.init();
   return api;
 }

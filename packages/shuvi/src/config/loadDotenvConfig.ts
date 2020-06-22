@@ -3,8 +3,6 @@ import dotenvExpand from 'dotenv-expand';
 import fs from 'fs';
 import path from 'path';
 
-export type Env = { [key: string]: string };
-
 export const loadDotenvConfig = (dir: string) => {
   const mode = process.env.NODE_ENV!;
 

@@ -5,20 +5,19 @@ import {
   IServerResponse
 } from '../server';
 import { getApi, Api } from '../api';
-import { IConfig } from '../config';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
 
 export interface IShuviConstructorOptions {
-  config: IConfig;
+  configFile?: string;
 }
 
 export default abstract class Shuvi {
   protected _api!: Api;
-  private _config: IConfig;
+  private _configFile?: string;
 
-  constructor({ config }: IShuviConstructorOptions) {
-    this._config = config;
+  constructor({ configFile }: IShuviConstructorOptions) {
+    this._configFile = configFile;
   }
 
   async ready(): Promise<void> {
@@ -85,7 +84,7 @@ export default abstract class Shuvi {
 
     this._api = await getApi({
       mode: this.getMode(),
-      config: this._config
+      configFile: this._configFile
     });
   }
 }
