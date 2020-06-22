@@ -93,6 +93,9 @@ describe('api', () => {
     expect(process.env.READ_ENV).toBeUndefined();
 
     await getApi({
+      config: {
+        rootDir: path.join(__dirname, 'fixtures', 'dotenv')
+      },
       configFile: path.join(__dirname, 'fixtures', 'dotenv', CONFIG_FILE)
     });
 

@@ -52,19 +52,27 @@ export async function loadConfig(
   // read dotenv so we can get env in shuvi.config.js
   loadDotenvConfig(rootDir);
 
-  if (configFile && configFile.endsWith(CONFIG_FILE)) {
-    const config = await loadConfigFromFile<IConfig>(configFile);
+  if (configFile) {
+    if (configFile.endsWith(CONFIG_FILE)) {
+      const config = await loadConfigFromFile<IConfig>(configFile);
 
-    if (!config.rootDir) {
-      config.rootDir = rootDir;
+      if (!config.rootDir) {
+        config.rootDir = rootDir;
+      }
+
+      return deepmerge(config, userConfig || {});
+    } else {
+      throw new Error(
+        `configFile expect to end with '${CONFIG_FILE}', but recevied '${configFile}'`
+      );
+    }
+  } else if (userConfig) {
+    if (!userConfig.rootDir) {
+      userConfig.rootDir = rootDir;
     }
 
-    return deepmerge(config, userConfig || {});
-  } else if (userConfig) {
     return userConfig;
   } else {
-    throw new Error(
-      `configFile expect to end with '${CONFIG_FILE}', but recevied ${configFile}`
-    );
+    throw new Error(`Expected either configFile or config to be defined.`);
   }
 }

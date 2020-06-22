@@ -1,4 +1,5 @@
 import { loadFixture, resolveFixture } from './utils';
+import { loadConfig } from '..';
 
 describe('config', () => {
   test('should load config', async () => {
@@ -6,6 +7,12 @@ describe('config', () => {
 
     expect(config.ssr).toBe(true);
     expect(config.rootDir).toBe(resolveFixture('base'));
+  });
+
+  test('should use process.cwd for rootDir when rootDir is not specified', async () => {
+    const config = await loadConfig(undefined, {});
+
+    expect(config.rootDir).toBe(process.cwd());
   });
 
   test('should overwrite config with userConfig ', async () => {
@@ -36,6 +43,7 @@ describe('config', () => {
     Object.assign(process.env, {
       NODE_ENV: 'development'
     });
+
     const config = await loadFixture('dotenv');
 
     expect(config.env).toMatchInlineSnapshot(`
@@ -47,5 +55,17 @@ describe('config', () => {
         "shouldBeUndefined": undefined,
       }
     `);
+  });
+
+  test('should throw error when configFile is invalid', () => {
+    expect(loadConfig('example')).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"configFile expect to end with 'shuvi.config.js', but recevied 'example'"`
+    );
+  });
+
+  test('should throw error when configFile and userConfig is not defined', () => {
+    expect(loadConfig()).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Expected either configFile or config to be defined."`
+    );
   });
 });
