@@ -59,7 +59,7 @@ export async function loadConfig(
       config.rootDir = rootDir;
     }
 
-    return deepmerge(userConfig || {}, config);
+    return deepmerge(config, userConfig || {});
   } else if (userConfig) {
     return userConfig;
   } else {

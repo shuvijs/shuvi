@@ -15,7 +15,7 @@ describe('config', () => {
     });
 
     expect(config.publicDir).toBe('./public-dir');
-    expect(config.ssr).toBe(true);
+    expect(config.ssr).toBe(false);
   });
 
   test('should not load config when userConfig is given and configFile is undefined', async () => {
