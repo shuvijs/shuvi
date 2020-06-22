@@ -1,30 +1,26 @@
 import path from 'path';
-import { IApiConfig } from '@shuvi/types';
+import { loadConfig } from 'shuvi/lib/config';
 import { build } from './build';
 import { CONFIG_FILE } from 'shuvi/src/constants';
+import { IConfig } from 'shuvi/src/shuvi';
 
 export function resolveFixture(...paths: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...paths);
 }
 
-export function loadFixture(
-  fixture: string
-): { rootDir: string; configFile: string } {
+export async function loadFixture(
+  fixture: string,
+  overrides: IConfig = {}
+): Promise<IConfig> {
   const rootDir = resolveFixture(fixture);
-  const configFile = path.join(rootDir, CONFIG_FILE);
-  return { rootDir, configFile };
+  if (!overrides.rootDir) {
+    overrides.rootDir = rootDir
+  }
+  const config = await loadConfig(path.join(rootDir, CONFIG_FILE), overrides);
+  return config;
 }
 
-export async function buildFixture(
-  fixture: string,
-  overrides: Partial<IApiConfig> = {}
-) {
-  const { rootDir, configFile } = await loadFixture(fixture);
-  await build({
-    config: {
-      ...overrides,
-      rootDir
-    },
-    configFile
-  });
+export async function buildFixture(fixture: string, overrides: IConfig = {}) {
+  const config = await loadFixture(fixture, overrides);
+  await build({ config });
 }
