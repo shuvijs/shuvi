@@ -56,16 +56,4 @@ describe('config', () => {
       }
     `);
   });
-
-  test('should throw error when configFile is invalid', () => {
-    expect(loadConfig('example')).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"configFile expect to end with 'shuvi.config.js', but recevied 'example'"`
-    );
-  });
-
-  test('should throw error when configFile and userConfig is not defined', () => {
-    expect(loadConfig()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Expected either configFile or config to be defined."`
-    );
-  });
 });
