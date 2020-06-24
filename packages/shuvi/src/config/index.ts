@@ -41,17 +41,17 @@ export async function loadConfig(
   configFile?: string,
   userConfig: IConfig = {}
 ): Promise<IConfig> {
-  userConfig.rootDir = userConfig.rootDir
+  const rootDir = userConfig.rootDir
     ? path.resolve(userConfig.rootDir)
     : process.cwd();
 
   // read dotenv so we can get env in shuvi.config.js
-  loadDotenvConfig(userConfig.rootDir);
+  loadDotenvConfig(rootDir);
 
   if (configFile) {
     const config = await loadConfigFromFile<IConfig>(configFile);
-    return deepmerge(config, userConfig);
+    return deepmerge({ rootDir }, config, userConfig);
   }
 
-  return userConfig;
+  return deepmerge({ rootDir }, userConfig);
 }
