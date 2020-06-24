@@ -5,6 +5,10 @@ import { IApi } from '../index';
 import { IManifest } from './bundler';
 import { Hookable } from '@shuvi/hooks';
 
+export type IData = {
+  [k: string]: string | number | boolean | undefined | null;
+};
+
 export type IParams = ParsedUrlQuery;
 
 export type IQuery = ParsedUrlQuery;
@@ -57,22 +61,6 @@ export interface ISeverAppContext {
   [x: string]: any;
 }
 
-export interface IAppComponentContext {
-  isServer: boolean;
-  pathname: string;
-  query: IQuery;
-  params: IParams;
-  redirect: IRedirectFn;
-  appContext: {
-    // server only
-    req?: IRequest;
-    [x: string]: any;
-  };
-
-  // special props
-  fetchInitialProps(): Promise<void>;
-}
-
 export interface IRouteComponentContext {
   isServer: boolean;
   pathname: string;
@@ -80,10 +68,19 @@ export interface IRouteComponentContext {
   params: IParams;
   redirect: IRedirectFn;
   appContext: {
+    // client only
+    pageData?: IData;
+
     // server only
     req?: IRequest;
+
+    // others
     [x: string]: any;
   };
+}
+
+export interface IAppComponentContext extends IRouteComponentContext {
+  fetchInitialProps(): Promise<void>;
 }
 
 export type IAppComponent<C, P = {}> = C & {
@@ -95,8 +92,9 @@ export type IRouteComponent<C, P = {}> = C & {
 };
 
 export type IAppData<Data = {}> = {
-  runtimeConfig?: { [k: string]: string };
   ssr: boolean;
+  runtimeConfig?: IData;
+  pageData?: IData;
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -202,7 +200,9 @@ export interface IDocumentModule {
     documentProps: IDocumentProps,
     context: ISeverAppContext
   ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(context: ISeverAppContext): Promise<ITemplateData> | ITemplateData;
+  getTemplateData(
+    context: ISeverAppContext
+  ): Promise<ITemplateData> | ITemplateData;
 }
 
 export interface IApplication extends Hookable {

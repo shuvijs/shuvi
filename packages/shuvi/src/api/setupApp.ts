@@ -118,11 +118,7 @@ export async function setupApp(api: Api) {
     imported: 'default',
     local: 'router'
   });
-  api.addAppExport(
-    require.resolve('@shuvi/runtime-core/lib/lib/telestore'),
-    '{ telestore }'
-  );
-  // don not use absolute path, this mpdule would't be bundle
+  // don not use absolute path, this module would't be bundled
   api.addAppExport(
     'shuvi/lib/lib/runtimeConfig',
     '{ default as getRuntimeConfig }'

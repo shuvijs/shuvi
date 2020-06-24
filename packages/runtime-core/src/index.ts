@@ -13,6 +13,10 @@ const entryModule = resolveDist('entry');
 class CoreRuntime {
   async install(api: IApi): Promise<void> {
     api.addEntryCode(`import "${entryModule}"`);
+    api.addAppExport(
+      require.resolve('@shuvi/runtime-core/lib/lib/getPageData'),
+      '{ getPageData }'
+    );
   }
 }
 

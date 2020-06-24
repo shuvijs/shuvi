@@ -8,7 +8,7 @@ export function config(api: IApi) {
   const resolveLocal = (m: string) => require.resolve(m);
   const resolveUser = (m: string) =>
     path.join(api.paths.rootDir, 'node_modules', m);
-  api.tap<APIHooks.IHookBundlerConfig>('bundler:config-target', {
+  api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
     name: 'runtime-react',
     fn: config => {
       // const oriExternal = config.get("externals");

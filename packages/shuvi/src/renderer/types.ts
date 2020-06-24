@@ -5,11 +5,8 @@ export interface IRendererConstructorOptions {
   api: Api;
 }
 
-export interface IServerRendererContext {
-  appData: Record<string, any>;
-}
-
 export type IRenderDocumentOptions = {
+  app: Runtime.IApplication;
   url: string;
   AppComponent: any;
   routes: Runtime.IRoute[];

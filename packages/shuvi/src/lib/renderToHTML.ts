@@ -16,15 +16,16 @@ export async function renderToHTML({
   const { application } = api.resources.server;
   const app = application.create(
     {
-      req
+      req,
     },
     {
       async render({ appContext, AppComponent, routes }) {
         const result = await renderer.renderDocument({
+          app,
           url: req.url || '/',
           AppComponent,
           routes,
-          appContext
+          appContext,
         });
 
         if (isRedirect(result)) {

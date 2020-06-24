@@ -19,7 +19,7 @@ export type IHookAppRoutes = defineHook<
 >;
 
 export type IHookAppRoutesFile = defineHook<
-  'app:routes-file',
+  'app:routesFile',
   {
     initialValue: string;
   }
@@ -28,7 +28,7 @@ export type IHookAppRoutesFile = defineHook<
 export type IEventAppReady = defineHook<'app:ready'>;
 
 export type IHookBundlerConfig = defineHook<
-  'bundler:config-target',
+  'bundler:configTarget',
   {
     initialValue: WebpackChain;
     args: [
@@ -42,7 +42,7 @@ export type IHookBundlerConfig = defineHook<
 >;
 
 export type IHookBundlerExtraTarget = defineHook<
-  'bundler:extra-target',
+  'bundler:extraTarget',
   {
     args: [
       {
@@ -55,7 +55,7 @@ export type IHookBundlerExtraTarget = defineHook<
 >;
 
 export type IEventTargetDone = defineHook<
-  'bundler:target-done',
+  'bundler:targetDone',
   {
     args: [
       {

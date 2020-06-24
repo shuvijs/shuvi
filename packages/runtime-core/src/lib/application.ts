@@ -55,7 +55,7 @@ export class Application<Context extends {}> extends Hookable
 
   private async _createApplicationContext() {
     this._context = (await this.callHook<RuntimeHooks.IHookCreateAppContext>({
-      name: 'create-app-context',
+      name: 'createAppContext',
       initialValue: this._context
     })) as IContext;
   }
@@ -66,6 +66,6 @@ export class Application<Context extends {}> extends Hookable
       AppComponent: this.AppComponent,
       routes: this.routes
     });
-    this.emitEvent<RuntimeHooks.IEventRenderDone>('render-done', result);
+    this.emitEvent<RuntimeHooks.IEventRenderDone>('renderDone', result);
   }
 }

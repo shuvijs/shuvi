@@ -20,7 +20,7 @@ function getApp({ render }: any = {}) {
 describe('application', () => {
   test('should add createAppContext hook', async () => {
     const app = getApp();
-    app.tap('create-app-context', {
+    app.tap('createAppContext', {
       name: 'test',
       fn(context: any) {
         context.foo = 'bar';
@@ -32,11 +32,11 @@ describe('application', () => {
     expect(ctx.foo).toBe('bar');
   });
 
-  test('should emit render-done event', async () => {
+  test('should emit renderDone event', async () => {
     const render = jest.fn().mockReturnValue('render result');
     const app = getApp({ render });
     let renderResult;
-    app.on('render-done', (result: any) => {
+    app.on('renderDone', (result: any) => {
       renderResult = result;
     });
     await app.run();

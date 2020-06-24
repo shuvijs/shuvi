@@ -1,29 +1,19 @@
 import { Runtime, ITemplateData } from '@shuvi/types';
-import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
-  CLIENT_APPDATA_ID,
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC
 } from '../constants';
-import getRuntimeConfig, { hasSetRuntimeConfig } from '../lib/runtimeConfig';
 import { renderTemplate } from '../lib/viewTemplate';
-import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import {
-  IRendererConstructorOptions,
-  IRenderDocumentOptions,
-  IServerRendererContext
-} from './types';
+import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
 import { Api, IBuiltResource } from '../api';
 
-import IAppData = Runtime.IAppData;
 import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
 import IRenderResultRedirect = Runtime.IRenderResultRedirect;
-import IServerRendererOptions = Runtime.IServerRendererOptions;
 
 export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
@@ -39,24 +29,19 @@ export abstract class BaseRenderer {
   }
 
   async renderDocument({
+    app,
     url,
     AppComponent,
     routes,
     appContext
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
-    const api = this._api;
-    const rendererCtx: IServerRendererContext = {
-      appData: {}
-    };
-    const rendererOptions: IServerRendererOptions = {
+    const docProps = await this.getDocumentProps({
+      app,
       url,
       AppComponent,
       routes,
-      appContext,
-      manifest: this._resources.clientManifest,
-      getAssetPublicUrl: api.getAssetPublicUrl.bind(api)
-    };
-    const docProps = await this.getDocumentProps(rendererOptions, rendererCtx);
+      appContext
+    });
     if (isRedirect(docProps)) {
       return docProps;
     }
@@ -66,15 +51,6 @@ export abstract class BaseRenderer {
       document.onDocumentProps(docProps, appContext);
     }
 
-    const appData: IAppData = {
-      ssr: api.config.ssr,
-      ...rendererCtx.appData
-    };
-    if (api.config.ssr && hasSetRuntimeConfig()) {
-      appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
-    }
-    docProps.mainTags.push(this._getInlineAppData(appData));
-
     return this._renderDocument(
       docProps,
       document.getTemplateData ? document.getTemplateData(appContext) : {}
@@ -82,8 +58,7 @@ export abstract class BaseRenderer {
   }
 
   protected abstract getDocumentProps(
-    options: IServerRendererOptions,
-    rendererCtx: IServerRendererContext
+    options: IRenderDocumentOptions
   ):
     | Promise<IDocumentProps | IRenderResultRedirect>
     | IDocumentProps
@@ -154,18 +129,6 @@ export abstract class BaseRenderer {
         id: CLIENT_CONTAINER_ID
       },
       html
-    );
-  }
-
-  private _getInlineAppData(appData: IAppData): IHtmlTag {
-    const data = JSON.stringify(appData);
-    return tag(
-      'textarea',
-      {
-        id: CLIENT_APPDATA_ID,
-        style: 'display: none'
-      },
-      htmlEscapeJsonString(data)
     );
   }
 
