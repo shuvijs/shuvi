@@ -58,7 +58,7 @@ class WebpackBundler {
       this._internalTargets = await this._getInternalTargets();
       this._extraTargets = ((await this._api.callHook<APIHooks.IHookBundlerExtraTarget>(
         {
-          name: 'bundler:extra-target',
+          name: 'bundler:extraTarget',
           parallel: true
         },
         {
@@ -243,7 +243,7 @@ class WebpackBundler {
       const isSuccessful = !messages.errors.length && !messages.warnings.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
-        await api.emitEvent<APIHooks.IEventTargetDone>('bundler:target-done', {
+        await api.emitEvent<APIHooks.IEventTargetDone>('bundler:targetDone', {
           first: isFirstSuccessfulCompile,
           name: compiler.name,
           stats
@@ -280,7 +280,7 @@ class WebpackBundler {
     });
     clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
-        name: 'bundler:config-target',
+        name: 'bundler:configTarget',
         initialValue: clientChain
       },
       {
@@ -298,7 +298,7 @@ class WebpackBundler {
     });
     serverChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
-        name: 'bundler:config-target',
+        name: 'bundler:configTarget',
         initialValue: serverChain
       },
       {

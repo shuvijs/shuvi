@@ -3,7 +3,7 @@ import { defineHook, defineEvent } from './helper';
 export type IHookInit = defineHook<'init'>;
 
 export type IHookCreateAppContext = defineHook<
-  'create-app-context',
+  'createAppContext',
   {
     initialValue: object;
   }
@@ -11,6 +11,8 @@ export type IHookCreateAppContext = defineHook<
 
 export type IHookRender = defineHook<'render'>;
 
-export type IEventRenderDone = defineEvent<'render-done', [any]>;
+export type IHookServerGetPageData = defineHook<'server:getPageData'>;
+
+export type IEventRenderDone = defineEvent<'renderDone', [any]>;
 
 export type IHookDispose = defineHook<'dispose'>;

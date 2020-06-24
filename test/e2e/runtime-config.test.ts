@@ -1,4 +1,3 @@
-import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 import { AppCtx, Page, launchFixture } from '../utils';
 
 let ctx: AppCtx;
@@ -35,7 +34,7 @@ describe('SSR: Runtime Config', () => {
     expect(await page.$text('#client-a')).toBe('a');
   });
 
-  test('should get runtimeConfig on client-side (app.js side effect)', async () => {
+  test('should get runtimeConfig on client-side before render', async () => {
     page = await ctx.browser.page(ctx.url('/basic'));
 
     expect(await page.$text('#app')).toBe('a');
@@ -73,9 +72,6 @@ describe('CSR: Runtime Config', () => {
 
   test('should works', async () => {
     page = await ctx.browser.page(ctx.url('/ssr-false'));
-
-    const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
-    expect(appData.runtimeConfig).toBeUndefined();
 
     await page.waitFor('#a');
     expect(await page.$text('#a')).toBe('a');

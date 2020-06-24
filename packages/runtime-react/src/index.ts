@@ -29,7 +29,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     configBundler(api);
 
     // add necessary imports
-    api.tap<APIHooks.IHookAppRoutesFile>('app:routes-file', {
+    api.tap<APIHooks.IHookAppRoutesFile>('app:routesFile', {
       name: 'runtime-react',
       fn: fileContent => {
         return `

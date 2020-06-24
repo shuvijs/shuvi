@@ -6,10 +6,6 @@ export default () => {
   return runtimeConfig || {};
 };
 
-export function hasSetRuntimeConfig(): boolean {
-  return runtimeConfig !== null;
-}
-
 export function setRuntimeConfig(config: IRuntimeConfig) {
   runtimeConfig = config;
 }

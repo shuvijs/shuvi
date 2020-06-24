@@ -193,7 +193,7 @@ class Api extends Hookable implements IApi {
     });
     let content = `export default ${serialized}`;
     content = await this.callHook<APIHooks.IHookAppRoutesFile>({
-      name: 'app:routes-file',
+      name: 'app:routesFile',
       initialValue: content
     });
     this._app.setRoutesContent(content);

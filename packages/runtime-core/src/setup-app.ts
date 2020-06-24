@@ -5,11 +5,14 @@ import { renderer } from '@shuvi/app/core/renderer';
 import { create } from '@shuvi/app/core/application';
 import { getAppData } from './lib/getAppData';
 
+const appData = getAppData();
+
 const app = create(
-  {},
+  {
+    pageData: appData.pageData || {}
+  },
   {
     async render({ appContext, AppComponent, routes }) {
-      const appData = getAppData();
       const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
 
       renderer({

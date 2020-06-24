@@ -9,7 +9,7 @@ export * from './types';
 export { isRedirect };
 
 export class Renderer {
-  protected _api: Api;
+  private _api: Api;
   private _ssrRenderer: BaseRenderer;
   private _spaRenderer: BaseRenderer;
 
