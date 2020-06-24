@@ -93,7 +93,7 @@ export type IRouteComponent<C, P = {}> = C & {
 
 export type IAppData<Data = {}> = {
   ssr: boolean;
-  runtimeConfig?: IData;
+  runtimeConfig?: Record<string, string>;
   pageData?: IData;
 } & {
   [K in keyof Data]: Data[K];
