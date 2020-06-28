@@ -4,7 +4,7 @@
 // avoid generating __source annotations in JSX during testing:
 const NODE_ENV = process.env.NODE_ENV;
 process.env.NODE_ENV = 'production';
-const loader = require('../babel-loader');
+const loader = require('../shuvi-babel-loader');
 process.env.NODE_ENV = NODE_ENV;
 
 const os = require('os');
@@ -57,7 +57,7 @@ const babel = async (
   });
 };
 
-describe('babel-loader', () => {
+describe('shuvi-babel-loader', () => {
   describe('replace constants', () => {
     test('should replace typeof window expression nested', async () => {
       const code = await babel('function a(){console.log(typeof window)}');

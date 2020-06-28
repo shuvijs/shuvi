@@ -39,7 +39,7 @@ export function createNodeWebpackChain({
   chain.module
     .rule('main')
     .oneOf('js')
-    .use('babel-loader')
+    .use('shuvi-babel-loader')
     .tap(options => ({
       ...options,
       isNode: true

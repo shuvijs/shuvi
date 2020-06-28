@@ -124,7 +124,7 @@ export function baseWebpackChain({
   });
 
   config.resolveLoader.merge({
-    alias: ['babel-loader', 'route-component-loader'].reduce(
+    alias: ['shuvi-babel-loader', 'route-component-loader'].reduce(
       (alias, loader) => {
         alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
         return alias;
@@ -150,8 +150,8 @@ export function baseWebpackChain({
       return /node_modules/.test(path);
     })
     .end()
-    .use('babel-loader')
-    .loader('@shuvi/babel-loader')
+    .use('shuvi-babel-loader')
+    .loader('@shuvi/shuvi-babel-loader')
     .options({
       isNode: false,
       cacheDirectory: true
