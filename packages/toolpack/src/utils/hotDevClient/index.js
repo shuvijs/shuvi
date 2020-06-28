@@ -113,7 +113,6 @@ export default function connect(options) {
 var isFirstCompilation = true;
 var mostRecentCompilationHash = null;
 var hasCompileErrors = false;
-let deferredBuildError = null;
 
 function clearOutdatedErrors() {
   // Clean up outdated compile errors, if any.
@@ -122,26 +121,26 @@ function clearOutdatedErrors() {
       console.clear();
     }
   }
+}
 
-  deferredBuildError = null;
+function afterApplyUpdate(hasUpdates) {
+  tryDismissErrorOverlay();
 }
 
 // Successful compilation.
 function handleSuccess() {
+  clearOutdatedErrors();
+
   const isHotUpdate = !isFirstCompilation;
   isFirstCompilation = false;
   hasCompileErrors = false;
 
   // Attempt to apply hot updates or reload.
   if (isHotUpdate) {
-    tryApplyUpdates(function onHotUpdateSuccess() {
-      if (deferredBuildError) {
-        deferredBuildError();
-      } else {
-        // Only dismiss it when we're sure it's a hot update.
-        // Otherwise it would flicker right before the reload.
-        ErrorOverlay.dismissBuildError();
-      }
+    tryApplyUpdates(function onHotUpdateSuccess(hasUpdates) {
+      // Only dismiss it when we're sure it's a hot update.
+      // Otherwise it would flicker right before the reload.
+      afterApplyUpdate(hasUpdates);
     });
   }
 }
@@ -194,6 +193,12 @@ function handleErrors(errors) {
   }
 }
 
+function tryDismissErrorOverlay() {
+  if (!hasCompileErrors) {
+    ErrorOverlay.dismissBuildError();
+  }
+}
+
 // There is a newer version of the code available.
 function handleAvailableHash(hash) {
   // Update last known compilation hash.
@@ -212,42 +217,29 @@ function processMessage(e) {
     }
     case 'built':
     case 'sync': {
-      clearOutdatedErrors();
-
       if (obj.hash) {
         handleAvailableHash(obj.hash);
       }
 
       const { errors, warnings } = obj;
       const hasErrors = Boolean(errors && errors.length);
+      if (hasErrors) {
+        return handleErrors(errors);
+      }
 
       const hasWarnings = Boolean(warnings && warnings.length);
-
-      if (hasErrors) {
-        // When there is a compilation error coming from SSR we have to reload the page on next successful compile
-        if (obj.action === 'sync') {
-          hadRuntimeError = true;
-        }
-
-        handleErrors(errors);
-        break;
-      } else if (hasWarnings) {
-        handleWarnings(warnings);
+      if (hasWarnings) {
+        return handleWarnings(warnings);
       }
 
       handleSuccess();
       break;
     }
     case 'warnings':
-      console.log('warnings', obj);
       handleWarnings(obj.data);
       break;
     case 'errors':
-      if (canApplyUpdates()) {
-        handleErrors(obj.data);
-      } else {
-        deferredBuildError = () => handleErrors(obj.data);
-      }
+      handleErrors(obj.data);
       break;
     default: {
       if (customHmrEventHandler) {
@@ -289,7 +281,8 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   function handleApplyUpdates(err, updatedModules) {
-    if (err || hadRuntimeError) {
+    const needForcedReload = err || !updatedModules || hadRuntimeError;
+    if (needForcedReload) {
       if (err) {
         console.warn('Error while applying updates, reloading page', err);
       }
@@ -300,9 +293,10 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
       return;
     }
 
+    const hasUpdates = Boolean(updatedModules.length);
     if (typeof onHotUpdateSuccess === 'function') {
       // Maybe we want to do something.
-      onHotUpdateSuccess();
+      onHotUpdateSuccess(hasUpdates);
     }
 
     if (isUpdateAvailable()) {
@@ -313,16 +307,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
 
   // https://webpack.github.io/docs/hot-module-replacement.html#check
   try {
-    const updatedModules = await module.hot.check(
-      /* autoApply */ {
-        ignoreUnaccepted: true
-      }
-    );
-    if (!updatedModules || updatedModules.length <= 0) {
-      // the updated module is not used by current page, just do nothing
-      return;
-    }
-
+    const updatedModules = await module.hot.check(/* autoApply */ true);
     handleApplyUpdates(null, updatedModules);
   } catch (err) {
     handleApplyUpdates(err, null);
