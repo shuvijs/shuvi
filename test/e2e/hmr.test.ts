@@ -1,6 +1,5 @@
 import { AppCtx, Page, launchFixture, resolveFixture, check } from '../utils';
-import { readFileSync, writeFileSync, renameSync, existsSync } from 'fs';
-import path from 'path';
+import { readFileSync, writeFileSync } from 'fs';
 
 function resolvePagePath(page: string) {
   return resolveFixture('basic/src/pages/hmr', page);
