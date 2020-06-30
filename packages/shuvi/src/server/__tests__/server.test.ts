@@ -53,7 +53,7 @@ describe('server', () => {
           res.end('api1');
         })
         .use('/header', (req: IIncomingMessage, res: IServerResponse) => {
-          Object.keys(req.headers).forEach((header) => {
+          Object.keys(req.headers).forEach(header => {
             const val = req.headers[header];
             if (typeof val !== 'undefined') {
               res.setHeader(header, val);
@@ -91,15 +91,15 @@ describe('server', () => {
           '/server1/header': {
             target: `http://${host}:${proxyTarget1Port}`,
             headers: {
-              foo: 'bar',
+              foo: 'bar'
             },
-            pathRewrite: { '^/server1': '' },
+            pathRewrite: { '^/server1': '' }
           },
           '/server2/api': {
             target: `http://${host}:${proxyTarget2Port}`,
-            pathRewrite: { '^/server2': '' },
-          },
-        },
+            pathRewrite: { '^/server2': '' }
+          }
+        }
       });
       server.use('/noproxy', (req: IIncomingMessage, res: IServerResponse) => {
         res.end('no proxy');
@@ -125,22 +125,22 @@ describe('server', () => {
         proxy: [
           {
             context: '/api',
-            target: `http://${host}:${proxyTarget1Port}`,
+            target: `http://${host}:${proxyTarget1Port}`
           },
           {
             context: '/server1/header',
             target: `http://${host}:${proxyTarget1Port}`,
             headers: {
-              foo: 'bar',
+              foo: 'bar'
             },
-            pathRewrite: { '^/server1': '' },
+            pathRewrite: { '^/server1': '' }
           },
           {
             context: '/server2/api',
             target: `http://${host}:${proxyTarget2Port}`,
-            pathRewrite: { '^/server2': '' },
-          },
-        ],
+            pathRewrite: { '^/server2': '' }
+          }
+        ]
       });
       server.use('/noproxy', (req: IIncomingMessage, res: IServerResponse) => {
         res.end('no proxy');
@@ -160,5 +160,20 @@ describe('server', () => {
       resp = await got(`http://${host}:${port}/server2/api`);
       expect(resp.body).toEqual('api2');
     });
+  });
+
+  test('should detect if port is being used', async done => {
+    server = new Server();
+    const anotherServer = new Server();
+    const port = await findPort();
+    await server.listen(port);
+
+    try {
+      await anotherServer.listen(port);
+    } catch (e) {
+      expect(e.code).toBe('EADDRINUSE');
+      expect(e.message).toMatch(/is being used./);
+      done();
+    }
   });
 });

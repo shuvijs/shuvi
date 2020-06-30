@@ -3,6 +3,7 @@ import { IServerProxyConfig, IServerProxyConfigItem } from '@shuvi/types';
 import { parse as parseUrl } from 'url';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import Connect from 'connect';
+import detectPort from 'detect-port';
 import {
   IConnect,
   IIncomingMessage,
@@ -76,13 +77,25 @@ export class Server {
     );
   }
 
+  async _checkPort(port: number) {
+    const _port = await detectPort(port);
+    if (_port !== port) {
+      const error = new Error(`Port ${port} is being used.`);
+      Object.assign(error, { code: 'EADDRINUSE' });
+      throw error;
+    }
+  }
+
   async listen(port: number, hostname?: string): Promise<void> {
     if (this._server) {
       return;
     }
 
+    await this._checkPort(port);
+
     this.hostname = hostname;
     this.port = port;
+
     const srv = (this._server = http.createServer(this.getRequestHandler()));
     await new Promise((resolve, reject) => {
       // This code catches EADDRINUSE error if the port is already in use
