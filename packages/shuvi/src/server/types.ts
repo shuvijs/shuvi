@@ -3,6 +3,7 @@ import { UrlWithParsedQuery } from 'url';
 import { Server, NextFunction } from 'connect';
 
 export interface IIncomingMessage extends http.IncomingMessage {
+  url: string;
   parsedUrl: UrlWithParsedQuery;
   originalUrl?: http.IncomingMessage['url'];
   [x: string]: any;
