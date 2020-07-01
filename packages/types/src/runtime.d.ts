@@ -1,4 +1,4 @@
-import { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import { IRouteBase, IRouteConfig, IRoute, ITemplateData } from '@shuvi/core';
 import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
@@ -205,11 +205,22 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
+export interface IServerModule {
+  onViewDone(
+    req: IncomingMessage,
+    res: ServerResponse,
+    ctx: {
+      html: string | null;
+      appContext: any;
+    }
+  ): void;
+}
+
 export interface IApplication extends Hookable {
   AppComponent: any;
   routes: IRoute[];
 
-  run(): Promise<void>;
+  run(): Promise<{ [k: string]: any }>;
   rerender(): Promise<void>;
   dispose(): Promise<void>;
 }

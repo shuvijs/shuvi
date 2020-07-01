@@ -2,6 +2,7 @@ import { Bundler, IApi, Runtime, IApiConfig } from '@shuvi/types';
 
 export type IBuiltResource = {
   server: {
+    server: Runtime.IServerModule;
     application: Runtime.IApplicationModule;
     document: Partial<Runtime.IDocumentModule>;
     renderer: Runtime.IServerRenderer;

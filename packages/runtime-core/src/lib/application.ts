@@ -32,6 +32,8 @@ export class Application<Context extends {}> extends Hookable
     await this._init();
     await this._createApplicationContext();
     await this._render();
+
+    return this._context;
   }
 
   async rerender() {
