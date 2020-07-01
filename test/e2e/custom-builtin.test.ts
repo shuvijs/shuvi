@@ -140,12 +140,13 @@ describe('Custom Server.js', () => {
 
   test('should work', async () => {
     page = await ctx.browser.page();
-    const result = await page.goto(ctx.url('/'));
+    const result = await page.goto(ctx.url('/404'));
 
     if (!result) {
       throw Error('no result');
     }
 
     expect(result.status()).toBe(404);
+    expect(await page.$text('div')).toMatch(/404 Page/);
   });
 });

@@ -1,4 +1,4 @@
-const App = () => <div>Index Page</div>;
+const App = () => <div>404 Page</div>;
 
 App.getInitialProps = ({ appContext }) => {
   appContext.notFound = true;
