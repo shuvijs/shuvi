@@ -44,12 +44,16 @@ export class SsrRenderer extends BaseRenderer {
     }
 
     const mainAssetsTags = this._getMainAssetTags();
+
     const pageDataList = ((await app.callHook<
       RuntimeHooks.IHookServerGetPageData
-    >({
-      name: 'server:getPageData',
-      parallel: true
-    })) as any) as IData[];
+    >(
+      {
+        name: 'server:getPageData',
+        parallel: true
+      },
+      appContext
+    )) as any) as IData[];
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;
