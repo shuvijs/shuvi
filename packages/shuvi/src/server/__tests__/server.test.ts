@@ -7,8 +7,8 @@ const host = 'localhost';
 
 describe('server', () => {
   let server: Server;
-  afterEach(() => {
-    server.close();
+  afterEach(async () => {
+    await server.close();
   });
 
   test('should work', async () => {

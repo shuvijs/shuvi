@@ -44,9 +44,10 @@ describe('api', () => {
     test('should access config and paths', async () => {
       let config: IApiConfig;
       let paths: IPaths;
+
       await getApi({
         config: {
-          rootDir: '/root',
+          rootDir: path.join(__dirname, 'fixtures', 'dotenv'),
           publicPath: '/test',
           plugins: [
             api => {
@@ -57,7 +58,7 @@ describe('api', () => {
         }
       });
       expect(config!.publicPath).toBe('/test');
-      expect(paths!.rootDir).toBe('/root');
+      expect(paths!.rootDir).toBe(path.join(__dirname, 'fixtures', 'dotenv'));
     });
   });
 
