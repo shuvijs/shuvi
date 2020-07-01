@@ -10,7 +10,7 @@ describe('config', () => {
   });
 
   test('should use process.cwd for rootDir when rootDir is not specified', async () => {
-    const config = await loadConfig(undefined, {});
+    const config = await loadConfig();
 
     expect(config.rootDir).toBe(process.cwd());
   });
@@ -25,16 +25,22 @@ describe('config', () => {
     expect(config.ssr).toBe(false);
   });
 
-  test('should not load config when userConfig is given and configFile is undefined', async () => {
+  test('should warn when customed configFile does not exist', async () => {
+    const warn = jest
+      .spyOn(global.console, 'warn')
+      .mockImplementation(() => null);
     const config = await loadFixture(
       'base',
       {
         ssr: false,
         publicDir: './'
       },
-      false
+      'none-exist-file'
     );
 
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringMatching(/Config file not found:/)
+    );
     expect(config.ssr).toBe(false);
     expect(config.publicDir).toBe('./');
   });

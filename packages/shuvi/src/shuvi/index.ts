@@ -4,6 +4,7 @@ import { IConfig } from '../config';
 export { Shuvi, IConfig };
 
 export interface ShuviOptions {
+  cwd?: string
   dev?: boolean;
   config?: IConfig;
   configFile?: string;
@@ -11,6 +12,7 @@ export interface ShuviOptions {
 
 export function shuvi({
   dev = false,
+  cwd = '.',
   config = {},
   configFile
 }: ShuviOptions): Shuvi {
@@ -21,5 +23,5 @@ export function shuvi({
     ShuviCtor = require('./shuvi.prod').default;
   }
 
-  return new ShuviCtor({ config, configFile });
+  return new ShuviCtor({ cwd, config, configFile });
 }

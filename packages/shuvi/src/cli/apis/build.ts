@@ -8,15 +8,14 @@ import { BUILD_CLIENT_DIR } from '../../constants';
 import { renderToHTML } from '../../lib/renderToHTML';
 
 export interface IBuildOptions {
+  cwd?: string;
   config?: IConfig;
   configFile?: string;
-  target?: 'spa' | 'ssr';
+  target: 'spa' | 'ssr';
 }
 
 const defaultBuildOptions = {
   target: 'ssr',
-  config: {},
-  configFile: ''
 } as const;
 
 async function bundle({ api }: { api: Api }) {
@@ -77,12 +76,13 @@ async function buildHtml({
   }
 }
 
-export async function build(options: IBuildOptions) {
-  const opts: Required<IBuildOptions> = {
+export async function build(options: Partial<IBuildOptions>) {
+  const opts: IBuildOptions = {
     ...defaultBuildOptions,
     ...options
   };
   const api = await getApi({
+    cwd: opts.cwd,
     mode: 'production',
     config: opts.config,
     configFile: opts.configFile
