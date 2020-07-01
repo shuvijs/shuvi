@@ -11,7 +11,7 @@ export interface IBuildOptions {
   cwd?: string;
   config?: IConfig;
   configFile?: string;
-  target: 'spa' | 'ssr';
+  target?: 'spa' | 'ssr';
 }
 
 const defaultBuildOptions = {
@@ -76,8 +76,8 @@ async function buildHtml({
   }
 }
 
-export async function build(options: Partial<IBuildOptions>) {
-  const opts: IBuildOptions = {
+export async function build(options: IBuildOptions) {
+  const opts = {
     ...defaultBuildOptions,
     ...options
   };
