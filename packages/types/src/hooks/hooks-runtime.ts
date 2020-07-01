@@ -11,7 +11,12 @@ export type IHookCreateAppContext = defineHook<
 
 export type IHookRender = defineHook<'render'>;
 
-export type IHookServerGetPageData = defineHook<'server:getPageData'>;
+export type IHookServerGetPageData = defineHook<
+  'server:getPageData',
+  {
+    args: [object /* appContext */];
+  }
+>;
 
 export type IEventRenderDone = defineEvent<'renderDone', [any]>;
 
