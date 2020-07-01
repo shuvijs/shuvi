@@ -3,7 +3,6 @@ import { PluginApi } from '../pluginApi';
 import { resolvePlugin } from './utils';
 import { IApiConfig, IPaths } from '@shuvi/types';
 import path from 'path';
-import { CONFIG_FILE } from '@shuvi/shared/lib/constants';
 
 describe('api', () => {
   let gApi: Api;
@@ -93,10 +92,7 @@ describe('api', () => {
     expect(process.env.READ_ENV).toBeUndefined();
 
     await getApi({
-      config: {
-        rootDir: path.join(__dirname, 'fixtures', 'dotenv')
-      },
-      configFile: path.join(__dirname, 'fixtures', 'dotenv', CONFIG_FILE)
+      cwd: path.join(__dirname, 'fixtures', 'dotenv')
     });
 
     expect(process.env.READ_ENV).toBe('true');

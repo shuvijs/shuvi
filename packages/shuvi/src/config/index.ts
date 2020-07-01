@@ -1,10 +1,16 @@
 import { IApiConfig } from '@shuvi/types';
 import path from 'path';
-import { PUBLIC_PATH } from '../constants';
+import { PUBLIC_PATH, CONFIG_FILE } from '../constants';
 import { loadDotenvConfig } from './loadDotenvConfig';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 
 export type IConfig = Partial<IApiConfig>;
+
+export interface LoadConfigOptions {
+  rootDir?: string;
+  configFile?: string;
+  overrides?: IConfig;
+}
 
 export const defaultConfig: IApiConfig = {
   ssr: true,
@@ -18,40 +24,27 @@ export const defaultConfig: IApiConfig = {
   }
 };
 
-async function loadConfigFromFile<T>(configPath: string): Promise<T> {
-  const absolutePath = path.isAbsolute(configPath)
-    ? configPath
-    : path.resolve(configPath);
-  let config = {} as T;
-
-  try {
-    config = require(absolutePath);
-    config = (config as any).default || config;
-  } catch (err) {
-    // Ignore MODULE_NOT_FOUND
-    if (err.code !== 'MODULE_NOT_FOUND') {
-      throw err;
-    }
-  }
-
-  return config;
-}
-
-export async function loadConfig(
-  configFile?: string,
-  userConfig: IConfig = {}
-): Promise<IConfig> {
-  const rootDir = userConfig.rootDir
-    ? path.resolve(userConfig.rootDir)
-    : process.cwd();
+export async function loadConfig({
+  rootDir = '.',
+  configFile = CONFIG_FILE,
+  overrides = {}
+}: LoadConfigOptions = {}): Promise<IConfig> {
+  rootDir = path.resolve(rootDir);
+  configFile = path.resolve(rootDir, configFile);
 
   // read dotenv so we can get env in shuvi.config.js
   loadDotenvConfig(rootDir);
 
-  if (configFile) {
-    const config = await loadConfigFromFile<IConfig>(configFile);
-    return deepmerge({ rootDir }, config, userConfig);
+  let fileConfig: IConfig = {};
+  try {
+    fileConfig = require(configFile);
+    fileConfig = (fileConfig as any).default || fileConfig;
+  } catch (err) {
+    if (err.code !== 'MODULE_NOT_FOUND') {
+      throw err;
+    } else if (configFile !== path.resolve(rootDir, CONFIG_FILE)) {
+      console.warn('Config file not found: ' + configFile);
+    }
   }
-
-  return deepmerge({ rootDir }, userConfig);
+  return deepmerge({ rootDir }, fileConfig, overrides);
 }

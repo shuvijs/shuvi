@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   IApiConfig,
   IApi,
@@ -26,12 +27,14 @@ import { getPaths } from './paths';
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
 interface IApiOPtions {
+  cwd?: string;
   mode?: IShuviMode;
   config?: IConfig;
   configFile?: string;
 }
 
 class Api extends Hookable implements IApi {
+  private _cwd: string;
   private _mode: IShuviMode;
   private _userConfig?: IConfig;
   private _config!: IApiConfig;
@@ -44,7 +47,7 @@ class Api extends Hookable implements IApi {
   private _plugins!: IPlugin[];
   private _pluginApi!: PluginApi;
 
-  constructor({ mode, config, configFile }: IApiOPtions) {
+  constructor({ cwd, mode, config, configFile }: IApiOPtions) {
     super();
     if (mode) {
       this._mode = mode;
@@ -54,6 +57,7 @@ class Api extends Hookable implements IApi {
       this._mode = 'production';
     }
 
+    this._cwd = path.resolve(cwd || '.');
     this._configFile = configFile;
     this._userConfig = config;
   }
@@ -73,7 +77,11 @@ class Api extends Hookable implements IApi {
   async init() {
     this._app = new App();
 
-    const configFromFile = await loadConfig(this._configFile, this._userConfig);
+    const configFromFile = await loadConfig({
+      rootDir: this._cwd,
+      configFile: this._configFile,
+      overrides: this._userConfig
+    });
 
     const config: IApiConfig = deepmerge(defaultConfig, configFromFile);
 
@@ -311,11 +319,12 @@ class Api extends Hookable implements IApi {
 export type { Api };
 
 export async function getApi({
+  cwd,
   mode,
   config,
   configFile
 }: IApiOPtions): Promise<Api> {
-  const api = new Api({ mode, config, configFile });
+  const api = new Api({ cwd, mode, config, configFile });
 
   await api.init();
   return api;

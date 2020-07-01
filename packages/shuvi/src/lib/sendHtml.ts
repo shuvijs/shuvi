@@ -5,7 +5,7 @@ export function sendHTML(
   res: ServerResponse,
   html: string
 ) {
-  if (res.finished || res.headersSent) return;
+  if (res.writableEnded || res.headersSent) return;
 
   if (!res.getHeader('Content-Type')) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');

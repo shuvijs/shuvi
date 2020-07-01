@@ -11,18 +11,22 @@ import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
 
 export interface IShuviConstructorOptions {
+  cwd: string;
   config: IConfig;
   configFile?: string;
 }
 
 export default abstract class Shuvi {
   protected _api!: Api;
-  private _config: IConfig;
-  private _configFile?: string;
+  private _apiPromise: Promise<Api>;
 
-  constructor({ config, configFile }: IShuviConstructorOptions) {
-    this._config = config;
-    this._configFile = configFile;
+  constructor({ cwd, config, configFile }: IShuviConstructorOptions) {
+    this._apiPromise = getApi({
+      cwd,
+      config,
+      configFile,
+      mode: this.getMode(),
+    });
   }
 
   async ready(): Promise<void> {
@@ -85,7 +89,7 @@ export default abstract class Shuvi {
     res: IServerResponse
   ): Promise<void> {
     const html = await this.renderToHTML(req, res);
-    if (html && !res.writableEnded) {
+    if (html) {
       sendHTML(req, res, html);
     }
   }
@@ -95,10 +99,6 @@ export default abstract class Shuvi {
       return;
     }
 
-    this._api = await getApi({
-      mode: this.getMode(),
-      config: this._config,
-      configFile: this._configFile
-    });
+    this._api = await this._apiPromise;
   }
 }

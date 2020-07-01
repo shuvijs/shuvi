@@ -1,13 +1,11 @@
 import program from 'commander';
 import path from 'path';
-import { IConfig } from '../../config';
 import { build } from '../apis/build';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
 import { getProjectDir } from '../utils';
-import { CONFIG_FILE } from '@shuvi/shared/lib/constants';
 
-interface CliOptions {
+interface CLIParams {
   publicPath?: string;
   target?: 'spa';
 }
@@ -32,7 +30,8 @@ function set(obj: any, path: string, value: any) {
   obj[final] = value;
 }
 
-function applyCliOptions(cliOptions: Record<string, any>, config: IConfig) {
+function getConfigFromCli(cliOptions: Record<string, any>) {
+  const config = {};
   Object.keys(CliConfigMap).forEach(key => {
     if (typeof program[key] !== 'undefined') {
       const value = CliConfigMap[key];
@@ -43,6 +42,7 @@ function applyCliOptions(cliOptions: Record<string, any>, config: IConfig) {
       }
     }
   });
+  return config;
 }
 
 export default async function main(argv: string[]) {
@@ -50,6 +50,7 @@ export default async function main(argv: string[]) {
     .name(pkgInfo.name)
     .usage(`build [dir] [options]`)
     .helpOption()
+    .option('--config <file>', 'path to config file')
     .option(
       '--public-path <url>',
       'specify the asset prefix. eg: https://some.cdn.com'
@@ -61,13 +62,17 @@ export default async function main(argv: string[]) {
     )
     .parse(argv, { from: 'user' });
 
-  const configFile = path.join(getProjectDir(program), CONFIG_FILE);
-  const cliOpts = program as CliOptions;
-  const config = {};
-  applyCliOptions(cliOpts, config);
+  const cwd = getProjectDir(program);
+  const cliParams = program as CLIParams;
+  const config = getConfigFromCli(cliParams);
 
   try {
-    await build({ config, target: cliOpts.target, configFile });
+    await build({
+      cwd,
+      config,
+      configFile: program.config && path.resolve(cwd, program.config),
+      target: cliParams.target
+    });
     console.log('Build successfully!');
   } catch (error) {
     console.error('Failed to build.\n');
