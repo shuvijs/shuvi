@@ -10,13 +10,13 @@ export async function renderToHTML({
   req: Runtime.IRequest;
   api: Api;
   onRedirect?(redirect: Runtime.IRenderResultRedirect): void;
-}): Promise<null | string> {
+}): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
   const renderer = new Renderer({ api });
   const { application } = api.resources.server;
   const app = application.create(
     {
-      req,
+      req
     },
     {
       async render({ appContext, AppComponent, routes }) {
@@ -25,7 +25,7 @@ export async function renderToHTML({
           url: req.url || '/',
           AppComponent,
           routes,
-          appContext,
+          appContext
         });
 
         if (isRedirect(result)) {
@@ -37,13 +37,14 @@ export async function renderToHTML({
     }
   );
 
+  let appContext: any;
   try {
-    await app.run();
+    appContext = await app.run();
   } catch (error) {
     console.log('shuvi app run error', error);
   } finally {
     await app.dispose();
   }
 
-  return html;
+  return { appContext, html };
 }

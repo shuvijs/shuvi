@@ -5,7 +5,7 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('Custom app', () => {
+describe('Custom app.js', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-app');
   });
@@ -26,7 +26,7 @@ describe('Custom app', () => {
 
   test('App.getInitalProps should work', async () => {
     page = await ctx.browser.page(ctx.url('/'), {
-      disableJavaScript: true,
+      disableJavaScript: true
     });
 
     expect(await page.$text('#pathname')).toBe('/');
@@ -36,7 +36,7 @@ describe('Custom app', () => {
 describe('[SPA] Custom app', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-app', {
-      ssr: false,
+      ssr: false
     });
   });
   afterAll(async () => {
@@ -56,7 +56,7 @@ describe('[SPA] Custom app', () => {
   });
 });
 
-describe('Custom template', () => {
+describe('Custom document template', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-document-template');
   });
@@ -76,7 +76,7 @@ describe('Custom template', () => {
   });
 });
 
-describe('Custom document', () => {
+describe('Custom document.js', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-document');
   });
@@ -122,5 +122,31 @@ describe('Custom 404 page', () => {
     await page.shuvi.navigate('/none-exist-page');
     await page.waitForSelector('#custom-404');
     expect(await page.$text('#custom-404')).toBe('404');
+  });
+});
+
+describe('Custom Server.js', () => {
+  beforeAll(async () => {
+    ctx = await launchFixture('custom-server');
+  });
+  afterAll(async () => {
+    await ctx.close();
+  });
+  afterEach(async () => {
+    await page.close();
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
+  });
+
+  test('should work', async () => {
+    page = await ctx.browser.page();
+    const result = await page.goto(ctx.url('/404'));
+
+    if (!result) {
+      throw Error('no result');
+    }
+
+    expect(result.status()).toBe(404);
+    expect(await page.$text('div')).toMatch(/404 Page/);
   });
 });

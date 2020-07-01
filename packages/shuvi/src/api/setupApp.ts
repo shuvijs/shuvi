@@ -70,6 +70,15 @@ export async function setupApp(api: Api) {
     'core'
   );
   api.addAppFile(
+    File.moduleProxy('server.js', {
+      source: [
+        ...withExts(api.resolveUserFile('server'), moduleFileExtensions),
+        require.resolve('@shuvi/utils/lib/noop')
+      ]
+    }),
+    'core'
+  );
+  api.addAppFile(
     File.moduleProxy('document.js', {
       source: [
         ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
@@ -139,6 +148,10 @@ export async function setupApp(api: Api) {
     File.module('server.js', {
       exports: api.config.ssr
         ? {
+            [api.resolveAppFile('core', 'server')]: {
+              imported: '*',
+              local: 'server'
+            },
             [api.resolveAppFile('core', 'document')]: {
               imported: '*',
               local: 'document'
@@ -153,6 +166,10 @@ export async function setupApp(api: Api) {
             }
           }
         : {
+            [api.resolveAppFile('core', 'server')]: {
+              imported: '*',
+              local: 'server'
+            },
             [api.resolveAppFile('core', 'document')]: {
               imported: '*',
               local: 'document'

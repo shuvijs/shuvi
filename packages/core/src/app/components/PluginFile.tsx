@@ -6,6 +6,7 @@ import { useSelector } from '../models/store';
 function Plugin() {
   const plugins = useSelector(state => state.runtimePlugins);
 
+  // TODO: move userPlugin create to core
   let content = 'import initPlugins from "@shuvi/app/core/userPlugin"\n';
   let pluginsHash = '';
 

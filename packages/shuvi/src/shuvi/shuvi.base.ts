@@ -1,5 +1,5 @@
 import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
-import { ServerResponse } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import {
   IHTTPRequestHandler,
   IIncomingMessage,
@@ -35,17 +35,27 @@ export default abstract class Shuvi {
   }
 
   async renderToHTML(
-    req: Runtime.IRequest,
+    req: IncomingMessage,
     res: ServerResponse
   ): Promise<string | null> {
-    return renderToHTML({
-      req,
+    const { server } = this._api.resources.server;
+    const { html, appContext } = await renderToHTML({
+      req: req as Runtime.IRequest,
       api: this._api,
       onRedirect(redirect) {
         res.writeHead(redirect.status ?? 302, { Location: redirect.path });
         res.end();
       }
     });
+
+    if (server.onViewDone) {
+      server.onViewDone(req, res, {
+        html,
+        appContext
+      });
+    }
+
+    return html;
   }
 
   async close() {
@@ -75,7 +85,7 @@ export default abstract class Shuvi {
     res: IServerResponse
   ): Promise<void> {
     const html = await this.renderToHTML(req, res);
-    if (html) {
+    if (html && !res.writableEnded) {
       sendHTML(req, res, html);
     }
   }
