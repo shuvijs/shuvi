@@ -15,7 +15,7 @@ export interface IBuildOptions {
 }
 
 const defaultBuildOptions = {
-  target: 'ssr',
+  target: 'ssr'
 } as const;
 
 async function bundle({ api }: { api: Api }) {
@@ -60,7 +60,7 @@ async function buildHtml({
   pathname: string;
   filename: string;
 }) {
-  const html = await renderToHTML({
+  const { html } = await renderToHTML({
     req: {
       url: pathname,
       headers: {}
