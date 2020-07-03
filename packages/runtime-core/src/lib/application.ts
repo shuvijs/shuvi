@@ -31,12 +31,14 @@ export class Application<Context extends {}> extends Hookable
   async run() {
     await this._init();
     await this._createApplicationContext();
+    await this._getAppComponent();
     await this._render();
 
     return this._context;
   }
 
   async rerender() {
+    await this._getAppComponent();
     await this._render();
   }
 
@@ -60,6 +62,16 @@ export class Application<Context extends {}> extends Hookable
       name: 'createAppContext',
       initialValue: this._context
     })) as IContext;
+  }
+
+  private async _getAppComponent() {
+    this.AppComponent = await this.callHook<RuntimeHooks.IHookGetAppComponent>(
+      {
+        name: 'getAppComponent',
+        initialValue: this.AppComponent
+      },
+      this._context
+    );
   }
 
   private async _render() {

@@ -9,6 +9,14 @@ export type IHookCreateAppContext = defineHook<
   }
 >;
 
+export type IHookGetAppComponent = defineHook<
+  'getAppComponent',
+  {
+    initialValue: object;
+    args: [object];
+  }
+>;
+
 export type IHookRender = defineHook<'render'>;
 
 export type IHookServerGetPageData = defineHook<
