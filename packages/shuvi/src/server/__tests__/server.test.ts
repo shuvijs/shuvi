@@ -75,13 +75,8 @@ describe('server', () => {
       await proxyTarget2.listen(proxyTarget2Port);
     });
 
-    afterAll(() => {
-      proxyTarget1?.close();
-      proxyTarget2?.close();
-    });
-
-    afterEach(() => {
-      server.close();
+    afterAll(async () => {
+      await Promise.all([proxyTarget1?.close(), proxyTarget2?.close()]);
     });
 
     test('object options', async () => {

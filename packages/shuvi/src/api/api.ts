@@ -309,7 +309,7 @@ class Api extends Hookable implements IApi {
 
   async destory() {
     if (this._server) {
-      this._server.close();
+      await this._server.close();
     }
     this._app.stopBuild(this.paths.appDir);
     await this.callHook<APIHooks.IHookDestory>('destory');
