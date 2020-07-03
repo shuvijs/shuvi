@@ -15,7 +15,7 @@ function findFirstExistedFile(files: string[]): string | null {
 
 export function useFileByOrder(files: string[], fallbackFile: string) {
   const lookupFiles = files;
-  const forceupdate = useReducer((s) => s * -1, 1)[1];
+  const forceupdate = useReducer(s => s * -1, 1)[1];
   const existedFiles = useRef(new Map<string, true>());
   let file = fallbackFile;
 
@@ -31,6 +31,7 @@ export function useFileByOrder(files: string[], fallbackFile: string) {
     }
 
     return watch({ files: lookupFiles }, ({ removals, changes }) => {
+      console.log({ lookupFiles, changes, removals });
       for (let index = 0; index < changes.length; index++) {
         const existed = changes[index];
         existedFiles.current.set(existed, true);

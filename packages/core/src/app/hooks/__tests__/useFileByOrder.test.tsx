@@ -15,7 +15,7 @@ function DumpComp({}: any) {
 
 function TestComp({
   files = [],
-  fallback,
+  fallback
 }: {
   files?: string[];
   fallback: string;
@@ -82,7 +82,7 @@ describe('useFileByOrder', () => {
     }
   });
 
-  test('should update when the file occurs 1', async () => {
+  test.only('should update when the file occurs 1', async () => {
     try {
       const { root } = render(
         <TestComp files={[unexistedFileC, fileA]} fallback="fallback.js" />

@@ -12,7 +12,7 @@
     "dev": "lerna run dev --stream --parallel",
     "shuvi": "node ./packages/shuvi/lib/cli/cli.js",
     "build": "lerna run build --stream",
-    "test": "yarn test:fixtures && yarn test:unit",
+    "test": "jest useFileByOrder",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
     "test:e2e": "jest test/e2e --runInBand"
