@@ -2,7 +2,9 @@ import { Application } from '../application';
 
 function getApp({ render }: any = {}) {
   const app = new Application({
-    context: {},
+    context: {
+      test: true
+    },
     AppComponent: {},
     routes: [
       {
@@ -45,5 +47,25 @@ describe('application', () => {
     expect(renderPrarmas['AppComponent']).toBeDefined();
     expect(renderPrarmas['routes']).toBeDefined();
     expect(renderPrarmas['appContext']).toBeDefined();
+  });
+
+  test('should wrap getAppComponent hook', async () => {
+    const app = getApp();
+
+    app.tap('getAppComponent', {
+      name: 'wrapAppComponent',
+      fn: (AppComponent: any, context: any) => {
+        expect(context.test).toBe(true);
+
+        const WrapApp = () => AppComponent;
+        WrapApp.test = 'test';
+        return WrapApp;
+      }
+    });
+
+    await app.run();
+
+    expect(typeof app.AppComponent).toBe('function');
+    expect(app.AppComponent.test).toBe('test');
   });
 });
