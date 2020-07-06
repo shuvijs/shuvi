@@ -15,7 +15,7 @@ function DumpComp({}: any) {
 
 function TestComp({
   files = [],
-  fallback,
+  fallback
 }: {
   files?: string[];
   fallback: string;
@@ -24,9 +24,10 @@ function TestComp({
   return <DumpComp value={file} />;
 }
 
-function safeDelete(file: string) {
+async function safeDelete(file: string) {
   try {
-    fse.unlinkSync(file);
+    await fse.unlink(file);
+    await wait(1000);
   } catch {
     // ignore
   }
@@ -40,7 +41,9 @@ afterEach(cleanup);
 
 describe('useFileByOrder', () => {
   test('should use fallback file', () => {
-    const { root, update } = render(<TestComp fallback="fallback.js" />);
+    const { root, update, unmount } = render(
+      <TestComp fallback="fallback.js" />
+    );
     expect(root.findByType(DumpComp).props.value).toBe('fallback.js');
     update(
       <TestComp
@@ -49,53 +52,58 @@ describe('useFileByOrder', () => {
       />
     );
     expect(root.findByType(DumpComp).props.value).toBe('fallback.js');
+    unmount();
   });
 
   test('should use first existed file', () => {
-    const { root } = render(
+    const { root, unmount } = render(
       <TestComp files={[fileA, fileB]} fallback="fallback.js" />
     );
     expect(root.findByType(DumpComp).props.value).toBe(fileA);
+    unmount();
   });
 
   test('should use first existed file 1', () => {
-    const { root } = render(
+    const { root, unmount } = render(
       <TestComp files={['none-existed.js', fileA]} fallback="fallback.js" />
     );
     expect(root.findByType(DumpComp).props.value).toBe(fileA);
+    unmount();
   });
 
   test('should update when the file occurs', async () => {
     try {
-      const { root } = render(
+      const { root, unmount } = render(
         <TestComp files={[unexistedFileC]} fallback="fallback.js" />
       );
       expect(root.findByType(DumpComp).props.value).toBe('fallback.js');
 
       await act(async () => {
-        fse.writeFileSync(unexistedFileC, '', 'utf8');
+        await fse.writeFile(unexistedFileC, '', 'utf8');
         await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
+      unmount();
     } finally {
-      safeDelete(unexistedFileC);
+      await safeDelete(unexistedFileC);
     }
   });
 
   test('should update when the file occurs 1', async () => {
     try {
-      const { root } = render(
+      const { root, unmount } = render(
         <TestComp files={[unexistedFileC, fileA]} fallback="fallback.js" />
       );
       expect(root.findByType(DumpComp).props.value).toBe(fileA);
 
       await act(async () => {
-        fse.writeFileSync(unexistedFileC, '', 'utf8');
+        await fse.writeFile(unexistedFileC, '', 'utf8');
         await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
+      unmount();
     } finally {
-      safeDelete(unexistedFileC);
+      await safeDelete(unexistedFileC);
     }
   });
 });
