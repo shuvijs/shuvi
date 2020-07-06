@@ -7,8 +7,8 @@ const host = 'localhost';
 
 describe('server', () => {
   let server: Server;
-  afterEach(() => {
-    server.close();
+  afterEach(async () => {
+    await server.close();
   });
 
   test('should work', async () => {
@@ -75,13 +75,8 @@ describe('server', () => {
       await proxyTarget2.listen(proxyTarget2Port);
     });
 
-    afterAll(() => {
-      proxyTarget1?.close();
-      proxyTarget2?.close();
-    });
-
-    afterEach(() => {
-      server.close();
+    afterAll(async () => {
+      await Promise.all([proxyTarget1?.close(), proxyTarget2?.close()]);
     });
 
     test('object options', async () => {

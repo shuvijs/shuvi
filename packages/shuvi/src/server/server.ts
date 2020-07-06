@@ -117,7 +117,11 @@ export class Server {
   }
 
   close() {
-    this._server?.close();
+    return new Promise((resolve, reject) =>
+      this._server?.close(() => {
+        resolve();
+      })
+    );
   }
 
   private _setupProxy(proxy: IServerProxyConfig) {
