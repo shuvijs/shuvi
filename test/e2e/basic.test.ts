@@ -40,12 +40,6 @@ describe('Basic Features', () => {
     expect(await page.$text('#process-env')).toBe('development');
   });
 
-  test('Head Component', async () => {
-    await page.shuvi.navigate('/head');
-    await page.waitForSelector('#head');
-    expect(await page.title()).toBe('Test Title');
-  });
-
   test('404 Page', async () => {
     await page.shuvi.navigate('/none-exist-page');
     await page.waitForSelector('div[style]');
@@ -89,6 +83,41 @@ describe('Basic Features', () => {
       localPage = await ctx.browser.page(ctx.url('/query'));
       const query = JSON.parse(await localPage.$text('#query'));
       expect(Object.keys(query).length).toBe(0);
+    });
+  });
+
+  describe('Head', () => {
+    let localPage: Page;
+    afterEach(async () => {
+      await localPage.close();
+    });
+
+    test('should have the default head tags', async () => {
+      localPage = await ctx.browser.page(ctx.url('/default-head'));
+      expect(await localPage.$$attr('meta[charset]', 'charset')).toEqual(['utf-8']);
+    });
+
+    test('should overwrite the default head tags', async () => {
+      localPage = await ctx.browser.page(ctx.url('/overwrite-default-head'));
+      expect(await localPage.$attr('meta[name="viewport"]', 'data-foo')).toEqual(
+        'bar'
+      );
+      expect(await localPage.$attr('meta[name="viewport"]', 'content')).toEqual(
+        'width=device-width'
+      );
+    });
+
+    test('should works on server', async () => {
+      localPage = await ctx.browser.page(ctx.url('/head'));
+      expect(await localPage.title()).toBe('Test Title');
+    });
+
+    test('should works on client', async () => {
+      localPage = await ctx.browser.page(ctx.url('/'));
+      expect(await localPage.$text('div')).toBe('Index Page');
+      await localPage.shuvi.navigate('/head');
+      await localPage.waitForSelector('#head');
+      expect(await localPage.title()).toBe('Test Title');
     });
   });
 });
