@@ -10,27 +10,12 @@ import AppContainer from './AppContainer';
 import { IReactRenderer, IReactAppData } from './types';
 import { Head } from './head';
 import { createRedirector } from './utils/createRedirector';
+import { DEFAULT_HEADS } from './head/constants';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
 import IHtmlTag = Runtime.IHtmlTag;
 import IParams = Runtime.IParams;
-
-const DEFAULT_HEAD = [
-  {
-    tagName: 'meta',
-    attrs: {
-      charset: 'utf-8'
-    }
-  },
-  {
-    tagName: 'meta',
-    attrs: {
-      name: 'viewport',
-      content: 'width=device-width,minimum-scale=1,initial-scale=1'
-    }
-  }
-];
 
 const renderApp: IReactRenderer = async ({
   url,
@@ -115,6 +100,7 @@ const renderApp: IReactRenderer = async ({
         <LoadableContext.Provider
           value={moduleName => loadableModules.push(moduleName)}
         >
+          <Head>{DEFAULT_HEADS}</Head>
           <AppContainer
             routes={routes}
             routeProps={routeProps}
@@ -182,7 +168,7 @@ const renderApp: IReactRenderer = async ({
     appData,
     appHtml: htmlContent,
     htmlAttrs: {},
-    headBeginTags: [...DEFAULT_HEAD, ...head, ...preloadDynamicChunks],
+    headBeginTags: [...head, ...preloadDynamicChunks],
     headEndTags: [...styles],
     bodyBeginTags: [],
     bodyEndTags: []
