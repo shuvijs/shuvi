@@ -10,10 +10,9 @@ import { setHistory } from './router/router';
 import { matchRoutes } from './router/matchRoutes';
 import AppContainer from './AppContainer';
 import { IReactAppData, IRoute } from './types';
-import { HeadManager, HeadManagerContext, Head } from './head';
+import { HeadManager, HeadManagerContext } from './head';
 import Loadable from './loadable';
 import { createRedirector } from './utils/createRedirector';
-import { DEFAULT_HEADS } from './head/constants';
 
 const headManager = new HeadManager();
 
@@ -80,7 +79,6 @@ export function createClientRenderer({
     const root = (
       <Router history={history}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <Head>{DEFAULT_HEADS}</Head>
           <AppContainer
             routes={routes}
             routeProps={routeProps}
