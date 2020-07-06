@@ -41,9 +41,7 @@ afterEach(cleanup);
 
 describe('useFileByOrder', () => {
   test('should use fallback file', () => {
-    const { root, update, unmount } = render(
-      <TestComp fallback="fallback.js" />
-    );
+    const { root, update } = render(<TestComp fallback="fallback.js" />);
     expect(root.findByType(DumpComp).props.value).toBe('fallback.js');
     update(
       <TestComp
@@ -52,28 +50,25 @@ describe('useFileByOrder', () => {
       />
     );
     expect(root.findByType(DumpComp).props.value).toBe('fallback.js');
-    unmount();
   });
 
   test('should use first existed file', () => {
-    const { root, unmount } = render(
+    const { root } = render(
       <TestComp files={[fileA, fileB]} fallback="fallback.js" />
     );
     expect(root.findByType(DumpComp).props.value).toBe(fileA);
-    unmount();
   });
 
   test('should use first existed file 1', () => {
-    const { root, unmount } = render(
+    const { root } = render(
       <TestComp files={['none-existed.js', fileA]} fallback="fallback.js" />
     );
     expect(root.findByType(DumpComp).props.value).toBe(fileA);
-    unmount();
   });
 
   test('should update when the file occurs', async () => {
     try {
-      const { root, unmount } = render(
+      const { root } = render(
         <TestComp files={[unexistedFileC]} fallback="fallback.js" />
       );
       expect(root.findByType(DumpComp).props.value).toBe('fallback.js');
@@ -83,7 +78,8 @@ describe('useFileByOrder', () => {
         await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
-      unmount();
+      // make sure to unmount before delete file
+      cleanup();
     } finally {
       await safeDelete(unexistedFileC);
     }
@@ -91,7 +87,7 @@ describe('useFileByOrder', () => {
 
   test('should update when the file occurs 1', async () => {
     try {
-      const { root, unmount } = render(
+      const { root } = render(
         <TestComp files={[unexistedFileC, fileA]} fallback="fallback.js" />
       );
       expect(root.findByType(DumpComp).props.value).toBe(fileA);
@@ -101,7 +97,8 @@ describe('useFileByOrder', () => {
         await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
-      unmount();
+      // make sure to unmount before delete file
+      cleanup();
     } finally {
       await safeDelete(unexistedFileC);
     }
