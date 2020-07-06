@@ -15,7 +15,7 @@ function DumpComp({}: any) {
 
 function TestComp({
   files = [],
-  fallback,
+  fallback
 }: {
   files?: string[];
   fallback: string;
@@ -24,9 +24,10 @@ function TestComp({
   return <DumpComp value={file} />;
 }
 
-function safeDelete(file: string) {
+async function safeDelete(file: string) {
   try {
-    fse.unlinkSync(file);
+    await fse.unlink(file);
+    await wait(1000);
   } catch {
     // ignore
   }
@@ -73,12 +74,12 @@ describe('useFileByOrder', () => {
       expect(root.findByType(DumpComp).props.value).toBe('fallback.js');
 
       await act(async () => {
-        fse.writeFileSync(unexistedFileC, '', 'utf8');
+        await fse.writeFile(unexistedFileC, '', 'utf8');
         await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
     } finally {
-      safeDelete(unexistedFileC);
+      await safeDelete(unexistedFileC);
     }
   });
 
@@ -90,12 +91,12 @@ describe('useFileByOrder', () => {
       expect(root.findByType(DumpComp).props.value).toBe(fileA);
 
       await act(async () => {
-        fse.writeFileSync(unexistedFileC, '', 'utf8');
+        await fse.writeFile(unexistedFileC, '', 'utf8');
         await wait(1000);
       });
       expect(root.findByType(DumpComp).props.value).toBe(unexistedFileC);
     } finally {
-      safeDelete(unexistedFileC);
+      await safeDelete(unexistedFileC);
     }
   });
 });
