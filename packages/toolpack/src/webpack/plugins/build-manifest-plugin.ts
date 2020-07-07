@@ -63,6 +63,7 @@ export default class BuildManifestPlugin {
         chunkRequest: {},
         loadble: {}
       });
+
       compilation.chunkGroups.forEach(chunkGroup => {
         if (chunkGroup instanceof Entrypoint) {
           this._collectEntries(chunkGroup);
@@ -70,6 +71,17 @@ export default class BuildManifestPlugin {
 
         this._collect(chunkGroup, compiler);
       });
+
+      for (const filePath of Object.keys(compilation.assets)) {
+        const path = filePath.replace(/\\/g, '/');
+        if (/^static\/dll\//.test(path)) {
+          if (/\.map$/.test(path)) {
+            continue;
+          }
+          // @ts-ignore
+          assetMap.entries['static/runtime/main.js'].js.unshift(path);
+        }
+      }
 
       this._manifest.loadble = Object.keys(this._manifest.loadble)
         .sort()
@@ -168,6 +180,7 @@ export default class BuildManifestPlugin {
     }
 
     const context = compiler.options.context;
+
     chunk.files.forEach((file: string) => {
       const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
       const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
