@@ -1,4 +1,4 @@
-import { IShuviMode, IApiConfig } from '../..';
+import { IShuviMode, IApiConfig, Runtime } from '../..';
 import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
 import { IRouteConfig } from '../runtime';
@@ -88,6 +88,14 @@ export type IEventServerListen = defineHook<
         hostname: string;
       }
     ];
+  }
+>;
+
+export type IHookModifyHtml = defineHook<
+  'modifyHtml',
+  {
+    initialValue: Runtime.IDocumentProps;
+    args: [object /* appContext */];
   }
 >;
 

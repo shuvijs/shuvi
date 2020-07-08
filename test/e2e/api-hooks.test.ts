@@ -12,7 +12,7 @@ describe('Runtime Plugin', () => {
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('runtime-plugin', { ssr: true });
+    ctx = await launchFixture('api-hooks', { ssr: true });
   });
   afterEach(async () => {
     await page.close();
@@ -21,10 +21,8 @@ describe('Runtime Plugin', () => {
     await ctx.close();
   });
 
-  test('should get pageData in client and custom documentProps', async () => {
-    page = await ctx.browser.page(ctx.url('/page-data'));
-    await page.waitFor('[data-test-id="page-data"]');
-    expect(await page.$text('[data-test-id="page-data"]')).toBe('bar');
+  test('should inject custom documentProps', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
 
     expect(
       (
