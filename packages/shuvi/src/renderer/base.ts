@@ -1,4 +1,4 @@
-import { Runtime, ITemplateData, RuntimeHooks } from '@shuvi/types';
+import { Runtime, ITemplateData, APIHooks } from '@shuvi/types';
 import {
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
@@ -83,6 +83,14 @@ export abstract class BaseRenderer {
       return docProps;
     }
 
+    docProps = await this._api.callHook<APIHooks.IHookModifyHtmlProps>(
+      {
+        name: 'modifyHtml',
+        initialValue: docProps
+      },
+      appContext
+    );
+
     const { document } = this._resources.server;
 
     if (document.onDocumentProps) {
@@ -92,16 +100,6 @@ export abstract class BaseRenderer {
         throw new Error('onDocumentProps not returning object.');
       }
     }
-
-    docProps = await app.callHook<RuntimeHooks.IHookModifyDocumentProps>(
-      {
-        // SSR will run on every request
-        // SPA will run this once when building
-        name: 'modifyDocumentProps',
-        initialValue: docProps
-      },
-      appContext
-    );
 
     return this._renderDocument(
       addDefaultHtmlTags(docProps),

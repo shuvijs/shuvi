@@ -7,17 +7,4 @@ export default ({ registerPlugin }) => {
       };
     }
   });
-
-  registerPlugin('modifyDocumentProps', {
-    name: 'test-document-props',
-    fn(documentProps) {
-      documentProps.headTags.push({
-        tagName: 'meta',
-        attrs: {
-          name: 'testDocumentProps'
-        }
-      });
-      return documentProps;
-    }
-  });
 };
