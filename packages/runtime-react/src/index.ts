@@ -22,7 +22,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       local: 'dynamic'
     });
     api.addAppExport(
-      resolveDep('react-router-dom'),
+      'react-router-dom',
       '{ Link, useLocation, useParams, useHistory, useRouteMatch, withRouter }'
     );
 
