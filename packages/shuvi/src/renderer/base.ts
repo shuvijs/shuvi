@@ -83,7 +83,7 @@ export abstract class BaseRenderer {
       return docProps;
     }
 
-    docProps = await this._api.callHook<APIHooks.IHookModifyHtmlProps>(
+    docProps = await this._api.callHook<APIHooks.IHookModifyHtml>(
       {
         name: 'modifyHtml',
         initialValue: docProps

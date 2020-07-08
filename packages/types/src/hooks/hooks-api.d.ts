@@ -91,7 +91,7 @@ export type IEventServerListen = defineHook<
   }
 >;
 
-export type IHookModifyHtmlProps = defineHook<
+export type IHookModifyHtml = defineHook<
   'modifyHtml',
   {
     initialValue: Runtime.IDocumentProps;
