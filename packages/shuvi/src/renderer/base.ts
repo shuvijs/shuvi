@@ -1,4 +1,4 @@
-import { Runtime, ITemplateData } from '@shuvi/types';
+import { Runtime, ITemplateData, RuntimeHooks } from '@shuvi/types';
 import {
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
@@ -72,7 +72,7 @@ export abstract class BaseRenderer {
     routes,
     appContext
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
-    const docProps = await this.getDocumentProps({
+    let docProps = await this.getDocumentProps({
       app,
       url,
       AppComponent,
@@ -84,9 +84,24 @@ export abstract class BaseRenderer {
     }
 
     const { document } = this._resources.server;
+
     if (document.onDocumentProps) {
-      document.onDocumentProps(docProps, appContext);
+      docProps = await document.onDocumentProps(docProps, appContext);
+
+      if (!docProps || typeof docProps !== 'object') {
+        throw new Error('onDocumentProps not returning object.');
+      }
     }
+
+    docProps = await app.callHook<RuntimeHooks.IHookModifyDocumentProps>(
+      {
+        // SSR will run on every request
+        // SPA will run this once when building
+        name: 'modifyDocumentProps',
+        initialValue: docProps
+      },
+      appContext
+    );
 
     return this._renderDocument(
       addDefaultHtmlTags(docProps),

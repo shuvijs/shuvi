@@ -21,9 +21,18 @@ describe('Runtime Plugin', () => {
     await ctx.close();
   });
 
-  test('should get pageData in client', async () => {
+  test('should get pageData in client and custom documentProps', async () => {
     page = await ctx.browser.page(ctx.url('/page-data'));
     await page.waitFor('[data-test-id="page-data"]');
     expect(await page.$text('[data-test-id="page-data"]')).toBe('bar');
+
+    expect(
+      (
+        await page.$$eval(
+          'head > meta[name="testDocumentProps"]',
+          element => element
+        )
+      ).length
+    ).toBe(1);
   });
 });

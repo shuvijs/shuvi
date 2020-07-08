@@ -1,4 +1,5 @@
 import { defineHook, defineEvent } from './helper';
+import { Runtime } from '@shuvi/types';
 
 export type IHookInit = defineHook<'init'>;
 
@@ -22,6 +23,14 @@ export type IHookRender = defineHook<'render'>;
 export type IHookServerGetPageData = defineHook<
   'server:getPageData',
   {
+    args: [object /* appContext */];
+  }
+>;
+
+export type IHookModifyDocumentProps = defineHook<
+  'modifyDocumentProps',
+  {
+    initialValue: Runtime.IDocumentProps;
     args: [object /* appContext */];
   }
 >;
