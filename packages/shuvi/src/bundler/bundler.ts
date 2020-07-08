@@ -144,6 +144,10 @@ class WebpackBundler {
     return runCompiler(compiler);
   }
 
+  public async resolveWebpackConfig(): Promise<Target[]> {
+    return await this._getInternalTargets();
+  }
+
   private _createConfig(options: IWebpackConfigOptions) {
     return createWepbackConfig(this._api, options);
   }

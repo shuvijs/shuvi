@@ -33,6 +33,7 @@
     "@shuvi/toolpack": "^0.0.1-beta.48",
     "@shuvi/types": "^0.0.1-beta.48",
     "@shuvi/utils": "^0.0.1-beta.48",
+    "cli-highlight": "^2.1.4",
     "commander": "5.1.0",
     "connect": "3.7.0",
     "cross-spawn": "7.0.1",

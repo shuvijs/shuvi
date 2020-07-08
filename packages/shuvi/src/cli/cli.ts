@@ -4,7 +4,7 @@ import spawn from 'cross-spawn';
 //@ts-ignore
 import pkgInfo from '../../package.json';
 
-const Commands = ['dev', 'build', 'serve'] as const;
+const Commands = ['dev', 'build', 'serve', 'inspect'] as const;
 
 type CommandName = typeof Commands[number];
 
@@ -33,14 +33,14 @@ const result = spawn.sync(
   [
     require.resolve('./agent'),
     require.resolve('./cmds/' + cmd),
-    ...commandArgs,
+    ...commandArgs
   ],
   {
     stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_ENV: nodeEnv,
-    },
+      NODE_ENV: nodeEnv
+    }
   }
 );
 if (result.signal) {
