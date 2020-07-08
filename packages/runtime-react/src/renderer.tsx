@@ -16,22 +16,6 @@ import IRouteComponent = Runtime.IRouteComponent;
 import IHtmlTag = Runtime.IHtmlTag;
 import IParams = Runtime.IParams;
 
-const DEFAULT_HEAD = [
-  {
-    tagName: 'meta',
-    attrs: {
-      charset: 'utf-8'
-    }
-  },
-  {
-    tagName: 'meta',
-    attrs: {
-      name: 'viewport',
-      content: 'width=device-width,minimum-scale=1,initial-scale=1'
-    }
-  }
-];
-
 const renderApp: IReactRenderer = async ({
   url,
   AppComponent,
@@ -182,7 +166,7 @@ const renderApp: IReactRenderer = async ({
     appData,
     appHtml: htmlContent,
     htmlAttrs: {},
-    headBeginTags: [...DEFAULT_HEAD, ...head, ...preloadDynamicChunks],
+    headBeginTags: [...head, ...preloadDynamicChunks],
     headEndTags: [...styles],
     bodyBeginTags: [],
     bodyEndTags: []

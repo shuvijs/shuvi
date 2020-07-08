@@ -15,6 +15,43 @@ import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
 import IRenderResultRedirect = Runtime.IRenderResultRedirect;
 
+function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
+  let hasMetaCharset = false;
+  let hasMetaViewport = false;
+
+  for (const { tagName, attrs } of documentProps.headTags) {
+    if (hasMetaCharset && hasMetaViewport) {
+      break;
+    }
+
+    if (tagName === 'meta') {
+      if (attrs.charset) {
+        hasMetaCharset = true;
+      } else if (attrs.name === 'viewport') {
+        hasMetaViewport = true;
+      }
+    }
+  }
+
+  if (!hasMetaCharset) {
+    documentProps.headTags.unshift(
+      tag('meta', {
+        charset: 'utf-8'
+      })
+    );
+  }
+  if (!hasMetaViewport) {
+    documentProps.headTags.unshift(
+      tag('meta', {
+        name: 'viewport',
+        content: 'width=device-width,minimum-scale=1,initial-scale=1'
+      })
+    );
+  }
+
+  return documentProps;
+}
+
 export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
 }
@@ -52,7 +89,7 @@ export abstract class BaseRenderer {
     }
 
     return this._renderDocument(
-      docProps,
+      addDefaultHtmlTags(docProps),
       document.getTemplateData ? document.getTemplateData(appContext) : {}
     );
   }
