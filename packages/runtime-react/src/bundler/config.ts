@@ -5,7 +5,8 @@ import AliasPlugin from 'enhanced-resolve/lib/AliasPlugin';
 import { PACKAGE_DIR } from '../paths';
 
 export function config(api: IApi) {
-  const resolveLocal = (m: string) => require.resolve(m);
+  const resolveLocal = (m: string) =>
+    path.dirname(require.resolve(`${m}/package.json`));
   const resolveUser = (m: string) =>
     path.join(api.paths.rootDir, 'node_modules', m);
   api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
