@@ -11,13 +11,13 @@ export const webpackHelpers = (): IWebpackHelpers => {
     callback
   ) => {
     let callbackCalled = false;
-    const nextHandler = (err?: any, result?: any, type?: string) => {
+    const nextHandler = (err?: any, result?: any) => {
       if (err) {
-        callback(err);
+        callback(err, undefined);
         callbackCalled = true;
       } else {
         if (result !== 'next') {
-          callback(err, result, type);
+          callback(err, result);
           callbackCalled = true;
         }
       }
@@ -31,7 +31,7 @@ export const webpackHelpers = (): IWebpackHelpers => {
     }
 
     if (!callbackCalled) {
-      callback();
+      callback(null, undefined);
     }
   };
 
