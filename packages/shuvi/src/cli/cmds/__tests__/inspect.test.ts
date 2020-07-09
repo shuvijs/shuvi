@@ -1,4 +1,4 @@
-import { runShuviCommand } from './utils';
+import { runShuviCommand } from 'shuvi-test-utils';
 
 describe('shuvi inspect command', () => {
   test('should be log webpack config correctly', () => {

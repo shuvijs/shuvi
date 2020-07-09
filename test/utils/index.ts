@@ -1,4 +1,5 @@
 import Browser, { Page } from './browser';
+import { execSync, ExecSyncOptions } from 'child_process';
 
 export { Browser, Page };
 
@@ -40,4 +41,16 @@ export async function check<T>(
   }
 
   throw new Error('CHECK TIMED OUT: ' + lastErr);
+}
+
+export function runShuviCommand(
+  command: string,
+  args: string[],
+  options?: ExecSyncOptions
+) {
+  const result = execSync(`yarn shuvi ${command} ${args.join(' ')}`, {
+    stdio: 'pipe',
+    ...options
+  });
+  return result.toString();
 }
