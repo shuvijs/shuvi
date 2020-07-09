@@ -10,8 +10,6 @@ const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
 export interface BrowserOptions extends BaseOptions {}
 
-export { browserWebpackHelpers } from './parts/helpers';
-
 export function createBrowserWebpackChain({
   ...baseOptions
 }: BrowserOptions): WebpackChain {

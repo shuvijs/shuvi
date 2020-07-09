@@ -24,10 +24,7 @@ import {
   IWebpackConfigOptions
 } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import {
-  nodeWebpackHelpers,
-  browserWebpackHelpers
-} from '@shuvi/toolpack/lib/webpack/config';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerDiagnostics = {
   errors: string[];
@@ -292,7 +289,7 @@ class WebpackBundler {
       {
         name: BUNDLER_TARGET_CLIENT,
         mode: this._api.mode,
-        helpers: browserWebpackHelpers,
+        helpers: webpackHelpers,
         webpack: webpack
       }
     );
@@ -311,7 +308,7 @@ class WebpackBundler {
       {
         name: BUNDLER_TARGET_SERVER,
         mode: this._api.mode,
-        helpers: nodeWebpackHelpers,
+        helpers: webpackHelpers,
         webpack: webpack
       }
     );

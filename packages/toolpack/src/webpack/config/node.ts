@@ -4,11 +4,9 @@ import { baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
 import { resolvePreferTarget } from './parts/resolve';
-import { nodeWebpackHelpers } from './parts/helpers';
+import { webpackHelpers } from './parts/helpers';
 
 export interface NodeOptions extends BaseOptions {}
-
-export { nodeWebpackHelpers };
 
 export function createNodeWebpackChain({
   ...baseOptions
@@ -37,7 +35,7 @@ export function createNodeWebpackChain({
 
   chain.output.libraryTarget('commonjs2');
   chain.optimization.minimize(false);
-  nodeWebpackHelpers.addExternals(
+  webpackHelpers.addExternals(
     chain,
     nodeExternals({ projectRoot: baseOptions.projectRoot })
   );

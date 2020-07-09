@@ -1,4 +1,3 @@
-import { ExternalsElement } from 'webpack';
 // import resolve from "resolve";
 import { AppSourceRegexs } from '../../../constants';
 import { ExternalsFunction } from '@shuvi/types/src/bundler';

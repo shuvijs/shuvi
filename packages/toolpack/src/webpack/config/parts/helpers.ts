@@ -2,13 +2,13 @@ import webpack from 'webpack';
 import { WebpackChain } from '@shuvi/types';
 import { ExternalsFunction, IWebpackHelpers } from '@shuvi/types/src/bundler';
 
-export const webpackHelpers = (): IWebpackHelpers => {
+interface IExternalsFn extends webpack.ExternalsFunctionElement {
+  externalFns: ExternalsFunction[];
+}
+const createDefaultExternalsFn = () => {
   const externalFns: ExternalsFunction[] = [];
-  const defaultExternalsFn: webpack.ExternalsFunctionElement = (
-    context,
-    request,
-    callback
-  ) => {
+
+  const defaultExternalsFn: IExternalsFn = (context, request, callback) => {
     let callbackCalled = false;
     const nextHandler = (err?: any, result?: any, type?: string) => {
       if (err) {
@@ -34,32 +34,30 @@ export const webpackHelpers = (): IWebpackHelpers => {
     }
   };
 
-  return {
-    addExternals: (
-      webpackChain: WebpackChain,
-      externalFn: ExternalsFunction
-    ) => {
-      let externals = webpackChain.get('externals');
-      console.log({ externals });
-      if (!externals) {
-        externals = defaultExternalsFn;
-        webpackChain.externals(externals);
-      }
-      console.log({ name: externals.name });
-      if (
-        typeof externals === 'function' &&
-        externals.name === 'defaultExternalsFn'
-      ) {
-        externalFns.push(externalFn);
-        return;
-      }
+  defaultExternalsFn.externalFns = externalFns;
 
-      throw new Error(
-        'Externals was modified directly, addExternals will have no effect.'
-      );
-    }
-  };
+  return defaultExternalsFn;
 };
 
-export const nodeWebpackHelpers = webpackHelpers();
-export const browserWebpackHelpers = webpackHelpers();
+export const webpackHelpers: IWebpackHelpers = {
+  addExternals: (webpackChain: WebpackChain, externalFn: ExternalsFunction) => {
+    let externals = webpackChain.get('externals');
+
+    if (!externals) {
+      externals = createDefaultExternalsFn();
+      webpackChain.externals(externals);
+    }
+
+    if (
+      typeof externals === 'function' &&
+      externals.name === 'defaultExternalsFn'
+    ) {
+      externals.externalFns.push(externalFn);
+      return;
+    }
+
+    throw new Error(
+      'Externals was modified directly, addExternals will have no effect.'
+    );
+  }
+};
