@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
 import { IRouteConfig } from '../runtime';
 import { defineHook } from './helper';
+import { IWebpackHelpers } from '../bundler';
 
 export type IHookGetConfig = defineHook<
   'getConfig',
@@ -36,6 +37,7 @@ export type IHookBundlerConfig = defineHook<
         name: string;
         mode: IShuviMode;
         webpack: typeof webpack;
+        helpers: IWebpackHelpers;
       }
     ];
   }

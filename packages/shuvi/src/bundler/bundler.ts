@@ -24,6 +24,7 @@ import {
   IWebpackConfigOptions
 } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerDiagnostics = {
   errors: string[];
@@ -56,7 +57,9 @@ class WebpackBundler {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
-      this._extraTargets = ((await this._api.callHook<APIHooks.IHookBundlerExtraTarget>(
+      this._extraTargets = ((await this._api.callHook<
+        APIHooks.IHookBundlerExtraTarget
+      >(
         {
           name: 'bundler:extraTarget',
           parallel: true
@@ -272,11 +275,13 @@ class WebpackBundler {
   }
 
   private async _getInternalTargets(): Promise<Target[]> {
+    const clientWebpackHelpers = webpackHelpers();
     let clientChain = createWepbackConfig(this._api, {
       name: BUNDLER_TARGET_CLIENT,
       node: false,
       entry: getClientEntry(this._api),
-      outputDir: BUILD_CLIENT_DIR
+      outputDir: BUILD_CLIENT_DIR,
+      webpackHelpers: clientWebpackHelpers
     });
     clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
@@ -286,15 +291,18 @@ class WebpackBundler {
       {
         name: BUNDLER_TARGET_CLIENT,
         mode: this._api.mode,
+        helpers: clientWebpackHelpers,
         webpack: webpack
       }
     );
 
+    const serverWebpackHelpers = webpackHelpers();
     let serverChain = createWepbackConfig(this._api, {
       name: BUNDLER_TARGET_SERVER,
       node: true,
       entry: getServerEntry(this._api),
-      outputDir: BUILD_SERVER_DIR
+      outputDir: BUILD_SERVER_DIR,
+      webpackHelpers: serverWebpackHelpers
     });
     serverChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
@@ -304,6 +312,7 @@ class WebpackBundler {
       {
         name: BUNDLER_TARGET_SERVER,
         mode: this._api.mode,
+        helpers: serverWebpackHelpers,
         webpack: webpack
       }
     );
