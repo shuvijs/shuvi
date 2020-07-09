@@ -1,6 +1,6 @@
-import { ExternalsElement, ExternalsFunctionElement } from "webpack";
 // import resolve from "resolve";
-import { AppSourceRegexs } from "../../../constants";
+import { AppSourceRegexs } from '../../../constants';
+import { ExternalsFunction } from '@shuvi/types/src/bundler';
 
 type Test = string | RegExp;
 
@@ -8,7 +8,7 @@ function match(value: string, tests: Test[]) {
   let matched: boolean = false;
   for (let index = 0; index < tests.length; index++) {
     const test = tests[index];
-    if (typeof test === "string") {
+    if (typeof test === 'string') {
       matched = test === value;
     } else {
       matched = value.match(test) !== null;
@@ -28,24 +28,18 @@ export function nodeExternals({
   projectRoot
 }: {
   projectRoot: string;
-}): ExternalsElement {
-  const nodeExternal: ExternalsFunctionElement = (
-    context,
-    request,
-    callback
-  ) => {
+}): ExternalsFunction {
+  const nodeExternal: ExternalsFunction = (context, request, next) => {
     function transpiled() {
-      return callback(null, undefined);
+      return next(null, undefined);
     }
 
     function external() {
-      return callback(null, `commonjs ${request}`);
+      return next(null, `commonjs ${request}`);
     }
 
     const notExternalModules: Test[] = [];
-    const externalModules: Test[] = [
-      /shuvi[/\\]lib[/\\]lib[/\\]runtimeConfig/
-    ];
+    const externalModules: Test[] = [/shuvi[/\\]lib[/\\]lib[/\\]runtimeConfig/];
 
     // make sure we don't externalize anything that is
     // supposed to be transpiled
@@ -61,7 +55,7 @@ export function nodeExternals({
       return external();
     }
 
-    transpiled();
+    next(null, 'next');
     // // Relative requires don't need custom resolution, because they
     // // are relative to requests we've already resolved here.
     // // Absolute requires (require('/foo')) are extremely uncommon, but

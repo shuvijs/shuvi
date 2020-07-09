@@ -1,3 +1,5 @@
+import { WebpackChain } from '..';
+
 export interface IModuleItem {
   id: string;
   name: string;
@@ -33,4 +35,14 @@ export interface IManifest {
   loadble: {
     [s: string]: IModule;
   };
+}
+
+export type ExternalsFunction = (
+  context: any,
+  request: any,
+  next: (err?: any, result?: string | 'next', type?: string) => void
+) => void;
+
+export interface IWebpackHelpers {
+  addExternals: (chain: WebpackChain, externalsFn: ExternalsFunction) => void;
 }
