@@ -4,11 +4,14 @@ import { baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
 import { resolvePreferTarget } from './parts/resolve';
-import { webpackHelpers } from './parts/helpers';
+import { IWebpackHelpers } from '@shuvi/types/src/bundler';
 
-export interface NodeOptions extends BaseOptions {}
+export interface NodeOptions extends BaseOptions {
+  webpackHelpers: IWebpackHelpers;
+}
 
 export function createNodeWebpackChain({
+  webpackHelpers,
   ...baseOptions
 }: NodeOptions): WebpackChain {
   const chain = baseWebpackChain(baseOptions);

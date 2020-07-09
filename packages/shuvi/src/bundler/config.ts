@@ -14,6 +14,7 @@ import {
   BUILD_SERVER_FILE_SERVER
 } from '../constants';
 import { runtimeDir } from '../runtime';
+import { IWebpackHelpers } from '@shuvi/types/src/bundler';
 
 export interface IWebpackEntry {
   [x: string]: string | string[];
@@ -25,11 +26,12 @@ export interface IWebpackConfigOptions {
   entry: IWebpackEntry;
   srcDirs?: string[];
   outputDir: string;
+  webpackHelpers: IWebpackHelpers;
 }
 
 export function createWepbackConfig(
   { mode, assetPublicPath, paths, config }: Api,
-  opts: IWebpackConfigOptions
+  { webpackHelpers, ...opts }: IWebpackConfigOptions
 ): WebpackChain {
   const dev = mode === 'development';
   let chain: WebpackChain;
@@ -47,7 +49,8 @@ export function createWepbackConfig(
       dev,
       projectRoot: paths.rootDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
-      mediaFilename: BUILD_MEDIA_PATH
+      mediaFilename: BUILD_MEDIA_PATH,
+      webpackHelpers
     });
     chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
   } else {
@@ -58,7 +61,8 @@ export function createWepbackConfig(
       projectRoot: paths.rootDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
       mediaFilename: BUILD_MEDIA_PATH,
-      publicPath: assetPublicPath
+      publicPath: assetPublicPath,
+      webpackHelpers
     });
     chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
@@ -70,7 +74,10 @@ export function createWepbackConfig(
   });
 
   chain.resolve.alias.set('@shuvi/app', paths.appDir);
-  chain.resolve.alias.set('@shuvi/runtime-core', path.dirname(require.resolve('@shuvi/runtime-core/package.json')));
+  chain.resolve.alias.set(
+    '@shuvi/runtime-core',
+    path.dirname(require.resolve('@shuvi/runtime-core/package.json'))
+  );
   chain.output.set('filename', ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
     if (

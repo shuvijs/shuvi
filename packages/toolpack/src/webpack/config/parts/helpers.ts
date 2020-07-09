@@ -2,13 +2,14 @@ import webpack from 'webpack';
 import { WebpackChain } from '@shuvi/types';
 import { ExternalsFunction, IWebpackHelpers } from '@shuvi/types/src/bundler';
 
-interface IExternalsFn extends webpack.ExternalsFunctionElement {
-  externalFns: ExternalsFunction[];
-}
-const createDefaultExternalsFn = () => {
+export const webpackHelpers = (): IWebpackHelpers => {
   const externalFns: ExternalsFunction[] = [];
 
-  const defaultExternalsFn: IExternalsFn = (context, request, callback) => {
+  const defaultExternalsFn: webpack.ExternalsFunctionElement = (
+    context,
+    request,
+    callback
+  ) => {
     let callbackCalled = false;
     const nextHandler = (err?: any, result?: any, type?: string) => {
       if (err) {
@@ -34,30 +35,28 @@ const createDefaultExternalsFn = () => {
     }
   };
 
-  defaultExternalsFn.externalFns = externalFns;
+  return {
+    addExternals: (
+      webpackChain: WebpackChain,
+      externalFn: ExternalsFunction
+    ) => {
+      let externals = webpackChain.get('externals');
+      if (!externals) {
+        externals = defaultExternalsFn;
+        webpackChain.externals(externals);
+      }
 
-  return defaultExternalsFn;
-};
+      if (
+        typeof externals === 'function' &&
+        externals.name === 'defaultExternalsFn'
+      ) {
+        externalFns.push(externalFn);
+        return;
+      }
 
-export const webpackHelpers: IWebpackHelpers = {
-  addExternals: (webpackChain: WebpackChain, externalFn: ExternalsFunction) => {
-    let externals = webpackChain.get('externals');
-
-    if (!externals) {
-      externals = createDefaultExternalsFn();
-      webpackChain.externals(externals);
+      throw new Error(
+        'Externals was modified directly, addExternals will have no effect.'
+      );
     }
-
-    if (
-      typeof externals === 'function' &&
-      externals.name === 'defaultExternalsFn'
-    ) {
-      externals.externalFns.push(externalFn);
-      return;
-    }
-
-    throw new Error(
-      'Externals was modified directly, addExternals will have no effect.'
-    );
-  }
+  };
 };
