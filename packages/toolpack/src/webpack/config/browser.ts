@@ -10,6 +10,8 @@ const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
 export interface BrowserOptions extends BaseOptions {}
 
+export { browserWebpackHelpers } from './parts/helpers';
+
 export function createBrowserWebpackChain({
   ...baseOptions
 }: BrowserOptions): WebpackChain {
@@ -25,7 +27,7 @@ export function createBrowserWebpackChain({
     '.js',
     '.jsx',
     '.json',
-    '.wasm',
+    '.wasm'
   ]);
   if (baseOptions.target) {
     chain.resolve
@@ -51,7 +53,7 @@ export function createBrowserWebpackChain({
           priority: 40,
           // Don't let webpack eliminate this chunk (prevents this chunk from
           // becoming a part of the commons chunk)
-          enforce: true,
+          enforce: true
         },
         lib: {
           test(module: { size: Function; identifier: Function }): boolean {
@@ -84,12 +86,12 @@ export function createBrowserWebpackChain({
           },
           priority: 30,
           minChunks: 1,
-          reuseExistingChunk: true,
+          reuseExistingChunk: true
         },
         commons: {
           name: 'commons',
           minChunks: 2,
-          priority: 20,
+          priority: 20
         },
         shared: {
           name(module: any, chunks: any) {
@@ -107,11 +109,11 @@ export function createBrowserWebpackChain({
           },
           priority: 10,
           minChunks: 2,
-          reuseExistingChunk: true,
-        },
+          reuseExistingChunk: true
+        }
       },
       maxInitialRequests: 25,
-      minSize: 20000,
+      minSize: 20000
     });
   }
 
@@ -119,14 +121,14 @@ export function createBrowserWebpackChain({
     {
       ...options,
       // prevent errof of destructing process.env
-      'process.env': JSON.stringify('{}'),
-    },
+      'process.env': JSON.stringify('{}')
+    }
   ]);
   chain.plugin('private/build-manifest').tap(([options]) => [
     {
       ...options,
-      modules: true,
-    },
+      modules: true
+    }
   ]);
 
   return withStyle(chain, { extractCss: !dev, publicPath });

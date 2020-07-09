@@ -24,6 +24,10 @@ import {
   IWebpackConfigOptions
 } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
+import {
+  nodeWebpackHelpers,
+  browserWebpackHelpers
+} from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerDiagnostics = {
   errors: string[];
@@ -56,7 +60,9 @@ class WebpackBundler {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
-      this._extraTargets = ((await this._api.callHook<APIHooks.IHookBundlerExtraTarget>(
+      this._extraTargets = ((await this._api.callHook<
+        APIHooks.IHookBundlerExtraTarget
+      >(
         {
           name: 'bundler:extraTarget',
           parallel: true
@@ -286,6 +292,7 @@ class WebpackBundler {
       {
         name: BUNDLER_TARGET_CLIENT,
         mode: this._api.mode,
+        helpers: browserWebpackHelpers,
         webpack: webpack
       }
     );
@@ -304,6 +311,7 @@ class WebpackBundler {
       {
         name: BUNDLER_TARGET_SERVER,
         mode: this._api.mode,
+        helpers: nodeWebpackHelpers,
         webpack: webpack
       }
     );
