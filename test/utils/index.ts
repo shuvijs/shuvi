@@ -1,5 +1,5 @@
 import Browser, { Page } from './browser';
-import { execSync, ExecSyncOptions } from 'child_process';
+import { spawn, execSync, ExecSyncOptions } from 'child_process';
 
 export { Browser, Page };
 
@@ -48,9 +48,48 @@ export function runShuviCommand(
   args: string[],
   options?: ExecSyncOptions
 ) {
-  const result = execSync(`yarn shuvi ${command} ${args.join(' ')}`, {
-    stdio: 'pipe',
-    ...options
+  try {
+    const result = execSync(`yarn shuvi ${command} ${args.join(' ')}`, {
+      stdio: 'pipe',
+      ...options
+    });
+    return result.toString();
+  } catch (e) {
+    throw e;
+  }
+}
+
+export function runShuviCommandWithSpawn(
+  command: string,
+  args: string[]
+): Promise<{ code: number; message: string }> {
+  return new Promise((resolve, reject) => {
+    let output = '';
+    let err = '';
+    const s = spawn('yarn', ['shuvi', command, ...args], {
+      shell: true
+    });
+
+    s.stdout.on('data', data => {
+      output += data;
+    });
+
+    s.stderr.on('data', data => {
+      err += data;
+    });
+
+    s.on('exit', code => {
+      if (code === 0) {
+        resolve({
+          code,
+          message: output
+        });
+      } else {
+        reject({
+          code,
+          message: err
+        });
+      }
+    });
   });
-  return result.toString();
 }
