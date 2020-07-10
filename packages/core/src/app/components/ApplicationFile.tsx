@@ -7,7 +7,7 @@ import AppComponent from "@shuvi/app/core/app";
 import routes from "@shuvi/app/core/routes";
 import { Application } from "@shuvi/runtime-core/lib/lib/application";
 import pluginsHash from "@shuvi/app/core/pluginsHash";
-import initPlugins from "@shuvi/app/core/plugin";
+import runPlugins from "@shuvi/runtime-core/lib/lib/runPlugins";
 
 const __CLIENT__ = typeof window !== 'undefined';
 
@@ -26,7 +26,7 @@ export function create(context, options) {
     render: options.render
   });
   
-  app.setupPlugins(initPlugins, pluginsHash);
+  runPlugins(app.tap.bind(app));
 
   return app;
 }
