@@ -82,4 +82,29 @@ export class Application<Context extends {}> extends Hookable
     });
     this.emitEvent<RuntimeHooks.IEventRenderDone>('renderDone', result);
   }
+
+  setupPlugins(
+    initPlugins: Runtime.IInitPlugins,
+    pluginsHash: Runtime.IPluginsHash
+  ) {
+    const tap = this.tap.bind(this);
+
+    initPlugins({
+      registerPlugin: tap,
+      applyPluginOption: (name, options) => {
+        let pluginSelected = pluginsHash[name];
+        if (!pluginSelected) {
+          console.warn(
+            '[' +
+              name +
+              '] plugin is being applied options but does not match plugins in "shuvi.config.js".'
+          );
+        } else {
+          pluginsHash[name].options = options;
+        }
+      }
+    });
+
+    Object.values(pluginsHash).forEach(fn => fn(tap, fn.options));
+  }
 }
