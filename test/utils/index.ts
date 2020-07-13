@@ -1,5 +1,5 @@
 import Browser, { Page } from './browser';
-import { spawn, SpawnOptions } from 'child_process';
+import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 
 export { Browser, Page };
 
@@ -46,15 +46,14 @@ export async function check<T>(
 export function runShuviCommand(
   command: string,
   args: string[],
-  options?: SpawnOptions
+  options?: SpawnOptionsWithoutStdio
 ): Promise<{ code: number; message: string }> {
   return new Promise((resolve, reject) => {
     let output = '';
     let err = '';
     const s = spawn('yarn', ['shuvi', command, ...args], {
       ...options,
-      shell: true,
-      stdio: 'pipe'
+      shell: true
     });
 
     s.stdout.on('data', data => {
