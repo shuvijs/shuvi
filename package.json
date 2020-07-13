@@ -12,6 +12,7 @@
     "dev": "lerna run dev --stream --parallel",
     "shuvi": "node ./packages/shuvi/lib/cli/cli.js",
     "build": "lerna run build --stream",
+    "jest": "jest",
     "test": "yarn test:fixtures && yarn test:unit",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
