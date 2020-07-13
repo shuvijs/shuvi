@@ -5,8 +5,9 @@ function ApplicationFile() {
   const app = `
 import AppComponent from "@shuvi/app/core/app";
 import routes from "@shuvi/app/core/routes";
-import { Application } from "@shuvi/runtime-core/lib/lib/application";
-import runPlugins from "@shuvi/app/core/plugin";
+import { Application } from "@shuvi/core/lib/app/lib/application";
+import pluginsHash from "@shuvi/app/core/pluginsHash";
+import runPlugins from "@shuvi/core/lib/app/lib/runPlugins";
 
 const __CLIENT__ = typeof window !== 'undefined';
 
@@ -34,9 +35,9 @@ if (module.hot) {
   module.hot.accept(['@shuvi/app/core/app', '@shuvi/app/core/routes'], () => {
     if (!app) return;
 
-    app.AppComponent = require('@shuvi/app/core/app').default;
-    app.routes = require('@shuvi/app/core/routes').default;
-    app.rerender();
+    let AppComponent = require('@shuvi/app/core/app').default;
+    let routes = require('@shuvi/app/core/routes').default;
+    app.rerender({routes,AppComponent});
   });
 }
 `;

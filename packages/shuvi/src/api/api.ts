@@ -177,6 +177,10 @@ class Api extends Hookable implements IApi {
     this._app.setAppModule(module);
   }
 
+  setPluginModule(module: string | string[]) {
+    this._app.setPluginModule(module);
+  }
+
   async setRoutes(routes: IRouteConfig[]) {
     routes = await this.callHook<APIHooks.IHookAppRoutes>({
       name: 'app:routes',

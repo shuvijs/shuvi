@@ -16,7 +16,6 @@ export class Application<Context extends {}> extends Hookable
   implements Runtime.IApplication {
   AppComponent: any;
   routes: Runtime.IRoute[];
-
   private _renderFn: Runtime.IAppRenderFn;
   private _context: IContext;
 
@@ -37,8 +36,13 @@ export class Application<Context extends {}> extends Hookable
     return this._context;
   }
 
-  async rerender() {
-    await this._getAppComponent();
+  async rerender({ AppComponent, routes }: Runtime.RerenderConfig = {}) {
+    if (routes) {
+      this.routes = routes;
+    }
+    if (AppComponent) {
+      this.AppComponent = AppComponent;
+    }
     await this._render();
   }
 

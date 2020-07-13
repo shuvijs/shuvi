@@ -21,6 +21,10 @@ export class App {
     this._store.appModule = module;
   }
 
+  setPluginModule(module: string | string[]) {
+    this._store.pluginModule = module;
+  }
+
   setRoutesContent(content: string): void {
     this._store.routesContent = content;
   }
