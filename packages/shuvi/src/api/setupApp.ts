@@ -59,6 +59,11 @@ export async function setupApp(api: Api) {
     runtime.getAppModulePath()
   ]);
 
+  api.setPluginModule([
+    ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
+    require.resolve('@shuvi/utils/lib/noopFn')
+  ]);
+
   api.addAppFile(
     File.moduleProxy('404.js', {
       source: [
@@ -84,17 +89,6 @@ export async function setupApp(api: Api) {
         ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
         require.resolve('@shuvi/utils/lib/noop')
       ]
-    }),
-    'core'
-  );
-
-  api.addAppFile(
-    File.moduleProxy('userPlugin.js', {
-      source: [
-        ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
-        require.resolve('@shuvi/utils/lib/noop')
-      ],
-      defaultExport: true
     }),
     'core'
   );
