@@ -5,9 +5,9 @@ function ApplicationFile() {
   const app = `
 import AppComponent from "@shuvi/app/core/app";
 import routes from "@shuvi/app/core/routes";
-import { Application } from "@shuvi/runtime-core/lib/lib/application";
+import { Application } from "@shuvi/core/lib/app/lib/application";
 import pluginsHash from "@shuvi/app/core/pluginsHash";
-import runPlugins from "@shuvi/runtime-core/lib/lib/runPlugins";
+import runPlugins from "@shuvi/core/lib/app/lib/runPlugins";
 
 const __CLIENT__ = typeof window !== 'undefined';
 

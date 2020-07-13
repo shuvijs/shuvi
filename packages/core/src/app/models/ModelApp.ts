@@ -1,7 +1,7 @@
 import os from 'os';
 import { observable, action, computed } from 'mobx';
 import { IFileNode, Dir, isDir, File } from './files/FileNode';
-import { getCodeSnippet } from '../libs/getCodeSnippet';
+import { getCodeSnippet } from '../utils/getCodeSnippet';
 import { ISpecifier } from '../types';
 
 function getDirAndName(path: string) {
