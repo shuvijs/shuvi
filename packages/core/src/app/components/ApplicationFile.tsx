@@ -35,9 +35,9 @@ if (module.hot) {
   module.hot.accept(['@shuvi/app/core/app', '@shuvi/app/core/routes'], () => {
     if (!app) return;
 
-    app.AppComponent = require('@shuvi/app/core/app').default;
-    app.routes = require('@shuvi/app/core/routes').default;
-    app.rerender();
+    let AppComponent = require('@shuvi/app/core/app').default;
+    let routes = require('@shuvi/app/core/routes').default;
+    app.rerender({routes,AppComponent});
   });
 }
 `;

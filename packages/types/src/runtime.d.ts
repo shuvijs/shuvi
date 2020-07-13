@@ -216,12 +216,16 @@ export interface IServerModule {
   ): void;
 }
 
+export type RerenderConfig = {
+  AppComponent?: any;
+  routes?: IRoute[];
+};
+
 export interface IApplication extends Hookable {
   AppComponent: any;
   routes: IRoute[];
-
   run(): Promise<{ [k: string]: any }>;
-  rerender(): Promise<void>;
+  rerender(config?: RerenderConfig): Promise<void>;
   dispose(): Promise<void>;
 }
 
