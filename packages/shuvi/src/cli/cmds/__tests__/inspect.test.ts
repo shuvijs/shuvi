@@ -17,37 +17,36 @@ describe('shuvi inspect command', () => {
   });
 
   test('can specify --mode', async () => {
-    const { code, message: output } = await runShuviCommand('inspect', [
+    const { code, message } = await runShuviCommand('inspect', [
       'test/fixtures/inspect',
       '--mode=production'
     ]);
     expect(code).toBe(0);
-    expect(output).toMatch(`mode: 'production'`);
-    expect(output).toMatch(`name: 'shuvi/server'`);
-    expect(output).toMatch(`name: 'shuvi/client'`);
+    expect(message).toMatch(`mode: 'production'`);
+    expect(message).toMatch(`name: 'shuvi/server'`);
+    expect(message).toMatch(`name: 'shuvi/client'`);
   });
 
   test('can specify --verbose', async () => {
-    const { code, message: output } = await runShuviCommand('inspect', [
+    const { code, message } = await runShuviCommand('inspect', [
       'test/fixtures/inspect',
       '--verbose'
     ]);
     expect(code).toBe(0);
-    expect(output).toMatch(`'process.env.NODE_ENV': '"development"'`);
-    expect(output).toMatch(`__NAME__: '"shuvi/client"'`);
-    expect(output).toMatch(`__NAME__: '"shuvi/server"'`);
-    expect(output).toMatch(`__DEV__: true`);
+    expect(message).toMatch(`'process.env.NODE_ENV': '"development"'`);
+    expect(message).toMatch(`__NAME__: '"shuvi/client"'`);
+    expect(message).toMatch(`__NAME__: '"shuvi/server"'`);
+    expect(message).toMatch(`__DEV__: true`);
 
-    const { code: code2, message: output2 } = await runShuviCommand('inspect', [
-      'test/fixtures/inspect',
-      '--mode=production',
-      '--verbose'
-    ]);
+    const { code: code2, message: message2 } = await runShuviCommand(
+      'inspect',
+      ['test/fixtures/inspect', '--mode=production', '--verbose']
+    );
     expect(code2).toBe(0);
-    expect(output2).toMatch(`'process.env.NODE_ENV': '"production"'`);
-    expect(output2).toMatch(`__NAME__: '"shuvi/client"'`);
-    expect(output2).toMatch(`__NAME__: '"shuvi/server"'`);
-    expect(output2).toMatch(`__DEV__: false`);
+    expect(message2).toMatch(`'process.env.NODE_ENV': '"production"'`);
+    expect(message2).toMatch(`__NAME__: '"shuvi/client"'`);
+    expect(message2).toMatch(`__NAME__: '"shuvi/server"'`);
+    expect(message2).toMatch(`__DEV__: false`);
   });
 
   test('should exit process when dir is not exist', async () => {
