@@ -45,22 +45,6 @@ export async function check<T>(
 
 export function runShuviCommand(
   command: string,
-  args: string[],
-  options?: ExecSyncOptions
-) {
-  try {
-    const result = execSync(`yarn shuvi ${command} ${args.join(' ')}`, {
-      stdio: 'pipe',
-      ...options
-    });
-    return result.toString();
-  } catch (e) {
-    throw e;
-  }
-}
-
-export function runShuviCommandWithSpawn(
-  command: string,
   args: string[]
 ): Promise<{ code: number; message: string }> {
   return new Promise((resolve, reject) => {
