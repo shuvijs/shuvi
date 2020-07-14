@@ -2,6 +2,7 @@ import { APIHooks } from '@shuvi/types';
 import ForkTsCheckerWebpackPlugin, {
   createCodeframeFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
+import BundleAnalyzerPlugin from '@shuvi/toolpack/lib/utils/BundleAnalyzerPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import Logger from '@shuvi/utils/lib/logger';
 import { inspect } from 'util';
@@ -24,7 +25,10 @@ import {
   IWebpackConfigOptions
 } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
+import {
+  WebpackChain,
+  webpackHelpers
+} from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerDiagnostics = {
   errors: string[];
@@ -278,8 +282,25 @@ class WebpackBundler {
     });
   }
 
+  private _modifyClientConfig(clientChain: WebpackChain): WebpackChain {
+    if (this._api.config.analyze) {
+      clientChain
+        .plugin('cli/bundle-analyzer-plugin')
+        .use(BundleAnalyzerPlugin, [
+          {
+            logLevel: 'warn',
+            openAnalyzer: true,
+            analyzerMode: 'static',
+            reportFilename: './analyze/client.html'
+          }
+        ]);
+    }
+    return clientChain;
+  }
+
   private async _getInternalTargets(): Promise<Target[]> {
     const clientWebpackHelpers = webpackHelpers();
+    // create base config
     let clientChain = createWepbackConfig(this._api, {
       name: BUNDLER_TARGET_CLIENT,
       node: false,
@@ -287,6 +308,7 @@ class WebpackBundler {
       outputDir: BUILD_CLIENT_DIR,
       webpackHelpers: clientWebpackHelpers
     });
+    // modify config by call hook
     clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
         name: 'bundler:configTarget',
@@ -299,6 +321,8 @@ class WebpackBundler {
         webpack: webpack
       }
     );
+    // modify config by cli options
+    clientChain = this._modifyClientConfig(clientChain);
 
     const serverWebpackHelpers = webpackHelpers();
     let serverChain = createWepbackConfig(this._api, {
