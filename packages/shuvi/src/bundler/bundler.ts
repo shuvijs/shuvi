@@ -289,9 +289,9 @@ class WebpackBundler {
         .use(BundleAnalyzerPlugin, [
           {
             logLevel: 'warn',
-            openAnalyzer: true,
+            openAnalyzer: false,
             analyzerMode: 'static',
-            reportFilename: './analyze/client.html'
+            reportFilename: '../analyze/client.html'
           }
         ]);
     }
@@ -308,7 +308,7 @@ class WebpackBundler {
       outputDir: BUILD_CLIENT_DIR,
       webpackHelpers: clientWebpackHelpers
     });
-    // modify config by call hook
+    // modify config by api hooks
     clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
         name: 'bundler:configTarget',

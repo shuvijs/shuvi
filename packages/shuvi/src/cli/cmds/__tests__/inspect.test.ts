@@ -50,7 +50,7 @@ describe('shuvi inspect command', () => {
     const project2 = createCliTestProject('test/fixtures/inspect');
     const { message: message2 } = await project2.run(
       'inspect',
-      ['test/fixtures/inspect', '--mode=production', '--verbose'],
+      ['--mode=production', '--verbose'],
       {
         env: {
           ...process.env,
@@ -66,7 +66,7 @@ describe('shuvi inspect command', () => {
 
   test('should exit process when dir is not exist', async () => {
     try {
-      const project = createCliTestProject('test/fixtures/inspect');
+      const project = createCliTestProject('test/fixtures/xxx');
       await project.run('inspect');
     } catch (e) {
       expect(e.code).toBe(1);
