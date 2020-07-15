@@ -43,7 +43,7 @@ if (module.hot) {
 `;
 
   const emptyApp = `
-import { Application } from "@shuvi/runtime-core/lib/lib/application";
+import { Application } from "@shuvi/core/lib/lib/application";
 
 export function create(context, options) {
   return new Application({
