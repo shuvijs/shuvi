@@ -53,8 +53,8 @@ export default abstract class Shuvi {
     });
 
     // set 404 statusCode
-    if (appContext.__statusCode) {
-      res.statusCode = appContext.__statusCode;
+    if (appContext.statusCode) {
+      res.statusCode = appContext.statusCode;
     }
 
     if (server.onViewDone) {
