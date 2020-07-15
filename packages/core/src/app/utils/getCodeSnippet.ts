@@ -3,7 +3,7 @@ import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import generate from '@babel/generator';
 import * as BabelTypes from '@babel/types';
-import { ICodeSnippet } from '../types';
+import { ICodeSnippet } from '../../types';
 
 export function getCodeSnippet(content: string): ICodeSnippet {
   let ast: BabelTypes.File;

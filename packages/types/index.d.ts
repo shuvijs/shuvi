@@ -1,4 +1,11 @@
-import { IFile, App, ISpecifier, ITemplateData } from '@shuvi/core';
+import {
+  IFile,
+  App,
+  ISpecifier,
+  ITemplateData,
+  IHookable,
+  AppHooks
+} from '@shuvi/core';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
 import {
@@ -7,14 +14,19 @@ import {
 } from 'http-proxy-middleware';
 import * as Runtime from './src/runtime';
 import * as Bundler from './src/bundler';
-import { IHookable } from './src/hookable';
-
-export * from './src/hookable';
-export * from './src/hooks';
+import * as APIHooks from './src/hooks';
 
 export { webpack, WebpackChain };
 
-export { Runtime, Bundler, IFile, ISpecifier, ITemplateData };
+export {
+  Runtime,
+  Bundler,
+  APIHooks,
+  AppHooks,
+  IFile,
+  ISpecifier,
+  ITemplateData
+};
 
 export interface IServerProxyConfigItem extends ProxyOptions {
   context?: ProxyFilter;

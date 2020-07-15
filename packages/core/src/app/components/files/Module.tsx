@@ -1,6 +1,6 @@
-import React from "react";
-import { File } from "@shuvi/react-fs";
-import { ISpecifier } from "../../types";
+import React from 'react';
+import { File } from '@shuvi/react-fs';
+import { ISpecifier } from '../../../types';
 
 export interface Props {
   name: string;
@@ -16,9 +16,9 @@ function Module({ name, exports = {} }: Props) {
     for (const specifier of specifiers) {
       if (specifier === '*') {
         statements.push(`export * from "${source}"`);
-      } else if (typeof specifier === "string") {
+      } else if (typeof specifier === 'string') {
         statements.push(`export ${specifier} from "${source}"`);
-      } else if (specifier.imported === "*") {
+      } else if (specifier.imported === '*') {
         statements.push(`import * as ${specifier.local} from "${source}"`);
         statements.push(`export { ${specifier.local} }`);
       } else {
@@ -28,7 +28,7 @@ function Module({ name, exports = {} }: Props) {
       }
     }
   }
-  return <File name={name} content={`${statements.join("\n")}`} />;
+  return <File name={name} content={`${statements.join('\n')}`} />;
 }
 
 export default Module;

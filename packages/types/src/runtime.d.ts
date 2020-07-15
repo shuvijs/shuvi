@@ -1,9 +1,29 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
-import { IRouteBase, IRouteConfig, IRoute, ITemplateData } from '@shuvi/core';
+import {
+  IRouteBase,
+  IRouteConfig,
+  IRoute,
+  ITemplateData,
+  IApplication,
+  IAppRenderFn,
+  IRenderOptions,
+  IAppPlugin,
+  IInitAppPlugins,
+  IAppPluginRecord
+} from '@shuvi/core';
 import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
-import { Hookable } from '@shuvi/hooks';
+
+export {
+  IRouteBase,
+  IRouteConfig,
+  IRoute,
+  IApplication,
+  IAppPlugin,
+  IInitAppPlugins,
+  IAppPluginRecord
+};
 
 export type IData = {
   [k: string]: string | number | boolean | undefined | null;
@@ -17,8 +37,6 @@ export interface IRequest {
   url: string;
   headers: IncomingHttpHeaders;
 }
-
-export { IRouteBase, IRouteConfig, IRoute };
 
 export interface IMatchedRoute<
   Params extends { [K in keyof Params]?: string } = {}
@@ -99,14 +117,8 @@ export type IAppData<Data = {}> = {
   [K in keyof Data]: Data[K];
 };
 
-export interface IRendererOptions<CompType = any> {
-  AppComponent: CompType;
-  routes: IRoute[];
-  appContext: Record<string, any>;
-}
-
 export interface IClientRendererOptions<CompType = any, Data = {}>
-  extends IRendererOptions<CompType> {
+  extends IRenderOptions<CompType> {
   appContainer: HTMLElement;
   appData: IAppData<Data>;
 }
@@ -122,7 +134,7 @@ export interface ITelestore {
 }
 
 export interface IServerRendererOptions<CompType = any>
-  extends IRendererOptions<CompType> {
+  extends IRenderOptions<CompType> {
   url: string;
   manifest: IManifest;
   getAssetPublicUrl(path: string): string;
@@ -182,10 +194,6 @@ export interface IRouter {
   onChange(listener: IRouterListener): () => void;
 }
 
-export interface IAppRenderFn {
-  (options: IRendererOptions): Promise<any>;
-}
-
 export interface IApplicationModule {
   create(
     context: any,
@@ -216,19 +224,6 @@ export interface IServerModule {
   ): void;
 }
 
-export type RerenderConfig = {
-  AppComponent?: any;
-  routes?: IRoute[];
-};
-
-export interface IApplication extends Hookable {
-  AppComponent: any;
-  routes: IRoute[];
-  run(): Promise<{ [k: string]: any }>;
-  rerender(config?: RerenderConfig): Promise<void>;
-  dispose(): Promise<void>;
-}
-
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;
 
@@ -249,17 +244,3 @@ export interface IRuntime<CompType = unknown> {
 
   getServerRendererModulePath(): string;
 }
-
-export interface IPlugin<O extends {} = {}> {
-  (tap: IApplication['tap'], options?: O): void;
-  options?: O;
-}
-
-export type IInitPlugins = (params: {
-  applyPluginOption: <T extends {}>(name: string, options: T) => void;
-  registerPlugin: IApplication['tap'];
-}) => void;
-
-export type IPluginsHash = {
-  [name: string]: IPlugin;
-};

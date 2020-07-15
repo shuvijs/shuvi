@@ -1,9 +1,9 @@
-import { IShuviMode, IApiConfig, Runtime } from '../..';
+import { defineHook } from '@shuvi/core';
 import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
-import { IRouteConfig } from '../runtime';
-import { defineHook } from './helper';
-import { IWebpackHelpers } from '../bundler';
+import { IApiConfig, IShuviMode } from '..';
+import { IRouteConfig, IDocumentProps } from './runtime';
+import { IWebpackHelpers } from './bundler';
 
 export type IHookGetConfig = defineHook<
   'getConfig',
@@ -96,7 +96,7 @@ export type IEventServerListen = defineHook<
 export type IHookModifyHtml = defineHook<
   'modifyHtml',
   {
-    initialValue: Runtime.IDocumentProps;
+    initialValue: IDocumentProps;
     args: [object /* appContext */];
   }
 >;

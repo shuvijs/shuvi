@@ -1,4 +1,4 @@
-import { Runtime, RuntimeHooks } from '@shuvi/types';
+import { Runtime, AppHooks } from '@shuvi/types';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
   IDENTITY_SSR_RUNTIME_PUBLICPATH,
@@ -45,9 +45,7 @@ export class SsrRenderer extends BaseRenderer {
 
     const mainAssetsTags = this._getMainAssetTags();
 
-    const pageDataList = ((await app.callHook<
-      RuntimeHooks.IHookServerGetPageData
-    >(
+    const pageDataList = ((await app.callHook<AppHooks.IHookServerGetPageData>(
       {
         name: 'server:getPageData',
         parallel: true

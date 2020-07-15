@@ -1,4 +1,12 @@
-import { IHookConfig, NoInitValue } from '../hookable';
+import { IHookConfig, NoInitValue } from './hookable';
+
+export type {
+  NoInitValue,
+  IHookable,
+  ICallHookOpts,
+  IHookOpts,
+  IHookConfig
+} from '@shuvi/hooks';
 
 type IDefaultHookConfig = {
   args: [];

@@ -1,5 +1,7 @@
 import { createCliTestProject } from 'shuvi-test-utils';
 
+jest.setTimeout(30 * 1000);
+
 describe('shuvi inspect command', () => {
   test('should be log webpack config correctly', async () => {
     try {

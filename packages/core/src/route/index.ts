@@ -1,3 +1,1 @@
-export { Route } from "./route";
-
-export * from "./types";
+export { Route } from './route';

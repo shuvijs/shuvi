@@ -4,7 +4,7 @@ import ReactFS from '@shuvi/react-fs';
 import AppComponent from './AppComponent';
 import { File } from './models/files';
 import { Store, createStore, StoreProvider } from './models/store';
-import { IBuildOptions, ISpecifier } from './types';
+import { IBuildOptions, ISpecifier } from '../types';
 
 export class App {
   private _store: Store;

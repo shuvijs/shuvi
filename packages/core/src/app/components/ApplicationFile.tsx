@@ -5,9 +5,10 @@ function ApplicationFile() {
   const app = `
 import AppComponent from "@shuvi/app/core/app";
 import routes from "@shuvi/app/core/routes";
-import { Application } from "@shuvi/core/lib/app/lib/application";
-import pluginsHash from "@shuvi/app/core/pluginsHash";
-import runPlugins from "@shuvi/core/lib/app/lib/runPlugins";
+import initPlugins from "@shuvi/app/core/plugin";
+import { pluginRecord } from "@shuvi/app/core/plugins";
+import { Application } from "@shuvi/core/lib/app/app-modules/application";
+import runPlugins from "@shuvi/core/lib/app/app-modules/runPlugins";
 
 const __CLIENT__ = typeof window !== 'undefined';
 
@@ -26,7 +27,11 @@ export function create(context, options) {
     render: options.render
   });
   
-  runPlugins(app.tap.bind(app));
+  runPlugins({
+    tap: app.tap.bind(app),
+    initPlugins,
+    pluginRecord,
+  });
 
   return app;
 }
@@ -43,7 +48,7 @@ if (module.hot) {
 `;
 
   const emptyApp = `
-import { Application } from "@shuvi/core/lib/app/lib/application";
+import { Application } from "@shuvi/core/lib/app/app-modules/application";
 
 export function create(context, options) {
   return new Application({

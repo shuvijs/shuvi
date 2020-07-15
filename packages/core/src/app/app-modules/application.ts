@@ -1,5 +1,11 @@
-import { Runtime, RuntimeHooks } from '@shuvi/types';
 import { Hookable } from '@shuvi/hooks';
+import {
+  IApplication,
+  IRoute,
+  IAppRenderFn,
+  IRerenderConfig,
+  AppHooks
+} from '../../types';
 
 export type IContext = {
   [x: string]: any;
@@ -7,16 +13,16 @@ export type IContext = {
 
 export interface IApplicationOptions<Context> {
   AppComponent: any;
-  routes: Runtime.IRoute[];
+  routes: IRoute[];
   context: Context;
-  render: Runtime.IAppRenderFn;
+  render: IAppRenderFn;
 }
 
 export class Application<Context extends {}> extends Hookable
-  implements Runtime.IApplication {
+  implements IApplication {
   AppComponent: any;
-  routes: Runtime.IRoute[];
-  private _renderFn: Runtime.IAppRenderFn;
+  routes: IRoute[];
+  private _renderFn: IAppRenderFn;
   private _context: IContext;
 
   constructor(options: IApplicationOptions<Context>) {
@@ -36,7 +42,7 @@ export class Application<Context extends {}> extends Hookable
     return this._context;
   }
 
-  async rerender({ AppComponent, routes }: Runtime.RerenderConfig = {}) {
+  async rerender({ AppComponent, routes }: IRerenderConfig = {}) {
     if (routes) {
       this.routes = routes;
     }
@@ -47,7 +53,7 @@ export class Application<Context extends {}> extends Hookable
   }
 
   async dispose() {
-    await this.callHook<RuntimeHooks.IHookDispose>({
+    await this.callHook<AppHooks.IHookDispose>({
       name: 'dispose',
       parallel: true
     });
@@ -58,18 +64,18 @@ export class Application<Context extends {}> extends Hookable
   }
 
   private async _init() {
-    await this.callHook<RuntimeHooks.IHookInit>('init');
+    await this.callHook<AppHooks.IHookInit>('init');
   }
 
   private async _createApplicationContext() {
-    this._context = (await this.callHook<RuntimeHooks.IHookCreateAppContext>({
+    this._context = (await this.callHook<AppHooks.IHookCreateAppContext>({
       name: 'createAppContext',
       initialValue: this._context
     })) as IContext;
   }
 
   private async _getAppComponent() {
-    this.AppComponent = await this.callHook<RuntimeHooks.IHookGetAppComponent>(
+    this.AppComponent = await this.callHook<AppHooks.IHookGetAppComponent>(
       {
         name: 'getAppComponent',
         initialValue: this.AppComponent
@@ -84,6 +90,6 @@ export class Application<Context extends {}> extends Hookable
       AppComponent: this.AppComponent,
       routes: this.routes
     });
-    this.emitEvent<RuntimeHooks.IEventRenderDone>('renderDone', result);
+    this.emitEvent<AppHooks.IEventRenderDone>('renderDone', result);
   }
 }
