@@ -93,9 +93,17 @@ export default abstract class Shuvi {
     req: IIncomingMessage,
     res: IServerResponse
   ): Promise<void> {
-    const html = await this.renderToHTML(req, res);
-    if (html) {
-      sendHTML(req, res, html);
+    try {
+      const html = await this.renderToHTML(req, res);
+      if (html) {
+        sendHTML(req, res, html);
+      }
+    } catch (error) {
+      if (this.getMode() === 'development') {
+        console.error('render error', error);
+      }
+      res.statusCode = 500;
+      res.end('Server Render Error');
     }
   }
 

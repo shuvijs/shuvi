@@ -1,4 +1,5 @@
 import { Runtime, ITemplateData, APIHooks } from '@shuvi/types';
+import invariant from '@shuvi/utils/lib/invariant';
 import {
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
@@ -95,10 +96,10 @@ export abstract class BaseRenderer {
 
     if (document.onDocumentProps) {
       docProps = await document.onDocumentProps(docProps, appContext);
-
-      if (!docProps || typeof docProps !== 'object') {
-        throw new Error('onDocumentProps not returning object.');
-      }
+      invariant(
+        typeof docProps === 'object',
+        'onDocumentProps not returning object.'
+      );
     }
 
     return this._renderDocument(

@@ -41,7 +41,7 @@ export async function renderToHTML({
   try {
     appContext = await app.run();
   } catch (error) {
-    console.log('shuvi app run error', error);
+    throw error;
   } finally {
     await app.dispose();
   }

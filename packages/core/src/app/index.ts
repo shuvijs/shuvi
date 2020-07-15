@@ -4,7 +4,7 @@ import {
   createCustomFile,
   createModule,
   File as FileClass
-} from "./models/files";
+} from './models/files';
 
 const File = {
   file: createFile,
@@ -17,6 +17,4 @@ export type IFile = InstanceType<typeof FileClass>;
 
 export { File };
 
-export { App } from "./app";
-
-export * from "./types";
+export { App } from './app';

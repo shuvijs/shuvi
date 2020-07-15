@@ -1,4 +1,4 @@
-import { defineHook, defineEvent } from './helper';
+import { defineHook, defineEvent } from './hookable';
 
 export type IHookInit = defineHook<'init'>;
 

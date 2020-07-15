@@ -8,20 +8,20 @@ function Plugin() {
   const source = useSelector(state => state.pluginModule);
   const plugins = useSelector(state => state.runtimePlugins);
 
-  let pluginsHash = '';
+  let pluginRecord = '';
   let content = '';
 
   plugins.forEach((value, name) => {
     content += `import ${name} from "${value}"\n`;
-    pluginsHash += `${name},`;
+    pluginRecord += `${name},`;
   });
 
-  content += `let plugins = {${pluginsHash}}\n`;
-  content += `export default plugins;`;
+  content += `const pluginRecord = {${pluginRecord}}\n`;
+  content += `export { pluginRecord };`;
 
   return (
     <>
-      <File name="pluginsHash.js" content={content} />
+      <File name="plugins.js" content={content} />
       <ModuleProxy name="plugin.js" source={source} defaultExport />
     </>
   );

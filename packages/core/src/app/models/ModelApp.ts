@@ -2,7 +2,7 @@ import os from 'os';
 import { observable, action, computed } from 'mobx';
 import { IFileNode, Dir, isDir, File } from './files/FileNode';
 import { getCodeSnippet } from '../utils/getCodeSnippet';
-import { ISpecifier } from '../types';
+import { ISpecifier } from '../../types';
 
 function getDirAndName(path: string) {
   const segs = path.split('/');

@@ -26,6 +26,7 @@
     "@babel/generator": "7.10.1",
     "@babel/parser": "7.10.1",
     "@babel/traverse": "7.10.1",
+    "@shuvi/hooks": "0.0.1-beta.38",
     "@shuvi/react-fs": "^0.0.1-beta.48",
     "@shuvi/shared": "^0.0.1-beta.48",
     "@shuvi/utils": "^0.0.1-beta.48",

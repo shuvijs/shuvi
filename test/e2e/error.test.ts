@@ -7,10 +7,12 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('Basic Features', () => {
+describe('Warnings', () => {
   let ctx: AppCtx;
   let page: Page;
-  let logSpy = jest.spyOn(console, 'log');
+  let logSpy = jest
+    .spyOn(console, 'error')
+    .mockImplementationOnce(() => void 0);
 
   beforeAll(async () => {
     ctx = await launchFixture('error', { ssr: true });
@@ -26,9 +28,9 @@ describe('Basic Features', () => {
     page = await ctx.browser.page(ctx.url('/'));
 
     expect(logSpy).toHaveBeenLastCalledWith(
-      'shuvi app run error',
+      'render error',
       expect.objectContaining({
-        message: 'onDocumentProps not returning object.'
+        message: expect.stringMatching(/onDocumentProps not returning object/)
       })
     );
   });

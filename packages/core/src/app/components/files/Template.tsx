@@ -3,7 +3,7 @@ import { File } from '@shuvi/react-fs';
 import fse from 'fs-extra';
 import ejs from 'ejs';
 import { memoizeOne } from '../../utils';
-import { ITemplateData } from '../../types';
+import { ITemplateData } from '../../../types';
 
 export interface Props {
   name: string;
