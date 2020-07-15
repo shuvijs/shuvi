@@ -39,6 +39,9 @@ function renderRoutes(
               : null;
             let { component: Component } = route;
             if (Component) {
+              if (route.name === '404') {
+                appContext.statusCode = 404;
+              }
               const TypedComponent = Component as React.ComponentType<
                 IRouteProps
               >;

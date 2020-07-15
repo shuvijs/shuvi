@@ -191,7 +191,8 @@ class Api extends Hookable implements IApi {
       componentDir: this.paths.pagesDir
     });
     routes.push({
-      component: this.resolveAppFile('core', '404')
+      component: this.resolveAppFile('core', '404'),
+      name: '404'
     });
     this._routes = routes;
 

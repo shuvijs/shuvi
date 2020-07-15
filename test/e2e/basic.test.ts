@@ -40,10 +40,26 @@ describe('Basic Features', () => {
     expect(await page.$text('#process-env')).toBe('development');
   });
 
-  test('404 Page', async () => {
-    await page.shuvi.navigate('/none-exist-page');
-    await page.waitForSelector('div[style]');
-    expect(await page.$text('body')).toMatch(/404/);
+  describe('404 Page', () => {
+    let localPage: Page;
+    afterAll(async () => {
+      await localPage.close();
+    });
+
+    test('should work in client', async () => {
+      await page.shuvi.navigate('/none-exist-page');
+
+      await page.waitForSelector('div[style]');
+      expect(await page.$text('body')).toMatch(/404/);
+    });
+
+    test('should work in server', async () => {
+      localPage = await ctx.browser.page(ctx.url('/none-exist-page'));
+
+      await localPage.waitForSelector('div[style]');
+      expect(localPage.statusCode).toBe(404);
+      expect(await localPage.$text('body')).toMatch(/404/);
+    });
   });
 
   describe('redirect', () => {
@@ -94,14 +110,16 @@ describe('Basic Features', () => {
 
     test('should have the default head tags', async () => {
       localPage = await ctx.browser.page(ctx.url('/default-head'));
-      expect(await localPage.$$attr('meta[charset]', 'charset')).toEqual(['utf-8']);
+      expect(await localPage.$$attr('meta[charset]', 'charset')).toEqual([
+        'utf-8'
+      ]);
     });
 
     test('should overwrite the default head tags', async () => {
       localPage = await ctx.browser.page(ctx.url('/overwrite-default-head'));
-      expect(await localPage.$attr('meta[name="viewport"]', 'data-foo')).toEqual(
-        'bar'
-      );
+      expect(
+        await localPage.$attr('meta[name="viewport"]', 'data-foo')
+      ).toEqual('bar');
       expect(await localPage.$attr('meta[name="viewport"]', 'content')).toEqual(
         'width=device-width'
       );

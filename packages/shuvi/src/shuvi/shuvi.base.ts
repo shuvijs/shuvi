@@ -25,7 +25,7 @@ export default abstract class Shuvi {
       cwd,
       config,
       configFile,
-      mode: this.getMode(),
+      mode: this.getMode()
     });
   }
 
@@ -51,6 +51,11 @@ export default abstract class Shuvi {
         res.end();
       }
     });
+
+    // set 404 statusCode
+    if (appContext.statusCode) {
+      res.statusCode = appContext.statusCode;
+    }
 
     if (server.onViewDone) {
       server.onViewDone(req, res, {

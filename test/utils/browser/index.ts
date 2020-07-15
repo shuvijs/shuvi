@@ -17,7 +17,7 @@ export interface Page extends puppeteer.Page {
   $attr(selector: string, attr: string): Promise<string>;
   $$attr(selector: string, attr: string): Promise<(string | null)[]>;
   collectBrowserLog(): { texts: string[]; dispose: Function };
-
+  statusCode?: number;
   shuvi: {
     navigate(path: string, query?: Record<string, any>): Promise<any>;
   };
@@ -67,7 +67,8 @@ export default class Browser {
       if (options.disableJavaScript) {
         await page.setJavaScriptEnabled(false);
       }
-      await page.goto(url, options);
+      const response = await page.goto(url, options);
+      page.statusCode = response?.status();
     }
     // await page.waitForFunction(`!!${page.$nuxtGlobalHandle}`);
 
