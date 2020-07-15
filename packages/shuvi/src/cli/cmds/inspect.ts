@@ -37,10 +37,11 @@ export default async function main(argv: string[]) {
 
   configs.forEach(({ name, config }) => {
     console.log(chalk.cyan.bold(`${name} webpack config`));
-    console.log(
-      highlight(inspect(config, { depth: program.verbose ? 10 : 2 }), {
-        language: 'js'
-      })
-    );
+    const configString = inspect(config, { depth: program.verbose ? 10 : 2 });
+    if (process.env.__DISABLE_HIGHLIGHT__ === 'true') {
+      console.log(configString);
+    } else {
+      console.log(highlight(configString, { language: 'js' }));
+    }
   });
 }
