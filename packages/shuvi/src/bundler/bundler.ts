@@ -2,7 +2,6 @@ import { APIHooks } from '@shuvi/types';
 import ForkTsCheckerWebpackPlugin, {
   createCodeframeFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
-import BundleAnalyzerPlugin from '@shuvi/toolpack/lib/utils/BundleAnalyzerPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import Logger from '@shuvi/utils/lib/logger';
 import { inspect } from 'util';
@@ -25,10 +24,7 @@ import {
   IWebpackConfigOptions
 } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import {
-  WebpackChain,
-  webpackHelpers
-} from '@shuvi/toolpack/lib/webpack/config';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerDiagnostics = {
   errors: string[];
@@ -282,22 +278,6 @@ class WebpackBundler {
     });
   }
 
-  private _modifyClientConfig(clientChain: WebpackChain): WebpackChain {
-    if (this._api.config.analyze) {
-      clientChain
-        .plugin('cli/bundle-analyzer-plugin')
-        .use(BundleAnalyzerPlugin, [
-          {
-            logLevel: 'warn',
-            openAnalyzer: false,
-            analyzerMode: 'static',
-            reportFilename: '../analyze/client.html'
-          }
-        ]);
-    }
-    return clientChain;
-  }
-
   private async _getInternalTargets(): Promise<Target[]> {
     const clientWebpackHelpers = webpackHelpers();
     // create base config
@@ -321,8 +301,6 @@ class WebpackBundler {
         webpack: webpack
       }
     );
-    // modify config by cli options
-    clientChain = this._modifyClientConfig(clientChain);
 
     const serverWebpackHelpers = webpackHelpers();
     let serverChain = createWepbackConfig(this._api, {

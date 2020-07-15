@@ -1,5 +1,7 @@
 import { createCliTestProject } from 'shuvi-test-utils';
 
+jest.setTimeout(5 * 60 * 1000);
+
 describe('shuvi build command', () => {
   test('should build app correctly', async () => {
     const project = createCliTestProject('test/fixtures/inspect');

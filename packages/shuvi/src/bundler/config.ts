@@ -56,6 +56,7 @@ export function createWepbackConfig(
   } else {
     chain = createBrowserWebpackChain({
       env: config.env,
+      analyze: config.analyze,
       srcDirs,
       dev,
       projectRoot: paths.rootDir,
