@@ -94,7 +94,6 @@ const renderApp: IReactRenderer = async ({
   let head: IHtmlTag[];
   try {
     htmlContent = renderToString(
-      // @ts-ignore staticContext is not declared in @types/react-router-dom
       <Router history={history}>
         <LoadableContext.Provider
           value={moduleName => loadableModules.push(moduleName)}

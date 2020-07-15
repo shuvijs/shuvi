@@ -39,6 +39,9 @@ function renderRoutes(
               : null;
             let { component: Component } = route;
             if (Component) {
+              if (route.__statusCode) {
+                appContext.__statusCode = route.__statusCode;
+              }
               const TypedComponent = Component as React.ComponentType<
                 IRouteProps
               >;
