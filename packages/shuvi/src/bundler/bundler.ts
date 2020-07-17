@@ -280,6 +280,7 @@ class WebpackBundler {
 
   private async _getInternalTargets(): Promise<Target[]> {
     const clientWebpackHelpers = webpackHelpers();
+    // create base config
     let clientChain = createWepbackConfig(this._api, {
       name: BUNDLER_TARGET_CLIENT,
       node: false,
@@ -287,6 +288,7 @@ class WebpackBundler {
       outputDir: BUILD_CLIENT_DIR,
       webpackHelpers: clientWebpackHelpers
     });
+    // modify config by api hooks
     clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
         name: 'bundler:configTarget',

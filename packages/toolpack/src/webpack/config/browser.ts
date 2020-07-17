@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import { baseWebpackChain, BaseOptions } from './base';
@@ -11,13 +12,14 @@ const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
 export interface BrowserOptions extends BaseOptions {
   webpackHelpers: IWebpackHelpers;
+  analyze?: boolean;
 }
 
 export function createBrowserWebpackChain({
   webpackHelpers,
   ...baseOptions
 }: BrowserOptions): WebpackChain {
-  const { dev, publicPath } = baseOptions;
+  const { dev, publicPath, analyze } = baseOptions;
   const chain = baseWebpackChain(baseOptions);
   const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
@@ -117,6 +119,16 @@ export function createBrowserWebpackChain({
       maxInitialRequests: 25,
       minSize: 20000
     });
+    if (analyze) {
+      chain.plugin('private/bundle-analyzer-plugin').use(BundleAnalyzerPlugin, [
+        {
+          logLevel: 'warn',
+          openAnalyzer: false,
+          analyzerMode: 'static',
+          reportFilename: '../analyze/client.html'
+        }
+      ]);
+    }
   }
 
   chain.plugin('define').tap(([options]) => [
