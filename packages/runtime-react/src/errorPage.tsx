@@ -62,6 +62,9 @@ const ErrorPage: Runtime.IRouteComponent<
 };
 
 ErrorPage.getInitialProps = ({ appContext }) => {
+  if (appContext.error) {
+    console.log({ error: appContext.error });
+  }
   return { statusCode: appContext.statusCode as number };
 };
 
