@@ -11,6 +11,7 @@ interface CLIParams {
 }
 
 const CliConfigMap: Record<string, string | ((config: any) => void)> = {
+  analyze: 'analyze',
   publicPath: 'publicPath',
   routerHistory: 'router.history',
   target(config) {
@@ -60,6 +61,7 @@ export default async function main(argv: string[]) {
       '--router-history <history>',
       "specify the hisotry type. 'browser' or 'hash'"
     )
+    .option('--analyze', 'generate html file to help analyze webpack bundle')
     .parse(argv, { from: 'user' });
 
   const cwd = getProjectDir(program);

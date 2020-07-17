@@ -85,6 +85,7 @@ export interface IApiConfig {
   runtimeConfig?: IRuntimeConfig;
   proxy?: IServerProxyConfig;
   plugins?: IPluginConfig[];
+  analyze?: boolean;
 }
 
 // api for plugins
