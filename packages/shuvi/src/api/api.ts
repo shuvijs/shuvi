@@ -190,10 +190,12 @@ class Api extends Hookable implements IApi {
     routes = normalizeRoutes(routes, {
       componentDir: this.paths.pagesDir
     });
+
     routes.push({
-      component: this.resolveAppFile('core', '404'),
-      name: '404'
+      component: this.resolveAppFile('core', 'error'),
+      name: 'error'
     });
+
     this._routes = routes;
 
     const serialized = serializeRoutes(routes, {

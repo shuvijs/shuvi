@@ -28,14 +28,40 @@ export class SsrRenderer extends BaseRenderer {
       server: { renderer }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
-    const result = await renderer({
-      url,
-      AppComponent,
-      routes,
-      appContext,
-      manifest,
-      getAssetPublicUrl
-    });
+    let result;
+    try {
+      result = await renderer({
+        url,
+        AppComponent,
+        routes,
+        appContext,
+        manifest,
+        getAssetPublicUrl
+      });
+    } catch (e) {
+      appContext.error = e;
+      // inject error object that can be serialized
+      app.tap<AppHooks.IHookServerGetPageData>('server:getPageData', {
+        name: 'injectErrorFlag',
+        fn: (): any => {
+          return {
+            error: {
+              message: e.message
+            }
+          };
+        }
+      });
+
+      // render Error.js
+      result = await renderer({
+        url,
+        AppComponent,
+        routes,
+        appContext,
+        manifest,
+        getAssetPublicUrl
+      });
+    }
     if (result.redirect) {
       return {
         $type: 'redirect',

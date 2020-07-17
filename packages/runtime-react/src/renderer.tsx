@@ -24,6 +24,10 @@ const renderApp: IReactRenderer = async ({
   manifest,
   getAssetPublicUrl
 }) => {
+  if (appContext.error) {
+    routes = routes.filter(({ name }) => name == 'error');
+  }
+
   await Loadable.preloadAll();
 
   const redirector = createRedirector();

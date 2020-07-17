@@ -74,6 +74,17 @@ export async function setupApp(api: Api) {
     }),
     'core'
   );
+
+  api.addAppFile(
+    File.moduleProxy('error.js', {
+      source: [
+        ...withExts(api.resolveUserFile('error'), moduleFileExtensions),
+        runtime.getErrorModulePath()
+      ],
+      defaultExport: true
+    }),
+    'core'
+  );
   api.addAppFile(
     File.moduleProxy('server.js', {
       source: [

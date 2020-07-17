@@ -13,6 +13,7 @@ import { IReactAppData, IRoute } from './types';
 import { HeadManager, HeadManagerContext } from './head';
 import Loadable from './loadable';
 import { createRedirector } from './utils/createRedirector';
+// @ts-ignore
 
 const headManager = new HeadManager();
 
@@ -51,6 +52,12 @@ export function createClientRenderer({
       React.ComponentType
     >;
     let { ssr, appProps, dynamicIds, routeProps } = appData;
+
+    if (appContext.pageData.error) {
+      // todo: remove app.js from error page, because error might be in app.js.
+      appContext.error = appContext.pageData.error;
+      routes = routes.filter(({ name }) => name == 'error');
+    }
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);

@@ -10,7 +10,7 @@ export interface IAppContainerProps {
   routeProps: IRouteProps;
 }
 
-export type IRoute = Runtime.IRoute
+export type IRoute = Runtime.IRoute;
 
 export type IRouteProps = {
   [x: string]: any;

@@ -240,6 +240,8 @@ export interface IRuntime<CompType = unknown> {
 
   get404ModulePath(): string;
 
+  getErrorModulePath(): string;
+
   getClientRendererModulePath(): string;
 
   getServerRendererModulePath(): string;

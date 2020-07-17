@@ -84,6 +84,10 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
     return resolveDist('page404');
   }
 
+  getErrorModulePath(): string {
+    return resolveDist('errorPage');
+  }
+
   getRouterModulePath(): string {
     return resolveDist('router/router');
   }
