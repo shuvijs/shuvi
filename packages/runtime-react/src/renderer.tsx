@@ -3,20 +3,60 @@ import { renderToString } from 'react-dom/server';
 import { Runtime } from '@shuvi/types';
 import { Router } from 'react-router-dom';
 import { createServerHistory } from './router/history';
-import { matchRoutes } from './router/matchRoutes';
+import { matchRoutes } from '@shuvi/core/lib/app/utils';
 import { setHistory } from './router/router';
 import Loadable, { LoadableContext } from './loadable';
 import AppContainer from './AppContainer';
 import { IReactRenderer, IReactAppData } from './types';
 import { Head } from './head';
 import { createRedirector } from './utils/createRedirector';
+import ErrorPage from '@shuvi/app/core/error';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
 import IHtmlTag = Runtime.IHtmlTag;
 import IParams = Runtime.IParams;
 
-const renderApp: IReactRenderer = async ({
+const renderError: IReactRenderer['renderError'] = async ({
+  url,
+  error,
+  appContext
+}) => {
+  let head: IHtmlTag[];
+
+  let props = {};
+  if (ErrorPage && ErrorPage.getInitialProps) {
+    props = await ErrorPage.getInitialProps!({
+      isServer: true,
+      pathname: url,
+      appContext,
+      error,
+      statusCode: appContext.statusCode
+    });
+  }
+
+  const htmlContent = renderToString(<ErrorPage {...props} />);
+
+  head = Head.rewind() || [];
+
+  const appData: IReactAppData = {
+    appProps: props,
+    routeProps: [],
+    dynamicIds: []
+  };
+
+  return {
+    appData,
+    appHtml: htmlContent,
+    htmlAttrs: {},
+    headBeginTags: [...head],
+    headEndTags: [],
+    bodyBeginTags: [],
+    bodyEndTags: []
+  };
+};
+
+const renderApp: IReactRenderer['renderApp'] = async ({
   url,
   AppComponent,
   routes,
@@ -24,10 +64,6 @@ const renderApp: IReactRenderer = async ({
   manifest,
   getAssetPublicUrl
 }) => {
-  if (appContext.error) {
-    routes = routes.filter(({ name }) => name == 'error');
-  }
-
   await Loadable.preloadAll();
 
   const redirector = createRedirector();
@@ -176,4 +212,4 @@ const renderApp: IReactRenderer = async ({
   };
 };
 
-export default renderApp;
+export default { renderError, renderApp };

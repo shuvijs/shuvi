@@ -7,13 +7,13 @@ import qs from 'querystring';
 import { Runtime } from '@shuvi/types';
 import { History } from './router/history';
 import { setHistory } from './router/router';
-import { matchRoutes } from './router/matchRoutes';
+import { matchRoutes, isRoutesMatched } from '@shuvi/core/lib/app/utils';
 import AppContainer from './AppContainer';
 import { IReactAppData, IRoute } from './types';
 import { HeadManager, HeadManagerContext } from './head';
 import Loadable from './loadable';
 import { createRedirector } from './utils/createRedirector';
-// @ts-ignore
+import ErrorPage from '@shuvi/app/core/error';
 
 const headManager = new HeadManager();
 
@@ -40,68 +40,101 @@ export function createClientRenderer({
   const history = historyCreator({ basename: '/' });
   setHistory(history);
 
-  return async ({
-    appContainer,
-    AppComponent,
-    appData,
-    routes,
-    appContext
-  }) => {
-    const redirector = createRedirector();
-    const TypedAppComponent = AppComponent as Runtime.IAppComponent<
-      React.ComponentType
-    >;
-    let { ssr, appProps, dynamicIds, routeProps } = appData;
+  const renderError: Runtime.IClientRenderer<
+    React.ComponentType,
+    IReactAppData
+  >['renderError'] = async ({ appContainer, appData, appContext }) => {
+    let { ssr, statusCode } = appData;
+    let { appProps } = appData;
 
-    if (appContext.pageData.error) {
-      // todo: remove app.js from error page, because error might be in app.js.
-      appContext.error = appContext.pageData.error;
-      routes = routes.filter(({ name }) => name == 'error');
+    if (!ssr) {
+      if (ErrorPage.getInitialProps) {
+        const { pathname } = history.location;
+
+        appProps = await ErrorPage.getInitialProps({
+          isServer: false,
+          pathname,
+          statusCode,
+          appContext
+        });
+      }
     }
 
-    if (ssr) {
-      await Loadable.preloadReady(dynamicIds);
-    } else if (TypedAppComponent.getInitialProps) {
-      const { pathname } = history.location;
-      const query = qs.parse(history.location.search.slice(1));
-
-      // todo: pass appContext
-      appProps = await TypedAppComponent.getInitialProps({
-        isServer: false,
-        pathname,
-        query,
-        params: getRouteParams(routes, pathname),
-        redirect: redirector.handler,
-        appContext,
-        async fetchInitialProps() {
-          // do nothing
-        }
-      });
-    }
-
-    if (redirector.redirected) {
-      history.push(redirector.state!.path);
-    }
-
-    const root = (
-      <Router history={history}>
-        <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer
-            routes={routes}
-            routeProps={routeProps}
-            appContext={appContext}
-          >
-            <TypedAppComponent {...appProps} />
-          </AppContainer>
-        </HeadManagerContext.Provider>
-      </Router>
-    );
-
+    const root = <ErrorPage {...appProps} />;
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
       isInitialRender = false;
     } else {
       ReactDOM.render(root, appContainer);
     }
+  };
+
+  return {
+    renderApp: async ({
+      appContainer,
+      AppComponent,
+      appData,
+      routes,
+      appContext
+    }) => {
+      const redirector = createRedirector();
+      const TypedAppComponent = AppComponent as Runtime.IAppComponent<
+        React.ComponentType
+      >;
+      let { ssr, appProps, dynamicIds, routeProps } = appData;
+
+      if (ssr) {
+        await Loadable.preloadReady(dynamicIds);
+      } else if (TypedAppComponent.getInitialProps) {
+        const { pathname } = history.location;
+        const query = qs.parse(history.location.search.slice(1));
+
+        if (isRoutesMatched(routes, pathname)) {
+          const params = getRouteParams(routes, pathname);
+
+          // todo: pass appContext
+          appProps = await TypedAppComponent.getInitialProps({
+            isServer: false,
+            pathname,
+            query,
+            params,
+            redirect: redirector.handler,
+            appContext,
+            async fetchInitialProps() {
+              // do nothing
+            }
+          });
+        } else {
+          appData.statusCode = 404;
+          return renderError({ appContainer, appData, appContext });
+        }
+      }
+
+      if (redirector.redirected) {
+        history.push(redirector.state!.path);
+      }
+
+      const root = (
+        <Router history={history}>
+          <HeadManagerContext.Provider value={headManager.updateHead}>
+            <AppContainer
+              routes={routes}
+              routeProps={routeProps}
+              appContext={appContext}
+            >
+              <TypedAppComponent {...appProps} />
+            </AppContainer>
+          </HeadManagerContext.Provider>
+        </Router>
+      );
+
+      if (ssr && isInitialRender) {
+        ReactDOM.hydrate(root, appContainer);
+        isInitialRender = false;
+      } else {
+        ReactDOM.render(root, appContainer);
+      }
+    },
+    renderError
   };
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { IApi, Runtime, APIHooks } from '@shuvi/types';
 import { resolveDist, resolveDep } from './paths';
-import { matchRoutes } from './router/matchRoutes';
+import { matchRoutes } from '@shuvi/core/lib/app/utils';
 import { config as configBundler } from './bundler/config';
 
 import RouteConfig = Runtime.IRouteConfig;

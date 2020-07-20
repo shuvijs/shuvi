@@ -4,6 +4,8 @@ import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
 import { renderer } from '@shuvi/app/core/renderer';
 import { create } from '@shuvi/app/core/application';
 import { getAppData } from './lib/getAppData';
+import { isRoutesMatched } from '@shuvi/core/lib/app/utils';
+import { router } from '@shuvi/app';
 
 const appData = getAppData();
 
@@ -14,14 +16,27 @@ const app = create(
   {
     async render({ appContext, AppComponent, routes }) {
       const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
+      const { pathname } = router.location;
 
-      renderer({
-        AppComponent: AppComponent,
-        routes,
-        appData,
-        appContainer,
-        appContext
-      });
+      if (appData.ssr == false && !isRoutesMatched(routes, pathname)) {
+        appData.statusCode = 404;
+      }
+
+      if (appData.statusCode && appData.statusCode >= 400) {
+        renderer.renderError({
+          appData,
+          appContainer,
+          appContext
+        });
+      } else {
+        renderer.renderApp({
+          AppComponent: AppComponent,
+          routes,
+          appData,
+          appContainer,
+          appContext
+        });
+      }
     }
   }
 );

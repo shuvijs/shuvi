@@ -109,10 +109,20 @@ export type IRouteComponent<C, P = {}> = C & {
   getInitialProps?(context: IRouteComponentContext): P | Promise<P>;
 };
 
+export type IErrorComponent<C, P = {}> = C & {
+  getInitialProps?(
+    context: Omit<IRouteComponentContext, 'redirect' | 'query' | 'params'> & {
+      error?: Error;
+      statusCode?: number;
+    }
+  ): P | Promise<P>;
+};
+
 export type IAppData<Data = {}> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
+  statusCode?: number;
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -123,9 +133,16 @@ export interface IClientRendererOptions<CompType = any, Data = {}>
   appData: IAppData<Data>;
 }
 
-export type IClientRenderer<CompType = any, Data = {}> = (
-  options: IClientRendererOptions<CompType, Data>
-) => void;
+export interface IClientErrorRendererOptions<CompType = any, Data = {}>
+  extends Pick<IRenderOptions<CompType>, 'appContext'> {
+  appContainer: HTMLElement;
+  appData: IAppData<Data>;
+}
+
+export type IClientRenderer<CompType = any, Data = {}> = {
+  renderError: (options: IClientErrorRendererOptions<CompType, Data>) => void;
+  renderApp: (options: IClientRendererOptions<CompType, Data>) => void;
+};
 
 export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
@@ -140,9 +157,22 @@ export interface IServerRendererOptions<CompType = any>
   getAssetPublicUrl(path: string): string;
 }
 
-export type IServerRenderer<CompType = any, Data = {}> = (
-  options: IServerRendererOptions<CompType>
-) => Promise<IRenderAppResult<Data>>;
+export interface IServerErrorRendererOptions<CompType = any>
+  extends Pick<IRenderOptions<CompType>, 'appContext'> {
+  url: string;
+  error?: Error;
+  manifest: IManifest;
+  getAssetPublicUrl(path: string): string;
+}
+
+export type IServerRenderer<CompType = any, Data = {}> = {
+  renderError: (
+    options: IServerErrorRendererOptions<CompType>
+  ) => Promise<IRenderAppResult<Data>>;
+  renderApp: (
+    options: IServerRendererOptions<CompType>
+  ) => Promise<IRenderAppResult<Data>>;
+};
 
 export interface IRedirectState {
   status?: number;
@@ -164,6 +194,7 @@ export type IRenderAppResult<Data = {}> = {
   appData?: Data;
   appHtml?: string;
   redirect?: IRedirectState;
+  routeNotFound?: boolean;
 };
 
 export type IRouterAction = 'PUSH' | 'POP' | 'REPLACE';

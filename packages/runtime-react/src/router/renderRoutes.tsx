@@ -39,13 +39,6 @@ function renderRoutes(
               : null;
             let { component: Component } = route;
             if (Component) {
-              if (route.name === 'error') {
-                if (appContext.error) {
-                  appContext.statusCode = 500;
-                } else {
-                  appContext.statusCode = 404;
-                }
-              }
               const TypedComponent = Component as React.ComponentType<
                 IRouteProps
               >;

@@ -29,20 +29,20 @@ interface IErrorProps {
   statusCode: number;
 }
 
-const ErrorPage: Runtime.IRouteComponent<
+const ErrorPage: Runtime.IErrorComponent<
   React.FC<IErrorProps>,
   IErrorProps
 > = ({ statusCode }) => {
-  if (statusCode === 404) {
+  if (statusCode === 500) {
     return (
       <div style={style.container}>
         <Head>
-          <title>404: Page not found</title>
+          <title>500: Server Error</title>
         </Head>
 
         <div style={style.error}>
-          <div style={style.errorCode}>404</div>
-          <div style={style.errorDesc}>Page not found</div>
+          <div style={style.errorCode}>500</div>
+          <div style={style.errorDesc}>Internal Server Error</div>
         </div>
       </div>
     );
@@ -50,22 +50,21 @@ const ErrorPage: Runtime.IRouteComponent<
   return (
     <div style={style.container}>
       <Head>
-        <title>500: Server Error</title>
+        <title>404: Page not found</title>
       </Head>
 
       <div style={style.error}>
-        <div style={style.errorCode}>500</div>
-        <div style={style.errorDesc}>Internal Server Error</div>
+        <div style={style.errorCode}>404</div>
+        <div style={style.errorDesc}>Page not found</div>
       </div>
     </div>
   );
 };
 
-ErrorPage.getInitialProps = ({ appContext }) => {
-  if (appContext.error) {
-    console.log({ error: appContext.error });
-  }
-  return { statusCode: appContext.statusCode as number };
+// server will receive `error` object
+ErrorPage.getInitialProps = ({ statusCode }) => {
+  // default statusCode for 404 for SPA client routing
+  return { statusCode: statusCode || 404 };
 };
 
 export default ErrorPage;

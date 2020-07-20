@@ -9,6 +9,7 @@ import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
+import { isRoutesMatched } from '@shuvi/core/lib/app/utils';
 
 import IData = Runtime.IData;
 import IAppData = Runtime.IAppData;
@@ -25,43 +26,47 @@ export class SsrRenderer extends BaseRenderer {
     const api = this._api;
     const {
       clientManifest: manifest,
-      server: { renderer }
+      server: {
+        renderer: { renderApp, renderError }
+      }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
     let result;
-    try {
-      result = await renderer({
-        url,
-        AppComponent,
-        routes,
-        appContext,
-        manifest,
-        getAssetPublicUrl
-      });
-    } catch (e) {
-      appContext.error = e;
-      // inject error object that can be serialized
-      app.tap<AppHooks.IHookServerGetPageData>('server:getPageData', {
-        name: 'injectErrorFlag',
-        fn: (): any => {
-          return {
-            error: {
-              message: e.message
-            }
-          };
-        }
-      });
+    let errorFlag = {
+      hasError: false,
+      error: undefined
+    };
 
-      // render Error.js
-      result = await renderer({
-        url,
-        AppComponent,
-        routes,
-        appContext,
-        manifest,
-        getAssetPublicUrl
-      });
+    try {
+      if (!isRoutesMatched(routes, url)) {
+        appContext.statusCode = 404;
+        errorFlag.hasError = true;
+      } else {
+        result = await renderApp({
+          url,
+          AppComponent,
+          routes,
+          appContext,
+          manifest,
+          getAssetPublicUrl
+        });
+      }
+    } catch (e) {
+      appContext.statusCode = 500;
+      errorFlag.hasError = true;
+      errorFlag.error = e;
+    } finally {
+      if (errorFlag.hasError || !result) {
+        result = await renderError({
+          url,
+          error: errorFlag.error,
+          appContext,
+          manifest,
+          getAssetPublicUrl
+        });
+      }
     }
+
     if (result.redirect) {
       return {
         $type: 'redirect',
@@ -78,15 +83,19 @@ export class SsrRenderer extends BaseRenderer {
       },
       appContext
     )) as any) as IData[];
+
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;
     }, {});
+
     const appData: IAppData = {
       ...result.appData,
       pageData,
-      ssr: api.config.ssr
+      ssr: api.config.ssr,
+      statusCode: appContext.statusCode
     };
+
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 
     const documentProps = {

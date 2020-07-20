@@ -1,1 +1,2 @@
-export * from "./memoize";
+export * from './memoize';
+export * from './routes';
