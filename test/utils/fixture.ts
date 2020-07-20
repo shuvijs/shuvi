@@ -1,7 +1,7 @@
 import path from 'path';
 import { loadConfig } from 'shuvi/lib/config';
 import { build } from './build';
-import { IConfig } from 'shuvi/src/shuvi';
+import { IConfig } from 'shuvi/lib/shuvi';
 
 export function resolveFixture(...paths: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...paths);

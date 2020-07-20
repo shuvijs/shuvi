@@ -6,6 +6,10 @@ export type IBuiltResource = {
     application: Runtime.IApplicationModule;
     document: Partial<Runtime.IDocumentModule>;
     renderer: Runtime.IServerRenderer;
+    matchRoutes(
+      routes: Runtime.IRouteConfig[],
+      pathname: string
+    ): Runtime.IMatchedRoute[];
   };
   documentTemplate: any;
   clientManifest: Bundler.IManifest;

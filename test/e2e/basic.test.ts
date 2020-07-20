@@ -47,10 +47,10 @@ describe('Basic Features', () => {
     });
 
     test('should work in client', async () => {
-      await page.shuvi.navigate('/none-exist-page');
-
-      await page.waitForSelector('div[style]');
-      expect(await page.$text('body')).toMatch(/404/);
+      localPage = await ctx.browser.page(ctx.url('/'));
+      await localPage.shuvi.navigate('/none-exist-page');
+      await localPage.waitForSelector('div[style]');
+      expect(await localPage.$text('body')).toMatch(/404/);
     });
 
     test('should work in server', async () => {
