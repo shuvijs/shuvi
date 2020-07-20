@@ -138,6 +138,21 @@ describe('Basic Features', () => {
       expect(await localPage.title()).toBe('Test Title');
     });
   });
+
+  describe('Error Page', () => {
+    let localPage: Page;
+    afterAll(async () => {
+      await localPage.close();
+    });
+
+    test('should work in server', async () => {
+      localPage = await ctx.browser.page(ctx.url('/error'));
+
+      await localPage.waitForSelector('div[style]');
+      expect(localPage.statusCode).toBe(500);
+      expect(await localPage.$text('body')).toMatch(/500/);
+    });
+  });
 });
 
 describe('[SPA] Basic Features', () => {

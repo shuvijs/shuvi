@@ -30,6 +30,7 @@ export class SsrRenderer extends BaseRenderer {
         renderer: { renderApp, renderError }
       }
     } = this._resources;
+
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
     let result;
     let errorFlag = {
@@ -38,7 +39,9 @@ export class SsrRenderer extends BaseRenderer {
     };
 
     try {
-      if (!isRoutesMatched(routes, url)) {
+      // todo: get pathname, because parsedUrl might not always get injected. given that we can expose renderHtml.
+      const pathname = appContext.req.parsedUrl.pathname;
+      if (!isRoutesMatched(routes, pathname)) {
         appContext.statusCode = 404;
         errorFlag.hasError = true;
       } else {
