@@ -109,15 +109,6 @@ export type IRouteComponent<C, P = {}> = C & {
   getInitialProps?(context: IRouteComponentContext): P | Promise<P>;
 };
 
-export type IErrorComponent<C, P = {}> = C & {
-  getInitialProps?(
-    context: Omit<IRouteComponentContext, 'redirect' | 'query' | 'params'> & {
-      error?: Error;
-      statusCode?: number;
-    }
-  ): P | Promise<P>;
-};
-
 export type IAppData<Data = {}> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
@@ -132,11 +123,6 @@ export interface IClientRendererOptions<CompType = any, Data = {}>
   appData: IAppData<Data>;
 }
 
-// export type IClientErrorRendererOptions<CompType = any, Data = {}> = Omit<
-//   IClientRendererOptions<CompType, Data>,
-//   'AppComponent' | 'routes'
-// >;
-
 export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
   set(key: string, value: any): void;
@@ -150,25 +136,21 @@ export interface IServerRendererOptions<CompType = any>
   getAssetPublicUrl(path: string): string;
 }
 
-// export interface IServerErrorRendererOptions<CompType = any>
-//   extends Omit<IServerRendererOptions<CompType>, 'AppComponent' | 'routes'> {
-//   error?: Error;
-// }
-
-export interface IView<CompType = any, Data = {}> {
-  server: {
-    renderApp(
-      options: IServerRendererOptions<CompType>
-    ): Promise<IRenderAppResult<Data>>;
-    // renderError(
-    //   options: IServerErrorRendererOptions<CompType>
-    // ): Promise<IRenderAppResult<Data>>;
-  };
-  client: {
-    renderApp(options: IClientRendererOptions<CompType, Data>): void;
-    // renderError(options: IClientErrorRendererOptions<CompType, Data>): void;
-  };
+interface IView<
+  RenderOption extends IRenderOptions = any,
+  RenderResult = void
+> {
+  renderApp(options: RenderOption): RenderResult;
 }
+
+export interface IViewClient<CompType = any, Data = {}>
+  extends IView<IClientRendererOptions<CompType, Data>> {}
+
+export interface IViewServer<CompType = any, Data = {}>
+  extends IView<
+    IServerRendererOptions<CompType>,
+    Promise<IRenderAppResult<Data>>
+  > {}
 
 export interface IRedirectState {
   status?: number;

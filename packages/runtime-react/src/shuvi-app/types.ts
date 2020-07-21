@@ -1,4 +1,5 @@
 import { Runtime } from '@shuvi/types';
+import { IViewClient, IViewServer } from '@shuvi/types/src/runtime';
 
 export type IReactAppData = {
   appProps?: Record<string, any>;
@@ -23,6 +24,5 @@ export type IAppComponent = Runtime.IAppComponent<React.Component, any>;
 
 export type IRouteComponent = Runtime.IRouteComponent<React.Component, any>;
 
-type IReactView = Runtime.IView<React.ComponentType, IReactAppData>;
-export type IReactServerView = IReactView['server'];
-export type IReactClientView = IReactView['client'];
+export type IReactServerView = IViewServer<React.ComponentType, IReactAppData>;
+export type IReactClientView = IViewClient<React.ComponentType, IReactAppData>;

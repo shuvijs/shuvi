@@ -14,7 +14,7 @@ export function createNodeWebpackChain({
   webpackHelpers,
   ...baseOptions
 }: NodeOptions): WebpackChain {
-  const chain = baseWebpackChain(baseOptions, false);
+  const chain = baseWebpackChain(baseOptions);
   const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
   chain.target('node');
@@ -56,6 +56,13 @@ export function createNodeWebpackChain({
     {
       ...options,
       modules: false
+    }
+  ]);
+
+  chain.plugin('define').tap(([options]) => [
+    {
+      ...options,
+      __BROWSER__: false
     }
   ]);
 

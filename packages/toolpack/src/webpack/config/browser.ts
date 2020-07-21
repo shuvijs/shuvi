@@ -20,7 +20,7 @@ export function createBrowserWebpackChain({
   ...baseOptions
 }: BrowserOptions): WebpackChain {
   const { dev, publicPath, analyze } = baseOptions;
-  const chain = baseWebpackChain(baseOptions, true);
+  const chain = baseWebpackChain(baseOptions);
   const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
   chain.target('web');
@@ -134,6 +134,7 @@ export function createBrowserWebpackChain({
   chain.plugin('define').tap(([options]) => [
     {
       ...options,
+      __BROWSER__: true,
       // prevent errof of destructing process.env
       'process.env': JSON.stringify('{}')
     }
