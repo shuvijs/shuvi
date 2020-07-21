@@ -13,7 +13,6 @@ import {
   BUILD_CLIENT_RUNTIME_POLYFILL,
   BUILD_SERVER_FILE_SERVER
 } from '../constants';
-import { runtimeDir } from '../runtime';
 import { IWebpackHelpers } from '@shuvi/types/src/bundler';
 
 export interface IWebpackEntry {
@@ -36,12 +35,7 @@ export function createWepbackConfig(
   const dev = mode === 'development';
   let chain: WebpackChain;
 
-  const srcDirs = [
-    runtimeDir,
-    paths.appDir,
-    paths.srcDir,
-    ...(opts.srcDirs || [])
-  ];
+  const srcDirs = [paths.appDir, paths.srcDir, ...(opts.srcDirs || [])];
   if (opts.node) {
     chain = createNodeWebpackChain({
       env: config.env,
