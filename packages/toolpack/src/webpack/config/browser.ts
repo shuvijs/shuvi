@@ -20,7 +20,7 @@ export function createBrowserWebpackChain({
   ...baseOptions
 }: BrowserOptions): WebpackChain {
   const { dev, publicPath, analyze } = baseOptions;
-  const chain = baseWebpackChain(baseOptions);
+  const chain = baseWebpackChain(baseOptions, true);
   const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
   chain.target('web');

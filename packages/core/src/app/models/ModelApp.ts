@@ -57,7 +57,7 @@ function addFileNode(dir: string, file: IFileNode, files: IFileNode[]) {
 }
 
 export class ModelApp {
-  @observable rendererModule!: string;
+  @observable viewModule!: string;
   @observable appModule!: string | string[];
   @observable pluginModule!: string | string[];
   @observable entryCodes: string[] = [];

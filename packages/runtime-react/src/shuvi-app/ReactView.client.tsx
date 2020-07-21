@@ -7,10 +7,11 @@ import { History } from './router/history';
 import { setHistory } from './router/router';
 import { matchRoutes } from './router/matchRoutes';
 import AppContainer from './AppContainer';
-import { IReactAppData, IRoute } from './types';
+import { IRoute } from './types';
 import { HeadManager, HeadManagerContext } from './head';
 import Loadable from './loadable';
 import { createRedirector } from './utils/createRedirector';
+import { IReactClientView } from './types';
 
 const headManager = new HeadManager();
 
@@ -26,24 +27,24 @@ function getRouteParams(routes: IRoute[], pathname: string) {
   return params;
 }
 
-export function createClientRenderer({
-  historyCreator
-}: {
-  historyCreator: HistoryCreator;
-}): Runtime.IClientRenderer<React.ComponentType, IReactAppData> {
-  let isInitialRender: Boolean = true;
+export class ReactClientView implements IReactClientView {
+  private _history: History;
+  private _isInitialRender: boolean = false;
 
-  // TODO: config basename
-  const history = historyCreator({ basename: '/' });
-  setHistory(history);
+  constructor(historyCreator: HistoryCreator) {
+    // TODO: config basename
+    this._history = historyCreator({ basename: '/' });
+    setHistory(this._history);
+  }
 
-  return async ({
+  renderApp: IReactClientView['renderApp'] = async ({
     appContainer,
     AppComponent,
     appData,
     routes,
     appContext
   }) => {
+    const { _history: history, _isInitialRender: isInitialRender } = this;
     const redirector = createRedirector();
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
@@ -90,7 +91,7 @@ export function createClientRenderer({
 
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
-      isInitialRender = false;
+      this._isInitialRender = false;
     } else {
       ReactDOM.render(root, appContainer);
     }

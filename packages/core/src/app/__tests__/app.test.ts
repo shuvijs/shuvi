@@ -42,7 +42,7 @@ describe('app', () => {
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
-    app.setRendererModule('rendererModules');
+    app.setViewModule('viewModules');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
 
@@ -55,7 +55,7 @@ describe('app', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['core/renderer.js', 'export * from "rendererModules"'],
+      ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -69,7 +69,7 @@ describe('app', () => {
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
-    app.setRendererModule('rendererModules');
+    app.setViewModule('viewModules');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
 
@@ -82,7 +82,7 @@ describe('app', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['core/renderer.js', 'export * from "rendererModules"'],
+      ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -92,7 +92,7 @@ describe('app', () => {
     app.addPolyfill('path/toPolyfill2');
     app.setRoutesContent('routes content 2');
     app.setAppModule('123');
-    app.setRendererModule('rendererModules2');
+    app.setViewModule('viewModules2');
     app.addExport('export2', '*');
 
     checkMatch([
@@ -103,7 +103,7 @@ describe('app', () => {
       ],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "123"\nexport default temp'],
-      ['core/renderer.js', 'export * from "rendererModules2"'],
+      ['core/view.js', 'import temp from "viewModules2"\nexport default temp'],
       [
         'core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
@@ -122,7 +122,7 @@ describe('app', () => {
 
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
-    app.setRendererModule('rendererModules');
+    app.setViewModule('viewModules');
     app.addExport('something to export', '*');
     app.addPolyfill('path/toPolyfill');
 
@@ -134,7 +134,7 @@ describe('app', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['core/renderer.js', 'export * from "rendererModules"'],
+      ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -147,3 +147,4 @@ describe('app', () => {
     );
   });
 });
+``;

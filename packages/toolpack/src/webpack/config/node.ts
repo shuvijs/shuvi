@@ -14,7 +14,7 @@ export function createNodeWebpackChain({
   webpackHelpers,
   ...baseOptions
 }: NodeOptions): WebpackChain {
-  const chain = baseWebpackChain(baseOptions);
+  const chain = baseWebpackChain(baseOptions, false);
   const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
 
   chain.target('node');

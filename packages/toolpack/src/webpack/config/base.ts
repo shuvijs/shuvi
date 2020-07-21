@@ -57,15 +57,18 @@ const terserOptions = {
 
 export { WebpackChain };
 
-export function baseWebpackChain({
-  dev,
-  projectRoot,
-  srcDirs,
-  mediaFilename,
-  buildManifestFilename,
-  publicPath = '/',
-  env = {}
-}: BaseOptions): WebpackChain {
+export function baseWebpackChain(
+  {
+    dev,
+    projectRoot,
+    srcDirs,
+    mediaFilename,
+    buildManifestFilename,
+    publicPath = '/',
+    env = {}
+  }: BaseOptions,
+  isBrowser: boolean = false
+): WebpackChain {
   const { typeScriptPath, tsConfigPath, useTypeScript } = getTypeScriptInfo(
     projectRoot
   );
@@ -192,7 +195,10 @@ export function baseWebpackChain({
           [`process.env.${key}`]: JSON.stringify(env[key])
         };
       }, {}),
-      'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
+      'process.env.NODE_ENV': JSON.stringify(
+        dev ? 'development' : 'production'
+      ),
+      __BROWSER__: isBrowser
     }
   ]);
   config
