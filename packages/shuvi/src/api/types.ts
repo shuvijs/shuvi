@@ -5,7 +5,7 @@ export type IBuiltResource = {
     server: Runtime.IServerModule;
     application: Runtime.IApplicationModule;
     document: Partial<Runtime.IDocumentModule>;
-    renderer: Runtime.IServerRenderer;
+    view: Runtime.IViewServer;
     matchRoutes(
       routes: Runtime.IRouteConfig[],
       pathname: string

@@ -134,6 +134,7 @@ export function createBrowserWebpackChain({
   chain.plugin('define').tap(([options]) => [
     {
       ...options,
+      __BROWSER__: true,
       // prevent errof of destructing process.env
       'process.env': JSON.stringify('{}')
     }

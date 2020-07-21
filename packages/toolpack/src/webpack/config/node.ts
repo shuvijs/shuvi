@@ -59,5 +59,12 @@ export function createNodeWebpackChain({
     }
   ]);
 
+  chain.plugin('define').tap(([options]) => [
+    {
+      ...options,
+      __BROWSER__: false
+    }
+  ]);
+
   return withStyle(chain, { ssr: true });
 }

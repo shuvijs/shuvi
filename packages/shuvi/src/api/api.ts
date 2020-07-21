@@ -169,8 +169,8 @@ class Api extends Hookable implements IApi {
     return this._resources;
   }
 
-  setRendererModule(path: string) {
-    this._app.setRendererModule(path);
+  setViewModule(path: string) {
+    this._app.setViewModule(path);
   }
 
   setAppModule(module: string | string[]) {

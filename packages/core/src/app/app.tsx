@@ -13,8 +13,8 @@ export class App {
     this._store = createStore();
   }
 
-  setRendererModule(module: string) {
-    this._store.rendererModule = module;
+  setViewModule(module: string) {
+    this._store.viewModule = module;
   }
 
   setAppModule(module: string | string[]) {

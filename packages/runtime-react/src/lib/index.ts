@@ -57,11 +57,7 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
     return reactRouterMatchRoutes(routes, pathname) as Runtime.IMatchedRoute[];
   }
 
-  getServerRendererModulePath(): string {
-    return resolveAppFile('renderer');
-  }
-
-  getClientRendererModulePath(): string {
+  getViewModulePath(): string {
     let {
       ssr,
       router: { history }
@@ -72,10 +68,10 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
     }
 
     if (history === 'hash') {
-      return resolveAppFile('clientRender.hash');
+      return resolveAppFile('index.hash');
     }
 
-    return resolveAppFile('clientRender.browser');
+    return resolveAppFile('index.browser');
   }
 
   getAppModulePath(): string {

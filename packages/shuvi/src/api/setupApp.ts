@@ -53,7 +53,7 @@ export async function setupApp(api: Api) {
   coreRuntime.install(api.getPluginApi());
   runtime.install(api.getPluginApi());
 
-  api.setRendererModule(runtime.getClientRendererModulePath());
+  api.setViewModule(runtime.getViewModulePath());
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
     runtime.getAppModulePath()
@@ -74,6 +74,7 @@ export async function setupApp(api: Api) {
     }),
     'core'
   );
+
   api.addAppFile(
     File.moduleProxy('server.js', {
       source: [
@@ -154,9 +155,9 @@ export async function setupApp(api: Api) {
               imported: '*',
               local: 'application'
             },
-            [runtime.getServerRendererModulePath()]: {
+            [runtime.getViewModulePath()]: {
               imported: 'default',
-              local: 'renderer'
+              local: 'view'
             }
           }
         : {
