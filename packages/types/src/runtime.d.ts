@@ -123,10 +123,6 @@ export interface IClientRendererOptions<CompType = any, Data = {}>
   appData: IAppData<Data>;
 }
 
-export type IClientRenderer<CompType = any, Data = {}> = (
-  options: IClientRendererOptions<CompType, Data>
-) => void;
-
 export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
   set(key: string, value: any): void;
@@ -140,9 +136,21 @@ export interface IServerRendererOptions<CompType = any>
   getAssetPublicUrl(path: string): string;
 }
 
-export type IServerRenderer<CompType = any, Data = {}> = (
-  options: IServerRendererOptions<CompType>
-) => Promise<IRenderAppResult<Data>>;
+interface IView<
+  RenderOption extends IRenderOptions = any,
+  RenderResult = void
+> {
+  renderApp(options: RenderOption): RenderResult;
+}
+
+export interface IViewClient<CompType = any, Data = {}>
+  extends IView<IClientRendererOptions<CompType, Data>> {}
+
+export interface IViewServer<CompType = any, Data = {}>
+  extends IView<
+    IServerRendererOptions<CompType>,
+    Promise<IRenderAppResult<Data>>
+  > {}
 
 export interface IRedirectState {
   status?: number;
@@ -240,7 +248,5 @@ export interface IRuntime<CompType = unknown> {
 
   get404ModulePath(): string;
 
-  getClientRendererModulePath(): string;
-
-  getServerRendererModulePath(): string;
+  getViewModulePath(): string;
 }

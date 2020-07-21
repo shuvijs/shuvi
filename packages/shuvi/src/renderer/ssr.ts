@@ -25,10 +25,10 @@ export class SsrRenderer extends BaseRenderer {
     const api = this._api;
     const {
       clientManifest: manifest,
-      server: { renderer }
+      server: { view }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
-    const result = await renderer({
+    const result = await view.renderApp({
       url,
       AppComponent,
       routes,
