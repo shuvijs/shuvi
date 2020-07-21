@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom';
 import { Router } from 'react-router-dom';
 import qs from 'querystring';
 import { Runtime } from '@shuvi/types';
-import { History } from './router/history';
-import { setHistory } from './router/router';
-import { matchRoutes } from './router/matchRoutes';
-import AppContainer from './AppContainer';
-import { IRoute } from './types';
-import { HeadManager, HeadManagerContext } from './head';
-import Loadable from './loadable';
-import { createRedirector } from './utils/createRedirector';
-import { IReactClientView } from './types';
+import { History } from '../router/history';
+import { setHistory } from '../router/router';
+import { matchRoutes } from '../router/matchRoutes';
+import AppContainer from '../AppContainer';
+import { IRoute } from '../types';
+import { HeadManager, HeadManagerContext } from '../head';
+import Loadable from '../loadable';
+import { createRedirector } from '../utils/createRedirector';
+import { IReactClientView } from '../types';
 
 const headManager = new HeadManager();
 
