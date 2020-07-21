@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, launchFixture, check } from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
@@ -36,8 +36,16 @@ describe('SSR: Runtime Config', () => {
 
   test('should get runtimeConfig on client-side before render', async () => {
     page = await ctx.browser.page(ctx.url('/basic'));
-
-    expect(await page.$text('#app')).toBe('a');
+    let error = false;
+    try {
+      await check(
+        async () => await page.$text('#app'),
+        v => v === 'a'
+      );
+    } catch {
+      error = true;
+    }
+    expect(error).toBe(false);
   });
 
   test('should not access private config on client-side', async () => {
