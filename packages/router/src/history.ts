@@ -1,7 +1,3 @@
-export {
-  createBrowserHistory,
-  createHashHistory,
-  createMemoryHistory
-} from 'history';
+export * from 'history';
 
 // todo normalize history options
