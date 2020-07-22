@@ -1,0 +1,29 @@
+{
+  "name": "@shuvi/router-react",
+  "version": "0.0.1-beta.48",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/router-react"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "dev": "tsc -p tsconfig.build.json -w",
+    "prebuild": "rimraf lib",
+    "build": "run-p build:*",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "build:cjs": "tsc -p tsconfig.build.cjs.json"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
