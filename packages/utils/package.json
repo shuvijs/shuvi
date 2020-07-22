@@ -3,7 +3,7 @@
   "version": "0.0.1-beta.48",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liximomo/shuvi.git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
     "directory": "packages/utils"
   },
   "author": "liximomo",
