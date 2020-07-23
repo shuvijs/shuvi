@@ -1,3 +1,7 @@
-// @shuvi/router
+export { createRoutesFromArray } from './createRoutesFromArray';
+export { matchPath } from './matchPath';
+export { matchRoutes } from './matchRoutes';
+export { resolvePath } from './resolvePath';
 
-export const add = (a: number, b: number) => a + b;
+export * from './types';
+export * from './history';
