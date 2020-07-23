@@ -49,6 +49,8 @@ export class Application<Context extends {}> extends Hookable
     if (AppComponent) {
       this.AppComponent = AppComponent;
     }
+
+    await this._getAppComponent();
     await this._render();
   }
 
