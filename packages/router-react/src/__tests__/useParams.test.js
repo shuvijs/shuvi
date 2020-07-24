@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import {
-  MemoryRouter as Router,
-  Outlet,
-  Routes,
-  Route,
-  useParams
-} from 'react-router';
+import { MemoryRouter as Router, Outlet, Routes, Route, useParams } from '..';
 
 describe('useParams', () => {
   describe("when the route isn't matched", () => {
