@@ -25,12 +25,14 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/router": "^0.0.1-beta.48",
-    "react": "16.13.0",
-    "react-test-renderer": "^16.13.1"
+    "@shuvi/router": "^0.0.1-beta.48"
   },
   "devDependencies": {
     "@types/react": "^16.9.43",
-    "@types/react-test-renderer": "^16.9.2"
+    "@types/react-test-renderer": "^16.9.2",
+    "react-test-renderer": "^16.13.1"
+  },
+  "peerDependencies": {
+    "react": "16.13.0"
   }
 }
