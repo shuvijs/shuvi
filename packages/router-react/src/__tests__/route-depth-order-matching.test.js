@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { act, create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Outlet, Routes, Route } from '../index';
+import { MemoryRouter as Router, Outlet, Routes, Route } from '..';
 
 describe('nested /', () => {
   it('matches them depth-first', () => {

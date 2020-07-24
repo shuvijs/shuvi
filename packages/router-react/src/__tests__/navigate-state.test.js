@@ -11,7 +11,7 @@ import {
   Route,
   useNavigate,
   useLocation
-} from '../index';
+} from '..';
 
 describe('navigate state', () => {
   let node;

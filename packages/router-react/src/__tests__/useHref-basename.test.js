@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, useHref } from '../index';
+import { MemoryRouter as Router, Routes, Route, useHref } from '..';
 
 describe('useHref under a <Routes basename>', () => {
   describe('to a child route', () => {

@@ -5,7 +5,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { MemoryRouter as Router, Routes, Route } from '../index';
+import { MemoryRouter as Router, Routes, Route } from '..';
 
 describe('when the same component is mounted by two different routes', () => {
   let node;

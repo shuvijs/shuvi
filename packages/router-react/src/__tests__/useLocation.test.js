@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, useLocation } from '../index';
+import { MemoryRouter as Router, Routes, Route, useLocation } from '..';
 
 describe('useLocation', () => {
   it('returns the current location object', () => {

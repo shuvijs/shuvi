@@ -5,7 +5,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { Router, Routes, Route, useNavigate } from '../index';
+import { Router, Routes, Route, useNavigate } from '..';
 
 function createMockHistory(initialLocation) {
   return {

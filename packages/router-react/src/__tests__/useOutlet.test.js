@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, useOutlet } from '../index';
+import { MemoryRouter as Router, Routes, Route, useOutlet } from '..';
 
 describe('useOutlet', () => {
   describe('when there is no child route', () => {

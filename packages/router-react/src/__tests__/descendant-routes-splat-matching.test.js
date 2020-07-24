@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { act, create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Outlet, Routes, Route } from '../index';
+import { MemoryRouter as Router, Outlet, Routes, Route } from '..';
 
 describe('Descendant <Routes> splat matching', () => {
   describe('when the parent route path ends with /*', () => {

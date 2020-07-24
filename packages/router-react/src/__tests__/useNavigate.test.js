@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, useNavigate } from '../index';
+import { MemoryRouter as Router, Routes, Route, useNavigate } from '..';
 
 describe('useNavigate', () => {
   it('returns the navigate function', () => {

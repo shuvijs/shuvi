@@ -1,4 +1,4 @@
-import { generatePath } from '../index';
+import { generatePath } from '..';
 
 describe('generatePath', () => {
   describe('with no params', () => {

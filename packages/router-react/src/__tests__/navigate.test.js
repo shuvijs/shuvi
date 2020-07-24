@@ -5,7 +5,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { MemoryRouter as Router, Routes, Route, useNavigate } from '../index';
+import { MemoryRouter as Router, Routes, Route, useNavigate } from '..';
 
 describe('navigate', () => {
   let node;

@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import {
-  MemoryRouter as Router,
-  Outlet,
-  Routes,
-  Route,
-  useParams
-} from '../index';
+import { MemoryRouter as Router, Outlet, Routes, Route, useParams } from '..';
 
 describe('nested routes', () => {
   it('gets all params from parent routes', () => {

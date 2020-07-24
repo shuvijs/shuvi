@@ -27,7 +27,7 @@ import {
 
 import { joinPaths } from '@shuvi/router/src/utils';
 
-const __DEV__ = process.env.NODE_ENV === 'development';
+const __DEV__ = process.env.NODE_ENV !== 'production';
 
 const readOnly: <T extends unknown>(obj: T) => T = __DEV__
   ? obj => Object.freeze(obj)

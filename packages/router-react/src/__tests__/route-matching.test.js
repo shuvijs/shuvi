@@ -7,7 +7,7 @@ import {
   Route,
   useParams,
   useRoutes
-} from '../index';
+} from '..';
 
 describe('route matching', () => {
   describe('using a route config object', () => {
