@@ -93,4 +93,4 @@ export function generatePath(path: string, params: IParams = {}): string {
     );
 }
 
-export { default as invariant } from '@shuvi/utils/lib/invariant';
+export { invariant };
