@@ -33,6 +33,6 @@
     "react-test-renderer": "^16.13.1"
   },
   "peerDependencies": {
-    "react": "16.13.0"
+    "react": ">=16.8"
   }
 }
