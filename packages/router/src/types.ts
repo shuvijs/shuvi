@@ -3,14 +3,14 @@ import { History } from 'history';
 export type IParams = Record<string, string>;
 
 export interface IRouteObject<Element = any> {
-  caseSensitive: boolean;
+  caseSensitive?: boolean;
   children?: IRouteObject<Element>[];
-  element: Element; // For react will be React.Element
+  element?: Element; // For react will be React.Element
   path: string;
 }
 
-export interface IRouteMatch {
-  route: IRouteObject;
+export interface IRouteMatch<T = IRouteObject> {
+  route: T;
   pathname: string;
   params: IParams;
 }

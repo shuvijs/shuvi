@@ -6,6 +6,8 @@ export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
 };
 
+type RouteKeysWithoutChildren = keyof Omit<IRouteBase, 'children'>;
+
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
@@ -17,14 +19,14 @@ function serializeRoutesImpl(
 ): string {
   let res = '';
   for (let index = 0; index < routes.length; index++) {
-    const { routes: childRoutes, ...route } = routes[index];
+    const { children: childRoutes, ...route } = routes[index];
     const fullpath = route.path ? parentPath + '/' + route.path : parentPath;
     const id = genRouteId(fullpath);
 
     let strRoute = `id: ${JSON.stringify(id)},\n`;
     const keys = Object.keys(route);
     for (let index = 0; index < keys.length; index++) {
-      const key = keys[index];
+      const key = keys[index] as RouteKeysWithoutChildren;
       strRoute += `${key}: `;
       const customSerialize = templates[key];
       if (customSerialize) {
@@ -68,8 +70,8 @@ export function normalizeRoutes(
       : path.resolve(option.componentDir, route.component);
 
     route.component = absPath.replace(/\\/g, '/');
-    if (route.routes && route.routes.length > 0) {
-      route.routes = normalizeRoutes(route.routes, option);
+    if (route.children && route.children.length > 0) {
+      route.children = normalizeRoutes(route.children, option);
     }
     res.push(route);
   }

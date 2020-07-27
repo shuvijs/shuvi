@@ -66,7 +66,7 @@ function getRouteWeight(route: InternalRouteConfig): number {
   const weights: [string, string] = ['0', '0'];
   if (meta.isStaticRoute) {
     weights[0] = '1';
-  } else if (route.exact) {
+  } else if (route.caseSensitive) {
     weights[1] = '1';
   }
 
@@ -150,7 +150,7 @@ export class Route {
       } else if (isLayout(file)) {
         const layoutRoute: InternalRouteConfig = {
           path: normalizeRoutePath(file.replace(/\/_layout$/, '/')),
-          exact: false,
+          caseSensitive: false,
           component: join(this._pagesDir, rawfile),
           __meta: {
             isStaticRoute: isStaicRouter(file)
@@ -170,7 +170,7 @@ export class Route {
       } else {
         route = {
           path: routePath,
-          exact: !isLayout(file),
+          caseSensitive: !isLayout(file),
           component: join(this._pagesDir, rawFile),
           __meta: {
             isStaticRoute: isStaicRouter(file)
