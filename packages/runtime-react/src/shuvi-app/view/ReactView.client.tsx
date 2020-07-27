@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from 'react-router-dom';
 import qs from 'querystring';
+import { matchRoutes } from '@shuvi/core';
 import { Runtime } from '@shuvi/types';
 import { History } from '../router/history';
 import { setHistory } from '../router/router';
-import { matchRoutes } from '../router/matchRoutes';
 import AppContainer from '../AppContainer';
 import { IRoute } from '../types';
 import { HeadManager, HeadManagerContext } from '../head';
@@ -21,8 +21,8 @@ function getRouteParams(routes: IRoute[], pathname: string) {
   const matchedRoutes = matchRoutes(routes, pathname);
   const params: Runtime.IParams = {};
   for (let index = 0; index < matchedRoutes.length; index++) {
-    const { match } = matchedRoutes[index];
-    Object.assign(params, match.params);
+    const matchedRoute = matchedRoutes[index];
+    Object.assign(params, matchedRoute.params);
   }
   return params;
 }

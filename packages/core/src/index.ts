@@ -11,6 +11,6 @@ export { default as React } from 'react';
 
 export { App, IFile, File } from './app';
 
-export { Route } from './route';
+export { Route, matchRoutes } from './route';
 
 export * from './types';
