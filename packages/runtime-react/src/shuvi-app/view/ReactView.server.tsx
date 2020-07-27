@@ -3,8 +3,7 @@ import { renderToString } from 'react-dom/server';
 import { matchRoutes } from '@shuvi/core';
 import { Runtime } from '@shuvi/types';
 import { Router } from 'react-router-dom';
-import { createServerHistory } from '../router/history';
-import { setHistory } from '../router/router';
+import { createServerHistory } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
@@ -35,8 +34,6 @@ export class ReactServerView implements IReactServerView {
       context: routerContext
     });
     const { pathname, query } = history.location;
-    // sethistory before render to make router avaliable
-    setHistory(history);
 
     const routeProps: { [x: string]: any } = {};
     const matchedRoutes = matchRoutes(routes, pathname);
@@ -95,6 +92,8 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
     try {
       htmlContent = renderToString(
+        // TODO: refractor
+        // @ts-ignore
         <Router history={history}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}

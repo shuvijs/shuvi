@@ -1,5 +1,5 @@
+import { createMemoryHistory, MemoryHistory } from '@shuvi/router';
 import { renderWithRouter } from '../router/__tests__/utils';
-import { createMemoryHistory, MemoryHistory } from '../router/history';
 import renderRoutes from '../router/renderRoutes';
 import { Runtime } from '@shuvi/types';
 

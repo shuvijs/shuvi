@@ -165,34 +165,6 @@ export type IRenderAppResult<Data = {}> = {
   redirect?: IRedirectState;
 };
 
-export type IRouterAction = 'PUSH' | 'POP' | 'REPLACE';
-
-export interface IRouterServerContext {
-  url?: string;
-}
-
-export interface IRouterListener {
-  (location: IRouterLocation, action: IRouterAction): void;
-}
-
-export interface IRouterLocation {
-  pathname: string;
-  search: string;
-  state: any;
-  hash: string;
-}
-
-export interface IRouter {
-  query: IQuery;
-  location: IRouterLocation;
-  push(path: string, state?: any): void;
-  replace(path: string, state?: any): void;
-  go(n: number): void;
-  goBack(): void;
-  goForward(): void;
-  onChange(listener: IRouterListener): () => void;
-}
-
 export interface IApplicationModule {
   create(
     context: any,

@@ -22,7 +22,10 @@ describe('useLocation', () => {
     expect(location).toMatchObject({
       pathname: '/home',
       search: '?the=search',
-      hash: '#the-hash'
+      hash: '#the-hash',
+      query: {
+        the: 'search'
+      }
     });
   });
 });

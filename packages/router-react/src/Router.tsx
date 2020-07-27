@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Action } from '@shuvi/router';
+import { Action, createRouter } from '@shuvi/router';
 import { LocationContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
@@ -27,12 +27,17 @@ export function Router({
       ` You never need more than one.`
   );
 
-  return (
-    <LocationContext.Provider
-      children={children}
-      value={{ action, location, navigator, static: staticProp }}
-    />
-  );
+  let contextVal = React.useMemo(() => {
+    return {
+      action,
+      location,
+      navigator,
+      static: staticProp,
+      router: createRouter(navigator as any) // navigator is history, typing as any
+    };
+  }, [action, location, navigator, staticProp]);
+
+  return <LocationContext.Provider children={children} value={contextVal} />;
 }
 
 if (__DEV__) {

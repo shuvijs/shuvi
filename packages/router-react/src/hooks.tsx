@@ -14,7 +14,8 @@ import {
   Path,
   State,
   To,
-  Transition
+  Transition,
+  IRouter
 } from '@shuvi/router';
 import { Outlet } from './Outlet';
 import { __DEV__ } from './constants';
@@ -259,4 +260,16 @@ export function useRoutes_(
   }, null as React.ReactElement | null);
 
   return element;
+}
+
+/**
+ * Returns the current router object
+ */
+export function useRouter(): IRouter {
+  invariant(
+    useInRouterContext(),
+    `useLocation() may be used only in the context of a <Router> component.`
+  );
+
+  return React.useContext(LocationContext).router as IRouter;
 }

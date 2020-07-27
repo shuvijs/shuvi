@@ -1,7 +1,7 @@
 import React from 'react';
 import { Router } from 'react-router-dom';
 import { render, ReactTestRenderer } from 'shuvi-test-utils/reactTestRender';
-import { createMemoryHistory, MemoryHistory, History } from '../history';
+import { createMemoryHistory, MemoryHistory, History } from '@shuvi/router';
 
 // https://testing-library.com/docs/example-react-router#reducing-boilerplate
 export const renderWithRouter = (
@@ -12,8 +12,11 @@ export const renderWithRouter = (
   }: { route?: string; history?: MemoryHistory } = {}
 ): ReactTestRenderer & { history: History } => {
   const Wrapper: React.FC = ({ children }) => (
+    // TODO: refractor
+    // @ts-ignore
     <Router history={history}>{children}</Router>
   );
+
   return {
     ...render(<Wrapper>{ui}</Wrapper>),
     // adding `history` to the returned utilities to allow us

@@ -5,3 +5,4 @@ export { resolvePath } from './resolvePath';
 
 export * from './types';
 export * from './history';
+export * from './router';

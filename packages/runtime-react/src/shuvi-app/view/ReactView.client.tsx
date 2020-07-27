@@ -4,8 +4,7 @@ import { Router } from 'react-router-dom';
 import qs from 'querystring';
 import { matchRoutes } from '@shuvi/core';
 import { Runtime } from '@shuvi/types';
-import { History } from '../router/history';
-import { setHistory } from '../router/router';
+import type { History } from '@shuvi/router';
 import AppContainer from '../AppContainer';
 import { IRoute } from '../types';
 import { HeadManager, HeadManagerContext } from '../head';
@@ -15,7 +14,7 @@ import { IReactClientView } from '../types';
 
 const headManager = new HeadManager();
 
-type HistoryCreator = (options: { basename: string }) => History;
+type HistoryCreator = () => History;
 
 function getRouteParams(routes: IRoute[], pathname: string) {
   const matchedRoutes = matchRoutes(routes, pathname);
@@ -32,9 +31,7 @@ export class ReactClientView implements IReactClientView {
   private _isInitialRender: boolean = false;
 
   constructor(historyCreator: HistoryCreator) {
-    // TODO: config basename
-    this._history = historyCreator({ basename: '/' });
-    setHistory(this._history);
+    this._history = historyCreator();
   }
 
   renderApp: IReactClientView['renderApp'] = async ({
@@ -76,6 +73,8 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
+      // TODO: upgrade to @shuvi/router-react
+      // @ts-ignore
       <Router history={history}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <AppContainer

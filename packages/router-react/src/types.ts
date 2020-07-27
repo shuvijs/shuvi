@@ -6,7 +6,7 @@ import {
   Location,
   State,
   To,
-  IRouteObject as RouteObject
+  IRouter
 } from '@shuvi/router';
 
 export interface ILocationContextObject {
@@ -14,6 +14,7 @@ export interface ILocationContextObject {
   location?: Location;
   navigator?: INavigator;
   static: boolean;
+  router?: IRouter;
 }
 
 export interface IRouteContextObject {
