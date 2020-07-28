@@ -11,6 +11,7 @@ import {
   IInitAppPlugins,
   IAppPluginRecord
 } from '@shuvi/core';
+import { IRouteMatch, IRouteObject } from '@shuvi/router';
 import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
@@ -38,17 +39,7 @@ export interface IRequest {
   headers: IncomingHttpHeaders;
 }
 
-export interface IMatchedRoute<
-  Params extends { [K in keyof Params]?: string } = {}
-> {
-  route: IRouteBase;
-  match: {
-    params: Params;
-    isExact: boolean;
-    path: string;
-    url: string;
-  };
-}
+export type IMatchedRoute<T = IRouteObject> = IRouteMatch<T>;
 
 export type IHtmlAttrs = { textContent?: string } & {
   [x: string]: string | number | undefined | boolean;
@@ -240,7 +231,10 @@ export interface IRuntime<CompType = unknown> {
     route: IRouteConfig & { id: string }
   ): string;
 
-  matchRoutes(routes: IRouteConfig[], pathname: string): IMatchedRoute[];
+  matchRoutes(
+    routes: IRouteConfig[],
+    pathname: string
+  ): IMatchedRoute<IRouteConfig>[];
 
   getRouterModulePath(): string;
 
