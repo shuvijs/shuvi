@@ -5,7 +5,8 @@ import {
   InitialEntry,
   Location,
   State,
-  To
+  To,
+  IRouteObject as RouteObject
 } from '@shuvi/router';
 
 export interface ILocationContextObject {
@@ -64,16 +65,7 @@ export interface INavigateFunction {
   (delta: number): void;
 }
 
-/**
- * A route object represents a logical route, with (optionally) its child
- * routes organized in a tree-like structure.
- */
-export interface IRouteObject {
-  caseSensitive: boolean;
-  children?: IRouteObject[];
-  element: React.ReactNode;
-  path: string;
-}
+export type IRouteObject = RouteObject<React.ReactNode>;
 
 /**
  * A "partial route" object is usually supplied by the user and may omit
