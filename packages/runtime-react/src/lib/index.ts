@@ -4,7 +4,6 @@ import { IApi, Runtime, APIHooks } from '@shuvi/types';
 import { resolveAppFile, resolveDep } from './paths';
 import { config as configBundler } from './bundler/config';
 
-import IRouteConfig = Runtime.IRouteConfig;
 import RouteConfig = Runtime.IRouteConfig;
 
 class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
@@ -53,7 +52,7 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
   }
 
   // TODO: move this to core
-  matchRoutes(routes: IRouteConfig[], pathname: string) {
+  matchRoutes(routes: RouteConfig[], pathname: string) {
     return matchRoutes(routes, pathname);
   }
 
