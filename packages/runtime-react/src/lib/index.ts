@@ -1,9 +1,10 @@
 import React from 'react';
-import { matchRoutes } from '@shuvi/core';
+import { matchRoutes as reactRouterMatchRoutes } from 'react-router-config';
 import { IApi, Runtime, APIHooks } from '@shuvi/types';
 import { resolveAppFile, resolveDep } from './paths';
 import { config as configBundler } from './bundler/config';
 
+import IRouteBase = Runtime.IRouteBase;
 import RouteConfig = Runtime.IRouteConfig;
 
 class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
@@ -52,8 +53,8 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
   }
 
   // TODO: move this to core
-  matchRoutes(routes: RouteConfig[], pathname: string) {
-    return matchRoutes(routes, pathname);
+  matchRoutes(routes: IRouteBase[], pathname: string): Runtime.IMatchedRoute[] {
+    return reactRouterMatchRoutes(routes, pathname) as Runtime.IMatchedRoute[];
   }
 
   getViewModulePath(): string {

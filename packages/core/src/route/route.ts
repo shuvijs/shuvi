@@ -1,4 +1,3 @@
-// TODO
 import { join, relative, posix } from 'path';
 import invariant from '@shuvi/utils/lib/invariant';
 import { watch } from '@shuvi/utils/lib/fileWatcher';
@@ -67,7 +66,7 @@ function getRouteWeight(route: InternalRouteConfig): number {
   const weights: [string, string] = ['0', '0'];
   if (meta.isStaticRoute) {
     weights[0] = '1';
-  } else if (route.caseSensitive) {
+  } else if (route.exact) {
     weights[1] = '1';
   }
 
@@ -151,7 +150,7 @@ export class Route {
       } else if (isLayout(file)) {
         const layoutRoute: InternalRouteConfig = {
           path: normalizeRoutePath(file.replace(/\/_layout$/, '/')),
-          caseSensitive: false,
+          exact: false,
           component: join(this._pagesDir, rawfile),
           __meta: {
             isStaticRoute: isStaicRouter(file)
@@ -171,7 +170,7 @@ export class Route {
       } else {
         route = {
           path: routePath,
-          caseSensitive: !isLayout(file),
+          exact: !isLayout(file),
           component: join(this._pagesDir, rawFile),
           __meta: {
             isStaticRoute: isStaicRouter(file)

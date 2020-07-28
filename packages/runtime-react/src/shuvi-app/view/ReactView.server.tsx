@@ -1,6 +1,5 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { matchRoutes } from '@shuvi/core';
 import { Runtime } from '@shuvi/types';
 import { Router } from 'react-router-dom';
 import { createServerHistory } from '../router/history';
@@ -10,6 +9,7 @@ import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { createRedirector } from '../utils/createRedirector';
+import { matchRoutes } from '../router/matchRoutes';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -43,11 +43,11 @@ export class ReactServerView implements IReactServerView {
     const pendingDataFetchs: Array<() => Promise<void>> = [];
     const params: IParams = {};
     for (let index = 0; index < matchedRoutes.length; index++) {
-      const matchedRoute = matchedRoutes[index];
-      const comp = matchedRoute.route.component as
+      const { route, match } = matchedRoutes[index];
+      const comp = route.component as
         | IRouteComponent<React.Component, any>
         | undefined;
-      Object.assign(params, matchedRoute.params);
+      Object.assign(params, match.params);
       if (comp && comp.getInitialProps) {
         pendingDataFetchs.push(async () => {
           const props = await comp.getInitialProps!({
@@ -55,10 +55,10 @@ export class ReactServerView implements IReactServerView {
             pathname,
             query,
             appContext,
-            params: matchedRoute.params,
+            params: match.params,
             redirect: redirector.handler
           });
-          routeProps[matchedRoute.route.id] = props || {};
+          routeProps[route.id] = props || {};
         });
       }
     }

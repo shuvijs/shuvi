@@ -19,7 +19,6 @@ function renderRoutes(
     appContext?: Data;
   } = {}
 ) {
-  // TODO migration
   return routes && routes.length ? (
     <Switch {...switchProps}>
       {routes.map((route, i) => (

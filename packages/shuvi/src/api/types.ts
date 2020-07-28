@@ -9,7 +9,7 @@ export type IBuiltResource = {
     matchRoutes(
       routes: Runtime.IRouteConfig[],
       pathname: string
-    ): Runtime.IMatchedRoute<Runtime.IRouteConfig>[];
+    ): Runtime.IMatchedRoute[];
   };
   documentTemplate: any;
   clientManifest: Bundler.IManifest;
