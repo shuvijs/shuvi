@@ -1,19 +1,19 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { IRouteBase, IRouteConfig } from '@shuvi/core';
+import { IRouteConfig } from '@shuvi/core';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
 };
 
-type RouteKeysWithoutChildren = keyof Omit<IRouteBase, 'children'>;
+type RouteKeysWithoutChildren = keyof Omit<IRouteConfig, 'children'>;
 
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
 function serializeRoutesImpl(
-  routes: IRouteBase[],
+  routes: IRouteConfig[],
   templates: Templates<any> = {},
   parentPath: string = ''
 ): string {
@@ -38,7 +38,7 @@ function serializeRoutesImpl(
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `routes: ${serializeRoutesImpl(
+      strRoute += `children: ${serializeRoutesImpl(
         childRoutes,
         templates,
         fullpath
@@ -51,7 +51,7 @@ function serializeRoutesImpl(
   return `[${res}]`;
 }
 
-export function serializeRoutes<T extends IRouteBase = IRouteBase>(
+export function serializeRoutes<T extends IRouteConfig = IRouteConfig>(
   routes: T[],
   templates: Templates<T> = {}
 ): string {

@@ -141,12 +141,12 @@ export function loadRouteComponent(
   loader: () => Promise<any>,
   options?: DynamicOptions<any>
 ) {
-  const dynamicComp = dynamic<any>(
+  const DynamicComp = dynamic<any>(
     () =>
       loader().then(mod => {
         const comp = mod.default || mod;
         if (comp.getInitialProps) {
-          (dynamicComp as RouteComponent<React.ComponentType>).getInitialProps =
+          (DynamicComp as RouteComponent<React.ComponentType>).getInitialProps =
             comp.getInitialProps;
 
           // make getInitialProps work in browser
@@ -162,5 +162,5 @@ export function loadRouteComponent(
     options
   );
 
-  return dynamicComp;
+  return <DynamicComp />;
 }

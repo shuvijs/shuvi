@@ -1,19 +1,15 @@
 import {
   matchRoutes as matcher,
   PartialLocation,
-  IRouteObject,
-  IRouteMatch
+  IRouteMatch,
+  IRouteBaseObject
 } from '@shuvi/router';
 
-export function matchRoutes<
-  Element = any,
-  RouteObject extends IRouteObject<Element> = IRouteObject<Element>
->(
-  routes: RouteObject[],
+// matchRoutes can support any `routes` object
+export function matchRoutes<T extends IRouteBaseObject>(
+  routes: T[],
   location: string | PartialLocation,
   basename = ''
-): IRouteMatch<RouteObject>[] {
-  return (
-    (matcher(routes, location, basename) as IRouteMatch<RouteObject>[]) || []
-  );
+): IRouteMatch<T>[] {
+  return matcher(routes, location, basename) || [];
 }

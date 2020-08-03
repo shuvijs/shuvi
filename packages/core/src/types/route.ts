@@ -1,16 +1,12 @@
-import { IRouteObject } from '@shuvi/router';
+import { IRouteBaseObject } from '@shuvi/router';
 
-export interface IRouteBase extends IRouteObject {
-  [x: string]: any;
-}
-
-export interface IRouteConfig extends IRouteBase {
+export interface IRouteConfig extends IRouteBaseObject {
   children?: IRouteConfig[];
   name?: string;
   component: string;
 }
 
-export interface IRoute extends IRouteBase {
+export interface IRoute extends IRouteBaseObject {
   id: string;
   component: any;
   children?: IRoute[];

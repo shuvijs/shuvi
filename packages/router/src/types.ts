@@ -15,7 +15,7 @@ export interface IRouteMatch<T = IRouteObject> {
   params: IParams;
 }
 
-export type IRouteBranch = [string, IRouteObject[], number[]];
+export type IRouteBranch<T = IRouteObject> = [string, T[], number[]];
 
 export type IPathPattern =
   | string

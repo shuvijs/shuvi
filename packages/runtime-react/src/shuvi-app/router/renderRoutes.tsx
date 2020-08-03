@@ -1,3 +1,4 @@
+// @ts-nocheck
 /// <reference lib="dom" />
 
 import React from 'react';

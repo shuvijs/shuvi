@@ -3,6 +3,11 @@ import { IRouteObject, IRouteMatch, IRouteBranch, IParams } from './types';
 import { matchPath } from './matchPath';
 import { joinPaths } from './utils';
 
+export interface IRouteBaseObject<Element = any>
+  extends Omit<IRouteObject<Element>, 'children'> {
+  children?: IRouteBaseObject<Element>[];
+}
+
 const paramRe = /^:\w+$/;
 const dynamicSegmentValue = 2;
 const emptySegmentValue = 1;
@@ -53,15 +58,15 @@ function stableSort(array: any[], compareItems: (a: any, b: any) => number) {
   array.sort((a, b) => compareItems(a, b) || copy.indexOf(a) - copy.indexOf(b));
 }
 
-function matchRouteBranch(
-  branch: IRouteBranch,
+function matchRouteBranch<T extends IRouteBaseObject>(
+  branch: IRouteBranch<T>,
   pathname: string
-): IRouteMatch[] | null {
+): IRouteMatch<T>[] | null {
   let routes = branch[1];
   let matchedPathname = '/';
   let matchedParams: IParams = {};
 
-  let matches: IRouteMatch[] = [];
+  let matches: IRouteMatch<T>[] = [];
   for (let i = 0; i < routes.length; ++i) {
     let route = routes[i];
     let remainingPathname =
@@ -92,7 +97,7 @@ function matchRouteBranch(
   return matches;
 }
 
-export function rankRouteBranches(branches: IRouteBranch[]): void {
+function rankRouteBranches(branches: IRouteBranch[]): void {
   let pathScores = branches.reduce<Record<string, number>>((memo, [path]) => {
     memo[path] = computeScore(path);
     return memo;
@@ -113,13 +118,13 @@ export function rankRouteBranches(branches: IRouteBranch[]): void {
   });
 }
 
-export function flattenRoutes(
-  routes: IRouteObject[],
-  branches: IRouteBranch[] = [],
+export function flattenRoutes<T extends IRouteBaseObject>(
+  routes: T[],
+  branches: IRouteBranch<T>[] = [],
   parentPath = '',
-  parentRoutes: IRouteObject[] = [],
+  parentRoutes: T[] = [],
   parentIndexes: number[] = []
-): IRouteBranch[] {
+): IRouteBranch<T>[] {
   routes.forEach((route, index) => {
     let path = joinPaths([parentPath, route.path]);
     let routes = parentRoutes.concat(route);
@@ -138,11 +143,11 @@ export function flattenRoutes(
   return branches;
 }
 
-export function matchRoutes(
-  routes: IRouteObject[],
+export function matchRoutes<T extends IRouteBaseObject>(
+  routes: T[],
   location: string | PartialLocation,
   basename = ''
-): IRouteMatch[] | null {
+): IRouteMatch<T>[] | null {
   if (typeof location === 'string') {
     location = parsePath(location);
   }
@@ -161,10 +166,10 @@ export function matchRoutes(
   let branches = flattenRoutes(routes);
   rankRouteBranches(branches);
 
-  let matches = null;
+  let matches: IRouteMatch<T>[] | null = null;
   for (let i = 0; matches == null && i < branches.length; ++i) {
     // TODO: Match on search, state too?
-    matches = matchRouteBranch(branches[i], pathname);
+    matches = matchRouteBranch<T>(branches[i], pathname);
   }
 
   return matches;

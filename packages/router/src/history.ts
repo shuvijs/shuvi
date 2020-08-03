@@ -19,7 +19,8 @@ import {
   Path,
   Transition,
   MemoryHistory as OriMemoryHistory,
-  Update
+  Update,
+  PartialLocation
 } from 'history';
 import { parse, ParsedUrlQuery } from 'querystring';
 
@@ -182,5 +183,6 @@ export {
   Path,
   Transition,
   MemoryHistory,
-  Update
+  Update,
+  PartialLocation
 };

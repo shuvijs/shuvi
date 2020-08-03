@@ -78,6 +78,7 @@ export default async function main(argv: string[]) {
     console.log('Build successfully!');
   } catch (error) {
     console.error('Failed to build.\n');
+    console.error({ error });
     console.error(error.message);
 
     process.exit(1);

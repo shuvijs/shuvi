@@ -1,6 +1,5 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import {
-  IRouteBase,
   IRouteConfig,
   IRoute,
   ITemplateData,
@@ -17,7 +16,6 @@ import { IApi } from '../index';
 import { IManifest } from './bundler';
 
 export {
-  IRouteBase,
   IRouteConfig,
   IRoute,
   IApplication,
@@ -202,13 +200,6 @@ export interface IRuntime<CompType = unknown> {
     componentModule: string,
     route: IRouteConfig & { id: string }
   ): string;
-
-  matchRoutes(
-    routes: IRouteConfig[],
-    pathname: string
-  ): IMatchedRoute<IRouteConfig>[];
-
-  getRouterModulePath(): string;
 
   getAppModulePath(): string;
 

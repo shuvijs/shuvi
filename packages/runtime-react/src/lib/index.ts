@@ -1,5 +1,4 @@
 import React from 'react';
-import { matchRoutes } from '@shuvi/core';
 import { IApi, Runtime, APIHooks } from '@shuvi/types';
 import { resolveAppFile, resolveDep } from './paths';
 import { config as configBundler } from './bundler/config';
@@ -51,11 +50,6 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
 })`.trim();
   }
 
-  // TODO: move this to core
-  matchRoutes(routes: RouteConfig[], pathname: string) {
-    return matchRoutes(routes, pathname);
-  }
-
   getViewModulePath(): string {
     let {
       ssr,
@@ -79,10 +73,6 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
 
   get404ModulePath(): string {
     return resolveAppFile('page404');
-  }
-
-  getRouterModulePath(): string {
-    return resolveAppFile('router/router');
   }
 }
 

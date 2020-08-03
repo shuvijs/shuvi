@@ -12,18 +12,16 @@ const secondPageComponent = loadRouteComponent(() => {
   return import('./fixtures/loadRouteComponent/secondPage');
 });
 
-describe('loadRouteComponent [node]', () => {
+describe.skip('loadRouteComponent [node]', () => {
   const routes = [
     {
       id: 'secondPage',
       component: secondPageComponent,
-      exact: true,
       path: '/second'
     },
     {
       id: 'firstPage',
       component: firstPageComponent,
-      exact: true,
       path: '/first'
     }
   ];
