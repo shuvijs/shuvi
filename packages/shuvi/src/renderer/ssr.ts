@@ -95,10 +95,10 @@ export class SsrRenderer extends BaseRenderer {
   private _getInlineAppData(appData: IAppData): IHtmlTag {
     const data = JSON.stringify(appData);
     return tag(
-      'textarea',
+      'script',
       {
         id: CLIENT_APPDATA_ID,
-        style: 'display: none'
+        type: 'application/json'
       },
       htmlEscapeJsonString(data)
     );
