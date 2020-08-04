@@ -97,7 +97,6 @@ export function baseWebpackChain({
   }
 
   config.output.merge({
-    publicPath,
     hotUpdateChunkFilename: 'static/webpack/[id].[hash].hot-update.js',
     hotUpdateMainFilename: 'static/webpack/[hash].hot-update.json',
     // This saves chunks with the name given via `import()`
