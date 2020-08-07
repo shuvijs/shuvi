@@ -4,7 +4,7 @@ import { matchPath } from './matchPath';
 import { joinPaths } from './utils';
 
 export interface IRouteBaseObject<Element = any>
-  extends Omit<IRouteObject<Element>, 'children'> {
+  extends Omit<IRouteObject<Element>, 'children' | 'element'> {
   children?: IRouteBaseObject<Element>[];
 }
 

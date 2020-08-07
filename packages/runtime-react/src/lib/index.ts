@@ -24,7 +24,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       'react-router-dom',
       '{ Link, useLocation, useParams, useHistory, useRouteMatch, withRouter }'
     );
-
+    api.addAppExport('@shuvi/router-react', '{ useRouter }');
     configBundler(api);
 
     // add necessary imports

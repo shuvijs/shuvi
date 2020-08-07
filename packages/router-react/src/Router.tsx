@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Action, createRouter } from '@shuvi/router';
+import { Action } from '@shuvi/router';
 import { LocationContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
@@ -19,7 +19,8 @@ export function Router({
   action = Action.Pop,
   location,
   navigator,
-  static: staticProp = false
+  static: staticProp = false,
+  router
 }: IRouterProps): React.ReactElement {
   invariant(
     !useInRouterContext(),
@@ -33,9 +34,9 @@ export function Router({
       location,
       navigator,
       static: staticProp,
-      router: createRouter(navigator as any) // navigator is history, typing as any
+      router // navigator is history, typing as any
     };
-  }, [action, location, navigator, staticProp]);
+  }, [action, location, navigator, staticProp, router]);
 
   return <LocationContext.Provider children={children} value={contextVal} />;
 }

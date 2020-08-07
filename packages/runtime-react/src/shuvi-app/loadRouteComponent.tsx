@@ -162,5 +162,5 @@ export function loadRouteComponent(
     options
   );
 
-  return <DynamicComp />;
+  return DynamicComp;
 }

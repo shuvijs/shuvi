@@ -1,5 +1,5 @@
 import React from 'react';
-import { joinPaths } from '@shuvi/router/src/utils';
+import { joinPaths } from '@shuvi/router/lib/utils';
 import {
   createRoutesFromArray,
   matchPath,

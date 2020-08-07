@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { matchRoutes } from '@shuvi/core';
+import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
 import { Router } from 'react-router-dom';
 import { createServerHistory } from '@shuvi/router';

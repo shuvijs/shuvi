@@ -51,6 +51,7 @@ export interface IRouterProps {
   location: Location;
   navigator: INavigator;
   static?: boolean;
+  router?: IRouter;
 }
 
 export interface IRoutesProps {

@@ -8,7 +8,7 @@ import {
 } from '../server';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
-import { matchRoutes } from '@shuvi/core';
+import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;

@@ -123,7 +123,7 @@ export class Route {
   private _getRoutes(files: string[]): IRouteConfig[] {
     const rootRoute = ({
       id: '',
-      element: '',
+      component: '',
       routes: []
     } as any) as InternalRouteConfig;
     const layouts = new Map<string, InternalRouteConfig>();
