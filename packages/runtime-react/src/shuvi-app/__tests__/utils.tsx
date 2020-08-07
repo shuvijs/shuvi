@@ -1,4 +1,3 @@
-import { createMemoryHistory, MemoryHistory } from '@shuvi/router';
 import { renderWithRouter } from '../router/__tests__/utils';
 import renderRoutes from '../router/renderRoutes';
 import { Runtime } from '@shuvi/types';
@@ -13,10 +12,7 @@ export const renderWithRoutes = (
     initialProps?: Record<string, any>;
     appContext?: Record<string, any>;
   } = {},
-  {
-    route = '/',
-    history = createMemoryHistory({ initialEntries: [route] })
-  }: { route?: string; history?: MemoryHistory } = {}
+  { route = '/' }: { route?: string } = {}
 ) => {
   return renderWithRouter(
     renderRoutes(routes, {
@@ -24,8 +20,7 @@ export const renderWithRoutes = (
       appContext
     })!,
     {
-      route,
-      history
+      route
     }
   );
 };

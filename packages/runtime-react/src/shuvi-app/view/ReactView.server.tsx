@@ -2,7 +2,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
-import { Router } from 'react-router-dom';
+import { Router } from '@shuvi/router-react';
 import { createServerHistory } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
@@ -92,9 +92,11 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
     try {
       htmlContent = renderToString(
-        // TODO: refractor
-        // @ts-ignore
-        <Router history={history}>
+        <Router
+          action={history.action}
+          location={history.location}
+          navigator={history}
+        >
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >

@@ -1,69 +1,61 @@
-// @ts-nocheck
 /// <reference lib="dom" />
 
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route } from '@shuvi/router-react';
 import { Runtime } from '@shuvi/types';
 import { IRouteProps } from '../loadRouteComponent';
 
 type Data = Record<string, any>;
 
+interface IRenderRouteOptions {
+  initialProps?: Data;
+  appContext?: Data;
+}
+
 function renderRoutes(
   routes: Runtime.IRoute[],
-  {
-    initialProps = {},
-    switchProps = {},
-    appContext = {}
-  }: {
-    initialProps?: Data;
-    switchProps?: Data;
-    appContext?: Data;
-  } = {}
+  { initialProps = {}, appContext = {} }: IRenderRouteOptions = {}
 ) {
-  // TODO migration
   return routes && routes.length ? (
-    <Switch {...switchProps}>
-      {routes.map((route, i) => (
-        <Route
-          key={route.key || i}
-          path={route.path}
-          exact={route.exact}
-          strict={route.strict}
-          sensitive={route.sensitive}
-          render={props => {
-            const childRoutes = route.routes
-              ? renderRoutes(route.routes, {
-                  initialProps,
-                  switchProps: {
-                    location: props.location
-                  }
-                })
-              : null;
-            let { component: Component } = route;
-            if (Component) {
-              if (route.name === '404') {
-                appContext.statusCode = 404;
-              }
-              const TypedComponent = Component as React.ComponentType<
-                IRouteProps
-              >;
-              return (
-                <TypedComponent
-                  __appContext={appContext}
-                  __initialProps={initialProps[route.id]}
-                  {...props}
-                >
-                  {childRoutes}
-                </TypedComponent>
-              );
-            }
-
-            return childRoutes;
-          }}
-        />
-      ))}
-    </Switch>
+    <Routes>
+      {renderRoutesChildrens(routes, { initialProps, appContext })}
+    </Routes>
   ) : null;
+}
+
+function renderRoutesChildrens(
+  routes: Runtime.IRoute[],
+  { initialProps = {}, appContext = {} }: IRenderRouteOptions = {}
+) {
+  return routes.map((route: Runtime.IRoute, i) => {
+    let element: React.ReactElement | null = null;
+    let { component: Component } = route;
+    if (Component) {
+      const TypedComponent = Component as React.ComponentType<IRouteProps>;
+      element = (
+        <TypedComponent
+          __appContext={appContext}
+          __initialProps={initialProps[route.id]}
+        />
+      );
+    }
+
+    return (
+      <Route
+        key={route.id || i}
+        path={route.path}
+        caseSensitive={false}
+        element={element}
+      >
+        {route.children
+          ? renderRoutesChildrens(route.children, {
+              initialProps,
+              appContext
+            })
+          : null}
+      </Route>
+    );
+  });
 }
 
 export default renderRoutes;

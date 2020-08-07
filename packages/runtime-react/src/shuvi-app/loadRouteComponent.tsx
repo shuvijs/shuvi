@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { parse as parseQuerystring } from 'querystring';
-import { RouteComponentProps } from 'react-router-dom';
 import { Runtime } from '@shuvi/types';
 import dynamic, { DynamicOptions } from './dynamic';
 import { getDisplayName } from './utils/getDisplayName';
 import { createRedirector } from './utils/createRedirector';
 
 import RouteComponent = Runtime.IRouteComponent;
+import { useNavigate, useLocation, useParams } from '@shuvi/router-react';
 
 type Data = Record<string, any>;
 
-export type IRouteProps = RouteComponentProps & {
+export type IRouteProps = {
   __appContext: Data;
   __initialProps?: Data;
 };
@@ -38,97 +38,68 @@ function withInitialPropsServer(
 
 function withInitialPropsClient<P = {}>(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
-): RouteComponent<React.ComponentClass<IRouteProps & P>> {
-  const hoc: RouteComponent<React.ComponentClass<
-    IRouteProps & P
-  >> = class WithInitialProps extends React.Component<
-    IRouteProps & P,
-    { propsResolved: boolean; initialProps: Data }
-  > {
-    static displayName = `WithInitialProps(${getDisplayName(
-      WrappedComponent
-    )})`;
+): RouteComponent<React.FunctionComponent<IRouteProps & P>> {
+  const hoc = function WithInitialProps(props: IRouteProps & P) {
+    const [unmount, setUnmount] = useState(false);
 
-    private _unmount: boolean = false;
+    useEffect(() => () => setUnmount(true), []);
 
-    constructor(props: IRouteProps & P) {
-      super(props);
+    const [initialProps, setInitialProps] = useState(
+      props.__initialProps || {}
+    );
 
-      const propsResolved = typeof props.__initialProps !== 'undefined';
-      this.state = {
-        propsResolved: propsResolved,
-        initialProps: props.__initialProps || {}
-      };
+    const [propsResolved, setPropsResolved] = useState(
+      typeof props.__initialProps !== 'undefined'
+    );
 
-      if (!propsResolved) {
-        this._getInitialProps();
-      }
-    }
+    const location = useLocation();
+    const params = useParams();
+    const navigate = useNavigate();
 
-    getSnapshotBeforeUpdate(prevProps: IRouteProps) {
-      return prevProps.match;
-    }
-
-    componentDidUpdate(prevProps: Readonly<IRouteProps>) {
-      const shallow = false;
-      const isUrlChanged = prevProps.match.url !== this.props.match.url;
-      if (isUrlChanged) {
-        if (shallow) {
-          const isRouteMatchChange =
-            prevProps.match.path !== this.props.match.path;
-          if (isRouteMatchChange) {
-            this._getInitialProps();
-          }
-        } else {
-          this._getInitialProps();
-        }
-      }
-    }
-
-    private async _getInitialProps() {
-      const { match, location, history, __appContext: appContext } = this.props;
+    const getInitialProps = async () => {
+      const { __appContext: appContext } = props;
       const redirector = createRedirector();
-      // TODO: pass app context
+
       const initialProps = await WrappedComponent.getInitialProps!({
         isServer: false,
         pathname: location.pathname,
         query: parseQuerystring(location.search.slice(1)),
-        params: match.params,
+        params: params,
         redirect: redirector.handler,
         appContext
       });
 
-      if (this._unmount) {
-        return;
-      }
+      if (unmount) return;
 
       if (redirector.redirected) {
-        history.push(redirector.state!.path);
+        navigate(redirector.state!.path);
       } else {
-        this.setState({
-          propsResolved: true,
-          initialProps
-        });
+        setPropsResolved(true);
+        setInitialProps(initialProps);
       }
-    }
+    };
 
-    componentWillUnmount() {
-      this._unmount = true;
-    }
-
-    render() {
-      if (!this.state.propsResolved) {
-        return null;
+    const isFirstRender = React.useRef(true);
+    useEffect(() => {
+      if (isFirstRender.current) {
+        if (!propsResolved) getInitialProps();
+      } else {
+        getInitialProps();
       }
+      isFirstRender.current = false;
+    }, [params, location]);
 
-      const { __initialProps, __appContext, ...rest } = this.props;
+    if (!propsResolved) return null;
 
-      return React.createElement(WrappedComponent, {
-        ...rest,
-        ...this.state.initialProps
-      });
-    }
+    const { __initialProps, __appContext, ...rest } = props;
+
+    return React.createElement(WrappedComponent, {
+      ...rest,
+      ...initialProps
+    });
   };
+
+  hoc.displayName = `WithInitialProps(${getDisplayName(WrappedComponent)})`;
 
   if (WrappedComponent.getInitialProps) {
     hoc.getInitialProps = WrappedComponent.getInitialProps;

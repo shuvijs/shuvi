@@ -2,7 +2,6 @@ import { loadRouteComponent } from '../loadRouteComponent';
 import { act } from 'shuvi-test-utils/reactTestRender';
 import FirstPage from './fixtures/loadRouteComponent/firstPage';
 import { renderWithRoutes } from './utils';
-import SecondPage from './fixtures/loadRouteComponent/secondPage';
 
 const firstPageComponent = loadRouteComponent(() => {
   return import('./fixtures/loadRouteComponent/firstPage');
@@ -12,7 +11,7 @@ const secondPageComponent = loadRouteComponent(() => {
   return import('./fixtures/loadRouteComponent/secondPage');
 });
 
-describe.skip('loadRouteComponent [node]', () => {
+describe('loadRouteComponent [node]', () => {
   const routes = [
     {
       id: 'secondPage',
@@ -52,7 +51,7 @@ describe.skip('loadRouteComponent [node]', () => {
     `);
 
     // No getInitialProps
-    const { root: secondRoot, toJSON: secondToJson } = renderWithRoutes(
+    const { toJSON: secondToJson } = renderWithRoutes(
       { routes, initialProps },
       {
         route: '/second'
@@ -60,20 +59,6 @@ describe.skip('loadRouteComponent [node]', () => {
     );
 
     await act(async () => {});
-
-    // clear item that are not undefined, should only be left with RouteComponentProps
-    expect(
-      Object.entries(secondRoot.findByType(SecondPage).props)
-        .filter(([_, value]) => value !== undefined)
-        .map(([key]) => key)
-    ).toMatchInlineSnapshot(`
-      Array [
-        "history",
-        "location",
-        "match",
-        "children",
-      ]
-    `);
 
     expect(secondToJson()).toMatchInlineSnapshot(`
       <div>

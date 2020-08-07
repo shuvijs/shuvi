@@ -5,6 +5,7 @@
 import { loadRouteComponent } from '../loadRouteComponent';
 import { act } from 'shuvi-test-utils/reactTestRender';
 import FirstPage from './fixtures/loadRouteComponent/firstPage';
+import DetailPage from './fixtures/loadRouteComponent/detailPage';
 import { renderWithRoutes } from './utils';
 import { wait } from 'shuvi-test-utils';
 
@@ -16,7 +17,11 @@ const secondPageComponent = loadRouteComponent(() => {
   return import('./fixtures/loadRouteComponent/secondPage');
 });
 
-describe.skip('loadRouteComponent [web]', () => {
+const detailPageComponent = loadRouteComponent(() => {
+  return import('./fixtures/loadRouteComponent/detailPage');
+});
+
+describe('loadRouteComponent [web]', () => {
   const routes = [
     {
       id: 'secondPage',
@@ -46,7 +51,7 @@ describe.skip('loadRouteComponent [web]', () => {
     );
 
     await act(async () => {
-      await wait(1000);
+      await wait(1100);
     });
 
     // Spread initialProps as props
@@ -92,7 +97,7 @@ describe.skip('loadRouteComponent [web]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`null`);
 
     await act(async () => {
-      await wait(1000);
+      await wait(1100);
     });
 
     // getInitialProps resolved
@@ -105,5 +110,52 @@ describe.skip('loadRouteComponent [web]', () => {
         first page
       </div>
     `);
+  });
+
+  it('getInitialProps should be recall in client when the route component params update', async () => {
+    // No getInitialProps
+    const { root, toJSON } = renderWithRoutes(
+      {
+        routes: [
+          {
+            id: 'detailPage',
+            component: detailPageComponent,
+            path: '/detail/:id'
+          }
+        ]
+      },
+      {
+        route: '/detail/1'
+      }
+    );
+
+    // getInitialProps not resolved
+    expect(toJSON()).toMatchInlineSnapshot(`null`);
+
+    await act(async () => {
+      await wait(1100);
+    });
+
+    // getInitialProps resolved
+    expect(root.findByType(DetailPage).props).toMatchObject({
+      data: {
+        id: '1'
+      }
+    });
+
+    await act(async () => {
+      root.findByType('a').props.onClick(new MouseEvent('click'));
+    });
+
+    await act(async () => {
+      await wait(1100);
+    });
+
+    // getInitialProps resolved
+    expect(root.findByType(DetailPage).props).toMatchObject({
+      data: {
+        id: '2'
+      }
+    });
   });
 });

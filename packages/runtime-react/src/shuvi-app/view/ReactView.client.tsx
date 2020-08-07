@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from 'react-router-dom';
+import { Router } from '@shuvi/router-react';
 import qs from 'querystring';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
@@ -75,9 +75,11 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      // TODO: upgrade to @shuvi/router-react
-      // @ts-ignore
-      <Router history={history} router={router}>
+      <Router
+        action={history.action}
+        location={history.location}
+        navigator={history}
+      >
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <AppContainer
             routes={routes}
