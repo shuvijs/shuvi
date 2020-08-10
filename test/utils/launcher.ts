@@ -35,8 +35,7 @@ async function createTextContext(app: Shuvi) {
     browser,
     url,
     async close() {
-      await app.close();
-      await browser.close();
+      await Promise.all([app.close(), browser.close()]);
     }
   };
 }
