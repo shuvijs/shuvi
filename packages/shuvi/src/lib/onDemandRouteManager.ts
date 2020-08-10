@@ -51,10 +51,15 @@ export class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const routeModule = matchRoutes(this._api.getRoutes(), pathname).map(
-      m => `${m.route.component}?${ROUTE_RESOURCE_QUERYSTRING}`
-    );
-    return this._activateModules(routeModule);
+    const matchedRoutes = matchRoutes(this._api.getRoutes(), pathname);
+
+    const modulesToActivate = matchedRoutes
+      .map(({ route: { component } }) =>
+        component ? `${component}?${ROUTE_RESOURCE_QUERYSTRING}` : ''
+      )
+      .filter(Boolean);
+
+    return this._activateModules(modulesToActivate);
   }
 
   private async _activateModules(modules: string[]): Promise<void> {

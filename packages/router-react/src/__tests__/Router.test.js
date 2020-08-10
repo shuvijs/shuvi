@@ -18,16 +18,8 @@ describe('A <Router>', () => {
 
     expect(() => {
       createTestRenderer(
-        <Router
-          action={history.action}
-          location={history.location}
-          navigator={history}
-        >
-          <Router
-            action={history.action}
-            location={history.location}
-            navigator={history}
-          />
+        <Router history={history}>
+          <Router history={history} />
         </Router>
       );
     }).toThrow(/cannot render a <Router> inside another <Router>/);

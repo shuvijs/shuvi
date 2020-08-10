@@ -116,6 +116,7 @@ export function loadRouteComponent(
     () =>
       loader().then(mod => {
         const comp = mod.default || mod;
+
         if (comp.getInitialProps) {
           (DynamicComp as RouteComponent<React.ComponentType>).getInitialProps =
             comp.getInitialProps;

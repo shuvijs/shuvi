@@ -65,11 +65,14 @@ export function normalizeRoutes(
   const res: IRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
-    const absPath = path.isAbsolute(route.component)
-      ? route.component
-      : path.resolve(option.componentDir, route.component);
+    if (route.component) {
+      const absPath = path.isAbsolute(route.component)
+        ? route.component
+        : path.resolve(option.componentDir, route.component);
 
-    route.component = absPath.replace(/\\/g, '/');
+      route.component = absPath.replace(/\\/g, '/');
+    }
+
     if (route.children && route.children.length > 0) {
       route.children = normalizeRoutes(route.children, option);
     }

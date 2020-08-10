@@ -20,7 +20,10 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       imported: 'default',
       local: 'dynamic'
     });
-    api.addAppExport('@shuvi/router-react', '{ useRouter }');
+    api.addAppExport(
+      '@shuvi/router-react',
+      '{ Link, useLocation, useParams, useNavigate, useRouter, Outlet }'
+    );
     configBundler(api);
 
     // add necessary imports

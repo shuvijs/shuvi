@@ -24,7 +24,7 @@ function renderRoutes(
 }
 
 function renderRoutesChildrens(
-  routes: Runtime.IRoute[],
+  routes: Runtime.IRoute[] = [],
   { initialProps = {}, appContext = {} }: IRenderRouteOptions = {}
 ) {
   return routes.map((route: Runtime.IRoute, i) => {
@@ -40,12 +40,18 @@ function renderRoutesChildrens(
       );
     }
 
+    if (route.name === '404') {
+      appContext.statusCode = 404;
+    }
+
     return (
       <Route
         key={route.id || i}
-        path={route.path}
-        caseSensitive={false}
-        element={element}
+        path={
+          route.path.startsWith('/') ? route.path.replace('/', '') : route.path
+        }
+        caseSensitive={false} // TODO: read from config
+        {...(element && { element })}
       >
         {route.children
           ? renderRoutesChildrens(route.children, {

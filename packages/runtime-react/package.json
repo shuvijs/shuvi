@@ -29,14 +29,12 @@
   },
   "dependencies": {
     "@shuvi/app": "^0.0.1-beta.50",
-    "@shuvi/router": "^0.0.1-beta.48",
-    "@shuvi/router-react": "^0.0.1-beta.48",
+    "@shuvi/router-react": "^0.0.1-beta.50",
     "@shuvi/utils": "^0.0.1-beta.50",
     "enhanced-resolve": "5.0.0-beta.4",
     "react": "16.13.0",
     "react-app-polyfill": "1.0.6",
     "react-dom": "16.13.0",
-    "react-router-dom": "5.1.2",
     "use-subscription": "^1.3.0"
   },
   "devDependencies": {

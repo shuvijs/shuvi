@@ -35,6 +35,11 @@ export function config(api: IApi) {
       // config.externals(external);
       // make sure we don't have multiple entity of following packages , becasue module variable will fail
       config.resolve.alias.set('@shuvi/runtime-react', PACKAGE_DIR);
+      config.resolve.alias.set(
+        '@shuvi/router-react$',
+        resolveLocal('@shuvi/router-react')
+      );
+      config.resolve.alias.set('@shuvi/router$', resolveLocal('@shuvi/router'));
 
       // WEBPACK5: using alias in webpack5
       config.resolve.plugin('react-alias').use(AliasPlugin, [

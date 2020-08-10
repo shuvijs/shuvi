@@ -6,7 +6,9 @@ import {
   Location,
   State,
   To,
-  IRouter
+  IRouteObject as RouteObject,
+  IRouter,
+  History
 } from '@shuvi/router';
 
 export interface ILocationContextObject {
@@ -46,10 +48,8 @@ export interface IRouteProps {
 }
 
 export interface IRouterProps {
-  action?: Action;
+  history: History;
   children?: React.ReactNode;
-  location: Location;
-  navigator: INavigator;
   static?: boolean;
   router?: IRouter;
 }

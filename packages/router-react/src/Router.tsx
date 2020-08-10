@@ -1,6 +1,7 @@
+//
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Action } from '@shuvi/router';
+import { Action, Update, createRouter } from '@shuvi/router';
 import { LocationContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
@@ -16,11 +17,9 @@ import { IRouterProps } from './types';
  */
 export function Router({
   children = null,
-  action = Action.Pop,
-  location,
-  navigator,
+  history,
   static: staticProp = false,
-  router
+  router = createRouter(history)
 }: IRouterProps): React.ReactElement {
   invariant(
     !useInRouterContext(),
@@ -28,15 +27,28 @@ export function Router({
       ` You never need more than one.`
   );
 
+  let [{ action, location }, dispatch] = React.useReducer(
+    (_: Update, action: Update) => action,
+    {
+      action: history.action || Action.Pop,
+      location: history.location
+    }
+  );
+
+  // @ts-ignore
+  if (typeof window !== 'undefined') {
+    React.useLayoutEffect(() => history.listen(dispatch), [history]);
+  }
+
   let contextVal = React.useMemo(() => {
     return {
       action,
       location,
-      navigator,
+      navigator: history,
       static: staticProp,
       router // navigator is history, typing as any
     };
-  }, [action, location, navigator, staticProp, router]);
+  }, [history, action, location, staticProp, router]);
 
   return <LocationContext.Provider children={children} value={contextVal} />;
 }
@@ -45,15 +57,7 @@ if (__DEV__) {
   Router.displayName = 'Router';
   Router.propTypes = {
     children: PropTypes.node,
-    action: PropTypes.oneOf(['POP', 'PUSH', 'REPLACE']),
-    location: PropTypes.object.isRequired,
-    navigator: PropTypes.shape({
-      createHref: PropTypes.func.isRequired,
-      push: PropTypes.func.isRequired,
-      replace: PropTypes.func.isRequired,
-      go: PropTypes.func.isRequired,
-      block: PropTypes.func.isRequired
-    }).isRequired,
+    history: PropTypes.object,
     static: PropTypes.bool
   };
 }

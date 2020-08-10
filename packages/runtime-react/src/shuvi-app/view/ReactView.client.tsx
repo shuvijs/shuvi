@@ -4,7 +4,7 @@ import { Router } from '@shuvi/router-react';
 import qs from 'querystring';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
-import { History, createRouter } from '@shuvi/router';
+import { History, createRouter, IRouter } from '@shuvi/router';
 import AppContainer from '../AppContainer';
 import { IRoute } from '../types';
 import { HeadManager, HeadManagerContext } from '../head';
@@ -28,12 +28,18 @@ function getRouteParams(routes: IRoute[], pathname: string) {
 
 export class ReactClientView implements IReactClientView {
   private _history: History;
+  private _router: IRouter;
   private _isInitialRender: boolean = false;
 
   constructor(historyCreator: HistoryCreator) {
     this._history = historyCreator();
+    this._router = createRouter(this._history);
     // For e2e test
-    (window as any).__SHUVI.router = createRouter(this._history);
+    if ((window as any).__SHUVI) {
+      (window as any).__SHUVI.router = this._router;
+    } else {
+      (window as any).__SHUVI = { router: this._router };
+    }
   }
 
   renderApp: IReactClientView['renderApp'] = async ({
@@ -75,11 +81,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <Router
-        action={history.action}
-        location={history.location}
-        navigator={history}
-      >
+      <Router history={history} router={this._router}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <AppContainer
             routes={routes}

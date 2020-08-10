@@ -92,11 +92,7 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
     try {
       htmlContent = renderToString(
-        <Router
-          action={history.action}
-          location={history.location}
-          navigator={history}
-        >
+        <Router static history={history}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >
