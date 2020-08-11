@@ -39,10 +39,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         navigate(to, { replace, state });
       }
     }
-    // @ts-ignore
     return (
-      // eslint-disable-next-line jsx-a11y/anchor-has-content
-      // @ts-ignore
       <a
         {...rest}
         href={href}

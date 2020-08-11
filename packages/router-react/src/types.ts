@@ -1,22 +1,15 @@
 import {
-  INavigator,
   IParams,
-  Action,
   InitialEntry,
-  Location,
   State,
   To,
   IRouteObject as RouteObject,
-  IRouter,
-  History
+  IRouter
 } from '@shuvi/router';
 
 export interface ILocationContextObject {
-  action?: Action;
-  location?: Location;
-  navigator?: INavigator;
   static: boolean;
-  router?: IRouter;
+  router: IRouter;
 }
 
 export interface IRouteContextObject {
@@ -48,10 +41,9 @@ export interface IRouteProps {
 }
 
 export interface IRouterProps {
-  history: History;
   children?: React.ReactNode;
   static?: boolean;
-  router?: IRouter;
+  router: IRouter;
 }
 
 export interface IRoutesProps {

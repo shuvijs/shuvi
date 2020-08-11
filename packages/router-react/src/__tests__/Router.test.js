@@ -2,6 +2,7 @@ import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
 import { createMemoryHistory } from 'history';
 import { Router } from '..';
+import { createRouter } from '@shuvi/router/lib/';
 
 describe('A <Router>', () => {
   let consoleError;
@@ -14,12 +15,12 @@ describe('A <Router>', () => {
   });
 
   it('throws if another <Router> is already in context', () => {
-    let history = createMemoryHistory();
+    let router = createRouter(createMemoryHistory());
 
     expect(() => {
       createTestRenderer(
-        <Router history={history}>
-          <Router history={history} />
+        <Router router={router}>
+          <Router router={router} />
         </Router>
       );
     }).toThrow(/cannot render a <Router> inside another <Router>/);

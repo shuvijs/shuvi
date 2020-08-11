@@ -5,7 +5,6 @@ import {
   matchPath,
   matchRoutes,
   resolvePath,
-  INavigator,
   IPathPattern,
   IParams,
   IPathMatch,
@@ -33,12 +32,12 @@ export function useBlocker(blocker: Blocker, when = true): void {
     `useBlocker() may be used only in the context of a <Router> component.`
   );
 
-  let navigator = React.useContext(LocationContext).navigator as INavigator;
+  let router = React.useContext(LocationContext).router;
 
   React.useEffect(() => {
     if (!when) return;
 
-    let unblock = navigator.block((tx: Transition) => {
+    let unblock = router.block((tx: Transition) => {
       let autoUnblockingTx = {
         ...tx,
         retry() {
@@ -54,7 +53,7 @@ export function useBlocker(blocker: Blocker, when = true): void {
     });
 
     return unblock;
-  }, [navigator, blocker, when]);
+  }, [router, blocker, when]);
 }
 
 /**
@@ -67,17 +66,17 @@ export function useHref(to: To): string {
     `useHref() may be used only in the context of a <Router> component.`
   );
 
-  let navigator = React.useContext(LocationContext).navigator as INavigator;
+  let router = React.useContext(LocationContext).router;
   let path = useResolvedPath(to);
 
-  return navigator.createHref(path);
+  return router.createHref(path);
 }
 
 /**
  * Returns true if this component is a descendant of a <Router>.
  */
 export function useInRouterContext(): boolean {
-  return React.useContext(LocationContext).location != null;
+  return React.useContext(LocationContext).router != null;
 }
 
 /**
@@ -94,7 +93,7 @@ export function useLocation(): Location {
     `useLocation() may be used only in the context of a <Router> component.`
   );
 
-  return React.useContext(LocationContext).location as Location;
+  return React.useContext(LocationContext).router.location;
 }
 
 /**
@@ -108,7 +107,7 @@ export function useMatch(pattern: IPathPattern): IPathMatch | null {
     `useMatch() may be used only in the context of a <Router> component.`
   );
 
-  let location = useLocation() as Location;
+  let location = useLocation();
   return matchPath(pattern, location.pathname);
 }
 
@@ -123,7 +122,7 @@ export function useNavigate(): INavigateFunction {
   );
 
   let locationContext = React.useContext(LocationContext);
-  let navigator = locationContext.navigator as INavigator;
+  let router = locationContext.router;
   let { pathname } = React.useContext(RouteContext);
 
   let activeRef = React.useRef(false);
@@ -135,10 +134,10 @@ export function useNavigate(): INavigateFunction {
     (to: To | number, options: { replace?: boolean; state?: State } = {}) => {
       if (activeRef.current) {
         if (typeof to === 'number') {
-          navigator.go(to);
+          router.go(to);
         } else {
           let path = resolvePath(to, pathname);
-          (!!options.replace ? navigator.replace : navigator.push)(
+          (!!options.replace ? router.replace : router.push)(
             path,
             options.state
           );
@@ -151,7 +150,7 @@ export function useNavigate(): INavigateFunction {
         );
       }
     },
-    [navigator, pathname]
+    [router, pathname]
   );
 
   return navigate;

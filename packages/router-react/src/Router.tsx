@@ -1,7 +1,7 @@
 //
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Action, Update, createRouter } from '@shuvi/router';
+import { Action, Update, IRouter } from '@shuvi/router';
 import { LocationContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
@@ -17,9 +17,8 @@ import { IRouterProps } from './types';
  */
 export function Router({
   children = null,
-  history,
   static: staticProp = false,
-  router = createRouter(history)
+  router
 }: IRouterProps): React.ReactElement {
   invariant(
     !useInRouterContext(),
@@ -27,28 +26,29 @@ export function Router({
       ` You never need more than one.`
   );
 
-  let [{ action, location }, dispatch] = React.useReducer(
-    (_: Update, action: Update) => action,
+  let [updatedRouter, dispatch] = React.useReducer(
+    (previousRouter: IRouter, action: Update) => ({
+      ...previousRouter,
+      ...action
+    }),
     {
-      action: history.action || Action.Pop,
-      location: history.location
+      ...router,
+      action: router.action || Action.Pop,
+      location: router.location
     }
   );
 
-  // @ts-ignore
+  // @ts-ignore ignoring because of window
   if (typeof window !== 'undefined') {
-    React.useLayoutEffect(() => history.listen(dispatch), [history]);
+    React.useLayoutEffect(() => router.onChange(dispatch), [router]);
   }
 
   let contextVal = React.useMemo(() => {
     return {
-      action,
-      location,
-      navigator: history,
       static: staticProp,
-      router // navigator is history, typing as any
+      router: updatedRouter
     };
-  }, [history, action, location, staticProp, router]);
+  }, [staticProp, updatedRouter]);
 
   return <LocationContext.Provider children={children} value={contextVal} />;
 }
@@ -57,7 +57,7 @@ if (__DEV__) {
   Router.displayName = 'Router';
   Router.propTypes = {
     children: PropTypes.node,
-    history: PropTypes.object,
+    router: PropTypes.object,
     static: PropTypes.bool
   };
 }

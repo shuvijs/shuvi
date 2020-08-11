@@ -81,7 +81,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <Router history={history} router={this._router}>
+      <Router router={this._router}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <AppContainer
             routes={routes}

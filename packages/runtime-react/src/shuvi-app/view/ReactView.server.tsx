@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
 import { Router } from '@shuvi/router-react';
-import { createServerHistory } from '@shuvi/router';
+import { createServerHistory, createRouter } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
@@ -92,7 +92,7 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
     try {
       htmlContent = renderToString(
-        <Router static history={history}>
+        <Router static router={createRouter(history)}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >

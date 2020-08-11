@@ -136,7 +136,7 @@ const addQuery = (location: Location) => {
 };
 
 const enchanceHistory = <H extends OriHistory>(history: H) => {
-  // @ts-ignore
+  // @ts-ignore ignoring because query will be injected in the next line
   const queryHistory: History<H> = {
     ...history,
     listen: listener =>
