@@ -1,8 +1,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { useHref, useNavigate, useLocation, useResolvedPath } from '.';
+import { useHref, useNavigate, useResolvedPath } from '.';
 import { createPath, State, To } from '@shuvi/router';
 import { __DEV__ } from './constants';
+import { useRouter } from './hooks';
 
 function isModifiedEvent(event: React.MouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
@@ -18,7 +19,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   ) {
     let href = useHref(to);
     let navigate = useNavigate();
-    let location = useLocation();
+    let { location } = useRouter();
     let path = useResolvedPath(to);
 
     function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
@@ -40,6 +41,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
       }
     }
     return (
+      // @ts-ignore
       <a
         {...rest}
         href={href}

@@ -80,23 +80,6 @@ export function useInRouterContext(): boolean {
 }
 
 /**
- * Returns the current location object, which represents the current URL in web
- * browsers.
- *
- * Note: If you're using this it may mean you're doing some of your own
- * "routing" in your app, and we'd like to know what your use case is. We may
- * be able to provide something higher-level to better suit your needs.
- */
-export function useLocation(): Location {
-  invariant(
-    useInRouterContext(),
-    `useLocation() may be used only in the context of a <Router> component.`
-  );
-
-  return React.useContext(LocationContext).router.location;
-}
-
-/**
  * Returns true if the URL for the given "to" value matches the current URL.
  * This is useful for components that need to know "active" state, e.g.
  * <NavLink>.
@@ -107,7 +90,7 @@ export function useMatch(pattern: IPathPattern): IPathMatch | null {
     `useMatch() may be used only in the context of a <Router> component.`
   );
 
-  let location = useLocation();
+  let { location } = useRouter();
   return matchPath(pattern, location.pathname);
 }
 
@@ -232,7 +215,7 @@ export function useRoutes_(
 
   basename = basename ? joinPaths([parentPathname, basename]) : parentPathname;
 
-  let location = useLocation() as Location;
+  let { location } = useRouter();
   let matches = React.useMemo(() => matchRoutes(routes, location, basename), [
     location,
     routes,
@@ -267,7 +250,7 @@ export function useRoutes_(
 export function useRouter(): IRouter {
   invariant(
     useInRouterContext(),
-    `useLocation() may be used only in the context of a <Router> component.`
+    `useRouter() may be used only in the context of a <Router> component.`
   );
 
   return React.useContext(LocationContext).router as IRouter;

@@ -6,7 +6,7 @@ import { getDisplayName } from './utils/getDisplayName';
 import { createRedirector } from './utils/createRedirector';
 
 import RouteComponent = Runtime.IRouteComponent;
-import { useNavigate, useLocation, useParams } from '@shuvi/router-react';
+import { useNavigate, useParams, useRouter } from '@shuvi/router-react';
 
 type Data = Record<string, any>;
 
@@ -52,7 +52,7 @@ function withInitialPropsClient<P = {}>(
       typeof props.__initialProps !== 'undefined'
     );
 
-    const location = useLocation();
+    const { location } = useRouter();
     const params = useParams();
     const navigate = useNavigate();
 
