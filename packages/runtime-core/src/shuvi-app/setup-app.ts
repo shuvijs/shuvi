@@ -21,7 +21,7 @@ const app = create(
             appContainer,
             appContext,
             appData,
-            error: '' // getInitialProps would not be run.
+            error: undefined
           });
         } else {
           view.renderApp({
