@@ -1,15 +1,14 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
+import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
-import { Router } from 'react-router-dom';
-import { createServerHistory } from '../router/history';
-import { setHistory } from '../router/router';
+import { Router } from '@shuvi/router-react';
+import { createServerHistory, createRouter } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { createRedirector } from '../utils/createRedirector';
-import { matchRoutes } from '../router/matchRoutes';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -35,19 +34,17 @@ export class ReactServerView implements IReactServerView {
       context: routerContext
     });
     const { pathname, query } = history.location;
-    // sethistory before render to make router avaliable
-    setHistory(history);
 
     const routeProps: { [x: string]: any } = {};
     const matchedRoutes = matchRoutes(routes, pathname);
     const pendingDataFetchs: Array<() => Promise<void>> = [];
     const params: IParams = {};
     for (let index = 0; index < matchedRoutes.length; index++) {
-      const { route, match } = matchedRoutes[index];
-      const comp = route.component as
+      const matchedRoute = matchedRoutes[index];
+      const comp = matchedRoute.route.component as
         | IRouteComponent<React.Component, any>
         | undefined;
-      Object.assign(params, match.params);
+      Object.assign(params, matchedRoute.params);
       if (comp && comp.getInitialProps) {
         pendingDataFetchs.push(async () => {
           const props = await comp.getInitialProps!({
@@ -55,10 +52,10 @@ export class ReactServerView implements IReactServerView {
             pathname,
             query,
             appContext,
-            params: match.params,
+            params: matchedRoute.params,
             redirect: redirector.handler
           });
-          routeProps[route.id] = props || {};
+          routeProps[matchedRoute.route.id] = props || {};
         });
       }
     }
@@ -95,7 +92,7 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
     try {
       htmlContent = renderToString(
-        <Router history={history}>
+        <Router static router={createRouter(history)}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >

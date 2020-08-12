@@ -6,7 +6,7 @@ import { ILocationContextObject, IRouteContextObject } from './types';
 
 export const LocationContext = React.createContext<ILocationContextObject>({
   static: false
-});
+} as ILocationContextObject);
 
 if (__DEV__) {
   LocationContext.displayName = 'Location';

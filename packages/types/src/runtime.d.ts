@@ -1,6 +1,5 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import {
-  IRouteBase,
   IRouteConfig,
   IRoute,
   ITemplateData,
@@ -11,12 +10,12 @@ import {
   IInitAppPlugins,
   IAppPluginRecord
 } from '@shuvi/core';
+import { IRouteMatch, IRouteObject } from '@shuvi/router';
 import { ParsedUrlQuery } from 'querystring';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
 
 export {
-  IRouteBase,
   IRouteConfig,
   IRoute,
   IApplication,
@@ -38,17 +37,7 @@ export interface IRequest {
   headers: IncomingHttpHeaders;
 }
 
-export interface IMatchedRoute<
-  Params extends { [K in keyof Params]?: string } = {}
-> {
-  route: IRouteBase;
-  match: {
-    params: Params;
-    isExact: boolean;
-    path: string;
-    url: string;
-  };
-}
+export type IMatchedRoute<T = IRouteObject> = IRouteMatch<T>;
 
 export type IHtmlAttrs = { textContent?: string } & {
   [x: string]: string | number | undefined | boolean;
@@ -174,34 +163,6 @@ export type IRenderAppResult<Data = {}> = {
   redirect?: IRedirectState;
 };
 
-export type IRouterAction = 'PUSH' | 'POP' | 'REPLACE';
-
-export interface IRouterServerContext {
-  url?: string;
-}
-
-export interface IRouterListener {
-  (location: IRouterLocation, action: IRouterAction): void;
-}
-
-export interface IRouterLocation {
-  pathname: string;
-  search: string;
-  state: any;
-  hash: string;
-}
-
-export interface IRouter {
-  query: IQuery;
-  location: IRouterLocation;
-  push(path: string, state?: any): void;
-  replace(path: string, state?: any): void;
-  go(n: number): void;
-  goBack(): void;
-  goForward(): void;
-  onChange(listener: IRouterListener): () => void;
-}
-
 export interface IApplicationModule {
   create(
     context: any,
@@ -239,10 +200,6 @@ export interface IRuntime<CompType = unknown> {
     componentModule: string,
     route: IRouteConfig & { id: string }
   ): string;
-
-  matchRoutes(routes: IRouteConfig[], pathname: string): IMatchedRoute[];
-
-  getRouterModulePath(): string;
 
   getAppModulePath(): string;
 

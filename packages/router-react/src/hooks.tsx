@@ -1,20 +1,19 @@
 import React from 'react';
-import { joinPaths } from '@shuvi/router/src/utils';
+import { joinPaths } from '@shuvi/router/lib/utils';
 import {
   createRoutesFromArray,
   matchPath,
   matchRoutes,
   resolvePath,
-  INavigator,
   IPathPattern,
   IParams,
   IPathMatch,
   Blocker,
-  Location,
   Path,
   State,
   To,
-  Transition
+  Transition,
+  IRouter
 } from '@shuvi/router';
 import { Outlet } from './Outlet';
 import { __DEV__ } from './constants';
@@ -32,12 +31,12 @@ export function useBlocker(blocker: Blocker, when = true): void {
     `useBlocker() may be used only in the context of a <Router> component.`
   );
 
-  let navigator = React.useContext(LocationContext).navigator as INavigator;
+  let router = React.useContext(LocationContext).router;
 
   React.useEffect(() => {
     if (!when) return;
 
-    let unblock = navigator.block((tx: Transition) => {
+    let unblock = router.block((tx: Transition) => {
       let autoUnblockingTx = {
         ...tx,
         retry() {
@@ -53,7 +52,7 @@ export function useBlocker(blocker: Blocker, when = true): void {
     });
 
     return unblock;
-  }, [navigator, blocker, when]);
+  }, [router, blocker, when]);
 }
 
 /**
@@ -66,34 +65,18 @@ export function useHref(to: To): string {
     `useHref() may be used only in the context of a <Router> component.`
   );
 
-  let navigator = React.useContext(LocationContext).navigator as INavigator;
+  let router = React.useContext(LocationContext).router;
   let path = useResolvedPath(to);
 
-  return navigator.createHref(path);
+  // @ts-ignore
+  return router.createHref(path);
 }
 
 /**
  * Returns true if this component is a descendant of a <Router>.
  */
 export function useInRouterContext(): boolean {
-  return React.useContext(LocationContext).location != null;
-}
-
-/**
- * Returns the current location object, which represents the current URL in web
- * browsers.
- *
- * Note: If you're using this it may mean you're doing some of your own
- * "routing" in your app, and we'd like to know what your use case is. We may
- * be able to provide something higher-level to better suit your needs.
- */
-export function useLocation(): Location {
-  invariant(
-    useInRouterContext(),
-    `useLocation() may be used only in the context of a <Router> component.`
-  );
-
-  return React.useContext(LocationContext).location as Location;
+  return React.useContext(LocationContext).router != null;
 }
 
 /**
@@ -107,8 +90,8 @@ export function useMatch(pattern: IPathPattern): IPathMatch | null {
     `useMatch() may be used only in the context of a <Router> component.`
   );
 
-  let location = useLocation() as Location;
-  return matchPath(pattern, location.pathname);
+  let { pathname } = useRouter();
+  return matchPath(pattern, pathname);
 }
 
 /**
@@ -122,7 +105,7 @@ export function useNavigate(): INavigateFunction {
   );
 
   let locationContext = React.useContext(LocationContext);
-  let navigator = locationContext.navigator as INavigator;
+  let router = locationContext.router;
   let { pathname } = React.useContext(RouteContext);
 
   let activeRef = React.useRef(false);
@@ -134,10 +117,10 @@ export function useNavigate(): INavigateFunction {
     (to: To | number, options: { replace?: boolean; state?: State } = {}) => {
       if (activeRef.current) {
         if (typeof to === 'number') {
-          navigator.go(to);
+          router.go(to);
         } else {
           let path = resolvePath(to, pathname);
-          (!!options.replace ? navigator.replace : navigator.push)(
+          (!!options.replace ? router.replace : router.push)(
             path,
             options.state
           );
@@ -150,7 +133,7 @@ export function useNavigate(): INavigateFunction {
         );
       }
     },
-    [navigator, pathname]
+    [router, pathname]
   );
 
   return navigate;
@@ -232,7 +215,7 @@ export function useRoutes_(
 
   basename = basename ? joinPaths([parentPathname, basename]) : parentPathname;
 
-  let location = useLocation() as Location;
+  let { location } = useRouter();
   let matches = React.useMemo(() => matchRoutes(routes, location, basename), [
     location,
     routes,
@@ -259,4 +242,16 @@ export function useRoutes_(
   }, null as React.ReactElement | null);
 
   return element;
+}
+
+/**
+ * Returns the current router object
+ */
+export function useRouter(): IRouter {
+  invariant(
+    useInRouterContext(),
+    `useRouter() may be used only in the context of a <Router> component.`
+  );
+
+  return React.useContext(LocationContext).router as IRouter;
 }

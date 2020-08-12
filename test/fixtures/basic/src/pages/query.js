@@ -1,3 +1,6 @@
-import { router } from '@shuvi/app';
+import { useRouter } from '@shuvi/app';
 
-export default () => <div id="query">{JSON.stringify(router.query)}</div>;
+export default () => {
+  const router = useRouter();
+  return <div id="query">{JSON.stringify(router.query)}</div>;
+};

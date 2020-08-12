@@ -1,18 +1,15 @@
 import {
-  INavigator,
   IParams,
-  Action,
   InitialEntry,
-  Location,
   State,
-  To
+  To,
+  IRouteObject as RouteObject,
+  IRouter
 } from '@shuvi/router';
 
 export interface ILocationContextObject {
-  action?: Action;
-  location?: Location;
-  navigator?: INavigator;
   static: boolean;
+  router: IRouter;
 }
 
 export interface IRouteContextObject {
@@ -44,11 +41,9 @@ export interface IRouteProps {
 }
 
 export interface IRouterProps {
-  action?: Action;
   children?: React.ReactNode;
-  location: Location;
-  navigator: INavigator;
   static?: boolean;
+  router: IRouter;
 }
 
 export interface IRoutesProps {
@@ -64,16 +59,7 @@ export interface INavigateFunction {
   (delta: number): void;
 }
 
-/**
- * A route object represents a logical route, with (optionally) its child
- * routes organized in a tree-like structure.
- */
-export interface IRouteObject {
-  caseSensitive: boolean;
-  children?: IRouteObject[];
-  element: React.ReactNode;
-  path: string;
-}
+export type IRouteObject = RouteObject<React.ReactNode>;
 
 /**
  * A "partial route" object is usually supplied by the user and may omit

@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/router-react",
-  "version": "0.0.1-beta.48",
+  "version": "0.0.1-beta.50",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -15,7 +15,9 @@
     "lib"
   ],
   "scripts": {
-    "dev": "tsc -p tsconfig.build.json -w",
+    "dev": "run-p watch:*",
+    "watch:esm": "tsc -p tsconfig.build.esm.json -w",
+    "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
     "prebuild": "rimraf lib",
     "build": "run-p build:*",
     "build:esm": "tsc -p tsconfig.build.esm.json",
@@ -25,7 +27,7 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/router": "^0.0.1-beta.48"
+    "@shuvi/router": "^0.0.1-beta.50"
   },
   "devDependencies": {
     "@types/react": "^16.9.43",

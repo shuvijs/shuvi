@@ -1,6 +1,5 @@
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import { DevMiddleware } from './devMiddleware';
-import { runtime } from '../runtime';
 import {
   IIncomingMessage,
   IServerResponse,
@@ -9,6 +8,7 @@ import {
 } from '../server';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
+import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
@@ -51,10 +51,15 @@ export class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const routeModule = runtime
-      .matchRoutes(this._api.getRoutes(), pathname)
-      .map(m => `${m.route.component}?${ROUTE_RESOURCE_QUERYSTRING}`);
-    return this._activateModules(routeModule);
+    const matchedRoutes = matchRoutes(this._api.getRoutes(), pathname);
+
+    const modulesToActivate = matchedRoutes
+      .map(({ route: { component } }) =>
+        component ? `${component}?${ROUTE_RESOURCE_QUERYSTRING}` : ''
+      )
+      .filter(Boolean);
+
+    return this._activateModules(modulesToActivate);
   }
 
   private async _activateModules(modules: string[]): Promise<void> {
