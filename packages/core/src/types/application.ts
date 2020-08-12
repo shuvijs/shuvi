@@ -1,11 +1,17 @@
 import { Hookable } from '@shuvi/hooks';
 import { IRoute } from './route';
 
+export type IError = 'notFound' | string | Error;
+
 export interface IRenderOptions<CompType = any> {
   AppComponent: CompType;
   routes: IRoute[];
   appContext: Record<string, any>;
 }
+
+export type IRenderErrorOptions = Pick<IRenderOptions, 'appContext'> & {
+  error: IError;
+};
 
 export type IRerenderConfig = {
   AppComponent?: any;

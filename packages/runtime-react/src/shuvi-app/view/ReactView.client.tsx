@@ -11,6 +11,8 @@ import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { createRedirector } from '../utils/createRedirector';
 import { IReactClientView } from '../types';
+import ErrorPage from '@shuvi/app/core/error';
+import ClientErrorBoundary from '../ClientErrorBoundary';
 
 const headManager = new HeadManager();
 
@@ -81,18 +83,61 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <Router router={this._router}>
-        <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer
-            routes={routes}
-            routeProps={routeProps}
-            appContext={appContext}
-          >
-            <TypedAppComponent {...appProps} />
-          </AppContainer>
-        </HeadManagerContext.Provider>
-      </Router>
+      <ClientErrorBoundary
+        onError={error => {
+          this.renderError({
+            appContainer,
+            appContext,
+            appData,
+            error
+          });
+        }}
+      >
+        <Router router={this._router}>
+          <HeadManagerContext.Provider value={headManager.updateHead}>
+            <AppContainer
+              routes={routes}
+              routeProps={routeProps}
+              appContext={appContext}
+            >
+              <TypedAppComponent {...appProps} />
+            </AppContainer>
+          </HeadManagerContext.Provider>
+        </Router>
+      </ClientErrorBoundary>
     );
+
+    if (ssr && isInitialRender) {
+      ReactDOM.hydrate(root, appContainer);
+      this._isInitialRender = false;
+    } else {
+      ReactDOM.render(root, appContainer);
+    }
+  };
+  renderError: IReactClientView['renderError'] = async ({
+    appContainer,
+    appData,
+    error,
+    appContext
+  }) => {
+    const { _history: history, _isInitialRender: isInitialRender } = this;
+
+    let { ssr } = appData;
+    let { appProps } = appData;
+
+    if (!ssr) {
+      if (ErrorPage.getInitialProps) {
+        const { pathname } = history.location;
+        appProps = await ErrorPage.getInitialProps({
+          isServer: false,
+          error,
+          pathname,
+          appContext
+        });
+      }
+    }
+
+    const root = <ErrorPage {...appProps} />;
 
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);

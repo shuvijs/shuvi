@@ -15,13 +15,32 @@ const app = create(
     async render({ appContext, AppComponent, routes }) {
       const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
 
-      view.renderApp({
-        AppComponent: AppComponent,
-        routes,
-        appData,
-        appContainer,
-        appContext
-      });
+      try {
+        if (appData.hasError) {
+          view.renderError({
+            appContainer,
+            appContext,
+            appData,
+            error: '' // getInitialProps would not be run.
+          });
+        } else {
+          view.renderApp({
+            AppComponent: AppComponent,
+            routes,
+            appData,
+            appContainer,
+            appContext
+          });
+        }
+      } catch (error) {
+        // Tay: This is not used by React, because React doesn't throw error during render. I'm not sure whether Vue would need this as well.
+        view.renderError({
+          appContainer,
+          appContext,
+          appData,
+          error
+        });
+      }
     }
   }
 );

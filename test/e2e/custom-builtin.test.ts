@@ -36,7 +36,8 @@ describe('Custom app.js', () => {
 describe('[SPA] Custom app', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-app', {
-      ssr: false
+      ssr: false,
+      router: { history: 'browser' }
     });
   });
   afterAll(async () => {
@@ -97,9 +98,9 @@ describe('Custom document.js', () => {
   });
 });
 
-describe('Custom 404 page', () => {
+describe('Custom Error page', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('custom-404');
+    ctx = await launchFixture('custom-error');
   });
   afterAll(async () => {
     await ctx.close();
@@ -110,11 +111,12 @@ describe('Custom 404 page', () => {
     jest.resetModules();
   });
 
-  test('should work', async () => {
+  test('should show custom-404', async () => {
     page = await ctx.browser.page(ctx.url('/none-exist-page'));
 
     expect(await page.$text('#custom-404')).toBe('404');
 
+    expect(page.statusCode).toBe(404);
     await page.shuvi.navigate('/');
     await page.waitForSelector('#index');
     expect(await page.$text('#index')).toBe('Index Page');
@@ -122,6 +124,62 @@ describe('Custom 404 page', () => {
     await page.shuvi.navigate('/none-exist-page');
     await page.waitForSelector('#custom-404');
     expect(await page.$text('#custom-404')).toBe('404');
+  });
+
+  test('should show custom-500', async () => {
+    page = await ctx.browser.page(ctx.url('/throwErrorInRender'));
+
+    expect(await page.$text('#custom-500')).toBe('500');
+    expect(page.statusCode).toBe(500);
+
+    // In a 500 error, we cannot navigate to other pages
+    await page.close();
+    page = await ctx.browser.page(ctx.url('/'));
+
+    await page.waitForSelector('#index');
+    expect(await page.$text('#index')).toBe('Index Page');
+
+    await page.shuvi.navigate('/throwErrorInRender');
+    await page.waitForSelector('#custom-500');
+    expect(await page.$text('#custom-500')).toBe('500');
+  });
+});
+
+describe('[SPA] Custom Error page', () => {
+  beforeAll(async () => {
+    ctx = await launchFixture('custom-error', {
+      ssr: false,
+      router: { history: 'browser' }
+    });
+  });
+  afterAll(async () => {
+    await ctx.close();
+  });
+  afterEach(async () => {
+    await page.close();
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
+  });
+
+  test('should show custom-404', async () => {
+    page = await ctx.browser.page(ctx.url('/none-exist-page'));
+    await page.waitForSelector('#custom-404');
+
+    expect(await page.$text('#custom-404')).toBe('404');
+  });
+
+  test('should show custom-500 when throw error in render', async () => {
+    page = await ctx.browser.page(ctx.url('/throwErrorInRender'));
+    await page.waitForSelector('#custom-500');
+
+    expect(await page.$text('#custom-500')).toBe('500');
+  });
+
+  test('should show custom-500 when throw error in getInitialProps', async () => {
+    page = await ctx.browser.page(ctx.url('/throwErrorInGetInitialProps'));
+    await page.waitForSelector('#custom-500');
+
+    expect(await page.$text('#custom-500')).toBe('500');
   });
 });
 

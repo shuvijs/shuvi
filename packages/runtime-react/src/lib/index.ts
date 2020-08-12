@@ -70,8 +70,8 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
     return resolveAppFile('App');
   }
 
-  get404ModulePath(): string {
-    return resolveAppFile('page404');
+  getErrorModulePath(): string {
+    return resolveAppFile('errorPage');
   }
 }
 

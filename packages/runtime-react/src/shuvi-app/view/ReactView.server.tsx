@@ -9,6 +9,7 @@ import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { createRedirector } from '../utils/createRedirector';
+import ErrorPage from '@shuvi/app/core/error';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -165,6 +166,44 @@ export class ReactServerView implements IReactServerView {
       htmlAttrs: {},
       headBeginTags: [...head, ...preloadDynamicChunks],
       headEndTags: [...styles],
+      bodyBeginTags: [],
+      bodyEndTags: []
+    };
+  };
+
+  renderError: IReactServerView['renderError'] = async ({
+    url,
+    error,
+    appContext
+  }) => {
+    let head: IHtmlTag[];
+
+    let props = {};
+    if (ErrorPage && ErrorPage.getInitialProps) {
+      props = await ErrorPage.getInitialProps!({
+        isServer: true,
+        pathname: url,
+        appContext,
+        error
+      });
+    }
+
+    const htmlContent = renderToString(<ErrorPage {...props} />);
+
+    head = Head.rewind() || [];
+
+    const appData: IReactAppData = {
+      appProps: props,
+      routeProps: [],
+      dynamicIds: []
+    };
+
+    return {
+      appData,
+      appHtml: htmlContent,
+      htmlAttrs: {},
+      headBeginTags: [...head],
+      headEndTags: [],
       bodyBeginTags: [],
       bodyEndTags: []
     };

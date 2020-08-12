@@ -65,10 +65,10 @@ export async function setupApp(api: Api) {
   ]);
 
   api.addAppFile(
-    File.moduleProxy('404.js', {
+    File.moduleProxy('error.js', {
       source: [
-        ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
-        runtime.get404ModulePath()
+        ...withExts(api.resolveUserFile('error'), moduleFileExtensions),
+        runtime.getErrorModulePath()
       ],
       defaultExport: true
     }),

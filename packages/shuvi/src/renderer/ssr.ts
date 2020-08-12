@@ -13,6 +13,7 @@ import { IRenderDocumentOptions } from './types';
 import IData = Runtime.IData;
 import IAppData = Runtime.IAppData;
 import IHtmlTag = Runtime.IHtmlTag;
+import { matchRoutes } from '@shuvi/router/lib/';
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps({
@@ -28,14 +29,37 @@ export class SsrRenderer extends BaseRenderer {
       server: { view }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
-    const result = await view.renderApp({
-      url,
-      AppComponent,
-      routes,
-      appContext,
-      manifest,
-      getAssetPublicUrl
-    });
+    let result, hasError;
+
+    try {
+      let matched = matchRoutes(routes, url);
+
+      if (matched?.length === 1 && matched[0].route.name === 'notFound') {
+        appContext.statusCode = 404;
+      }
+
+      result = await view.renderApp({
+        url,
+        AppComponent,
+        routes,
+        appContext,
+        manifest,
+        getAssetPublicUrl
+      });
+    } catch (error) {
+      hasError = true;
+
+      appContext.statusCode = 500;
+
+      result = await view.renderError({
+        url,
+        error,
+        appContext,
+        manifest,
+        getAssetPublicUrl
+      });
+    }
+
     if (result.redirect) {
       return {
         $type: 'redirect',
@@ -59,7 +83,8 @@ export class SsrRenderer extends BaseRenderer {
     const appData: IAppData = {
       ...result.appData,
       pageData,
-      ssr: api.config.ssr
+      ssr: api.config.ssr,
+      hasError
     };
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 

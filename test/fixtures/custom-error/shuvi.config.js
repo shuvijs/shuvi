@@ -1,3 +1,3 @@
 module.exports = {
-  ssr: true,
+  ssr: true
 };
