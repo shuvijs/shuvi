@@ -52,7 +52,7 @@ describe('useParams', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/blog/react-router']}>
+        <Router initialEntries={['/blog/shuvi-router']}>
           <Routes>
             <Route path="/blog/:slug" element={<BlogPost />} />
           </Routes>
@@ -61,7 +61,7 @@ describe('useParams', () => {
 
       expect(typeof params).toBe('object');
       expect(params).toMatchObject({
-        slug: 'react-router'
+        slug: 'shuvi-router'
       });
     });
 
@@ -84,7 +84,7 @@ describe('useParams', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/users/mjackson/courses/react-router']}>
+          <Router initialEntries={['/users/mjackson/courses/shuvi-router']}>
             <Routes>
               <Route path="users/:username" element={<UserDashboard />}>
                 <Route path="courses/:course" element={<Course />} />
@@ -96,7 +96,7 @@ describe('useParams', () => {
         expect(typeof params).toBe('object');
         expect(params).toMatchObject({
           username: 'mjackson',
-          course: 'react-router'
+          course: 'shuvi-router'
         });
       });
     });

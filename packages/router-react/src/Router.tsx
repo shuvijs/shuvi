@@ -1,6 +1,7 @@
+//
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Action } from '@shuvi/router';
+import { Action, Update, IRouter } from '@shuvi/router';
 import { LocationContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
@@ -16,10 +17,8 @@ import { IRouterProps } from './types';
  */
 export function Router({
   children = null,
-  action = Action.Pop,
-  location,
-  navigator,
-  static: staticProp = false
+  static: staticProp = false,
+  router
 }: IRouterProps): React.ReactElement {
   invariant(
     !useInRouterContext(),
@@ -27,27 +26,38 @@ export function Router({
       ` You never need more than one.`
   );
 
-  return (
-    <LocationContext.Provider
-      children={children}
-      value={{ action, location, navigator, static: staticProp }}
-    />
+  let [updatedRouter, dispatch] = React.useReducer(
+    (previousRouter: IRouter, action: Update) => ({
+      ...previousRouter,
+      ...action
+    }),
+    {
+      ...router,
+      action: router.action || Action.Pop,
+      location: router.location
+    }
   );
+
+  // @ts-ignore ignoring because of window
+  if (typeof window !== 'undefined') {
+    React.useLayoutEffect(() => router.onChange(dispatch), [router]);
+  }
+
+  let contextVal = React.useMemo(() => {
+    return {
+      static: staticProp,
+      router: updatedRouter
+    };
+  }, [staticProp, updatedRouter]);
+
+  return <LocationContext.Provider children={children} value={contextVal} />;
 }
 
 if (__DEV__) {
   Router.displayName = 'Router';
   Router.propTypes = {
     children: PropTypes.node,
-    action: PropTypes.oneOf(['POP', 'PUSH', 'REPLACE']),
-    location: PropTypes.object.isRequired,
-    navigator: PropTypes.shape({
-      createHref: PropTypes.func.isRequired,
-      push: PropTypes.func.isRequired,
-      replace: PropTypes.func.isRequired,
-      go: PropTypes.func.isRequired,
-      block: PropTypes.func.isRequired
-    }).isRequired,
+    router: PropTypes.object,
     static: PropTypes.bool
   };
 }

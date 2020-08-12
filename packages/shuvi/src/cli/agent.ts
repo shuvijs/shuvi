@@ -21,7 +21,7 @@ if (process.env.SHUVI__SECRET_FIX_LOCAL_RESOLVE) {
     let redirectdRequest = request;
     // make sure these packages are resolved into project/node_modules/
     // this only works on server side
-    if (['react', 'react-dom', 'react-router-dom'].includes(request)) {
+    if (['react', 'react-dom'].includes(request)) {
       redirectdRequest = resolveNodeModule(request);
     }
 

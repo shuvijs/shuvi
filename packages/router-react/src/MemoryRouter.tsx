@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { MemoryHistory, createMemoryHistory, Update } from '@shuvi/router';
+import { createMemoryHistory, IRouter, createRouter } from '@shuvi/router';
 import { Router } from './Router';
 import { __DEV__ } from './constants';
 import { IMemoryRouterProps } from './types';
@@ -13,30 +13,14 @@ export function MemoryRouter({
   initialEntries,
   initialIndex
 }: IMemoryRouterProps): React.ReactElement {
-  let historyRef = React.useRef<MemoryHistory>();
-  if (historyRef.current == null) {
-    historyRef.current = createMemoryHistory({ initialEntries, initialIndex });
+  let routerRef = React.useRef<IRouter>();
+  if (routerRef.current == null) {
+    routerRef.current = createRouter(
+      createMemoryHistory({ initialEntries, initialIndex })
+    );
   }
 
-  let history = historyRef.current;
-  let [state, dispatch] = React.useReducer(
-    (_: Update, action: Update) => action,
-    {
-      action: history.action,
-      location: history.location
-    }
-  );
-
-  React.useLayoutEffect(() => history.listen(dispatch), [history]);
-
-  return (
-    <Router
-      children={children}
-      action={state.action}
-      location={state.location}
-      navigator={history}
-    />
-  );
+  return <Router children={children} router={routerRef.current} />;
 }
 
 if (__DEV__) {

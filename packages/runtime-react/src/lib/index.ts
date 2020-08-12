@@ -1,10 +1,8 @@
 import React from 'react';
-import { matchRoutes as reactRouterMatchRoutes } from 'react-router-config';
 import { IApi, Runtime, APIHooks } from '@shuvi/types';
 import { resolveAppFile, resolveDep } from './paths';
 import { config as configBundler } from './bundler/config';
 
-import IRouteBase = Runtime.IRouteBase;
 import RouteConfig = Runtime.IRouteConfig;
 
 class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
@@ -23,10 +21,9 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       local: 'dynamic'
     });
     api.addAppExport(
-      'react-router-dom',
-      '{ Link, useLocation, useParams, useHistory, useRouteMatch, withRouter }'
+      '@shuvi/router-react',
+      '{ Link, useParams, useRouter, Outlet }'
     );
-
     configBundler(api);
 
     // add necessary imports
@@ -52,11 +49,6 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
 })`.trim();
   }
 
-  // TODO: move this to core
-  matchRoutes(routes: IRouteBase[], pathname: string): Runtime.IMatchedRoute[] {
-    return reactRouterMatchRoutes(routes, pathname) as Runtime.IMatchedRoute[];
-  }
-
   getViewModulePath(): string {
     let {
       ssr,
@@ -80,10 +72,6 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
 
   get404ModulePath(): string {
     return resolveAppFile('page404');
-  }
-
-  getRouterModulePath(): string {
-    return resolveAppFile('router/router');
   }
 }
 

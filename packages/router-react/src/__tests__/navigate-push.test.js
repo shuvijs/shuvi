@@ -6,9 +6,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { Router, Routes, Route, useNavigate } from '..';
+import { createRouter } from '@shuvi/router/src';
 
-function createMockHistory(initialLocation) {
-  return {
+function createMockRouter(initialLocation) {
+  return createRouter({
     action: 'POP',
     location: initialLocation,
     createHref() {},
@@ -19,7 +20,7 @@ function createMockHistory(initialLocation) {
     forward() {},
     listen() {},
     block() {}
-  };
+  });
 }
 
 describe('navigate', () => {
@@ -35,7 +36,7 @@ describe('navigate', () => {
   });
 
   describe('by default', () => {
-    it('calls history.push()', () => {
+    it('calls router.push()', () => {
       function Home() {
         let navigate = useNavigate();
 
@@ -55,20 +56,16 @@ describe('navigate', () => {
         return <h1>About</h1>;
       }
 
-      let history = createMockHistory({
+      let router = createMockRouter({
         pathname: '/home',
         search: '',
         hash: ''
       });
-      let spy = jest.spyOn(history, 'push');
+      let spy = jest.spyOn(router, 'push');
 
       act(() => {
         ReactDOM.render(
-          <Router
-            action={history.action}
-            location={history.location}
-            navigator={history}
-          >
+          <Router router={router}>
             <Routes>
               <Route path="home" element={<Home />} />
               <Route path="about" element={<About />} />
@@ -90,7 +87,7 @@ describe('navigate', () => {
   });
 
   describe('with { replace: true }', () => {
-    it('calls history.replace()', () => {
+    it('calls router.replace()', () => {
       function Home() {
         let navigate = useNavigate();
 
@@ -110,20 +107,16 @@ describe('navigate', () => {
         return <h1>About</h1>;
       }
 
-      let history = createMockHistory({
+      let router = createMockRouter({
         pathname: '/home',
         search: '',
         hash: ''
       });
-      let spy = jest.spyOn(history, 'replace');
+      let spy = jest.spyOn(router, 'replace');
 
       act(() => {
         ReactDOM.render(
-          <Router
-            action={history.action}
-            location={history.location}
-            navigator={history}
-          >
+          <Router router={router}>
             <Routes>
               <Route path="home" element={<Home />} />
               <Route path="about" element={<About />} />

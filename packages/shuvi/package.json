@@ -1,6 +1,6 @@
 {
   "name": "shuvi",
-  "version": "0.0.1-beta.48",
+  "version": "0.0.1-beta.50",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -25,14 +25,14 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/core": "^0.0.1-beta.48",
+    "@shuvi/core": "^0.0.1-beta.50",
     "@shuvi/hooks": "0.0.1-beta.38",
-    "@shuvi/runtime-core": "^0.0.1-beta.48",
-    "@shuvi/runtime-react": "^0.0.1-beta.48",
-    "@shuvi/shared": "^0.0.1-beta.48",
-    "@shuvi/toolpack": "^0.0.1-beta.48",
-    "@shuvi/types": "^0.0.1-beta.48",
-    "@shuvi/utils": "^0.0.1-beta.48",
+    "@shuvi/runtime-core": "^0.0.1-beta.50",
+    "@shuvi/runtime-react": "^0.0.1-beta.50",
+    "@shuvi/shared": "^0.0.1-beta.50",
+    "@shuvi/toolpack": "^0.0.1-beta.50",
+    "@shuvi/types": "^0.0.1-beta.50",
+    "@shuvi/utils": "^0.0.1-beta.50",
     "cli-highlight": "^2.1.4",
     "commander": "5.1.0",
     "connect": "3.7.0",
@@ -44,7 +44,7 @@
     "fs-extra": "8.1.0",
     "http-proxy-middleware": "1.0.3",
     "send": "0.17.1",
-    "webpack": "4.41.2",
+    "webpack": "4.44.1",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "2.25.0"
   },

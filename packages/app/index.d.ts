@@ -9,6 +9,4 @@ export const App: any;
 
 export const getRuntimeConfig: () => Record<string, string>;
 
-export const router: Runtime.IRouter;
-
 export const Head: React.FC;
