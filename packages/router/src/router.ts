@@ -2,6 +2,7 @@ import { History, Location, Listener } from './history';
 
 export interface IRouter {
   query: History['location']['query'];
+  pathname: string;
   location: Location;
   action: History['action'];
   push: History['push'];
@@ -9,6 +10,7 @@ export interface IRouter {
   go: History['go'];
   back: History['back'];
   block: History['block'];
+  // @internal
   createHref: History['createHref'];
   forward(): void;
   onChange: (listener: Listener) => void;
@@ -18,6 +20,9 @@ export const createRouter = (history: History): IRouter => {
   return {
     get query() {
       return history.location.query;
+    },
+    get pathname() {
+      return history.location.pathname;
     },
     get location() {
       return history.location;

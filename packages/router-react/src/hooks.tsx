@@ -9,7 +9,6 @@ import {
   IParams,
   IPathMatch,
   Blocker,
-  Location,
   Path,
   State,
   To,
@@ -69,6 +68,7 @@ export function useHref(to: To): string {
   let router = React.useContext(LocationContext).router;
   let path = useResolvedPath(to);
 
+  // @ts-ignore
   return router.createHref(path);
 }
 
@@ -90,8 +90,8 @@ export function useMatch(pattern: IPathPattern): IPathMatch | null {
     `useMatch() may be used only in the context of a <Router> component.`
   );
 
-  let { location } = useRouter();
-  return matchPath(pattern, location.pathname);
+  let { pathname } = useRouter();
+  return matchPath(pattern, pathname);
 }
 
 /**
