@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/utils",
-  "version": "0.0.1-beta.48",
+  "version": "0.0.1-beta.50",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -25,7 +25,7 @@
     "debug": "4.1.1",
     "resolve": "1.15.1",
     "tiny-invariant": "1.1.0",
-    "watchpack": "2.0.0-beta.13"
+    "watchpack": "2.0.0-beta.14"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",

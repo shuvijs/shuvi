@@ -191,9 +191,11 @@ class Api extends Hookable implements IApi {
       componentDir: this.paths.pagesDir
     });
     routes.push({
+      path: '*',
       component: this.resolveAppFile('core', '404'),
       name: '404'
     });
+
     this._routes = routes;
 
     const serialized = serializeRoutes(routes, {
@@ -204,6 +206,7 @@ class Api extends Hookable implements IApi {
         );
       }
     });
+
     let content = `export default ${serialized}`;
     content = await this.callHook<APIHooks.IHookAppRoutesFile>({
       name: 'app:routesFile',

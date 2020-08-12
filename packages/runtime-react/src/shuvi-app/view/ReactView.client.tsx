@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from 'react-router-dom';
+import { Router } from '@shuvi/router-react';
 import qs from 'querystring';
+import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
-import { History } from '../router/history';
-import { setHistory } from '../router/router';
-import { matchRoutes } from '../router/matchRoutes';
+import { History, createRouter, IRouter } from '@shuvi/router';
 import AppContainer from '../AppContainer';
 import { IRoute } from '../types';
 import { HeadManager, HeadManagerContext } from '../head';
@@ -15,26 +14,32 @@ import { IReactClientView } from '../types';
 
 const headManager = new HeadManager();
 
-type HistoryCreator = (options: { basename: string }) => History;
+type HistoryCreator = () => History;
 
 function getRouteParams(routes: IRoute[], pathname: string) {
   const matchedRoutes = matchRoutes(routes, pathname);
   const params: Runtime.IParams = {};
   for (let index = 0; index < matchedRoutes.length; index++) {
-    const { match } = matchedRoutes[index];
-    Object.assign(params, match.params);
+    const matchedRoute = matchedRoutes[index];
+    Object.assign(params, matchedRoute.params);
   }
   return params;
 }
 
 export class ReactClientView implements IReactClientView {
   private _history: History;
+  private _router: IRouter;
   private _isInitialRender: boolean = false;
 
   constructor(historyCreator: HistoryCreator) {
-    // TODO: config basename
-    this._history = historyCreator({ basename: '/' });
-    setHistory(this._history);
+    this._history = historyCreator();
+    this._router = createRouter(this._history);
+    // For e2e test
+    if ((window as any).__SHUVI) {
+      (window as any).__SHUVI.router = this._router;
+    } else {
+      (window as any).__SHUVI = { router: this._router };
+    }
   }
 
   renderApp: IReactClientView['renderApp'] = async ({
@@ -76,7 +81,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <Router history={history}>
+      <Router router={this._router}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <AppContainer
             routes={routes}

@@ -7,11 +7,12 @@ import renderRoutes from '../renderRoutes';
 import { IRoute } from '@shuvi/types/src/runtime';
 import { renderWithRouter } from './utils';
 import { ReactTestRenderer } from 'react-test-renderer';
+import { Outlet } from '@shuvi/router-react';
 
-const createDummyComponent = (text: string): React.FC => ({ children }) => (
+const createDummyComponent = (text: string): React.FC => () => (
   <div>
     {text}
-    {children}
+    <Outlet />
   </div>
 );
 
@@ -54,14 +55,12 @@ describe('renderRoutes', () => {
       {
         id: '0001',
         component: HOME_COMPONENT,
-        exact: true,
         path: '/'
       },
       {
         id: '0002',
         component: ABOUT_COMPONENT,
-        path: '/about',
-        exact: true
+        path: '/about'
       }
     ];
 
@@ -109,26 +108,22 @@ describe('renderRoutes', () => {
       {
         id: '0001',
         component: HOME_COMPONENT,
-        exact: true,
         path: '/'
       },
       {
         id: '0002',
         component: ABOUT_COMPONENT,
         path: '/about',
-        exact: false,
-        routes: [
+        children: [
           {
             id: '0003',
-            exact: true,
             component: HI_COMPONENT,
-            path: '/about/hi'
+            path: 'hi'
           },
           {
             id: '0004',
-            exact: true,
             component: TEST_COMPONENT,
-            path: '/about/test'
+            path: 'test'
           }
         ]
       }
@@ -207,32 +202,27 @@ describe('renderRoutes', () => {
       {
         id: '0001',
         component: HOME_COMPONENT,
-        exact: true,
         path: '/'
       },
       {
         id: '0002',
         component: ABOUT_COMPONENT,
         path: '/about',
-        exact: false,
-        routes: [
+        children: [
           {
             id: '0003',
-            exact: false,
             component: HI_COMPONENT,
-            path: '/about/hi',
-            routes: [
+            path: 'hi',
+            children: [
               {
                 id: '0004',
-                exact: false,
                 component: COOL_COMPONENT,
-                path: '/about/hi/cool',
-                routes: [
+                path: 'cool',
+                children: [
                   {
                     id: '0005',
-                    exact: false,
                     component: SHUVI_COMPONENT,
-                    path: '/about/hi/cool/shuvi'
+                    path: 'shuvi'
                   }
                 ]
               }
