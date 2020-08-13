@@ -37,7 +37,7 @@ function renderRoutes(
                   }
                 })
               : null;
-            let { component: Component } = route;
+            let { component: Component, ...restRoute } = route;
             if (Component) {
               if (route.name === '404') {
                 appContext.statusCode = 404;
@@ -49,6 +49,7 @@ function renderRoutes(
                 <TypedComponent
                   __appContext={appContext}
                   __initialProps={initialProps[route.id]}
+                  route={restRoute}
                   {...props}
                 >
                   {childRoutes}
