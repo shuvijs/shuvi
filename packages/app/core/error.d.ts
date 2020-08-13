@@ -1,9 +1,10 @@
 import { Runtime } from '@shuvi/types';
+import { IError } from '@shuvi/core';
 
 interface IErrorProps {
-  notFound: boolean;
+  error: IError;
 }
 
-declare const ErrorPage: Runtime.IErrorComponent<React.FC, IErrorProps>;
+declare const ErrorPage: Runtime.IErrorComponent<React.FC<IErrorProps>, any>;
 
 export default ErrorPage;

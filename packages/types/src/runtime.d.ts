@@ -112,7 +112,7 @@ export type IAppData<Data = {}> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
-  hasError?: boolean;
+  error?: string;
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -144,15 +144,11 @@ export interface IServerRendererOptions<CompType = any>
 
 export interface IServerErrorRendererOptions extends IRenderErrorOptions {
   url: string;
-  manifest: IManifest;
-  getAssetPublicUrl(path: string): string;
 }
 
 interface IView<
   RenderOption extends IRenderOptions = any,
-  RenderErrorOptions extends Pick<IRenderOptions, 'appContext'> & {
-    error: IError;
-  } = any,
+  RenderErrorOptions extends IRenderErrorOptions = any,
   RenderResult = void
 > {
   renderApp(options: RenderOption): RenderResult;
@@ -235,6 +231,8 @@ export interface IRuntime<CompType = unknown> {
   getAppModulePath(): string;
 
   getErrorModulePath(): string;
+
+  get404ModulePath(): string;
 
   getViewModulePath(): string;
 }

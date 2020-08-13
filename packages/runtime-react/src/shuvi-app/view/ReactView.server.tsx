@@ -177,8 +177,8 @@ export class ReactServerView implements IReactServerView {
     appContext
   }) => {
     let head: IHtmlTag[];
+    let props = { error };
 
-    let props = {};
     if (ErrorPage && ErrorPage.getInitialProps) {
       props = await ErrorPage.getInitialProps!({
         isServer: true,
@@ -188,7 +188,7 @@ export class ReactServerView implements IReactServerView {
       });
     }
 
-    const htmlContent = renderToString(<ErrorPage {...props} />);
+    const htmlContent = renderToString(<ErrorPage {...props} error={error} />);
 
     head = Head.rewind() || [];
 

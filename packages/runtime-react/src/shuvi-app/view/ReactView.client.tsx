@@ -31,7 +31,7 @@ function getRouteParams(routes: IRoute[], pathname: string) {
 export class ReactClientView implements IReactClientView {
   private _history: History;
   private _router: IRouter;
-  private _isInitialRender: boolean = false;
+  private _isInitialRender: boolean = true;
 
   constructor(historyCreator: HistoryCreator) {
     this._history = historyCreator();
@@ -83,16 +83,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <ClientErrorBoundary
-        onError={error => {
-          this.renderError({
-            appContainer,
-            appContext,
-            appData,
-            error
-          });
-        }}
-      >
+      <ClientErrorBoundary onError={appContext.error}>
         <Router router={this._router}>
           <HeadManagerContext.Provider value={headManager.updateHead}>
             <AppContainer
@@ -117,13 +108,11 @@ export class ReactClientView implements IReactClientView {
   renderError: IReactClientView['renderError'] = async ({
     appContainer,
     appData,
-    error,
-    appContext
+    appContext,
+    error
   }) => {
     const { _history: history, _isInitialRender: isInitialRender } = this;
-
-    let { ssr } = appData;
-    let { appProps } = appData;
+    let { ssr, appProps } = appData;
 
     if (!ssr) {
       if (ErrorPage.getInitialProps) {
@@ -137,7 +126,7 @@ export class ReactClientView implements IReactClientView {
       }
     }
 
-    const root = <ErrorPage {...appProps} />;
+    const root = <ErrorPage {...appProps} error={error} />;
 
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);

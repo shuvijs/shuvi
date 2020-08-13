@@ -13,7 +13,6 @@ import { IRenderDocumentOptions } from './types';
 import IData = Runtime.IData;
 import IAppData = Runtime.IAppData;
 import IHtmlTag = Runtime.IHtmlTag;
-import { matchRoutes } from '@shuvi/router/lib/';
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps({
@@ -29,15 +28,9 @@ export class SsrRenderer extends BaseRenderer {
       server: { view }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
-    let result, hasError;
+    let result;
 
     try {
-      let matched = matchRoutes(routes, url);
-
-      if (matched?.length === 1 && matched[0].route.name === 'notFound') {
-        appContext.statusCode = 404;
-      }
-
       result = await view.renderApp({
         url,
         AppComponent,
@@ -47,23 +40,18 @@ export class SsrRenderer extends BaseRenderer {
         getAssetPublicUrl
       });
     } catch (error) {
-      hasError = true;
-
-      appContext.statusCode = 500;
-
-      result = await view.renderError({
-        url,
-        error,
-        appContext,
-        manifest,
-        getAssetPublicUrl
-      });
+      appContext.error(error);
     }
 
-    if (result.redirect) {
+    // use error result if exist
+    if (appContext.error.result) {
+      result = await appContext.error.result;
+    }
+
+    if (result?.redirect) {
       return {
         $type: 'redirect',
-        ...result.redirect
+        ...result?.redirect
       } as const;
     }
 
@@ -81,25 +69,25 @@ export class SsrRenderer extends BaseRenderer {
       return acc;
     }, {});
     const appData: IAppData = {
-      ...result.appData,
+      ...result?.appData,
       pageData,
       ssr: api.config.ssr,
-      hasError
+      error: appContext.error.message
     };
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 
     const documentProps = {
-      htmlAttrs: { ...result.htmlAttrs },
+      htmlAttrs: { ...result?.htmlAttrs },
       headTags: [
-        ...(result.headBeginTags || []),
+        ...(result?.headBeginTags || []),
         ...mainAssetsTags.styles,
-        ...(result.headEndTags || [])
+        ...(result?.headEndTags || [])
       ],
       mainTags: [
         this._getInlineAppData(appData),
-        ...(result.mainBeginTags || []),
-        this._getAppContainerTag(result.appHtml),
-        ...(result.mainEndTags || [])
+        ...(result?.mainBeginTags || []),
+        this._getAppContainerTag(result?.appHtml),
+        ...(result?.mainEndTags || [])
       ],
       scriptTags: [
         tag(
@@ -107,9 +95,9 @@ export class SsrRenderer extends BaseRenderer {
           {},
           `${IDENTITY_SSR_RUNTIME_PUBLICPATH} = "${api.assetPublicPath}"`
         ),
-        ...(result.scriptBeginTags || []),
+        ...(result?.scriptBeginTags || []),
         ...mainAssetsTags.scripts,
-        ...(result.scriptEndTags || [])
+        ...(result?.scriptEndTags || [])
       ]
     };
 

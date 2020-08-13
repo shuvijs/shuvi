@@ -73,6 +73,10 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
   getErrorModulePath(): string {
     return resolveAppFile('errorPage');
   }
+
+  get404ModulePath(): string {
+    return resolveAppFile('page404');
+  }
 }
 
 export default new ReactRuntime();

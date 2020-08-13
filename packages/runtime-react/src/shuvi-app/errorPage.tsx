@@ -1,6 +1,7 @@
 import React from 'react';
 import { Head } from '@shuvi/app';
 import { Runtime } from '@shuvi/types';
+import { IError } from '@shuvi/core';
 
 const style = {
   container: {
@@ -26,14 +27,13 @@ const style = {
 } as const;
 
 interface IErrorProps {
-  notFound: boolean;
+  error: IError;
 }
 
-const ErrorPage: Runtime.IErrorComponent<
-  React.FC<IErrorProps>,
-  IErrorProps
-> = ({ notFound }) => {
-  if (notFound) {
+const ErrorPage: Runtime.IErrorComponent<React.FC<IErrorProps>> = ({
+  error
+}) => {
+  if (!error) {
     return (
       <div style={style.container}>
         <Head>
@@ -47,6 +47,7 @@ const ErrorPage: Runtime.IErrorComponent<
       </div>
     );
   }
+
   return (
     <div style={style.container}>
       <Head>
@@ -59,17 +60,6 @@ const ErrorPage: Runtime.IErrorComponent<
       </div>
     </div>
   );
-};
-
-// server will receive `error` object
-ErrorPage.getInitialProps = ({ error }) => {
-  if (error) {
-    console.log('Error in error.js:', error);
-  }
-
-  return {
-    notFound: !error
-  };
 };
 
 export default ErrorPage;
