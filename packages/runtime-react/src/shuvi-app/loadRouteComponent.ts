@@ -11,6 +11,7 @@ import RouteComponent = Runtime.IRouteComponent;
 type Data = Record<string, any>;
 
 export type IRouteProps = RouteComponentProps & {
+  route: Record<string, any>;
   __appContext: Data;
   __initialProps?: Data;
 };

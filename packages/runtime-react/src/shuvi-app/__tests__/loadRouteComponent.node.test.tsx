@@ -70,6 +70,7 @@ describe('loadRouteComponent [node]', () => {
         .map(([key]) => key)
     ).toMatchInlineSnapshot(`
       Array [
+        "route",
         "history",
         "location",
         "match",
