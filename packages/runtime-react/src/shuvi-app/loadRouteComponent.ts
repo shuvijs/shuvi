@@ -13,6 +13,7 @@ type Data = Record<string, any>;
 export type IRouteProps = RouteComponentProps & {
   __appContext: Data;
   __initialProps?: Data;
+  route: Omit<Runtime.IRoute, 'component'>;
 };
 
 function withoutInitialProps(
