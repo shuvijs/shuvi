@@ -9,7 +9,6 @@ import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { createRedirector } from '../utils/createRedirector';
-import ErrorPage from '@shuvi/app/core/error';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -174,13 +173,23 @@ export class ReactServerView implements IReactServerView {
   renderError: IReactServerView['renderError'] = async ({
     url,
     error,
-    appContext
+    appContext,
+    manifest,
+    ErrorComponent,
+    getAssetPublicUrl
   }) => {
-    let head: IHtmlTag[];
-    let props = { error };
+    const routerContext = {};
+    const history = createServerHistory({
+      basename: '',
+      location: url,
+      context: routerContext
+    });
 
-    if (ErrorPage && ErrorPage.getInitialProps) {
-      props = await ErrorPage.getInitialProps!({
+    let head: IHtmlTag[];
+    let errorProps = { error };
+
+    if (ErrorComponent && ErrorComponent.getInitialProps) {
+      errorProps = await ErrorComponent.getInitialProps!({
         isServer: true,
         pathname: url,
         appContext,
@@ -188,22 +197,78 @@ export class ReactServerView implements IReactServerView {
       });
     }
 
-    const htmlContent = renderToString(<ErrorPage {...props} error={error} />);
+    const loadableModules: string[] = [];
+    let htmlContent: string;
+    try {
+      htmlContent = renderToString(
+        <Router static router={createRouter(history)}>
+          <LoadableContext.Provider
+            value={moduleName => loadableModules.push(moduleName)}
+          >
+            <ErrorComponent {...errorProps} error={error} />
+          </LoadableContext.Provider>
+        </Router>
+      );
+    } finally {
+      head = Head.rewind() || [];
+    }
 
-    head = Head.rewind() || [];
+    const { loadble } = manifest;
+    const dynamicImportIdSet = new Set<string>();
+    const dynamicImportChunkSet = new Set<string>();
+    for (const mod of loadableModules) {
+      const manifestItem = loadble[mod];
+      if (manifestItem) {
+        manifestItem.files.forEach(file => {
+          dynamicImportChunkSet.add(file);
+        });
+        manifestItem.children.forEach(item => {
+          dynamicImportIdSet.add(item.id as string);
+        });
+      }
+    }
+
+    const preloadDynamicChunks: IHtmlTag<'link'>[] = [];
+    const styles: IHtmlTag<'link'>[] = [];
+    for (const file of dynamicImportChunkSet) {
+      if (/\.js$/.test(file)) {
+        preloadDynamicChunks.push({
+          tagName: 'link',
+          attrs: {
+            rel: 'preload',
+            href: getAssetPublicUrl(file),
+            as: 'script'
+          }
+        });
+      } else if (/\.css$/.test(file)) {
+        styles.push({
+          tagName: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: getAssetPublicUrl(file)
+          }
+        });
+      }
+    }
 
     const appData: IReactAppData = {
-      appProps: props,
       routeProps: [],
-      dynamicIds: []
+      dynamicIds: [...dynamicImportIdSet]
     };
+
+    if (errorProps) {
+      appData.appProps = errorProps;
+    }
+    if (dynamicImportIdSet.size) {
+      appData.dynamicIds = Array.from(dynamicImportIdSet);
+    }
 
     return {
       appData,
       appHtml: htmlContent,
       htmlAttrs: {},
-      headBeginTags: [...head],
-      headEndTags: [],
+      headBeginTags: [...head, ...preloadDynamicChunks],
+      headEndTags: [...styles],
       bodyBeginTags: [],
       bodyEndTags: []
     };

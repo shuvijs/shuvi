@@ -7,6 +7,7 @@ import puppeteer, {
 } from 'puppeteer-core';
 import qs from 'querystring';
 import ChromeDetector from './chrome';
+import { IRouter } from '@shuvi/router';
 
 export interface Page extends puppeteer.Page {
   [x: string]: any;
@@ -20,6 +21,7 @@ export interface Page extends puppeteer.Page {
   statusCode?: number;
   shuvi: {
     navigate(path: string, query?: Record<string, any>): Promise<any>;
+    invokeRouter: (action: keyof IRouter, arg?: any) => Promise<any>;
   };
 }
 
@@ -137,6 +139,7 @@ export default class Browser {
       );
 
     const getShuvi = () => page.evaluateHandle('window.__SHUVI');
+
     page.shuvi = {
       async navigate(path: string, query: Record<string, any> = {}) {
         const $shuvi = await getShuvi();
@@ -147,6 +150,15 @@ export default class Browser {
           ($shuvi, path: string) => $shuvi.router.push(path),
           $shuvi,
           path
+        );
+      },
+      async invokeRouter(action: keyof IRouter, arg: any) {
+        const $shuvi = await getShuvi();
+        return page.evaluate(
+          ($shuvi, action: keyof IRouter, arg) => $shuvi.router[action](arg),
+          $shuvi,
+          action,
+          arg
         );
       }
     };

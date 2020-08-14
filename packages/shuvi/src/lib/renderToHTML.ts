@@ -15,7 +15,11 @@ export async function renderToHTML({
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
   const renderer = new Renderer({ api });
-  const { application, view } = api.resources.server;
+  const {
+    server: { application, view },
+    clientManifest: manifest
+  } = api.resources;
+  const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
 
   const app = application.create(
     {
@@ -35,7 +39,10 @@ export async function renderToHTML({
           this.error.result = view.renderError({
             error,
             appContext: this,
-            url: req.url || '/'
+            url: req.url || '/',
+            ErrorComponent: app.ErrorComponent,
+            getAssetPublicUrl,
+            manifest
           });
         }
 

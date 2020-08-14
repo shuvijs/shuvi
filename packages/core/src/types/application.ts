@@ -9,8 +9,12 @@ export interface IRenderOptions<CompType = any> {
   appContext: Record<string, any>;
 }
 
-export type IRenderErrorOptions = Pick<IRenderOptions, 'appContext'> & {
+export type IRenderErrorOptions<CompType = any> = Pick<
+  IRenderOptions,
+  'appContext'
+> & {
   error: IError;
+  ErrorComponent: CompType;
 };
 
 export type IRerenderConfig = {
@@ -24,6 +28,7 @@ export interface IAppRenderFn {
 
 export interface IApplication extends Hookable {
   AppComponent: any;
+  ErrorComponent: any;
   routes: IRoute[];
   run(): Promise<{ [k: string]: any }>;
   rerender(config?: IRerenderConfig): Promise<void>;

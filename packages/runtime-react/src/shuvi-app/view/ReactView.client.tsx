@@ -11,7 +11,6 @@ import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { createRedirector } from '../utils/createRedirector';
 import { IReactClientView } from '../types';
-import ErrorPage from '@shuvi/app/core/error';
 import ClientErrorBoundary from '../ClientErrorBoundary';
 
 const headManager = new HeadManager();
@@ -109,29 +108,37 @@ export class ReactClientView implements IReactClientView {
     appContainer,
     appData,
     appContext,
+    ErrorComponent,
     error
   }) => {
     const { _history: history, _isInitialRender: isInitialRender } = this;
-    let { ssr, appProps } = appData;
+    let { ssr, appProps, dynamicIds } = appData;
 
-    if (!ssr) {
-      if (ErrorPage.getInitialProps) {
-        const { pathname } = history.location;
-        appProps = await ErrorPage.getInitialProps({
-          isServer: false,
-          error,
-          pathname,
-          appContext
-        });
-      }
+    if (ssr) {
+      await Loadable.preloadReady(dynamicIds);
+    } else if (ErrorComponent.getInitialProps) {
+      const { pathname } = history.location;
+      appProps = await ErrorComponent.getInitialProps({
+        isServer: false,
+        error,
+        pathname,
+        appContext
+      });
     }
 
-    const root = <ErrorPage {...appProps} error={error} />;
+    const root = (
+      <Router router={this._router}>
+        <HeadManagerContext.Provider value={headManager.updateHead}>
+          <ErrorComponent {...appProps} error={error} />
+        </HeadManagerContext.Provider>
+      </Router>
+    );
 
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
       this._isInitialRender = false;
     } else {
+      ReactDOM.unmountComponentAtNode(appContainer);
       ReactDOM.render(root, appContainer);
     }
   };

@@ -8,6 +8,7 @@ import view from '@shuvi/app/core/view';
 import { create } from '@shuvi/app/core/application';
 import { getAppData } from './helper/getAppData';
 import { IError } from '@shuvi/core';
+import { handleRouterError } from '@shuvi/router';
 
 const appData = getAppData();
 const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
@@ -16,17 +17,17 @@ const app = create(
   {
     pageData: appData.pageData || {},
     error: function (error: IError) {
+      handleRouterError((window as any).__SHUVI.router);
       if (error?.message === NOT_FOUND_ERROR_MESSAGE) {
         error = undefined;
-      } else {
-        console.error(error);
       }
 
       view.renderError({
         appContext: this,
         appContainer,
         appData,
-        error
+        error,
+        ErrorComponent: app.ErrorComponent
       });
     }
   },

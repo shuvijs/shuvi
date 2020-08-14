@@ -144,6 +144,8 @@ export interface IServerRendererOptions<CompType = any>
 
 export interface IServerErrorRendererOptions extends IRenderErrorOptions {
   url: string;
+  manifest: IManifest;
+  getAssetPublicUrl(path: string): string;
 }
 
 interface IView<
