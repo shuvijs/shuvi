@@ -4,6 +4,7 @@ import { File } from '@shuvi/react-fs';
 function ApplicationFile() {
   const app = `
 import AppComponent from "@shuvi/app/core/app";
+import ErrorComponent from "@shuvi/app/core/error";
 import routes from "@shuvi/app/core/routes";
 import initPlugins from "@shuvi/app/core/plugin";
 import { pluginRecord } from "@shuvi/app/core/plugins";
@@ -22,6 +23,7 @@ export function create(context, options) {
 
   app = new Application({
     AppComponent,
+    ErrorComponent,
     routes,
     context,
     render: options.render
@@ -41,8 +43,9 @@ if (module.hot) {
     if (!app) return;
 
     let AppComponent = require('@shuvi/app/core/app').default;
+    let ErrorComponent = require('@shuvi/app/core/error').default;
     let routes = require('@shuvi/app/core/routes').default;
-    app.rerender({routes,AppComponent});
+    app.rerender({routes,AppComponent,ErrorComponent});
   });
 }
 `;
@@ -53,6 +56,7 @@ import { Application } from "@shuvi/core/lib/app/app-modules/application";
 export function create(context, options) {
   return new Application({
     AppComponent: null,
+    ErrorComponent: null,
     routes: [],
     context,
     render: options.render
