@@ -169,4 +169,108 @@ export class ReactServerView implements IReactServerView {
       bodyEndTags: []
     };
   };
+
+  renderError: IReactServerView['renderError'] = async ({
+    url,
+    error,
+    appContext,
+    manifest,
+    ErrorComponent,
+    getAssetPublicUrl
+  }) => {
+    const routerContext = {};
+    const history = createServerHistory({
+      basename: '',
+      location: url,
+      context: routerContext
+    });
+
+    let head: IHtmlTag[];
+    let errorProps = { error };
+
+    if (ErrorComponent && ErrorComponent.getInitialProps) {
+      errorProps = await ErrorComponent.getInitialProps!({
+        isServer: true,
+        pathname: url,
+        appContext,
+        error
+      });
+    }
+
+    const loadableModules: string[] = [];
+    let htmlContent: string;
+    try {
+      htmlContent = renderToString(
+        <Router static router={createRouter(history)}>
+          <LoadableContext.Provider
+            value={moduleName => loadableModules.push(moduleName)}
+          >
+            <ErrorComponent {...errorProps} error={error} />
+          </LoadableContext.Provider>
+        </Router>
+      );
+    } finally {
+      head = Head.rewind() || [];
+    }
+
+    const { loadble } = manifest;
+    const dynamicImportIdSet = new Set<string>();
+    const dynamicImportChunkSet = new Set<string>();
+    for (const mod of loadableModules) {
+      const manifestItem = loadble[mod];
+      if (manifestItem) {
+        manifestItem.files.forEach(file => {
+          dynamicImportChunkSet.add(file);
+        });
+        manifestItem.children.forEach(item => {
+          dynamicImportIdSet.add(item.id as string);
+        });
+      }
+    }
+
+    const preloadDynamicChunks: IHtmlTag<'link'>[] = [];
+    const styles: IHtmlTag<'link'>[] = [];
+    for (const file of dynamicImportChunkSet) {
+      if (/\.js$/.test(file)) {
+        preloadDynamicChunks.push({
+          tagName: 'link',
+          attrs: {
+            rel: 'preload',
+            href: getAssetPublicUrl(file),
+            as: 'script'
+          }
+        });
+      } else if (/\.css$/.test(file)) {
+        styles.push({
+          tagName: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: getAssetPublicUrl(file)
+          }
+        });
+      }
+    }
+
+    const appData: IReactAppData = {
+      routeProps: [],
+      dynamicIds: [...dynamicImportIdSet]
+    };
+
+    if (errorProps) {
+      appData.appProps = errorProps;
+    }
+    if (dynamicImportIdSet.size) {
+      appData.dynamicIds = Array.from(dynamicImportIdSet);
+    }
+
+    return {
+      appData,
+      appHtml: htmlContent,
+      htmlAttrs: {},
+      headBeginTags: [...head, ...preloadDynamicChunks],
+      headEndTags: [...styles],
+      bodyBeginTags: [],
+      bodyEndTags: []
+    };
+  };
 }

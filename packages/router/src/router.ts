@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { History, Location, Listener } from './history';
 
 export interface IRouter {
@@ -13,7 +15,14 @@ export interface IRouter {
   // @internal
   createHref: History['createHref'];
   forward(): void;
-  onChange: (listener: Listener) => void;
+  onChange: (listener: Listener) => () => void;
+}
+
+export function handleRouterError(router: IRouter) {
+  const unsubscribe = router.onChange(({ location }) => {
+    window.location.href = location.pathname;
+    unsubscribe();
+  });
 }
 
 export const createRouter = (history: History): IRouter => {

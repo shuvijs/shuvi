@@ -1,41 +1,12 @@
-import React from 'react';
-// @ts-ignore
-import { Head } from '@shuvi/app';
+import { NOT_FOUND_ERROR_MESSAGE } from '@shuvi/shared/lib/constants';
+import { IRouteComponent } from '@shuvi/types/src/runtime';
 
-const style = {
-  container: {
-    color: '#000',
-    background: '#fff',
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif',
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  error: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  errorCode: {
-    borderRight: '1px solid rgba(0, 0, 0, 0.3)',
-    paddingRight: '20px',
-    marginRight: '20px',
-    fontSize: '24px',
-    fontWeight: 500
-  },
-  errorDesc: { fontSize: '16px', lineHeight: '1' }
-} as const;
+const Page404: IRouteComponent<React.FC, void> = () => {
+  return null;
+};
 
-export default function Page404() {
-  return (
-    <div style={style.container}>
-      <Head>
-        <title>404: Page not found</title>
-      </Head>
+Page404.getInitialProps = ({ appContext }) => {
+  appContext.error(new Error(NOT_FOUND_ERROR_MESSAGE));
+};
 
-      <div style={style.error}>
-        <div style={style.errorCode}>404</div>
-        <div style={style.errorDesc}>This page could not be found.</div>
-      </div>
-    </div>
-  );
-}
+export default Page404;
