@@ -40,10 +40,6 @@ function renderRoutesChildrens(
       );
     }
 
-    if (route.name === '404') {
-      appContext.statusCode = 404;
-    }
-
     return (
       <Route
         key={route.id || i}
