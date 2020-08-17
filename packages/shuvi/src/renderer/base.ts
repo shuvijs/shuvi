@@ -98,11 +98,10 @@ export abstract class BaseRenderer {
     } = this._resources;
 
     if (document.onDocumentProps) {
-      docProps = await document.onDocumentProps(
-        docProps,
-        appContext,
-        clientManifest
-      );
+      docProps = await document.onDocumentProps(docProps, appContext, {
+        manifest: clientManifest,
+        getAssetPublicUrl: this._api.getAssetPublicUrl
+      });
       invariant(
         typeof docProps === 'object',
         'onDocumentProps not returning object.'
