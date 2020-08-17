@@ -92,10 +92,17 @@ export abstract class BaseRenderer {
       appContext
     );
 
-    const { document } = this._resources.server;
+    const {
+      server: { document },
+      clientManifest
+    } = this._resources;
 
     if (document.onDocumentProps) {
-      docProps = await document.onDocumentProps(docProps, appContext);
+      docProps = await document.onDocumentProps(
+        docProps,
+        appContext,
+        clientManifest
+      );
       invariant(
         typeof docProps === 'object',
         'onDocumentProps not returning object.'

@@ -214,7 +214,8 @@ export interface IApplicationModule {
 export interface IDocumentModule {
   onDocumentProps(
     documentProps: IDocumentProps,
-    context: ISeverAppContext
+    context: ISeverAppContext,
+    manifest: IManifest
   ): Promise<IDocumentProps> | IDocumentProps;
   getTemplateData(
     context: ISeverAppContext
