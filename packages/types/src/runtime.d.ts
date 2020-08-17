@@ -215,7 +215,10 @@ export interface IDocumentModule {
   onDocumentProps(
     documentProps: IDocumentProps,
     context: ISeverAppContext,
-    manifest: IManifest
+    resources: {
+      manifest: IManifest;
+      getAssetPublicUrl: (...paths: string[]) => string;
+    }
   ): Promise<IDocumentProps> | IDocumentProps;
   getTemplateData(
     context: ISeverAppContext
