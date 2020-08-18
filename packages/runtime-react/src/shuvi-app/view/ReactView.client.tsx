@@ -1,16 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from '@shuvi/router-react';
-import qs from 'querystring';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
 import { History, createRouter, IRouter } from '@shuvi/router';
 import AppContainer from '../AppContainer';
-import { IRoute } from '../types';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { createRedirector } from '../utils/createRedirector';
-import { IReactClientView } from '../types';
+import { IReactClientView, IReactAppData, IRoute } from '../types';
 import ClientErrorBoundary from '../ClientErrorBoundary';
 
 const headManager = new HeadManager();
@@ -46,11 +44,12 @@ export class ReactClientView implements IReactClientView {
   renderApp: IReactClientView['renderApp'] = async ({
     appContainer,
     AppComponent,
+    ErrorComponent,
     appData,
     routes,
     appContext
   }) => {
-    const { _history: history, _isInitialRender: isInitialRender } = this;
+    const { _history: history } = this;
     const redirector = createRedirector();
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
@@ -60,10 +59,8 @@ export class ReactClientView implements IReactClientView {
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else if (TypedAppComponent.getInitialProps) {
-      const { pathname } = history.location;
-      const query = qs.parse(history.location.search.slice(1));
+      const { pathname, query } = history.location;
 
-      // todo: pass appContext
       appProps = await TypedAppComponent.getInitialProps({
         isServer: false,
         pathname,
@@ -81,65 +78,114 @@ export class ReactClientView implements IReactClientView {
       history.push(redirector.state!.path);
     }
 
+    this._renderWithContainer({
+      AppComponent,
+      ErrorComponent,
+      appContainer,
+      appData,
+      appContext,
+      routes,
+      children: (
+        <AppContainer
+          routes={routes}
+          routeProps={routeProps}
+          appContext={appContext}
+        >
+          <TypedAppComponent {...appProps} />
+        </AppContainer>
+      )
+    });
+  };
+  renderError: IReactClientView['renderError'] = async ({
+    AppComponent,
+    appContainer,
+    appData,
+    appContext,
+    ErrorComponent,
+    routes,
+    error
+  }) => {
+    const { _history: history } = this;
+    let { ssr, errorProps, dynamicIds } = appData;
+    const TypedErrorComponent = ErrorComponent as Runtime.IErrorComponent<
+      React.ComponentType
+    >;
+    const redirector = createRedirector();
+    if (ssr) {
+      await Loadable.preloadReady(dynamicIds);
+    } else if (TypedErrorComponent.getInitialProps) {
+      const { pathname, query } = history.location;
+      errorProps = await TypedErrorComponent.getInitialProps({
+        isServer: false,
+        pathname,
+        query,
+        params: {},
+        redirect: redirector.handler,
+        appContext
+      });
+    }
+
+    if (redirector.redirected) {
+      history.push(redirector.state!.path);
+    }
+
+    this._renderWithContainer({
+      AppComponent,
+      ErrorComponent,
+      appContainer,
+      appData,
+      appContext,
+      routes,
+      children: <ErrorComponent {...errorProps} error={error} />
+    });
+  };
+
+  private async _renderWithContainer({
+    AppComponent,
+    ErrorComponent,
+    appContainer,
+    appData,
+    appContext,
+    children,
+    routes
+  }: {
+    AppComponent: React.ComponentType;
+    ErrorComponent: React.ComponentType;
+    appContainer: HTMLElement;
+    appData: Runtime.IAppData<IReactAppData>;
+    routes: IRoute[];
+    appContext: Record<string, any>;
+    children: React.ReactNode;
+  }) {
+    const { _isInitialRender: isInitialRender } = this;
+
     const root = (
-      <ClientErrorBoundary onError={appContext.error}>
+      <ClientErrorBoundary
+        onError={error => {
+          this.renderError({
+            appContainer,
+            appData,
+            appContext,
+            AppComponent,
+            ErrorComponent,
+            routes,
+            error
+          });
+        }}
+      >
         <Router router={this._router}>
           <HeadManagerContext.Provider value={headManager.updateHead}>
-            <AppContainer
-              routes={routes}
-              routeProps={routeProps}
-              appContext={appContext}
-            >
-              <TypedAppComponent {...appProps} />
-            </AppContainer>
+            {children}
           </HeadManagerContext.Provider>
         </Router>
       </ClientErrorBoundary>
     );
 
-    if (ssr && isInitialRender) {
+    if (appData.ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
       this._isInitialRender = false;
     } else {
       ReactDOM.render(root, appContainer);
     }
-  };
-  renderError: IReactClientView['renderError'] = async ({
-    appContainer,
-    appData,
-    appContext,
-    ErrorComponent,
-    error
-  }) => {
-    const { _history: history, _isInitialRender: isInitialRender } = this;
-    let { ssr, appProps, dynamicIds } = appData;
-
-    if (ssr) {
-      await Loadable.preloadReady(dynamicIds);
-    } else if (ErrorComponent.getInitialProps) {
-      const { pathname } = history.location;
-      appProps = await ErrorComponent.getInitialProps({
-        isServer: false,
-        error,
-        pathname,
-        appContext
-      });
-    }
-
-    const root = (
-      <Router router={this._router}>
-        <HeadManagerContext.Provider value={headManager.updateHead}>
-          <ErrorComponent {...appProps} error={error} />
-        </HeadManagerContext.Provider>
-      </Router>
-    );
-
-    if (ssr && isInitialRender) {
-      ReactDOM.hydrate(root, appContainer);
-      this._isInitialRender = false;
-    } else {
-      ReactDOM.unmountComponentAtNode(appContainer);
-      ReactDOM.render(root, appContainer);
-    }
-  };
+  }
 }

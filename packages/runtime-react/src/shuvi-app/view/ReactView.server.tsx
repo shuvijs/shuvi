@@ -12,6 +12,7 @@ import { createRedirector } from '../utils/createRedirector';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
+import IErrorComponent = Runtime.IErrorComponent;
 import IHtmlTag = Runtime.IHtmlTag;
 import IParams = Runtime.IParams;
 
@@ -42,7 +43,7 @@ export class ReactServerView implements IReactServerView {
     for (let index = 0; index < matchedRoutes.length; index++) {
       const matchedRoute = matchedRoutes[index];
       const comp = matchedRoute.route.component as
-        | IRouteComponent<React.Component, any>
+        | IRouteComponent<React.ComponentType, any>
         | undefined;
       Object.assign(params, matchedRoute.params);
       if (comp && comp.getInitialProps) {
@@ -178,22 +179,29 @@ export class ReactServerView implements IReactServerView {
     ErrorComponent,
     getAssetPublicUrl
   }) => {
+    const redirector = createRedirector();
     const routerContext = {};
     const history = createServerHistory({
       basename: '',
       location: url,
       context: routerContext
     });
-
+    const { pathname, query } = history.location;
     let head: IHtmlTag[];
     let errorProps = { error };
+    let typedErrorComponent = ErrorComponent as IErrorComponent<
+      React.ComponentType,
+      any
+    >;
 
-    if (ErrorComponent && ErrorComponent.getInitialProps) {
-      errorProps = await ErrorComponent.getInitialProps!({
+    if (typedErrorComponent && typedErrorComponent.getInitialProps) {
+      errorProps = await typedErrorComponent.getInitialProps({
         isServer: true,
-        pathname: url,
+        pathname,
+        query,
         appContext,
-        error
+        params: {},
+        redirect: redirector.handler
       });
     }
 
@@ -257,7 +265,7 @@ export class ReactServerView implements IReactServerView {
     };
 
     if (errorProps) {
-      appData.appProps = errorProps;
+      appData.errorProps = errorProps;
     }
     if (dynamicImportIdSet.size) {
       appData.dynamicIds = Array.from(dynamicImportIdSet);

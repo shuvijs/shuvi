@@ -26,7 +26,7 @@ export function create(context, options) {
     ErrorComponent,
     routes,
     context,
-    render: options.render
+    render: options.render,
   });
   
   runPlugins({

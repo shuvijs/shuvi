@@ -1,13 +1,13 @@
 import * as React from 'react';
 
 export interface IClientErrorBoundaryProps {
-  onError(error: Error): void;
+  onError(error: any): void;
 }
 
 export default class ClientErrorBoundary extends React.Component<
   IClientErrorBoundaryProps
 > {
-  componentDidCatch(error: Error) {
+  componentDidCatch(error: any) {
     this.props.onError(error);
   }
 

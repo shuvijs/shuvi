@@ -9,8 +9,7 @@ import {
   IAppPlugin,
   IInitAppPlugins,
   IAppPluginRecord,
-  IError,
-  IRenderErrorOptions
+  IAppError
 } from '@shuvi/core';
 import { IRouteMatch, IRouteObject } from '@shuvi/router';
 import { ParsedUrlQuery } from 'querystring';
@@ -98,8 +97,8 @@ export type IAppComponent<C, P = {}> = C & {
 
 export type IErrorComponent<C, P = {}> = C & {
   getInitialProps?(
-    context: Omit<IRouteComponentContext, 'redirect' | 'query' | 'params'> & {
-      error?: IError;
+    context: IRouteComponentContext & {
+      error?: any;
     }
   ): P | Promise<P>;
 };
@@ -112,22 +111,10 @@ export type IAppData<Data = {}> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
-  error?: string;
+  error?: IAppError;
 } & {
   [K in keyof Data]: Data[K];
 };
-
-export interface IClientRendererOptions<CompType = any, Data = {}>
-  extends IRenderOptions<CompType> {
-  appContainer: HTMLElement;
-  appData: IAppData<Data>;
-}
-
-export interface IClientErrorRendererOptions<Data = {}>
-  extends IRenderErrorOptions {
-  appContainer: HTMLElement;
-  appData: IAppData<Data>;
-}
 
 export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
@@ -135,48 +122,50 @@ export interface ITelestore {
   dump(): Record<string, any>;
 }
 
-export interface IServerRendererOptions<CompType = any>
-  extends IRenderOptions<CompType> {
-  url: string;
-  manifest: IManifest;
-  getAssetPublicUrl(path: string): string;
-}
+type IViewRenderAppOptions<CompType, Options = {}> = {
+  AppComponent: CompType;
+  ErrorComponent: CompType;
+  routes: IRoute[];
+  appContext: Record<string, any>;
+} & {
+  [Key in keyof Options]: Options[Key];
+};
 
-export interface IServerErrorRendererOptions extends IRenderErrorOptions {
-  url: string;
-  manifest: IManifest;
-  getAssetPublicUrl(path: string): string;
-}
+type IViewRenderErrorOptions<CompType, Options = {}> = IViewRenderAppOptions<
+  CompType,
+  Options
+> & {
+  error: IAppError;
+};
 
-interface IView<
-  RenderOption extends IRenderOptions = any,
-  RenderErrorOptions extends IRenderErrorOptions = any,
-  RenderResult = void
-> {
-  renderApp(options: RenderOption): RenderResult;
-  renderError(options: RenderErrorOptions): RenderResult;
+interface IView<CompType = any, Option extends {} = any, RenderResult = void> {
+  renderApp(options: IViewRenderAppOptions<CompType, Option>): RenderResult;
+  renderError(options: IViewRenderErrorOptions<CompType, Option>): RenderResult;
 }
 
 export interface IViewClient<CompType = any, Data = {}>
   extends IView<
-    IClientRendererOptions<CompType, Data>,
-    IClientErrorRendererOptions<Data>
+    CompType,
+    {
+      appContainer: HTMLElement;
+      appData: IAppData<Data>;
+    }
   > {}
 
 export interface IViewServer<CompType = any, Data = {}>
   extends IView<
-    IServerRendererOptions<CompType>,
-    IServerErrorRendererOptions,
+    CompType,
+    {
+      url: string;
+      manifest: IManifest;
+      getAssetPublicUrl(path: string): string;
+    },
     Promise<IRenderAppResult<Data>>
   > {}
 
 export interface IRedirectState {
   status?: number;
   path: string;
-}
-
-export interface IRenderResultRedirect extends IRedirectState {
-  $type: 'redirect';
 }
 
 export type IRenderAppResult<Data = {}> = {
@@ -233,8 +222,6 @@ export interface IRuntime<CompType = unknown> {
   getAppModulePath(): string;
 
   getErrorModulePath(): string;
-
-  get404ModulePath(): string;
 
   getViewModulePath(): string;
 }

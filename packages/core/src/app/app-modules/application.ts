@@ -93,6 +93,7 @@ export class Application<Context extends {}> extends Hookable
     const result = await this._renderFn({
       appContext: this._context,
       AppComponent: this.AppComponent,
+      ErrorComponent: this.ErrorComponent,
       routes: this.routes
     });
     this.emitEvent<AppHooks.IEventRenderDone>('renderDone', result);

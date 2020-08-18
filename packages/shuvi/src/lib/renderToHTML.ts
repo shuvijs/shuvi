@@ -1,8 +1,6 @@
 import { Runtime } from '@shuvi/types';
-import { Renderer, isRedirect } from '../renderer';
+import { Renderer } from '../renderer';
 import { Api } from '../api';
-import { IError } from '@shuvi/core';
-import { NOT_FOUND_ERROR_MESSAGE } from '@shuvi/shared/lib/constants';
 
 export async function renderToHTML({
   req,
@@ -11,59 +9,32 @@ export async function renderToHTML({
 }: {
   req: Runtime.IRequest;
   api: Api;
-  onRedirect?(redirect: Runtime.IRenderResultRedirect): void;
-}): Promise<{ html: string | null; appContext: any }> {
+  onRedirect?(redirect: Runtime.IRedirectState): void;
+}): Promise<{ html: string | null; appContext: any; statusCode: number }> {
+  let statusCode = 200;
   let html: null | string = null;
   const renderer = new Renderer({ api });
   const {
-    server: { application, view },
-    clientManifest: manifest
+    server: { application }
   } = api.resources;
-  const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
 
   const app = application.create(
     {
-      req,
-      error: function (error: IError) {
-        if (!this.error.result) {
-          this.error.message = error?.message;
-
-          if (error?.message === NOT_FOUND_ERROR_MESSAGE) {
-            this.statusCode = 404;
-            error = undefined;
-          } else {
-            console.error(error);
-            this.statusCode = 500;
-          }
-
-          this.error.result = view.renderError({
-            error,
-            appContext: this,
-            url: req.url || '/',
-            ErrorComponent: app.ErrorComponent,
-            getAssetPublicUrl,
-            manifest
-          });
-        }
-
-        return this.error.result;
-      }
+      req
     },
     {
-      async render({ appContext, AppComponent, routes }) {
-        const result = await renderer.renderDocument({
+      async render({ appContext, AppComponent, ErrorComponent, routes }) {
+        html = await renderer.renderDocument({
           app,
           url: req.url || '/',
           AppComponent,
+          ErrorComponent,
           routes,
-          appContext
+          appContext,
+          onRedirect(state) {
+            onRedirect && onRedirect(state);
+          }
         });
-
-        if (isRedirect(result)) {
-          onRedirect && onRedirect(result);
-        } else {
-          html = result;
-        }
       }
     }
   );
@@ -77,5 +48,5 @@ export async function renderToHTML({
     await app.dispose();
   }
 
-  return { appContext, html };
+  return { appContext, html, statusCode };
 }

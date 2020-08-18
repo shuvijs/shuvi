@@ -1,8 +1,11 @@
-import { Runtime, AppHooks } from '@shuvi/types';
+import { Runtime, AppHooks, IAppError } from '@shuvi/types';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
+import { parse as parseURL } from 'url';
+import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import {
   IDENTITY_SSR_RUNTIME_PUBLICPATH,
-  CLIENT_APPDATA_ID
+  CLIENT_APPDATA_ID,
+  ERROR_PAGE_NOT_FOUND
 } from '../constants';
 import getRuntimeConfig from '../lib/runtimeConfig';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
@@ -19,8 +22,10 @@ export class SsrRenderer extends BaseRenderer {
     app,
     url,
     AppComponent,
+    ErrorComponent,
     routes,
-    appContext
+    appContext,
+    onRedirect
   }: IRenderDocumentOptions) {
     const api = this._api;
     const {
@@ -28,35 +33,47 @@ export class SsrRenderer extends BaseRenderer {
       server: { view }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
-    let result;
 
-    try {
-      result = await view.renderApp({
-        url,
-        AppComponent,
-        routes,
-        appContext,
-        manifest,
-        getAssetPublicUrl
-      });
-    } catch (error) {
-      appContext.error(error);
-    }
+    let error: IAppError | undefined;
+    let result: Runtime.IRenderAppResult | undefined;
 
-    // use error result if exist
-    if (appContext.error.result) {
-      result = await appContext.error.result;
-    }
+    const matchedRoutes = matchRoutes(routes, parseURL(url).pathname || '/');
+    if (matchedRoutes.length < 1) {
+      error = {
+        code: ERROR_PAGE_NOT_FOUND
+      };
+    } else {
+      try {
+        result = await view.renderApp({
+          url,
+          AppComponent,
+          ErrorComponent,
+          routes,
+          appContext,
+          manifest,
+          getAssetPublicUrl
+        });
+      } catch (err) {
+        error = err;
+        result = await view.renderError({
+          error: err,
+          url,
+          AppComponent,
+          routes,
+          ErrorComponent,
+          appContext,
+          manifest,
+          getAssetPublicUrl
+        });
+      }
 
-    if (result?.redirect) {
-      return {
-        $type: 'redirect',
-        ...result?.redirect
-      } as const;
+      if (result.redirect) {
+        onRedirect(result.redirect);
+        return null;
+      }
     }
 
     const mainAssetsTags = this._getMainAssetTags();
-
     const pageDataList = ((await app.callHook<AppHooks.IHookServerGetPageData>(
       {
         name: 'server:getPageData',
@@ -70,9 +87,9 @@ export class SsrRenderer extends BaseRenderer {
     }, {});
     const appData: IAppData = {
       ...result?.appData,
-      pageData,
       ssr: api.config.ssr,
-      error: appContext.error.message
+      error,
+      pageData
     };
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 

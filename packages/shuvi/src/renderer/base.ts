@@ -14,7 +14,6 @@ import { Api, IBuiltResource } from '../api';
 
 import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
-import IRenderResultRedirect = Runtime.IRenderResultRedirect;
 
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;
@@ -53,10 +52,6 @@ function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   return documentProps;
 }
 
-export function isRedirect(obj: any): obj is IRenderResultRedirect {
-  return obj && (obj as IRenderResultRedirect).$type === 'redirect';
-}
-
 export abstract class BaseRenderer {
   protected _api: Api;
   protected _resources: IBuiltResource;
@@ -70,19 +65,27 @@ export abstract class BaseRenderer {
     app,
     url,
     AppComponent,
+    ErrorComponent,
     routes,
-    appContext
-  }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
+    appContext,
+    onRedirect
+  }: IRenderDocumentOptions): Promise<string | null> {
+    let hasRedirected: boolean = false;
     let docProps = await this.getDocumentProps({
       app,
       url,
       AppComponent,
+      ErrorComponent,
       routes,
-      appContext
+      appContext,
+      onRedirect(state) {
+        hasRedirected = true;
+        onRedirect(state);
+      }
     });
 
-    if (isRedirect(docProps)) {
-      return docProps;
+    if (hasRedirected || !docProps) {
+      return null;
     }
 
     docProps = await this._api.callHook<APIHooks.IHookModifyHtml>(
@@ -111,10 +114,7 @@ export abstract class BaseRenderer {
 
   protected abstract getDocumentProps(
     options: IRenderDocumentOptions
-  ):
-    | Promise<IDocumentProps | IRenderResultRedirect>
-    | IDocumentProps
-    | IRenderResultRedirect;
+  ): Promise<IDocumentProps | null> | IDocumentProps | null;
 
   protected _getMainAssetTags(): {
     styles: IHtmlTag<any>[];

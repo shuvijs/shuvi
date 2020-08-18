@@ -28,4 +28,4 @@ export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_public_path__`;
 
 export const IDENTITY_SSR_RUNTIME_PUBLICPATH = `__${NAME}_ssr_public_path__`;
 
-export const NOT_FOUND_ERROR_MESSAGE = '404_NOT_FOUND';
+export const ERROR_PAGE_NOT_FOUND = 'ERROR_NOT_FOUND';

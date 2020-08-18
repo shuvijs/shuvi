@@ -4,7 +4,8 @@ import {
   ISpecifier,
   ITemplateData,
   IHookable,
-  AppHooks
+  AppHooks,
+  IAppError
 } from '@shuvi/core';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
@@ -22,6 +23,7 @@ export {
   Runtime,
   Bundler,
   APIHooks,
+  IAppError,
   AppHooks,
   IFile,
   ISpecifier,

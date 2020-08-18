@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head } from '@shuvi/app';
 import { Runtime } from '@shuvi/types';
-import { IError } from '@shuvi/core';
+import { ERROR_PAGE_NOT_FOUND } from '@shuvi/shared/lib/constants';
 
 const style = {
   container: {
@@ -27,13 +27,11 @@ const style = {
 } as const;
 
 interface IErrorProps {
-  error: IError;
+  pageNotFound?: boolean;
 }
 
-const ErrorPage: Runtime.IErrorComponent<React.FC<IErrorProps>> = ({
-  error
-}) => {
-  if (!error) {
+function ErrorPage(props: IErrorProps) {
+  if (props.pageNotFound) {
     return (
       <div style={style.container}>
         <Head>
@@ -51,15 +49,24 @@ const ErrorPage: Runtime.IErrorComponent<React.FC<IErrorProps>> = ({
   return (
     <div style={style.container}>
       <Head>
-        <title>500: Server Error</title>
+        <title>Error</title>
       </Head>
 
       <div style={style.error}>
-        <div style={style.errorCode}>500</div>
-        <div style={style.errorDesc}>Internal Server Error</div>
+        <div style={style.errorDesc}>An error occurred</div>
       </div>
     </div>
   );
+}
+
+((ErrorPage as any) as Runtime.IErrorComponent<
+  React.ComponentType,
+  {}
+>).getInitialProps = ({ error }) => {
+  if (error && error.code === ERROR_PAGE_NOT_FOUND) {
+  }
+
+  return {};
 };
 
 export default ErrorPage;
