@@ -16,7 +16,7 @@ export default async function main(argv: string[]) {
     .parse(argv, { from: 'user' });
 
   const cwd = getProjectDir(program);
-  const port = program.port || 3000;
+  const port = Number(program.port) || 3000;
   const host = program.host || 'localhost';
 
   const shuviApp = shuvi({
