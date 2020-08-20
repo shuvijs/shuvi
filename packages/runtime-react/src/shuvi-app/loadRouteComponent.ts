@@ -25,7 +25,7 @@ function withoutInitialProps(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
 ): RouteComponent<React.ComponentType<IRouteProps>> {
   return ({ __appContext, ...rest }: IRouteProps) => {
-    useEffect(routeComplete, []);
+    useEffect(routeComplete);
 
     return React.createElement(WrappedComponent, {
       ...rest
@@ -69,7 +69,7 @@ function withInitialPropsClient<P = {}>(
       };
 
       if (!propsResolved) {
-        this._getInitialProps().then(routeComplete, routeComplete);
+        this._getInitialProps();
       } else {
         routeComplete();
       }
@@ -99,14 +99,19 @@ function withInitialPropsClient<P = {}>(
       const { match, location, history, __appContext: appContext } = this.props;
       const redirector = createRedirector();
       // TODO: pass app context
-      const initialProps = await WrappedComponent.getInitialProps!({
-        isServer: false,
-        pathname: location.pathname,
-        query: parseQuerystring(location.search.slice(1)),
-        params: match.params,
-        redirect: redirector.handler,
-        appContext
-      });
+      let initialProps: any = {};
+      try {
+        initialProps = await WrappedComponent.getInitialProps!({
+          isServer: false,
+          pathname: location.pathname,
+          query: parseQuerystring(location.search.slice(1)),
+          params: match.params,
+          redirect: redirector.handler,
+          appContext
+        });
+      } finally {
+        routeComplete();
+      }
 
       if (this._unmount) {
         return;
