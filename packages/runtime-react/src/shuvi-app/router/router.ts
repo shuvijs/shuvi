@@ -8,11 +8,18 @@ export type Router = Runtime.IRouter;
 
 let history: History;
 let routerEvent: EventEmitter;
+let prePath: string | undefined;
 
 //@internal
 export function setHistory(value: History) {
   history = value;
   routerEvent = createEvent();
+  history.listen((location, action) => {
+    if (!prePath || prePath !== location.pathname) {
+      prePath = location.pathname;
+      routerEvent.emit('route-change-start', location, action);
+    }
+  });
 }
 
 //@internal
@@ -46,11 +53,11 @@ function goForward(...args: any[]) {
 }
 
 function onChange(listener: Runtime.IRouterListener) {
-  return history.listen(listener);
-}
+  routerEvent.on('route-change-start', listener);
 
-function onRouteChangeStart(listener: Runtime.IRouterListener) {
-  return history.listen(listener);
+  return () => {
+    routerEvent.off('route-change-start', listener);
+  };
 }
 
 function onRouteChangeComplete(listener: () => void) {
@@ -74,7 +81,7 @@ const router: Router = {
   goBack,
   goForward,
   onChange,
-  onRouteChangeStart,
+  onRouteChangeStart: onChange,
   onRouteChangeComplete
 };
 
