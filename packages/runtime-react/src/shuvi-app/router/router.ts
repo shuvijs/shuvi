@@ -9,6 +9,7 @@ export type Router = Runtime.IRouter;
 let history: History;
 let routerEvent: EventEmitter;
 let prePath: string | undefined;
+let isStartRouteChange: boolean = false;
 
 //@internal
 export function setHistory(value: History) {
@@ -17,6 +18,7 @@ export function setHistory(value: History) {
   history.listen((location, action) => {
     if (!prePath || prePath !== location.pathname) {
       prePath = location.pathname;
+      isStartRouteChange = true;
       routerEvent.emit('route-change-start', location, action);
     }
   });
@@ -24,7 +26,10 @@ export function setHistory(value: History) {
 
 //@internal
 export function emitRouterEvent(event: string) {
-  routerEvent && routerEvent.emit(event);
+  if (routerEvent && isStartRouteChange) {
+    isStartRouteChange = false;
+    routerEvent.emit(event);
+  }
 }
 
 function push(...args: any[]) {
