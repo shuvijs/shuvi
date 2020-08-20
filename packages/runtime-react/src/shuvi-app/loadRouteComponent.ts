@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { parse as parseQuerystring } from 'querystring';
 import { RouteComponentProps } from 'react-router-dom';
 import { Runtime } from '@shuvi/types';
@@ -17,10 +17,16 @@ export type IRouteProps = RouteComponentProps & {
   __initialProps?: Data;
 };
 
+function routeComplete() {
+  emitRouterEvent('route-change-complete');
+}
+
 function withoutInitialProps(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
 ): RouteComponent<React.ComponentType<IRouteProps>> {
   return ({ __appContext, ...rest }: IRouteProps) => {
+    useEffect(routeComplete, []);
+
     return React.createElement(WrappedComponent, {
       ...rest
     });
@@ -63,9 +69,9 @@ function withInitialPropsClient<P = {}>(
       };
 
       if (!propsResolved) {
-        this._getInitialProps().then(this._routeComplete, this._routeComplete);
+        this._getInitialProps().then(routeComplete, routeComplete);
       } else {
-        this._routeComplete();
+        routeComplete();
       }
     }
 
@@ -115,10 +121,6 @@ function withInitialPropsClient<P = {}>(
         });
       }
     }
-
-    private _routeComplete = () => {
-      emitRouterEvent('route-change-complete');
-    };
 
     componentWillUnmount() {
       this._unmount = true;
