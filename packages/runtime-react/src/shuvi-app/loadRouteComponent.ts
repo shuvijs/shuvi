@@ -2,6 +2,7 @@ import React from 'react';
 import { parse as parseQuerystring } from 'querystring';
 import { RouteComponentProps } from 'react-router-dom';
 import { Runtime } from '@shuvi/types';
+import { emitRouterEvent } from './router/router';
 import dynamic, { DynamicOptions } from './dynamic';
 import { getDisplayName } from './utils/getDisplayName';
 import { createRedirector } from './utils/createRedirector';
@@ -62,7 +63,9 @@ function withInitialPropsClient<P = {}>(
       };
 
       if (!propsResolved) {
-        this._getInitialProps();
+        this._getInitialProps().then(this._routeComplete, this._routeComplete);
+      } else {
+        this._routeComplete();
       }
     }
 
@@ -112,6 +115,10 @@ function withInitialPropsClient<P = {}>(
         });
       }
     }
+
+    private _routeComplete = () => {
+      emitRouterEvent('route-change-complete');
+    };
 
     componentWillUnmount() {
       this._unmount = true;

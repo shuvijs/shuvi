@@ -200,6 +200,8 @@ export interface IRouter {
   goBack(): void;
   goForward(): void;
   onChange(listener: IRouterListener): () => void;
+  onRouteChangeStart(listener: IRouterListener): () => void;
+  onRouteChangeComplete(listener: () => void): () => void;
 }
 
 export interface IApplicationModule {
