@@ -36,8 +36,7 @@ describe('Custom app.js', () => {
 describe('[SPA] Custom app', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-app', {
-      ssr: false,
-      router: { history: 'browser' }
+      ssr: false
     });
   });
   afterAll(async () => {
@@ -95,6 +94,34 @@ describe('Custom document.js', () => {
 
     expect(await page.$attr('meta[name="test"]', 'content')).toBe('1');
     expect(await page.$attr('body', 'test')).toBe('1');
+  });
+});
+
+describe('Custom 404 page', () => {
+  beforeAll(async () => {
+    ctx = await launchFixture('custom-404');
+  });
+  afterAll(async () => {
+    await ctx.close();
+  });
+  afterEach(async () => {
+    await page.close();
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
+  });
+
+  test('should work', async () => {
+    page = await ctx.browser.page(ctx.url('/none-exist-page'));
+
+    expect(await page.$text('#custom-404')).toBe('404');
+
+    await page.shuvi.navigate('/');
+    await page.waitForSelector('#index');
+    expect(await page.$text('#index')).toBe('Index Page');
+
+    await page.shuvi.navigate('/none-exist-page');
+    await page.waitForSelector('#custom-404');
+    expect(await page.$text('#custom-404')).toBe('404');
   });
 });
 

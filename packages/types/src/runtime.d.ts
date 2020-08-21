@@ -8,9 +8,7 @@ import {
   IRenderOptions,
   IAppPlugin,
   IInitAppPlugins,
-  IAppPluginRecord,
-  IError,
-  IRenderErrorOptions
+  IAppPluginRecord
 } from '@shuvi/core';
 import { IRouteMatch, IRouteObject } from '@shuvi/router';
 import { ParsedUrlQuery } from 'querystring';
@@ -96,14 +94,6 @@ export type IAppComponent<C, P = {}> = C & {
   getInitialProps?(context: IAppComponentContext): P | Promise<P>;
 };
 
-export type IErrorComponent<C, P = {}> = C & {
-  getInitialProps?(
-    context: Omit<IRouteComponentContext, 'redirect' | 'query' | 'params'> & {
-      error?: IError;
-    }
-  ): P | Promise<P>;
-};
-
 export type IRouteComponent<C, P = {}> = C & {
   getInitialProps?(context: IRouteComponentContext): P | Promise<P>;
 };
@@ -112,19 +102,12 @@ export type IAppData<Data = {}> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
-  error?: string;
 } & {
   [K in keyof Data]: Data[K];
 };
 
 export interface IClientRendererOptions<CompType = any, Data = {}>
   extends IRenderOptions<CompType> {
-  appContainer: HTMLElement;
-  appData: IAppData<Data>;
-}
-
-export interface IClientErrorRendererOptions<Data = {}>
-  extends IRenderErrorOptions {
   appContainer: HTMLElement;
   appData: IAppData<Data>;
 }
@@ -142,31 +125,19 @@ export interface IServerRendererOptions<CompType = any>
   getAssetPublicUrl(path: string): string;
 }
 
-export interface IServerErrorRendererOptions extends IRenderErrorOptions {
-  url: string;
-  manifest: IManifest;
-  getAssetPublicUrl(path: string): string;
-}
-
 interface IView<
   RenderOption extends IRenderOptions = any,
-  RenderErrorOptions extends IRenderErrorOptions = any,
   RenderResult = void
 > {
   renderApp(options: RenderOption): RenderResult;
-  renderError(options: RenderErrorOptions): RenderResult;
 }
 
 export interface IViewClient<CompType = any, Data = {}>
-  extends IView<
-    IClientRendererOptions<CompType, Data>,
-    IClientErrorRendererOptions<Data>
-  > {}
+  extends IView<IClientRendererOptions<CompType, Data>> {}
 
 export interface IViewServer<CompType = any, Data = {}>
   extends IView<
     IServerRendererOptions<CompType>,
-    IServerErrorRendererOptions,
     Promise<IRenderAppResult<Data>>
   > {}
 
@@ -231,8 +202,6 @@ export interface IRuntime<CompType = unknown> {
   ): string;
 
   getAppModulePath(): string;
-
-  getErrorModulePath(): string;
 
   get404ModulePath(): string;
 

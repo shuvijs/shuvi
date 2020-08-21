@@ -27,5 +27,3 @@ export const DEV_HOT_LAUNCH_EDITOR_ENDPOINT = `${PATH_PREFIX}/development/open-s
 export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_public_path__`;
 
 export const IDENTITY_SSR_RUNTIME_PUBLICPATH = `__${NAME}_ssr_public_path__`;
-
-export const NOT_FOUND_ERROR_MESSAGE = '404_NOT_FOUND';
