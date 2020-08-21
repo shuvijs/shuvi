@@ -13,7 +13,6 @@ export type IContext = {
 
 export interface IApplicationOptions<Context> {
   AppComponent: any;
-  ErrorComponent: any;
   routes: IRoute[];
   context: Context;
   render: IAppRenderFn;
@@ -22,7 +21,6 @@ export interface IApplicationOptions<Context> {
 export class Application<Context extends {}> extends Hookable
   implements IApplication {
   AppComponent: any;
-  ErrorComponent: any;
   routes: IRoute[];
   private _renderFn: IAppRenderFn;
   private _context: IContext;
@@ -30,7 +28,6 @@ export class Application<Context extends {}> extends Hookable
   constructor(options: IApplicationOptions<Context>) {
     super();
     this.AppComponent = options.AppComponent;
-    this.ErrorComponent = options.ErrorComponent;
     this.routes = options.routes;
     this._context = options.context;
     this._renderFn = options.render;

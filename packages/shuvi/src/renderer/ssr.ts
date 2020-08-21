@@ -28,30 +28,18 @@ export class SsrRenderer extends BaseRenderer {
       server: { view }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
-    let result;
-
-    try {
-      result = await view.renderApp({
-        url,
-        AppComponent,
-        routes,
-        appContext,
-        manifest,
-        getAssetPublicUrl
-      });
-    } catch (error) {
-      appContext.error(error);
-    }
-
-    // use error result if exist
-    if (appContext.error.result) {
-      result = await appContext.error.result;
-    }
-
-    if (result?.redirect) {
+    const result = await view.renderApp({
+      url,
+      AppComponent,
+      routes,
+      appContext,
+      manifest,
+      getAssetPublicUrl
+    });
+    if (result.redirect) {
       return {
         $type: 'redirect',
-        ...result?.redirect
+        ...result.redirect
       } as const;
     }
 
@@ -69,25 +57,24 @@ export class SsrRenderer extends BaseRenderer {
       return acc;
     }, {});
     const appData: IAppData = {
-      ...result?.appData,
+      ...result.appData,
       pageData,
-      ssr: api.config.ssr,
-      error: appContext.error.message
+      ssr: api.config.ssr
     };
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 
     const documentProps = {
-      htmlAttrs: { ...result?.htmlAttrs },
+      htmlAttrs: { ...result.htmlAttrs },
       headTags: [
-        ...(result?.headBeginTags || []),
+        ...(result.headBeginTags || []),
         ...mainAssetsTags.styles,
-        ...(result?.headEndTags || [])
+        ...(result.headEndTags || [])
       ],
       mainTags: [
         this._getInlineAppData(appData),
-        ...(result?.mainBeginTags || []),
-        this._getAppContainerTag(result?.appHtml),
-        ...(result?.mainEndTags || [])
+        ...(result.mainBeginTags || []),
+        this._getAppContainerTag(result.appHtml),
+        ...(result.mainEndTags || [])
       ],
       scriptTags: [
         tag(
@@ -95,9 +82,9 @@ export class SsrRenderer extends BaseRenderer {
           {},
           `${IDENTITY_SSR_RUNTIME_PUBLICPATH} = "${api.assetPublicPath}"`
         ),
-        ...(result?.scriptBeginTags || []),
+        ...(result.scriptBeginTags || []),
         ...mainAssetsTags.scripts,
-        ...(result?.scriptEndTags || [])
+        ...(result.scriptEndTags || [])
       ]
     };
 

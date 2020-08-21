@@ -11,7 +11,6 @@ import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { createRedirector } from '../utils/createRedirector';
 import { IReactClientView } from '../types';
-import ClientErrorBoundary from '../ClientErrorBoundary';
 
 const headManager = new HeadManager();
 
@@ -30,7 +29,7 @@ function getRouteParams(routes: IRoute[], pathname: string) {
 export class ReactClientView implements IReactClientView {
   private _history: History;
   private _router: IRouter;
-  private _isInitialRender: boolean = true;
+  private _isInitialRender: boolean = false;
 
   constructor(historyCreator: HistoryCreator) {
     this._history = historyCreator();
@@ -82,54 +81,15 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <ClientErrorBoundary onError={appContext.error}>
-        <Router router={this._router}>
-          <HeadManagerContext.Provider value={headManager.updateHead}>
-            <AppContainer
-              routes={routes}
-              routeProps={routeProps}
-              appContext={appContext}
-            >
-              <TypedAppComponent {...appProps} />
-            </AppContainer>
-          </HeadManagerContext.Provider>
-        </Router>
-      </ClientErrorBoundary>
-    );
-
-    if (ssr && isInitialRender) {
-      ReactDOM.hydrate(root, appContainer);
-      this._isInitialRender = false;
-    } else {
-      ReactDOM.render(root, appContainer);
-    }
-  };
-  renderError: IReactClientView['renderError'] = async ({
-    appContainer,
-    appData,
-    appContext,
-    ErrorComponent,
-    error
-  }) => {
-    const { _history: history, _isInitialRender: isInitialRender } = this;
-    let { ssr, appProps, dynamicIds } = appData;
-
-    if (ssr) {
-      await Loadable.preloadReady(dynamicIds);
-    } else if (ErrorComponent.getInitialProps) {
-      const { pathname } = history.location;
-      appProps = await ErrorComponent.getInitialProps({
-        isServer: false,
-        error,
-        pathname,
-        appContext
-      });
-    }
-
-    const root = (
       <Router router={this._router}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <ErrorComponent {...appProps} error={error} />
+          <AppContainer
+            routes={routes}
+            routeProps={routeProps}
+            appContext={appContext}
+          >
+            <TypedAppComponent {...appProps} />
+          </AppContainer>
         </HeadManagerContext.Provider>
       </Router>
     );
@@ -138,7 +98,6 @@ export class ReactClientView implements IReactClientView {
       ReactDOM.hydrate(root, appContainer);
       this._isInitialRender = false;
     } else {
-      ReactDOM.unmountComponentAtNode(appContainer);
       ReactDOM.render(root, appContainer);
     }
   };

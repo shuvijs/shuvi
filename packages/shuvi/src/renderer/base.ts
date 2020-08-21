@@ -80,7 +80,6 @@ export abstract class BaseRenderer {
       routes,
       appContext
     });
-
     if (isRedirect(docProps)) {
       return docProps;
     }
