@@ -21,7 +21,6 @@ describe('Basic Features', () => {
 
   test('Page /', async () => {
     page = await ctx.browser.page(ctx.url('/'));
-    expect(page.statusCode).toBe(200);
 
     expect(await page.$$attr('body script', 'src')).toEqual(
       expect.arrayContaining([expect.stringMatching(/polyfill\.js/)])
