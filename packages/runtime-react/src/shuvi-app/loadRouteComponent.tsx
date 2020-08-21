@@ -41,7 +41,6 @@ function withInitialPropsClient<P = {}>(
 ): RouteComponent<React.FunctionComponent<IRouteProps & P>> {
   const hoc = function WithInitialProps(props: IRouteProps & P) {
     const [unmount, setUnmount] = useState(false);
-    const [, setError] = useState(null);
 
     useEffect(() => () => setUnmount(true), []);
 
@@ -61,35 +60,26 @@ function withInitialPropsClient<P = {}>(
       const { __appContext: appContext } = props;
       const redirector = createRedirector();
 
-      try {
-        const initialProps = await WrappedComponent.getInitialProps!({
-          isServer: false,
-          pathname: location.pathname,
-          query: parseQuerystring(location.search.slice(1)),
-          params: params,
-          redirect: redirector.handler,
-          appContext
-        });
+      const initialProps = await WrappedComponent.getInitialProps!({
+        isServer: false,
+        pathname: location.pathname,
+        query: parseQuerystring(location.search.slice(1)),
+        params: params,
+        redirect: redirector.handler,
+        appContext
+      });
 
-        if (unmount) return;
+      if (unmount) return;
 
-        if (redirector.redirected) {
-          navigate(redirector.state!.path);
-        } else {
-          setPropsResolved(true);
-          setInitialProps(initialProps);
-        }
-      } catch (e) {
-        // Mini hack to throw error so that ErrorBoundary catch it
-        // https://github.com/facebook/react/issues/14981#issuecomment-468460187
-        setError(() => {
-          throw e;
-        });
+      if (redirector.redirected) {
+        navigate(redirector.state!.path);
+      } else {
+        setPropsResolved(true);
+        setInitialProps(initialProps);
       }
     };
 
     const isFirstRender = React.useRef(true);
-
     useEffect(() => {
       if (isFirstRender.current) {
         if (!propsResolved) getInitialProps();
