@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { createMemoryHistory } from 'history';
+import { createRouter, createMemoryHistory } from '@shuvi/router';
 import { Router } from '..';
-import { createRouter } from '@shuvi/router/lib/';
 
 describe('A <Router>', () => {
   let consoleError;

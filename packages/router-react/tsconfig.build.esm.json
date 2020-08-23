@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "./src",
     "module": "esnext",
-    "outDir": "esm"
+    "outDir": "esm",
+    "lib": ["esnext", "DOM"]
   },
   "include": [
     "src"

@@ -3,9 +3,8 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "lib",
-    "module": "commonjs"
+    "module": "commonjs",
+    "lib": ["esnext", "DOM"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

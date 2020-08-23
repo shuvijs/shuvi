@@ -11,7 +11,7 @@ import {
   IAppPluginRecord
 } from '@shuvi/core';
 import { IRouteMatch, IRouteObject } from '@shuvi/router';
-import { ParsedUrlQuery } from 'querystring';
+import { ParsedQuery } from 'query-string';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
 
@@ -28,9 +28,9 @@ export type IData = {
   [k: string]: string | number | boolean | undefined | null;
 };
 
-export type IParams = ParsedUrlQuery;
+export type IParams = ParsedQuery;
 
-export type IQuery = ParsedUrlQuery;
+export type IQuery = ParsedQuery;
 
 export interface IRequest {
   url: string;
