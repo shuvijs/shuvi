@@ -2,14 +2,14 @@ import React from 'react';
 import { IParams } from '@shuvi/router';
 import { readOnly } from './utils';
 import { __DEV__ } from './constants';
-import { ILocationContextObject, IRouteContextObject } from './types';
+import { IRouterContextObject, IRouteContextObject } from './types';
 
-export const LocationContext = React.createContext<ILocationContextObject>({
-  static: false
-} as ILocationContextObject);
+export const RouterContext = React.createContext<IRouterContextObject>(
+  null as any
+);
 
 if (__DEV__) {
-  LocationContext.displayName = 'Location';
+  RouterContext.displayName = 'Router';
 }
 
 export const RouteContext = React.createContext<IRouteContextObject>({

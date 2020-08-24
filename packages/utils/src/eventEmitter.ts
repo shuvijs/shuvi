@@ -1,20 +1,22 @@
 type Handler = (...evts: any[]) => void;
 
-export type EventEmitter = {
-  on(type: string, handler: Handler): void;
-  off(type: string, handler: Handler): void;
+export type EventEmitter<F extends Function = Handler> = {
+  on(type: string, handler: F): void;
+  off(type: string, handler: F): void;
   emit(type: string, ...evts: any[]): void;
 };
 
-export default function emitter(): EventEmitter {
-  const all: { [s: string]: Handler[] } = Object.create(null);
+export default function emitter<F extends Function = Handler>(): EventEmitter<
+  F
+> {
+  const all: { [s: string]: F[] } = Object.create(null);
 
   return {
-    on(type: string, handler: Handler) {
+    on(type: string, handler: F) {
       (all[type] || (all[type] = [])).push(handler);
     },
 
-    off(type: string, handler: Handler) {
+    off(type: string, handler: F) {
       if (all[type]) {
         const index = all[type].indexOf(handler);
         if (index >= 0) {
@@ -24,7 +26,7 @@ export default function emitter(): EventEmitter {
     },
 
     emit(type: string, ...evts: any[]) {
-      (all[type] || []).slice().forEach((handler: Handler) => {
+      (all[type] || []).slice().forEach((handler: F) => {
         handler(...evts);
       });
     }

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { parse as parseQuerystring } from 'querystring';
 import { Runtime } from '@shuvi/types';
 import dynamic, { DynamicOptions } from './dynamic';
 import { getDisplayName } from './utils/getDisplayName';
 import { createRedirector } from './utils/createRedirector';
 
 import RouteComponent = Runtime.IRouteComponent;
-import { useNavigate, useParams, useRouter } from '@shuvi/router-react';
+import { useNavigate, useParams, useLocation } from '@shuvi/router-react';
 
 type Data = Record<string, any>;
 
@@ -52,7 +51,7 @@ function withInitialPropsClient<P = {}>(
       typeof props.__initialProps !== 'undefined'
     );
 
-    const { location } = useRouter();
+    const { query, pathname } = useLocation();
     const params = useParams();
     const navigate = useNavigate();
 
@@ -62,8 +61,8 @@ function withInitialPropsClient<P = {}>(
 
       const initialProps = await WrappedComponent.getInitialProps!({
         isServer: false,
-        pathname: location.pathname,
-        query: parseQuerystring(location.search.slice(1)),
+        query,
+        pathname,
         params: params,
         redirect: redirector.handler,
         appContext

@@ -23,7 +23,7 @@ describe('uesRouter', () => {
       back: expect.any(Function),
       forward: expect.any(Function),
       go: expect.any(Function),
-      location: expect.objectContaining({
+      current: expect.objectContaining({
         hash: '#the-hash',
         pathname: '/home',
         query: {
@@ -33,36 +33,7 @@ describe('uesRouter', () => {
       }),
       onChange: expect.any(Function),
       push: expect.any(Function),
-      query: {
-        the: 'search'
-      },
       replace: expect.any(Function)
-    });
-  });
-
-  it('returns the current location object', () => {
-    let router;
-    function Home() {
-      router = useRouter();
-      return <h1>Home</h1>;
-    }
-
-    createTestRenderer(
-      <Router initialEntries={['/home?the=search#the-hash']}>
-        <Routes>
-          <Route path="/home" element={<Home />} />
-        </Routes>
-      </Router>
-    );
-
-    expect(typeof router.location).toBe('object');
-    expect(router.location).toMatchObject({
-      pathname: '/home',
-      search: '?the=search',
-      hash: '#the-hash',
-      query: {
-        the: 'search'
-      }
     });
   });
 });

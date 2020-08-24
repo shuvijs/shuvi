@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from '@shuvi/router-react';
-import qs from 'querystring';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
 import { History, createRouter, IRouter } from '@shuvi/router';
@@ -27,13 +26,11 @@ function getRouteParams(routes: IRoute[], pathname: string) {
 }
 
 export class ReactClientView implements IReactClientView {
-  private _history: History;
   private _router: IRouter;
   private _isInitialRender: boolean = false;
 
   constructor(historyCreator: HistoryCreator) {
-    this._history = historyCreator();
-    this._router = createRouter(this._history);
+    this._router = createRouter(historyCreator());
     // For e2e test
     if ((window as any).__SHUVI) {
       (window as any).__SHUVI.router = this._router;
@@ -49,7 +46,7 @@ export class ReactClientView implements IReactClientView {
     routes,
     appContext
   }) => {
-    const { _history: history, _isInitialRender: isInitialRender } = this;
+    const { _router: router, _isInitialRender: isInitialRender } = this;
     const redirector = createRedirector();
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
@@ -59,8 +56,7 @@ export class ReactClientView implements IReactClientView {
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else if (TypedAppComponent.getInitialProps) {
-      const { pathname } = history.location;
-      const query = qs.parse(history.location.search.slice(1));
+      const { pathname, query } = router.current;
 
       // todo: pass appContext
       appProps = await TypedAppComponent.getInitialProps({
@@ -77,7 +73,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     if (redirector.redirected) {
-      history.push(redirector.state!.path);
+      router.push(redirector.state!.path);
     }
 
     const root = (
