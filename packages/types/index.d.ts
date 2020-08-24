@@ -64,14 +64,14 @@ export type IPluginConfig =
   | string
   | [
       string /* plugin module */,
-      any? /* plugin, options */,
+      any? /* plugin options */,
       string? /* identifier */
     ]
   | ((api: IApi) => void);
 
 export type IPresetConfig =
   | string
-  | [string /* plugin module */, any? /* plugin, options */];
+  | [string /* plugin module */, any? /* plugin options */];
 
 export type IRuntimeConfig = Record<string, string>;
 

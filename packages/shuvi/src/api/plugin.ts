@@ -75,11 +75,11 @@ function resolvePreset(
   presetConfig: IPresetConfig,
   resolveOptions: ResolvePluginOptions
 ): IPreset {
-  let pluginPath: string;
+  let presetPath: string;
   let options: any;
 
   if (Array.isArray(presetConfig)) {
-    pluginPath = presetConfig[0];
+    presetPath = presetConfig[0];
     const nameOrOption = presetConfig[1];
     if (typeof nameOrOption === 'string') {
       options = {};
@@ -87,24 +87,24 @@ function resolvePreset(
       options = nameOrOption;
     }
   } else if (typeof presetConfig === 'string') {
-    pluginPath = presetConfig;
+    presetPath = presetConfig;
     options = {};
   } else {
     throw new Error(`Plugin must be one of type [string, array, function]`);
   }
 
-  pluginPath = resolve.sync(pluginPath, { basedir: resolveOptions.dir });
+  presetPath = resolve.sync(presetPath, { basedir: resolveOptions.dir });
 
-  const id = pluginPath;
-  let plugin = require(pluginPath);
-  plugin = plugin.default || plugin;
-  const pluginFn: IPresetSpec = (api: IApi) => {
-    return plugin(api, options);
+  const id = presetPath;
+  let preset = require(presetPath);
+  preset = preset.default || preset;
+  const presetFn: IPresetSpec = (api: IApi) => {
+    return preset(api, options);
   };
 
   return {
     id,
-    get: () => pluginFn
+    get: () => presetFn
   };
 }
 
