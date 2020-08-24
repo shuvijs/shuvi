@@ -10,7 +10,7 @@ import {
   Routes,
   Route,
   useNavigate,
-  useRouter
+  useLocation
 } from '..';
 
 describe('navigate state', () => {
@@ -44,7 +44,7 @@ describe('navigate state', () => {
 
       let location;
       function About() {
-        location = useRouter().location;
+        location = useLocation();
         return <h1>About</h1>;
       }
 
@@ -94,7 +94,7 @@ describe('navigate state', () => {
 
       let location;
       function About() {
-        location = useRouter().location;
+        location = useLocation();
         return <h1>About</h1>;
       }
 

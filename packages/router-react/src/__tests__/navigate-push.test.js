@@ -6,13 +6,23 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { Router, Routes, Route, useNavigate } from '..';
-import { createRouter } from '@shuvi/router/src';
+import { createRouter } from '@shuvi/router';
 
 function createMockRouter(initialLocation) {
   return createRouter({
     action: 'POP',
     location: initialLocation,
-    createHref() {},
+    resolve() {
+      return {
+        path: {
+          pathname: '/',
+          search: '',
+          hash: '',
+          query: {}
+        },
+        href: '/'
+      };
+    },
     push() {},
     replace() {},
     go() {},

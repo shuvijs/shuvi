@@ -22,7 +22,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     });
     api.addAppExport(
       '@shuvi/router-react',
-      '{ Link, useParams, useRouter, Outlet }'
+      '{ useParams, useRouter, useLocation, Link, Outlet }'
     );
     configBundler(api);
 

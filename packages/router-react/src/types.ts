@@ -7,7 +7,7 @@ import {
   IRouter
 } from '@shuvi/router';
 
-export interface ILocationContextObject {
+export interface IRouterContextObject {
   static: boolean;
   router: IRouter;
 }

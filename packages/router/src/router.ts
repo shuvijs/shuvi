@@ -1,30 +1,22 @@
-import { History, Location, Listener } from './history';
+import { History, Location, Listener } from './types';
 
 export interface IRouter {
-  query: History['location']['query'];
-  pathname: string;
-  location: Location;
+  current: Location;
   action: History['action'];
   push: History['push'];
   replace: History['replace'];
   go: History['go'];
   back: History['back'];
   block: History['block'];
-  // @internal
-  createHref: History['createHref'];
+  resolve: History['resolve'];
   forward(): void;
   onChange: (listener: Listener) => void;
 }
 
 export const createRouter = (history: History): IRouter => {
   return {
-    get query() {
-      return history.location.query;
-    },
-    get pathname() {
-      return history.location.pathname;
-    },
-    get location() {
+    // @ts-ignore
+    get current() {
       return history.location;
     },
     get action() {
@@ -49,6 +41,6 @@ export const createRouter = (history: History): IRouter => {
     onChange: function (listener) {
       return history.listen(listener);
     },
-    createHref: history.createHref
+    resolve: history.resolve
   };
 };

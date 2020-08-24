@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
 import { Router } from '@shuvi/router-react';
-import { createServerHistory, createRouter } from '@shuvi/router';
+import { createMemoryHistory, createRouter } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
@@ -27,11 +27,9 @@ export class ReactServerView implements IReactServerView {
     await Loadable.preloadAll();
 
     const redirector = createRedirector();
-    const routerContext = {};
-    const history = createServerHistory({
-      basename: '',
-      location: url,
-      context: routerContext
+    const history = createMemoryHistory({
+      initialEntries: [url],
+      initialIndex: 0
     });
     const { pathname, query } = history.location;
 

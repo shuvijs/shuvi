@@ -4,7 +4,6 @@ import {
   createRoutesFromArray,
   matchPath,
   matchRoutes,
-  resolvePath,
   IPathPattern,
   IParams,
   IPathMatch,
@@ -17,9 +16,23 @@ import {
 } from '@shuvi/router';
 import { Outlet } from './Outlet';
 import { __DEV__ } from './constants';
-import { LocationContext, RouteContext } from './contexts';
+import { RouterContext, RouteContext } from './contexts';
 import { invariant, warning, warningOnce, readOnly } from './utils';
 import { INavigateFunction, IPartialRouteObject, IRouteObject } from './types';
+
+export function useLocation() {
+  const router = useRouter();
+  let [location, setLocation] = React.useState(router.current);
+
+  if (typeof window !== 'undefined') {
+    React.useLayoutEffect(
+      () => router.onChange(({ location }) => setLocation(location)),
+      [router]
+    );
+  }
+
+  return location;
+}
 
 /**
  * Blocks all navigation attempts. This is useful for preventing the page from
@@ -31,7 +44,7 @@ export function useBlocker(blocker: Blocker, when = true): void {
     `useBlocker() may be used only in the context of a <Router> component.`
   );
 
-  let router = React.useContext(LocationContext).router;
+  const { router } = React.useContext(RouterContext);
 
   React.useEffect(() => {
     if (!when) return;
@@ -65,18 +78,17 @@ export function useHref(to: To): string {
     `useHref() may be used only in the context of a <Router> component.`
   );
 
-  let router = React.useContext(LocationContext).router;
-  let path = useResolvedPath(to);
+  const { router } = React.useContext(RouterContext);
+  const path = useResolvedPath(to);
 
-  // @ts-ignore
-  return router.createHref(path);
+  return router.resolve(path).href;
 }
 
 /**
  * Returns true if this component is a descendant of a <Router>.
  */
 export function useInRouterContext(): boolean {
-  return React.useContext(LocationContext).router != null;
+  return React.useContext(RouterContext) != null;
 }
 
 /**
@@ -90,7 +102,7 @@ export function useMatch(pattern: IPathPattern): IPathMatch | null {
     `useMatch() may be used only in the context of a <Router> component.`
   );
 
-  let { pathname } = useRouter();
+  const { pathname } = useLocation();
   return matchPath(pattern, pathname);
 }
 
@@ -104,11 +116,10 @@ export function useNavigate(): INavigateFunction {
     `useNavigate() may be used only in the context of a <Router> component.`
   );
 
-  let locationContext = React.useContext(LocationContext);
-  let router = locationContext.router;
-  let { pathname } = React.useContext(RouteContext);
+  const { router } = React.useContext(RouterContext);
+  const { pathname } = React.useContext(RouteContext);
 
-  let activeRef = React.useRef(false);
+  const activeRef = React.useRef(false);
   React.useEffect(() => {
     activeRef.current = true;
   });
@@ -119,7 +130,7 @@ export function useNavigate(): INavigateFunction {
         if (typeof to === 'number') {
           router.go(to);
         } else {
-          let path = resolvePath(to, pathname);
+          let { path } = router.resolve(to, pathname);
           (!!options.replace ? router.replace : router.push)(
             path,
             options.state
@@ -159,8 +170,9 @@ export function useParams(): IParams {
  * Resolves the pathname of the given `to` value against the current location.
  */
 export function useResolvedPath(to: To): Path {
-  let { pathname } = React.useContext(RouteContext);
-  return React.useMemo(() => resolvePath(to, pathname), [to, pathname]);
+  const { router } = React.useContext(RouterContext);
+  const { pathname } = React.useContext(RouteContext);
+  return React.useMemo(() => router.resolve(to, pathname).path, [to, pathname]);
 }
 
 /**
@@ -215,8 +227,8 @@ export function useRoutes_(
 
   basename = basename ? joinPaths([parentPathname, basename]) : parentPathname;
 
-  let { location } = useRouter();
-  let matches = React.useMemo(() => matchRoutes(routes, location, basename), [
+  const location = useLocation();
+  const matches = React.useMemo(() => matchRoutes(routes, location, basename), [
     location,
     routes,
     basename
@@ -253,5 +265,5 @@ export function useRouter(): IRouter {
     `useRouter() may be used only in the context of a <Router> component.`
   );
 
-  return React.useContext(LocationContext).router as IRouter;
+  return React.useContext(RouterContext).router;
 }

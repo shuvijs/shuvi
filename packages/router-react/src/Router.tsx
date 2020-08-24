@@ -1,8 +1,6 @@
-//
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Action, Update, IRouter } from '@shuvi/router';
-import { LocationContext } from './contexts';
+import { RouterContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
 import { invariant } from './utils';
@@ -26,31 +24,14 @@ export function Router({
       ` You never need more than one.`
   );
 
-  let [updatedRouter, dispatch] = React.useReducer(
-    (previousRouter: IRouter, action: Update) => ({
-      ...previousRouter,
-      ...action
-    }),
-    {
-      ...router,
-      action: router.action || Action.Pop,
-      location: router.location
-    }
-  );
-
-  // @ts-ignore ignoring because of window
-  if (typeof window !== 'undefined') {
-    React.useLayoutEffect(() => router.onChange(dispatch), [router]);
-  }
-
-  let contextVal = React.useMemo(() => {
+  const contextVal = React.useMemo(() => {
     return {
       static: staticProp,
-      router: updatedRouter
+      router: router
     };
-  }, [staticProp, updatedRouter]);
+  }, [staticProp, router]);
 
-  return <LocationContext.Provider children={children} value={contextVal} />;
+  return <RouterContext.Provider children={children} value={contextVal} />;
 }
 
 if (__DEV__) {

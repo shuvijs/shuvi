@@ -18,7 +18,7 @@
     "dev": "run-p watch:*",
     "watch:esm": "tsc -p tsconfig.build.esm.json -w",
     "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
-    "prebuild": "rimraf lib",
+    "prebuild": "rimraf lib esm",
     "build": "run-p build:*",
     "build:esm": "tsc -p tsconfig.build.esm.json",
     "build:cjs": "tsc -p tsconfig.build.cjs.json"

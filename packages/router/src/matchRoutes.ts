@@ -1,7 +1,12 @@
-import { PartialLocation, parsePath } from 'history';
-import { IRouteObject, IRouteMatch, IRouteBranch, IParams } from './types';
+import {
+  IRouteObject,
+  IRouteMatch,
+  IRouteBranch,
+  IParams,
+  PartialLocation
+} from './types';
 import { matchPath } from './matchPath';
-import { joinPaths } from './utils';
+import { joinPaths, resolvePath } from './utils';
 
 export interface IRouteBaseObject<Element = any>
   extends Omit<IRouteObject<Element>, 'children' | 'element'> {
@@ -149,7 +154,7 @@ export function matchRoutes<T extends IRouteBaseObject>(
   basename = ''
 ): IRouteMatch<T>[] | null {
   if (typeof location === 'string') {
-    location = parsePath(location);
+    location = resolvePath(location);
   }
 
   let pathname = location.pathname || '/';
