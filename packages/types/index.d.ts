@@ -69,6 +69,10 @@ export type IPluginConfig =
     ]
   | ((api: IApi) => void);
 
+export type IPresetConfig =
+  | string
+  | [string /* plugin module */, any? /* plugin, options */];
+
 export type IRuntimeConfig = Record<string, string>;
 
 export interface IApiConfig {
@@ -85,6 +89,7 @@ export interface IApiConfig {
   runtimeConfig?: IRuntimeConfig;
   proxy?: IServerProxyConfig;
   plugins?: IPluginConfig[];
+  presets?: IPresetConfig[];
   analyze?: boolean;
 }
 
