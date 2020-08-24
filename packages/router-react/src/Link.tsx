@@ -1,9 +1,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useHref, useNavigate, useResolvedPath } from '.';
-import { createPath, State, To } from '@shuvi/router';
+import { pathToString, State, To } from '@shuvi/router';
 import { __DEV__ } from './constants';
-import { useRouter } from './hooks';
+import { useLocation } from './hooks';
 
 function isModifiedEvent(event: React.MouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
@@ -19,7 +19,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   ) {
     let href = useHref(to);
     let navigate = useNavigate();
-    let { location } = useRouter();
+    const location = useLocation();
     let path = useResolvedPath(to);
 
     function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
@@ -35,7 +35,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         // If the URL hasn't changed, a regular <a> will do a replace instead of
         // a push, so do the same here.
         let replace =
-          !!replaceProp || createPath(location) === createPath(path);
+          !!replaceProp || pathToString(location) === pathToString(path);
 
         navigate(to, { replace, state });
       }
