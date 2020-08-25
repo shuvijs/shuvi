@@ -1,11 +1,17 @@
 import path from 'path';
-import { IPluginConfig } from '@shuvi/types';
-import { resolvePlugins } from '../plugin';
+import { IPluginConfig, IPresetConfig } from '@shuvi/types';
+import { resolvePlugins, resolvePresets } from '../plugin';
 
 function callPlugins(context: any, ...plugins: IPluginConfig[]) {
   resolvePlugins(plugins, {
     dir: path.join(__dirname, 'fixtures/plugins')
   }).forEach(p => p.get().apply(context));
+}
+
+function callPresets(context: any, ...presets: IPresetConfig[]) {
+  resolvePresets(presets, {
+    dir: path.join(__dirname, 'fixtures/presets')
+  }).forEach(p => p.get()(context));
 }
 
 describe('plugin', () => {
@@ -68,5 +74,24 @@ describe('plugin', () => {
       expect(plugins[1].name).toBe('simple-class');
       expect(plugins[1].options).toMatchObject({ test: 2 });
     });
+  });
+});
+
+describe('preset', () => {
+  test('should accept function module as a plugin', () => {
+    const api = {};
+    callPresets(api, './simple-preset');
+    const presets = (api as any).__presets;
+    expect(presets.length).toBe(1);
+    expect(presets[0].name).toBe('simple-preset');
+  });
+
+  test('should accept module and option', () => {
+    const api = {};
+    callPresets(api, ['./simple-preset', { test: 1 }]);
+    const presets = (api as any).__presets;
+    expect(presets.length).toBe(1);
+    expect(presets[0].name).toBe('simple-preset');
+    expect(presets[0].options).toMatchObject({ test: 1 });
   });
 });

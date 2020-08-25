@@ -1,6 +1,6 @@
-import { IPluginConfig, IApi } from '@shuvi/types';
+import { IPluginConfig, IApi, IPresetConfig } from '@shuvi/types';
 import resolve from '@shuvi/utils/lib/resolve';
-import { IPlugin, IPluginSpec } from './types';
+import { IPlugin, IPluginSpec, IPreset, IPresetSpec } from './types';
 
 export interface ResolvePluginOptions {
   dir: string;
@@ -71,9 +71,53 @@ function resolvePlugin(
   };
 }
 
+function resolvePreset(
+  presetConfig: IPresetConfig,
+  resolveOptions: ResolvePluginOptions
+): IPreset {
+  let presetPath: string;
+  let options: any;
+
+  if (Array.isArray(presetConfig)) {
+    presetPath = presetConfig[0];
+    const nameOrOption = presetConfig[1];
+    if (typeof nameOrOption === 'string') {
+      options = {};
+    } else {
+      options = nameOrOption;
+    }
+  } else if (typeof presetConfig === 'string') {
+    presetPath = presetConfig;
+    options = {};
+  } else {
+    throw new Error(`Plugin must be one of type [string, array, function]`);
+  }
+
+  presetPath = resolve.sync(presetPath, { basedir: resolveOptions.dir });
+
+  const id = presetPath;
+  let preset = require(presetPath);
+  preset = preset.default || preset;
+  const presetFn: IPresetSpec = (api: IApi) => {
+    return preset(api, options);
+  };
+
+  return {
+    id,
+    get: () => presetFn
+  };
+}
+
 export function resolvePlugins(
   plugins: IPluginConfig[],
   options: ResolvePluginOptions
 ): IPlugin[] {
   return plugins.map(plugin => resolvePlugin(plugin, options));
+}
+
+export function resolvePresets(
+  presets: IPresetConfig[],
+  options: ResolvePluginOptions
+): IPreset[] {
+  return presets.map(preset => resolvePreset(preset, options));
 }
