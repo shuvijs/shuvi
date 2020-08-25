@@ -13,7 +13,7 @@ if (__DEV__) {
 }
 
 export const RouteContext = React.createContext<IRouteContextObject>({
-  outlet: null,
+  depth: 0,
   params: readOnly<IParams>({}),
   pathname: '',
   route: null

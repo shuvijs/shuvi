@@ -3,9 +3,11 @@ import {
   InitialEntry,
   State,
   To,
-  IRouteObject as RouteObject,
+  IRouteRecord as IOriginRouteRecord,
   IRouter
 } from '@shuvi/router';
+
+export type IRouteRecord = IOriginRouteRecord<React.ReactNode>;
 
 export interface IRouterContextObject {
   static: boolean;
@@ -13,14 +15,16 @@ export interface IRouterContextObject {
 }
 
 export interface IRouteContextObject {
-  outlet: React.ReactElement | null;
+  depth: number;
   params: IParams;
   pathname: string;
-  route: IRouteObject | null;
+  route: IRouteRecord | null;
 }
 
 export interface IMemoryRouterProps {
+  basename?: string;
   children?: React.ReactNode;
+  routes?: IRouteRecord[];
   initialEntries?: InitialEntry[];
   initialIndex?: number;
 }
@@ -59,16 +63,14 @@ export interface INavigateFunction {
   (delta: number): void;
 }
 
-export type IRouteObject = RouteObject<React.ReactNode>;
-
 /**
  * A "partial route" object is usually supplied by the user and may omit
  * certain properties of a real route object such as `path` and `element`,
  * which have reasonable defaults.
  */
-export interface IPartialRouteObject {
+export interface IPartialRouteRecord {
   caseSensitive?: boolean;
-  children?: IPartialRouteObject[];
+  children?: IPartialRouteRecord[];
   element?: React.ReactNode;
   path?: string;
 }

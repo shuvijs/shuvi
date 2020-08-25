@@ -1,21 +1,10 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import {
-  MemoryRouter as Router,
-  Outlet,
-  Routes,
-  Route,
-  useParams,
-  useRoutes
-} from '..';
+import { MemoryRouter as Router, useParams, RouterView } from '..';
 
 describe('route matching', () => {
   describe('using a route config object', () => {
-    function RoutesRenderer({ routes }) {
-      return useRoutes(routes);
-    }
-
-    let routes = [
+    describeRouteMatching([
       {
         path: 'courses',
         element: <Courses />,
@@ -41,57 +30,7 @@ describe('route matching', () => {
       },
       { path: '/', element: <Home /> },
       { path: '*', element: <NotFound /> }
-    ];
-
-    describeRouteMatching(<RoutesRenderer routes={routes} />);
-  });
-
-  describe('using <Routes> with <Route> elements', () => {
-    let routes = (
-      <Routes>
-        <Route path="courses" element={<Courses />}>
-          <Route path=":id" element={<Course />}>
-            <Route path="grades" element={<CourseGrades />} />
-          </Route>
-          <Route path="new" element={<NewCourse />} />
-          <Route path="/" element={<CoursesIndex />} />
-          <Route path="*" element={<CoursesNotFound />} />
-        </Route>
-        <Route path="courses" element={<Landing />}>
-          <Route path="react-fundamentals" element={<ReactFundamentals />} />
-          <Route path="advanced-react" element={<AdvancedReact />} />
-          <Route path="*" element={<NeverRender />} />
-        </Route>
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-
-    describeRouteMatching(routes);
-  });
-
-  describe('using <Routes> and the *secret menu*', () => {
-    let routes = (
-      <Routes>
-        <Courses path="courses">
-          <Course path=":id">
-            <CourseGrades path="grades" />
-          </Course>
-          <NewCourse path="new" />
-          <CoursesIndex path="/" />
-          <CoursesNotFound path="*" />
-        </Courses>
-        <Landing path="courses">
-          <ReactFundamentals path="react-fundamentals" />
-          <AdvancedReact path="advanced-react" />
-          <NeverRender path="*" />
-        </Landing>
-        <Home path="/" />
-        <NotFound path="*" />
-      </Routes>
-    );
-
-    describeRouteMatching(routes);
+    ]);
   });
 
   function describeRouteMatching(routes) {
@@ -114,9 +53,13 @@ describe('route matching', () => {
     });
   }
 
-  function renderRoutes(children, entry) {
+  function renderRoutes(routes, entry) {
     let renderer = createTestRenderer(
-      <Router initialEntries={[entry]} children={children} />
+      <Router
+        initialEntries={[entry]}
+        children={<RouterView />}
+        routes={routes}
+      />
     );
 
     return renderer.toJSON();
@@ -126,7 +69,7 @@ describe('route matching', () => {
     return (
       <div>
         <h1>Courses</h1>
-        <Outlet />
+        <RouterView />
       </div>
     );
   }
@@ -137,7 +80,7 @@ describe('route matching', () => {
     return (
       <div>
         <h2>Course {id}</h2>
-        <Outlet />
+        <RouterView />
       </div>
     );
   }
@@ -162,7 +105,7 @@ describe('route matching', () => {
     return (
       <p>
         <h1>Welcome to React Training</h1>
-        <Outlet />
+        <RouterView />
       </p>
     );
   }

@@ -1,6 +1,6 @@
-import { useLocation } from '@shuvi/app';
+import { useCurrentRoute } from '@shuvi/app';
 
 export default () => {
-  const { query } = useLocation();
+  const { query } = useCurrentRoute();
   return <div id="query">{JSON.stringify(query)}</div>;
 };

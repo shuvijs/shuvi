@@ -7,10 +7,9 @@ import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import {
   MemoryRouter as Router,
-  Routes,
-  Route,
   useNavigate,
-  useLocation
+  useCurrentRoute,
+  RouterView
 } from '..';
 
 describe('navigate state', () => {
@@ -42,19 +41,22 @@ describe('navigate state', () => {
         );
       }
 
-      let location;
+      let route;
       function About() {
-        location = useLocation();
+        route = useCurrentRoute();
         return <h1>About</h1>;
       }
 
       act(() => {
         ReactDOM.render(
-          <Router initialEntries={['/home']}>
-            <Routes>
-              <Route path="home" element={<Home />} />
-              <Route path="about" element={<About />} />
-            </Routes>
+          <Router
+            initialEntries={['/home']}
+            routes={[
+              { path: 'home', element: <Home /> },
+              { path: 'about', element: <About /> }
+            ]}
+          >
+            <RouterView />
           </Router>,
           node
         );
@@ -67,8 +69,8 @@ describe('navigate state', () => {
         button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       });
 
-      expect(location).toBeDefined();
-      expect(location).toMatchObject({
+      expect(route).toBeDefined();
+      expect(route).toMatchObject({
         state: null
       });
     });
@@ -92,19 +94,22 @@ describe('navigate state', () => {
         );
       }
 
-      let location;
+      let route;
       function About() {
-        location = useLocation();
+        route = useCurrentRoute();
         return <h1>About</h1>;
       }
 
       act(() => {
         ReactDOM.render(
-          <Router initialEntries={['/home']}>
-            <Routes>
-              <Route path="home" element={<Home />} />
-              <Route path="about" element={<About />} />
-            </Routes>
+          <Router
+            initialEntries={['/home']}
+            routes={[
+              { path: 'home', element: <Home /> },
+              { path: 'about', element: <About /> }
+            ]}
+          >
+            <RouterView />
           </Router>,
           node
         );
@@ -117,8 +122,8 @@ describe('navigate state', () => {
         button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       });
 
-      expect(location).toBeDefined();
-      expect(location).toMatchObject({
+      expect(route).toBeDefined();
+      expect(route).toMatchObject({
         state: { from: 'home' }
       });
     });

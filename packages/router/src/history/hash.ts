@@ -1,11 +1,4 @@
-import {
-  GlobalHistory,
-  To,
-  Location,
-  Blocker,
-  Transition,
-  ResolvedPath
-} from '../types';
+import { GlobalHistory, To, Location, Blocker, Transition } from '../types';
 import {
   createLocation,
   pushState,
@@ -16,19 +9,6 @@ import {
   warning
 } from '../utils';
 import BaseHisotry, { ACTION_POP } from './base';
-
-function getBaseHref() {
-  const base = window.document.querySelector('base');
-  let href = '';
-
-  if (base && base.getAttribute('href')) {
-    let url = window.location.href;
-    let hashIndex = url.indexOf('#');
-    href = hashIndex === -1 ? url : url.slice(0, hashIndex);
-  }
-
-  return href;
-}
 
 export default class HashHistory extends BaseHisotry {
   private _history: GlobalHistory = window.history;
@@ -63,14 +43,6 @@ export default class HashHistory extends BaseHisotry {
 
   block(blocker: Blocker): () => void {
     return addBlocker(this._blockers, blocker);
-  }
-
-  resolve(to: To, from?: string): ResolvedPath {
-    const toPath = resolvePath(to, from);
-    return {
-      path: toPath,
-      href: getBaseHref() + '#' + pathToString(toPath)
-    };
   }
 
   private _setup() {
