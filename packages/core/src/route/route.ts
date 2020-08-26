@@ -2,9 +2,9 @@ import eventEmitter from '@shuvi/utils/lib/eventEmitter';
 import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { join, relative } from 'path';
-import { IRouteConfig } from '../types';
+import { IUserRouteConfig } from '../types';
 
-export type SubscribeFn = (v: IRouteConfig[]) => void;
+export type SubscribeFn = (v: IUserRouteConfig[]) => void;
 
 const jsExtensions = ['js', 'jsx', 'ts', 'tsx'];
 
@@ -96,7 +96,7 @@ export class Route {
     this._pagesDir = pagesDir;
   }
 
-  async getRoutes(): Promise<IRouteConfig[]> {
+  async getRoutes(): Promise<IUserRouteConfig[]> {
     const files = await recursiveReadDir(this._pagesDir, {
       filter: filterRouteFile
     });
@@ -110,24 +110,24 @@ export class Route {
     }
   }
 
-  private _getRoutes(files: string[]): IRouteConfig[] {
+  private _getRoutes(files: string[]): IUserRouteConfig[] {
     const transformedFiles = transformFilesObject(files);
 
     const generateRoute = (
       fileToTransform: IFilesObject,
       pageDirectory: string
     ) => {
-      const routes: IRouteConfig[] = [];
+      const routes: IUserRouteConfig[] = [];
       Object.entries(fileToTransform).forEach(
         ([fileName, nestedRoute], _, arr) => {
-          let route: IRouteConfig;
+          let route: IUserRouteConfig;
           let routePath = normalizeRoutePath(normalizeFilePath(fileName));
           {
             const isDirectory = Object.values(nestedRoute).length > 0;
 
             route = {
               path: routePath
-            } as IRouteConfig;
+            } as IUserRouteConfig;
 
             // if a directory have _layout, treat it as its own component
             if (isDirectory) {

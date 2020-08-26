@@ -1,13 +1,14 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
 import { Runtime } from '@shuvi/types';
 import { Router } from '@shuvi/router-react';
+import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';
 import { createMemoryHistory, createRouter } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
+import { normalizeRoutes } from '../utils/router';
 import { createRedirector } from '../utils/createRedirector';
 
 import IAppComponent = Runtime.IAppComponent;
@@ -27,19 +28,29 @@ export class ReactServerView implements IReactServerView {
     await Loadable.preloadAll();
 
     const redirector = createRedirector();
-    const history = createMemoryHistory({
-      initialEntries: [url],
-      initialIndex: 0
+    const router = createRouter({
+      routes: normalizeRoutes(routes),
+      history: createMemoryHistory({
+        initialEntries: [url],
+        initialIndex: 0
+      })
     });
-    const { pathname, query } = history.location;
-
+    let { pathname, query, matches } = router.current;
+    // TODO: handler no matches
+    if (!matches) {
+      matches = [];
+    }
     const routeProps: { [x: string]: any } = {};
-    const matchedRoutes = matchRoutes(routes, pathname);
     const pendingDataFetchs: Array<() => Promise<void>> = [];
     const params: IParams = {};
-    for (let index = 0; index < matchedRoutes.length; index++) {
-      const matchedRoute = matchedRoutes[index];
-      const comp = matchedRoute.route.component as
+    for (let index = 0; index < matches.length; index++) {
+      const matchedRoute = matches[index];
+      const appRoute = matchedRoute.route as Runtime.IAppRouteConfig;
+      if (appRoute.name === ROUTE_NOT_FOUND_NAME) {
+        // set response code
+        appContext.statusCode = 404;
+      }
+      const comp = appRoute.component as
         | IRouteComponent<React.Component, any>
         | undefined;
       Object.assign(params, matchedRoute.params);
@@ -53,7 +64,7 @@ export class ReactServerView implements IReactServerView {
             params: matchedRoute.params,
             redirect: redirector.handler
           });
-          routeProps[matchedRoute.route.id] = props || {};
+          routeProps[appRoute.id] = props || {};
         });
       }
     }
@@ -90,15 +101,11 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
     try {
       htmlContent = renderToString(
-        <Router static router={createRouter(history)}>
+        <Router static router={router}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >
-            <AppContainer
-              routes={routes}
-              routeProps={routeProps}
-              appContext={appContext}
-            >
+            <AppContainer routeProps={routeProps} appContext={appContext}>
               <AppComponent {...appInitialProps} />
             </AppContainer>
           </LoadableContext.Provider>

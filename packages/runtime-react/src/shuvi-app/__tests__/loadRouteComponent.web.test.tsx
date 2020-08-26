@@ -36,7 +36,7 @@ describe('loadRouteComponent [web]', () => {
   ];
 
   it('basic', async () => {
-    const initialProps = {
+    const routeProps = {
       firstPage: {
         data: 'data from server'
       }
@@ -45,7 +45,7 @@ describe('loadRouteComponent [web]', () => {
     const { root, toJSON } = renderWithRoutes(
       {
         routes,
-        initialProps
+        routeProps
       },
       { route: '/first' }
     );
@@ -54,7 +54,7 @@ describe('loadRouteComponent [web]', () => {
       await wait(1100);
     });
 
-    // Spread initialProps as props
+    // Spread routeProps as props
     expect(root.findByType(FirstPage).props).toMatchObject({
       data: 'data from server'
     });

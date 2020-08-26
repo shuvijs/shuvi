@@ -1,5 +1,5 @@
 import {
-  IRouteObject,
+  IRouteRecord,
   IRouteMatch,
   IRouteBranch,
   IParams,
@@ -9,7 +9,7 @@ import { matchPath } from './matchPath';
 import { joinPaths, resolvePath } from './utils';
 
 export interface IRouteBaseObject<Element = any>
-  extends Omit<IRouteObject<Element>, 'children' | 'element'> {
+  extends Omit<IRouteRecord<Element>, 'children' | 'element'> {
   children?: IRouteBaseObject<Element>[];
 }
 

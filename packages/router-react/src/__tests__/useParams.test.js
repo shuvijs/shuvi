@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Outlet, Routes, Route, useParams } from '..';
+import { MemoryRouter as Router, RouterView, useParams } from '..';
 
 describe('useParams', () => {
   describe("when the route isn't matched", () => {
@@ -31,10 +31,16 @@ describe('useParams', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/home']}>
-          <Routes>
-            <Route path="/home" element={<Home />} />
-          </Routes>
+        <Router
+          initialEntries={['/home']}
+          routes={[
+            {
+              path: '/home',
+              element: <Home />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -52,10 +58,16 @@ describe('useParams', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/blog/shuvi-router']}>
-          <Routes>
-            <Route path="/blog/:slug" element={<BlogPost />} />
-          </Routes>
+        <Router
+          initialEntries={['/blog/shuvi-router']}
+          routes={[
+            {
+              path: '/blog/:slug',
+              element: <BlogPost />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -78,18 +90,28 @@ describe('useParams', () => {
           return (
             <div>
               <h1>User Dashboard</h1>
-              <Outlet />
+              <RouterView />
             </div>
           );
         }
 
         createTestRenderer(
-          <Router initialEntries={['/users/mjackson/courses/shuvi-router']}>
-            <Routes>
-              <Route path="users/:username" element={<UserDashboard />}>
-                <Route path="courses/:course" element={<Course />} />
-              </Route>
-            </Routes>
+          <Router
+            initialEntries={['/users/mjackson/courses/shuvi-router']}
+            routes={[
+              {
+                path: 'users/:username',
+                element: <UserDashboard />,
+                children: [
+                  {
+                    path: 'courses/:course',
+                    element: <Course />
+                  }
+                ]
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -111,10 +133,16 @@ describe('useParams', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/blog/react%20router']}>
-          <Routes>
-            <Route path="/blog/:slug" element={<BlogPost />} />
-          </Routes>
+        <Router
+          initialEntries={['/blog/react%20router']}
+          routes={[
+            {
+              path: '/blog/:slug',
+              element: <BlogPost />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -134,10 +162,16 @@ describe('useParams', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/blog/react+router+is%20awesome']}>
-          <Routes>
-            <Route path="/blog/:slug" element={<BlogPost />} />
-          </Routes>
+        <Router
+          initialEntries={['/blog/react+router+is%20awesome']}
+          routes={[
+            {
+              path: '/blog/:slug',
+              element: <BlogPost />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -166,10 +200,16 @@ describe('useParams', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/blog/react%2router']}>
-          <Routes>
-            <Route path="/blog/:slug" element={<BlogPost />} />
-          </Routes>
+        <Router
+          initialEntries={['/blog/react%2router']}
+          routes={[
+            {
+              path: '/blog/:slug',
+              element: <BlogPost />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 

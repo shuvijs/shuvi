@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Outlet, Routes, Route, useParams } from '..';
+import { MemoryRouter as Router, useParams, RouterView } from '..';
 
 describe('nested routes', () => {
   it('gets all params from parent routes', () => {
@@ -8,7 +8,7 @@ describe('nested routes', () => {
       return (
         <div>
           <h1>Users</h1>
-          <Outlet />
+          <RouterView />
         </div>
       );
     }
@@ -18,11 +18,7 @@ describe('nested routes', () => {
       return (
         <div>
           <h1>User: {username}</h1>
-          <Routes>
-            <Route path="courses" element={<Courses />}>
-              <Route path=":courseId" element={<Course />} />
-            </Route>
-          </Routes>
+          <RouterView />
         </div>
       );
     }
@@ -31,7 +27,7 @@ describe('nested routes', () => {
       return (
         <div>
           <h1>Courses</h1>
-          <Outlet />
+          <RouterView />
         </div>
       );
     }
@@ -51,12 +47,34 @@ describe('nested routes', () => {
     }
 
     let renderer = createTestRenderer(
-      <Router initialEntries={['/users/michael/courses/routing']}>
-        <Routes>
-          <Route path="users" element={<Users />}>
-            <Route path=":username/*" element={<User />} />
-          </Route>
-        </Routes>
+      <Router
+        initialEntries={['/users/michael/courses/routing']}
+        routes={[
+          {
+            path: 'users',
+            element: <Users />,
+            children: [
+              {
+                path: ':username',
+                element: <User />,
+                children: [
+                  {
+                    path: 'courses',
+                    element: <Courses />,
+                    children: [
+                      {
+                        path: ':courseId',
+                        element: <Course />
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]}
+      >
+        <RouterView />
       </Router>
     );
 

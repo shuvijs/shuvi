@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, useRouter } from '..';
+import { MemoryRouter as Router, RouterView, useRouter } from '..';
 
 describe('uesRouter', () => {
   it('returns the current router object', () => {
@@ -11,29 +11,39 @@ describe('uesRouter', () => {
     }
 
     createTestRenderer(
-      <Router initialEntries={['/home?the=search#the-hash']}>
-        <Routes>
-          <Route path="/home" element={<Home />} />
-        </Routes>
+      <Router
+        initialEntries={['/home?the=search#the-hash']}
+        routes={[
+          {
+            path: '/home',
+            element: <Home />
+          }
+        ]}
+      >
+        <RouterView />
       </Router>
     );
 
     expect(typeof router).toBe('object');
-    expect(router).toMatchObject({
-      back: expect.any(Function),
-      forward: expect.any(Function),
-      go: expect.any(Function),
-      current: expect.objectContaining({
-        hash: '#the-hash',
-        pathname: '/home',
-        query: {
-          the: 'search'
-        },
-        search: '?the=search'
-      }),
-      onChange: expect.any(Function),
-      push: expect.any(Function),
-      replace: expect.any(Function)
-    });
+    expect(router).toMatchObject(
+      expect.objectContaining({
+        current: expect.objectContaining({
+          hash: '#the-hash',
+          pathname: '/home',
+          query: {
+            the: 'search'
+          },
+          params: {},
+          search: '?the=search'
+        }),
+        back: expect.any(Function),
+        forward: expect.any(Function),
+        go: expect.any(Function),
+        push: expect.any(Function),
+        replace: expect.any(Function),
+        resolve: expect.any(Function),
+        onChange: expect.any(Function)
+      })
+    );
   });
 });

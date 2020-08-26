@@ -1,19 +1,21 @@
+import { History, Path, State, Listener } from './history';
+
 export type IParams = Record<string, string>;
 
-export interface IRouteObject<Element = any> {
+export interface IRouteRecord<Element = any> {
   caseSensitive?: boolean;
-  children?: IRouteObject<Element>[];
+  children?: IRouteRecord<Element>[];
   element?: Element; // For react will be React.Element
   path: string;
 }
 
-export interface IRouteMatch<T = IRouteObject> {
+export interface IRouteMatch<T = IRouteRecord> {
   route: T;
   pathname: string;
   params: IParams;
 }
 
-export type IRouteBranch<T = IRouteObject> = [string, T[], number[]];
+export type IRouteBranch<T = IRouteRecord> = [string, T[], number[]];
 
 export type IPathPattern =
   | string
@@ -25,9 +27,32 @@ export interface IPathMatch {
   params: IParams;
 }
 
-export type IPartialRouteObject<Element = any> = {
+export type IPartialRouteRecord<Element = any> = {
   caseSensitive?: boolean;
-  children?: IPartialRouteObject<Element>[];
+  children?: IPartialRouteRecord<Element>[];
   element?: Element; // For react will be React.Element
   path?: string;
 };
+
+export interface IRoute extends Path {
+  params: IParams;
+  state: State;
+  matches: IRouteMatch[] | null;
+
+  // todo?
+  // fullpath: string?
+  // href: string?
+}
+
+export interface IRouter {
+  current: IRoute;
+  action: History['action'];
+  push: History['push'];
+  replace: History['replace'];
+  go: History['go'];
+  back: History['back'];
+  block: History['block'];
+  resolve: History['resolve'];
+  forward(): void;
+  onChange: (listener: Listener) => void;
+}

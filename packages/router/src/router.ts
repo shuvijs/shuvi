@@ -1,46 +1,100 @@
-import { History, Location, Listener } from './types';
+import {
+  History,
+  IRouter,
+  IRoute,
+  IRouteRecord,
+  IPartialRouteRecord,
+  ResolvedPath,
+  To
+} from './types';
+import { matchRoutes } from './matchRoutes';
+import { createRoutesFromArray } from './createRoutesFromArray';
+import { normalizeBase, joinPaths } from './utils';
 
-export interface IRouter {
-  current: Location;
-  action: History['action'];
-  push: History['push'];
-  replace: History['replace'];
-  go: History['go'];
-  back: History['back'];
-  block: History['block'];
-  resolve: History['resolve'];
-  forward(): void;
-  onChange: (listener: Listener) => void;
+interface IRouterOptions {
+  history: History;
+  routes: IPartialRouteRecord[];
+  caseSensitive?: boolean;
+  basename?: string;
 }
 
-export const createRouter = (history: History): IRouter => {
-  return {
-    // @ts-ignore
-    get current() {
-      return history.location;
-    },
-    get action() {
-      return history.action;
-    },
-    push: function (...args) {
-      history.push(...args);
-    },
-    replace: function (...args) {
-      history.replace(...args);
-    },
-    go: function (...args) {
-      history.go(...args);
-    },
-    back: function (...args) {
-      history.back(...args);
-    },
-    forward: function (...args) {
-      history.forward(...args);
-    },
-    block: history.block,
-    onChange: function (listener) {
-      return history.listen(listener);
-    },
-    resolve: history.resolve
-  };
+class Router implements IRouter {
+  private _basename: string;
+  private _history: History;
+  private _routes: IRouteRecord[];
+  private _current: IRoute;
+
+  constructor({ basename = '', history, routes }: IRouterOptions) {
+    this._basename = normalizeBase(basename);
+    this._history = history;
+    this._routes = createRoutesFromArray(routes);
+    this._current = this._getCurrent();
+    this._history.listen(() => (this._current = this._getCurrent()));
+  }
+
+  get current(): IRoute {
+    return this._current;
+  }
+
+  get action() {
+    return this._history.action;
+  }
+
+  push(to: any, state?: any): void {
+    this._history.push(to, state);
+  }
+
+  replace(to: any, state?: any) {
+    this._history.replace(to, state);
+  }
+
+  go(delta: number) {
+    this._history.go(delta);
+  }
+
+  back() {
+    this._history.back();
+  }
+
+  forward() {
+    this._history.forward();
+  }
+
+  block(blocker: any) {
+    return this._history.block(blocker);
+  }
+
+  onChange(listener: any) {
+    return this._history.listen(listener);
+  }
+
+  resolve(to: To, from?: any): ResolvedPath {
+    return this._history.resolve(
+      to,
+      from ? joinPaths([this._basename, from]) : this._basename
+    );
+  }
+
+  private _getCurrent() {
+    const {
+      _routes: routes,
+      _basename: basename,
+      _history: { location }
+    } = this;
+    const matches = matchRoutes(routes, location, basename);
+    const params = matches ? matches[matches.length - 1].params : {};
+    return {
+      matches,
+      params,
+      pathname: location.pathname,
+      search: location.search,
+      hash: location.hash,
+      query: location.query,
+      state: location.state
+    };
+  }
+}
+
+export const createRouter = (options: IRouterOptions): IRouter => {
+  return new Router(options);
 };

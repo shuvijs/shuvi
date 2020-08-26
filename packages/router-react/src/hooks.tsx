@@ -1,10 +1,5 @@
-import React from 'react';
-import { joinPaths } from '@shuvi/router/lib/utils';
+import React, { useReducer } from 'react';
 import {
-  createRoutesFromArray,
-  matchPath,
-  matchRoutes,
-  IPathPattern,
   IParams,
   IPathMatch,
   Blocker,
@@ -12,26 +7,24 @@ import {
   State,
   To,
   Transition,
-  IRouter
+  IRouter,
+  IPathPattern,
+  matchPath
 } from '@shuvi/router';
-import { Outlet } from './Outlet';
 import { __DEV__ } from './constants';
 import { RouterContext, RouteContext } from './contexts';
-import { invariant, warning, warningOnce, readOnly } from './utils';
-import { INavigateFunction, IPartialRouteObject, IRouteObject } from './types';
+import { invariant, warning } from './utils';
+import { INavigateFunction } from './types';
 
-export function useLocation() {
+export function useCurrentRoute() {
   const router = useRouter();
-  let [location, setLocation] = React.useState(router.current);
+  const forceupdate = useReducer(s => s * -1, 1)[1];
 
   if (typeof window !== 'undefined') {
-    React.useLayoutEffect(
-      () => router.onChange(({ location }) => setLocation(location)),
-      [router]
-    );
+    React.useLayoutEffect(() => router.onChange(() => forceupdate()), [router]);
   }
 
-  return location;
+  return router.current;
 }
 
 /**
@@ -80,7 +73,6 @@ export function useHref(to: To): string {
 
   const { router } = React.useContext(RouterContext);
   const path = useResolvedPath(to);
-
   return router.resolve(path).href;
 }
 
@@ -102,7 +94,7 @@ export function useMatch(pattern: IPathPattern): IPathMatch | null {
     `useMatch() may be used only in the context of a <Router> component.`
   );
 
-  const { pathname } = useLocation();
+  const { pathname } = useCurrentRoute();
   return matchPath(pattern, pathname);
 }
 
@@ -131,7 +123,8 @@ export function useNavigate(): INavigateFunction {
           router.go(to);
         } else {
           let { path } = router.resolve(to, pathname);
-          (!!options.replace ? router.replace : router.push)(
+          (!!options.replace ? router.replace : router.push).call(
+            router,
             path,
             options.state
           );
@@ -151,14 +144,6 @@ export function useNavigate(): INavigateFunction {
 }
 
 /**
- * Returns the element for the child route at this level of the route
- * hierarchy. Used internally by <Outlet> to render child routes.
- */
-export function useOutlet(): React.ReactElement | null {
-  return React.useContext(RouteContext).outlet;
-}
-
-/**
  * Returns an object of key/value pairs of the dynamic params from the current
  * URL that were matched by the route path.
  */
@@ -173,87 +158,6 @@ export function useResolvedPath(to: To): Path {
   const { router } = React.useContext(RouterContext);
   const { pathname } = React.useContext(RouteContext);
   return React.useMemo(() => router.resolve(to, pathname).path, [to, pathname]);
-}
-
-/**
- * Returns the element of the route that matched the current location, prepared
- * with the correct context to render the remainder of the route tree. Route
- * elements in the tree must render an <Outlet> to render their child route's
- * element.
- */
-export function useRoutes(
-  partialRoutes: IPartialRouteObject[],
-  basename = ''
-): React.ReactElement | null {
-  invariant(
-    useInRouterContext(),
-    `useRoutes() may be used only in the context of a <Router> component.`
-  );
-
-  let routes = React.useMemo(
-    () => createRoutesFromArray(partialRoutes, <Outlet />),
-    [partialRoutes]
-  );
-
-  return useRoutes_(routes, basename);
-}
-
-export function useRoutes_(
-  routes: IRouteObject[],
-  basename = ''
-): React.ReactElement | null {
-  let {
-    route: parentRoute,
-    pathname: parentPathname,
-    params: parentParams
-  } = React.useContext(RouteContext);
-
-  if (__DEV__) {
-    // You won't get a warning about 2 different <Routes> under a <Route>
-    // without a trailing *, but this is a best-effort warning anyway since we
-    // cannot even give the warning unless they land at the parent route.
-    let parentPath = parentRoute && parentRoute.path;
-    warningOnce(
-      parentPathname,
-      !parentRoute || parentRoute.path.endsWith('*'),
-      `You rendered descendant <Routes> (or called \`useRoutes\`) at "${parentPathname}"` +
-        ` (under <Route path="${parentPath}">) but the parent route path has no trailing "*".` +
-        ` This means if you navigate deeper, the parent won't match anymore and therefore` +
-        ` the child routes will never render.` +
-        `\n\n` +
-        `Please change the parent <Route path="${parentPath}"> to <Route path="${parentPath}/*">.`
-    );
-  }
-
-  basename = basename ? joinPaths([parentPathname, basename]) : parentPathname;
-
-  const location = useLocation();
-  const matches = React.useMemo(() => matchRoutes(routes, location, basename), [
-    location,
-    routes,
-    basename
-  ]);
-
-  if (!matches) {
-    return null;
-  }
-
-  // Otherwise render an element.
-  let element = matches.reduceRight((outlet, { params, pathname, route }) => {
-    return (
-      <RouteContext.Provider
-        children={route.element}
-        value={{
-          outlet,
-          params: readOnly<IParams>({ ...parentParams, ...params }),
-          pathname: joinPaths([basename, pathname]),
-          route
-        }}
-      />
-    );
-  }, null as React.ReactElement | null);
-
-  return element;
 }
 
 /**

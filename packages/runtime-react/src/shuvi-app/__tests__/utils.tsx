@@ -1,24 +1,24 @@
-import { renderWithRouter } from '../router/__tests__/utils';
-import renderRoutes from '../router/renderRoutes';
+import { renderRoutes } from '../utils/__tests__/utils';
+import { normalizeRoutes } from '../utils/router';
 import { Runtime } from '@shuvi/types';
 
 export const renderWithRoutes = (
   {
     routes = [],
-    initialProps = {},
+    routeProps = {},
     appContext = {}
   }: {
-    routes?: Runtime.IRoute[];
-    initialProps?: Record<string, any>;
+    routes?: Runtime.IAppRouteConfig[];
+    routeProps?: Record<string, any>;
     appContext?: Record<string, any>;
   } = {},
   { route = '/' }: { route?: string } = {}
 ) => {
-  return renderWithRouter(
-    renderRoutes(routes, {
-      initialProps,
+  return renderRoutes(
+    normalizeRoutes(routes, {
+      routeProps,
       appContext
-    })!,
+    }),
     {
       route
     }

@@ -25,7 +25,7 @@ describe('loadRouteComponent [node]', () => {
     }
   ];
 
-  const initialProps = {
+  const routeProps = {
     firstPage: {
       test: '123'
     }
@@ -33,13 +33,13 @@ describe('loadRouteComponent [node]', () => {
 
   it('basic', async () => {
     const { root, toJSON } = renderWithRoutes(
-      { routes, initialProps },
+      { routes, routeProps },
       { route: '/first' }
     );
 
     await act(async () => {});
 
-    // Spread initialProps as props
+    // Spread routeProps as props
     expect(root.findByType(FirstPage).props).toMatchObject({
       test: '123'
     });
@@ -50,9 +50,9 @@ describe('loadRouteComponent [node]', () => {
       </div>
     `);
 
-    // No getInitialProps
+    // No getrouteProps
     const { toJSON: secondToJson } = renderWithRoutes(
-      { routes, initialProps },
+      { routes, routeProps },
       {
         route: '/second'
       }

@@ -1,19 +1,19 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { IRouteConfig } from '@shuvi/core';
+import { IUserRouteConfig } from '@shuvi/core';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
 };
 
-type RouteKeysWithoutChildren = keyof Omit<IRouteConfig, 'children'>;
+type RouteKeysWithoutChildren = keyof Omit<IUserRouteConfig, 'children'>;
 
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
 function serializeRoutesImpl(
-  routes: IRouteConfig[],
+  routes: IUserRouteConfig[],
   templates: Templates<any> = {},
   parentPath: string = ''
 ): string {
@@ -51,7 +51,7 @@ function serializeRoutesImpl(
   return `[${res}]`;
 }
 
-export function serializeRoutes<T extends IRouteConfig = IRouteConfig>(
+export function serializeRoutes<T extends IUserRouteConfig = IUserRouteConfig>(
   routes: T[],
   templates: Templates<T> = {}
 ): string {
@@ -59,10 +59,10 @@ export function serializeRoutes<T extends IRouteConfig = IRouteConfig>(
 }
 
 export function normalizeRoutes(
-  routes: IRouteConfig[],
+  routes: IUserRouteConfig[],
   option: { componentDir: string }
-): IRouteConfig[] {
-  const res: IRouteConfig[] = [];
+): IUserRouteConfig[] {
+  const res: IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
     if (route.component) {

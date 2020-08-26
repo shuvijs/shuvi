@@ -1,5 +1,5 @@
 module.exports = {
-  ssr: true,
+  ssr: false,
   routes: [
     {
       path: '/',

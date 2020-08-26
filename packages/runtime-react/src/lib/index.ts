@@ -3,7 +3,7 @@ import { IApi, Runtime, APIHooks } from '@shuvi/types';
 import { resolveAppFile, resolveDep } from './paths';
 import { config as configBundler } from './bundler/config';
 
-import RouteConfig = Runtime.IRouteConfig;
+import UserRouteConfig = Runtime.IUserRouteConfig;
 
 class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
   private _api!: IApi;
@@ -22,7 +22,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     });
     api.addAppExport(
       '@shuvi/router-react',
-      '{ useParams, useRouter, useLocation, Link, Outlet }'
+      '{ useParams, useRouter, useCurrentRoute, Link, RouterView }'
     );
     configBundler(api);
 
@@ -40,7 +40,7 @@ ${fileContent}
 
   componentTemplate(
     componentModule: string,
-    route: RouteConfig & { id: string }
+    route: UserRouteConfig & { id: string }
   ) {
     return `
 loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${componentModule}"), {

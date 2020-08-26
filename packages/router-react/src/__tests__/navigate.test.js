@@ -5,7 +5,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { MemoryRouter as Router, Routes, Route, useNavigate } from '..';
+import { MemoryRouter as Router, useNavigate, RouterView } from '..';
 
 describe('navigate', () => {
   let node;
@@ -42,11 +42,20 @@ describe('navigate', () => {
 
       act(() => {
         ReactDOM.render(
-          <Router initialEntries={['/home']}>
-            <Routes>
-              <Route path="home" element={<Home />} />
-              <Route path="about" element={<About />} />
-            </Routes>
+          <Router
+            initialEntries={['/home']}
+            routes={[
+              {
+                path: 'home',
+                element: <Home />
+              },
+              {
+                path: 'about',
+                element: <About />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>,
           node
         );
@@ -90,11 +99,20 @@ describe('navigate', () => {
 
       act(() => {
         ReactDOM.render(
-          <Router initialEntries={['/home']}>
-            <Routes>
-              <Route path="home" element={<Home />} />
-              <Route path="about" element={<About />} />
-            </Routes>
+          <Router
+            initialEntries={['/home']}
+            routes={[
+              {
+                path: 'home',
+                element: <Home />
+              },
+              {
+                path: 'about',
+                element: <About />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>,
           node
         );

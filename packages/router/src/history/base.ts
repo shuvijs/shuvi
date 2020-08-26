@@ -9,7 +9,12 @@ import {
   To,
   Action
 } from '../types';
-import { createLocation, createEvents } from '../utils';
+import {
+  createLocation,
+  createEvents,
+  resolvePath,
+  pathToString
+} from '../utils';
 
 /**
  * A POP indicates a change to an arbitrary index in the history stack, such
@@ -56,7 +61,6 @@ export default abstract class BaseHistory implements History {
   protected abstract getIndexAndLocation(): [number /* index */, Location];
 
   // history interface
-  abstract resolve(to: To, from?: string): ResolvedPath;
   abstract push(to: To, state?: object | null | undefined): void;
   abstract replace(to: To, state?: object | null | undefined): void;
   abstract go(delta: number): void;
@@ -72,6 +76,14 @@ export default abstract class BaseHistory implements History {
 
   listen(listener: Listener) {
     return this._listeners.push(listener);
+  }
+
+  resolve(to: any, from?: any): ResolvedPath {
+    const toPath = resolvePath(to, from);
+    return {
+      path: toPath,
+      href: pathToString(toPath)
+    };
   }
 
   protected transitionTo(

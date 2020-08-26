@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Outlet, Routes, Route, useParams } from '..';
+import { MemoryRouter as Router, RouterView, useParams } from '..';
 
 describe('<Routes> with a basename', () => {
   function User() {
@@ -8,7 +8,7 @@ describe('<Routes> with a basename', () => {
     return (
       <div>
         <h1>User: {userId}</h1>
-        <Outlet />
+        <RouterView />
       </div>
     );
   }
@@ -17,16 +17,27 @@ describe('<Routes> with a basename', () => {
     return <h1>Dashboard</h1>;
   }
 
-  let userRoute = (
-    <Route path="users/:userId" element={<User />}>
-      <Route path="dashboard" element={<Dashboard />} />
-    </Route>
-  );
+  let userRoutes = [
+    {
+      path: 'users/:userId',
+      element: <User />,
+      children: [
+        {
+          path: 'dashboard',
+          element: <Dashboard />
+        }
+      ]
+    }
+  ];
 
   it('does not match when the URL pathname does not start with that base', () => {
     let renderer = createTestRenderer(
-      <Router initialEntries={['/app/users/michael/dashboard']}>
-        <Routes basename="/base">{userRoute}</Routes>
+      <Router
+        basename="/base"
+        initialEntries={['/app/users/michael/dashboard']}
+        routes={userRoutes}
+      >
+        <RouterView />
       </Router>
     );
 
@@ -35,8 +46,12 @@ describe('<Routes> with a basename', () => {
 
   it('matches when the URL pathname starts with that base', () => {
     let renderer = createTestRenderer(
-      <Router initialEntries={['/app/users/michael/dashboard']}>
-        <Routes basename="/app">{userRoute}</Routes>
+      <Router
+        basename="/app"
+        initialEntries={['/app/users/michael/dashboard']}
+        routes={userRoutes}
+      >
+        <RouterView />
       </Router>
     );
 

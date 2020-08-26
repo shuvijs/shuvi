@@ -7,14 +7,18 @@ import {
   IPaths,
   IShuviMode
 } from '@shuvi/types';
-import { App, IRouteConfig, IFile } from '@shuvi/core';
+import { App, IUserRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hooks';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
-import { PUBLIC_PATH, ROUTE_RESOURCE_QUERYSTRING } from '../constants';
+import {
+  PUBLIC_PATH,
+  ROUTE_RESOURCE_QUERYSTRING,
+  ROUTE_NOT_FOUND_NAME
+} from '../constants';
 import { runtime } from '../runtime';
 import { defaultConfig, IConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
@@ -44,7 +48,7 @@ class Api extends Hookable implements IApi {
   private _app!: App;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
-  private _routes: IRouteConfig[] = [];
+  private _routes: IUserRouteConfig[] = [];
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
@@ -145,7 +149,7 @@ class Api extends Hookable implements IApi {
     this._app.setPluginModule(module);
   }
 
-  async setRoutes(routes: IRouteConfig[]) {
+  async setRoutes(routes: IUserRouteConfig[]) {
     routes = await this.callHook<APIHooks.IHookAppRoutes>({
       name: 'app:routes',
       initialValue: routes
@@ -157,7 +161,7 @@ class Api extends Hookable implements IApi {
     routes.push({
       path: '*',
       component: this.resolveAppFile('core', '404'),
-      name: '404'
+      name: ROUTE_NOT_FOUND_NAME
     });
 
     this._routes = routes;
@@ -279,7 +283,7 @@ class Api extends Hookable implements IApi {
     await this.callHook<APIHooks.IHookDestory>('destory');
   }
 
-  private _getPluginApi(): PluginApi {
+  getPluginApi(): PluginApi {
     if (!this._pluginApi) {
       this._pluginApi = createPluginApi(this);
     }
@@ -303,13 +307,13 @@ class Api extends Hookable implements IApi {
     });
     const allPlugins = this._presetPlugins.concat(this._plugins);
     for (const plugin of allPlugins) {
-      plugin.get().apply(this._getPluginApi());
+      plugin.get().apply(this.getPluginApi());
     }
   }
 
   private _initPreset(preset: IPreset) {
     const { id, get: getPreset } = preset;
-    const { presets, plugins } = getPreset()(this._getPluginApi());
+    const { presets, plugins } = getPreset()(this.getPluginApi());
 
     if (presets) {
       invariant(
