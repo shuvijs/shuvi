@@ -42,7 +42,6 @@ if (module.hot) {
 
     let AppComponent = require('@shuvi/app/core/app').default;
     let routes = require('@shuvi/app/core/routes').default;
-    debugger;
     app.rerender({routes,AppComponent});
   });
 }
