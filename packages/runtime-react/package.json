@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@shuvi/app": "^0.0.1-beta.50",
+    "@shuvi/shared": "^0.0.1-beta.50",
     "@shuvi/router-react": "^0.0.1-beta.50",
     "@shuvi/utils": "^0.0.1-beta.50",
     "enhanced-resolve": "5.0.0-beta.4",

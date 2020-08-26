@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import {
-  IRouteConfig,
-  IRoute,
+  IUserRouteConfig,
+  IAppRouteConfig,
   ITemplateData,
   IApplication,
   IAppRenderFn,
@@ -10,18 +10,26 @@ import {
   IInitAppPlugins,
   IAppPluginRecord
 } from '@shuvi/core';
-import { IRouteMatch, IRouteObject } from '@shuvi/router';
+import {
+  IRouteMatch,
+  IRouteRecord,
+  IPartialRouteRecord,
+  IRouter
+} from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
 
 export {
-  IRouteConfig,
-  IRoute,
+  IUserRouteConfig,
+  IAppRouteConfig,
   IApplication,
   IAppPlugin,
   IInitAppPlugins,
-  IAppPluginRecord
+  IAppPluginRecord,
+  IRouteRecord,
+  IPartialRouteRecord,
+  IRouter
 };
 
 export type IData = {
@@ -37,7 +45,7 @@ export interface IRequest {
   headers: IncomingHttpHeaders;
 }
 
-export type IMatchedRoute<T = IRouteObject> = IRouteMatch<T>;
+export type IMatchedRoute<T = IRouteRecord> = IRouteMatch<T>;
 
 export type IHtmlAttrs = { textContent?: string } & {
   [x: string]: string | number | undefined | boolean;
@@ -198,7 +206,7 @@ export interface IRuntime<CompType = unknown> {
 
   componentTemplate(
     componentModule: string,
-    route: IRouteConfig & { id: string }
+    route: IUserRouteConfig & { id: string }
   ): string;
 
   getAppModulePath(): string;

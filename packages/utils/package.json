@@ -11,6 +11,7 @@
   "files": [
     "lib"
   ],
+  "sideEffects": false,
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, Outlet, useHref } from '..';
+import { MemoryRouter as Router, RouterView, useHref } from '..';
 
 describe('useHref', () => {
   describe('to a child route', () => {
@@ -12,10 +12,16 @@ describe('useHref', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/courses']}>
-          <Routes>
-            <Route path="courses" element={<Courses />} />
-          </Routes>
+        <Router
+          initialEntries={['/courses']}
+          routes={[
+            {
+              path: 'courses',
+              element: <Courses />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -31,10 +37,16 @@ describe('useHref', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/courses/']}>
-            <Routes>
-              <Route path="courses" element={<Courses />} />
-            </Routes>
+          <Router
+            initialEntries={['/courses/']}
+            routes={[
+              {
+                path: 'courses',
+                element: <Courses />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -51,10 +63,16 @@ describe('useHref', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/courses']}>
-            <Routes>
-              <Route path="courses" element={<Courses />} />
-            </Routes>
+          <Router
+            initialEntries={['/courses']}
+            routes={[
+              {
+                path: 'courses',
+                element: <Courses />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -72,10 +90,16 @@ describe('useHref', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/courses']}>
-          <Routes>
-            <Route path="courses" element={<Courses />} />
-          </Routes>
+        <Router
+          initialEntries={['/courses']}
+          routes={[
+            {
+              path: 'courses',
+              element: <Courses />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -91,10 +115,16 @@ describe('useHref', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/courses/']}>
-            <Routes>
-              <Route path="/courses/" element={<Courses />} />
-            </Routes>
+          <Router
+            initialEntries={['/courses/']}
+            routes={[
+              {
+                path: 'courses',
+                element: <Courses />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -111,10 +141,16 @@ describe('useHref', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/courses']}>
-            <Routes>
-              <Route path="courses" element={<Courses />} />
-            </Routes>
+          <Router
+            initialEntries={['/courses']}
+            routes={[
+              {
+                path: 'courses',
+                element: <Courses />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -132,10 +168,16 @@ describe('useHref', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/courses/advanced-react']}>
-          <Routes>
-            <Route path="courses/advanced-react" element={<AdvancedReact />} />
-          </Routes>
+        <Router
+          initialEntries={['/courses/advanced-react']}
+          routes={[
+            {
+              path: 'courses/advanced-react',
+              element: <AdvancedReact />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -151,13 +193,16 @@ describe('useHref', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/courses/advanced-react/']}>
-            <Routes>
-              <Route
-                path="courses/advanced-react"
-                element={<AdvancedReact />}
-              />
-            </Routes>
+          <Router
+            initialEntries={['/courses/advanced-react/']}
+            routes={[
+              {
+                path: 'courses/advanced-react',
+                element: <AdvancedReact />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -174,13 +219,16 @@ describe('useHref', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/courses/advanced-react']}>
-            <Routes>
-              <Route
-                path="courses/advanced-react"
-                element={<AdvancedReact />}
-              />
-            </Routes>
+          <Router
+            initialEntries={['/courses/advanced-react']}
+            routes={[
+              {
+                path: 'courses/advanced-react',
+                element: <AdvancedReact />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -195,7 +243,7 @@ describe('useHref', () => {
         return (
           <div>
             <h1>Courses</h1>
-            <Outlet />
+            <RouterView />
           </div>
         );
       }
@@ -207,15 +255,22 @@ describe('useHref', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/courses/react-fundamentals']}>
-          <Routes>
-            <Route path="courses" element={<Courses />}>
-              <Route
-                path="react-fundamentals"
-                element={<ReactFundamentals />}
-              />
-            </Route>
-          </Routes>
+        <Router
+          initialEntries={['/courses/react-fundamentals']}
+          routes={[
+            {
+              path: 'courses',
+              element: <Courses />,
+              children: [
+                {
+                  path: 'react-fundamentals',
+                  element: <ReactFundamentals />
+                }
+              ]
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -231,10 +286,16 @@ describe('useHref', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/home']}>
-            <Routes>
-              <Route path="/home" element={<Home />} />
-            </Routes>
+          <Router
+            initialEntries={['/home']}
+            routes={[
+              {
+                path: 'home',
+                element: <Home />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 

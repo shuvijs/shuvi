@@ -1,21 +1,21 @@
-import { IPartialRouteObject, IRouteObject } from './types';
+import { IPartialRouteRecord, IRouteRecord } from './types';
 
 export function createRoutesFromArray<Element = any>(
-  array: IPartialRouteObject[],
-  defaultElement: Element
-): IRouteObject[] {
+  array: IPartialRouteRecord[]
+): IRouteRecord[] {
   return array.map(partialRoute => {
-    let route: IRouteObject<Element> = {
-      path: partialRoute.path || '/',
-      caseSensitive: partialRoute.caseSensitive === true,
-      element: partialRoute.element || defaultElement
+    let route: IRouteRecord<Element> = {
+      ...(partialRoute as any),
+      caseSensitive: !!partialRoute.caseSensitive,
+      path: partialRoute.path || '/'
     };
 
+    if (partialRoute.element) {
+      route.element = partialRoute.element;
+    }
+
     if (partialRoute.children) {
-      route.children = createRoutesFromArray(
-        partialRoute.children,
-        defaultElement
-      );
+      route.children = createRoutesFromArray(partialRoute.children);
     }
 
     return route;

@@ -14,7 +14,10 @@ describe('A <Router>', () => {
   });
 
   it('throws if another <Router> is already in context', () => {
-    let router = createRouter(createMemoryHistory());
+    let router = createRouter({
+      routes: [],
+      history: createMemoryHistory()
+    });
 
     expect(() => {
       createTestRenderer(

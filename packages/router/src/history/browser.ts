@@ -1,18 +1,9 @@
-import {
-  GlobalHistory,
-  To,
-  Location,
-  Blocker,
-  Transition,
-  ResolvedPath
-} from '../types';
+import { GlobalHistory, To, Location, Blocker, Transition } from '../types';
 import {
   createLocation,
   pushState,
   replaceState,
   addBlocker,
-  pathToString,
-  resolvePath,
   warning
 } from '../utils';
 import BaseHisotry, { ACTION_POP } from './base';
@@ -50,14 +41,6 @@ export default class BrowserHistory extends BaseHisotry {
 
   block(blocker: Blocker): () => void {
     return addBlocker(this._blockers, blocker);
-  }
-
-  resolve(to: To, from?: string): ResolvedPath {
-    const toPath = resolvePath(to, from);
-    return {
-      path: toPath,
-      href: pathToString(toPath)
-    };
   }
 
   private _setup() {

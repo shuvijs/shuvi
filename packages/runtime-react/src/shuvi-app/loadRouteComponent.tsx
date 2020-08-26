@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import React, { useEffect, useState } from 'react';
 import { Runtime } from '@shuvi/types';
 import dynamic, { DynamicOptions } from './dynamic';
@@ -5,7 +7,7 @@ import { getDisplayName } from './utils/getDisplayName';
 import { createRedirector } from './utils/createRedirector';
 
 import RouteComponent = Runtime.IRouteComponent;
-import { useNavigate, useParams, useLocation } from '@shuvi/router-react';
+import { useNavigate, useCurrentRoute } from '@shuvi/router-react';
 
 type Data = Record<string, any>;
 
@@ -51,8 +53,7 @@ function withInitialPropsClient<P = {}>(
       typeof props.__initialProps !== 'undefined'
     );
 
-    const { query, pathname } = useLocation();
-    const params = useParams();
+    const currentRoute = useCurrentRoute();
     const navigate = useNavigate();
 
     const getInitialProps = async () => {
@@ -61,9 +62,9 @@ function withInitialPropsClient<P = {}>(
 
       const initialProps = await WrappedComponent.getInitialProps!({
         isServer: false,
-        query,
-        pathname,
-        params: params,
+        query: currentRoute.query,
+        pathname: currentRoute.pathname,
+        params: currentRoute.params,
         redirect: redirector.handler,
         appContext
       });
@@ -86,7 +87,7 @@ function withInitialPropsClient<P = {}>(
         getInitialProps();
       }
       isFirstRender.current = false;
-    }, [params, location]);
+    }, [currentRoute]);
 
     if (!propsResolved) return null;
 
@@ -115,7 +116,6 @@ export function loadRouteComponent(
     () =>
       loader().then(mod => {
         const comp = mod.default || mod;
-
         if (comp.getInitialProps) {
           (DynamicComp as RouteComponent<React.ComponentType>).getInitialProps =
             comp.getInitialProps;

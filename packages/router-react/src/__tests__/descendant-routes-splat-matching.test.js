@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { act, create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Outlet, Routes, Route } from '..';
+import { MemoryRouter as Router, RouterView } from '..';
 
 describe('Descendant <Routes> splat matching', () => {
   describe('when the parent route path ends with /*', () => {
@@ -13,12 +13,7 @@ describe('Descendant <Routes> splat matching', () => {
         return (
           <div>
             <h1>React</h1>
-            <Routes>
-              <Route
-                path="react-fundamentals"
-                element={<ReactFundamentals />}
-              />
-            </Routes>
+            <RouterView />
           </div>
         );
       }
@@ -27,7 +22,7 @@ describe('Descendant <Routes> splat matching', () => {
         return (
           <div>
             <h1>Courses</h1>
-            <Outlet />
+            <RouterView />
           </div>
         );
       }
@@ -35,12 +30,28 @@ describe('Descendant <Routes> splat matching', () => {
       let renderer;
       act(() => {
         renderer = createTestRenderer(
-          <Router initialEntries={['/courses/react/react-fundamentals']}>
-            <Routes>
-              <Route path="courses" element={<Courses />}>
-                <Route path="react/*" element={<ReactCourses />} />
-              </Route>
-            </Routes>
+          <Router
+            initialEntries={['/courses/react/react-fundamentals']}
+            routes={[
+              {
+                path: 'courses',
+                element: <Courses />,
+                children: [
+                  {
+                    path: 'react',
+                    element: <ReactCourses />,
+                    children: [
+                      {
+                        path: 'react-fundamentals',
+                        element: <ReactFundamentals />
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
       });

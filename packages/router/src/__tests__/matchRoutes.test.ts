@@ -1,23 +1,19 @@
 import { matchRoutes } from '../matchRoutes';
-import { DUMMY_ELEMENT } from './utils';
 
 const ROUTE1 = {
   path: '/',
-  caseSensitive: true,
-  element: DUMMY_ELEMENT
+  caseSensitive: true
 };
 
 const ROUTE2 = {
   path: '/test',
-  caseSensitive: true,
-  element: DUMMY_ELEMENT
+  caseSensitive: true
 };
 
 const ROUTE3 = {
   path: '/:id/nested',
   caseSensitive: true,
-  element: DUMMY_ELEMENT,
-  children: [{ path: '/asd', caseSensitive: true, element: DUMMY_ELEMENT }]
+  children: [{ path: '/asd', caseSensitive: true }]
 };
 
 describe('matchRoutes', () => {
@@ -28,7 +24,6 @@ describe('matchRoutes', () => {
         pathname: '/',
         route: {
           caseSensitive: true,
-          element: DUMMY_ELEMENT,
           path: '/'
         }
       }
@@ -46,11 +41,8 @@ describe('matchRoutes', () => {
         pathname: '/123/nested',
         route: {
           caseSensitive: true,
-          element: DUMMY_ELEMENT,
           path: '/:id/nested',
-          children: [
-            { path: '/asd', caseSensitive: true, element: DUMMY_ELEMENT }
-          ]
+          children: [{ path: '/asd', caseSensitive: true }]
         }
       },
       {
@@ -60,8 +52,7 @@ describe('matchRoutes', () => {
         pathname: '/123/nested/asd',
         route: {
           path: '/asd',
-          caseSensitive: true,
-          element: DUMMY_ELEMENT
+          caseSensitive: true
         }
       }
     ]);

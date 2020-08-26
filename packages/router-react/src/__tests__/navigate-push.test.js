@@ -5,31 +5,34 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { Router, Routes, Route, useNavigate } from '..';
+import { Router, useNavigate, RouterView } from '..';
 import { createRouter } from '@shuvi/router';
 
-function createMockRouter(initialLocation) {
+function createMockRouter(routes, initialLocation) {
   return createRouter({
-    action: 'POP',
-    location: initialLocation,
-    resolve() {
-      return {
-        path: {
-          pathname: '/',
-          search: '',
-          hash: '',
-          query: {}
-        },
-        href: '/'
-      };
-    },
-    push() {},
-    replace() {},
-    go() {},
-    back() {},
-    forward() {},
-    listen() {},
-    block() {}
+    routes,
+    history: {
+      action: 'POP',
+      location: initialLocation,
+      resolve() {
+        return {
+          path: {
+            pathname: '/',
+            search: '',
+            hash: '',
+            query: {}
+          },
+          href: '/'
+        };
+      },
+      push() {},
+      replace() {},
+      go() {},
+      back() {},
+      forward() {},
+      listen() {},
+      block() {}
+    }
   });
 }
 
@@ -66,20 +69,29 @@ describe('navigate', () => {
         return <h1>About</h1>;
       }
 
-      let router = createMockRouter({
-        pathname: '/home',
-        search: '',
-        hash: ''
-      });
+      let router = createMockRouter(
+        [
+          {
+            path: 'home',
+            element: <Home />
+          },
+          {
+            path: 'about',
+            element: <About />
+          }
+        ],
+        {
+          pathname: '/home',
+          search: '',
+          hash: ''
+        }
+      );
       let spy = jest.spyOn(router, 'push');
 
       act(() => {
         ReactDOM.render(
           <Router router={router}>
-            <Routes>
-              <Route path="home" element={<Home />} />
-              <Route path="about" element={<About />} />
-            </Routes>
+            <RouterView />
           </Router>,
           node
         );
@@ -117,20 +129,29 @@ describe('navigate', () => {
         return <h1>About</h1>;
       }
 
-      let router = createMockRouter({
-        pathname: '/home',
-        search: '',
-        hash: ''
-      });
+      let router = createMockRouter(
+        [
+          {
+            path: 'home',
+            element: <Home />
+          },
+          {
+            path: 'about',
+            element: <About />
+          }
+        ],
+        {
+          pathname: '/home',
+          search: '',
+          hash: ''
+        }
+      );
       let spy = jest.spyOn(router, 'replace');
 
       act(() => {
         ReactDOM.render(
           <Router router={router}>
-            <Routes>
-              <Route path="home" element={<Home />} />
-              <Route path="about" element={<About />} />
-            </Routes>
+            <RouterView />
           </Router>,
           node
         );
