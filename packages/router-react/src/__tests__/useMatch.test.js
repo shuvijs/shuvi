@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, useMatch } from '..';
+import { MemoryRouter as Router, RouterView, useMatch } from '..';
 
 describe('useMatch', () => {
   describe('when the path matches the current URL', () => {
@@ -20,13 +20,26 @@ describe('useMatch', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/home']}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/about" element={<About />} />
-            </Route>
-          </Routes>
+        <Router
+          initialEntries={['/home']}
+          routes={[
+            {
+              path: '/',
+              element: <Layout />,
+              children: [
+                {
+                  path: '/home',
+                  element: <Home />
+                },
+                {
+                  path: '/about',
+                  element: <About />
+                }
+              ]
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -55,13 +68,26 @@ describe('useMatch', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/home']}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/about" element={<About />} />
-            </Route>
-          </Routes>
+        <Router
+          initialEntries={['/home']}
+          routes={[
+            {
+              path: '/',
+              element: <Layout />,
+              children: [
+                {
+                  path: '/home',
+                  element: <Home />
+                },
+                {
+                  path: '/about',
+                  element: <About />
+                }
+              ]
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 

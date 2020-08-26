@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route, useHref } from '..';
+import { MemoryRouter as Router, RouterView, useHref } from '..';
 
 describe('useHref under a <Routes basename>', () => {
   describe('to a child route', () => {
@@ -12,10 +12,17 @@ describe('useHref under a <Routes basename>', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/app/admin']}>
-          <Routes basename="app">
-            <Route path="admin" element={<Admin />} />
-          </Routes>
+        <Router
+          initialEntries={['/app/admin']}
+          basename="app"
+          routes={[
+            {
+              path: 'admin',
+              element: <Admin />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -31,10 +38,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin/']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin/']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -51,10 +65,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -72,10 +93,17 @@ describe('useHref under a <Routes basename>', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/app/admin']}>
-          <Routes basename="app">
-            <Route path="admin" element={<Admin />} />
-          </Routes>
+        <Router
+          initialEntries={['/app/admin']}
+          basename="app"
+          routes={[
+            {
+              path: 'admin',
+              element: <Admin />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -91,10 +119,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin/']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin/']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -111,10 +146,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -132,10 +174,17 @@ describe('useHref under a <Routes basename>', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/app/admin']}>
-          <Routes basename="app">
-            <Route path="admin" element={<Admin />} />
-          </Routes>
+        <Router
+          initialEntries={['/app/admin']}
+          basename="app"
+          routes={[
+            {
+              path: 'admin',
+              element: <Admin />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -151,10 +200,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin/']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin/']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -171,10 +227,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -192,10 +255,17 @@ describe('useHref under a <Routes basename>', () => {
       }
 
       createTestRenderer(
-        <Router initialEntries={['/app/admin']}>
-          <Routes basename="app">
-            <Route path="admin" element={<Admin />} />
-          </Routes>
+        <Router
+          initialEntries={['/app/admin']}
+          basename="app"
+          routes={[
+            {
+              path: 'admin',
+              element: <Admin />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
 
@@ -211,10 +281,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -231,10 +308,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin/']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin/']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 
@@ -251,10 +335,17 @@ describe('useHref under a <Routes basename>', () => {
         }
 
         createTestRenderer(
-          <Router initialEntries={['/app/admin']}>
-            <Routes basename="app">
-              <Route path="admin" element={<Admin />} />
-            </Routes>
+          <Router
+            initialEntries={['/app/admin']}
+            basename="app"
+            routes={[
+              {
+                path: 'admin',
+                element: <Admin />
+              }
+            ]}
+          >
+            <RouterView />
           </Router>
         );
 

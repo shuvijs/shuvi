@@ -3,16 +3,18 @@
  */
 
 import React from 'react';
-import renderRoutes from '../renderRoutes';
-import { IRoute } from '@shuvi/types/src/runtime';
-import { renderWithRouter } from './utils';
+import { Runtime } from '@shuvi/types/';
+import { RouterView } from '@shuvi/router-react';
+import { renderRoutes } from './utils';
 import { ReactTestRenderer } from 'react-test-renderer';
-import { Outlet } from '@shuvi/router-react';
+import { normalizeRoutes } from '../router';
+
+import IAppRouteConfig = Runtime.IAppRouteConfig;
 
 const createDummyComponent = (text: string): React.FC => () => (
   <div>
     {text}
-    <Outlet />
+    <RouterView />
   </div>
 );
 
@@ -44,14 +46,9 @@ const initialPropsHash = {
   '0005': {}
 };
 
-describe('renderRoutes', () => {
-  it('return null for empty routes', () => {
-    const routes = renderRoutes([]);
-    expect(routes).toBeNull();
-  });
-
+describe('normalizeRoutes', () => {
   it('basic', () => {
-    const sampleRoutes: IRoute[] = [
+    const sampleRoutes: IAppRouteConfig[] = [
       {
         id: '0001',
         component: HOME_COMPONENT,
@@ -64,13 +61,13 @@ describe('renderRoutes', () => {
       }
     ];
 
-    const routesComponent = renderRoutes(sampleRoutes, {
-      initialProps: initialPropsHash
+    const routes = normalizeRoutes(sampleRoutes, {
+      routeProps: initialPropsHash
     })!;
     let json, app;
 
     // render / page
-    app = renderWithRouter(routesComponent, {
+    app = renderRoutes(routes, {
       route: '/'
     });
     json = app.toJSON();
@@ -87,7 +84,7 @@ describe('renderRoutes', () => {
     `);
 
     // render /about page
-    app = renderWithRouter(routesComponent, {
+    app = renderRoutes(routes, {
       route: '/about'
     });
     json = app.toJSON();
@@ -104,7 +101,7 @@ describe('renderRoutes', () => {
   });
 
   it('nested', () => {
-    const sampleRoutes: IRoute[] = [
+    const sampleRoutes: IAppRouteConfig[] = [
       {
         id: '0001',
         component: HOME_COMPONENT,
@@ -129,12 +126,12 @@ describe('renderRoutes', () => {
       }
     ];
 
-    const routesComponent = renderRoutes(sampleRoutes, {
-      initialProps: initialPropsHash
+    const routes = normalizeRoutes(sampleRoutes, {
+      routeProps: initialPropsHash
     })!;
     let app, json;
 
-    app = renderWithRouter(routesComponent, {
+    app = renderRoutes(routes, {
       route: '/about'
     });
     json = app.toJSON();
@@ -149,7 +146,7 @@ describe('renderRoutes', () => {
       </div>
     `);
 
-    app = renderWithRouter(routesComponent, {
+    app = renderRoutes(routes, {
       route: '/about/hi'
     });
     json = app.toJSON();
@@ -173,7 +170,7 @@ describe('renderRoutes', () => {
       </div>
     `);
 
-    app = renderWithRouter(routesComponent, {
+    app = renderRoutes(routes, {
       route: '/about/test'
     });
     json = app.toJSON();
@@ -190,7 +187,7 @@ describe('renderRoutes', () => {
     `);
 
     // fake route
-    json = renderWithRouter(routesComponent, {
+    json = renderRoutes(routes, {
       route: '/fake'
     }).toJSON();
 
@@ -198,7 +195,7 @@ describe('renderRoutes', () => {
   });
 
   it('deep nested', () => {
-    const sampleRoutes: IRoute[] = [
+    const sampleRoutes: IAppRouteConfig[] = [
       {
         id: '0001',
         component: HOME_COMPONENT,
@@ -232,12 +229,12 @@ describe('renderRoutes', () => {
       }
     ];
 
-    const routesComponent = renderRoutes(sampleRoutes, {
-      initialProps: initialPropsHash
+    const routes = normalizeRoutes(sampleRoutes, {
+      routeProps: initialPropsHash
     })!;
     let app, json;
 
-    app = renderWithRouter(routesComponent, {
+    app = renderRoutes(routes, {
       route: '/about/hi/cool/shuvi'
     });
     json = app.toJSON();

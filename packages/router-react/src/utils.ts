@@ -1,7 +1,5 @@
-import React from 'react';
 import { IParams } from '@shuvi/router';
 import { __DEV__ } from './constants';
-import { IRouteObject } from './types';
 import invariant from '@shuvi/utils/lib/invariant';
 
 export const readOnly: <T extends unknown>(obj: T) => T = __DEV__
@@ -29,54 +27,6 @@ export function warningOnce(key: string, cond: boolean, message: string) {
     alreadyWarned[key] = true;
     warning(false, message);
   }
-}
-
-/**
- * Creates a route config from a React "children" object, which is usually
- * either a `<Route>` element or an array of them. Used internally by
- * `<Routes>` to create a route config from its children.
- */
-export function createRoutesFromChildren(
-  children: React.ReactNode
-): IRouteObject[] {
-  let routes: IRouteObject[] = [];
-
-  React.Children.forEach(children, element => {
-    if (!React.isValidElement(element)) {
-      // Ignore non-elements. This allows people to more easily inline
-      // conditionals in their route config.
-      return;
-    }
-
-    if (element.type === React.Fragment) {
-      // Transparently support React.Fragment and its children.
-      routes.push.apply(
-        routes,
-        createRoutesFromChildren(element.props.children)
-      );
-      return;
-    }
-
-    let route: IRouteObject = {
-      path: element.props.path || '/',
-      caseSensitive: element.props.caseSensitive === true,
-      // Default behavior is to just render the element that was given. This
-      // permits people to use any element they prefer, not just <Route> (though
-      // all our official examples and docs use <Route> for clarity).
-      element
-    };
-
-    if (element.props.children) {
-      let childRoutes = createRoutesFromChildren(element.props.children);
-      if (childRoutes.length) {
-        route.children = childRoutes;
-      }
-    }
-
-    routes.push(route);
-  });
-
-  return routes;
 }
 
 /**

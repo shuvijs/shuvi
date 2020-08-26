@@ -5,7 +5,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { MemoryRouter as Router, Routes, Route } from '..';
+import { MemoryRouter as Router, RouterView } from '..';
 
 describe('when the same component is mounted by two different routes', () => {
   let node;
@@ -33,11 +33,20 @@ describe('when the same component is mounted by two different routes', () => {
 
     act(() => {
       ReactDOM.render(
-        <Router initialEntries={['/home']}>
-          <Routes>
-            <Route path="home" element={<Home />} />
-            <Route path="another-home" element={<Home />} />
-          </Routes>
+        <Router
+          initialEntries={['/home']}
+          routes={[
+            {
+              path: 'home',
+              element: <Home />
+            },
+            {
+              path: 'another-home',
+              element: <Home />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>,
         node
       );
@@ -48,11 +57,20 @@ describe('when the same component is mounted by two different routes', () => {
 
     act(() => {
       ReactDOM.render(
-        <Router initialEntries={['/another-home']}>
-          <Routes>
-            <Route path="home" element={<Home />} />
-            <Route path="another-home" element={<Home />} />
-          </Routes>
+        <Router
+          initialEntries={['/another-home']}
+          routes={[
+            {
+              path: 'home',
+              element: <Home />
+            },
+            {
+              path: 'another-home',
+              element: <Home />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>,
         node
       );

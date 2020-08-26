@@ -1,20 +1,34 @@
 import * as React from 'react';
 import { act, create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Outlet, Routes, Route } from '..';
+import { MemoryRouter as Router, RouterView } from '..';
 
 describe('nested /', () => {
   it('matches them depth-first', () => {
     let renderer;
     act(() => {
       renderer = createTestRenderer(
-        <Router initialEntries={['/']}>
-          <Routes>
-            <Route path="/" element={<First />}>
-              <Route path="/" element={<Second />}>
-                <Route path="/" element={<Third />} />
-              </Route>
-            </Route>
-          </Routes>
+        <Router
+          initialEntries={['/']}
+          routes={[
+            {
+              path: '/',
+              element: <First />,
+              children: [
+                {
+                  path: '/',
+                  element: <Second />,
+                  children: [
+                    {
+                      path: '/',
+                      element: <Third />
+                    }
+                  ]
+                }
+              ]
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
     });
@@ -35,7 +49,7 @@ describe('nested /', () => {
   function First() {
     return (
       <div>
-        First <Outlet />
+        First <RouterView />
       </div>
     );
   }
@@ -43,7 +57,7 @@ describe('nested /', () => {
   function Second() {
     return (
       <div>
-        Second <Outlet />
+        Second <RouterView />
       </div>
     );
   }
@@ -58,11 +72,20 @@ describe('routes with identical paths', () => {
     let renderer;
     act(() => {
       renderer = createTestRenderer(
-        <Router initialEntries={['/home']}>
-          <Routes>
-            <Route path="/home" element={<First />} />
-            <Route path="/home" element={<Second />} />
-          </Routes>
+        <Router
+          initialEntries={['/home']}
+          routes={[
+            {
+              path: '/home',
+              element: <First />
+            },
+            {
+              path: '/home',
+              element: <Second />
+            }
+          ]}
+        >
+          <RouterView />
         </Router>
       );
     });

@@ -1,18 +1,19 @@
 import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
-import { MemoryRouter as Router, Routes, Route } from '..';
+import { MemoryRouter as Router, Routes, Route, RouterView } from '..';
 
-describe('A <Routes>', () => {
+describe('A <RouterView>', () => {
   it('renders the first route that matches the URL', () => {
     function Home() {
       return <h1>Home</h1>;
     }
 
     let renderer = createTestRenderer(
-      <Router initialEntries={['/']}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
+      <Router
+        initialEntries={['/']}
+        routes={[{ path: '/', element: <Home /> }]}
+      >
+        <RouterView />
       </Router>
     );
 
@@ -29,52 +30,51 @@ describe('A <Routes>', () => {
     }
 
     let renderer = createTestRenderer(
-      <Router initialEntries={['/home']}>
-        <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/home" element={<Dashboard />} />
-        </Routes>
+      <Router
+        initialEntries={['/home']}
+        routes={[
+          { path: '/home', element: <Home /> },
+          { path: '/home', element: <Dashboard /> }
+        ]}
+      >
+        <RouterView />
       </Router>
     );
 
     expect(renderer.toJSON()).toMatchSnapshot();
   });
 
-  it('renders with non-element children', () => {
-    function Home() {
-      return <h1>Home</h1>;
-    }
-
-    let renderer = createTestRenderer(
-      <Router initialEntries={['/']}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {false}
-          {undefined}
-        </Routes>
-      </Router>
-    );
-
-    expect(renderer.toJSON()).toMatchSnapshot();
-  });
-
-  it('renders with React.Fragment children', () => {
+  it('renders with nested routes', () => {
     function Home() {
       return <h1>Home</h1>;
     }
 
     function Admin() {
-      return <h1>Admin</h1>;
+      return (
+        <>
+          <h1>Admin</h1>
+          <RouterView />
+        </>
+      );
+    }
+
+    function User() {
+      return <h1>User</h1>;
     }
 
     let renderer = createTestRenderer(
-      <Router initialEntries={['/admin']}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <React.Fragment>
-            <Route path="/admin" element={<Admin />} />
-          </React.Fragment>
-        </Routes>
+      <Router
+        initialEntries={['/admin/user']}
+        routes={[
+          { path: '/home', element: <Home /> },
+          {
+            path: '/admin',
+            element: <Admin />,
+            children: [{ path: 'user', element: <User /> }]
+          }
+        ]}
+      >
+        <RouterView />
       </Router>
     );
 

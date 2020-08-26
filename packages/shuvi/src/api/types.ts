@@ -7,9 +7,9 @@ export type IBuiltResource = {
     document: Partial<Runtime.IDocumentModule>;
     view: Runtime.IViewServer;
     matchRoutes(
-      routes: Runtime.IRouteConfig[],
+      routes: Runtime.IUserRouteConfig[],
       pathname: string
-    ): Runtime.IMatchedRoute<Runtime.IRouteConfig>[];
+    ): Runtime.IMatchedRoute<Runtime.IUserRouteConfig>[];
   };
   documentTemplate: any;
   clientManifest: Bundler.IManifest;
