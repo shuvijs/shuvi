@@ -213,6 +213,8 @@ export interface ResolvedPath {
   href: string;
 }
 
+export type RemoveListenerCallback = () => void | undefined;
+
 /**
  * A history is an interface to the navigation stack. The history serves as the
  * source of truth for the current location, as well as provides a set of
@@ -297,7 +299,7 @@ export interface History<S extends State = State> {
    * @returns unlisten - A function that may be used to stop listening
    *
    */
-  listen(listener: Listener<S>): () => void;
+  listen(listener: Listener<S>): () => RemoveListenerCallback;
 
   /**
    * Prevents the current location from changing and sets up a listener that

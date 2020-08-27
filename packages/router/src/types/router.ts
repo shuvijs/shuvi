@@ -4,7 +4,8 @@ import {
   State,
   Listener,
   NavigationGuardHook,
-  NavigationResolvedHook
+  NavigationResolvedHook,
+  RemoveListenerCallback
 } from './history';
 
 export type IParams = Record<string, string>;
@@ -65,8 +66,9 @@ export interface IRouter {
   block: History['block'];
   resolve: History['resolve'];
   forward(): void;
-  onChange: (listener: Listener) => Function;
-  beforeEach: (listener: NavigationGuardHook) => Function;
-  afterEach: (listener: NavigationResolvedHook) => Function;
-  beforeResolve: (listener: NavigationGuardHook) => Function;
+
+  onChange: (listener: Listener) => RemoveListenerCallback;
+  beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
+  afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
+  beforeResolve: (listener: NavigationGuardHook) => RemoveListenerCallback;
 }
