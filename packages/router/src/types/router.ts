@@ -1,4 +1,11 @@
-import { History, Path, State, Listener } from './history';
+import {
+  History,
+  Path,
+  State,
+  Listener,
+  NavigationGuardHook,
+  NavigationResolvedHook
+} from './history';
 
 export type IParams = Record<string, string>;
 
@@ -6,6 +13,8 @@ export interface IRouteRecord<Element = any> {
   caseSensitive?: boolean;
   children?: IRouteRecord<Element>[];
   element?: Element; // For react will be React.Element
+  redirect?: string;
+  onBeforeEnter?: NavigationGuardHook;
   path: string;
 }
 
@@ -30,6 +39,8 @@ export interface IPathMatch {
 export type IPartialRouteRecord<Element = any> = {
   caseSensitive?: boolean;
   children?: IPartialRouteRecord<Element>[];
+  beforeEnter?: NavigationGuardHook;
+  redirect?: string;
   element?: Element; // For react will be React.Element
   path?: string;
 };
@@ -54,5 +65,8 @@ export interface IRouter {
   block: History['block'];
   resolve: History['resolve'];
   forward(): void;
-  onChange: (listener: Listener) => void;
+  onChange: (listener: Listener) => Function;
+  beforeEach: (listener: NavigationGuardHook) => Function;
+  afterEach: (listener: NavigationResolvedHook) => Function;
+  beforeResolve: (listener: NavigationGuardHook) => Function;
 }

@@ -1,4 +1,5 @@
 import { ParsedQuery } from 'query-string';
+import { IRoute } from './router';
 
 export type GlobalHistory = typeof window.history;
 
@@ -168,6 +169,20 @@ export interface Listener<S extends State = State> {
   (update: Update<S>): void;
 }
 
+export interface NavigationGuardHook {
+  (
+    to: IRoute,
+    from: IRoute,
+    next: (
+      nextObject?: false | string | { path?: string; replace?: boolean } | Error
+    ) => void
+  ): void;
+}
+
+export interface NavigationResolvedHook {
+  (to: IRoute, from: IRoute): void;
+}
+
 /**
  * A change to the current location that was blocked. May be retried
  * after obtaining user confirmation.
@@ -293,4 +308,6 @@ export interface History<S extends State = State> {
    *
    */
   block(blocker: Blocker<S>): () => void;
+
+  onTransistion(to: To, afterResolved: () => void): void;
 }

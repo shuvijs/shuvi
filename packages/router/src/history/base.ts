@@ -51,6 +51,7 @@ interface TransitionOptions {
 export default abstract class BaseHistory implements History {
   action: Action = ACTION_POP;
   location: Location = createLocation('/');
+  onTransistion = (_: To, cb: Function) => void 0;
 
   protected _index: number = 0;
   protected _blockers = createEvents<Blocker>();
@@ -109,19 +110,19 @@ export default abstract class BaseHistory implements History {
       return;
     }
 
-    // TODO: call before hooks
+    this.onTransistion(to, () => {
+      handleTransion({
+        location: nextLocation,
+        state: {
+          usr: nextLocation.state,
+          key: nextLocation.key,
+          idx: this._index + 1
+        },
+        url: this.resolve(nextLocation).href
+      });
 
-    handleTransion({
-      location: nextLocation,
-      state: {
-        usr: nextLocation.state,
-        key: nextLocation.key,
-        idx: this._index + 1
-      },
-      url: this.resolve(nextLocation).href
+      this._applyTx(nextAction);
     });
-
-    this._applyTx(nextAction);
   }
 
   protected _applyTx(nextAction: Action) {
