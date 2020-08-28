@@ -37,27 +37,20 @@ export interface IPathMatch {
   params: IParams;
 }
 
-export type IPartialRouteRecord<Element = any> = {
-  caseSensitive?: boolean;
-  children?: IPartialRouteRecord<Element>[];
-  beforeEnter?: NavigationGuardHook;
-  redirect?: string;
-  element?: Element; // For react will be React.Element
-  path?: string;
-};
+export type IPartialRouteRecord<Element = any> = Partial<IRouteRecord<Element>>;
 
-export interface IRoute extends Path {
+export interface IRoute<RouteRecord extends IRouteRecord> extends Path {
   params: IParams;
   state: State;
-  matches: IRouteMatch[] | null;
+  matches: IRouteMatch<RouteRecord>[] | null;
 
   // todo?
   // fullpath: string?
   // href: string?
 }
 
-export interface IRouter {
-  current: IRoute;
+export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
+  current: IRoute<RouteRecord>;
   action: History['action'];
   push: History['push'];
   replace: History['replace'];

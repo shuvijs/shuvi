@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Runtime } from '@shuvi/types';
 import { AppContext } from '../AppContainer';
 import { IRouteProps } from '../loadRouteComponent';
+import { IRouteMatch } from '@shuvi/router';
 
 type Data = Record<string, any>;
 
@@ -48,4 +49,15 @@ export function normalizeRoutes(
     res.children = normalizeRoutes(route.children, options);
     return res;
   });
+}
+
+export function getRedirectFromRoutes(
+  appRoutes: IRouteMatch<IAppRouteWithElement>[]
+): string | null {
+  return appRoutes.reduceRight((redirectPath, { route: { redirect } }) => {
+    if (!redirectPath && redirect) {
+      return redirect;
+    }
+    return redirectPath;
+  }, null as string | null);
 }

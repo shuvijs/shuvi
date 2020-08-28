@@ -1,3 +1,5 @@
+import { IRouteRecord } from '@shuvi/router';
+
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
   name?: string;
@@ -6,11 +8,10 @@ export interface IUserRouteConfig {
   path: string;
 }
 
-export interface IAppRouteConfig {
+export interface IAppRouteConfig extends IRouteRecord {
   id: string;
   component?: any;
   children?: IAppRouteConfig[];
-  redirect?: string;
   path: string;
   [x: string]: any;
 }

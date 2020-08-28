@@ -1,5 +1,5 @@
 import { ParsedQuery } from 'query-string';
-import { IRoute } from './router';
+import { IRoute, IRouteRecord } from './router';
 
 export type GlobalHistory = typeof window.history;
 
@@ -169,18 +169,18 @@ export interface Listener<S extends State = State> {
   (update: Update<S>): void;
 }
 
-export interface NavigationGuardHook {
+export interface NavigationGuardHook<R extends IRouteRecord = any> {
   (
-    to: IRoute,
-    from: IRoute,
+    to: IRoute<R>,
+    from: IRoute<R>,
     next: (
       nextObject?: false | string | { path?: string; replace?: boolean } | Error
     ) => void
   ): void;
 }
 
-export interface NavigationResolvedHook {
-  (to: IRoute, from: IRoute): void;
+export interface NavigationResolvedHook<R extends IRouteRecord = any> {
+  (to: IRoute<R>, from: IRoute<R>): void;
 }
 
 /**
@@ -299,7 +299,7 @@ export interface History<S extends State = State> {
    * @returns unlisten - A function that may be used to stop listening
    *
    */
-  listen(listener: Listener<S>): () => RemoveListenerCallback;
+  listen(listener: Listener<S>): RemoveListenerCallback;
 
   /**
    * Prevents the current location from changing and sets up a listener that

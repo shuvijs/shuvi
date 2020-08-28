@@ -23,18 +23,18 @@ import { isError } from './utils/error';
 import { runQueue } from './utils/async';
 import { extractHooks } from './utils/extract-hooks';
 
-interface IRouterOptions {
+interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
-  routes: IPartialRouteRecord[];
+  routes: RouteRecord[];
   caseSensitive?: boolean;
   basename?: string;
 }
 
-class Router implements IRouter {
+class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _basename: string;
   private _history: History;
-  private _routes: IRouteRecord[];
-  private _current: IRoute;
+  private _routes: RouteRecord[];
+  private _current: IRoute<RouteRecord>;
 
   private _beforeEachs: Events<NavigationGuardHook> = createEvents<
     NavigationGuardHook
@@ -46,7 +46,7 @@ class Router implements IRouter {
     NavigationResolvedHook
   >();
 
-  constructor({ basename = '', history, routes }: IRouterOptions) {
+  constructor({ basename = '', history, routes }: IRouterOptions<RouteRecord>) {
     this._basename = normalizeBase(basename);
     this._history = history;
     this._routes = createRoutesFromArray(routes);
@@ -132,7 +132,7 @@ class Router implements IRouter {
     };
   }
 
-  get current(): IRoute {
+  get current(): IRoute<RouteRecord> {
     return this._current;
   }
 
@@ -206,7 +206,7 @@ class Router implements IRouter {
     };
   }
 
-  private _getNextRoute(to: To): IRoute {
+  private _getNextRoute(to: To): IRoute<RouteRecord> {
     const { _routes: routes, _basename: basename } = this;
     const matches = matchRoutes(routes, to, basename);
     const params = matches ? matches[matches.length - 1].params : {};
@@ -220,6 +220,8 @@ class Router implements IRouter {
   }
 }
 
-export const createRouter = (options: IRouterOptions): IRouter => {
+export const createRouter = <RouteRecord extends IRouteRecord>(
+  options: IRouterOptions<RouteRecord>
+): IRouter<RouteRecord> => {
   return new Router(options);
 };

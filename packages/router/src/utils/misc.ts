@@ -1,9 +1,10 @@
+import { RemoveListenerCallback } from '../types';
 const isDev = process.env.NODE_ENV === 'development';
 
 export type Events<F> = {
   toArray: () => F[];
   length: number;
-  push: (fn: F) => () => void;
+  push: (fn: F) => RemoveListenerCallback;
   call: (...arg: any) => void;
 };
 
