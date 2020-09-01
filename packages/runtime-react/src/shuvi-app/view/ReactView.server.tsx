@@ -8,7 +8,7 @@ import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
-import { normalizeRoutes, getRedirectFromRoutes } from '../utils/router';
+import { normalizeRoutes } from '../utils/router';
 import { createRedirector } from '../utils/createRedirector';
 
 import IAppComponent = Runtime.IAppComponent;
@@ -35,17 +35,16 @@ export class ReactServerView implements IReactServerView {
         initialIndex: 0
       })
     });
-    let { pathname, query, matches } = router.current;
+    let { pathname, query, matches, redirect } = router.current;
     // TODO: handler no matches
     if (!matches) {
       matches = [];
     }
 
-    let redirectPath;
-    if ((redirectPath = getRedirectFromRoutes(matches))) {
+    if (redirect) {
       return {
         redirect: {
-          path: redirectPath
+          path: redirect
         }
       };
     }

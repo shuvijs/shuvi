@@ -7,7 +7,7 @@ import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { createRedirector } from '../utils/createRedirector';
-import { normalizeRoutes, getRedirectFromRoutes } from '../utils/router';
+import { normalizeRoutes } from '../utils/router';
 import { IReactClientView } from '../types';
 
 const headManager = new HeadManager();
@@ -51,13 +51,11 @@ export class ReactClientView implements IReactClientView {
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else {
-      const { pathname, query, params, matches } = router.current;
+      const { pathname, query, params, redirect } = router.current;
 
-      let redirectPath;
-      if (matches && (redirectPath = getRedirectFromRoutes(matches))) {
-        router.push(redirectPath);
-      }
-      if (TypedAppComponent.getInitialProps) {
+      if (redirect) {
+        redirector.handler(redirect);
+      } else if (TypedAppComponent.getInitialProps) {
         appProps = await TypedAppComponent.getInitialProps({
           isServer: false,
           pathname,

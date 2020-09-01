@@ -43,7 +43,7 @@ export interface IRoute<RouteRecord extends IRouteRecord> extends Path {
   params: IParams;
   state: State;
   matches: IRouteMatch<RouteRecord>[] | null;
-
+  redirect: string | null;
   // todo?
   // fullpath: string?
   // href: string?

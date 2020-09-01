@@ -21,6 +21,7 @@ import {
 import { isError } from './utils/error';
 import { runQueue } from './utils/async';
 import { extractHooks } from './utils/extract-hooks';
+import { getRedirectFromRoutes } from './getRedirectFromRoutes';
 
 interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
@@ -177,7 +178,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     );
   }
 
-  private _getCurrent() {
+  private _getCurrent(): IRoute<RouteRecord> {
     const {
       _routes: routes,
       _basename: basename,
@@ -185,9 +186,11 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     } = this;
     const matches = matchRoutes(routes, location, basename);
     const params = matches ? matches[matches.length - 1].params : {};
+    const redirect = getRedirectFromRoutes(matches || []);
     return {
       matches,
       params,
+      redirect,
       pathname: location.pathname,
       search: location.search,
       hash: location.hash,
@@ -201,9 +204,11 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const matches = matchRoutes(routes, to, basename);
     const params = matches ? matches[matches.length - 1].params : {};
     const parsedPath = resolvePath(to);
+    const redirect = getRedirectFromRoutes(matches || []);
     return {
       matches,
       params,
+      redirect,
       ...parsedPath,
       state: null
     };

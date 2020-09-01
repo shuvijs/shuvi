@@ -20,6 +20,33 @@ describe('router', () => {
     });
   });
 
+  describe('redirect', () => {
+    it('should have the correct current redirect', () => {
+      const router = createRouter({
+        routes: [
+          { path: '/' },
+          {
+            path: 'about',
+            redirect: '/',
+            children: [
+              {
+                path: 'redirect',
+                redirect: '/about'
+              }
+            ]
+          }
+        ],
+        history: new MemoryHistory({
+          initialEntries: ['/about/redirect'],
+          initialIndex: 0
+        })
+      });
+      debugger;
+      let current = router.current;
+      expect(current.redirect).toEqual('/about');
+    });
+  });
+
   describe('navigation flow', () => {
     let router: IRouter;
     let beforeEachFn: any, afterEachFn: any, routeResolveFn: any;
