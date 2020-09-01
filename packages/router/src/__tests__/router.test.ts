@@ -22,31 +22,19 @@ describe('router', () => {
 
   describe('navigation flow', () => {
     let router: IRouter;
-    let beforeEachFn: any,
-      beforeResolveFn: any,
-      afterEachFn: any,
-      routeBeforeEnter: any;
+    let beforeEachFn: any, afterEachFn: any, routeResolveFn: any;
 
     beforeEach(() => {
-      routeBeforeEnter = jest.fn().mockImplementation((to, from, next) => {
+      beforeEachFn = jest.fn().mockImplementation((to, from, next) => {
+        expect(afterEachFn).toBeCalledTimes(0);
+        expect(routeResolveFn).toBeCalledTimes(0);
+        next();
+      });
+
+      routeResolveFn = jest.fn().mockImplementation((to, from, next) => {
         expect(to.pathname).toBe('/about');
         expect(from.pathname).toBe('/');
-        expect(beforeEachFn).toBeCalledTimes(0);
-        expect(beforeResolveFn).toBeCalledTimes(0);
-        expect(afterEachFn).toBeCalledTimes(0);
-        next();
-      });
-
-      beforeEachFn = jest.fn().mockImplementation((to, from, next) => {
-        expect(beforeResolveFn).toBeCalledTimes(0);
-        expect(afterEachFn).toBeCalledTimes(0);
-        expect(routeBeforeEnter).toBeCalledTimes(1);
-        next();
-      });
-
-      beforeResolveFn = jest.fn().mockImplementation((to, from, next) => {
         expect(beforeEachFn).toBeCalledTimes(1);
-        expect(routeBeforeEnter).toBeCalledTimes(1);
         expect(afterEachFn).toBeCalledTimes(0);
         next();
       });
@@ -55,15 +43,14 @@ describe('router', () => {
         expect(to.pathname).toBe('/about');
         expect(from.pathname).toBe('/');
         expect(beforeEachFn).toBeCalledTimes(1);
-        expect(routeBeforeEnter).toBeCalledTimes(1);
-        expect(beforeResolveFn).toBeCalledTimes(1);
+        expect(routeResolveFn).toBeCalledTimes(1);
         expect(next).toBeUndefined();
       });
 
       router = createRouter({
         routes: [
           { path: '/' },
-          { path: '/about', beforeEnter: routeBeforeEnter },
+          { path: '/about', resolve: routeResolveFn },
           { path: '/new' },
           { path: '/redirectToNew', redirect: '/new' }
         ],
@@ -76,7 +63,6 @@ describe('router', () => {
 
     it('should run the navigation flow in sequence', () => {
       router.beforeEach(beforeEachFn);
-      router.beforeResolve(beforeResolveFn);
       router.afterEach(afterEachFn);
 
       let current = router.current;
@@ -87,14 +73,12 @@ describe('router', () => {
 
     it('should abort when guard return false', () => {
       beforeEachFn = jest.fn().mockImplementation((to, from, next) => {
-        expect(routeBeforeEnter).toBeCalledTimes(1);
-        expect(beforeResolveFn).toBeCalledTimes(0);
+        expect(routeResolveFn).toBeCalledTimes(0);
         expect(afterEachFn).toBeCalledTimes(0);
         next(false);
       });
 
       router.beforeEach(beforeEachFn);
-      router.beforeResolve(beforeResolveFn);
       router.afterEach(afterEachFn);
 
       let current = router.current;
@@ -104,21 +88,19 @@ describe('router', () => {
       expect(current).toBe(router.current);
 
       expect(beforeEachFn).toBeCalledTimes(1);
-      [beforeResolveFn, afterEachFn].forEach(fn =>
+      [routeResolveFn, afterEachFn].forEach(fn =>
         expect(fn).toBeCalledTimes(0)
       );
     });
 
     it('should abort when guard return Error', () => {
-      beforeResolveFn = jest.fn().mockImplementation((to, from, next) => {
-        expect(beforeEachFn).toBeCalledTimes(1);
-        expect(routeBeforeEnter).toBeCalledTimes(1);
+      beforeEachFn = jest.fn().mockImplementation((to, from, next) => {
+        expect(routeResolveFn).toBeCalledTimes(0);
         expect(afterEachFn).toBeCalledTimes(0);
         next(new Error());
       });
 
       router.beforeEach(beforeEachFn);
-      router.beforeResolve(beforeResolveFn);
       router.afterEach(afterEachFn);
 
       let current = router.current;
@@ -127,20 +109,18 @@ describe('router', () => {
       // route not changed because aborted
       expect(current).toBe(router.current);
 
-      expect(beforeResolveFn).toBeCalledTimes(1);
+      expect(beforeEachFn).toBeCalledTimes(1);
       expect(afterEachFn).toBeCalledTimes(0);
     });
 
     it('should abort when guard throw error', () => {
-      beforeResolveFn = jest.fn().mockImplementation((to, from, next) => {
-        expect(beforeEachFn).toBeCalledTimes(1);
-        expect(routeBeforeEnter).toBeCalledTimes(1);
+      beforeEachFn = jest.fn().mockImplementation((to, from, next) => {
+        expect(routeResolveFn).toBeCalledTimes(0);
         expect(afterEachFn).toBeCalledTimes(0);
         throw new Error('test error');
       });
 
       router.beforeEach(beforeEachFn);
-      router.beforeResolve(beforeResolveFn);
       router.afterEach(afterEachFn);
 
       let current = router.current;
@@ -149,7 +129,7 @@ describe('router', () => {
       // route not changed because aborted
       expect(current).toBe(router.current);
 
-      expect(beforeResolveFn).toBeCalledTimes(1);
+      expect(beforeEachFn).toBeCalledTimes(1);
       expect(afterEachFn).toBeCalledTimes(0);
     });
 

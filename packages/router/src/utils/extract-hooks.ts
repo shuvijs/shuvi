@@ -1,8 +1,8 @@
-import { IRouteMatch, NavigationGuardHook } from '../types';
+import { IRouteMatch, IRouteRecord, NavigationGuardHook } from '../types';
 
 export function extractHooks(
   matched: IRouteMatch<any>[],
-  method: 'beforeEnter' // can add more method later on
+  method: keyof IRouteRecord // can add more method later on
 ): NavigationGuardHook[] {
   const guards: NavigationGuardHook[] = [];
 

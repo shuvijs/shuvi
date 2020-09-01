@@ -15,7 +15,7 @@ export interface IRouteRecord<Element = any> {
   children?: IRouteRecord<Element>[];
   element?: Element; // For react will be React.Element
   redirect?: string;
-  onBeforeEnter?: NavigationGuardHook;
+  resolve?: NavigationGuardHook;
   path: string;
 }
 
@@ -63,5 +63,4 @@ export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
   onChange: (listener: Listener) => RemoveListenerCallback;
   beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
   afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
-  beforeResolve: (listener: NavigationGuardHook) => RemoveListenerCallback;
 }

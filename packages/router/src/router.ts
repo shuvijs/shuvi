@@ -18,7 +18,6 @@ import {
   resolvePath,
   Events
 } from './utils';
-import { resolveAsyncComponents } from './utils/resolve-async-components';
 import { isError } from './utils/error';
 import { runQueue } from './utils/async';
 import { extractHooks } from './utils/extract-hooks';
@@ -39,9 +38,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _beforeEachs: Events<NavigationGuardHook> = createEvents<
     NavigationGuardHook
   >();
-  private _beforeResolves: Events<NavigationGuardHook> = createEvents<
-    NavigationGuardHook
-  >();
+
   private _afterEachs: Events<NavigationResolvedHook> = createEvents<
     NavigationResolvedHook
   >();
@@ -54,20 +51,20 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     this._history.listen(() => (this._current = this._getCurrent()));
 
     /*
-     * The Full Navigation Resolution Flow for shuvi/router
-     * Navigation triggered.
-     * Handle route.redirect if it has one
-     * Call route.beforeEnter
-     * Call router.beforeEach
-     * Call router.beforeResolve
-     * Emit change event(trigger react update)
-     * Call router.afterEach
+      The Full Navigation Resolution Flow for shuvi/router
+      1. Navigation triggered.
+      2. Handle route.redirect if it has one
+      3. Call router.beforeEach
+      4. Call route.resolve
+      5. Emit change event(trigger react update)
+      6. Call router.afterEach
      */
     this._history.onTransistion = (to, completeTransistion) => {
       const nextRoute = this._getNextRoute(to);
       const current = this._getCurrent();
 
-      const routeRedirect = nextRoute.matches?.reduceRight(
+      const nextMatches = nextRoute.matches || [];
+      const routeRedirect = nextMatches.reduceRight(
         (redirectPath, { route: { redirect } }) => {
           if (redirectPath) return redirectPath;
           if (redirect) {
@@ -84,11 +81,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       }
 
       const queue = ([] as Array<NavigationGuardHook>).concat(
-        // global before hooks
-        extractHooks(nextRoute.matches || [], 'beforeEnter'),
         this._beforeEachs.toArray(),
-        resolveAsyncComponents(nextRoute.matches || []),
-        this._beforeResolves.toArray()
+        extractHooks(nextMatches, 'resolve')
       );
 
       let abort = false;
@@ -170,10 +164,6 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
   beforeEach(listener: NavigationGuardHook) {
     return this._beforeEachs.push(listener);
-  }
-
-  beforeResolve(listener: NavigationGuardHook) {
-    return this._beforeResolves.push(listener);
   }
 
   afterEach(listener: NavigationResolvedHook) {
