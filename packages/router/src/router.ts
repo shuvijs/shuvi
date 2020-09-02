@@ -114,9 +114,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
           completeTransistion();
           const isRedirected = this._current._redirected;
           this._current = this._getCurrent();
-          history.notifyListeners();
           this._current.redirected = isRedirected;
           this._afterEachs.call(this._current, current);
+          history.notifyListeners();
         }
       });
     };
