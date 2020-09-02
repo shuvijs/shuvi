@@ -4,10 +4,13 @@ import {
   State,
   To,
   IRouteRecord as IOriginRouteRecord,
+  IPartialRouteRecord as IOriginalRouteRecord,
   IRouter
 } from '@shuvi/router';
 
 export type IRouteRecord = IOriginRouteRecord<React.ReactNode>;
+
+export type IPartialRouteRecord = IOriginalRouteRecord;
 
 export interface IRouterContextObject {
   static: boolean;
@@ -61,16 +64,4 @@ export interface IRoutesProps {
 export interface INavigateFunction {
   (to: To, options?: { replace?: boolean; state?: State }): void;
   (delta: number): void;
-}
-
-/**
- * A "partial route" object is usually supplied by the user and may omit
- * certain properties of a real route object such as `path` and `element`,
- * which have reasonable defaults.
- */
-export interface IPartialRouteRecord {
-  caseSensitive?: boolean;
-  children?: IPartialRouteRecord[];
-  element?: React.ReactNode;
-  path?: string;
 }

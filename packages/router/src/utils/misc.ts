@@ -1,9 +1,11 @@
+import { RemoveListenerCallback } from '../types';
 const isDev = process.env.NODE_ENV === 'development';
 
 export type Events<F> = {
+  toArray: () => F[];
   length: number;
-  push: (fn: F) => () => void;
-  call: (arg: any) => void;
+  push: (fn: F) => RemoveListenerCallback;
+  call: (...arg: any) => void;
 };
 
 export function createEvents<F extends Function>(): Events<F> {
@@ -13,14 +15,17 @@ export function createEvents<F extends Function>(): Events<F> {
     get length() {
       return handlers.length;
     },
+    toArray() {
+      return handlers;
+    },
     push(fn: F) {
       handlers.push(fn);
       return function () {
         handlers = handlers.filter(handler => handler !== fn);
       };
     },
-    call(arg) {
-      handlers.forEach(fn => fn && fn(arg));
+    call(...arg) {
+      handlers.forEach(fn => fn && fn(...arg));
     }
   };
 }

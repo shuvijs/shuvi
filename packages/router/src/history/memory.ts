@@ -50,8 +50,8 @@ export default class MemoryHistory extends BaseHisotry {
     this.location = this._entries[this._index];
   }
 
-  push(to: To, state?: object | null | undefined): void {
-    this.transitionTo(to, {
+  push(to: To, state?: object | null | undefined) {
+    return this.transitionTo(to, {
       state,
       handleTransion: ({ location }) => {
         this._index += 1;
@@ -60,8 +60,8 @@ export default class MemoryHistory extends BaseHisotry {
     });
   }
 
-  replace(to: To, state?: object | null | undefined): void {
-    this.transitionTo(to, {
+  replace(to: To, state?: object | null | undefined) {
+    return this.transitionTo(to, {
       state,
       replace: true,
       handleTransion: ({ location }) => {

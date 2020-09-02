@@ -51,10 +51,12 @@ interface TransitionOptions {
 export default abstract class BaseHistory implements History {
   action: Action = ACTION_POP;
   location: Location = createLocation('/');
+  onTransistion: History['onTransistion'] = () => void 0;
 
   protected _index: number = 0;
   protected _blockers = createEvents<Blocker>();
   private _listeners = createEvents<Listener>();
+  private _enableListeners = false;
 
   // ### implemented by sub-classes ###
   // base interface
@@ -109,27 +111,33 @@ export default abstract class BaseHistory implements History {
       return;
     }
 
-    // TODO: call before hooks
+    this.onTransistion(to, () => {
+      handleTransion({
+        location: nextLocation,
+        state: {
+          usr: nextLocation.state,
+          key: nextLocation.key,
+          idx: this._index + 1
+        },
+        url: this.resolve(nextLocation).href
+      });
 
-    handleTransion({
-      location: nextLocation,
-      state: {
-        usr: nextLocation.state,
-        key: nextLocation.key,
-        idx: this._index + 1
-      },
-      url: this.resolve(nextLocation).href
+      this._applyTx(nextAction);
     });
-
-    this._applyTx(nextAction);
   }
 
   protected _applyTx(nextAction: Action) {
     // update state
     this.action = nextAction;
     [this._index, this.location] = this.getIndexAndLocation();
+  }
 
-    // notify listener
-    this._listeners.call({ action: this.action, location: this.location });
+  notifyListeners() {
+    this._enableListeners &&
+      this._listeners.call({ action: this.action, location: this.location });
+  }
+
+  enableListeners() {
+    this._enableListeners = true;
   }
 }

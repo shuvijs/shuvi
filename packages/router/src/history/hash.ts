@@ -18,8 +18,8 @@ export default class HashHistory extends BaseHisotry {
     this._setup();
   }
 
-  push(to: To, state?: object | null | undefined): void {
-    this.transitionTo(to, {
+  push(to: To, state?: object | null | undefined) {
+    return this.transitionTo(to, {
       state,
       handleTransion({ state, url }) {
         pushState(state, url);
@@ -27,8 +27,8 @@ export default class HashHistory extends BaseHisotry {
     });
   }
 
-  replace(to: To, state?: object | null | undefined): void {
-    this.transitionTo(to, {
+  replace(to: To, state?: object | null | undefined) {
+    return this.transitionTo(to, {
       state,
       replace: true,
       handleTransion({ state, url }) {

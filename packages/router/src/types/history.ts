@@ -1,4 +1,5 @@
 import { ParsedQuery } from 'query-string';
+import { IRoute, IRouteRecord } from './router';
 
 export type GlobalHistory = typeof window.history;
 
@@ -168,6 +169,20 @@ export interface Listener<S extends State = State> {
   (update: Update<S>): void;
 }
 
+export interface NavigationGuardHook<R extends IRouteRecord = any> {
+  (
+    to: IRoute<R>,
+    from: IRoute<R>,
+    next: (
+      nextObject?: false | string | { path?: string; replace?: boolean } | Error
+    ) => void
+  ): void;
+}
+
+export interface NavigationResolvedHook<R extends IRouteRecord = any> {
+  (to: IRoute<R>, from: IRoute<R>): void;
+}
+
 /**
  * A change to the current location that was blocked. May be retried
  * after obtaining user confirmation.
@@ -197,6 +212,8 @@ export interface ResolvedPath {
   path: Path;
   href: string;
 }
+
+export type RemoveListenerCallback = () => void | undefined;
 
 /**
  * A history is an interface to the navigation stack. The history serves as the
@@ -282,7 +299,7 @@ export interface History<S extends State = State> {
    * @returns unlisten - A function that may be used to stop listening
    *
    */
-  listen(listener: Listener<S>): () => void;
+  listen(listener: Listener<S>): RemoveListenerCallback;
 
   /**
    * Prevents the current location from changing and sets up a listener that
@@ -293,4 +310,9 @@ export interface History<S extends State = State> {
    *
    */
   block(blocker: Blocker<S>): () => void;
+
+  onTransistion(to: To, afterResolved: () => void): void;
+
+  notifyListeners(): void;
+  enableListeners(): void;
 }

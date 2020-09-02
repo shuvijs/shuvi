@@ -1,4 +1,12 @@
-import { History, Path, State, Listener } from './history';
+import {
+  History,
+  Path,
+  State,
+  Listener,
+  NavigationGuardHook,
+  NavigationResolvedHook,
+  RemoveListenerCallback
+} from './history';
 
 export type IParams = Record<string, string>;
 
@@ -6,6 +14,8 @@ export interface IRouteRecord<Element = any> {
   caseSensitive?: boolean;
   children?: IRouteRecord<Element>[];
   element?: Element; // For react will be React.Element
+  redirect?: string;
+  resolve?: NavigationGuardHook;
   path: string;
 }
 
@@ -27,25 +37,22 @@ export interface IPathMatch {
   params: IParams;
 }
 
-export type IPartialRouteRecord<Element = any> = {
-  caseSensitive?: boolean;
-  children?: IPartialRouteRecord<Element>[];
-  element?: Element; // For react will be React.Element
-  path?: string;
-};
+export type IPartialRouteRecord<Element = any> = Partial<IRouteRecord<Element>>;
 
-export interface IRoute extends Path {
+export interface IRoute<RouteRecord extends IRouteRecord> extends Path {
   params: IParams;
   state: State;
-  matches: IRouteMatch[] | null;
-
+  matches: IRouteMatch<RouteRecord>[] | null;
+  redirected?: boolean;
+  // @internal
+  _redirected?: boolean;
   // todo?
   // fullpath: string?
   // href: string?
 }
 
-export interface IRouter {
-  current: IRoute;
+export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
+  current: IRoute<RouteRecord>;
   action: History['action'];
   push: History['push'];
   replace: History['replace'];
@@ -54,5 +61,9 @@ export interface IRouter {
   block: History['block'];
   resolve: History['resolve'];
   forward(): void;
-  onChange: (listener: Listener) => void;
+  ready: Promise<any>;
+
+  onChange: (listener: Listener) => RemoveListenerCallback;
+  beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
+  afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
 }

@@ -42,8 +42,16 @@ export function normalizeRoutes(
     const res: IAppRouteWithElement = {
       ...route
     };
+
     if (route.component) {
       res.element = <RouteComponent route={route} overrideContext={options} />;
+      res.resolve = async (to, from, next) => {
+        const preload = route.component?.preload;
+        if (preload) {
+          await preload();
+        }
+        next();
+      };
     }
     res.children = normalizeRoutes(route.children, options);
     return res;
