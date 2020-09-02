@@ -35,16 +35,19 @@ export class ReactServerView implements IReactServerView {
         initialIndex: 0
       })
     });
-    let { pathname, query, matches, redirect } = router.current;
+
+    await router.ready;
+
+    let { pathname, query, matches, redirected } = router.current;
     // TODO: handler no matches
     if (!matches) {
       matches = [];
     }
 
-    if (redirect) {
+    if (redirected) {
       return {
         redirect: {
-          path: redirect
+          path: pathname
         }
       };
     }

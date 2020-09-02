@@ -43,7 +43,9 @@ export interface IRoute<RouteRecord extends IRouteRecord> extends Path {
   params: IParams;
   state: State;
   matches: IRouteMatch<RouteRecord>[] | null;
-  redirect: string | null;
+  redirected?: boolean;
+  // @internal
+  _redirected?: boolean;
   // todo?
   // fullpath: string?
   // href: string?
@@ -59,6 +61,7 @@ export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
   block: History['block'];
   resolve: History['resolve'];
   forward(): void;
+  ready: Promise<any>;
 
   onChange: (listener: Listener) => RemoveListenerCallback;
   beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;

@@ -35,6 +35,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _history: History;
   private _routes: RouteRecord[];
   private _current: IRoute<RouteRecord>;
+  ready: Promise<any> = Promise.resolve();
 
   private _beforeEachs: Events<NavigationGuardHook> = createEvents<
     NavigationGuardHook
@@ -49,7 +50,6 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     this._history = history;
     this._routes = createRoutesFromArray(routes);
     this._current = this._getCurrent();
-    this._history.listen(() => (this._current = this._getCurrent()));
 
     /*
       The Full Navigation Resolution Flow for shuvi/router
@@ -62,23 +62,14 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
      */
     this._history.onTransistion = (to, completeTransistion) => {
       const nextRoute = this._getNextRoute(to);
-      const current = this._getCurrent();
+      const current = this._current;
 
       const nextMatches = nextRoute.matches || [];
-      const routeRedirect = nextMatches.reduceRight(
-        (redirectPath, { route: { redirect } }) => {
-          if (redirectPath) return redirectPath;
-          if (redirect) {
-            redirectPath = redirect;
-          }
-          return redirectPath;
-        },
-        ''
-      );
+      const routeRedirect = getRedirectFromRoutes(nextMatches);
 
       if (routeRedirect) {
-        this.push(routeRedirect);
-        return;
+        this.current._redirected = true;
+        return this.replace(routeRedirect);
       }
 
       const queue = ([] as Array<NavigationGuardHook>).concat(
@@ -121,10 +112,29 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       runQueue(queue, iterator, () => {
         if (!abort) {
           completeTransistion();
-          this._afterEachs.call(this._getCurrent(), current);
+          const isRedirected = this._current._redirected;
+          this._current = this._getCurrent();
+          history.notifyListeners();
+          this._current.redirected = isRedirected;
+          this._afterEachs.call(this._current, current);
         }
       });
     };
+  }
+
+  run() {
+    const { _history: history } = this;
+    // this make sure onTransistion is called on the first render
+
+    this.ready = new Promise(resolve => {
+      const unsubscribe = this.afterEach(() => {
+        history.enableListeners();
+        resolve();
+        unsubscribe();
+      });
+    });
+    this.replace(history.location);
+    return this;
   }
 
   get current(): IRoute<RouteRecord> {
@@ -135,12 +145,12 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     return this._history.action;
   }
 
-  push(to: any, state?: any): void {
-    this._history.push(to, state);
+  push(to: any, state?: any) {
+    return this._history.push(to, state);
   }
 
   replace(to: any, state?: any) {
-    this._history.replace(to, state);
+    return this._history.replace(to, state);
   }
 
   go(delta: number) {
@@ -186,11 +196,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     } = this;
     const matches = matchRoutes(routes, location, basename);
     const params = matches ? matches[matches.length - 1].params : {};
-    const redirect = getRedirectFromRoutes(matches || []);
+
     return {
       matches,
       params,
-      redirect,
       pathname: location.pathname,
       search: location.search,
       hash: location.hash,
@@ -204,11 +213,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const matches = matchRoutes(routes, to, basename);
     const params = matches ? matches[matches.length - 1].params : {};
     const parsedPath = resolvePath(to);
-    const redirect = getRedirectFromRoutes(matches || []);
     return {
       matches,
       params,
-      redirect,
       ...parsedPath,
       state: null
     };
@@ -218,5 +225,5 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 export const createRouter = <RouteRecord extends IRouteRecord>(
   options: IRouterOptions<RouteRecord>
 ): IRouter<RouteRecord> => {
-  return new Router(options);
+  return new Router(options).run();
 };

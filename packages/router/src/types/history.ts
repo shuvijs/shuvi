@@ -312,4 +312,7 @@ export interface History<S extends State = State> {
   block(blocker: Blocker<S>): () => void;
 
   onTransistion(to: To, afterResolved: () => void): void;
+
+  notifyListeners(): void;
+  enableListeners(): void;
 }

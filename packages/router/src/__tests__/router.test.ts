@@ -41,9 +41,10 @@ describe('router', () => {
           initialIndex: 0
         })
       });
-      debugger;
+
       let current = router.current;
-      expect(current.redirect).toEqual('/about');
+      expect(current.redirected).toBe(true);
+      expect(current.pathname).toBe('/');
     });
   });
 

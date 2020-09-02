@@ -51,11 +51,12 @@ interface TransitionOptions {
 export default abstract class BaseHistory implements History {
   action: Action = ACTION_POP;
   location: Location = createLocation('/');
-  onTransistion = (_: To, cb: Function) => void 0;
+  onTransistion: History['onTransistion'] = () => void 0;
 
   protected _index: number = 0;
   protected _blockers = createEvents<Blocker>();
   private _listeners = createEvents<Listener>();
+  private _enableListeners = false;
 
   // ### implemented by sub-classes ###
   // base interface
@@ -129,8 +130,14 @@ export default abstract class BaseHistory implements History {
     // update state
     this.action = nextAction;
     [this._index, this.location] = this.getIndexAndLocation();
+  }
 
-    // notify listener
-    this._listeners.call({ action: this.action, location: this.location });
+  notifyListeners() {
+    this._enableListeners &&
+      this._listeners.call({ action: this.action, location: this.location });
+  }
+
+  enableListeners() {
+    this._enableListeners = true;
   }
 }

@@ -35,6 +35,7 @@ export class ReactClientView implements IReactClientView {
       routes: normalizeRoutes(routes),
       history
     });
+
     // For e2e test
     if ((window as any).__SHUVI) {
       (window as any).__SHUVI.router = router;
@@ -51,11 +52,9 @@ export class ReactClientView implements IReactClientView {
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else {
-      const { pathname, query, params, redirect } = router.current;
+      const { pathname, query, params } = router.current;
 
-      if (redirect) {
-        redirector.handler(redirect);
-      } else if (TypedAppComponent.getInitialProps) {
+      if (TypedAppComponent.getInitialProps) {
         appProps = await TypedAppComponent.getInitialProps({
           isServer: false,
           pathname,
@@ -71,7 +70,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     if (redirector.redirected) {
-      router.push(redirector.state!.path);
+      router.replace(redirector.state!.path);
     }
 
     const root = (
