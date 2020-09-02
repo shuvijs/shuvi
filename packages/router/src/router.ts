@@ -5,34 +5,139 @@ import {
   IRouteRecord,
   IPartialRouteRecord,
   ResolvedPath,
-  To
+  To,
+  NavigationGuardHook,
+  NavigationResolvedHook
 } from './types';
 import { matchRoutes } from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
-import { normalizeBase, joinPaths } from './utils';
+import {
+  normalizeBase,
+  joinPaths,
+  createEvents,
+  resolvePath,
+  Events
+} from './utils';
+import { isError } from './utils/error';
+import { runQueue } from './utils/async';
+import { extractHooks } from './utils/extract-hooks';
+import { getRedirectFromRoutes } from './getRedirectFromRoutes';
 
-interface IRouterOptions {
+interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
-  routes: IPartialRouteRecord[];
+  routes: RouteRecord[];
   caseSensitive?: boolean;
   basename?: string;
 }
 
-class Router implements IRouter {
+class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _basename: string;
   private _history: History;
-  private _routes: IRouteRecord[];
-  private _current: IRoute;
+  private _routes: RouteRecord[];
+  private _current: IRoute<RouteRecord>;
+  ready: Promise<any> = Promise.resolve();
 
-  constructor({ basename = '', history, routes }: IRouterOptions) {
+  private _beforeEachs: Events<NavigationGuardHook> = createEvents<
+    NavigationGuardHook
+  >();
+
+  private _afterEachs: Events<NavigationResolvedHook> = createEvents<
+    NavigationResolvedHook
+  >();
+
+  constructor({ basename = '', history, routes }: IRouterOptions<RouteRecord>) {
     this._basename = normalizeBase(basename);
     this._history = history;
     this._routes = createRoutesFromArray(routes);
     this._current = this._getCurrent();
-    this._history.listen(() => (this._current = this._getCurrent()));
+
+    /*
+      The Full Navigation Resolution Flow for shuvi/router
+      1. Navigation triggered.
+      2. Handle route.redirect if it has one
+      3. Call router.beforeEach
+      4. Call route.resolve
+      5. Emit change event(trigger react update)
+      6. Call router.afterEach
+     */
+    this._history.onTransistion = (to, completeTransistion) => {
+      const nextRoute = this._getNextRoute(to);
+      const current = this._current;
+
+      const nextMatches = nextRoute.matches || [];
+      const routeRedirect = getRedirectFromRoutes(nextMatches);
+
+      if (routeRedirect) {
+        this.current._redirected = true;
+        return this.replace(routeRedirect);
+      }
+
+      const queue = ([] as Array<NavigationGuardHook>).concat(
+        this._beforeEachs.toArray(),
+        extractHooks(nextMatches, 'resolve')
+      );
+
+      let abort = false;
+      const iterator = (hook: NavigationGuardHook, next: Function) => {
+        try {
+          hook(nextRoute, current, to => {
+            if (to === false) {
+              abort = true;
+            } else if (isError(to)) {
+              abort = true;
+            } else if (
+              typeof to === 'string' ||
+              (typeof to === 'object' && typeof to.path === 'string')
+            ) {
+              abort = true;
+              if (typeof to === 'object') {
+                if (to.replace) {
+                  this.replace(to.path);
+                } else {
+                  this.push(to.path);
+                }
+              } else {
+                this.push(to);
+              }
+            } else {
+              next(to);
+            }
+          });
+        } catch (err) {
+          abort = true;
+          console.error('Uncaught error during navigation:', err);
+        }
+      };
+
+      runQueue(queue, iterator, () => {
+        if (!abort) {
+          completeTransistion();
+          const isRedirected = this._current._redirected;
+          this._current = this._getCurrent();
+          this._current.redirected = isRedirected;
+          this._afterEachs.call(this._current, current);
+          history.notifyListeners();
+        }
+      });
+    };
   }
 
-  get current(): IRoute {
+  run() {
+    const { _history: history } = this;
+    // this make sure onTransistion is called on the first render
+
+    this.ready = new Promise(resolve => {
+      const unsubscribe = this.afterEach(() => {
+        history.enableListeners();
+        resolve();
+        unsubscribe();
+      });
+    });
+    this.replace(history.location);
+    return this;
+  }
+
+  get current(): IRoute<RouteRecord> {
     return this._current;
   }
 
@@ -40,12 +145,12 @@ class Router implements IRouter {
     return this._history.action;
   }
 
-  push(to: any, state?: any): void {
-    this._history.push(to, state);
+  push(to: any, state?: any) {
+    return this._history.push(to, state);
   }
 
   replace(to: any, state?: any) {
-    this._history.replace(to, state);
+    return this._history.replace(to, state);
   }
 
   go(delta: number) {
@@ -68,6 +173,14 @@ class Router implements IRouter {
     return this._history.listen(listener);
   }
 
+  beforeEach(listener: NavigationGuardHook) {
+    return this._beforeEachs.push(listener);
+  }
+
+  afterEach(listener: NavigationResolvedHook) {
+    return this._afterEachs.push(listener);
+  }
+
   resolve(to: To, from?: any): ResolvedPath {
     return this._history.resolve(
       to,
@@ -75,7 +188,7 @@ class Router implements IRouter {
     );
   }
 
-  private _getCurrent() {
+  private _getCurrent(): IRoute<RouteRecord> {
     const {
       _routes: routes,
       _basename: basename,
@@ -83,6 +196,7 @@ class Router implements IRouter {
     } = this;
     const matches = matchRoutes(routes, location, basename);
     const params = matches ? matches[matches.length - 1].params : {};
+
     return {
       matches,
       params,
@@ -93,8 +207,23 @@ class Router implements IRouter {
       state: location.state
     };
   }
+
+  private _getNextRoute(to: To): IRoute<RouteRecord> {
+    const { _routes: routes, _basename: basename } = this;
+    const matches = matchRoutes(routes, to, basename);
+    const params = matches ? matches[matches.length - 1].params : {};
+    const parsedPath = resolvePath(to);
+    return {
+      matches,
+      params,
+      ...parsedPath,
+      state: null
+    };
+  }
 }
 
-export const createRouter = (options: IRouterOptions): IRouter => {
-  return new Router(options);
+export const createRouter = <RouteRecord extends IRouteRecord>(
+  options: IRouterOptions<RouteRecord>
+): IRouter<RouteRecord> => {
+  return new Router(options).run();
 };

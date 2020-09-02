@@ -1,10 +1,11 @@
 import { IPartialRouteRecord, IRouteRecord } from './types';
 
-export function createRoutesFromArray<Element = any>(
-  array: IPartialRouteRecord[]
-): IRouteRecord[] {
+export function createRoutesFromArray<
+  T extends IPartialRouteRecord,
+  U extends IRouteRecord
+>(array: T[]): U[] {
   return array.map(partialRoute => {
-    let route: IRouteRecord<Element> = {
+    let route: U = {
       ...(partialRoute as any),
       caseSensitive: !!partialRoute.caseSensitive,
       path: partialRoute.path || '/'
