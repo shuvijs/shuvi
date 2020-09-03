@@ -1,5 +1,8 @@
 import { ParsedQuery } from 'query-string';
 import { IRoute, IRouteRecord } from './router';
+import type History from '../history/base';
+
+export { History };
 
 export type GlobalHistory = typeof window.history;
 
@@ -38,7 +41,7 @@ export type HistoryState = {
   usr: State;
   key?: string;
   idx: number;
-};
+} | null;
 
 /**
  * A unique string associated with a location. May be used to safely store
@@ -111,6 +114,8 @@ export interface PartialPath {
  *
  */
 export interface Location<S extends State = State> extends Path {
+  redirectedFrom?: PathRecord;
+
   /**
    * An object of arbitrary data associated with this location.
    *
@@ -206,7 +211,7 @@ export interface Blocker<S extends State = State> {
  * `history.push` or `history.replace`. May be either a URL or the pieces of a
  * URL path.
  */
-export type To = string | PartialPath;
+export type PathRecord = string | PartialPath;
 
 export interface ResolvedPath {
   path: Path;
@@ -214,105 +219,3 @@ export interface ResolvedPath {
 }
 
 export type RemoveListenerCallback = () => void | undefined;
-
-/**
- * A history is an interface to the navigation stack. The history serves as the
- * source of truth for the current location, as well as provides a set of
- * methods that may be used to change it.
- *
- * It is similar to the DOM's `window.history` object, but with a smaller, more
- * focused API.
- */
-export interface History<S extends State = State> {
-  /**
-   * The last action that modified the current location. This will always be
-   * Action.Pop when a history instance is first created. This value is mutable.
-   *
-   */
-  readonly action: Action;
-
-  /**
-   * The current location. This value is mutable.
-   *
-   */
-  readonly location: Location<S>;
-
-  /**
-   * Returns a valid href for the given `to` value that may be used as
-   * the value of an <a href> attribute.
-   *
-   * @param to - The destination URL
-   *
-   */
-  resolve(to: To, from?: string): ResolvedPath;
-
-  /**
-   * Pushes a new location onto the history stack, increasing its length by one.
-   * If there were any entries in the stack after the current one, they are
-   * lost.
-   *
-   * @param to - The new URL
-   * @param state - Data to associate with the new location
-   *
-   */
-  push(to: To, state?: S): void;
-
-  /**
-   * Replaces the current location in the history stack with a new one.  The
-   * location that was replaced will no longer be available.
-   *
-   * @param to - The new URL
-   * @param state - Data to associate with the new location
-   *
-   */
-  replace(to: To, state?: S): void;
-
-  /**
-   * Navigates `n` entries backward/forward in the history stack relative to the
-   * current index. For example, a "back" navigation would use go(-1).
-   *
-   * @param delta - The delta in the stack index
-   *
-   */
-  go(delta: number): void;
-
-  /**
-   * Navigates to the previous entry in the stack. Identical to go(-1).
-   *
-   * Warning: if the current location is the first location in the stack, this
-   * will unload the current document.
-   *
-   */
-  back(): void;
-
-  /**
-   * Navigates to the next entry in the stack. Identical to go(1).
-   *
-   */
-  forward(): void;
-
-  /**
-   * Sets up a listener that will be called whenever the current location
-   * changes.
-   *
-   * @param listener - A function that will be called when the location changes
-   * @returns unlisten - A function that may be used to stop listening
-   *
-   */
-  listen(listener: Listener<S>): RemoveListenerCallback;
-
-  /**
-   * Prevents the current location from changing and sets up a listener that
-   * will be called instead.
-   *
-   * @param blocker - A function that will be called when a transition is blocked
-   * @returns unblock - A function that may be used to stop blocking
-   *
-   */
-  block(blocker: Blocker<S>): () => void;
-
-  onTransistion(to: To, afterResolved: () => void): void;
-
-  notifyListeners(): void;
-  enableListeners(): void;
-}

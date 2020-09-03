@@ -5,7 +5,8 @@ import {
   Listener,
   NavigationGuardHook,
   NavigationResolvedHook,
-  RemoveListenerCallback
+  RemoveListenerCallback,
+  PathRecord
 } from './history';
 
 export type IParams = Record<string, string>;
@@ -44,8 +45,6 @@ export interface IRoute<RouteRecord extends IRouteRecord> extends Path {
   state: State;
   matches: IRouteMatch<RouteRecord>[] | null;
   redirected?: boolean;
-  // @internal
-  _redirected?: boolean;
   // todo?
   // fullpath: string?
   // href: string?
@@ -54,8 +53,8 @@ export interface IRoute<RouteRecord extends IRouteRecord> extends Path {
 export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
   current: IRoute<RouteRecord>;
   action: History['action'];
-  push: History['push'];
-  replace: History['replace'];
+  push(to: PathRecord, state?: any): void;
+  replace(to: PathRecord, state?: any): void;
   go: History['go'];
   back: History['back'];
   block: History['block'];
@@ -63,7 +62,7 @@ export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
   forward(): void;
   ready: Promise<any>;
 
-  onChange: (listener: Listener) => RemoveListenerCallback;
+  listen: (listener: Listener) => RemoveListenerCallback;
   beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
   afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
 }

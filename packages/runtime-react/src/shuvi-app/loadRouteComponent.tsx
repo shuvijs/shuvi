@@ -72,7 +72,7 @@ function withInitialPropsClient<P = {}>(
       if (unmount) return;
 
       if (redirector.redirected) {
-        navigate(redirector.state!.path);
+        navigate(redirector.state!.path, { replace: true });
       } else {
         setPropsResolved(true);
         setInitialProps(initialProps);

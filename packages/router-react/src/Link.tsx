@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useHref, useNavigate, useResolvedPath } from '.';
-import { pathToString, State, To } from '@shuvi/router';
+import { pathToString, State, PathRecord } from '@shuvi/router';
 import { __DEV__ } from './constants';
 import { useCurrentRoute } from './hooks';
 
@@ -57,7 +57,7 @@ export interface LinkProps
   extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   replace?: boolean;
   state?: State;
-  to: To;
+  to: PathRecord;
 }
 
 if (__DEV__) {
