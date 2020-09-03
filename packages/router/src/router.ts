@@ -206,7 +206,6 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
         this._ready = true;
         this._readyDefer.resolve();
       } else {
-        console.log('to', to);
         this._listeners.call({
           action: this._history.action,
           location: this._history.location
