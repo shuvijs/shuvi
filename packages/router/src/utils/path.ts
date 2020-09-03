@@ -1,6 +1,6 @@
 import qs from 'query-string';
 import { inBrowser } from './dom';
-import { To, PartialPath, Path } from '../types';
+import { PathRecord, PartialPath, Path } from '../types';
 
 export const trimTrailingSlashes = (path: string) => path.replace(/\/+$/, '');
 
@@ -59,7 +59,7 @@ function resolvePathname(toPathname: string, fromPathname: string): string {
 /**
  * Parses a string URL path into its separate pathname, search, and hash components.
  */
-export function resolvePath(to: To, fromPathname = '/'): Path {
+export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
   let parsedPath: Path = {
     pathname: '',
     search: '',

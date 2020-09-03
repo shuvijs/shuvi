@@ -1,4 +1,11 @@
-import { HistoryState, Location, To, State, Key, Blocker } from '../types';
+import {
+  HistoryState,
+  Location,
+  PathRecord,
+  State,
+  Key,
+  Blocker
+} from '../types';
 import { readOnly, Events } from './misc';
 import { resolvePath } from './path';
 
@@ -16,11 +23,16 @@ function createKey() {
 }
 
 export function createLocation(
-  to: To,
-  { state = null, key }: { state?: State; key?: Key } = {}
+  to: PathRecord,
+  {
+    state = null,
+    key,
+    redirectedFrom
+  }: { state?: State; key?: Key; redirectedFrom?: PathRecord } = {}
 ) {
-  return readOnly<Location>({
+  return readOnly<Location<any>>({
     ...resolvePath(to),
+    redirectedFrom,
     state,
     key: key || createKey()
   });
