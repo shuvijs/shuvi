@@ -1,12 +1,10 @@
 import {
   State,
-  History,
   HistoryState,
   Blocker,
-  Listener,
   Location,
   ResolvedPath,
-  To,
+  PathRecord,
   Action
 } from '../types';
 import {
@@ -40,31 +38,41 @@ export const ACTION_REPLACE: Action = 'Replace';
 
 interface TransitionOptions {
   state?: State;
-  replace?: boolean;
-  handleTransion: (event: {
+  action?: Action;
+  redirectedFrom?: PathRecord;
+  onTransition(event: {
     location: Location;
     state: HistoryState;
     url: string;
-  }) => void;
+  }): void;
+  onAbort?(): void;
 }
 
-export default abstract class BaseHistory implements History {
+export interface PushOptions {
+  state?: object | null | undefined;
+  redirectedFrom?: PathRecord;
+}
+
+export default abstract class BaseHistory {
   action: Action = ACTION_POP;
   location: Location = createLocation('/');
-  onTransistion: History['onTransistion'] = () => void 0;
+  doTransision: (
+    to: PathRecord,
+    onComplete: Function,
+    onAbort?: Function
+  ) => void = () => void 0;
 
   protected _index: number = 0;
   protected _blockers = createEvents<Blocker>();
-  private _listeners = createEvents<Listener>();
-  private _enableListeners = false;
 
   // ### implemented by sub-classes ###
   // base interface
   protected abstract getIndexAndLocation(): [number /* index */, Location];
+  abstract setup(): void;
 
   // history interface
-  abstract push(to: To, state?: object | null | undefined): void;
-  abstract replace(to: To, state?: object | null | undefined): void;
+  abstract push(to: PathRecord, options: PushOptions): void;
+  abstract replace(to: PathRecord, options?: PushOptions): void;
   abstract go(delta: number): void;
   abstract block(blocker: Blocker<State>): () => void;
 
@@ -76,10 +84,6 @@ export default abstract class BaseHistory implements History {
     this.go(1);
   }
 
-  listen(listener: Listener) {
-    return this._listeners.push(listener);
-  }
-
   resolve(to: any, from?: any): ResolvedPath {
     const toPath = resolvePath(to, from);
     return {
@@ -88,56 +92,58 @@ export default abstract class BaseHistory implements History {
     };
   }
 
-  protected transitionTo(
-    to: To,
-    { handleTransion, replace = false, state = null }: TransitionOptions
+  transitionTo(
+    to: PathRecord,
+    {
+      onTransition,
+      onAbort,
+      action = ACTION_PUSH,
+      state = null,
+      redirectedFrom
+    }: TransitionOptions
   ) {
-    const nextAction = replace ? ACTION_REPLACE : ACTION_PUSH;
-    const nextLocation = createLocation(to, { state });
+    const nextLocation = createLocation(to, { state, redirectedFrom });
 
     // check transition
     if (this._blockers.length) {
       this._blockers.call({
-        action: nextAction,
+        action,
         location: nextLocation,
         retry: () => {
           this.transitionTo(to, {
-            handleTransion,
-            replace,
-            state
+            onTransition,
+            onAbort,
+            action,
+            state,
+            redirectedFrom
           });
         }
       });
       return;
     }
 
-    this.onTransistion(to, () => {
-      handleTransion({
-        location: nextLocation,
-        state: {
-          usr: nextLocation.state,
-          key: nextLocation.key,
-          idx: this._index + 1
-        },
-        url: this.resolve(nextLocation).href
-      });
+    this.doTransision(
+      to,
+      () => {
+        onTransition({
+          location: nextLocation,
+          state: {
+            usr: nextLocation.state,
+            key: nextLocation.key,
+            idx: this._index + 1
+          },
+          url: this.resolve(nextLocation).href
+        });
 
-      this._applyTx(nextAction);
-    });
+        this._updateState(action);
+      },
+      onAbort
+    );
   }
 
-  protected _applyTx(nextAction: Action) {
+  private _updateState(nextAction: Action) {
     // update state
     this.action = nextAction;
     [this._index, this.location] = this.getIndexAndLocation();
-  }
-
-  notifyListeners() {
-    this._enableListeners &&
-      this._listeners.call({ action: this.action, location: this.location });
-  }
-
-  enableListeners() {
-    this._enableListeners = true;
   }
 }

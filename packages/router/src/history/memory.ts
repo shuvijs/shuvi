@@ -1,6 +1,12 @@
-import { To, Location, Blocker, PartialLocation, ResolvedPath } from '../types';
+import {
+  PathRecord,
+  Location,
+  Blocker,
+  PartialLocation,
+  ResolvedPath
+} from '../types';
 import { createLocation, resolvePath, pathToString, warning } from '../utils';
-import BaseHisotry, { ACTION_POP } from './base';
+import BaseHisotry, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
 
 function clamp(n: number, lowerBound: number, upperBound: number) {
   return Math.min(Math.max(n, lowerBound), upperBound);
@@ -50,21 +56,27 @@ export default class MemoryHistory extends BaseHisotry {
     this.location = this._entries[this._index];
   }
 
-  push(to: To, state?: object | null | undefined) {
+  setup() {
+    // do nothing
+  }
+
+  push(to: PathRecord, { state, redirectedFrom }: PushOptions = {}) {
     return this.transitionTo(to, {
       state,
-      handleTransion: ({ location }) => {
+      redirectedFrom,
+      onTransition: ({ location }) => {
         this._index += 1;
         this._entries.splice(this._index, this._entries.length, location);
       }
     });
   }
 
-  replace(to: To, state?: object | null | undefined) {
+  replace(to: PathRecord, { state, redirectedFrom }: PushOptions = {}) {
     return this.transitionTo(to, {
       state,
-      replace: true,
-      handleTransion: ({ location }) => {
+      action: ACTION_REPLACE,
+      redirectedFrom,
+      onTransition: ({ location }) => {
         this._entries[this._index] = location;
       }
     });
@@ -95,15 +107,13 @@ export default class MemoryHistory extends BaseHisotry {
     return this._blockers.push(blocker);
   }
 
-  resolve(to: To, from?: string): ResolvedPath {
+  resolve(to: PathRecord, from?: string): ResolvedPath {
     const toPath = resolvePath(to, from);
     return {
       path: toPath,
       href: pathToString(toPath)
     };
   }
-
-  protected setup() {}
 
   protected getIndexAndLocation(): [number, Location] {
     const index = this._index;

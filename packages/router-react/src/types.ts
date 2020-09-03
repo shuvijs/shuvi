@@ -2,7 +2,7 @@ import {
   IParams,
   InitialEntry,
   State,
-  To,
+  PathRecord,
   IRouteRecord as IOriginRouteRecord,
   IPartialRouteRecord as IOriginalRouteRecord,
   IRouter
@@ -33,7 +33,7 @@ export interface IMemoryRouterProps {
 }
 
 export interface INavigateProps {
-  to: To;
+  to: PathRecord;
   replace?: boolean;
   state?: State;
 }
@@ -62,6 +62,6 @@ export interface IRoutesProps {
  * The interface for the navigate() function returned from useNavigate().
  */
 export interface INavigateFunction {
-  (to: To, options?: { replace?: boolean; state?: State }): void;
+  (to: PathRecord, options?: { replace?: boolean; state?: State }): void;
   (delta: number): void;
 }

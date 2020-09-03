@@ -1,4 +1,10 @@
-import { GlobalHistory, To, Location, Blocker, Transition } from '../types';
+import {
+  GlobalHistory,
+  PathRecord,
+  Location,
+  Blocker,
+  Transition
+} from '../types';
 import {
   createLocation,
   pushState,
@@ -8,30 +14,39 @@ import {
   pathToString,
   warning
 } from '../utils';
-import BaseHisotry, { ACTION_POP } from './base';
+import BaseHisotry, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
 
 export default class HashHistory extends BaseHisotry {
   private _history: GlobalHistory = window.history;
 
   constructor() {
     super();
-    this._setup();
+    [this._index, this.location] = this.getIndexAndLocation();
+    if (this._index == null) {
+      this._index = 0;
+      this._history.replaceState(
+        { ...this._history.state, idx: this._index },
+        ''
+      );
+    }
   }
 
-  push(to: To, state?: object | null | undefined) {
+  push(to: PathRecord, { state, redirectedFrom }: PushOptions = {}) {
     return this.transitionTo(to, {
       state,
-      handleTransion({ state, url }) {
+      redirectedFrom,
+      onTransition({ state, url }) {
         pushState(state, url);
       }
     });
   }
 
-  replace(to: To, state?: object | null | undefined) {
+  replace(to: PathRecord, { state, redirectedFrom }: PushOptions = {}) {
     return this.transitionTo(to, {
       state,
-      replace: true,
-      handleTransion({ state, url }) {
+      action: ACTION_REPLACE,
+      redirectedFrom,
+      onTransition({ state, url }) {
         replaceState(state, url);
       }
     });
@@ -45,16 +60,7 @@ export default class HashHistory extends BaseHisotry {
     return addBlocker(this._blockers, blocker);
   }
 
-  private _setup() {
-    [this._index, this.location] = this.getIndexAndLocation();
-    if (this._index == null) {
-      this._index = 0;
-      this._history.replaceState(
-        { ...this._history.state, idx: this._index },
-        ''
-      );
-    }
-
+  setup() {
     let blockedPopTx: Transition | null = null;
     const handlePop = () => {
       const index = this._index;
@@ -98,7 +104,10 @@ export default class HashHistory extends BaseHisotry {
             );
           }
         } else {
-          this._applyTx(nextAction);
+          this.transitionTo(nextLocation, {
+            onTransition: () => {},
+            action: nextAction
+          });
         }
       }
     };

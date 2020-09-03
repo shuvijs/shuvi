@@ -42,7 +42,7 @@ describe('uesRouter', () => {
         push: expect.any(Function),
         replace: expect.any(Function),
         resolve: expect.any(Function),
-        onChange: expect.any(Function)
+        listen: expect.any(Function)
       })
     );
   });

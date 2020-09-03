@@ -5,7 +5,7 @@ const MyApp = () => {
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
-      router.onChange(() => {
+      router.listen(() => {
         console.log('history change');
       });
     }

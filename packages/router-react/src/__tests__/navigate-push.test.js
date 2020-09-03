@@ -6,33 +6,15 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { Router, useNavigate, RouterView } from '..';
-import { createRouter } from '@shuvi/router';
+import { createRouter, MemoryHistory } from '@shuvi/router';
 
 function createMockRouter(routes, initialLocation) {
   return createRouter({
     routes,
-    history: {
-      action: 'POP',
-      location: initialLocation,
-      resolve() {
-        return {
-          path: {
-            pathname: '/',
-            search: '',
-            hash: '',
-            query: {}
-          },
-          href: '/'
-        };
-      },
-      push() {},
-      replace() {},
-      go() {},
-      back() {},
-      forward() {},
-      listen() {},
-      block() {}
-    }
+    history: new MemoryHistory({
+      initialEntries: [initialLocation],
+      initialIndex: 0
+    })
   });
 }
 
