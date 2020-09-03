@@ -1,11 +1,11 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useRef, useEffect, useLayoutEffect } from 'react';
 import {
   IParams,
   IPathMatch,
   Blocker,
   Path,
   State,
-  To,
+  PathRecord,
   Transition,
   IRouter,
   IPathPattern,
@@ -16,13 +16,30 @@ import { RouterContext, RouteContext } from './contexts';
 import { invariant, warning } from './utils';
 import { INavigateFunction } from './types';
 
-export function useCurrentRoute() {
-  const router = useRouter();
-  const forceupdate = useReducer(s => s * -1, 1)[1];
-
+function useIsomorphicEffect(cb: any, deps: any): void {
   if (typeof window !== 'undefined') {
-    React.useLayoutEffect(() => router.onChange(() => forceupdate()), [router]);
+    useLayoutEffect(cb, deps);
+  } else {
+    useEffect(cb, deps);
   }
+}
+
+export function useCurrentRoute() {
+  const unmount = useRef(false);
+  const forceupdate = useReducer(s => s * -1, 1)[1];
+  const router = useRouter();
+
+  useIsomorphicEffect(() => () => (unmount.current = true), []);
+  useIsomorphicEffect(
+    () =>
+      router.listen(() => {
+        if (unmount.current) {
+          return;
+        }
+        forceupdate();
+      }),
+    [router]
+  );
 
   return router.current;
 }
@@ -65,7 +82,7 @@ export function useBlocker(blocker: Blocker, when = true): void {
  * Returns the full href for the given "to" value. This is useful for building
  * custom links that are also accessible and preserve right-click behavior.
  */
-export function useHref(to: To): string {
+export function useHref(to: PathRecord): string {
   invariant(
     useInRouterContext(),
     `useHref() may be used only in the context of a <Router> component.`
@@ -117,7 +134,10 @@ export function useNavigate(): INavigateFunction {
   });
 
   let navigate: INavigateFunction = React.useCallback(
-    (to: To | number, options: { replace?: boolean; state?: State } = {}) => {
+    (
+      to: PathRecord | number,
+      options: { replace?: boolean; state?: State } = {}
+    ) => {
       if (activeRef.current) {
         if (typeof to === 'number') {
           router.go(to);
@@ -154,7 +174,7 @@ export function useParams(): IParams {
 /**
  * Resolves the pathname of the given `to` value against the current location.
  */
-export function useResolvedPath(to: To): Path {
+export function useResolvedPath(to: PathRecord): Path {
   const { router } = React.useContext(RouterContext);
   const { pathname } = React.useContext(RouteContext);
   return React.useMemo(() => router.resolve(to, pathname).path, [to, pathname]);
