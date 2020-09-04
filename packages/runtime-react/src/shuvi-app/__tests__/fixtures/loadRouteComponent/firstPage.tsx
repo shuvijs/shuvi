@@ -1,6 +1,12 @@
 import React from 'react';
+import { Link } from '@shuvi/router-react';
 
-const FirstPage = () => <div>first page</div>;
+const FirstPage = () => (
+  <div>
+    first page
+    <Link to="/second">go second page</Link>
+  </div>
+);
 
 FirstPage.getInitialProps = async () => {
   const data = await new Promise(resolve =>

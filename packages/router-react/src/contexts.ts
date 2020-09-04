@@ -1,5 +1,5 @@
 import React from 'react';
-import { IParams } from '@shuvi/router';
+import { IParams, IRoute } from '@shuvi/router';
 import { readOnly } from './utils';
 import { __DEV__ } from './constants';
 import { IRouterContextObject, IRouteContextObject } from './types';
@@ -12,7 +12,13 @@ if (__DEV__) {
   RouterContext.displayName = 'Router';
 }
 
-export const RouteContext = React.createContext<IRouteContextObject>({
+export const RouteContext = React.createContext<IRoute>(null as any);
+
+if (__DEV__) {
+  RouterContext.displayName = 'Route';
+}
+
+export const MactedRouteContext = React.createContext<IRouteContextObject>({
   depth: 0,
   params: readOnly<IParams>({}),
   pathname: '',
@@ -20,5 +26,5 @@ export const RouteContext = React.createContext<IRouteContextObject>({
 });
 
 if (__DEV__) {
-  RouteContext.displayName = 'Route';
+  MactedRouteContext.displayName = 'MactedRoute';
 }

@@ -47,6 +47,12 @@ describe('loadRouteComponent [node]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`
       <div>
         first page
+        <a
+          href="/second"
+          onClick={[Function]}
+        >
+          go second page
+        </a>
       </div>
     `);
 

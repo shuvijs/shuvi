@@ -62,6 +62,12 @@ describe('loadRouteComponent [web]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`
       <div>
         first page
+        <a
+          href="/second"
+          onClick={[Function]}
+        >
+          go second page
+        </a>
       </div>
     `);
   });
@@ -108,8 +114,49 @@ describe('loadRouteComponent [web]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`
       <div>
         first page
+        <a
+          href="/second"
+          onClick={[Function]}
+        >
+          go second page
+        </a>
       </div>
     `);
+  });
+
+  it('getInitialProps should not called when leave route', async () => {
+    const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
+    const { root, toJSON } = renderWithRoutes(
+      { routes },
+      {
+        route: '/first'
+      }
+    );
+
+    // wait getInitialprops resolve
+    await act(async () => {
+      await wait(1100);
+    });
+
+    expect(toJSON()).toMatchInlineSnapshot(`
+      <div>
+        first page
+        <a
+          href="/second"
+          onClick={[Function]}
+        >
+          go second page
+        </a>
+      </div>
+    `);
+
+    expect(getInitialProps.mock.calls.length).toBe(1);
+
+    await act(async () => {
+      root.findByType('a').props.onClick(new MouseEvent('click'));
+    });
+
+    expect(getInitialProps.mock.calls.length).toBe(1);
   });
 
   it('getInitialProps should be recall in client when the route component params update', async () => {
