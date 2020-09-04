@@ -40,7 +40,8 @@ export interface IPathMatch {
 
 export type IPartialRouteRecord<Element = any> = Partial<IRouteRecord<Element>>;
 
-export interface IRoute<RouteRecord extends IRouteRecord> extends Path {
+export interface IRoute<RouteRecord extends IRouteRecord = IRouteRecord>
+  extends Path {
   params: IParams;
   state: State;
   matches: IRouteMatch<RouteRecord>[] | null;

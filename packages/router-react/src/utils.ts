@@ -1,6 +1,15 @@
 import { IParams } from '@shuvi/router';
+import { useLayoutEffect, useEffect } from 'react';
 import { __DEV__ } from './constants';
 import invariant from '@shuvi/utils/lib/invariant';
+
+export function useIsomorphicEffect(cb: any, deps: any): void {
+  if (typeof window !== 'undefined') {
+    useLayoutEffect(cb, deps);
+  } else {
+    useEffect(cb, deps);
+  }
+}
 
 export const readOnly: <T extends unknown>(obj: T) => T = __DEV__
   ? obj => Object.freeze(obj)

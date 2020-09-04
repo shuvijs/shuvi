@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useContext } from 'react';
 import {
   IParams,
   IPathMatch,
@@ -12,36 +12,12 @@ import {
   matchPath
 } from '@shuvi/router';
 import { __DEV__ } from './constants';
-import { RouterContext, RouteContext } from './contexts';
+import { RouterContext, RouteContext, MactedRouteContext } from './contexts';
 import { invariant, warning } from './utils';
 import { INavigateFunction } from './types';
 
-function useIsomorphicEffect(cb: any, deps: any): void {
-  if (typeof window !== 'undefined') {
-    useLayoutEffect(cb, deps);
-  } else {
-    useEffect(cb, deps);
-  }
-}
-
 export function useCurrentRoute() {
-  const unmount = useRef(false);
-  const forceupdate = useReducer(s => s * -1, 1)[1];
-  const router = useRouter();
-
-  useIsomorphicEffect(() => () => (unmount.current = true), []);
-  useIsomorphicEffect(
-    () =>
-      router.listen(() => {
-        if (unmount.current) {
-          return;
-        }
-        forceupdate();
-      }),
-    [router]
-  );
-
-  return router.current;
+  return useContext(RouteContext);
 }
 
 /**
@@ -54,7 +30,7 @@ export function useBlocker(blocker: Blocker, when = true): void {
     `useBlocker() may be used only in the context of a <Router> component.`
   );
 
-  const { router } = React.useContext(RouterContext);
+  const { router } = useContext(RouterContext);
 
   React.useEffect(() => {
     if (!when) return;
@@ -88,7 +64,7 @@ export function useHref(to: PathRecord): string {
     `useHref() may be used only in the context of a <Router> component.`
   );
 
-  const { router } = React.useContext(RouterContext);
+  const { router } = useContext(RouterContext);
   const path = useResolvedPath(to);
   return router.resolve(path).href;
 }
@@ -97,7 +73,7 @@ export function useHref(to: PathRecord): string {
  * Returns true if this component is a descendant of a <Router>.
  */
 export function useInRouterContext(): boolean {
-  return React.useContext(RouterContext) != null;
+  return useContext(RouterContext) != null;
 }
 
 /**
@@ -125,8 +101,8 @@ export function useNavigate(): INavigateFunction {
     `useNavigate() may be used only in the context of a <Router> component.`
   );
 
-  const { router } = React.useContext(RouterContext);
-  const { pathname } = React.useContext(RouteContext);
+  const { router } = useContext(RouterContext);
+  const { pathname } = useContext(MactedRouteContext);
 
   const activeRef = React.useRef(false);
   React.useEffect(() => {
@@ -168,15 +144,15 @@ export function useNavigate(): INavigateFunction {
  * URL that were matched by the route path.
  */
 export function useParams(): IParams {
-  return React.useContext(RouteContext).params;
+  return useContext(MactedRouteContext).params;
 }
 
 /**
  * Resolves the pathname of the given `to` value against the current location.
  */
 export function useResolvedPath(to: PathRecord): Path {
-  const { router } = React.useContext(RouterContext);
-  const { pathname } = React.useContext(RouteContext);
+  const { router } = useContext(RouterContext);
+  const { pathname } = useContext(MactedRouteContext);
   return React.useMemo(() => router.resolve(to, pathname).path, [to, pathname]);
 }
 
@@ -189,5 +165,5 @@ export function useRouter(): IRouter {
     `useRouter() may be used only in the context of a <Router> component.`
   );
 
-  return React.useContext(RouterContext).router;
+  return useContext(RouterContext).router;
 }

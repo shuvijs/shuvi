@@ -57,6 +57,8 @@ function withInitialPropsClient<P = {}>(
     const navigate = useNavigate();
 
     const getInitialProps = async () => {
+      if (unmount) return;
+
       const { __appContext: appContext } = props;
       const redirector = createRedirector();
 
@@ -68,8 +70,6 @@ function withInitialPropsClient<P = {}>(
         redirect: redirector.handler,
         appContext
       });
-
-      if (unmount) return;
 
       if (redirector.redirected) {
         navigate(redirector.state!.path, { replace: true });
