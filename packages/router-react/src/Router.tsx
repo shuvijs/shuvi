@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useRef, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { RouterContext } from './contexts';
+import { RouterContext, RouteContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
-import { invariant } from './utils';
+import { invariant, useIsomorphicEffect } from './utils';
 import { IRouterProps } from './types';
 
 /**
@@ -31,7 +31,26 @@ export function Router({
     };
   }, [staticProp, router]);
 
-  return <RouterContext.Provider children={children} value={contextVal} />;
+  const unmount = useRef(false);
+  const forceupdate = useReducer(s => s * -1, 1)[1];
+
+  useIsomorphicEffect(() => () => (unmount.current = true), []);
+  useIsomorphicEffect(
+    () =>
+      router.listen(() => {
+        if (unmount.current) {
+          return;
+        }
+        forceupdate();
+      }),
+    [router]
+  );
+
+  return (
+    <RouterContext.Provider value={contextVal}>
+      <RouteContext.Provider children={children} value={router.current} />
+    </RouterContext.Provider>
+  );
 }
 
 if (__DEV__) {

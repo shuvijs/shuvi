@@ -3,7 +3,7 @@ import { IParams } from '@shuvi/router';
 import { joinPaths } from '@shuvi/router/lib/utils';
 import { useCurrentRoute } from './hooks';
 import { __DEV__ } from './constants';
-import { RouteContext } from './contexts';
+import { MactedRouteContext } from './contexts';
 import { warningOnce, readOnly } from './utils';
 
 const defaultElement = <RouterView />;
@@ -19,7 +19,7 @@ export function RouterView(): React.ReactElement | null {
     depth,
     pathname: parentPathname,
     params: parentParams
-  } = React.useContext(RouteContext);
+  } = React.useContext(MactedRouteContext);
 
   // Otherwise render an element.
   const matched = matches[depth];
@@ -38,7 +38,7 @@ export function RouterView(): React.ReactElement | null {
 
   const { route, params, pathname } = matched;
   return (
-    <RouteContext.Provider
+    <MactedRouteContext.Provider
       children={route.element || defaultElement}
       value={{
         depth: depth + 1,
