@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Runtime } from '@shuvi/types';
 import dynamic, { DynamicOptions } from './dynamic';
 import { getDisplayName } from './utils/getDisplayName';
@@ -8,6 +8,7 @@ import { createRedirector } from './utils/createRedirector';
 
 import RouteComponent = Runtime.IRouteComponent;
 import { useNavigate, useCurrentRoute } from '@shuvi/router-react';
+import useIsomorphicEffect from '@shuvi/shared/lib/useIsomorphicEffect';
 
 type Data = Record<string, any>;
 
@@ -41,9 +42,14 @@ function withInitialPropsClient<P = {}>(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
 ): RouteComponent<React.FunctionComponent<IRouteProps & P>> {
   const hoc = function WithInitialProps(props: IRouteProps & P) {
-    const [unmount, setUnmount] = useState(false);
+    const unmount = useRef(false);
 
-    useEffect(() => () => setUnmount(true), []);
+    useIsomorphicEffect(
+      () => () => {
+        unmount.current = true;
+      },
+      []
+    );
 
     const [initialProps, setInitialProps] = useState(
       props.__initialProps || {}
@@ -53,7 +59,7 @@ function withInitialPropsClient<P = {}>(
       typeof props.__initialProps !== 'undefined'
     );
 
-    const currentRoute = useCurrentRoute();
+    const currentRoute = useCurrentRoute(); // trigger update, unmount => trigger update
     const navigate = useNavigate();
 
     const getInitialProps = async () => {
@@ -69,8 +75,6 @@ function withInitialPropsClient<P = {}>(
         appContext
       });
 
-      if (unmount) return;
-
       if (redirector.redirected) {
         navigate(redirector.state!.path, { replace: true });
       } else {
@@ -80,7 +84,9 @@ function withInitialPropsClient<P = {}>(
     };
 
     const isFirstRender = React.useRef(true);
-    useEffect(() => {
+    useIsomorphicEffect(() => {
+      if (unmount.current) return;
+
       if (isFirstRender.current) {
         if (!propsResolved) getInitialProps();
       } else {

@@ -1,4 +1,5 @@
-import React, { useReducer, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useReducer, useRef } from 'react';
+import useIsomorphicEffect from '@shuvi/shared/lib/useIsomorphicEffect';
 import {
   IParams,
   IPathMatch,
@@ -15,14 +16,6 @@ import { __DEV__ } from './constants';
 import { RouterContext, RouteContext } from './contexts';
 import { invariant, warning } from './utils';
 import { INavigateFunction } from './types';
-
-function useIsomorphicEffect(cb: any, deps: any): void {
-  if (typeof window !== 'undefined') {
-    useLayoutEffect(cb, deps);
-  } else {
-    useEffect(cb, deps);
-  }
-}
 
 export function useCurrentRoute() {
   const unmount = useRef(false);

@@ -52,6 +52,7 @@ export class ReactClientView implements IReactClientView {
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else {
+      await router.ready;
       const { pathname, query, params } = router.current;
 
       if (TypedAppComponent.getInitialProps) {
