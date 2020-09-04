@@ -16,9 +16,14 @@ export type IRouteProps = {
   __initialProps?: Data;
 };
 
+let isFirstRender = true;
+
 function withoutInitialProps(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
 ): RouteComponent<React.ComponentType<IRouteProps>> {
+  if (__BROWSER__) {
+    isFirstRender = false;
+  }
   return ({ __appContext, ...rest }: IRouteProps) => {
     return React.createElement(WrappedComponent, {
       ...rest
@@ -50,7 +55,7 @@ function withInitialPropsClient<P = {}>(
     );
 
     const [propsResolved, setPropsResolved] = useState(
-      typeof props.__initialProps !== 'undefined'
+      isFirstRender ? typeof props.__initialProps !== 'undefined' : false
     );
 
     const currentRoute = useCurrentRoute();
@@ -79,14 +84,15 @@ function withInitialPropsClient<P = {}>(
       }
     };
 
-    const isFirstRender = React.useRef(true);
     useEffect(() => {
-      if (isFirstRender.current) {
+      if (isFirstRender) {
         if (!propsResolved) getInitialProps();
       } else {
         getInitialProps();
       }
-      isFirstRender.current = false;
+      if (__BROWSER__) {
+        isFirstRender = false;
+      }
     }, [currentRoute]);
 
     if (!propsResolved) return null;

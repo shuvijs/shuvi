@@ -35,6 +35,10 @@ describe('loadRouteComponent [web]', () => {
     }
   ];
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('basic', async () => {
     const routeProps = {
       firstPage: {
@@ -50,9 +54,7 @@ describe('loadRouteComponent [web]', () => {
       { route: '/first' }
     );
 
-    await act(async () => {
-      await wait(1100);
-    });
+    await act(async () => {});
 
     // Spread routeProps as props
     expect(root.findByType(FirstPage).props).toMatchObject({
@@ -103,7 +105,7 @@ describe('loadRouteComponent [web]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`null`);
 
     await act(async () => {
-      await wait(1100);
+      await wait(600);
     });
 
     // getInitialProps resolved
@@ -135,7 +137,7 @@ describe('loadRouteComponent [web]', () => {
 
     // wait getInitialprops resolve
     await act(async () => {
-      await wait(1100);
+      await wait(600);
     });
 
     expect(toJSON()).toMatchInlineSnapshot(`
@@ -180,7 +182,7 @@ describe('loadRouteComponent [web]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`null`);
 
     await act(async () => {
-      await wait(1100);
+      await wait(600);
     });
 
     // getInitialProps resolved
@@ -195,7 +197,7 @@ describe('loadRouteComponent [web]', () => {
     });
 
     await act(async () => {
-      await wait(1100);
+      await wait(600);
     });
 
     // getInitialProps resolved
@@ -203,6 +205,44 @@ describe('loadRouteComponent [web]', () => {
       data: {
         id: '2'
       }
+    });
+  });
+
+  it('getInitialProps should ignore routeProps and be called in client when naviagated', async () => {
+    const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
+
+    const routeProps = {
+      firstPage: {
+        data: 'data from server'
+      }
+    };
+    const { root, toJSON } = renderWithRoutes(
+      {
+        routes,
+        routeProps
+      },
+      {
+        route: '/second'
+      }
+    );
+
+    await act(async () => {});
+
+    await act(async () => {
+      root.findByType('a').props.onClick(new MouseEvent('click'));
+    });
+
+    // getInitialProps not resolved
+    expect(toJSON()).toMatchInlineSnapshot(`null`);
+    expect(getInitialProps).toBeCalledTimes(1);
+
+    await act(async () => {
+      await wait(600);
+    });
+
+    // getInitialProps resolved
+    expect(root.findByType(FirstPage).props).toMatchObject({
+      data: 'done'
     });
   });
 });
