@@ -39,91 +39,105 @@ describe('loadRouteComponent [web]', () => {
     jest.restoreAllMocks();
   });
 
-  it('basic', async () => {
+  it('getInitialProps should be called when isFirstRender is false', async () => {
+    const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
+
     const routeProps = {
       firstPage: {
         data: 'data from server'
       }
     };
 
+    const appContext = {
+      isFirstRender: false
+    };
+
     const { root, toJSON } = renderWithRoutes(
       {
         routes,
-        routeProps
+        routeProps,
+        appContext
       },
-      { route: '/first' }
-    );
-
-    await act(async () => {});
-
-    // Spread routeProps as props
-    expect(root.findByType(FirstPage).props).toMatchObject({
-      data: 'data from server'
-    });
-
-    expect(toJSON()).toMatchInlineSnapshot(`
-      <div>
-        first page
-        <a
-          href="/second"
-          onClick={[Function]}
-        >
-          go second page
-        </a>
-      </div>
-    `);
-  });
-
-  it('getInitialProps should work in client when the route component be activated', async () => {
-    // No getInitialProps
-    const { root, toJSON } = renderWithRoutes(
-      { routes },
       {
-        route: '/second'
+        route: '/first'
       }
     );
 
-    await act(async () => {});
-
-    expect(toJSON()).toMatchInlineSnapshot(`
-      <div>
-        second page
-        <a
-          href="/first"
-          onClick={[Function]}
-        >
-          go first page
-        </a>
-      </div>
-    `);
-
-    await act(async () => {
-      root.findByType('a').props.onClick(new MouseEvent('click'));
-    });
-
-    // getInitialProps not resolved
     expect(toJSON()).toMatchInlineSnapshot(`null`);
 
     await act(async () => {
       await wait(600);
     });
 
-    // getInitialProps resolved
+    expect(getInitialProps).toBeCalledTimes(1);
+
     expect(root.findByType(FirstPage).props).toMatchObject({
       data: 'done'
     });
+  });
 
-    expect(toJSON()).toMatchInlineSnapshot(`
-      <div>
-        first page
-        <a
-          href="/second"
-          onClick={[Function]}
-        >
-          go second page
-        </a>
-      </div>
-    `);
+  it('getInitialProps should be called when roteProps is not defined and isFirstRender is true', async () => {
+    const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
+
+    const routeProps = {};
+
+    const appContext = {
+      isFirstRender: true
+    };
+
+    const { root, toJSON } = renderWithRoutes(
+      {
+        routes,
+        routeProps,
+        appContext
+      },
+      {
+        route: '/first'
+      }
+    );
+
+    expect(toJSON()).toMatchInlineSnapshot(`null`);
+
+    await act(async () => {
+      await wait(600);
+    });
+
+    expect(getInitialProps).toBeCalledTimes(1);
+
+    expect(root.findByType(FirstPage).props).toMatchObject({
+      data: 'done'
+    });
+  });
+
+  it('getInitialProps should not be called when routeProps is supplied when isFirstRender is true', async () => {
+    const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
+
+    const routeProps = {
+      firstPage: {
+        data: 'data from server'
+      }
+    };
+
+    const appContext = {
+      isFirstRender: true
+    };
+
+    const { root } = renderWithRoutes(
+      {
+        routes,
+        routeProps,
+        appContext
+      },
+      {
+        route: '/first'
+      }
+    );
+
+    expect(getInitialProps).toBeCalledTimes(0);
+
+    expect(root.findByType(FirstPage).props).toMatchObject({
+      data: 'data from server'
+    });
   });
 
   it('getInitialProps should not called when leave route', async () => {
@@ -205,44 +219,6 @@ describe('loadRouteComponent [web]', () => {
       data: {
         id: '2'
       }
-    });
-  });
-
-  it('getInitialProps should ignore routeProps and be called in client when naviagated', async () => {
-    const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
-
-    const routeProps = {
-      firstPage: {
-        data: 'data from server'
-      }
-    };
-    const { root, toJSON } = renderWithRoutes(
-      {
-        routes,
-        routeProps
-      },
-      {
-        route: '/second'
-      }
-    );
-
-    await act(async () => {});
-
-    await act(async () => {
-      root.findByType('a').props.onClick(new MouseEvent('click'));
-    });
-
-    // getInitialProps not resolved
-    expect(toJSON()).toMatchInlineSnapshot(`null`);
-    expect(getInitialProps).toBeCalledTimes(1);
-
-    await act(async () => {
-      await wait(600);
-    });
-
-    // getInitialProps resolved
-    expect(root.findByType(FirstPage).props).toMatchObject({
-      data: 'done'
     });
   });
 });

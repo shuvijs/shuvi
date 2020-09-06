@@ -73,6 +73,13 @@ export class ReactClientView implements IReactClientView {
       router.replace(redirector.state!.path);
     }
 
+    appContext.isFirstRender = true;
+
+    const removeListener = router.listen(() => {
+      appContext.isFirstRender = false;
+      removeListener();
+    });
+
     const root = (
       <Router router={router}>
         <HeadManagerContext.Provider value={headManager.updateHead}>

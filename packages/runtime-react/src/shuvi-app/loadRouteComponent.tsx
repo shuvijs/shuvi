@@ -16,14 +16,9 @@ export type IRouteProps = {
   __initialProps?: Data;
 };
 
-let isFirstRender = true;
-
 function withoutInitialProps(
   WrappedComponent: RouteComponent<React.ComponentType<any>>
 ): RouteComponent<React.ComponentType<IRouteProps>> {
-  if (__BROWSER__) {
-    isFirstRender = false;
-  }
   return ({ __appContext, ...rest }: IRouteProps) => {
     return React.createElement(WrappedComponent, {
       ...rest
@@ -47,6 +42,7 @@ function withInitialPropsClient<P = {}>(
 ): RouteComponent<React.FunctionComponent<IRouteProps & P>> {
   const hoc = function WithInitialProps(props: IRouteProps & P) {
     const [unmount, setUnmount] = useState(false);
+    const { __appContext: appContext } = props;
 
     useEffect(() => () => setUnmount(true), []);
 
@@ -55,7 +51,9 @@ function withInitialPropsClient<P = {}>(
     );
 
     const [propsResolved, setPropsResolved] = useState(
-      isFirstRender ? typeof props.__initialProps !== 'undefined' : false
+      appContext.isFirstRender
+        ? typeof props.__initialProps !== 'undefined'
+        : false
     );
 
     const currentRoute = useCurrentRoute();
@@ -64,7 +62,6 @@ function withInitialPropsClient<P = {}>(
     const getInitialProps = async () => {
       if (unmount) return;
 
-      const { __appContext: appContext } = props;
       const redirector = createRedirector();
 
       const initialProps = await WrappedComponent.getInitialProps!({
@@ -85,13 +82,10 @@ function withInitialPropsClient<P = {}>(
     };
 
     useEffect(() => {
-      if (isFirstRender) {
+      if (appContext.isFirstRender) {
         if (!propsResolved) getInitialProps();
       } else {
         getInitialProps();
-      }
-      if (__BROWSER__) {
-        isFirstRender = false;
       }
     }, [currentRoute]);
 
