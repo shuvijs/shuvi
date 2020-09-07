@@ -1,12 +1,17 @@
-import { router, App } from '@shuvi/app';
+import { App, useRouter } from '@shuvi/app';
 
-// should access router instance
-if (typeof window !== 'undefined') {
-  router.onChange(() => {
-    console.log('history change');
-  });
-}
+const MyApp = () => {
+  const router = useRouter();
 
-const MyApp = () => <App />;
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      router.listen(() => {
+        console.log('history change');
+      });
+    }
+  }, []);
+
+  return <App />;
+};
 
 export default MyApp;

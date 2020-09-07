@@ -1,20 +1,11 @@
-import { join, relative, posix } from 'path';
-import invariant from '@shuvi/utils/lib/invariant';
-import { watch } from '@shuvi/utils/lib/fileWatcher';
 import eventEmitter from '@shuvi/utils/lib/eventEmitter';
+import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
-import { IRouteConfig } from '../types';
+import { join, relative } from 'path';
+import { IUserRouteConfig } from '../types';
 
-export type SubscribeFn = (v: IRouteConfig[]) => void;
+export type SubscribeFn = (v: IUserRouteConfig[]) => void;
 
-interface InternalRouteConfig extends IRouteConfig {
-  routes?: InternalRouteConfig[];
-  __meta: {
-    isStaticRoute: boolean;
-  };
-}
-
-const unixPath = posix;
 const jsExtensions = ['js', 'jsx', 'ts', 'tsx'];
 
 const RouteFileRegExp = new RegExp(`\\.(?:${jsExtensions.join('|')})$`);
@@ -23,9 +14,44 @@ function isLayout(filepath: string) {
   return filepath.endsWith('/_layout');
 }
 
-function isStaicRouter(filepath: string) {
-  return unixPath.basename(filepath).charAt(0) !== '$';
+interface IFilesObject {
+  [file: string]: IFilesObject;
 }
+
+/**
+ * This method transform files into a nested hash object of each file level.`
+ * Example ['/a/1', '/a/2', '/b/1'] will become
+ * { a: { 1: {}, 2: {} }, b: { 1: {} } }
+ * */
+const transformFilesObject = (files: string[]): IFilesObject => {
+  return files.reduce((acc, file) => {
+    file
+      .split('/')
+      .filter(Boolean)
+      .forEach((route, index, arr) => {
+        let objToTraverse = acc;
+
+        if (index === 0 && normalizeFilePath(route) === '/_layout') {
+          console.warn(
+            'Top level _layout is not supported and will be ignored.'
+          );
+        } else {
+          for (let i = 0; i < index; i++) {
+            objToTraverse = objToTraverse[arr[i]];
+          }
+
+          if (objToTraverse && objToTraverse[route]) {
+            objToTraverse[route] = {
+              ...objToTraverse[route]
+            };
+          } else {
+            objToTraverse[route] = {};
+          }
+        }
+      });
+    return acc;
+  }, {} as IFilesObject);
+};
 
 function normalizeFilePath(filepath: string) {
   const res = filepath
@@ -61,44 +87,6 @@ function filterRouteFile(name: string) {
   return RouteFileRegExp.test(name);
 }
 
-function getRouteWeight(route: InternalRouteConfig): number {
-  const meta = route.__meta;
-  const weights: [string, string] = ['0', '0'];
-  if (meta.isStaticRoute) {
-    weights[0] = '1';
-  } else if (route.exact) {
-    weights[1] = '1';
-  }
-
-  return Number(weights.join(''));
-}
-
-function sortRoutes(routes: InternalRouteConfig[]): IRouteConfig[] {
-  const res = routes
-    .slice()
-    .sort((a, b) => getRouteWeight(b) - getRouteWeight(a));
-  let paramsRouteNum = 0;
-  for (let index = 0; index < res.length; index++) {
-    const route = res[index];
-    if (!route.__meta.isStaticRoute) {
-      paramsRouteNum += 1;
-    }
-    if (route.routes && route.routes.length > 0) {
-      // @ts-ignore
-      route.routes = sortRoutes(route.routes);
-    }
-
-    delete route.__meta;
-  }
-
-  invariant(
-    paramsRouteNum <= 1,
-    `We should not have multiple dynamic routes under a directory.`
-  );
-
-  return res;
-}
-
 export class Route {
   private _pagesDir: string;
   private _unwatch: any;
@@ -108,7 +96,7 @@ export class Route {
     this._pagesDir = pagesDir;
   }
 
-  async getRoutes(): Promise<IRouteConfig[]> {
+  async getRoutes(): Promise<IUserRouteConfig[]> {
     const files = await recursiveReadDir(this._pagesDir, {
       filter: filterRouteFile
     });
@@ -122,73 +110,50 @@ export class Route {
     }
   }
 
-  private _getRoutes(files: string[]): IRouteConfig[] {
-    const rootRoute = ({
-      id: '',
-      component: '',
-      routes: []
-    } as any) as InternalRouteConfig;
-    const layouts = new Map<string, InternalRouteConfig>();
-    const normalizedFiles: string[] = [];
+  private _getRoutes(files: string[]): IUserRouteConfig[] {
+    const transformedFiles = transformFilesObject(files);
 
-    const getLayout = (filepath: string) => {
-      let layout: InternalRouteConfig | undefined;
-      while (filepath && filepath !== '/' && !layout) {
-        filepath = filepath.replace(/\/_layout$/, '').replace(/\/[^/]+$/, '');
-        layout = layouts.get(`${filepath}/_layout`);
-      }
-      return layout;
+    const generateRoute = (
+      fileToTransform: IFilesObject,
+      pageDirectory: string
+    ) => {
+      const routes: IUserRouteConfig[] = [];
+      Object.entries(fileToTransform).forEach(
+        ([fileName, nestedRoute], _, arr) => {
+          let route: IUserRouteConfig;
+          let routePath = normalizeRoutePath(normalizeFilePath(fileName));
+          {
+            const isDirectory = Object.values(nestedRoute).length > 0;
+
+            route = {
+              path: routePath
+            } as IUserRouteConfig;
+
+            // if a directory have _layout, treat it as its own component
+            if (isDirectory) {
+              const layoutFile = Object.keys(nestedRoute).find(route =>
+                isLayout(normalizeRoutePath(normalizeFilePath(route)))
+              );
+              if (layoutFile) {
+                route.component = join(pageDirectory, fileName, layoutFile);
+                // delete _layout
+                delete nestedRoute[layoutFile];
+              }
+              route.children = generateRoute(
+                nestedRoute,
+                join(pageDirectory, fileName)
+              ); // inner directory
+            } else {
+              route.component = join(pageDirectory, fileName);
+            }
+            routes.push(route);
+          }
+        }
+      );
+      return routes;
     };
 
-    for (let index = 0; index < files.length; index++) {
-      const rawfile = files[index];
-      const file = normalizeFilePath(rawfile);
-      normalizedFiles.push(file);
-
-      if (file === '/_layout') {
-        console.warn('Top level _layout is not supported and will be ignored.');
-      } else if (isLayout(file)) {
-        const layoutRoute: InternalRouteConfig = {
-          path: normalizeRoutePath(file.replace(/\/_layout$/, '/')),
-          exact: false,
-          component: join(this._pagesDir, rawfile),
-          __meta: {
-            isStaticRoute: isStaicRouter(file)
-          }
-        };
-        layouts.set(file, layoutRoute);
-      }
-    }
-
-    for (let index = 0; index < normalizedFiles.length; index++) {
-      const rawFile = files[index];
-      const file = normalizedFiles[index];
-      const routePath = normalizeRoutePath(file);
-      let route: InternalRouteConfig | undefined;
-      if (isLayout(file)) {
-        route = layouts.get(file);
-      } else {
-        route = {
-          path: routePath,
-          exact: !isLayout(file),
-          component: join(this._pagesDir, rawFile),
-          __meta: {
-            isStaticRoute: isStaicRouter(file)
-          }
-        };
-      }
-
-      if (!route) {
-        continue;
-      }
-
-      const layout = getLayout(file);
-      const parentRoute = layout || rootRoute;
-      parentRoute.routes = parentRoute.routes || [];
-      parentRoute.routes.push(route);
-    }
-
-    return sortRoutes(rootRoute.routes!);
+    return generateRoute(transformedFiles, this._pagesDir);
   }
 
   private async _createWatcher() {

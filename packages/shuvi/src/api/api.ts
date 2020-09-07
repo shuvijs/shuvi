@@ -7,20 +7,25 @@ import {
   IPaths,
   IShuviMode
 } from '@shuvi/types';
-import { App, IRouteConfig, IFile } from '@shuvi/core';
+import { App, IUserRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hooks';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
-import { PUBLIC_PATH, ROUTE_RESOURCE_QUERYSTRING } from '../constants';
+import {
+  PUBLIC_PATH,
+  ROUTE_RESOURCE_QUERYSTRING,
+  ROUTE_NOT_FOUND_NAME
+} from '../constants';
 import { runtime } from '../runtime';
 import { defaultConfig, IConfig, loadConfig } from '../config';
-import { IResources, IBuiltResource, IPlugin } from './types';
+import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
 import { initCoreResource } from './initCoreResource';
-import { resolvePlugins } from './plugin';
+import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
 
@@ -43,8 +48,10 @@ class Api extends Hookable implements IApi {
   private _app!: App;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
-  private _routes: IRouteConfig[] = [];
+  private _routes: IUserRouteConfig[] = [];
+  private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
+  private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
 
   constructor({ cwd, mode, config, configFile }: IApiOPtions) {
@@ -83,46 +90,7 @@ class Api extends Hookable implements IApi {
       overrides: this._userConfig
     });
 
-    const config: IApiConfig = deepmerge(defaultConfig, configFromFile);
-
-    // init plugins
-    this._plugins = resolvePlugins(config.plugins || [], {
-      dir: config.rootDir
-    });
-
-    let runPlugins = function runNext(
-      next?: Function,
-      cur: Function = () => void 0
-    ) {
-      if (next) {
-        return (n: Function) =>
-          runNext(n, () => {
-            cur();
-            next();
-          });
-      }
-      return cur();
-    };
-    for (const plugin of this._plugins) {
-      const pluginInst = plugin.get();
-      if (typeof pluginInst.modifyConfig === 'function') {
-        this.tap<APIHooks.IHookGetConfig>('getConfig', {
-          name: 'pluginModifyConfig',
-          fn(config) {
-            return pluginInst.modifyConfig!(config);
-          }
-        });
-      }
-      runPlugins = runPlugins(() => {
-        pluginInst.apply(this.getPluginApi());
-      });
-    }
-
-    // prepare all properties befofre run plugins, so plugin can use all api of Api
-    this._config = await this.callHook<APIHooks.IHookGetConfig>({
-      name: 'getConfig',
-      initialValue: config
-    });
+    this._config = deepmerge(defaultConfig, configFromFile);
     // do not allow to modify config
     Object.freeze(this._config);
     this._paths = getPaths({
@@ -133,12 +101,12 @@ class Api extends Hookable implements IApi {
     // do not allow to modify paths
     Object.freeze(this._paths);
 
-    runPlugins();
+    this._initPresetsAndPlugins();
 
     initCoreResource(this);
     // TODO?: move into application
-    if (typeof this.config.runtimeConfig === 'object') {
-      setRuntimeConfig(this.config.runtimeConfig);
+    if (typeof this._config.runtimeConfig === 'object') {
+      setRuntimeConfig(this._config.runtimeConfig);
     }
   }
 
@@ -181,7 +149,7 @@ class Api extends Hookable implements IApi {
     this._app.setPluginModule(module);
   }
 
-  async setRoutes(routes: IRouteConfig[]) {
+  async setRoutes(routes: IUserRouteConfig[]) {
     routes = await this.callHook<APIHooks.IHookAppRoutes>({
       name: 'app:routes',
       initialValue: routes
@@ -191,9 +159,11 @@ class Api extends Hookable implements IApi {
       componentDir: this.paths.pagesDir
     });
     routes.push({
+      path: '*',
       component: this.resolveAppFile('core', '404'),
-      name: '404'
+      name: ROUTE_NOT_FOUND_NAME
     });
+
     this._routes = routes;
 
     const serialized = serializeRoutes(routes, {
@@ -204,6 +174,7 @@ class Api extends Hookable implements IApi {
         );
       }
     });
+
     let content = `export default ${serialized}`;
     content = await this.callHook<APIHooks.IHookAppRoutesFile>({
       name: 'app:routesFile',
@@ -304,6 +275,14 @@ class Api extends Hookable implements IApi {
     return joinPath(this.paths.publicDir, ...paths);
   }
 
+  async destory() {
+    if (this._server) {
+      await this._server.close();
+    }
+    this._app.stopBuild(this.paths.appDir);
+    await this.callHook<APIHooks.IHookDestory>('destory');
+  }
+
   getPluginApi(): PluginApi {
     if (!this._pluginApi) {
       this._pluginApi = createPluginApi(this);
@@ -312,12 +291,57 @@ class Api extends Hookable implements IApi {
     return this._pluginApi;
   }
 
-  async destory() {
-    if (this._server) {
-      await this._server.close();
+  private _initPresetsAndPlugins() {
+    const config = this._config;
+    // init presets
+    this._presets = resolvePresets(config.presets || [], {
+      dir: config.rootDir
+    });
+    for (const preset of this._presets) {
+      this._initPreset(preset);
     }
-    this._app.stopBuild(this.paths.appDir);
-    await this.callHook<APIHooks.IHookDestory>('destory');
+
+    // init plugins
+    this._plugins = resolvePlugins(this._config.plugins || [], {
+      dir: this._config.rootDir
+    });
+    const allPlugins = this._presetPlugins.concat(this._plugins);
+    for (const plugin of allPlugins) {
+      plugin.get().apply(this.getPluginApi());
+    }
+  }
+
+  private _initPreset(preset: IPreset) {
+    const { id, get: getPreset } = preset;
+    const { presets, plugins } = getPreset()(this.getPluginApi());
+
+    if (presets) {
+      invariant(
+        Array.isArray(presets),
+        `presets returned from preset ${id} must be Array.`
+      );
+
+      const resolvedPresets = resolvePresets(presets, {
+        dir: this._config.rootDir
+      });
+
+      for (const preset of resolvedPresets) {
+        this._initPreset(preset);
+      }
+    }
+
+    if (plugins) {
+      invariant(
+        Array.isArray(plugins),
+        `presets returned from preset ${id} must be Array.`
+      );
+
+      this._presetPlugins.push(
+        ...resolvePlugins(plugins, {
+          dir: this._config.rootDir
+        })
+      );
+    }
   }
 }
 

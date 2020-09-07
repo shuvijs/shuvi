@@ -3,7 +3,7 @@
   "version": "0.0.1-beta.55",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liximomo/shuvi.git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
     "directory": "packages/toolpack"
   },
   "author": "liximomo",
@@ -63,9 +63,9 @@
     "@types/loader-utils": "1.1.3",
     "@types/webpack-bundle-analyzer": "^3.8.0",
     "memfs": "^3.1.2",
-    "webpack": "^4.41.2"
+    "webpack": "4.44.1"
   },
   "peerDependencies": {
-    "webpack": "^4.41.2"
+    "webpack": "4.44.1"
   }
 }

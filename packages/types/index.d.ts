@@ -64,10 +64,14 @@ export type IPluginConfig =
   | string
   | [
       string /* plugin module */,
-      any? /* plugin, options */,
+      any? /* plugin options */,
       string? /* identifier */
     ]
   | ((api: IApi) => void);
+
+export type IPresetConfig =
+  | string
+  | [string /* plugin module */, any? /* plugin options */];
 
 export type IRuntimeConfig = Record<string, string>;
 
@@ -81,10 +85,11 @@ export interface IApiConfig {
   router: {
     history: IRouterHistoryMode;
   };
-  routes?: Runtime.IRouteConfig[];
+  routes?: Runtime.IUserRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
   proxy?: IServerProxyConfig;
   plugins?: IPluginConfig[];
+  presets?: IPresetConfig[];
   analyze?: boolean;
 }
 
