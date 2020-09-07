@@ -9,17 +9,16 @@ import { warningOnce, readOnly } from './utils';
 const defaultElement = <RouterView />;
 
 export function RouterView(): React.ReactElement | null {
-  const { matches } = useCurrentRoute();
-
-  if (!matches) {
-    return null;
-  }
-
   let {
     depth,
     pathname: parentPathname,
     params: parentParams
   } = React.useContext(MactedRouteContext);
+  const { matches } = useCurrentRoute();
+
+  if (!matches) {
+    return null;
+  }
 
   // Otherwise render an element.
   const matched = matches[depth];
@@ -37,9 +36,13 @@ export function RouterView(): React.ReactElement | null {
   }
 
   const { route, params, pathname } = matched;
+  const element = route.component
+    ? React.createElement(route.component, route.props)
+    : defaultElement;
+
   return (
     <MactedRouteContext.Provider
-      children={route.element || defaultElement}
+      children={element}
       value={{
         depth: depth + 1,
         params: readOnly<IParams>({ ...parentParams, ...params }),

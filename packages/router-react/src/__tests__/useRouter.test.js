@@ -16,7 +16,7 @@ describe('uesRouter', () => {
         routes={[
           {
             path: '/home',
-            element: <Home />
+            component: Home
           }
         ]}
       >

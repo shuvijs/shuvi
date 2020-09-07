@@ -6,22 +6,29 @@ import React from 'react';
 import { Runtime } from '@shuvi/types/';
 import { RouterView } from '@shuvi/router-react';
 import { renderRoutes } from './utils';
-import { ReactTestRenderer } from 'react-test-renderer';
+import { ReactTestRenderer, act } from 'react-test-renderer';
 import { normalizeRoutes } from '../router';
 
 import IAppRouteConfig = Runtime.IAppRouteConfig;
+import { wait } from 'shuvi-test-utils';
 
-const createDummyComponent = (text: string): React.FC => () => (
-  <div>
-    {text}
-    <RouterView />
-  </div>
-);
+const createDummyComponent = (text: string): React.FC => {
+  const Comp = (props: any) => {
+    return (
+      <div>
+        {text}
+        <RouterView />
+      </div>
+    );
+  };
+  Comp.getInitialProps = () => ({});
+  return Comp;
+};
 
 const getInitialProps = (
   app: ReactTestRenderer,
   component: React.ElementType
-) => app.root.findByType(component).props.__initialProps;
+) => app.root.findByType(component).props;
 
 const HOME_COMPONENT = createDummyComponent('home');
 const ABOUT_COMPONENT = createDummyComponent('about');
@@ -43,6 +50,9 @@ const initialPropsHash = {
       error: 'error'
     }
   },
+  '0004': {
+    id: '004'
+  },
   '0005': {}
 };
 
@@ -62,7 +72,8 @@ describe('normalizeRoutes', () => {
     ];
 
     const routes = normalizeRoutes(sampleRoutes, {
-      routeProps: initialPropsHash
+      routeProps: initialPropsHash,
+      appContext: {}
     })!;
     let json, app;
 
@@ -100,7 +111,7 @@ describe('normalizeRoutes', () => {
     `);
   });
 
-  it('nested', () => {
+  it('nested', async () => {
     const sampleRoutes: IAppRouteConfig[] = [
       {
         id: '0001',
@@ -126,29 +137,48 @@ describe('normalizeRoutes', () => {
       }
     ];
 
-    const routes = normalizeRoutes(sampleRoutes, {
-      routeProps: initialPropsHash
-    })!;
     let app, json;
 
-    app = renderRoutes(routes, {
-      route: '/about'
-    });
-    json = app.toJSON();
+    app = renderRoutes(
+      normalizeRoutes(sampleRoutes, {
+        routeProps: initialPropsHash,
+        appContext: {}
+      }),
+      {
+        route: '/about'
+      }
+    );
 
+    // wait for router ready
+    await act(async () => {
+      wait(100);
+    });
+
+    json = app.toJSON();
+    console.log('json', json);
     expect(getInitialProps(app, ABOUT_COMPONENT)).toStrictEqual({
       data: [1, 2, 3]
     });
-
     expect(json).toMatchInlineSnapshot(`
       <div>
         about
       </div>
     `);
 
-    app = renderRoutes(routes, {
-      route: '/about/hi'
+    app = renderRoutes(
+      normalizeRoutes(sampleRoutes, {
+        routeProps: initialPropsHash,
+        appContext: {}
+      }),
+      {
+        route: '/about/hi'
+      }
+    );
+    // wait for router ready
+    await act(async () => {
+      wait(100);
     });
+
     json = app.toJSON();
 
     // expect nested initialProps is passed
@@ -160,7 +190,6 @@ describe('normalizeRoutes', () => {
         error: 'error'
       }
     });
-
     expect(json).toMatchInlineSnapshot(`
       <div>
         about
@@ -170,12 +199,28 @@ describe('normalizeRoutes', () => {
       </div>
     `);
 
-    app = renderRoutes(routes, {
-      route: '/about/test'
+    app = renderRoutes(
+      normalizeRoutes(sampleRoutes, {
+        routeProps: initialPropsHash,
+        appContext: {}
+      }),
+      {
+        route: '/about/test'
+      }
+    );
+    // wait for router ready
+    await act(async () => {
+      wait(100);
     });
+
     json = app.toJSON();
 
-    expect(getInitialProps(app, TEST_COMPONENT)).toBeUndefined();
+    expect(getInitialProps(app, ABOUT_COMPONENT)).toStrictEqual({
+      data: [1, 2, 3]
+    });
+    expect(getInitialProps(app, TEST_COMPONENT)).toStrictEqual({
+      id: '004'
+    });
 
     expect(json).toMatchInlineSnapshot(`
       <div>
@@ -187,9 +232,15 @@ describe('normalizeRoutes', () => {
     `);
 
     // fake route
-    json = renderRoutes(routes, {
-      route: '/fake'
-    }).toJSON();
+    json = renderRoutes(
+      normalizeRoutes(sampleRoutes, {
+        routeProps: initialPropsHash,
+        appContext: {}
+      }),
+      {
+        route: '/fake'
+      }
+    ).toJSON();
 
     expect(json).toBeNull();
   });
@@ -229,14 +280,17 @@ describe('normalizeRoutes', () => {
       }
     ];
 
-    const routes = normalizeRoutes(sampleRoutes, {
-      routeProps: initialPropsHash
-    })!;
     let app, json;
 
-    app = renderRoutes(routes, {
-      route: '/about/hi/cool/shuvi'
-    });
+    app = renderRoutes(
+      normalizeRoutes(sampleRoutes, {
+        routeProps: initialPropsHash,
+        appContext: {}
+      }),
+      {
+        route: '/about/hi/cool/shuvi'
+      }
+    );
     json = app.toJSON();
 
     expect(getInitialProps(app, ABOUT_COMPONENT)).toStrictEqual({
@@ -249,7 +303,9 @@ describe('normalizeRoutes', () => {
       }
     });
 
-    expect(getInitialProps(app, COOL_COMPONENT)).toBeUndefined();
+    expect(getInitialProps(app, COOL_COMPONENT)).toStrictEqual({
+      id: '004'
+    });
 
     expect(getInitialProps(app, SHUVI_COMPONENT)).toStrictEqual({});
 

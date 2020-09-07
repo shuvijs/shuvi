@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { loadRouteComponent } from '../loadRouteComponent';
 import { act } from 'shuvi-test-utils/reactTestRender';
 import FirstPage from './fixtures/loadRouteComponent/firstPage';
@@ -12,31 +16,24 @@ const secondPageComponent = loadRouteComponent(() => {
 });
 
 describe('loadRouteComponent [node]', () => {
-  const routes = [
-    {
-      id: 'secondPage',
-      component: secondPageComponent,
-      path: '/second'
-    },
-    {
-      id: 'firstPage',
-      component: firstPageComponent,
-      path: '/first'
-    }
-  ];
-
-  const routeProps = {
-    firstPage: {
-      test: '123'
-    }
-  };
-
   it('basic', async () => {
-    const { root, toJSON } = renderWithRoutes(
-      { routes, routeProps },
-      { route: '/first' }
-    );
-
+    const routes = [
+      {
+        id: 'secondPage',
+        component: secondPageComponent,
+        path: '/second'
+      },
+      {
+        id: 'firstPage',
+        component: firstPageComponent,
+        path: '/first',
+        props: {
+          test: '123'
+        }
+      }
+    ];
+    const { root, toJSON } = renderWithRoutes({ routes }, { route: '/first' });
+    // await for lodable update state
     await act(async () => {});
 
     // Spread routeProps as props
@@ -56,14 +53,13 @@ describe('loadRouteComponent [node]', () => {
       </div>
     `);
 
-    // No getrouteProps
     const { toJSON: secondToJson } = renderWithRoutes(
-      { routes, routeProps },
+      { routes },
       {
         route: '/second'
       }
     );
-
+    // await for lodable update state
     await act(async () => {});
 
     expect(secondToJson()).toMatchInlineSnapshot(`

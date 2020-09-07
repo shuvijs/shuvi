@@ -12,15 +12,15 @@ describe('nested /', () => {
           routes={[
             {
               path: '/',
-              element: <First />,
+              component: First,
               children: [
                 {
                   path: '/',
-                  element: <Second />,
+                  component: Second,
                   children: [
                     {
                       path: '/',
-                      element: <Third />
+                      component: Third
                     }
                   ]
                 }
@@ -77,11 +77,11 @@ describe('routes with identical paths', () => {
           routes={[
             {
               path: '/home',
-              element: <First />
+              component: First
             },
             {
               path: '/home',
-              element: <Second />
+              component: Second
             }
           ]}
         >

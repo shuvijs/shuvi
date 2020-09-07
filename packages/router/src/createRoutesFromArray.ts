@@ -11,10 +11,6 @@ export function createRoutesFromArray<
       path: partialRoute.path || '/'
     };
 
-    if (partialRoute.element) {
-      route.element = partialRoute.element;
-    }
-
     if (partialRoute.children) {
       route.children = createRoutesFromArray(partialRoute.children);
     }

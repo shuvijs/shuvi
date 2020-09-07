@@ -18,7 +18,7 @@ describe('useHref under a <Routes basename>', () => {
           routes={[
             {
               path: 'admin',
-              element: <Admin />
+              component: Admin
             }
           ]}
         >
@@ -44,7 +44,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -71,7 +71,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -99,7 +99,7 @@ describe('useHref under a <Routes basename>', () => {
           routes={[
             {
               path: 'admin',
-              element: <Admin />
+              component: Admin
             }
           ]}
         >
@@ -125,7 +125,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -152,7 +152,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -180,7 +180,7 @@ describe('useHref under a <Routes basename>', () => {
           routes={[
             {
               path: 'admin',
-              element: <Admin />
+              component: Admin
             }
           ]}
         >
@@ -206,7 +206,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -233,7 +233,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -261,7 +261,7 @@ describe('useHref under a <Routes basename>', () => {
           routes={[
             {
               path: 'admin',
-              element: <Admin />
+              component: Admin
             }
           ]}
         >
@@ -287,7 +287,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -314,7 +314,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
@@ -341,7 +341,7 @@ describe('useHref under a <Routes basename>', () => {
             routes={[
               {
                 path: 'admin',
-                element: <Admin />
+                component: Admin
               }
             ]}
           >
