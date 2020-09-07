@@ -55,11 +55,11 @@ describe('navigate', () => {
         [
           {
             path: 'home',
-            element: <Home />
+            component: Home
           },
           {
             path: 'about',
-            element: <About />
+            component: About
           }
         ],
         {
@@ -115,11 +115,11 @@ describe('navigate', () => {
         [
           {
             path: 'home',
-            element: <Home />
+            component: Home
           },
           {
             path: 'about',
-            element: <About />
+            component: About
           }
         ],
         {

@@ -17,7 +17,7 @@ describe('useHref', () => {
           routes={[
             {
               path: 'courses',
-              element: <Courses />
+              component: Courses
             }
           ]}
         >
@@ -42,7 +42,7 @@ describe('useHref', () => {
             routes={[
               {
                 path: 'courses',
-                element: <Courses />
+                component: Courses
               }
             ]}
           >
@@ -68,7 +68,7 @@ describe('useHref', () => {
             routes={[
               {
                 path: 'courses',
-                element: <Courses />
+                component: Courses
               }
             ]}
           >
@@ -95,7 +95,7 @@ describe('useHref', () => {
           routes={[
             {
               path: 'courses',
-              element: <Courses />
+              component: Courses
             }
           ]}
         >
@@ -120,7 +120,7 @@ describe('useHref', () => {
             routes={[
               {
                 path: 'courses',
-                element: <Courses />
+                component: Courses
               }
             ]}
           >
@@ -146,7 +146,7 @@ describe('useHref', () => {
             routes={[
               {
                 path: 'courses',
-                element: <Courses />
+                component: Courses
               }
             ]}
           >
@@ -173,7 +173,7 @@ describe('useHref', () => {
           routes={[
             {
               path: 'courses/advanced-react',
-              element: <AdvancedReact />
+              component: AdvancedReact
             }
           ]}
         >
@@ -198,7 +198,7 @@ describe('useHref', () => {
             routes={[
               {
                 path: 'courses/advanced-react',
-                element: <AdvancedReact />
+                component: AdvancedReact
               }
             ]}
           >
@@ -224,7 +224,7 @@ describe('useHref', () => {
             routes={[
               {
                 path: 'courses/advanced-react',
-                element: <AdvancedReact />
+                component: AdvancedReact
               }
             ]}
           >
@@ -260,11 +260,11 @@ describe('useHref', () => {
           routes={[
             {
               path: 'courses',
-              element: <Courses />,
+              component: Courses,
               children: [
                 {
                   path: 'react-fundamentals',
-                  element: <ReactFundamentals />
+                  component: ReactFundamentals
                 }
               ]
             }
@@ -291,7 +291,7 @@ describe('useHref', () => {
             routes={[
               {
                 path: 'home',
-                element: <Home />
+                component: Home
               }
             ]}
           >

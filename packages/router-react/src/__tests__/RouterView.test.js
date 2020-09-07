@@ -15,7 +15,7 @@ describe('useOutlet', () => {
           routes={[
             {
               path: '/home',
-              element: <Home />
+              component: Home
             }
           ]}
         >
@@ -43,11 +43,11 @@ describe('useOutlet', () => {
           routes={[
             {
               path: '/users',
-              element: <Users />,
+              component: Users,
               children: [
                 {
                   path: '/profile',
-                  element: <Profile />
+                  component: Profile
                 }
               ]
             }

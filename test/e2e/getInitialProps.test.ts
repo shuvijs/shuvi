@@ -27,11 +27,16 @@ describe('GetInitialProps', () => {
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="getInitialProps"]')
       );
-      ['isServer', 'pathname', 'query', 'params', 'redirect', 'appContext'].forEach(
-        key => {
-          expect(initialPropsCtx[key]).toBeDefined();
-        }
-      );
+      [
+        'isServer',
+        'pathname',
+        'query',
+        'params',
+        'redirect',
+        'appContext'
+      ].forEach(key => {
+        expect(initialPropsCtx[key]).toBeDefined();
+      });
 
       const appContext = initialPropsCtx.appContext;
 
@@ -73,6 +78,22 @@ describe('GetInitialProps', () => {
       expect(initialPropsCtx.query.a).toBe('2');
       expect(initialPropsCtx.params.foo).toBe('test');
     });
+
+    test('should be called after a client naviagation', async () => {
+      page = await ctx.browser.page(ctx.url('/one'));
+      expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
+      expect(await page.$text('[data-test-id="time"]')).toBe('0');
+
+      await page.shuvi.navigate('/two');
+      await page.waitFor('[data-test-id="two"]');
+      await page.waitFor('[data-test-id="time"]');
+      expect(await page.$text('[data-test-id="time"]')).toBe('1');
+
+      await page.shuvi.navigate('/one');
+      await page.waitFor('[data-test-id="one"]');
+      await page.waitFor('[data-test-id="time"]');
+      expect(await page.$text('[data-test-id="time"]')).toBe('1');
+    });
   });
 
   describe('ssr = false', () => {
@@ -95,7 +116,14 @@ describe('GetInitialProps', () => {
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="getInitialProps"]')
       );
-      ['isServer', 'pathname', 'query', 'params', 'redirect', 'appContext'].forEach(key => {
+      [
+        'isServer',
+        'pathname',
+        'query',
+        'params',
+        'redirect',
+        'appContext'
+      ].forEach(key => {
         expect(initialPropsCtx[key]).toBeDefined();
       });
 
@@ -106,6 +134,7 @@ describe('GetInitialProps', () => {
 
     test('AppComponent should receive contenxt object', async () => {
       page = await ctx.browser.page(ctx.url('/test?a=2'));
+      await page.waitFor('[data-test-id="app"]');
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="app"]')
       );

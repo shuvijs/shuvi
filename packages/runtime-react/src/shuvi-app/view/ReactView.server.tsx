@@ -29,7 +29,7 @@ export class ReactServerView implements IReactServerView {
 
     const redirector = createRedirector();
     const router = createRouter({
-      routes: normalizeRoutes(routes),
+      routes: normalizeRoutes(routes, { appContext }),
       history: createMemoryHistory({
         initialEntries: [url],
         initialIndex: 0
@@ -77,6 +77,7 @@ export class ReactServerView implements IReactServerView {
             redirect: redirector.handler
           });
           routeProps[appRoute.id] = props || {};
+          matchedRoute.route.props = props;
         });
       }
     }
@@ -117,7 +118,7 @@ export class ReactServerView implements IReactServerView {
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >
-            <AppContainer routeProps={routeProps} appContext={appContext}>
+            <AppContainer appContext={appContext}>
               <AppComponent {...appInitialProps} />
             </AppContainer>
           </LoadableContext.Provider>

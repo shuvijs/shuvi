@@ -47,11 +47,11 @@ describe('navigate', () => {
             routes={[
               {
                 path: 'home',
-                element: <Home />
+                component: Home
               },
               {
                 path: 'about',
-                element: <About />
+                component: About
               }
             ]}
           >
@@ -104,11 +104,11 @@ describe('navigate', () => {
             routes={[
               {
                 path: 'home',
-                element: <Home />
+                component: Home
               },
               {
                 path: 'about',
-                element: <About />
+                component: About
               }
             ]}
           >

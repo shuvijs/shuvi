@@ -16,7 +16,7 @@ describe('useNavigate', () => {
         routes={[
           {
             path: '/home',
-            element: <Home />
+            component: Home
           }
         ]}
       >

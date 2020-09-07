@@ -8,7 +8,8 @@ import {
   PathRecord,
   NavigationGuardHook,
   NavigationResolvedHook,
-  Listener
+  Listener,
+  NavigationHookContext
 } from './types';
 import { matchRoutes } from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
@@ -24,6 +25,17 @@ import { runQueue } from './utils/async';
 import { extractHooks } from './utils/extract-hooks';
 import History from './history/base';
 import { getRedirectFromRoutes } from './getRedirectFromRoutes';
+
+const START: IRoute<any> = {
+  matches: null,
+  params: {},
+  pathname: '/',
+  search: '',
+  hash: '',
+  query: {},
+  state: null,
+  redirected: false
+};
 
 interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
@@ -49,11 +61,11 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     this._basename = normalizeBase(basename);
     this._history = history;
     this._routes = createRoutesFromArray(routes);
-    this._current = this._getCurrent();
+    this._current = START;
     this._history.doTransision = this._doTransition.bind(this);
 
     const setup = () => this._history.setup();
-    this._history.transitionTo(this._current, {
+    this._history.transitionTo(this._getCurrent(), {
       onTransition: setup,
       onAbort: setup
     });
@@ -140,9 +152,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       });
     }
 
+    const routeContext = new Map<RouteRecord, NavigationHookContext>();
     const queue = ([] as Array<NavigationGuardHook>).concat(
       this._beforeEachs.toArray(),
-      extractHooks(nextMatches, 'resolve')
+      extractHooks(nextMatches, 'resolve', routeContext)
     );
 
     const abort = () => {
@@ -198,30 +211,48 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
       onComplete();
       const pre = this._current;
-      this._current = this._getCurrent();
+      this._current = this._getCurrent(routeContext);
       this._afterEachs.call(this._current, pre);
 
       // fire ready cbs once
       if (!this._ready) {
         this._ready = true;
         this._readyDefer.resolve();
-      } else {
-        this._listeners.call({
-          action: this._history.action,
-          location: this._history.location
-        });
       }
+
+      this._listeners.call({
+        action: this._history.action,
+        location: this._history.location
+      });
     });
   }
 
-  private _getCurrent(): IRoute<RouteRecord> {
+  private _getCurrent(
+    routeContext?: Map<RouteRecord, NavigationHookContext>
+  ): IRoute<RouteRecord> {
     const {
       _routes: routes,
       _basename: basename,
       _history: { location }
     } = this;
     const matches = matchRoutes(routes, location, basename);
-    const params = matches ? matches[matches.length - 1].params : {};
+    let params;
+    if (matches) {
+      params = matches[matches.length - 1].params;
+      if (routeContext) {
+        for (const { route } of matches) {
+          const resolvedProps = routeContext.get(route)?.props;
+          if (resolvedProps) {
+            route.props = {
+              ...route.props,
+              ...resolvedProps
+            };
+          }
+        }
+      }
+    } else {
+      params = {};
+    }
 
     return {
       matches,

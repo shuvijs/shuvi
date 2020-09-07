@@ -9,32 +9,7 @@ import DetailPage from './fixtures/loadRouteComponent/detailPage';
 import { renderWithRoutes } from './utils';
 import { wait } from 'shuvi-test-utils';
 
-const firstPageComponent = loadRouteComponent(() => {
-  return import('./fixtures/loadRouteComponent/firstPage');
-});
-
-const secondPageComponent = loadRouteComponent(() => {
-  return import('./fixtures/loadRouteComponent/secondPage');
-});
-
-const detailPageComponent = loadRouteComponent(() => {
-  return import('./fixtures/loadRouteComponent/detailPage');
-});
-
 describe('loadRouteComponent [web]', () => {
-  const routes = [
-    {
-      id: 'secondPage',
-      component: secondPageComponent,
-      path: '/second'
-    },
-    {
-      id: 'firstPage',
-      component: firstPageComponent,
-      path: '/first'
-    }
-  ];
-
   it('basic', async () => {
     const routeProps = {
       firstPage: {
@@ -44,7 +19,15 @@ describe('loadRouteComponent [web]', () => {
 
     const { root, toJSON } = renderWithRoutes(
       {
-        routes,
+        routes: [
+          {
+            id: 'firstPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/firstPage')
+            ),
+            path: '/first'
+          }
+        ],
         routeProps
       },
       { route: '/first' }
@@ -75,12 +58,30 @@ describe('loadRouteComponent [web]', () => {
   it('getInitialProps should work in client when the route component be activated', async () => {
     // No getInitialProps
     const { root, toJSON } = renderWithRoutes(
-      { routes },
+      {
+        routes: [
+          {
+            id: 'firstPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/firstPage')
+            ),
+            path: '/first'
+          },
+          {
+            id: 'secondPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/secondPage')
+            ),
+            path: '/second'
+          }
+        ]
+      },
       {
         route: '/second'
       }
     );
 
+    // await for lodable update state
     await act(async () => {});
 
     expect(toJSON()).toMatchInlineSnapshot(`
@@ -99,9 +100,7 @@ describe('loadRouteComponent [web]', () => {
       root.findByType('a').props.onClick(new MouseEvent('click'));
     });
 
-    // getInitialProps not resolved
-    expect(toJSON()).toMatchInlineSnapshot(`null`);
-
+    // wait for route resolve(getInitialProps)
     await act(async () => {
       await wait(1100);
     });
@@ -127,13 +126,30 @@ describe('loadRouteComponent [web]', () => {
   it('getInitialProps should not called when leave route', async () => {
     const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
     const { root, toJSON } = renderWithRoutes(
-      { routes },
+      {
+        routes: [
+          {
+            id: 'firstPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/firstPage')
+            ),
+            path: '/first'
+          },
+          {
+            id: 'secondPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/secondPage')
+            ),
+            path: '/second'
+          }
+        ]
+      },
       {
         route: '/first'
       }
     );
 
-    // wait getInitialprops resolve
+    // wait for route resolve(getInitialProps)
     await act(async () => {
       await wait(1100);
     });
@@ -166,7 +182,9 @@ describe('loadRouteComponent [web]', () => {
         routes: [
           {
             id: 'detailPage',
-            component: detailPageComponent,
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/detailPage')
+            ),
             path: '/detail/:id'
           }
         ]
@@ -194,6 +212,7 @@ describe('loadRouteComponent [web]', () => {
       root.findByType('a').props.onClick(new MouseEvent('click'));
     });
 
+    // wait for route resolve(getInitialProps)
     await act(async () => {
       await wait(1100);
     });

@@ -1,5 +1,4 @@
 import { ParsedQuery } from 'query-string';
-import { IRoute, IRouteRecord } from './router';
 import type History from '../history/base';
 
 export { History };
@@ -172,20 +171,6 @@ export interface Update<S extends State = State> {
  */
 export interface Listener<S extends State = State> {
   (update: Update<S>): void;
-}
-
-export interface NavigationGuardHook<R extends IRouteRecord = any> {
-  (
-    to: IRoute<R>,
-    from: IRoute<R>,
-    next: (
-      nextObject?: false | string | { path?: string; replace?: boolean } | Error
-    ) => void
-  ): void;
-}
-
-export interface NavigationResolvedHook<R extends IRouteRecord = any> {
-  (to: IRoute<R>, from: IRoute<R>): void;
 }
 
 /**

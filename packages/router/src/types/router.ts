@@ -3,21 +3,51 @@ import {
   Path,
   State,
   Listener,
-  NavigationGuardHook,
-  NavigationResolvedHook,
   RemoveListenerCallback,
   PathRecord
 } from './history';
 
 export type IParams = Record<string, string>;
 
+export type IRouteComponentProps = Record<string, string>;
+
 export interface IRouteRecord<Element = any> {
   caseSensitive?: boolean;
   children?: IRouteRecord<Element>[];
-  element?: Element; // For react will be React.Element
+  component?: any; // For react will be React.Element
   redirect?: string;
-  resolve?: NavigationGuardHook;
+  resolve?: NavigationGuardHookWithContext;
+  props?: IRouteComponentProps;
   path: string;
+}
+
+export interface NavigationGuardHook<R extends IRouteRecord = any> {
+  (
+    to: IRoute<R>,
+    from: IRoute<R>,
+    next: (
+      nextObject?: false | string | { path?: string; replace?: boolean } | Error
+    ) => void
+  ): void;
+}
+
+export interface NavigationGuardHookWithContext<R extends IRouteRecord = any> {
+  (
+    to: IRoute<R>,
+    from: IRoute<R>,
+    next: (
+      nextObject?: false | string | { path?: string; replace?: boolean } | Error
+    ) => void,
+    context: NavigationHookContext
+  ): void;
+}
+
+export interface NavigationResolvedHook<R extends IRouteRecord = any> {
+  (to: IRoute<R>, from: IRoute<R>): void;
+}
+
+export interface NavigationHookContext {
+  props?: Record<string, string>;
 }
 
 export interface IRouteMatch<T = IRouteRecord> {

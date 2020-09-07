@@ -37,12 +37,26 @@ export function create(context, options) {
 }
 
 if (module.hot) {
-  module.hot.accept(['@shuvi/app/core/app', '@shuvi/app/core/routes'], () => {
-    if (!app) return;
+  let pending = null
+  const rerender = () => {
+    if (window.__DISABLE_HMR) {
+      if (pending !== null) {
+        clearTimeout(pending);
+      }
+      pending = setTimeout(() => {
+        pending = null;
+        rerender();
+      }, 0)
+      return;
+    }
 
     let AppComponent = require('@shuvi/app/core/app').default;
     let routes = require('@shuvi/app/core/routes').default;
     app.rerender({routes,AppComponent});
+  };
+  module.hot.accept(['@shuvi/app/core/app', '@shuvi/app/core/routes'], () => {
+    if (!app) return;
+    rerender();
   });
 }
 `;
