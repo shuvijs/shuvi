@@ -1,0 +1,34 @@
+{
+  "name": "@shuvi/router",
+  "version": "0.0.1-beta.55",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/router"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "dev": "run-p watch:*",
+    "watch:esm": "tsc -p tsconfig.build.esm.json -w",
+    "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
+    "prebuild": "rimraf lib esm",
+    "build": "run-p build:*",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "build:cjs": "tsc -p tsconfig.build.cjs.json"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "dependencies": {
+    "@shuvi/utils": "^0.0.1-beta.50",
+    "query-string": "6.13.1"
+  },
+  "devDependencies": {}
+}

@@ -5,35 +5,13 @@
 import { loadRouteComponent } from '../loadRouteComponent';
 import { act } from 'shuvi-test-utils/reactTestRender';
 import FirstPage from './fixtures/loadRouteComponent/firstPage';
+import DetailPage from './fixtures/loadRouteComponent/detailPage';
 import { renderWithRoutes } from './utils';
 import { wait } from 'shuvi-test-utils';
 
-const firstPageComponent = loadRouteComponent(() => {
-  return import('./fixtures/loadRouteComponent/firstPage');
-});
-
-const secondPageComponent = loadRouteComponent(() => {
-  return import('./fixtures/loadRouteComponent/secondPage');
-});
-
 describe('loadRouteComponent [web]', () => {
-  const routes = [
-    {
-      id: 'secondPage',
-      component: secondPageComponent,
-      exact: true,
-      path: '/second'
-    },
-    {
-      id: 'firstPage',
-      component: firstPageComponent,
-      exact: true,
-      path: '/first'
-    }
-  ];
-
   it('basic', async () => {
-    const initialProps = {
+    const routeProps = {
       firstPage: {
         data: 'data from server'
       }
@@ -41,17 +19,25 @@ describe('loadRouteComponent [web]', () => {
 
     const { root, toJSON } = renderWithRoutes(
       {
-        routes,
-        initialProps
+        routes: [
+          {
+            id: 'firstPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/firstPage')
+            ),
+            path: '/first'
+          }
+        ],
+        routeProps
       },
       { route: '/first' }
     );
 
     await act(async () => {
-      await wait(1000);
+      await wait(1100);
     });
 
-    // Spread initialProps as props
+    // Spread routeProps as props
     expect(root.findByType(FirstPage).props).toMatchObject({
       data: 'data from server'
     });
@@ -59,6 +45,12 @@ describe('loadRouteComponent [web]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`
       <div>
         first page
+        <a
+          href="/second"
+          onClick={[Function]}
+        >
+          go second page
+        </a>
       </div>
     `);
   });
@@ -66,12 +58,30 @@ describe('loadRouteComponent [web]', () => {
   it('getInitialProps should work in client when the route component be activated', async () => {
     // No getInitialProps
     const { root, toJSON } = renderWithRoutes(
-      { routes },
+      {
+        routes: [
+          {
+            id: 'firstPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/firstPage')
+            ),
+            path: '/first'
+          },
+          {
+            id: 'secondPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/secondPage')
+            ),
+            path: '/second'
+          }
+        ]
+      },
       {
         route: '/second'
       }
     );
 
+    // await for lodable update state
     await act(async () => {});
 
     expect(toJSON()).toMatchInlineSnapshot(`
@@ -90,11 +100,9 @@ describe('loadRouteComponent [web]', () => {
       root.findByType('a').props.onClick(new MouseEvent('click'));
     });
 
-    // getInitialProps not resolved
-    expect(toJSON()).toMatchInlineSnapshot(`null`);
-
+    // wait for route resolve(getInitialProps)
     await act(async () => {
-      await wait(1000);
+      await wait(1100);
     });
 
     // getInitialProps resolved
@@ -105,7 +113,115 @@ describe('loadRouteComponent [web]', () => {
     expect(toJSON()).toMatchInlineSnapshot(`
       <div>
         first page
+        <a
+          href="/second"
+          onClick={[Function]}
+        >
+          go second page
+        </a>
       </div>
     `);
+  });
+
+  it('getInitialProps should not called when leave route', async () => {
+    const getInitialProps = jest.spyOn(FirstPage, 'getInitialProps');
+    const { root, toJSON } = renderWithRoutes(
+      {
+        routes: [
+          {
+            id: 'firstPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/firstPage')
+            ),
+            path: '/first'
+          },
+          {
+            id: 'secondPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/secondPage')
+            ),
+            path: '/second'
+          }
+        ]
+      },
+      {
+        route: '/first'
+      }
+    );
+
+    // wait for route resolve(getInitialProps)
+    await act(async () => {
+      await wait(1100);
+    });
+
+    expect(toJSON()).toMatchInlineSnapshot(`
+      <div>
+        first page
+        <a
+          href="/second"
+          onClick={[Function]}
+        >
+          go second page
+        </a>
+      </div>
+    `);
+
+    expect(getInitialProps.mock.calls.length).toBe(1);
+
+    await act(async () => {
+      root.findByType('a').props.onClick(new MouseEvent('click'));
+    });
+
+    expect(getInitialProps.mock.calls.length).toBe(1);
+  });
+
+  it('getInitialProps should be recall in client when the route component params update', async () => {
+    // No getInitialProps
+    const { root, toJSON } = renderWithRoutes(
+      {
+        routes: [
+          {
+            id: 'detailPage',
+            component: loadRouteComponent(() =>
+              import('./fixtures/loadRouteComponent/detailPage')
+            ),
+            path: '/detail/:id'
+          }
+        ]
+      },
+      {
+        route: '/detail/1'
+      }
+    );
+
+    // getInitialProps not resolved
+    expect(toJSON()).toMatchInlineSnapshot(`null`);
+
+    await act(async () => {
+      await wait(1100);
+    });
+
+    // getInitialProps resolved
+    expect(root.findByType(DetailPage).props).toMatchObject({
+      data: {
+        id: '1'
+      }
+    });
+
+    await act(async () => {
+      root.findByType('a').props.onClick(new MouseEvent('click'));
+    });
+
+    // wait for route resolve(getInitialProps)
+    await act(async () => {
+      await wait(1100);
+    });
+
+    // getInitialProps resolved
+    expect(root.findByType(DetailPage).props).toMatchObject({
+      data: {
+        id: '2'
+      }
+    });
   });
 });

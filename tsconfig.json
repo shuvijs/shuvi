@@ -3,17 +3,46 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shuvi/toolpack/lib/*": ["packages/toolpack/src/*"],
-      "@shuvi/utils/lib/*": ["packages/utils/src/*"],
-      "@shuvi/libs/lib/*": ["packages/libs/src/*"],
-      "@shuvi/runtime-core/lib/*": ["packages/runtime-core/src/*"],
-      "@shuvi/runtime-react/lib/*": ["packages/runtime-react/src/*"],
-      "@shuvi/shared/lib/*": ["packages/shared/src/*"],
-      "@shuvi/*": ["packages/*/src"],
-      "shuvi/lib/*": ["packages/shuvi/src/*"],
-      "shuvi-test-utils": ["test/utils/index"],
-      "shuvi-test-utils/*": ["test/utils/*"]
+      "@shuvi/toolpack/lib/*": [
+        "packages/toolpack/src/*"
+      ],
+      "@shuvi/utils/lib/*": [
+        "packages/utils/src/*"
+      ],
+      "@shuvi/libs/lib/*": [
+        "packages/libs/src/*"
+      ],
+      "@shuvi/runtime-core/lib/*": [
+        "packages/runtime-core/src/*"
+      ],
+      "@shuvi/runtime-react/lib/*": [
+        "packages/runtime-react/src/*"
+      ],
+      "@shuvi/shared/lib/*": [
+        "packages/shared/src/*"
+      ],
+      "@shuvi/router/lib/*": [
+        "packages/router/src/*"
+      ],
+      "@shuvi/react-router/lib/*": [
+        "packages/react-router/src/*"
+      ],
+      "@shuvi/*": [
+        "packages/*/src"
+      ],
+      "shuvi/lib/*": [
+        "packages/shuvi/src/*"
+      ],
+      "shuvi-test-utils": [
+        "test/utils/index"
+      ],
+      "shuvi-test-utils/*": [
+        "test/utils/*"
+      ]
     }
   },
-  "exclude": ["node_modules", "test/fixtures"]
+  "exclude": [
+    "node_modules",
+    "test/fixtures"
+  ]
 }

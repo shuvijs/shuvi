@@ -1,15 +1,15 @@
 import { Hookable } from '@shuvi/hooks';
-import { IRoute } from './route';
+import { IAppRouteConfig } from './route';
 
 export interface IRenderOptions<CompType = any> {
   AppComponent: CompType;
-  routes: IRoute[];
+  routes: IAppRouteConfig[];
   appContext: Record<string, any>;
 }
 
 export type IRerenderConfig = {
   AppComponent?: any;
-  routes?: IRoute[];
+  routes?: IAppRouteConfig[];
 };
 
 export interface IAppRenderFn {
@@ -18,7 +18,7 @@ export interface IAppRenderFn {
 
 export interface IApplication extends Hookable {
   AppComponent: any;
-  routes: IRoute[];
+  routes: IAppRouteConfig[];
   run(): Promise<{ [k: string]: any }>;
   rerender(config?: IRerenderConfig): Promise<void>;
   dispose(): Promise<void>;
