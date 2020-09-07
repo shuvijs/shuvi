@@ -35,15 +35,15 @@ describe('Descendant <Routes> splat matching', () => {
             routes={[
               {
                 path: 'courses',
-                element: <Courses />,
+                component: Courses,
                 children: [
                   {
                     path: 'react',
-                    element: <ReactCourses />,
+                    component: ReactCourses,
                     children: [
                       {
                         path: 'react-fundamentals',
-                        element: <ReactFundamentals />
+                        component: ReactFundamentals
                       }
                     ]
                   }

@@ -10,6 +10,8 @@ import { createRedirector } from '../utils/createRedirector';
 import { normalizeRoutes } from '../utils/router';
 import { IReactClientView } from '../types';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const headManager = new HeadManager();
 
 type HistoryCreator = () => History;
@@ -30,11 +32,23 @@ export class ReactClientView implements IReactClientView {
     appContext
   }) => {
     const { _history: history, _isInitialRender: isInitialRender } = this;
+    let { ssr, appProps, dynamicIds, routeProps } = appData;
 
     const router = createRouter({
-      routes: normalizeRoutes(routes),
+      routes: normalizeRoutes(routes, { appContext, routeProps }),
       history
     });
+
+    if (isDev) {
+      // todo: hope we can remove this with react-fast-refresh
+      router.beforeEach((to, from, next) => {
+        (window as any).__DISABLE_HMR = true;
+        next();
+      });
+      router.afterEach(() => {
+        (window as any).__DISABLE_HMR = false;
+      });
+    }
 
     // For e2e test
     if ((window as any).__SHUVI) {
@@ -47,11 +61,11 @@ export class ReactClientView implements IReactClientView {
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
     >;
-    let { ssr, appProps, dynamicIds, routeProps } = appData;
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else {
+      await router.ready;
       const { pathname, query, params } = router.current;
 
       if (TypedAppComponent.getInitialProps) {
@@ -76,7 +90,7 @@ export class ReactClientView implements IReactClientView {
     const root = (
       <Router router={router}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer routeProps={routeProps} appContext={appContext}>
+          <AppContainer appContext={appContext}>
             <TypedAppComponent {...appProps} />
           </AppContainer>
         </HeadManagerContext.Provider>

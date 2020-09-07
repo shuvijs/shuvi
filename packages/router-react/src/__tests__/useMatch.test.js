@@ -25,15 +25,15 @@ describe('useMatch', () => {
           routes={[
             {
               path: '/',
-              element: <Layout />,
+              component: Layout,
               children: [
                 {
                   path: '/home',
-                  element: <Home />
+                  component: Home
                 },
                 {
                   path: '/about',
-                  element: <About />
+                  component: About
                 }
               ]
             }
@@ -73,15 +73,15 @@ describe('useMatch', () => {
           routes={[
             {
               path: '/',
-              element: <Layout />,
+              component: Layout,
               children: [
                 {
                   path: '/home',
-                  element: <Home />
+                  component: Home
                 },
                 {
                   path: '/about',
-                  element: <About />
+                  component: About
                 }
               ]
             }

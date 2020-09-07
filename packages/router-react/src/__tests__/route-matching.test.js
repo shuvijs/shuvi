@@ -7,29 +7,29 @@ describe('route matching', () => {
     describeRouteMatching([
       {
         path: 'courses',
-        element: <Courses />,
+        component: Courses,
         children: [
           {
             path: ':id',
-            element: <Course />,
-            children: [{ path: 'grades', element: <CourseGrades /> }]
+            component: Course,
+            children: [{ path: 'grades', component: CourseGrades }]
           },
-          { path: 'new', element: <NewCourse /> },
-          { path: '/', element: <CoursesIndex /> },
-          { path: '*', element: <CoursesNotFound /> }
+          { path: 'new', component: NewCourse },
+          { path: '/', component: CoursesIndex },
+          { path: '*', component: CoursesNotFound }
         ]
       },
       {
         path: 'courses',
-        element: <Landing />,
+        component: Landing,
         children: [
-          { path: 'react-fundamentals', element: <ReactFundamentals /> },
-          { path: 'advanced-react', element: <AdvancedReact /> },
-          { path: '*', element: <NeverRender /> }
+          { path: 'react-fundamentals', component: ReactFundamentals },
+          { path: 'advanced-react', component: AdvancedReact },
+          { path: '*', component: NeverRender }
         ]
       },
-      { path: '/', element: <Home /> },
-      { path: '*', element: <NotFound /> }
+      { path: '/', component: Home },
+      { path: '*', component: NotFound }
     ]);
   });
 

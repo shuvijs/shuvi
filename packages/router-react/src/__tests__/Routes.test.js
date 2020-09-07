@@ -9,10 +9,7 @@ describe('A <RouterView>', () => {
     }
 
     let renderer = createTestRenderer(
-      <Router
-        initialEntries={['/']}
-        routes={[{ path: '/', element: <Home /> }]}
-      >
+      <Router initialEntries={['/']} routes={[{ path: '/', component: Home }]}>
         <RouterView />
       </Router>
     );
@@ -33,8 +30,8 @@ describe('A <RouterView>', () => {
       <Router
         initialEntries={['/home']}
         routes={[
-          { path: '/home', element: <Home /> },
-          { path: '/home', element: <Dashboard /> }
+          { path: '/home', component: Home },
+          { path: '/home', component: Dashboard }
         ]}
       >
         <RouterView />
@@ -66,11 +63,11 @@ describe('A <RouterView>', () => {
       <Router
         initialEntries={['/admin/user']}
         routes={[
-          { path: '/home', element: <Home /> },
+          { path: '/home', component: Home },
           {
             path: '/admin',
-            element: <Admin />,
-            children: [{ path: 'user', element: <User /> }]
+            component: Admin,
+            children: [{ path: 'user', component: User }]
           }
         ]}
       >

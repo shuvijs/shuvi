@@ -52,8 +52,8 @@ describe('navigate state', () => {
           <Router
             initialEntries={['/home']}
             routes={[
-              { path: 'home', element: <Home /> },
-              { path: 'about', element: <About /> }
+              { path: 'home', component: Home },
+              { path: 'about', component: About }
             ]}
           >
             <RouterView />
@@ -105,8 +105,8 @@ describe('navigate state', () => {
           <Router
             initialEntries={['/home']}
             routes={[
-              { path: 'home', element: <Home /> },
-              { path: 'about', element: <About /> }
+              { path: 'home', component: Home },
+              { path: 'about', component: About }
             ]}
           >
             <RouterView />

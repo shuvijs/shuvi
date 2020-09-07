@@ -52,19 +52,19 @@ describe('nested routes', () => {
         routes={[
           {
             path: 'users',
-            element: <Users />,
+            component: Users,
             children: [
               {
                 path: ':username',
-                element: <User />,
+                component: User,
                 children: [
                   {
                     path: 'courses',
-                    element: <Courses />,
+                    component: Courses,
                     children: [
                       {
                         path: ':courseId',
-                        element: <Course />
+                        component: Course
                       }
                     ]
                   }

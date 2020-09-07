@@ -16,7 +16,7 @@ describe('useCurrentRoute', () => {
         routes={[
           {
             path: '/:lng/home',
-            element: <Home />
+            component: Home
           }
         ]}
       >
