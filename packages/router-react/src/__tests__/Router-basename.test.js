@@ -20,11 +20,11 @@ describe('<Routes> with a basename', () => {
   let userRoutes = [
     {
       path: 'users/:userId',
-      element: <User />,
+      component: User,
       children: [
         {
           path: 'dashboard',
-          element: <Dashboard />
+          component: Dashboard
         }
       ]
     }

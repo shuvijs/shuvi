@@ -38,11 +38,11 @@ describe('when the same component is mounted by two different routes', () => {
           routes={[
             {
               path: 'home',
-              element: <Home />
+              component: Home
             },
             {
               path: 'another-home',
-              element: <Home />
+              component: Home
             }
           ]}
         >
@@ -62,11 +62,11 @@ describe('when the same component is mounted by two different routes', () => {
           routes={[
             {
               path: 'home',
-              element: <Home />
+              component: Home
             },
             {
               path: 'another-home',
-              element: <Home />
+              component: Home
             }
           ]}
         >

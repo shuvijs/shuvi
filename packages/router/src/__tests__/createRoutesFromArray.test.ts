@@ -6,12 +6,12 @@ describe('createRoutesFromArray', () => {
   });
 
   it('should create routes', () => {
-    const ELEMENT1 = () => 'element1';
+    const Comp1 = () => 'element1';
     expect(
       createRoutesFromArray([
         {
           path: '/',
-          element: ELEMENT1
+          component: Comp1
         },
         {
           path: '/:id',
@@ -27,7 +27,7 @@ describe('createRoutesFromArray', () => {
         }
       ])
     ).toStrictEqual([
-      { caseSensitive: false, element: ELEMENT1, path: '/' },
+      { caseSensitive: false, component: Comp1, path: '/' },
       {
         caseSensitive: true,
         path: '/:id',

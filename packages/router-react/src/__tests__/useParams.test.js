@@ -36,7 +36,7 @@ describe('useParams', () => {
           routes={[
             {
               path: '/home',
-              element: <Home />
+              component: Home
             }
           ]}
         >
@@ -63,7 +63,7 @@ describe('useParams', () => {
           routes={[
             {
               path: '/blog/:slug',
-              element: <BlogPost />
+              component: BlogPost
             }
           ]}
         >
@@ -101,11 +101,11 @@ describe('useParams', () => {
             routes={[
               {
                 path: 'users/:username',
-                element: <UserDashboard />,
+                component: UserDashboard,
                 children: [
                   {
                     path: 'courses/:course',
-                    element: <Course />
+                    component: Course
                   }
                 ]
               }
@@ -138,7 +138,7 @@ describe('useParams', () => {
           routes={[
             {
               path: '/blog/:slug',
-              element: <BlogPost />
+              component: BlogPost
             }
           ]}
         >
@@ -167,7 +167,7 @@ describe('useParams', () => {
           routes={[
             {
               path: '/blog/:slug',
-              element: <BlogPost />
+              component: BlogPost
             }
           ]}
         >
@@ -205,7 +205,7 @@ describe('useParams', () => {
           routes={[
             {
               path: '/blog/:slug',
-              element: <BlogPost />
+              component: BlogPost
             }
           ]}
         >
