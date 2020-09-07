@@ -7,9 +7,9 @@ export type IBuiltResource = {
     document: Partial<Runtime.IDocumentModule>;
     view: Runtime.IViewServer;
     matchRoutes(
-      routes: Runtime.IRouteConfig[],
+      routes: Runtime.IUserRouteConfig[],
       pathname: string
-    ): Runtime.IMatchedRoute[];
+    ): Runtime.IMatchedRoute<Runtime.IUserRouteConfig>[];
   };
   documentTemplate: any;
   clientManifest: Bundler.IManifest;
@@ -25,7 +25,19 @@ export interface IPluginSpec {
   apply(api: IApi): void;
 }
 
+export interface IPresetSpec {
+  (api: IApi): {
+    presets?: IApiConfig['presets'];
+    plugins?: IApiConfig['plugins'];
+  };
+}
+
 export interface IPlugin {
   id: string;
   get: () => IPluginSpec;
+}
+
+export interface IPreset {
+  id: string;
+  get: () => IPresetSpec;
 }

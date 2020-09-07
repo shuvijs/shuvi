@@ -9,6 +9,6 @@ export type IRenderDocumentOptions = {
   app: Runtime.IApplication;
   url: string;
   AppComponent: any;
-  routes: Runtime.IRoute[];
+  routes: Runtime.IAppRouteConfig[];
   appContext: any;
 };

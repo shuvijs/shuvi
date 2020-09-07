@@ -1,5 +1,5 @@
-import { Runtime } from "@shuvi/types";
+import { Runtime } from '@shuvi/types';
 
-declare const routes: Runtime.IRoute[];
+declare const routes: Runtime.IAppRouteConfig[];
 
 export default routes;

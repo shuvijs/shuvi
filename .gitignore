@@ -20,6 +20,7 @@ node_modules
 /lib/
 packages/*/lib/
 packages/*/shuvi-app/
+packages/*/esm/
 
 test/fixtures/**/dist/
 test/fixtures/**/.shuvi/

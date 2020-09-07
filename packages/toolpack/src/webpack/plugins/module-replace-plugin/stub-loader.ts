@@ -8,11 +8,5 @@ module.exports = function (this: loader.LoaderContext) {
 
   return `
 module.exports = require(${sModule})
-
-if (module.hot) {
-  // accept self, since this module can be disposed and re-evaluated without 
-  // informing parents
-  module.hot.accept(() => { /* noop */ })
-}
 `.trim();
 };

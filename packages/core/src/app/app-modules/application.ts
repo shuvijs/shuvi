@@ -1,7 +1,7 @@
 import { Hookable } from '@shuvi/hooks';
 import {
   IApplication,
-  IRoute,
+  IAppRouteConfig,
   IAppRenderFn,
   IRerenderConfig,
   AppHooks
@@ -13,7 +13,7 @@ export type IContext = {
 
 export interface IApplicationOptions<Context> {
   AppComponent: any;
-  routes: IRoute[];
+  routes: IAppRouteConfig[];
   context: Context;
   render: IAppRenderFn;
 }
@@ -21,7 +21,7 @@ export interface IApplicationOptions<Context> {
 export class Application<Context extends {}> extends Hookable
   implements IApplication {
   AppComponent: any;
-  routes: IRoute[];
+  routes: IAppRouteConfig[];
   private _renderFn: IAppRenderFn;
   private _context: IContext;
 

@@ -118,10 +118,7 @@ export async function setupApp(api: Api) {
     imported: 'default',
     local: 'App'
   });
-  api.addAppExport(runtime.getRouterModulePath(), {
-    imported: 'default',
-    local: 'router'
-  });
+
   // don not use absolute path, this module would't be bundled
   api.addAppExport(
     'shuvi/lib/lib/runtimeConfig',

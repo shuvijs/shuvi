@@ -1,17 +1,17 @@
-export interface IRouteBase {
-  path?: string;
-  exact?: boolean;
-  routes?: IRouteBase[];
-  [x: string]: any;
+import { IRouteRecord } from '@shuvi/router';
+
+export interface IUserRouteConfig {
+  children?: IUserRouteConfig[];
+  name?: string;
+  component?: string;
+  redirect?: string;
+  path: string;
 }
 
-export interface IRouteConfig extends IRouteBase {
-  routes?: IRouteConfig[];
-  component: string;
-}
-
-export interface IRoute extends IRouteBase {
+export interface IAppRouteConfig extends IRouteRecord {
   id: string;
-  component: any;
-  routes?: IRoute[];
+  component?: any;
+  children?: IAppRouteConfig[];
+  path: string;
+  [x: string]: any;
 }

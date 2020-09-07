@@ -4,35 +4,31 @@ describe('serializeRoutes', () => {
   const routes = [
     {
       path: '/',
-      exact: true,
-      component: 'Foo',
+      component: 'Foo'
     },
     {
       path: '/nested',
-      exact: false,
-      routes: [
+      component: 'Foo',
+      children: [
         {
           path: '/a',
-          component: 'Bar',
-          exact: true,
-        },
-      ],
-    },
+          component: 'Bar'
+        }
+      ]
+    }
   ];
   test('should work', () => {
     expect(serializeRoutes(routes)).toMatchInlineSnapshot(`
       "[{id: \\"0042\\",
       path: \\"/\\",
-      exact: true,
       component: \\"Foo\\",
       },
       {id: \\"0c46\\",
       path: \\"/nested\\",
-      exact: false,
-      routes: [{id: \\"f571\\",
+      component: \\"Foo\\",
+      children: [{id: \\"f571\\",
       path: \\"/a\\",
       component: \\"Bar\\",
-      exact: true,
       },
       ],
       },
@@ -45,21 +41,19 @@ describe('serializeRoutes', () => {
       serializeRoutes(routes, {
         component(comp) {
           return `() => import("${comp}")`;
-        },
+        }
       })
     ).toMatchInlineSnapshot(`
       "[{id: \\"0042\\",
       path: \\"/\\",
-      exact: true,
       component: () => import(\\"Foo\\"),
       },
       {id: \\"0c46\\",
       path: \\"/nested\\",
-      exact: false,
-      routes: [{id: \\"f571\\",
+      component: () => import(\\"Foo\\"),
+      children: [{id: \\"f571\\",
       path: \\"/a\\",
       component: () => import(\\"Bar\\"),
-      exact: true,
       },
       ],
       },
@@ -74,32 +68,38 @@ describe('normalizeRoutes', () => {
       const routes = normalizeRoutes(
         [
           {
+            path: '/a',
             component: 'a',
-            routes: [
+            children: [
               {
-                component: 'aa',
-              },
-            ],
+                path: '/aa',
+                component: 'aa'
+              }
+            ]
           },
           {
-            component: '/b',
-          },
+            path: '/b',
+            component: '/b'
+          }
         ],
         { componentDir: '/test' }
       );
 
       expect(routes).toMatchObject([
         {
+          path: '/a',
           component: '/test/a',
-          routes: [
+          children: [
             {
-              component: '/test/aa',
-            },
-          ],
+              path: '/aa',
+              component: '/test/aa'
+            }
+          ]
         },
         {
-          component: '/b',
-        },
+          path: '/b',
+          component: '/b'
+        }
       ]);
     });
   });

@@ -9,6 +9,7 @@ function getApp({ render }: any = {}) {
     routes: [
       {
         id: 'test',
+        path: '/',
         component: ''
       }
     ],

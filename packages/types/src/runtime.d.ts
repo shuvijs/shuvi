@@ -1,8 +1,7 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import {
-  IRouteBase,
-  IRouteConfig,
-  IRoute,
+  IUserRouteConfig,
+  IAppRouteConfig,
   ITemplateData,
   IApplication,
   IAppRenderFn,
@@ -11,44 +10,42 @@ import {
   IInitAppPlugins,
   IAppPluginRecord
 } from '@shuvi/core';
-import { ParsedUrlQuery } from 'querystring';
+import {
+  IRouteMatch,
+  IRouteRecord,
+  IPartialRouteRecord,
+  IRouter
+} from '@shuvi/router';
+import { ParsedQuery } from 'query-string';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
 
 export {
-  IRouteBase,
-  IRouteConfig,
-  IRoute,
+  IUserRouteConfig,
+  IAppRouteConfig,
   IApplication,
   IAppPlugin,
   IInitAppPlugins,
-  IAppPluginRecord
+  IAppPluginRecord,
+  IRouteRecord,
+  IPartialRouteRecord,
+  IRouter
 };
 
 export type IData = {
   [k: string]: string | number | boolean | undefined | null;
 };
 
-export type IParams = ParsedUrlQuery;
+export type IParams = ParsedQuery;
 
-export type IQuery = ParsedUrlQuery;
+export type IQuery = ParsedQuery;
 
 export interface IRequest {
   url: string;
   headers: IncomingHttpHeaders;
 }
 
-export interface IMatchedRoute<
-  Params extends { [K in keyof Params]?: string } = {}
-> {
-  route: IRouteBase;
-  match: {
-    params: Params;
-    isExact: boolean;
-    path: string;
-    url: string;
-  };
-}
+export type IMatchedRoute<T = IRouteRecord> = IRouteMatch<T>;
 
 export type IHtmlAttrs = { textContent?: string } & {
   [x: string]: string | number | undefined | boolean;
@@ -174,36 +171,6 @@ export type IRenderAppResult<Data = {}> = {
   redirect?: IRedirectState;
 };
 
-export type IRouterAction = 'PUSH' | 'POP' | 'REPLACE';
-
-export interface IRouterServerContext {
-  url?: string;
-}
-
-export interface IRouterListener {
-  (location: IRouterLocation, action: IRouterAction): void;
-}
-
-export interface IRouterLocation {
-  pathname: string;
-  search: string;
-  state: any;
-  hash: string;
-}
-
-export interface IRouter {
-  query: IQuery;
-  location: IRouterLocation;
-  push(path: string, state?: any): void;
-  replace(path: string, state?: any): void;
-  go(n: number): void;
-  goBack(): void;
-  goForward(): void;
-  onChange(listener: IRouterListener): () => void;
-  onRouteChangeStart(listener: IRouterListener): () => void;
-  onRouteChangeComplete(listener: () => void): () => void;
-}
-
 export interface IApplicationModule {
   create(
     context: any,
@@ -239,12 +206,8 @@ export interface IRuntime<CompType = unknown> {
 
   componentTemplate(
     componentModule: string,
-    route: IRouteConfig & { id: string }
+    route: IUserRouteConfig & { id: string }
   ): string;
-
-  matchRoutes(routes: IRouteConfig[], pathname: string): IMatchedRoute[];
-
-  getRouterModulePath(): string;
 
   getAppModulePath(): string;
 

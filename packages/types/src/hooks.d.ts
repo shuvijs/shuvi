@@ -2,7 +2,7 @@ import { defineHook } from '@shuvi/core';
 import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
 import { IApiConfig, IShuviMode } from '..';
-import { IRouteConfig, IDocumentProps } from './runtime';
+import { IUserRouteConfig, IDocumentProps } from './runtime';
 import { IWebpackHelpers } from './bundler';
 
 export type IHookGetConfig = defineHook<
@@ -15,7 +15,7 @@ export type IHookGetConfig = defineHook<
 export type IHookAppRoutes = defineHook<
   'app:routes',
   {
-    initialValue: IRouteConfig[];
+    initialValue: IUserRouteConfig[];
   }
 >;
 

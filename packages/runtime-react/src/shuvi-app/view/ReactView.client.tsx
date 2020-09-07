@@ -1,40 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from 'react-router-dom';
-import qs from 'querystring';
+import { Router } from '@shuvi/router-react';
 import { Runtime } from '@shuvi/types';
-import { History } from '../router/history';
-import { setHistory } from '../router/router';
-import { matchRoutes } from '../router/matchRoutes';
+import { History, createRouter } from '@shuvi/router';
 import AppContainer from '../AppContainer';
-import { IRoute } from '../types';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { createRedirector } from '../utils/createRedirector';
+import { normalizeRoutes } from '../utils/router';
 import { IReactClientView } from '../types';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 const headManager = new HeadManager();
 
-type HistoryCreator = (options: { basename: string }) => History;
-
-function getRouteParams(routes: IRoute[], pathname: string) {
-  const matchedRoutes = matchRoutes(routes, pathname);
-  const params: Runtime.IParams = {};
-  for (let index = 0; index < matchedRoutes.length; index++) {
-    const { match } = matchedRoutes[index];
-    Object.assign(params, match.params);
-  }
-  return params;
-}
+type HistoryCreator = () => History;
 
 export class ReactClientView implements IReactClientView {
   private _history: History;
   private _isInitialRender: boolean = false;
 
   constructor(historyCreator: HistoryCreator) {
-    // TODO: config basename
-    this._history = historyCreator({ basename: '/' });
-    setHistory(this._history);
+    this._history = historyCreator();
   }
 
   renderApp: IReactClientView['renderApp'] = async ({
@@ -45,44 +32,65 @@ export class ReactClientView implements IReactClientView {
     appContext
   }) => {
     const { _history: history, _isInitialRender: isInitialRender } = this;
+    let { ssr, appProps, dynamicIds, routeProps } = appData;
+
+    const router = createRouter({
+      routes: normalizeRoutes(routes, { appContext, routeProps }),
+      history
+    });
+
+    if (isDev) {
+      // todo: hope we can remove this with react-fast-refresh
+      router.beforeEach((to, from, next) => {
+        (window as any).__DISABLE_HMR = true;
+        next();
+      });
+      router.afterEach(() => {
+        (window as any).__DISABLE_HMR = false;
+      });
+    }
+
+    // For e2e test
+    if ((window as any).__SHUVI) {
+      (window as any).__SHUVI.router = router;
+    } else {
+      (window as any).__SHUVI = { router };
+    }
+
     const redirector = createRedirector();
     const TypedAppComponent = AppComponent as Runtime.IAppComponent<
       React.ComponentType
     >;
-    let { ssr, appProps, dynamicIds, routeProps } = appData;
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
-    } else if (TypedAppComponent.getInitialProps) {
-      const { pathname } = history.location;
-      const query = qs.parse(history.location.search.slice(1));
+    } else {
+      await router.ready;
+      const { pathname, query, params } = router.current;
 
-      // todo: pass appContext
-      appProps = await TypedAppComponent.getInitialProps({
-        isServer: false,
-        pathname,
-        query,
-        params: getRouteParams(routes, pathname),
-        redirect: redirector.handler,
-        appContext,
-        async fetchInitialProps() {
-          // do nothing
-        }
-      });
+      if (TypedAppComponent.getInitialProps) {
+        appProps = await TypedAppComponent.getInitialProps({
+          isServer: false,
+          pathname,
+          query,
+          params,
+          redirect: redirector.handler,
+          appContext,
+          async fetchInitialProps() {
+            // do nothing
+          }
+        });
+      }
     }
 
     if (redirector.redirected) {
-      history.push(redirector.state!.path);
+      router.replace(redirector.state!.path);
     }
 
     const root = (
-      <Router history={history}>
+      <Router router={router}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer
-            routes={routes}
-            routeProps={routeProps}
-            appContext={appContext}
-          >
+          <AppContainer appContext={appContext}>
             <TypedAppComponent {...appProps} />
           </AppContainer>
         </HeadManagerContext.Provider>

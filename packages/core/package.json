@@ -3,7 +3,7 @@
   "version": "0.0.1-beta.55",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liximomo/shuvi.git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
     "directory": "packages/core"
   },
   "author": "liximomo",
@@ -28,6 +28,7 @@
     "@babel/traverse": "7.10.1",
     "@shuvi/hooks": "0.0.1-beta.38",
     "@shuvi/react-fs": "^0.0.1-beta.55",
+    "@shuvi/router": "^0.0.1-beta.55",
     "@shuvi/shared": "^0.0.1-beta.55",
     "@shuvi/utils": "^0.0.1-beta.55",
     "ejs": "3.0.1",

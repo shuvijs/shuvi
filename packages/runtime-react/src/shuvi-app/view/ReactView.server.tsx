@@ -1,15 +1,15 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Runtime } from '@shuvi/types';
-import { Router } from 'react-router-dom';
-import { createServerHistory } from '../router/history';
-import { setHistory } from '../router/router';
+import { Router } from '@shuvi/router-react';
+import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';
+import { createMemoryHistory, createRouter } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
+import { normalizeRoutes } from '../utils/router';
 import { createRedirector } from '../utils/createRedirector';
-import { matchRoutes } from '../router/matchRoutes';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -28,26 +28,44 @@ export class ReactServerView implements IReactServerView {
     await Loadable.preloadAll();
 
     const redirector = createRedirector();
-    const routerContext = {};
-    const history = createServerHistory({
-      basename: '',
-      location: url,
-      context: routerContext
+    const router = createRouter({
+      routes: normalizeRoutes(routes, { appContext }),
+      history: createMemoryHistory({
+        initialEntries: [url],
+        initialIndex: 0
+      })
     });
-    const { pathname, query } = history.location;
-    // sethistory before render to make router avaliable
-    setHistory(history);
+
+    await router.ready;
+
+    let { pathname, query, matches, redirected } = router.current;
+    // TODO: handler no matches
+    if (!matches) {
+      matches = [];
+    }
+
+    if (redirected) {
+      return {
+        redirect: {
+          path: pathname
+        }
+      };
+    }
 
     const routeProps: { [x: string]: any } = {};
-    const matchedRoutes = matchRoutes(routes, pathname);
     const pendingDataFetchs: Array<() => Promise<void>> = [];
     const params: IParams = {};
-    for (let index = 0; index < matchedRoutes.length; index++) {
-      const { route, match } = matchedRoutes[index];
-      const comp = route.component as
+    for (let index = 0; index < matches.length; index++) {
+      const matchedRoute = matches[index];
+      const appRoute = matchedRoute.route as Runtime.IAppRouteConfig;
+      if (appRoute.name === ROUTE_NOT_FOUND_NAME) {
+        // set response code
+        appContext.statusCode = 404;
+      }
+      const comp = appRoute.component as
         | IRouteComponent<React.Component, any>
         | undefined;
-      Object.assign(params, match.params);
+      Object.assign(params, matchedRoute.params);
       if (comp && comp.getInitialProps) {
         pendingDataFetchs.push(async () => {
           const props = await comp.getInitialProps!({
@@ -55,10 +73,11 @@ export class ReactServerView implements IReactServerView {
             pathname,
             query,
             appContext,
-            params: match.params,
+            params: matchedRoute.params,
             redirect: redirector.handler
           });
-          routeProps[route.id] = props || {};
+          routeProps[appRoute.id] = props || {};
+          matchedRoute.route.props = props;
         });
       }
     }
@@ -95,15 +114,11 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
     try {
       htmlContent = renderToString(
-        <Router history={history}>
+        <Router static router={router}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >
-            <AppContainer
-              routes={routes}
-              routeProps={routeProps}
-              appContext={appContext}
-            >
+            <AppContainer appContext={appContext}>
               <AppComponent {...appInitialProps} />
             </AppContainer>
           </LoadableContext.Provider>
