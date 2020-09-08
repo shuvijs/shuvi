@@ -13,7 +13,7 @@ describe('matchPath', () => {
         '*': '123'
       },
       path: '/*',
-      pathname: ''
+      pathname: '/123'
     });
 
     expect(
