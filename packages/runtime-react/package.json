@@ -28,10 +28,10 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/app": "^0.0.1-beta.55",
-    "@shuvi/router-react": "^0.0.1-beta.55",
-    "@shuvi/shared": "^0.0.1-beta.55",
-    "@shuvi/utils": "^0.0.1-beta.55",
+    "@shuvi/app": "0.0.1-beta.55",
+    "@shuvi/router-react": "0.0.1-beta.55",
+    "@shuvi/shared": "0.0.1-beta.55",
+    "@shuvi/utils": "0.0.1-beta.55",
     "enhanced-resolve": "5.0.0-beta.4",
     "react": "16.13.0",
     "react-app-polyfill": "1.0.6",
@@ -39,6 +39,6 @@
     "use-subscription": "^1.3.0"
   },
   "devDependencies": {
-    "@shuvi/types": "^0.0.1-beta.55"
+    "@shuvi/types": "0.0.1-beta.55"
   }
 }
