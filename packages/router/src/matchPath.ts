@@ -1,39 +1,17 @@
+import pathToRegexp, { Key, PathRegExp } from 'path-to-regexp';
 import { IPathPattern, IPathMatch, IParams } from './types';
 
 function compilePath(
   path: string,
   caseSensitive: boolean,
   end: boolean
-): [RegExp, string[]] {
-  let keys: string[] = [];
-  let source =
-    '^(' +
-    path
-      .replace(/^\/*/, '/') // Make sure it has a leading /
-      .replace(/\/?\*?$/, '') // Ignore trailing / and /*, we'll handle it below
-      .replace(/[\\.*+^$?{}|()[\]]/g, '\\$&') // Escape special regex chars
-      .replace(/:(\w+)/g, (_: string, key: string) => {
-        keys.push(key);
-        return '([^\\/]+)';
-      }) +
-    ')';
+): [PathRegExp, Key[]] {
+  const keys: Key[] = [];
 
-  if (path.endsWith('*')) {
-    if (path.endsWith('/*')) {
-      source += '\\/?'; // Don't include the / in params['*']
-    }
-    keys.push('*');
-    source += '(.*)';
-  } else if (end) {
-    source += '\\/?';
-  }
+  const source = path.replace(/^\/*/, '/'); // Make sure it has a leading /
+  const regexp = pathToRegexp(source, keys, { end, sensitive: caseSensitive });
 
-  if (end) source += '$';
-
-  let flags = caseSensitive ? undefined : 'i';
-  let matcher = new RegExp(source, flags);
-
-  return [matcher, keys];
+  return [regexp, keys];
 }
 
 function safelyDecodeURIComponent(value: string, paramName: string) {
@@ -59,15 +37,20 @@ export function matchPath(
   }
 
   let { path, caseSensitive = false, end = true } = pattern;
-  let [matcher, paramNames] = compilePath(path, caseSensitive, end);
-  let match = pathname.match(matcher);
+
+  let [matcher, keys] = compilePath(path, caseSensitive, end);
+
+  const match = matcher.exec(pathname);
 
   if (!match) return null;
 
-  let matchedPathname = match[1];
-  let values = match.slice(2);
-  let params = paramNames.reduce((memo, paramName, index) => {
-    memo[paramName] = safelyDecodeURIComponent(values[index], paramName);
+  let [matchedPathname, ...values] = match;
+
+  let params = keys.reduce((memo, key, index) => {
+    memo[key.name || '*'] = safelyDecodeURIComponent(
+      values[index],
+      String(key.name)
+    );
     return memo;
   }, {} as IParams);
 
