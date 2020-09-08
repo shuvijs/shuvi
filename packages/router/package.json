@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/router",
-  "version": "0.0.1-beta.55",
+  "version": "0.0.1-rc.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -27,9 +27,8 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/utils": "0.0.1-beta.55",
+    "@shuvi/utils": "^0.0.1-rc.1",
     "path-to-regexp": "1.7.0",
     "query-string": "6.13.1"
-  },
-  "devDependencies": {}
+  }
 }
