@@ -187,7 +187,7 @@ export default class BuildManifestPlugin {
           ? module.libIdent({ context })
           : null;
 
-      if (name.endsWith('.css')) {
+      if (!name || name.endsWith('.css')) {
         continue;
       }
 
