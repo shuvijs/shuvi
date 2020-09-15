@@ -83,27 +83,16 @@ class Api extends Hookable implements IApi {
 
   async init() {
     this._app = new App();
-
     const configFromFile = await loadConfig({
       rootDir: this._cwd,
       configFile: this._configFile,
       overrides: this._userConfig
     });
-
     this._config = deepmerge(defaultConfig, configFromFile);
-    // do not allow to modify config
-    Object.freeze(this._config);
-    this._paths = getPaths({
-      rootDir: this._config.rootDir,
-      outputPath: this._config.outputPath,
-      publicDir: this._config.publicDir
-    });
-    // do not allow to modify paths
-    Object.freeze(this._paths);
 
-    this._initPresetsAndPlugins();
-
+    await this._initPresetsAndPlugins();
     initCoreResource(this);
+
     // TODO?: move into application
     if (typeof this._config.runtimeConfig === 'object') {
       setRuntimeConfig(this._config.runtimeConfig);
@@ -291,7 +280,7 @@ class Api extends Hookable implements IApi {
     return this._pluginApi;
   }
 
-  private _initPresetsAndPlugins() {
+  private async _initPresetsAndPlugins() {
     const config = this._config;
     // init presets
     this._presets = resolvePresets(config.presets || [], {
@@ -306,9 +295,52 @@ class Api extends Hookable implements IApi {
       dir: this._config.rootDir
     });
     const allPlugins = this._presetPlugins.concat(this._plugins);
+
+    let runPlugins = function runNext(
+      next?: Function,
+      cur: Function = () => void 0
+    ) {
+      if (next) {
+        return (n: Function) =>
+          runNext(n, () => {
+            cur();
+            next();
+          });
+      }
+      return cur();
+    };
     for (const plugin of allPlugins) {
-      plugin.get().apply(this.getPluginApi());
+      const pluginInst = plugin.get();
+      if (typeof pluginInst.modifyConfig === 'function') {
+        this.tap<APIHooks.IHookGetConfig>('getConfig', {
+          name: 'pluginModifyConfig',
+          fn(config) {
+            pluginInst.modifyConfig!(config);
+            return config;
+          }
+        });
+      }
+      runPlugins = runPlugins(() => {
+        pluginInst.apply(this.getPluginApi());
+      });
     }
+
+    // prepare all properties befofre run plugins, so plugin can use all api of Api
+    this._config = await this.callHook<APIHooks.IHookGetConfig>({
+      name: 'getConfig',
+      initialValue: config
+    });
+    // do not allow to modify config
+    Object.freeze(this._config);
+    this._paths = getPaths({
+      rootDir: this._config.rootDir,
+      outputPath: this._config.outputPath,
+      publicDir: this._config.publicDir
+    });
+    // do not allow to modify paths
+    Object.freeze(this._paths);
+
+    runPlugins();
   }
 
   private _initPreset(preset: IPreset) {
