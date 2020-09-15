@@ -3,7 +3,8 @@ import {
   PathRecord,
   Location,
   Blocker,
-  Transition
+  Transition,
+  ResolvedPath
 } from '../types';
 import {
   createLocation,
@@ -15,6 +16,27 @@ import {
   warning
 } from '../utils';
 import BaseHisotry, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+
+function getBaseHref() {
+  let base = document.querySelector('base');
+  let href = '';
+
+  if (base && base.getAttribute('href')) {
+    let url = window.location.href;
+    let hashIndex = url.indexOf('#');
+    href = hashIndex === -1 ? url : url.slice(0, hashIndex);
+  }
+
+  return href;
+}
+
+function createHref(to: PathRecord) {
+  return (
+    getBaseHref() +
+    '#' +
+    (typeof to === 'string' ? to : pathToString(resolvePath(to)))
+  );
+}
 
 export default class HashHistory extends BaseHisotry {
   private _history: GlobalHistory = window.history;
@@ -58,6 +80,14 @@ export default class HashHistory extends BaseHisotry {
 
   block(blocker: Blocker): () => void {
     return addBlocker(this._blockers, blocker);
+  }
+
+  resolve(to: any, from?: any): ResolvedPath {
+    const toPath = resolvePath(to, from);
+    return {
+      path: toPath,
+      href: createHref(toPath)
+    };
   }
 
   setup() {
