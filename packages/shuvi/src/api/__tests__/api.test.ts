@@ -2,7 +2,7 @@ import { getApi } from '../api';
 import { PluginApi } from '../pluginApi';
 import { IApiConfig, IPaths } from '@shuvi/types';
 import path from 'path';
-import { resolvePreset } from './utils';
+import { resolvePreset, resolvePlugin } from './utils';
 
 describe('api', () => {
   test('should has "production" be default mode', async () => {
@@ -38,6 +38,21 @@ describe('api', () => {
       });
       expect(config!.publicPath).toBe('/test');
       expect(paths!.rootDir).toBe(path.join(__dirname, 'fixtures', 'dotenv'));
+    });
+
+    describe('modifyConfig', () => {
+      test('should work', async () => {
+        let pluginApi: PluginApi;
+        const api = await getApi({
+          config: {
+            plugins: [resolvePlugin('modify-config'), api => (pluginApi = api)]
+          }
+        });
+        const plugins = (pluginApi! as any).__plugins;
+        expect(plugins.length).toBe(1);
+        expect(plugins[0].name).toBe('modify-config');
+        expect(api.config.publicPath).toBe('/bar');
+      });
     });
   });
 
