@@ -1,5 +1,6 @@
 import path from 'path';
 import fse from 'fs-extra';
+import { APIHooks } from '@shuvi/types';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import { Api, getApi } from '../../api/api';
 import { IConfig } from '../../config';
@@ -104,4 +105,6 @@ export async function build(options: IBuildOptions) {
   if (opts.target === 'spa') {
     await buildHtml({ api, pathname: '/', filename: 'index.html' });
   }
+
+  api.emitEvent<APIHooks.IEventAfterBuild>('afterBuild');
 }
