@@ -87,7 +87,6 @@ export default class MemoryHistory extends BaseHisotry {
     let nextIndex = clamp(index + delta, 0, entries.length - 1);
     let nextAction = ACTION_POP;
     let nextLocation = entries[nextIndex];
-
     // check transition
     if (this._blockers.length) {
       this._blockers.call({
@@ -100,7 +99,13 @@ export default class MemoryHistory extends BaseHisotry {
       return;
     }
 
-    this._index = nextIndex;
+    this.transitionTo(nextLocation.pathname, {
+      ...nextLocation,
+      action: nextAction,
+      onTransition: ({ location }) => {
+        this._index = nextIndex;
+      }
+    });
   }
 
   block(blocker: Blocker): () => void {

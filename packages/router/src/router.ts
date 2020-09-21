@@ -32,6 +32,7 @@ const START: IRoute<any> = {
   pathname: '/',
   search: '',
   hash: '',
+  key: 'default',
   query: {},
   state: null,
   redirected: false
@@ -262,7 +263,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       hash: location.hash,
       query: location.query,
       state: location.state,
-      redirected: !!location.redirectedFrom
+      redirected: !!location.redirectedFrom,
+      key: location.key
     };
   }
 
