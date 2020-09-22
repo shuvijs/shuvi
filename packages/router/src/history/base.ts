@@ -21,20 +21,20 @@ import {
  *
  * Note: This is the default action for newly created history objects.
  */
-export const ACTION_POP: Action = 'Pop';
+export const ACTION_POP: Action = 'POP';
 
 /**
- * A PUSH indicates a new entry being added to the history stack, such as when
+ * A Push indicates a new entry being added to the history stack, such as when
  * a link is clicked and a new page loads. When this happens, all subsequent
  * entries in the stack are lost.
  */
-export const ACTION_PUSH: Action = 'Push';
+export const ACTION_PUSH: Action = 'PUSH';
 
 /**
  * A REPLACE indicates the entry at the current index in the history stack
  * being replaced by a new one.
  */
-export const ACTION_REPLACE: Action = 'Replace';
+export const ACTION_REPLACE: Action = 'REPLACE';
 
 interface TransitionOptions {
   state?: State;
@@ -102,7 +102,8 @@ export default abstract class BaseHistory {
       redirectedFrom
     }: TransitionOptions
   ) {
-    const nextLocation = createLocation(to, { state, redirectedFrom });
+    const { path } = this.resolve(to, this.location.pathname);
+    const nextLocation = createLocation(path, { state, redirectedFrom });
 
     // check transition
     if (this._blockers.length) {

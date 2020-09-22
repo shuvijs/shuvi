@@ -103,6 +103,7 @@ export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
   }
 
   const toPathname = parsedPath.pathname;
+
   parsedPath.pathname = toPathname
     ? resolvePathname(
         toPathname,

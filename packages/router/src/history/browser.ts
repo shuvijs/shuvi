@@ -117,6 +117,7 @@ export default class BrowserHistory extends BaseHisotry {
   protected getIndexAndLocation(): [number, Location] {
     const { pathname, search, hash } = window.location;
     const state = this._history.state || {};
+
     return [
       state.idx,
       createLocation(

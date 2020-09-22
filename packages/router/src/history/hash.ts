@@ -150,7 +150,7 @@ export default class HashHistory extends BaseHisotry {
       const [, nextLocation] = this.getIndexAndLocation();
 
       // Ignore extraneous hashchange events.
-      if (pathToString(nextLocation) !== pathToString(location)) {
+      if (pathToString(nextLocation) !== pathToString(this.location)) {
         handlePop();
       }
     });
