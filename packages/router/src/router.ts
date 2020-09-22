@@ -277,6 +277,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       matches,
       params,
       ...parsedPath,
+      key: '',
       state: null
     };
   }
