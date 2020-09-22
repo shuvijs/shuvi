@@ -76,6 +76,7 @@ export interface IRoute<RouteRecord extends IRouteRecord = IRouteRecord>
   state: State;
   matches: IRouteMatch<RouteRecord>[] | null;
   redirected?: boolean;
+  key: string;
   // todo?
   // fullpath: string?
   // href: string?

@@ -9,7 +9,7 @@ export type GlobalHistory = typeof window.history;
  * Actions represent the type of change to a location value.
  *
  */
-export type Action = 'Pop' | 'Push' | 'Replace';
+export type Action = 'POP' | 'PUSH' | 'REPLACE';
 
 /**
  * A URL pathname, beginning with a /.
