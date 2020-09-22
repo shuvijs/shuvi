@@ -126,9 +126,7 @@ describe('a hash history', () => {
     });
   });
 
-  // It work in real environment but not here, need to fix
-  // Todo: fix this
-  describe.skip('forward', () => {
+  describe('forward', () => {
     it('calls change listeners with the next location', done => {
       GoForward(router, done);
     });
