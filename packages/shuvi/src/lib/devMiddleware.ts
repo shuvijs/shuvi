@@ -33,15 +33,25 @@ export async function getDevMiddleware({
       send('warns', warns);
     }
   });
-  const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
+
+  let devMiddlewareOptions = {
     publicPath: api.assetPublicPath,
-    noInfo: true,
     logLevel: 'silent',
     watchOptions: {
       ignored: [/[\\/]\.git[\\/]/, /[\\/]node_modules[\\/]/]
     },
     writeToDisk: true
+  };
+
+  devMiddlewareOptions = await api.callHook<APIHooks.IEventDevMiddleware>({
+    name: 'bundler:devMiddleware',
+    initialValue: devMiddlewareOptions
   });
+
+  const webpackDevMiddleware = WebpackDevMiddleware(
+    compiler,
+    devMiddlewareOptions
+  );
   const webpackHotMiddleware = WebpackHotMiddleware(
     bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!,
     {
@@ -60,7 +70,7 @@ export async function getDevMiddleware({
   };
 
   const send = (action: string, payload?: any) => {
-    webpackHotMiddleware.publish({ action, data: payload });
+    webpackHotMiddleware.pubwebpackDevMiddlewarelish({ action, data: payload });
   };
 
   const invalidate = () => {
