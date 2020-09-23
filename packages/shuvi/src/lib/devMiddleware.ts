@@ -43,7 +43,7 @@ export async function getDevMiddleware({
     writeToDisk: true
   };
 
-  devMiddlewareOptions = await api.callHook<APIHooks.IEventDevMiddleware>({
+  devMiddlewareOptions = await api.callHook<APIHooks.IHookDevMiddleware>({
     name: 'bundler:devMiddleware',
     initialValue: devMiddlewareOptions
   });
