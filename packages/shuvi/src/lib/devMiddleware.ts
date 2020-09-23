@@ -34,13 +34,11 @@ export async function getDevMiddleware({
     }
   });
 
-  let devMiddlewareOptions = {
-    publicPath: api.assetPublicPath,
+  let devMiddlewareOptions: any = {
     logLevel: 'silent',
     watchOptions: {
       ignored: [/[\\/]\.git[\\/]/, /[\\/]node_modules[\\/]/]
-    },
-    writeToDisk: true
+    }
   };
 
   devMiddlewareOptions = await api.callHook<APIHooks.IHookDevMiddleware>({
@@ -48,10 +46,18 @@ export async function getDevMiddleware({
     initialValue: devMiddlewareOptions
   });
 
-  const webpackDevMiddleware = WebpackDevMiddleware(
-    compiler,
-    devMiddlewareOptions
-  );
+  ['writeToDisk', 'publicPath'].forEach(property => {
+    console.warn(
+      !devMiddlewareOptions[property],
+      `bundler:devMiddleware: '${property}' will be ignored`
+    );
+  });
+
+  const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
+    ...devMiddlewareOptions,
+    publicPath: api.assetPublicPath,
+    writeToDisk: true
+  });
   const webpackHotMiddleware = WebpackHotMiddleware(
     bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!,
     {
