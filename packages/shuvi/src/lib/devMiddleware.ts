@@ -47,10 +47,9 @@ export async function getDevMiddleware({
   });
 
   ['writeToDisk', 'publicPath'].forEach(property => {
-    console.warn(
-      !devMiddlewareOptions[property],
-      `bundler:devMiddleware: '${property}' will be ignored`
-    );
+    if (devMiddlewareOptions[property]) {
+      console.warn(`bundler:devMiddleware: '${property}' will be ignored`);
+    }
   });
 
   const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
