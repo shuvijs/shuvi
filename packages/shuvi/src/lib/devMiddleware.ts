@@ -70,7 +70,7 @@ export async function getDevMiddleware({
   };
 
   const send = (action: string, payload?: any) => {
-    webpackHotMiddleware.pubwebpackDevMiddlewarelish({ action, data: payload });
+    webpackHotMiddleware.publish({ action, data: payload });
   };
 
   const invalidate = () => {
