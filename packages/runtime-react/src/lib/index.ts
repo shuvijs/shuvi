@@ -1,6 +1,6 @@
 import React from 'react';
 import { IApi, Runtime, APIHooks } from '@shuvi/types';
-import { resolveAppFile, resolveDep } from './paths';
+import { resolveAppFile, resolveDep, resolveLib } from './paths';
 import { config as configBundler } from './bundler/config';
 
 import UserRouteConfig = Runtime.IUserRouteConfig;
@@ -21,7 +21,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
       local: 'dynamic'
     });
     api.addAppExport(
-      '@shuvi/router-react',
+      resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, Link, RouterView }'
     );
     configBundler(api);
