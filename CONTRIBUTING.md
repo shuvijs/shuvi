@@ -35,11 +35,11 @@ Assemble other packages for setting up the development server, building producti
 
 ### shared
 
-Reusable logic within the porject.
+Reusable logic within the project.
 
 ### utils
 
-Generally reusable logi.
+Generally reusable logic.
 
 ### toolpack
 
@@ -59,8 +59,17 @@ Type definitions for shuvi.
 
 ### Local Development
 
-1. Open two ternimal at the root folder.
+1. Open two terminal at the root folder.
 
 2. Run `yarn dev`
+
+3. Create a 'Hello world' page:
+
+```bash
+mkdir -p src/pages
+cat <<EOF >> src/pages/index.js
+export default () => <div>hello, world</div>
+EOF
+```
 
 Once it is done, you can run shuvi cli by `yarn shuvi` in another terminal. It will serve the application in the specified dir.
