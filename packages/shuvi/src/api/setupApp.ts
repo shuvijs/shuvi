@@ -40,8 +40,9 @@ export async function setupApp(api: Api) {
       if (parsedTsConfig.exclude == null) {
         appTsConfig.exclude = ['node_modules'];
       }
+
       if (parsedTsConfig.include == null) {
-        appTsConfig.include = ['src'];
+        appTsConfig.include = ['src', '.shuvi/app/index.d.ts'];
       }
     }
   });

@@ -17,3 +17,5 @@ export type ISpecifier =
       imported: string;
       local: string;
     };
+
+export type IExports = { [source: string]: ISpecifier | ISpecifier[] };
