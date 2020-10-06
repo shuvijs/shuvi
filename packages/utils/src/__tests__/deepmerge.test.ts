@@ -6,7 +6,7 @@ describe('deepmerge', () => {
       const mergeObject = { a: { b: 2 } };
       const result = deepmerge({ a: { c: 3 }, b: 2, c: 3 }, mergeObject);
 
-      expect(result).toEqual({ a: { b: 2, c: 3 }, b: 2, c: 3 });
+      expect(result).toMatchObject({ a: { b: 2, c: 3 }, b: 2, c: 3 });
     });
 
     test('should work with empty object', () => {
@@ -27,7 +27,7 @@ describe('deepmerge', () => {
       );
       expect(result).toEqual({
         a: { b: { c: { d: 'change string' } } },
-        b: { a: { d: true } }
+        b: { a: { d: true } },
       });
     });
 
@@ -77,15 +77,5 @@ describe('deepmerge', () => {
       expect(result.a.b.c).toBe(true);
       expect(result.a.b.b.c).toBe(true);
     });
-  });
-
-  test('should not mutate the input object', () => {
-    const origin = { a: { c: 3 }, b: 2, c: 3 };
-    const target = { a: { b: 2 } };
-    const result = deepmerge(origin, target);
-
-    expect(result).toEqual({ a: { b: 2, c: 3 }, b: 2, c: 3 });
-    expect(origin).toEqual({ a: { c: 3 }, b: 2, c: 3 });
-    expect(target).toEqual({ a: { b: 2 } });
   });
 });
