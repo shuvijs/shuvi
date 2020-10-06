@@ -150,3 +150,29 @@ describe('Custom Server.js', () => {
     expect(await page.$text('div')).toMatch(/404 Page/);
   });
 });
+
+describe('Custom userModuleName', () => {
+  beforeAll(async () => {
+    ctx = await launchFixture('custom-userModuleName');
+  });
+  afterAll(async () => {
+    await ctx.close();
+  });
+  afterEach(async () => {
+    await page.close();
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
+  });
+
+  test('should work', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
+
+    // Note: custom app
+    await page.waitForSelector('#app');
+    expect(await page.$text('#app')).toBe('custom-userModuleName');
+
+    // Note: custom document
+    expect(await page.$attr('meta[name="test"]', 'content')).toBe('1');
+    expect(await page.$attr('body', 'test')).toBe('_document');
+  });
+});

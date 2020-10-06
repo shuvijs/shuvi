@@ -21,6 +21,13 @@ export const defaultConfig: IApiConfig = {
   publicPath: PUBLIC_PATH,
   router: {
     history: 'auto'
+  },
+  userModuleName: {
+    app: 'app',
+    plugin: 'plugin',
+    404: '404',
+    server: 'server',
+    document: 'document'
   }
 };
 

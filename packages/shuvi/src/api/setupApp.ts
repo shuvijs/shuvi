@@ -56,19 +56,28 @@ export async function setupApp(api: Api) {
 
   api.setViewModule(runtime.getViewModulePath());
   api.setAppModule([
-    ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
+    ...withExts(
+      api.resolveUserFile(config.userModuleName!.app),
+      moduleFileExtensions
+    ),
     runtime.getAppModulePath()
   ]);
 
   api.setPluginModule([
-    ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
+    ...withExts(
+      api.resolveUserFile(config.userModuleName!.plugin),
+      moduleFileExtensions
+    ),
     require.resolve('@shuvi/utils/lib/noopFn')
   ]);
 
   api.addAppFile(
     File.moduleProxy('404.js', {
       source: [
-        ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
+        ...withExts(
+          api.resolveUserFile(config.userModuleName!['404']),
+          moduleFileExtensions
+        ),
         runtime.get404ModulePath()
       ],
       defaultExport: true
@@ -79,7 +88,10 @@ export async function setupApp(api: Api) {
   api.addAppFile(
     File.moduleProxy('server.js', {
       source: [
-        ...withExts(api.resolveUserFile('server'), moduleFileExtensions),
+        ...withExts(
+          api.resolveUserFile(config.userModuleName!.server),
+          moduleFileExtensions
+        ),
         require.resolve('@shuvi/utils/lib/noop')
       ]
     }),
@@ -88,7 +100,10 @@ export async function setupApp(api: Api) {
   api.addAppFile(
     File.moduleProxy('document.js', {
       source: [
-        ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
+        ...withExts(
+          api.resolveUserFile(config.userModuleName!.document),
+          moduleFileExtensions
+        ),
         require.resolve('@shuvi/utils/lib/noop')
       ]
     }),

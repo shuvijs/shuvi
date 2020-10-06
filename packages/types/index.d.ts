@@ -91,6 +91,14 @@ export interface IApiConfig {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;
+  userModuleName?: {
+    // Note: filename without extension
+    app: string;
+    plugin: string;
+    404: string;
+    server: string;
+    document: string;
+  };
 }
 
 // api for plugins
