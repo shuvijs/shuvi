@@ -1,6 +1,6 @@
 import { APIHooks } from '@shuvi/types';
 import ForkTsCheckerWebpackPlugin, {
-  createCodeframeFormatter
+  createCodeFrameFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import Logger from '@shuvi/utils/lib/logger';
@@ -171,7 +171,7 @@ class WebpackBundler {
       plugin => plugin instanceof ForkTsCheckerWebpackPlugin
     );
     if (options.typeChecking && useTypeScript) {
-      const typescriptFormatter = createCodeframeFormatter({});
+      const typescriptFormatter = createCodeFrameFormatter({});
 
       compiler.hooks.beforeCompile.tap('beforeCompile', () => {
         tsMessagesPromise = new Promise(resolve => {
@@ -179,22 +179,22 @@ class WebpackBundler {
         });
       });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap(
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
         'afterTypeScriptCheck',
-        (diagnostics: any[], lints: any[]) => {
-          const allMsgs = [...diagnostics, ...lints];
+        issues => {
           const format = (message: any) => {
             const file = (message.file || '').replace(/\\/g, '/');
-            const formated = typescriptFormatter(message, true);
+            const formated = typescriptFormatter(message);
             return `${file}\n${formated}`;
           };
 
           tsMessagesResolver({
-            errors: allMsgs.filter(msg => msg.severity === 'error').map(format),
-            warnings: allMsgs
+            errors: issues.filter(msg => msg.severity === 'error').map(format),
+            warnings: issues
               .filter(msg => msg.severity === 'warning')
               .map(format)
           });
+          return issues;
         }
       );
     }

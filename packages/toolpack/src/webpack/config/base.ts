@@ -206,14 +206,19 @@ export function baseWebpackChain({
       .plugin('private/fork-ts-checker-webpack-plugin')
       .use(require.resolve('fork-ts-checker-webpack-plugin'), [
         {
-          typescript: typeScriptPath,
+          typescript: {
+            configFile: tsConfigPath,
+            typeScriptPath,
+            diagnosticOptions: {
+              syntactic: true
+            }
+          },
           async: dev,
-          useTypescriptIncrementalApi: true,
-          checkSyntacticErrors: true,
-          tsconfig: tsConfigPath,
-          reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
-          compilerOptions: { isolatedModules: true, noEmit: true },
-          silent: true,
+          logger: {
+            infrastructure: 'silent',
+            issues: 'silent',
+            devServer: false
+          },
           formatter: 'codeframe'
         }
       ]);

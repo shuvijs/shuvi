@@ -18,8 +18,7 @@ declare module 'terser-webpack-plugin' {
       warning: any,
       file: any,
       sourceMap: any,
-      requestShortener?: any,
-      warningsFilter?: any
+      requestShortener?: any
     ): any;
 
     apply(compiler: any): void;
