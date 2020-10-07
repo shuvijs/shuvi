@@ -1,12 +1,8 @@
-declare module "babel-loader" {
-  export default any
+declare module 'babel-loader' {
+  export default any;
 }
 
-declare module "mini-css-extract-plugin" {
-  export default any
-}
-
-declare module "terser-webpack-plugin" {
+declare module 'terser-webpack-plugin' {
   export default class TerserPlugin {
     constructor(options?: any);
 
