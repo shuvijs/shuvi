@@ -23,6 +23,6 @@
     "@types/webpack": "4.41.0",
     "http-proxy-middleware": "1.0.3",
     "query-string": "6.13.1",
-    "webpack-chain": "6.4.0"
+    "webpack-chain": "6.5.1"
   }
 }
