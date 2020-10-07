@@ -21,3 +21,5 @@
 - [ ] ts support
 - [ ] ssr error handle (can do in user side)
 - [x] nested getInitialProps
+
+test
