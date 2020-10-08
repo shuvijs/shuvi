@@ -14,10 +14,13 @@ describe('devMiddleware', () => {
   describe('devMiddlewareHook', () => {
     test('should call hook', async done => {
       const mockHook = jest.fn();
-      api.tap<APIHooks.IHookDevMiddleware>('bundler:devMiddleware', {
-        name: 'testMiddleware',
-        fn: mockHook
-      });
+      api.tap<APIHooks.IHookModifyDevMiddlewareOption>(
+        'bundler:modifyDevMiddlewareOption',
+        {
+          name: 'testMiddleware',
+          fn: mockHook
+        }
+      );
 
       await getDevMiddleware({ api });
 
@@ -40,10 +43,13 @@ describe('devMiddleware', () => {
           watchOptions: {}
         };
       });
-      api.tap<APIHooks.IHookDevMiddleware>('bundler:devMiddleware', {
-        name: 'testMiddleware',
-        fn: mockHook
-      });
+      api.tap<APIHooks.IHookModifyDevMiddlewareOption>(
+        'bundler:modifyDevMiddlewareOption',
+        {
+          name: 'testMiddleware',
+          fn: mockHook
+        }
+      );
 
       await getDevMiddleware({ api });
 
@@ -64,16 +70,19 @@ describe('devMiddleware', () => {
       const mockHook = jest.fn().mockImplementation(config => {
         return { ...config, writeToDisk: false };
       });
-      api.tap<APIHooks.IHookDevMiddleware>('bundler:devMiddleware', {
-        name: 'testMiddleware',
-        fn: mockHook
-      });
+      api.tap<APIHooks.IHookModifyDevMiddlewareOption>(
+        'bundler:modifyDevMiddlewareOption',
+        {
+          name: 'testMiddleware',
+          fn: mockHook
+        }
+      );
 
       try {
         await getDevMiddleware({ api });
       } catch (e) {
         expect(e).toMatchInlineSnapshot(`
-          [ValidationError: Invalid configuration object. bundler:devMiddleware has been initialized using a configuration object that does not match the API schema.
+          [ValidationError: Invalid configuration object. bundler:modifyDevMiddlewareOption has been initialized using a configuration object that does not match the API schema.
            - configuration has an unknown property 'writeToDisk'. These properties are valid:
              object { mimeTypes?, methods?, headers?, outputFileSystem?, logLevel?, logTime?, reporter?, watchOptions? }]
         `);

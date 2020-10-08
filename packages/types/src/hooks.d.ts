@@ -106,8 +106,8 @@ export type IHookDestory = defineHook<'destory'>;
 
 export type IEventAfterBuild = defineHook<'afterBuild'>;
 
-export type IHookDevMiddleware = defineHook<
-  'bundler:devMiddleware',
+export type IHookModifyDevMiddlewareOption = defineHook<
+  'bundler:modifyDevMiddlewareOption',
   {
     initialValue: WebpackDevMiddleware.Options;
   }

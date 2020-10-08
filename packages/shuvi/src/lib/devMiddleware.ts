@@ -43,13 +43,15 @@ export async function getDevMiddleware({
     }
   };
 
-  devMiddlewareOptions = await api.callHook<APIHooks.IHookDevMiddleware>({
-    name: 'bundler:devMiddleware',
+  devMiddlewareOptions = await api.callHook<
+    APIHooks.IHookModifyDevMiddlewareOption
+  >({
+    name: 'bundler:modifyDevMiddlewareOption',
     initialValue: devMiddlewareOptions
   });
 
   validate(WebpackDevMiddlewareOptionSchema as any, devMiddlewareOptions, {
-    name: 'bundler:devMiddleware'
+    name: 'bundler:modifyDevMiddlewareOption'
   });
 
   const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
