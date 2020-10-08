@@ -8,7 +8,6 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
-import ChunkNamesPlugin from '../plugins/chunk-names-plugin';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ModuleReplacePlugin from '../plugins/module-replace-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
@@ -77,7 +76,7 @@ export function baseWebpackChain({
   config.context(projectRoot);
 
   config.optimization.merge({
-    noEmitOnErrors: dev,
+    emitOnErrors: !dev,
     checkWasmTypes: false,
     nodeEnv: false,
     splitChunks: false,
@@ -106,7 +105,6 @@ export function baseWebpackChain({
     }.js`,
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
-    futureEmitAssets: !dev,
     webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm'
   });
 
@@ -166,10 +164,12 @@ export function baseWebpackChain({
       name: mediaFilename
     });
 
-  config.plugin('private/chunk-names-plugin').use(ChunkNamesPlugin);
-  config
-    .plugin('private/ignore-plugin')
-    .use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/]);
+  config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
+    {
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/
+    }
+  ]);
 
   config.plugin('define').use(webpack.DefinePlugin, [
     {
@@ -243,7 +243,7 @@ export function baseWebpackChain({
   } else {
     config
       .plugin('private/hashed-moduleids-plugin')
-      .use(webpack.HashedModuleIdsPlugin);
+      .use(webpack.ids.HashedModuleIdsPlugin);
   }
 
   return config;

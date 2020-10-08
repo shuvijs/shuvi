@@ -1,12 +1,13 @@
-import { loader } from "webpack";
-import loaderUtils from "loader-utils";
+// @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
+import { loader } from '@types/webpack';
+import loaderUtils from 'loader-utils';
 
 export type RouteComponentLoaderOptions = {
   componentAbsolutePath: string;
   active: boolean;
 };
 
-const routeComponentLoader: loader.Loader = function() {
+const routeComponentLoader: loader.Loader = function () {
   const { componentAbsolutePath }: any = loaderUtils.getOptions(this);
 
   const stringifyRequest = loaderUtils.stringifyRequest(

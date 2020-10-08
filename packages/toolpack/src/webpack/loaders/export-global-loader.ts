@@ -1,18 +1,19 @@
-import { loader } from "webpack";
-import loaderUtils from "loader-utils";
+// @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
+import { loader } from '@types/webpack';
+import loaderUtils from 'loader-utils';
 
 export type ClientPagesLoaderOptions = {
   absolutePagePath: string;
   page: string;
 };
 
-const nextClientPagesLoader: loader.Loader = function() {
+const nextClientPagesLoader: loader.Loader = function () {
   const { absolutePath, exportName, globalName } = loaderUtils.getOptions(this);
 
   const stringifyGlobalName = JSON.stringify(globalName);
   const stringifyAbsolutePath = loaderUtils.stringifyRequest(
     this,
-    absolutePath
+    absolutePath as string
   );
   const stringifyName = JSON.stringify(exportName);
 
