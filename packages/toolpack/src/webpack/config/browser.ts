@@ -49,7 +49,7 @@ export function createBrowserWebpackChain({
         defaultVendors: false,
         framework: {
           chunks: 'all',
-          name: 'framework',
+          name: 'framework.js',
           // This regex ignores nested copies of framework libraries so they're
           // bundled with their issuer.
           // https://github.com/zeit/next.js/pull/9012
@@ -93,7 +93,7 @@ export function createBrowserWebpackChain({
           reuseExistingChunk: true
         },
         commons: {
-          name: 'commons',
+          name: 'commons.js',
           minChunks: 2,
           priority: 20
         },

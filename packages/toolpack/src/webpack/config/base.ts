@@ -97,8 +97,8 @@ export function baseWebpackChain({
 
   config.output.merge({
     publicPath,
-    hotUpdateChunkFilename: 'static/webpack/[id].[hash].hot-update.js',
-    hotUpdateMainFilename: 'static/webpack/[hash].hot-update.json',
+    hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
+    hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
     // This saves chunks with the name given via `import()`
     chunkFilename: `static/chunks/${
       dev ? '[name]' : '[name].[contenthash:8]'
@@ -133,6 +133,14 @@ export function baseWebpackChain({
 
   config.module.set('strictExportPresence', true);
   const mainRule = config.module.rule('main');
+
+  // TODO: FIXME: do NOT webpack 5 support with this
+  // x-ref: https://github.com/webpack/webpack/issues/11467
+  mainRule
+    .oneOf('mjs')
+    .test(/\.m?js/)
+    .resolve.set('fullySpecified', false);
+
   mainRule
     .oneOf('js')
     .test(/\.(tsx|ts|js|mjs|jsx)$/)
@@ -154,6 +162,7 @@ export function baseWebpackChain({
       isNode: false,
       cacheDirectory: true
     });
+
   mainRule
     .oneOf('media')
     .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
