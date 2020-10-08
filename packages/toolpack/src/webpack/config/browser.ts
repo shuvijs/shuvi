@@ -46,7 +46,7 @@ export function createBrowserWebpackChain({
       chunks: 'all',
       cacheGroups: {
         default: false,
-        vendors: false,
+        defaultVendors: false,
         framework: {
           chunks: 'all',
           name: 'framework',
@@ -102,12 +102,9 @@ export function createBrowserWebpackChain({
             return crypto
               .createHash('sha1')
               .update(
-                chunks.reduce(
-                  (acc: string, chunk: webpack.compilation.Chunk) => {
-                    return acc + chunk.name;
-                  },
-                  ''
-                )
+                chunks.reduce((acc: string, chunk: webpack.Chunk) => {
+                  return acc + chunk.name;
+                }, '')
               )
               .digest('hex');
           },

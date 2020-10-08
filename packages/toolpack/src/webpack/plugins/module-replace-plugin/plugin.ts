@@ -1,4 +1,4 @@
-import { Compiler, Plugin } from 'webpack';
+import { Compiler, WebpackPluginInstance } from 'webpack';
 
 const REPLACED = Symbol('replaced');
 
@@ -72,7 +72,7 @@ function getKnownModules(id: string): ModuleInfo[] {
 //   }
 // }
 
-export default class ModuleReplacePlugin implements Plugin {
+export default class ModuleReplacePlugin implements WebpackPluginInstance {
   private _options: ModuleReplacePluginOptions;
 
   static restoreModule(id: string): false | Promise<any> {
@@ -91,7 +91,7 @@ export default class ModuleReplacePlugin implements Plugin {
     moduleInfos.forEach(moduleInfo => {
       moduleInfo.action = ModuleAction.RESTORE;
       handler.pending.set(moduleInfo.compiler, false);
-      moduleInfo.compiler.hooks.invalid.call('noop', new Date());
+      moduleInfo.compiler.hooks.invalid.call('noop', new Date().getTime());
     });
     return new Promise(resolve => {
       handler.resolve = resolve;

@@ -1,8 +1,9 @@
 import { Bundler } from '@shuvi/types';
-import { Compiler as WebpackCompiler } from 'webpack';
+import webpack, { Compiler as WebpackCompiler } from 'webpack';
 // @ts-ignore
 import Entrypoint from 'webpack/lib/Entrypoint';
-import { RawSource } from 'webpack-sources';
+
+const { RawSource } = webpack.sources;
 
 import ModuleItem = Bundler.IModuleItem;
 import Manifest = Bundler.IManifest;
@@ -55,32 +56,44 @@ export default class BuildManifestPlugin {
     };
   }
 
+  createAssets(compiler: webpack.Compiler, compilation: webpack.Compilation) {
+    const assetMap = (this._manifest = {
+      entries: {},
+      bundles: {},
+      chunkRequest: {},
+      loadble: {}
+    });
+
+    compilation.chunkGroups.forEach(chunkGroup => {
+      if (chunkGroup instanceof Entrypoint) {
+        this._collectEntries(chunkGroup);
+      }
+
+      this._collect(chunkGroup, compiler);
+    });
+
+    this._manifest.loadble = Object.keys(this._manifest.loadble)
+      .sort()
+      // eslint-disable-next-line no-sequences
+      .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
+
+    return assetMap;
+  }
+
   apply(compiler: WebpackCompiler) {
-    compiler.hooks.emit.tapAsync('BuildManifest', (compilation, callback) => {
-      const assetMap = (this._manifest = {
-        entries: {},
-        bundles: {},
-        chunkRequest: {},
-        loadble: {}
-      });
-      compilation.chunkGroups.forEach(chunkGroup => {
-        if (chunkGroup instanceof Entrypoint) {
-          this._collectEntries(chunkGroup);
+    compiler.hooks.make.tap('BuildManifestPlugin', compilation => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'BuildManifestPlugin',
+          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+        },
+        (assets: any) => {
+          assets[this._options.filename] = new RawSource(
+            JSON.stringify(this.createAssets(compiler, compilation), null, 2),
+            true
+          );
         }
-
-        this._collect(chunkGroup, compiler);
-      });
-
-      this._manifest.loadble = Object.keys(this._manifest.loadble)
-        .sort()
-        // eslint-disable-next-line no-sequences
-        .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
-
-      compilation.assets[this._options.filename] = new RawSource(
-        JSON.stringify(assetMap, null, 2)
       );
-
-      callback();
     });
   }
 

@@ -1,4 +1,4 @@
-import { Compiler, Stats, MultiCompiler } from "webpack";
+import { Compiler, Stats, MultiCompiler } from 'webpack';
 
 export type BundlerResult = {
   errors: string[];
@@ -26,7 +26,7 @@ export function runCompiler(
   compiler: Compiler | MultiCompiler
 ): Promise<BundlerResult> {
   return new Promise(async (resolve, reject) => {
-    compiler.run((err: Error, statsOrMultiStats: any) => {
+    compiler.run((err: Error | undefined, statsOrMultiStats: any) => {
       if (err) {
         return reject(err);
       }
