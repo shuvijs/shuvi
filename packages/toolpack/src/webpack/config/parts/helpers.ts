@@ -24,7 +24,7 @@ export const webpackHelpers = (): IWebpackHelpers => {
     };
 
     for (let i = 0; i < externalFns.length; i++) {
-      externalFns[i](context, request, nextHandler);
+      externalFns[i]({ context, request }, nextHandler);
       if (callbackCalled) {
         break;
       }

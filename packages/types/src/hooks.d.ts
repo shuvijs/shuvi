@@ -75,7 +75,7 @@ export type IEventBundlerDone = defineHook<
     args: [
       {
         first: boolean;
-        stats: webpack.compilation.MultiStats;
+        stats: any; // TODO: webpack5 doesn't expose MultiStats
       }
     ];
   }

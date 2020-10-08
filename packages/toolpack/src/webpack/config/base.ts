@@ -136,8 +136,8 @@ export function baseWebpackChain({
 
   // TODO: FIXME: do NOT webpack 5 support with this
   // x-ref: https://github.com/webpack/webpack/issues/11467
-  mainRule
-    .oneOf('mjs')
+  config.module
+    .rule('webpackPatch')
     .test(/\.m?js/)
     .resolve.set('fullySpecified', false);
 
