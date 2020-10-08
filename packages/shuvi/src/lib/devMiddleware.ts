@@ -38,7 +38,7 @@ export async function getDevMiddleware({
     noInfo: true,
     logLevel: 'silent',
     watchOptions: {
-      ignored: [/[\\/]\.git[\\/]/, /[\\/]node_modules[\\/]/]
+      ignored: ['**/.git/**', '**/node_modules/**']
     },
     writeToDisk: true
   });

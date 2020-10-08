@@ -57,7 +57,7 @@ class WebpackBundler {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
-      // @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
+
       this._extraTargets = ((await this._api.callHook<
         APIHooks.IHookBundlerExtraTarget
       >(
@@ -95,7 +95,6 @@ class WebpackBundler {
             // make sure this event is fired after all bundler:target-done
             this._api.emitEvent<APIHooks.IEventBundlerDone>('bundler:done', {
               first,
-              // @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
               stats: stats
             });
           }, isFirstSuccessfulCompile);
@@ -255,15 +254,12 @@ class WebpackBundler {
       const isSuccessful = !messages.errors.length && !messages.warnings.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
-        console.log(1);
-        console.log('stats', stats);
         await api.emitEvent<APIHooks.IEventTargetDone>('bundler:targetDone', {
           first: isFirstSuccessfulCompile,
           name: compiler.name,
           stats
         });
         isFirstSuccessfulCompile = false;
-        console.log('coll');
       }
 
       // If errors exist, only show errors.
@@ -297,7 +293,6 @@ class WebpackBundler {
       webpackHelpers: clientWebpackHelpers
     });
     // modify config by api hooks
-    // @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
     clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
         name: 'bundler:configTarget',
@@ -319,7 +314,6 @@ class WebpackBundler {
       outputDir: BUILD_SERVER_DIR,
       webpackHelpers: serverWebpackHelpers
     });
-    // @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
     serverChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
       {
         name: 'bundler:configTarget',
