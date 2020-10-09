@@ -29,7 +29,7 @@ function isFunction(target: object): target is Function {
 }
 
 function getModuleId(wpModule: any) {
-  return wpModule.rawRequest;
+  return wpModule.rawRequest || wpModule?.createData?.rawRequest;
 }
 
 const stubLoader = require.resolve('./stub-loader');
@@ -131,10 +131,12 @@ export default class ModuleReplacePlugin implements WebpackPluginInstance {
 
     compiler.hooks.beforeCompile.tapAsync(
       'ModuleReplacePlugin',
-      ({ normalModuleFactory }: any, callback) => {
+      ({ normalModuleFactory }, callback) => {
         normalModuleFactory.hooks.afterResolve.tap(
           'ModuleReplacePlugin',
-          (wpModule: any) => this._collectModules(compiler, wpModule)
+          wpModule => {
+            this._collectModules(compiler, wpModule);
+          }
         );
         callback();
       }
@@ -150,6 +152,9 @@ export default class ModuleReplacePlugin implements WebpackPluginInstance {
   private _handleBuildModule(compiler: Compiler, wpModule: any) {
     const knownModules = compilerInfo.get(compiler)!.modules;
     const id = getModuleId(wpModule);
+    if (!id) {
+      return;
+    }
     const moduleInfo = knownModules.get(id);
     if (!moduleInfo) {
       return;
@@ -183,10 +188,10 @@ export default class ModuleReplacePlugin implements WebpackPluginInstance {
   private _collectModules(compiler: Compiler, wpModule: any) {
     const knownModules = compilerInfo.get(compiler)!.modules;
     const id = getModuleId(wpModule);
-    if (knownModules.has(id)) {
+
+    if (knownModules.has(id) || !id) {
       return;
     }
-
     const replacedModule = this._getReplacedModule(wpModule);
     if (replacedModule) {
       knownModules.set(id, {
