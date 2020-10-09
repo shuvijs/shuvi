@@ -1,5 +1,5 @@
 import { Bundler } from '@shuvi/types';
-import webpack, { Compiler as WebpackCompiler } from 'webpack';
+import webpack, { Compiler as WebpackCompiler, Compilation } from 'webpack';
 // @ts-ignore
 import Entrypoint from 'webpack/lib/Entrypoint';
 
@@ -56,7 +56,7 @@ export default class BuildManifestPlugin {
     };
   }
 
-  createAssets(compiler: webpack.Compiler, compilation: webpack.Compilation) {
+  createAssets(compiler: WebpackCompiler, compilation: Compilation) {
     const assetMap = (this._manifest = {
       entries: {},
       bundles: {},
@@ -69,7 +69,7 @@ export default class BuildManifestPlugin {
         this._collectEntries(chunkGroup);
       }
 
-      this._collect(chunkGroup, compiler);
+      this._collect(chunkGroup, compiler, compilation);
     });
 
     this._manifest.loadble = Object.keys(this._manifest.loadble)
@@ -115,11 +115,15 @@ export default class BuildManifestPlugin {
     }
   }
 
-  private _collect(chunkGroup: any, compiler: WebpackCompiler): void {
+  private _collect(
+    chunkGroup: any,
+    compiler: WebpackCompiler,
+    compilation: Compilation
+  ): void {
     const collectModules = this._options.modules;
     chunkGroup.origins.forEach((chunkGroupOrigin: any) => {
       const { request } = chunkGroupOrigin;
-      const ctx = { request, compiler };
+      const ctx = { request, compiler, compilation };
       chunkGroup.chunks.forEach((chunk: any) => {
         this._collectChunk(chunk, ctx);
         if (collectModules) {
@@ -170,17 +174,19 @@ export default class BuildManifestPlugin {
     chunk: any,
     {
       request,
-      compiler
+      compiler,
+      compilation
     }: {
       request: string;
       compiler: WebpackCompiler;
+      compilation: Compilation;
     }
   ) {
     if (chunk.canBeInitial()) {
       return;
     }
 
-    const context = compiler.options.context;
+    const context = compiler.options.context!;
     chunk.files.forEach((file: string) => {
       const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
       const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
@@ -189,8 +195,10 @@ export default class BuildManifestPlugin {
       }
     });
 
-    for (const module of chunk.modulesIterable) {
-      let id = module.id;
+    for (const module of compilation.chunkGraph.getChunkModulesIterable(
+      chunk
+    )) {
+      let id = compilation.chunkGraph.getModuleId(module);
       if (!module.type.startsWith('javascript')) {
         continue;
       }
@@ -207,7 +215,7 @@ export default class BuildManifestPlugin {
       this._pushLoadableModules(request, {
         id,
         name
-      });
+      } as ModuleItem);
     }
   }
 
