@@ -160,7 +160,8 @@ export function baseWebpackChain({
     .loader('@shuvi/shuvi-babel-loader')
     .options({
       isNode: false,
-      cacheDirectory: true
+      // webpack 5 have in-built cache.
+      cacheDirectory: false
     });
 
   mainRule
@@ -233,6 +234,13 @@ export function baseWebpackChain({
       ]);
   }
 
+  config.cache({
+    type: 'filesystem',
+    buildDependencies: {
+      config: srcDirs || []
+    },
+    cacheDirectory: path.join(projectRoot, '.shuvi', 'cache', 'webpack')
+  });
   if (dev) {
     config.plugin('private/module-replace-plugin').use(ModuleReplacePlugin, [
       {
