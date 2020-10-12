@@ -33,7 +33,7 @@ export interface BaseOptions {
   };
 }
 
-const terserOptions = {
+const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
   parse: {
     ecma: 8
   },

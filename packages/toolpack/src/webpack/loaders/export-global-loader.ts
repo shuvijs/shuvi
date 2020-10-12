@@ -1,5 +1,4 @@
-// @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
-import { loader } from '@types/webpack';
+import { loader } from 'webpack';
 import loaderUtils from 'loader-utils';
 
 export type ClientPagesLoaderOptions = {
