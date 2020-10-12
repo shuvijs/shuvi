@@ -1,5 +1,5 @@
 import { Bundler } from '@shuvi/types';
-import webpack, { Compiler as WebpackCompiler, Compilation } from 'webpack';
+import webpack, { Compiler, Compilation, Plugin } from 'webpack';
 // @ts-ignore
 import Entrypoint from 'webpack/lib/Entrypoint';
 
@@ -45,7 +45,7 @@ function getFileExt(filepath: string): string {
 
 // This plugin creates a build-manifest.json for all assets that are being output
 // It has a mapping of "entry" filename to real filename. Because the real filename can be hashed in production
-export default class BuildManifestPlugin {
+export default class BuildManifestPlugin implements Plugin {
   private _options: Options;
   private _manifest!: Manifest;
 
@@ -56,7 +56,7 @@ export default class BuildManifestPlugin {
     };
   }
 
-  createAssets(compiler: WebpackCompiler, compilation: Compilation) {
+  createAssets(compiler: Compiler, compilation: Compilation) {
     const assetMap = (this._manifest = {
       entries: {},
       bundles: {},
@@ -80,14 +80,14 @@ export default class BuildManifestPlugin {
     return assetMap;
   }
 
-  apply(compiler: WebpackCompiler) {
+  apply(compiler: Compiler) {
     compiler.hooks.make.tap('BuildManifestPlugin', compilation => {
       compilation.hooks.processAssets.tap(
         {
           name: 'BuildManifestPlugin',
           stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
         },
-        (assets: any) => {
+        assets => {
           assets[this._options.filename] = new RawSource(
             JSON.stringify(this.createAssets(compiler, compilation), null, 2),
             true
@@ -117,7 +117,7 @@ export default class BuildManifestPlugin {
 
   private _collect(
     chunkGroup: any,
-    compiler: WebpackCompiler,
+    compiler: Compiler,
     compilation: Compilation
   ): void {
     const collectModules = this._options.modules;
@@ -178,7 +178,7 @@ export default class BuildManifestPlugin {
       compilation
     }: {
       request: string;
-      compiler: WebpackCompiler;
+      compiler: Compiler;
       compilation: Compilation;
     }
   ) {
