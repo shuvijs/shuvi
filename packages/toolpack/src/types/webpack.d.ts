@@ -1,9 +1,9 @@
-import webpack from 'webpack';
-import { loader as l } from '@types/webpack';
+import webpack, { Compiler } from 'webpack';
+import * as webpack4 from '@types/webpack';
 
 declare module 'webpack' {
   namespace loader {
-    export type Loader = l.Loader;
-    export type LoaderContext = l.LoaderContext;
+    export type Loader = webpack4.loader.Loader;
+    export type LoaderContext = webpack4.loader.LoaderContext;
   }
 }
