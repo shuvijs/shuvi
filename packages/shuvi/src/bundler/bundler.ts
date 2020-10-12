@@ -1,5 +1,6 @@
 import { APIHooks } from '@shuvi/types';
 import ForkTsCheckerWebpackPlugin, {
+  Issue,
   createCodeFrameFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
@@ -182,19 +183,16 @@ class WebpackBundler {
 
       ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
         'afterTypeScriptCheck',
-        // @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
-        issues => {
+        (issues: Issue[]) => {
           const format = (message: any) => {
             const file = (message.file || '').replace(/\\/g, '/');
-            const formated = typescriptFormatter(message);
-            return `${file}\n${formated}`;
+            const formatted = typescriptFormatter(message);
+            return `${file}\n${formatted}`;
           };
 
           tsMessagesResolver({
-            // @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
             errors: issues.filter(msg => msg.severity === 'error').map(format),
             warnings: issues
-              // @ts-ignore Poor webpack own typings https://github.com/webpack/webpack/issues/10828
               .filter(msg => msg.severity === 'warning')
               .map(format)
           });

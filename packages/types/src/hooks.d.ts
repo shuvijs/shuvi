@@ -1,5 +1,5 @@
 import { defineHook } from '@shuvi/core';
-import webpack from 'webpack';
+import webpack, { MultiStats } from 'webpack';
 import WebpackChain from 'webpack-chain';
 import { IApiConfig, IShuviMode } from '..';
 import { IUserRouteConfig, IDocumentProps } from './runtime';
@@ -75,7 +75,7 @@ export type IEventBundlerDone = defineHook<
     args: [
       {
         first: boolean;
-        stats: any; // TODO: webpack5 doesn't expose MultiStats
+        stats: MultiStats;
       }
     ];
   }

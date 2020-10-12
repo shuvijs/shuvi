@@ -1,18 +1,16 @@
-import webpack from 'webpack';
 import { WebpackChain } from '@shuvi/types';
 import { ExternalsFunction, IWebpackHelpers } from '@shuvi/types/src/bundler';
 
 export const webpackHelpers = (): IWebpackHelpers => {
   const externalFns: ExternalsFunction[] = [];
 
-  const defaultExternalsFn: webpack.ExternalsPlugin['externals'] = (
+  const defaultExternalsFn: ExternalsFunction = (
     { context, request },
     callback
   ) => {
     let callbackCalled = false;
     const nextHandler = (err?: any, result?: any) => {
       if (err) {
-        // @ts-ignore webpack 5
         callback(err, undefined);
         callbackCalled = true;
       } else {
@@ -31,7 +29,6 @@ export const webpackHelpers = (): IWebpackHelpers => {
     }
 
     if (!callbackCalled) {
-      // @ts-ignore webpack 5
       callback(null, undefined);
     }
   };

@@ -1,4 +1,4 @@
-import { Compiler, WebpackPluginInstance } from 'webpack';
+import { Compiler, Plugin } from 'webpack';
 
 const REPLACED = Symbol('replaced');
 
@@ -72,7 +72,7 @@ function getKnownModules(id: string): ModuleInfo[] {
 //   }
 // }
 
-export default class ModuleReplacePlugin implements WebpackPluginInstance {
+export default class ModuleReplacePlugin implements Plugin {
   private _options: ModuleReplacePluginOptions;
 
   static restoreModule(id: string): false | Promise<any> {
