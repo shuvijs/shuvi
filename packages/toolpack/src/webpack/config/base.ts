@@ -237,7 +237,10 @@ export function baseWebpackChain({
   config.cache({
     type: 'filesystem',
     buildDependencies: {
-      config: srcDirs || []
+      config: ([] as Array<string>).concat(
+        // webpack 5 need trailing slash for directory
+        srcDirs.map(dir => path.join(dir, '/'))
+      )
     },
     cacheDirectory: path.join(projectRoot, '.shuvi', 'cache', 'webpack')
   });
