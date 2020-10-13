@@ -3,7 +3,6 @@ import {
   DEV_STYLE_PREPARE
 } from '@shuvi/shared/lib/constants';
 import Config from 'webpack-chain';
-// @ts-ignore
 import Rule from 'webpack-chain/src/Rule';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import loaderUtils from 'loader-utils';

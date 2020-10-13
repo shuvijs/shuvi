@@ -15,4 +15,6 @@ declare module 'webpack' {
   declare interface ResolvePlugin {
     apply: (resolver: Resolver) => void;
   }
+
+  type ChunkGroup = Compilation['chunkGroups'][0];
 }
