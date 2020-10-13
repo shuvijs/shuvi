@@ -1,6 +1,5 @@
 import { Bundler } from '@shuvi/types';
-import webpack, { Compiler, Compilation, Plugin } from 'webpack';
-// @ts-ignore
+import webpack, { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
 import Entrypoint from 'webpack/lib/Entrypoint';
 
 const { RawSource } = webpack.sources;
@@ -26,9 +25,9 @@ function getFileExt(filepath: string): string {
   return match[1];
 }
 
-// function findEntrypointName(chunkGorup: any): string[] {
+// function findEntrypointName(chunkGroup: any): string[] {
 //   const entrypoints: any[] = [];
-//   const queue: any[] = [chunkGorup];
+//   const queue: any[] = [chunkGroup];
 //   while (queue.length) {
 //     const item = queue.shift();
 //     for (const parent of item.getParents()) {
@@ -97,7 +96,7 @@ export default class BuildManifestPlugin implements Plugin {
     });
   }
 
-  private _collectEntries(entrypoint: any) {
+  private _collectEntries(entrypoint: ChunkGroup) {
     for (const chunk of entrypoint.chunks) {
       // If there's no name or no files
       if (!chunk.name || !chunk.files) {
@@ -116,15 +115,15 @@ export default class BuildManifestPlugin implements Plugin {
   }
 
   private _collect(
-    chunkGroup: any,
+    chunkGroup: ChunkGroup,
     compiler: Compiler,
     compilation: Compilation
   ): void {
     const collectModules = this._options.modules;
-    chunkGroup.origins.forEach((chunkGroupOrigin: any) => {
+    chunkGroup.origins.forEach(chunkGroupOrigin => {
       const { request } = chunkGroupOrigin;
       const ctx = { request, compiler, compilation };
-      chunkGroup.chunks.forEach((chunk: any) => {
+      chunkGroup.chunks.forEach(chunk => {
         this._collectChunk(chunk, ctx);
         if (collectModules) {
           this._collectChunkModule(chunk, ctx);
@@ -134,7 +133,7 @@ export default class BuildManifestPlugin implements Plugin {
   }
 
   private _collectChunk(
-    chunk: any,
+    chunk: webpack.Chunk,
     {
       request
     }: {
@@ -171,7 +170,7 @@ export default class BuildManifestPlugin implements Plugin {
   }
 
   private _collectChunkModule(
-    chunk: any,
+    chunk: webpack.Chunk,
     {
       request,
       compiler,
