@@ -8,7 +8,6 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
-import ResolveWithSuffixFirstPlugin from '../plugins/resolve-with-suffix-first-plugin';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ModuleReplacePlugin from '../plugins/module-replace-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
@@ -176,11 +175,6 @@ export function baseWebpackChain({
       name: mediaFilename
     });
 
-  if (suffix) {
-    config.resolve
-      .plugin('private/resolve-with-suffix-first-plugin')
-      .use(ResolveWithSuffixFirstPlugin, [{ suffix }]);
-  }
 
   config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {

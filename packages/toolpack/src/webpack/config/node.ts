@@ -5,6 +5,7 @@ import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
 import { resolvePreferTarget } from './parts/resolve';
 import { IWebpackHelpers } from '@shuvi/types/src/bundler';
+import resolveExtensionsWithSuffix from '../../utils/resolveExtensionsWithSuffix';
 
 export interface NodeOptions extends BaseOptions {
   webpackHelpers: IWebpackHelpers;
@@ -19,14 +20,17 @@ export function createNodeWebpackChain({
 
   chain.target('node');
   chain.devtool(false);
-  const extensions = [
-    ...(useTypeScript ? ['.tsx', '.ts'] : []),
-    '.js',
-    '.mjs',
-    '.jsx',
-    '.json',
-    '.wasm'
-  ];
+  const extensions = resolveExtensionsWithSuffix(
+    [
+      ...(useTypeScript ? ['.tsx', '.ts'] : []),
+      '.js',
+      '.mjs',
+      '.jsx',
+      '.json',
+      '.wasm'
+    ],
+    baseOptions.suffix
+  );
   chain.resolve.extensions.merge(
     baseOptions.target
       ? resolvePreferTarget(baseOptions.target, extensions)

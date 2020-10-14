@@ -7,6 +7,7 @@ import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import { baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
 import { IWebpackHelpers } from '@shuvi/types/src/bundler';
+import resolveExtensionsWithSuffix from '../../utils/resolveExtensionsWithSuffix';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
@@ -25,14 +26,19 @@ export function createBrowserWebpackChain({
 
   chain.target('web');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
-  chain.resolve.extensions.merge([
-    ...(useTypeScript ? ['.tsx', '.ts'] : []),
-    '.mjs',
-    '.js',
-    '.jsx',
-    '.json',
-    '.wasm'
-  ]);
+  chain.resolve.extensions.merge(
+    resolveExtensionsWithSuffix(
+      [
+        ...(useTypeScript ? ['.tsx', '.ts'] : []),
+        '.mjs',
+        '.js',
+        '.jsx',
+        '.json',
+        '.wasm'
+      ],
+      baseOptions.suffix
+    )
+  );
   if (baseOptions.target) {
     chain.resolve
       .plugin('private/prefer-resolver-plugin')
