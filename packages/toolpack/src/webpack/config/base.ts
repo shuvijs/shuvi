@@ -235,16 +235,17 @@ export function baseWebpackChain({
   }
 
   config.cache({
-    type: 'filesystem',
-    buildDependencies: {
-      config: ([] as Array<string>).concat(
-        // webpack 5 need trailing slash for directory
-        srcDirs.map(dir => path.join(dir, '/'))
-      )
-    },
-    cacheDirectory: path.join(projectRoot, '.shuvi', 'cache', 'webpack')
+    type: 'memory'
   });
   if (dev) {
+    // For future webpack-dev-server purpose
+    config.watchOptions({
+      ignored: ['**/.git/**', '**/node_modules/**']
+    });
+    config.set('infrastructureLogging', {
+      level: 'none'
+    });
+
     config.plugin('private/module-replace-plugin').use(ModuleReplacePlugin, [
       {
         modules: [

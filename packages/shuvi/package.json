@@ -44,7 +44,7 @@
     "fs-extra": "8.1.0",
     "http-proxy-middleware": "1.0.3",
     "send": "0.17.1",
-    "webpack": "5.0.0",
+    "webpack": "5.1.0",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "2.25.0"
   },
