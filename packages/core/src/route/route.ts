@@ -7,7 +7,7 @@ import { join, relative } from 'path';
 import { IUserRouteConfig } from '../types';
 
 export type SubscribeFn = (v: IUserRouteConfig[]) => void;
-type GetRoutesOptions = { suffix?: string };
+type Options = { suffix?: string };
 
 const jsExtensions = ['js', 'jsx', 'ts', 'tsx'];
 
@@ -94,9 +94,9 @@ export class Route {
   private _pagesDir: string;
   private _unwatch: any;
   private _event = eventEmitter();
-  private _options: GetRoutesOptions;
+  private _options: Options;
 
-  constructor(pagesDir: string, options: GetRoutesOptions) {
+  constructor(pagesDir: string, options: Options) {
     this._pagesDir = pagesDir;
     this._options = options;
   }
