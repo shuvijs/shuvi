@@ -1,5 +1,10 @@
 import webpack, { Compiler, ResolveOptions, Compilation } from 'webpack';
 import * as webpack4 from '@types/webpack';
+import { AsyncSeriesHook } from 'tapable';
+
+type ExtractAsyncSeriesHookGeneric<Type> = Type extends AsyncSeriesHook<infer X>
+  ? X
+  : never;
 
 declare module 'webpack' {
   namespace loader {
@@ -17,4 +22,8 @@ declare module 'webpack' {
   }
 
   type ChunkGroup = Compilation['chunkGroups'][0];
+
+  type ResolveRequest = ExtractAsyncSeriesHookGeneric<
+    Resolver['hooks']['result']
+  >[0] & { context: { issuer: string; compiler?: string } };
 }
