@@ -261,6 +261,8 @@ export function baseWebpackChain({
     config
       .plugin('private/require-cache-hot-reloader')
       .use(RequireCacheHotReloaderPlugin);
+
+    config.optimization.usedExports(false);
   } else {
     config
       .plugin('private/hashed-moduleids-plugin')
