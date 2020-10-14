@@ -3,7 +3,7 @@ import { Route } from '../route';
 
 describe('route', () => {
   test('should work', async () => {
-    const route = new Route(resolveFixture('basic'));
+    const route = new Route(resolveFixture('basic'), {});
     const routes = sortByPath(await route.getRoutes());
 
     expect(routes.length).toBe(3);
@@ -22,7 +22,7 @@ describe('route', () => {
   });
 
   test('should work for nested dir', async () => {
-    const route = new Route(resolveFixture('nest'));
+    const route = new Route(resolveFixture('nest'), {});
     const routes = sortByPath(await route.getRoutes());
 
     expect(routes.length).toBe(2);
@@ -47,7 +47,7 @@ describe('route', () => {
   });
 
   test('should generate layout route', async () => {
-    const route = new Route(resolveFixture('layout'));
+    const route = new Route(resolveFixture('layout'), {});
     const routes = sortByPath(await route.getRoutes());
 
     expect(routes.length).toBe(2);
@@ -84,5 +84,20 @@ describe('route', () => {
       path: '/'
     });
     expect(cIndex.component).toMatch(/b\/c\/index.js$/);
+  });
+
+  test('should work for suffix', async () => {
+    const route = new Route(resolveFixture('suffix'), { suffix: 'electron'});
+    const routes = sortByPath(await route.getRoutes());
+
+    expect(routes.length).toBe(2);
+    expect(routes[0]).toMatchObject({
+      path: '/'
+    });
+    expect(routes[0].component).toMatch(/index.js$/);
+    expect(routes[1]).toMatchObject({
+      path: '/a'
+    });
+    expect(routes[1].component).toMatch(/a.electron.js$/);
   });
 });
