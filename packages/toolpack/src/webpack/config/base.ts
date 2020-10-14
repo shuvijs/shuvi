@@ -160,8 +160,7 @@ export function baseWebpackChain({
     .loader('@shuvi/shuvi-babel-loader')
     .options({
       isNode: false,
-      // webpack 5 have in-built cache.
-      cacheDirectory: false
+      cacheDirectory: true
     });
 
   mainRule
@@ -234,10 +233,11 @@ export function baseWebpackChain({
       ]);
   }
 
-  config.cache({
-    type: 'memory'
-  });
   if (dev) {
+    config.cache({
+      type: 'memory'
+    });
+
     // For future webpack-dev-server purpose
     config.watchOptions({
       ignored: ['**/.git/**', '**/node_modules/**']
