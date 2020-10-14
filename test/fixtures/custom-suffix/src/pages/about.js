@@ -1,13 +1,12 @@
-import { divide } from 'lodash';
 import Button from '../components/Button';
 import Link from '../components/Link';
 
-const Index = () => (
+const About = () => (
   <div>
-    <div id="page-pathname">pages/index.js</div>
+    <div id="page-pathname">pages/about.js</div>
     <Button />
     <Link />
   </div>
 );
 
-export default Index;
+export default About;

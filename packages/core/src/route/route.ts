@@ -1,3 +1,5 @@
+import fs from 'fs';
+import nodePath from 'path';
 import eventEmitter from '@shuvi/utils/lib/eventEmitter';
 import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
@@ -5,6 +7,7 @@ import { join, relative } from 'path';
 import { IUserRouteConfig } from '../types';
 
 export type SubscribeFn = (v: IUserRouteConfig[]) => void;
+type GetRoutesOptions = { suffix?: string };
 
 const jsExtensions = ['js', 'jsx', 'ts', 'tsx'];
 
@@ -91,15 +94,25 @@ export class Route {
   private _pagesDir: string;
   private _unwatch: any;
   private _event = eventEmitter();
+  private _options: GetRoutesOptions;
 
-  constructor(pagesDir: string) {
+  constructor(pagesDir: string, options: GetRoutesOptions) {
     this._pagesDir = pagesDir;
+    this._options = options;
   }
 
   async getRoutes(): Promise<IUserRouteConfig[]> {
-    const files = await recursiveReadDir(this._pagesDir, {
+    const { suffix } = this._options;
+
+    let files = await recursiveReadDir(this._pagesDir, {
       filter: filterRouteFile
     });
+
+    // Note: remove the file with `suffix` to prevent exposing
+    if (suffix) {
+      files = files.filter(f => !f.includes(`.${suffix}.`));
+    }
+
     return this._getRoutes(files);
   }
 
@@ -144,7 +157,9 @@ export class Route {
                 join(pageDirectory, fileName)
               ); // inner directory
             } else {
-              route.component = join(pageDirectory, fileName);
+              route.component = this._resolveWithSuffixFirst(
+                join(pageDirectory, fileName)
+              );
             }
             routes.push(route);
           }
@@ -177,5 +192,16 @@ export class Route {
         this._event.emit('change', this._getRoutes(files));
       }
     );
+  }
+
+  private _resolveWithSuffixFirst(path: string): string {
+    const { suffix } = this._options;
+    if (!suffix) return path;
+
+    const { dir, name, ext } = nodePath.parse(path);
+    const absolutePath = `${dir}/${name}.${suffix}${ext}`;
+    if (fs.existsSync(absolutePath)) return absolutePath;
+
+    return path;
   }
 }

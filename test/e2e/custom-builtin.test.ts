@@ -5,151 +5,151 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('Custom app.js', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-app');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
+// describe('Custom app.js', () => {
+//   beforeAll(async () => {
+//     ctx = await launchFixture('custom-app');
+//   });
+//   afterAll(async () => {
+//     await ctx.close();
+//   });
+//   afterEach(async () => {
+//     await page.close();
+//     // force require to load file to make sure compiled file get load correctlly
+//     jest.resetModules();
+//   });
 
-  test('should render the custom app', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
+//   test('should render the custom app', async () => {
+//     page = await ctx.browser.page(ctx.url('/'));
 
-    expect(await page.$text('#pathname')).toBe('/');
-  });
+//     expect(await page.$text('#pathname')).toBe('/');
+//   });
 
-  test('App.getInitalProps should work', async () => {
-    page = await ctx.browser.page(ctx.url('/'), {
-      disableJavaScript: true
-    });
+//   test('App.getInitalProps should work', async () => {
+//     page = await ctx.browser.page(ctx.url('/'), {
+//       disableJavaScript: true
+//     });
 
-    expect(await page.$text('#pathname')).toBe('/');
-  });
-});
+//     expect(await page.$text('#pathname')).toBe('/');
+//   });
+// });
 
-describe('[SPA] Custom app', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-app', {
-      ssr: false
-    });
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
+// describe('[SPA] Custom app', () => {
+//   beforeAll(async () => {
+//     ctx = await launchFixture('custom-app', {
+//       ssr: false
+//     });
+//   });
+//   afterAll(async () => {
+//     await ctx.close();
+//   });
+//   afterEach(async () => {
+//     await page.close();
+//     // force require to load file to make sure compiled file get load correctlly
+//     jest.resetModules();
+//   });
 
-  test('App.getInitalProps should work', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
-    await page.waitForSelector('#pathname');
+//   test('App.getInitalProps should work', async () => {
+//     page = await ctx.browser.page(ctx.url('/'));
+//     await page.waitForSelector('#pathname');
 
-    expect(await page.$text('#pathname')).toBe('/');
-  });
-});
+//     expect(await page.$text('#pathname')).toBe('/');
+//   });
+// });
 
-describe('Custom document template', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-document-template');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
+// describe('Custom document template', () => {
+//   beforeAll(async () => {
+//     ctx = await launchFixture('custom-document-template');
+//   });
+//   afterAll(async () => {
+//     await ctx.close();
+//   });
+//   afterEach(async () => {
+//     await page.close();
+//     // force require to load file to make sure compiled file get load correctlly
+//     jest.resetModules();
+//   });
 
-  test('should work', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
+//   test('should work', async () => {
+//     page = await ctx.browser.page(ctx.url('/'));
 
-    expect(await page.$attr('body', 'test')).toBe('1');
-  });
-});
+//     expect(await page.$attr('body', 'test')).toBe('1');
+//   });
+// });
 
-describe('Custom document.js', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-document');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
+// describe('Custom document.js', () => {
+//   beforeAll(async () => {
+//     ctx = await launchFixture('custom-document');
+//   });
+//   afterAll(async () => {
+//     await ctx.close();
+//   });
+//   afterEach(async () => {
+//     await page.close();
+//     // force require to load file to make sure compiled file get load correctlly
+//     jest.resetModules();
+//   });
 
-  test('should work', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
+//   test('should work', async () => {
+//     page = await ctx.browser.page(ctx.url('/'));
 
-    expect(await page.$attr('meta[name="test"]', 'content')).toBe('1');
-    expect(await page.$attr('body', 'test')).toBe('1');
-  });
-});
+//     expect(await page.$attr('meta[name="test"]', 'content')).toBe('1');
+//     expect(await page.$attr('body', 'test')).toBe('1');
+//   });
+// });
 
-describe('Custom 404 page', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-404');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
+// describe('Custom 404 page', () => {
+//   beforeAll(async () => {
+//     ctx = await launchFixture('custom-404');
+//   });
+//   afterAll(async () => {
+//     await ctx.close();
+//   });
+//   afterEach(async () => {
+//     await page.close();
+//     // force require to load file to make sure compiled file get load correctlly
+//     jest.resetModules();
+//   });
 
-  test('should work', async () => {
-    page = await ctx.browser.page(ctx.url('/none-exist-page'));
+//   test('should work', async () => {
+//     page = await ctx.browser.page(ctx.url('/none-exist-page'));
 
-    expect(await page.$text('#custom-404')).toBe('404');
+//     expect(await page.$text('#custom-404')).toBe('404');
 
-    await page.shuvi.navigate('/');
-    await page.waitForSelector('#index');
-    expect(await page.$text('#index')).toBe('Index Page');
+//     await page.shuvi.navigate('/');
+//     await page.waitForSelector('#index');
+//     expect(await page.$text('#index')).toBe('Index Page');
 
-    await page.shuvi.navigate('/none-exist-page');
-    await page.waitForSelector('#custom-404');
-    expect(await page.$text('#custom-404')).toBe('404');
-  });
-});
+//     await page.shuvi.navigate('/none-exist-page');
+//     await page.waitForSelector('#custom-404');
+//     expect(await page.$text('#custom-404')).toBe('404');
+//   });
+// });
 
-describe('Custom Server.js', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-server');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
+// describe('Custom Server.js', () => {
+//   beforeAll(async () => {
+//     ctx = await launchFixture('custom-server');
+//   });
+//   afterAll(async () => {
+//     await ctx.close();
+//   });
+//   afterEach(async () => {
+//     await page.close();
+//     // force require to load file to make sure compiled file get load correctlly
+//     jest.resetModules();
+//   });
 
-  test('should work', async () => {
-    page = await ctx.browser.page();
-    const result = await page.goto(ctx.url('/404'));
+//   test('should work', async () => {
+//     page = await ctx.browser.page();
+//     const result = await page.goto(ctx.url('/404'));
 
-    if (!result) {
-      throw Error('no result');
-    }
+//     if (!result) {
+//       throw Error('no result');
+//     }
 
-    expect(result.status()).toBe(404);
-    expect(await page.$text('div')).toMatch(/404 Page/);
-  });
-});
+//     expect(result.status()).toBe(404);
+//     expect(await page.$text('div')).toMatch(/404 Page/);
+//   });
+// });
 
 describe('Custom config.resolve.suffix', () => {
   beforeAll(async () => {
@@ -164,7 +164,7 @@ describe('Custom config.resolve.suffix', () => {
     jest.resetModules();
   });
 
-  test('should work', async () => {
+  test('should work /', async () => {
     page = await ctx.browser.page(ctx.url('/'));
 
     // Note: custom app
@@ -172,14 +172,211 @@ describe('Custom config.resolve.suffix', () => {
     expect(await page.$text('#app-pathname')).toBe('app.electron.js');
     expect(await page.$text('#app-pathname')).not.toBe('app.js');
 
+    // Note: custom page
+    await page.waitForSelector('#page-pathname');
+    expect(await page.$text('#page-pathname')).toBe('pages/index.electron.js');
+    expect(await page.$text('#page-pathname')).not.toBe('pages/index.js');
+
     // Note: custom component
     await page.waitForSelector('#Button-pathname');
-    expect(await page.$text('#Button-pathname')).toBe('Button.electron.js');
-    expect(await page.$text('#Button-pathname')).not.toBe('Button.js');
+    expect(await page.$text('#Button-pathname')).toBe(
+      'components/Button.electron.js'
+    );
+    expect(await page.$text('#Button-pathname')).not.toBe(
+      'components/Button.js'
+    );
 
     // Note: fallback
     await page.waitForSelector('#Link-pathname');
-    expect(await page.$text('#Link-pathname')).toBe('Link.js');
-    expect(await page.$text('#Link-pathname')).not.toBe('Link.electron.js');
+    expect(await page.$text('#Link-pathname')).toBe('components/Link.js');
+    expect(await page.$text('#Link-pathname')).not.toBe(
+      'components/Link.electron.js'
+    );
+
+    await page.waitForSelector('#Card-pathname');
+    expect(await page.$text('#Card-pathname')).toBe('components/Card.js');
+    expect(await page.$text('#Card-pathname')).not.toBe(
+      'components/Card.electron.js'
+    );
+  });
+
+  test('should work /home', async () => {
+    page = await ctx.browser.page(ctx.url('/home'));
+
+    // Note: custom app
+    await page.waitForSelector('#app-pathname');
+    expect(await page.$text('#app-pathname')).toBe('app.electron.js');
+    expect(await page.$text('#app-pathname')).not.toBe('app.js');
+
+    // Note: custom page
+    await page.waitForSelector('#page-pathname');
+    expect(await page.$text('#page-pathname')).toBe('pages/home.electron.js');
+    expect(await page.$text('#page-pathname')).not.toBe('pages/home.js');
+
+    // Note: custom component
+    await page.waitForSelector('#Button-pathname');
+    expect(await page.$text('#Button-pathname')).toBe(
+      'components/Button.electron.js'
+    );
+    expect(await page.$text('#Button-pathname')).not.toBe(
+      'components/Button.js'
+    );
+
+    // Note: fallback
+    await page.waitForSelector('#Link-pathname');
+    expect(await page.$text('#Link-pathname')).toBe('components/Link.js');
+    expect(await page.$text('#Link-pathname')).not.toBe(
+      'components/Link.electron.js'
+    );
+
+    await page.waitForSelector('#Card-pathname');
+    expect(await page.$text('#Card-pathname')).toBe('components/Card.js');
+    expect(await page.$text('#Card-pathname')).not.toBe(
+      'components/Card.electron.js'
+    );
+  });
+
+  test('should work /about', async () => {
+    page = await ctx.browser.page(ctx.url('/about'));
+
+    // Note: custom app
+    await page.waitForSelector('#app-pathname');
+    expect(await page.$text('#app-pathname')).toBe('app.electron.js');
+    expect(await page.$text('#app-pathname')).not.toBe('app.js');
+
+    // Note: custom page
+    await page.waitForSelector('#page-pathname');
+    expect(await page.$text('#page-pathname')).toBe('pages/about.js');
+    expect(await page.$text('#page-pathname')).not.toBe('pages/about.electron.js');
+
+    // Note: custom component
+    await page.waitForSelector('#Button-pathname');
+    expect(await page.$text('#Button-pathname')).toBe(
+      'components/Button.electron.js'
+    );
+    expect(await page.$text('#Button-pathname')).not.toBe(
+      'components/Button.js'
+    );
+
+    // Note: fallback
+    await page.waitForSelector('#Link-pathname');
+    expect(await page.$text('#Link-pathname')).toBe('components/Link.js');
+    expect(await page.$text('#Link-pathname')).not.toBe(
+      'components/Link.electron.js'
+    );
+
+    await page.waitForSelector('#Card-pathname');
+    expect(await page.$text('#Card-pathname')).toBe('components/Card.js');
+    expect(await page.$text('#Card-pathname')).not.toBe(
+      'components/Card.electron.js'
+    );
+  });
+
+  test('should work /nest', async () => {
+    page = await ctx.browser.page(ctx.url('/nest'));
+
+    // Note: custom app
+    await page.waitForSelector('#app-pathname');
+    expect(await page.$text('#app-pathname')).toBe('app.electron.js');
+    expect(await page.$text('#app-pathname')).not.toBe('app.js');
+
+    // Note: custom page
+    await page.waitForSelector('#page-pathname');
+    expect(await page.$text('#page-pathname')).toBe('pages/nest/index.js');
+    expect(await page.$text('#page-pathname')).not.toBe('pages/nest/index.electron.js');
+
+    // Note: custom component
+    await page.waitForSelector('#Button-pathname');
+    expect(await page.$text('#Button-pathname')).toBe(
+      'components/Button.electron.js'
+    );
+    expect(await page.$text('#Button-pathname')).not.toBe(
+      'components/Button.js'
+    );
+
+    // Note: fallback
+    await page.waitForSelector('#Link-pathname');
+    expect(await page.$text('#Link-pathname')).toBe('components/Link.js');
+    expect(await page.$text('#Link-pathname')).not.toBe(
+      'components/Link.electron.js'
+    );
+
+    await page.waitForSelector('#Card-pathname');
+    expect(await page.$text('#Card-pathname')).toBe('components/Card.js');
+    expect(await page.$text('#Card-pathname')).not.toBe(
+      'components/Card.electron.js'
+    );
+  });
+
+  test('should work /nest/home', async () => {
+    page = await ctx.browser.page(ctx.url('/nest/home'));
+
+    // Note: custom app
+    await page.waitForSelector('#app-pathname');
+    expect(await page.$text('#app-pathname')).toBe('app.electron.js');
+    expect(await page.$text('#app-pathname')).not.toBe('app.js');
+
+    // Note: custom page
+    await page.waitForSelector('#page-pathname');
+    expect(await page.$text('#page-pathname')).toBe('pages/nest/home.electron.js');
+    expect(await page.$text('#page-pathname')).not.toBe('pages/nest/home.js');
+
+    // Note: custom component
+    await page.waitForSelector('#Button-pathname');
+    expect(await page.$text('#Button-pathname')).toBe(
+      'components/Button.electron.js'
+    );
+    expect(await page.$text('#Button-pathname')).not.toBe(
+      'components/Button.js'
+    );
+
+    // Note: fallback
+    await page.waitForSelector('#Link-pathname');
+    expect(await page.$text('#Link-pathname')).toBe('components/Link.js');
+    expect(await page.$text('#Link-pathname')).not.toBe(
+      'components/Link.electron.js'
+    );
+
+    await page.waitForSelector('#Card-pathname');
+    expect(await page.$text('#Card-pathname')).toBe('components/Card.js');
+    expect(await page.$text('#Card-pathname')).not.toBe(
+      'components/Card.electron.js'
+    );
+  });
+
+  test('should work /nest/about', async () => {
+    page = await ctx.browser.page(ctx.url('/nest/about'));
+
+    // Note: custom app
+    await page.waitForSelector('#app-pathname');
+    expect(await page.$text('#app-pathname')).toBe('app.electron.js');
+    expect(await page.$text('#app-pathname')).not.toBe('app.js');
+
+    // Note: custom page
+    await page.waitForSelector('#page-pathname');
+    expect(await page.$text('#page-pathname')).toBe('pages/nest/about.js');
+    expect(await page.$text('#page-pathname')).not.toBe('pages/nest/about.electron.js');
+    
+    // Note: custom component
+    await page.waitForSelector('#Button-pathname');
+    expect(await page.$text('#Button-pathname')).toBe(
+      'components/Button.electron.js'
+    );
+    expect(await page.$text('#Button-pathname')).not.toBe(
+      'components/Button.js'
+    );
+
+    // Note: fallback
+    await page.waitForSelector('#Link-pathname');
+    expect(await page.$text('#Link-pathname')).toBe('components/Link.js');
+    expect(await page.$text('#Link-pathname')).not.toBe(
+      'components/Link.electron.js'
+    );
+
+    await page.waitForSelector('#Card-pathname');
+    expect(await page.$text('#Card-pathname')).toBe('components/Card.js');
+    expect(await page.$text('#Card-pathname')).not.toBe(
+      'components/Card.electron.js'
+    );
   });
 });

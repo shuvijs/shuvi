@@ -55,7 +55,7 @@ export async function setupApp(api: Api) {
       }
     }
   });
-  
+
   const { useTypeScript } = await getTypeScriptInfo(paths.rootDir);
   function makePossiblePaths(path: string) {
     const moduleFileExtensions = useTypeScript
@@ -190,7 +190,9 @@ export async function setupApp(api: Api) {
   if (Array.isArray(routes) && routes.length) {
     api.setRoutes(routes);
   } else {
-    const route = new Route(paths.pagesDir);
+    const route = new Route(paths.pagesDir, {
+      suffix: api.config.resolve.suffix
+    });
     if (api.mode === 'development') {
       route.subscribe(routes => {
         api.setRoutes(routes);

@@ -1,1 +1,7 @@
-export default () => <button id="Button-pathname">Button.electron.js</button>;
+import Card from './Card';
+
+export default () => (
+  <Card>
+    <button id="Button-pathname">components/Button.electron.js</button>
+  </Card>
+);

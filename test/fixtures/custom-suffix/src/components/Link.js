@@ -1,1 +1,1 @@
-export default () => <a id="Link-pathname">Link.js</a>;
+export default () => <a id="Link-pathname">components/Link.js</a>;

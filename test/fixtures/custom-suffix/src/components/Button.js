@@ -1,1 +1,7 @@
-export default () => <button id="Button-pathname">Button.js</button>;
+import Card from './Card';
+
+export default () => (
+  <Card>
+    <button id="Button-pathname">components/Button.js</button>
+  </Card>
+);
