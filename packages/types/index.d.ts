@@ -91,6 +91,10 @@ export interface IApiConfig {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;
+  resolve: {
+    // Note: resolve-with-suffix-first for built-in modules (e.g., `app.electron.js`) and user files (e.g., `Component.electron.js`)
+    suffix?: string; 
+  }
 }
 
 // api for plugins

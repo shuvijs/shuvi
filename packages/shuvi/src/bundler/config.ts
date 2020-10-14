@@ -44,7 +44,8 @@ export function createWepbackConfig(
       projectRoot: paths.rootDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
       mediaFilename: BUILD_MEDIA_PATH,
-      webpackHelpers
+      webpackHelpers,
+      suffix: config.resolve.suffix
     });
     chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
   } else {
@@ -57,7 +58,8 @@ export function createWepbackConfig(
       buildManifestFilename: BUILD_MANIFEST_PATH,
       mediaFilename: BUILD_MEDIA_PATH,
       publicPath: assetPublicPath,
-      webpackHelpers
+      webpackHelpers,
+      suffix: config.resolve.suffix
     });
     chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });

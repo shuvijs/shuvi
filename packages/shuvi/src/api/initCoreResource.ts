@@ -15,6 +15,15 @@ function resolveServerDist(api: Api, name: string) {
 }
 
 function resolveDocument(api: Api) {
+  // Note: resolve with suffix first
+  const { suffix } = api.config.resolve;
+  if (suffix) {
+    const customDoc = api.resolveUserFile(`document.${suffix}.ejs`);
+    if (fse.existsSync(customDoc)) {
+      return customDoc;
+    }
+  }
+
   const customDoc = api.resolveUserFile("document.ejs");
   if (fse.existsSync(customDoc)) {
     return customDoc;

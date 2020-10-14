@@ -7,8 +7,17 @@ import { runtime } from '../runtime';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { Api } from './api';
 
-function withExts(file: string, extensions: string[]): string[] {
-  return extensions.map(ext => `${file}.${ext}`);
+function withSuffix(file: string, suffix?: string): string[] {
+  if (!suffix) return [file];
+  return [`${file}.${suffix}`, file];
+}
+
+function withExts(files: string[], extensions: string[]): string[] {
+  let result: string[] = [];
+  files.forEach(file => {
+    result = [...result, ...extensions.map(ext => `${file}.${ext}`)];
+  });
+  return result;
 }
 
 export async function setupApp(api: Api) {
@@ -46,31 +55,33 @@ export async function setupApp(api: Api) {
       }
     }
   });
+  
   const { useTypeScript } = await getTypeScriptInfo(paths.rootDir);
-  const moduleFileExtensions = useTypeScript
-    ? ['tsx', 'ts', 'js', 'jsx']
-    : ['js', 'jsx', 'tsx', 'ts'];
+  function makePossiblePaths(path: string) {
+    const moduleFileExtensions = useTypeScript
+      ? ['tsx', 'ts', 'js', 'jsx']
+      : ['js', 'jsx', 'tsx', 'ts'];
+
+    return withExts(
+      withSuffix(api.resolveUserFile(path), config.resolve.suffix),
+      moduleFileExtensions
+    );
+  }
 
   coreRuntime.install(api.getPluginApi());
   runtime.install(api.getPluginApi());
 
   api.setViewModule(runtime.getViewModulePath());
-  api.setAppModule([
-    ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
-    runtime.getAppModulePath()
-  ]);
+  api.setAppModule([...makePossiblePaths('app'), runtime.getAppModulePath()]);
 
   api.setPluginModule([
-    ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
+    ...makePossiblePaths('plugin'),
     require.resolve('@shuvi/utils/lib/noopFn')
   ]);
 
   api.addAppFile(
     File.moduleProxy('404.js', {
-      source: [
-        ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
-        runtime.get404ModulePath()
-      ],
+      source: [...makePossiblePaths('404'), runtime.get404ModulePath()],
       defaultExport: true
     }),
     'core'
@@ -79,7 +90,7 @@ export async function setupApp(api: Api) {
   api.addAppFile(
     File.moduleProxy('server.js', {
       source: [
-        ...withExts(api.resolveUserFile('server'), moduleFileExtensions),
+        ...makePossiblePaths('server'),
         require.resolve('@shuvi/utils/lib/noop')
       ]
     }),
@@ -88,7 +99,7 @@ export async function setupApp(api: Api) {
   api.addAppFile(
     File.moduleProxy('document.js', {
       source: [
-        ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
+        ...makePossiblePaths('document'),
         require.resolve('@shuvi/utils/lib/noop')
       ]
     }),

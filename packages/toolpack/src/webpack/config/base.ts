@@ -8,6 +8,7 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
+import ResolveWithSuffixFirstPlugin from '../plugins/resolve-with-suffix-first-plugin';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ModuleReplacePlugin from '../plugins/module-replace-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
@@ -31,6 +32,7 @@ export interface BaseOptions {
   env?: {
     [x: string]: string;
   };
+  suffix?: string, // = config.resolve.suffix
 }
 
 const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
@@ -63,7 +65,8 @@ export function baseWebpackChain({
   mediaFilename,
   buildManifestFilename,
   publicPath = '/',
-  env = {}
+  env = {},
+  suffix
 }: BaseOptions): WebpackChain {
   const { typeScriptPath, tsConfigPath, useTypeScript } = getTypeScriptInfo(
     projectRoot
@@ -172,6 +175,12 @@ export function baseWebpackChain({
     .options({
       name: mediaFilename
     });
+
+  if (suffix) {
+    config.resolve
+      .plugin('private/resolve-with-suffix-first-plugin')
+      .use(ResolveWithSuffixFirstPlugin, [{ suffix }]);
+  }
 
   config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {

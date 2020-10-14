@@ -21,7 +21,8 @@ export const defaultConfig: IApiConfig = {
   publicPath: PUBLIC_PATH,
   router: {
     history: 'auto'
-  }
+  },
+  resolve: {},
 };
 
 export async function loadConfig({

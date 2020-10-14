@@ -150,3 +150,36 @@ describe('Custom Server.js', () => {
     expect(await page.$text('div')).toMatch(/404 Page/);
   });
 });
+
+describe('Custom config.resolve.suffix', () => {
+  beforeAll(async () => {
+    ctx = await launchFixture('custom-suffix');
+  });
+  afterAll(async () => {
+    await ctx.close();
+  });
+  afterEach(async () => {
+    await page.close();
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
+  });
+
+  test('should work', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
+
+    // Note: custom app
+    await page.waitForSelector('#app-pathname');
+    expect(await page.$text('#app-pathname')).toBe('app.electron.js');
+    expect(await page.$text('#app-pathname')).not.toBe('app.js');
+
+    // Note: custom component
+    await page.waitForSelector('#Button-pathname');
+    expect(await page.$text('#Button-pathname')).toBe('Button.electron.js');
+    expect(await page.$text('#Button-pathname')).not.toBe('Button.js');
+
+    // Note: fallback
+    await page.waitForSelector('#Link-pathname');
+    expect(await page.$text('#Link-pathname')).toBe('Link.js');
+    expect(await page.$text('#Link-pathname')).not.toBe('Link.electron.js');
+  });
+});
