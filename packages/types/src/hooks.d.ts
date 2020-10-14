@@ -101,6 +101,6 @@ export type IHookModifyHtml = defineHook<
   }
 >;
 
-export type IHookDestory = defineHook<'destory'>;
+export type IHookDestroy = defineHook<'destroy'>;
 
 export type IEventAfterBuild = defineHook<'afterBuild'>;

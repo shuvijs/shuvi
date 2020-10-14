@@ -1,7 +1,9 @@
 // ref: https://github.com/vercel/next.js/blob/canary/packages/next/build/webpack/plugins/nextjs-require-cache-hot-reloader.ts
 
 import { Compiler, Plugin } from 'webpack';
+import path from 'path';
 import { realpathSync } from 'fs';
+import { BUILD_SERVER_FILE_SERVER } from 'shuvi/lib/constants';
 
 function deleteCache(filePath: string) {
   try {
@@ -26,7 +28,14 @@ export default class RequireCacheHotReloader implements Plugin {
       deleteCache(targetPath);
     });
 
-    compiler.hooks.afterEmit.tap(PLUGIN_NAME, () => {
+    compiler.hooks.afterEmit.tap(PLUGIN_NAME, compilation => {
+      const serverRuntimePath = path.join(
+        compilation.outputOptions.path!,
+        BUILD_SERVER_FILE_SERVER
+      );
+
+      deleteCache(serverRuntimePath);
+
       for (const outputPath of this.previousOutputPathsWebpack5) {
         if (!this.currentOutputPathsWebpack5.has(outputPath)) {
           deleteCache(outputPath);

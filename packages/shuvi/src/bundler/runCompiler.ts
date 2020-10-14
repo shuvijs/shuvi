@@ -27,23 +27,25 @@ export function runCompiler(
 ): Promise<BundlerResult> {
   return new Promise(async (resolve, reject) => {
     compiler.run((err: Error | undefined, statsOrMultiStats: any) => {
-      if (err) {
-        return reject(err);
-      }
+      compiler.close(() => {
+        if (err) {
+          return reject(err);
+        }
 
-      if (statsOrMultiStats.stats) {
-        const result: BundlerResult = statsOrMultiStats.stats.reduce(
-          generateStats,
-          { errors: [], warnings: [] }
+        if (statsOrMultiStats.stats) {
+          const result: BundlerResult = statsOrMultiStats.stats.reduce(
+            generateStats,
+            { errors: [], warnings: [] }
+          );
+          return resolve(result);
+        }
+
+        const result = generateStats(
+          { errors: [], warnings: [] },
+          statsOrMultiStats
         );
         return resolve(result);
-      }
-
-      const result = generateStats(
-        { errors: [], warnings: [] },
-        statsOrMultiStats
-      );
-      return resolve(result);
+      });
     });
   });
 }

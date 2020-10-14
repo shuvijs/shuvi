@@ -13,7 +13,7 @@ import {
 export interface DevMiddleware {
   apply(): void;
   send(action: string, payload?: any): void;
-  invalidate(): void;
+  invalidate(): Promise<unknown>;
   waitUntilValid(force?: boolean): void;
 }
 
@@ -64,7 +64,7 @@ export async function getDevMiddleware({
   };
 
   const invalidate = () => {
-    webpackDevMiddleware.invalidate();
+    return new Promise(resolve => webpackDevMiddleware.invalidate(resolve));
   };
 
   const waitUntilValid = (force: boolean = false) => {
@@ -78,7 +78,7 @@ export async function getDevMiddleware({
     });
   };
 
-  api.tap<APIHooks.IHookDestory>('destory', {
+  api.tap<APIHooks.IHookDestroy>('destroy', {
     name: 'DevMiddleware',
     fn() {
       return new Promise(resolve => {

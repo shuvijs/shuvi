@@ -128,6 +128,25 @@ export function createBrowserWebpackChain({
     }
   }
 
+  chain.resolve.alias
+    .set('stream', require.resolve('stream-browserify'))
+    .set('path', require.resolve('path-browserify'))
+    .set('crypto', require.resolve('crypto-browserify'))
+    .set('buffer', require.resolve('buffer'))
+    .set('vm', require.resolve('vm-browserify'));
+
+  chain.plugin('node-buffer-polyfill').use(webpack.ProvidePlugin, [
+    {
+      Buffer: ['buffer', 'Buffer']
+    }
+  ]);
+
+  chain.plugin('node-process-polyfill').use(webpack.ProvidePlugin, [
+    {
+      process: ['process']
+    }
+  ]);
+
   chain.plugin('define').tap(([options]) => [
     {
       ...options,
