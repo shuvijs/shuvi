@@ -10,7 +10,7 @@ Write less code, Let shuvi do more.
 
 ## Folder Structure
 
-`shuvi` is a monorepo, meaning it is divided into independent sub-packages.<br>
+`shuvi` is a monorepo, meaning it is divided into independent sub-packages.<br/>
 These packages can be found in the [`packages/`](https://github.com/liximomo/shuvi/tree/master/packages) directory.
 
 ### app
