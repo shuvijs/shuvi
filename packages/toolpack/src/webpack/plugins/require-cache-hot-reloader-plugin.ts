@@ -3,7 +3,7 @@
 import { Compiler, Plugin } from 'webpack';
 import path from 'path';
 import { realpathSync } from 'fs';
-import { BUILD_SERVER_FILE_SERVER } from 'shuvi/lib/constants';
+import { BUILD_SERVER_FILE_SERVER } from '@shuvi/shared/lib/constants';
 
 function deleteCache(filePath: string) {
   try {
