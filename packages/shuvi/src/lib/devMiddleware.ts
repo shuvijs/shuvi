@@ -2,6 +2,8 @@ import { APIHooks } from '@shuvi/types';
 import { createLaunchEditorMiddleware } from '@shuvi/toolpack/lib/utils/errorOverlayMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
+import WebpackDevMiddlewareOptionSchema from './devMiddleware.schema';
+import { validate } from '@shuvi/utils/lib/schemaUtils';
 import { Api } from '../api';
 import { getBundler } from '../bundler';
 import {
@@ -33,16 +35,32 @@ export async function getDevMiddleware({
       send('warns', warns);
     }
   });
-  const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
-    publicPath: api.assetPublicPath,
-    noInfo: true,
+
+  let devMiddlewareOptions: WebpackDevMiddleware.Options = {
     logLevel: 'silent',
     watchOptions: {
       aggregateTimeout: 500,
       ignored: ['**/.git/**', '**/node_modules/**']
-    },
+    }
+  };
+
+  devMiddlewareOptions = await api.callHook<
+    APIHooks.IHookModifyDevMiddlewareOption
+  >({
+    name: 'bundler:modifyDevMiddlewareOption',
+    initialValue: devMiddlewareOptions
+  });
+
+  validate(WebpackDevMiddlewareOptionSchema as any, devMiddlewareOptions, {
+    name: 'bundler:modifyDevMiddlewareOption'
+  });
+
+  const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
+    ...devMiddlewareOptions,
+    publicPath: api.assetPublicPath,
     writeToDisk: true
   });
+
   const webpackHotMiddleware = new WebpackHotMiddleware({
     compiler: bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!,
     path: DEV_HOT_MIDDLEWARE_PATH
@@ -68,6 +86,7 @@ export async function getDevMiddleware({
     if (force) {
       // private api
       // we know that there must be a rebuild so it's safe to do this
+      // @ts-ignore
       webpackDevMiddleware.context.state = false;
     }
     return new Promise(resolve => {
