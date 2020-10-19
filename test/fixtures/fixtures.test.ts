@@ -1,9 +1,16 @@
 import fs from 'fs';
+import path from 'path';
 import * as utils from '../utils';
 
-const fixtures = fs
-  .readdirSync(__dirname)
-  .filter(name => name !== 'fixtures.test.ts');
+const fixtures = fs.readdirSync(__dirname).filter(name => {
+  if (name === 'fixtures.test.ts') {
+    return false;
+  }
+
+  const fullpath = path.join(__dirname, name);
+  const stat = fs.statSync(fullpath);
+  return stat.isDirectory();
+});
 
 // Note: jest.resetModules() would cause Error('Callback was already called.');
 let buildFixture: typeof utils.buildFixture;
