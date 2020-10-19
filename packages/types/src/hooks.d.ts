@@ -1,6 +1,7 @@
 import { defineHook } from '@shuvi/core';
 import webpack, { MultiStats } from 'webpack';
 import WebpackChain from 'webpack-chain';
+import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { IApiConfig, IShuviMode } from '..';
 import { IUserRouteConfig, IDocumentProps } from './runtime';
 import { IWebpackHelpers } from './bundler';
@@ -104,3 +105,10 @@ export type IHookModifyHtml = defineHook<
 export type IHookDestroy = defineHook<'destroy'>;
 
 export type IEventAfterBuild = defineHook<'afterBuild'>;
+
+export type IHookModifyDevMiddlewareOption = defineHook<
+  'bundler:modifyDevMiddlewareOption',
+  {
+    initialValue: WebpackDevMiddleware.Options;
+  }
+>;
