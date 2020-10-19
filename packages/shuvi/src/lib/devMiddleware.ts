@@ -1,9 +1,9 @@
 import { APIHooks } from '@shuvi/types';
 import { createLaunchEditorMiddleware } from '@shuvi/toolpack/lib/utils/errorOverlayMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
+import { WebpackHotMiddleware } from './hotMiddleware';
 import WebpackDevMiddlewareOptionSchema from './devMiddleware.schema';
 import { validate } from '@shuvi/utils/lib/schemaUtils';
-import WebpackHotMiddleware from 'webpack-hot-middleware';
 import { Api } from '../api';
 import { getBundler } from '../bundler';
 import {
@@ -15,7 +15,7 @@ import {
 export interface DevMiddleware {
   apply(): void;
   send(action: string, payload?: any): void;
-  invalidate(): void;
+  invalidate(): Promise<unknown>;
   waitUntilValid(force?: boolean): void;
 }
 
@@ -39,7 +39,8 @@ export async function getDevMiddleware({
   let devMiddlewareOptions: WebpackDevMiddleware.Options = {
     logLevel: 'silent',
     watchOptions: {
-      ignored: [/[\\/]\.git[\\/]/, /[\\/]node_modules[\\/]/]
+      aggregateTimeout: 500,
+      ignored: ['**/.git/**', '**/node_modules/**']
     }
   };
 
@@ -60,18 +61,14 @@ export async function getDevMiddleware({
     writeToDisk: true
   });
 
-  const webpackHotMiddleware = WebpackHotMiddleware(
-    bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!,
-    {
-      path: DEV_HOT_MIDDLEWARE_PATH,
-      log: false,
-      heartbeat: 2500
-    }
-  );
+  const webpackHotMiddleware = new WebpackHotMiddleware({
+    compiler: bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!,
+    path: DEV_HOT_MIDDLEWARE_PATH
+  });
 
   const apply = () => {
     api.server.use(webpackDevMiddleware);
-    api.server.use(webpackHotMiddleware);
+    api.server.use(webpackHotMiddleware.middleware);
     api.server.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );
@@ -82,7 +79,7 @@ export async function getDevMiddleware({
   };
 
   const invalidate = () => {
-    webpackDevMiddleware.invalidate();
+    return new Promise(resolve => webpackDevMiddleware.invalidate(resolve));
   };
 
   const waitUntilValid = (force: boolean = false) => {
@@ -97,7 +94,7 @@ export async function getDevMiddleware({
     });
   };
 
-  api.tap<APIHooks.IHookDestory>('destory', {
+  api.tap<APIHooks.IHookDestroy>('destroy', {
     name: 'DevMiddleware',
     fn() {
       return new Promise(resolve => {

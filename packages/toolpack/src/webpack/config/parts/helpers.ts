@@ -1,13 +1,11 @@
-import webpack from 'webpack';
 import { WebpackChain } from '@shuvi/types';
 import { ExternalsFunction, IWebpackHelpers } from '@shuvi/types/src/bundler';
 
 export const webpackHelpers = (): IWebpackHelpers => {
   const externalFns: ExternalsFunction[] = [];
 
-  const defaultExternalsFn: webpack.ExternalsFunctionElement = (
-    context,
-    request,
+  const defaultExternalsFn: ExternalsFunction = (
+    { context, request },
     callback
   ) => {
     let callbackCalled = false;
@@ -24,7 +22,7 @@ export const webpackHelpers = (): IWebpackHelpers => {
     };
 
     for (let i = 0; i < externalFns.length; i++) {
-      externalFns[i](context, request, nextHandler);
+      externalFns[i]({ context, request }, nextHandler);
       if (callbackCalled) {
         break;
       }
