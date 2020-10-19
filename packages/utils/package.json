@@ -27,7 +27,7 @@
     "resolve": "1.15.1",
     "schema-utils": "^3.0.0",
     "tiny-invariant": "1.1.0",
-    "watchpack": "2.0.0-beta.14"
+    "watchpack": "2.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",

@@ -8,7 +8,6 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
-import ChunkNamesPlugin from '../plugins/chunk-names-plugin';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ModuleReplacePlugin from '../plugins/module-replace-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
@@ -34,7 +33,7 @@ export interface BaseOptions {
   };
 }
 
-const terserOptions = {
+const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
   parse: {
     ecma: 8
   },
@@ -77,7 +76,7 @@ export function baseWebpackChain({
   config.context(projectRoot);
 
   config.optimization.merge({
-    noEmitOnErrors: dev,
+    emitOnErrors: !dev,
     checkWasmTypes: false,
     nodeEnv: false,
     splitChunks: false,
@@ -98,15 +97,14 @@ export function baseWebpackChain({
 
   config.output.merge({
     publicPath,
-    hotUpdateChunkFilename: 'static/webpack/[id].[hash].hot-update.js',
-    hotUpdateMainFilename: 'static/webpack/[hash].hot-update.json',
+    hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
+    hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
     // This saves chunks with the name given via `import()`
     chunkFilename: `static/chunks/${
       dev ? '[name]' : '[name].[contenthash:8]'
     }.js`,
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
-    futureEmitAssets: !dev,
     webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm'
   });
 
@@ -135,6 +133,14 @@ export function baseWebpackChain({
 
   config.module.set('strictExportPresence', true);
   const mainRule = config.module.rule('main');
+
+  // TODO: FIXME: await babel/babel-loader to update to fix this.
+  // x-ref: https://github.com/webpack/webpack/issues/11467
+  config.module
+    .rule('webpackPatch')
+    .test(/\.m?js/)
+    .resolve.set('fullySpecified', false);
+
   mainRule
     .oneOf('js')
     .test(/\.(tsx|ts|js|mjs|jsx)$/)
@@ -156,6 +162,7 @@ export function baseWebpackChain({
       isNode: false,
       cacheDirectory: true
     });
+
   mainRule
     .oneOf('media')
     .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
@@ -166,10 +173,12 @@ export function baseWebpackChain({
       name: mediaFilename
     });
 
-  config.plugin('private/chunk-names-plugin').use(ChunkNamesPlugin);
-  config
-    .plugin('private/ignore-plugin')
-    .use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/]);
+  config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
+    {
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/
+    }
+  ]);
 
   config.plugin('define').use(webpack.DefinePlugin, [
     {
@@ -206,20 +215,37 @@ export function baseWebpackChain({
       .plugin('private/fork-ts-checker-webpack-plugin')
       .use(require.resolve('fork-ts-checker-webpack-plugin'), [
         {
-          typescript: typeScriptPath,
+          typescript: {
+            configFile: tsConfigPath,
+            typeScriptPath,
+            diagnosticOptions: {
+              syntactic: true
+            }
+          },
           async: dev,
-          useTypescriptIncrementalApi: true,
-          checkSyntacticErrors: true,
-          tsconfig: tsConfigPath,
-          reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
-          compilerOptions: { isolatedModules: true, noEmit: true },
-          silent: true,
+          logger: {
+            infrastructure: 'silent',
+            issues: 'silent',
+            devServer: false
+          },
           formatter: 'codeframe'
         }
       ]);
   }
 
   if (dev) {
+    config.cache({
+      type: 'memory'
+    });
+
+    // For future webpack-dev-server purpose
+    config.watchOptions({
+      ignored: ['**/.git/**', '**/node_modules/**']
+    });
+    config.set('infrastructureLogging', {
+      level: 'none'
+    });
+
     config.plugin('private/module-replace-plugin').use(ModuleReplacePlugin, [
       {
         modules: [
@@ -235,10 +261,12 @@ export function baseWebpackChain({
     config
       .plugin('private/require-cache-hot-reloader')
       .use(RequireCacheHotReloaderPlugin);
+
+    config.optimization.usedExports(false);
   } else {
     config
       .plugin('private/hashed-moduleids-plugin')
-      .use(webpack.HashedModuleIdsPlugin);
+      .use(webpack.ids.HashedModuleIdsPlugin);
   }
 
   return config;

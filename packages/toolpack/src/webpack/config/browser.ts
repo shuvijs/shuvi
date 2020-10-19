@@ -46,10 +46,10 @@ export function createBrowserWebpackChain({
       chunks: 'all',
       cacheGroups: {
         default: false,
-        vendors: false,
+        defaultVendors: false,
         framework: {
           chunks: 'all',
-          name: 'framework',
+          name: 'framework.js',
           // This regex ignores nested copies of framework libraries so they're
           // bundled with their issuer.
           // https://github.com/zeit/next.js/pull/9012
@@ -93,7 +93,7 @@ export function createBrowserWebpackChain({
           reuseExistingChunk: true
         },
         commons: {
-          name: 'commons',
+          name: 'commons.js',
           minChunks: 2,
           priority: 20
         },
@@ -102,12 +102,9 @@ export function createBrowserWebpackChain({
             return crypto
               .createHash('sha1')
               .update(
-                chunks.reduce(
-                  (acc: string, chunk: webpack.compilation.Chunk) => {
-                    return acc + chunk.name;
-                  },
-                  ''
-                )
+                chunks.reduce((acc: string, chunk: webpack.Chunk) => {
+                  return acc + chunk.name;
+                }, '')
               )
               .digest('hex');
           },
@@ -130,6 +127,25 @@ export function createBrowserWebpackChain({
       ]);
     }
   }
+
+  chain.resolve.alias
+    .set('stream', require.resolve('stream-browserify'))
+    .set('path', require.resolve('path-browserify'))
+    .set('crypto', require.resolve('crypto-browserify'))
+    .set('buffer', require.resolve('buffer'))
+    .set('vm', require.resolve('vm-browserify'));
+
+  chain.plugin('node-buffer-polyfill').use(webpack.ProvidePlugin, [
+    {
+      Buffer: ['buffer', 'Buffer']
+    }
+  ]);
+
+  chain.plugin('node-process-polyfill').use(webpack.ProvidePlugin, [
+    {
+      process: ['process']
+    }
+  ]);
 
   chain.plugin('define').tap(([options]) => [
     {

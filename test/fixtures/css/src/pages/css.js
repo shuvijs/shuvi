@@ -1,3 +1,7 @@
-import "./style.css";
+import './style.css';
 
-export default () => <div id="css">css</div>;
+export default () => (
+  <div id="css" className="test">
+    css
+  </div>
+);

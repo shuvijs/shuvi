@@ -2,7 +2,8 @@ import { createFsFromVolume, Volume } from 'memfs';
 import type {
   Stats,
   Compiler as WebpackCompiler,
-  Configuration
+  Configuration,
+  NormalModule
 } from 'webpack';
 import webpack from 'webpack';
 import { resolveFixture } from '../utils';
@@ -14,11 +15,12 @@ export interface WatchChainer {
 
 export type Compiler = Omit<WebpackCompiler, 'watch'> & {
   watch(): Promise<Stats>;
-  close(cb?: () => void): void;
+  close(cb?: CompileCloseCallback): void;
   forceCompile(): void;
   waitForCompile(cb: CompileDoneCallback): WatchChainer;
 };
 
+export type CompileCloseCallback = () => void;
 export type CompileDoneCallback = (s: Stats) => any;
 export type JestDoneCallback = (e?: Error) => void;
 
@@ -123,7 +125,7 @@ export function createCompiler(
     compiler = (value as any) as Compiler;
   }
 
-  let watching: WebpackCompiler.Watching | null = null;
+  let watching: WebpackCompiler['watching'] | null = null;
   const webpackFs = ensureWebpackMemoryFs(createFsFromVolume(new Volume()));
   compiler.outputFileSystem = webpackFs;
 
@@ -146,7 +148,7 @@ export function createCompiler(
     });
   };
 
-  compiler.close = cb => {
+  compiler.close = (cb: CompileCloseCallback) => {
     if (watching) {
       watching.close(() => {
         cb && cb();
@@ -176,8 +178,8 @@ export function runCompiler(
     compiler.run((err, stats) => {
       if (err) {
         reject(err);
-      } else if (stats.hasErrors()) {
-        reject(new Error(stats.compilation.errors[0]));
+      } else if (stats!.hasErrors()) {
+        reject(stats!.compilation.errors[0]);
       } else {
         resolve(stats);
       }
@@ -185,21 +187,20 @@ export function runCompiler(
   });
 }
 
-export function watchCompiler(value: Configuration | Compiler): Compiler {
+export function watchCompiler(
+  value: Configuration | WebpackCompiler
+): Compiler {
   const compiler = createCompiler(value);
   compiler.watch();
   return compiler;
 }
 
-export function getModuleSource(
-  stats: Stats,
-  request: string | RegExp
-): string {
-  return stats.compilation.modules
+export function getModuleSource(stats: Stats, request: string | RegExp) {
+  return [...stats.compilation.modules]
     .find(m =>
       typeof request === 'string'
-        ? m.userRequest === request
-        : request.test(m.userRequest)
+        ? (m as NormalModule).userRequest === request
+        : request.test((m as NormalModule).userRequest)
     )
     ?.originalSource()
     .source();

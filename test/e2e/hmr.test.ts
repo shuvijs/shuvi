@@ -1,5 +1,12 @@
-import { AppCtx, Page, launchFixture, resolveFixture, check } from '../utils';
-import { readFileSync, writeFileSync } from 'fs';
+import {
+  AppCtx,
+  Page,
+  launchFixture,
+  resolveFixture,
+  check,
+  getIframeTextContent
+} from '../utils';
+import { readFileSync, writeFileSync, renameSync, existsSync } from 'fs';
 
 function resolvePagePath(page: string) {
   return resolveFixture('basic/src/pages/hmr', page);
@@ -24,40 +31,39 @@ describe('Hot Module Reloading', () => {
     await ctx.close();
   });
 
-  // broken in webpack 4. should work in webpack 5
-  // test('should work when delete a page and add it back', async () => {
-  //   const pagePath = resolvePagePath('one.js');
-  //   const newPagePath = resolvePagePath('new-one.js');
+  test('should work when delete a page and add it back', async () => {
+    const pagePath = resolvePagePath('one.js');
+    const newPagePath = resolvePagePath('new-one.js');
 
-  //   try {
-  //     page = await ctx.browser.page(ctx.url('/hmr/one'));
+    try {
+      page = await ctx.browser.page(ctx.url('/hmr/one'));
 
-  //     expect(await page.$text('[data-test-id="hmr-one"]')).toBe(
-  //       'This is the one page'
-  //     );
+      expect(await page.$text('[data-test-id="hmr-one"]')).toBe(
+        'This is the one page'
+      );
 
-  //     // Rename the file to mimic a deleted page
-  //     renameSync(pagePath, newPagePath);
+      // Rename the file to mimic a deleted page
+      renameSync(pagePath, newPagePath);
 
-  //     await check(
-  //       () => page.$text('#__APP'),
-  //       t => /This page could not be found/.test(t)
-  //     );
+      await check(
+        () => page.$text('#__APP'),
+        t => /This page could not be found/.test(t)
+      );
 
-  //     // Rename the file back to the original filename
-  //     renameSync(newPagePath, pagePath);
+      // Rename the file back to the original filename
+      renameSync(newPagePath, pagePath);
 
-  //     // wait until the page comes back
-  //     await check(
-  //       () => page.$text('[data-test-id="hmr-one"]'),
-  //       t => /This is the one page/.test(t)
-  //     );
-  //   } finally {
-  //     if (existsSync(newPagePath)) {
-  //       renameSync(newPagePath, pagePath);
-  //     }
-  //   }
-  // });
+      // wait until the page comes back
+      await check(
+        () => page.$text('[data-test-id="hmr-one"]'),
+        t => /This is the one page/.test(t)
+      );
+    } finally {
+      if (existsSync(newPagePath)) {
+        renameSync(newPagePath, pagePath);
+      }
+    }
+  });
 
   describe('editing a page', () => {
     test('should detect the changes and display it', async () => {
@@ -83,6 +89,49 @@ describe('Hot Module Reloading', () => {
         await check(
           () => page.$text('[data-test-id="hmr-two"]'),
           t => /COOL page/.test(t)
+        );
+
+        // add the original content
+        writeFileSync(pagePath, originalContent, 'utf8');
+
+        await check(
+          () => page.$text('[data-test-id="hmr-two"]'),
+          t => /This is the two page/.test(t)
+        );
+
+        done = true;
+      } finally {
+        if (!done && originalContent) {
+          writeFileSync(pagePath, originalContent, 'utf8');
+        }
+      }
+    });
+
+    test('should show compile error message', async () => {
+      const pagePath = resolvePagePath('two.js');
+      let originalContent: string | undefined;
+      let done = false;
+
+      try {
+        page = await ctx.browser.page(ctx.url('/hmr/two'));
+        expect(await page.$text('[data-test-id="hmr-two"]')).toBe(
+          'This is the two page'
+        );
+
+        originalContent = readFileSync(pagePath, 'utf8');
+        const editedContent = originalContent.replace(
+          'This is the two page',
+          '</div>'
+        );
+
+        // change the content
+        writeFileSync(pagePath, editedContent, 'utf8');
+
+        // error box content
+        await check(
+          () => getIframeTextContent(page),
+          t =>
+            /Adjacent JSX elements must be wrapped in an enclosing tag/.test(t)
         );
 
         // add the original content

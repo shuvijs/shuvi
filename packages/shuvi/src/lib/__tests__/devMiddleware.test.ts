@@ -29,7 +29,8 @@ describe('devMiddleware', () => {
       expect(mockHook).toBeCalledWith({
         logLevel: 'silent',
         watchOptions: {
-          ignored: [/[\\/]\.git[\\/]/, /[\\/]node_modules[\\/]/]
+          aggregateTimeout: 500,
+          ignored: ['**/.git/**', '**/node_modules/**']
         }
       });
 

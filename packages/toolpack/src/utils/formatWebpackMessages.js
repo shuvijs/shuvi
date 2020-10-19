@@ -16,6 +16,11 @@ function isLikelyASyntaxError(message) {
 
 // Cleans up webpack error messages.
 function formatMessage(message, isError) {
+  message =
+    (message.moduleName ? message.moduleName + '\n' : '') +
+    (message.file ? message.file + '\n' : '') +
+    message.message;
+
   let lines = message.split('\n');
 
   // Strip Webpack-added headers off errors/warnings
@@ -69,7 +74,7 @@ function formatMessage(message, isError) {
       lines[0],
       lines[1]
         .replace('Error: ', '')
-        .replace('Module not found: Cannot find file:', 'Cannot find file:'),
+        .replace('Module not found: Cannot find file:', 'Cannot find file:')
     ];
   }
 
@@ -106,10 +111,10 @@ function formatMessage(message, isError) {
 }
 
 function formatWebpackMessages(json) {
-  const formattedErrors = json.errors.map(function(message) {
+  const formattedErrors = json.errors.map(function (message) {
     return formatMessage(message, true);
   });
-  const formattedWarnings = json.warnings.map(function(message) {
+  const formattedWarnings = json.warnings.map(function (message) {
     return formatMessage(message, false);
   });
   const result = { errors: formattedErrors, warnings: formattedWarnings };

@@ -6,7 +6,7 @@ interface BabeLoaderlOption {
 }
 
 interface CustomOption {
-  isNode: boolean;
+  isNode?: boolean;
 }
 
 function hasBuiltPreset(presets: { value: any }[]) {

@@ -38,9 +38,8 @@ export interface IManifest {
 }
 
 export type ExternalsFunction = (
-  context: any,
-  request: any,
-  next: (err?: any, result?: string | 'next', type?: string) => void
+  data: { context: string; request: string },
+  callback: (err: Error | null, result: string | undefined) => void
 ) => void;
 
 export interface IWebpackHelpers {

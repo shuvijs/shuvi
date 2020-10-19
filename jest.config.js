@@ -24,6 +24,8 @@ module.exports = {
 
   setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
 
+  globalTeardown: '<rootDir>/test/teardown.ts',
+
   testEnvironment: 'node',
 
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

@@ -16,7 +16,7 @@
     "test": "yarn test:fixtures && yarn test:unit",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
-    "test:e2e": "jest test/e2e --runInBand"
+    "test:e2e": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand"
   },
   "husky": {
     "hooks": {
@@ -54,7 +54,7 @@
     "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.4",
-    "puppeteer-core": "^2.1.1",
+    "puppeteer-core": "4.0.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^25.3.1",
     "typescript": "^3.8.3"

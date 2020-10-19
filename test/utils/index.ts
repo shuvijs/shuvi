@@ -101,3 +101,11 @@ export function createCliTestProject(dir: string, cwd?: string) {
     run: runShuviCommand
   };
 }
+
+export const getIframeTextContent = (page: Page) => {
+  return page.evaluate(() => {
+    return (
+      document.querySelector('iframe')?.contentDocument?.body.innerText || ''
+    );
+  });
+};

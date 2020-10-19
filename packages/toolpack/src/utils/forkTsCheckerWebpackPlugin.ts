@@ -1,4 +1,5 @@
-import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
-export { createCodeframeFormatter } from "fork-ts-checker-webpack-plugin/lib/formatter/codeframeFormatter";
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+export { Issue } from 'fork-ts-checker-webpack-plugin/lib/issue';
+export { createCodeFrameFormatter } from 'fork-ts-checker-webpack-plugin/lib/formatter/codeFrameFormatter';
 
 export default ForkTsCheckerWebpackPlugin;

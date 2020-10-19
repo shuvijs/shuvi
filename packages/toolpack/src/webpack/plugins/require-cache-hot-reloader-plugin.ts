@@ -1,39 +1,51 @@
-import { Compiler, Plugin } from "webpack";
-import { realpathSync } from "fs";
+// ref: https://github.com/vercel/next.js/blob/canary/packages/next/build/webpack/plugins/nextjs-require-cache-hot-reloader.ts
 
-function deleteCache(path: string) {
+import { Compiler, Plugin } from 'webpack';
+import path from 'path';
+import { realpathSync } from 'fs';
+import { BUILD_SERVER_FILE_SERVER } from 'shuvi/lib/constants';
+
+function deleteCache(filePath: string) {
   try {
-    delete require.cache[realpathSync(path)];
+    delete require.cache[realpathSync(filePath)];
   } catch (e) {
-    if (e.code !== "ENOENT") throw e;
+    if (e.code !== 'ENOENT') throw e;
   } finally {
-    delete require.cache[path];
+    delete require.cache[filePath];
   }
 }
 
+const PLUGIN_NAME = 'RequireCacheHotReloader';
+
 // This plugin flushes require.cache after emitting the files. Providing 'hot reloading' of server files.
 export default class RequireCacheHotReloader implements Plugin {
-  prevAssets: any = null;
+  previousOutputPathsWebpack5: Set<string> = new Set();
+  currentOutputPathsWebpack5: Set<string> = new Set();
 
   apply(compiler: Compiler) {
-    compiler.hooks.afterEmit.tapAsync(
-      "RequireCacheHotReloader",
-      (compilation, callback) => {
-        const { assets } = compilation;
-        if (this.prevAssets) {
-          for (const f of Object.keys(assets)) {
-            deleteCache(assets[f].existsAt);
-          }
-          for (const f of Object.keys(this.prevAssets)) {
-            if (!assets[f]) {
-              deleteCache(this.prevAssets[f].existsAt);
-            }
-          }
-        }
-        this.prevAssets = assets;
+    compiler.hooks.assetEmitted.tap(PLUGIN_NAME, (_file, { targetPath }) => {
+      this.currentOutputPathsWebpack5.add(targetPath);
+      deleteCache(targetPath);
+    });
 
-        callback();
+    compiler.hooks.afterEmit.tap(PLUGIN_NAME, compilation => {
+      const serverRuntimePath = path.join(
+        compilation.outputOptions.path!,
+        BUILD_SERVER_FILE_SERVER
+      );
+
+      deleteCache(serverRuntimePath);
+
+      for (const outputPath of this.previousOutputPathsWebpack5) {
+        if (!this.currentOutputPathsWebpack5.has(outputPath)) {
+          deleteCache(outputPath);
+        }
       }
-    );
+
+      this.previousOutputPathsWebpack5 = new Set(
+        this.currentOutputPathsWebpack5
+      );
+      this.currentOutputPathsWebpack5.clear();
+    });
   }
 }
