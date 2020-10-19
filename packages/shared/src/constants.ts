@@ -29,3 +29,6 @@ export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_public_path__`;
 export const IDENTITY_SSR_RUNTIME_PUBLICPATH = `__${NAME}_ssr_public_path__`;
 
 export const ROUTE_NOT_FOUND_NAME = `404`;
+
+// bundle
+export const BUILD_SERVER_FILE_SERVER = `server.js`;
