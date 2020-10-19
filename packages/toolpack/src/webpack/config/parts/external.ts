@@ -29,7 +29,7 @@ export function nodeExternals({
 }: {
   projectRoot: string;
 }): ExternalsFunction {
-  const nodeExternal: ExternalsFunction = (context, request, next) => {
+  const nodeExternal: ExternalsFunction = ({ context, request }, next) => {
     function transpiled() {
       return next(null, undefined);
     }

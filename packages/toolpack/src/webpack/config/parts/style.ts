@@ -1,9 +1,8 @@
 import {
   DEV_STYLE_ANCHOR_ID,
-  DEV_STYLE_PREPARE,
+  DEV_STYLE_PREPARE
 } from '@shuvi/shared/lib/constants';
 import Config from 'webpack-chain';
-// @ts-ignore
 import Rule from 'webpack-chain/src/Rule';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import loaderUtils from 'loader-utils';
@@ -58,7 +57,7 @@ const sassRegex = /\.(scss|sass)$/;
 function ssrCssRule({
   test,
   resourceQuery,
-  scss,
+  scss
 }: {
   test: any;
   resourceQuery?: any;
@@ -77,15 +76,15 @@ function ssrCssRule({
       sourceMap: false,
       importLoaders: scss ? 1 : 0,
       esModule: true,
-      onlyLocals: true,
       modules: {
         getLocalIdent: getCSSModuleLocalIdent,
-      },
+        exportOnlyLocals: true
+      }
     });
 
   if (scss) {
     rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
-      sourceMap: false,
+      sourceMap: false
     });
   }
 
@@ -99,7 +98,7 @@ function cssRule({
   cssModule,
   extractCss,
   sourceMap,
-  scss,
+  scss
 }: {
   publicPath?: string;
   test: any;
@@ -129,9 +128,9 @@ function cssRule({
         ...(publicPath && shouldUseRelativeAssetPaths(publicPath)
           ? {
               // path relative to outdir from the generated css file
-              publicPath: '../../',
+              publicPath: '../../'
             }
-          : {}),
+          : {})
       });
   } else {
     rule
@@ -158,7 +157,7 @@ function cssRule({
           });
         `
         ),
-        esModule: true,
+        esModule: true
       });
   }
 
@@ -170,11 +169,11 @@ function cssRule({
       importLoaders: scss ? 2 : 1,
       esModule: true,
       ...(cssModule && {
-        // onlyLocals: true,
         modules: {
-          getLocalIdent: getCSSModuleLocalIdent,
-        },
-      }),
+          getLocalIdent: getCSSModuleLocalIdent
+          // exportOnlyLocals: true,
+        }
+      })
     });
 
   rule
@@ -182,25 +181,24 @@ function cssRule({
     .loader(require.resolve('postcss-loader'))
     .options({
       sourceMap,
-      // Necessary for external CSS imports to work
-      // https://github.com/facebook/create-react-app/issues/2677
-      ident: 'postcss',
-      plugins: () => [
-        // Make Flexbox behave like the spec cross-browser.
-        require('postcss-flexbugs-fixes'),
-        // Run Autoprefixer and compile new CSS features.
-        require('postcss-preset-env')({
-          autoprefixer: {
-            flexbox: 'no-2009',
-          },
-          stage: 3,
-        }),
-      ],
+      postcssOptions: {
+        plugins: [
+          // Make Flexbox behave like the spec cross-browser.
+          require('postcss-flexbugs-fixes'),
+          // Run Autoprefixer and compile new CSS features.
+          require('postcss-preset-env')({
+            autoprefixer: {
+              flexbox: 'no-2009'
+            },
+            stage: 3
+          })
+        ]
+      }
     });
 
   if (scss) {
     rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
-      sourceMap,
+      sourceMap
     });
   }
 
@@ -219,7 +217,7 @@ export function withStyle(
       ssrCssRule({
         test: cssRegex,
         resourceQuery: cssModuleQueryRegex,
-        scss: false,
+        scss: false
       }).after('js')
     );
     oneOfs.set(
@@ -228,7 +226,7 @@ export function withStyle(
       ssrCssRule({
         test: sassRegex,
         resourceQuery: cssModuleQueryRegex,
-        scss: true,
+        scss: true
       }).after('css-module')
     );
     const ignoreRule: Config.Rule = new Rule();
@@ -247,8 +245,8 @@ export function withStyle(
     chain.plugin('mini-css-extract-plugin').use(MiniCssExtractPlugin, [
       {
         filename: 'static/css/[contenthash:8].css',
-        chunkFilename: 'static/css/[contenthash:8].chunk.css',
-      },
+        chunkFilename: 'static/css/[contenthash:8].chunk.css'
+      }
     ]);
   }
 
@@ -262,7 +260,7 @@ export function withStyle(
       scss: false,
       extractCss,
       sourceMap,
-      publicPath,
+      publicPath
     }).after('js')
   );
   oneOfs.set(
@@ -274,7 +272,7 @@ export function withStyle(
       scss: false,
       extractCss,
       sourceMap,
-      publicPath,
+      publicPath
     }).after('css-module')
   );
   oneOfs.set(
@@ -287,7 +285,7 @@ export function withStyle(
       scss: true,
       extractCss,
       sourceMap,
-      publicPath,
+      publicPath
     }).after('css')
   );
   oneOfs.set(
@@ -299,7 +297,7 @@ export function withStyle(
       scss: true,
       extractCss,
       sourceMap,
-      publicPath,
+      publicPath
     }).after('scss-module')
   );
 

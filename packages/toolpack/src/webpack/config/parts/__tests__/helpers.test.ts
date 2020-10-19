@@ -26,11 +26,13 @@ describe('webpackHelpers', () => {
       expect(newExternalFn.name).toBe('defaultExternalsFn');
 
       expect(mockExternalFn).toBeCalledTimes(0);
-      newExternalFn('test context', 'test request', defaultCallback);
+      newExternalFn(
+        { context: 'test context', request: 'test request' },
+        defaultCallback
+      );
 
       expect(mockExternalFn).toBeCalledWith(
-        'test context',
-        'test request',
+        { context: 'test context', request: 'test request' },
         expect.anything()
       );
 
@@ -42,17 +44,15 @@ describe('webpackHelpers', () => {
       const { chain, helpers } = setupTest();
       const defaultCallback = jest.fn();
 
-      const mockExternalFn1 = jest.fn().mockImplementation((ctx, req, next) => {
+      const mockExternalFn1 = jest.fn().mockImplementation((_, next) => {
         next(null, 'next');
       });
 
-      const shouldInvokeCallback = jest
-        .fn()
-        .mockImplementation((ctx, req, next) => {
-          next();
-        });
+      const shouldInvokeCallback = jest.fn().mockImplementation((_, next) => {
+        next();
+      });
 
-      const mockExternalFn3 = jest.fn().mockImplementation((ctx, req, next) => {
+      const mockExternalFn3 = jest.fn().mockImplementation((_, next) => {
         next(null, 'next');
       });
 
@@ -61,7 +61,10 @@ describe('webpackHelpers', () => {
       helpers.addExternals(chain, mockExternalFn3);
 
       const newExternalFn = chain.get('externals');
-      newExternalFn('test context', 'test request', defaultCallback);
+      newExternalFn(
+        { context: 'test context', request: 'test request' },
+        defaultCallback
+      );
 
       expect(mockExternalFn1).toBeCalledTimes(1);
       expect(shouldInvokeCallback).toBeCalledTimes(1);

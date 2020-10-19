@@ -1,4 +1,3 @@
-//@ts-ignore
 import launchEditor from 'launch-editor';
 
 export function createLaunchEditorMiddleware(launchEditorEndpoint: string) {

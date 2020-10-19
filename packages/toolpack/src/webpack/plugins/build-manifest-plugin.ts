@@ -1,8 +1,8 @@
 import { Bundler } from '@shuvi/types';
-import { Compiler as WebpackCompiler } from 'webpack';
-// @ts-ignore
+import webpack, { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
 import Entrypoint from 'webpack/lib/Entrypoint';
-import { RawSource } from 'webpack-sources';
+
+const { RawSource } = webpack.sources;
 
 import ModuleItem = Bundler.IModuleItem;
 import Manifest = Bundler.IManifest;
@@ -25,9 +25,9 @@ function getFileExt(filepath: string): string {
   return match[1];
 }
 
-// function findEntrypointName(chunkGorup: any): string[] {
+// function findEntrypointName(chunkGroup: any): string[] {
 //   const entrypoints: any[] = [];
-//   const queue: any[] = [chunkGorup];
+//   const queue: any[] = [chunkGroup];
 //   while (queue.length) {
 //     const item = queue.shift();
 //     for (const parent of item.getParents()) {
@@ -44,7 +44,7 @@ function getFileExt(filepath: string): string {
 
 // This plugin creates a build-manifest.json for all assets that are being output
 // It has a mapping of "entry" filename to real filename. Because the real filename can be hashed in production
-export default class BuildManifestPlugin {
+export default class BuildManifestPlugin implements Plugin {
   private _options: Options;
   private _manifest!: Manifest;
 
@@ -55,36 +55,48 @@ export default class BuildManifestPlugin {
     };
   }
 
-  apply(compiler: WebpackCompiler) {
-    compiler.hooks.emit.tapAsync('BuildManifest', (compilation, callback) => {
-      const assetMap = (this._manifest = {
-        entries: {},
-        bundles: {},
-        chunkRequest: {},
-        loadble: {}
-      });
-      compilation.chunkGroups.forEach(chunkGroup => {
-        if (chunkGroup instanceof Entrypoint) {
-          this._collectEntries(chunkGroup);
+  createAssets(compiler: Compiler, compilation: Compilation) {
+    const assetMap = (this._manifest = {
+      entries: {},
+      bundles: {},
+      chunkRequest: {},
+      loadble: {}
+    });
+
+    compilation.chunkGroups.forEach(chunkGroup => {
+      if (chunkGroup instanceof Entrypoint) {
+        this._collectEntries(chunkGroup);
+      }
+
+      this._collect(chunkGroup, compiler, compilation);
+    });
+
+    this._manifest.loadble = Object.keys(this._manifest.loadble)
+      .sort()
+      // eslint-disable-next-line no-sequences
+      .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
+
+    return assetMap;
+  }
+
+  apply(compiler: Compiler) {
+    compiler.hooks.make.tap('BuildManifestPlugin', compilation => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'BuildManifestPlugin',
+          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+        },
+        assets => {
+          assets[this._options.filename] = new RawSource(
+            JSON.stringify(this.createAssets(compiler, compilation), null, 2),
+            true
+          );
         }
-
-        this._collect(chunkGroup, compiler);
-      });
-
-      this._manifest.loadble = Object.keys(this._manifest.loadble)
-        .sort()
-        // eslint-disable-next-line no-sequences
-        .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
-
-      compilation.assets[this._options.filename] = new RawSource(
-        JSON.stringify(assetMap, null, 2)
       );
-
-      callback();
     });
   }
 
-  private _collectEntries(entrypoint: any) {
+  private _collectEntries(entrypoint: ChunkGroup) {
     for (const chunk of entrypoint.chunks) {
       // If there's no name or no files
       if (!chunk.name || !chunk.files) {
@@ -102,12 +114,16 @@ export default class BuildManifestPlugin {
     }
   }
 
-  private _collect(chunkGroup: any, compiler: WebpackCompiler): void {
+  private _collect(
+    chunkGroup: ChunkGroup,
+    compiler: Compiler,
+    compilation: Compilation
+  ): void {
     const collectModules = this._options.modules;
-    chunkGroup.origins.forEach((chunkGroupOrigin: any) => {
+    chunkGroup.origins.forEach(chunkGroupOrigin => {
       const { request } = chunkGroupOrigin;
-      const ctx = { request, compiler };
-      chunkGroup.chunks.forEach((chunk: any) => {
+      const ctx = { request, compiler, compilation };
+      chunkGroup.chunks.forEach(chunk => {
         this._collectChunk(chunk, ctx);
         if (collectModules) {
           this._collectChunkModule(chunk, ctx);
@@ -117,7 +133,7 @@ export default class BuildManifestPlugin {
   }
 
   private _collectChunk(
-    chunk: any,
+    chunk: webpack.Chunk,
     {
       request
     }: {
@@ -154,20 +170,22 @@ export default class BuildManifestPlugin {
   }
 
   private _collectChunkModule(
-    chunk: any,
+    chunk: webpack.Chunk,
     {
       request,
-      compiler
+      compiler,
+      compilation
     }: {
       request: string;
-      compiler: WebpackCompiler;
+      compiler: Compiler;
+      compilation: Compilation;
     }
   ) {
     if (chunk.canBeInitial()) {
       return;
     }
 
-    const context = compiler.options.context;
+    const context = compiler.options.context!;
     chunk.files.forEach((file: string) => {
       const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
       const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
@@ -176,8 +194,10 @@ export default class BuildManifestPlugin {
       }
     });
 
-    for (const module of chunk.modulesIterable) {
-      let id = module.id;
+    for (const module of compilation.chunkGraph.getChunkModulesIterable(
+      chunk
+    )) {
+      let id = compilation.chunkGraph.getModuleId(module);
       if (!module.type.startsWith('javascript')) {
         continue;
       }
@@ -194,7 +214,7 @@ export default class BuildManifestPlugin {
       this._pushLoadableModules(request, {
         id,
         name
-      });
+      } as ModuleItem);
     }
   }
 

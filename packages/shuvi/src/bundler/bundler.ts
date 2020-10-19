@@ -1,6 +1,7 @@
 import { APIHooks } from '@shuvi/types';
 import ForkTsCheckerWebpackPlugin, {
-  createCodeframeFormatter
+  Issue,
+  createCodeFrameFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import Logger from '@shuvi/utils/lib/logger';
@@ -26,15 +27,19 @@ import {
 import { runCompiler, BundlerResult } from './runCompiler';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
+type CompilerErr = {
+  moduleName: string;
+  message: string;
+};
 type CompilerDiagnostics = {
-  errors: string[];
-  warnings: string[];
+  errors: CompilerErr[];
+  warnings: CompilerErr[];
 };
 
 interface WatchTargetOptions {
   typeChecking?: boolean;
-  onErrors?(errors: string[]): void;
-  onWarns?(warns: string[]): void;
+  onErrors?(errors: CompilerErr[]): void;
+  onWarns?(warns: CompilerErr[]): void;
 }
 
 interface Target {
@@ -57,6 +62,7 @@ class WebpackBundler {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
+
       this._extraTargets = ((await this._api.callHook<
         APIHooks.IHookBundlerExtraTarget
       >(
@@ -171,7 +177,7 @@ class WebpackBundler {
       plugin => plugin instanceof ForkTsCheckerWebpackPlugin
     );
     if (options.typeChecking && useTypeScript) {
-      const typescriptFormatter = createCodeframeFormatter({});
+      const typescriptFormatter = createCodeFrameFormatter({});
 
       compiler.hooks.beforeCompile.tap('beforeCompile', () => {
         tsMessagesPromise = new Promise(resolve => {
@@ -179,22 +185,25 @@ class WebpackBundler {
         });
       });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).receive.tap(
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
         'afterTypeScriptCheck',
-        (diagnostics: any[], lints: any[]) => {
-          const allMsgs = [...diagnostics, ...lints];
+        (issues: Issue[]) => {
           const format = (message: any) => {
             const file = (message.file || '').replace(/\\/g, '/');
-            const formated = typescriptFormatter(message, true);
-            return `${file}\n${formated}`;
+            const formatted = typescriptFormatter(message);
+            return {
+              message: formatted,
+              moduleName: file
+            };
           };
 
           tsMessagesResolver({
-            errors: allMsgs.filter(msg => msg.severity === 'error').map(format),
-            warnings: allMsgs
+            errors: issues.filter(msg => msg.severity === 'error').map(format),
+            warnings: issues
               .filter(msg => msg.severity === 'warning')
               .map(format)
           });
+          return issues;
         }
       );
     }
