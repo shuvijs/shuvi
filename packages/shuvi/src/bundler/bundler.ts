@@ -27,15 +27,19 @@ import {
 import { runCompiler, BundlerResult } from './runCompiler';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
+type CompilerErr = {
+  moduleName: string;
+  message: string;
+};
 type CompilerDiagnostics = {
-  errors: string[];
-  warnings: string[];
+  errors: CompilerErr[];
+  warnings: CompilerErr[];
 };
 
 interface WatchTargetOptions {
   typeChecking?: boolean;
-  onErrors?(errors: string[]): void;
-  onWarns?(warns: string[]): void;
+  onErrors?(errors: CompilerErr[]): void;
+  onWarns?(warns: CompilerErr[]): void;
 }
 
 interface Target {
@@ -187,7 +191,10 @@ class WebpackBundler {
           const format = (message: any) => {
             const file = (message.file || '').replace(/\\/g, '/');
             const formatted = typescriptFormatter(message);
-            return `${file}\n${formatted}`;
+            return {
+              message: formatted,
+              moduleName: file
+            };
           };
 
           tsMessagesResolver({

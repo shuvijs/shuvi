@@ -134,7 +134,7 @@ export function baseWebpackChain({
   config.module.set('strictExportPresence', true);
   const mainRule = config.module.rule('main');
 
-  // TODO: FIXME: do NOT webpack 5 support with this
+  // TODO: FIXME: await babel/babel-loader to update to fix this.
   // x-ref: https://github.com/webpack/webpack/issues/11467
   config.module
     .rule('webpackPatch')
