@@ -29,8 +29,8 @@ export async function getDevMiddleware({
   const compiler = await bundler.getWebpackCompiler();
   // watch before pass compiler to WebpackDevMiddleware
   bundler.watch({
-    onErrors(errros) {
-      send('errors', errros);
+    onErrors(errors) {
+      send('errors', errors);
     },
     onWarns(warns) {
       send('warns', warns);
