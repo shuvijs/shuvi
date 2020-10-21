@@ -68,8 +68,11 @@ export async function getDevMiddleware({
   });
 
   const apply = () => {
-    // TODO: need test
-    api.server.use(c2k(webpackDevMiddleware) as any);
+    api.server.use(async (ctx, next) => {
+      ctx.status = 200;
+      const handler = c2k(webpackDevMiddleware) as any;
+      await handler(ctx, next);
+    });
     api.server.use(webpackHotMiddleware.middleware);
     api.server.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
