@@ -1,10 +1,4 @@
 import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
-import { IncomingMessage, ServerResponse } from 'http';
-import {
-  IHTTPRequestHandler,
-  IIncomingMessage,
-  IServerResponse
-} from '../server';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
@@ -34,34 +28,30 @@ export default abstract class Shuvi {
     await this.init();
   }
 
-  getRequestHandler(): IHTTPRequestHandler {
+  getRequestHandler() {
     return this._api.server.getRequestHandler();
   }
 
-  async renderToHTML(
-    req: IncomingMessage,
-    res: ServerResponse
-  ): Promise<string | null> {
+  async renderToHTML(ctx: Runtime.IServerContext): Promise<string | null> {
     const { server } = this._api.resources.server;
     const { html, appContext } = await renderToHTML({
-      req: req as Runtime.IRequest,
+      req: ctx.req as Runtime.IRequest,
       api: this._api,
       onRedirect(redirect) {
-        res.writeHead(redirect.status ?? 302, { Location: redirect.path });
-        res.end();
+        ctx.status = redirect.status ?? 302;
+        ctx.response.set({ Location: redirect.path });
+        ctx.body = '';
+        return;
       }
     });
 
     // set 404 statusCode
     if (appContext.statusCode) {
-      res.statusCode = appContext.statusCode;
+      ctx.status = appContext.statusCode;
     }
 
     if (server.onViewDone) {
-      server.onViewDone(req, res, {
-        html,
-        appContext
-      });
+      server.onViewDone(ctx, { html, appContext });
     }
 
     return html;
@@ -84,26 +74,26 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _handle404(req: IIncomingMessage, res: IServerResponse) {
-    res.statusCode = 404;
-    res.end();
+  protected _handle404(ctx: Runtime.IServerContext) {
+    ctx.status = 404;
+    ctx.body = '';
+    return;
   }
 
   protected async _handlePageRequest(
-    req: IIncomingMessage,
-    res: IServerResponse
+    ctx: Runtime.IServerContext
   ): Promise<void> {
     try {
-      const html = await this.renderToHTML(req, res);
+      const html = await this.renderToHTML(ctx);
       if (html) {
-        sendHTML(req, res, html);
+        sendHTML(ctx, html);
       }
     } catch (error) {
       if (this.getMode() === 'development') {
         console.error('render error', error);
       }
-      res.statusCode = 500;
-      res.end('Server Render Error');
+      ctx.status = 500;
+      ctx.body = 'Server Render Error';
     }
   }
 

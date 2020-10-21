@@ -1,4 +1,6 @@
-import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
+import http, { IncomingHttpHeaders } from 'http';
+import Koa from 'koa';
+import { UrlWithParsedQuery } from 'url';
 import {
   IUserRouteConfig,
   IAppRouteConfig,
@@ -190,11 +192,21 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
+export interface IIncomingMessage extends http.IncomingMessage {
+  url: string;
+  parsedUrl: UrlWithParsedQuery;
+  originalUrl?: http.IncomingMessage['url'];
+  [x: string]: any;
+}
+export type IServerApp = Koa;
+export type IServerContext = Koa.ParameterizedContext;
+export type IServerMiddleware = IServerApp['middleware'][0];
+export type IServerNext = Koa.Next;
+
 export interface IServerModule {
   onViewDone(
-    req: IncomingMessage,
-    res: ServerResponse,
-    ctx: {
+    ctx: IServerContext,
+    payload: {
       html: string | null;
       appContext: any;
     }

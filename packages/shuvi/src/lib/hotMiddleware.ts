@@ -24,6 +24,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import type webpack from 'webpack';
 import type http from 'http';
+import { Runtime } from '@shuvi/types';
 
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
@@ -57,14 +58,10 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware = (
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    next: () => void
-  ) => {
+  middleware: Runtime.IServerMiddleware = async (ctx, next) => {
     if (this.closed) return next();
-    if (!req.url?.startsWith(this._path)) return next();
-    this.eventStream.handler(req, res);
+    if (!ctx.request.url?.startsWith(this._path)) return await next();
+    this.eventStream.handler(ctx);
     if (this.latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
@@ -130,7 +127,7 @@ class EventStream {
     this.clients.clear();
   }
 
-  handler(req: http.IncomingMessage, res: http.ServerResponse) {
+  handler(ctx: Runtime.IServerContext) {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'text/event-stream;charset=utf-8',
@@ -140,20 +137,24 @@ class EventStream {
       'X-Accel-Buffering': 'no'
     };
 
-    const isHttp1 = !(parseInt(req.httpVersion) >= 2);
+    const isHttp1 = !(parseInt(ctx.req.httpVersion) >= 2);
     if (isHttp1) {
-      req.socket.setKeepAlive(true);
+      ctx.request.socket.setKeepAlive(true);
       Object.assign(headers, {
         Connection: 'keep-alive'
       });
     }
 
-    res.writeHead(200, headers);
-    res.write('\n');
-    this.clients.add(res);
-    req.on('close', () => {
-      if (!res.finished) res.end();
-      this.clients.delete(res);
+    ctx.status = 200;
+    ctx.response.set(headers);
+    ctx.body += '\n';
+    this.clients.add(ctx.res);
+    ctx.req.on('close', () => {
+      if (!ctx.res.finished) {
+        ctx.body = '';
+        return;
+      }
+      this.clients.delete(ctx.res);
     });
   }
 

@@ -1,17 +1,15 @@
 import http from 'http';
-import { IServerProxyConfig, IServerProxyConfigItem } from '@shuvi/types';
+import Koa from 'koa';
+import koaRoute from 'koa-route';
+import c2k from 'koa-connect';
+import {
+  IServerProxyConfig,
+  IServerProxyConfigItem,
+  Runtime
+} from '@shuvi/types';
 import { parse as parseUrl } from 'url';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import Connect from 'connect';
 import detectPort from 'detect-port';
-import {
-  IConnect,
-  IIncomingMessage,
-  IServerResponse,
-  INextFunction,
-  IHTTPRequestHandler,
-  IHandleFunction
-} from './types';
 
 interface IServerOptions {
   proxy?: IServerProxyConfig;
@@ -60,21 +58,22 @@ function normalizeProxyConfig(
 export class Server {
   hostname: string | undefined;
   port: number | undefined;
-  private _connect: IConnect;
+  private _app: Runtime.IServerApp;
   private _server: http.Server | null = null;
 
   constructor(options: IServerOptions = {}) {
-    this._connect = Connect();
+    this._app = new Koa();
 
     if (options.proxy) {
       this._setupProxy(options.proxy);
     }
-    this._connect.use(
-      (req: IIncomingMessage, _res: IServerResponse, next: INextFunction) => {
-        req.parsedUrl = parseUrl(req.url || '', true);
-        next();
-      }
-    );
+    this._app.use(async (ctx, next) => {
+      (ctx.req as Runtime.IIncomingMessage).parsedUrl = parseUrl(
+        ctx.request.url || '',
+        true
+      );
+      await next();
+    });
   }
 
   async _checkPort(port: number) {
@@ -105,15 +104,19 @@ export class Server {
     });
   }
 
-  use(fn: IHandleFunction): this;
-  use(route: string, fn: IHandleFunction): this;
+  use(fn: Runtime.IServerMiddleware): this;
+  use(route: string, fn: Runtime.IServerMiddleware): this;
   use(route: any, fn?: any): this {
-    this._connect.use(route, fn);
+    if (fn) {
+      this._app.use(koaRoute.get(route, fn, { end: false }));
+    } else {
+      this._app.use(route);
+    }
     return this;
   }
 
-  getRequestHandler(): IHTTPRequestHandler {
-    return this._connect;
+  getRequestHandler() {
+    return this._app.callback();
   }
 
   close() {
@@ -128,11 +131,9 @@ export class Server {
     const proxyOptions = normalizeProxyConfig(proxy);
     proxyOptions.forEach(({ context, ...opts }) => {
       if (context) {
-        this._connect.use(
-          createProxyMiddleware(context, opts) as IHandleFunction
-        );
+        this._app.use(c2k(createProxyMiddleware(context, opts) as any));
       } else {
-        this._connect.use(createProxyMiddleware(opts) as IHandleFunction);
+        this._app.use(c2k(createProxyMiddleware(opts) as any));
       }
     });
   }

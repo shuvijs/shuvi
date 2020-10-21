@@ -1,15 +1,11 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { Runtime } from '@shuvi/types';
 
-export function sendHTML(
-  req: IncomingMessage,
-  res: ServerResponse,
-  html: string
-) {
-  if (res.writableEnded || res.headersSent) return;
+export function sendHTML(ctx: Runtime.IServerContext, html: string) {
+  if (ctx.res.writableEnded || ctx.res.headersSent) return;
 
-  if (!res.getHeader('Content-Type')) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  if (!ctx.response.headers['Content-Type']) {
+    ctx.response.set('Content-Type', 'text/html; charset=utf-8');
   }
-  res.setHeader('Content-Length', Buffer.byteLength(html));
-  res.end(req.method === 'HEAD' ? null : html);
+  ctx.response.set('Content-Length', Buffer.byteLength(html).toString());
+  ctx.body = ctx.request.method === 'HEAD' ? null : html;
 }

@@ -1,15 +1,19 @@
 import launchEditor from 'launch-editor';
+import { Runtime } from '@shuvi/types';
 
-export function createLaunchEditorMiddleware(launchEditorEndpoint: string) {
-  return function launchEditorMiddleware(req: any, res: any, next: any) {
-    if (req.url.startsWith(launchEditorEndpoint)) {
-      const { query } = req.parsedUrl;
-      const lineNumber = parseInt(query.lineNumber, 10) || 1;
-      const colNumber = parseInt(query.colNumber, 10) || 1;
+export function createLaunchEditorMiddleware(
+  launchEditorEndpoint: string
+): Runtime.IServerMiddleware {
+  return async function launchEditorMiddleware(ctx, next) {
+    if (ctx.request.url.startsWith(launchEditorEndpoint)) {
+      const { query } = (ctx.req as Runtime.IIncomingMessage).parsedUrl;
+      const lineNumber = parseInt(query.lineNumber as string, 10) || 1;
+      const colNumber = parseInt(query.colNumber as string, 10) || 1;
       launchEditor(`${query.fileName}:${lineNumber}:${colNumber}`);
-      res.end();
+      ctx.body = '';
+      return;
     } else {
-      next();
+      await next();
     }
   };
 }

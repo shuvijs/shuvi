@@ -1,4 +1,4 @@
-import { IIncomingMessage, IServerResponse } from '../server';
+import { Runtime } from '@shuvi/types';
 import { serveStatic } from '../lib/serveStatic';
 import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
@@ -17,17 +17,21 @@ export default class ShuviProd extends Base {
     return 'production' as const;
   }
 
-  private async _assetsMiddleware(req: IIncomingMessage, res: IServerResponse) {
+  private async _assetsMiddleware(ctx: Runtime.IServerContext) {
     const api = this._api;
-    const asestAbsPath = api.resolveBuildFile(BUILD_CLIENT_DIR, req.url!);
+    const assetAbsPath = api.resolveBuildFile(
+      BUILD_CLIENT_DIR,
+      ctx.request.url.replace(api.assetPublicPath, '')
+    );
     try {
-      await serveStatic(req, res, asestAbsPath);
+      await serveStatic(ctx, assetAbsPath);
     } catch (err) {
       if (err.code === 'ENOENT' || err.statusCode === 404) {
-        this._handle404(req, res);
+        this._handle404(ctx);
       } else if (err.statusCode === 412) {
-        res.statusCode = 412;
-        return res.end();
+        ctx.status = 412;
+        ctx.body = '';
+        return;
       } else {
         throw err;
       }
