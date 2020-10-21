@@ -202,6 +202,7 @@ export type IServerApp = Koa;
 export type IServerContext = Koa.ParameterizedContext;
 export type IServerMiddleware = IServerApp['middleware'][0];
 export type IServerNext = Koa.Next;
+export type IServerResponse = Koa.Response;
 
 export interface IServerModule {
   onViewDone(

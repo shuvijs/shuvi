@@ -23,7 +23,7 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import type webpack from 'webpack';
-import type http from 'http';
+import { PassThrough } from 'stream';
 import { Runtime } from '@shuvi/types';
 
 interface IWebpackHotMiddlewareOptions {
@@ -59,7 +59,7 @@ export class WebpackHotMiddleware {
     this.publishStats('built', this.latestStats);
   };
   middleware: Runtime.IServerMiddleware = async (ctx, next) => {
-    if (this.closed) return next();
+    if (this.closed) return await next();
     if (!ctx.request.url?.startsWith(this._path)) return await next();
     this.eventStream.handler(ctx);
     if (this.latestStats) {
@@ -99,7 +99,7 @@ export class WebpackHotMiddleware {
 }
 
 class EventStream {
-  clients: Set<http.ServerResponse>;
+  clients: Set<Runtime.IServerResponse>;
   interval: NodeJS.Timeout;
   constructor() {
     this.clients = new Set();
@@ -109,11 +109,11 @@ class EventStream {
 
   heartbeatTick = () => {
     this.everyClient(client => {
-      client.write('data: \uD83D\uDC93\n\n');
+      client.body.write('data: \uD83D\uDC93\n\n');
     });
   };
 
-  everyClient(fn: (client: http.ServerResponse) => void) {
+  everyClient(fn: (client: Runtime.IServerResponse) => void) {
     for (const client of this.clients) {
       fn(client);
     }
@@ -122,7 +122,7 @@ class EventStream {
   close() {
     clearInterval(this.interval);
     this.everyClient(client => {
-      if (!client.finished) client.end();
+      if (!client.res.finished) client.body.end();
     });
     this.clients.clear();
   }
@@ -147,20 +147,18 @@ class EventStream {
 
     ctx.status = 200;
     ctx.response.set(headers);
-    ctx.body += '\n';
-    this.clients.add(ctx.res);
-    ctx.req.on('close', () => {
-      if (!ctx.res.finished) {
-        ctx.body = '';
-        return;
-      }
-      this.clients.delete(ctx.res);
+    ctx.response.body = new PassThrough();
+    ctx.response.body.write('\n');
+    this.clients.add(ctx.response);
+    ctx.response.body.on('close', () => {
+      if (!ctx.res.finished) ctx.response.body.end()
+      this.clients.delete(ctx.response);
     });
   }
 
   publish(payload: any) {
     this.everyClient(client => {
-      client.write('data: ' + JSON.stringify(payload) + '\n\n');
+      client.body.write('data: ' + JSON.stringify(payload) + '\n\n');
     });
   }
 }
