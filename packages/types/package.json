@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/types",
-  "version": "0.0.1-rc.4",
+  "version": "0.0.1-rc.5",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -17,13 +17,13 @@
     "build": "echo \"lerna bug, without this, lerna can't get the right topology order\""
   },
   "dependencies": {
-    "@shuvi/core": "^0.0.1-rc.4",
+    "@shuvi/core": "^0.0.1-rc.5",
     "@shuvi/hooks": "0.0.1-beta.38",
-    "@shuvi/router": "^0.0.1-rc.4",
-    "webpack": "5.1.0",
+    "@shuvi/router": "^0.0.1-rc.5",
     "@types/webpack-dev-middleware": "3.7.2",
     "http-proxy-middleware": "1.0.3",
     "query-string": "6.13.1",
+    "webpack": "5.1.0",
     "webpack-chain": "6.5.1"
   }
 }
