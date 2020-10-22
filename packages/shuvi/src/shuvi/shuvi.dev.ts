@@ -4,6 +4,7 @@ import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
+import { throwServerRenderError } from '../lib/throw';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -79,7 +80,7 @@ export default class ShuviDev extends Base {
     try {
       await this._handlePageRequest(ctx);
     } catch (error) {
-      ctx.throw(500, error)
+      throwServerRenderError(error);
     }
 
     await next();

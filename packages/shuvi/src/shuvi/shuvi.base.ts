@@ -3,6 +3,7 @@ import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
+import { throwServerRenderError } from '../lib/throw';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -87,11 +88,7 @@ export default abstract class Shuvi {
         sendHTML(ctx, html);
       }
     } catch (error) {
-      if (this.getMode() === 'development') {
-        console.error('render error', error);
-      }
-      ctx.status = 500;
-      ctx.body = 'Server Render Error';
+      throwServerRenderError(error);
     }
   };
 

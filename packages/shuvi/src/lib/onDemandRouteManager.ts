@@ -4,6 +4,7 @@ import { DevMiddleware } from './devMiddleware';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
+import { throwServerRenderError } from './throw';
 
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
@@ -40,7 +41,7 @@ export class OnDemandRouteManager {
           ctx.status = 200;
           await next();
         } catch (error) {
-          ctx.throw(500, error);
+          throwServerRenderError(error);
         }
       } else {
         ctx.status = 200;
