@@ -76,14 +76,10 @@ export default class ShuviDev extends Base {
       (ctx.req as Runtime.IIncomingMessage).parsedUrl.pathname || '/'
     );
 
-    let err: Error | undefined;
     try {
       await this._handlePageRequest(ctx);
     } catch (error) {
-      console.error('render fail', error);
-      err = error;
-      // TODO
-      ctx.app.emit('error', err, ctx);
+      ctx.throw(500, error)
     }
 
     await next();

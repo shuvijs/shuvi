@@ -39,9 +39,8 @@ export class OnDemandRouteManager {
           await task;
           ctx.status = 200;
           await next();
-        } catch (err) {
-          ctx.app.emit('error', err, ctx);
-          await next();
+        } catch (error) {
+          ctx.throw(500, error);
         }
       } else {
         ctx.status = 200;
