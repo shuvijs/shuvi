@@ -1,4 +1,4 @@
-import http, { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders, IncomingMessage } from 'http';
 import Koa from 'koa';
 import { UrlWithParsedQuery } from 'url';
 import {
@@ -72,10 +72,10 @@ export interface IRedirectFn {
   (status: number, path: string): void;
   (path: string): void;
 }
-export interface IIncomingMessage extends http.IncomingMessage {
+export interface IIncomingMessage extends IncomingMessage {
   url: string;
   parsedUrl: UrlWithParsedQuery;
-  originalUrl?: http.IncomingMessage['url'];
+  originalUrl?: IncomingMessage['url'];
   [x: string]: any;
 }
 
@@ -201,7 +201,7 @@ export interface IDocumentModule {
 export type IKoa = Koa;
 export type IKoaContext = Koa.Context;
 export type IKoaMiddleware = Koa.Middleware;
-export type IKoaHandler = (context: Koa.Context) => any | Promise<void>;
+export type IKoaHandler = (context: IKoaContext) => any | Promise<void>;
 export type IKoaNext = Koa.Next;
 export type IKoaResponse = Koa.Response;
 
