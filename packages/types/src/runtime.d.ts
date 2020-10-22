@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders, IncomingMessage } from 'http';
-import Koa from 'koa';
+import Koa, { DefaultState, DefaultContext } from 'koa';
 import { UrlWithParsedQuery } from 'url';
 import {
   IUserRouteConfig,
@@ -198,10 +198,15 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
-export type IKoa = Koa;
+export type IKoa<S = DefaultState, C = DefaultContext> = Koa<S, C>;
 export type IKoaContext = Koa.Context;
-export type IKoaMiddleware = Koa.Middleware;
-export type IKoaHandler = (context: IKoaContext) => any | Promise<void>;
+export type IKoaMiddleware<
+  S = DefaultState,
+  C = DefaultContext
+> = Koa.Middleware<S, C>;
+export type IKoaHandler<S = DefaultState, C = DefaultContext> = (
+  context: Koa.ParameterizedContext<S, C>
+) => any | Promise<void>;
 export type IKoaNext = Koa.Next;
 export type IKoaResponse = Koa.Response;
 
