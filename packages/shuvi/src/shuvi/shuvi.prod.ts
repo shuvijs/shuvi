@@ -10,7 +10,7 @@ export default class ShuviProd extends Base {
     if (api.config.publicPath === PUBLIC_PATH) {
       api.server.use(api.assetPublicPath, this._assetsMiddleware);
     }
-    api.server.use(this._handlePageRequest.bind(this));
+    api.server.use(this._handlePageRequest);
   }
 
   protected getMode() {
