@@ -75,10 +75,8 @@ export class Server {
       await next();
     });
     this._app.on('error', (err, ctx) => {
-      if (process.env.NODE_ENV === 'development') {
-        // Note: Koa error-handling logic such as centralized logging
-        console.error('server error', err, ctx);
-      }
+      // Note: Koa error-handling logic such as centralized logging
+      console.error('server error', err, ctx);
     });
   }
 
