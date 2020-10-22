@@ -41,7 +41,7 @@ export class OnDemandRouteManager {
           ctx.status = 200;
           await next();
         } catch (error) {
-          throwServerRenderError(error);
+          throwServerRenderError(ctx, error);
         }
       } else {
         ctx.status = 200;

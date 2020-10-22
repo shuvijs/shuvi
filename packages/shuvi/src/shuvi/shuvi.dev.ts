@@ -80,7 +80,7 @@ export default class ShuviDev extends Base {
     try {
       await this._handlePageRequest(ctx);
     } catch (error) {
-      throwServerRenderError(error);
+      throwServerRenderError(ctx, error);
     }
 
     await next();

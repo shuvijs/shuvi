@@ -88,7 +88,7 @@ export default abstract class Shuvi {
         sendHTML(ctx, html);
       }
     } catch (error) {
-      throwServerRenderError(error);
+      throwServerRenderError(ctx, error);
     }
   };
 
