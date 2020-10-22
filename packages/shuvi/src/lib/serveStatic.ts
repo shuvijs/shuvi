@@ -2,7 +2,7 @@ import { Runtime } from '@shuvi/types';
 import send from 'send';
 
 export function serveStatic(
-  ctx: Runtime.IServerContext,
+  ctx: Runtime.IKoaContext,
   path: string
 ): Promise<void> {
   return new Promise((resolve, reject) => {

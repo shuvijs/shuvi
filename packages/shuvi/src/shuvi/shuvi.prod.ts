@@ -8,7 +8,7 @@ export default class ShuviProd extends Base {
     const api = this._api;
     // If user don't provide a custom asset public path, we need serve it
     if (api.config.publicPath === PUBLIC_PATH) {
-      api.server.use(api.assetPublicPath, this._assetsMiddleware.bind(this));
+      api.server.use(api.assetPublicPath, this._assetsMiddleware);
     }
     api.server.use(this._handlePageRequest.bind(this));
   }
@@ -17,7 +17,7 @@ export default class ShuviProd extends Base {
     return 'production' as const;
   }
 
-  private async _assetsMiddleware(ctx: Runtime.IServerContext) {
+  private _assetsMiddleware: Runtime.IKoaHandler = async ctx => {
     const api = this._api;
     const assetAbsPath = api.resolveBuildFile(
       BUILD_CLIENT_DIR,
@@ -36,5 +36,5 @@ export default class ShuviProd extends Base {
         throw err;
       }
     }
-  }
+  };
 }

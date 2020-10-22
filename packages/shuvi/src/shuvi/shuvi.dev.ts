@@ -28,8 +28,8 @@ export default class ShuviDev extends Base {
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
-    api.server.use(api.assetPublicPath, this._publicDirMiddleware.bind(this));
-    api.server.use(this._pageMiddleware.bind(this));
+    api.server.use(api.assetPublicPath, this._publicDirMiddleware);
+    api.server.use(this._pageMiddleware);
 
     await devMiddleware.waitUntilValid();
   }
@@ -38,7 +38,7 @@ export default class ShuviDev extends Base {
     return 'development' as const;
   }
 
-  private async _publicDirMiddleware(ctx: Runtime.IServerContext) {
+  private _publicDirMiddleware: Runtime.IKoaHandler = async ctx => {
     const api = this._api;
     const assetAbsPath = api.resolvePublicFile(
       ctx.request.url.replace(api.assetPublicPath, '')
@@ -56,12 +56,9 @@ export default class ShuviDev extends Base {
         throw err;
       }
     }
-  }
+  };
 
-  private async _pageMiddleware(
-    ctx: Runtime.IServerContext,
-    next: Runtime.IServerNext
-  ) {
+  private _pageMiddleware: Runtime.IKoaMiddleware = async (ctx, next) => {
     const headers = ctx.request.headers;
     if (ctx.request.method !== 'GET') {
       return await next();
@@ -90,5 +87,5 @@ export default class ShuviDev extends Base {
     }
 
     await next();
-  }
+  };
 }

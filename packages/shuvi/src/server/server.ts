@@ -58,7 +58,7 @@ function normalizeProxyConfig(
 export class Server {
   hostname: string | undefined;
   port: number | undefined;
-  private _app: Runtime.IServerApp;
+  private _app: Runtime.IKoa;
   private _server: http.Server | null = null;
 
   constructor(options: IServerOptions = {}) {
@@ -104,10 +104,11 @@ export class Server {
     });
   }
 
-  use(fn: Runtime.IServerMiddleware): this;
-  use(route: string, fn: Runtime.IServerMiddleware): this;
+  use(fn: Runtime.IKoaMiddleware): this;
+  use(route: string, fn: Runtime.IKoaMiddleware): this;
   use(route: any, fn?: any): this {
     if (fn) {
+      /* Note: When `end: false` the path will match at the beginning. ref: https://github.com/pillarjs/path-to-regexp/tree/1.x#usage */
       this._app.use(koaRoute.get(route, fn, { end: false }));
     } else {
       this._app.use(route);

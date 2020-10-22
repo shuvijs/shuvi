@@ -13,7 +13,7 @@ export class OnDemandRouteManager {
     this._api = api;
   }
 
-  getServerMiddleware(): Runtime.IServerMiddleware {
+  getServerMiddleware(): Runtime.IKoaMiddleware {
     return async (ctx, next) => {
       const pathname = (ctx.req as Runtime.IIncomingMessage).parsedUrl
         .pathname!;

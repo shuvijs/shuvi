@@ -22,8 +22,8 @@
 // CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import type webpack from 'webpack';
 import { PassThrough } from 'stream';
+import type webpack from 'webpack';
 import { Runtime } from '@shuvi/types';
 
 interface IWebpackHotMiddlewareOptions {
@@ -58,7 +58,7 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware: Runtime.IServerMiddleware = async (ctx, next) => {
+  middleware: Runtime.IKoaMiddleware = async (ctx, next) => {
     if (this.closed) return await next();
     if (!ctx.request.url?.startsWith(this._path)) return await next();
     this.eventStream.handler(ctx);
@@ -99,7 +99,7 @@ export class WebpackHotMiddleware {
 }
 
 class EventStream {
-  clients: Set<Runtime.IServerResponse>;
+  clients: Set<Runtime.IKoaResponse>;
   interval: NodeJS.Timeout;
   constructor() {
     this.clients = new Set();
@@ -113,7 +113,7 @@ class EventStream {
     });
   };
 
-  everyClient(fn: (client: Runtime.IServerResponse) => void) {
+  everyClient(fn: (client: Runtime.IKoaResponse) => void) {
     for (const client of this.clients) {
       fn(client);
     }
@@ -127,7 +127,7 @@ class EventStream {
     this.clients.clear();
   }
 
-  handler(ctx: Runtime.IServerContext) {
+  handler: Runtime.IKoaHandler = ctx => {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'text/event-stream;charset=utf-8',
@@ -151,10 +151,10 @@ class EventStream {
     ctx.response.body.write('\n');
     this.clients.add(ctx.response);
     ctx.response.body.on('close', () => {
-      if (!ctx.res.finished) ctx.response.body.end()
+      if (!ctx.res.finished) ctx.response.body.end();
       this.clients.delete(ctx.response);
     });
-  }
+  };
 
   publish(payload: any) {
     this.everyClient(client => {

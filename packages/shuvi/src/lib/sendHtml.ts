@@ -1,6 +1,6 @@
 import { Runtime } from '@shuvi/types';
 
-export function sendHTML(ctx: Runtime.IServerContext, html: string) {
+export function sendHTML(ctx: Runtime.IKoaContext, html: string) {
   if (ctx.res.writableEnded || ctx.res.headersSent) return;
 
   if (!ctx.response.headers['Content-Type']) {

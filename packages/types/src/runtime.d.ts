@@ -72,6 +72,12 @@ export interface IRedirectFn {
   (status: number, path: string): void;
   (path: string): void;
 }
+export interface IIncomingMessage extends http.IncomingMessage {
+  url: string;
+  parsedUrl: UrlWithParsedQuery;
+  originalUrl?: http.IncomingMessage['url'];
+  [x: string]: any;
+}
 
 export interface ISeverAppContext {
   req: IRequest;
@@ -192,21 +198,16 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
-export interface IIncomingMessage extends http.IncomingMessage {
-  url: string;
-  parsedUrl: UrlWithParsedQuery;
-  originalUrl?: http.IncomingMessage['url'];
-  [x: string]: any;
-}
-export type IServerApp = Koa;
-export type IServerContext = Koa.ParameterizedContext;
-export type IServerMiddleware = IServerApp['middleware'][0];
-export type IServerNext = Koa.Next;
-export type IServerResponse = Koa.Response;
+export type IKoa = Koa;
+export type IKoaContext = Koa.Context;
+export type IKoaMiddleware = Koa.Middleware;
+export type IKoaHandler = (context: Koa.Context) => any | Promise<void>;
+export type IKoaNext = Koa.Next;
+export type IKoaResponse = Koa.Response;
 
 export interface IServerModule {
   onViewDone(
-    ctx: IServerContext,
+    ctx: IKoaContext,
     payload: {
       html: string | null;
       appContext: any;

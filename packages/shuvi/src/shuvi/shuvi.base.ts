@@ -32,7 +32,7 @@ export default abstract class Shuvi {
     return this._api.server.getRequestHandler();
   }
 
-  async renderToHTML(ctx: Runtime.IServerContext): Promise<string | null> {
+  async renderToHTML(ctx: Runtime.IKoaContext): Promise<string | null> {
     const { server } = this._api.resources.server;
     const { html, appContext } = await renderToHTML({
       req: ctx.req as Runtime.IRequest,
@@ -74,15 +74,13 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _handle404(ctx: Runtime.IServerContext) {
+  protected _handle404: Runtime.IKoaHandler = ctx => {
     ctx.status = 404;
     ctx.body = '';
     return;
-  }
+  };
 
-  protected async _handlePageRequest(
-    ctx: Runtime.IServerContext
-  ): Promise<void> {
+  protected _handlePageRequest: Runtime.IKoaHandler = async ctx => {
     try {
       const html = await this.renderToHTML(ctx);
       if (html) {
@@ -95,7 +93,7 @@ export default abstract class Shuvi {
       ctx.status = 500;
       ctx.body = 'Server Render Error';
     }
-  }
+  };
 
   private async _ensureApiInited() {
     if (this._api) {
