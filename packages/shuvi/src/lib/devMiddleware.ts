@@ -103,6 +103,7 @@ export async function getDevMiddleware({
     name: 'DevMiddleware',
     fn() {
       return new Promise(resolve => {
+        webpackHotMiddleware.close()
         webpackDevMiddleware.close(resolve);
       });
     }

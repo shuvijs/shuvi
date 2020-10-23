@@ -122,7 +122,7 @@ class EventStream {
   close() {
     clearInterval(this.interval);
     this.everyClient(client => {
-      if (!client.res.finished) client.body.end();
+      if (!client.res.finished || !client.res.writableEnded) client.body.end();
     });
     this.clients.clear();
   }
@@ -151,7 +151,7 @@ class EventStream {
     ctx.response.body.write('\n');
     this.clients.add(ctx.response);
     ctx.response.body.on('close', () => {
-      if (!ctx.res.finished) ctx.response.body.end();
+      if (!ctx.res.finished || !ctx.res.writableEnded) ctx.response.body.end();
       this.clients.delete(ctx.response);
     });
   };
