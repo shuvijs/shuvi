@@ -45,7 +45,7 @@ export default class ShuviDev extends Base {
       ctx.request.url.replace(api.assetPublicPath, '')
     );
     try {
-      await serveStatic(ctx, assetAbsPath);
+      await serveStatic(ctx.req, ctx.res, assetAbsPath);
     } catch (err) {
       if (err.code === 'ENOENT' || err.statusCode === 404) {
         this._handle404(ctx);

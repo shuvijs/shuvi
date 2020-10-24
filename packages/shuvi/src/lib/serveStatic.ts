@@ -1,14 +1,15 @@
-import { Runtime } from '@shuvi/types';
+import { IncomingMessage, ServerResponse } from 'http';
 import send from 'send';
 
 export function serveStatic(
-  ctx: Runtime.IKoaContext,
+  req: IncomingMessage,
+  res: ServerResponse,
   path: string
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    send(ctx.req, path)
+    send(req, path)
       .on('file', () => {
-        ctx.status = 200;
+        res.statusCode = 200;
       })
       .on('directory', () => {
         // We don't allow directories to be read.
@@ -17,7 +18,7 @@ export function serveStatic(
         reject(err);
       })
       .on('error', reject)
-      .pipe(ctx.res)
+      .pipe(res)
       .on('finish', resolve);
   });
 }

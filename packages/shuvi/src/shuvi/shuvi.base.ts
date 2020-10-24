@@ -1,3 +1,4 @@
+import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/sendHtml';
@@ -33,26 +34,27 @@ export default abstract class Shuvi {
     return this._api.server.getRequestHandler();
   }
 
-  async renderToHTML(ctx: Runtime.IKoaContext): Promise<string | null> {
+  async renderToHTML(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Promise<string | null> {
     const { server } = this._api.resources.server;
     const { html, appContext } = await renderToHTML({
-      req: ctx.req as Runtime.IRequest,
+      req: req as Runtime.IRequest,
       api: this._api,
       onRedirect(redirect) {
-        ctx.status = redirect.status ?? 302;
-        ctx.response.set({ Location: redirect.path });
-        ctx.body = '';
-        return;
+        res.writeHead(redirect.status ?? 302, { Location: redirect.path });
+        res.end();
       }
     });
 
     // set 404 statusCode
     if (appContext.statusCode) {
-      ctx.status = appContext.statusCode;
+      res.statusCode = appContext.statusCode;
     }
 
     if (server.onViewDone) {
-      server.onViewDone(ctx, { html, appContext });
+      server.onViewDone(req, res, { html, appContext });
     }
 
     return html;
@@ -83,9 +85,9 @@ export default abstract class Shuvi {
 
   protected _handlePageRequest: Runtime.IKoaHandler = async ctx => {
     try {
-      const html = await this.renderToHTML(ctx);
+      const html = await this.renderToHTML(ctx.req, ctx.res);
       if (html) {
-        sendHTML(ctx, html);
+        sendHTML(ctx.req, ctx.res, html);
       }
     } catch (error) {
       throwServerRenderError(ctx, error);

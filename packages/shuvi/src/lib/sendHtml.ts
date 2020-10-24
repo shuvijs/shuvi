@@ -1,11 +1,15 @@
-import { Runtime } from '@shuvi/types';
+import { IncomingMessage, ServerResponse } from 'http';
 
-export function sendHTML(ctx: Runtime.IKoaContext, html: string) {
-  if (ctx.res.writableEnded || ctx.res.headersSent) return;
+export function sendHTML(
+  req: IncomingMessage,
+  res: ServerResponse,
+  html: string
+) {
+  if (res.writableEnded || res.headersSent) return;
 
-  if (!ctx.response.type) {
-    ctx.response.type = 'text/html; charset=utf-8';
+  if (!res.getHeader('Content-Type')) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
   }
-  ctx.response.length = Buffer.byteLength(html);
-  ctx.body = ctx.request.method === 'HEAD' ? null : html;
+  res.setHeader('Content-Length', Buffer.byteLength(html));
+  res.end(req.method === 'HEAD' ? null : html);
 }

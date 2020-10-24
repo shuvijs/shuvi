@@ -1,6 +1,6 @@
-export function onViewDone(ctx, { html, appContext }) {
+export function onViewDone(req, res, { html, appContext }) {
   if (appContext.notFound) {
-    ctx.status = 404;
-    ctx.body = html;
+    res.statusCode = 404;
+    res.end(html);
   }
 }

@@ -1,4 +1,4 @@
-import { IncomingHttpHeaders, IncomingMessage } from 'http';
+import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import Koa, { DefaultState, DefaultContext } from 'koa';
 import { UrlWithParsedQuery } from 'url';
 import {
@@ -212,7 +212,8 @@ export type IKoaResponse = Koa.Response;
 
 export interface IServerModule {
   onViewDone(
-    ctx: IKoaContext,
+    req: IncomingMessage,
+    res: ServerResponse, 
     payload: {
       html: string | null;
       appContext: any;
