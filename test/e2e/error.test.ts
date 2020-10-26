@@ -25,12 +25,19 @@ describe('Warnings', () => {
   });
 
   test('should log onDocumentProps error', async () => {
+    Object.assign(process.env, {
+      NODE_ENV: 'development'
+    });
     page = await ctx.browser.page(ctx.url('/'));
 
     expect(logSpy).toHaveBeenLastCalledWith(
-      'render error',
+      'server error',
       expect.objectContaining({
         message: expect.stringMatching(/onDocumentProps not returning object/)
+      }),
+      // Note: ctx
+      expect.objectContaining({
+        originalUrl: '/'
       })
     );
   });
