@@ -1,7 +1,6 @@
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { Server } from '../server';
-import { IServerResponse, IIncomingMessage } from '../types';
 
 const host = 'localhost';
 
@@ -15,8 +14,8 @@ describe('server', () => {
     server = new Server();
     const port = await findPort();
     await server.listen(port);
-    server.use((req: IIncomingMessage, res: IServerResponse) => {
-      res.end('ok');
+    server.use(ctx => {
+      ctx.body = 'ok';
     });
 
     const { body } = await got(`http://${host}:${port}`);
@@ -26,18 +25,38 @@ describe('server', () => {
   test('middleware', async () => {
     server = new Server();
     server
-      .use((req: IIncomingMessage, res: IServerResponse, next: any) => {
-        req.__test = 'worked';
-        next();
+      .use(async (ctx, next) => {
+        ctx.__test = 'worked';
+        await next();
       })
-      .use('/api', (req: IIncomingMessage, res: IServerResponse) => {
-        res.end(req.__test);
+      .use('/api', ctx => {
+        ctx.body = ctx.__test;
       });
     const port = await findPort();
     await server.listen(port);
 
     const { body } = await got(`http://${host}:${port}/api`);
     expect(body).toEqual('worked');
+  });
+
+  test('path-to-regexp match at the beginning for _publicDirMiddleware', async () => {
+    server = new Server();
+    server
+      .use(async (ctx, next) => {
+        ctx.__test = 'worked';
+        await next();
+      })
+      .use('/api', ctx => {
+        ctx.body = ctx.__test;
+      });
+
+    const port = await findPort();
+    await server.listen(port);
+
+    const { body } = await got(`http://${host}:${port}/api`);
+    expect(body).toEqual('worked');
+    const { body: body2 } = await got(`http://${host}:${port}/api/path/to/the/static/file`);
+    expect(body2).toEqual('worked');
   });
 
   describe('proxy', () => {
@@ -49,28 +68,25 @@ describe('server', () => {
     beforeAll(async () => {
       proxyTarget1 = new Server();
       proxyTarget1
-        .use('/api', (req: IIncomingMessage, res: IServerResponse) => {
-          res.end('api1');
+        .use('/api', ctx => {
+          ctx.body = 'api1';
         })
-        .use('/header', (req: IIncomingMessage, res: IServerResponse) => {
-          Object.keys(req.headers).forEach(header => {
-            const val = req.headers[header];
+        .use('/header', ctx => {
+          Object.keys(ctx.req.headers).forEach(header => {
+            const val = ctx.req.headers[header];
             if (typeof val !== 'undefined') {
-              res.setHeader(header, val);
+              ctx.response.set(header, val);
             }
           });
-          res.end('ok');
+          ctx.body = 'ok';
         });
       proxyTarget1Port = await findPort();
       await proxyTarget1.listen(proxyTarget1Port);
 
       proxyTarget2 = new Server();
-      proxyTarget2.use(
-        '/api',
-        (req: IIncomingMessage, res: IServerResponse) => {
-          res.end('api2');
-        }
-      );
+      proxyTarget2.use('/api', ctx => {
+        ctx.body = 'api2';
+      });
       proxyTarget2Port = await findPort();
       await proxyTarget2.listen(proxyTarget2Port);
     });
@@ -96,8 +112,8 @@ describe('server', () => {
           }
         }
       });
-      server.use('/noproxy', (req: IIncomingMessage, res: IServerResponse) => {
-        res.end('no proxy');
+      server.use('/noproxy', ctx => {
+        ctx.body = 'no proxy';
       });
       const port = await findPort();
       await server.listen(port, host);
@@ -137,8 +153,8 @@ describe('server', () => {
           }
         ]
       });
-      server.use('/noproxy', (req: IIncomingMessage, res: IServerResponse) => {
-        res.end('no proxy');
+      server.use('/noproxy', ctx => {
+        ctx.body = 'no proxy';
       });
       const port = await findPort();
       await server.listen(port, host);

@@ -1,9 +1,10 @@
-import { IIncomingMessage, IServerResponse, INextFunction } from '../server';
+import { Runtime } from '@shuvi/types';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
+import { throwServerRenderError } from '../lib/throw';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -28,8 +29,8 @@ export default class ShuviDev extends Base {
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
-    api.server.use(api.assetPublicPath, this._plubicDirMiddleware.bind(this));
-    api.server.use(this._pageMiddleware.bind(this));
+    api.server.use(api.assetPublicPath, this._publicDirMiddleware);
+    api.server.use(this._pageMiddleware);
 
     await devMiddleware.waitUntilValid();
   }
@@ -38,54 +39,50 @@ export default class ShuviDev extends Base {
     return 'development' as const;
   }
 
-  private async _plubicDirMiddleware(
-    req: IIncomingMessage,
-    res: IServerResponse
-  ) {
+  private _publicDirMiddleware: Runtime.IServerAppHandler = async ctx => {
     const api = this._api;
-    const asestAbsPath = api.resolvePublicFile(req.url!);
+    const assetAbsPath = api.resolvePublicFile(
+      ctx.request.url.replace(api.assetPublicPath, '')
+    );
     try {
-      await serveStatic(req, res, asestAbsPath);
+      await serveStatic(ctx.req, ctx.res, assetAbsPath);
     } catch (err) {
       if (err.code === 'ENOENT' || err.statusCode === 404) {
-        this._handle404(req, res);
+        this._handle404(ctx);
       } else if (err.statusCode === 412) {
-        res.statusCode = 412;
-        return res.end();
+        ctx.status = 412;
+        ctx.body = '';
+        return;
       } else {
         throw err;
       }
     }
-  }
+  };
 
-  private async _pageMiddleware(
-    req: IIncomingMessage,
-    res: IServerResponse,
-    next: INextFunction
-  ) {
-    const headers = req.headers;
-    if (req.method !== 'GET') {
-      return next();
+  private _pageMiddleware: Runtime.IServerAppMiddleware = async (ctx, next) => {
+    const headers = ctx.request.headers;
+    if (ctx.request.method !== 'GET') {
+      return await next();
     } else if (!headers || typeof headers.accept !== 'string') {
-      return next();
+      return await next();
     } else if (headers.accept.indexOf('application/json') === 0) {
-      return next();
+      return await next();
     } else if (
       !acceptsHtml(headers.accept, { htmlAcceptHeaders: ['text/html'] })
     ) {
-      return next();
+      return await next();
     }
 
-    await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || '/');
+    await this._onDemandRouteMgr.ensureRoutes(
+      (ctx.req as Runtime.IIncomingMessage).parsedUrl.pathname || '/'
+    );
 
-    let err: Error | undefined;
     try {
-      await this._handlePageRequest(req, res);
+      await this._handlePageRequest(ctx);
     } catch (error) {
-      console.error('render fail', error);
-      err = error;
+      throwServerRenderError(ctx, error);
     }
 
-    next(err);
-  }
+    await next();
+  };
 }

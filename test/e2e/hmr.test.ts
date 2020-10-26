@@ -27,7 +27,6 @@ describe('Hot Module Reloading', () => {
     ctx = await launchFixture('basic', { ssr: true });
   });
   afterAll(async () => {
-    await page.close();
     await ctx.close();
   });
 
@@ -59,6 +58,8 @@ describe('Hot Module Reloading', () => {
         t => /This is the one page/.test(t)
       );
     } finally {
+      await page.close();
+
       if (existsSync(newPagePath)) {
         renameSync(newPagePath, pagePath);
       }
@@ -101,6 +102,8 @@ describe('Hot Module Reloading', () => {
 
         done = true;
       } finally {
+        await page.close();
+
         if (!done && originalContent) {
           writeFileSync(pagePath, originalContent, 'utf8');
         }
@@ -144,6 +147,8 @@ describe('Hot Module Reloading', () => {
 
         done = true;
       } finally {
+        await page.close();
+
         if (!done && originalContent) {
           writeFileSync(pagePath, originalContent, 'utf8');
         }

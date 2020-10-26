@@ -1,14 +1,10 @@
-import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
 import { IncomingMessage, ServerResponse } from 'http';
-import {
-  IHTTPRequestHandler,
-  IIncomingMessage,
-  IServerResponse
-} from '../server';
+import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
+import { throwServerRenderError } from '../lib/throw';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -34,7 +30,7 @@ export default abstract class Shuvi {
     await this.init();
   }
 
-  getRequestHandler(): IHTTPRequestHandler {
+  getRequestHandler() {
     return this._api.server.getRequestHandler();
   }
 
@@ -58,10 +54,7 @@ export default abstract class Shuvi {
     }
 
     if (server.onViewDone) {
-      server.onViewDone(req, res, {
-        html,
-        appContext
-      });
+      server.onViewDone(req, res, { html, appContext });
     }
 
     return html;
@@ -84,28 +77,22 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _handle404(req: IIncomingMessage, res: IServerResponse) {
-    res.statusCode = 404;
-    res.end();
-  }
+  protected _handle404: Runtime.IServerAppHandler = ctx => {
+    ctx.status = 404;
+    ctx.body = '';
+    return;
+  };
 
-  protected async _handlePageRequest(
-    req: IIncomingMessage,
-    res: IServerResponse
-  ): Promise<void> {
+  protected _handlePageRequest: Runtime.IServerAppHandler = async ctx => {
     try {
-      const html = await this.renderToHTML(req, res);
+      const html = await this.renderToHTML(ctx.req, ctx.res);
       if (html) {
-        sendHTML(req, res, html);
+        sendHTML(ctx.req, ctx.res, html);
       }
     } catch (error) {
-      if (this.getMode() === 'development') {
-        console.error('render error', error);
-      }
-      res.statusCode = 500;
-      res.end('Server Render Error');
+      throwServerRenderError(ctx, error);
     }
-  }
+  };
 
   private async _ensureApiInited() {
     if (this._api) {
