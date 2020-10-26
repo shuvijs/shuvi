@@ -44,7 +44,6 @@ export class OnDemandRouteManager {
           throwServerRenderError(ctx, error);
         }
       } else {
-        ctx.status = 200;
         await next();
       }
     };
