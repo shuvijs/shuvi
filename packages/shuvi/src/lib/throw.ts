@@ -4,7 +4,7 @@ import { Runtime } from '@shuvi/types';
  * Only expose error stack to end user on the browser in development mode.
  */
 export function throwServerRenderError(
-  ctx: Runtime.IKoaContext,
+  ctx: Runtime.IServerAppContext,
   error: any
 ): void {
   // Note: client

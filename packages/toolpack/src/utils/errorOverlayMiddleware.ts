@@ -3,7 +3,7 @@ import { Runtime } from '@shuvi/types';
 
 export function createLaunchEditorMiddleware(
   launchEditorEndpoint: string
-): Runtime.IKoaMiddleware {
+): Runtime.IServerAppMiddleware {
   return async function launchEditorMiddleware(ctx, next) {
     if (ctx.request.url.startsWith(launchEditorEndpoint)) {
       const { query } = (ctx.req as Runtime.IIncomingMessage).parsedUrl;

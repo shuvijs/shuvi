@@ -198,17 +198,17 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
-export type IKoa<S = DefaultState, C = DefaultContext> = Koa<S, C>;
-export type IKoaContext = Koa.Context;
-export type IKoaMiddleware<
+export type IServerApp<S = DefaultState, C = DefaultContext> = Koa<S, C>;
+export type IServerAppContext = Koa.Context;
+export type IServerAppMiddleware<
   S = DefaultState,
   C = DefaultContext
 > = Koa.Middleware<S, C>;
-export type IKoaHandler<S = DefaultState, C = DefaultContext> = (
+export type IServerAppHandler<S = DefaultState, C = DefaultContext> = (
   context: Koa.ParameterizedContext<S, C>
 ) => any | Promise<void>;
-export type IKoaNext = Koa.Next;
-export type IKoaResponse = Koa.Response;
+export type IServerAppNext = Koa.Next;
+export type IServerAppResponse = Koa.Response;
 
 export interface IServerModule {
   onViewDone(

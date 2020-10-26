@@ -58,7 +58,7 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware: Runtime.IKoaMiddleware = async (ctx, next) => {
+  middleware: Runtime.IServerAppMiddleware = async (ctx, next) => {
     if (this.closed) return await next();
     if (!ctx.request.url?.startsWith(this._path)) return await next();
     this.eventStream.handler(ctx);
@@ -99,7 +99,7 @@ export class WebpackHotMiddleware {
 }
 
 class EventStream {
-  clients: Set<Runtime.IKoaResponse>;
+  clients: Set<Runtime.IServerAppResponse>;
   interval: NodeJS.Timeout;
   constructor() {
     this.clients = new Set();
@@ -113,7 +113,7 @@ class EventStream {
     });
   };
 
-  everyClient(fn: (client: Runtime.IKoaResponse) => void) {
+  everyClient(fn: (client: Runtime.IServerAppResponse) => void) {
     for (const client of this.clients) {
       fn(client);
     }
@@ -127,7 +127,7 @@ class EventStream {
     this.clients.clear();
   }
 
-  handler: Runtime.IKoaHandler = ctx => {
+  handler: Runtime.IServerAppHandler = ctx => {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'text/event-stream;charset=utf-8',

@@ -77,13 +77,13 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _handle404: Runtime.IKoaHandler = ctx => {
+  protected _handle404: Runtime.IServerAppHandler = ctx => {
     ctx.status = 404;
     ctx.body = '';
     return;
   };
 
-  protected _handlePageRequest: Runtime.IKoaHandler = async ctx => {
+  protected _handlePageRequest: Runtime.IServerAppHandler = async ctx => {
     try {
       const html = await this.renderToHTML(ctx.req, ctx.res);
       if (html) {

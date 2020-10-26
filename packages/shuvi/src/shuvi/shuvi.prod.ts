@@ -17,7 +17,7 @@ export default class ShuviProd extends Base {
     return 'production' as const;
   }
 
-  private _assetsMiddleware: Runtime.IKoaHandler = async ctx => {
+  private _assetsMiddleware: Runtime.IServerAppHandler = async ctx => {
     const api = this._api;
     const assetAbsPath = api.resolveBuildFile(
       BUILD_CLIENT_DIR,

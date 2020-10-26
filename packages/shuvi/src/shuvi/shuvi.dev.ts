@@ -39,7 +39,7 @@ export default class ShuviDev extends Base {
     return 'development' as const;
   }
 
-  private _publicDirMiddleware: Runtime.IKoaHandler = async ctx => {
+  private _publicDirMiddleware: Runtime.IServerAppHandler = async ctx => {
     const api = this._api;
     const assetAbsPath = api.resolvePublicFile(
       ctx.request.url.replace(api.assetPublicPath, '')
@@ -59,7 +59,7 @@ export default class ShuviDev extends Base {
     }
   };
 
-  private _pageMiddleware: Runtime.IKoaMiddleware = async (ctx, next) => {
+  private _pageMiddleware: Runtime.IServerAppMiddleware = async (ctx, next) => {
     const headers = ctx.request.headers;
     if (ctx.request.method !== 'GET') {
       return await next();
