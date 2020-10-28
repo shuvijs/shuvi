@@ -38,7 +38,6 @@ export class OnDemandRouteManager {
         this.devMiddleware.invalidate();
         try {
           await task;
-          ctx.status = 200;
           await next();
         } catch (error) {
           throwServerRenderError(ctx, error);
