@@ -7589,6 +7589,11 @@ koa-convert@^1.2.0:
     co "^4.6.0"
     koa-compose "^3.0.0"
 
+koa-lowercase@2.0.11:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/koa-lowercase/-/koa-lowercase-2.0.11.tgz#caa13ef8cbff399dc8cdab3d01fc862d4f105a40"
+  integrity sha512-XgOfagXMC7xQ0QurQTtyf+DtSiqQHZ1MuzWqt7X76cCVDsa22klyIC2dwJuXVew0tkRzrzC7qvpOf9e6QDSEzQ==
+
 koa-route@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/koa-route/-/koa-route-3.2.0.tgz#76298b99a6bcfa9e38cab6fe5c79a8733e758bce"

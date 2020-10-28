@@ -21,13 +21,20 @@ import {
 } from '../constants';
 import { runtime } from '../runtime';
 import { defaultConfig, IConfig, loadConfig } from '../config';
-import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
+import {
+  IResources,
+  IBuiltResource,
+  IPlugin,
+  IPreset,
+  IMiddleware
+} from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
 import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
+import { resolveMiddlewares } from './middleware';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -52,6 +59,7 @@ class Api extends Hookable implements IApi {
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
+  private _middlewares!: IMiddleware[];
   private _pluginApi!: PluginApi;
 
   constructor({ cwd, mode, config, configFile }: IApiOPtions) {
@@ -92,6 +100,8 @@ class Api extends Hookable implements IApi {
 
     await this._initPresetsAndPlugins();
     initCoreResource(this);
+
+    await this._initMiddlewares();
 
     // TODO?: move into application
     if (typeof this._config.runtimeConfig === 'object') {
@@ -373,6 +383,17 @@ class Api extends Hookable implements IApi {
           dir: this._config.rootDir
         })
       );
+    }
+  }
+
+  private async _initMiddlewares() {
+    const config = this._config;
+    this._middlewares = resolveMiddlewares(config.serverMiddleware || [], {
+      dir: path.join(config.rootDir, 'src') /* Note: resolve from src directory */
+    });
+
+    for (const middleware of this._middlewares) {
+      this.server.use(...middleware.get())
     }
   }
 }

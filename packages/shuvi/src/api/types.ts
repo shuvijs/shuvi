@@ -41,3 +41,11 @@ export interface IPreset {
   id: string;
   get: () => IPresetSpec;
 }
+
+export interface IMiddleware {
+  id: string;
+  get: () => [
+    string /* route */,
+    Runtime.IServerAppMiddleware | Runtime.IServerAppHandler
+  ];
+}
