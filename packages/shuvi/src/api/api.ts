@@ -89,6 +89,10 @@ class Api extends Hookable implements IApi {
     return this._paths;
   }
 
+  get middlewares() {
+    return this._middlewares;
+  }
+
   async init() {
     this._app = new App();
     const configFromFile = await loadConfig({
@@ -389,11 +393,16 @@ class Api extends Hookable implements IApi {
   private async _initMiddlewares() {
     const config = this._config;
     this._middlewares = resolveMiddlewares(config.serverMiddleware || [], {
-      dir: path.join(config.rootDir, 'src') /* Note: resolve from src directory */
+      rootDir: this._paths.rootDir,
+      buildDir: this._paths.buildDir
     });
 
     for (const middleware of this._middlewares) {
-      this.server.use(...middleware.get())
+      this.server.use(middleware.path, async (ctx, next) => {
+        // Note: lazy require the middleware module
+        const handler = middleware.get();
+        await handler(ctx, next);
+      });
     }
   }
 }

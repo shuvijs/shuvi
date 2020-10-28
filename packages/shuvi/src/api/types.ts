@@ -44,8 +44,7 @@ export interface IPreset {
 
 export interface IMiddleware {
   id: string;
-  get: () => [
-    string /* route */,
-    Runtime.IServerAppMiddleware | Runtime.IServerAppHandler
-  ];
+  path: string;
+  handler: string;
+  get: () => Runtime.IServerAppMiddleware | Runtime.IServerAppHandler;
 }
