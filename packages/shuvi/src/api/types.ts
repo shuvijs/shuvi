@@ -46,5 +46,6 @@ export interface IMiddleware {
   id: string;
   path: string;
   handler: string;
+  isNPM: boolean;
   get: () => Runtime.IServerAppMiddleware | Runtime.IServerAppHandler;
 }

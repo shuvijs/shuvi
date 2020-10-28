@@ -101,8 +101,8 @@ export function getClientEntry(_api: Api): IWebpackEntry {
 
 export function getServerEntry(_api: Api): IWebpackEntry {
   const middlewareEntry = _api.middlewares
-    .map(m => m.handler)
-    .filter(handler => handler.startsWith('api/'))
+    .filter(({ isNPM }) => !isNPM)
+    .map(middleware => middleware.handler)
     .reduce((acc, e) => {
       acc[`${e}.js`] = path.join(_api.paths.srcDir, e);
       return acc;
