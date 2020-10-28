@@ -2,7 +2,7 @@ import { getApi } from '../api';
 import { PluginApi } from '../pluginApi';
 import { IApiConfig, IPaths } from '@shuvi/types';
 import path from 'path';
-import { resolvePreset, resolvePlugin } from './utils';
+import { resolvePreset, resolvePlugin, resolveMiddleware } from './utils';
 
 describe('api', () => {
   test('should has "production" be default mode', async () => {
@@ -76,6 +76,56 @@ describe('api', () => {
       expect(plugins[0].id).toMatch(/plugin-a/);
       expect(plugins[1].id).toMatch(/plugin-b/);
       expect(plugins[2].id).toMatch(/plugin-c/);
+    });
+  });
+
+  describe('middlewares', () => {
+    test('should work with object', async () => {
+      const api = await getApi({
+        config: {
+          serverMiddleware: [
+            {
+              path: '/health-check',
+              handler: resolveMiddleware('health-check')
+            }
+          ]
+        }
+      });
+      const middlewares = (api as any)._middlewares;
+      expect(middlewares.length).toBe(1);
+      expect(middlewares[0].id).toMatch(/\/health-check =>/);
+      expect(middlewares[0].get()[0]/* route */).toBe('/health-check');
+      expect(middlewares[0].get()[1].name /* handler */).toBe('healthCheck')
+
+    });
+
+    test('should work with string', async () => {
+      const api = await getApi({
+        config: {
+          serverMiddleware: [
+            resolveMiddleware('set-header')
+          ]
+        }
+      });
+      const middlewares = (api as any)._middlewares;
+      expect(middlewares.length).toBe(1);
+      expect(middlewares[0].id).toMatch(/\/ =>/);
+      expect(middlewares[0].get()[0]/* route */).toBe('/');
+      expect(middlewares[0].get()[1].name /* handler */).toBe('setHeader')
+
+    });
+
+    test('should work with npm package', async () => {
+      const api = await getApi({
+        config: {
+          serverMiddleware: ['koa-lowercase']
+        }
+      });
+      const middlewares = (api as any)._middlewares;
+      expect(middlewares.length).toBe(1);
+      expect(middlewares[0].id).toMatch(/\/ =>/);
+      expect(middlewares[0].get()[0]/* route */).toBe('/');
+      expect(middlewares[0].get()[1].name /* handler */).toBe('lowercase')
     });
   });
 

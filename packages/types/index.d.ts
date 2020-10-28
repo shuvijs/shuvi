@@ -73,6 +73,11 @@ export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
 
+
+export type IMiddlewareConfig =
+| string
+| { path: string, handler: string };
+
 export type IRuntimeConfig = Record<string, string>;
 
 export interface IApiConfig {
@@ -91,6 +96,7 @@ export interface IApiConfig {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;
+  serverMiddleware?: IMiddlewareConfig[];
 }
 
 // api for plugins
