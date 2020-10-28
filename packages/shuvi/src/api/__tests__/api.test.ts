@@ -94,9 +94,9 @@ describe('api', () => {
       const middlewares = (api as any)._middlewares;
       expect(middlewares.length).toBe(1);
       expect(middlewares[0].id).toMatch(/\/health-check =>/);
-      expect(middlewares[0].get()[0]/* route */).toBe('/health-check');
-      expect(middlewares[0].get()[1].name /* handler */).toBe('healthCheck')
-
+      expect(middlewares[0].path).toBe('/health-check');
+      expect(middlewares[0].handler).toBe(resolveMiddleware('health-check'));
+      expect(middlewares[0].get().name).toBe('healthCheck')
     });
 
     test('should work with string', async () => {
@@ -110,9 +110,9 @@ describe('api', () => {
       const middlewares = (api as any)._middlewares;
       expect(middlewares.length).toBe(1);
       expect(middlewares[0].id).toMatch(/\/ =>/);
-      expect(middlewares[0].get()[0]/* route */).toBe('/');
-      expect(middlewares[0].get()[1].name /* handler */).toBe('setHeader')
-
+      expect(middlewares[0].path).toBe('/');
+      expect(middlewares[0].handler).toBe(resolveMiddleware('set-header'));
+      expect(middlewares[0].get().name).toBe('setHeader')
     });
 
     test('should work with npm package', async () => {
@@ -124,8 +124,9 @@ describe('api', () => {
       const middlewares = (api as any)._middlewares;
       expect(middlewares.length).toBe(1);
       expect(middlewares[0].id).toMatch(/\/ =>/);
-      expect(middlewares[0].get()[0]/* route */).toBe('/');
-      expect(middlewares[0].get()[1].name /* handler */).toBe('lowercase')
+      expect(middlewares[0].path).toBe('/');
+      expect(middlewares[0].handler).toBe('koa-lowercase');
+      expect(middlewares[0].get().name).toBe('lowercase')
     });
   });
 

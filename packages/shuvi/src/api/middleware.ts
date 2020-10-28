@@ -1,14 +1,17 @@
+import path from 'path';
 import { IMiddlewareConfig } from '@shuvi/types';
 import resolve from '@shuvi/utils/lib/resolve';
 import { IMiddleware } from './types';
+import { BUILD_SERVER_DIR } from '../constants';
 
 export interface ResolveMiddlewareOptions {
-  dir: string;
+  rootDir: string;
+  buildDir: string;
 }
 
 function resolveMiddleware(
   middlewareConfig: IMiddlewareConfig,
-  resolveOptions: ResolveMiddlewareOptions
+  options: ResolveMiddlewareOptions
 ): IMiddleware {
   let route: string;
   let handlerPath: string;
@@ -23,20 +26,19 @@ function resolveMiddleware(
     throw new Error(`Middleware must be one of type [string, object]`);
   }
 
-  // Note: make it relative
-  handlerPath = handlerPath.startsWith('api/') ? `./${handlerPath}` : handlerPath;
-
-  // TODO: webpack resolve
-  handlerPath = resolve.sync(handlerPath, {
-    basedir: resolveOptions.dir
-  });
-  const id = `${route} => ${handlerPath}`;
-  let middlewareFn = require(handlerPath);
-  middlewareFn = middlewareFn.default || middlewareFn;
+  const resolvedHandlerPath = handlerPath.startsWith('api/')
+    ? `${path.join(options.buildDir, BUILD_SERVER_DIR, handlerPath)}.js`
+    : resolve.sync(handlerPath, { basedir: options.rootDir });
 
   return {
-    id,
-    get: () => [route, middlewareFn]
+    id: `${route} => ${handlerPath}`,
+    path: route,
+    handler: handlerPath,
+    get: () => {
+      // Note: lazy require the middleware module
+      const middlewareFn = require(resolvedHandlerPath);
+      return middlewareFn.default || middlewareFn;
+    }
   };
 }
 
