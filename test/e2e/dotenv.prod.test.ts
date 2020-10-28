@@ -17,6 +17,7 @@ describe('Dotenv production', () => {
     ctx = await serveFixture('dotenv', { ssr: true });
     page = await ctx.browser.page(ctx.url('/'));
 
+    expect(page.statusCode).toBe(200);
     expect(await page.$text('#publicValue')).toBe('publicValue');
     expect(await page.$text('#valueNotFoundOnClient')).toBe('');
     expect(await page.$text('#valueForwadedFromConfig')).toBe('shareValue');
