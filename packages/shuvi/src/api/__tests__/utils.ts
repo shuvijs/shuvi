@@ -7,3 +7,7 @@ export function resolvePlugin(name: string) {
 export function resolvePreset(name: string) {
   return path.join(__dirname, 'fixtures', 'presets', name);
 }
+
+export function resolveMiddleware(name: string) {
+  return path.join(__dirname, 'fixtures', 'middlewares', name);
+}
