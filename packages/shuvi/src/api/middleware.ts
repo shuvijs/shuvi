@@ -9,6 +9,16 @@ export interface ResolveMiddlewareOptions {
   buildDir: string;
 }
 
+function resolvedHandler(name: string, options: ResolveMiddlewareOptions) {
+  try {
+    // Note: attempt to resolve from npm
+    return resolve.sync(name, { basedir: options.rootDir });
+  } catch (error) {
+    // Note: self defined middleware module
+    return `${path.join(options.buildDir, BUILD_SERVER_DIR, name)}.js`;
+  }
+}
+
 function resolveMiddleware(
   middlewareConfig: IMiddlewareConfig,
   options: ResolveMiddlewareOptions
@@ -26,14 +36,13 @@ function resolveMiddleware(
     throw new Error(`Middleware must be one of type [string, object]`);
   }
 
-  const resolvedHandlerPath = handlerPath.startsWith('api/')
-    ? `${path.join(options.buildDir, BUILD_SERVER_DIR, handlerPath)}.js`
-    : resolve.sync(handlerPath, { basedir: options.rootDir });
+  const resolvedHandlerPath = resolvedHandler(handlerPath, options);
 
   return {
     id: `${route} => ${handlerPath}`,
     path: route,
     handler: handlerPath,
+    isNPM: resolvedHandlerPath.includes('node_modules'),
     get: () => {
       // Note: lazy require the middleware module
       const middlewareFn = require(resolvedHandlerPath);
