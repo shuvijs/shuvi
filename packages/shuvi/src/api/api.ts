@@ -26,7 +26,7 @@ import {
   IBuiltResource,
   IPlugin,
   IPreset,
-  IMiddleware
+  IServerMiddleware
 } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
@@ -34,7 +34,7 @@ import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
-import { resolveMiddlewares } from './middleware';
+import { resolveServerMiddleware } from './serverMiddleware';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -59,7 +59,7 @@ class Api extends Hookable implements IApi {
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
-  private _middlewares!: IMiddleware[];
+  private _serverMiddleware!: IServerMiddleware[];
   private _pluginApi!: PluginApi;
 
   constructor({ cwd, mode, config, configFile }: IApiOPtions) {
@@ -89,8 +89,8 @@ class Api extends Hookable implements IApi {
     return this._paths;
   }
 
-  get middlewares() {
-    return this._middlewares;
+  get serverMiddleware() {
+    return this._serverMiddleware;
   }
 
   async init() {
@@ -105,7 +105,7 @@ class Api extends Hookable implements IApi {
     await this._initPresetsAndPlugins();
     initCoreResource(this);
 
-    await this._initMiddlewares();
+    await this._initServerMiddleware();
 
     // TODO?: move into application
     if (typeof this._config.runtimeConfig === 'object') {
@@ -390,20 +390,12 @@ class Api extends Hookable implements IApi {
     }
   }
 
-  private async _initMiddlewares() {
+  private async _initServerMiddleware() {
     const config = this._config;
-    this._middlewares = resolveMiddlewares(config.serverMiddleware || [], {
+    this._serverMiddleware = resolveServerMiddleware(config.serverMiddleware || [], {
       rootDir: this._paths.rootDir,
       buildDir: this._paths.buildDir
     });
-
-    for (const middleware of this._middlewares) {
-      this.server.use(middleware.path, async (ctx, next) => {
-        // Note: lazy require the middleware module
-        const handler = middleware.get();
-        await handler(ctx, next);
-      });
-    }
   }
 }
 

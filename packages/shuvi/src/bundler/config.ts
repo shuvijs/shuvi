@@ -100,7 +100,7 @@ export function getClientEntry(_api: Api): IWebpackEntry {
 }
 
 export function getServerEntry(_api: Api): IWebpackEntry {
-  const middlewareEntry = _api.middlewares
+  const middlewareEntry = _api.serverMiddleware
     .filter(({ isNPM }) => !isNPM)
     .map(middleware => middleware.handler)
     .reduce((acc, e) => {
