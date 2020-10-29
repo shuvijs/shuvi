@@ -79,7 +79,7 @@ describe('api', () => {
     });
   });
 
-  describe('middlewares', () => {
+  describe('serverMiddleware', () => {
     test('should work with object', async () => {
       const api = await getApi({
         config: {
@@ -91,14 +91,14 @@ describe('api', () => {
           ]
         }
       });
-      const middlewares = (api as any)._middlewares;
-      expect(middlewares.length).toBe(1);
-      expect(middlewares[0].id).toMatch(/\/health-check =>/);
-      expect(middlewares[0].path).toBe('/health-check');
-      expect(middlewares[0].handler).toBe(
+      const serverMiddleware = api.serverMiddleware;
+      expect(serverMiddleware.length).toBe(1);
+      expect(serverMiddleware[0].id).toMatch(/\/health-check =>/);
+      expect(serverMiddleware[0].path).toBe('/health-check');
+      expect(serverMiddleware[0].handler).toBe(
         resolveServerMiddleware('health-check')
       );
-      expect(middlewares[0].get().name).toBe('healthCheck');
+      expect(serverMiddleware[0].get().name).toBe('healthCheck');
     });
 
     test('should work with string', async () => {
@@ -107,14 +107,14 @@ describe('api', () => {
           serverMiddleware: [resolveServerMiddleware('set-header')]
         }
       });
-      const middlewares = (api as any)._middlewares;
-      expect(middlewares.length).toBe(1);
-      expect(middlewares[0].id).toMatch(/\/ =>/);
-      expect(middlewares[0].path).toBe('/');
-      expect(middlewares[0].handler).toBe(
+      const serverMiddleware = api.serverMiddleware;
+      expect(serverMiddleware.length).toBe(1);
+      expect(serverMiddleware[0].id).toMatch(/\/ =>/);
+      expect(serverMiddleware[0].path).toBe('/');
+      expect(serverMiddleware[0].handler).toBe(
         resolveServerMiddleware('set-header')
       );
-      expect(middlewares[0].get().name).toBe('setHeader');
+      expect(serverMiddleware[0].get().name).toBe('setHeader');
     });
 
     test('should work with npm package', async () => {
@@ -123,12 +123,12 @@ describe('api', () => {
           serverMiddleware: ['koa-lowercase']
         }
       });
-      const middlewares = (api as any)._middlewares;
-      expect(middlewares.length).toBe(1);
-      expect(middlewares[0].id).toMatch(/\/ =>/);
-      expect(middlewares[0].path).toBe('/');
-      expect(middlewares[0].handler).toBe('koa-lowercase');
-      expect(middlewares[0].get().name).toBe('lowercase');
+      const serverMiddleware = api.serverMiddleware;
+      expect(serverMiddleware.length).toBe(1);
+      expect(serverMiddleware[0].id).toMatch(/\/ =>/);
+      expect(serverMiddleware[0].path).toBe('/');
+      expect(serverMiddleware[0].handler).toBe('koa-lowercase');
+      expect(serverMiddleware[0].get().name).toBe('lowercase');
     });
   });
 
