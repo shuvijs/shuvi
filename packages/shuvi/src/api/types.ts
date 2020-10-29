@@ -42,7 +42,7 @@ export interface IPreset {
   get: () => IPresetSpec;
 }
 
-export interface IMiddleware {
+export interface IServerMiddleware {
   id: string;
   path: string;
   handler: string;

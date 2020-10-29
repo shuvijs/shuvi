@@ -27,6 +27,8 @@ export default abstract class Shuvi {
 
   async ready(): Promise<void> {
     await this._ensureApiInited();
+    // Note: keep the order, server middleware first
+    await this._setupServerMiddleware();
     await this.init();
   }
 
@@ -102,5 +104,17 @@ export default abstract class Shuvi {
     }
 
     this._api = await this._apiPromise;
+  }
+
+  private async _setupServerMiddleware() {
+    const api = this._api;
+
+    for (const middleware of api.serverMiddleware) {
+      api.server.use(middleware.path, async (ctx, next) => {
+        // Note: lazy require the middleware module
+        const handler = middleware.get();
+        await handler(ctx, next);
+      });
+    }
   }
 }
