@@ -2,7 +2,7 @@ import { getApi } from '../api';
 import { PluginApi } from '../pluginApi';
 import { IApiConfig, IPaths } from '@shuvi/types';
 import path from 'path';
-import { resolvePreset, resolvePlugin, resolveMiddleware } from './utils';
+import { resolvePreset, resolvePlugin, resolveServerMiddleware } from './utils';
 
 describe('api', () => {
   test('should has "production" be default mode', async () => {
@@ -86,7 +86,7 @@ describe('api', () => {
           serverMiddleware: [
             {
               path: '/health-check',
-              handler: resolveMiddleware('health-check')
+              handler: resolveServerMiddleware('health-check')
             }
           ]
         }
@@ -95,24 +95,26 @@ describe('api', () => {
       expect(middlewares.length).toBe(1);
       expect(middlewares[0].id).toMatch(/\/health-check =>/);
       expect(middlewares[0].path).toBe('/health-check');
-      expect(middlewares[0].handler).toBe(resolveMiddleware('health-check'));
-      expect(middlewares[0].get().name).toBe('healthCheck')
+      expect(middlewares[0].handler).toBe(
+        resolveServerMiddleware('health-check')
+      );
+      expect(middlewares[0].get().name).toBe('healthCheck');
     });
 
     test('should work with string', async () => {
       const api = await getApi({
         config: {
-          serverMiddleware: [
-            resolveMiddleware('set-header')
-          ]
+          serverMiddleware: [resolveServerMiddleware('set-header')]
         }
       });
       const middlewares = (api as any)._middlewares;
       expect(middlewares.length).toBe(1);
       expect(middlewares[0].id).toMatch(/\/ =>/);
       expect(middlewares[0].path).toBe('/');
-      expect(middlewares[0].handler).toBe(resolveMiddleware('set-header'));
-      expect(middlewares[0].get().name).toBe('setHeader')
+      expect(middlewares[0].handler).toBe(
+        resolveServerMiddleware('set-header')
+      );
+      expect(middlewares[0].get().name).toBe('setHeader');
     });
 
     test('should work with npm package', async () => {
@@ -126,7 +128,7 @@ describe('api', () => {
       expect(middlewares[0].id).toMatch(/\/ =>/);
       expect(middlewares[0].path).toBe('/');
       expect(middlewares[0].handler).toBe('koa-lowercase');
-      expect(middlewares[0].get().name).toBe('lowercase')
+      expect(middlewares[0].get().name).toBe('lowercase');
     });
   });
 
