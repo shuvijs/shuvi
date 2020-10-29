@@ -1,16 +1,13 @@
 import got from 'got';
-import { AppCtx, serveFixture } from '../utils';
+import { AppCtx, launchFixture } from '../utils';
 
 let ctx: AppCtx;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('middleware production', () => {
+describe('serverMiddleware development', () => {
   beforeAll(async () => {
-    Object.assign(process.env, {
-      NODE_ENV: 'production'
-    });
-    ctx = await serveFixture('middleware');
+    ctx = await launchFixture('serverMiddleware');
   });
   afterAll(async () => {
     await ctx.close();
