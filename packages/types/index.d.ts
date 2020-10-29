@@ -74,7 +74,7 @@ export type IPresetConfig =
   | [string /* plugin module */, any? /* plugin options */];
 
 
-export type IMiddlewareConfig =
+export type IServerMiddlewareConfig =
 | string
 | { path: string, handler: string };
 
@@ -96,7 +96,7 @@ export interface IApiConfig {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;
-  serverMiddleware?: IMiddlewareConfig[];
+  serverMiddleware?: IServerMiddlewareConfig[];
 }
 
 // api for plugins

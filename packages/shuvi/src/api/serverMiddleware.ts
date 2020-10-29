@@ -1,15 +1,15 @@
 import path from 'path';
-import { IMiddlewareConfig } from '@shuvi/types';
+import { IServerMiddlewareConfig } from '@shuvi/types';
 import resolve from '@shuvi/utils/lib/resolve';
-import { IMiddleware } from './types';
+import { IServerMiddleware } from './types';
 import { BUILD_SERVER_DIR } from '../constants';
 
-export interface ResolveMiddlewareOptions {
+export interface Options {
   rootDir: string;
   buildDir: string;
 }
 
-function resolvedHandler(name: string, options: ResolveMiddlewareOptions) {
+function resolvedHandler(name: string, options: Options) {
   try {
     // Note: attempt to resolve from npm
     return resolve.sync(name, { basedir: options.rootDir });
@@ -20,18 +20,18 @@ function resolvedHandler(name: string, options: ResolveMiddlewareOptions) {
 }
 
 function resolveMiddleware(
-  middlewareConfig: IMiddlewareConfig,
-  options: ResolveMiddlewareOptions
-): IMiddleware {
+  middleware: IServerMiddlewareConfig,
+  options: Options
+): IServerMiddleware {
   let route: string;
   let handlerPath: string;
 
-  if (typeof middlewareConfig === 'object') {
-    route = middlewareConfig.path;
-    handlerPath = middlewareConfig.handler;
-  } else if (typeof middlewareConfig === 'string') {
+  if (typeof middleware === 'object') {
+    route = middleware.path;
+    handlerPath = middleware.handler;
+  } else if (typeof middleware === 'string') {
     route = '/'; // Note: for all routes
-    handlerPath = middlewareConfig;
+    handlerPath = middleware;
   } else {
     throw new Error(`Middleware must be one of type [string, object]`);
   }
@@ -51,9 +51,11 @@ function resolveMiddleware(
   };
 }
 
-export function resolveMiddlewares(
-  middlewares: IMiddlewareConfig[],
-  options: ResolveMiddlewareOptions
-): IMiddleware[] {
-  return middlewares.map(middleware => resolveMiddleware(middleware, options));
+export function resolveServerMiddleware(
+  serverMiddleware: IServerMiddlewareConfig[],
+  options: Options
+): IServerMiddleware[] {
+  return serverMiddleware.map(middleware =>
+    resolveMiddleware(middleware, options)
+  );
 }
