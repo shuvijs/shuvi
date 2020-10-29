@@ -5,7 +5,7 @@ let ctx: AppCtx;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('middleware', () => {
+describe('middleware development', () => {
   beforeAll(async () => {
     ctx = await launchFixture('middleware');
   });
@@ -13,7 +13,7 @@ describe('middleware', () => {
     await ctx.close();
   });
   afterEach(async () => {
-    // force require to load file to make sure compiled file get load correctlly
+    // force require to load file to make sure compiled file get load correctly
     jest.resetModules();
   });
 
