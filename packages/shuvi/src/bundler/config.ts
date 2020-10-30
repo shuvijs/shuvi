@@ -86,7 +86,7 @@ export function createWepbackConfig(
       return chunk.name.replace(/\.js$/, '-[contenthash].js');
     }
 
-    return '[name]';
+    return '[name].js';
   });
 
   return chain;
