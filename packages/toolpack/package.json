@@ -73,9 +73,9 @@
     "@types/terser-webpack-plugin": "4.2.0",
     "@types/webpack-bundle-analyzer": "^3.8.0",
     "memfs": "^3.1.2",
-    "webpack": "5.1.0"
+    "webpack": "5.3.2"
   },
   "peerDependencies": {
-    "webpack": "5.1.0"
+    "webpack": "5.3.2"
   }
 }
