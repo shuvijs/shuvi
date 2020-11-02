@@ -28,7 +28,7 @@ export function normalizeServerMiddleware(
     path = middleware.path;
     handler = middleware.handler;
   } else if (typeof middleware === 'string') {
-    path = '/'; // Note: for all routes
+    path = '/'; // Note: match all routes
     handler = middleware;
   } else {
     throw new Error(`Middleware must be one of type [string, object]`);
