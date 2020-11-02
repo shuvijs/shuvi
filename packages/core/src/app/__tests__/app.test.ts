@@ -45,6 +45,11 @@ describe('app', () => {
     app.setViewModule('viewModules');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
+    app.addServerMiddleware('serverMiddleware1', {
+      path: '/',
+      handler: 'api/set-header',
+      resolved: 'path/api/set-header'
+    });
 
     await app.build({
       dir: BUILD_DIR
@@ -57,7 +62,8 @@ describe('app', () => {
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content']
+      ['core/routes.js', 'routes content'],
+      ['core/serverMiddleware.js', 'import api_setHeader from "path/api/set-header";\n\nexport default [\n  { path: "/", handler: api_setHeader },\n];']
     ]);
   });
 

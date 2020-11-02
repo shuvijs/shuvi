@@ -2,7 +2,7 @@ import { getApi } from '../api';
 import { PluginApi } from '../pluginApi';
 import { IApiConfig, IPaths } from '@shuvi/types';
 import path from 'path';
-import { resolvePreset, resolvePlugin, resolveServerMiddleware } from './utils';
+import { resolvePreset, resolvePlugin } from './utils';
 
 describe('api', () => {
   test('should has "production" be default mode', async () => {
@@ -79,59 +79,6 @@ describe('api', () => {
     });
   });
 
-  describe('serverMiddleware', () => {
-    test('should work with object', async () => {
-      const api = await getApi({
-        config: {
-          serverMiddleware: [
-            {
-              path: '/health-check',
-              handler: resolveServerMiddleware('health-check')
-            }
-          ]
-        }
-      });
-      const serverMiddleware = api.serverMiddleware;
-      expect(serverMiddleware.length).toBe(1);
-      expect(serverMiddleware[0].id).toMatch(/\/health-check =>/);
-      expect(serverMiddleware[0].path).toBe('/health-check');
-      expect(serverMiddleware[0].handler).toBe(
-        resolveServerMiddleware('health-check')
-      );
-      expect(serverMiddleware[0].get().name).toBe('healthCheck');
-    });
-
-    test('should work with string', async () => {
-      const api = await getApi({
-        config: {
-          serverMiddleware: [resolveServerMiddleware('set-header')]
-        }
-      });
-      const serverMiddleware = api.serverMiddleware;
-      expect(serverMiddleware.length).toBe(1);
-      expect(serverMiddleware[0].id).toMatch(/\/ =>/);
-      expect(serverMiddleware[0].path).toBe('/');
-      expect(serverMiddleware[0].handler).toBe(
-        resolveServerMiddleware('set-header')
-      );
-      expect(serverMiddleware[0].get().name).toBe('setHeader');
-    });
-
-    test('should work with npm package', async () => {
-      const api = await getApi({
-        config: {
-          serverMiddleware: ['koa-lowercase']
-        }
-      });
-      const serverMiddleware = api.serverMiddleware;
-      expect(serverMiddleware.length).toBe(1);
-      expect(serverMiddleware[0].id).toMatch(/\/ =>/);
-      expect(serverMiddleware[0].path).toBe('/');
-      expect(serverMiddleware[0].handler).toBe('koa-lowercase');
-      expect(serverMiddleware[0].get().name).toBe('lowercase');
-    });
-  });
-
   test('getPluginApi', async () => {
     let pluginApi!: PluginApi;
     const api = await getApi({
@@ -155,7 +102,8 @@ describe('api', () => {
       'resolveUserFile',
       'resolveBuildFile',
       'resolvePublicFile',
-      'getAssetPublicUrl'
+      'getAssetPublicUrl',
+      'addServerMiddleware',
     ].forEach(method => {
       // @ts-ignore
       expect(typeof pluginApi[method]).toBe('function');
