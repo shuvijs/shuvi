@@ -156,7 +156,11 @@ export async function setupApp(api: Api) {
             [runtime.getViewModulePath()]: {
               imported: 'default',
               local: 'view'
-            }
+            },
+            [api.resolveAppFile('core', 'serverMiddleware')]: {
+              imported: 'default',
+              local: 'serverMiddleware'
+            },
           }
         : {
             [api.resolveAppFile('core', 'server')]: {
@@ -170,7 +174,11 @@ export async function setupApp(api: Api) {
             [api.resolveAppFile('core', 'application-spa-server')]: {
               imported: '*',
               local: 'application'
-            }
+            },
+            [api.resolveAppFile('core', 'serverMiddleware')]: {
+              imported: 'default',
+              local: 'serverMiddleware'
+            },
           }
     })
   );

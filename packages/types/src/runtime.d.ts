@@ -213,13 +213,17 @@ export type IServerAppResponse = Koa.Response;
 export interface IServerModule {
   onViewDone(
     req: IncomingMessage,
-    res: ServerResponse, 
+    res: ServerResponse,
     payload: {
       html: string | null;
       appContext: any;
     }
   ): void;
 }
+export type IServerMiddlewareModule = {
+  path: string;
+  handler: IServerAppMiddleware | IServerAppHandler;
+}[];
 
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;

@@ -37,6 +37,13 @@ export class App {
     this._store.addRuntimePlugin(name, runtimePlugin);
   }
 
+  addServerMiddleware(
+    key: string,
+    value: { path: string; handler: string; resolved: string }
+  ): void {
+    this._store.addServerMiddleware(key, value);
+  }
+
   addFile(file: File, dir: string = '/'): void {
     this._store.addFile(file, dir);
   }
