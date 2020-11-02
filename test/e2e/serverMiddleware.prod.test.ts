@@ -27,6 +27,10 @@ describe('serverMiddleware production', () => {
     expect(res.body).toBe('200 OK');
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar')
 
+    res = await got.get(ctx.url('/health-check2'));
+    expect(res.body).toBe('200 OK');
+    expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar')
+
     res = await got.get(ctx.url('/home'));
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar')
 

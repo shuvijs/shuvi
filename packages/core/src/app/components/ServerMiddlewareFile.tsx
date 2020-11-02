@@ -32,7 +32,7 @@ function ServerMiddleware() {
   });
 
   uniqueImports.forEach((v, k) => {
-    content += `import ${v} from "${k}"\n`;
+    content += `import ${v} from "${k}";\n`;
   });
 
   content += `\nexport default [${exportContent}\n];`;
