@@ -6,6 +6,7 @@ export type IBuiltResource = {
     application: Runtime.IApplicationModule;
     document: Partial<Runtime.IDocumentModule>;
     view: Runtime.IViewServer;
+    serverMiddleware: Runtime.IServerMiddlewareModule;
     matchRoutes(
       routes: Runtime.IUserRouteConfig[],
       pathname: string
@@ -40,12 +41,4 @@ export interface IPlugin {
 export interface IPreset {
   id: string;
   get: () => IPresetSpec;
-}
-
-export interface IServerMiddleware {
-  id: string;
-  path: string;
-  handler: string;
-  isNPM: boolean;
-  get: () => Runtime.IServerAppMiddleware | Runtime.IServerAppHandler;
 }
