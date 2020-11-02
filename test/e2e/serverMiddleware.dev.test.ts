@@ -40,7 +40,9 @@ describe('serverMiddleware development', () => {
   test('should match path', async () => {
     let page;
     
-    page = await ctx.browser.page(ctx.url('/users'));
+    page = await ctx.browser.page(ctx.url('/home'));
+
+    await page.goto(ctx.url('/users'));
     expect(await page.$text('body')).toMatch(/404/);
 
     await page.goto(ctx.url('/users/'));
