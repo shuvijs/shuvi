@@ -16,7 +16,8 @@ import {
   IRouteMatch,
   IRouteRecord,
   IPartialRouteRecord,
-  IRouter
+  IRouter,
+  IPathMatch,
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 import { IApi } from '../index';
@@ -76,6 +77,7 @@ export interface IIncomingMessage extends IncomingMessage {
   url: string;
   parsedUrl: UrlWithParsedQuery;
   originalUrl?: IncomingMessage['url'];
+  matchedPath?: IPathMatch| null; 
   [x: string]: any;
 }
 

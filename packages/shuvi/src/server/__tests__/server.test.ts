@@ -1,3 +1,4 @@
+import { Runtime } from '@shuvi/types';
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { Server } from '../server';
@@ -57,6 +58,37 @@ describe('server', () => {
     expect(body).toEqual('worked');
     const { body: body2 } = await got(`http://${host}:${port}/api/path/to/the/static/file`);
     expect(body2).toEqual('worked');
+  });
+
+  test('match middleware with matchedPath object', async () => {
+    expect.assertions(3);
+
+    let matchedPath;
+    server = new Server();
+    server.use('/api/users/:id', ctx => {
+      matchedPath = (ctx.req as Runtime.IIncomingMessage).matchedPath;
+      ctx.status = 200;
+    });
+    const port = await findPort();
+    await server.listen(port);
+
+    try {
+      await got(`http://${host}:${port}/api/users`);
+    } catch (error) {
+      expect(error.response.statusCode).toBe(404);
+    }
+    try {
+      await got(`http://${host}:${port}/api/users/`);
+    } catch (error) {
+      expect(error.response.statusCode).toBe(404);
+    }
+
+    await got(`http://${host}:${port}/api/users/USER_ID`);
+    expect(matchedPath).toStrictEqual({
+      path: '/api/users/:id',
+      pathname: '/api/users/USER_ID',
+      params: { id: 'USER_ID' }
+    });
   });
 
   describe('proxy', () => {

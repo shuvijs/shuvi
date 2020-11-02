@@ -1,12 +1,12 @@
 import http from 'http';
 import Koa from 'koa';
-import koaRoute from 'koa-route';
 import c2k from 'koa-connect';
 import {
   IServerProxyConfig,
   IServerProxyConfigItem,
   Runtime
 } from '@shuvi/types';
+import { matchPath } from '@shuvi/router';
 import { parse as parseUrl } from 'url';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import detectPort from 'detect-port';
@@ -112,8 +112,17 @@ export class Server {
   use(route: string, fn: Runtime.IServerAppMiddleware): this;
   use(route: any, fn?: any): this {
     if (fn) {
-      /* Note: When `end: false` the path will match at the beginning. ref: https://github.com/pillarjs/path-to-regexp/tree/1.x#usage */
-      this._app.use(koaRoute.get(route, fn, { end: false }));
+      this._app.use(async (ctx, next) => {
+        const matchedPath = matchPath(
+          { path: route, end: false },
+          ctx.request.url
+        );
+        (ctx.req as Runtime.IIncomingMessage).matchedPath = matchedPath;
+
+        // Note: not matched
+        if (!matchedPath) return await next();
+        await fn(ctx, next);
+      });
     } else {
       this._app.use(route);
     }

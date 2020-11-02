@@ -44,7 +44,6 @@
     "http-proxy-middleware": "1.0.6",
     "koa": "2.13.0",
     "koa-connect": "2.1.0",
-    "koa-route": "3.2.0",
     "send": "0.17.1",
     "webpack": "5.3.2",
     "webpack-dev-middleware": "3.7.2"
