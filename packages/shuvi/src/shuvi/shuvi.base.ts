@@ -80,6 +80,8 @@ export default abstract class Shuvi {
   protected abstract init(): Promise<void> | void;
 
   protected _setupServerMiddleware() {
+    if (!this._api.config.serverMiddleware) return;
+
     const mode = this.getMode();
     const { serverMiddleware } = this._api.resources.server;
 
