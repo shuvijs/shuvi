@@ -36,4 +36,19 @@ describe('serverMiddleware development', () => {
     expect(res.url).toContain('/home');
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar')
   });
+
+  test('should match path', async () => {
+    let page;
+    
+    page = await ctx.browser.page(ctx.url('/users'));
+    expect(await page.$text('body')).toMatch(/404/);
+
+    page = await ctx.browser.page(ctx.url('/users/'));
+    expect(await page.$text('body')).toMatch(/404/);
+
+    page = await ctx.browser.page(ctx.url('/users/bob'));
+    expect(await page.$text('body')).toMatch(/bob/);
+
+    await page.close();
+  });
 });
