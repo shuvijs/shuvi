@@ -100,16 +100,7 @@ export function getClientEntry(_api: Api): IWebpackEntry {
 }
 
 export function getServerEntry(_api: Api): IWebpackEntry {
-  const middlewareEntry = _api.serverMiddleware
-    .filter(({ isNPM }) => !isNPM)
-    .map(middleware => middleware.handler)
-    .reduce((acc, e) => {
-      acc[`${e}.js`] = path.join(_api.paths.srcDir, e);
-      return acc;
-    }, {} as { [path: string]: string });
-
   return {
-    ...middlewareEntry,
     [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/server']
   };
 }

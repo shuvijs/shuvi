@@ -21,20 +21,14 @@ import {
 } from '../constants';
 import { runtime } from '../runtime';
 import { defaultConfig, IConfig, loadConfig } from '../config';
-import {
-  IResources,
-  IBuiltResource,
-  IPlugin,
-  IPreset,
-  IServerMiddleware
-} from './types';
+import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
 import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
-import { resolveServerMiddleware } from './serverMiddleware';
+import { normalizeServerMiddleware, resolveHandler } from './serverMiddleware';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -59,7 +53,6 @@ class Api extends Hookable implements IApi {
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
-  private _serverMiddleware!: IServerMiddleware[];
   private _pluginApi!: PluginApi;
 
   constructor({ cwd, mode, config, configFile }: IApiOPtions) {
@@ -89,10 +82,6 @@ class Api extends Hookable implements IApi {
     return this._paths;
   }
 
-  get serverMiddleware() {
-    return this._serverMiddleware;
-  }
-
   async init() {
     this._app = new App();
     const configFromFile = await loadConfig({
@@ -103,9 +92,9 @@ class Api extends Hookable implements IApi {
     this._config = deepmerge(defaultConfig, configFromFile);
 
     await this._initPresetsAndPlugins();
-    initCoreResource(this);
-
     await this._initServerMiddleware();
+
+    initCoreResource(this);
 
     // TODO?: move into application
     if (typeof this._config.runtimeConfig === 'object') {
@@ -258,6 +247,13 @@ class Api extends Hookable implements IApi {
     this._app.addRuntimePlugin(name, runtimePlugin);
   }
 
+  addServerMiddleware(
+    key: string,
+    value: { path: string; handler: string, resolved: string }
+  ): void {
+    this._app.addServerMiddleware(key, value);
+  }
+
   getAssetPublicUrl(...paths: string[]): string {
     return joinPath(this.assetPublicPath, ...paths);
   }
@@ -391,10 +387,14 @@ class Api extends Hookable implements IApi {
   }
 
   private async _initServerMiddleware() {
-    const config = this._config;
-    this._serverMiddleware = resolveServerMiddleware(config.serverMiddleware || [], {
-      rootDir: this._paths.rootDir,
-      buildDir: this._paths.buildDir
+    (this._config.serverMiddleware || []).forEach(serverMiddleware => {
+      const { path, handler } = normalizeServerMiddleware(serverMiddleware);
+      const resolved = resolveHandler(handler, {
+        rootDir: this._paths.rootDir,
+        srcDir: this._paths.srcDir
+      });
+      const key = `${path} -> ${handler}`;
+      this._app.addServerMiddleware(key, { path, handler, resolved });
     });
   }
 }

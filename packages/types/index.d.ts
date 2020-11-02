@@ -73,10 +73,9 @@ export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
 
-
 export type IServerMiddlewareConfig =
-| string
-| { path: string, handler: string };
+  | string /* handler */
+  | { path: string; handler: string };
 
 export type IRuntimeConfig = Record<string, string>;
 
@@ -110,6 +109,7 @@ export interface IApi extends IHookable {
   addAppExport: typeof App.prototype.addExport;
   addAppPolyfill: typeof App.prototype.addPolyfill;
   addRuntimePlugin: typeof App.prototype.addRuntimePlugin;
+  addServerMiddleware: typeof App.prototype.addServerMiddleware;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
