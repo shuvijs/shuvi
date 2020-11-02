@@ -174,11 +174,7 @@ export async function setupApp(api: Api) {
             [api.resolveAppFile('core', 'application-spa-server')]: {
               imported: '*',
               local: 'application'
-            },
-            [api.resolveAppFile('core', 'serverMiddleware')]: {
-              imported: 'default',
-              local: 'serverMiddleware'
-            },
+            }
           }
     })
   );
