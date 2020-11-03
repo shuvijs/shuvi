@@ -47,8 +47,7 @@ describe('app', () => {
     app.addExport('something to export', '*');
     app.addServerMiddleware('serverMiddleware1', {
       path: '/',
-      handler: 'api/set-header',
-      resolved: 'path/api/set-header'
+      handler: 'path/api/set-header',
     });
 
     await app.build({
@@ -63,7 +62,7 @@ describe('app', () => {
       ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content'],
-      ['core/serverMiddleware.js', 'import api_setHeader from "path/api/set-header";\n\nexport default [\n  { path: "/", handler: api_setHeader },\n];']
+      ['core/serverMiddleware.js', 'import path_api_setHeader from "path/api/set-header";\n\nexport default [\n  { path: "/", handler: path_api_setHeader },\n];']
     ]);
   });
 

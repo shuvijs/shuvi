@@ -25,9 +25,9 @@ function ServerMiddleware() {
 
   const uniqueImports = new Map<string, string>();
 
-  serverMiddleware.forEach(({ path, handler, resolved }) => {
+  serverMiddleware.forEach(({ path, handler }) => {
     const importName = makeVariableName(handler);
-    uniqueImports.set(resolved, importName);
+    uniqueImports.set(handler, importName);
     exportContent += `\n  { path: "${path}", handler: ${importName} },`;
   });
 
