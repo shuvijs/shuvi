@@ -47,7 +47,7 @@ describe('app', () => {
     app.addExport('something to export', '*');
     app.addServerMiddleware('serverMiddleware1', {
       path: '/',
-      handler: 'path/api/set-header',
+      handler: 'path/api/set-header'
     });
 
     await app.build({
@@ -62,7 +62,10 @@ describe('app', () => {
       ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content'],
-      ['core/serverMiddleware.js', 'import path_api_setHeader from "path/api/set-header";\n\nexport default [\n  { path: "/", handler: path_api_setHeader },\n];']
+      [
+        'core/serverMiddleware.js',
+        'import path_api_setHeader from "path/api/set-header";\n\nexport default [\n  { path: "/", handler: path_api_setHeader },\n];'
+      ]
     ]);
   });
 
@@ -150,6 +153,21 @@ describe('app', () => {
     expect(readFileSync(resolveBuildFile('core/routes.js'), 'utf8')).toBe(
       'routes content'
     );
+  });
+
+  test('should throw error if there is duplicated middleware', async () => {
+    app.addServerMiddleware('serverMiddleware1', {
+      path: '/',
+      handler: 'path/api/set-header'
+    });
+    try {
+      app.addServerMiddleware('serverMiddleware1', {
+        path: '/',
+        handler: 'path/api/set-header'
+      });
+    } catch (error) {
+      expect(error.message).toMatch(/duplicated middleware/);
+    }
   });
 });
 ``;
