@@ -68,7 +68,7 @@ export class ModelApp {
   @observable runtimePlugins = new Map<string, string>();
   @observable serverMiddleware = new Map<
     string,
-    { path: string; handler: string; }
+    { path: string; handler: string }
   >();
 
   @computed
@@ -121,10 +121,10 @@ export class ModelApp {
   }
 
   @action
-  addServerMiddleware(
-    key: string,
-    value: { path: string; handler: string; }
-  ) {
+  addServerMiddleware(key: string, value: { path: string; handler: string }) {
+    if (this.serverMiddleware.get(key)) {
+      throw new Error(`duplicated middleware "${key}"`);
+    }
     this.serverMiddleware.set(key, value);
   }
 

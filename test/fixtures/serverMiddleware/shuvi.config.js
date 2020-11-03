@@ -7,7 +7,6 @@ module.exports = {
     './api/set-header.js', // Note: will be resolved from `src` directory and extension is optional.
     { path: '/health-check*', handler: 'api/set-cookie' },
     { path: '/health-check', handler: 'api/health-check' },
-    { path: '/health-check', handler: 'api/health-check' }, // Note: duplicated middleware will be omitted
     { path: '/health-check2', handler: 'api/health-check' }, // Note: share handler with other path
     {
       path: '/health-check3',
