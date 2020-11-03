@@ -77,7 +77,6 @@ export interface IIncomingMessage extends IncomingMessage {
   url: string;
   parsedUrl: UrlWithParsedQuery;
   originalUrl?: IncomingMessage['url'];
-  matchedPath?: IPathMatch| null; 
   [x: string]: any;
 }
 
@@ -200,13 +199,16 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
-export type IServerApp<S = DefaultState, C = DefaultContext> = Koa<S, C>;
+export interface CustomContext extends DefaultContext {
+  params?: Record<string, string>;
+}
+export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
 export type IServerAppContext = Koa.Context;
 export type IServerAppMiddleware<
   S = DefaultState,
-  C = DefaultContext
+  C = CustomContext
 > = Koa.Middleware<S, C>;
-export type IServerAppHandler<S = DefaultState, C = DefaultContext> = (
+export type IServerAppHandler<S = DefaultState, C = CustomContext> = (
   context: Koa.ParameterizedContext<S, C>
 ) => any | Promise<void>;
 export type IServerAppNext = Koa.Next;

@@ -23,7 +23,7 @@ export default class ShuviProd extends Base {
     const api = this._api;
     const assetAbsPath = api.resolveBuildFile(
       BUILD_CLIENT_DIR,
-      (ctx.req as Runtime.IIncomingMessage).matchedPath?.params.path!
+      ctx.params!.path
     );
     try {
       await serveStatic(ctx.req, ctx.res, assetAbsPath);
