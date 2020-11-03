@@ -42,9 +42,7 @@ export default class ShuviDev extends Base {
 
   private _publicDirMiddleware: Runtime.IServerAppHandler = async ctx => {
     const api = this._api;
-    const assetAbsPath = api.resolvePublicFile(
-      (ctx.req as Runtime.IIncomingMessage).matchedPath?.params.path!
-    );
+    const assetAbsPath = api.resolvePublicFile(ctx.params!.path);
     try {
       await serveStatic(ctx.req, ctx.res, assetAbsPath);
     } catch (err) {
