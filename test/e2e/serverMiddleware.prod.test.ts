@@ -26,18 +26,33 @@ describe('serverMiddleware production', () => {
     res = await got.get(ctx.url('/health-check'));
     expect(res.body).toBe('200 OK');
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
+    expect(res.headers).toHaveProperty('set-cookie', [
+      'shuvi-middleware-custom-cookie=foo; path=/; httponly'
+    ]);
 
     res = await got.get(ctx.url('/health-check2'));
     expect(res.body).toBe('200 OK');
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
+    expect(res.headers).toHaveProperty('set-cookie', [
+      'shuvi-middleware-custom-cookie=foo; path=/; httponly'
+    ]);
+
+    res = await got.get(ctx.url('/health-check3'));
+    expect(res.body).toBe('200 OK');
+    expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
+    expect(res.headers).toHaveProperty('set-cookie', [
+      'shuvi-middleware-custom-cookie=foo; path=/; httponly'
+    ]);
 
     res = await got.get(ctx.url('/home'));
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
+    expect(res.headers).not.toHaveProperty('set-cookie');
 
     // Note: koa-lowercase /HOME -> 301 redirect /home
     res = await got.get(ctx.url('/HOME'));
     expect(res.url).toContain('/home');
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
+    expect(res.headers).not.toHaveProperty('set-cookie');
   });
 
   test('should match path /users/:id', async () => {

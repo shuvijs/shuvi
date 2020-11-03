@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { IServerMiddlewareConfig } from '@shuvi/types';
 import resolve from '@shuvi/utils/lib/resolve';
 
@@ -7,14 +8,42 @@ export interface Options {
   srcDir: string;
 }
 
-export function resolveHandler(name: string, options: Options) {
+const EXTENSIONS = ['js', 'ts'];
+
+function resolveAbsolute(resolveFrom: string, handler: string): string | undefined {
+  const absPath = (path.isAbsolute(handler)
+    ? handler
+    : path.resolve(resolveFrom, handler)
+  ).replace(/\\/g, '/');
+
+  // Note: already has extension
+  if (path.extname(absPath)) {
+    if (fs.existsSync(absPath)) {
+      return absPath;
+    } else {
+      throw new Error(`"${absPath}" handler do not exist.`);
+    }
+  }
+  
+  // Note: attempt to resolve with extension
+  for (let i = 0; i < EXTENSIONS.length; i++) {
+    if (fs.existsSync(`${absPath}.${EXTENSIONS[i]}`)) {
+      return absPath;
+    }
+  }
+
+  return undefined;
+}
+
+export function resolveHandler(handler: string, options: Options) {
+  const absPath = resolveAbsolute(options.srcDir, handler);
+  if (absPath) return absPath;
   try {
-    // Note: just check if it is a npm module
-    resolve.sync(name, { basedir: options.rootDir });
-    return name;
+    // Note: check if it is a npm module
+    resolve.sync(handler, { basedir: options.rootDir });
+    return handler;
   } catch (error) {
-    // Note: self defined middleware module
-    return `${path.join(options.srcDir, name)}`;
+    throw new Error(`"${handler}" handler do not exist.`)
   }
 }
 
