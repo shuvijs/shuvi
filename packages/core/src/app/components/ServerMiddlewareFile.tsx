@@ -10,7 +10,7 @@ import { useSelector } from '../models/store';
  */
 function makeVariableName(str: string) {
   return str
-    .replace(/\//g, '_')
+    .replace(/[\/\.]/g, '_')
     .replace(/\-/g, ' ')
     .replace(/\s(.)/g, s => s.toUpperCase())
     .replace(/\s/g, '')

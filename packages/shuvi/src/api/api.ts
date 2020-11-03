@@ -393,6 +393,7 @@ class Api extends Hookable implements IApi {
         rootDir: this._paths.rootDir,
         srcDir: this._paths.srcDir
       });
+      // Note: duplicated middleware will be omitted with same key
       const key = `${path} -> ${handler}`;
       this._app.addServerMiddleware(key, { path, handler: resolved });
     });
