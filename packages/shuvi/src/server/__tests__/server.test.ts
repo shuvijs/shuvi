@@ -11,83 +11,118 @@ describe('server', () => {
     await server.close();
   });
 
-  test('should work', async () => {
-    server = new Server();
-    const port = await findPort();
-    await server.listen(port);
-    server.use(ctx => {
-      ctx.body = 'ok';
-    });
-
-    const { body } = await got(`http://${host}:${port}`);
-    expect(body).toEqual('ok');
-  });
-
-  test('middleware', async () => {
-    server = new Server();
-    server
-      .use(async (ctx, next) => {
-        ctx.__test = 'worked';
-        await next();
-      })
-      .use('/api', ctx => {
-        ctx.body = ctx.__test;
-      });
-    const port = await findPort();
-    await server.listen(port);
-
-    const { body } = await got(`http://${host}:${port}/api`);
-    expect(body).toEqual('worked');
-  });
-
-  test('path-to-regexp match at the beginning for _publicDirMiddleware', async () => {
-    server = new Server();
-    server
-      .use(async (ctx, next) => {
-        ctx.__test = 'worked';
-        await next();
-      })
-      .use('/api', ctx => {
-        ctx.body = ctx.__test;
+  describe('middleware', () => {
+    test('should work', async () => {
+      server = new Server();
+      const port = await findPort();
+      await server.listen(port);
+      server.use(ctx => {
+        ctx.body = 'ok';
       });
 
-    const port = await findPort();
-    await server.listen(port);
-
-    const { body } = await got(`http://${host}:${port}/api`);
-    expect(body).toEqual('worked');
-    const { body: body2 } = await got(`http://${host}:${port}/api/path/to/the/static/file`);
-    expect(body2).toEqual('worked');
-  });
-
-  test('match middleware with matchedPath object', async () => {
-    expect.assertions(3);
-
-    let matchedPath;
-    server = new Server();
-    server.use('/api/users/:id', ctx => {
-      matchedPath = (ctx.req as Runtime.IIncomingMessage).matchedPath;
-      ctx.status = 200;
+      const { body } = await got(`http://${host}:${port}`);
+      expect(body).toEqual('ok');
     });
-    const port = await findPort();
-    await server.listen(port);
 
-    try {
-      await got(`http://${host}:${port}/api/users`);
-    } catch (error) {
-      expect(error.response.statusCode).toBe(404);
-    }
-    try {
-      await got(`http://${host}:${port}/api/users/`);
-    } catch (error) {
-      expect(error.response.statusCode).toBe(404);
-    }
+    test('context', async () => {
+      server = new Server();
+      server
+        .use(async (ctx, next) => {
+          ctx.__test = 'worked';
+          await next();
+        })
+        .use('/api', ctx => {
+          ctx.body = ctx.__test;
+        });
+      const port = await findPort();
+      await server.listen(port);
 
-    await got(`http://${host}:${port}/api/users/USER_ID`);
-    expect(matchedPath).toStrictEqual({
-      path: '/api/users/:id',
-      pathname: '/api/users/USER_ID',
-      params: { id: 'USER_ID' }
+      const { body } = await got(`http://${host}:${port}/api`);
+      expect(body).toEqual('worked');
+    });
+
+    test('match path /api*', async () => {
+      server = new Server();
+      server
+        .use(async (ctx, next) => {
+          ctx.__test = 'worked';
+          await next();
+        })
+        .use('/api*', ctx => {
+          ctx.body = ctx.__test;
+        });
+
+      const port = await findPort();
+      await server.listen(port);
+
+      const { body } = await got(`http://${host}:${port}/api`);
+      expect(body).toEqual('worked');
+      const { body: body2 } = await got(
+        `http://${host}:${port}/api/path/to/the/static/file`
+      );
+      expect(body2).toEqual('worked');
+    });
+
+    test('match /api/users/:id with matchedPath object', async () => {
+      expect.assertions(4);
+
+      let matchedPath;
+      server = new Server();
+      server.use('/api/users/:id', ctx => {
+        matchedPath = (ctx.req as Runtime.IIncomingMessage).matchedPath;
+        ctx.status = 200;
+      });
+      const port = await findPort();
+      await server.listen(port);
+
+      try {
+        await got(`http://${host}:${port}/api/users`);
+      } catch (error) {
+        expect(error.response.statusCode).toBe(404);
+      }
+      try {
+        await got(`http://${host}:${port}/api/users/`);
+      } catch (error) {
+        expect(error.response.statusCode).toBe(404);
+      }
+
+      await got(`http://${host}:${port}/api/users/USER_ID`);
+      expect(matchedPath).toStrictEqual({
+        path: '/api/users/:id',
+        pathname: '/api/users/USER_ID',
+        params: { id: 'USER_ID' }
+      });
+
+      try {
+        await got(`http://${host}:${port}/api/users/USER_ID/others`);
+      } catch (error) {
+        expect(error.response.statusCode).toBe(404);
+      }
+    });
+
+    test('match all /:path*', async () => {
+      let matchedPath;
+      server = new Server();
+      server.use('/:path*', ctx => {
+        matchedPath = (ctx.req as Runtime.IIncomingMessage).matchedPath;
+        ctx.status = 200;
+      });
+      const port = await findPort();
+      await server.listen(port);
+
+      await got(`http://${host}:${port}`);
+      expect(matchedPath).toStrictEqual({
+        path: '/:path*',
+        pathname: '/',
+        params: { path: undefined }
+      });
+
+      await got(`http://${host}:${port}/path/to/match/route`);
+      expect(matchedPath).toStrictEqual({
+        path: '/:path*',
+        pathname: '/path/to/match/route',
+        params: { path: 'path/to/match/route' }
+      });
     });
   });
 
