@@ -10,7 +10,7 @@ export default class ShuviProd extends Base {
     this._setupServerMiddleware();
     // If user don't provide a custom asset public path, we need serve it
     if (api.config.publicPath === PUBLIC_PATH) {
-      api.server.use(api.assetPublicPath, this._assetsMiddleware);
+      api.server.use(`${api.assetPublicPath}:path*`, this._assetsMiddleware);
     }
     api.server.use(this._handlePageRequest);
   }
@@ -23,7 +23,7 @@ export default class ShuviProd extends Base {
     const api = this._api;
     const assetAbsPath = api.resolveBuildFile(
       BUILD_CLIENT_DIR,
-      ctx.request.url.replace(api.assetPublicPath, '')
+      (ctx.req as Runtime.IIncomingMessage).matchedPath?.params.path!
     );
     try {
       await serveStatic(ctx.req, ctx.res, assetAbsPath);
