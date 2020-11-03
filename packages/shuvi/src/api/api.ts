@@ -249,7 +249,7 @@ class Api extends Hookable implements IApi {
 
   addServerMiddleware(
     key: string,
-    value: { path: string; handler: string, resolved: string }
+    value: { path: string; handler: string }
   ): void {
     this._app.addServerMiddleware(key, value);
   }
@@ -394,7 +394,7 @@ class Api extends Hookable implements IApi {
         srcDir: this._paths.srcDir
       });
       const key = `${path} -> ${handler}`;
-      this._app.addServerMiddleware(key, { path, handler, resolved });
+      this._app.addServerMiddleware(key, { path, handler: resolved });
     });
   }
 }

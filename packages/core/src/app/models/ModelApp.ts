@@ -68,7 +68,7 @@ export class ModelApp {
   @observable runtimePlugins = new Map<string, string>();
   @observable serverMiddleware = new Map<
     string,
-    { path: string; handler: string; resolved: string }
+    { path: string; handler: string; }
   >();
 
   @computed
@@ -123,7 +123,7 @@ export class ModelApp {
   @action
   addServerMiddleware(
     key: string,
-    value: { path: string; handler: string; resolved: string }
+    value: { path: string; handler: string; }
   ) {
     this.serverMiddleware.set(key, value);
   }
