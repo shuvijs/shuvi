@@ -114,9 +114,8 @@ export class Server {
     if (fn) {
       this._app.use(async (ctx, next) => {
         const matchedPath = matchPath(route, ctx.request.url);
-        (ctx.req as Runtime.IIncomingMessage).matchedPath = matchedPath;
-
         if (!matchedPath) return await next(); // Note: not matched
+        ctx.params = matchedPath.params;
         await fn(ctx, next);
       });
     } else {

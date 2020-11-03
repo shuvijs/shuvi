@@ -1,4 +1,3 @@
-import { Runtime } from '@shuvi/types';
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { Server } from '../server';
@@ -63,13 +62,13 @@ describe('server', () => {
       expect(body2).toEqual('worked');
     });
 
-    test('match /api/users/:id with matchedPath object', async () => {
+    test('match /api/users/:id with matchedPath params object', async () => {
       expect.assertions(4);
 
-      let matchedPath;
+      let params;
       server = new Server();
       server.use('/api/users/:id', ctx => {
-        matchedPath = (ctx.req as Runtime.IIncomingMessage).matchedPath;
+        params = ctx.params;
         ctx.status = 200;
       });
       const port = await findPort();
@@ -87,11 +86,7 @@ describe('server', () => {
       }
 
       await got(`http://${host}:${port}/api/users/USER_ID`);
-      expect(matchedPath).toStrictEqual({
-        path: '/api/users/:id',
-        pathname: '/api/users/USER_ID',
-        params: { id: 'USER_ID' }
-      });
+      expect(params).toStrictEqual({ id: 'USER_ID' });
 
       try {
         await got(`http://${host}:${port}/api/users/USER_ID/others`);
@@ -101,28 +96,20 @@ describe('server', () => {
     });
 
     test('match all /:path*', async () => {
-      let matchedPath;
+      let params;
       server = new Server();
       server.use('/:path*', ctx => {
-        matchedPath = (ctx.req as Runtime.IIncomingMessage).matchedPath;
+        params = ctx.params;
         ctx.status = 200;
       });
       const port = await findPort();
       await server.listen(port);
 
       await got(`http://${host}:${port}`);
-      expect(matchedPath).toStrictEqual({
-        path: '/:path*',
-        pathname: '/',
-        params: { path: undefined }
-      });
+      expect(params).toStrictEqual({ path: undefined });
 
       await got(`http://${host}:${port}/path/to/match/route`);
-      expect(matchedPath).toStrictEqual({
-        path: '/:path*',
-        pathname: '/path/to/match/route',
-        params: { path: 'path/to/match/route' }
-      });
+      expect(params).toStrictEqual({ path: 'path/to/match/route' });
     });
   });
 
