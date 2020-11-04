@@ -102,4 +102,13 @@ describe('serverMiddleware development', () => {
 
     await page.close();
   });
+
+  test('should not match assetPublicPath for static files', async () => {
+    const res = await got.get(ctx.url('/_shuvi/user.json'), {
+      responseType: 'json'
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('name', 'foo');
+    expect(res.headers).not.toHaveProperty('shuvi-middleware-custom-header');
+  });
 });

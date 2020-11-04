@@ -25,14 +25,13 @@ export default class ShuviDev extends Base {
       api
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
-
-    await devMiddleware.waitUntilValid();
-
+    
     // keep the order
-    this._setupServerMiddleware(); // Note: serverMiddleware needs bundle to be ready
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
     api.server.use(`${api.assetPublicPath}:path*`, this._publicDirMiddleware);
+    await devMiddleware.waitUntilValid();
+    this._setupServerMiddleware(); // Note: serverMiddleware needs bundle to be ready
     api.server.use(this._pageMiddleware);
   }
 
