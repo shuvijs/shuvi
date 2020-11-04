@@ -14,6 +14,8 @@ module.exports = {
     },
 
     { path: '/users/:id', handler: 'api/user' },
-    { path: '/profile/:id/setting*', handler: 'api/setting' }
+    { path: '/profile/:id/setting*', handler: 'api/setting' },
+
+    { path: '/home', handler: 'api/modify-html' },
   ]
 };

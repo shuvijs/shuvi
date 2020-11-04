@@ -114,4 +114,10 @@ describe('serverMiddleware production', () => {
     expect(res.body).toHaveProperty('name', 'foo');
     expect(res.headers).not.toHaveProperty('shuvi-middleware-custom-header');
   });
+
+  test('should modify the body content', async () => {
+    const page = await ctx.browser.page(ctx.url('/home'));
+    expect(await page.$attr('meta[name="test"]', 'content')).toBe('modified');
+    await page.close();
+  });
 });
