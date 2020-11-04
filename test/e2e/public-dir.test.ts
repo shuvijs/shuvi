@@ -17,23 +17,22 @@ describe('Public Dir', () => {
     ctx = await launchFixture('public-dir');
 
     // file
-    res = await got.get<any>(ctx.url('/_shuvi/user.json'), {
+    res = await got.get(ctx.url('/_shuvi/user.json'), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
-    expect(res.body.name).toBe('foo');
+    expect(res.body).toHaveProperty('name', 'foo');
 
     // nest
-    res = await got.get<any>(
-      ctx.url('/_shuvi/nest/user.json'),
-      { responseType: 'json' }
-    );
+    res = await got.get(ctx.url('/_shuvi/nest/user.json'), {
+      responseType: 'json'
+    });
     expect(res.statusCode).toBe(200);
-    expect(res.body.name).toBe('bar');
+    expect(res.body).toHaveProperty('name', 'bar');
 
     // folder
     try {
-      await got.get<any>(ctx.url('/_shuvi/nest'), { responseType: 'json' });
+      await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
     } catch (error) {
       expect(error.response.statusCode).toBe(404);
     }
@@ -47,23 +46,22 @@ describe('Public Dir', () => {
     ctx = await serveFixture('public-dir');
 
     // file
-    res = await got.get<any>(ctx.url('/_shuvi/user.json'), {
+    res = await got.get(ctx.url('/_shuvi/user.json'), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
-    expect(res.body.name).toBe('foo');
+    expect(res.body).toHaveProperty('name', 'foo');
 
     // nest
-    res = await got.get<any>(
-      ctx.url('/_shuvi/nest/user.json'),
-      { responseType: 'json' }
-    );
+    res = await got.get(ctx.url('/_shuvi/nest/user.json'), {
+      responseType: 'json'
+    });
     expect(res.statusCode).toBe(200);
-    expect(res.body.name).toBe('bar');
+    expect(res.body).toHaveProperty('name', 'bar');
 
     // folder
     try {
-      await got.get<any>(ctx.url('/_shuvi/nest'), { responseType: 'json' });
+      await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
     } catch (error) {
       expect(error.response.statusCode).toBe(404);
     }
