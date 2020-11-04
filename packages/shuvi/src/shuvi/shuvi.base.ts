@@ -110,7 +110,7 @@ export default abstract class Shuvi {
     try {
       const html = await this.renderToHTML(ctx.req, ctx.res);
       if (html) {
-        sendHTML(ctx.req, ctx.res, html);
+        sendHTML(ctx, html);
       }
     } catch (error) {
       throwServerRenderError(ctx, error);
