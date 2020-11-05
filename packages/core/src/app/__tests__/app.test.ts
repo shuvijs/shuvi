@@ -49,6 +49,11 @@ describe('app', () => {
       path: '/',
       handler: 'path/api/set-header'
     });
+    app.addServerMiddleware('cache', {
+      path: '*',
+      handler: 'api/cache',
+      options: [{ maxAge: 2 * 60 * 1000 }]
+    });
 
     await app.build({
       dir: BUILD_DIR
@@ -64,7 +69,13 @@ describe('app', () => {
       ['core/routes.js', 'routes content'],
       [
         'core/serverMiddleware.js',
-        'import path_api_setHeader from "path/api/set-header";\n\nexport default [\n  { path: "/", handler: path_api_setHeader },\n];'
+        `import path_api_setHeader from "path/api/set-header";
+import api_cache from "api/cache";
+
+export default [
+  { path: "/", handler: path_api_setHeader },
+  { path: "*", handler: api_cache({"maxAge":120000}) },
+];`
       ]
     ]);
   });

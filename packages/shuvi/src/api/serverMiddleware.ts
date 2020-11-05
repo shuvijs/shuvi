@@ -49,13 +49,15 @@ export function resolveHandler(handler: string, options: Options) {
 
 export function normalizeServerMiddleware(
   middleware: IServerMiddlewareConfig
-): { path: string; handler: string } {
+): { path: string; handler: string; options?: any[] } {
   let path: string;
   let handler: string;
+  let options: any[] | undefined;
 
   if (typeof middleware === 'object') {
     path = middleware.path;
     handler = middleware.handler;
+    options = middleware.options;
   } else if (typeof middleware === 'string') {
     path = '*'; // Note: match all routes
     handler = middleware;
@@ -63,5 +65,5 @@ export function normalizeServerMiddleware(
     throw new Error(`Middleware must be one of type [string, object]`);
   }
 
-  return { path, handler };
+  return { path, handler, options };
 }

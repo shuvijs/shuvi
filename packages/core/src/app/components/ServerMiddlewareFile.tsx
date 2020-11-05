@@ -17,6 +17,10 @@ function makeVariableName(str: string) {
     .replace(/^(.)/, s => s.toLowerCase());
 }
 
+function toParamterString(options: any[]) {
+  return options.map(e => JSON.stringify(e)).join(', ');
+}
+
 function ServerMiddleware() {
   const serverMiddleware = useSelector(state => state.serverMiddleware);
 
@@ -25,10 +29,12 @@ function ServerMiddleware() {
 
   const uniqueImports = new Map<string, string>();
 
-  serverMiddleware.forEach(({ path, handler }) => {
+  serverMiddleware.forEach(({ path, handler, options }) => {
     const importName = makeVariableName(handler);
     uniqueImports.set(handler, importName);
-    exportContent += `\n  { path: "${path}", handler: ${importName} },`;
+    exportContent += `\n  { path: "${path}", handler: ${
+      options ? `${importName}(${toParamterString(options)})` : importName
+    } },`;
   });
 
   uniqueImports.forEach((v, k) => {

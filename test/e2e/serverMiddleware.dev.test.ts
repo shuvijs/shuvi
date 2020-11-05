@@ -26,6 +26,7 @@ describe('serverMiddleware development', () => {
     expect(res.headers).toHaveProperty('set-cookie', [
       'shuvi-middleware-custom-cookie=foo; path=/; httponly'
     ]);
+    expect(res.headers).not.toHaveProperty('cache-control');
 
     res = await got.get(ctx.url('/health-check2'));
     expect(res.body).toBe('200 OK');
@@ -33,6 +34,7 @@ describe('serverMiddleware development', () => {
     expect(res.headers).toHaveProperty('set-cookie', [
       'shuvi-middleware-custom-cookie=foo; path=/; httponly'
     ]);
+    expect(res.headers).toHaveProperty('cache-control', 'max-age=120, must-revalidate');
 
     res = await got.get(ctx.url('/health-check3'));
     expect(res.body).toBe('200 OK');
@@ -40,6 +42,7 @@ describe('serverMiddleware development', () => {
     expect(res.headers).toHaveProperty('set-cookie', [
       'shuvi-middleware-custom-cookie=foo; path=/; httponly'
     ]);
+    expect(res.headers).toHaveProperty('cache-control', 'no-cache, no-store, must-revalidate');
 
     res = await got.get(ctx.url('/home'));
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');

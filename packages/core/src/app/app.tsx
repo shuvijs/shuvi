@@ -39,7 +39,7 @@ export class App {
 
   addServerMiddleware(
     key: string,
-    value: { path: string; handler: string; }
+    value: { path: string; handler: string; options?: any[] }
   ): void {
     this._store.addServerMiddleware(key, value);
   }

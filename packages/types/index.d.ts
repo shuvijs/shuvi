@@ -75,7 +75,7 @@ export type IPresetConfig =
 
 export type IServerMiddlewareConfig =
   | string /* handler */
-  | { path: string; handler: string };
+  | { path: string; handler: string; options?: any[] };
 
 export type IRuntimeConfig = Record<string, string>;
 
