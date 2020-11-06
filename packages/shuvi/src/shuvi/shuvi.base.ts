@@ -5,6 +5,7 @@ import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
 import { throwServerRenderError } from '../lib/throw';
+import { normalizeServerMiddleware } from '../api/serverMiddleware';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -80,24 +81,20 @@ export default abstract class Shuvi {
   protected abstract init(): Promise<void> | void;
 
   protected _setupServerMiddleware() {
-    if (!this._api.config.serverMiddleware) return;
+    const {
+      server: { serverMiddleware = [] }
+    } = this._api.resources.server;
 
-    const mode = this.getMode();
-    const { serverMiddleware } = this._api.resources.server;
+    const { rootDir } = this._api.paths;
 
-    if (mode === 'development') {
-      serverMiddleware.forEach((middleware, index) => {
-        this._api.server.use(middleware.path, async (ctx, next) => {
-          // Note: always use new module in dev
-          const { handler } = this._api.resources.server.serverMiddleware[index];
-          await handler(ctx, next);
-        });
-      });
-    } else {
-      serverMiddleware.forEach(middleware => {
-        this._api.server.use(middleware.path, middleware.handler);
-      });
-    }
+    const normalizedServerMiddleware = serverMiddleware.map(middleware =>
+      normalizeServerMiddleware(middleware, { rootDir })
+    );
+    console.log({ serverMiddleware, normalizedServerMiddleware });
+
+    normalizedServerMiddleware.forEach(middleware => {
+      this._api.server.use(middleware.path, middleware.handler);
+    });
   }
 
   protected _handle404: Runtime.IServerAppHandler = ctx => {

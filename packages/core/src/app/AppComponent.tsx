@@ -9,7 +9,6 @@ import RoutesFile from './components/RoutesFile';
 import UserFiles from './components/UserFiles';
 import ApplicationFile from './components/ApplicationFile';
 import PluginFile from './components/PluginFile';
-import ServerMiddlewareFile from './components/ServerMiddlewareFile';
 
 function App() {
   return (
@@ -22,7 +21,6 @@ function App() {
         <AppFile />
         <RoutesFile />
         <PluginFile />
-        <ServerMiddlewareFile />
         <Polyfill />
       </Dir>
       <UserFiles />

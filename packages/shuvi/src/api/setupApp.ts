@@ -156,11 +156,7 @@ export async function setupApp(api: Api) {
             [runtime.getViewModulePath()]: {
               imported: 'default',
               local: 'view'
-            },
-            [api.resolveAppFile('core', 'serverMiddleware')]: {
-              imported: 'default',
-              local: 'serverMiddleware'
-            },
+            }
           }
         : {
             [api.resolveAppFile('core', 'server')]: {

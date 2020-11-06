@@ -25,7 +25,7 @@ export default class ShuviDev extends Base {
       api
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
-    
+
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
