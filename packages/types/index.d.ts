@@ -104,6 +104,7 @@ export interface IApi extends IHookable {
   addAppExport: typeof App.prototype.addExport;
   addAppPolyfill: typeof App.prototype.addPolyfill;
   addRuntimePlugin: typeof App.prototype.addRuntimePlugin;
+  addServerMiddleware: (serverMiddleware: Runtime.IServerMiddleware) => void;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

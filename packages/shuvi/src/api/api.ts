@@ -28,6 +28,7 @@ import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
+import { IServerMiddleware } from '@shuvi/types/src/runtime';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -53,6 +54,7 @@ class Api extends Hookable implements IApi {
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
+  extraServerMiddleware: IServerMiddleware[] = [];
 
   constructor({ cwd, mode, config, configFile }: IApiOPtions) {
     super();
@@ -375,6 +377,10 @@ class Api extends Hookable implements IApi {
         })
       );
     }
+  }
+
+  addServerMiddleware(extraServerMiddleware: IServerMiddleware) {
+    this.extraServerMiddleware.push(extraServerMiddleware);
   }
 }
 

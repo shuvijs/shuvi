@@ -34,10 +34,6 @@ describe('Warnings', () => {
       'server error',
       expect.objectContaining({
         message: expect.stringMatching(/onDocumentProps not returning object/)
-      }),
-      // Note: ctx
-      expect.objectContaining({
-        originalUrl: '/'
       })
     );
   });

@@ -26,12 +26,24 @@ export default class ShuviDev extends Base {
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
+    await devMiddleware.waitUntilValid();
+
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
     api.server.use(`${api.assetPublicPath}:path*`, this._publicDirMiddleware);
-    await devMiddleware.waitUntilValid();
-    this._setupServerMiddleware(); // Note: serverMiddleware needs bundle to be ready
+
+    api.server.use(async (ctx, next) => {
+      // Need to ensureRoutes for serverMiddleware bundle.
+      // calling `api.resources.server` before ensureRoutes will cause error.
+      await this._onDemandRouteMgr.ensureRoutes(
+        (ctx.req as Runtime.IIncomingMessage).parsedUrl.pathname || '/'
+      );
+      await next();
+    });
+
+    api.server.use(this._createServerMiddlewaresHandler());
+
     api.server.use(this._pageMiddleware);
   }
 
@@ -70,10 +82,6 @@ export default class ShuviDev extends Base {
     ) {
       return await next();
     }
-
-    await this._onDemandRouteMgr.ensureRoutes(
-      (ctx.req as Runtime.IIncomingMessage).parsedUrl.pathname || '/'
-    );
 
     try {
       await this._handlePageRequest(ctx);

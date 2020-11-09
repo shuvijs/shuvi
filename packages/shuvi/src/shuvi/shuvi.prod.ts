@@ -11,7 +11,8 @@ export default class ShuviProd extends Base {
     if (api.config.publicPath === PUBLIC_PATH) {
       api.server.use(`${api.assetPublicPath}:path*`, this._assetsMiddleware);
     }
-    this._setupServerMiddleware();
+
+    api.server.use(this._createServerMiddlewaresHandler());
     api.server.use(this._handlePageRequest);
   }
 

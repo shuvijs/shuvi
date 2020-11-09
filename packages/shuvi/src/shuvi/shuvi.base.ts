@@ -6,6 +6,8 @@ import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
 import { throwServerRenderError } from '../lib/throw';
 import { normalizeServerMiddleware } from '../api/serverMiddleware';
+import { IServerMiddlewareModule } from '@shuvi/types/src/runtime';
+import { matchPath } from '@shuvi/router/src';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -80,21 +82,21 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _setupServerMiddleware() {
+  protected _getServerMiddlewares() {
+    const { extraServerMiddleware } = this._api;
+
     const {
       server: { serverMiddleware = [] }
     } = this._api.resources.server;
 
     const { rootDir } = this._api.paths;
 
-    const normalizedServerMiddleware = serverMiddleware.map(middleware =>
-      normalizeServerMiddleware(middleware, { rootDir })
-    );
-    console.log({ serverMiddleware, normalizedServerMiddleware });
-
-    normalizedServerMiddleware.forEach(middleware => {
-      this._api.server.use(middleware.path, middleware.handler);
-    });
+    // plugin serverMiddleware => server.js middleware
+    const normalizedServerMiddleware = [
+      ...extraServerMiddleware,
+      ...serverMiddleware
+    ].map(middleware => normalizeServerMiddleware(middleware, { rootDir }));
+    return normalizedServerMiddleware;
   }
 
   protected _handle404: Runtime.IServerAppHandler = ctx => {
@@ -121,4 +123,33 @@ export default abstract class Shuvi {
 
     this._api = await this._apiPromise;
   }
+
+  protected _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
+    let middlewares: IServerMiddlewareModule[];
+
+    return async (ctx, next) => {
+      if (!middlewares) {
+        middlewares = this._getServerMiddlewares();
+      }
+
+      let i = 0;
+
+      const runMiddleware = async (middleware: IServerMiddlewareModule) => {
+        if (i === middlewares.length) {
+          await next();
+          return;
+        }
+        const matchedPath = matchPath(middleware.path, ctx.request.url);
+        if (!matchedPath) {
+          await runMiddleware(middlewares[++i]);
+          return;
+        }
+        ctx.params = matchedPath.params;
+
+        await middleware.handler(ctx, () => runMiddleware(middlewares[++i]));
+      };
+
+      await runMiddleware(middlewares[i]);
+    };
+  };
 }

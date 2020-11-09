@@ -234,6 +234,11 @@ export type IServerMiddleware =
       handler: string | IServerAppMiddleware | IServerAppHandler;
     };
 
+export type IServerMiddlewareModule = {
+  path: string;
+  handler: IServerAppMiddleware | IServerAppHandler;
+};
+
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;
 

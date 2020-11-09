@@ -38,9 +38,6 @@ describe('Custom Server.js with error production', () => {
       'server error',
       expect.objectContaining({
         message: expect.stringMatching(/Something wrong/)
-      }),
-      expect.objectContaining({
-        originalUrl: '/' // Note: ctx
       })
     );
   });

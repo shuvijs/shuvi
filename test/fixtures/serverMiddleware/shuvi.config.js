@@ -1,5 +1,6 @@
 const path = require('path');
 
 module.exports = {
-  ssr: true
+  ssr: true,
+  plugins: [['./plugins/pluginServerMiddleware.js']]
 };
