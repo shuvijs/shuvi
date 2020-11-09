@@ -156,6 +156,11 @@ export async function setupApp(api: Api) {
             [runtime.getViewModulePath()]: {
               imported: 'default',
               local: 'view'
+            },
+            // include shuvi in main bundle
+            [api.resolveAppFile('index')]: {
+              imported: '*',
+              local: 'shuvi'
             }
           }
         : {

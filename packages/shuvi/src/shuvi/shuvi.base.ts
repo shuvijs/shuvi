@@ -1,3 +1,5 @@
+/// <reference types="@types/koa" />
+
 import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
 import { getApi, Api } from '../api';
@@ -6,8 +8,7 @@ import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
 import { throwServerRenderError } from '../lib/throw';
 import { normalizeServerMiddleware } from '../api/serverMiddleware';
-import { IServerMiddlewareModule } from '@shuvi/types/src/runtime';
-import { matchPath } from '@shuvi/router/src';
+import { matchPath } from '@shuvi/router';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -82,7 +83,7 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _getServerMiddlewares() {
+  private _getServerMiddlewares() {
     const { extraServerMiddleware } = this._api;
 
     const {
@@ -96,6 +97,7 @@ export default abstract class Shuvi {
       ...extraServerMiddleware,
       ...serverMiddleware
     ].map(middleware => normalizeServerMiddleware(middleware, { rootDir }));
+
     return normalizedServerMiddleware;
   }
 
@@ -125,7 +127,7 @@ export default abstract class Shuvi {
   }
 
   protected _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
-    let middlewares: IServerMiddlewareModule[];
+    let middlewares: Runtime.IServerMiddlewareModule[];
 
     return async (ctx, next) => {
       if (!middlewares) {
@@ -134,7 +136,9 @@ export default abstract class Shuvi {
 
       let i = 0;
 
-      const runMiddleware = async (middleware: IServerMiddlewareModule) => {
+      const runMiddleware = async (
+        middleware: Runtime.IServerMiddlewareModule
+      ) => {
         if (i === middlewares.length) {
           await next();
           return;

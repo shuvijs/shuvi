@@ -76,7 +76,7 @@ export class Server {
     });
     this._app.on('error', (err, ctx) => {
       // Note: Koa error-handling logic such as centralized logging
-      console.error('server error', err);
+      console.error(`server error: ${ctx.request.url} `, err);
     });
   }
 
