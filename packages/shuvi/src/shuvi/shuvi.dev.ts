@@ -35,6 +35,9 @@ export default class ShuviDev extends Base {
 
     api.server.use(this._createServerMiddlewaresHandler());
 
+    if (process.env.NODE_ENV === 'test') {
+      api.server.use(require('shuvi-test-utils/clearRequireCache').default);
+    }
     api.server.use(this._pageMiddleware);
   }
 

@@ -102,7 +102,8 @@ describe('api', () => {
       'resolveUserFile',
       'resolveBuildFile',
       'resolvePublicFile',
-      'getAssetPublicUrl'
+      'getAssetPublicUrl',
+      'addServerMiddleware'
     ].forEach(method => {
       // @ts-ignore
       expect(typeof pluginApi[method]).toBe('function');
