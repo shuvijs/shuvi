@@ -188,12 +188,6 @@ class Api extends Hookable implements IApi {
       await this._app.build({ dir: this.paths.appDir });
     }
 
-    // prevent webpack watch running too early
-    // https://github.com/webpack/webpack/issues/7997
-    await new Promise(resolve => {
-      setTimeout(resolve, 1000);
-    });
-
     this.emitEvent<APIHooks.IEventAppReady>('app:ready');
   }
 
