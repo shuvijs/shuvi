@@ -11,7 +11,8 @@ export default class ShuviProd extends Base {
     if (api.config.publicPath === PUBLIC_PATH) {
       api.server.use(`${api.assetPublicPath}:path*`, this._assetsMiddleware);
     }
-    this._setupServerMiddleware();
+
+    api.server.use(this._createServerMiddlewaresHandler());
     api.server.use(this._handlePageRequest);
   }
 
@@ -38,5 +39,11 @@ export default class ShuviProd extends Base {
         throw err;
       }
     }
+  };
+
+  private _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
+    const middlewares = this._getServerMiddlewares();
+
+    return this._runServerMiddlewares(middlewares);
   };
 }

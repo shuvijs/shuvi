@@ -25,13 +25,19 @@ export default class ShuviDev extends Base {
       api
     });
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
-    
+
+    await devMiddleware.waitUntilValid();
+
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
     api.server.use(`${api.assetPublicPath}:path*`, this._publicDirMiddleware);
-    await devMiddleware.waitUntilValid();
-    this._setupServerMiddleware(); // Note: serverMiddleware needs bundle to be ready
+
+    api.server.use(this._createServerMiddlewaresHandler());
+
+    if (process.env.NODE_ENV === 'test') {
+      api.server.use(require('shuvi-test-utils/clearRequireCache').default);
+    }
     api.server.use(this._pageMiddleware);
   }
 
@@ -82,5 +88,13 @@ export default class ShuviDev extends Base {
     }
 
     await next();
+  };
+
+  private _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
+    return async (ctx, next) => {
+      const middlewares = this._getServerMiddlewares();
+
+      await this._runServerMiddlewares(middlewares)(ctx, next);
+    };
   };
 }

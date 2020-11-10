@@ -66,10 +66,6 @@ export class ModelApp {
   @observable polyfills: string[] = [];
   @observable exports = new Map<string, ISpecifier[]>();
   @observable runtimePlugins = new Map<string, string>();
-  @observable serverMiddleware = new Map<
-    string,
-    { path: string; handler: string }
-  >();
 
   @computed
   get entryConent(): string {
@@ -118,14 +114,6 @@ export class ModelApp {
   @action
   addRuntimePlugin(name: string, runtimePlugin: string) {
     this.runtimePlugins.set(name, runtimePlugin);
-  }
-
-  @action
-  addServerMiddleware(key: string, value: { path: string; handler: string }) {
-    if (this.serverMiddleware.get(key)) {
-      throw new Error(`duplicated middleware "${key}"`);
-    }
-    this.serverMiddleware.set(key, value);
   }
 
   @action

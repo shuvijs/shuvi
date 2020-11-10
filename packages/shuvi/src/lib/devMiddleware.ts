@@ -68,10 +68,10 @@ export async function getDevMiddleware({
   });
 
   const apply = () => {
+    const webpackDevHandler = c2k(webpackDevMiddleware) as any;
     api.server.use(async (ctx, next) => {
       ctx.status = 200;
-      const handler = c2k(webpackDevMiddleware) as any;
-      await handler(ctx, next);
+      await webpackDevHandler(ctx, next);
     });
     api.server.use(webpackHotMiddleware.middleware);
     api.server.use(
@@ -103,7 +103,7 @@ export async function getDevMiddleware({
     name: 'DevMiddleware',
     fn() {
       return new Promise(resolve => {
-        webpackHotMiddleware.close()
+        webpackHotMiddleware.close();
         webpackDevMiddleware.close(resolve);
       });
     }

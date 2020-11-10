@@ -31,7 +31,7 @@ export default class RequireCacheHotReloader implements Plugin {
     compiler.hooks.afterEmit.tap(PLUGIN_NAME, compilation => {
       const serverRuntimePath = path.join(
         compilation.outputOptions.path!,
-        BUILD_SERVER_FILE_SERVER
+        `${BUILD_SERVER_FILE_SERVER}.js`
       );
 
       deleteCache(serverRuntimePath);
