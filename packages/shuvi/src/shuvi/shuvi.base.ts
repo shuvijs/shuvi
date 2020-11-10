@@ -8,6 +8,7 @@ import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
 import { throwServerRenderError } from '../lib/throw';
 import { normalizeServerMiddleware } from '../api/serverMiddleware';
+import { matchPath } from '@shuvi/router';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -123,5 +124,32 @@ export default abstract class Shuvi {
     }
 
     this._api = await this._apiPromise;
+  }
+
+  protected _runServerMiddlewares(
+    middlewares: Runtime.IServerMiddlewareModule[]
+  ): Runtime.IServerAppMiddleware {
+    return async (ctx, next) => {
+      let i = 0;
+
+      const runMiddleware = async (
+        middleware: Runtime.IServerMiddlewareModule
+      ) => {
+        if (i === middlewares.length) {
+          await next();
+          return;
+        }
+        const matchedPath = matchPath(middleware.path, ctx.request.url);
+        if (!matchedPath) {
+          await runMiddleware(middlewares[++i]);
+          return;
+        }
+        ctx.params = matchedPath.params;
+
+        await middleware.handler(ctx, () => runMiddleware(middlewares[++i]));
+      };
+
+      await runMiddleware(middlewares[i]);
+    };
   }
 }

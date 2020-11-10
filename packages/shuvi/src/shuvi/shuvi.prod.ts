@@ -2,7 +2,6 @@ import { Runtime } from '@shuvi/types';
 import { serveStatic } from '../lib/serveStatic';
 import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
-import { matchPath } from '@shuvi/router';
 
 export default class ShuviProd extends Base {
   async init() {
@@ -45,27 +44,6 @@ export default class ShuviProd extends Base {
   private _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
     const middlewares = this._getServerMiddlewares();
 
-    return async (ctx, next) => {
-      let i = 0;
-
-      const runMiddleware = async (
-        middleware: Runtime.IServerMiddlewareModule
-      ) => {
-        if (i === middlewares.length) {
-          await next();
-          return;
-        }
-        const matchedPath = matchPath(middleware.path, ctx.request.url);
-        if (!matchedPath) {
-          await runMiddleware(middlewares[++i]);
-          return;
-        }
-        ctx.params = matchedPath.params;
-
-        await middleware.handler(ctx, () => runMiddleware(middlewares[++i]));
-      };
-
-      await runMiddleware(middlewares[i]);
-    };
+    return this._runServerMiddlewares(middlewares);
   };
 }
