@@ -5,6 +5,7 @@ import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
 import { throwServerRenderError } from '../lib/throw';
+import { matchPath } from '@shuvi/router';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -88,5 +89,32 @@ export default class ShuviDev extends Base {
     }
 
     await next();
+  };
+
+  private _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
+    return async (ctx, next) => {
+      const middlewares = this._getServerMiddlewares();
+
+      let i = 0;
+
+      const runMiddleware = async (
+        middleware: Runtime.IServerMiddlewareModule
+      ) => {
+        if (i === middlewares.length) {
+          await next();
+          return;
+        }
+        const matchedPath = matchPath(middleware.path, ctx.request.url);
+        if (!matchedPath) {
+          await runMiddleware(middlewares[++i]);
+          return;
+        }
+        ctx.params = matchedPath.params;
+
+        await middleware.handler(ctx, () => runMiddleware(middlewares[++i]));
+      };
+
+      await runMiddleware(middlewares[i]);
+    };
   };
 }
