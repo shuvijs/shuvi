@@ -7,7 +7,7 @@ import modifyHtml from './api/modify-html';
 
 export const serverMiddleware = [
   'koa-lowercase',
-  setHeader, // Note: will be resolved from `src` directory and extension is optional.
+  setHeader,
   { path: '/health-check*', handler: setCookie },
   { path: '/health-check', handler: healthCheck },
   { path: '/health-check2', handler: healthCheck }, // Note: share handler with other path

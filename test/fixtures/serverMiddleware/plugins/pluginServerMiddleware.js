@@ -1,4 +1,4 @@
-export default api => {
+module.exports = api => {
   api.addServerMiddleware({
     path: 'pluginServerMiddleware',
     handler: async (ctx, next) => {

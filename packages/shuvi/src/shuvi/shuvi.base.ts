@@ -9,6 +9,7 @@ import { IConfig } from '../config';
 import { throwServerRenderError } from '../lib/throw';
 import { normalizeServerMiddleware } from '../api/serverMiddleware';
 import { matchPath } from '@shuvi/router';
+import { BUNDLER_TARGET_SERVER } from '../constants';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -127,7 +128,19 @@ export default abstract class Shuvi {
   }
 
   protected _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
-    let middlewares: Runtime.IServerMiddlewareModule[];
+    let middlewares: Runtime.IServerMiddlewareModule[] | undefined;
+
+    this._api.tap<APIHooks.IEventTargetDone>('bundler:targetDone', {
+      name: 'hotReloadMiddlewares',
+      fn: ({ name }) => {
+        if (
+          this._api.mode === 'development' &&
+          name === BUNDLER_TARGET_SERVER
+        ) {
+          middlewares = undefined;
+        }
+      }
+    });
 
     return async (ctx, next) => {
       if (!middlewares) {
@@ -139,18 +152,18 @@ export default abstract class Shuvi {
       const runMiddleware = async (
         middleware: Runtime.IServerMiddlewareModule
       ) => {
-        if (i === middlewares.length) {
+        if (i === middlewares!.length) {
           await next();
           return;
         }
         const matchedPath = matchPath(middleware.path, ctx.request.url);
         if (!matchedPath) {
-          await runMiddleware(middlewares[++i]);
+          await runMiddleware(middlewares![++i]);
           return;
         }
         ctx.params = matchedPath.params;
 
-        await middleware.handler(ctx, () => runMiddleware(middlewares[++i]));
+        await middleware.handler(ctx, () => runMiddleware(middlewares![++i]));
       };
 
       await runMiddleware(middlewares[i]);
