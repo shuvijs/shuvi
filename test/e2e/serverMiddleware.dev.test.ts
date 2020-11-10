@@ -117,4 +117,10 @@ describe('serverMiddleware development', () => {
     expect(await page.$attr('meta[name="test"]', 'content')).toBe('modified');
     await page.close();
   });
+
+  test('should allow plugin middleware', async () => {
+    const page = await ctx.browser.page(ctx.url('/pluginServerMiddleware'));
+    expect(await page.$text('body')).toBe('pluginServerMiddleware');
+    await page.close();
+  });
 });

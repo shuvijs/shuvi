@@ -31,13 +31,9 @@ describe('Warnings', () => {
     page = await ctx.browser.page(ctx.url('/'));
 
     expect(logSpy).toHaveBeenLastCalledWith(
-      'server error',
+      'server error: / ',
       expect.objectContaining({
         message: expect.stringMatching(/onDocumentProps not returning object/)
-      }),
-      // Note: ctx
-      expect.objectContaining({
-        originalUrl: '/'
       })
     );
   });

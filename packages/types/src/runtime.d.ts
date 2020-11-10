@@ -16,8 +16,7 @@ import {
   IRouteMatch,
   IRouteRecord,
   IPartialRouteRecord,
-  IRouter,
-  IPathMatch,
+  IRouter
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 import { IApi } from '../index';
@@ -223,11 +222,22 @@ export interface IServerModule {
       appContext: any;
     }
   ): void;
+  serverMiddleware: IServerMiddleware[];
 }
+
+export type IServerMiddleware =
+  | IServerAppMiddleware
+  | IServerAppHandler
+  | string
+  | {
+      path: string;
+      handler: string | IServerAppMiddleware | IServerAppHandler;
+    };
+
 export type IServerMiddlewareModule = {
   path: string;
   handler: IServerAppMiddleware | IServerAppHandler;
-}[];
+};
 
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;

@@ -14,12 +14,12 @@ const apiProps: Array<keyof IApi> = [
   'addAppExport',
   'addAppPolyfill',
   'addRuntimePlugin',
-  'addServerMiddleware',
   'resolveAppFile',
   'resolveUserFile',
   'resolveBuildFile',
   'resolvePublicFile',
-  'getAssetPublicUrl'
+  'getAssetPublicUrl',
+  'addServerMiddleware'
 ];
 
 class PluginApi implements IApi {

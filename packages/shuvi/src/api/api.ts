@@ -5,7 +5,8 @@ import {
   APIHooks,
   ISpecifier,
   IPaths,
-  IShuviMode
+  IShuviMode,
+  Runtime
 } from '@shuvi/types';
 import { App, IUserRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
@@ -28,7 +29,6 @@ import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
-import { normalizeServerMiddleware, resolveHandler } from './serverMiddleware';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -54,6 +54,7 @@ class Api extends Hookable implements IApi {
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
+  extraServerMiddleware: Runtime.IServerMiddleware[] = [];
 
   constructor({ cwd, mode, config, configFile }: IApiOPtions) {
     super();
@@ -92,7 +93,6 @@ class Api extends Hookable implements IApi {
     this._config = deepmerge(defaultConfig, configFromFile);
 
     await this._initPresetsAndPlugins();
-    await this._initServerMiddleware();
 
     initCoreResource(this);
 
@@ -247,13 +247,6 @@ class Api extends Hookable implements IApi {
     this._app.addRuntimePlugin(name, runtimePlugin);
   }
 
-  addServerMiddleware(
-    key: string,
-    value: { path: string; handler: string }
-  ): void {
-    this._app.addServerMiddleware(key, value);
-  }
-
   getAssetPublicUrl(...paths: string[]): string {
     return joinPath(this.assetPublicPath, ...paths);
   }
@@ -386,16 +379,8 @@ class Api extends Hookable implements IApi {
     }
   }
 
-  private async _initServerMiddleware() {
-    (this._config.serverMiddleware || []).forEach(serverMiddleware => {
-      const { path, handler } = normalizeServerMiddleware(serverMiddleware);
-      const resolved = resolveHandler(handler, {
-        rootDir: this._paths.rootDir,
-        srcDir: this._paths.srcDir
-      });
-      const key = `${path} -> ${handler}`;
-      this._app.addServerMiddleware(key, { path, handler: resolved });
-    });
+  addServerMiddleware(extraServerMiddleware: Runtime.IServerMiddleware) {
+    this.extraServerMiddleware.push(extraServerMiddleware);
   }
 }
 
