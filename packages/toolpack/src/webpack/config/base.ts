@@ -10,6 +10,7 @@ import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ModuleReplacePlugin from '../plugins/module-replace-plugin';
+import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
 import { AppSourceRegexs } from '../../constants';
 
@@ -173,6 +174,7 @@ export function baseWebpackChain({
       name: mediaFilename
     });
 
+  config.plugin('chunk-names').use(ChunkNamePlugin);
   config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {
       resourceRegExp: /^\.\/locale$/,
