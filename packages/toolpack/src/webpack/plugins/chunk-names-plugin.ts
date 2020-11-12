@@ -17,7 +17,7 @@ export default class ChunkNamesPlugin {
 
               if (chunk.filenameTemplate) {
                 filenameTemplate = chunk.filenameTemplate;
-              } else if (chunk.hasEntryModule()) {
+              } else if (chunk.hasRuntime() || chunk.hasEntryModule()) {
                 filenameTemplate = outputOptions.filename;
               } else {
                 filenameTemplate = outputOptions.chunkFilename;
