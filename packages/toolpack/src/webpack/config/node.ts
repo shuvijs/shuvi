@@ -36,6 +36,8 @@ export function createNodeWebpackChain({
   // related issue: https://github.com/graphql/graphql-js/issues/1272
   chain.resolve.mainFields.clear().add('main').add('module');
 
+  chain.output.filename(`[name].js`);
+
   chain.output.libraryTarget('commonjs2');
   chain.optimization.minimize(false);
   webpackHelpers.addExternals(

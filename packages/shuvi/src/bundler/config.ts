@@ -46,7 +46,6 @@ export function createWepbackConfig(
       mediaFilename: BUILD_MEDIA_PATH,
       webpackHelpers
     });
-    chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
   } else {
     chain = createBrowserWebpackChain({
       env: config.env,
@@ -59,9 +58,25 @@ export function createWepbackConfig(
       publicPath: assetPublicPath,
       webpackHelpers
     });
-    chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
+
+    chain.output.set('filename', ({ chunk }: { chunk: { name: string } }) => {
+      // Use `[name]-[contenthash].js` in production
+      if (
+        !dev &&
+        [
+          BUILD_CLIENT_RUNTIME_MAIN,
+          BUILD_CLIENT_RUNTIME_POLYFILL,
+          BUILD_CLIENT_RUNTIME_WEBPACK
+        ].includes(chunk.name)
+      ) {
+        return chunk.name.replace(/\.js$/, '-[contenthash].js');
+      }
+      return `static/chunks/[name]${dev ? '' : '-[chunkhash]'}.js`;
+    });
   }
+
+  chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
 
   chain.name(opts.name);
   chain.merge({
@@ -73,21 +88,6 @@ export function createWepbackConfig(
     '@shuvi/runtime-core',
     path.dirname(require.resolve('@shuvi/runtime-core/package.json'))
   );
-  chain.output.set('filename', ({ chunk }: { chunk: { name: string } }) => {
-    // Use `[name]-[contenthash].js` in production
-    if (
-      !dev &&
-      [
-        BUILD_CLIENT_RUNTIME_MAIN,
-        BUILD_CLIENT_RUNTIME_POLYFILL,
-        BUILD_CLIENT_RUNTIME_WEBPACK
-      ].includes(chunk.name)
-    ) {
-      return chunk.name.replace(/\.js$/, '-[contenthash].js');
-    }
-
-    return '[name].js';
-  });
 
   return chain;
 }

@@ -265,10 +265,6 @@ export function baseWebpackChain({
       .use(RequireCacheHotReloaderPlugin);
 
     config.optimization.usedExports(false);
-  } else {
-    config
-      .plugin('private/hashed-moduleids-plugin')
-      .use(webpack.ids.HashedModuleIdsPlugin);
   }
 
   return config;
