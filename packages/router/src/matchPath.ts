@@ -14,15 +14,21 @@ function compilePath(
   return [regexp, keys];
 }
 
-function safelyDecodeURIComponent(value: string, paramName: string) {
+function safelyDecodeURIComponent(
+  value: string,
+  paramName: string,
+  optional?: boolean
+) {
   try {
     return decodeURIComponent(value.replace(/\+/g, ' '));
   } catch (error) {
-    console.warn(
-      `The value for the URL param "${paramName}" will not be decoded because` +
-        ` the string "${value}" is a malformed URL segment. This is probably` +
-        ` due to a bad percent encoding (${error}).`
-    );
+    if (!optional) {
+      console.warn(
+        `The value for the URL param "${paramName}" will not be decoded because` +
+          ` the string "${value}" is a malformed URL segment. This is probably` +
+          ` due to a bad percent encoding (${error}).`
+      );
+    }
 
     return value;
   }
@@ -49,7 +55,8 @@ export function matchPath(
   let params = keys.reduce((memo, key, index) => {
     memo[key.name || '*'] = safelyDecodeURIComponent(
       values[index],
-      String(key.name)
+      String(key.name),
+      key.optional
     );
     return memo;
   }, {} as IParams);

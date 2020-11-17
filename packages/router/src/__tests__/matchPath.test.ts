@@ -110,4 +110,24 @@ describe('matchPath', () => {
       )
     ).toBeNull();
   });
+
+  it('should work with optional params', () => {
+    expect(matchPath({ path: '/:optional?' }, '/optional')).toStrictEqual({
+      params: { optional: 'optional' },
+      path: '/:optional?',
+      pathname: '/optional'
+    });
+  });
+
+  it('should not log warning when optional params is empty', () => {
+    jest.spyOn(console, 'warn');
+
+    expect(matchPath({ path: '/:optional?' }, '/')).toStrictEqual({
+      params: { optional: undefined },
+      path: '/:optional?',
+      pathname: '/'
+    });
+
+    expect(console.warn).toBeCalledTimes(0);
+  });
 });
