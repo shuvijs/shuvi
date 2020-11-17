@@ -7,6 +7,8 @@ const { RawSource } = webpack.sources;
 import ModuleItem = Bundler.IModuleItem;
 import Manifest = Bundler.IManifest;
 
+type ModuleId = string | number;
+
 const defaultOptions = {
   filename: 'build-manifest.json',
   modules: false,
@@ -63,12 +65,22 @@ export default class BuildManifestPlugin implements Plugin {
       loadble: {}
     });
 
+    const chunkRootModulesMap = new Map<ModuleId, Boolean>();
+    compilation.chunks.forEach(chunk => {
+      compilation.chunkGraph.getChunkRootModules(chunk).forEach(module => {
+        const id = compilation.chunkGraph.getModuleId(module);
+        if (id !== '') {
+          chunkRootModulesMap.set(id, true);
+        }
+      });
+    });
+
     compilation.chunkGroups.forEach(chunkGroup => {
       if (chunkGroup instanceof Entrypoint) {
         this._collectEntries(chunkGroup);
       }
 
-      this._collect(chunkGroup, compiler, compilation);
+      this._collect(chunkGroup, compiler, compilation, chunkRootModulesMap);
     });
 
     this._manifest.loadble = Object.keys(this._manifest.loadble)
@@ -117,12 +129,13 @@ export default class BuildManifestPlugin implements Plugin {
   private _collect(
     chunkGroup: ChunkGroup,
     compiler: Compiler,
-    compilation: Compilation
+    compilation: Compilation,
+    chunkRootModulesMap: Map<ModuleId, Boolean>
   ): void {
     const collectModules = this._options.modules;
     chunkGroup.origins.forEach(chunkGroupOrigin => {
       const { request } = chunkGroupOrigin;
-      const ctx = { request, compiler, compilation };
+      const ctx = { request, compiler, compilation, chunkRootModulesMap };
       chunkGroup.chunks.forEach(chunk => {
         this._collectChunk(chunk, ctx);
         if (collectModules) {
@@ -174,11 +187,13 @@ export default class BuildManifestPlugin implements Plugin {
     {
       request,
       compiler,
-      compilation
+      compilation,
+      chunkRootModulesMap
     }: {
       request: string;
       compiler: Compiler;
       compilation: Compilation;
+      chunkRootModulesMap: Map<ModuleId, Boolean>;
     }
   ) {
     if (chunk.canBeInitial()) {
@@ -211,10 +226,12 @@ export default class BuildManifestPlugin implements Plugin {
         continue;
       }
 
-      this._pushLoadableModules(request, {
-        id,
-        name
-      } as ModuleItem);
+      if (chunkRootModulesMap.has(id)) {
+        this._pushLoadableModules(request, {
+          id,
+          name
+        } as ModuleItem);
+      }
     }
   }
 
@@ -251,7 +268,7 @@ export default class BuildManifestPlugin implements Plugin {
   }
 
   private _pushLoadableModules(request: string, module: ModuleItem): void;
-  private _pushLoadableModules(request: string, module: string): void;
+  private _pushLoadableModules(request: string, file: string): void;
   private _pushLoadableModules(request: string, value: string | ModuleItem) {
     const modules = this._manifest.loadble;
     if (!modules[request]) {
@@ -262,12 +279,17 @@ export default class BuildManifestPlugin implements Plugin {
     }
 
     if (typeof value === 'string') {
-      modules[request].files.push(value);
-    } else if (
-      // Avoid duplicate files
-      !modules[request].children.some(item => item.id === module.id)
-    ) {
-      modules[request].children.push(value);
+      const existed = modules[request].files.some(file => file === value);
+      if (!existed) {
+        modules[request].files.push(value);
+      }
+    } else {
+      const existed = modules[request].children.some(
+        item => item.id === value.id
+      );
+      if (!existed) {
+        modules[request].children.push(value);
+      }
     }
   }
 }
