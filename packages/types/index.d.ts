@@ -98,6 +98,7 @@ export interface IApi extends IHookable {
   readonly mode: IShuviMode;
   readonly paths: IPaths;
   readonly config: IApiConfig;
+  readonly isBuildPhase: boolean;
 
   addEntryCode: typeof App.prototype.addEntryCode;
   addAppFile: typeof App.prototype.addFile;

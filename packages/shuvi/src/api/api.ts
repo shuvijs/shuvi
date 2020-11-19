@@ -37,6 +37,7 @@ interface IApiOPtions {
   mode?: IShuviMode;
   config?: IConfig;
   configFile?: string;
+  isBuildPhase?: boolean;
 }
 
 class Api extends Hookable implements IApi {
@@ -54,9 +55,16 @@ class Api extends Hookable implements IApi {
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
+  private _isBuildPhase: boolean;
   extraServerMiddleware: Runtime.IServerMiddleware[] = [];
 
-  constructor({ cwd, mode, config, configFile }: IApiOPtions) {
+  constructor({
+    cwd,
+    mode,
+    config,
+    configFile,
+    isBuildPhase = false
+  }: IApiOPtions) {
     super();
     if (mode) {
       this._mode = mode;
@@ -69,10 +77,15 @@ class Api extends Hookable implements IApi {
     this._cwd = path.resolve(cwd || '.');
     this._configFile = configFile;
     this._userConfig = config;
+    this._isBuildPhase = isBuildPhase;
   }
 
   get mode() {
     return this._mode;
+  }
+
+  get isBuildPhase() {
+    return this._isBuildPhase;
   }
 
   get config() {

@@ -88,6 +88,7 @@ describe('api', () => {
     expect(pluginApi.mode).toBe(api.mode);
     expect(pluginApi.paths).toBe(api.paths);
     expect(pluginApi.config).toBe(api.config);
+    expect(pluginApi.isBuildPhase).toBe(api.isBuildPhase);
 
     [
       'tap',
