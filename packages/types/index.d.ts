@@ -75,6 +75,12 @@ export type IPresetConfig =
 
 export type IRuntimeConfig = Record<string, string>;
 
+export declare type IPhase =
+  | 'PHASE_PRODUCTION_BUILD'
+  | 'PHASE_PRODUCTION_SERVER'
+  | 'PHASE_DEVELOPMENT_SERVER'
+  | 'PHASE_INSPECT_WEBPACK';
+
 export interface IApiConfig {
   outputPath: string;
   rootDir: string;
@@ -98,7 +104,7 @@ export interface IApi extends IHookable {
   readonly mode: IShuviMode;
   readonly paths: IPaths;
   readonly config: IApiConfig;
-  readonly isBuildPhase: boolean;
+  readonly phase: IPhase;
 
   addEntryCode: typeof App.prototype.addEntryCode;
   addAppFile: typeof App.prototype.addFile;

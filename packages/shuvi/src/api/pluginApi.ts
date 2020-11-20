@@ -3,7 +3,7 @@ import { Api } from '../api';
 
 const apiProps: Array<keyof IApi> = [
   'mode',
-  'isBuildPhase',
+  'phase',
   'paths',
   'config',
   'tap',
@@ -28,7 +28,7 @@ class PluginApi implements IApi {
   mode: any;
   paths: any;
   config: any;
-  isBuildPhase: any;
+  phase: any;
 
   // methods
   tap: any;

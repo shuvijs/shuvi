@@ -87,7 +87,7 @@ export async function build(options: IBuildOptions) {
     mode: 'production',
     config: opts.config,
     configFile: opts.configFile,
-    isBuildPhase: true
+    phase: 'PHASE_PRODUCTION_BUILD'
   });
 
   // generate application
