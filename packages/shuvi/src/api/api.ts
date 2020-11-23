@@ -6,7 +6,8 @@ import {
   ISpecifier,
   IPaths,
   IShuviMode,
-  Runtime
+  Runtime,
+  IPhase
 } from '@shuvi/types';
 import { App, IUserRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
@@ -37,6 +38,7 @@ interface IApiOPtions {
   mode?: IShuviMode;
   config?: IConfig;
   configFile?: string;
+  phase?: IPhase;
 }
 
 class Api extends Hookable implements IApi {
@@ -54,9 +56,10 @@ class Api extends Hookable implements IApi {
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
+  private _phase: IPhase;
   extraServerMiddleware: Runtime.IServerMiddleware[] = [];
 
-  constructor({ cwd, mode, config, configFile }: IApiOPtions) {
+  constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
     if (mode) {
       this._mode = mode;
@@ -69,10 +72,24 @@ class Api extends Hookable implements IApi {
     this._cwd = path.resolve(cwd || '.');
     this._configFile = configFile;
     this._userConfig = config;
+
+    if (phase) {
+      this._phase = phase;
+    } else {
+      if (this._mode === 'development') {
+        this._phase = 'PHASE_DEVELOPMENT_SERVER';
+      } else {
+        this._phase = 'PHASE_PRODUCTION_SERVER';
+      }
+    }
   }
 
   get mode() {
     return this._mode;
+  }
+
+  get phase() {
+    return this._phase;
   }
 
   get config() {
@@ -384,9 +401,10 @@ export async function getApi({
   cwd,
   mode,
   config,
-  configFile
+  configFile,
+  phase
 }: IApiOPtions): Promise<Api> {
-  const api = new Api({ cwd, mode, config, configFile });
+  const api = new Api({ cwd, mode, config, configFile, phase });
 
   await api.init();
   return api;

@@ -6,7 +6,9 @@ import { resolvePreset, resolvePlugin } from './utils';
 
 describe('api', () => {
   test('should has "production" be default mode', async () => {
-    const prodApi = await getApi({ config: {} });
+    const prodApi = await getApi({
+      config: {}
+    });
     expect(prodApi.mode).toBe('production');
   });
 
@@ -88,6 +90,7 @@ describe('api', () => {
     expect(pluginApi.mode).toBe(api.mode);
     expect(pluginApi.paths).toBe(api.paths);
     expect(pluginApi.config).toBe(api.config);
+    expect(pluginApi.phase).toBe(api.phase);
 
     [
       'tap',
