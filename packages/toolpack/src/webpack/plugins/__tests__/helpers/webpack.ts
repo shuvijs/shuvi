@@ -196,12 +196,17 @@ export function watchCompiler(
 }
 
 export function getModuleSource(stats: Stats, request: string | RegExp) {
-  return [...stats.compilation.modules]
-    .find(m =>
+  let res: any;
+  for (const m of stats.compilation.modules) {
+    if (
       typeof request === 'string'
-        ? (m as NormalModule).userRequest === request
-        : request.test((m as NormalModule).userRequest)
-    )
-    ?.originalSource()
-    .source();
+        ? (m as NormalModule).rawRequest === request
+        : request.test((m as NormalModule).rawRequest)
+    ) {
+      res = m;
+      break;
+    }
+  }
+
+  return res?.originalSource().source();
 }

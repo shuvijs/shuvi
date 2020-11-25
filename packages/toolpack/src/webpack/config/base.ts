@@ -252,7 +252,9 @@ export function baseWebpackChain({
       {
         modules: [
           {
-            test: RegExp(escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`)),
+            resourceQuery: RegExp(
+              escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`)
+            ),
             module: dumbRouteComponent
           }
         ]

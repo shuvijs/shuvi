@@ -11,7 +11,7 @@ describe('module-replace-plugin', () => {
         new ModuleReplacePlugin({
           modules: [
             {
-              test: /\?_lazy/,
+              resourceQuery: /\?_lazy/,
               module: require.resolve('./fixtures/testDummyComponent')
             }
           ]
@@ -21,8 +21,12 @@ describe('module-replace-plugin', () => {
 
     compiler
       .waitForCompile(stats => {
-        expect(getModuleSource(stats, /one\.js/)).toMatch(`testDummyComponent`);
-        expect(getModuleSource(stats, /two\.js/)).toMatch(`testDummyComponent`);
+        expect(getModuleSource(stats, /\.\.\/shared\/one\?_lazy/)).toMatch(
+          `testDummyComponent`
+        );
+        expect(getModuleSource(stats, /\.\.\/shared\/two\?_lazy/)).toMatch(
+          `testDummyComponent`
+        );
         expect(getModuleSource(stats, /module-replace/)).toMatchInlineSnapshot(`
           "import(
             /* webpackChunkName:\\"sharedOne\\" */
@@ -39,15 +43,23 @@ describe('module-replace-plugin', () => {
         return ModuleReplacePlugin.restoreModule('../shared/one?_lazy');
       })
       .then(stats => {
-        expect(getModuleSource(stats, /one\.js/)).toMatch(`export default 1;`);
-        expect(getModuleSource(stats, /two\.js/)).toMatch(`testDummyComponent`);
+        expect(getModuleSource(stats, /\.\.\/shared\/one\?_lazy/)).toMatch(
+          /one.js\?_lazy/
+        );
+        expect(getModuleSource(stats, /\.\.\/shared\/two\?_lazy/)).toMatch(
+          `testDummyComponent`
+        );
 
         compiler.forceCompile();
         return ModuleReplacePlugin.restoreModule('../shared/two?_lazy');
       })
       .then(stats => {
-        expect(getModuleSource(stats, /one\.js/)).toMatch(`export default 1;`);
-        expect(getModuleSource(stats, /two\.js/)).toMatch(`export default 2;`);
+        expect(getModuleSource(stats, /\.\.\/shared\/one\?_lazy/)).toMatch(
+          /one.js\?_lazy/
+        );
+        expect(getModuleSource(stats, /\.\.\/shared\/two\?_lazy/)).toMatch(
+          /two.js\?_lazy/
+        );
       })
       .end(done);
   });
