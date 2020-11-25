@@ -1,9 +1,7 @@
 import { Compiler, Plugin } from 'webpack';
 
-const REPLACED = Symbol('replaced');
-
 export type ConfigItem = {
-  test: Function | RegExp;
+  resourceQuery: Function | RegExp;
   module: string;
 };
 
@@ -11,20 +9,31 @@ export interface ModuleReplacePluginOptions {
   modules: ConfigItem[];
 }
 
+export interface Loader {
+  loader: string;
+  options: Record<string, any>;
+}
+
 export interface ModuleInfo {
   action: typeof ModuleAction[keyof typeof ModuleAction];
   compiler: Compiler;
   replacedModule: string;
-  loaders?: { loader: string; options: Record<string, any> }[];
+  loaders: Loader[];
 }
+
+const REPLACED = Symbol('replaced');
+
+const stubLoader = require.resolve('./stub-loader');
+
+const pitchLoader = stubLoader;
 
 const toString = Object.prototype.toString;
 
-function isRegExp(target: object): target is RegExp {
+function isRegExp(target: any): target is RegExp {
   return toString.call(target) === `[object RegExp]`;
 }
 
-function isFunction(target: object): target is Function {
+function isFunction(target: any): target is Function {
   return toString.call(target) === `[object Function]`;
 }
 
@@ -32,7 +41,30 @@ function getModuleId(wpModule: any) {
   return wpModule.rawRequest || wpModule?.createData?.rawRequest;
 }
 
-const stubLoader = require.resolve('./stub-loader');
+function isPitcher(loader: Loader) {
+  return loader.loader === pitchLoader;
+}
+
+function findReplacedModule(
+  configs: ConfigItem[],
+  query: string
+): string | null {
+  for (let index = 0; index < configs.length; index++) {
+    const { resourceQuery, module } = configs[index];
+    let isMatch = false;
+    if (isRegExp(resourceQuery)) {
+      isMatch = resourceQuery.test(query);
+    } else if (isFunction(resourceQuery)) {
+      isMatch = resourceQuery(query);
+    }
+
+    if (isMatch) {
+      return module;
+    }
+  }
+
+  return null;
+}
 
 const ModuleAction = {
   REPLACE: 'replace',
@@ -106,10 +138,24 @@ export default class ModuleReplacePlugin implements Plugin {
   }
 
   apply(compiler: Compiler) {
+    const { modules } = this._options;
+
     // init compiler info
     compilerInfo.set(compiler, {
       modules: new Map()
     });
+
+    const pitcher = {
+      loader: pitchLoader,
+      resourceQuery(query: string) {
+        const find = findReplacedModule(modules, query);
+        return !!find;
+      },
+      options: {}
+    };
+
+    // replace original rules
+    compiler.options.module.rules?.unshift(pitcher);
 
     compiler.hooks.done.tap('done', () => {
       const finished: string[] = [];
@@ -164,23 +210,23 @@ export default class ModuleReplacePlugin implements Plugin {
       const handler = moduleHandler.get(id);
       if (handler) {
         handler.pending.set(compiler, true);
-        wpModule.loaders = moduleInfo.loaders;
+      }
+      const pitcher = (wpModule.loaders || []).find(isPitcher);
+      if (pitcher) {
+        pitcher.options = {};
       }
       return;
     }
 
     if (moduleInfo.action === ModuleAction.REPLACE) {
       if (!wpModule.loaders || wpModule.loaders[REPLACED] !== true) {
-        moduleInfo.loaders = wpModule.loaders;
-        wpModule.loaders = [
-          {
-            loader: stubLoader,
-            options: {
-              module: moduleInfo.replacedModule
-            }
-          }
-        ];
         wpModule.loaders[REPLACED] = true;
+        const pitcher = (wpModule.loaders || []).find(isPitcher);
+        if (pitcher) {
+          pitcher.options = {
+            replacedModule: moduleInfo.replacedModule
+          };
+        }
       }
     }
   }
@@ -192,33 +238,21 @@ export default class ModuleReplacePlugin implements Plugin {
     if (knownModules.has(id) || !id) {
       return;
     }
-    const replacedModule = this._getReplacedModule(wpModule);
+
+    const {
+      createData: { resourceResolveData }
+    } = wpModule;
+    const replacedModule = findReplacedModule(
+      this._options.modules,
+      resourceResolveData.query
+    );
     if (replacedModule) {
       knownModules.set(id, {
         action: ModuleAction.REPLACE,
         replacedModule,
-        compiler
+        compiler,
+        loaders: []
       });
     }
-  }
-
-  private _getReplacedModule(wpModule: any): string | null {
-    const { request, dependencies } = wpModule;
-    if (dependencies.length <= 0) return null;
-
-    const { modules } = this._options;
-    for (let index = 0; index < modules.length; index++) {
-      const { test, module } = modules[index];
-      let shouldReplace = false;
-      if (isRegExp(test)) {
-        shouldReplace = test.test(request);
-      } else if (isFunction(test)) {
-        shouldReplace = test(wpModule);
-      }
-
-      if (shouldReplace) return module;
-    }
-
-    return null;
   }
 }
