@@ -21,3 +21,11 @@ export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack.js`;
 export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/runtime/polyfill.js`;
 
 export const BUILD_SERVER_DIR = 'server';
+
+export const PHASE_PRODUCTION_BUILD = 'PHASE_PRODUCTION_BUILD';
+
+export const PHASE_PRODUCTION_SERVER = 'PHASE_PRODUCTION_SERVER';
+
+export const PHASE_DEVELOPMENT_SERVER = 'PHASE_DEVELOPMENT_SERVER';
+
+export const PHASE_INSPECT_WEBPACK = 'PHASE_INSPECT_WEBPACK';

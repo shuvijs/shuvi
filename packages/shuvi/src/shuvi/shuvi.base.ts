@@ -1,14 +1,14 @@
-import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
+/// <reference types="@types/koa" />
+
 import { IncomingMessage, ServerResponse } from 'http';
-import {
-  IHTTPRequestHandler,
-  IIncomingMessage,
-  IServerResponse
-} from '../server';
+import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
+import { throwServerRenderError } from '../lib/throw';
+import { normalizeServerMiddleware } from '../api/serverMiddleware';
+import { matchPath } from '@shuvi/router';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -34,7 +34,7 @@ export default abstract class Shuvi {
     await this.init();
   }
 
-  getRequestHandler(): IHTTPRequestHandler {
+  getRequestHandler() {
     return this._api.server.getRequestHandler();
   }
 
@@ -55,13 +55,12 @@ export default abstract class Shuvi {
     // set 404 statusCode
     if (appContext.statusCode) {
       res.statusCode = appContext.statusCode;
+    } else {
+      res.statusCode = 200;
     }
 
     if (server.onViewDone) {
-      server.onViewDone(req, res, {
-        html,
-        appContext
-      });
+      server.onViewDone(req, res, { html, appContext });
     }
 
     return html;
@@ -84,28 +83,40 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _handle404(req: IIncomingMessage, res: IServerResponse) {
-    res.statusCode = 404;
-    res.end();
+  protected _getServerMiddlewares() {
+    const { extraServerMiddleware } = this._api;
+
+    const {
+      server: { serverMiddleware = [] }
+    } = this._api.resources.server;
+
+    const { rootDir } = this._api.paths;
+
+    // plugin serverMiddleware => server.js middleware
+    const normalizedServerMiddleware = [
+      ...extraServerMiddleware,
+      ...serverMiddleware
+    ].map(middleware => normalizeServerMiddleware(middleware, { rootDir }));
+
+    return normalizedServerMiddleware;
   }
 
-  protected async _handlePageRequest(
-    req: IIncomingMessage,
-    res: IServerResponse
-  ): Promise<void> {
+  protected _handle404: Runtime.IServerAppHandler = ctx => {
+    ctx.status = 404;
+    ctx.body = '';
+    return;
+  };
+
+  protected _handlePageRequest: Runtime.IServerAppHandler = async ctx => {
     try {
-      const html = await this.renderToHTML(req, res);
+      const html = await this.renderToHTML(ctx.req, ctx.res);
       if (html) {
-        sendHTML(req, res, html);
+        sendHTML(ctx, html);
       }
     } catch (error) {
-      if (this.getMode() === 'development') {
-        console.error('render error', error);
-      }
-      res.statusCode = 500;
-      res.end('Server Render Error');
+      throwServerRenderError(ctx, error);
     }
-  }
+  };
 
   private async _ensureApiInited() {
     if (this._api) {
@@ -113,5 +124,32 @@ export default abstract class Shuvi {
     }
 
     this._api = await this._apiPromise;
+  }
+
+  protected _runServerMiddlewares(
+    middlewares: Runtime.IServerMiddlewareModule[]
+  ): Runtime.IServerAppMiddleware {
+    return async (ctx, next) => {
+      let i = 0;
+
+      const runMiddleware = async (
+        middleware: Runtime.IServerMiddlewareModule
+      ) => {
+        if (i === middlewares.length) {
+          await next();
+          return;
+        }
+        const matchedPath = matchPath(middleware.path, ctx.request.url);
+        if (!matchedPath) {
+          await runMiddleware(middlewares[++i]);
+          return;
+        }
+        ctx.params = matchedPath.params;
+
+        await middleware.handler(ctx, () => runMiddleware(middlewares[++i]));
+      };
+
+      await runMiddleware(middlewares[i]);
+    };
   }
 }

@@ -3,6 +3,7 @@ import { Api } from '../api';
 
 const apiProps: Array<keyof IApi> = [
   'mode',
+  'phase',
   'paths',
   'config',
   'tap',
@@ -18,7 +19,8 @@ const apiProps: Array<keyof IApi> = [
   'resolveUserFile',
   'resolveBuildFile',
   'resolvePublicFile',
-  'getAssetPublicUrl'
+  'getAssetPublicUrl',
+  'addServerMiddleware'
 ];
 
 class PluginApi implements IApi {
@@ -26,6 +28,7 @@ class PluginApi implements IApi {
   mode: any;
   paths: any;
   config: any;
+  phase: any;
 
   // methods
   tap: any;
@@ -38,6 +41,7 @@ class PluginApi implements IApi {
   addAppExport: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
+  addServerMiddleware: any;
 
   resolveAppFile: any;
   resolveUserFile: any;
