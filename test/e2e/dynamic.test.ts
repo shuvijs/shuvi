@@ -13,6 +13,7 @@ describe('Dynamic', () => {
   beforeAll(async () => {
     ctx = await launchFixture('dynamic');
   }, 1000 * 60 * 5);
+
   afterAll(async () => {
     await ctx.close();
   });

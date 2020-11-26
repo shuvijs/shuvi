@@ -11,6 +11,7 @@ import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ModuleReplacePlugin from '../plugins/module-replace-plugin';
 import ChunkNamePlugin from '../plugins/chunk-names-plugin';
+import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
 import { AppSourceRegexs } from '../../constants';
 
@@ -248,6 +249,7 @@ export function baseWebpackChain({
       level: 'none'
     });
 
+    config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
     config.plugin('private/module-replace-plugin').use(ModuleReplacePlugin, [
       {
         modules: [

@@ -1,4 +1,6 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
+import Koa, { DefaultState, DefaultContext } from 'koa';
+import { UrlWithParsedQuery } from 'url';
 import {
   IUserRouteConfig,
   IAppRouteConfig,
@@ -69,6 +71,12 @@ export interface IDocumentProps {
 export interface IRedirectFn {
   (status: number, path: string): void;
   (path: string): void;
+}
+export interface IIncomingMessage extends IncomingMessage {
+  url: string;
+  parsedUrl: UrlWithParsedQuery;
+  originalUrl?: IncomingMessage['url'];
+  [x: string]: any;
 }
 
 export interface ISeverAppContext {
@@ -190,16 +198,46 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
+export interface CustomContext extends DefaultContext {
+  params?: Record<string, string>;
+}
+export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
+export type IServerAppContext = Koa.Context;
+export type IServerAppMiddleware<
+  S = DefaultState,
+  C = CustomContext
+> = Koa.Middleware<S, C>;
+export type IServerAppHandler<S = DefaultState, C = CustomContext> = (
+  context: Koa.ParameterizedContext<S, C>
+) => any | Promise<void>;
+export type IServerAppNext = Koa.Next;
+export type IServerAppResponse = Koa.Response;
+
 export interface IServerModule {
   onViewDone(
     req: IncomingMessage,
     res: ServerResponse,
-    ctx: {
+    payload: {
       html: string | null;
       appContext: any;
     }
   ): void;
+  serverMiddleware: IServerMiddleware[];
 }
+
+export type IServerMiddleware =
+  | IServerAppMiddleware
+  | IServerAppHandler
+  | string
+  | {
+      path: string;
+      handler: string | IServerAppMiddleware | IServerAppHandler;
+    };
+
+export type IServerMiddlewareModule = {
+  path: string;
+  handler: IServerAppMiddleware | IServerAppHandler;
+};
 
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;

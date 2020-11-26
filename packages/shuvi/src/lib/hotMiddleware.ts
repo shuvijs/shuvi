@@ -22,8 +22,9 @@
 // CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import { PassThrough } from 'stream';
 import type webpack from 'webpack';
-import type http from 'http';
+import { Runtime } from '@shuvi/types';
 
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
@@ -57,14 +58,10 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware = (
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    next: () => void
-  ) => {
-    if (this.closed) return next();
-    if (!req.url?.startsWith(this._path)) return next();
-    this.eventStream.handler(req, res);
+  middleware: Runtime.IServerAppMiddleware = async (ctx, next) => {
+    if (this.closed) return await next();
+    if (!ctx.request.url?.startsWith(this._path)) return await next();
+    this.eventStream.handler(ctx);
     if (this.latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
@@ -102,7 +99,7 @@ export class WebpackHotMiddleware {
 }
 
 class EventStream {
-  clients: Set<http.ServerResponse>;
+  clients: Set<Runtime.IServerAppResponse>;
   interval: NodeJS.Timeout;
   constructor() {
     this.clients = new Set();
@@ -112,11 +109,11 @@ class EventStream {
 
   heartbeatTick = () => {
     this.everyClient(client => {
-      client.write('data: \uD83D\uDC93\n\n');
+      client.body.write('data: \uD83D\uDC93\n\n');
     });
   };
 
-  everyClient(fn: (client: http.ServerResponse) => void) {
+  everyClient(fn: (client: Runtime.IServerAppResponse) => void) {
     for (const client of this.clients) {
       fn(client);
     }
@@ -125,12 +122,12 @@ class EventStream {
   close() {
     clearInterval(this.interval);
     this.everyClient(client => {
-      if (!client.finished) client.end();
+      if (!client.res.finished || !client.res.writableEnded) client.body.end();
     });
     this.clients.clear();
   }
 
-  handler(req: http.IncomingMessage, res: http.ServerResponse) {
+  handler: Runtime.IServerAppHandler = ctx => {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'text/event-stream;charset=utf-8',
@@ -140,26 +137,28 @@ class EventStream {
       'X-Accel-Buffering': 'no'
     };
 
-    const isHttp1 = !(parseInt(req.httpVersion) >= 2);
+    const isHttp1 = !(parseInt(ctx.req.httpVersion) >= 2);
     if (isHttp1) {
-      req.socket.setKeepAlive(true);
+      ctx.request.socket.setKeepAlive(true);
       Object.assign(headers, {
         Connection: 'keep-alive'
       });
     }
 
-    res.writeHead(200, headers);
-    res.write('\n');
-    this.clients.add(res);
-    req.on('close', () => {
-      if (!res.finished) res.end();
-      this.clients.delete(res);
+    ctx.status = 200;
+    ctx.response.set(headers);
+    ctx.response.body = new PassThrough();
+    ctx.response.body.write('\n');
+    this.clients.add(ctx.response);
+    ctx.response.body.on('close', () => {
+      if (!ctx.res.finished || !ctx.res.writableEnded) ctx.response.body.end();
+      this.clients.delete(ctx.response);
     });
-  }
+  };
 
   publish(payload: any) {
     this.everyClient(client => {
-      client.write('data: ' + JSON.stringify(payload) + '\n\n');
+      client.body.write('data: ' + JSON.stringify(payload) + '\n\n');
     });
   }
 }

@@ -29,7 +29,8 @@ export default async function main(argv: string[]) {
 
   const api = await getApi({
     cwd,
-    mode
+    mode,
+    phase: 'PHASE_INSPECT_WEBPACK'
   });
   const bundler = getBundler(api);
 

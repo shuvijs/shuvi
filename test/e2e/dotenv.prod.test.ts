@@ -15,8 +15,10 @@ describe('Dotenv production', () => {
       NODE_ENV: 'production'
     });
     ctx = await serveFixture('dotenv', { ssr: true });
-    page = await ctx.browser.page(ctx.url('/'));
+    page = await ctx.browser.page(ctx.url('/'), { waitUntil: 'networkidle0' });
 
+    expect(page.statusCode).toBe(200);
+    // Note: if this test fail, client render is not working in client.
     expect(await page.$text('#publicValue')).toBe('publicValue');
     expect(await page.$text('#valueNotFoundOnClient')).toBe('');
     expect(await page.$text('#valueForwadedFromConfig')).toBe('shareValue');

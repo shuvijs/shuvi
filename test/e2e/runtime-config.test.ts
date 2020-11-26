@@ -15,6 +15,13 @@ describe('SSR: Runtime Config', () => {
       }
     });
   });
+
+  beforeEach(() => {
+    // runtimeConfig is stored in modules and this will prevent it to be reset.
+    Object.assign(process.env, {
+      DISABLE_RESET_MODULES: 'true'
+    });
+  });
   afterAll(async () => {
     await ctx.close();
   });

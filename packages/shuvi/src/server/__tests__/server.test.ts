@@ -1,7 +1,6 @@
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { Server } from '../server';
-import { IServerResponse, IIncomingMessage } from '../types';
 
 const host = 'localhost';
 
@@ -11,33 +10,107 @@ describe('server', () => {
     await server.close();
   });
 
-  test('should work', async () => {
-    server = new Server();
-    const port = await findPort();
-    await server.listen(port);
-    server.use((req: IIncomingMessage, res: IServerResponse) => {
-      res.end('ok');
+  describe('middleware', () => {
+    test('should work', async () => {
+      server = new Server();
+      const port = await findPort();
+      await server.listen(port);
+      server.use(ctx => {
+        ctx.body = 'ok';
+      });
+
+      const { body } = await got(`http://${host}:${port}`);
+      expect(body).toEqual('ok');
     });
 
-    const { body } = await got(`http://${host}:${port}`);
-    expect(body).toEqual('ok');
-  });
+    test('context', async () => {
+      server = new Server();
+      server
+        .use(async (ctx, next) => {
+          ctx.__test = 'worked';
+          await next();
+        })
+        .use('/api', ctx => {
+          ctx.body = ctx.__test;
+        });
+      const port = await findPort();
+      await server.listen(port);
 
-  test('middleware', async () => {
-    server = new Server();
-    server
-      .use((req: IIncomingMessage, res: IServerResponse, next: any) => {
-        req.__test = 'worked';
-        next();
-      })
-      .use('/api', (req: IIncomingMessage, res: IServerResponse) => {
-        res.end(req.__test);
+      const { body } = await got(`http://${host}:${port}/api`);
+      expect(body).toEqual('worked');
+    });
+
+    test('match path /api*', async () => {
+      server = new Server();
+      server
+        .use(async (ctx, next) => {
+          ctx.__test = 'worked';
+          await next();
+        })
+        .use('/api*', ctx => {
+          ctx.body = ctx.__test;
+        });
+
+      const port = await findPort();
+      await server.listen(port);
+
+      const { body } = await got(`http://${host}:${port}/api`);
+      expect(body).toEqual('worked');
+      const { body: body2 } = await got(
+        `http://${host}:${port}/api/path/to/the/static/file`
+      );
+      expect(body2).toEqual('worked');
+    });
+
+    test('match /api/users/:id with matchedPath params object', async () => {
+      expect.assertions(4);
+
+      let params;
+      server = new Server();
+      server.use('/api/users/:id', ctx => {
+        params = ctx.params;
+        ctx.status = 200;
       });
-    const port = await findPort();
-    await server.listen(port);
+      const port = await findPort();
+      await server.listen(port);
 
-    const { body } = await got(`http://${host}:${port}/api`);
-    expect(body).toEqual('worked');
+      try {
+        await got(`http://${host}:${port}/api/users`);
+      } catch (error) {
+        expect(error.response.statusCode).toBe(404);
+      }
+      try {
+        await got(`http://${host}:${port}/api/users/`);
+      } catch (error) {
+        expect(error.response.statusCode).toBe(404);
+      }
+
+      await got(`http://${host}:${port}/api/users/USER_ID`);
+      expect(params).toStrictEqual({ id: 'USER_ID' });
+
+      try {
+        await got(`http://${host}:${port}/api/users/USER_ID/others`);
+      } catch (error) {
+        expect(error.response.statusCode).toBe(404);
+      }
+    });
+
+    test('match all /:path*', async () => {
+      let params;
+      server = new Server();
+      server.use('/:path*', ctx => {
+        params = ctx.params;
+        ctx.status = 200;
+      });
+      const port = await findPort();
+      await server.listen(port);
+
+      await got(`http://${host}:${port}`);
+      expect(params).toStrictEqual({ path: undefined });
+
+      await got(`http://${host}:${port}/path/to/match/route`);
+      expect(params).toStrictEqual({ path: 'path/to/match/route' });
+    });
   });
 
   describe('proxy', () => {
@@ -49,28 +122,25 @@ describe('server', () => {
     beforeAll(async () => {
       proxyTarget1 = new Server();
       proxyTarget1
-        .use('/api', (req: IIncomingMessage, res: IServerResponse) => {
-          res.end('api1');
+        .use('/api', ctx => {
+          ctx.body = 'api1';
         })
-        .use('/header', (req: IIncomingMessage, res: IServerResponse) => {
-          Object.keys(req.headers).forEach(header => {
-            const val = req.headers[header];
+        .use('/header', ctx => {
+          Object.keys(ctx.req.headers).forEach(header => {
+            const val = ctx.req.headers[header];
             if (typeof val !== 'undefined') {
-              res.setHeader(header, val);
+              ctx.response.set(header, val);
             }
           });
-          res.end('ok');
+          ctx.body = 'ok';
         });
       proxyTarget1Port = await findPort();
       await proxyTarget1.listen(proxyTarget1Port);
 
       proxyTarget2 = new Server();
-      proxyTarget2.use(
-        '/api',
-        (req: IIncomingMessage, res: IServerResponse) => {
-          res.end('api2');
-        }
-      );
+      proxyTarget2.use('/api', ctx => {
+        ctx.body = 'api2';
+      });
       proxyTarget2Port = await findPort();
       await proxyTarget2.listen(proxyTarget2Port);
     });
@@ -96,8 +166,8 @@ describe('server', () => {
           }
         }
       });
-      server.use('/noproxy', (req: IIncomingMessage, res: IServerResponse) => {
-        res.end('no proxy');
+      server.use('/noproxy', ctx => {
+        ctx.body = 'no proxy';
       });
       const port = await findPort();
       await server.listen(port, host);
@@ -137,8 +207,8 @@ describe('server', () => {
           }
         ]
       });
-      server.use('/noproxy', (req: IIncomingMessage, res: IServerResponse) => {
-        res.end('no proxy');
+      server.use('/noproxy', ctx => {
+        ctx.body = 'no proxy';
       });
       const port = await findPort();
       await server.listen(port, host);

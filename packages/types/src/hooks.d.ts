@@ -1,10 +1,14 @@
 import { defineHook } from '@shuvi/core';
-import webpack, { MultiStats } from 'webpack';
+import webpack, { MultiCompiler } from 'webpack';
+import { SyncHook } from 'tapable';
 import WebpackChain from 'webpack-chain';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { IApiConfig, IShuviMode } from '..';
 import { IUserRouteConfig, IDocumentProps } from './runtime';
 import { IWebpackHelpers } from './bundler';
+
+type ExtractSyncHookGeneric<Type> = Type extends SyncHook<infer X> ? X : never;
+export type MultiStats = ExtractSyncHookGeneric<MultiCompiler['hooks']['done']>[0];
 
 export type IHookGetConfig = defineHook<
   'getConfig',
