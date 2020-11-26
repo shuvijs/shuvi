@@ -24,7 +24,7 @@
     "@types/webpack-dev-middleware": "3.7.2",
     "http-proxy-middleware": "1.0.6",
     "query-string": "6.13.1",
-    "webpack": "5.4.0",
+    "webpack": "5.7.0",
     "webpack-chain": "6.5.1"
   }
 }
