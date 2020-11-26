@@ -1,14 +1,10 @@
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
+import { Runtime } from '@shuvi/types';
 import { DevMiddleware } from './devMiddleware';
-import {
-  IIncomingMessage,
-  IServerResponse,
-  INextFunction,
-  IRequestHandle
-} from '../server';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
 import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
+import { throwServerRenderError } from './throw';
 
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
@@ -18,18 +14,15 @@ export class OnDemandRouteManager {
     this._api = api;
   }
 
-  getServerMiddleware(): IRequestHandle {
-    return (
-      req: IIncomingMessage,
-      res: IServerResponse,
-      next: INextFunction
-    ) => {
-      const pathname = req.parsedUrl.pathname!;
+  getServerMiddleware(): Runtime.IServerAppMiddleware {
+    return async (ctx, next) => {
+      const pathname = (ctx.req as Runtime.IIncomingMessage).parsedUrl
+        .pathname!;
       if (!pathname.startsWith(this._api.assetPublicPath)) {
-        return next();
+        return await next();
       }
       if (!this.devMiddleware) {
-        return next();
+        return await next();
       }
 
       const chunkName = pathname.replace(this._api.assetPublicPath, '');
@@ -37,15 +30,20 @@ export class OnDemandRouteManager {
         .chunkRequest[chunkName];
 
       if (!chunkInitiatorModule) {
-        return next();
+        return await next();
       }
 
       const task = ModuleReplacePlugin.restoreModule(chunkInitiatorModule);
       if (task) {
         this.devMiddleware.invalidate();
-        task.then(next, next);
+        try {
+          await task;
+          await next();
+        } catch (error) {
+          throwServerRenderError(ctx, error);
+        }
       } else {
-        next();
+        await next();
       }
     };
   }

@@ -11,19 +11,59 @@ describe('Public Dir', () => {
   });
 
   test('should serve files in public in dev', async () => {
+    let res;
+
+    expect.assertions(5);
     ctx = await launchFixture('public-dir');
-    const { body } = await got.get<any>(ctx.url('/_shuvi/user.json'), {
-      responseType: 'json',
+
+    // file
+    res = await got.get(ctx.url('/_shuvi/user.json'), {
+      responseType: 'json'
     });
-    expect(body.name).toBe('foo');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('name', 'foo');
+
+    // nest
+    res = await got.get(ctx.url('/_shuvi/nest/user.json'), {
+      responseType: 'json'
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('name', 'bar');
+
+    // folder
+    try {
+      await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
+    } catch (error) {
+      expect(error.response.statusCode).toBe(404);
+    }
   });
 
   test('should serve files in public in prod', async () => {
+    let res;
+
+    expect.assertions(5);
     // BUG: jest.resetModules() would cause Error('Callback was already called.');
     ctx = await serveFixture('public-dir');
-    const { body } = await got.get<any>(ctx.url('/_shuvi/user.json'), {
-      responseType: 'json',
+
+    // file
+    res = await got.get(ctx.url('/_shuvi/user.json'), {
+      responseType: 'json'
     });
-    expect(body.name).toBe('foo');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('name', 'foo');
+
+    // nest
+    res = await got.get(ctx.url('/_shuvi/nest/user.json'), {
+      responseType: 'json'
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('name', 'bar');
+
+    // folder
+    try {
+      await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
+    } catch (error) {
+      expect(error.response.statusCode).toBe(404);
+    }
   });
 });

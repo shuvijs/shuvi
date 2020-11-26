@@ -1,6 +1,7 @@
 import { APIHooks } from '@shuvi/types';
 import { createLaunchEditorMiddleware } from '@shuvi/toolpack/lib/utils/errorOverlayMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
+import c2k from 'koa-connect';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import WebpackDevMiddlewareOptionSchema from './devMiddleware.schema';
 import { validate } from '@shuvi/utils/lib/schemaUtils';
@@ -28,8 +29,8 @@ export async function getDevMiddleware({
   const compiler = await bundler.getWebpackCompiler();
   // watch before pass compiler to WebpackDevMiddleware
   bundler.watch({
-    onErrors(errros) {
-      send('errors', errros);
+    onErrors(errors) {
+      send('errors', errors);
     },
     onWarns(warns) {
       send('warns', warns);
@@ -67,7 +68,11 @@ export async function getDevMiddleware({
   });
 
   const apply = () => {
-    api.server.use(webpackDevMiddleware);
+    const webpackDevHandler = c2k(webpackDevMiddleware) as any;
+    api.server.use(async (ctx, next) => {
+      ctx.status = 200;
+      await webpackDevHandler(ctx, next);
+    });
     api.server.use(webpackHotMiddleware.middleware);
     api.server.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
@@ -98,6 +103,7 @@ export async function getDevMiddleware({
     name: 'DevMiddleware',
     fn() {
       return new Promise(resolve => {
+        webpackHotMiddleware.close();
         webpackDevMiddleware.close(resolve);
       });
     }
