@@ -14,11 +14,11 @@ export const BUILD_MEDIA_PATH = 'static/media/[name].[hash:8].[ext]';
 
 export const BUILD_CLIENT_DIR = 'client';
 
-export const BUILD_CLIENT_RUNTIME_MAIN = `static/runtime/main.js`;
+export const BUILD_CLIENT_RUNTIME_MAIN = `static/runtime/main`;
 
-export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack.js`;
+export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack`;
 
-export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/runtime/polyfill.js`;
+export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/runtime/polyfill`;
 
 export const BUILD_SERVER_DIR = 'server';
 
