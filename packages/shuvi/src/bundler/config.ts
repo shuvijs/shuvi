@@ -75,18 +75,11 @@ export function createWepbackConfig(
   );
   chain.output.set('filename', ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
-    if (
-      !dev &&
-      [
-        BUILD_CLIENT_RUNTIME_MAIN,
-        BUILD_CLIENT_RUNTIME_POLYFILL,
-        BUILD_CLIENT_RUNTIME_WEBPACK
-      ].includes(chunk.name)
-    ) {
-      return chunk.name.replace(/\.js$/, '-[contenthash].js');
+    if (!dev) {
+      return `[name]-[contenthash].js`;
     }
 
-    return '[name]';
+    return '[name].js';
   });
 
   return chain;
