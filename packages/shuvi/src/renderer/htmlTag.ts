@@ -1,48 +1,52 @@
-import { Runtime } from "@shuvi/types";
-import { htmlEscapeContent } from "@shuvi/utils/lib/htmlescape";
+import { Runtime } from '@shuvi/types';
+import { htmlEscapeContent } from '@shuvi/utils/lib/htmlescape';
 
 /**
  * All html tag elements which must not contain innerHTML
  * @see https://www.w3.org/TR/html5/syntax.html#void-elements
  */
 const voidTags = [
-  "area",
-  "base",
-  "br",
-  "col",
-  "embed",
-  "hr",
-  "img",
-  "input",
-  "keygen",
-  "link",
-  "meta",
-  "param",
-  "source",
-  "track",
-  "wbr"
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'keygen',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr'
 ];
 
 // the result will have an extra leading space
 export function stringifyAttrs(attrs: Runtime.IHtmlAttrs): string {
   const attrNames = Object.keys(attrs);
-  const res: string[] = [""];
+  const res: string[] = [''];
   for (let index = 0; index < attrNames.length; index++) {
     const attributeName = attrNames[index];
 
-    if (attributeName === "textContent") continue;
+    if (attributeName === 'textContent') continue;
     if (attrs[attributeName] === false) {
       continue;
     }
 
     if (attrs[attributeName] === true) {
-      res.push(attributeName);
+      res.push(htmlEscapeContent(attributeName));
     } else {
-      res.push(`${attributeName}="${attrs[attributeName]}"`);
+      res.push(
+        `${htmlEscapeContent(attributeName)}="${htmlEscapeContent(
+          attrs[attributeName]?.toString() || ''
+        )}"`
+      );
     }
   }
 
-  return res.join(" ");
+  return res.join(' ');
 }
 
 export function stringifyTag(tag: Runtime.IHtmlTag) {
@@ -54,11 +58,11 @@ export function stringifyTag(tag: Runtime.IHtmlTag) {
     return `${res} />`;
   }
 
-  res += ">";
+  res += '>';
   res +=
     tag.innerHTML ||
-    (tag.attrs.textContent ? htmlEscapeContent(tag.attrs.textContent) : "");
-  res += "</" + tag.tagName + ">";
+    (tag.attrs.textContent ? htmlEscapeContent(tag.attrs.textContent) : '');
+  res += '</' + tag.tagName + '>';
   return res;
 }
 
