@@ -2,6 +2,11 @@ import path from 'path';
 import { IApi, APIHooks } from '@shuvi/types';
 // @ts-ignore
 import AliasPlugin from 'enhanced-resolve/lib/AliasPlugin';
+import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
+import {
+  BUNDLER_TARGET_CLIENT,
+  BUILD_CLIENT_RUNTIME_REACT_REFRESH
+} from 'shuvi';
 import { PACKAGE_DIR } from '../paths';
 
 export function config(api: IApi) {
@@ -11,7 +16,7 @@ export function config(api: IApi) {
     path.join(api.paths.rootDir, 'node_modules', m);
   api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
     name: 'runtime-react',
-    fn: config => {
+    fn: (config, { name }) => {
       // const oriExternal = config.get("externals");
       // const external: webpack.ExternalsFunctionElement = (
       //   context,
@@ -58,6 +63,31 @@ export function config(api: IApi) {
         ],
         'resolve'
       ]);
+
+      if (name === BUNDLER_TARGET_CLIENT) {
+        config.module
+          .rule('main')
+          .oneOf('js')
+          .use('react-refresh-loader')
+          .loader('@next/react-refresh-utils/loader')
+          .before('shuvi-babel-loader');
+
+        config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);
+
+        config.module
+          .rule('main')
+          .oneOf('js')
+          .use('shuvi-babel-loader')
+          .tap(options => ({ ...options, hasReactRefresh: true }));
+
+        config.merge({
+          entry: {
+            [BUILD_CLIENT_RUNTIME_REACT_REFRESH]: [
+              require.resolve(`@next/react-refresh-utils/runtime`)
+            ]
+          }
+        });
+      }
       return config;
     }
   });
