@@ -14,6 +14,7 @@ import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
 import { AppSourceRegexs } from '../../constants';
+import crypto from 'crypto';
 
 const dumbRouteComponent = require.resolve('../../utils/emptyComponent');
 
@@ -83,7 +84,8 @@ export function baseWebpackChain({
     nodeEnv: false,
     splitChunks: false,
     runtimeChunk: undefined,
-    minimize: !dev
+    minimize: !dev,
+    realContentHash: false
   });
   if (!dev) {
     config.optimization.minimizer('terser').use(TerserPlugin, [
@@ -184,27 +186,31 @@ export function baseWebpackChain({
     }
   ]);
 
+  const shuviPublicEnv = Object.keys(process.env).reduce(
+    (prev: { [key: string]: string }, key: string) => {
+      if (key.startsWith(PUBLIC_ENV_PREFIX)) {
+        prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
+      }
+      return prev;
+    },
+    {}
+  );
+
+  const shuviConfigEnv = Object.keys(env).reduce((acc, key) => {
+    if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
+      throw new Error(`The key "${key}" under "env" is not allowed.`);
+    }
+
+    return {
+      ...acc,
+      [`process.env.${key}`]: JSON.stringify(env[key])
+    };
+  }, {} as { [key: string]: string });
+
   config.plugin('define').use(webpack.DefinePlugin, [
     {
-      ...Object.keys(process.env).reduce(
-        (prev: { [key: string]: string }, key: string) => {
-          if (key.startsWith(PUBLIC_ENV_PREFIX)) {
-            prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
-          }
-          return prev;
-        },
-        {}
-      ),
-      ...Object.keys(env).reduce((acc, key) => {
-        if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
-          throw new Error(`The key "${key}" under "env" is not allowed.`);
-        }
-
-        return {
-          ...acc,
-          [`process.env.${key}`]: JSON.stringify(env[key])
-        };
-      }, {}),
+      ...shuviPublicEnv,
+      ...shuviConfigEnv,
       'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
     }
   ]);
@@ -237,13 +243,34 @@ export function baseWebpackChain({
       ]);
   }
 
-  config.cache({
-    type: 'filesystem',
-    cacheDirectory:
-      // process.env.NODE_ENV === 'test'
-      // ? path.join(projectRoot, '.shuvi', 'cache', 'webpack')
-      path.resolve('node_modules/.cache/shuvi/webpack')
-  });
+  const getCacheConfig = () => {
+    const projectHash = crypto
+      .createHash('sha256')
+      .update(projectRoot)
+      .digest('hex');
+
+    const stringifiedEnvs = Object.entries({
+      ...shuviConfigEnv,
+      ...shuviPublicEnv
+    }).reduce((prev: string, [key, value]) => {
+      if (key.startsWith('NEXT_PUBLIC_')) {
+        return `${prev}|${key}=${value}`;
+      }
+      return prev;
+    }, '');
+
+    const SHUVI_VERSION = require('shuvi/package.json').version;
+
+    return {
+      type: 'filesystem',
+      cacheDirectory: path.resolve(
+        `node_modules/.cache/shuvi/webpack/${projectHash}`
+      ),
+      version: `${SHUVI_VERSION}|${stringifiedEnvs}`
+    };
+  };
+
+  config.cache(getCacheConfig());
 
   if (dev) {
     // For future webpack-dev-server purpose
