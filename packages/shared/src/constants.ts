@@ -31,4 +31,10 @@ export const IDENTITY_SSR_RUNTIME_PUBLICPATH = `__${NAME}_ssr_public_path__`;
 export const ROUTE_NOT_FOUND_NAME = `404`;
 
 // bundle
+export const BUNDLER_TARGET_CLIENT = `${NAME}/client`;
+
+export const BUNDLER_TARGET_SERVER = `${NAME}/server`;
+
 export const BUILD_SERVER_FILE_SERVER = `server`;
+
+export const BUILD_CLIENT_RUNTIME_REACT_REFRESH = `static/runtime/react-refresh`;

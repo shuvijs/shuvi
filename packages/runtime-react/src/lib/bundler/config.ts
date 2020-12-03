@@ -6,7 +6,7 @@ import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWeb
 import {
   BUNDLER_TARGET_CLIENT,
   BUILD_CLIENT_RUNTIME_REACT_REFRESH
-} from 'shuvi';
+} from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';
 
 export function config(api: IApi) {
