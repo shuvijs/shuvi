@@ -253,10 +253,7 @@ export function baseWebpackChain({
       ...shuviConfigEnv,
       ...shuviPublicEnv
     }).reduce((prev: string, [key, value]) => {
-      if (key.startsWith('NEXT_PUBLIC_')) {
-        return `${prev}|${key}=${value}`;
-      }
-      return prev;
+      return `${prev}|${key}=${value}`;
     }, '');
 
     const SHUVI_VERSION = require('shuvi/package.json').version;
