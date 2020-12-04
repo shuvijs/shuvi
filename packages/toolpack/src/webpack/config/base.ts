@@ -245,7 +245,7 @@ export function baseWebpackChain({
 
   const getCacheConfig = () => {
     const projectHash = crypto
-      .createHash('sha256')
+      .createHash('md5')
       .update(projectRoot)
       .digest('hex');
 
