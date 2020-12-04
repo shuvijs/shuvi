@@ -38,24 +38,26 @@ export function createWepbackConfig(
   const srcDirs = [paths.appDir, paths.srcDir, ...(opts.srcDirs || [])];
   if (opts.node) {
     chain = createNodeWebpackChain({
-      env: config.env,
-      srcDirs,
-      dev,
-      projectRoot: paths.rootDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
+      dev,
+      env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,
+      name: opts.name,
+      projectRoot: paths.rootDir,
+      srcDirs,
       webpackHelpers
     });
     chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
   } else {
     chain = createBrowserWebpackChain({
-      env: config.env,
       analyze: config.analyze,
-      srcDirs,
-      dev,
-      projectRoot: paths.rootDir,
       buildManifestFilename: BUILD_MANIFEST_PATH,
+      dev,
+      env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,
+      name: opts.name,
+      projectRoot: paths.rootDir,
+      srcDirs,
       publicPath: assetPublicPath,
       webpackHelpers
     });
