@@ -16,6 +16,10 @@ function getSourcePath(source: string) {
     return source.substring(10);
   }
 
+  if (source.startsWith('/')) {
+    return source.substring(1);
+  }
+
   return source;
 }
 
