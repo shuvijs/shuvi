@@ -25,6 +25,7 @@ const resolveLocalLoader = (name: string) =>
 
 export interface BaseOptions {
   dev: boolean;
+  name: string;
   projectRoot: string;
   srcDirs: string[];
   mediaFilename: string;
@@ -64,6 +65,7 @@ export function baseWebpackChain({
   projectRoot,
   srcDirs,
   mediaFilename,
+  name,
   buildManifestFilename,
   publicPath = '/',
   env = {}
@@ -259,10 +261,11 @@ export function baseWebpackChain({
     const SHUVI_VERSION = require('shuvi/package.json').version;
 
     return {
-      type: 'filesystem',
       cacheDirectory: path.resolve(
-        `node_modules/.cache/shuvi/webpack/${projectHash}`
+        `node_modules/.cache/webpack/${projectHash}`
       ),
+      type: 'filesystem',
+      name: `${name.replace(/\//, '-')}-${config.get('mode')}`,
       version: `${SHUVI_VERSION}|${stringifiedEnvs}`
     };
   };

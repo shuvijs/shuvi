@@ -42,6 +42,7 @@ export function createWepbackConfig(
       dev,
       env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,
+      name: opts.name,
       projectRoot: paths.rootDir,
       srcDirs,
       webpackHelpers
@@ -54,6 +55,7 @@ export function createWepbackConfig(
       dev,
       env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,
+      name: opts.name,
       projectRoot: paths.rootDir,
       srcDirs,
       publicPath: assetPublicPath,
