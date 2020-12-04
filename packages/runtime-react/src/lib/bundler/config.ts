@@ -64,7 +64,7 @@ export function config(api: IApi) {
         'resolve'
       ]);
 
-      if (name === BUNDLER_TARGET_CLIENT) {
+      if (name === BUNDLER_TARGET_CLIENT && api.mode === 'development') {
         config.module
           .rule('main')
           .oneOf('js')
