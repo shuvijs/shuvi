@@ -14,6 +14,7 @@ import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
 import { AppSourceRegexs } from '../../constants';
+import crypto from 'crypto';
 
 const dumbRouteComponent = require.resolve('../../utils/emptyComponent');
 
@@ -24,6 +25,7 @@ const resolveLocalLoader = (name: string) =>
 
 export interface BaseOptions {
   dev: boolean;
+  name: string;
   projectRoot: string;
   srcDirs: string[];
   mediaFilename: string;
@@ -63,6 +65,7 @@ export function baseWebpackChain({
   projectRoot,
   srcDirs,
   mediaFilename,
+  name,
   buildManifestFilename,
   publicPath = '/',
   env = {}
@@ -83,7 +86,8 @@ export function baseWebpackChain({
     nodeEnv: false,
     splitChunks: false,
     runtimeChunk: undefined,
-    minimize: !dev
+    minimize: !dev,
+    realContentHash: false
   });
   if (!dev) {
     config.optimization.minimizer('terser').use(TerserPlugin, [
@@ -162,7 +166,8 @@ export function baseWebpackChain({
     .loader('@shuvi/shuvi-babel-loader')
     .options({
       isNode: false,
-      cacheDirectory: true
+      // webpack 5 have in-built cache.
+      cacheDirectory: false
     });
 
   mainRule
@@ -183,27 +188,31 @@ export function baseWebpackChain({
     }
   ]);
 
+  const shuviPublicEnv = Object.keys(process.env).reduce(
+    (prev: { [key: string]: string }, key: string) => {
+      if (key.startsWith(PUBLIC_ENV_PREFIX)) {
+        prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
+      }
+      return prev;
+    },
+    {}
+  );
+
+  const shuviConfigEnv = Object.keys(env).reduce((acc, key) => {
+    if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
+      throw new Error(`The key "${key}" under "env" is not allowed.`);
+    }
+
+    return {
+      ...acc,
+      [`process.env.${key}`]: JSON.stringify(env[key])
+    };
+  }, {} as { [key: string]: string });
+
   config.plugin('define').use(webpack.DefinePlugin, [
     {
-      ...Object.keys(process.env).reduce(
-        (prev: { [key: string]: string }, key: string) => {
-          if (key.startsWith(PUBLIC_ENV_PREFIX)) {
-            prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
-          }
-          return prev;
-        },
-        {}
-      ),
-      ...Object.keys(env).reduce((acc, key) => {
-        if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
-          throw new Error(`The key "${key}" under "env" is not allowed.`);
-        }
-
-        return {
-          ...acc,
-          [`process.env.${key}`]: JSON.stringify(env[key])
-        };
-      }, {}),
+      ...shuviPublicEnv,
+      ...shuviConfigEnv,
       'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
     }
   ]);
@@ -236,11 +245,34 @@ export function baseWebpackChain({
       ]);
   }
 
-  if (dev) {
-    config.cache({
-      type: 'memory'
-    });
+  const getCacheConfig = () => {
+    const projectHash = crypto
+      .createHash('md5')
+      .update(projectRoot)
+      .digest('hex');
 
+    const stringifiedEnvs = Object.entries({
+      ...shuviConfigEnv,
+      ...shuviPublicEnv
+    }).reduce((prev: string, [key, value]) => {
+      return `${prev}|${key}=${value}`;
+    }, '');
+
+    const SHUVI_VERSION = require('shuvi/package.json').version;
+
+    return {
+      cacheDirectory: path.resolve(
+        `node_modules/.cache/webpack/${projectHash}`
+      ),
+      type: 'filesystem',
+      name: `${name.replace(/\//, '-')}-${config.get('mode')}`,
+      version: `${SHUVI_VERSION}|${stringifiedEnvs}`
+    };
+  };
+
+  config.cache(getCacheConfig());
+
+  if (dev) {
     // For future webpack-dev-server purpose
     config.watchOptions({
       ignored: ['**/.git/**', '**/node_modules/**']
