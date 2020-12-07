@@ -30,6 +30,19 @@ describe('matchRoutes', () => {
     ]);
   });
 
+  it('should match with 1 route with querystring', () => {
+    expect(matchRoutes([ROUTE1, ROUTE2], '/?test=123')).toStrictEqual([
+      {
+        params: {},
+        pathname: '/',
+        route: {
+          caseSensitive: true,
+          path: '/'
+        }
+      }
+    ]);
+  });
+
   it('should match with multiple routes', () => {
     expect(
       matchRoutes([ROUTE1, ROUTE2, ROUTE3], '/123/nested/asd')
