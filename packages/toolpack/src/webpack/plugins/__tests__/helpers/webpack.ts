@@ -142,7 +142,7 @@ export function createCompiler(
           if (err) {
             return reject(err);
           }
-          resolve(stats);
+          resolve(stats!);
         }
       );
     });
@@ -181,7 +181,7 @@ export function runCompiler(
       } else if (stats!.hasErrors()) {
         reject(stats!.compilation.errors[0]);
       } else {
-        resolve(stats);
+        resolve(stats!);
       }
     });
   });

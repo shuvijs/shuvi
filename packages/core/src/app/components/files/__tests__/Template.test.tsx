@@ -1,4 +1,5 @@
 import path from 'path';
+import { ReactTestRendererJSON } from 'react-test-renderer';
 import { render, cleanup } from 'shuvi-test-utils/reactTestRender';
 import Template from '../Template';
 
@@ -45,7 +46,7 @@ describe('Template', () => {
         data={{ foo: 'bar' }}
       />
     );
-    const { props } = toJSON()!;
+    const { props } = toJSON() as ReactTestRendererJSON;
     expect(props.name).toBe('test.js');
     expect(props.content.trim()).toBe('var foo = "bar"');
   });
