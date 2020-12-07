@@ -1,5 +1,5 @@
 export { createRoutesFromArray } from './createRoutesFromArray';
-export { matchPath } from './matchPath';
+export { matchPathname } from './matchPathname';
 export { matchRoutes, IRouteBaseObject } from './matchRoutes';
 
 export { pathToString } from './utils';

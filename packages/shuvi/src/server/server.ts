@@ -6,7 +6,7 @@ import {
   IServerProxyConfigItem,
   Runtime
 } from '@shuvi/types';
-import { matchPath } from '@shuvi/router';
+import { matchPathname } from '@shuvi/router';
 import { parse as parseUrl } from 'url';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import detectPort from 'detect-port';
@@ -113,7 +113,7 @@ export class Server {
   use(route: any, fn?: any): this {
     if (fn) {
       this._app.use(async (ctx, next) => {
-        const matchedPath = matchPath(route, ctx.request.url);
+        const matchedPath = matchPathname(route, ctx.request.path);
         if (!matchedPath) return await next(); // Note: not matched
         ctx.params = matchedPath.params;
         await fn(ctx, next);

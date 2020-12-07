@@ -5,7 +5,7 @@ import {
   IParams,
   PartialLocation
 } from './types';
-import { matchPath } from './matchPath';
+import { matchPathname } from './matchPathname';
 import { joinPaths, resolvePath } from './utils';
 
 export interface IRouteBaseObject<Element = any>
@@ -78,7 +78,7 @@ function matchRouteBranch<T extends IRouteBaseObject>(
       matchedPathname === '/'
         ? pathname
         : pathname.slice(matchedPathname.length) || '/';
-    let routeMatch = matchPath(
+    let routeMatch = matchPathname(
       {
         path: route.path,
         caseSensitive: route.caseSensitive,
