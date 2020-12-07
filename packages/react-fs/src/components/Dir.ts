@@ -1,8 +1,8 @@
-import React from "react";
+import { createElement, PureComponent } from "react";
 import { DirProps } from "../types";
 
-export default class Dir extends React.PureComponent<DirProps> {
+export default class Dir extends PureComponent<DirProps> {
   render() {
-    return React.createElement<DirProps>("dir", this.props);
+    return createElement<DirProps>("dir", this.props);
   }
 }

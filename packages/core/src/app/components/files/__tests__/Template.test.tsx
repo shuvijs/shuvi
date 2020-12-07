@@ -1,5 +1,4 @@
 import path from 'path';
-import React from 'react';
 import { render, cleanup } from 'shuvi-test-utils/reactTestRender';
 import Template from '../Template';
 

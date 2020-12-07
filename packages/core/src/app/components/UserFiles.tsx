@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react';
 import FileNode from './files/FileNode';
 import { useSelector } from '../models/store';

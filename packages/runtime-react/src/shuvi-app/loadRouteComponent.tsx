@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import React from 'react';
+import * as React from 'react';
 import { Runtime } from '@shuvi/types';
 import dynamic, { DynamicOptions } from './dynamic';
 

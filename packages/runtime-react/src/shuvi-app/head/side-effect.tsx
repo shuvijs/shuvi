@@ -1,7 +1,7 @@
 // Based on https://github.com/zeit/next.js
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import { SideEffectProps, HeadState } from './types';
 
 const isServer = typeof window === 'undefined';
@@ -20,7 +20,7 @@ export default () => {
     }
   }
 
-  return class extends Component<SideEffectProps> {
+  return class extends React.Component<SideEffectProps> {
     // Used when server rendering
     static rewind() {
       const recordedState = state;

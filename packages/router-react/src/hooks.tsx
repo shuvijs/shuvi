@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import * as React from 'react';
 import {
   IParams,
   IPathMatch,
@@ -17,7 +17,7 @@ import { invariant, warning } from './utils';
 import { INavigateFunction } from './types';
 
 export function useCurrentRoute() {
-  return useContext(RouteContext);
+  return React.useContext(RouteContext);
 }
 
 /**
@@ -30,7 +30,7 @@ export function useBlocker(blocker: Blocker, when = true): void {
     `useBlocker() may be used only in the context of a <Router> component.`
   );
 
-  const { router } = useContext(RouterContext);
+  const { router } = React.useContext(RouterContext);
 
   React.useEffect(() => {
     if (!when) return;
@@ -64,7 +64,7 @@ export function useHref(to: PathRecord): string {
     `useHref() may be used only in the context of a <Router> component.`
   );
 
-  const { router } = useContext(RouterContext);
+  const { router } = React.useContext(RouterContext);
   const path = useResolvedPath(to);
   return router.resolve(path).href;
 }
@@ -73,7 +73,7 @@ export function useHref(to: PathRecord): string {
  * Returns true if this component is a descendant of a <Router>.
  */
 export function useInRouterContext(): boolean {
-  return useContext(RouterContext) != null;
+  return React.useContext(RouterContext) != null;
 }
 
 /**
@@ -101,8 +101,8 @@ export function useNavigate(): INavigateFunction {
     `useNavigate() may be used only in the context of a <Router> component.`
   );
 
-  const { router } = useContext(RouterContext);
-  const { pathname } = useContext(MactedRouteContext);
+  const { router } = React.useContext(RouterContext);
+  const { pathname } = React.useContext(MactedRouteContext);
 
   const activeRef = React.useRef(false);
   React.useEffect(() => {
@@ -144,15 +144,15 @@ export function useNavigate(): INavigateFunction {
  * URL that were matched by the route path.
  */
 export function useParams(): IParams {
-  return useContext(MactedRouteContext).params;
+  return React.useContext(MactedRouteContext).params;
 }
 
 /**
  * Resolves the pathname of the given `to` value against the current location.
  */
 export function useResolvedPath(to: PathRecord): Path {
-  const { router } = useContext(RouterContext);
-  const { pathname } = useContext(MactedRouteContext);
+  const { router } = React.useContext(RouterContext);
+  const { pathname } = React.useContext(MactedRouteContext);
   return React.useMemo(() => router.resolve(to, pathname).path, [to, pathname]);
 }
 
@@ -165,5 +165,5 @@ export function useRouter(): IRouter {
     `useRouter() may be used only in the context of a <Router> component.`
   );
 
-  return useContext(RouterContext).router;
+  return React.useContext(RouterContext).router;
 }

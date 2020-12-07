@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import { Dir as DirComp } from "@shuvi/react-fs";
 import { IFileNode, File, Dir, isDir, isFile } from "../../models/files";
 
@@ -6,7 +6,7 @@ interface Props {
   file: IFileNode;
 }
 
-export default class FileNode extends React.Component<Props> {
+export default class FileNode extends Component<Props> {
   constructor(props: Props) {
     super(props);
 

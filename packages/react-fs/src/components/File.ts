@@ -1,7 +1,7 @@
-import React from "react";
+import { createElement, Component } from "react";
 import { FileProps } from "../types";
 
-export default class File extends React.Component<FileProps> {
+export default class File extends Component<FileProps> {
   shouldComponentUpdate(nextProps: FileProps) {
     return (
       nextProps.name !== this.props.name ||
@@ -10,6 +10,6 @@ export default class File extends React.Component<FileProps> {
   }
 
   render() {
-    return React.createElement<FileProps>("file", this.props);
+    return createElement<FileProps>("file", this.props);
   }
 }

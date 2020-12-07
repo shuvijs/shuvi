@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { IApi, Runtime, APIHooks } from '@shuvi/types';
 import { resolveAppFile, resolveDep, resolveLib } from './paths';
 import { config as configBundler } from './bundler/config';

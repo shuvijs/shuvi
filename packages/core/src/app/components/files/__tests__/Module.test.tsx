@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, cleanup, ReactTestInstance } from 'shuvi-test-utils/reactTestRender';
 import Module from '../Module';
 

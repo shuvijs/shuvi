@@ -1,10 +1,10 @@
-import React, { createContext, useMemo } from 'react';
+import * as React from 'react';
 
 export interface IAppContext {
   appContext: { [x: string]: any };
 }
 
-const AppContext = createContext<IAppContext>(null as any);
+const AppContext = React.createContext<IAppContext>(null as any);
 
 export { AppContext };
 
@@ -15,7 +15,7 @@ export default function AppContainer({
 }: IAppContext & {
   children: React.ReactElement;
 }) {
-  const appCtx: IAppContext = useMemo(() => ({ appContext }), [appContext]);
+  const appCtx: IAppContext = React.useMemo(() => ({ appContext }), [appContext]);
   return (
     <AppContext.Provider value={appCtx}>
       {React.cloneElement(children, {

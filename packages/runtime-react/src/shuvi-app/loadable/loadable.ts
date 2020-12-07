@@ -22,7 +22,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 // https://github.com/jamiebuilds/react-loadable/blob/v5.5.0/src/index.js
 // Modified to be compatible with webpack 4 / Next.js
 
-import React from 'react';
+import * as React from 'react';
 import { useSubscription } from 'use-subscription';
 import { LoadableContext } from './loadable-context';
 

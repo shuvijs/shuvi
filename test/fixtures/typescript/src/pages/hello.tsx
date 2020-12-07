@@ -1,5 +1,3 @@
-import React from 'react';
-// @ts-ignore FIXME
 import { useCurrentRoute } from '@shuvi/app';
 import { hello } from '../components/hello';
 import { World } from '../components/world';
