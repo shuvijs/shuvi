@@ -125,7 +125,7 @@ export default class ModuleReplacePlugin implements Plugin {
       handler.pending.set(moduleInfo.compiler, false);
       moduleInfo.compiler.hooks.invalid.call('noop', new Date().getTime());
     });
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       handler.resolve = resolve;
     });
   }
