@@ -35,11 +35,11 @@
     "fs-extra": "8.1.0",
     "mobx": "5.15.4",
     "mobx-react": "6.1.8",
-    "react": "16.13.0"
+    "react": "17.0.1"
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.1",
     "@types/ejs": "3.0.4",
-    "react-test-renderer": "^16.13.1"
+    "react-test-renderer": "^17.0.1"
   }
 }
