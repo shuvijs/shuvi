@@ -1,6 +1,6 @@
 module.exports = api => {
   api.addServerMiddleware({
-    path: 'pluginServerMiddleware',
+    path: 'pluginservermiddleware',
     handler: async (ctx, next) => {
       await next();
       ctx.body = 'pluginServerMiddleware';

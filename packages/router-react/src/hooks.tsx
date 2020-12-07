@@ -9,7 +9,7 @@ import {
   Transition,
   IRouter,
   IPathPattern,
-  matchPath
+  matchPathname
 } from '@shuvi/router';
 import { __DEV__ } from './constants';
 import { RouterContext, RouteContext, MactedRouteContext } from './contexts';
@@ -88,7 +88,7 @@ export function useMatch(pattern: IPathPattern): IPathMatch | null {
   );
 
   const { pathname } = useCurrentRoute();
-  return matchPath(pattern, pathname);
+  return matchPathname(pattern, pathname);
 }
 
 /**

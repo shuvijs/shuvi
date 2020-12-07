@@ -34,7 +34,7 @@ function safelyDecodeURIComponent(
   }
 }
 
-export function matchPath(
+export function matchPathname(
   pattern: IPathPattern,
   pathname: string
 ): IPathMatch | null {

@@ -27,6 +27,14 @@ describe('serverMiddleware development', () => {
       'shuvi-middleware-custom-cookie=foo; path=/; httponly'
     ]);
 
+    // with querystring
+    res = await got.get(ctx.url('/health-check?test=123'));
+    expect(res.body).toBe('200 OK');
+    expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
+    expect(res.headers).toHaveProperty('set-cookie', [
+      'shuvi-middleware-custom-cookie=foo; path=/; httponly'
+    ]);
+
     res = await got.get(ctx.url('/health-check2'));
     expect(res.body).toBe('200 OK');
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
