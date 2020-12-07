@@ -1,14 +1,14 @@
-import { matchPath } from '../matchPath';
+import { matchPathname } from '../matchPathname';
 
-describe('matchPath', () => {
+describe('matchPathname', () => {
   it('should match given string', () => {
-    expect(matchPath('', '')).toStrictEqual({
+    expect(matchPathname('', '')).toStrictEqual({
       params: {},
       path: '',
       pathname: ''
     });
 
-    expect(matchPath('/*', '/123')).toStrictEqual({
+    expect(matchPathname('/*', '/123')).toStrictEqual({
       params: {
         '*': '123'
       },
@@ -17,7 +17,7 @@ describe('matchPath', () => {
     });
 
     expect(
-      matchPath('/caseInsensitive/:id', '/caseinsensitive/123')
+      matchPathname('/caseInsensitive/:id', '/caseinsensitive/123')
     ).toStrictEqual({
       params: {
         id: '123'
@@ -26,7 +26,7 @@ describe('matchPath', () => {
       pathname: '/caseinsensitive/123'
     });
 
-    expect(matchPath('nested/1/2/3', '/nested/1/2/3')).toStrictEqual({
+    expect(matchPathname('nested/1/2/3', '/nested/1/2/3')).toStrictEqual({
       params: {},
       path: 'nested/1/2/3',
       pathname: '/nested/1/2/3'
@@ -35,7 +35,7 @@ describe('matchPath', () => {
 
   it('should match given pattern', () => {
     expect(
-      matchPath({ path: '', caseSensitive: true, end: true }, '')
+      matchPathname({ path: '', caseSensitive: true, end: true }, '')
     ).toStrictEqual({
       params: {},
       path: '',
@@ -43,7 +43,7 @@ describe('matchPath', () => {
     });
 
     expect(
-      matchPath(
+      matchPathname(
         { path: '/asd/:id', caseSensitive: true, end: true },
         '/asd/123'
       )
@@ -56,7 +56,7 @@ describe('matchPath', () => {
     });
 
     expect(
-      matchPath(
+      matchPathname(
         { path: '/withEndFalse/:id/', caseSensitive: true, end: false },
         '/withEndFalse/123/thisWillMatch'
       )
@@ -69,7 +69,7 @@ describe('matchPath', () => {
     });
 
     expect(
-      matchPath(
+      matchPathname(
         {
           path: '/withMultipleParams/:id/:id2',
           caseSensitive: true,
@@ -88,23 +88,23 @@ describe('matchPath', () => {
   });
 
   it('should not match given string', () => {
-    expect(matchPath('/qwe', '/')).toBeNull();
+    expect(matchPathname('/qwe', '/')).toBeNull();
 
-    expect(matchPath('/nested/1/2/3', '/incorrect/1/2/3')).toBeNull();
+    expect(matchPathname('/nested/1/2/3', '/incorrect/1/2/3')).toBeNull();
   });
 
   it('should not match given pattern', () => {
-    expect(matchPath({ path: '/notMatch' }, '/')).toBeNull();
+    expect(matchPathname({ path: '/notMatch' }, '/')).toBeNull();
 
     expect(
-      matchPath(
+      matchPathname(
         { path: '/caseSensitive', caseSensitive: true },
         '/casesensitive'
       )
     ).toBeNull();
 
     expect(
-      matchPath(
+      matchPathname(
         { path: '/withEnd', caseSensitive: true, end: true },
         '/withEnd/something'
       )
@@ -112,7 +112,7 @@ describe('matchPath', () => {
   });
 
   it('should work with optional params', () => {
-    expect(matchPath({ path: '/:optional?' }, '/optional')).toStrictEqual({
+    expect(matchPathname({ path: '/:optional?' }, '/optional')).toStrictEqual({
       params: { optional: 'optional' },
       path: '/:optional?',
       pathname: '/optional'
@@ -122,7 +122,7 @@ describe('matchPath', () => {
   it('should not log warning when optional params is empty', () => {
     jest.spyOn(console, 'warn');
 
-    expect(matchPath({ path: '/:optional?' }, '/')).toStrictEqual({
+    expect(matchPathname({ path: '/:optional?' }, '/')).toStrictEqual({
       params: { optional: undefined },
       path: '/:optional?',
       pathname: '/'

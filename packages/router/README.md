@@ -5,7 +5,7 @@ Common router logics.
 ## Docs
 
 - matchRoutes
-- matchPath
+- matchPathname
 - resolvePath
 - history
   - createBrowserHistory
