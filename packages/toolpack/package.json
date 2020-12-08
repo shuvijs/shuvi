@@ -37,7 +37,6 @@
     "@shuvi/types": "^0.0.1-rc.16",
     "@shuvi/utils": "^0.0.1-rc.16",
     "babel-loader": "8.1.0",
-    "babel-plugin-syntax-jsx": "6.18.0",
     "babel-plugin-transform-define": "2.0.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "buffer": "5.6.0",
