@@ -30,7 +30,7 @@
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
     "@babel/plugin-transform-runtime": "7.10.1",
     "@babel/preset-env": "7.10.1",
-    "@babel/preset-react": "7.10.1",
+    "@babel/preset-react": "7.12.7",
     "@babel/preset-typescript": "7.10.1",
     "@babel/runtime": "7.10.1",
     "@shuvi/shared": "^0.0.1-rc.16",
