@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useParams } from '@shuvi/router-react';
 
 const DetailPage = () => {

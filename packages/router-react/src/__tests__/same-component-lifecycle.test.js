@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import * as React from 'react';
+import { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { MemoryRouter as Router, RouterView } from '..';
@@ -22,7 +22,7 @@ describe('when the same component is mounted by two different routes', () => {
   it('mounts only once', () => {
     let mountCount = 0;
 
-    class Home extends React.Component {
+    class Home extends Component {
       componentDidMount() {
         mountCount += 1;
       }

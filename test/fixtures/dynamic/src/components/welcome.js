@@ -1,6 +1,6 @@
-import React from 'react'
+import { Component } from 'react';
 
-export default class Welcome extends React.Component {
+export default class Welcome extends Component {
   state = { name: null }
 
   componentDidMount() {

@@ -1,4 +1,3 @@
-import React from 'react';
 import fse from 'fs-extra';
 import { wait } from 'shuvi-test-utils';
 import { render, cleanup, act } from 'shuvi-test-utils/reactTestRender';

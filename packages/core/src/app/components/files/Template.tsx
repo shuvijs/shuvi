@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import { File } from '@shuvi/react-fs';
 import fse from 'fs-extra';
 import ejs from 'ejs';
@@ -12,7 +12,7 @@ export interface Props {
   data?: ITemplateData;
 }
 
-export default class Template extends React.Component<Props> {
+export default class Template extends Component<Props> {
   private _compileTemplate = memoizeOne((template: string) =>
     ejs.compile(template)
   );

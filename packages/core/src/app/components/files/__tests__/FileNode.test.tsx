@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, cleanup } from 'shuvi-test-utils/reactTestRender';
 import FileNode from '../FileNode';
 import { createFile, createCustomFile } from '../../../models/files';

@@ -8,8 +8,8 @@ module.exports = {
 
   globals: {
     'ts-jest': {
-      tsConfig: {
-        jsx: 'react',
+      tsconfig: {
+        jsx: 'react-jsx',
         allowJs: true,
         target: 'es6',
         lib: ['esnext'],

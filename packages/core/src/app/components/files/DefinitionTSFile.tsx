@@ -1,4 +1,3 @@
-import React from 'react';
 import { File } from '@shuvi/react-fs';
 import { ISpecifier } from '../../../types';
 import { useGetExportsContent } from '../../hooks/useGetExportsContent';

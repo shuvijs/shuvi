@@ -1,5 +1,3 @@
-import React from 'react';
-// @ts-ignore
 import { Head } from '@shuvi/app';
 
 const style = {

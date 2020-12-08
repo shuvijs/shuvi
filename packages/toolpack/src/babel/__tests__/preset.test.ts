@@ -62,16 +62,15 @@ describe('shuvi/babel', () => {
       // Destructure array as object
       expect(output).toContain('const{0:count,1:setCount}=useState(0);');
 
-      // Hoist React.createElement as __jsx
-      expect(output).toContain('var __jsx=React.createElement');
-      expect(output).toMatch(/return __jsx\(.*?\)/);
+      expect(output).toContain('import{jsx as _jsx}from"react/jsx-runtime";');
+      expect(output).toMatch(/_jsx\(.*?\)/);
 
       // Global css and css modules
       expect(output).toMatch(/import styles from"a.css\?cssmodules"/);
       expect(output).toMatch(/import'global.css'/);
 
       expect(output).toMatchInlineSnapshot(
-        `"import React from\\"react\\";var __jsx=React.createElement;import{useState}from'react';import styles from\\"a.css?cssmodules\\";import'global.css';const App=()=>{const{0:count,1:setCount}=useState(0);return __jsx(\\"div\\",null,count);};export default App;"`
+        `"import{jsx as _jsx}from\\"react/jsx-runtime\\";import{useState}from'react';import styles from\\"a.css?cssmodules\\";import'global.css';const App=()=>{const{0:count,1:setCount}=useState(0);return/*#__PURE__*/_jsx(\\"div\\",{children:count});};export default App;"`
       );
     });
 
@@ -96,9 +95,8 @@ describe('shuvi/babel', () => {
         'const{0:count,1:setCount}=(0,_react.useState)(0);'
       );
 
-      // Hoist React.createElement as __jsx
-      expect(output).toContain('var __jsx=_react.default.createElement;');
-      expect(output).toMatch(/return __jsx\(.*?\)/);
+      expect(output).toContain('var _jsxRuntime=require("react/jsx-runtime");');
+      expect(output).toMatch(/_jsxRuntime.jsx\)\(.*?\)/);
 
       // Global css and css modules
       expect(output).toContain('require("global.css");');
@@ -119,9 +117,8 @@ describe('shuvi/babel', () => {
       expect(output).toMatch(/import styles from"a.css\?cssmodules"/);
       expect(output).toMatch(/import'global.css'/);
 
-      // Hoist React.createElement as __jsx
-      expect(output).toContain('var __jsx=React.createElement');
-      expect(output).toMatch(/return __jsx\(.*?\)/);
+      expect(output).toContain('import{jsx as _jsx}from"react/jsx-runtime";');
+      expect(output).toMatch(/_jsx\(.*?\)/);
 
       // Convert arrow function to function block
       expect(output).toContain('var App=function App(){');
@@ -132,7 +129,7 @@ describe('shuvi/babel', () => {
       );
 
       expect(output).toMatchInlineSnapshot(
-        `"import React from\\"react\\";var __jsx=React.createElement;import{useState}from'react';import styles from\\"a.css?cssmodules\\";import'global.css';var App=function App(){var _useState=useState(0),count=_useState[0],setCount=_useState[1];return __jsx(\\"div\\",null,count);};export default App;"`
+        `"import{jsx as _jsx}from\\"react/jsx-runtime\\";import{useState}from'react';import styles from\\"a.css?cssmodules\\";import'global.css';var App=function App(){var _useState=useState(0),count=_useState[0],setCount=_useState[1];return/*#__PURE__*/_jsx(\\"div\\",{children:count});};export default App;"`
       );
     });
 
@@ -149,8 +146,7 @@ describe('shuvi/babel', () => {
       expect(output).toContain('require("global.css");');
       expect(output).toContain('require("a.css?cssmodules")');
 
-      // Hoist React.createElement as __jsx
-      expect(output).toContain('var __jsx=_react["default"].createElement');
+      expect(output).toContain('var _jsxRuntime=require("react/jsx-runtime");');
 
       // Convert arrow function to function block
       expect(output).toContain('var App=function App(){');

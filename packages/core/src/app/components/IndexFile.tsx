@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react';
 import Module from '../components/files/Module';
 import { useSelector } from '../models/store';

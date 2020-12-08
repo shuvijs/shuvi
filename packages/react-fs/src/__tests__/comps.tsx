@@ -1,7 +1,7 @@
-import React from "react";
+import { Component } from "react";
 import { File, Dir } from "..";
 
-export class Test1 extends React.Component<{}, { createB: boolean }> {
+export class Test1 extends Component<{}, { createB: boolean }> {
   state = {
     aName: "dirA",
     a1Name: "A1",

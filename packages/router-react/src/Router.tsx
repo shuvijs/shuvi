@@ -1,4 +1,4 @@
-import React, { useRef, useReducer } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import { RouterContext, RouteContext } from './contexts';
 import { useInRouterContext } from './hooks';
@@ -31,8 +31,8 @@ export function Router({
     };
   }, [staticProp, router]);
 
-  const unmount = useRef(false);
-  const forceupdate = useReducer(s => s * -1, 1)[1];
+  const unmount = React.useRef(false);
+  const forceupdate = React.useReducer(s => s * -1, 1)[1];
 
   useIsomorphicEffect(() => () => (unmount.current = true), []);
   useIsomorphicEffect(

@@ -67,6 +67,7 @@ if (__DEV__) {
     replace: PropTypes.bool,
     state: PropTypes.object,
     target: PropTypes.string,
+    // @ts-ignore https://github.com/DefinitelyTyped/DefinitelyTyped/issues/28015
     to: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.shape({

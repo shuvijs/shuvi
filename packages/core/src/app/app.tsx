@@ -1,4 +1,3 @@
-import React from 'react';
 import { useStaticRendering } from 'mobx-react';
 import ReactFS from '@shuvi/react-fs';
 import AppComponent from './AppComponent';

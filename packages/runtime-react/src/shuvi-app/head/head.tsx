@@ -2,7 +2,7 @@
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
 import { Runtime } from '@shuvi/types';
-import React from 'react';
+import * as React from 'react';
 import withSideEffect from './side-effect';
 import { HeadManagerContext } from './head-manager-context';
 import { HeadElement, HeadState } from './types';

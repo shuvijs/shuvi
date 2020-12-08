@@ -1,4 +1,3 @@
-import React from 'react';
 import { File, Dir } from '..';
 import { renderOnce } from '../renderer';
 import { resetFs, recursiveReadDir } from './utils';

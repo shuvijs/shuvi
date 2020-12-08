@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { create as createTestRenderer } from 'react-test-renderer';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 import { Router } from '..';

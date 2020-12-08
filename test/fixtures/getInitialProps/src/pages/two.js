@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from '@shuvi/router-react';
 
 let globalTime = 0;

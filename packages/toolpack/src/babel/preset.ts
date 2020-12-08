@@ -63,10 +63,10 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
           // Adds component stack to warning messages
           // Adds __self attribute to JSX which React will use for some warnings
           development: isDevelopment || isTest,
-          pragma: '__jsx',
           // Will use the native built-in instead of trying to polyfill
           // behavior for any plugins that require one.
           useBuiltIns: true,
+          runtime: 'automatic',
           ...options['preset-react']
         }
       ],
@@ -74,18 +74,6 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
     ],
     plugins: [
       require('./plugins/auto-css-modules'),
-      [
-        require('./plugins/jsx-pragma'),
-        {
-          // This produces the following injected import for modules containing JSX:
-          //   import React from 'react';
-          //   var __jsx = React.createElement;
-          module: 'react',
-          importAs: 'React',
-          pragma: '__jsx',
-          property: 'createElement'
-        }
-      ],
       [
         require('./plugins/optimize-hook-destructuring'),
         {

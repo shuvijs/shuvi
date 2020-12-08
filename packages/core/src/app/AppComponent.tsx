@@ -1,4 +1,4 @@
-import React, { ErrorInfo } from 'react';
+import { Component, ErrorInfo } from 'react';
 import { Dir } from '@shuvi/react-fs';
 import IndexFile from './components/IndexFile';
 import ViewFile from './components/ViewFile';
@@ -28,7 +28,7 @@ function App() {
   );
 }
 
-export default class AppContainer extends React.Component {
+export default class AppContainer extends Component {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('error', error);
   }

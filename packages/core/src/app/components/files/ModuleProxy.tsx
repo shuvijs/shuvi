@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { File } from '@shuvi/react-fs';
 import { useFileByOrder } from '../../hooks/useFileByOrder';
 

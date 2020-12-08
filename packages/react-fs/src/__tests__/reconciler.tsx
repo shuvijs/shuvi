@@ -1,8 +1,8 @@
 import path from "path";
-import React from "react";
+import { Component } from "react";
 import ReactFS, { File, Dir } from "..";
 
-class App extends React.Component<{}, { createB: boolean }> {
+class App extends Component<{}, { createB: boolean }> {
   state = {
     aName: 'dirA',
     a1Name: 'A1',

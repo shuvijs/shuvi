@@ -1,6 +1,6 @@
 import path from 'path';
 import fse from 'fs-extra';
-import React from 'react';
+import * as React from 'react';
 import TestRenderer from 'react-test-renderer';
 import ReactReconciler from 'react-reconciler';
 import { ReactFsReconciler } from './reconciler';

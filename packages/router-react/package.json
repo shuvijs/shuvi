@@ -31,11 +31,11 @@
     "@shuvi/types": "^0.0.1-rc.18"
   },
   "devDependencies": {
-    "@types/react": "^16.9.43",
-    "@types/react-test-renderer": "^16.9.2",
-    "react-test-renderer": "^16.13.1"
+    "@types/react": "^17.0.0",
+    "@types/react-test-renderer": "^17.0.0",
+    "react-test-renderer": "^17.0.1"
   },
   "peerDependencies": {
-    "react": ">=16.8"
+    "react": ">=17"
   }
 }

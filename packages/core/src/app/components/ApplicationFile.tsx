@@ -1,4 +1,3 @@
-import React from 'react';
 import { File } from '@shuvi/react-fs';
 
 function ApplicationFile() {

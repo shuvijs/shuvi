@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react';
 import ModuleProxy from './files/ModuleProxy';
 import { useSelector } from '../models/store';

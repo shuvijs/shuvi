@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import React from 'react';
+import * as React from 'react';
 import { Runtime } from '@shuvi/types/';
 import { RouterView } from '@shuvi/router-react';
 import { renderRoutes } from './utils';
