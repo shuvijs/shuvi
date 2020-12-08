@@ -67,6 +67,7 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
           // Will use the native built-in instead of trying to polyfill
           // behavior for any plugins that require one.
           useBuiltIns: true,
+          runtime: 'automatic',
           ...options['preset-react']
         }
       ],
