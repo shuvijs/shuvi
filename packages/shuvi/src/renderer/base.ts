@@ -84,14 +84,6 @@ export abstract class BaseRenderer {
       return docProps;
     }
 
-    docProps = await this._api.callHook<APIHooks.IHookModifyHtml>(
-      {
-        name: 'modifyHtml',
-        initialValue: docProps
-      },
-      appContext
-    );
-
     const { document } = this._resources.server;
 
     if (document.onDocumentProps) {
@@ -101,6 +93,14 @@ export abstract class BaseRenderer {
         'onDocumentProps not returning object.'
       );
     }
+
+    docProps = await this._api.callHook<APIHooks.IHookModifyHtml>(
+      {
+        name: 'modifyHtml',
+        initialValue: docProps
+      },
+      appContext
+    );
 
     return this._renderDocument(
       addDefaultHtmlTags(docProps),
