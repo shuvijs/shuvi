@@ -7,7 +7,6 @@ interface BabeLoaderlOption {
 
 interface CustomOption {
   isNode?: boolean;
-  hasReactRefresh?: boolean;
 }
 
 function hasBuiltPreset(presets: { value: any }[]) {
@@ -24,8 +23,7 @@ module.exports = babelLoader.custom((babel: any) => {
   return {
     customOptions(opts: BabeLoaderlOption & CustomOption) {
       const custom = {
-        isNode: opts.isNode,
-        hasReactRefresh: opts.hasReactRefresh
+        isNode: opts.isNode
       };
       const loader = Object.assign(
         opts.cacheDirectory
@@ -39,7 +37,6 @@ module.exports = babelLoader.custom((babel: any) => {
       );
 
       delete loader.isNode;
-      delete loader.hasReactRefresh;
 
       return { loader, custom };
     },
@@ -48,7 +45,7 @@ module.exports = babelLoader.custom((babel: any) => {
       cfg: any,
       {
         source,
-        customOptions: { isNode, hasReactRefresh }
+        customOptions: { isNode }
       }: {
         source: any;
         customOptions: CustomOption;
@@ -76,15 +73,6 @@ module.exports = babelLoader.custom((babel: any) => {
       options.caller.isNode = isNode;
 
       options.plugins = options.plugins || [];
-
-      if (hasReactRefresh) {
-        const reactRefreshPlugin = babel.createConfigItem(
-          [require('react-refresh/babel'), { skipEnvCheck: true }],
-          { type: 'plugin' }
-        );
-
-        options.plugins.unshift(reactRefreshPlugin);
-      }
 
       options.plugins.push([
         require.resolve('babel-plugin-transform-define'),

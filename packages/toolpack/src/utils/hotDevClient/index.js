@@ -305,6 +305,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
     if (needForcedReload) {
       ErrorOverlay.reportRuntimeError(err);
       if (hadRuntimeError) {
+        hadRuntimeError = false;
         window.location.reload();
       }
       hadRuntimeError = true;

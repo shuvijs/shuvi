@@ -78,7 +78,18 @@ export function config(api: IApi) {
           .rule('main')
           .oneOf('js')
           .use('shuvi-babel-loader')
-          .tap(options => ({ ...options, hasReactRefresh: true }));
+          .tap(options => {
+            const plugins = options.plugins || [];
+            plugins.unshift([
+              require('react-refresh/babel'),
+              { skipEnvCheck: true }
+            ]);
+
+            return {
+              ...options,
+              plugins
+            };
+          });
 
         config.merge({
           entry: {
