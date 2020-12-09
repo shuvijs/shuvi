@@ -3,11 +3,9 @@ import { IApi, APIHooks } from '@shuvi/types';
 // @ts-ignore
 import AliasPlugin from 'enhanced-resolve/lib/AliasPlugin';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
-import {
-  BUNDLER_TARGET_CLIENT,
-  BUILD_CLIENT_RUNTIME_REACT_REFRESH
-} from '@shuvi/shared/lib/constants';
+import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';
+import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
 
 export function config(api: IApi) {
   const resolveLocal = (m: string) =>
@@ -96,6 +94,21 @@ export function config(api: IApi) {
             [BUILD_CLIENT_RUNTIME_REACT_REFRESH]: [
               require.resolve(`@next/react-refresh-utils/runtime`)
             ]
+          }
+        });
+
+        api.tap<APIHooks.IHookModifyHtml>('modifyHtml', {
+          name: 'insertReactRefreshEntryFile',
+          fn: documentProps => {
+            documentProps.scriptTags.unshift({
+              tagName: 'script',
+              attrs: {
+                src: api.getAssetPublicUrl(
+                  BUILD_CLIENT_RUNTIME_REACT_REFRESH + '.js'
+                )
+              }
+            });
+            return documentProps;
           }
         });
       }

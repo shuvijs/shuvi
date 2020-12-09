@@ -5,8 +5,7 @@ import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
   DEV_STYLE_ANCHOR_ID,
-  DEV_STYLE_HIDE_FOUC,
-  BUILD_CLIENT_RUNTIME_REACT_REFRESH
+  DEV_STYLE_HIDE_FOUC
 } from '../constants';
 import { renderTemplate } from '../lib/viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
@@ -148,15 +147,6 @@ export abstract class BaseRenderer {
       });
     }
     if (this._api.mode === 'development') {
-      if (clientManifest.bundles[BUILD_CLIENT_RUNTIME_REACT_REFRESH]) {
-        scripts.unshift(
-          tag('script', {
-            src: this._api.getAssetPublicUrl(
-              clientManifest.bundles[BUILD_CLIENT_RUNTIME_REACT_REFRESH]
-            )
-          })
-        );
-      }
       styles.push(
         tag(
           'style',
