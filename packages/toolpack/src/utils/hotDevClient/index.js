@@ -123,8 +123,9 @@ function clearOutdatedErrors() {
   }
 }
 
-function afterApplyUpdate(hasUpdates) {
+function afterApplyUpdate() {
   tryDismissErrorOverlay();
+  console.log('[Fast Refresh] Done.');
 }
 
 // Successful compilation.
@@ -137,10 +138,10 @@ function handleSuccess() {
 
   // Attempt to apply hot updates or reload.
   if (isHotUpdate) {
-    tryApplyUpdates(function onHotUpdateSuccess(hasUpdates) {
+    tryApplyUpdates(function onHotUpdateSuccess() {
       // Only dismiss it when we're sure it's a hot update.
       // Otherwise it would flicker right before the reload.
-      afterApplyUpdate(hasUpdates);
+      afterApplyUpdate();
     });
   }
 }
@@ -148,6 +149,10 @@ function handleSuccess() {
 // Compilation with warnings (e.g. ESLint).
 function handleWarnings(warnings) {
   clearOutdatedErrors();
+
+  var isHotUpdate = !isFirstCompilation;
+  isFirstCompilation = false;
+  hasCompileErrors = false;
 
   // Print warnings to the console.
   const formatted = formatWebpackMessages({
@@ -166,6 +171,15 @@ function handleWarnings(warnings) {
       }
       console.warn(stripAnsi(formatted.warnings[i]));
     }
+  }
+
+  // Attempt to apply hot updates or reload.
+  if (isHotUpdate) {
+    tryApplyUpdates(function onSuccessfulHotUpdate() {
+      // Only dismiss it when we're sure it's a hot update.
+      // Otherwise it would flicker right before the reload.
+      tryDismissErrorOverlay();
+    });
   }
 }
 
@@ -211,7 +225,9 @@ function processMessage(e) {
   switch (obj.action) {
     case 'building': {
       console.log(
-        '[HMR] bundle ' + (obj.name ? "'" + obj.name + "' " : '') + 'rebuilding'
+        '[Fast Refresh] bundle ' +
+          (obj.name ? "'" + obj.name + "' " : '') +
+          'rebuilding'
       );
       break;
     }
@@ -277,26 +293,27 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
 
   if (!isUpdateAvailable() || !canApplyUpdates()) {
     ErrorOverlay.dismissBuildError();
+    // HMR failed, need to refresh
+    if (module.hot.status() === 'fail') {
+      window.location.reload();
+    }
     return;
   }
 
   function handleApplyUpdates(err, updatedModules) {
     const needForcedReload = err || !updatedModules || hadRuntimeError;
     if (needForcedReload) {
-      if (err) {
-        console.warn('Error while applying updates, reloading page', err);
-      }
+      ErrorOverlay.reportRuntimeError(err);
       if (hadRuntimeError) {
-        console.warn('Had runtime error previously, reloading page');
+        hadRuntimeError = false;
+        window.location.reload();
       }
-      window.location.reload();
-      return;
+      hadRuntimeError = true;
     }
 
-    const hasUpdates = Boolean(updatedModules.length);
     if (typeof onHotUpdateSuccess === 'function') {
       // Maybe we want to do something.
-      onHotUpdateSuccess(hasUpdates);
+      onHotUpdateSuccess();
     }
 
     if (isUpdateAvailable()) {
@@ -305,7 +322,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
     }
   }
 
-  // https://webpack.github.io/docs/hot-module-replacement.html#check
+  // https://webpack.js.org/api/hot-module-replacement/#check
   try {
     const updatedModules = await module.hot.check(/* autoApply */ true);
     handleApplyUpdates(null, updatedModules);

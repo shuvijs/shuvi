@@ -8,7 +8,9 @@ import { IUserRouteConfig, IDocumentProps } from './runtime';
 import { IWebpackHelpers } from './bundler';
 
 type ExtractSyncHookGeneric<Type> = Type extends SyncHook<infer X> ? X : never;
-export type MultiStats = ExtractSyncHookGeneric<MultiCompiler['hooks']['done']>[0];
+export type MultiStats = ExtractSyncHookGeneric<
+  MultiCompiler['hooks']['done']
+>[0];
 
 export type IHookGetConfig = defineHook<
   'getConfig',
@@ -80,7 +82,7 @@ export type IEventBundlerDone = defineHook<
     args: [
       {
         first: boolean;
-        stats: MultiStats;
+        stats: any;
       }
     ];
   }
