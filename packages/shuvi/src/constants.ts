@@ -1,10 +1,6 @@
-import { NAME, PATH_PREFIX } from '@shuvi/shared/lib/constants';
+import { PATH_PREFIX } from '@shuvi/shared/lib/constants';
 
 export * from '@shuvi/shared/lib/constants';
-
-export const BUNDLER_TARGET_CLIENT = `${NAME}/client`;
-
-export const BUNDLER_TARGET_SERVER = `${NAME}/server`;
 
 export const PUBLIC_PATH = `${PATH_PREFIX}/`;
 

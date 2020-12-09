@@ -37,6 +37,7 @@ module.exports = babelLoader.custom((babel: any) => {
       );
 
       delete loader.isNode;
+
       return { loader, custom };
     },
     config(

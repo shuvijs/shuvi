@@ -2,7 +2,10 @@ import path from 'path';
 import { IApi, APIHooks } from '@shuvi/types';
 // @ts-ignore
 import AliasPlugin from 'enhanced-resolve/lib/AliasPlugin';
+import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
+import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';
+import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
 
 export function config(api: IApi) {
   const resolveLocal = (m: string) =>
@@ -11,7 +14,7 @@ export function config(api: IApi) {
     path.join(api.paths.rootDir, 'node_modules', m);
   api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
     name: 'runtime-react',
-    fn: config => {
+    fn: (config, { name }) => {
       // const oriExternal = config.get("externals");
       // const external: webpack.ExternalsFunctionElement = (
       //   context,
@@ -58,6 +61,57 @@ export function config(api: IApi) {
         ],
         'resolve'
       ]);
+
+      if (name === BUNDLER_TARGET_CLIENT && api.mode === 'development') {
+        config.module
+          .rule('main')
+          .oneOf('js')
+          .use('react-refresh-loader')
+          .loader('@next/react-refresh-utils/loader')
+          .before('shuvi-babel-loader');
+
+        config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);
+
+        config.module
+          .rule('main')
+          .oneOf('js')
+          .use('shuvi-babel-loader')
+          .tap(options => {
+            const plugins = options.plugins || [];
+            plugins.unshift([
+              require('react-refresh/babel'),
+              { skipEnvCheck: true }
+            ]);
+
+            return {
+              ...options,
+              plugins
+            };
+          });
+
+        config.merge({
+          entry: {
+            [BUILD_CLIENT_RUNTIME_REACT_REFRESH]: [
+              require.resolve(`@next/react-refresh-utils/runtime`)
+            ]
+          }
+        });
+
+        api.tap<APIHooks.IHookModifyHtml>('modifyHtml', {
+          name: 'insertReactRefreshEntryFile',
+          fn: documentProps => {
+            documentProps.scriptTags.unshift({
+              tagName: 'script',
+              attrs: {
+                src: api.getAssetPublicUrl(
+                  BUILD_CLIENT_RUNTIME_REACT_REFRESH + '.js'
+                )
+              }
+            });
+            return documentProps;
+          }
+        });
+      }
       return config;
     }
   });
