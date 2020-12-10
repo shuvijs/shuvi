@@ -19,5 +19,13 @@ export const serverMiddleware = [
   { path: '/users/:id', handler: user },
   { path: '/profile/:id/setting*', handler: setting },
 
-  { path: '/home', handler: modifyHtml }
+  { path: '/home', handler: modifyHtml },
+
+  {
+    path: '/testorder',
+    handler: (ctx, next) => {
+      console.log('server.js');
+      return next();
+    }
+  }
 ];
