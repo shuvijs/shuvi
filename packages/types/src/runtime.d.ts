@@ -19,7 +19,7 @@ import {
   IRouter
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
-import { IApi } from '../index';
+import { IApi, IServerMiddlewareOption } from '../index';
 import { IManifest } from './bundler';
 
 export {

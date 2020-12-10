@@ -7,7 +7,8 @@ import {
   IPaths,
   IShuviMode,
   Runtime,
-  IPhase
+  IPhase,
+  IServerMiddlewareOption
 } from '@shuvi/types';
 import { App, IUserRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
@@ -57,7 +58,10 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  extraServerMiddleware: Runtime.IServerMiddleware[] = [];
+  extraServerMiddlewareWithOptions: {
+    middleware: Runtime.IServerMiddleware;
+    options: IServerMiddlewareOption;
+  }[] = [];
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
@@ -390,8 +394,14 @@ class Api extends Hookable implements IApi {
     }
   }
 
-  addServerMiddleware(extraServerMiddleware: Runtime.IServerMiddleware) {
-    this.extraServerMiddleware.push(extraServerMiddleware);
+  addServerMiddleware(
+    extraServerMiddleware: Runtime.IServerMiddleware,
+    options: IServerMiddlewareOption = {}
+  ) {
+    this.extraServerMiddlewareWithOptions.push({
+      middleware: extraServerMiddleware,
+      options
+    });
   }
 }
 

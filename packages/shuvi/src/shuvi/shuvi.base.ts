@@ -84,7 +84,7 @@ export default abstract class Shuvi {
   protected abstract init(): Promise<void> | void;
 
   protected _getServerMiddlewares() {
-    const { extraServerMiddleware } = this._api;
+    const { extraServerMiddlewareWithOptions } = this._api;
 
     const {
       server: { serverMiddleware = [] }
@@ -92,11 +92,33 @@ export default abstract class Shuvi {
 
     const { rootDir } = this._api.paths;
 
-    // plugin serverMiddleware => server.js middleware
-    const normalizedServerMiddleware = [
-      ...extraServerMiddleware,
+    const middlewares = [
+      ...extraServerMiddlewareWithOptions,
       ...serverMiddleware
-    ].map(middleware => normalizeServerMiddleware(middleware, { rootDir }));
+    ];
+
+    // plugin serverMiddleware => server.js middleware
+    const normalizedServerMiddleware = middlewares
+      .sort((a, b) => {
+        let score = 0;
+
+        if (typeof a === 'object' && 'options' in a) {
+          score += a.options.order || 0;
+        }
+
+        if (typeof b === 'object' && 'options' in b) {
+          score -= b.options.order || 0;
+        }
+
+        return score;
+      })
+      .map(middleware => {
+        if (typeof middleware === 'object' && 'middleware' in middleware) {
+          middleware = middleware.middleware;
+        }
+
+        return normalizeServerMiddleware(middleware, { rootDir });
+      });
 
     return normalizedServerMiddleware;
   }
