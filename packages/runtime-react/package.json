@@ -33,7 +33,6 @@
     "@shuvi/router-react": "^0.0.1-rc.17",
     "@shuvi/shared": "^0.0.1-rc.17",
     "@shuvi/utils": "^0.0.1-rc.17",
-    "enhanced-resolve": "5.2.0",
     "react": "16.13.0",
     "react-app-polyfill": "1.0.6",
     "react-dom": "16.13.0",

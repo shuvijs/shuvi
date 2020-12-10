@@ -40,13 +40,6 @@ export interface INavigateProps {
 
 export interface IOutletProps {}
 
-export interface IRouteProps {
-  caseSensitive?: boolean;
-  children?: React.ReactNode;
-  element?: React.ReactElement | null;
-  path?: string;
-}
-
 export interface IRouterProps {
   children?: React.ReactNode;
   static?: boolean;

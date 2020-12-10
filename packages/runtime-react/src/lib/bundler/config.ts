@@ -1,15 +1,15 @@
 import path from 'path';
 import { IApi, APIHooks } from '@shuvi/types';
-// @ts-ignore
-import AliasPlugin from 'enhanced-resolve/lib/AliasPlugin';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';
 import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
 
 export function config(api: IApi) {
-  const resolveLocal = (m: string) =>
-    path.dirname(require.resolve(`${m}/package.json`));
+  const resolveLocal = (m: string, sub?: string) => {
+    const pck = path.dirname(require.resolve(`${m}/package.json`));
+    return sub ? `${pck}/${sub}` : pck;
+  };
   const resolveUser = (m: string) =>
     path.join(api.paths.rootDir, 'node_modules', m);
   api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
@@ -43,23 +43,15 @@ export function config(api: IApi) {
         resolveLocal('@shuvi/router-react')
       );
       config.resolve.alias.set('@shuvi/router$', resolveLocal('@shuvi/router'));
-
-      // WEBPACK5: using alias in webpack5
-      config.resolve.plugin('react-alias').use(AliasPlugin, [
-        'described-resolve',
-        [
-          {
-            name: 'react',
-            onlyModule: true,
-            alias: [resolveUser('react'), resolveLocal('react')]
-          },
-          {
-            name: 'react-dom',
-            onlyModule: true,
-            alias: [resolveUser('react-dom'), resolveLocal('react-dom')]
-          }
-        ],
-        'resolve'
+      // @ts-ignore
+      config.resolve.alias.set('react$', [
+        resolveUser('react'),
+        resolveLocal('react')
+      ]);
+      // @ts-ignore
+      config.resolve.alias.set('react-dom$', [
+        resolveUser('react-dom'),
+        resolveLocal('react-dom')
       ]);
 
       if (name === BUNDLER_TARGET_CLIENT && api.mode === 'development') {
