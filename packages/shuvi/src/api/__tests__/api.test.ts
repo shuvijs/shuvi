@@ -122,4 +122,27 @@ describe('api', () => {
 
     expect(process.env.READ_ENV).toBe('true');
   });
+
+  describe('serverMiddleware', () => {
+    test('addServerMiddleware', async () => {
+      const api = await getApi({
+        config: {}
+      });
+
+      const serverMiddleware = jest.fn();
+      api.addServerMiddleware(serverMiddleware);
+
+      const firstServerMiddleware = jest.fn();
+      api.addServerMiddleware(firstServerMiddleware, { order: 0 });
+
+      const secondServerMiddleware = jest.fn();
+      api.addServerMiddleware(secondServerMiddleware, { order: 1 });
+
+      const fakeServerMiddleware = jest.fn();
+      api.addServerMiddleware(fakeServerMiddleware);
+      console.log({ ...api });
+
+      expect(api.extraServerMiddlewareWithOptions.length).toBe(4);
+    });
+  });
 });

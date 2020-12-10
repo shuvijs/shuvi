@@ -81,6 +81,8 @@ export declare type IPhase =
   | 'PHASE_DEVELOPMENT_SERVER'
   | 'PHASE_INSPECT_WEBPACK';
 
+export type IServerMiddlewareOption = { order?: number };
+
 export interface IApiConfig {
   outputPath: string;
   rootDir: string;
@@ -111,7 +113,10 @@ export interface IApi extends IHookable {
   addAppExport: typeof App.prototype.addExport;
   addAppPolyfill: typeof App.prototype.addPolyfill;
   addRuntimePlugin: typeof App.prototype.addRuntimePlugin;
-  addServerMiddleware: (serverMiddleware: Runtime.IServerMiddleware) => void;
+  addServerMiddleware: (
+    serverMiddleware: Runtime.IServerMiddleware,
+    options?: IServerMiddlewareOption
+  ) => void;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
