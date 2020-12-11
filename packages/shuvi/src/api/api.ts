@@ -404,7 +404,7 @@ class Api extends Hookable implements IApi {
     let serverMiddleware: Runtime.IServerMiddleware[];
     try {
       // this.resources.server maybe don't exist
-      serverMiddleware = this.resources.server.server.serverMiddleware;
+      serverMiddleware = this.resources.server.server.serverMiddleware || [];
     } catch (error) {
       serverMiddleware = [];
     }

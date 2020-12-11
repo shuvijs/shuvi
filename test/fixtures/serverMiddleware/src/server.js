@@ -24,8 +24,16 @@ export const serverMiddleware = [
   {
     path: '/testorder',
     handler: (ctx, next) => {
-      console.log('server.js');
+      console.log('user default order');
       return next();
     }
+  },
+  {
+    path: '/testorder',
+    handler: (ctx, next) => {
+      console.log(10);
+      return next();
+    },
+    order: 10
   }
 ];

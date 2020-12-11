@@ -211,7 +211,7 @@ export type IServerAppNext = Koa.Next;
 export type IServerAppResponse = Koa.Response;
 
 export interface IServerModule {
-  onViewDone(
+  onViewDone?(
     req: IncomingMessage,
     res: ServerResponse,
     payload: {
@@ -219,7 +219,7 @@ export interface IServerModule {
       appContext: any;
     }
   ): void;
-  serverMiddleware: IServerMiddleware[];
+  serverMiddleware?: IServerMiddleware[];
 }
 
 export interface IServerMiddlewareOptions {

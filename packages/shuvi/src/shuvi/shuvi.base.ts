@@ -26,6 +26,8 @@ export default abstract class Shuvi {
       configFile,
       mode: this.getMode()
     });
+
+    this._handlePageRequest = this._handlePageRequest.bind(this);
   }
 
   async ready(): Promise<void> {
