@@ -20,7 +20,7 @@ export default class ShuviProd extends Base {
     return 'production' as const;
   }
 
-  private _assetsMiddleware: Runtime.IServerAppHandler = async ctx => {
+  private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
     const api = this._api;
     const assetAbsPath = api.resolveBuildFile(
       BUILD_CLIENT_DIR,
@@ -41,7 +41,7 @@ export default class ShuviProd extends Base {
     }
   };
 
-  private _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
+  private _createServerMiddlewaresHandler = (): Runtime.IServerMiddlewareHandler => {
     const middlewares = this._getServerMiddlewares();
 
     return this._runServerMiddlewares(middlewares);

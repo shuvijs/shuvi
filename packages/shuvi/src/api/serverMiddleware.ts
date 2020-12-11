@@ -5,6 +5,13 @@ export interface Options {
   rootDir: string;
 }
 
+export interface InternalServerMiddlewareOptions
+  extends Runtime.IServerMiddlewareOptions {
+  handler: Runtime.IServerMiddlewareHandler;
+  path: string;
+  order: number;
+}
+
 function resolveHandler(handler: string, options: Options) {
   try {
     // Note: check if it is a npm module
@@ -18,31 +25,32 @@ function resolveHandler(handler: string, options: Options) {
 export function normalizeServerMiddleware(
   middleware: Runtime.IServerMiddleware,
   options: Options
-): {
-  path: string;
-  handler: Runtime.IServerAppMiddleware | Runtime.IServerAppHandler;
-} {
-  let path: string;
-  let handler: Runtime.IServerAppMiddleware | Runtime.IServerAppHandler;
-
-  if (typeof middleware === 'object') {
-    return {
-      ...normalizeServerMiddleware(middleware.handler, options),
-      path: middleware.path
+): InternalServerMiddlewareOptions {
+  let middlewareOptions: Runtime.IServerMiddlewareOptions;
+  if (typeof middleware !== 'object') {
+    middlewareOptions = {
+      handler: middleware
     };
-  } else if (typeof middleware === 'string') {
-    path = '*'; // Note: match all routes
-    const resolvedPath = resolveHandler(middleware, options);
+  } else {
+    middlewareOptions = middleware;
+  }
 
+  let handler: Runtime.IServerMiddlewareHandler;
+  if (typeof middlewareOptions.handler === 'string') {
+    const resolvedPath = resolveHandler(middlewareOptions.handler, options);
     handler = require(resolvedPath);
-  } else if (typeof middleware === 'function') {
-    path = '*';
-    handler = middleware;
+  } else if (typeof middlewareOptions.handler === 'function') {
+    handler = middlewareOptions.handler;
   } else {
     throw new Error(
       `Middleware must be one of type [string, function, object]`
     );
   }
 
-  return { path, handler };
+  return {
+    handler,
+    // Note: default to match all routes
+    path: middlewareOptions.path ?? '*',
+    order: middlewareOptions.order ?? 0
+  };
 }
