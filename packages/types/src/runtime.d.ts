@@ -222,21 +222,21 @@ export interface IServerModule {
   serverMiddleware: IServerMiddleware[];
 }
 
-export type IServerMiddlewareOptions = {
+export interface IServerMiddlewareOptions {
   handler: string | IServerMiddlewareHandler;
   path?: string;
   order?: number;
-};
+}
 
 export type IServerMiddleware =
   | string
   | IServerMiddlewareHandler
   | IServerMiddlewareOptions;
 
-export type IServerMiddlewareModule = {
+export interface IServerMiddlewareItem {
   path: string;
   handler: IServerMiddlewareHandler;
-};
+}
 
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;

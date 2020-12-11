@@ -8,6 +8,7 @@ export interface Options {
 export interface InternalServerMiddlewareOptions
   extends Runtime.IServerMiddlewareOptions {
   handler: Runtime.IServerMiddlewareHandler;
+  path: string;
   order: number;
 }
 
@@ -28,10 +29,7 @@ export function normalizeServerMiddleware(
   let middlewareOptions: Runtime.IServerMiddlewareOptions;
   if (typeof middleware !== 'object') {
     middlewareOptions = {
-      handler: middleware,
-      // Note: match all routes
-      path: '*',
-      order: 0
+      handler: middleware
     };
   } else {
     middlewareOptions = middleware;
@@ -49,5 +47,10 @@ export function normalizeServerMiddleware(
     );
   }
 
-  return { ...middlewareOptions, handler, order: middlewareOptions.order ?? 0 };
+  return {
+    handler,
+    // Note: default to match all routes
+    path: middlewareOptions.path ?? '*',
+    order: middlewareOptions.order ?? 0
+  };
 }

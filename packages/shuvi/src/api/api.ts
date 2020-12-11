@@ -395,7 +395,7 @@ class Api extends Hookable implements IApi {
     this.extraServerMiddlewares.push(middleware);
   }
 
-  getServerMiddlewares() {
+  getServerMiddlewares(): Runtime.IServerMiddlewareItem[] {
     const {
       extraServerMiddlewares,
       paths: { rootDir }
