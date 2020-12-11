@@ -131,12 +131,13 @@ describe('serverMiddleware production', () => {
     jest.spyOn(console, 'log');
     const page = await ctx.browser.page(ctx.url('/testorder'));
 
-    expect(console.log).toBeCalledTimes(5);
+    expect(console.log).toBeCalledTimes(6);
     expect(console.log).toHaveBeenNthCalledWith(1, -1);
-    expect(console.log).toHaveBeenNthCalledWith(2, 0);
-    expect(console.log).toHaveBeenNthCalledWith(3, 'server.js');
+    expect(console.log).toHaveBeenNthCalledWith(2, 'user default order');
+    expect(console.log).toHaveBeenNthCalledWith(3, 'plugin default order');
     expect(console.log).toHaveBeenNthCalledWith(4, 1);
     expect(console.log).toHaveBeenNthCalledWith(5, 9);
+    expect(console.log).toHaveBeenNthCalledWith(6, 10);
     await page.close();
   });
 });
