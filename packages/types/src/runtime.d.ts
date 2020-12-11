@@ -19,7 +19,7 @@ import {
   IRouter
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
-import { IApi, IServerMiddlewareOption } from '../index';
+import { IApi } from '../index';
 import { IManifest } from './bundler';
 
 export {
@@ -203,13 +203,10 @@ export interface CustomContext extends DefaultContext {
 }
 export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
 export type IServerAppContext = Koa.Context;
-export type IServerAppMiddleware<
+export type IServerMiddlewareHandler<
   S = DefaultState,
   C = CustomContext
 > = Koa.Middleware<S, C>;
-export type IServerAppHandler<S = DefaultState, C = CustomContext> = (
-  context: Koa.ParameterizedContext<S, C>
-) => any | Promise<void>;
 export type IServerAppNext = Koa.Next;
 export type IServerAppResponse = Koa.Response;
 
@@ -225,18 +222,20 @@ export interface IServerModule {
   serverMiddleware: IServerMiddleware[];
 }
 
+export type IServerMiddlewareOptions = {
+  handler: string | IServerMiddlewareHandler;
+  path?: string;
+  order?: number;
+};
+
 export type IServerMiddleware =
-  | IServerAppMiddleware
-  | IServerAppHandler
   | string
-  | {
-      path: string;
-      handler: string | IServerAppMiddleware | IServerAppHandler;
-    };
+  | IServerMiddlewareHandler
+  | IServerMiddlewareOptions;
 
 export type IServerMiddlewareModule = {
   path: string;
-  handler: IServerAppMiddleware | IServerAppHandler;
+  handler: IServerMiddlewareHandler;
 };
 
 export interface IRuntime<CompType = unknown> {
