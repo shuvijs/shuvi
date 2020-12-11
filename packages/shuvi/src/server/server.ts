@@ -108,8 +108,8 @@ export class Server {
     });
   }
 
-  use(fn: Runtime.IServerAppMiddleware): this;
-  use(route: string, fn: Runtime.IServerAppMiddleware): this;
+  use(fn: Runtime.IServerMiddlewareHandler): this;
+  use(route: string, fn: Runtime.IServerMiddleware): this;
   use(route: any, fn?: any): this {
     if (fn) {
       this._app.use(async (ctx, next) => {

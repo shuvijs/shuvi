@@ -45,7 +45,7 @@ export default class ShuviDev extends Base {
     return 'development' as const;
   }
 
-  private _publicDirMiddleware: Runtime.IServerAppHandler = async ctx => {
+  private _publicDirMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
     const api = this._api;
     const assetAbsPath = api.resolvePublicFile(ctx.params!.path);
     try {
@@ -63,7 +63,10 @@ export default class ShuviDev extends Base {
     }
   };
 
-  private _pageMiddleware: Runtime.IServerAppMiddleware = async (ctx, next) => {
+  private _pageMiddleware: Runtime.IServerMiddlewareHandler = async (
+    ctx,
+    next
+  ) => {
     const headers = ctx.request.headers;
     if (ctx.request.method !== 'GET') {
       return await next();
@@ -90,7 +93,7 @@ export default class ShuviDev extends Base {
     await next();
   };
 
-  private _createServerMiddlewaresHandler = (): Runtime.IServerAppMiddleware => {
+  private _createServerMiddlewaresHandler = (): Runtime.IServerMiddlewareHandler => {
     return async (ctx, next) => {
       const middlewares = this._getServerMiddlewares();
 

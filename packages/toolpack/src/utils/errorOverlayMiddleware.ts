@@ -25,7 +25,7 @@ function getSourcePath(source: string) {
 
 export function createLaunchEditorMiddleware(
   launchEditorEndpoint: string
-): Runtime.IServerAppMiddleware {
+): Runtime.IServerMiddlewareHandler {
   return async function launchEditorMiddleware(ctx, next) {
     if (ctx.request.url.startsWith(launchEditorEndpoint)) {
       const { query } = (ctx.req as Runtime.IIncomingMessage).parsedUrl;

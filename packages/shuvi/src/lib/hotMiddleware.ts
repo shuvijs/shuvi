@@ -58,7 +58,7 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware: Runtime.IServerAppMiddleware = async (ctx, next) => {
+  middleware: Runtime.IServerMiddlewareHandler = async (ctx, next) => {
     if (this.closed) return await next();
     if (!ctx.request.url?.startsWith(this._path)) return await next();
     this.eventStream.handler(ctx);
@@ -127,7 +127,7 @@ class EventStream {
     this.clients.clear();
   }
 
-  handler: Runtime.IServerAppHandler = ctx => {
+  handler(ctx: Runtime.IServerAppContext) {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'text/event-stream;charset=utf-8',
@@ -154,7 +154,7 @@ class EventStream {
       if (!ctx.res.finished || !ctx.res.writableEnded) ctx.response.body.end();
       this.clients.delete(ctx.response);
     });
-  };
+  }
 
   publish(payload: any) {
     this.everyClient(client => {
