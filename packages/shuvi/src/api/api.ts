@@ -7,8 +7,7 @@ import {
   IPaths,
   IShuviMode,
   Runtime,
-  IPhase,
-  IServerMiddlewareOption
+  IPhase
 } from '@shuvi/types';
 import { App, IUserRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
@@ -31,6 +30,7 @@ import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
+import { normalizeServerMiddleware } from './serverMiddleware';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -58,10 +58,7 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  extraServerMiddlewareWithOptions: {
-    middleware: Runtime.IServerMiddleware;
-    options: IServerMiddlewareOption;
-  }[] = [];
+  private extraServerMiddlewares: Runtime.IServerMiddleware[] = [];
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
@@ -223,7 +220,7 @@ class Api extends Hookable implements IApi {
           Object.defineProperty(api._resources, identifier, {
             value,
             enumerable: true,
-            configurable: true,
+            configurable: false,
             writable: false
           });
           return value;
@@ -237,7 +234,7 @@ class Api extends Hookable implements IApi {
           return loader();
         },
         enumerable: true,
-        configurable: true
+        configurable: false
       });
     }
   }
@@ -394,14 +391,27 @@ class Api extends Hookable implements IApi {
     }
   }
 
-  addServerMiddleware(
-    extraServerMiddleware: Runtime.IServerMiddleware,
-    options: IServerMiddlewareOption = {}
-  ) {
-    this.extraServerMiddlewareWithOptions.push({
-      middleware: extraServerMiddleware,
-      options
-    });
+  addServerMiddleware(middleware: Runtime.IServerMiddleware) {
+    this.extraServerMiddlewares.push(middleware);
+  }
+
+  getServerMiddlewares(): Runtime.IServerMiddlewareItem[] {
+    const {
+      extraServerMiddlewares,
+      paths: { rootDir }
+    } = this;
+
+    let serverMiddleware: Runtime.IServerMiddleware[];
+    try {
+      // this.resources.server maybe don't exist
+      serverMiddleware = this.resources.server.server.serverMiddleware;
+    } catch (error) {
+      serverMiddleware = [];
+    }
+
+    return [...serverMiddleware, ...extraServerMiddlewares]
+      .map(m => normalizeServerMiddleware(m, { rootDir }))
+      .sort((a, b) => a.order - b.order);
   }
 }
 
