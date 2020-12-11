@@ -28,6 +28,7 @@ export default abstract class Shuvi {
     });
 
     this._handlePageRequest = this._handlePageRequest.bind(this);
+    this.renderToHTML = this.renderToHTML.bind(this);
   }
 
   async ready(): Promise<void> {
@@ -141,5 +142,18 @@ export default abstract class Shuvi {
 
       await runMiddleware(middlewares[i]);
     };
+  }
+
+  protected _injectShuviContext() {
+    const shuviContext = {
+      renderToHTML: this.renderToHTML
+    };
+    this._api.addServerMiddleware({
+      handler: (ctx, next) => {
+        ctx.shuvi = shuviContext;
+        return next();
+      },
+      order: Number.MIN_SAFE_INTEGER
+    });
   }
 }

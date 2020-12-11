@@ -35,5 +35,14 @@ export const serverMiddleware = [
       return next();
     },
     order: 10
+  },
+  {
+    path: '/testRenderToHTML',
+    handler: async ctx => {
+      const html = await ctx.shuvi.renderToHTML(ctx.req, ctx.res);
+      console.log({ html, type: typeof html });
+      ctx.body = html.replace(/renderToHtml/, 'renderByMiddleware');
+      return html;
+    }
   }
 ];

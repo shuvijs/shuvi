@@ -200,6 +200,12 @@ export interface IDocumentModule {
 
 export interface CustomContext extends DefaultContext {
   params?: Record<string, string>;
+  shuvi: {
+    renderToHTML(
+      req: IncomingMessage,
+      res: ServerResponse
+    ): Promise<string | null>;
+  };
 }
 export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
 export type IServerAppContext = Koa.Context;

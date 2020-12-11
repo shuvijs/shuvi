@@ -140,4 +140,12 @@ describe('serverMiddleware production', () => {
     expect(console.log).toHaveBeenNthCalledWith(6, 10);
     await page.close();
   });
+
+  test('should have shuvi renderToHTML context', async () => {
+    const page = await ctx.browser.page(ctx.url('/testrendertohtml'), {
+      disableJavaScript: true
+    });
+    expect(await page.$text('#testId')).toBe('renderByMiddleware');
+    await page.close();
+  });
 });

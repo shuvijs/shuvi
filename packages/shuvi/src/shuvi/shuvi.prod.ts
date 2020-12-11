@@ -7,6 +7,8 @@ export default class ShuviProd extends Base {
   async init() {
     const api = this._api;
 
+    this._injectShuviContext();
+
     // If user don't provide a custom asset public path, we need serve it
     if (api.config.publicPath === PUBLIC_PATH) {
       api.server.use(`${api.assetPublicPath}:path*`, this._assetsMiddleware);

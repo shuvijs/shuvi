@@ -20,6 +20,8 @@ export default class ShuviDev extends Base {
     // prepare app
     await api.buildApp();
 
+    this._injectShuviContext();
+
     // prepare server
     const devMiddleware = await getDevMiddleware({
       api
