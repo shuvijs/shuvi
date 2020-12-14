@@ -116,7 +116,6 @@ export default abstract class Shuvi {
         sendHTML(ctx, html);
       }
     } catch (error) {
-      console.log({ error });
       throwServerRenderError(ctx, error);
     }
   }
