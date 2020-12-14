@@ -39,6 +39,8 @@ export default class ShuviDev extends Base {
       api.server.use(require('shuvi-test-utils/clearRequireCache').default);
     }
     api.server.use(this._pageMiddleware);
+
+    this._onServerViewDone();
   }
 
   protected getMode() {

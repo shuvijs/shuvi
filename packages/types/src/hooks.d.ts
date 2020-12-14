@@ -3,6 +3,7 @@ import webpack, { MultiCompiler } from 'webpack';
 import { SyncHook } from 'tapable';
 import WebpackChain from 'webpack-chain';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
+import { IncomingMessage, ServerResponse } from 'http';
 import { IApiConfig, IShuviMode } from '..';
 import { IUserRouteConfig, IDocumentProps } from './runtime';
 import { IWebpackHelpers } from './bundler';
@@ -116,5 +117,19 @@ export type IHookModifyDevMiddlewareOption = defineHook<
   'bundler:modifyDevMiddlewareOption',
   {
     initialValue: WebpackDevMiddleware.Options;
+  }
+>;
+
+export type IHookOnViewDone = defineHook<
+  'onViewDone',
+  {
+    args: [
+      {
+        req: IncomingMessage;
+        res: ServerResponse;
+        html: string | null;
+        appContext: object /* appContext */;
+      }
+    ];
   }
 >;

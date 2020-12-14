@@ -202,7 +202,7 @@ export interface CustomContext extends DefaultContext {
   params?: Record<string, string>;
 }
 export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
-export type IServerAppContext = Koa.Context;
+export type IServerAppContext = CustomContext;
 export type IServerMiddlewareHandler<
   S = DefaultState,
   C = CustomContext

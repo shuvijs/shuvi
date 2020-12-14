@@ -7,15 +7,20 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('Runtime Plugin', () => {
+describe('API Hook', () => {
   let ctx: AppCtx;
   let page: Page;
+  let spyGlobalTestHTML: jest.SpyInstance;
 
   beforeAll(async () => {
+    (global as any).testHTML = () => {};
+    // @ts-ignore
+    spyGlobalTestHTML = jest.spyOn(global, 'testHTML');
     ctx = await launchFixture('api-hooks', { ssr: true });
   });
   afterEach(async () => {
     await page.close();
+    jest.resetAllMocks();
   });
   afterAll(async () => {
     await ctx.close();
@@ -32,5 +37,18 @@ describe('Runtime Plugin', () => {
         )
       ).length
     ).toBe(1);
+  });
+
+  test('should call onViewDone event', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
+
+    expect(spyGlobalTestHTML).toBeCalledWith(
+      expect.objectContaining({
+        html: expect.anything(),
+        req: expect.anything(),
+        res: expect.anything(),
+        appContext: expect.anything()
+      })
+    );
   });
 });

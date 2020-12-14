@@ -14,6 +14,8 @@ export default class ShuviProd extends Base {
 
     api.server.use(this._createServerMiddlewaresHandler());
     api.server.use(this._handlePageRequest);
+
+    this._onServerViewDone();
   }
 
   protected getMode() {

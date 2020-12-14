@@ -14,6 +14,10 @@ module.exports = {
           return documentProps;
         }
       });
+
+      api.on('onViewDone', ({ html, req, res, appContext }) =>
+        global.testHTML({ req, res, html, appContext })
+      );
     }
   ]
 };

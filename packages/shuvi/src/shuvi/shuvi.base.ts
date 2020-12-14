@@ -43,7 +43,6 @@ export default abstract class Shuvi {
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<string | null> {
-    const { server } = this._api.resources.server;
     const { html, appContext } = await renderToHTML({
       req: req as Runtime.IRequest,
       api: this._api,
@@ -60,9 +59,12 @@ export default abstract class Shuvi {
       res.statusCode = 200;
     }
 
-    if (server.onViewDone) {
-      server.onViewDone(req, res, { html, appContext });
-    }
+    await this._api.emitEvent<APIHooks.IHookOnViewDone>('onViewDone', {
+      req,
+      res,
+      html,
+      appContext
+    });
 
     return html;
   }
@@ -94,6 +96,19 @@ export default abstract class Shuvi {
     return;
   }
 
+  protected _onServerViewDone() {
+    const { server } = this._api.resources.server;
+
+    if (server.onViewDone) {
+      this._api.on<APIHooks.IHookOnViewDone>(
+        'onViewDone',
+        ({ req, res, html, appContext }) => {
+          server.onViewDone?.(req, res, { html, appContext });
+        }
+      );
+    }
+  }
+
   protected async _handlePageRequest(ctx: Runtime.IServerAppContext) {
     try {
       const html = await this.renderToHTML(ctx.req, ctx.res);
@@ -101,6 +116,7 @@ export default abstract class Shuvi {
         sendHTML(ctx, html);
       }
     } catch (error) {
+      console.log({ error });
       throwServerRenderError(ctx, error);
     }
   }

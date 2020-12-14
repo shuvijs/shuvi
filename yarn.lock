@@ -2397,10 +2397,10 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@shuvi/hooks@0.0.1-beta.38":
-  version "0.0.1-beta.38"
-  resolved "https://registry.yarnpkg.com/@shuvi/hooks/-/hooks-0.0.1-beta.38.tgz#48e2fcb7a4227118236496adc0c2f5045fda8565"
-  integrity sha512-KlI7VuG4036UnOGFdD31bG69LY/MnnmBKTIZh1CAVNBfYkUY07ezKwGrZ8ZsNBoowRJGXgP5jWGBteh3dlEuug==
+"@shuvi/hooks@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.npmjs.org/@shuvi/hooks/-/hooks-0.0.2.tgz#14194acef3733686863b855f9b391ef8da2da8c5"
+  integrity sha512-Ms5Bjzx6l9zSqVkG5PvAfqTIIy/arpg79ossvcZpMBlKEeGv3N3KWF+ciLcLjWM9Cub+lXJwrNJtSEoiupm7Zw==
 
 "@sindresorhus/is@^2.0.0":
   version "2.1.0"
