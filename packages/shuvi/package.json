@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@shuvi/core": "^0.0.1-rc.18",
-    "@shuvi/hooks": "0.0.2",
+    "@shuvi/hooks": "0.0.3",
     "@shuvi/runtime-core": "^0.0.1-rc.18",
     "@shuvi/runtime-react": "^0.0.1-rc.18",
     "@shuvi/shared": "^0.0.1-rc.18",

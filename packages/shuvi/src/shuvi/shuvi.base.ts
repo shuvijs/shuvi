@@ -59,12 +59,15 @@ export default abstract class Shuvi {
       res.statusCode = 200;
     }
 
-    await this._api.emitEvent<APIHooks.IHookOnViewDone>('onViewDone', {
-      req,
-      res,
-      html,
-      appContext
-    });
+    await this._api.callHook<APIHooks.IHookOnViewDone>(
+      { name: 'onViewDone', parallel: true },
+      {
+        req,
+        res,
+        html,
+        appContext
+      }
+    );
 
     return html;
   }
