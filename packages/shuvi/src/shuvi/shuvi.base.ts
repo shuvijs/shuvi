@@ -96,7 +96,13 @@ export default abstract class Shuvi {
 
   protected async _handlePageRequest(ctx: Runtime.IServerAppContext) {
     try {
-      const html = await this.renderToHTML(ctx.req, ctx.res);
+      const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
+        {
+          name: 'renderToHTML',
+          initialValue: this.renderToHTML.bind(this)
+        }
+      );
+      const html = await renderToHTML(ctx.req, ctx.res);
       if (html) {
         sendHTML(ctx, html);
       }
