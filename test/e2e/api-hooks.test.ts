@@ -33,4 +33,14 @@ describe('Runtime Plugin', () => {
       ).length
     ).toBe(1);
   });
+
+  test('should replace renderToHTML by hooks', async () => {
+    jest.spyOn(console, 'log');
+
+    page = await ctx.browser.page(ctx.url('/'));
+    expect(console.log).toHaveBeenLastCalledWith(
+      'custom-renderToHTML',
+      expect.stringMatching(/\<html\>/)
+    );
+  });
 });

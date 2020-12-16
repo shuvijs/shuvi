@@ -1,3 +1,4 @@
+import { IncomingMessage, ServerResponse } from 'http';
 import { defineHook } from '@shuvi/core';
 import webpack, { MultiCompiler } from 'webpack';
 import { SyncHook } from 'tapable';
@@ -116,5 +117,15 @@ export type IHookModifyDevMiddlewareOption = defineHook<
   'bundler:modifyDevMiddlewareOption',
   {
     initialValue: WebpackDevMiddleware.Options;
+  }
+>;
+
+export type IHookRenderToHTML = defineHook<
+  'renderToHTML',
+  {
+    initialValue: (
+      req: IncomingMessage,
+      res: ServerResponse
+    ) => Promise<string | null>;
   }
 >;
