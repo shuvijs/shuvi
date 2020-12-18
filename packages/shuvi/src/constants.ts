@@ -18,6 +18,8 @@ export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/runtime/polyfill`;
 
 export const BUILD_SERVER_DIR = 'server';
 
+export const BUILD_SERVER_FILE_SERVER = `server`;
+
 export const PHASE_PRODUCTION_BUILD = 'PHASE_PRODUCTION_BUILD';
 
 export const PHASE_PRODUCTION_SERVER = 'PHASE_PRODUCTION_SERVER';
