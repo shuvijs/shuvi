@@ -34,5 +34,3 @@ export const ROUTE_NOT_FOUND_NAME = `404`;
 export const BUNDLER_TARGET_CLIENT = `${NAME}/client`;
 
 export const BUNDLER_TARGET_SERVER = `${NAME}/server`;
-
-export const BUILD_SERVER_FILE_SERVER = `server`;
