@@ -296,7 +296,7 @@ class Api extends Hookable implements IApi {
   }
 
   private async _initPresetsAndPlugins() {
-    const config = this._config;
+    const { phase, _config: config } = this;
     // init presets
     this._presets = resolvePresets(config.presets || [], {
       dir: config.rootDir
@@ -324,13 +324,14 @@ class Api extends Hookable implements IApi {
       }
       return cur();
     };
+
     for (const plugin of allPlugins) {
       const pluginInst = plugin.get();
       if (typeof pluginInst.modifyConfig === 'function') {
         this.tap<APIHooks.IHookGetConfig>('getConfig', {
           name: 'pluginModifyConfig',
           fn(config) {
-            pluginInst.modifyConfig!(config);
+            pluginInst.modifyConfig!(config, phase);
             return config;
           }
         });
