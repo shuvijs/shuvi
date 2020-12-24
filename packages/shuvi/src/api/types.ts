@@ -1,4 +1,4 @@
-import { Bundler, IApi, Runtime, IApiConfig } from '@shuvi/types';
+import { Bundler, IApi, Runtime, IApiConfig, IPhase } from '@shuvi/types';
 
 export type IBuiltResource = {
   server: {
@@ -21,7 +21,7 @@ export type IResources<Extra = {}> = IBuiltResource & {
 } & { [K in keyof Extra]: Extra[K] };
 
 export interface IPluginSpec {
-  modifyConfig?(config: IApiConfig): Promise<IApiConfig>;
+  modifyConfig?(config: IApiConfig, phase: IPhase): Promise<IApiConfig>;
   apply(api: IApi): void;
 }
 

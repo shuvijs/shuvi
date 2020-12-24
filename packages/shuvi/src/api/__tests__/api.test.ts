@@ -54,6 +54,7 @@ describe('api', () => {
         expect(plugins.length).toBe(1);
         expect(plugins[0].name).toBe('modify-config');
         expect(api.config.publicPath).toBe('/bar');
+        expect((api.config as any)._phase).toBe('PHASE_PRODUCTION_SERVER');
       });
     });
   });

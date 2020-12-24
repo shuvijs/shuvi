@@ -4,7 +4,8 @@ module.exports = class Plugin {
     this.name = 'modify-config';
   }
 
-  modifyConfig(config) {
+  modifyConfig(config, phase) {
+    config._phase = phase;
     config.publicPath = '/bar';
     return config;
   }
