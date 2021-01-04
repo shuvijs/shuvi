@@ -1,0 +1,3 @@
+require('./notFound');
+
+module.exports = {};

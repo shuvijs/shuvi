@@ -40,7 +40,7 @@ export async function loadConfig({
     fileConfig = require(configFile);
     fileConfig = (fileConfig as any).default || fileConfig;
   } catch (err) {
-    if (err.code !== 'MODULE_NOT_FOUND') {
+    if (err.message.indexOf(`Cannot find module '${configFile}'`) < 0) {
       throw err;
     } else if (configFile !== path.resolve(rootDir, CONFIG_FILE)) {
       console.warn('Config file not found: ' + configFile);
