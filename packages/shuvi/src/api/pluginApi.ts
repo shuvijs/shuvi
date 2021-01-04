@@ -30,6 +30,9 @@ class PluginApi implements IApi {
   config: any;
   phase: any;
 
+  // resources
+  clientManifest: any;
+
   // methods
   tap: any;
   callHook: any;
@@ -65,6 +68,10 @@ export function createPluginApi(api: Api): PluginApi {
       if (isApiProp(prop)) {
         const val = api[prop];
         return typeof val === 'function' ? val.bind(api) : val;
+      }
+
+      if (prop === 'clientManifest') {
+        return api.resources.clientManifest;
       }
 
       // @ts-ignore
