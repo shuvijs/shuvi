@@ -99,7 +99,7 @@ export interface IApiConfig {
   analyze?: boolean;
 }
 
-// api for plugins
+// api for internal
 export interface IApi extends IHookable {
   readonly mode: IShuviMode;
   readonly paths: IPaths;
@@ -118,4 +118,9 @@ export interface IApi extends IHookable {
   resolveBuildFile(...paths: string[]): string;
   resolvePublicFile(...paths: string[]): string;
   getAssetPublicUrl(...paths: string[]): string;
+}
+
+// api for plugins
+export interface IPluginApi extends IApi {
+  readonly clientManifest: Bundler.IManifest;
 }
