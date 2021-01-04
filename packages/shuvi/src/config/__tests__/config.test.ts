@@ -2,6 +2,12 @@ import { loadFixture, resolveFixture } from './utils';
 import { loadConfig } from '..';
 
 describe('config', () => {
+  test('should work without config file', async () => {
+    const config = await loadFixture('empty');
+
+    expect(config.rootDir?.endsWith('fixtures/empty')).toBe(true);
+  });
+
   test('should load config', async () => {
     const config = await loadFixture('base');
 
@@ -61,5 +67,19 @@ describe('config', () => {
         "shouldBeUndefined": undefined,
       }
     `);
+  });
+
+  test('should throw error when config file failed', async () => {
+    expect.assertions(1);
+
+    try {
+      await loadFixture('error');
+    } catch (e) {
+      expect(
+        e.message.startsWith(
+          "Cannot find module './notFound' from 'shuvi.config.js'"
+        )
+      ).toBe(true);
+    }
   });
 });
