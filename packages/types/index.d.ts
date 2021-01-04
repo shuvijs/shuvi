@@ -105,6 +105,7 @@ export interface IApi extends IHookable {
   readonly paths: IPaths;
   readonly config: IApiConfig;
   readonly phase: IPhase;
+  readonly clientManifest: Bundler.IManifest;
 
   addEntryCode: typeof App.prototype.addEntryCode;
   addAppFile: typeof App.prototype.addFile;

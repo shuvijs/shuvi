@@ -22,7 +22,7 @@ describe('api', () => {
     test('should work', async () => {
       let pluginApi: PluginApi;
       const api = await getApi({
-        config: { plugins: [api => (pluginApi = api as PluginApi)] }
+        config: { plugins: [api => (pluginApi = api)] }
       });
       expect(pluginApi!).toBeDefined();
       expect(pluginApi!.paths).toBe(api.paths);
@@ -53,10 +53,7 @@ describe('api', () => {
         let pluginApi: PluginApi;
         const api = await getApi({
           config: {
-            plugins: [
-              resolvePlugin('modify-config'),
-              api => (pluginApi = api as PluginApi)
-            ]
+            plugins: [resolvePlugin('modify-config'), api => (pluginApi = api)]
           }
         });
         const plugins = (pluginApi! as any).__plugins;
@@ -94,14 +91,14 @@ describe('api', () => {
   test('getPluginApi', async () => {
     let pluginApi!: PluginApi;
     const api = await getApi({
-      config: { plugins: [api => (pluginApi = api as PluginApi)] }
+      config: { plugins: [api => (pluginApi = api)] }
     });
 
     expect(pluginApi.mode).toBe(api.mode);
     expect(pluginApi.paths).toBe(api.paths);
     expect(pluginApi.config).toBe(api.config);
     expect(pluginApi.phase).toBe(api.phase);
-    expect(pluginApi.clientManifest).toBe(api.resources.clientManifest);
+    expect(pluginApi.clientManifest).toBe(api.clientManifest);
 
     [
       'tap',
