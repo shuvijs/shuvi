@@ -7,8 +7,7 @@ import {
   IPaths,
   IShuviMode,
   Runtime,
-  IPhase,
-  Bundler
+  IPhase
 } from '@shuvi/types';
 import { App, IUserRouteConfig, IFile } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
@@ -146,10 +145,6 @@ class Api extends Hookable implements IApi {
 
   get resources(): IBuiltResource {
     return this._resources;
-  }
-
-  get clientManifest(): Bundler.IManifest {
-    return this._resources.clientManifest;
   }
 
   setViewModule(path: string) {

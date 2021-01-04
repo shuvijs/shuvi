@@ -121,7 +121,7 @@ export abstract class BaseRenderer {
   } {
     const styles: IHtmlTag<'link' | 'style'>[] = [];
     const scripts: IHtmlTag<'script'>[] = [];
-    const { clientManifest } = this._api;
+    const { clientManifest } = this._api.resources;
     const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
     const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
     scripts.push(
