@@ -1,5 +1,4 @@
 import { Route, File } from '@shuvi/core';
-import coreRuntime from '@shuvi/runtime-core';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
@@ -50,9 +49,6 @@ export async function setupApp(api: Api) {
   const moduleFileExtensions = useTypeScript
     ? ['tsx', 'ts', 'js', 'jsx']
     : ['js', 'jsx', 'tsx', 'ts'];
-
-  coreRuntime.install(api.getPluginApi());
-  runtime.install(api.getPluginApi());
 
   api.setViewModule(runtime.getViewModulePath());
   api.setAppModule([
