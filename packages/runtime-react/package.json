@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/runtime-react",
-  "version": "0.0.1-rc.22",
+  "version": "0.0.1-rc.23",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -29,10 +29,10 @@
   },
   "dependencies": {
     "@next/react-refresh-utils": "10.0.3",
-    "@shuvi/app": "^0.0.1-rc.22",
-    "@shuvi/router-react": "^0.0.1-rc.22",
-    "@shuvi/shared": "^0.0.1-rc.22",
-    "@shuvi/utils": "^0.0.1-rc.22",
+    "@shuvi/app": "^0.0.1-rc.23",
+    "@shuvi/router-react": "^0.0.1-rc.23",
+    "@shuvi/shared": "^0.0.1-rc.23",
+    "@shuvi/utils": "^0.0.1-rc.23",
     "react": "16.13.0",
     "react-app-polyfill": "1.0.6",
     "react-dom": "16.13.0",
@@ -40,6 +40,6 @@
     "use-subscription": "1.4.1"
   },
   "devDependencies": {
-    "@shuvi/types": "^0.0.1-rc.22"
+    "@shuvi/types": "^0.0.1-rc.23"
   }
 }
