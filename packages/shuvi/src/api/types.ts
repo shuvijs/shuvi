@@ -1,4 +1,5 @@
-import { Bundler, IApi, Runtime, IApiConfig, IPhase } from '@shuvi/types';
+import { Bundler, Runtime, IApiConfig, IPhase } from '@shuvi/types';
+import { PluginApi } from './pluginApi';
 
 export type IBuiltResource = {
   server: {
@@ -22,11 +23,11 @@ export type IResources<Extra = {}> = IBuiltResource & {
 
 export interface IPluginSpec {
   modifyConfig?(config: IApiConfig, phase: IPhase): Promise<IApiConfig>;
-  apply(api: IApi): void;
+  apply(api: PluginApi): void;
 }
 
 export interface IPresetSpec {
-  (api: IApi): {
+  (api: PluginApi): {
     presets?: IApiConfig['presets'];
     plugins?: IApiConfig['plugins'];
   };
