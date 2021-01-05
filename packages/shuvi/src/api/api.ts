@@ -15,6 +15,8 @@ import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hooks';
+import coreRuntime from '@shuvi/runtime-core';
+
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import {
@@ -111,6 +113,10 @@ class Api extends Hookable implements IApi {
     });
     this._config = deepmerge(defaultConfig, configFromFile);
 
+    // Runtime installation need to be executed before initializing presets and plugins
+    // to make sure shuvi entry file at the top.
+    coreRuntime.install(this.getPluginApi());
+    runtime.install(this.getPluginApi());
     await this._initPresetsAndPlugins();
 
     initCoreResource(this);
