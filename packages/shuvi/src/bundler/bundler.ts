@@ -261,7 +261,7 @@ class WebpackBundler {
         _log('Compiled successfully!');
         await api.emitEvent<APIHooks.IEventTargetDone>('bundler:targetDone', {
           first: isFirstSuccessfulCompile,
-          name: compiler.name,
+          name: compiler.name!,
           stats
         });
         isFirstSuccessfulCompile = false;
