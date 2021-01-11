@@ -60,6 +60,6 @@
     "typescript": "^3.8.3"
   },
   "resolutions": {
-    "@babel/types": "7.10.1"
+    "@babel/types": "7.12.11"
   }
 }
