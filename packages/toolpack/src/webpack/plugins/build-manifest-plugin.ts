@@ -67,12 +67,15 @@ export default class BuildManifestPlugin implements Plugin {
 
     const chunkRootModulesMap = new Map<ModuleId, Boolean>();
     compilation.chunks.forEach(chunk => {
-      compilation.chunkGraph.getChunkRootModules(chunk).forEach(module => {
-        const id = compilation.chunkGraph.getModuleId(module);
-        if (id !== '') {
-          chunkRootModulesMap.set(id, true);
-        }
-      });
+      const { chunkGraph } = compilation;
+      if (chunkGraph) {
+        chunkGraph.getChunkRootModules(chunk).forEach(module => {
+          const id = chunkGraph.getModuleId(module);
+          if (id !== '') {
+            chunkRootModulesMap.set(id, true);
+          }
+        });
+      }
     });
 
     compilation.chunkGroups.forEach(chunkGroup => {
@@ -121,7 +124,7 @@ export default class BuildManifestPlugin implements Plugin {
         }
 
         const ext = getFileExt(file);
-        this._pushEntries(entrypoint.name, ext, file.replace(/\\/g, '/'));
+        this._pushEntries(entrypoint.name!, ext, file.replace(/\\/g, '/'));
       }
     }
   }
@@ -209,28 +212,30 @@ export default class BuildManifestPlugin implements Plugin {
       }
     });
 
-    for (const module of compilation.chunkGraph.getChunkModulesIterable(
-      chunk
-    )) {
-      let id = compilation.chunkGraph.getModuleId(module);
-      if (!module.type.startsWith('javascript')) {
-        continue;
-      }
+    const { chunkGraph } = compilation;
 
-      let name =
-        typeof module.libIdent === 'function'
-          ? module.libIdent({ context })
-          : null;
+    if (chunkGraph) {
+      for (const module of chunkGraph.getChunkModulesIterable(chunk)) {
+        let id = chunkGraph.getModuleId(module);
+        if (!module.type.startsWith('javascript')) {
+          continue;
+        }
 
-      if (!name || name.endsWith('.css')) {
-        continue;
-      }
+        let name =
+          typeof module.libIdent === 'function'
+            ? module.libIdent({ context })
+            : null;
 
-      if (chunkRootModulesMap.has(id)) {
-        this._pushLoadableModules(request, {
-          id,
-          name
-        } as ModuleItem);
+        if (!name || name.endsWith('.css')) {
+          continue;
+        }
+
+        if (chunkRootModulesMap.has(id)) {
+          this._pushLoadableModules(request, {
+            id,
+            name
+          } as ModuleItem);
+        }
       }
     }
   }

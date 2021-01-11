@@ -29,6 +29,6 @@
   "dependencies": {
     "@shuvi/utils": "^0.0.1-rc.23",
     "path-to-regexp": "1.7.0",
-    "query-string": "6.13.1"
+    "query-string": "6.13.8"
   }
 }

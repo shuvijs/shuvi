@@ -175,7 +175,7 @@ describe('shuvi-babel-loader', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var hello;export default(function(){return(hello===null||hello===void 0?void 0:hello.world)?'something':'nothing';});"`
+        `"var hello;export default(function(){return hello!==null&&hello!==void 0&&hello.world?'something':'nothing';});"`
       );
     });
 
@@ -188,7 +188,7 @@ describe('shuvi-babel-loader', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var hello;export default(function(){return(hello===null||hello===void 0?void 0:hello.world)?'something':'nothing';});"`
+        `"var hello;export default(function(){return hello!==null&&hello!==void 0&&hello.world?'something':'nothing';});"`
       );
     });
 

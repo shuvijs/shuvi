@@ -21,7 +21,7 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "fs-extra": "8.1.0",
+    "fs-extra": "9.0.1",
     "react-reconciler": "0.24.0",
     "react-test-renderer": "16.13.0"
   },
