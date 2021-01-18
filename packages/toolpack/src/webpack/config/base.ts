@@ -229,10 +229,26 @@ export function baseWebpackChain({
         {
           typescript: {
             configFile: tsConfigPath,
+            // enable incremental true by default
+            configOverwrite: {
+              compilerOptions: {
+                incremental: true
+              }
+            },
+            // suitable for babel-loader
+            mode: 'write-references',
             typeScriptPath,
             diagnosticOptions: {
               syntactic: true
             }
+          },
+          issue: {
+            // only include the project's issues, without this it might report issues in other directoies in a monorepo
+            include: [
+              {
+                file: `${projectRoot}/**/*`
+              }
+            ]
           },
           async: dev,
           logger: {
