@@ -3,8 +3,6 @@ import { createLaunchEditorMiddleware } from '@shuvi/toolpack/lib/utils/errorOve
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import c2k from 'koa-connect';
 import { WebpackHotMiddleware } from './hotMiddleware';
-import WebpackDevMiddlewareOptionSchema from './devMiddleware.schema';
-import { validate } from '@shuvi/utils/lib/schemaUtils';
 import { Api } from '../api';
 import { getBundler } from '../bundler';
 import {
@@ -37,27 +35,8 @@ export async function getDevMiddleware({
     }
   });
 
-  let devMiddlewareOptions: WebpackDevMiddleware.Options = {
-    logLevel: 'silent',
-    watchOptions: {
-      aggregateTimeout: 500,
-      ignored: ['**/.git/**', '**/node_modules/**']
-    }
-  };
-
-  devMiddlewareOptions = await api.callHook<
-    APIHooks.IHookModifyDevMiddlewareOption
-  >({
-    name: 'bundler:modifyDevMiddlewareOption',
-    initialValue: devMiddlewareOptions
-  });
-
-  validate(WebpackDevMiddlewareOptionSchema as any, devMiddlewareOptions, {
-    name: 'bundler:modifyDevMiddlewareOption'
-  });
-
-  const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
-    ...devMiddlewareOptions,
+  const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
+    stats: false, // disable stats on server
     publicPath: api.assetPublicPath,
     writeToDisk: true
   });

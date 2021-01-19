@@ -273,8 +273,10 @@ export function baseWebpackChain({
   config.cache(getCacheConfig());
 
   if (dev) {
-    // For future webpack-dev-server purpose
+    // For webpack-dev-middleware usage
     config.watchOptions({
+      // timeout 300 will make hmr.test to failed, set to 350
+      aggregateTimeout: 350,
       ignored: ['**/.git/**', '**/node_modules/**']
     });
     config.set('infrastructureLogging', {

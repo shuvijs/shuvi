@@ -113,13 +113,6 @@ export type IHookDestroy = defineHook<'destroy'>;
 
 export type IEventAfterBuild = defineHook<'afterBuild'>;
 
-export type IHookModifyDevMiddlewareOption = defineHook<
-  'bundler:modifyDevMiddlewareOption',
-  {
-    initialValue: WebpackDevMiddleware.Options;
-  }
->;
-
 export type IHookRenderToHTML = defineHook<
   'renderToHTML',
   {
