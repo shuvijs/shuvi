@@ -3,85 +3,67 @@ export default {
   type: 'object',
   properties: {
     mimeTypes: {
+      description:
+        'Allows a user to register custom mime types or extension mappings.',
       type: 'object'
     },
     methods: {
+      description:
+        'Allows to pass the list of HTTP request methods accepted by the middleware.',
       type: 'array',
       items: {
-        type: 'string'
+        type: 'string',
+        minlength: '1'
       }
     },
     headers: {
       type: 'object'
     },
-    outputFileSystem: {
-      type: 'object'
-    },
-    logLevel: {
-      type: 'string'
-    },
-    logTime: {
-      type: 'boolean'
-    },
-    reporter: {
-      type: 'object'
-    },
-    watchOptions: {
-      description: 'Options for the watcher.',
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        aggregateTimeout: {
-          description:
-            'Delay the rebuilt after the first change. Value is a time in ms.',
-          type: 'number'
-        },
-        ignored: {
-          type: 'array',
-          description:
-            'Ignore some files from watching (glob pattern or regexp).',
-          items: {
-            anyOf: [
-              {
-                type: 'array',
-                items: {
-                  description:
-                    'A glob pattern for files that should be ignored from watching.',
-                  type: 'string',
-                  minLength: 1
-                }
-              },
-              {
-                instanceof: 'RegExp',
-                tsType: 'RegExp'
-              },
-              {
-                description:
-                  'A single glob pattern for files that should be ignored from watching.',
-                type: 'string',
-                minLength: 1
-              }
-            ]
-          }
-        },
-        poll: {
-          description: 'Enable polling mode for watching.',
-          anyOf: [
-            {
-              description: '`number`: use polling with specified interval.',
-              type: 'number'
-            },
-            {
-              description: '`true`: use polling.',
-              type: 'boolean'
-            }
+    stats: {
+      description: 'Stats options object or preset name.',
+      anyOf: [
+        {
+          enum: [
+            'none',
+            'summary',
+            'errors-only',
+            'errors-warnings',
+            'minimal',
+            'normal',
+            'detailed',
+            'verbose'
           ]
         },
-        stdin: {
-          description: 'Stop watching when stdin stream has ended.',
+        {
           type: 'boolean'
+        },
+        {
+          type: 'object',
+          additionalProperties: true
         }
-      }
+      ]
+    },
+    serverSideRender: {
+      description:
+        'Instructs the module to enable or disable the server-side rendering mode.',
+      type: 'boolean'
+    },
+    outputFileSystem: {
+      description:
+        'Set the default file system which will be used by webpack as primary destination of generated files.',
+      type: 'object'
+    },
+    index: {
+      description: 'Allows to serve an index of the directory.',
+      anyOf: [
+        {
+          type: 'boolean'
+        },
+        {
+          type: 'string',
+          minlength: '1'
+        }
+      ]
     }
   },
   additionalProperties: false

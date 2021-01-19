@@ -27,11 +27,7 @@ describe('devMiddleware', () => {
       expect(mockHook).toBeCalledTimes(1);
 
       expect(mockHook).toBeCalledWith({
-        logLevel: 'silent',
-        watchOptions: {
-          aggregateTimeout: 500,
-          ignored: ['**/.git/**', '**/node_modules/**']
-        }
+        stats: false
       });
 
       done();
@@ -40,8 +36,10 @@ describe('devMiddleware', () => {
     test('should able to modify option', async done => {
       const mockHook = jest.fn().mockImplementation(config => {
         return {
-          logLevel: 'silent',
-          watchOptions: {}
+          stats: false,
+          headers: {
+            'Custom-Header': 'test'
+          }
         };
       });
       api.tap<APIHooks.IHookModifyDevMiddlewareOption>(
@@ -59,8 +57,11 @@ describe('devMiddleware', () => {
       expect(WebpackDevMiddleware).toBeCalledWith(
         expect.anything(),
         expect.objectContaining({
-          logLevel: 'silent',
-          watchOptions: {}
+          publicPath: '/_shuvi/',
+          stats: false,
+          headers: {
+            'Custom-Header': 'test'
+          }
         })
       );
 
@@ -85,7 +86,7 @@ describe('devMiddleware', () => {
         expect(e).toMatchInlineSnapshot(`
           [ValidationError: Invalid configuration object. bundler:modifyDevMiddlewareOption has been initialized using a configuration object that does not match the API schema.
            - configuration has an unknown property 'writeToDisk'. These properties are valid:
-             object { mimeTypes?, methods?, headers?, outputFileSystem?, logLevel?, logTime?, reporter?, watchOptions? }]
+             object { mimeTypes?, methods?, headers?, stats?, serverSideRender?, outputFileSystem?, index? }]
         `);
 
         expect(mockHook).toBeCalledTimes(1);

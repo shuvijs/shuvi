@@ -38,11 +38,7 @@ export async function getDevMiddleware({
   });
 
   let devMiddlewareOptions: WebpackDevMiddleware.Options = {
-    logLevel: 'silent',
-    watchOptions: {
-      aggregateTimeout: 500,
-      ignored: ['**/.git/**', '**/node_modules/**']
-    }
+    stats: false // disable stats on server
   };
 
   devMiddlewareOptions = await api.callHook<
@@ -56,7 +52,7 @@ export async function getDevMiddleware({
     name: 'bundler:modifyDevMiddlewareOption'
   });
 
-  const webpackDevMiddleware = WebpackDevMiddleware(compiler, {
+  const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
     ...devMiddlewareOptions,
     publicPath: api.assetPublicPath,
     writeToDisk: true
