@@ -40,10 +40,10 @@ if (module.hot) {
   module.hot.accept(['@shuvi/app/entry','@shuvi/app/core/app', '@shuvi/app/core/routes'],async ()=>{
     let AppComponent = require('@shuvi/app/core/app').default;
     let routes = require('@shuvi/app/core/routes').default;
-    // to solve routig problem, we need to rerender routes
+    // to solve routing problem, we need to rerender routes
     // wait navigation complete only rerender to ensure getInitialProps is called
     if (__SHUVI.router._pending) {
-      const removelistener = __SHUVI.router.afterEach((_,__, next)=>{
+      const removelistener = __SHUVI.router.afterEach(()=>{
         app.rerender({routes,AppComponent});
         removelistener()
       })
