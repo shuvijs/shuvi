@@ -26,7 +26,7 @@ export function create(context, options) {
     context,
     render: options.render
   });
-  
+
   runPlugins({
     tap: app.tap.bind(app),
     initPlugins,
@@ -37,27 +37,20 @@ export function create(context, options) {
 }
 
 if (module.hot) {
-  let pending = null
-  const rerender = () => {
-    if (window.__DISABLE_HMR) {
-      if (pending !== null) {
-        clearTimeout(pending);
-      }
-      pending = setTimeout(() => {
-        pending = null;
-        rerender();
-      }, 0)
-      return;
-    }
-
+  module.hot.accept(['@shuvi/app/entry','@shuvi/app/core/app', '@shuvi/app/core/routes'],async ()=>{
     let AppComponent = require('@shuvi/app/core/app').default;
     let routes = require('@shuvi/app/core/routes').default;
-    app.rerender({routes,AppComponent});
-  };
-  module.hot.accept(['@shuvi/app/core/app', '@shuvi/app/core/routes'], () => {
-    if (!app) return;
-    rerender();
-  });
+    // to solve routing problem, we need to rerender routes
+    // wait navigation complete only rerender to ensure getInitialProps is called
+    if (__SHUVI.router._pending) {
+      const removelistener = __SHUVI.router.afterEach(()=>{
+        app.rerender({routes,AppComponent});
+        removelistener()
+      })
+    } else {
+      app.rerender({routes,AppComponent});
+    }
+  })
 }
 `;
 

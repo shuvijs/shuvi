@@ -9,8 +9,14 @@ interface Event {
   [x: string]: any;
 }
 
+let devClient: ReturnType<typeof connect> | undefined;
+
 export default (options = {}) => {
-  const devClient = connect({
+  if (devClient) {
+    return devClient;
+  }
+
+  devClient = connect({
     ...options,
     launchEditorEndpoint: DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
     path: DEV_HOT_MIDDLEWARE_PATH
