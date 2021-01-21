@@ -9,7 +9,7 @@ import { app } from './setup-app';
 async function init() {
   initWebpackHMR();
   // reduce FOUC caused by style-loader
-  const styleReady = new Promise(resolve => {
+  const styleReady = new Promise<void>(resolve => {
     (window.requestAnimationFrame || setTimeout)(async () => {
       await (window as any)[DEV_STYLE_PREPARE];
       document

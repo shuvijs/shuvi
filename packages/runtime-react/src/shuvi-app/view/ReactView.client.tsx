@@ -10,8 +10,6 @@ import { createRedirector } from '../utils/createRedirector';
 import { normalizeRoutes } from '../utils/router';
 import { IReactClientView } from '../types';
 
-const isDev = process.env.NODE_ENV === 'development';
-
 const headManager = new HeadManager();
 
 type HistoryCreator = () => History;
@@ -38,17 +36,6 @@ export class ReactClientView implements IReactClientView {
       routes: normalizeRoutes(routes, { appContext, routeProps }),
       history
     });
-
-    if (isDev) {
-      // todo: hope we can remove this with react-fast-refresh
-      router.beforeEach((to, from, next) => {
-        (window as any).__DISABLE_HMR = true;
-        next();
-      });
-      router.afterEach(() => {
-        (window as any).__DISABLE_HMR = false;
-      });
-    }
 
     // For e2e test
     if ((window as any).__SHUVI) {
