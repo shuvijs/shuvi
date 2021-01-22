@@ -37,7 +37,7 @@ export function create(context, options) {
 }
 
 if (module.hot) {
-  module.hot.accept(['@shuvi/app/entry','@shuvi/app/core/app', '@shuvi/app/core/routes'],async ()=>{
+  module.hot.accept(['@shuvi/app/entry','@shuvi/app/core/app', '@shuvi/app/core/routes', '@shuvi/app/core/plugin'],async ()=>{
     let AppComponent = require('@shuvi/app/core/app').default;
     let routes = require('@shuvi/app/core/routes').default;
     // to solve routing problem, we need to rerender routes
