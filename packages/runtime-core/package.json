@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/runtime-core",
-  "version": "0.0.1-rc.26",
+  "version": "0.0.1-rc.27",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -27,9 +27,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/app": "^0.0.1-rc.26",
-    "@shuvi/shared": "^0.0.1-rc.26",
-    "@shuvi/toolpack": "^0.0.1-rc.26",
-    "@shuvi/types": "^0.0.1-rc.26"
+    "@shuvi/app": "^0.0.1-rc.27",
+    "@shuvi/shared": "^0.0.1-rc.27",
+    "@shuvi/toolpack": "^0.0.1-rc.27",
+    "@shuvi/types": "^0.0.1-rc.27"
   }
 }
