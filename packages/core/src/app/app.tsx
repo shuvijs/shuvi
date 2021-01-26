@@ -29,6 +29,10 @@ export class App {
     this._store.routesContent = content;
   }
 
+  setEntryFile(file: string): void {
+    this._store.setEntryFile(file);
+  }
+
   addEntryCode(content: string): void {
     this._store.addEntryCode(content);
   }

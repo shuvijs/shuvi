@@ -51,6 +51,7 @@ export async function setupApp(api: Api) {
     : ['js', 'jsx', 'tsx', 'ts'];
 
   api.setViewModule(runtime.getViewModulePath());
+  api.setEntryFile(api.resolveAppFile('bootstrap'));
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
     runtime.getAppModulePath()

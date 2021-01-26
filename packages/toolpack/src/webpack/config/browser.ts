@@ -91,27 +91,27 @@ export function createBrowserWebpackChain({
           priority: 30,
           minChunks: 1,
           reuseExistingChunk: true
-        },
-        commons: {
-          name: 'commons',
-          minChunks: 2,
-          priority: 20
-        },
-        shared: {
-          name(module: any, chunks: any) {
-            return crypto
-              .createHash('sha1')
-              .update(
-                chunks.reduce((acc: string, chunk: webpack.Chunk) => {
-                  return acc + chunk.name;
-                }, '')
-              )
-              .digest('hex');
-          },
-          priority: 10,
-          minChunks: 2,
-          reuseExistingChunk: true
         }
+        // commons: {
+        //   name: 'commons',
+        //   minChunks: 2,
+        //   priority: 20
+        // },
+        // shared: {
+        //   name(module: any, chunks: any) {
+        //     return crypto
+        //       .createHash('sha1')
+        //       .update(
+        //         chunks.reduce((acc: string, chunk: webpack.Chunk) => {
+        //           return acc + chunk.name;
+        //         }, '')
+        //       )
+        //       .digest('hex');
+        //   },
+        //   priority: 10,
+        //   minChunks: 2,
+        //   reuseExistingChunk: true
+        // }
       },
       maxInitialRequests: 25,
       minSize: 20000
