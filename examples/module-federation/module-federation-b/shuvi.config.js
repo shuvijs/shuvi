@@ -58,6 +58,7 @@ module.exports = {
                 : {
                     mfeAAA: 'mfeAAA'
                   },
+              remoteType: 'var',
               shared: sharedDeps
             }
           ]);
