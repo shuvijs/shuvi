@@ -39,6 +39,7 @@ describe('app', () => {
       createFile('test.js', { content: 'export default () => "test page"' })
     );
 
+    app.setEntryFileContent('import "entry.js"');
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
@@ -51,7 +52,8 @@ describe('app', () => {
     });
 
     checkMatch([
-      ['entry.js', /run()/],
+      ['entry.js', 'import "entry.js"'],
+      ['bootstrap.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
@@ -66,6 +68,7 @@ describe('app', () => {
       createFile('test.js', { content: 'export default () => "test page"' })
     );
 
+    app.setEntryFileContent('import "entry.js"');
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
@@ -78,7 +81,8 @@ describe('app', () => {
     });
 
     checkMatch([
-      ['entry.js', /run()/],
+      ['entry.js', 'import "entry.js"'],
+      ['bootstrap.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
@@ -88,6 +92,7 @@ describe('app', () => {
     ]);
 
     // Change modules and content
+    app.setEntryFileContent('import "other_entry.js"');
     app.addEntryCode('const a = 1');
     app.addPolyfill('path/toPolyfill2');
     app.setRoutesContent('routes content 2');
@@ -96,7 +101,8 @@ describe('app', () => {
     app.addExport('export2', '*');
 
     checkMatch([
-      ['entry.js', /run().*const a=1/s],
+      ['entry.js', 'import "other_entry.js"'],
+      ['bootstrap.js', /run().*const a=1/s],
       [
         'index.js',
         'export * from "something to export"\nexport * from "export2"'

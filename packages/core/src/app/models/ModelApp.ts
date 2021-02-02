@@ -61,7 +61,7 @@ export class ModelApp {
   @observable appModule!: string | string[];
   @observable pluginModule!: string | string[];
   @observable entryCodes: string[] = [];
-  @observable entryFile!: string;
+  @observable entryFileContent!: string;
   @observable routesContent: string = 'export default []';
   @observable extraFiles: IFileNode[] = [];
   @observable polyfills: string[] = [];
@@ -89,8 +89,8 @@ export class ModelApp {
   }
 
   @action
-  setEntryFile(file: string) {
-    this.entryFile = file;
+  setEntryFileContent(file: string) {
+    this.entryFileContent = file;
   }
 
   @action

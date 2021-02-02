@@ -250,8 +250,8 @@ class Api extends Hookable implements IApi {
     }
   }
 
-  setEntryFile(file: string): void {
-    this._app.setEntryFile(file);
+  setEntryFileContent(content: string): void {
+    this._app.setEntryFileContent(content);
   }
 
   addEntryCode(content: string): void {
