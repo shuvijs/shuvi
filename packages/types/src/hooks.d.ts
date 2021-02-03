@@ -34,13 +34,6 @@ export type IHookAppRoutesFile = defineHook<
   }
 >;
 
-export type IHookAppEntryFileContent = defineHook<
-  'app:entryFileContent',
-  {
-    initialValue: string;
-  }
->;
-
 export type IEventAppReady = defineHook<'app:ready'>;
 
 export type IHookBundlerConfig = defineHook<

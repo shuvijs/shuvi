@@ -89,8 +89,8 @@ export class ModelApp {
   }
 
   @action
-  setEntryFileContent(file: string) {
-    this.entryFileContent = file;
+  setEntryFileContent(content: string) {
+    this.entryFileContent = content;
   }
 
   @action

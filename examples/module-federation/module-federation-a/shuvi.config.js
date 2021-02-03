@@ -4,14 +4,10 @@ const sharedDeps = require('../sharedDeps');
 const fixChunk = require('../fixChunk');
 
 module.exports = {
+  asyncEntry: true,
   ssr: true,
   plugins: [
     api => {
-      api.tap('app:entryFileContent', {
-        fn: name => {
-          return `import ('${api.resolveAppFile('bootstrap')}');`;
-        }
-      });
       api.tap('bundler:configTarget', {
         fn: (config, { name }) => {
           const isServer = name === BUNDLER_TARGET_SERVER;

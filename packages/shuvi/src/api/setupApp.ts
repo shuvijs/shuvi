@@ -5,7 +5,6 @@ import path from 'path';
 import { runtime } from '../runtime';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { Api } from './api';
-import { APIHooks } from '@shuvi/types';
 
 function withExts(file: string, extensions: string[]): string[] {
   return extensions.map(ext => `${file}.${ext}`);
@@ -53,14 +52,13 @@ export async function setupApp(api: Api) {
 
   api.setViewModule(runtime.getViewModulePath());
 
-  const entryFileContent = await api.callHook<
-    APIHooks.IHookAppEntryFileContent
-  >({
-    name: 'app:entryFileContent',
-    initialValue: `import '${api.resolveAppFile('bootstrap')}';`
-  });
+  let bootstrapFile = `'${api.resolveAppFile('bootstrap')}'`;
 
-  api.setEntryFileContent(entryFileContent);
+  if (config.asyncEntry === true) {
+    bootstrapFile = `(${bootstrapFile})`;
+  }
+
+  api.setEntryFileContent(`import ${bootstrapFile};`);
 
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
