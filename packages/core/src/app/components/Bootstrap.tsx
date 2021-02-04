@@ -4,8 +4,8 @@ import { File } from '@shuvi/react-fs';
 import { useSelector } from '../models/store';
 
 function Index() {
-  const content = useSelector(state => state.entryFileContent);
-  return <File name="entry.js" content={content} />;
+  const content = useSelector(state => state.bootstrapContent);
+  return <File name="bootstrap.js" content={content} />;
 }
 
 export default observer(Index);

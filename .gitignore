@@ -24,3 +24,5 @@ packages/*/esm/
 
 test/fixtures/**/dist/
 test/fixtures/**/.shuvi/
+examples/**/.shuvi
+examples/**/dist

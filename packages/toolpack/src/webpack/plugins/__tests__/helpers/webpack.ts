@@ -91,22 +91,6 @@ function waitForCompile(compiler: Compiler, initialCb: CompileDoneCallback) {
   return chainer;
 }
 
-// https://github.com/streamich/memfs/issues/404#issuecomment-522450466
-function ensureWebpackMemoryFs(fs: any) {
-  // Return it back, when it has Webpack 'join' method
-  if (fs.join) {
-    return fs;
-  }
-
-  // Create FS proxy, adding `join` method to memfs, but not modifying original object
-  const nextFs = Object.create(fs);
-  const joinPath = require('memory-fs/lib/join');
-
-  nextFs.join = joinPath;
-
-  return nextFs;
-}
-
 export function createCompiler(
   value: Configuration | WebpackCompiler
 ): Compiler {
@@ -126,12 +110,12 @@ export function createCompiler(
   }
 
   let watching: WebpackCompiler['watching'] | null = null;
-  const webpackFs = ensureWebpackMemoryFs(createFsFromVolume(new Volume()));
-  compiler.outputFileSystem = webpackFs;
+  const fs = createFsFromVolume(new Volume());
+  compiler.outputFileSystem = fs as any;
 
   const originWatch = (compiler.watch as any) as WebpackCompiler['watch'];
   compiler.watch = function () {
-    return new Promise((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       watching = originWatch.call(
         this,
         {
@@ -174,7 +158,7 @@ export function runCompiler(
   value: Configuration | WebpackCompiler
 ): Promise<Stats> {
   const compiler = createCompiler(value);
-  return new Promise((resolve, reject) => {
+  return new Promise<any>((resolve, reject) => {
     compiler.run((err, stats) => {
       if (err) {
         reject(err);
