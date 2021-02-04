@@ -61,6 +61,7 @@ export class ModelApp {
   @observable appModule!: string | string[];
   @observable pluginModule!: string | string[];
   @observable entryCodes: string[] = [];
+  @observable entryFileContent!: string;
   @observable routesContent: string = 'export default []';
   @observable extraFiles: IFileNode[] = [];
   @observable polyfills: string[] = [];
@@ -68,7 +69,7 @@ export class ModelApp {
   @observable runtimePlugins = new Map<string, string>();
 
   @computed
-  get entryConent(): string {
+  get bootstrapContent(): string {
     const codes = this.entryCodes;
     let imports = '';
     let body = '';
@@ -85,6 +86,11 @@ export class ModelApp {
     }
 
     return `${imports}${os.EOL}${body}`;
+  }
+
+  @action
+  setEntryFileContent(content: string) {
+    this.entryFileContent = content;
   }
 
   @action

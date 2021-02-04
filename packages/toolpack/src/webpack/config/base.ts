@@ -39,11 +39,10 @@ export interface BaseOptions {
 
 const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
   parse: {
-    ecma: 8
+    ecma: 2017 // es8 === 2017
   },
   compress: {
     ecma: 5,
-    warnings: false,
     // The following two options are known to break valid JavaScript code
     comparisons: false,
     inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
@@ -94,8 +93,6 @@ export function baseWebpackChain({
       {
         extractComments: false,
         parallel: true,
-        cache: true,
-        sourceMap: false,
         terserOptions
       }
     ]);
