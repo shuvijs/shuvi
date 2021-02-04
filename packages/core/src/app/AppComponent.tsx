@@ -9,12 +9,14 @@ import RoutesFile from './components/RoutesFile';
 import UserFiles from './components/UserFiles';
 import ApplicationFile from './components/ApplicationFile';
 import PluginFile from './components/PluginFile';
+import Bootstrap from './components/Bootstrap';
 
 function App() {
   return (
     <>
       <IndexFile />
       <EntryFile />
+      <Bootstrap />
       <Dir name="core">
         <ApplicationFile />
         <ViewFile />

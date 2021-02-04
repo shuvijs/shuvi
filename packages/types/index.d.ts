@@ -97,6 +97,7 @@ export interface IApiConfig {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;
+  asyncEntry?: boolean;
 }
 
 // api for plugins

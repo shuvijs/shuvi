@@ -51,6 +51,15 @@ export async function setupApp(api: Api) {
     : ['js', 'jsx', 'tsx', 'ts'];
 
   api.setViewModule(runtime.getViewModulePath());
+
+  let bootstrapFile = `'${api.resolveAppFile('bootstrap')}'`;
+
+  if (config.asyncEntry === true) {
+    bootstrapFile = `(${bootstrapFile})`;
+  }
+
+  api.setEntryFileContent(`import ${bootstrapFile};`);
+
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
     runtime.getAppModulePath()
