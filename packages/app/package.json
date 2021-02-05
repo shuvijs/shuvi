@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/app",
-  "version": "0.0.1-rc.27",
+  "version": "0.0.1-rc.28",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -12,6 +12,6 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/types": "^0.0.1-rc.27"
+    "@shuvi/types": "^0.0.1-rc.28"
   }
 }
