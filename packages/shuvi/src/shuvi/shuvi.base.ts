@@ -96,10 +96,6 @@ export default abstract class Shuvi {
 
   protected async _handlePageRequest(ctx: Runtime.IServerAppContext) {
     try {
-      if (ctx.request.method !== 'GET') {
-        return;
-      }
-
       const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
         {
           name: 'renderToHTML',
