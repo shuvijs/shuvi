@@ -1,12 +1,11 @@
 import { Hookable } from '@shuvi/hooks';
-import { IServerModule } from 'packages/types/src/runtime';
 import { IAppRouteConfig } from './route';
 
 export interface IRenderOptions<CompType = any> {
   AppComponent: CompType;
   routes: IAppRouteConfig[];
   appContext: Record<string, any>;
-  render?: IServerModule['render'];
+  render?: (renderAppToString: () => string, appContext: any) => string;
 }
 
 export type IRerenderConfig = {
