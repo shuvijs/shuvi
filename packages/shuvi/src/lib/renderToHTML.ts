@@ -5,17 +5,18 @@ import { Api } from '../api';
 export async function renderToHTML({
   req,
   api,
-  onRedirect,
-  render
+  onRedirect
 }: {
   req: Runtime.IRequest;
   api: Api;
   onRedirect?(redirect: Runtime.IRenderResultRedirect): void;
-  render?: Runtime.IServerModule['render'];
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
   const renderer = new Renderer({ api });
-  const { application } = api.resources.server;
+  const {
+    application,
+    server: { render }
+  } = api.resources.server;
   const app = application.create(
     {
       req

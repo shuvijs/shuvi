@@ -50,8 +50,7 @@ export default abstract class Shuvi {
       onRedirect(redirect) {
         res.writeHead(redirect.status ?? 302, { Location: redirect.path });
         res.end();
-      },
-      render: server.render
+      }
     });
 
     // set 404 statusCode
