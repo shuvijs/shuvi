@@ -24,7 +24,7 @@ export class ReactServerView implements IReactServerView {
     appContext,
     manifest,
     getAssetPublicUrl,
-    onRender
+    render
   }) => {
     await Loadable.preloadAll();
 
@@ -127,8 +127,8 @@ export class ReactServerView implements IReactServerView {
           </Router>
         );
 
-      if (onRender) {
-        htmlContent = onRender(renderAppToString, appContext as any);
+      if (render) {
+        htmlContent = render(renderAppToString, appContext as any);
       } else {
         htmlContent = renderAppToString();
       }

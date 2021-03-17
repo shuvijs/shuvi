@@ -6,12 +6,12 @@ export async function renderToHTML({
   req,
   api,
   onRedirect,
-  onRender
+  render
 }: {
   req: Runtime.IRequest;
   api: Api;
   onRedirect?(redirect: Runtime.IRenderResultRedirect): void;
-  onRender?: Runtime.IServerModule['onRender'];
+  render?: Runtime.IServerModule['render'];
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
   const renderer = new Renderer({ api });
@@ -28,7 +28,7 @@ export async function renderToHTML({
           AppComponent,
           routes,
           appContext,
-          onRender
+          render
         });
 
         if (isRedirect(result)) {

@@ -211,7 +211,7 @@ export type IServerAppNext = Koa.Next;
 export type IServerAppResponse = Koa.Response;
 
 export interface IServerModule {
-  onRender?(
+  render?(
     renderAppToString: () => string,
     appContext: ISeverAppContext
   ): string;

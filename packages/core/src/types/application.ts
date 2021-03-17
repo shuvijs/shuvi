@@ -6,7 +6,7 @@ export interface IRenderOptions<CompType = any> {
   AppComponent: CompType;
   routes: IAppRouteConfig[];
   appContext: Record<string, any>;
-  onRender?: IServerModule['onRender'];
+  render?: IServerModule['render'];
 }
 
 export type IRerenderConfig = {

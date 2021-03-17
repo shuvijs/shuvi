@@ -72,7 +72,7 @@ export abstract class BaseRenderer {
     AppComponent,
     routes,
     appContext,
-    onRender
+    render
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
     let docProps = await this.getDocumentProps({
       app,
@@ -80,7 +80,7 @@ export abstract class BaseRenderer {
       AppComponent,
       routes,
       appContext,
-      onRender
+      render
     });
     if (isRedirect(docProps)) {
       return docProps;

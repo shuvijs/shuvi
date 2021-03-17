@@ -1,4 +1,4 @@
-export function onRender(renderAppToString, appContext) {
+export function render(renderAppToString, appContext) {
   if (appContext.notFound) {
     return '404 Custom HTML';
   }

@@ -150,7 +150,7 @@ describe('Custom Server.js', () => {
     expect(await page.$text('div')).toMatch(/404/);
   });
 
-  test('should work with custom onRender', async () => {
+  test('should work with custom render', async () => {
     page = await ctx.browser.page(ctx.url('/404'), {
       disableJavaScript: true
     });
