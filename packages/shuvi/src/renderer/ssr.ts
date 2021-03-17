@@ -20,7 +20,8 @@ export class SsrRenderer extends BaseRenderer {
     url,
     AppComponent,
     routes,
-    appContext
+    appContext,
+    onRender
   }: IRenderDocumentOptions) {
     const api = this._api;
     const {
@@ -34,7 +35,8 @@ export class SsrRenderer extends BaseRenderer {
       routes,
       appContext,
       manifest,
-      getAssetPublicUrl
+      getAssetPublicUrl,
+      onRender
     });
     if (result.redirect) {
       return {

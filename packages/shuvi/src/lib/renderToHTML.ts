@@ -5,11 +5,13 @@ import { Api } from '../api';
 export async function renderToHTML({
   req,
   api,
-  onRedirect
+  onRedirect,
+  onRender
 }: {
   req: Runtime.IRequest;
   api: Api;
   onRedirect?(redirect: Runtime.IRenderResultRedirect): void;
+  onRender?: Runtime.IServerModule['onRender'];
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
   const renderer = new Renderer({ api });
@@ -25,7 +27,8 @@ export async function renderToHTML({
           url: req.url || '/',
           AppComponent,
           routes,
-          appContext
+          appContext,
+          onRender
         });
 
         if (isRedirect(result)) {

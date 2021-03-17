@@ -147,6 +147,14 @@ describe('Custom Server.js', () => {
     }
 
     expect(result.status()).toBe(404);
-    expect(await page.$text('div')).toMatch(/404 Page/);
+    expect(await page.$text('div')).toMatch(/404/);
+  });
+
+  test('should work with custom onRender', async () => {
+    page = await ctx.browser.page(ctx.url('/404'), {
+      disableJavaScript: true
+    });
+
+    expect(await page.$text('div')).toMatch(/404 Custom HTML/);
   });
 });
