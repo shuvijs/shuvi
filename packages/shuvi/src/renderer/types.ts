@@ -11,4 +11,5 @@ export type IRenderDocumentOptions = {
   AppComponent: any;
   routes: Runtime.IAppRouteConfig[];
   appContext: any;
+  render?: Runtime.IServerModule['render'];
 };
