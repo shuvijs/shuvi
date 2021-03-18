@@ -23,7 +23,8 @@ export class ReactServerView implements IReactServerView {
     routes,
     appContext,
     manifest,
-    getAssetPublicUrl
+    getAssetPublicUrl,
+    render
   }) => {
     await Loadable.preloadAll();
 
@@ -113,17 +114,24 @@ export class ReactServerView implements IReactServerView {
     let htmlContent: string;
     let head: IHtmlTag[];
     try {
-      htmlContent = renderToString(
-        <Router static router={router}>
-          <LoadableContext.Provider
-            value={moduleName => loadableModules.push(moduleName)}
-          >
-            <AppContainer appContext={appContext}>
-              <AppComponent {...appInitialProps} />
-            </AppContainer>
-          </LoadableContext.Provider>
-        </Router>
-      );
+      const renderAppToString = () =>
+        renderToString(
+          <Router static router={router}>
+            <LoadableContext.Provider
+              value={moduleName => loadableModules.push(moduleName)}
+            >
+              <AppContainer appContext={appContext}>
+                <AppComponent {...appInitialProps} />
+              </AppContainer>
+            </LoadableContext.Provider>
+          </Router>
+        );
+
+      if (render) {
+        htmlContent = render(renderAppToString, appContext as any);
+      } else {
+        htmlContent = renderAppToString();
+      }
     } finally {
       head = Head.rewind() || [];
     }

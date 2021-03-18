@@ -13,7 +13,10 @@ export async function renderToHTML({
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
   const renderer = new Renderer({ api });
-  const { application } = api.resources.server;
+  const {
+    application,
+    server: { render }
+  } = api.resources.server;
   const app = application.create(
     {
       req
@@ -25,7 +28,8 @@ export async function renderToHTML({
           url: req.url || '/',
           AppComponent,
           routes,
-          appContext
+          appContext,
+          render
         });
 
         if (isRedirect(result)) {
