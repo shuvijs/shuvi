@@ -16,7 +16,7 @@ type HistoryCreator = () => History;
 
 export class ReactClientView implements IReactClientView {
   private _history: History;
-  private _isInitialRender: boolean = false;
+  private _isInitialRender: boolean = true;
 
   constructor(historyCreator: HistoryCreator) {
     this._history = historyCreator();
