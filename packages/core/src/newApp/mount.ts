@@ -22,21 +22,15 @@ export function mount(options: FileOptions): Promise<FileInternalInstance> {
         fd = fse.openSync(fsPath, 'w+');
         const fileContent = content();
         fse.writeSync(fd, fileContent, 0);
-        console.log(`create file ${options.name}`);
-        console.log(`content:`, fileContent);
         invokeArrayFns(instance.mounted);
         instance.isMounted = true;
         defer.resolve(instance);
         return;
       }
 
-      // update
-      // todo: update file
       const fileContent = content();
       fse.ftruncateSync(fd, 0);
       fse.writeSync(fd, fileContent, 0);
-      console.log(`updated file ${options.name}`);
-      console.log(`content:`, fileContent);
     },
     {
       scheduler: queueJob,
@@ -46,6 +40,7 @@ export function mount(options: FileOptions): Promise<FileInternalInstance> {
   );
 
   instance.destroy = () => {
+    const destroyDefer = Defer<void>();
     const { effects, update, unmounted, name: fsPath } = instance;
 
     fse.removeSync(fsPath);
@@ -56,11 +51,8 @@ export function mount(options: FileOptions): Promise<FileInternalInstance> {
       }
     }
 
-    // todo: delete file
-    // update may be null
     if (update) {
       stop(update);
-      console.log(`delete file at ${name}`);
     }
 
     queuePostFlushCb(() => {
@@ -68,7 +60,9 @@ export function mount(options: FileOptions): Promise<FileInternalInstance> {
     });
     queuePostFlushCb(() => {
       instance.isUnmounted = true;
+      destroyDefer.resolve();
     });
+    return destroyDefer.promise;
   };
 
   return defer.promise;

@@ -6,7 +6,7 @@ import { mount as mountFile } from './mount';
 export interface FileManager {
   addFile(options: FileOptions): void;
   mount(): Promise<void>;
-  unmount(): void;
+  unmount(): Promise<void>;
 }
 
 export interface FileManagerOptions {
@@ -37,7 +37,7 @@ export function getFileManager({
           const inst = await mountFile(file);
           instances.set(file.name, inst);
         } catch (error) {
-          console.log(`fail to create file ${file.name}`);
+          console.log(`fail to mount file ${file.name}`);
           console.error(error);
         }
       });
@@ -52,11 +52,21 @@ export function getFileManager({
     }
   };
 
-  const unmount = () => {
-    for (const inst of instances.values()) {
-      inst.destroy();
+  const unmount = async () => {
+    const tasks = [];
+    for (const [name, inst] of instances.entries()) {
+      tasks.push(async () => {
+        try {
+          await inst.destroy();
+          instances.delete(name);
+        } catch (error) {
+          console.log(`fail to unmount file ${name}`);
+          console.error(error);
+        }
+      });
     }
-    instances.clear();
+
+    await Promise.all(tasks.map(task => task()));
   };
 
   return {
