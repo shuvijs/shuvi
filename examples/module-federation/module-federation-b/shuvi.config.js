@@ -30,7 +30,7 @@ const nextServerRemote = remoteObject => {
 
 module.exports = {
   asyncEntry: true,
-  ssr: true,
+  ssr: false,
   plugins: [
     api => {
       api.tap('bundler:configTarget', {

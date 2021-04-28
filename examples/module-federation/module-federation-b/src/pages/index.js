@@ -1,13 +1,17 @@
 import React from 'react';
 import Component from 'mfeAAA/Component';
+import RemoteContext from 'mfeAAA/Context';
 console.log({ Component });
 
 export default () => {
   console.log({ Component });
+  console.log('RemoteContext', RemoteContext);
   return (
-    <div id="index">
-      <Component />
-    </div>
+    <RemoteContext.Provider value={'ModuleB'}>
+      <div id="index">
+        <Component />
+      </div>
+    </RemoteContext.Provider>
   );
 };
 
