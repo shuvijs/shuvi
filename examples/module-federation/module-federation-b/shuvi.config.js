@@ -12,12 +12,6 @@ module.exports = {
     api => {
       api.tap('bundler:configTarget', {
         fn: (config, { name }) => {
-          const isServer = name === BUNDLER_TARGET_SERVER;
-          if (isServer) {
-          } else {
-            fixChunk(config);
-          }
-
           config.plugin('module-federation').use(ModuleFederationPlugin, [
             {
               name: 'mfeBBB',
@@ -27,6 +21,8 @@ module.exports = {
               shared: sharedDeps
             }
           ]);
+
+          config.optimization.runtimeChunk(false);
 
           return config;
         }

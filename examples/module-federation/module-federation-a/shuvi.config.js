@@ -26,8 +26,8 @@ module.exports = {
               },
               filename: 'remoteEntry.js',
               exposes: {
-                './Component': './src/components/Component.js',
-                './Context': './src/context/sharedContext.js'
+                './Component': './src/components/Component',
+                './Context': './src/context/sharedContext'
               },
               shared: sharedDeps
             }
