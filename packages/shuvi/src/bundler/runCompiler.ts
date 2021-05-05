@@ -1,9 +1,8 @@
-import type webpack from 'webpack';
 import { Compiler, Stats, MultiCompiler } from 'webpack';
 
 export type BundlerResult = {
-  errors: webpack.StatsError[];
-  warnings: webpack.StatsError[];
+  errors: string[];
+  warnings: string[];
 };
 
 function generateStats(result: BundlerResult, stat: Stats): BundlerResult {
@@ -12,11 +11,11 @@ function generateStats(result: BundlerResult, stat: Stats): BundlerResult {
     warnings: true,
     errors: true
   });
-  if (errors && errors.length > 0) {
+  if (errors.length > 0) {
     result.errors.push(...errors);
   }
 
-  if (warnings && warnings.length > 0) {
+  if (warnings.length > 0) {
     result.warnings.push(...warnings);
   }
 

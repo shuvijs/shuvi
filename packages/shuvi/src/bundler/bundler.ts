@@ -82,16 +82,16 @@ class WebpackBundler {
 
       let isFirstSuccessfulCompile = true;
       this._compiler.hooks.done.tap('done', async stats => {
-        const warnings: webpack.StatsError[] = [];
-        const errors: webpack.StatsError[] = [];
+        const warnings: string[] = [];
+        const errors: string[] = [];
         stats.stats.forEach(s => {
           const statsData = s.toJson({
             all: false,
             warnings: true,
             errors: true
           });
-          warnings.push(...(statsData.warnings || []));
-          errors.push(...(statsData.errors || []));
+          warnings.push(...statsData.warnings);
+          errors.push(...statsData.errors);
         });
 
         const isSuccessful = !warnings.length && !errors.length;
@@ -228,7 +228,7 @@ class WebpackBundler {
         warnings: true,
         errors: true
       });
-      const hasErrors = !!statsData.errors?.length;
+      const hasErrors = !!statsData.errors.length;
       const typePromise = tsMessagesPromise;
 
       if (options.typeChecking && useTypeScript && !hasErrors) {
@@ -256,8 +256,7 @@ class WebpackBundler {
       }
 
       const messages = formatWebpackMessages(statsData);
-      const isSuccessful =
-        !messages.errors?.length && !messages.warnings?.length;
+      const isSuccessful = !messages.errors.length && !messages.warnings.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
         await api.emitEvent<APIHooks.IEventTargetDone>('bundler:targetDone', {
@@ -269,7 +268,7 @@ class WebpackBundler {
       }
 
       // If errors exist, only show errors.
-      if (messages.errors?.length) {
+      if (messages.errors.length) {
         // Only keep the first error. Others are often indicative
         // of the same problem, but confuse the reader with noise.
         if (messages.errors.length > 1) {
@@ -281,7 +280,7 @@ class WebpackBundler {
       }
 
       // Show warnings if no errors were found.
-      if (messages.warnings?.length) {
+      if (messages.warnings.length) {
         _log('Compiled with warnings.\n');
         _log(messages.warnings.join('\n\n'));
       }
