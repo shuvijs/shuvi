@@ -12,12 +12,15 @@ export interface FileManager {
 export interface FileManagerOptions {
   watch?: boolean;
   rootDir: string;
+  context: any;
 }
 
 export function getFileManager({
   watch = false,
-  rootDir
+  rootDir,
+  context
 }: FileManagerOptions): FileManager {
+  let hasMounted: boolean = false;
   const files: FileOptions[] = [];
   const instances = new Map<string, FileInternalInstance>();
 
@@ -27,20 +30,33 @@ export function getFileManager({
       ...options,
       name: fullPath
     });
+
+    if (hasMounted) {
+      setTimeout(() => {
+        mount();
+      }, 0);
+    }
+  };
+
+  const _mountFile = async (file: FileOptions) => {
+    try {
+      const inst = await mountFile(file, context);
+      instances.set(file.name, inst);
+    } catch (error) {
+      console.log(`fail to mount file ${file.name}`);
+      console.error(error);
+    }
   };
 
   const mount = async () => {
+    if (!hasMounted) {
+      hasMounted = true;
+    }
     const tasks = [];
-    for (const file of files) {
-      tasks.push(async () => {
-        try {
-          const inst = await mountFile(file);
-          instances.set(file.name, inst);
-        } catch (error) {
-          console.log(`fail to mount file ${file.name}`);
-          console.error(error);
-        }
-      });
+    const filesCopy = files.slice();
+    files.length = 0;
+    for (const file of filesCopy) {
+      tasks.push(() => _mountFile(file));
     }
 
     if (!watch) {
@@ -67,6 +83,8 @@ export function getFileManager({
     }
 
     await Promise.all(tasks.map(task => task()));
+
+    instances.clear();
   };
 
   return {

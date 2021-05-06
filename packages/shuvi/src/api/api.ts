@@ -113,10 +113,6 @@ class Api extends Hookable implements IApi {
     });
     this._config = deepmerge(defaultConfig, configFromFile);
 
-    // Runtime installation need to be executed before initializing presets and plugins
-    // to make sure shuvi entry file at the top.
-    coreRuntime.install(this.getPluginApi());
-    runtime.install(this.getPluginApi());
     await this._initPresetsAndPlugins();
 
     initCoreResource(this);
@@ -371,6 +367,10 @@ class Api extends Hookable implements IApi {
     // do not allow to modify paths
     Object.freeze(this._paths);
 
+    // Runtime installation need to be executed before initializing presets and plugins
+    // to make sure shuvi entry file at the top.
+    coreRuntime.install(this.getPluginApi());
+    runtime.install(this.getPluginApi());
     runPlugins();
   }
 

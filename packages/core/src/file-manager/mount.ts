@@ -7,7 +7,10 @@ import { queueJob, queuePostFlushCb } from './scheduler';
 import { invokeArrayFns } from './utils';
 import { FileInternalInstance } from './fileTypes';
 
-export function mount(options: FileOptions): Promise<FileInternalInstance> {
+export function mount(
+  options: FileOptions,
+  context: any = {}
+): Promise<FileInternalInstance> {
   const defer = Defer<FileInternalInstance>();
   const instance = createFileInstance(options);
 
@@ -20,7 +23,7 @@ export function mount(options: FileOptions): Promise<FileInternalInstance> {
       if (!instance.isMounted) {
         fse.ensureDirSync(dir);
         fd = fse.openSync(fsPath, 'w+');
-        const fileContent = content();
+        const fileContent = content(context);
         fse.writeSync(fd, fileContent, 0);
         invokeArrayFns(instance.mounted);
         instance.isMounted = true;
@@ -28,7 +31,7 @@ export function mount(options: FileOptions): Promise<FileInternalInstance> {
         return;
       }
 
-      const fileContent = content();
+      const fileContent = content(context);
       fse.ftruncateSync(fd, 0);
       fse.writeSync(fd, fileContent, 0);
     },
