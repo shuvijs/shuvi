@@ -5,7 +5,7 @@ const fixChunk = require('../fixChunk');
 
 module.exports = {
   asyncEntry: true,
-  ssr: true,
+  ssr: false,
   plugins: [
     api => {
       api.tap('bundler:configTarget', {
@@ -26,7 +26,8 @@ module.exports = {
               },
               filename: 'remoteEntry.js',
               exposes: {
-                './Component': './src/components/Component.js'
+                './Component': './src/components/Component',
+                './Context': './src/context/sharedContext'
               },
               shared: sharedDeps
             }
