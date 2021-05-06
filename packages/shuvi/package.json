@@ -1,6 +1,6 @@
 {
   "name": "shuvi",
-  "version": "0.0.1-rc.31",
+  "version": "0.0.1-rc.32",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -25,14 +25,14 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/core": "^0.0.1-rc.31",
+    "@shuvi/core": "^0.0.1-rc.32",
     "@shuvi/hooks": "0.0.1-beta.38",
-    "@shuvi/runtime-core": "^0.0.1-rc.31",
-    "@shuvi/runtime-react": "^0.0.1-rc.31",
-    "@shuvi/shared": "^0.0.1-rc.31",
-    "@shuvi/toolpack": "^0.0.1-rc.31",
-    "@shuvi/types": "^0.0.1-rc.31",
-    "@shuvi/utils": "^0.0.1-rc.31",
+    "@shuvi/runtime-core": "^0.0.1-rc.32",
+    "@shuvi/runtime-react": "^0.0.1-rc.32",
+    "@shuvi/shared": "^0.0.1-rc.32",
+    "@shuvi/toolpack": "^0.0.1-rc.32",
+    "@shuvi/types": "^0.0.1-rc.32",
+    "@shuvi/utils": "^0.0.1-rc.32",
     "cli-highlight": "^2.1.9",
     "commander": "5.1.0",
     "cross-spawn": "7.0.3",
