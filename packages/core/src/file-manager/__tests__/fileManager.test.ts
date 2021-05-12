@@ -51,6 +51,29 @@ test('should update file after changing state', async () => {
     .endPromise();
 });
 
+test('should not update file after changing state', async () => {
+  const fileManager = getFileManager({ watch: false, rootDir: '/' });
+  const state = reactive({
+    content: 'a'
+  });
+  fileManager.addFile({
+    name: 'test',
+    content() {
+      return state.content;
+    }
+  });
+  await fileManager.mount();
+  expect(await readFile('/test')).toEqual('a');
+
+  return waitForUpdate(() => {
+    state.content = 'b';
+  })
+    .then(async () => {
+      expect(await readFile('/test')).toEqual('a');
+    })
+    .endPromise();
+});
+
 test('should delete file after unmount', async () => {
   const fileManager = getFileManager({ watch: false, rootDir: '/' });
   fileManager.addFile({

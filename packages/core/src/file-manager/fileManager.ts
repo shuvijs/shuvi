@@ -1,7 +1,8 @@
 import path from 'path';
-import { pauseTracking, resetTracking } from '@vue/reactivity';
+import { stop } from '@vue/reactivity';
 import { FileOptions, FileInternalInstance } from './file';
 import { mount as mountFile } from './mount';
+import { queueJob } from './scheduler';
 
 export interface FileManager {
   addFile(options: FileOptions): void;
@@ -12,7 +13,7 @@ export interface FileManager {
 export interface FileManagerOptions {
   watch?: boolean;
   rootDir: string;
-  context: any;
+  context?: any;
 }
 
 export function getFileManager({
@@ -21,10 +22,15 @@ export function getFileManager({
   context
 }: FileManagerOptions): FileManager {
   let hasMounted: boolean = false;
+  let hasUnMounted: boolean = false;
   const files: FileOptions[] = [];
   const instances = new Map<string, FileInternalInstance>();
 
   const addFile = (options: FileOptions) => {
+    if (hasUnMounted) {
+      return;
+    }
+
     const fullPath = path.resolve(rootDir, options.name);
     files.push({
       ...options,
@@ -32,15 +38,16 @@ export function getFileManager({
     });
 
     if (hasMounted) {
-      setTimeout(() => {
-        mount();
-      }, 0);
+      queueJob(mount);
     }
   };
 
   const _mountFile = async (file: FileOptions) => {
     try {
       const inst = await mountFile(file, context);
+      if (!watch) {
+        stop(inst.update);
+      }
       instances.set(file.name, inst);
     } catch (error) {
       console.log(`fail to mount file ${file.name}`);
@@ -59,13 +66,7 @@ export function getFileManager({
       tasks.push(() => _mountFile(file));
     }
 
-    if (!watch) {
-      pauseTracking();
-    }
     await Promise.all(tasks.map(task => task()));
-    if (!watch) {
-      resetTracking();
-    }
   };
 
   const unmount = async () => {
@@ -85,6 +86,9 @@ export function getFileManager({
     await Promise.all(tasks.map(task => task()));
 
     instances.clear();
+
+    hasMounted = false;
+    hasUnMounted = true;
   };
 
   return {

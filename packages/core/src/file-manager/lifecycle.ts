@@ -1,11 +1,11 @@
 import { pauseTracking, resetTracking } from '@vue/reactivity';
-import { callWithErrorHandling } from '../errorHandling';
+import { callWithErrorHandling } from './errorHandling';
 import {
   FileLifecycleHooks,
   FileInternalInstance,
   currentInstance,
   setCurrentInstance
-} from '../file';
+} from './file';
 
 export function injectHook(
   type: FileLifecycleHooks,
@@ -47,7 +47,10 @@ export function injectHook(
   return undefined;
 }
 
-// export const createHook = <T extends Function = () => any>(
-//   lifecycle: FileLifecycleHooks,
-// ) => (hook: T, target: FileInternalInstance | null = currentInstance) =>
-//   injectHook(lifecycle, hook, target)
+export const createHook = <T extends Function = () => any>(
+  lifecycle: FileLifecycleHooks
+) => (hook: T, target: FileInternalInstance | null = currentInstance) =>
+  injectHook(lifecycle, hook, target);
+
+export const onMounted = createHook('mounted');
+export const onUnMounted = createHook('unmounted');

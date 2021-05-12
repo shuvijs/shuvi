@@ -17,7 +17,11 @@ export const waitForUpdate = initialCb => {
   let end;
   const queue = initialCb ? [initialCb] : [];
   let resolve;
-  const promise = new Promise(r => (resolve = r));
+  let reject;
+  const promise = new Promise((_res, _rej) => {
+    resolve = _res;
+    reject = _rej;
+  });
 
   async function shift() {
     const job = queue.shift();
@@ -27,6 +31,7 @@ export const waitForUpdate = initialCb => {
         await job();
       } catch (e) {
         hasError = true;
+        reject(e);
         const done = queue[queue.length - 1];
         if (done && done.fail) {
           done.fail(e);

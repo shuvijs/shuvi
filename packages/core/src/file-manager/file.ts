@@ -6,17 +6,12 @@ import {
   FileInternalContentFunction
 } from './fileTypes';
 import { EMPTY_OBJ, extend, hasOwn } from '@shuvi/utils';
-import { injectHook } from './file-api/lifecycle';
+import { injectHook } from './lifecycle';
 import { queueJob } from './scheduler';
 
 export * from './fileTypes';
 
 type DataFn = (vm: FilePublicInstance) => any;
-
-export const LifecycleHooks = {
-  MOUNTED: 'm',
-  UNMOUNTED: 'um'
-} as const;
 
 const AccessTypes = {
   DATA: 0,
@@ -30,7 +25,6 @@ export let currentInstance: FileInternalInstance | null = null;
 
 export const getCurrentInstance: () => FileInternalInstance | null = () =>
   currentInstance;
-// todo 删除了 ｜｜ currentRenderingInstance, 之后补上
 
 export const setCurrentInstance = (instance: FileInternalInstance | null) => {
   currentInstance = instance;
