@@ -45,6 +45,7 @@ export function createWepbackConfig(
       name: opts.name,
       projectRoot: paths.rootDir,
       srcDirs,
+      publicPath: assetPublicPath,
       webpackHelpers
     });
     chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
