@@ -9,8 +9,8 @@ export type ISpecifier =
 
 export interface ProjectContext {
   viewModule: string;
-  appModule: string;
-  pluginModule: string;
+  appModule: string | string[];
+  pluginModule: string | string[];
   entryCodes: string[];
   entryFileContent: string;
   routesContent: string;
@@ -22,11 +22,11 @@ export interface ProjectContext {
 export const createProjectContext = () =>
   reactive<ProjectContext>({
     viewModule: '',
-    appModule: '',
-    pluginModule: '',
+    appModule: [],
+    pluginModule: [],
     entryCodes: [],
     entryFileContent: '',
-    routesContent: '',
+    routesContent: 'export default []',
     polyfills: [],
     exports: new Map(),
     runtimePlugins: new Map()
