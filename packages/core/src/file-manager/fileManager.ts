@@ -1,28 +1,26 @@
 import path from 'path';
-import { stop } from '@vue/reactivity';
 import { FileOptions, FileInternalInstance } from './file';
 import { mount as mountFile } from './mount';
 import { queueJob } from './scheduler';
 
 export interface FileManager {
   addFile(options: FileOptions): void;
-  mount(): Promise<void>;
+  mount(dir: string): Promise<void>;
   unmount(): Promise<void>;
 }
 
 export interface FileManagerOptions {
   watch?: boolean;
-  rootDir: string;
   context?: any;
 }
 
 export function getFileManager({
   watch = false,
-  rootDir,
   context
 }: FileManagerOptions): FileManager {
   let hasMounted: boolean = false;
   let hasUnMounted: boolean = false;
+  let rootDir = '';
   const files: FileOptions[] = [];
   const instances = new Map<string, FileInternalInstance>();
 
@@ -30,24 +28,21 @@ export function getFileManager({
     if (hasUnMounted) {
       return;
     }
-
-    const fullPath = path.resolve(rootDir, options.name);
     files.push({
       ...options,
-      name: fullPath
+      name: options.name
     });
 
     if (hasMounted) {
-      queueJob(mount);
+      queueJob(() => {
+        mount(rootDir);
+      });
     }
   };
 
   const _mountFile = async (file: FileOptions) => {
     try {
-      const inst = await mountFile(file, context);
-      if (!watch) {
-        stop(inst.update);
-      }
+      const inst = await mountFile(file, context, watch);
       instances.set(file.name, inst);
     } catch (error) {
       console.log(`fail to mount file ${file.name}`);
@@ -55,7 +50,9 @@ export function getFileManager({
     }
   };
 
-  const mount = async () => {
+  const mount = async (dir: string) => {
+    // rootDir is set while mounting
+    rootDir = dir;
     if (!hasMounted) {
       hasMounted = true;
     }
@@ -63,6 +60,8 @@ export function getFileManager({
     const filesCopy = files.slice();
     files.length = 0;
     for (const file of filesCopy) {
+      // rootDir as well as Full path name would not be set until mount
+      file.name = path.resolve(rootDir, file.name);
       tasks.push(() => _mountFile(file));
     }
 

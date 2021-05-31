@@ -1,4 +1,6 @@
-import { getFileManager, FileManager } from '../file-manager';
+import { getFileManager, FileManager, FileOptions } from '../file-manager';
+import filePresets from './file-presets';
+
 import {
   ProjectContext,
   createProjectContext,
@@ -6,21 +8,35 @@ import {
 } from './projectContext';
 
 interface ProjectBuilderOptions {
-  static: boolean;
-  dir: string;
+  static?: boolean;
 }
 
 class ProjectBuilder {
   private _projectContext: ProjectContext;
-  private _fileMagager: FileManager;
+  private _fileManager: FileManager;
 
-  constructor(option: ProjectBuilderOptions) {
+  constructor(option: ProjectBuilderOptions = {}) {
     this._projectContext = createProjectContext();
-    this._fileMagager = getFileManager({
+    this._fileManager = getFileManager({
       watch: !option.static,
-      rootDir: option.dir,
       context: this._projectContext
     });
+  }
+
+  setViewModule(module: string) {
+    this._projectContext.viewModule = module;
+  }
+
+  setAppModule(module: string | string[]) {
+    this._projectContext.appModule = module;
+  }
+
+  setPluginModule(module: string | string[]) {
+    this._projectContext.pluginModule = module;
+  }
+
+  setRoutesContent(content: string): void {
+    this._projectContext.routesContent = content;
   }
 
   setEntryFileContent(content: string) {
@@ -31,8 +47,11 @@ class ProjectBuilder {
     this._projectContext.entryCodes.push(content);
   }
 
-  addExport(source: string, specifier: ISpecifier[]) {
-    this._projectContext.exports.set(source, specifier);
+  addExport(source: string, specifier: ISpecifier | ISpecifier[]) {
+    this._projectContext.exports.set(
+      source,
+      ([] as ISpecifier[]).concat(specifier)
+    );
   }
 
   addPolyfill(file: string) {
@@ -45,12 +64,27 @@ class ProjectBuilder {
     this._projectContext.runtimePlugins.set(name, runtimePlugin);
   }
 
-  async build(): Promise<void> {
-    await this._fileMagager.mount();
+  addFilePresets() {
+    filePresets.forEach((file: FileOptions) => {
+      this._fileManager.addFile(file);
+    });
   }
 
-  async destory(): Promise<void> {
-    await this._fileMagager.unmount();
+  addFile(options: FileOptions): void {
+    this._fileManager.addFile(options);
+  }
+
+  /**
+   * There is no longer `buildOnce` method.
+   * Continuous building or static building will rely on `static` value of `ProjectBuilderOptions`
+   */
+  async build(dir: string): Promise<void> {
+    this.addFilePresets();
+    await this._fileManager.mount(dir);
+  }
+
+  async stopBuild(): Promise<void> {
+    await this._fileManager.unmount();
   }
 }
 
