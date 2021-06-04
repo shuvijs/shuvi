@@ -13,6 +13,9 @@ describe('CSS', () => {
   afterAll(async () => {
     await ctx.close();
   });
+  afterEach(async () => {
+    await page.close();
+  });
 
   test('should import .css files', async () => {
     page = await ctx.browser.page(ctx.url('/css'));
@@ -80,8 +83,9 @@ describe('CSS', () => {
   test('should remove FOUC style when no css', async () => {
     page = await ctx.browser.page(ctx.url('/no-css'));
     // wait for style inserting
-    page.waitForFunction(`document
-   .querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`);
+    page.waitForFunction(
+      `document.querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`
+    );
     expect(
       await page.$eval('body', el => window.getComputedStyle(el).display)
     ).not.toBe('none');

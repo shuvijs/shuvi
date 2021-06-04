@@ -38,7 +38,7 @@ export default async function main(argv: string[]) {
   });
 
   try {
-    console.log('Starting the development server...', process.env.NODE_ENV);
+    console.log('Starting the development server...');
     await shuviApp.listen(port, host);
     const localUrl = `http://${
       host === '0.0.0.0' ? 'localhost' : host

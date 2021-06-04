@@ -65,7 +65,7 @@ async function launchShuvi(
   isDev: boolean,
   configOverrides: Partial<IApiConfig>,
   envOverrides: Partial<NodeJS.ProcessEnv>
-): Promise<ReturnType<typeof spawn>> {
+): Promise<ChildProcess> {
   return new Promise(resolve => {
     const spawnOptions: SpawnOptions = {
       env: {
@@ -100,11 +100,10 @@ async function launchShuvi(
       shuviProcess.stdout.setEncoding('utf-8');
       shuviProcess.stdout.on('data', (data: string) => {
         // Attention!
-        // Through stdio stream, multiple `console.log` output might be merged into one emit.
+        // Through stdio stream, a '\n' would be appended to every `console.log` output.
+        // Multiple `console.log` output might be merged into one emitting.
         // In this case, it will be a little more complex to spy on `console.log`.
-
-        // Two newlines would be added on the head and tail of the original data so that it needs to be trimmed.
-        console.log(data.trim());
+        console.log(data);
         // We could only listen to the console output to ensure that devServer is ready
         if (data.includes('Ready on')) {
           resolve(shuviProcess);
@@ -114,7 +113,6 @@ async function launchShuvi(
     if (shuviProcess.stderr) {
       shuviProcess.stderr.setEncoding('utf-8');
       shuviProcess.stderr.on('data', data => {
-        // const dataString = String(data);
         console.error(data);
       });
     }

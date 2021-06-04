@@ -127,14 +127,17 @@ describe('serverMiddleware production', () => {
   test('should follow plugin middleware order', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
     const page = await ctx.browser.page(ctx.url('/testorder'));
-    const consoleResult = consoleSpy.mock.calls.join('\n');
+    const consoleResult = consoleSpy.mock.calls.join('');
     expect(consoleResult).toBe(
-      dedent`-1
-        user default order
-        plugin default order
-        1
-        9
-        10`
+      [
+        '-1',
+        'user default order',
+        'plugin default order',
+        '1',
+        '9',
+        '10',
+        ''
+      ].join('\n')
     );
     await page.close();
   });

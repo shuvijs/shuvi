@@ -254,22 +254,6 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addFile(options);
   }
 
-  /* addFileByModule(fileName: string, exports: {} = {}): void {
-    this._projectBuilder.addFileByModule(fileName, exports);
-  }
-
-  addFileByModuleProxy(
-    fileName: string,
-    source: string | string[],
-    defaultExport?: boolean
-  ): void {
-    this._projectBuilder.addFileByModuleProxy(fileName, source, defaultExport);
-  }
-
-  addFileByContent(fileName: string, fileContent: string): void {
-    this._projectBuilder.addFileByContent(fileName, fileContent);
-  } */
-
   addAppExport(source: string, specifier: ISpecifier | ISpecifier[]): void {
     this._projectBuilder.addExport(source, specifier);
   }
