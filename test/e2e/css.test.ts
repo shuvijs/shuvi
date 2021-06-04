@@ -14,12 +14,6 @@ describe('CSS', () => {
     await ctx.close();
   });
 
-  afterEach(async () => {
-    await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
-  });
-
   test('should import .css files', async () => {
     page = await ctx.browser.page(ctx.url('/css'));
     // wait for style inserting
