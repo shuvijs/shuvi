@@ -32,7 +32,10 @@ describe('Custom Server.js with error development', () => {
 
     // Note: Server
     expect(logSpy).toHaveBeenLastCalledWith(
-      expect.stringMatching(/server error: \/[\s\S]+Something wrong/)
+      'server error: / ',
+      expect.objectContaining({
+        message: expect.stringMatching(/Something wrong/)
+      })
     );
   });
 });

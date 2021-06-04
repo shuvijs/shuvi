@@ -13,8 +13,11 @@ describe('CSS', () => {
   afterAll(async () => {
     await ctx.close();
   });
+
   afterEach(async () => {
     await page.close();
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
   });
 
   test('should import .css files', async () => {
@@ -83,9 +86,8 @@ describe('CSS', () => {
   test('should remove FOUC style when no css', async () => {
     page = await ctx.browser.page(ctx.url('/no-css'));
     // wait for style inserting
-    page.waitForFunction(
-      `document.querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`
-    );
+    page.waitForFunction(`document
+   .querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`);
     expect(
       await page.$eval('body', el => window.getComputedStyle(el).display)
     ).not.toBe('none');

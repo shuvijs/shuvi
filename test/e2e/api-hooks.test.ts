@@ -2,6 +2,11 @@ import { AppCtx, Page, launchFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
+afterEach(() => {
+  // force require to load file to make sure compiled file get load correctlly
+  jest.resetModules();
+});
+
 describe('Runtime Plugin', () => {
   let ctx: AppCtx;
   let page: Page;
@@ -34,7 +39,8 @@ describe('Runtime Plugin', () => {
 
     page = await ctx.browser.page(ctx.url('/'));
     expect(console.log).toHaveBeenLastCalledWith(
-      expect.stringMatching(/custom-renderToHTML[\s\S]+\<html\>/)
+      'custom-renderToHTML',
+      expect.stringMatching(/\<html\>/)
     );
   });
 });

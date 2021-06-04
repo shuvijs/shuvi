@@ -1,5 +1,4 @@
 import got from 'got';
-import dedent from 'dedent-js';
 import { AppCtx, serveFixture } from '../utils';
 
 let ctx: AppCtx;
@@ -15,6 +14,10 @@ describe('serverMiddleware production', () => {
   });
   afterAll(async () => {
     await ctx.close();
+  });
+  afterEach(async () => {
+    // force require to load file to make sure compiled file get load correctly
+    jest.resetModules();
   });
 
   test('should work', async () => {
@@ -125,20 +128,16 @@ describe('serverMiddleware production', () => {
   });
 
   test('should follow plugin middleware order', async () => {
-    const consoleSpy = jest.spyOn(console, 'log');
+    jest.spyOn(console, 'log');
     const page = await ctx.browser.page(ctx.url('/testorder'));
-    const consoleResult = consoleSpy.mock.calls.join('');
-    expect(consoleResult).toBe(
-      [
-        '-1',
-        'user default order',
-        'plugin default order',
-        '1',
-        '9',
-        '10',
-        ''
-      ].join('\n')
-    );
+
+    expect(console.log).toBeCalledTimes(6);
+    expect(console.log).toHaveBeenNthCalledWith(1, -1);
+    expect(console.log).toHaveBeenNthCalledWith(2, 'user default order');
+    expect(console.log).toHaveBeenNthCalledWith(3, 'plugin default order');
+    expect(console.log).toHaveBeenNthCalledWith(4, 1);
+    expect(console.log).toHaveBeenNthCalledWith(5, 9);
+    expect(console.log).toHaveBeenNthCalledWith(6, 10);
     await page.close();
   });
 });

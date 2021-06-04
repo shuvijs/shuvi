@@ -14,6 +14,11 @@ function resolvePagePath(page: string) {
 
 jest.setTimeout(5 * 60 * 1000);
 
+afterEach(() => {
+  // force require to load file to make sure compiled file get load correctlly
+  jest.resetModules();
+});
+
 describe('Hot Module Reloading', () => {
   let ctx: AppCtx;
   let page: Page;
@@ -169,6 +174,7 @@ describe('Hot Module Reloading', () => {
 
         // change the content
         writeFileSync(serverPath, editedContent, 'utf8');
+        jest.resetModules();
 
         page = await ctx.browser.page(ctx.url('/hmr/serverMiddleware'));
 
@@ -176,6 +182,7 @@ describe('Hot Module Reloading', () => {
 
         // add the original content
         writeFileSync(serverPath, originalContent, 'utf8');
+        jest.resetModules();
 
         page = await ctx.browser.page(ctx.url('/hmr/serverMiddleware'));
 
