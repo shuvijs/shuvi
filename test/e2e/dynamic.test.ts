@@ -20,8 +20,6 @@ describe('Dynamic', () => {
 
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should render dynamic import components', async () => {
