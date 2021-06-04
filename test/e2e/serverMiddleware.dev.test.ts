@@ -12,10 +12,6 @@ describe('serverMiddleware development', () => {
   afterAll(async () => {
     await ctx.close();
   });
-  afterEach(async () => {
-    // force require to load file to make sure compiled file get load correctly
-    jest.resetModules();
-  });
 
   test('should work', async () => {
     let res;
