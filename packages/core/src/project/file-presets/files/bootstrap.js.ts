@@ -3,7 +3,6 @@ import { ProjectContext } from '../../projectContext';
 import os from 'os';
 
 export default {
-  name: 'bootstrap.js',
   content: (context: ProjectContext) => {
     const codes = context.entryCodes;
     let imports = '';

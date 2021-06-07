@@ -11,6 +11,5 @@ export function create(context, options) {
 `;
 
 export default {
-  name: 'core/application-spa-server.js',
   content: () => applicationSpaServerJsFile
 };
