@@ -1,7 +1,6 @@
 import { ProjectContext } from '../../../projectContext';
 
 export default {
-  name: 'core/plugins.js',
   content: (context: ProjectContext) => {
     const plugins = context.runtimePlugins;
     let pluginRecord = '';
