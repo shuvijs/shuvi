@@ -7,6 +7,7 @@ import { findPort } from './findPort';
 import Browser from './browser';
 import { spawn, sync } from 'cross-spawn';
 import { SpawnOptions, ChildProcess } from 'child_process';
+import rimraf from 'rimraf';
 
 export { Shuvi };
 
@@ -126,6 +127,9 @@ export async function launchFixture(
   isDev: boolean = true
 ) {
   const path = resolveFixture(name);
+  // remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect
+  rimraf.sync(resolveFixture(name, '.shuvi'));
+  rimraf.sync(resolveFixture(name, 'dist'));
   const port = await findPort();
   const shuviProcess = await launchShuvi(
     path,
