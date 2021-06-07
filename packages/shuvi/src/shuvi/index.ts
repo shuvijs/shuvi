@@ -4,7 +4,7 @@ import { IConfig } from '../config';
 export { Shuvi, IConfig };
 
 export interface ShuviOptions {
-  cwd?: string
+  cwd?: string;
   dev?: boolean;
   config?: IConfig;
   configFile?: string;

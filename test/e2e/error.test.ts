@@ -2,11 +2,6 @@ import { AppCtx, Page, launchFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
-afterEach(() => {
-  // force require to load file to make sure compiled file get load correctlly
-  jest.resetModules();
-});
-
 describe('Warnings', () => {
   let ctx: AppCtx;
   let page: Page;
@@ -31,10 +26,9 @@ describe('Warnings', () => {
     page = await ctx.browser.page(ctx.url('/'));
 
     expect(logSpy).toHaveBeenLastCalledWith(
-      'server error: / ',
-      expect.objectContaining({
-        message: expect.stringMatching(/onDocumentProps not returning object/)
-      })
+      expect.stringMatching(
+        /server error: \/.+onDocumentProps not returning object/
+      )
     );
   });
 });
