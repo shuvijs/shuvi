@@ -1,6 +1,5 @@
-export { shuvi, Shuvi, IConfig } from './shuvi';
-
-export { IFile, File, ISpecifier, ITemplateData } from '@shuvi/core';
+export { shuvi, Shuvi } from './shuvi';
+export type { IConfig } from './shuvi';
 
 export type { PluginApi } from './api';
 

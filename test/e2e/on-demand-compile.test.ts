@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, launchFixtureAtCurrentProcess } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -20,7 +20,7 @@ describe('On Demand Compile', () => {
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('on-demand-compile');
+    ctx = await launchFixtureAtCurrentProcess('on-demand-compile');
   });
   afterAll(async () => {
     await page.close();

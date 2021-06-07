@@ -1,4 +1,4 @@
-import { Route, File } from '@shuvi/core';
+import { Route, fileSnippetUtil } from '@shuvi/core';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
@@ -70,54 +70,60 @@ export async function setupApp(api: Api) {
     require.resolve('@shuvi/utils/lib/noopFn')
   ]);
 
-  api.addAppFile(
-    File.moduleProxy('404.js', {
-      source: [
-        ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
-        runtime.get404ModulePath()
-      ],
-      defaultExport: true
-    }),
-    'core'
-  );
+  const moduleExportProxy404 = fileSnippetUtil.moduleExportProxyCreater();
+  api.addAppFile({
+    name: 'core/404.js',
+    content: () =>
+      moduleExportProxy404.getContent(
+        [
+          ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
+          runtime.get404ModulePath()
+        ],
+        true
+      ),
+    mounted: moduleExportProxy404.mounted,
+    unmounted: moduleExportProxy404.unmounted
+  });
 
-  api.addAppFile(
-    File.moduleProxy('server.js', {
-      source: [
+  const moduleExportProxyServer = fileSnippetUtil.moduleExportProxyCreater();
+  api.addAppFile({
+    name: 'core/server.js',
+    content: () =>
+      moduleExportProxyServer.getContent([
         ...withExts(api.resolveUserFile('server'), moduleFileExtensions),
         require.resolve('@shuvi/utils/lib/noop')
-      ]
-    }),
-    'core'
-  );
-  api.addAppFile(
-    File.moduleProxy('document.js', {
-      source: [
+      ]),
+    mounted: moduleExportProxyServer.mounted,
+    unmounted: moduleExportProxyServer.unmounted
+  });
+
+  const moduleExportProxyDocument = fileSnippetUtil.moduleExportProxyCreater();
+  api.addAppFile({
+    name: 'core/document.js',
+    content: () =>
+      moduleExportProxyDocument.getContent([
         ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
         require.resolve('@shuvi/utils/lib/noop')
-      ]
-    }),
-    'core'
-  );
+      ]),
+    mounted: moduleExportProxyDocument.mounted,
+    unmounted: moduleExportProxyDocument.unmounted
+  });
 
   if (!config.runtimeConfig || config.ssr) {
     // with ssr, we get runtimeConfig from appData
-    api.addAppFile(
-      File.file('runtimeConfig.js', {
-        content: `export default null`
-      }),
-      'core'
-    );
+    api.addAppFile({
+      name: 'core/runtimeConfig.js',
+      content: () => 'export default null'
+    });
   } else if (config.runtimeConfig) {
     // with none-ssr, we need create cruntimeConfig when build
-    api.addAppFile(
-      File.file('runtimeConfig.js', {
-        content: `export default ${JSON.stringify(
-          getPublicRuntimeConfig(config.runtimeConfig)
+    api.addAppFile({
+      name: 'core/runtimeConfig.js',
+      content: () =>
+        `export default ${JSON.stringify(
+          getPublicRuntimeConfig(config.runtimeConfig || {})
         )}`
-      }),
-      'core'
-    );
+    });
   }
 
   api.addAppExport(runtime.getAppModulePath(), {
@@ -130,59 +136,61 @@ export async function setupApp(api: Api) {
     'shuvi/lib/lib/runtimeConfig',
     '{ default as getRuntimeConfig }'
   );
-  api.addAppFile(
-    File.module('setRuntimeConfig.js', {
-      exports: {
+
+  api.addAppFile({
+    name: 'core/setRuntimeConfig.js',
+    content: () =>
+      fileSnippetUtil.moduleExport({
         'shuvi/lib/lib/runtimeConfig': {
           imported: 'setRuntimeConfig',
           local: 'default'
         }
-      }
-    }),
-    'core'
-  );
+      })
+  });
 
-  api.addAppFile(
-    File.module('server.js', {
-      exports: api.config.ssr
-        ? {
-            [api.resolveAppFile('core', 'server')]: {
-              imported: '*',
-              local: 'server'
-            },
-            [api.resolveAppFile('core', 'document')]: {
-              imported: '*',
-              local: 'document'
-            },
-            [api.resolveAppFile('core', 'application')]: {
-              imported: '*',
-              local: 'application'
-            },
-            [runtime.getViewModulePath()]: {
-              imported: 'default',
-              local: 'view'
+  api.addAppFile({
+    name: 'server.js',
+    content: () =>
+      fileSnippetUtil.moduleExport(
+        api.config.ssr
+          ? {
+              [api.resolveAppFile('core', 'server')]: {
+                imported: '*',
+                local: 'server'
+              },
+              [api.resolveAppFile('core', 'document')]: {
+                imported: '*',
+                local: 'document'
+              },
+              [api.resolveAppFile('core', 'application')]: {
+                imported: '*',
+                local: 'application'
+              },
+              [runtime.getViewModulePath()]: {
+                imported: 'default',
+                local: 'view'
+              }
             }
-          }
-        : {
-            [api.resolveAppFile('core', 'server')]: {
-              imported: '*',
-              local: 'server'
-            },
-            [api.resolveAppFile('core', 'document')]: {
-              imported: '*',
-              local: 'document'
-            },
-            [api.resolveAppFile('core', 'application-spa-server')]: {
-              imported: '*',
-              local: 'application'
+          : {
+              [api.resolveAppFile('core', 'server')]: {
+                imported: '*',
+                local: 'server'
+              },
+              [api.resolveAppFile('core', 'document')]: {
+                imported: '*',
+                local: 'document'
+              },
+              [api.resolveAppFile('core', 'application-spa-server')]: {
+                imported: '*',
+                local: 'application'
+              }
             }
-          }
-    })
-  );
+      )
+  });
 
   const { routes } = api.config;
   if (Array.isArray(routes) && routes.length) {
-    api.setRoutes(routes);
+    await api.setRoutes(routes);
   } else {
     const route = new Route(paths.pagesDir);
     if (api.mode === 'development') {
@@ -191,7 +199,7 @@ export async function setupApp(api: Api) {
       });
     } else {
       const routes = await route.getRoutes();
-      api.setRoutes(routes);
+      await api.setRoutes(routes);
     }
   }
 }

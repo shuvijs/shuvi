@@ -17,8 +17,6 @@ describe('public path', () => {
 
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should pass public path to client', async () => {
@@ -41,8 +39,6 @@ describe('runtime public path', () => {
 
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should overwrite publicPath in client', async () => {

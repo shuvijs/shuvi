@@ -1,6 +1,5 @@
 import {
-  IFile,
-  App,
+  ProjectBuilder,
   ISpecifier,
   ITemplateData,
   IHookable,
@@ -18,15 +17,7 @@ import * as APIHooks from './src/hooks';
 
 export { webpack, WebpackChain };
 
-export {
-  Runtime,
-  Bundler,
-  APIHooks,
-  AppHooks,
-  IFile,
-  ISpecifier,
-  ITemplateData
-};
+export { Runtime, Bundler, APIHooks, AppHooks, ISpecifier, ITemplateData };
 
 export interface IServerProxyConfigItem extends ProxyOptions {
   context?: ProxyFilter;
@@ -108,11 +99,11 @@ export interface IApi extends IHookable {
   readonly phase: IPhase;
   readonly clientManifest: Bundler.IManifest;
 
-  addEntryCode: typeof App.prototype.addEntryCode;
-  addAppFile: typeof App.prototype.addFile;
-  addAppExport: typeof App.prototype.addExport;
-  addAppPolyfill: typeof App.prototype.addPolyfill;
-  addRuntimePlugin: typeof App.prototype.addRuntimePlugin;
+  addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;
+  addAppFile: typeof ProjectBuilder.prototype.addFile;
+  addAppExport: typeof ProjectBuilder.prototype.addExport;
+  addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
+  addRuntimePlugin: typeof ProjectBuilder.prototype.addRuntimePlugin;
   addServerMiddleware: (serverMiddleware: Runtime.IServerMiddleware) => void;
 
   resolveAppFile(...paths: string[]): string;

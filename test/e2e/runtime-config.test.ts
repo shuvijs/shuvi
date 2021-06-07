@@ -28,8 +28,6 @@ describe('SSR: Runtime Config', () => {
 
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should works on server-side and client-sdie', async () => {
@@ -81,8 +79,6 @@ describe('CSR: Runtime Config', () => {
 
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should works', async () => {

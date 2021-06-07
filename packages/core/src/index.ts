@@ -1,16 +1,13 @@
-import { File, Dir } from '@shuvi/react-fs';
+import fileSnippetUtil from './project/file-snippet-util';
 
-const ReactFs = {
-  File,
-  Dir
-};
-
-export { ReactFs };
-
-export { default as React } from 'react';
-
-export { App, IFile, File } from './app';
+export { fileSnippetUtil };
 
 export { Route } from './route';
 
 export * from './types';
+
+export type { FileOptions } from './file-manager';
+
+export { ProjectBuilder } from './project/projectBuilder';
+
+export * from './project/file-snippet-util';
