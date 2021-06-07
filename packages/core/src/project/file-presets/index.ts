@@ -2,27 +2,36 @@ import fs from 'fs-extra';
 import path from 'path';
 import { FileOptions } from '../../file-manager';
 
+const EXT_REGEXP = /\.[a-zA-Z]+$/;
+
 /**
  * All preset files are listed in `files` folder as real files arrange.
  * These presets export objects as FileOptions with which fileManager will generate files.
  */
-const getAllFiles = (dirPath: string, fileList?: string[]): string[] => {
+const getAllFiles = (
+  dirPath: string,
+  parent: string = '',
+  fileList: FileOptions[] = []
+): FileOptions[] => {
   const files = fs.readdirSync(dirPath);
-  let currentFileList: string[] = fileList || [];
+  let currentFileList: FileOptions[] = fileList;
   files.forEach((file: string) => {
-    if (fs.statSync(dirPath + '/' + file).isDirectory()) {
-      currentFileList = getAllFiles(dirPath + '/' + file, currentFileList);
+    const filepath = path.join(dirPath, file);
+    const name = path.join(parent, file.replace(EXT_REGEXP, ''));
+    if (fs.statSync(filepath).isDirectory()) {
+      currentFileList = getAllFiles(filepath, name, currentFileList);
       // Match *.ts (source) or *.js (compiled) file, but ignore *.d.ts file
     } else if (/\.(js|ts)$/.test(file) && !/\.d\.ts$/.test(file)) {
-      currentFileList.push(path.join(dirPath, '/', file));
+      const options = require(filepath).default;
+      currentFileList.push({
+        name,
+        content: options.content
+      });
     }
   });
   return currentFileList;
 };
 
-const files = getAllFiles(__dirname + '/files');
-const filePresets = files.map(
-  (file: string): FileOptions => require(file).default
-);
-
-export default filePresets;
+export function getFilePresets() {
+  return getAllFiles(path.join(__dirname, 'files'));
+}

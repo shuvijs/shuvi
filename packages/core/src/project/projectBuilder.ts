@@ -1,5 +1,5 @@
 import { getFileManager, FileManager, FileOptions } from '../file-manager';
-import filePresets from './file-presets';
+import { getFilePresets } from './file-presets';
 
 import {
   ProjectContext,
@@ -14,12 +14,17 @@ interface ProjectBuilderOptions {
 class ProjectBuilder {
   private _projectContext: ProjectContext;
   private _fileManager: FileManager;
+  private _internalFiles: FileOptions[];
 
   constructor(option: ProjectBuilderOptions = {}) {
     this._projectContext = createProjectContext();
     this._fileManager = getFileManager({
       watch: !option.static,
       context: this._projectContext
+    });
+    this._internalFiles = getFilePresets();
+    this._internalFiles.forEach((file: FileOptions) => {
+      this._fileManager.addFile(file);
     });
   }
 
@@ -64,12 +69,6 @@ class ProjectBuilder {
     this._projectContext.runtimePlugins.set(name, runtimePlugin);
   }
 
-  addFilePresets() {
-    filePresets.forEach((file: FileOptions) => {
-      this._fileManager.addFile(file);
-    });
-  }
-
   addFile(options: FileOptions): void {
     this._fileManager.addFile(options);
   }
@@ -79,7 +78,6 @@ class ProjectBuilder {
    * Continuous building or static building will rely on `static` value of `ProjectBuilderOptions`
    */
   async build(dir: string): Promise<void> {
-    this.addFilePresets();
     await this._fileManager.mount(dir);
   }
 
