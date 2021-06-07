@@ -10,7 +10,7 @@ import {
   IPhase,
   Bundler
 } from '@shuvi/types';
-import { App, IUserRouteConfig, IFile } from '@shuvi/core';
+import { ProjectBuilder, IUserRouteConfig, FileOptions } from '@shuvi/core';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -52,7 +52,7 @@ class Api extends Hookable implements IApi {
   private _config!: IApiConfig;
   private _configFile?: string;
   private _paths!: IPaths;
-  private _app!: App;
+  private _projectBuilder!: ProjectBuilder;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
   private _routes: IUserRouteConfig[] = [];
@@ -105,7 +105,9 @@ class Api extends Hookable implements IApi {
   }
 
   async init() {
-    this._app = new App();
+    this._projectBuilder = new ProjectBuilder({
+      static: this.mode === 'production'
+    });
     const configFromFile = await loadConfig({
       rootDir: this._cwd,
       configFile: this._configFile,
@@ -113,10 +115,6 @@ class Api extends Hookable implements IApi {
     });
     this._config = deepmerge(defaultConfig, configFromFile);
 
-    // Runtime installation need to be executed before initializing presets and plugins
-    // to make sure shuvi entry file at the top.
-    coreRuntime.install(this.getPluginApi());
-    runtime.install(this.getPluginApi());
     await this._initPresetsAndPlugins();
 
     initCoreResource(this);
@@ -159,15 +157,15 @@ class Api extends Hookable implements IApi {
   }
 
   setViewModule(path: string) {
-    this._app.setViewModule(path);
+    this._projectBuilder.setViewModule(path);
   }
 
   setAppModule(module: string | string[]) {
-    this._app.setAppModule(module);
+    this._projectBuilder.setAppModule(module);
   }
 
   setPluginModule(module: string | string[]) {
-    this._app.setPluginModule(module);
+    this._projectBuilder.setPluginModule(module);
   }
 
   async setRoutes(routes: IUserRouteConfig[]) {
@@ -201,7 +199,7 @@ class Api extends Hookable implements IApi {
       name: 'app:routesFile',
       initialValue: content
     });
-    this._app.setRoutesContent(content);
+    this._projectBuilder.setRoutesContent(content);
   }
 
   getRoutes() {
@@ -210,13 +208,7 @@ class Api extends Hookable implements IApi {
 
   async buildApp(): Promise<void> {
     await setupApp(this);
-
-    if (this.mode === 'production') {
-      await this._app.buildOnce({ dir: this.paths.appDir });
-    } else {
-      await this._app.build({ dir: this.paths.appDir });
-    }
-
+    await this._projectBuilder.build(this.paths.appDir);
     this.emitEvent<APIHooks.IEventAppReady>('app:ready');
   }
 
@@ -251,27 +243,27 @@ class Api extends Hookable implements IApi {
   }
 
   setEntryFileContent(content: string): void {
-    this._app.setEntryFileContent(content);
+    this._projectBuilder.setEntryFileContent(content);
   }
 
   addEntryCode(content: string): void {
-    this._app.addEntryCode(content);
+    this._projectBuilder.addEntryCode(content);
   }
 
-  addAppFile(file: IFile, dir = ''): void {
-    this._app.addFile(file, dir.startsWith('/') ? dir : `/${dir}`);
+  addAppFile(options: FileOptions): void {
+    this._projectBuilder.addFile(options);
   }
 
   addAppExport(source: string, specifier: ISpecifier | ISpecifier[]): void {
-    this._app.addExport(source, specifier);
+    this._projectBuilder.addExport(source, specifier);
   }
 
   addAppPolyfill(file: string): void {
-    this._app.addPolyfill(file);
+    this._projectBuilder.addPolyfill(file);
   }
 
   addRuntimePlugin(name: string, runtimePlugin: string): void {
-    this._app.addRuntimePlugin(name, runtimePlugin);
+    this._projectBuilder.addRuntimePlugin(name, runtimePlugin);
   }
 
   getAssetPublicUrl(...paths: string[]): string {
@@ -298,7 +290,7 @@ class Api extends Hookable implements IApi {
     if (this._server) {
       await this._server.close();
     }
-    this._app.stopBuild(this.paths.appDir);
+    await this._projectBuilder.stopBuild();
     await this.callHook<APIHooks.IHookDestroy>('destroy');
   }
 
@@ -371,6 +363,10 @@ class Api extends Hookable implements IApi {
     // do not allow to modify paths
     Object.freeze(this._paths);
 
+    // Runtime installation need to be executed before initializing presets and plugins
+    // to make sure shuvi entry file at the top.
+    coreRuntime.install(this.getPluginApi());
+    runtime.install(this.getPluginApi());
     runPlugins();
   }
 

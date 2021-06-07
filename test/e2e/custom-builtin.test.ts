@@ -14,8 +14,6 @@ describe('Custom app.js', () => {
   });
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should render the custom app', async () => {
@@ -44,8 +42,6 @@ describe('[SPA] Custom app', () => {
   });
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('App.getInitalProps should work', async () => {
@@ -65,8 +61,6 @@ describe('Custom document template', () => {
   });
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should work', async () => {
@@ -85,8 +79,6 @@ describe('Custom document.js', () => {
   });
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should work', async () => {
@@ -106,8 +98,6 @@ describe('Custom 404 page', () => {
   });
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should work', async () => {
@@ -134,8 +124,6 @@ describe('Custom Server.js', () => {
   });
   afterEach(async () => {
     await page.close();
-    // force require to load file to make sure compiled file get load correctlly
-    jest.resetModules();
   });
 
   test('should work', async () => {
