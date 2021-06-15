@@ -52,7 +52,7 @@ describe('app', () => {
 
     checkMatch([
       ['entry.js', 'import "entry.js"'],
-      ['bootstrap.js', /run()/],
+      ['entryContents.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
@@ -80,7 +80,7 @@ describe('app', () => {
 
     checkMatch([
       ['entry.js', 'import "entry.js"'],
-      ['bootstrap.js', /run()/],
+      ['entryContents.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
@@ -102,7 +102,7 @@ describe('app', () => {
 
     checkMatch([
       ['entry.js', 'import "other_entry.js"'],
-      ['bootstrap.js', /run().*const a=1/s],
+      ['entryContents.js', /run().*const a=1/s],
       [
         'index.js',
         'export * from "something to export"\nexport * from "export2"'

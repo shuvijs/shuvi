@@ -52,13 +52,13 @@ export async function setupApp(api: Api) {
 
   api.setViewModule(runtime.getViewModulePath());
 
-  let bootstrapFile = `'${api.resolveAppFile('bootstrap')}'`;
+  let entryContentsFile = `'${api.resolveAppFile('entryContents')}'`;
 
   if (config.asyncEntry === true) {
-    bootstrapFile = `(${bootstrapFile})`;
+    entryContentsFile = `(${entryContentsFile})`;
   }
 
-  api.setEntryFileContent(`import ${bootstrapFile};`);
+  api.setEntryFileContent(`import ${entryContentsFile};`);
 
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
