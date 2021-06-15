@@ -1,4 +1,4 @@
-import { getFileManager, reactive } from '../index';
+import { getFileManager, reactive, onMounted, onUnmounted } from '../index';
 import { resetFs, recursiveReadDir, readFile } from './helper/fs';
 import { waitForUpdate } from './helper/wait-for-update';
 
@@ -139,4 +139,30 @@ test('should not excute mounted and unmounted in static mode', async () => {
   expect(await readFile('/test')).toEqual('a');
   await fileManager.unmount();
   expect(something).toEqual(0);
+});
+
+describe('onMount/onUnmount', () => {
+  test('should work', async () => {
+    const fileManager = getFileManager({ watch: true });
+    let something = 0;
+    fileManager.addFile({
+      name: 'test',
+      setup() {
+        onMounted(() => {
+          something = 1;
+        });
+        onUnmounted(() => {
+          something = 2;
+        });
+      },
+      content() {
+        return 'a';
+      }
+    });
+    await fileManager.mount('/');
+    expect(something).toEqual(1);
+    expect(await readFile('/test')).toEqual('a');
+    await fileManager.unmount();
+    expect(something).toEqual(2);
+  });
 });

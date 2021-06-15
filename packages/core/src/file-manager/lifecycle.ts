@@ -53,4 +53,4 @@ export const createHook = <T extends Function = () => any>(
   injectHook(lifecycle, hook, target);
 
 export const onMounted = createHook('mounted');
-export const onUnMounted = createHook('unmounted');
+export const onUnmounted = createHook('unmounted');

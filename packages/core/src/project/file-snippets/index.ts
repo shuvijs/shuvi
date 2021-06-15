@@ -1,5 +1,3 @@
-import { watch } from '@shuvi/utils/lib/fileWatcher';
-import { reactive } from '../../file-manager';
 import { getExportsContent } from './helpers';
 import moduleExportProxy, {
   moduleExportProxyCreater
@@ -23,5 +21,3 @@ export {
   moduleExportProxy,
   moduleExportProxyCreater
 };
-
-export { watch, reactive };

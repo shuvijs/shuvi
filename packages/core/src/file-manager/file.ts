@@ -1,20 +1,18 @@
-import { reactive, ReactiveEffect } from '@vue/reactivity';
+import { ReactiveEffect } from '@vue/reactivity';
 import {
   FileOptions,
   FileInternalInstance,
   FilePublicInstance,
   FileInternalContentFunction
 } from './fileTypes';
-import { EMPTY_OBJ, extend, hasOwn } from '@shuvi/utils';
+import { EMPTY_OBJ, extend, hasOwn, isObject } from '@shuvi/utils';
 import { injectHook } from './lifecycle';
 import { queueJob } from './scheduler';
 
 export * from './fileTypes';
 
-type DataFn = (vm: FilePublicInstance) => any;
-
 const AccessTypes = {
-  DATA: 0,
+  SETUP: 0,
   PROPS: 1,
   CONTEXT: 2,
   OTHER: 3,
@@ -41,7 +39,7 @@ export function recordInstanceBoundEffect(effect: ReactiveEffect) {
 type PublicPropertiesMap = Record<string, (i: FileInternalInstance) => any>;
 
 const publicPropertiesMap: PublicPropertiesMap = extend(Object.create(null), {
-  $data: i => i.data,
+  $setup: i => i.setupState,
   $forceUpdate: i => () => queueJob(i.update)
 } as PublicPropertiesMap);
 
@@ -52,7 +50,7 @@ interface ComponentRenderContext {
 
 export const PublicInstanceProxyHandlers = {
   get({ _: instance }: ComponentRenderContext, key: string) {
-    const { ctx, data, accessCache } = instance;
+    const { ctx, setupState, accessCache } = instance;
 
     // let @vue/reactivity know it should never observe Vue public instances.
     if (key === '__v_skip' /* ReactiveFlags.SKIP */) {
@@ -75,15 +73,15 @@ export const PublicInstanceProxyHandlers = {
       const n = accessCache![key];
       if (n !== undefined) {
         switch (n) {
-          case AccessTypes.DATA:
-            return data[key];
+          case AccessTypes.SETUP:
+            return setupState[key];
           case AccessTypes.CONTEXT:
             return ctx[key];
           // default: just fallthrough
         }
-      } else if (data !== EMPTY_OBJ && hasOwn(data, key)) {
-        accessCache![key] = AccessTypes.DATA;
-        return data[key];
+      } else if (setupState !== EMPTY_OBJ && hasOwn(setupState, key)) {
+        accessCache![key] = AccessTypes.SETUP;
+        return setupState[key];
       } else if (ctx !== EMPTY_OBJ && hasOwn(ctx, key)) {
         accessCache![key] = AccessTypes.CONTEXT;
         return ctx[key];
@@ -102,9 +100,9 @@ export const PublicInstanceProxyHandlers = {
     key: string,
     value: any
   ): boolean {
-    const { data, ctx } = instance;
-    if (data !== EMPTY_OBJ && hasOwn(data, key)) {
-      data[key] = value;
+    const { setupState, ctx } = instance;
+    if (setupState !== EMPTY_OBJ && hasOwn(setupState, key)) {
+      setupState[key] = value;
     }
 
     if (key[0] === '$' && key.slice(1) in instance) {
@@ -115,10 +113,13 @@ export const PublicInstanceProxyHandlers = {
     return true;
   },
 
-  has({ _: { data, accessCache, ctx } }: ComponentRenderContext, key: string) {
+  has(
+    { _: { setupState, accessCache, ctx } }: ComponentRenderContext,
+    key: string
+  ) {
     return (
       accessCache![key] !== undefined ||
-      (data !== EMPTY_OBJ && hasOwn(data, key)) ||
+      (setupState !== EMPTY_OBJ && hasOwn(setupState, key)) ||
       hasOwn(ctx, key) ||
       hasOwn(publicPropertiesMap, key)
     );
@@ -138,7 +139,7 @@ export function createFileInstance(options: FileOptions): FileInternalInstance {
 
     // state
     ctx: EMPTY_OBJ,
-    data: EMPTY_OBJ,
+    setupState: EMPTY_OBJ,
 
     // lifecycle
     isMounted: false,
@@ -153,7 +154,15 @@ export function createFileInstance(options: FileOptions): FileInternalInstance {
     PublicInstanceProxyHandlers
   ) as FilePublicInstance;
 
+  const { setup } = options;
+
   currentInstance = instance;
+  if (setup) {
+    const setupResult = setup();
+    if (isObject(setupResult)) {
+      instance.setupState = setupResult;
+    }
+  }
   applyOptions(instance, options);
   currentInstance = null;
 
@@ -163,7 +172,6 @@ export function createFileInstance(options: FileOptions): FileInternalInstance {
 function applyOptions(instance: FileInternalInstance, options: FileOptions) {
   const publicThis = instance.proxy!;
   const {
-    data: dataOptions,
     methods: methodsOptions,
 
     // lifecycle
@@ -171,10 +179,6 @@ function applyOptions(instance: FileInternalInstance, options: FileOptions) {
     unmounted
   } = options;
   const ctx = instance.ctx;
-  if (dataOptions) {
-    resolveData(instance, dataOptions, publicThis);
-  }
-
   if (methodsOptions) {
     const publicThis = instance.proxy;
     for (const key in methodsOptions) {
@@ -189,13 +193,4 @@ function applyOptions(instance: FileInternalInstance, options: FileOptions) {
   if (unmounted) {
     injectHook('unmounted', unmounted.bind(publicThis));
   }
-}
-
-function resolveData(
-  instance: FileInternalInstance,
-  dataFn: DataFn,
-  publicThis: FilePublicInstance
-) {
-  const data = dataFn.call(publicThis, publicThis);
-  instance.data = reactive(data);
 }

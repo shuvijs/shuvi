@@ -21,7 +21,7 @@ export interface FileOptionsBase<Data, Method extends MethodOptions>
   // Limitation: we cannot expose RawBindings on the `this` context for data
   // since that leads to some sort of circular inference and breaks ThisType
   // for the entire component.
-  data?: (this: CreateFilePublicInstance<Data, Method>) => Data;
+  setup?: (this: void) => Data | void;
   methods?: Method;
 
   // lifecycle
@@ -45,7 +45,7 @@ export type FilePublicInstance<
   Context = {},
   Method extends MethodOptions = {}
 > = {
-  $data: Data;
+  $setup: Data;
   $context: Context;
 } & Data &
   Context &
@@ -57,7 +57,7 @@ export type CreateFilePublicInstance<
   Method extends MethodOptions = {}
 > = FilePublicInstance<Data, Context, Method>;
 
-export type FileInternalContentFunction = (ctx: any) => string;
+export type FileInternalContentFunction = (ctx: any, $setup: Data) => string;
 
 export type FileType<
   Data = any,
@@ -96,7 +96,7 @@ export interface FileInternalInstance {
    * custom properties (via `this.x = ...`)
    */
   ctx: Data;
-  data: Data;
+  setupState: Data;
 
   // lifecycle
   isMounted: boolean;

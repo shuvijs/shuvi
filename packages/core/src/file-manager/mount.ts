@@ -15,7 +15,7 @@ export function mount(
   const defer = Defer<FileInternalInstance>();
   const instance = createFileInstance(options);
 
-  const { content, name: fsPath } = instance;
+  const { content, name: fsPath, setupState } = instance;
   const dir = path.dirname(fsPath);
   let fd: any;
   const componentEffect = () => {
@@ -23,7 +23,7 @@ export function mount(
     if (!instance.isMounted) {
       fse.ensureDirSync(dir);
       fd = fse.openSync(fsPath, 'w+');
-      const fileContent = content(context);
+      const fileContent = content(context, setupState);
       fse.writeSync(fd, fileContent, 0);
       /**
        * `mounted` hook could be excuted only in watch mode
@@ -35,7 +35,7 @@ export function mount(
       defer.resolve(instance);
       return;
     }
-    const fileContent = content(context);
+    const fileContent = content(context, setupState);
     fse.ftruncateSync(fd, 0);
     fse.writeSync(fd, fileContent, 0);
   };
