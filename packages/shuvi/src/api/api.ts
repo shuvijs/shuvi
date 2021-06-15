@@ -3,7 +3,6 @@ import {
   IApiConfig,
   IApi,
   APIHooks,
-  ISpecifier,
   IPaths,
   IShuviMode,
   Runtime,
@@ -254,8 +253,8 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addFile(options);
   }
 
-  addAppExport(source: string, specifier: ISpecifier | ISpecifier[]): void {
-    this._projectBuilder.addExport(source, specifier);
+  addAppExport(source: string, exported: string): void {
+    this._projectBuilder.addExport(source, exported);
   }
 
   addAppPolyfill(file: string): void {

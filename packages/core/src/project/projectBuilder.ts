@@ -1,11 +1,7 @@
 import { getFileManager, FileManager, FileOptions } from '../file-manager';
 import { getFilePresets } from './file-presets';
 
-import {
-  ProjectContext,
-  createProjectContext,
-  ISpecifier
-} from './projectContext';
+import { ProjectContext, createProjectContext } from './projectContext';
 
 interface ProjectBuilderOptions {
   static?: boolean;
@@ -52,11 +48,8 @@ class ProjectBuilder {
     this._projectContext.entryCodes.push(content);
   }
 
-  addExport(source: string, specifier: ISpecifier | ISpecifier[]) {
-    this._projectContext.exports.set(
-      source,
-      ([] as ISpecifier[]).concat(specifier)
-    );
+  addExport(source: string, exported: string) {
+    this._projectContext.exports.set(source, ([] as string[]).concat(exported));
   }
 
   addPolyfill(file: string) {

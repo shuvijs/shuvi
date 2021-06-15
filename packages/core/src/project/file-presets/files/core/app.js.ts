@@ -1,7 +1,7 @@
-import fileSnippetUtil from '../../../file-snippet-util';
+import { moduleExportProxyCreater } from '../../../file-snippets';
 import { ProjectContext } from '../../../projectContext';
 
-const moduleExportProxy = fileSnippetUtil.moduleExportProxyCreater();
+const moduleExportProxy = moduleExportProxyCreater();
 export default {
   content: (context: ProjectContext) =>
     moduleExportProxy.getContent(context.appModule, true),

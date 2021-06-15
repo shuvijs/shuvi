@@ -1,6 +1,5 @@
 import {
   ProjectBuilder,
-  ISpecifier,
   ITemplateData,
   IHookable,
   AppHooks
@@ -17,7 +16,7 @@ import * as APIHooks from './src/hooks';
 
 export { webpack, WebpackChain };
 
-export { Runtime, Bundler, APIHooks, AppHooks, ISpecifier, ITemplateData };
+export { Runtime, Bundler, APIHooks, AppHooks, ITemplateData };
 
 export interface IServerProxyConfigItem extends ProxyOptions {
   context?: ProxyFilter;

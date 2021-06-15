@@ -1,7 +1,7 @@
-import fileSnippetUtil from '../../file-snippet-util';
+import { exportsFromObject } from '../../file-snippets';
 import { ProjectContext } from '../../projectContext';
 
 export default {
   content: (context: ProjectContext) =>
-    fileSnippetUtil.moduleExport(Object.fromEntries(context.exports.entries()))
+    exportsFromObject(Object.fromEntries(context.exports.entries()))
 };
