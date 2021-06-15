@@ -15,14 +15,8 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
 
-    api.addAppExport(resolveAppFile('head/head'), {
-      imported: 'default',
-      local: 'Head'
-    });
-    api.addAppExport(resolveAppFile('dynamic'), {
-      imported: 'default',
-      local: 'dynamic'
-    });
+    api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
+    api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
     api.addAppExport(
       resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }'

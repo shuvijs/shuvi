@@ -1,12 +1,5 @@
 import { reactive } from '../file-manager';
 
-export type ISpecifier =
-  | string //  imported === local
-  | {
-      imported: string;
-      local: string;
-    };
-
 export interface ProjectContext {
   viewModule: string;
   appModule: string | string[];
@@ -15,7 +8,7 @@ export interface ProjectContext {
   entryFileContent: string;
   routesContent: string;
   polyfills: string[];
-  exports: Map<string, ISpecifier[]>;
+  exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
 }
 
