@@ -1,6 +1,6 @@
-import fileSnippetUtil from './project/file-snippet-util';
+import * as FileSnippets from './project/file-snippets';
 
-export { fileSnippetUtil };
+export { FileSnippets };
 
 export { Route } from './route';
 
@@ -10,4 +10,4 @@ export type { FileOptions } from './file-manager';
 
 export { ProjectBuilder } from './project/projectBuilder';
 
-export * from './project/file-snippet-util';
+export * from './project/file-snippets';

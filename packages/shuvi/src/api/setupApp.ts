@@ -1,4 +1,4 @@
-import { Route, fileSnippetUtil } from '@shuvi/core';
+import { Route, FileSnippets } from '@shuvi/core';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
@@ -12,6 +12,8 @@ function withExts(file: string, extensions: string[]): string[] {
 
 export async function setupApp(api: Api) {
   const { paths, config } = api;
+  const ssr = api.config.ssr;
+
   await verifyTypeScriptSetup({
     projectDir: paths.rootDir,
     srcDir: paths.srcDir,
@@ -70,7 +72,7 @@ export async function setupApp(api: Api) {
     require.resolve('@shuvi/utils/lib/noopFn')
   ]);
 
-  const moduleExportProxy404 = fileSnippetUtil.moduleExportProxyCreater();
+  const moduleExportProxy404 = FileSnippets.moduleExportProxyCreater();
   api.addAppFile({
     name: 'core/404.js',
     content: () =>
@@ -85,7 +87,7 @@ export async function setupApp(api: Api) {
     unmounted: moduleExportProxy404.unmounted
   });
 
-  const moduleExportProxyServer = fileSnippetUtil.moduleExportProxyCreater();
+  const moduleExportProxyServer = FileSnippets.moduleExportProxyCreater();
   api.addAppFile({
     name: 'core/server.js',
     content: () =>
@@ -97,7 +99,7 @@ export async function setupApp(api: Api) {
     unmounted: moduleExportProxyServer.unmounted
   });
 
-  const moduleExportProxyDocument = fileSnippetUtil.moduleExportProxyCreater();
+  const moduleExportProxyDocument = FileSnippets.moduleExportProxyCreater();
   api.addAppFile({
     name: 'core/document.js',
     content: () =>
@@ -126,10 +128,7 @@ export async function setupApp(api: Api) {
     });
   }
 
-  api.addAppExport(runtime.getAppModulePath(), {
-    imported: 'default',
-    local: 'App'
-  });
+  api.addAppExport(runtime.getAppModulePath(), '{ default as App }');
 
   // don not use absolute path, this module would't be bundled
   api.addAppExport(
@@ -140,52 +139,25 @@ export async function setupApp(api: Api) {
   api.addAppFile({
     name: 'core/setRuntimeConfig.js',
     content: () =>
-      fileSnippetUtil.moduleExport({
-        'shuvi/lib/lib/runtimeConfig': {
-          imported: 'setRuntimeConfig',
-          local: 'default'
-        }
-      })
+      `export { setRuntimeConfig as default } from 'shuvi/lib/lib/runtimeConfig'`
   });
 
   api.addAppFile({
     name: 'server.js',
     content: () =>
-      fileSnippetUtil.moduleExport(
-        api.config.ssr
-          ? {
-              [api.resolveAppFile('core', 'server')]: {
-                imported: '*',
-                local: 'server'
-              },
-              [api.resolveAppFile('core', 'document')]: {
-                imported: '*',
-                local: 'document'
-              },
-              [api.resolveAppFile('core', 'application')]: {
-                imported: '*',
-                local: 'application'
-              },
-              [runtime.getViewModulePath()]: {
-                imported: 'default',
-                local: 'view'
-              }
-            }
-          : {
-              [api.resolveAppFile('core', 'server')]: {
-                imported: '*',
-                local: 'server'
-              },
-              [api.resolveAppFile('core', 'document')]: {
-                imported: '*',
-                local: 'document'
-              },
-              [api.resolveAppFile('core', 'application-spa-server')]: {
-                imported: '*',
-                local: 'application'
-              }
-            }
-      )
+      [
+        `import * as server from '${api.resolveAppFile('core', 'server')}'`,
+        `import * as document from '${api.resolveAppFile('core', 'document')}'`,
+        `import * as application from '${api.resolveAppFile(
+          'core',
+          ssr ? 'application' : 'application-spa-server'
+        )}'`,
+        'export { server, document, application }',
+        ssr &&
+          `export { default as view } from '${runtime.getViewModulePath()}'`
+      ]
+        .filter(Boolean)
+        .join(';\n')
   });
 
   const { routes } = api.config;
