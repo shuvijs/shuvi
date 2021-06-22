@@ -63,13 +63,10 @@ Type definitions for shuvi.
 
 2. Run `yarn dev`
 
-3. Create a 'Hello world' page:
-
-```bash
-mkdir -p src/pages
-cat <<EOF >> src/pages/index.js
-export default () => <div>hello, world</div>
-EOF
-```
-
 Once it is done, you can run shuvi cli by `yarn shuvi` in another terminal. It will serve the application in the specified dir.
+
+e.g.
+
+```
+yarn shuvi dev test/fixtures/basic
+```
