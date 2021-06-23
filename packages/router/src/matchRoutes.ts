@@ -7,38 +7,27 @@ import {
 } from './types';
 import { matchPathname } from './matchPathname';
 import { joinPaths, resolvePath } from './utils';
+import { tokensToParser } from '@shuvi/router/lib/pathParserRanker';
+import { tokenizePath } from '@shuvi/router/lib/pathTokenizer';
 
 export interface IRouteBaseObject<Element = any>
   extends Omit<IRouteRecord<Element>, 'children' | 'element'> {
   children?: IRouteBaseObject<Element>[];
 }
 
-const paramRe = /^:\w+$/;
-const dynamicSegmentValue = 2;
-const emptySegmentValue = 1;
-const staticSegmentValue = 10;
-const splatPenalty = -2;
-const isSplat = (s: string) => s === '*';
-
-function computeScore(path: string): number {
-  let segments = path.split('/');
-  let initialScore = segments.length;
-  if (segments.some(isSplat)) {
-    initialScore += splatPenalty;
+function computeScore(
+  path: string
+): number {
+  const source = path ? path.replace(/^\/*/, '/') : path; // Make sure it has a leading /
+  const { score = [] } = tokensToParser(tokenizePath(source));
+  let initScore = 0;
+  while (score.length) {
+    const last = score.pop();
+    for (let i = 0; last && i < last.length; i++) {
+      initScore += last[i];
+    }
   }
-
-  return segments
-    .filter(s => !isSplat(s))
-    .reduce(
-      (score, segment) =>
-        score +
-        (paramRe.test(segment)
-          ? dynamicSegmentValue
-          : segment === ''
-          ? emptySegmentValue
-          : staticSegmentValue),
-      initialScore
-    );
+  return initScore;
 }
 
 function compareIndexes(a: number[], b: number[]): number {
@@ -50,10 +39,10 @@ function compareIndexes(a: number[], b: number[]): number {
       // first. This allows people to have fine-grained control over the matching
       // behavior by simply putting routes with identical paths in the order they
       // want them tried.
-      a[a.length - 1] - b[b.length - 1]
+    a[a.length - 1] - b[b.length - 1]
     : // Otherwise, it doesn't really make sense to rank non-siblings by index,
       // so they sort equally.
-      0;
+    0;
 }
 
 function stableSort(array: any[], compareItems: (a: any, b: any) => number) {
@@ -107,6 +96,8 @@ function rankRouteBranches(branches: IRouteBranch[]): void {
     memo[path] = computeScore(path);
     return memo;
   }, {});
+
+  console.log(pathScores);
 
   // Sorting is stable in modern browsers, but we still support IE 11, so we
   // need this little helper.
