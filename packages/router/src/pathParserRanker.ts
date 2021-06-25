@@ -1,6 +1,11 @@
 import { Token, TokenType } from './pathTokenizer'
 
-export type PathParams = Record<string, string | string[]>
+type PathParams = Record<string, string | string[]>
+
+export type MatchPathParams = {
+  match: string,
+  params: PathParams
+}
 
 /**
  * A param in a url like `/users/:id`
@@ -33,7 +38,7 @@ export interface PathParser {
    * @returns a Params object, empty if there are no params. `null` if there is
    * no match
    */
-  parse(path: string): PathParams | null
+  parse(path: string): MatchPathParams | null
   /**
    * Creates a string version of the url
    *
@@ -62,6 +67,7 @@ export interface _PathParserOptions {
   start?: boolean
   /**
    * Should the RegExp match until the end by appending a `$` to it. Defaults to true
+   * false make RegExp match end with next /|$
    */
   end?: boolean
 }
@@ -127,6 +133,7 @@ export function tokensToParser(
 
     // allow trailing slash
     if (options.strict && !segment.length) pattern += '/'
+
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
       const token = segment[tokenIndex]
       // resets the score if we are inside a sub segment /:a-other-:b
@@ -176,6 +183,8 @@ export function tokensToParser(
 
         pattern += subPattern
 
+        if (!options.end) pattern += '(?=\/|$)'
+
         subSegmentScore += PathScore.Dynamic
         if (optional) subSegmentScore += PathScore.BonusOptional
         if (repeatable) subSegmentScore += PathScore.BonusRepeatable
@@ -198,15 +207,15 @@ export function tokensToParser(
   }
 
   // TODO: dev only warn double trailing slash
-  if (!options.strict) pattern += '/?'
+  if (!options.strict) pattern += '/*?'
 
   if (options.end) pattern += '$'
   // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_something_else
-  else if (options.strict) pattern += '(?:/|$)'
+  else if (options.strict) pattern += '(?:/*|$)'
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i')
 
-  function parse(path: string): PathParams | null {
+  function parse(path: string): MatchPathParams | null {
     const match = path.match(re)
     const params: PathParams = {}
 
@@ -218,7 +227,10 @@ export function tokensToParser(
       params[key.name] = value && key.repeatable ? value.split('/') : value
     }
 
-    return params
+    return {
+      match: match[0],
+      params,
+    }
   }
 
   function stringify(params: PathParams): string {
@@ -307,9 +319,14 @@ function compareScoreArray(a: number[], b: number[]): number {
  * Compare function that can be used with `sort` to sort an array of PathParser
  * @param a - first PathParser
  * @param b - second PathParser
- * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b
+ * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b, last sort by index
  */
-export function comparePathParserScore(a: PathParser, b: PathParser): number {
+
+type PathParserIndex = PathParser & {
+  index: number
+}
+
+export function comparePathParserScore(a: PathParserIndex, b: PathParserIndex): number {
   let i = 0
   const aScore = a.score
   const bScore = b.score
@@ -322,11 +339,14 @@ export function comparePathParserScore(a: PathParser, b: PathParser): number {
   }
 
   // if a and b share the same score entries but b has more, sort b first
-  return bScore.length - aScore.length
+  const lengthDiff = bScore.length - aScore.length;
+  if(lengthDiff) return lengthDiff;
   // this is the ternary version
   // return aScore.length < bScore.length
   //   ? 1
   //   : aScore.length > bScore.length
   //   ? -1
   //   : 0
+  //
+  return a.index - b.index;
 }
