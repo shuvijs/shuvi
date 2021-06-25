@@ -1,5 +1,4 @@
-import { isDev } from './utils';
-
+// fork by vue router 4, add '/*'s WILDCARD_TOKEN match
 export const enum TokenType {
   Static,
   Param,
@@ -39,6 +38,14 @@ const ROOT_TOKEN: Token = {
   value: ''
 };
 
+const WILDCARD_TOKEN: TokenParam = {
+  type: TokenType.Param,
+  regexp: '.*',
+  value: '*',
+  optional: false,
+  repeatable: false,
+};
+
 const VALID_PARAM_RE = /[a-zA-Z0-9_]/;
 // After some profiling, the cache seems to be unnecessary because tokenizePath
 // (the slowest part of adding a route) is very fast
@@ -49,12 +56,9 @@ export function tokenizePath(path: string): Array<Token[]> {
   if (!path) return [[]];
   if (path === '/') return [[ROOT_TOKEN]];
   if (!path.startsWith('/')) {
-    throw new Error(
-      isDev
-        ? `Route paths should start with a "/": "${path}" should be "/${path}".`
-        : `Invalid path "${path}"`
-    );
+    path = path.replace(/^\/*/, '/'); // Make sure it has a leading /
   }
+  if (path === '/*') return [[WILDCARD_TOKEN]];
 
   // if (tokenCache.has(path)) return tokenCache.get(path)!
 
