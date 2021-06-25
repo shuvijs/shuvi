@@ -3,11 +3,16 @@ import { tokensToParser } from './pathParserRanker';
 import { tokenizePath } from './pathTokenizer';
 
 function safelyDecodeURIComponent(
-  value: string,
+  value: string[] | string,
   paramName: string,
   optional?: boolean
 ) {
   try {
+    if(Array.isArray(value)){
+      return value.map((item) =>{
+        return decodeURIComponent(item.replace(/\+/g, ' '));
+      })
+    }
     return decodeURIComponent(value.replace(/\+/g, ' '));
   } catch (error) {
     if (!optional) {
@@ -20,15 +25,6 @@ function safelyDecodeURIComponent(
 
     return value;
   }
-}
-
-function compileToParser(
-  path: string,
-  caseSensitive: boolean,
-  end: boolean
-) {
-  const source = path ? path.replace(/^\/*/, '/') : path; // Make sure it has a leading /
-  return tokensToParser(tokenizePath(source), { end, sensitive: caseSensitive });
 }
 
 /**
@@ -46,23 +42,25 @@ export function matchPathname(
 
   const { path, caseSensitive = false, end = true } = pattern;
 
-  const pathParser = compileToParser(path, caseSensitive, end);
+  const pathParser = tokensToParser(tokenizePath(path), { end, sensitive: caseSensitive });;
 
-  const match = pathParser.parse(pathname);
+  const matchResult = pathParser.parse(pathname);
 
-  if (!match) return null;
+  if (!matchResult) return null;
 
   const { keys = [] } = pathParser;
 
-  const params = (keys).reduce((memo, key, index) => {
+  const {match, params} = matchResult;
+
+  const safelyDecodetParams = (keys).reduce((memo, key, index) => {
     const keyName = key.name;
     memo[keyName] = safelyDecodeURIComponent(
-      String(match[keyName]),
+      params[keyName],
       String(keyName),
       key.optional
     );
     return memo;
   }, {} as IParams);
 
-  return { path, pathname, params };
+  return { path, pathname: match, params: safelyDecodetParams };
 }
