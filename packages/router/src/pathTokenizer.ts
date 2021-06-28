@@ -42,7 +42,7 @@ const WILDCARD_TOKEN: TokenParam = {
   type: TokenType.Param,
   regexp: '.*',
   value: '*',
-  optional: false,
+  optional: true,
   repeatable: false,
 };
 
@@ -102,7 +102,7 @@ export function tokenizePath(path: string): Array<Token[]> {
     ) {
       if (segment.length > 1 && (char === '*' || char === '+'))
         crash(
-          `A repeatable param (${buffer}) must be alone in its segment. eg: '/:ids+.`
+          `A repeatable param (${buffer}) must be alone in its segment. `
         );
       segment.push({
         type: TokenType.Param,

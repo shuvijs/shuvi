@@ -22,9 +22,11 @@ export default class ShuviProd extends Base {
 
   private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
     const api = this._api;
+    let {path = ''} = ctx.params || {};
+    if(Array.isArray(path)) path = path.join('/');
     const assetAbsPath = api.resolveBuildFile(
       BUILD_CLIENT_DIR,
-      ctx.params!.path
+      path
     );
     try {
       await serveStatic(ctx.req, ctx.res, assetAbsPath);

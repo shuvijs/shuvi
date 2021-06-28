@@ -1,5 +1,5 @@
 import { IPathPattern, IPathMatch, IParams } from './types';
-import { tokensToParser } from './pathParserRanker';
+import { PathParserOptions, tokensToParser } from './pathParserRanker';
 import { tokenizePath } from './pathTokenizer';
 
 function safelyDecodeURIComponent(
@@ -63,4 +63,20 @@ export function matchPathname(
   }, {} as IParams);
 
   return { path, pathname: match, params: safelyDecodetParams };
+}
+
+/**
+ * stringify path to string by params and options
+ * @param path
+ * @param params
+ * @param options
+ */
+export function matchStringify(
+  path: string,
+  params: IParams,
+  options?: PathParserOptions
+) {
+  const pathParser = tokensToParser(tokenizePath(path), options);
+
+  return pathParser.stringify(params);
 }
