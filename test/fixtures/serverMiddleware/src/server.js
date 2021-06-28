@@ -8,7 +8,7 @@ import modifyHtml from './api/modify-html';
 export const serverMiddleware = [
   'koa-lowercase',
   setHeader,
-  { path: '/health-check*', handler: setCookie },
+  { path: '/health-check:other(.*)', handler: setCookie },
   { path: '/health-check', handler: healthCheck },
   { path: '/health-check2', handler: healthCheck }, // Note: share handler with other path
   {
@@ -17,7 +17,7 @@ export const serverMiddleware = [
   },
 
   { path: '/users/:id', handler: user },
-  { path: '/profile/:id/setting*', handler: setting },
+  { path: '/profile/:id/setting:other(.*)', handler: setting },
 
   { path: '/home', handler: modifyHtml },
 
