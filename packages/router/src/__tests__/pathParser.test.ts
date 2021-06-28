@@ -154,6 +154,12 @@ describe('Path parser', () => {
       matchParams('/a/:a?', '/a/', { a: '' });
       matchParams('/a/:a*', '/a', { a: '' });
       matchParams('/a/:a*', '/a/', { a: '' });
+      matchParams('/a/:a(.*)', '/a', null);
+      matchParams('/a/:a(.*)', '/a/', { a: '' });
+      matchParams('/a/-:a*', '/a/-', { a: '' });
+      matchParams('/a/-:a*', '/a/-/b/c', null);
+      matchParams('/a/-:a*', '/a/-b/c', { a: ['b', 'c'] });
+      matchParams('/a/-:a(.*)', '/a/-b/c', { a: 'b/c' });
     });
 
     it('static then param optional', () => {
