@@ -274,6 +274,10 @@ describe('Path parser', () => {
       matchStringify('/:a*/other', {}, '/other');
     });
 
+    it('*', () => {
+      matchStringify('/*', {'*': 'any/other'}, '/any/other');
+    });
+
     // end of generating urls
   });
 });

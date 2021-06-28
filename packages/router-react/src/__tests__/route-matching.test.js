@@ -16,7 +16,7 @@ describe('route matching', () => {
           },
           { path: 'new', component: NewCourse },
           { path: '/', component: CoursesIndex },
-          { path: '*', component: CoursesNotFound }
+          { path: ':other(.*)', component: CoursesNotFound }
         ]
       },
       {
@@ -25,11 +25,11 @@ describe('route matching', () => {
         children: [
           { path: 'react-fundamentals', component: ReactFundamentals },
           { path: 'advanced-react', component: AdvancedReact },
-          { path: '*', component: NeverRender }
+          { path: ':other(.*)', component: NeverRender }
         ]
       },
       { path: '/', component: Home },
-      { path: '*', component: NotFound }
+      { path: ':other(.*)', component: NotFound }
     ]);
   });
 

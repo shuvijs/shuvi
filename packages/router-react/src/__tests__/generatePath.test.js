@@ -13,7 +13,7 @@ describe('generatePath', () => {
       expect(generatePath('/courses/:id', { id: 'routing' })).toBe(
         '/courses/routing'
       );
-      expect(generatePath('/courses/*', { '*': 'routing/grades' })).toBe(
+      expect(generatePath('/courses/:_(.*)', { '_': 'routing/grades' })).toBe(
         '/courses/routing/grades'
       );
       expect(generatePath('*', { '*': 'routing/grades' })).toBe(
@@ -33,13 +33,14 @@ describe('generatePath', () => {
     it('throws an error', () => {
       expect(() => {
         generatePath('/:lang/login', {});
-      }).toThrow(/Missing ":lang" param/);
+      }).toThrow(/Missing required param \"lang\"/);
     });
   });
 
   describe('with a missing splat', () => {
     it('omits the splat and trims the trailing slash', () => {
-      expect(generatePath('/courses/*', {})).toBe('/courses');
+      expect(generatePath('/courses/:_(.*)', {_:''})).toBe('/courses/');
+      expect(generatePath('/courses/:_(.*)?', {})).toBe('/courses');
     });
   });
 });
