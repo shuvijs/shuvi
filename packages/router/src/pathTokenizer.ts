@@ -38,14 +38,6 @@ const ROOT_TOKEN: Token = {
   value: ''
 };
 
-const WILDCARD_TOKEN: TokenParam = {
-  type: TokenType.Param,
-  regexp: '.*',
-  value: '*',
-  optional: true,
-  repeatable: false,
-};
-
 const VALID_PARAM_RE = /[a-zA-Z0-9_]/;
 // After some profiling, the cache seems to be unnecessary because tokenizePath
 // (the slowest part of adding a route) is very fast
@@ -58,7 +50,6 @@ export function tokenizePath(path: string): Array<Token[]> {
   if (!path.startsWith('/')) {
     path = path.replace(/^\/*/, '/'); // Make sure it has a leading /
   }
-  if (path === '/*') return [[WILDCARD_TOKEN]];
 
   // if (tokenCache.has(path)) return tokenCache.get(path)!
 

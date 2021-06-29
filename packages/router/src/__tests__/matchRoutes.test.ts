@@ -99,7 +99,7 @@ describe('path matching', () => {
       { path: '/files' },
       { path: '/:one/:two/:three/:four/:five' },
       { path: '/' },
-      { path: '*' }
+      { path: ':_other(.*)' }
     ];
 
     expect(pickPaths(routes, '/groups/main/users/me')).toEqual([
@@ -129,7 +129,7 @@ describe('path matching', () => {
       '/:one/:two/:three/:four/:five'
     ]);
     expect(pickPaths(routes, '/')).toEqual(['/']);
-    expect(pickPaths(routes, '/no/where')).toEqual(['*']);
+    expect(pickPaths(routes, '/no/where')).toEqual([':_other(.*)']);
   });
 
   test('precedence of a bunch of routes in a nested route config', () => {
@@ -155,7 +155,7 @@ describe('path matching', () => {
         ]
       },
       { path: '/' },
-      { path: '*' }
+      { path: ':_other(.*)' }
     ];
 
     expect(pickPaths(routes, '/courses')).toEqual(['courses', '/']);
@@ -179,7 +179,7 @@ describe('path matching', () => {
       'advanced-react'
     ]);
     expect(pickPaths(routes, '/')).toEqual(['/']);
-    expect(pickPaths(routes, '/whatever')).toEqual(['*']);
+    expect(pickPaths(routes, '/whatever')).toEqual([':_other(.*)']);
   });
 
   test('nested index route vs sibling static route', () => {

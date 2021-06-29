@@ -281,7 +281,7 @@ describe('Path parser', () => {
     });
 
     it('*', () => {
-      matchStringify('/*', {'*': 'any/other'}, '/any/other');
+      matchStringify('/:other(.*)', {'other': 'any/other'}, '/any/other');
     });
 
     // end of generating urls

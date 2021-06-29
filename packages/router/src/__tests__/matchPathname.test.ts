@@ -8,17 +8,17 @@ describe('matchPathname', () => {
       pathname: ''
     });
 
-    expect(matchPathname('/\\*', '/*')).toStrictEqual({
+    expect(matchPathname('/*', '/*')).toStrictEqual({
       params: {},
-      path: '/\\*',
+      path: '/*',
       pathname: '/*'
     });
 
-    expect(matchPathname('/*', '/123/any')).toStrictEqual({
+    expect(matchPathname('/:other(.*)', '/123/any')).toStrictEqual({
       params: {
-        '*': '123/any'
+        'other': '123/any'
       },
-      path: '/*',
+      path: '/:other(.*)',
       pathname: '/123/any'
     });
 
