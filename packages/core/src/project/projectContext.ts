@@ -7,6 +7,7 @@ export interface ProjectContext {
   entryCodes: string[];
   entryFileContent: string;
   routesContent: string;
+  routesNormalizer: string;
   polyfills: string[];
   exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
@@ -20,6 +21,7 @@ export const createProjectContext = () =>
     entryCodes: [],
     entryFileContent: '',
     routesContent: 'export default []',
+    routesNormalizer: '',
     polyfills: [],
     exports: new Map(),
     runtimePlugins: new Map()

@@ -3,12 +3,10 @@ import { renderToString } from 'react-dom/server';
 import { Runtime } from '@shuvi/types';
 import { Router } from '@shuvi/router-react';
 import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';
-import { createMemoryHistory, createRouter } from '@shuvi/router';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
-import { normalizeRoutes } from '../utils/router';
 import { createRedirector } from '../utils/createRedirector';
 
 import IAppComponent = Runtime.IAppComponent;
@@ -18,9 +16,8 @@ import IParams = Runtime.IParams;
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
-    url,
     AppComponent,
-    routes,
+    router,
     appContext,
     manifest,
     getAssetPublicUrl,
@@ -29,13 +26,6 @@ export class ReactServerView implements IReactServerView {
     await Loadable.preloadAll();
 
     const redirector = createRedirector();
-    const router = createRouter({
-      routes: normalizeRoutes(routes, { appContext }),
-      history: createMemoryHistory({
-        initialEntries: [url],
-        initialIndex: 0
-      })
-    });
 
     await router.ready;
 
@@ -173,7 +163,6 @@ export class ReactServerView implements IReactServerView {
         });
       }
     }
-
     const appData: IReactAppData = {
       routeProps,
       dynamicIds: [...dynamicImportIdSet]
