@@ -1,8 +1,6 @@
 import { Runtime, AppHooks } from '@shuvi/types';
-import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
   IDENTITY_SSR_RUNTIME_PUBLICPATH,
-  CLIENT_APPDATA_ID
 } from '../constants';
 import getRuntimeConfig from '../lib/runtimeConfig';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
@@ -12,14 +10,12 @@ import { IRenderDocumentOptions } from './types';
 
 import IData = Runtime.IData;
 import IAppData = Runtime.IAppData;
-import IHtmlTag = Runtime.IHtmlTag;
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps({
     app,
-    url,
     AppComponent,
-    routes,
+    router,
     appContext,
     render
   }: IRenderDocumentOptions) {
@@ -30,9 +26,8 @@ export class SsrRenderer extends BaseRenderer {
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
     const result = await view.renderApp({
-      url,
       AppComponent,
-      routes,
+      router,
       appContext,
       manifest,
       getAssetPublicUrl,
@@ -61,7 +56,8 @@ export class SsrRenderer extends BaseRenderer {
     const appData: IAppData = {
       ...result.appData,
       pageData,
-      ssr: api.config.ssr
+      ssr: api.config.ssr,
+      router: api.config.router
     };
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 
@@ -92,17 +88,5 @@ export class SsrRenderer extends BaseRenderer {
 
     documentProps.mainTags.push();
     return documentProps;
-  }
-
-  private _getInlineAppData(appData: IAppData): IHtmlTag {
-    const data = JSON.stringify(appData);
-    return tag(
-      'script',
-      {
-        id: CLIENT_APPDATA_ID,
-        type: 'application/json'
-      },
-      htmlEscapeJsonString(data)
-    );
   }
 }

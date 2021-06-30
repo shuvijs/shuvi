@@ -1,11 +1,11 @@
 import { Hookable } from '@shuvi/hooks';
 import {
   IApplication,
-  IAppRouteConfig,
   IAppRenderFn,
   IRerenderConfig,
   AppHooks
 } from '../../types';
+import { IRouter } from '@shuvi/router';
 
 export type IContext = {
   [x: string]: any;
@@ -13,7 +13,7 @@ export type IContext = {
 
 export interface IApplicationOptions<Context> {
   AppComponent: any;
-  routes: IAppRouteConfig[];
+  router: IRouter;
   context: Context;
   render: IAppRenderFn;
 }
@@ -21,14 +21,14 @@ export interface IApplicationOptions<Context> {
 export class Application<Context extends {}> extends Hookable
   implements IApplication {
   AppComponent: any;
-  routes: IAppRouteConfig[];
+  router: IRouter;
   private _renderFn: IAppRenderFn;
   private _context: IContext;
 
   constructor(options: IApplicationOptions<Context>) {
     super();
     this.AppComponent = options.AppComponent;
-    this.routes = options.routes;
+    this.router = options.router;
     this._context = options.context;
     this._renderFn = options.render;
   }
@@ -42,9 +42,9 @@ export class Application<Context extends {}> extends Hookable
     return this._context;
   }
 
-  async rerender({ AppComponent, routes }: IRerenderConfig = {}) {
-    if (routes) {
-      this.routes = routes;
+  async rerender({ AppComponent, router }: IRerenderConfig = {}) {
+    if (router) {
+      this.router = router;
     }
     if (AppComponent) {
       this.AppComponent = AppComponent;
@@ -90,7 +90,7 @@ export class Application<Context extends {}> extends Hookable
     const result = await this._renderFn({
       appContext: this._context,
       AppComponent: this.AppComponent,
-      routes: this.routes
+      router: this.router
     });
     this.emitEvent<AppHooks.IEventRenderDone>('renderDone', result);
   }

@@ -1,11 +1,13 @@
 import { Runtime, ITemplateData, APIHooks } from '@shuvi/types';
 import invariant from '@shuvi/utils/lib/invariant';
+import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
   DEV_STYLE_ANCHOR_ID,
-  DEV_STYLE_HIDE_FOUC
+  DEV_STYLE_HIDE_FOUC,
+  CLIENT_APPDATA_ID
 } from '../constants';
 import { renderTemplate } from '../lib/viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
@@ -15,6 +17,7 @@ import { Api, IBuiltResource } from '../api';
 import IHtmlTag = Runtime.IHtmlTag;
 import IDocumentProps = Runtime.IDocumentProps;
 import IRenderResultRedirect = Runtime.IRenderResultRedirect;
+import IAppData = Runtime.IAppData;
 
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;
@@ -68,17 +71,15 @@ export abstract class BaseRenderer {
 
   async renderDocument({
     app,
-    url,
     AppComponent,
-    routes,
+    router,
     appContext,
     render
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
     let docProps = await this.getDocumentProps({
       app,
-      url,
       AppComponent,
-      routes,
+      router,
       appContext,
       render
     });
@@ -182,6 +183,18 @@ export abstract class BaseRenderer {
         id: CLIENT_CONTAINER_ID
       },
       html
+    );
+  }
+
+  protected _getInlineAppData(appData: IAppData): IHtmlTag {
+    const data = JSON.stringify(appData);
+    return tag(
+      'script',
+      {
+        id: CLIENT_APPDATA_ID,
+        type: 'application/json'
+      },
+      htmlEscapeJsonString(data)
     );
   }
 
