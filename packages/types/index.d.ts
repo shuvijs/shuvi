@@ -48,7 +48,7 @@ export interface IConfigCore {
   outputPath: string;
 }
 
-export type IRouterHistoryMode = 'browser' | 'hash' | 'auto';
+export type IRouterHistoryMode = 'browser' | 'hash' | 'memory' | 'auto';
 
 export type IPluginConfig =
   | string

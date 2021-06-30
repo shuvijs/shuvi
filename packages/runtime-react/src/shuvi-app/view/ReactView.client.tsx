@@ -2,41 +2,26 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from '@shuvi/router-react';
 import { Runtime } from '@shuvi/types';
-import { History, createRouter } from '@shuvi/router';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { createRedirector } from '../utils/createRedirector';
-import { normalizeRoutes } from '../utils/router';
 import { IReactClientView } from '../types';
 
 const headManager = new HeadManager();
 
-type HistoryCreator = () => History;
-
 export class ReactClientView implements IReactClientView {
-  private _history: History;
   private _isInitialRender: boolean = true;
-
-  constructor(historyCreator: HistoryCreator) {
-    this._history = historyCreator();
-  }
 
   renderApp: IReactClientView['renderApp'] = async ({
     appContainer,
     AppComponent,
     appData,
-    routes,
+    router,
     appContext
   }) => {
-    const { _history: history, _isInitialRender: isInitialRender } = this;
-    let { ssr, appProps, dynamicIds, routeProps } = appData;
-
-    const router = createRouter({
-      routes: normalizeRoutes(routes, { appContext, routeProps }),
-      history
-    });
-
+    const { _isInitialRender: isInitialRender } = this;
+    let { ssr, appProps, dynamicIds } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
       (window as any).__SHUVI.router = router;

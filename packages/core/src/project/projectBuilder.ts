@@ -28,6 +28,10 @@ class ProjectBuilder {
     this._projectContext.viewModule = module;
   }
 
+  setRoutesNormalizer(module: string) {
+    this._projectContext.routesNormalizer = module;
+  }
+
   setAppModule(module: string | string[]) {
     this._projectContext.appModule = module;
   }

@@ -6,11 +6,9 @@ import { config as configBundler } from './bundler/config';
 import UserRouteConfig = Runtime.IUserRouteConfig;
 
 class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
-  private _api!: IApi;
-
+  _api!: IApi;
   async install(api: IApi): Promise<void> {
     this._api = api;
-
     // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
@@ -47,20 +45,11 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
   }
 
   getViewModulePath(): string {
-    let {
-      ssr,
-      router: { history }
-    } = this._api.config;
-
-    if (history === 'auto') {
-      history = ssr ? 'browser' : 'hash';
-    }
-
-    if (history === 'hash') {
-      return resolveAppFile('index.hash');
-    }
-
-    return resolveAppFile('index.browser');
+    return resolveAppFile('index');
+  }
+  
+  getRoutesNormalizerPath(): string {
+    return resolveAppFile('normalizeRoutes');
   }
 
   getAppModulePath(): string {

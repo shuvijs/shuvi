@@ -1,4 +1,5 @@
 import { Application } from '../application';
+import { createRouter, createMemoryHistory } from '@shuvi/router';
 
 function getApp({ render }: any = {}) {
   const app = new Application({
@@ -6,13 +7,16 @@ function getApp({ render }: any = {}) {
       test: true
     },
     AppComponent: {},
-    routes: [
-      {
-        id: 'test',
-        path: '/',
-        component: ''
-      }
-    ],
+    router: createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        {
+          id: 'test',
+          path: '/',
+          component: ''
+        }
+      ]
+    }),
     async render(options) {
       return render && render(options);
     }
@@ -46,7 +50,7 @@ describe('application', () => {
     expect(renderResult).toBe('render result');
     const renderPrarmas = render.mock.calls[0][0];
     expect(renderPrarmas['AppComponent']).toBeDefined();
-    expect(renderPrarmas['routes']).toBeDefined();
+    expect(renderPrarmas['router']).toBeDefined();
     expect(renderPrarmas['appContext']).toBeDefined();
   });
 

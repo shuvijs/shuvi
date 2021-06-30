@@ -7,9 +7,8 @@ export interface IRendererConstructorOptions {
 
 export type IRenderDocumentOptions = {
   app: Runtime.IApplication;
-  url: string;
   AppComponent: any;
-  routes: Runtime.IAppRouteConfig[];
+  router: Runtime.IRouter;
   appContext: any;
   render?: Runtime.IServerModule['render'];
 };
