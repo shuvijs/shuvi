@@ -23,5 +23,9 @@ export function shuvi({
     ShuviCtor = require('./shuvi.prod').default;
   }
 
-  return new ShuviCtor({ cwd, config, configFile });
+  let shuviCtor = new ShuviCtor({ cwd, config, configFile });
+
+  console.log(shuviCtor);
+
+  return shuviCtor;
 }

@@ -28,6 +28,7 @@ export default abstract class Shuvi {
     });
 
     this._handlePageRequest = this._handlePageRequest.bind(this);
+    this.renderToHTML = this.renderToHTML.bind(this);
   }
 
   async ready(): Promise<void> {
@@ -99,7 +100,7 @@ export default abstract class Shuvi {
       const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
         {
           name: 'renderToHTML',
-          initialValue: this.renderToHTML.bind(this)
+          initialValue: this.renderToHTML
         }
       );
       const html = await renderToHTML(ctx.req, ctx.res);
