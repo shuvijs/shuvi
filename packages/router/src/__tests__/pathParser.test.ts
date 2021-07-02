@@ -4,14 +4,16 @@ import { MatchPathParams } from '../pathParserRanker';
 import { tokensToParser } from '../pathParserRanker';
 
 describe('Path parser', () => {
-
   describe('parsing urls', () => {
     function matchParams(
       path: string,
       pathToTest: string,
-      params: ReturnType<ReturnType<typeof tokensToParser>['parse']> extends infer P
-        ?
-        P extends MatchPathParams ?  P['params'] : null
+      params: ReturnType<
+        ReturnType<typeof tokensToParser>['parse']
+      > extends infer P
+        ? P extends MatchPathParams
+          ? P['params']
+          : null
         : null,
       options?: Parameters<typeof tokensToParser>[1]
     ) {
@@ -23,7 +25,7 @@ describe('Path parser', () => {
 
       if (mathResult) {
         const { params } = mathResult;
-        matchParams = params
+        matchParams = params;
       }
 
       expect(matchParams).toEqual(params);
@@ -210,8 +212,10 @@ describe('Path parser', () => {
   describe('generating urls', () => {
     function matchStringify(
       path: string,
-      params: Exclude<ReturnType<ReturnType<typeof tokensToParser>['parse']>,
-        null>['params'],
+      params: Exclude<
+        ReturnType<ReturnType<typeof tokensToParser>['parse']>,
+        null
+      >['params'],
       expectedUrl: string,
       options?: Parameters<typeof tokensToParser>[1]
     ) {
@@ -280,8 +284,8 @@ describe('Path parser', () => {
       matchStringify('/:a*/other', {}, '/other');
     });
 
-    it('*', () => {
-      matchStringify('/:other(.*)', {'other': 'any/other'}, '/any/other');
+    it(':other(.*)', () => {
+      matchStringify('/:other(.*)', { other: 'any/other' }, '/any/other');
     });
 
     // end of generating urls
