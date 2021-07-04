@@ -1,5 +1,6 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import Koa, { DefaultState, DefaultContext } from 'koa';
+import connect  from 'connect';
 import { UrlWithParsedQuery } from 'url';
 import {
   IUserRouteConfig,
@@ -22,6 +23,7 @@ import {
 import { ParsedQuery } from 'query-string';
 import { IApi } from '../index';
 import { IManifest } from './bundler';
+import http from 'http';
 
 export {
   IUserRouteConfig,
@@ -201,14 +203,15 @@ export interface IDocumentModule {
 export interface CustomContext extends DefaultContext {
   params?: IParams;
 }
-export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
-export type IServerAppContext = Koa.Context;
-export type IServerMiddlewareHandler<
-  S = DefaultState,
-  C = CustomContext
-> = Koa.Middleware<S, C>;
-export type IServerAppNext = Koa.Next;
-export type IServerAppResponse = Koa.Response;
+export type IServerApp = connect.Server;
+// export type IServerAppContext = Koa.Context;
+export type IServerAppRequest = IIncomingMessage;
+export type IServerAppResponse = ServerResponse;
+export type IServerAppNext = connect.NextFunction;
+
+type NextHandleFunction = (req: IServerAppRequest, res: IServerAppResponse, next: IServerAppNext) => void;
+type ErrorHandleFunction = (err: any, req: IServerAppRequest, res: IServerAppResponse, next: IServerAppNext) => void;
+export type IServerMiddlewareHandler = connect.HandleFunction | NextHandleFunction | ErrorHandleFunction;
 
 export interface IServerModule {
   render?(

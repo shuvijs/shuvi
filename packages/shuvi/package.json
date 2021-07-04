@@ -35,6 +35,7 @@
     "@shuvi/utils": "^0.0.1-rc.32",
     "cli-highlight": "^2.1.9",
     "commander": "5.1.0",
+    "connect":"^3.7.0",
     "cross-spawn": "7.0.3",
     "detect-port": "1.3.0",
     "dotenv": "8.2.0",
