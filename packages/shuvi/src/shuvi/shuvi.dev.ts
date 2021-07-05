@@ -31,7 +31,10 @@ export default class ShuviDev extends Base {
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
-    api.server.use(`${api.assetPublicPath}:path*`, this._publicDirMiddleware);
+    api.server.use(
+      `${api.assetPublicPath}:path(.*)`,
+      this._publicDirMiddleware
+    );
 
     api.server.use(this._createServerMiddlewaresHandler());
 
@@ -44,7 +47,9 @@ export default class ShuviDev extends Base {
 
   private _publicDirMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
     const api = this._api;
-    const assetAbsPath = api.resolvePublicFile(ctx.params!.path);
+    let { path = '' } = ctx.params || {};
+    if (Array.isArray(path)) path = path.join('/');
+    const assetAbsPath = api.resolvePublicFile(path);
     try {
       await serveStatic(ctx.req, ctx.res, assetAbsPath);
     } catch (err) {

@@ -40,14 +40,14 @@ describe('server', () => {
       expect(body).toEqual('worked');
     });
 
-    test('match path /api*', async () => {
+    test('match path /:api(.*)', async () => {
       server = new Server();
       server
         .use(async (ctx, next) => {
           ctx.__test = 'worked';
           await next();
         })
-        .use('/api*', ctx => {
+        .use('/:api(.*)', ctx => {
           ctx.body = ctx.__test;
         });
 
@@ -106,10 +106,26 @@ describe('server', () => {
       await server.listen(port);
 
       await got(`http://${host}:${port}`);
-      expect(params).toStrictEqual({ path: undefined });
+      expect(params).toStrictEqual({ path: "" });
 
       await got(`http://${host}:${port}/path/to/match/route`);
-      expect(params).toStrictEqual({ path: 'path/to/match/route' });
+      expect(params).toStrictEqual({ path: ["path", "to", "match", "route"] });
+    });
+    test('match all /:path(.*)', async () => {
+      let params;
+      server = new Server();
+      server.use('/:path(.*)', ctx => {
+        params = ctx.params;
+        ctx.status = 200;
+      });
+      const port = await findPort();
+      await server.listen(port);
+
+      await got(`http://${host}:${port}`);
+      expect(params).toStrictEqual({ path: "" });
+
+      await got(`http://${host}:${port}/path/to/match/route`);
+      expect(params).toStrictEqual({ path: "path/to/match/route" });
     });
   });
 

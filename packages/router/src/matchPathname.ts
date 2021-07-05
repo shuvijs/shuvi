@@ -1,32 +1,25 @@
-import pathToRegexp, { Key, PathRegExp } from 'path-to-regexp';
 import { IPathPattern, IPathMatch, IParams } from './types';
-
-function compilePath(
-  path: string,
-  caseSensitive: boolean,
-  end: boolean
-): [PathRegExp, Key[]] {
-  const keys: Key[] = [];
-
-  const source = path.replace(/^\/*/, '/'); // Make sure it has a leading /
-  const regexp = pathToRegexp(source, keys, { end, sensitive: caseSensitive });
-
-  return [regexp, keys];
-}
+import { PathParserOptions, tokensToParser } from './pathParserRanker';
+import { tokenizePath } from './pathTokenizer';
 
 function safelyDecodeURIComponent(
-  value: string,
+  value: string[] | string,
   paramName: string,
   optional?: boolean
 ) {
   try {
+    if(Array.isArray(value)){
+      return value.map((item) =>{
+        return decodeURIComponent(item.replace(/\+/g, ' '));
+      })
+    }
     return decodeURIComponent(value.replace(/\+/g, ' '));
   } catch (error) {
     if (!optional) {
       console.warn(
         `The value for the URL param "${paramName}" will not be decoded because` +
-          ` the string "${value}" is a malformed URL segment. This is probably` +
-          ` due to a bad percent encoding (${error}).`
+        ` the string "${value}" is a malformed URL segment. This is probably` +
+        ` due to a bad percent encoding (${error}).`
       );
     }
 
@@ -34,6 +27,11 @@ function safelyDecodeURIComponent(
   }
 }
 
+/**
+ * match pathname, online link https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJnMCo0SmCHGYBdyBsATSBUQBsAPABAwxsAHeGVJwuLlARA..#
+ * @param pattern
+ * @param pathname
+ */
 export function matchPathname(
   pattern: IPathPattern,
   pathname: string
@@ -42,24 +40,43 @@ export function matchPathname(
     pattern = { path: pattern };
   }
 
-  let { path, caseSensitive = false, end = true } = pattern;
+  const { path, caseSensitive = false, end = true } = pattern;
 
-  let [matcher, keys] = compilePath(path, caseSensitive, end);
+  const pathParser = tokensToParser(tokenizePath(path), { end, sensitive: caseSensitive });;
 
-  const match = matcher.exec(pathname);
+  const matchResult = pathParser.parse(pathname);
 
-  if (!match) return null;
+  if (!matchResult) return null;
 
-  let [matchedPathname, ...values] = match;
+  const { keys = [] } = pathParser;
 
-  let params = keys.reduce((memo, key, index) => {
-    memo[key.name || '*'] = safelyDecodeURIComponent(
-      values[index],
-      String(key.name),
+  const {match, params} = matchResult;
+
+  const safelyDecodetParams = (keys).reduce((memo, key, index) => {
+    const keyName = key.name;
+    memo[keyName] = safelyDecodeURIComponent(
+      params[keyName],
+      String(keyName),
       key.optional
     );
     return memo;
   }, {} as IParams);
 
-  return { path, pathname: matchedPathname, params };
+  return { path, pathname: match, params: safelyDecodetParams };
+}
+
+/**
+ * stringify path to string by params and options
+ * @param path
+ * @param params
+ * @param options
+ */
+export function matchStringify(
+  path: string,
+  params: IParams,
+  options?: PathParserOptions
+) {
+  const pathParser = tokensToParser(tokenizePath(path), options);
+
+  return pathParser.stringify(params);
 }
