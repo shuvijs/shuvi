@@ -21,7 +21,7 @@ import {
   IParams
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
-import { IApi } from '../index';
+import { IApi, Runtime } from '../index';
 import { IManifest } from './bundler';
 import http from 'http';
 
@@ -203,7 +203,14 @@ export interface IDocumentModule {
 export interface CustomContext extends DefaultContext {
   params?: IParams;
 }
-export type IServerApp = connect.Server;
+
+export interface IServerApp extends Omit<connect.Server, 'use'>{
+  (req:  http.IncomingMessage, res: http.ServerResponse, next?: Function): void;
+  use(fn: Runtime.IServerMiddlewareHandler): this;
+  use(route: string, fn: Runtime.IServerMiddleware): this;
+  // handle(req: Runtime.IServerAppRequest, res: Runtime.IServerAppResponse, next: Runtime.IServerAppNext): void;
+}
+// export type IServerApp = connect.Server;
 // export type IServerAppContext = Koa.Context;
 export type IServerAppRequest = IIncomingMessage;
 export type IServerAppResponse = ServerResponse;

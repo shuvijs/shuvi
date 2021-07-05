@@ -12,7 +12,8 @@ export default class ShuviProd extends Base {
       api.server.use(`${api.assetPublicPath}:path(.*)`, this._assetsMiddleware);
     }
 
-    api.server.use(this._createServerMiddlewaresHandler());
+    this._useServerMiddlewaresHandler()
+
     api.server.use(this._handlePageRequest);
   }
 
@@ -20,29 +21,23 @@ export default class ShuviProd extends Base {
     return 'production' as const;
   }
 
-  private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
+  private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) => {
     const api = this._api;
-    let { path = '' } = ctx.params || {};
+    let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
     const assetAbsPath = api.resolveBuildFile(BUILD_CLIENT_DIR, path);
     try {
-      await serveStatic(ctx.req, ctx.res, assetAbsPath);
+      await serveStatic(req, res, assetAbsPath);
     } catch (err) {
-      if (err.code === 'ENOENT' || err.statusCode === 404) {
-        this._handle404(ctx);
-      } else if (err.statusCode === 412) {
-        ctx.status = 412;
-        ctx.body = '';
-        return;
-      } else {
+      if (err.code === 'ENOENT' || err.statusCode === 404 || err.statusCode === 412) {
+        return this._handleError(req, res, err.statusCode);
+      }else {
         throw err;
       }
     }
-  };
-
-  private _createServerMiddlewaresHandler = (): Runtime.IServerMiddlewareHandler => {
-    const middlewares = this._getServerMiddlewares();
-
-    return this._runServerMiddlewares(middlewares);
   };
 }

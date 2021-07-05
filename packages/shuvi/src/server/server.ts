@@ -55,17 +55,10 @@ interface IServerOptions {
 //   return res;
 // }
 
-interface IServerApp extends Omit<Runtime.IServerApp, 'use'>{
-  (req:  http.IncomingMessage, res: http.ServerResponse, next?: Function): void;
-  use(fn: Runtime.IServerMiddlewareHandler): this;
-  use(route: string, fn: Runtime.IServerMiddleware): this;
-  // handle(req: Runtime.IServerAppRequest, res: Runtime.IServerAppResponse, next: Runtime.IServerAppNext): void;
-}
-
 export class Server {
   hostname: string | undefined;
   port: number | undefined;
-  private _app: IServerApp;
+  private _app: Runtime.IServerApp;
   private _server: http.Server | null = null;
 
   constructor(options: IServerOptions = {}) {

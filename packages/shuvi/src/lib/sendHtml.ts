@@ -1,15 +1,17 @@
 import { Runtime } from '@shuvi/types';
 
-export function sendHTML(ctx: Runtime.IServerAppContext, html: string) {
-  if (ctx.res.writableEnded || ctx.res.headersSent) return;
+export function sendHTML(req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse, html: string) {
+  if (res.writableEnded || res.headersSent) return;
 
-  if (!ctx.response.type) {
-    ctx.response.type = 'text/html; charset=utf-8';
+  if (!res.hasHeader('content-type')) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
   }
-  ctx.response.length = Buffer.byteLength(html);
+  const buffer = Buffer.from(html);
+  res.setHeader('Content-Length', buffer.length)
 
   // ctx.body will set ctx.status to 200, if ctx.status is not set before
-  ctx.status = ctx.res.statusCode;
+  if(!res.statusCode) res.statusCode = 200;
 
-  ctx.body = ctx.request.method === 'HEAD' ? null : html;
+  res.end(req.method === 'HEAD' ? null : buffer);
+
 }

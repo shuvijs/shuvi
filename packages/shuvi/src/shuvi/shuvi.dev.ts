@@ -36,7 +36,7 @@ export default class ShuviDev extends Base {
       this._publicDirMiddleware
     );
 
-    api.server.use(this._createServerMiddlewaresHandler());
+    this._useServerMiddlewaresHandler()
 
     api.server.use(this._pageMiddleware);
   }
@@ -45,61 +45,54 @@ export default class ShuviDev extends Base {
     return 'development' as const;
   }
 
-  private _publicDirMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
+  private _publicDirMiddleware: Runtime.IServerMiddlewareHandler = async (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) => {
     const api = this._api;
-    let { path = '' } = ctx.params || {};
+    let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
     const assetAbsPath = api.resolvePublicFile(path);
     try {
-      await serveStatic(ctx.req, ctx.res, assetAbsPath);
+      await serveStatic(req, res, assetAbsPath);
     } catch (err) {
-      if (err.code === 'ENOENT' || err.statusCode === 404) {
-        this._handle404(ctx);
-      } else if (err.statusCode === 412) {
-        ctx.status = 412;
-        ctx.body = '';
-        return;
-      } else {
+      if (err.code === 'ENOENT' || err.statusCode === 404 || err.statusCode === 412) {
+        return this._handleError(req, res, err.statusCode);
+      }else {
         throw err;
       }
     }
   };
 
   private _pageMiddleware: Runtime.IServerMiddlewareHandler = async (
-    ctx,
-    next
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
   ) => {
-    const headers = ctx.request.headers;
-    if (ctx.request.method !== 'GET') {
-      return await next();
-    } else if (!headers || typeof headers.accept !== 'string') {
-      return await next();
-    } else if (headers.accept.indexOf('application/json') === 0) {
-      return await next();
+    const accept = req.getHeader('accept');
+    if (req.method !== 'GET') {
+      return next();
+    } else if (!accept || typeof accept !== 'string') {
+      return next();
+    } else if (accept.indexOf('application/json') === 0) {
+      return next();
     } else if (
-      !acceptsHtml(headers.accept, { htmlAcceptHeaders: ['text/html'] })
+      !acceptsHtml(accept, { htmlAcceptHeaders: ['text/html'] })
     ) {
-      return await next();
+      return next();
     }
 
     await this._onDemandRouteMgr.ensureRoutes(
-      (ctx.req as Runtime.IIncomingMessage).parsedUrl.pathname || '/'
+      req.parsedUrl.pathname || '/'
     );
 
     try {
-      await this._handlePageRequest(ctx);
+      await this._handlePageRequest(req, res, next);
     } catch (error) {
-      throwServerRenderError(ctx, error);
+      throwServerRenderError(next, error);
     }
 
-    await next();
-  };
-
-  private _createServerMiddlewaresHandler = (): Runtime.IServerMiddlewareHandler => {
-    return async (ctx, next) => {
-      const middlewares = this._getServerMiddlewares();
-
-      await this._runServerMiddlewares(middlewares)(ctx, next);
-    };
+    return next();
   };
 }
