@@ -113,7 +113,11 @@ class Api extends Hookable implements IApi {
       overrides: this._userConfig
     });
     this._config = deepmerge(defaultConfig, configFromFile);
-
+    const { ssr, router: { history } } = this._config;
+    // set history to a specific value
+    if (history === 'auto') {
+      this._config.router.history = ssr ? 'browser' : 'hash';
+    }
     await this._initPresetsAndPlugins();
 
     initCoreResource(this);
@@ -157,6 +161,10 @@ class Api extends Hookable implements IApi {
 
   setViewModule(path: string) {
     this._projectBuilder.setViewModule(path);
+  }
+
+  setRoutesNormalizer(path: string) {
+    this._projectBuilder.setRoutesNormalizer(path);
   }
 
   setAppModule(module: string | string[]) {

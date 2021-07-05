@@ -4,20 +4,41 @@ import initPlugins from "@shuvi/app/core/plugin";
 import { pluginRecord } from "@shuvi/app/core/plugins";
 import { Application } from "@shuvi/core/lib/app/app-modules/application";
 import runPlugins from "@shuvi/core/lib/app/app-modules/runPlugins";
-
+import { createRouter, createBrowserHistory, createHashHistory, createMemoryHistory } from '@shuvi/router';
 const __CLIENT__ = typeof window !== 'undefined';
 
 let app;
-
+let history;
+let routesNormalizer;
+let appContext;
 export function create(context, options) {
   // app is a singleton in client side
   if (__CLIENT__ && app) {
     return app;
   }
-
+  const { historyMode = 'memory', req } = context;
+  routesNormalizer = options.routesNormalizer;
+  switch (historyMode) {
+    case 'browser':
+      history = createBrowserHistory();
+      break;
+    case 'hash':
+      history = createHashHistory();
+      break;
+    default:
+      history = createMemoryHistory({
+        initialEntries: [req && req.url || '/'],
+        initialIndex: 0
+      })
+  }
+  
+  const router = createRouter({
+    history,
+    routes: routesNormalizer(routes, context)
+  })
   app = new Application({
     AppComponent,
-    routes,
+    router,
     context,
     render: options.render
   });
@@ -33,23 +54,29 @@ export function create(context, options) {
 
 if (module.hot) {
   module.hot.accept(['@shuvi/app/entry','@shuvi/app/core/app', '@shuvi/app/core/routes', '@shuvi/app/core/plugin'],async ()=>{
-    let AppComponent = require('@shuvi/app/core/app').default;
-    let routes = require('@shuvi/app/core/routes').default;
+    const rerender = () => {
+      const AppComponent = require('@shuvi/app/core/app').default;
+      const routes = require('@shuvi/app/core/routes').default;
+      const router = createRouter({
+        history,
+        routes: routesNormalizer(routes, appContext)
+      });
+      app.rerender({ router, AppComponent });
+    }
     // to solve routing problem, we need to rerender routes
     // wait navigation complete only rerender to ensure getInitialProps is called
     if (__SHUVI.router._pending) {
       const removelistener = __SHUVI.router.afterEach(()=>{
-        app.rerender({routes,AppComponent});
-        removelistener()
+        rerender();
+        removelistener();
       })
     } else {
-      app.rerender({routes,AppComponent});
+      rerender();
     }
   })
 }
 `;
 
 export default {
-  name: 'core/application.js',
   content: () => applicationJsFile
 };

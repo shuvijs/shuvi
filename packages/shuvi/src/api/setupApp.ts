@@ -30,7 +30,7 @@ export async function setupApp(api: Api) {
             path.resolve(
               paths.rootDir,
               appTsConfig.compilerOptions.baseUrl ||
-                parsedCompilerOptions.baseUrl
+              parsedCompilerOptions.baseUrl
             ),
             paths.appDir
           ) + '/index'
@@ -53,6 +53,8 @@ export async function setupApp(api: Api) {
     : ['js', 'jsx', 'tsx', 'ts'];
 
   api.setViewModule(runtime.getViewModulePath());
+
+  api.setRoutesNormalizer(runtime.getRoutesNormalizerPath());
 
   let entryContentsFile = `'${api.resolveAppFile('entryContents')}'`;
 
@@ -154,7 +156,8 @@ export async function setupApp(api: Api) {
         )}'`,
         'export { server, document, application }',
         ssr &&
-          `export { default as view } from '${runtime.getViewModulePath()}'`
+        `export { default as view } from '${runtime.getViewModulePath()}'
+        export { default as routesNormalizer } from '${runtime.getRoutesNormalizerPath()}'`
       ]
         .filter(Boolean)
         .join(';\n')
