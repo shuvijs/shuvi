@@ -1,4 +1,4 @@
-import { IParams } from '@shuvi/router';
+import { IParams, matchStringify } from '@shuvi/router';
 import { useLayoutEffect, useEffect } from 'react';
 import { __DEV__ } from './constants';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -42,14 +42,7 @@ export function warningOnce(key: string, cond: boolean, message: string) {
  * Returns a path with params interpolated.
  */
 export function generatePath(path: string, params: IParams = {}): string {
-  return path
-    .replace(/:(\w+)/g, (_, key) => {
-      invariant(params[key] != null, `Missing ":${key}" param`);
-      return params[key];
-    })
-    .replace(/\/*\*$/, _ =>
-      params['*'] == null ? '' : params['*'].replace(/^\/*/, '/')
-    );
+  return matchStringify(path, params);
 }
 
 export { invariant };

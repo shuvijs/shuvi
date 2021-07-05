@@ -16,7 +16,8 @@ import {
   IRouteMatch,
   IRouteRecord,
   IPartialRouteRecord,
-  IRouter
+  IRouter,
+  IParams
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 import { IApi, IRouterHistoryMode } from '../index';
@@ -31,7 +32,8 @@ export {
   IAppPluginRecord,
   IRouteRecord,
   IPartialRouteRecord,
-  IRouter
+  IRouter,
+  IParams
 };
 
 export interface IRoutesNormalizer {
@@ -43,8 +45,6 @@ export interface IRoutesNormalizer {
 export type IData = {
   [k: string]: string | number | boolean | undefined | null;
 };
-
-export type IParams = ParsedQuery;
 
 export type IQuery = ParsedQuery;
 
@@ -223,7 +223,7 @@ export interface IDocumentModule {
 }
 
 export interface CustomContext extends DefaultContext {
-  params?: Record<string, string>;
+  params?: IParams;
 }
 export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
 export type IServerAppContext = Koa.Context;

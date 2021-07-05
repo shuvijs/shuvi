@@ -50,7 +50,7 @@ export function normalizeServerMiddleware(
   return {
     handler,
     // Note: default to match all routes
-    path: middlewareOptions.path ?? '*',
+    path: middlewareOptions.path ?? ':other(.*)',
     order: middlewareOptions.order ?? 0
   };
 }

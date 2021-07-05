@@ -9,7 +9,7 @@ export default class ShuviProd extends Base {
 
     // If user don't provide a custom asset public path, we need serve it
     if (api.config.publicPath === PUBLIC_PATH) {
-      api.server.use(`${api.assetPublicPath}:path*`, this._assetsMiddleware);
+      api.server.use(`${api.assetPublicPath}:path(.*)`, this._assetsMiddleware);
     }
 
     api.server.use(this._createServerMiddlewaresHandler());
@@ -22,10 +22,9 @@ export default class ShuviProd extends Base {
 
   private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
     const api = this._api;
-    const assetAbsPath = api.resolveBuildFile(
-      BUILD_CLIENT_DIR,
-      ctx.params!.path
-    );
+    let { path = '' } = ctx.params || {};
+    if (Array.isArray(path)) path = path.join('/');
+    const assetAbsPath = api.resolveBuildFile(BUILD_CLIENT_DIR, path);
     try {
       await serveStatic(ctx.req, ctx.res, assetAbsPath);
     } catch (err) {

@@ -1,5 +1,5 @@
 import { RemoveListenerCallback } from '../types';
-const isDev = process.env.NODE_ENV === 'development';
+export const isDev = process.env.NODE_ENV === 'development';
 
 export type Events<F> = {
   toArray: () => F[];

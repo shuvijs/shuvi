@@ -74,7 +74,7 @@ describe('serverMiddleware production', () => {
     await page.close();
   });
 
-  test('should match path /profile/:id/setting*', async () => {
+  test('should match path /profile/:id/setting:other(.*)', async () => {
     let page;
     let res;
 
@@ -92,12 +92,12 @@ describe('serverMiddleware production', () => {
     res = await got.get(ctx.url('/profile/foo/setting'), {
       responseType: 'json'
     });
-    expect(res.body).toStrictEqual({ id: 'foo', '*': '' });
+    expect(res.body).toStrictEqual({ id: 'foo', 'other': '' });
 
     res = await got.get(ctx.url('/profile/foo/setting/bank'), {
       responseType: 'json'
     });
-    expect(res.body).toStrictEqual({ id: 'foo', '*': '/bank' });
+    expect(res.body).toStrictEqual({ id: 'foo', 'other': '/bank' });
 
     await page.close();
   });
