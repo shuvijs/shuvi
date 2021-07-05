@@ -54,7 +54,6 @@
     "@types/dotenv": "8.2.0",
     "@types/ejs": "3.0.4",
     "@types/koa": "2.11.6",
-    "@types/koa-route": "3.2.4",
     "koa-lowercase": "2.0.11"
   }
 }

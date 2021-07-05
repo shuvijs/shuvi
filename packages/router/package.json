@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "@shuvi/utils": "^0.0.1-rc.32",
-    "path-to-regexp": "1.7.0",
     "query-string": "6.13.8"
   }
 }

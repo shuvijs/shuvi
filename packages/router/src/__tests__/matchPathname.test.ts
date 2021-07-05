@@ -8,12 +8,18 @@ describe('matchPathname', () => {
       pathname: ''
     });
 
-    expect(matchPathname('/*', '/123')).toStrictEqual({
-      params: {
-        '*': '123'
-      },
+    expect(matchPathname('/*', '/*')).toStrictEqual({
+      params: {},
       path: '/*',
-      pathname: '/123'
+      pathname: '/*'
+    });
+
+    expect(matchPathname('/:other(.*)', '/123/any')).toStrictEqual({
+      params: {
+        'other': '123/any'
+      },
+      path: '/:other(.*)',
+      pathname: '/123/any'
     });
 
     expect(
@@ -123,7 +129,7 @@ describe('matchPathname', () => {
     jest.spyOn(console, 'warn');
 
     expect(matchPathname({ path: '/:optional?' }, '/')).toStrictEqual({
-      params: { optional: undefined },
+      params: { optional: '' },
       path: '/:optional?',
       pathname: '/'
     });

@@ -7,7 +7,7 @@ import {
   PathRecord
 } from './history';
 
-export type IParams = Record<string, string>;
+export type IParams = Record<string, string[] | string>;
 
 export type IRouteComponentProps = Record<string, string>;
 
