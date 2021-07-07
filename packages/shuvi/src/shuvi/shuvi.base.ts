@@ -1,5 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
+import { matchPathname } from '@shuvi/router';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
@@ -35,6 +36,17 @@ export default abstract class Shuvi {
 
   getRequestHandler(): Runtime.IServerApp {
     return this._api.server.getRequestHandler();
+  }
+
+  errorHandler(
+    err: any,
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) {
+    // Note: connect error-handling logic such as centralized logging
+    console.log('7777777');
+    console.error(`server error: ${req.url} `, err);
   }
 
   async renderToHTML(
@@ -82,7 +94,7 @@ export default abstract class Shuvi {
 
   protected abstract init(): Promise<void> | void;
 
-  protected _handleError(
+  protected _handleErrorSetStatusCode(
     req: Runtime.IIncomingMessage,
     res: Runtime.IServerAppResponse,
     statusCode: number = 404,
@@ -93,7 +105,11 @@ export default abstract class Shuvi {
     return;
   }
 
-  protected async _handlePageRequest(req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse, next: Runtime.IServerAppNext) {
+  protected async _handlePageRequest(
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) {
     try {
       const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
         {
@@ -106,7 +122,7 @@ export default abstract class Shuvi {
         sendHTML(req, res, html);
       }
     } catch (error) {
-      throwServerRenderError(next, error);
+      throwServerRenderError(req, res, next, error);
     }
   }
 
@@ -120,38 +136,44 @@ export default abstract class Shuvi {
 
   protected _useServerMiddlewaresHandler = () => {
     const middlewares = this._api.getServerMiddlewares();
-    for(const { path, handler } of middlewares){
+    for (const { path, handler } of middlewares) {
       this._api.server.use(path, handler);
     }
   };
 
-  // protected _runServerMiddlewares(
-  //   middlewares: Runtime.IServerMiddlewareItem[]
-  // ): Runtime.IServerMiddlewareHandler {
-  //   return async (ctx, next) => {
-  //     let i = 0;
-  //
-  //     const runNext = () => runMiddleware(middlewares[++i]);
-  //
-  //     const runMiddleware = async (
-  //       middleware: Runtime.IServerMiddlewareItem
-  //     ) => {
-  //       if (i === middlewares.length) {
-  //         await next();
-  //         return;
-  //       }
-  //       const matchedPath = matchPathname(middleware.path, ctx.request.path);
-  //
-  //       if (!matchedPath) {
-  //         await runNext();
-  //         return;
-  //       }
-  //       ctx.params = matchedPath.params;
-  //
-  //       await middleware.handler(ctx, runNext);
-  //     };
-  //
-  //     await runMiddleware(middlewares[i]);
-  //   };
-  // }
+  protected _getServerMiddlewares() {
+    return this._api.getServerMiddlewares();
+  }
+
+  protected _runServerMiddlewares(
+    middlewares: Runtime.IServerMiddlewareItem[]
+  ): Runtime.IServerMiddlewareHandler {
+    return async (
+      req: Runtime.IIncomingMessage,
+      res: Runtime.IServerAppResponse,
+      next: Runtime.IServerAppNext
+    ) => {
+      let i = 0;
+
+      const runNext = () => runMiddleware(middlewares[++i]);
+
+      const runMiddleware = async (middleware: any) => {
+        if (i === middlewares.length) {
+          return;
+        }
+        const matchedPath =
+          req.parsedUrl.pathname &&
+          matchPathname(middleware.path, req.parsedUrl.pathname);
+
+        if (!matchedPath) {
+          await runNext();
+          return;
+        }
+        req.params = matchedPath.params;
+        await middleware.handler(req, res, runNext);
+      };
+
+      await runMiddleware(middlewares[i]);
+    };
+  }
 }

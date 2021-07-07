@@ -22,7 +22,6 @@
 // CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import { PassThrough } from 'stream';
 import type webpack from 'webpack';
 import { Runtime } from '@shuvi/types';
 
@@ -58,10 +57,14 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware: Runtime.IServerMiddlewareHandler = async (ctx, next) => {
-    if (this.closed) return await next();
-    if (!ctx.request.url?.startsWith(this._path)) return await next();
-    this.eventStream.handler(ctx);
+  middleware: Runtime.IServerMiddlewareHandler = async (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) => {
+    if (this.closed) return next();
+    if (!req.url?.startsWith(this._path)) return next();
+    this.eventStream.handler(req, res, next);
     if (this.latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
@@ -109,7 +112,7 @@ class EventStream {
 
   heartbeatTick = () => {
     this.everyClient(client => {
-      client.body.write('data: \uD83D\uDC93\n\n');
+      client.write('data: \uD83D\uDC93\n\n');
     });
   };
 
@@ -122,12 +125,16 @@ class EventStream {
   close() {
     clearInterval(this.interval);
     this.everyClient(client => {
-      if (!client.res.finished || !client.res.writableEnded) client.body.end();
+      if (!client.finished || !client.writableEnded) client.end();
     });
     this.clients.clear();
   }
 
-  handler(ctx: Runtime.IServerAppContext) {
+  handler(
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'text/event-stream;charset=utf-8',
@@ -137,28 +144,26 @@ class EventStream {
       'X-Accel-Buffering': 'no'
     };
 
-    const isHttp1 = !(parseInt(ctx.req.httpVersion) >= 2);
+    const isHttp1 = !(parseInt(req.httpVersion) >= 2);
     if (isHttp1) {
-      ctx.request.socket.setKeepAlive(true);
+      req.socket.setKeepAlive(true);
       Object.assign(headers, {
         Connection: 'keep-alive'
       });
     }
 
-    ctx.status = 200;
-    ctx.response.set(headers);
-    ctx.response.body = new PassThrough();
-    ctx.response.body.write('\n');
-    this.clients.add(ctx.response);
-    ctx.response.body.on('close', () => {
-      if (!ctx.res.finished || !ctx.res.writableEnded) ctx.response.body.end();
-      this.clients.delete(ctx.response);
+    res.writeHead(200, headers);
+    res.write('\n');
+    this.clients.add(res);
+    req.on('close', () => {
+      if (!res.finished || !res.writableEnded) res.end();
+      this.clients.delete(res);
     });
   }
 
   publish(payload: any) {
     this.everyClient(client => {
-      client.body.write('data: ' + JSON.stringify(payload) + '\n\n');
+      client.write('data: ' + JSON.stringify(payload) + '\n\n');
     });
   }
 }

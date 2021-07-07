@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import Koa, { DefaultState, DefaultContext } from 'koa';
-import connect  from 'connect';
+import connect from 'connect';
 import { UrlWithParsedQuery } from 'url';
 import {
   IUserRouteConfig,
@@ -204,8 +204,8 @@ export interface CustomContext extends DefaultContext {
   params?: IParams;
 }
 
-export interface IServerApp extends Omit<connect.Server, 'use'>{
-  (req:  http.IncomingMessage, res: http.ServerResponse, next?: Function): void;
+export interface IServerApp extends Omit<connect.Server, 'use'> {
+  (req: http.IncomingMessage, res: http.ServerResponse, next?: Function): void;
   use(fn: Runtime.IServerMiddlewareHandler): this;
   use(route: string, fn: Runtime.IServerMiddleware): this;
   // handle(req: Runtime.IServerAppRequest, res: Runtime.IServerAppResponse, next: Runtime.IServerAppNext): void;
@@ -216,9 +216,21 @@ export type IServerAppRequest = IIncomingMessage;
 export type IServerAppResponse = ServerResponse;
 export type IServerAppNext = connect.NextFunction;
 
-type NextHandleFunction = (req: IServerAppRequest, res: IServerAppResponse, next: IServerAppNext) => void;
-type ErrorHandleFunction = (err: any, req: IServerAppRequest, res: IServerAppResponse, next: IServerAppNext) => void;
-export type IServerMiddlewareHandler = connect.HandleFunction | NextHandleFunction | ErrorHandleFunction;
+export type NextHandleFunction = (
+  req: IServerAppRequest,
+  res: IServerAppResponse,
+  next: IServerAppNext
+) => void;
+type ErrorHandleFunction = (
+  err: any,
+  req: IServerAppRequest,
+  res: IServerAppResponse,
+  next: IServerAppNext
+) => void;
+export type IServerMiddlewareHandler =
+  | connect.HandleFunction
+  | NextHandleFunction
+  | ErrorHandleFunction;
 
 export interface IServerModule {
   render?(

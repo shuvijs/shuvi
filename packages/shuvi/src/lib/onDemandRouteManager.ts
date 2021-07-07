@@ -15,14 +15,17 @@ export class OnDemandRouteManager {
   }
 
   getServerMiddleware(): Runtime.IServerMiddlewareHandler {
-    return async (ctx, next) => {
-      const pathname = (ctx.req as Runtime.IIncomingMessage).parsedUrl
-        .pathname!;
+    return async (
+      req: Runtime.IIncomingMessage,
+      res: Runtime.IServerAppResponse,
+      next: Runtime.IServerAppNext
+    ) => {
+      const pathname = req.parsedUrl.pathname!;
       if (!pathname.startsWith(this._api.assetPublicPath)) {
-        return await next();
+        return next();
       }
       if (!this.devMiddleware) {
-        return await next();
+        return next();
       }
 
       const chunkName = pathname.replace(this._api.assetPublicPath, '');
@@ -31,20 +34,20 @@ export class OnDemandRouteManager {
       ];
 
       if (!chunkInitiatorModule) {
-        return await next();
+        return next();
       }
 
       const task = ModuleReplacePlugin.restoreModule(chunkInitiatorModule);
       if (task) {
-        this.devMiddleware.invalidate();
+        await this.devMiddleware.invalidate();
         try {
           await task;
-          await next();
+          next();
         } catch (error) {
-          throwServerRenderError(ctx, error);
+          throwServerRenderError(req, res, next, error);
         }
       } else {
-        await next();
+        next();
       }
     };
   }

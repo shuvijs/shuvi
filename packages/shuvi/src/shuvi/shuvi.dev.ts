@@ -36,14 +36,36 @@ export default class ShuviDev extends Base {
       this._publicDirMiddleware
     );
 
-    this._useServerMiddlewaresHandler()
+    api.server.use(this._createServerMiddlewaresHandler);
+    // this._useServerMiddlewaresHandler();
 
     api.server.use(this._pageMiddleware);
+
+    api.server.use(this.errorHandler);
   }
 
   protected getMode() {
     return 'development' as const;
   }
+
+  private _createServerMiddlewaresHandler: Runtime.IServerMiddlewareHandler = async (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) => {
+    const middlewares = this._getServerMiddlewares();
+
+    const task = (this._runServerMiddlewares(
+      middlewares
+    ) as unknown) as Runtime.NextHandleFunction;
+
+    try {
+      await task(req, res, next);
+    } catch (error) {
+      return throwServerRenderError(req, res, next, error);
+    }
+    return next();
+  };
 
   private _publicDirMiddleware: Runtime.IServerMiddlewareHandler = async (
     req: Runtime.IIncomingMessage,
@@ -57,9 +79,13 @@ export default class ShuviDev extends Base {
     try {
       await serveStatic(req, res, assetAbsPath);
     } catch (err) {
-      if (err.code === 'ENOENT' || err.statusCode === 404 || err.statusCode === 412) {
-        return this._handleError(req, res, err.statusCode);
-      }else {
+      if (
+        err.code === 'ENOENT' ||
+        err.statusCode === 404 ||
+        err.statusCode === 412
+      ) {
+        return this._handleErrorSetStatusCode(req, res, err.statusCode);
+      } else {
         throw err;
       }
     }
@@ -70,27 +96,23 @@ export default class ShuviDev extends Base {
     res: Runtime.IServerAppResponse,
     next: Runtime.IServerAppNext
   ) => {
-    const accept = req.getHeader('accept');
+    const accept = req.headers['accept'];
     if (req.method !== 'GET') {
       return next();
-    } else if (!accept || typeof accept !== 'string') {
+    } else if (!accept) {
       return next();
     } else if (accept.indexOf('application/json') === 0) {
       return next();
-    } else if (
-      !acceptsHtml(accept, { htmlAcceptHeaders: ['text/html'] })
-    ) {
+    } else if (!acceptsHtml(accept, { htmlAcceptHeaders: ['text/html'] })) {
       return next();
     }
 
-    await this._onDemandRouteMgr.ensureRoutes(
-      req.parsedUrl.pathname || '/'
-    );
+    await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || '/');
 
     try {
       await this._handlePageRequest(req, res, next);
     } catch (error) {
-      throwServerRenderError(next, error);
+      throwServerRenderError(req, res, next, error);
     }
 
     return next();

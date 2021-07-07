@@ -67,16 +67,19 @@ export class Server {
     if (options.proxy) {
       this._setupProxy(options.proxy);
     }
-    this._app.use((req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse, next: Runtime.IServerAppNext) => {
-      req.parsedUrl = parseUrl(
-        req.url || '',
-        true
-      );
-      next();
-    });
-    this._app.on('error', (err, ctx) => {
-      // Note: Koa error-handling logic such as centralized logging
-      console.error(`server error: ${ctx.request.url} `, err);
+    this._app.use(
+      (
+        req: Runtime.IIncomingMessage,
+        res: Runtime.IServerAppResponse,
+        next: Runtime.IServerAppNext
+      ) => {
+        req.parsedUrl = parseUrl(req.url || '', true);
+        next();
+      }
+    );
+    this._app.on('error', (err, req, res, next) => {
+      // Note: connect error-handling logic such as centralized logging
+      console.error(`server error: ${req.url} `, err);
     });
   }
 
@@ -112,8 +115,14 @@ export class Server {
   use(route: string, fn: Runtime.IServerMiddleware): this;
   use(route: any, fn?: any): this {
     if (fn) {
-      this._app.use(function(req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse, next: Runtime.IServerAppNext) {
-        const matchedPath = req.url && matchPathname(route, req.url);
+      this._app.use(function (
+        req: Runtime.IIncomingMessage,
+        res: Runtime.IServerAppResponse,
+        next: Runtime.IServerAppNext
+      ) {
+        const matchedPath =
+          req.parsedUrl.pathname &&
+          matchPathname(route, req.parsedUrl.pathname);
         if (!matchedPath) return next(); // Note: not matched
         req.params = matchedPath.params;
         return fn(req, res, next);

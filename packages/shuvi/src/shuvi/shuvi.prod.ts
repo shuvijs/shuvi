@@ -2,6 +2,7 @@ import { Runtime } from '@shuvi/types';
 import { serveStatic } from '../lib/serveStatic';
 import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
+import { throwServerRenderError } from '../lib/throw';
 
 export default class ShuviProd extends Base {
   async init() {
@@ -12,14 +13,35 @@ export default class ShuviProd extends Base {
       api.server.use(`${api.assetPublicPath}:path(.*)`, this._assetsMiddleware);
     }
 
-    this._useServerMiddlewaresHandler()
+    api.server.use(this._createServerMiddlewaresHandler);
 
     api.server.use(this._handlePageRequest);
+
+    api.server.use(this.errorHandler);
   }
 
   protected getMode() {
     return 'production' as const;
   }
+
+  private _createServerMiddlewaresHandler: Runtime.IServerMiddlewareHandler = async (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) => {
+    const middlewares = this._getServerMiddlewares();
+
+    const task = (this._runServerMiddlewares(
+      middlewares
+    ) as unknown) as Runtime.NextHandleFunction;
+
+    try {
+      await task(req, res, next);
+    } catch (error) {
+      return throwServerRenderError(req, res, next, error);
+    }
+    return next();
+  };
 
   private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async (
     req: Runtime.IIncomingMessage,
@@ -33,9 +55,13 @@ export default class ShuviProd extends Base {
     try {
       await serveStatic(req, res, assetAbsPath);
     } catch (err) {
-      if (err.code === 'ENOENT' || err.statusCode === 404 || err.statusCode === 412) {
-        return this._handleError(req, res, err.statusCode);
-      }else {
+      if (
+        err.code === 'ENOENT' ||
+        err.statusCode === 404 ||
+        err.statusCode === 412
+      ) {
+        return this._handleErrorSetStatusCode(req, res, err.statusCode);
+      } else {
         throw err;
       }
     }
