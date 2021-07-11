@@ -1,4 +1,4 @@
-export default async function user(ctx) {
-  ctx.status = 200;
-  ctx.body = ctx.params.id;
+export default function user(req, res, next) {
+  res.statusCode = 200;
+  res.end(req.params.id);
 }

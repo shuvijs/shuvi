@@ -6,7 +6,7 @@ import setting from './api/setting';
 import modifyHtml from './api/modify-html';
 
 export const serverMiddleware = [
-  'koa-lowercase',
+  // 'koa-lowercase',
   setHeader,
   { path: '/health-check:other(.*)', handler: setCookie },
   { path: '/health-check', handler: healthCheck },
@@ -23,14 +23,14 @@ export const serverMiddleware = [
 
   {
     path: '/testorder',
-    handler: (ctx, next) => {
+    handler: (req, res, next) => {
       console.log('user default order');
       return next();
     }
   },
   {
     path: '/testorder',
-    handler: (ctx, next) => {
+    handler: (req, res, next) => {
       console.log(10);
       return next();
     },

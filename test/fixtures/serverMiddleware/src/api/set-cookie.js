@@ -1,4 +1,6 @@
-export default async function setCookie(ctx, next) {
-  ctx.cookies.set('shuvi-middleware-custom-cookie', 'foo');
-  await next();
+export default function setCookie(req, res, next) {
+  res.setHeader('Set-Cookie', [
+    'shuvi-middleware-custom-cookie=foo; path=/; httponly'
+  ]);
+  next();
 }

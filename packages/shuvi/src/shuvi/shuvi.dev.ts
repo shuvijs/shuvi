@@ -4,7 +4,6 @@ import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
-import { throwServerRenderError } from '../lib/throw';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -37,7 +36,6 @@ export default class ShuviDev extends Base {
     );
 
     api.server.use(this._createServerMiddlewaresHandler);
-    // this._useServerMiddlewaresHandler();
 
     api.server.use(this._pageMiddleware);
 
@@ -62,7 +60,7 @@ export default class ShuviDev extends Base {
     try {
       await task(req, res, next);
     } catch (error) {
-      return throwServerRenderError(req, res, next, error);
+      next(error);
     }
     return next();
   };
@@ -78,16 +76,11 @@ export default class ShuviDev extends Base {
     const assetAbsPath = api.resolvePublicFile(path);
     try {
       await serveStatic(req, res, assetAbsPath);
-    } catch (err) {
-      if (
-        err.code === 'ENOENT' ||
-        err.statusCode === 404 ||
-        err.statusCode === 412
-      ) {
-        return this._handleErrorSetStatusCode(req, res, err.statusCode);
-      } else {
-        throw err;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        error.statusCode = 404;
       }
+      next(error);
     }
   };
 
@@ -112,7 +105,7 @@ export default class ShuviDev extends Base {
     try {
       await this._handlePageRequest(req, res, next);
     } catch (error) {
-      throwServerRenderError(req, res, next, error);
+      next(error);
     }
 
     return next();

@@ -1,8 +1,8 @@
 export const serverMiddleware = [
   {
     path: '/hmr/serverMiddleware',
-    handler: ctx => {
-      ctx.body = 'body_content';
+    handler: (req, res, next) => {
+      res.end('body_content');
     }
   }
 ];

@@ -1,4 +1,4 @@
-export default async function setHeader(ctx, next) {
-  ctx.response.set('shuvi-middleware-custom-header', 'bar');
-  await next();
-};
+export default function setHeader(req, res, next) {
+  res.setHeader('shuvi-middleware-custom-header', 'bar');
+  next();
+}

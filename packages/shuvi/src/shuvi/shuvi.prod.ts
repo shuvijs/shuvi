@@ -2,7 +2,6 @@ import { Runtime } from '@shuvi/types';
 import { serveStatic } from '../lib/serveStatic';
 import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
-import { throwServerRenderError } from '../lib/throw';
 
 export default class ShuviProd extends Base {
   async init() {
@@ -38,7 +37,7 @@ export default class ShuviProd extends Base {
     try {
       await task(req, res, next);
     } catch (error) {
-      return throwServerRenderError(req, res, next, error);
+      next(error);
     }
     return next();
   };
@@ -54,16 +53,11 @@ export default class ShuviProd extends Base {
     const assetAbsPath = api.resolveBuildFile(BUILD_CLIENT_DIR, path);
     try {
       await serveStatic(req, res, assetAbsPath);
-    } catch (err) {
-      if (
-        err.code === 'ENOENT' ||
-        err.statusCode === 404 ||
-        err.statusCode === 412
-      ) {
-        return this._handleErrorSetStatusCode(req, res, err.statusCode);
-      } else {
-        throw err;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        error.statusCode = 404;
       }
+      next(error);
     }
   };
 }

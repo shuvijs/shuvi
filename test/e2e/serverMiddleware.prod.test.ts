@@ -44,11 +44,11 @@ describe('serverMiddleware production', () => {
     expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
     expect(res.headers).not.toHaveProperty('set-cookie');
 
-    // Note: koa-lowercase /HOME -> 301 redirect /home
-    res = await got.get(ctx.url('/HOME'));
-    expect(res.url).toContain('/home');
-    expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
-    expect(res.headers).not.toHaveProperty('set-cookie');
+    // // Note: koa-lowercase /HOME -> 301 redirect /home
+    // res = await got.get(ctx.url('/HOME'));
+    // expect(res.url).toContain('/home');
+    // expect(res.headers).toHaveProperty('shuvi-middleware-custom-header', 'bar');
+    // expect(res.headers).not.toHaveProperty('set-cookie');
   });
 
   test('should match path /users/:id', async () => {
@@ -92,12 +92,12 @@ describe('serverMiddleware production', () => {
     res = await got.get(ctx.url('/profile/foo/setting'), {
       responseType: 'json'
     });
-    expect(res.body).toStrictEqual({ id: 'foo', 'other': '' });
+    expect(res.body).toStrictEqual({ id: 'foo', other: '' });
 
     res = await got.get(ctx.url('/profile/foo/setting/bank'), {
       responseType: 'json'
     });
-    expect(res.body).toStrictEqual({ id: 'foo', 'other': '/bank' });
+    expect(res.body).toStrictEqual({ id: 'foo', other: '/bank' });
 
     await page.close();
   });

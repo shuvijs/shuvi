@@ -1,72 +1,19 @@
 import http from 'http';
 import connect from 'connect';
-// import c2k from 'koa-connect';
-import {
-  IServerProxyConfig,
-  // IServerProxyConfigItem,
-  Runtime
-} from '@shuvi/types';
+import { Runtime } from '@shuvi/types';
 import { matchPathname } from '@shuvi/router';
 import { parse as parseUrl } from 'url';
-// import { createProxyMiddleware } from 'http-proxy-middleware';
 import detectPort from 'detect-port';
-
-interface IServerOptions {
-  proxy?: IServerProxyConfig;
-}
-
-// function mergeDefaultProxyOptions(
-//   config: Partial<IServerProxyConfigItem>
-// ): IServerProxyConfigItem {
-//   return {
-//     logLevel: 'silent',
-//     secure: false,
-//     changeOrigin: true,
-//     ws: true,
-//     xfwd: true,
-//     ...config
-//   };
-// }
-
-// function normalizeProxyConfig(
-//   proxyConfig: IServerProxyConfig
-// ): IServerProxyConfigItem[] {
-//   const res: IServerProxyConfigItem[] = [];
-//
-//   if (Array.isArray(proxyConfig)) {
-//     proxyConfig.forEach(item => res.push(mergeDefaultProxyOptions(item)));
-//   } else if (typeof proxyConfig === 'object') {
-//     Object.keys(proxyConfig).forEach(context => {
-//       const val = proxyConfig[context];
-//       const opts =
-//         typeof val === 'string'
-//           ? {
-//               target: val,
-//               context
-//             }
-//           : {
-//               ...val,
-//               context
-//             };
-//       res.push(mergeDefaultProxyOptions(opts));
-//     });
-//   }
-//
-//   return res;
-// }
 
 export class Server {
   hostname: string | undefined;
   port: number | undefined;
-  private _app: Runtime.IServerApp;
+  private _app: any;
   private _server: http.Server | null = null;
 
-  constructor(options: IServerOptions = {}) {
+  constructor() {
     this._app = connect();
 
-    if (options.proxy) {
-      this._setupProxy(options.proxy);
-    }
     this._app.use(
       (
         req: Runtime.IIncomingMessage,
@@ -77,10 +24,6 @@ export class Server {
         next();
       }
     );
-    this._app.on('error', (err, req, res, next) => {
-      // Note: connect error-handling logic such as centralized logging
-      console.error(`server error: ${req.url} `, err);
-    });
   }
 
   async _checkPort(port: number) {
@@ -143,16 +86,5 @@ export class Server {
         resolve();
       })
     );
-  }
-
-  private _setupProxy(proxy: IServerProxyConfig) {
-    // const proxyOptions = normalizeProxyConfig(proxy);
-    // proxyOptions.forEach(({ context, ...opts }) => {
-    //   if (context) {
-    //     this._app.use(c2k(createProxyMiddleware(context, opts) as any));
-    //   } else {
-    //     this._app.use(c2k(createProxyMiddleware(opts) as any));
-    //   }
-    // });
   }
 }

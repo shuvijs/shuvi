@@ -126,9 +126,7 @@ class Api extends Hookable implements IApi {
 
   get server() {
     if (!this._server) {
-      this._server = new Server({
-        proxy: this.config.proxy
-      });
+      this._server = new Server();
     }
 
     return this._server;

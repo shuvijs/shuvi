@@ -1,44 +1,44 @@
 module.exports = api => {
   api.addServerMiddleware({
     path: 'testorder',
-    handler: async (ctx, next) => {
+    handler: (req, res, next) => {
       console.log(1);
-      await next();
+      next();
     },
     order: 1
   });
 
   api.addServerMiddleware({
     path: 'testorder',
-    handler: async (ctx, next) => {
+    handler: (req, res, next) => {
       console.log('plugin default order');
-      await next();
+      next();
     }
   });
 
   api.addServerMiddleware({
     path: 'testorder',
-    handler: async (ctx, next) => {
+    handler: async (req, res, next) => {
       console.log(-1);
-      await next();
+      next();
     },
     order: -1
   });
 
   api.addServerMiddleware({
     path: 'testorder',
-    handler: async (ctx, next) => {
+    handler: async (req, res, next) => {
       console.log(9);
-      await next();
+      next();
     },
     order: 9
   });
 
   api.addServerMiddleware({
     path: 'pluginservermiddleware',
-    handler: async (ctx, next) => {
-      await next();
-      ctx.body = 'pluginServerMiddleware';
+    handler: async (req, res, next) => {
+      next();
+      res.end('pluginServerMiddleware');
     }
   });
 };

@@ -44,9 +44,8 @@ export default abstract class Shuvi {
     res: Runtime.IServerAppResponse,
     next: Runtime.IServerAppNext
   ) {
-    // Note: connect error-handling logic such as centralized logging
-    console.log('7777777');
-    console.error(`server error: ${req.url} `, err);
+    throwServerRenderError(req, res, err);
+    next();
   }
 
   async renderToHTML(
@@ -122,7 +121,7 @@ export default abstract class Shuvi {
         sendHTML(req, res, html);
       }
     } catch (error) {
-      throwServerRenderError(req, res, next, error);
+      next(error);
     }
   }
 
@@ -133,13 +132,6 @@ export default abstract class Shuvi {
 
     this._api = await this._apiPromise;
   }
-
-  protected _useServerMiddlewaresHandler = () => {
-    const middlewares = this._api.getServerMiddlewares();
-    for (const { path, handler } of middlewares) {
-      this._api.server.use(path, handler);
-    }
-  };
 
   protected _getServerMiddlewares() {
     return this._api.getServerMiddlewares();
