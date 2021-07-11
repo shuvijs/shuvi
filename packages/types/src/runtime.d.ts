@@ -221,16 +221,13 @@ export type NextHandleFunction = (
   res: IServerAppResponse,
   next: IServerAppNext
 ) => void;
-type ErrorHandleFunction = (
+export type ErrorHandleFunction = (
   err: any,
   req: IServerAppRequest,
   res: IServerAppResponse,
   next: IServerAppNext
 ) => void;
-export type IServerMiddlewareHandler =
-  | connect.HandleFunction
-  | NextHandleFunction
-  | ErrorHandleFunction;
+export type IServerMiddlewareHandler = NextHandleFunction | ErrorHandleFunction;
 
 export interface IServerModule {
   render?(
