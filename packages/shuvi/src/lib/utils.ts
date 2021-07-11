@@ -1,7 +1,10 @@
+import asyncWarpHandler from 'express-async-handler';
+import { Runtime } from '@shuvi/types';
+
 export function acceptsHtml(
   header: string,
   {
-    htmlAcceptHeaders = ['text/html', '*/*'],
+    htmlAcceptHeaders = ['text/html', '*/*']
   }: { htmlAcceptHeaders?: string[] } = {}
 ) {
   for (var i = 0; i < htmlAcceptHeaders.length; i++) {
@@ -25,4 +28,10 @@ export function dedupe<T extends Record<string, any>, K extends keyof T>(
     kept.push(bundle);
   }
   return kept;
+}
+
+export function asyncMiddlewareWarp(fn: Runtime.IServerMiddlewareHandler) {
+  return (asyncWarpHandler(
+    (fn as unknown) as any
+  ) as unknown) as Runtime.IServerMiddlewareHandler;
 }

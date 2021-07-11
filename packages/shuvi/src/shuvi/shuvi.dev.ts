@@ -1,7 +1,7 @@
 import { Runtime } from '@shuvi/types';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
-import { acceptsHtml } from '../lib/utils';
+import { acceptsHtml, asyncMiddlewareWarp } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
 
@@ -28,16 +28,18 @@ export default class ShuviDev extends Base {
     await devMiddleware.waitUntilValid();
 
     // keep the order
-    api.server.use(this._onDemandRouteMgr.getServerMiddleware());
+    api.server.use(
+      asyncMiddlewareWarp(this._onDemandRouteMgr.getServerMiddleware())
+    );
     devMiddleware.apply();
     api.server.use(
       `${api.assetPublicPath}:path(.*)`,
-      this._publicDirMiddleware
+      asyncMiddlewareWarp(this._publicDirMiddleware)
     );
 
-    api.server.use(this._createServerMiddlewaresHandler);
+    api.server.use(asyncMiddlewareWarp(this._createServerMiddlewaresHandler));
 
-    api.server.use(this._pageMiddleware);
+    api.server.use(asyncMiddlewareWarp(this._pageMiddleware));
 
     api.server.use(this.errorHandler);
   }
@@ -57,11 +59,8 @@ export default class ShuviDev extends Base {
       middlewares
     ) as unknown) as Runtime.NextHandleFunction;
 
-    try {
-      await task(req, res, next);
-    } catch (error) {
-      next(error);
-    }
+    await task(req, res, next);
+
     return next();
   };
 
@@ -80,7 +79,7 @@ export default class ShuviDev extends Base {
       if (error.code === 'ENOENT') {
         error.statusCode = 404;
       }
-      next(error);
+      throw error;
     }
   };
 
@@ -102,11 +101,7 @@ export default class ShuviDev extends Base {
 
     await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || '/');
 
-    try {
-      await this._handlePageRequest(req, res, next);
-    } catch (error) {
-      next(error);
-    }
+    await this._handlePageRequest(req, res, next);
 
     return next();
   };

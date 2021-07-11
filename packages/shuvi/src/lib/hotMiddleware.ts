@@ -57,7 +57,7 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware: Runtime.IServerMiddlewareHandler = async (
+  middleware: Runtime.IServerMiddlewareHandler = (
     req: Runtime.IIncomingMessage,
     res: Runtime.IServerAppResponse,
     next: Runtime.IServerAppNext

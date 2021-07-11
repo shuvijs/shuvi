@@ -1,5 +1,6 @@
 import { Runtime } from '@shuvi/types';
 import { serveStatic } from '../lib/serveStatic';
+import { asyncMiddlewareWarp } from '../lib/utils';
 import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
 
@@ -9,12 +10,15 @@ export default class ShuviProd extends Base {
 
     // If user don't provide a custom asset public path, we need serve it
     if (api.config.publicPath === PUBLIC_PATH) {
-      api.server.use(`${api.assetPublicPath}:path(.*)`, this._assetsMiddleware);
+      api.server.use(
+        `${api.assetPublicPath}:path(.*)`,
+        asyncMiddlewareWarp(this._assetsMiddleware)
+      );
     }
 
-    api.server.use(this._createServerMiddlewaresHandler);
+    api.server.use(asyncMiddlewareWarp(this._createServerMiddlewaresHandler));
 
-    api.server.use(this._handlePageRequest);
+    api.server.use(asyncMiddlewareWarp(this._handlePageRequest));
 
     api.server.use(this.errorHandler);
   }
@@ -34,11 +38,8 @@ export default class ShuviProd extends Base {
       middlewares
     ) as unknown) as Runtime.NextHandleFunction;
 
-    try {
-      await task(req, res, next);
-    } catch (error) {
-      next(error);
-    }
+    await task(req, res, next);
+
     return next();
   };
 
@@ -57,7 +58,7 @@ export default class ShuviProd extends Base {
       if (error.code === 'ENOENT') {
         error.statusCode = 404;
       }
-      next(error);
+      throw error;
     }
   };
 }

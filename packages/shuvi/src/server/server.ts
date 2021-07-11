@@ -66,8 +66,10 @@ export class Server {
 
     // wrap sub-apps
     if (typeof handler.handler === 'function') {
+      if (typeof handler.path === 'string') {
+        this.middlewares.push(handler);
+      }
       const server = handler;
-      server.path = path;
       handler = function (
         req: Runtime.IIncomingMessage,
         res: Runtime.IServerAppResponse,
@@ -78,9 +80,9 @@ export class Server {
     }
 
     // wrap vanilla http.Servers
-    if (handler instanceof http.Server) {
-      handler = handler.listeners('request')[0];
-    }
+    // if (handler instanceof http.Server) {
+    //   handler = handler.listeners('request')[0];
+    // }
 
     // add the middleware
     this.middlewares.push({ path, handler });

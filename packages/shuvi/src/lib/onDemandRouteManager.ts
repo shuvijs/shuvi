@@ -39,11 +39,7 @@ export class OnDemandRouteManager {
       const task = ModuleReplacePlugin.restoreModule(chunkInitiatorModule);
       if (task) {
         await this.devMiddleware.invalidate();
-        try {
-          await task;
-        } catch (error) {
-          next(error);
-        }
+        await task;
       }
       next();
     };
