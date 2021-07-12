@@ -35,3 +35,10 @@ export function asyncMiddlewareWarp(fn: Runtime.IServerMiddlewareHandler) {
     (fn as unknown) as any
   ) as unknown) as Runtime.IServerMiddlewareHandler;
 }
+
+export const asyncCall =
+  typeof setImmediate === 'function'
+    ? setImmediate
+    : function (fn: (...args: any[]) => any) {
+        process.nextTick(fn.bind.apply(fn, arguments as any));
+      };

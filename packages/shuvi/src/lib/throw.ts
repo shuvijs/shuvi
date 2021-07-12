@@ -1,21 +1,16 @@
 import { Runtime } from '@shuvi/types';
+import { asyncCall } from './utils';
+
 /**
  * Only expose error stack to end user on the browser in development mode.
  */
-
-const defer =
-  typeof setImmediate === 'function'
-    ? setImmediate
-    : function (fn: any) {
-        process.nextTick(fn.bind.apply(fn, arguments));
-      };
 
 export function throwServerRenderError(
   req: Runtime.IIncomingMessage,
   res: Runtime.IServerAppResponse,
   error: any
 ): void {
-  defer(function () {
+  asyncCall(function () {
     console.error(`server error: ${req.url} `, error.stack || error.toString());
   });
   // Note: client

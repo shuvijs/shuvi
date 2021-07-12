@@ -1,16 +1,10 @@
 import http from 'http';
 import finalhandler from 'finalhandler';
 import { Runtime } from '@shuvi/types';
+import { asyncCall } from '../lib/utils';
 import { matchPathname } from '@shuvi/router';
 import { parse as parseUrl } from 'url';
 import detectPort from 'detect-port';
-
-const defer =
-  typeof setImmediate === 'function'
-    ? setImmediate
-    : function (fn: any) {
-        process.nextTick(fn.bind.apply(fn, arguments));
-      };
 
 export class Server {
   hostname: string | undefined;
@@ -113,7 +107,7 @@ export class Server {
 
       // all done
       if (!middleware) {
-        defer(done, err);
+        asyncCall(done, err);
         return;
       }
 
