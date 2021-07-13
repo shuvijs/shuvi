@@ -54,6 +54,8 @@ export async function setupApp(api: Api) {
 
   api.setViewModule(runtime.getViewModulePath());
 
+  api.setRoutesNormalizer(runtime.getRoutesNormalizerPath());
+
   let entryContentsFile = `'${api.resolveAppFile('entryContents')}'`;
 
   if (config.asyncEntry === true) {
@@ -154,7 +156,8 @@ export async function setupApp(api: Api) {
         )}'`,
         'export { server, document, application }',
         ssr &&
-          `export { default as view } from '${runtime.getViewModulePath()}'`
+          `export { default as view } from '${runtime.getViewModulePath()}'
+        export { default as routesNormalizer } from '${runtime.getRoutesNormalizerPath()}'`
       ]
         .filter(Boolean)
         .join(';\n')

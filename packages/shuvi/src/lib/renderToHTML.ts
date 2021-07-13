@@ -15,19 +15,19 @@ export async function renderToHTML({
   const renderer = new Renderer({ api });
   const {
     application,
-    server: { render }
+    server: { render },
+    routesNormalizer
   } = api.resources.server;
   const app = application.create(
     {
       req
     },
     {
-      async render({ appContext, AppComponent, routes }) {
+      async render({ appContext, AppComponent, router }) {
         const result = await renderer.renderDocument({
+          router,
           app,
-          url: req.url || '/',
           AppComponent,
-          routes,
           appContext,
           render
         });
@@ -37,7 +37,8 @@ export async function renderToHTML({
         } else {
           html = result;
         }
-      }
+      },
+      routesNormalizer
     }
   );
 

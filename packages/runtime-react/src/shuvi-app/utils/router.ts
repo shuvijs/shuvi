@@ -3,12 +3,7 @@ import { createRedirector } from '../utils/createRedirector';
 
 const isServer = typeof window === 'undefined';
 
-type Data = Record<string, any>;
-
-interface IRenderRouteOptions {
-  routeProps?: Data;
-  appContext: Data;
-}
+export type INormalizeRoutesContext = Runtime.IApplicationCreaterContext;
 
 type IAppRouteWithElement = Runtime.IAppRouteConfig & { element?: any };
 type IRouteComponentContext = Runtime.IRouteComponentContext;
@@ -21,9 +16,9 @@ export function resetHydratedState() {
 
 export function normalizeRoutes(
   routes: Runtime.IAppRouteConfig[] | undefined,
-  options: IRenderRouteOptions
+  appContext: INormalizeRoutesContext = {}
 ): IAppRouteWithElement[] {
-  const { routeProps = {}, appContext } = options;
+  const { routeProps = {} } = appContext;
   if (!routes) {
     return [] as IAppRouteWithElement[];
   }
@@ -74,7 +69,7 @@ export function normalizeRoutes(
         next();
       };
     }
-    res.children = normalizeRoutes(res.children, options);
+    res.children = normalizeRoutes(res.children, appContext);
     return res;
   });
 }

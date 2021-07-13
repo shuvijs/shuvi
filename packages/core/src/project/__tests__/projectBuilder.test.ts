@@ -56,7 +56,10 @@ describe('app', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules"\nexport default temp'
+      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -84,7 +87,10 @@ describe('app', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules"\nexport default temp'
+      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -109,7 +115,10 @@ describe('app', () => {
       ],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "123"\nexport default temp'],
-      ['core/view.js', 'import temp from "viewModules2"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules2"\nexport default temp'
+      ],
       [
         'core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
@@ -140,7 +149,10 @@ describe('app', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['core/view.js', 'import temp from "viewModules"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules"\nexport default temp'
+      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);

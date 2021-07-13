@@ -19,7 +19,7 @@ import {
   IParams
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
-import { IApi, Runtime } from '../index';
+import { IApi, IRouterHistoryMode } from '../index';
 import { IManifest } from './bundler';
 
 export {
@@ -34,6 +34,15 @@ export {
   IRouter,
   IParams
 };
+
+export interface IRoutesNormalizer {
+  (
+    routes: IAppRouteConfig[] | undefined,
+    options: {
+      context: object;
+    }
+  ): IAppRouteConfig[];
+}
 
 export type IData = {
   [k: string]: string | number | boolean | undefined | null;
@@ -117,6 +126,10 @@ export type IAppData<Data = {}> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
+  routeProps?: { [x: string]: any };
+  router: {
+    history: IRouterHistoryMode;
+  };
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -135,7 +148,6 @@ export interface ITelestore {
 
 export interface IServerRendererOptions<CompType = any>
   extends IRenderOptions<CompType> {
-  url: string;
   manifest: IManifest;
   getAssetPublicUrl(path: string): string;
 }
@@ -178,11 +190,28 @@ export type IRenderAppResult<Data = {}> = {
   redirect?: IRedirectState;
 };
 
+export interface IApplicationCreaterContext {
+  routeProps?: { [x: string]: any };
+  [x: string]: any;
+}
+export interface IApplicationCreaterServerContext {
+  req: IRequest;
+}
+
+export interface IApplicationCreaterClientContext {
+  pageData: any;
+  routeProps: { [x: string]: any };
+  historyMode: IRouterHistoryMode;
+}
+
 export interface IApplicationModule {
   create(
-    context: any,
+    context:
+      | IApplicationCreaterClientContext
+      | IApplicationCreaterServerContext,
     options: {
       render: IAppRenderFn;
+      routesNormalizer: IRoutesNormalizer;
     }
   ): IApplication;
 }
@@ -259,4 +288,6 @@ export interface IRuntime<CompType = unknown> {
   get404ModulePath(): string;
 
   getViewModulePath(): string;
+
+  getRoutesNormalizerPath(): string;
 }

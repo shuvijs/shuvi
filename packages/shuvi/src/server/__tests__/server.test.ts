@@ -144,6 +144,7 @@ describe('server', () => {
       await got(`http://${host}:${port}/path/to/match/route`);
       expect(params).toStrictEqual({ path: ['path', 'to', 'match', 'route'] });
     });
+
     test('match all /:path(.*)', async () => {
       let params;
       server = new Server();

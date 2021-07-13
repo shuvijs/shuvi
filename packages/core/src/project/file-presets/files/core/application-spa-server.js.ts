@@ -3,7 +3,7 @@ const applicationSpaServerJsFile = `import { Application } from "@shuvi/core/lib
 export function create(context, options) {
   return new Application({
     AppComponent: null,
-    routes: [],
+    router: null,
     context,
     render: options.render
   });
