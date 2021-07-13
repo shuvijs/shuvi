@@ -5,7 +5,6 @@ import {
   APIHooks,
   IPaths,
   IShuviMode,
-  Runtime,
   IPhase,
   Bundler
 } from '@shuvi/types';
@@ -32,7 +31,6 @@ import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
-import { normalizeServerMiddleware } from './serverMiddleware';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -60,7 +58,6 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private extraServerMiddlewares: Runtime.IServerMiddleware[] = [];
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
@@ -409,29 +406,6 @@ class Api extends Hookable implements IApi {
         })
       );
     }
-  }
-
-  addServerMiddleware(middleware: Runtime.IServerMiddleware) {
-    this.extraServerMiddlewares.push(middleware);
-  }
-
-  getServerMiddlewares(): Runtime.IServerMiddlewareItem[] {
-    const {
-      extraServerMiddlewares,
-      paths: { rootDir }
-    } = this;
-
-    let serverMiddleware: Runtime.IServerMiddleware[];
-    try {
-      // this.resources.server maybe don't exist
-      serverMiddleware = this.resources.server.server.serverMiddleware || [];
-    } catch (error) {
-      serverMiddleware = [];
-    }
-
-    return [...serverMiddleware, ...extraServerMiddlewares]
-      .map(m => normalizeServerMiddleware(m, { rootDir }))
-      .sort((a, b) => a.order - b.order);
   }
 }
 

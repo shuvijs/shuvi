@@ -256,19 +256,9 @@ export interface IServerModule {
       appContext: any;
     }
   ): void;
-  serverMiddleware?: IServerMiddleware[];
 }
 
-export interface IServerMiddlewareOptions {
-  handler: string | IServerMiddlewareHandler;
-  path?: string;
-  order?: number;
-}
-
-export type IServerMiddleware =
-  | string
-  | IServerMiddlewareHandler
-  | IServerMiddlewareOptions;
+export type IServerMiddleware = string | IServerMiddlewareHandler;
 
 export interface IServerMiddlewareItem {
   path: string;

@@ -16,8 +16,6 @@ export default class ShuviProd extends Base {
       );
     }
 
-    api.server.use(asyncMiddlewareWarp(this._createServerMiddlewaresHandler));
-
     api.server.use(asyncMiddlewareWarp(this._handlePageRequest));
 
     api.server.use(this.errorHandler);
@@ -26,22 +24,6 @@ export default class ShuviProd extends Base {
   protected getMode() {
     return 'production' as const;
   }
-
-  private _createServerMiddlewaresHandler: Runtime.IServerMiddlewareHandler = async (
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    next: Runtime.IServerAppNext
-  ) => {
-    const middlewares = this._getServerMiddlewares();
-
-    const task = (this._runServerMiddlewares(
-      middlewares
-    ) as unknown) as Runtime.NextHandleFunction;
-
-    await task(req, res, next);
-
-    return next();
-  };
 
   private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async (
     req: Runtime.IIncomingMessage,

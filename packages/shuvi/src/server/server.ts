@@ -47,7 +47,7 @@ export class Server {
   }
 
   use(fn: Runtime.IServerMiddlewareHandler): Server;
-  use(route: string, fn: Runtime.IServerMiddleware): Server;
+  use(route: string, fn: Runtime.IServerMiddlewareHandler): Server;
   use(route: any, fn?: any): Server {
     let handler = fn;
     let path = route;
