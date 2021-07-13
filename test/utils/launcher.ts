@@ -70,7 +70,7 @@ async function launchShuvi(
 ): Promise<ChildProcess> {
   return new Promise(resolve => {
     // dynamic NODE_SERVER like EXPRESS, KOA default SHUVI
-    const NODE_SERVER = process.env.NODE_SERVER || 'SHUVI';
+    const NODE_SERVER = process.env.NODE_SERVER;
     const spawnOptions: SpawnOptions = {
       env: {
         NODE_ENV: isDev ? 'development' : 'production',
@@ -89,10 +89,19 @@ async function launchShuvi(
     }
     let shuviProcess: ChildProcess;
     if (NODE_SERVER) {
-      const NODE_SERVER_SOURCE = Path.resolve(
-        path,
-        NODE_SERVER.toLocaleLowerCase()
-      );
+      let NODE_SERVER_SOURCE;
+      try {
+        NODE_SERVER_SOURCE = Path.resolve(
+          path,
+          NODE_SERVER.toLocaleLowerCase()
+        );
+      } catch (error) {
+        throw error;
+        console.error(
+          'can not find custom server js file on fixture test path'
+        );
+      }
+
       shuviProcess = spawn('node', [NODE_SERVER_SOURCE], {
         env: {
           ...spawnOptions.env,

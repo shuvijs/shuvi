@@ -16,9 +16,9 @@
     "test": "yarn test:fixtures && yarn test:unit",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
-    "test:e2e": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand",
-    "test:e2e:express": "NODE_OPTIONS=--max_old_space_size=4096 NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
-    "test:e2e:koa": "NODE_OPTIONS=--max_old_space_size=4096 NODE_SERVER=KOA jest test/e2e/basic --runInBand"
+    "test:e2e": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand && yarn test:e2e:express && yarn test:e2e:koa",
+    "test:e2e:express": "NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
+    "test:e2e:koa": "NODE_SERVER=KOA jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=KOA jest test/e2e/basic --runInBand"
   },
   "husky": {
     "hooks": {
@@ -45,11 +45,13 @@
     "@types/send": "^0.14.5",
     "@types/testing-library__react": "^10.0.1",
     "cross-spawn": "^7.0.2",
+    "express": "^4.17.1",
     "get-port": "^5.1.1",
     "got": "^10.7.0",
     "husky": "^4.2.3",
     "is-wsl": "^2.1.1",
     "jest": "^25.3.0",
+    "koa": "^2.13.1",
     "lerna": "^3.22.1",
     "lint-staged": "^10.1.2",
     "lodash": "^4.17.15",
