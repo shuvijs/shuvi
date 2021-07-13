@@ -4,6 +4,7 @@ import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { acceptsHtml, asyncMiddlewareWarp } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
+import { httpProxyMiddleware } from '../server';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -26,6 +27,10 @@ export default class ShuviDev extends Base {
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
     await devMiddleware.waitUntilValid();
+
+    if (api.config.proxy) {
+      httpProxyMiddleware(api.server, api.config.proxy);
+    }
 
     // keep the order
     api.server.use(
