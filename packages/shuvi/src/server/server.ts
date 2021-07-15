@@ -1,9 +1,10 @@
 import http from 'http';
-import { Runtime } from '@shuvi/types';
-import { asyncCall } from '../lib/utils';
-import { matchPathname } from '@shuvi/router';
 import { parse as parseUrl } from 'url';
 import detectPort from 'detect-port';
+import { Runtime } from '@shuvi/types';
+import { asyncCall } from '../lib/utils';
+import { sendHTML } from '../lib/sendHtml';
+import { matchPathname } from '@shuvi/router';
 
 export class Server {
   hostname: string | undefined;
@@ -26,7 +27,7 @@ export class Server {
     // default route to '/'
     if (typeof route !== 'string') {
       handler = route;
-      path = ':matchAll(.*)';
+      path = undefined;
     }
 
     // wrap sub-apps
@@ -66,7 +67,7 @@ export class Server {
 
     if (!req.parsedUrl) req.parsedUrl = parseUrl(req.url || '', true);
 
-    const next = (err?: any): void => {
+    const next: Runtime.IServerAppNext = err => {
       // next callback
       const middleware = this.middlewares[index++];
 
@@ -78,6 +79,9 @@ export class Server {
       }
 
       const path = middleware.path;
+
+      if (!path)
+        return this.call(middleware.handler, path, err, req, res, next);
 
       // route data
       const matchedPath =
@@ -130,7 +134,6 @@ export class Server {
     error?: any
   ) => {
     let msg;
-    let status;
 
     // ignore 404 on in-flight response
     if (!error && res.headersSent) {
@@ -146,12 +149,8 @@ export class Server {
         );
       });
 
-      status = error.status || error.statusCode;
-
-      if (status === undefined) {
-        // fallback to status code on response
-        status = 500;
-      }
+      // fallback to status code on response
+      res.statusCode = error.status || error.statusCode || 500;
 
       // get error message
       msg =
@@ -160,8 +159,8 @@ export class Server {
           : `Server Render Error\n\n${error.stack}`;
     } else {
       // not found
-      status = 404;
-      msg = `Cannot  ${req.method} {req.url}`;
+      res.statusCode = 404;
+      msg = `Cannot ${req.method} {req.url}`;
     }
 
     // cannot actually respond
@@ -171,28 +170,7 @@ export class Server {
     }
 
     // send response
-    this.send(req, res, status, msg);
-  };
-
-  send = (
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    status: number,
-    msg: string
-  ) => {
-    // response status
-    res.statusCode = status;
-
-    // standard headers
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Content-Length', Buffer.byteLength(msg, 'utf8'));
-
-    if (req.method === 'HEAD') {
-      res.end();
-      return;
-    }
-
-    res.end(msg, 'utf8');
+    return sendHTML(req, res, msg);
   };
 
   async _checkPort(port: number) {

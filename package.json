@@ -16,7 +16,7 @@
     "test": "yarn test:fixtures && yarn test:unit",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
-    "test:e2e": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand && yarn test:e2e:express && yarn test:e2e:koa",
+    "test:e2e": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand",
     "test:e2e:express": "NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
     "test:e2e:koa": "NODE_SERVER=KOA jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=KOA jest test/e2e/basic --runInBand"
   },
