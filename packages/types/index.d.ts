@@ -1,9 +1,5 @@
-import {
-  ProjectBuilder,
-  ITemplateData,
-  IHookable,
-  AppHooks
-} from '@shuvi/core';
+import { ITemplateData, IHookable, AppHooks } from '@shuvi/core';
+import { ProjectBuilder } from '@shuvi/shuvi';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
 import {

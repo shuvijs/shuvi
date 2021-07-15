@@ -1,4 +1,5 @@
-import { Route, FileSnippets } from '@shuvi/core';
+import { Route } from '@shuvi/core';
+import * as FileSnippets from '../project/file-snippets';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
@@ -56,24 +57,41 @@ export async function setupApp(api: Api) {
 
   api.setRoutesNormalizer(runtime.getRoutesNormalizerPath());
 
-  let entryContentsFile = `'${api.resolveAppFile('entryContents')}'`;
-
-  if (config.asyncEntry === true) {
-    entryContentsFile = `(${entryContentsFile})`;
-  }
-
-  api.setEntryFileContent(`import ${entryContentsFile};`);
-
   api.setAppModule([
     ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
     runtime.getAppModulePath()
   ]);
+
+  api.setUserModule({
+    app: [
+      ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/nullish')
+    ],
+    '404': [
+      ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/nullish')
+    ],
+    plugin: [
+      ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/noopFn')
+    ],
+    server: [
+      ...withExts(api.resolveUserFile('server'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/noop')
+    ],
+    document: [
+      ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/noop')
+    ]
+  });
 
   api.setPluginModule([
     ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
     require.resolve('@shuvi/utils/lib/noopFn')
   ]);
 
+  // todo: move into filePresets after `platform` refactoring
+  // we need to move file creation logics into filePresets as much as possible
   const moduleExportProxy404 = FileSnippets.moduleExportProxyCreater();
   api.addAppFile({
     name: 'core/404.js',
@@ -89,46 +107,13 @@ export async function setupApp(api: Api) {
     unmounted: moduleExportProxy404.unmounted
   });
 
-  const moduleExportProxyServer = FileSnippets.moduleExportProxyCreater();
-  api.addAppFile({
-    name: 'core/server.js',
-    content: () =>
-      moduleExportProxyServer.getContent([
-        ...withExts(api.resolveUserFile('server'), moduleFileExtensions),
-        require.resolve('@shuvi/utils/lib/noop')
-      ]),
-    mounted: moduleExportProxyServer.mounted,
-    unmounted: moduleExportProxyServer.unmounted
-  });
-
-  const moduleExportProxyDocument = FileSnippets.moduleExportProxyCreater();
-  api.addAppFile({
-    name: 'core/document.js',
-    content: () =>
-      moduleExportProxyDocument.getContent([
-        ...withExts(api.resolveUserFile('document'), moduleFileExtensions),
-        require.resolve('@shuvi/utils/lib/noop')
-      ]),
-    mounted: moduleExportProxyDocument.mounted,
-    unmounted: moduleExportProxyDocument.unmounted
-  });
-
-  if (!config.runtimeConfig || config.ssr) {
-    // with ssr, we get runtimeConfig from appData
-    api.addAppFile({
-      name: 'core/runtimeConfig.js',
-      content: () => 'export default null'
-    });
-  } else if (config.runtimeConfig) {
-    // with none-ssr, we need create cruntimeConfig when build
-    api.addAppFile({
-      name: 'core/runtimeConfig.js',
-      content: () =>
-        `export default ${JSON.stringify(
-          getPublicRuntimeConfig(config.runtimeConfig || {})
-        )}`
-    });
-  }
+  // with none-ssr, we need create cruntimeConfig when build
+  // with ssr, we get runtimeConfig from appData
+  api.setRuntimeConfigContent(
+    config.runtimeConfig || !config.ssr
+      ? JSON.stringify(getPublicRuntimeConfig(config.runtimeConfig || {}))
+      : null
+  );
 
   api.addAppExport(runtime.getAppModulePath(), '{ default as App }');
 
@@ -138,21 +123,17 @@ export async function setupApp(api: Api) {
     '{ default as getRuntimeConfig }'
   );
 
+  // todo: move into filePresets after `platform` refactoring
   api.addAppFile({
-    name: 'core/setRuntimeConfig.js',
-    content: () =>
-      `export { setRuntimeConfig as default } from 'shuvi/lib/lib/runtimeConfig'`
-  });
-
-  api.addAppFile({
-    name: 'server.js',
+    name: 'main.server.js',
     content: () =>
       [
-        `import * as server from '${api.resolveAppFile('core', 'server')}'`,
-        `import * as document from '${api.resolveAppFile('core', 'document')}'`,
+        `import * as server from '${api.resolveAppFile('user', 'server')}'`,
+        `import * as document from '${api.resolveAppFile('user', 'document')}'`,
         `import * as application from '${api.resolveAppFile(
           'core',
-          ssr ? 'application' : 'application-spa-server'
+          'server',
+          ssr ? 'application' : 'application-spa'
         )}'`,
         'export { server, document, application }',
         ssr &&
