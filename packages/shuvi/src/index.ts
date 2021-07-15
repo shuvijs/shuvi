@@ -3,7 +3,7 @@ export type { IConfig } from './shuvi';
 
 export type { PluginApi } from './api';
 
-export { ProjectBuilder } from './project/projectBuilder'
+export { ProjectBuilder } from './project/projectBuilder';
 
 export {
   BUNDLER_TARGET_CLIENT,

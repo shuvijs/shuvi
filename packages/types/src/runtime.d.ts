@@ -1,5 +1,4 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
-import Koa, { DefaultState, DefaultContext } from 'koa';
 import { UrlWithParsedQuery } from 'url';
 import {
   IUserRouteConfig,
@@ -37,9 +36,12 @@ export {
 };
 
 export interface IRoutesNormalizer {
-  (routes: IAppRouteConfig[] | undefined, options: {
-    context: object
-  }): IAppRouteConfig[];
+  (
+    routes: IAppRouteConfig[] | undefined,
+    options: {
+      context: object;
+    }
+  ): IAppRouteConfig[];
 }
 
 export type IData = {
@@ -199,12 +201,14 @@ export interface IApplicationCreaterServerContext {
 export interface IApplicationCreaterClientContext {
   pageData: any;
   routeProps: { [x: string]: any };
-  historyMode: IRouterHistoryMode
+  historyMode: IRouterHistoryMode;
 }
 
 export interface IApplicationModule {
   create(
-    context: IApplicationCreaterClientContext | IApplicationCreaterServerContext,
+    context:
+      | IApplicationCreaterClientContext
+      | IApplicationCreaterServerContext,
     options: {
       render: IAppRenderFn;
       routesNormalizer: IRoutesNormalizer;
@@ -222,17 +226,35 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
-export interface CustomContext extends DefaultContext {
-  params?: IParams;
+export type IServerAppRequest = IIncomingMessage;
+export type IServerAppResponse = ServerResponse;
+export type IServerAppNext = (err?: any) => void;
+
+export type NextHandleFunction = (
+  req: IServerAppRequest,
+  res: IServerAppResponse,
+  next: IServerAppNext
+) => void;
+
+export type ErrorHandleFunction = (
+  err: any,
+  req: IServerAppRequest,
+  res: IServerAppResponse,
+  next: IServerAppNext
+) => void;
+
+export type IServerAsyncMiddlewareHandler = (
+  req: IServerAppRequest,
+  res: IServerAppResponse,
+  next: IServerAppNext
+) => Promise<any>;
+
+export type IServerMiddlewareHandler = NextHandleFunction | ErrorHandleFunction;
+
+export interface IServerMiddlewareItem {
+  path: string;
+  handler: IServerMiddlewareHandler;
 }
-export type IServerApp<S = DefaultState, C = CustomContext> = Koa<S, C>;
-export type IServerAppContext = Koa.Context;
-export type IServerMiddlewareHandler<
-  S = DefaultState,
-  C = CustomContext
-> = Koa.Middleware<S, C>;
-export type IServerAppNext = Koa.Next;
-export type IServerAppResponse = Koa.Response;
 
 export interface IServerModule {
   render?(
@@ -247,23 +269,6 @@ export interface IServerModule {
       appContext: any;
     }
   ): void;
-  serverMiddleware?: IServerMiddleware[];
-}
-
-export interface IServerMiddlewareOptions {
-  handler: string | IServerMiddlewareHandler;
-  path?: string;
-  order?: number;
-}
-
-export type IServerMiddleware =
-  | string
-  | IServerMiddlewareHandler
-  | IServerMiddlewareOptions;
-
-export interface IServerMiddlewareItem {
-  path: string;
-  handler: IServerMiddlewareHandler;
 }
 
 export interface IRuntime<CompType = unknown> {

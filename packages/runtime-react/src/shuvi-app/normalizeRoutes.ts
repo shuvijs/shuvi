@@ -1,1 +1,1 @@
-export { normalizeRoutes as default} from './utils/router';
+export { normalizeRoutes as default } from './utils/router';

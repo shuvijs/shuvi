@@ -1,84 +1,177 @@
 import http from 'http';
-import Koa from 'koa';
-import c2k from 'koa-connect';
-import {
-  IServerProxyConfig,
-  IServerProxyConfigItem,
-  Runtime
-} from '@shuvi/types';
-import { matchPathname } from '@shuvi/router';
 import { parse as parseUrl } from 'url';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 import detectPort from 'detect-port';
-
-interface IServerOptions {
-  proxy?: IServerProxyConfig;
-}
-
-function mergeDefaultProxyOptions(
-  config: Partial<IServerProxyConfigItem>
-): IServerProxyConfigItem {
-  return {
-    logLevel: 'silent',
-    secure: false,
-    changeOrigin: true,
-    ws: true,
-    xfwd: true,
-    ...config
-  };
-}
-
-function normalizeProxyConfig(
-  proxyConfig: IServerProxyConfig
-): IServerProxyConfigItem[] {
-  const res: IServerProxyConfigItem[] = [];
-
-  if (Array.isArray(proxyConfig)) {
-    proxyConfig.forEach(item => res.push(mergeDefaultProxyOptions(item)));
-  } else if (typeof proxyConfig === 'object') {
-    Object.keys(proxyConfig).forEach(context => {
-      const val = proxyConfig[context];
-      const opts =
-        typeof val === 'string'
-          ? {
-              target: val,
-              context
-            }
-          : {
-              ...val,
-              context
-            };
-      res.push(mergeDefaultProxyOptions(opts));
-    });
-  }
-
-  return res;
-}
+import { Runtime } from '@shuvi/types';
+import { asyncCall } from '../lib/utils';
+import { sendHTML } from '../lib/sendHtml';
+import { matchPathname } from '@shuvi/router';
 
 export class Server {
   hostname: string | undefined;
   port: number | undefined;
-  private _app: Runtime.IServerApp;
+  private middlewares: Runtime.IServerMiddlewareItem[];
   private _server: http.Server | null = null;
 
-  constructor(options: IServerOptions = {}) {
-    this._app = new Koa();
-
-    if (options.proxy) {
-      this._setupProxy(options.proxy);
-    }
-    this._app.use(async (ctx, next) => {
-      (ctx.req as Runtime.IIncomingMessage).parsedUrl = parseUrl(
-        ctx.request.url || '',
-        true
-      );
-      await next();
-    });
-    this._app.on('error', (err, ctx) => {
-      // Note: Koa error-handling logic such as centralized logging
-      console.error(`server error: ${ctx.request.url} `, err);
-    });
+  constructor() {
+    this.middlewares = [];
+    this.call = this.call.bind(this);
+    this.middlewareHandler = this.middlewareHandler.bind(this);
   }
+
+  use(fn: Runtime.IServerMiddlewareHandler): Server;
+  use(route: string, fn: Runtime.IServerMiddlewareHandler): Server;
+  use(route: any, fn?: any): Server {
+    let handler = fn;
+    let path = route;
+
+    // default route to '/'
+    if (typeof route !== 'string') {
+      handler = route;
+      path = undefined;
+    }
+
+    // wrap sub-apps
+    if (typeof handler.handler === 'function') {
+      if (typeof handler.path === 'string') {
+        this.middlewares.push(handler);
+      }
+      const server = handler;
+      handler = function (
+        req: Runtime.IIncomingMessage,
+        res: Runtime.IServerAppResponse,
+        next: Runtime.IServerAppNext
+      ) {
+        return server.handler(req, res, next);
+      };
+    }
+
+    // add the middleware
+    this.middlewares.push({ path, handler });
+
+    return this;
+  }
+
+  getRequestHandler() {
+    return this.middlewareHandler as http.RequestListener;
+  }
+
+  middlewareHandler(
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    out?: (
+      req: Runtime.IIncomingMessage,
+      res: Runtime.IServerAppResponse
+    ) => void
+  ) {
+    let index = 0;
+
+    if (!req.parsedUrl) req.parsedUrl = parseUrl(req.url || '', true);
+
+    const next: Runtime.IServerAppNext = err => {
+      // next callback
+      const middleware = this.middlewares[index++];
+
+      // all done
+      if (!middleware) {
+        // final function handler
+        asyncCall(out || this.finalhandler, req, res, err);
+        return;
+      }
+
+      const path = middleware.path;
+
+      if (!path)
+        return this.call(middleware.handler, path, err, req, res, next);
+
+      // route data
+      const matchedPath =
+        req.parsedUrl.pathname && matchPathname(path, req.parsedUrl.pathname);
+
+      // skip this layer if the route doesn't match
+      if (!matchedPath) return next(err);
+      req.params = matchedPath.params;
+
+      // call the layer handler
+      return this.call(middleware.handler, path, err, req, res, next);
+    };
+
+    return next();
+  }
+
+  call(
+    middlewareHandler: Runtime.IServerMiddlewareHandler,
+    path: string,
+    err: any,
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) {
+    const arity = middlewareHandler.length;
+    let error = err;
+
+    try {
+      if (err && arity === 4) {
+        // error-handling middleware
+        (middlewareHandler as Runtime.ErrorHandleFunction)(err, req, res, next);
+        return;
+      } else if (!err && arity < 4) {
+        // request-handling middleware
+        (middlewareHandler as Runtime.NextHandleFunction)(req, res, next);
+        return;
+      }
+    } catch (e) {
+      // replace the error
+      error = e;
+    }
+
+    // continue
+    next(error);
+  }
+
+  finalhandler = (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    error?: any
+  ) => {
+    let msg;
+
+    // ignore 404 on in-flight response
+    if (!error && res.headersSent) {
+      return;
+    }
+
+    // unhandled error
+    if (error) {
+      asyncCall(function () {
+        console.error(
+          `server error: ${req.url} `,
+          error.stack || error.toString()
+        );
+      });
+
+      // fallback to status code on response
+      res.statusCode = error.status || error.statusCode || 500;
+
+      // get error message
+      msg =
+        process.env.NODE_ENV === 'production'
+          ? 'Server Render Error' // Note: should not expose error stack in prod
+          : `Server Render Error\n\n${error.stack}`;
+    } else {
+      // not found
+      res.statusCode = 404;
+      msg = `Cannot ${req.method} {req.url}`;
+    }
+
+    // cannot actually respond
+    if (res.headersSent) {
+      req.socket.destroy();
+      return;
+    }
+
+    // send response
+    return sendHTML(req, res, msg);
+  };
 
   async _checkPort(port: number) {
     const _port = await detectPort(port);
@@ -108,42 +201,11 @@ export class Server {
     });
   }
 
-  use(fn: Runtime.IServerMiddlewareHandler): this;
-  use(route: string, fn: Runtime.IServerMiddleware): this;
-  use(route: any, fn?: any): this {
-    if (fn) {
-      this._app.use(async (ctx, next) => {
-        const matchedPath = matchPathname(route, ctx.request.path);
-        if (!matchedPath) return await next(); // Note: not matched
-        ctx.params = matchedPath.params;
-        await fn(ctx, next);
-      });
-    } else {
-      this._app.use(route);
-    }
-    return this;
-  }
-
-  getRequestHandler() {
-    return this._app.callback();
-  }
-
   close() {
     return new Promise<void>((resolve, reject) =>
       this._server?.close(() => {
         resolve();
       })
     );
-  }
-
-  private _setupProxy(proxy: IServerProxyConfig) {
-    const proxyOptions = normalizeProxyConfig(proxy);
-    proxyOptions.forEach(({ context, ...opts }) => {
-      if (context) {
-        this._app.use(c2k(createProxyMiddleware(context, opts) as any));
-      } else {
-        this._app.use(c2k(createProxyMiddleware(opts) as any));
-      }
-    });
   }
 }

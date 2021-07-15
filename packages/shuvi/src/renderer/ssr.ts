@@ -1,7 +1,5 @@
 import { Runtime, AppHooks } from '@shuvi/types';
-import {
-  IDENTITY_SSR_RUNTIME_PUBLICPATH,
-} from '../constants';
+import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '../constants';
 import getRuntimeConfig from '../lib/runtimeConfig';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { BaseRenderer } from './base';

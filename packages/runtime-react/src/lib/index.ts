@@ -47,7 +47,7 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
   getViewModulePath(): string {
     return resolveAppFile('index');
   }
-  
+
   getRoutesNormalizerPath(): string {
     return resolveAppFile('normalizeRoutes');
   }

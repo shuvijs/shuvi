@@ -24,5 +24,4 @@ export function shuvi({
   }
 
   return new ShuviCtor({ cwd, config, configFile });
-
 }

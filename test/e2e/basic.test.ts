@@ -2,12 +2,14 @@ import { AppCtx, Page, launchFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 describe('Basic Features', () => {
   let ctx: AppCtx;
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('basic', { ssr: true });
+    ctx = await launchFixture('basic', { ssr: true }, {}, !isProduction);
   });
   afterAll(async () => {
     await page.close();
@@ -19,7 +21,7 @@ describe('Basic Features', () => {
 
     expect(page.statusCode).toBe(200);
     expect(await page.$$attr('body script', 'src')).toEqual(
-      expect.arrayContaining([expect.stringMatching(/polyfill\.js/)])
+      expect.arrayContaining([expect.stringMatching(/polyfill.*\.js/)])
     );
     expect(await page.$text('div')).toBe('Index Page');
   });
@@ -33,7 +35,9 @@ describe('Basic Features', () => {
   test('should access process.env', async () => {
     await page.shuvi.navigate('/process-env');
     await page.waitForSelector('#process-env');
-    expect(await page.$text('#process-env')).toBe('development');
+    expect(await page.$text('#process-env')).toBe(
+      !isProduction ? 'development' : 'production'
+    );
   });
 
   describe('404 Page', () => {
@@ -154,7 +158,7 @@ describe('[SPA] Basic Features', () => {
   test('Page /', async () => {
     page = await ctx.browser.page(ctx.url('/'));
     expect(await page.$$attr('body script', 'src')).toEqual(
-      expect.arrayContaining([expect.stringMatching(/polyfill\.js/)])
+      expect.arrayContaining([expect.stringMatching(/polyfill.*\.js/)])
     );
     await page.waitForSelector('#index');
     expect(await page.$text('#index')).toBe('Index Page');
