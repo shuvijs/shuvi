@@ -8,14 +8,11 @@ export const renderWithRoutes = (
     appContext = {}
   }: {
     routes?: Runtime.IAppRouteConfig[];
-    appContext?: INormalizeRoutesContext
+    appContext?: INormalizeRoutesContext;
   } = {},
   { route = '/' }: { route?: string } = {}
 ) => {
-  return renderRoutes(
-    normalizeRoutes(routes, appContext),
-    {
-      route
-    }
-  );
+  return renderRoutes(normalizeRoutes(routes, appContext), {
+    route
+  });
 };

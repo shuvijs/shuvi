@@ -26,18 +26,22 @@ function getSourcePath(source: string) {
 export function createLaunchEditorMiddleware(
   launchEditorEndpoint: string
 ): Runtime.IServerMiddlewareHandler {
-  return async function launchEditorMiddleware(ctx, next) {
-    if (ctx.request.url.startsWith(launchEditorEndpoint)) {
-      const { query } = (ctx.req as Runtime.IIncomingMessage).parsedUrl;
+  return function launchEditorMiddleware(
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    next: Runtime.IServerAppNext
+  ) {
+    if (req.url.startsWith(launchEditorEndpoint)) {
+      const { query } = req.parsedUrl;
       const lineNumber = parseInt(query.lineNumber as string, 10) || 1;
       const colNumber = parseInt(query.colNumber as string, 10) || 1;
       launchEditor(
         getSourcePath(`${query.fileName}:${lineNumber}:${colNumber}`)
       );
-      ctx.body = '';
+      res.end();
       return;
     } else {
-      await next();
+      next();
     }
   };
 }

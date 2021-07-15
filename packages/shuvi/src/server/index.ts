@@ -1,3 +1,4 @@
-import { Server } from "./server";
+import { Server } from './server';
+import httpProxyMiddleware from './httpProxyMiddleware';
 
-export { Server };
+export { Server, httpProxyMiddleware };

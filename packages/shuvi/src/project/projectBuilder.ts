@@ -71,7 +71,7 @@ class ProjectBuilder {
   }
 
   setUserModule(userModule: Partial<UserModule>) {
-    let key: keyof UserModule
+    let key: keyof UserModule;
     for (key in userModule) {
       this._projectContext.userModule[key] = userModule[key] || '';
     }

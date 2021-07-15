@@ -150,45 +150,4 @@ describe('Hot Module Reloading', () => {
       }
     });
   });
-
-  describe('editing a server middleware', () => {
-    test('should detect the changes and display it', async () => {
-      const serverPath = resolveFixture('basic/src/server.js');
-      let originalContent: string | undefined;
-      let done = false;
-
-      try {
-        page = await ctx.browser.page(ctx.url('/hmr/serverMiddleware'));
-        expect(await page.$text('body')).toBe('body_content');
-
-        originalContent = readFileSync(serverPath, 'utf8');
-        const editedContent = originalContent.replace(
-          'body_content',
-          'change_body_content'
-        );
-
-        // change the content
-        writeFileSync(serverPath, editedContent, 'utf8');
-
-        page = await ctx.browser.page(ctx.url('/hmr/serverMiddleware'));
-
-        expect(await page.$text('body')).toBe('change_body_content');
-
-        // add the original content
-        writeFileSync(serverPath, originalContent, 'utf8');
-
-        page = await ctx.browser.page(ctx.url('/hmr/serverMiddleware'));
-
-        expect(await page.$text('body')).toBe('body_content');
-
-        done = true;
-      } finally {
-        await page.close();
-
-        if (!done && originalContent) {
-          writeFileSync(serverPath, originalContent, 'utf8');
-        }
-      }
-    });
-  });
 });

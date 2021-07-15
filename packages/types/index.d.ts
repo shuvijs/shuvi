@@ -1,8 +1,4 @@
-import {
-  ITemplateData,
-  IHookable,
-  AppHooks
-} from '@shuvi/core';
+import { ITemplateData, IHookable, AppHooks } from '@shuvi/core';
 import { ProjectBuilder } from '@shuvi/shuvi';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
@@ -103,7 +99,6 @@ export interface IApi extends IHookable {
   addAppExport: typeof ProjectBuilder.prototype.addExport;
   addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
   addRuntimePlugin: typeof ProjectBuilder.prototype.addRuntimePlugin;
-  addServerMiddleware: (serverMiddleware: Runtime.IServerMiddleware) => void;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
