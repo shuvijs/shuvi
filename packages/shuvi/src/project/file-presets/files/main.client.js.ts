@@ -1,4 +1,4 @@
-import { getCodeSnippet } from '../../../app/utils/getCodeSnippet';
+import { getCodeSnippet } from '../../file-snippets/helpers';
 import { ProjectContext } from '../../projectContext';
 import os from 'os';
 
