@@ -1,4 +1,3 @@
-import asyncWarpHandler from 'express-async-handler';
 import { Runtime } from '@shuvi/types';
 
 export function acceptsHtml(
@@ -30,10 +29,12 @@ export function dedupe<T extends Record<string, any>, K extends keyof T>(
   return kept;
 }
 
-export function asyncMiddlewareWarp(fn: Runtime.IServerMiddlewareHandler) {
-  return (asyncWarpHandler(
-    (fn as unknown) as any
-  ) as unknown) as Runtime.IServerMiddlewareHandler;
+export function asyncMiddlewareWarp(fn: Runtime.IServerAsyncMiddlewareHandler) {
+  return function asyncUtilWrap (req, res, next
+  ) {
+    const fnReturn = fn(req, res, next)
+    return Promise.resolve(fnReturn).catch(next)
+  } as Runtime.NextHandleFunction
 }
 
 export const asyncCall =

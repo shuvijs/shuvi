@@ -44,17 +44,16 @@ export default class ShuviDev extends Base {
 
     api.server.use(asyncMiddlewareWarp(this._pageMiddleware));
 
-    api.server.use(this.errorHandler);
   }
 
   protected getMode() {
     return 'development' as const;
   }
 
-  private _publicDirMiddleware: Runtime.IServerMiddlewareHandler = async (
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    next: Runtime.IServerAppNext
+  private _publicDirMiddleware: Runtime.IServerAsyncMiddlewareHandler = async (
+    req,
+    res,
+    next
   ) => {
     const api = this._api;
     let { path = '' } = req.params || {};
@@ -70,10 +69,10 @@ export default class ShuviDev extends Base {
     }
   };
 
-  private _pageMiddleware: Runtime.IServerMiddlewareHandler = async (
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    next: Runtime.IServerAppNext
+  private _pageMiddleware: Runtime.IServerAsyncMiddlewareHandler = async (
+    req,
+    res,
+    next
   ) => {
     const accept = req.headers['accept'];
     if (req.method !== 'GET') {

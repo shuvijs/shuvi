@@ -13,11 +13,11 @@ export class OnDemandRouteManager {
     this._api = api;
   }
 
-  getServerMiddleware(): Runtime.IServerMiddlewareHandler {
+  getServerMiddleware(): Runtime.IServerAsyncMiddlewareHandler {
     return async (
-      req: Runtime.IIncomingMessage,
-      res: Runtime.IServerAppResponse,
-      next: Runtime.IServerAppNext
+      req,
+      res,
+      next
     ) => {
       const pathname = req.parsedUrl.pathname!;
       if (!pathname.startsWith(this._api.assetPublicPath)) {

@@ -18,14 +18,13 @@ export default class ShuviProd extends Base {
 
     api.server.use(asyncMiddlewareWarp(this._handlePageRequest));
 
-    api.server.use(this.errorHandler);
   }
 
   protected getMode() {
     return 'production' as const;
   }
 
-  private _assetsMiddleware: Runtime.IServerMiddlewareHandler = async (
+  private _assetsMiddleware: Runtime.IServerAsyncMiddlewareHandler = async (
     req: Runtime.IIncomingMessage,
     res: Runtime.IServerAppResponse,
     next: Runtime.IServerAppNext

@@ -1,5 +1,4 @@
 import http from 'http';
-import finalhandler from 'finalhandler';
 import { Runtime } from '@shuvi/types';
 import { asyncCall } from '../lib/utils';
 import { matchPathname } from '@shuvi/router';
@@ -16,34 +15,6 @@ export class Server {
     this.middlewares = [];
     this.call = this.call.bind(this);
     this.middlewareHandler = this.middlewareHandler.bind(this);
-  }
-
-  async _checkPort(port: number) {
-    const _port = await detectPort(port);
-    if (_port !== port) {
-      const error = new Error(`Port ${port} is being used.`);
-      Object.assign(error, { code: 'EADDRINUSE' });
-      throw error;
-    }
-  }
-
-  async listen(port: number, hostname?: string): Promise<void> {
-    if (this._server) {
-      return;
-    }
-
-    await this._checkPort(port);
-
-    this.hostname = hostname;
-    this.port = port;
-
-    const srv = (this._server = http.createServer(this.getRequestHandler()));
-    await new Promise((resolve, reject) => {
-      // This code catches EADDRINUSE error if the port is already in use
-      srv.on('error', reject);
-      srv.on('listening', resolve);
-      srv.listen(port, hostname);
-    });
   }
 
   use(fn: Runtime.IServerMiddlewareHandler): Server;
@@ -73,11 +44,6 @@ export class Server {
       };
     }
 
-    // wrap vanilla http.Servers
-    // if (handler instanceof http.Server) {
-    //   handler = handler.listeners('request')[0];
-    // }
-
     // add the middleware
     this.middlewares.push({ path, handler });
 
@@ -98,8 +64,7 @@ export class Server {
   ) {
     let index = 0;
 
-    // final function handler
-    const done = out || finalhandler(req, res);
+    if (!req.parsedUrl) req.parsedUrl = parseUrl(req.url || '', true);
 
     const next = (err?: any): void => {
       // next callback
@@ -107,13 +72,12 @@ export class Server {
 
       // all done
       if (!middleware) {
-        asyncCall(done, err);
+        // final function handler
+        asyncCall(out || this.finalhandler, req, res, err);
         return;
       }
 
       const path = middleware.path;
-
-      if (!req.parsedUrl) req.parsedUrl = parseUrl(req.url || '', true);
 
       // route data
       const matchedPath =
@@ -140,14 +104,13 @@ export class Server {
   ) {
     const arity = middlewareHandler.length;
     let error = err;
-    const hasError = Boolean(err);
 
     try {
-      if (hasError && arity === 4) {
+      if (err && arity === 4) {
         // error-handling middleware
         (middlewareHandler as Runtime.ErrorHandleFunction)(err, req, res, next);
         return;
-      } else if (!hasError && arity < 4) {
+      } else if (!err && arity < 4) {
         // request-handling middleware
         (middlewareHandler as Runtime.NextHandleFunction)(req, res, next);
         return;
@@ -159,6 +122,105 @@ export class Server {
 
     // continue
     next(error);
+  }
+
+  finalhandler = (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    error?: any
+  ) => {
+    let msg;
+    let status;
+
+    // ignore 404 on in-flight response
+    if (!error && res.headersSent) {
+      return;
+    }
+
+    // unhandled error
+    if (error) {
+      asyncCall(function () {
+        console.error(
+          `server error: ${req.url} `,
+          error.stack || error.toString()
+        );
+      });
+
+      status = error.status || error.statusCode;
+
+      if (status === undefined) {
+        // fallback to status code on response
+        status = 500;
+      }
+
+      // get error message
+      msg =
+        process.env.NODE_ENV === 'production'
+          ? 'Server Render Error' // Note: should not expose error stack in prod
+          : `Server Render Error\n\n${error.stack}`;
+    } else {
+      // not found
+      status = 404;
+      msg = `Cannot  ${req.method} {req.url}`;
+    }
+
+    // cannot actually respond
+    if (res.headersSent) {
+      req.socket.destroy();
+      return;
+    }
+
+    // send response
+    this.send(req, res, status, msg);
+  };
+
+  send = (
+    req: Runtime.IIncomingMessage,
+    res: Runtime.IServerAppResponse,
+    status: number,
+    msg: string
+  ) => {
+    // response status
+    res.statusCode = status;
+
+    // standard headers
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Content-Length', Buffer.byteLength(msg, 'utf8'));
+
+    if (req.method === 'HEAD') {
+      res.end();
+      return;
+    }
+
+    res.end(msg, 'utf8');
+  };
+
+  async _checkPort(port: number) {
+    const _port = await detectPort(port);
+    if (_port !== port) {
+      const error = new Error(`Port ${port} is being used.`);
+      Object.assign(error, { code: 'EADDRINUSE' });
+      throw error;
+    }
+  }
+
+  async listen(port: number, hostname?: string): Promise<void> {
+    if (this._server) {
+      return;
+    }
+
+    await this._checkPort(port);
+
+    this.hostname = hostname;
+    this.port = port;
+
+    const srv = (this._server = http.createServer(this.getRequestHandler()));
+    await new Promise((resolve, reject) => {
+      // This code catches EADDRINUSE error if the port is already in use
+      srv.on('error', reject);
+      srv.on('listening', resolve);
+      srv.listen(port, hostname);
+    });
   }
 
   close() {

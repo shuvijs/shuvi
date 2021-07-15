@@ -235,13 +235,26 @@ export type NextHandleFunction = (
   res: IServerAppResponse,
   next: IServerAppNext
 ) => void;
+
 export type ErrorHandleFunction = (
   err: any,
   req: IServerAppRequest,
   res: IServerAppResponse,
   next: IServerAppNext
 ) => void;
+
+export type IServerAsyncMiddlewareHandler = (
+  req: IServerAppRequest,
+  res: IServerAppResponse,
+  next: IServerAppNext
+) => Promise<any>;
+
 export type IServerMiddlewareHandler = NextHandleFunction | ErrorHandleFunction;
+
+export interface IServerMiddlewareItem {
+  path: string;
+  handler: IServerMiddlewareHandler;
+}
 
 export interface IServerModule {
   render?(
@@ -256,13 +269,6 @@ export interface IServerModule {
       appContext: any;
     }
   ): void;
-}
-
-export type IServerMiddleware = string | IServerMiddlewareHandler;
-
-export interface IServerMiddlewareItem {
-  path: string;
-  handler: IServerMiddlewareHandler;
 }
 
 export interface IRuntime<CompType = unknown> {

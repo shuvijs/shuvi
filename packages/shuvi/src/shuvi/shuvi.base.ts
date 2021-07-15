@@ -4,7 +4,6 @@ import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/sendHtml';
 import { renderToHTML } from '../lib/renderToHTML';
 import { IConfig } from '../config';
-import { throwServerRenderError } from '../lib/throw';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -35,16 +34,6 @@ export default abstract class Shuvi {
 
   getRequestHandler() {
     return this._api.server.getRequestHandler();
-  }
-
-  errorHandler(
-    err: any,
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    next: Runtime.IServerAppNext
-  ) {
-    throwServerRenderError(req, res, err);
-    next();
   }
 
   async renderToHTML(
@@ -111,19 +100,15 @@ export default abstract class Shuvi {
     res: Runtime.IServerAppResponse,
     next: Runtime.IServerAppNext
   ) {
-    try {
-      const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
-        {
-          name: 'renderToHTML',
-          initialValue: this.renderToHTML
-        }
-      );
-      const html = await renderToHTML(req, res);
-      if (html) {
-        sendHTML(req, res, html);
+    const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
+      {
+        name: 'renderToHTML',
+        initialValue: this.renderToHTML
       }
-    } catch (error) {
-      next(error);
+    );
+    const html = await renderToHTML(req, res);
+    if (html) {
+      sendHTML(req, res, html);
     }
   }
 
