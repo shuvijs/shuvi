@@ -30,6 +30,10 @@ export function normalizeBase(base: string): string {
   return base.replace(/\/$/, '');
 }
 
+export function parseQuery(queryStr: string) {
+  return qs.parse(queryStr);
+}
+
 export function pathToString({
   pathname = '/',
   search = '',
@@ -77,7 +81,7 @@ export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
       let searchIndex = to.indexOf('?');
       if (searchIndex >= 0) {
         parsedPath.search = to.substr(searchIndex);
-        parsedPath.query = qs.parse(parsedPath.search);
+        parsedPath.query = parseQuery(parsedPath.search);
         to = to.substr(0, searchIndex);
       }
 
@@ -96,7 +100,7 @@ export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
     });
 
     if (parsedPath.search) {
-      parsedPath.query = qs.parse(parsedPath.search);
+      parsedPath.query = parseQuery(parsedPath.search);
     } else {
       parsedPath.search = qs.stringify(parsedPath.query);
     }
