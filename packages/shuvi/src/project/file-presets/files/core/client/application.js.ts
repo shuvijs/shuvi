@@ -1,11 +1,10 @@
 const applicationJsFile = `import AppComponent from "@shuvi/app/core/app";
 import routes from "@shuvi/app/core/routes";
-import initPlugins from "@shuvi/app/core/plugin";
+import initPlugins from "@shuvi/app/user/plugin";
 import { pluginRecord } from "@shuvi/app/core/plugins";
 import { Application } from "@shuvi/core/lib/app/app-modules/application";
 import runPlugins from "@shuvi/core/lib/app/app-modules/runPlugins";
 import { createRouter, createBrowserHistory, createHashHistory, createMemoryHistory } from '@shuvi/router';
-const __CLIENT__ = typeof window !== 'undefined';
 
 let app;
 let history;
@@ -13,10 +12,10 @@ let routesNormalizer;
 let appContext;
 export function create(context, options) {
   // app is a singleton in client side
-  if (__CLIENT__ && app) {
+  if (app) {
     return app;
   }
-  const { historyMode = 'memory', req } = context;
+  const { historyMode } = context;
   routesNormalizer = options.routesNormalizer;
   switch (historyMode) {
     case 'browser':
@@ -27,7 +26,7 @@ export function create(context, options) {
       break;
     default:
       history = createMemoryHistory({
-        initialEntries: [req && req.url || '/'],
+        initialEntries: ['/'],
         initialIndex: 0
       })
   }
@@ -53,7 +52,7 @@ export function create(context, options) {
 }
 
 if (module.hot) {
-  module.hot.accept(['@shuvi/app/entry','@shuvi/app/core/app', '@shuvi/app/core/routes', '@shuvi/app/core/plugin'],async ()=>{
+  module.hot.accept(['@shuvi/app/main.client','@shuvi/app/core/app', '@shuvi/app/core/routes', '@shuvi/app/user/plugin'],async ()=>{
     const rerender = () => {
       const AppComponent = require('@shuvi/app/core/app').default;
       const routes = require('@shuvi/app/core/routes').default;

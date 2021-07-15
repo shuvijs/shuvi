@@ -40,7 +40,6 @@ describe('app', () => {
       content: () => 'export default () => "test page"'
     });
 
-    app.setEntryFileContent('import "entry.js"');
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
@@ -51,12 +50,14 @@ describe('app', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['entry.js', 'import "entry.js"'],
-      ['entryContents.js', /run()/],
+      ['main.client.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['platform/view.js', 'import temp from "viewModules"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules"\nexport default temp'
+      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -68,7 +69,6 @@ describe('app', () => {
       content: () => 'export default () => "test page"'
     });
 
-    app.setEntryFileContent('import "entry.js"');
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
@@ -79,18 +79,19 @@ describe('app', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['entry.js', 'import "entry.js"'],
-      ['entryContents.js', /run()/],
+      ['main.client.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['platform/view.js', 'import temp from "viewModules"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules"\nexport default temp'
+      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
 
     // Change modules and content
-    app.setEntryFileContent('import "other_entry.js"');
     app.addEntryCode('const a = 1');
     app.addPolyfill('path/toPolyfill2');
     app.setRoutesContent('routes content 2');
@@ -101,15 +102,17 @@ describe('app', () => {
     await wait(0);
 
     checkMatch([
-      ['entry.js', 'import "other_entry.js"'],
-      ['entryContents.js', /run().*const a=1/s],
+      ['main.client.js', /run().*const a=1/s],
       [
         'index.js',
         'export * from "something to export"\nexport * from "export2"'
       ],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "123"\nexport default temp'],
-      ['platform/view.js', 'import temp from "viewModules2"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules2"\nexport default temp'
+      ],
       [
         'core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
@@ -140,7 +143,10 @@ describe('app', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      ['platform/view.js', 'import temp from "viewModules"\nexport default temp'],
+      [
+        'platform/view.js',
+        'import temp from "viewModules"\nexport default temp'
+      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);

@@ -12,6 +12,7 @@ const entryModule = resolveAppFile('entry');
 
 class CoreRuntime {
   async install(api: IApi): Promise<void> {
+    // todo: move to core
     api.addEntryCode(`import "${entryModule}"`);
     api.addAppExport(resolveAppFile('helper/getPageData'), '{ getPageData }');
   }
