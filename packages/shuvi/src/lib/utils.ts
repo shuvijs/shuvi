@@ -1,7 +1,9 @@
+import { Runtime } from '@shuvi/types';
+
 export function acceptsHtml(
   header: string,
   {
-    htmlAcceptHeaders = ['text/html', '*/*'],
+    htmlAcceptHeaders = ['text/html', '*/*']
   }: { htmlAcceptHeaders?: string[] } = {}
 ) {
   for (var i = 0; i < htmlAcceptHeaders.length; i++) {
@@ -26,3 +28,18 @@ export function dedupe<T extends Record<string, any>, K extends keyof T>(
   }
   return kept;
 }
+
+export function asyncMiddlewareWarp(fn: Runtime.IServerAsyncMiddlewareHandler) {
+  return function asyncUtilWrap (req, res, next
+  ) {
+    const fnReturn = fn(req, res, next)
+    return Promise.resolve(fnReturn).catch(next)
+  } as Runtime.NextHandleFunction
+}
+
+export const asyncCall =
+  typeof setImmediate === 'function'
+    ? setImmediate
+    : function (fn: (...args: any[]) => any) {
+        process.nextTick(fn.bind.apply(fn, arguments as any));
+      };

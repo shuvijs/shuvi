@@ -20,7 +20,6 @@
     "@shuvi/core": "^0.0.1-rc.32",
     "@shuvi/hooks": "0.0.1-beta.38",
     "@shuvi/router": "^0.0.1-rc.32",
-    "@types/koa": "2.11.6",
     "@types/webpack-dev-middleware": "4.1.0",
     "http-proxy-middleware": "1.0.6",
     "query-string": "6.13.8",

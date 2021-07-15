@@ -5,13 +5,12 @@ import {
   APIHooks,
   IPaths,
   IShuviMode,
-  Runtime,
   IPhase,
   Bundler
 } from '@shuvi/types';
 import { IUserRouteConfig } from '@shuvi/core';
 import { ProjectBuilder, UserModule } from '../project/projectBuilder';
-import { FileOptions } from '../file-manager'
+import { FileOptions } from '../file-manager';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -34,7 +33,6 @@ import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
-import { normalizeServerMiddleware } from './serverMiddleware';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -62,7 +60,6 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private extraServerMiddlewares: Runtime.IServerMiddleware[] = [];
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
@@ -135,9 +132,7 @@ class Api extends Hookable implements IApi {
 
   get server() {
     if (!this._server) {
-      this._server = new Server({
-        proxy: this.config.proxy
-      });
+      this._server = new Server();
     }
 
     return this._server;
@@ -417,29 +412,6 @@ class Api extends Hookable implements IApi {
         })
       );
     }
-  }
-
-  addServerMiddleware(middleware: Runtime.IServerMiddleware) {
-    this.extraServerMiddlewares.push(middleware);
-  }
-
-  getServerMiddlewares(): Runtime.IServerMiddlewareItem[] {
-    const {
-      extraServerMiddlewares,
-      paths: { rootDir }
-    } = this;
-
-    let serverMiddleware: Runtime.IServerMiddleware[];
-    try {
-      // this.resources.server maybe don't exist
-      serverMiddleware = this.resources.server.server.serverMiddleware || [];
-    } catch (error) {
-      serverMiddleware = [];
-    }
-
-    return [...serverMiddleware, ...extraServerMiddlewares]
-      .map(m => normalizeServerMiddleware(m, { rootDir }))
-      .sort((a, b) => a.order - b.order);
   }
 }
 

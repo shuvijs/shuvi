@@ -3,7 +3,7 @@ import { createRedirector } from '../utils/createRedirector';
 
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = Runtime.IApplicationCreaterContext
+export type INormalizeRoutesContext = Runtime.IApplicationCreaterContext;
 
 type IAppRouteWithElement = Runtime.IAppRouteConfig & { element?: any };
 type IRouteComponentContext = Runtime.IRouteComponentContext;

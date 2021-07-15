@@ -1,10 +1,10 @@
 import { Runtime } from '@shuvi/types';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
-import { acceptsHtml } from '../lib/utils';
+import { acceptsHtml, asyncMiddlewareWarp } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
-import { throwServerRenderError } from '../lib/throw';
+import { httpProxyMiddleware } from '../server';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -28,78 +28,67 @@ export default class ShuviDev extends Base {
 
     await devMiddleware.waitUntilValid();
 
+    if (api.config.proxy) {
+      httpProxyMiddleware(api.server, api.config.proxy);
+    }
+
     // keep the order
-    api.server.use(this._onDemandRouteMgr.getServerMiddleware());
+    api.server.use(
+      asyncMiddlewareWarp(this._onDemandRouteMgr.getServerMiddleware())
+    );
     devMiddleware.apply();
     api.server.use(
       `${api.assetPublicPath}:path(.*)`,
-      this._publicDirMiddleware
+      asyncMiddlewareWarp(this._publicDirMiddleware)
     );
 
-    api.server.use(this._createServerMiddlewaresHandler());
+    api.server.use(asyncMiddlewareWarp(this._pageMiddleware));
 
-    api.server.use(this._pageMiddleware);
   }
 
   protected getMode() {
     return 'development' as const;
   }
 
-  private _publicDirMiddleware: Runtime.IServerMiddlewareHandler = async ctx => {
+  private _publicDirMiddleware: Runtime.IServerAsyncMiddlewareHandler = async (
+    req,
+    res,
+    next
+  ) => {
     const api = this._api;
-    let { path = '' } = ctx.params || {};
+    let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
     const assetAbsPath = api.resolvePublicFile(path);
     try {
-      await serveStatic(ctx.req, ctx.res, assetAbsPath);
-    } catch (err) {
-      if (err.code === 'ENOENT' || err.statusCode === 404) {
-        this._handle404(ctx);
-      } else if (err.statusCode === 412) {
-        ctx.status = 412;
-        ctx.body = '';
-        return;
-      } else {
-        throw err;
+      await serveStatic(req, res, assetAbsPath);
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        error.statusCode = 404;
       }
+      throw error;
     }
   };
 
-  private _pageMiddleware: Runtime.IServerMiddlewareHandler = async (
-    ctx,
+  private _pageMiddleware: Runtime.IServerAsyncMiddlewareHandler = async (
+    req,
+    res,
     next
   ) => {
-    const headers = ctx.request.headers;
-    if (ctx.request.method !== 'GET') {
-      return await next();
-    } else if (!headers || typeof headers.accept !== 'string') {
-      return await next();
-    } else if (headers.accept.indexOf('application/json') === 0) {
-      return await next();
-    } else if (
-      !acceptsHtml(headers.accept, { htmlAcceptHeaders: ['text/html'] })
-    ) {
-      return await next();
+    const accept = req.headers['accept'];
+    if (req.method !== 'GET') {
+      return next();
+    } else if (!accept) {
+      return next();
+    } else if (accept.indexOf('application/json') === 0) {
+      return next();
+    } else if (!acceptsHtml(accept, { htmlAcceptHeaders: ['text/html'] })) {
+      return next();
     }
 
-    await this._onDemandRouteMgr.ensureRoutes(
-      (ctx.req as Runtime.IIncomingMessage).parsedUrl.pathname || '/'
-    );
+    await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || '/');
 
-    try {
-      await this._handlePageRequest(ctx);
-    } catch (error) {
-      throwServerRenderError(ctx, error);
-    }
+    await this._handlePageRequest(req, res, next);
 
-    await next();
-  };
-
-  private _createServerMiddlewaresHandler = (): Runtime.IServerMiddlewareHandler => {
-    return async (ctx, next) => {
-      const middlewares = this._getServerMiddlewares();
-
-      await this._runServerMiddlewares(middlewares)(ctx, next);
-    };
+    return next();
   };
 }

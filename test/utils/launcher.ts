@@ -8,6 +8,7 @@ import Browser from './browser';
 import { spawn, sync } from 'cross-spawn';
 import { SpawnOptions, ChildProcess } from 'child_process';
 import rimraf from 'rimraf';
+import Path from 'path';
 
 export { Shuvi };
 
@@ -68,6 +69,8 @@ async function launchShuvi(
   envOverrides: Partial<NodeJS.ProcessEnv>
 ): Promise<ChildProcess> {
   return new Promise(resolve => {
+    // dynamic NODE_SERVER like EXPRESS, KOA default SHUVI
+    const NODE_SERVER = process.env.NODE_SERVER;
     const spawnOptions: SpawnOptions = {
       env: {
         NODE_ENV: isDev ? 'development' : 'production',
@@ -84,19 +87,43 @@ async function launchShuvi(
     if (!isDev) {
       sync('node', [cliAgent, getCliCommand('build'), path], spawnOptions);
     }
-    const shuviProcess: ChildProcess = spawn(
-      'node',
-      [
-        cliAgent,
-        getCliCommand(isDev ? 'dev' : 'serve'),
-        path,
-        '--port',
-        String(port),
-        '--config-overrides',
-        JSON.stringify(configOverrides)
-      ],
-      spawnOptions
-    );
+    let shuviProcess: ChildProcess;
+    if (NODE_SERVER) {
+      let NODE_SERVER_SOURCE;
+      try {
+        NODE_SERVER_SOURCE = Path.resolve(
+          path,
+          NODE_SERVER.toLocaleLowerCase()
+        );
+      } catch (error) {
+        throw error;
+        console.error(
+          'can not find custom server js file on fixture test path'
+        );
+      }
+
+      shuviProcess = spawn('node', [NODE_SERVER_SOURCE], {
+        env: {
+          ...spawnOptions.env,
+          PORT: String(port),
+          CONFIGOVERRIDES: JSON.stringify(configOverrides)
+        }
+      } as SpawnOptions);
+    } else {
+      shuviProcess = spawn(
+        'node',
+        [
+          cliAgent,
+          getCliCommand(isDev ? 'dev' : 'serve'),
+          path,
+          '--port',
+          String(port),
+          '--config-overrides',
+          JSON.stringify(configOverrides)
+        ],
+        spawnOptions
+      );
+    }
     if (shuviProcess.stdout) {
       shuviProcess.stdout.setEncoding('utf-8');
       shuviProcess.stdout.on('data', (data: string) => {
