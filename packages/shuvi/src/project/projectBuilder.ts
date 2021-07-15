@@ -1,7 +1,11 @@
 import { getFileManager, FileManager, FileOptions } from '../file-manager';
 import { getFilePresets } from './file-presets';
 
-import { ProjectContext, createProjectContext } from './projectContext';
+import {
+  ProjectContext,
+  createProjectContext,
+  UserModule
+} from './projectContext';
 
 interface ProjectBuilderOptions {
   static?: boolean;
@@ -44,8 +48,8 @@ class ProjectBuilder {
     this._projectContext.routesContent = content;
   }
 
-  setEntryFileContent(content: string) {
-    this._projectContext.entryFileContent = content;
+  setRuntimeConfigContent(content: string | null) {
+    this._projectContext.runtimeConfigContent = content;
   }
 
   addEntryCode(content: string) {
@@ -66,6 +70,13 @@ class ProjectBuilder {
     this._projectContext.runtimePlugins.set(name, runtimePlugin);
   }
 
+  setUserModule(userModule: Partial<UserModule>) {
+    let key: keyof UserModule
+    for (key in userModule) {
+      this._projectContext.userModule[key] = userModule[key] || '';
+    }
+  }
+
   addFile(options: FileOptions): void {
     this._fileManager.addFile(options);
   }
@@ -83,4 +94,4 @@ class ProjectBuilder {
   }
 }
 
-export { ProjectBuilder };
+export { ProjectBuilder, UserModule };

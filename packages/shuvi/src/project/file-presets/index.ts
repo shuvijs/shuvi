@@ -25,7 +25,7 @@ const getAllFiles = (
       const options = require(filepath).default;
       currentFileList.push({
         name,
-        content: options.content
+        ...options
       });
     }
   });

@@ -25,6 +25,10 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
+    "@babel/code-frame": "^7.14.5",
+    "@babel/generator": "^7.14.5",
+    "@babel/parser": "^7.14.7",
+    "@babel/traverse": "^7.14.7",
     "@shuvi/core": "^0.0.1-rc.32",
     "@shuvi/hooks": "0.0.1-beta.38",
     "@shuvi/runtime-core": "^0.0.1-rc.32",
@@ -33,6 +37,7 @@
     "@shuvi/toolpack": "^0.0.1-rc.32",
     "@shuvi/types": "^0.0.1-rc.32",
     "@shuvi/utils": "^0.0.1-rc.32",
+    "@vue/reactivity": "^3.1.4",
     "cli-highlight": "^2.1.9",
     "commander": "5.1.0",
     "cross-spawn": "7.0.3",

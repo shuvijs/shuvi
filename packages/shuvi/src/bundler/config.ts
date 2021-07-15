@@ -90,13 +90,13 @@ export function createWepbackConfig(
 
 export function getClientEntry(_api: Api): IWebpackEntry {
   return {
-    [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry'],
+    [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/main.client'],
     [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
   };
 }
 
 export function getServerEntry(_api: Api): IWebpackEntry {
   return {
-    [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/server']
+    [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/main.server']
   };
 }
