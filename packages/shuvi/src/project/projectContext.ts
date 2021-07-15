@@ -1,5 +1,13 @@
 import { reactive } from '../file-manager';
 
+export interface UserModule {
+  document: string | string[];
+  server: string | string[];
+  plugin: string | string[];
+  app: string | string[];
+  '404': string | string[];
+}
+
 export interface ProjectContext {
   viewModule: string;
   appModule: string | string[];
@@ -11,6 +19,8 @@ export interface ProjectContext {
   polyfills: string[];
   exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
+  runtimeConfigContent: string | null;
+  userModule: UserModule;
 }
 
 export const createProjectContext = () =>
@@ -24,5 +34,13 @@ export const createProjectContext = () =>
     routesNormalizer: '',
     polyfills: [],
     exports: new Map(),
-    runtimePlugins: new Map()
+    runtimePlugins: new Map(),
+    runtimeConfigContent: null,
+    userModule: {
+      document: '',
+      server: '',
+      plugin: '',
+      app: '',
+      '404': ''
+    }
   });

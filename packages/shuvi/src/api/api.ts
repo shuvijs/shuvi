@@ -9,7 +9,9 @@ import {
   IPhase,
   Bundler
 } from '@shuvi/types';
-import { ProjectBuilder, IUserRouteConfig, FileOptions } from '@shuvi/core';
+import { IUserRouteConfig } from '@shuvi/core';
+import { ProjectBuilder, UserModule } from '../project/projectBuilder';
+import { FileOptions } from '../file-manager'
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -113,7 +115,10 @@ class Api extends Hookable implements IApi {
       overrides: this._userConfig
     });
     this._config = deepmerge(defaultConfig, configFromFile);
-    const { ssr, router: { history } } = this._config;
+    const {
+      ssr,
+      router: { history }
+    } = this._config;
     // set history to a specific value
     if (history === 'auto') {
       this._config.router.history = ssr ? 'browser' : 'hash';
@@ -173,6 +178,14 @@ class Api extends Hookable implements IApi {
 
   setPluginModule(module: string | string[]) {
     this._projectBuilder.setPluginModule(module);
+  }
+
+  setRuntimeConfigContent(content: string | null) {
+    this._projectBuilder.setRuntimeConfigContent(content);
+  }
+
+  setUserModule(userModule: Partial<UserModule>) {
+    this._projectBuilder.setUserModule(userModule);
   }
 
   async setRoutes(routes: IUserRouteConfig[]) {
@@ -247,10 +260,6 @@ class Api extends Hookable implements IApi {
         configurable: false
       });
     }
-  }
-
-  setEntryFileContent(content: string): void {
-    this._projectBuilder.setEntryFileContent(content);
   }
 
   addEntryCode(content: string): void {
