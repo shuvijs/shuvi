@@ -80,6 +80,7 @@ export interface IApiConfig {
   routes?: Runtime.IUserRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
   proxy?: IServerProxyConfig;
+  platform?: string;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;

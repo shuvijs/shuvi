@@ -3,7 +3,6 @@ import * as FileSnippets from '../project/file-snippets';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
-import { runtime } from '../runtime';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { Api } from './api';
 
@@ -12,7 +11,7 @@ function withExts(file: string, extensions: string[]): string[] {
 }
 
 export async function setupApp(api: Api) {
-  const { paths, config } = api;
+  const { paths, config, runtime } = api;
   const ssr = api.config.ssr;
 
   await verifyTypeScriptSetup({

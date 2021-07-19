@@ -6,7 +6,8 @@ import {
   IPaths,
   IShuviMode,
   IPhase,
-  Bundler
+  Bundler,
+  Runtime
 } from '@shuvi/types';
 import { IUserRouteConfig } from '@shuvi/core';
 import { ProjectBuilder, UserModule } from '../project/projectBuilder';
@@ -24,7 +25,7 @@ import {
   ROUTE_RESOURCE_QUERYSTRING,
   ROUTE_NOT_FOUND_NAME
 } from '../constants';
-import { runtime } from '../runtime';
+import initRuntime from '../initRuntime';
 import { defaultConfig, IConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
@@ -60,6 +61,7 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
+  private _runtime!: Runtime.IRuntime;
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
@@ -100,6 +102,14 @@ class Api extends Hookable implements IApi {
 
   get paths() {
     return this._paths;
+  }
+
+  get runtime() {
+    if (!this._runtime) {
+      const { runtime } = initRuntime(this.config.platform);
+      this._runtime = runtime;
+    }
+    return this._runtime;
   }
 
   async init() {
@@ -201,8 +211,8 @@ class Api extends Hookable implements IApi {
     this._routes = routes;
 
     const serialized = serializeRoutes(routes, {
-      component(comp, route) {
-        return runtime.componentTemplate(
+      component: (comp, route) => {
+        return this.runtime.componentTemplate(
           `${comp}?${ROUTE_RESOURCE_QUERYSTRING}`,
           route
         );
@@ -374,6 +384,7 @@ class Api extends Hookable implements IApi {
     });
     // do not allow to modify config
     Object.freeze(this._config);
+
     this._paths = getPaths({
       rootDir: this._config.rootDir,
       outputPath: this._config.outputPath,
@@ -385,7 +396,7 @@ class Api extends Hookable implements IApi {
     // Runtime installation need to be executed before initializing presets and plugins
     // to make sure shuvi entry file at the top.
     coreRuntime.install(this.getPluginApi());
-    runtime.install(this.getPluginApi());
+    this.runtime.install(this.getPluginApi());
     runPlugins();
   }
 
