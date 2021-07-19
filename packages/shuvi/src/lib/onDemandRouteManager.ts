@@ -1,5 +1,5 @@
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { Runtime } from '@shuvi/types';
+import { IRequestHandlerWithNext } from '../server';
 import { DevMiddleware } from './devMiddleware';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
@@ -13,13 +13,9 @@ export class OnDemandRouteManager {
     this._api = api;
   }
 
-  getServerMiddleware(): Runtime.IServerAsyncMiddlewareHandler {
-    return async (
-      req,
-      res,
-      next
-    ) => {
-      const pathname = req.parsedUrl.pathname!;
+  getServerMiddleware(): IRequestHandlerWithNext {
+    return async (req, res, next) => {
+      const pathname = req.pathname;
       if (!pathname.startsWith(this._api.assetPublicPath)) {
         return next();
       }

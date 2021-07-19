@@ -1,10 +1,10 @@
-import { Runtime } from '@shuvi/types';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
-import { acceptsHtml, asyncMiddlewareWarp } from '../lib/utils';
+import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
+import { applyHttpProxyMiddleware } from '../lib/httpProxyMiddleware';
+import { IRequestHandlerWithNext } from '../server';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
-import { httpProxyMiddleware } from '../server';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -29,28 +29,24 @@ export default class ShuviDev extends Base {
     await devMiddleware.waitUntilValid();
 
     if (api.config.proxy) {
-      httpProxyMiddleware(api.server, api.config.proxy);
+      applyHttpProxyMiddleware(api.server, api.config.proxy);
     }
 
     // keep the order
-    api.server.use(
-      asyncMiddlewareWarp(this._onDemandRouteMgr.getServerMiddleware())
-    );
+    api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
     api.server.use(
       `${api.assetPublicPath}:path(.*)`,
-      asyncMiddlewareWarp(this._publicDirMiddleware)
+      this._publicDirMiddleware
     );
-
-    api.server.use(asyncMiddlewareWarp(this._pageMiddleware));
-
+    api.server.use(this._pageMiddleware);
   }
 
   protected getMode() {
     return 'development' as const;
   }
 
-  private _publicDirMiddleware: Runtime.IServerAsyncMiddlewareHandler = async (
+  private _publicDirMiddleware: IRequestHandlerWithNext = async (
     req,
     res,
     next
@@ -59,21 +55,20 @@ export default class ShuviDev extends Base {
     let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
     const assetAbsPath = api.resolvePublicFile(path);
+
+    let err = null;
     try {
       await serveStatic(req, res, assetAbsPath);
     } catch (error) {
       if (error.code === 'ENOENT') {
         error.statusCode = 404;
       }
-      throw error;
+      err = error;
     }
+    next(err);
   };
 
-  private _pageMiddleware: Runtime.IServerAsyncMiddlewareHandler = async (
-    req,
-    res,
-    next
-  ) => {
+  private _pageMiddleware: IRequestHandlerWithNext = async (req, res, next) => {
     const accept = req.headers['accept'];
     if (req.method !== 'GET') {
       return next();
@@ -85,10 +80,13 @@ export default class ShuviDev extends Base {
       return next();
     }
 
-    await this._onDemandRouteMgr.ensureRoutes(req.parsedUrl.pathname || '/');
-
-    await this._handlePageRequest(req, res, next);
-
-    return next();
+    let err = null;
+    try {
+      await this._onDemandRouteMgr.ensureRoutes(req.pathname || '/');
+      await this._handlePageRequest(req, res, next);
+    } catch (error) {
+      err = error;
+    }
+    next(err);
   };
 }

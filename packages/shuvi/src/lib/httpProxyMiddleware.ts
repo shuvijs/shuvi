@@ -1,14 +1,22 @@
-import { createProxyMiddleware } from 'http-proxy-middleware';
 import {
-  IServerProxyConfig,
-  IServerProxyConfigItem,
-  Runtime
-} from '@shuvi/types';
-import { Server } from './server';
+  Options as ProxyOptions,
+  Filter as ProxyFilter,
+  createProxyMiddleware
+} from 'http-proxy-middleware';
+import { Server } from '../server/server';
+import { IMiddlewareHandler } from '../server/serverTypes';
+
+export interface IProxyConfigItem extends ProxyOptions {
+  context?: ProxyFilter;
+}
+
+export type IProxyConfig =
+  | Record<string, string | Omit<IProxyConfigItem, 'context'>>
+  | IProxyConfigItem[];
 
 function mergeDefaultProxyOptions(
-  config: Partial<IServerProxyConfigItem>
-): IServerProxyConfigItem {
+  config: Partial<IProxyConfigItem>
+): IProxyConfigItem {
   return {
     logLevel: 'silent',
     secure: false,
@@ -18,10 +26,8 @@ function mergeDefaultProxyOptions(
     ...config
   };
 }
-function normalizeProxyConfig(
-  proxyConfig: IServerProxyConfig
-): IServerProxyConfigItem[] {
-  const res: IServerProxyConfigItem[] = [];
+function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
+  const res: IProxyConfigItem[] = [];
 
   if (Array.isArray(proxyConfig)) {
     proxyConfig.forEach(item => res.push(mergeDefaultProxyOptions(item)));
@@ -45,20 +51,13 @@ function normalizeProxyConfig(
   return res;
 }
 
-export default function httpProxyMiddleware(
-  server: Server,
-  proxy: IServerProxyConfig
-) {
+export function applyHttpProxyMiddleware(server: Server, proxy: IProxyConfig) {
   const proxyOptions = normalizeProxyConfig(proxy);
   proxyOptions.forEach(({ context, ...opts }) => {
     if (context) {
-      server.use(
-        createProxyMiddleware(context, opts) as Runtime.IServerMiddlewareHandler
-      );
+      server.use(createProxyMiddleware(context, opts) as IMiddlewareHandler);
     } else {
-      server.use(
-        createProxyMiddleware(opts) as Runtime.IServerMiddlewareHandler
-      );
+      server.use(createProxyMiddleware(opts) as IMiddlewareHandler);
     }
   });
 }

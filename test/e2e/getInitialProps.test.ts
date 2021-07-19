@@ -38,7 +38,7 @@ describe('GetInitialProps', () => {
       const req = appContext.req;
       expect(typeof req.headers).toBe('object');
       expect(req.url).toBe('/test?a=2');
-      expect(req.parsedUrl.href).toBe('/test?a=2');
+      expect(req.query).toEqual({ a: '2' });
 
       expect(initialPropsCtx.isServer).toBe(true);
       expect(initialPropsCtx.query.a).toBe('2');
@@ -67,7 +67,7 @@ describe('GetInitialProps', () => {
       const req = appContext.req;
       expect(typeof req.headers).toBe('object');
       expect(req.url).toBe('/test?a=2');
-      expect(req.parsedUrl.href).toBe('/test?a=2');
+      expect(req.query).toEqual({ a: '2' });
 
       expect(initialPropsCtx.isServer).toBe(true);
       expect(initialPropsCtx.query.a).toBe('2');

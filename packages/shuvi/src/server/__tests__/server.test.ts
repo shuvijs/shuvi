@@ -1,7 +1,7 @@
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { Server } from '../server';
-import { Runtime } from '@shuvi/types';
+import { IRequest, IResponse, INextFunc } from '../serverTypes';
 
 const host = 'localhost';
 
@@ -16,11 +16,9 @@ describe('server', () => {
       server = new Server();
       const port = await findPort();
       await server.listen(port);
-      server.use(
-        (req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse) => {
-          res.end('ok');
-        }
-      );
+      server.use((req: IRequest, res: IResponse) => {
+        res.end('ok');
+      });
 
       const { body } = await got(`http://${host}:${port}`);
       expect(body).toEqual('ok');
@@ -29,22 +27,13 @@ describe('server', () => {
     test('context', async () => {
       server = new Server();
       server
-        .use(
-          async (
-            req: Runtime.IIncomingMessage,
-            res: Runtime.IServerAppResponse,
-            next: Runtime.IServerAppNext
-          ) => {
-            req.__test = 'worked';
-            await next();
-          }
-        )
-        .use(
-          '/api',
-          (req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse) => {
-            res.end(req.__test);
-          }
-        );
+        .use(async (req: IRequest, res: IResponse, next: INextFunc) => {
+          (req as any).__test = 'worked';
+          await next();
+        })
+        .use('/api', (req: IRequest, res: IResponse) => {
+          res.end((req as any).__test);
+        });
       const port = await findPort();
       await server.listen(port);
 
@@ -55,26 +44,13 @@ describe('server', () => {
     test('match path /:api(.*)', async () => {
       server = new Server();
       server
-        .use(
-          (
-            req: Runtime.IIncomingMessage,
-            res: Runtime.IServerAppResponse,
-            next: Runtime.IServerAppNext
-          ) => {
-            req.__test = 'worked';
-            next();
-          }
-        )
-        .use(
-          '/:api(.*)',
-          (
-            req: Runtime.IIncomingMessage,
-            res: Runtime.IServerAppResponse,
-            next: Runtime.IServerAppNext
-          ) => {
-            res.end(req.__test);
-          }
-        );
+        .use((req: IRequest, res: IResponse, next: INextFunc) => {
+          (req as any).__test = 'worked';
+          next();
+        })
+        .use('/:api(.*)', (req: IRequest, res: IResponse, next: INextFunc) => {
+          res.end((req as any).__test);
+        });
 
       const port = await findPort();
       await server.listen(port);
@@ -92,14 +68,11 @@ describe('server', () => {
 
       let params;
       server = new Server();
-      server.use(
-        '/api/users/:id',
-        (req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse) => {
-          params = req.params;
-          res.statusCode = 200;
-          res.end();
-        }
-      );
+      server.use('/api/users/:id', (req: IRequest, res: IResponse) => {
+        params = req.params;
+        res.statusCode = 200;
+        res.end();
+      });
       const port = await findPort();
       await server.listen(port);
 
@@ -117,24 +90,18 @@ describe('server', () => {
       await got(`http://${host}:${port}/api/users/USER_ID`);
       expect(params).toStrictEqual({ id: 'USER_ID' });
 
-      try {
-        await got(`http://${host}:${port}/api/users/USER_ID/others`);
-      } catch (error) {
-        expect(error.response.statusCode).toBe(404);
-      }
+      await got(`http://${host}:${port}/api/users/USER_ID/others`);
+      expect(params).toStrictEqual({ id: 'USER_ID' });
     });
 
     test('match all /:path*', async () => {
       let params;
       server = new Server();
-      server.use(
-        '/:path*',
-        (req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse) => {
-          params = req.params;
-          res.statusCode = 200;
-          res.end();
-        }
-      );
+      server.use('/:path*', (req: IRequest, res: IResponse) => {
+        params = req.params;
+        res.statusCode = 200;
+        res.end();
+      });
       const port = await findPort();
       await server.listen(port);
 
@@ -148,14 +115,11 @@ describe('server', () => {
     test('match all /:path(.*)', async () => {
       let params;
       server = new Server();
-      server.use(
-        '/:path(.*)',
-        (req: Runtime.IIncomingMessage, res: Runtime.IServerAppResponse) => {
-          params = req.params;
-          res.statusCode = 200;
-          res.end();
-        }
-      );
+      server.use('/:path(.*)', (req: IRequest, res: IResponse) => {
+        params = req.params;
+        res.statusCode = 200;
+        res.end();
+      });
       const port = await findPort();
       await server.listen(port);
 

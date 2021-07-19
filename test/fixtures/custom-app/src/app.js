@@ -1,6 +1,6 @@
 import { App } from '@shuvi/app';
 
-const MyApp = (props) => (
+const MyApp = props => (
   <div>
     <div id="pathname">{props.pathname}</div>
     <App />
@@ -10,7 +10,7 @@ const MyApp = (props) => (
 MyApp.getInitialProps = async ({ fetchInitialProps, appContext }) => {
   let pathname;
   if (appContext.req) {
-    pathname = appContext.req.parsedUrl.pathname;
+    pathname = appContext.req.pathname;
   } else {
     pathname = window.location.pathname;
   }
@@ -18,7 +18,7 @@ MyApp.getInitialProps = async ({ fetchInitialProps, appContext }) => {
   await fetchInitialProps();
 
   return {
-    pathname,
+    pathname
   };
 };
 
