@@ -2,10 +2,6 @@ import { ITemplateData, IHookable, AppHooks } from '@shuvi/core';
 import { ProjectBuilder } from '@shuvi/shuvi';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
-import {
-  Options as ProxyOptions,
-  Filter as ProxyFilter
-} from 'http-proxy-middleware';
 import * as Runtime from './src/runtime';
 import * as Bundler from './src/bundler';
 import * as APIHooks from './src/hooks';
@@ -13,14 +9,6 @@ import * as APIHooks from './src/hooks';
 export { webpack, WebpackChain };
 
 export { Runtime, Bundler, APIHooks, AppHooks, ITemplateData };
-
-export interface IServerProxyConfigItem extends ProxyOptions {
-  context?: ProxyFilter;
-}
-
-export type IServerProxyConfig =
-  | Record<string, string | Omit<IServerProxyConfigItem, 'context'>>
-  | IServerProxyConfigItem[];
 
 export type IShuviMode = 'development' | 'production';
 
@@ -79,7 +67,7 @@ export interface IApiConfig {
   };
   routes?: Runtime.IUserRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
-  proxy?: IServerProxyConfig;
+  proxy?: any;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;

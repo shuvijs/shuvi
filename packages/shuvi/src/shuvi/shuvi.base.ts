@@ -1,8 +1,9 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
 import { getApi, Api } from '../api';
-import { sendHTML } from '../lib/sendHtml';
+import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
+import { IRequest, IResponse, INextFunc } from '../server';
 import { IConfig } from '../config';
 
 export interface IShuviConstructorOptions {
@@ -85,8 +86,8 @@ export default abstract class Shuvi {
   protected abstract init(): Promise<void> | void;
 
   protected _handleErrorSetStatusCode(
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
+    req: IRequest,
+    res: IResponse,
     statusCode: number = 404,
     errorMessage: string = ''
   ) {
@@ -96,19 +97,24 @@ export default abstract class Shuvi {
   }
 
   protected async _handlePageRequest(
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    next: Runtime.IServerAppNext
+    req: IRequest,
+    res: IResponse,
+    next: INextFunc
   ) {
-    const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
-      {
-        name: 'renderToHTML',
-        initialValue: this.renderToHTML
+    try {
+      const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
+        {
+          name: 'renderToHTML',
+          initialValue: this.renderToHTML
+        }
+      );
+      const html = await renderToHTML(req, res);
+      if (html) {
+        // send the response
+        sendHTML(req, res, html);
       }
-    );
-    const html = await renderToHTML(req, res);
-    if (html) {
-      sendHTML(req, res, html);
+    } catch (error) {
+      next(error);
     }
   }
 

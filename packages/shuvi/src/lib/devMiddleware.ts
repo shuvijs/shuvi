@@ -1,5 +1,5 @@
 import { APIHooks } from '@shuvi/types';
-import { createLaunchEditorMiddleware } from '@shuvi/toolpack/lib/utils/errorOverlayMiddleware';
+import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Api } from '../api';
@@ -47,7 +47,7 @@ export async function getDevMiddleware({
 
   const apply = () => {
     api.server.use(webpackDevMiddleware);
-    api.server.use(webpackHotMiddleware.middleware);
+    api.server.use(webpackHotMiddleware.middleware as any);
     api.server.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );

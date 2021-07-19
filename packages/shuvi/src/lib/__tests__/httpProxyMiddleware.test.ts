@@ -1,8 +1,7 @@
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
-import { Server } from '../server';
-import { Runtime } from '@shuvi/types';
-import httpProxyMiddleware from '../httpProxyMiddleware';
+import { applyHttpProxyMiddleware } from '../httpProxyMiddleware';
+import { Server, IRequest, IResponse, INextFunc } from '../../server';
 
 const host = 'localhost';
 
@@ -21,43 +20,25 @@ describe('server proxy test', () => {
     beforeAll(async () => {
       proxyTarget1 = new Server();
       proxyTarget1
-        .use(
-          '/api',
-          (
-            req: Runtime.IIncomingMessage,
-            res: Runtime.IServerAppResponse,
-            next: Runtime.IServerAppNext
-          ) => {
-            res.end('api1');
-          }
-        )
-        .use(
-          '/header',
-          (
-            req: Runtime.IIncomingMessage,
-            res: Runtime.IServerAppResponse,
-            next: Runtime.IServerAppNext
-          ) => {
-            Object.keys(req.headers).forEach(header => {
-              const val = req.headers[header];
-              if (typeof val !== 'undefined') {
-                res.setHeader(header, val);
-              }
-            });
-            res.end('ok');
-          }
-        );
+        .use('/api', (req: IRequest, res: IResponse, next: INextFunc) => {
+          res.end('api1');
+        })
+        .use('/header', (req: IRequest, res: IResponse, next: INextFunc) => {
+          Object.keys(req.headers).forEach(header => {
+            const val = req.headers[header];
+            if (typeof val !== 'undefined') {
+              res.setHeader(header, val);
+            }
+          });
+          res.end('ok');
+        });
       proxyTarget1Port = await findPort();
       await proxyTarget1.listen(proxyTarget1Port);
 
       proxyTarget2 = new Server();
       proxyTarget2.use(
         '/api',
-        (
-          req: Runtime.IIncomingMessage,
-          res: Runtime.IServerAppResponse,
-          next: Runtime.IServerAppNext
-        ) => {
+        (req: IRequest, res: IResponse, next: INextFunc) => {
           res.end('api2');
         }
       );
@@ -71,7 +52,7 @@ describe('server proxy test', () => {
 
     test('object options', async () => {
       server = new Server();
-      httpProxyMiddleware(server, {
+      applyHttpProxyMiddleware(server, {
         '/api': `http://${host}:${proxyTarget1Port}`,
         '/server1/header': {
           target: `http://${host}:${proxyTarget1Port}`,
@@ -87,11 +68,7 @@ describe('server proxy test', () => {
       });
       server.use(
         '/noproxy',
-        (
-          req: Runtime.IIncomingMessage,
-          res: Runtime.IServerAppResponse,
-          next: Runtime.IServerAppNext
-        ) => {
+        (req: IRequest, res: IResponse, next: INextFunc) => {
           res.end('no proxy');
         }
       );
@@ -113,7 +90,7 @@ describe('server proxy test', () => {
 
     test('array options', async () => {
       server = new Server();
-      httpProxyMiddleware(server, [
+      applyHttpProxyMiddleware(server, [
         {
           context: '/api',
           target: `http://${host}:${proxyTarget1Port}`
@@ -134,11 +111,7 @@ describe('server proxy test', () => {
       ]);
       server.use(
         '/noproxy',
-        (
-          req: Runtime.IIncomingMessage,
-          res: Runtime.IServerAppResponse,
-          next: Runtime.IServerAppNext
-        ) => {
+        (req: IRequest, res: IResponse, next: INextFunc) => {
           res.end('no proxy');
         }
       );

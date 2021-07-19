@@ -1,7 +1,7 @@
 import { ParsedQuery } from 'query-string';
 import type History from '../history/base';
 
-export { History };
+export { History, ParsedQuery };
 
 export type GlobalHistory = typeof window.history;
 
