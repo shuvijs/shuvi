@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/types';
+import { IncomingMessage, ServerResponse } from 'http';
 
 export function acceptsHtml(
   header: string,
@@ -14,32 +14,21 @@ export function acceptsHtml(
   return false;
 }
 
-export function dedupe<T extends Record<string, any>, K extends keyof T>(
-  bundles: T[],
-  prop: K
-): T[] {
-  const files = new Set();
-  const kept = [];
+export function sendHTML(
+  req: IncomingMessage,
+  res: ServerResponse,
+  html: string
+) {
+  if (res.writableEnded || res.headersSent) return;
 
-  for (const bundle of bundles) {
-    if (files.has(bundle[prop])) continue;
-    files.add(bundle[prop]);
-    kept.push(bundle);
+  if (!res.getHeader('Content-Type')) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
   }
-  return kept;
-}
+  const buffer = Buffer.from(html);
+  res.setHeader('Content-Length', buffer.length);
 
-export function asyncMiddlewareWarp(fn: Runtime.IServerAsyncMiddlewareHandler) {
-  return function asyncUtilWrap (req, res, next
-  ) {
-    const fnReturn = fn(req, res, next)
-    return Promise.resolve(fnReturn).catch(next)
-  } as Runtime.NextHandleFunction
-}
+  // ctx.body will set ctx.status to 200, if ctx.status is not set before
+  if (!res.statusCode) res.statusCode = 200;
 
-export const asyncCall =
-  typeof setImmediate === 'function'
-    ? setImmediate
-    : function (fn: (...args: any[]) => any) {
-        process.nextTick(fn.bind.apply(fn, arguments as any));
-      };
+  res.end(req.method === 'HEAD' ? null : buffer);
+}
