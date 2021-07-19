@@ -93,7 +93,7 @@ export async function setupApp(api: Api) {
   // todo: move into filePresets after `platform` refactoring
   // we need to move file creation logics into filePresets as much as possible
   const moduleExportProxy404 = FileSnippets.moduleExportProxyCreater();
-  api.addAppFile({
+  api.addSelfFile({
     name: 'core/404.js',
     content: () =>
       moduleExportProxy404.getContent(
@@ -124,7 +124,7 @@ export async function setupApp(api: Api) {
   );
 
   // todo: move into filePresets after `platform` refactoring
-  api.addAppFile({
+  api.addSelfFile({
     name: 'main.server.js',
     content: () =>
       [

@@ -261,7 +261,15 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addEntryCode(content);
   }
 
+  addSelfFile(options: FileOptions): void {
+    this._projectBuilder.addFile(options);
+  }
+
   addAppFile(options: FileOptions): void {
+    const { name = '' } = options;
+    if (!name.startsWith('files/')) {
+      throw new Error("addAppFile's params must start with 'files/'");
+    }
     this._projectBuilder.addFile(options);
   }
 
