@@ -6,6 +6,7 @@ export interface IUserRouteConfig {
   component?: string;
   redirect?: string;
   path: string;
+  id?: string;
 }
 
 export interface IAppRouteConfig extends IRouteRecord {

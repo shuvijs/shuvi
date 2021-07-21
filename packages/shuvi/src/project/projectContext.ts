@@ -15,11 +15,11 @@ export interface ProjectContext {
   entryCodes: string[];
   entryFileContent: string;
   routesContent: string;
-  routesNormalizer: string;
   polyfills: string[];
   exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
   runtimeConfigContent: string | null;
+  platformDir: string;
   userModule: UserModule;
 }
 
@@ -31,11 +31,11 @@ export const createProjectContext = () =>
     entryCodes: [],
     entryFileContent: '',
     routesContent: 'export default []',
-    routesNormalizer: '',
     polyfills: [],
     exports: new Map(),
     runtimePlugins: new Map(),
     runtimeConfigContent: null,
+    platformDir: '',
     userModule: {
       document: '',
       server: '',

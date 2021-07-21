@@ -15,10 +15,11 @@ export async function renderToHTML({
   const renderer = new Renderer({ api });
   const {
     application,
-    server: { render },
-    routesNormalizer
+    applicationSpa,
+    server: { render }
   } = api.resources.server;
-  const app = application.create(
+  const currentApplication = api.config.ssr ? application : applicationSpa;
+  const app = currentApplication.create(
     {
       req
     },
@@ -37,8 +38,7 @@ export async function renderToHTML({
         } else {
           html = result;
         }
-      },
-      routesNormalizer
+      }
     }
   );
 

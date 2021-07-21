@@ -12,7 +12,7 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
-
+    api.addAppExport(resolveAppFile('App'), '{ default as App }');
     api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
     api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
     api.addAppExport(
@@ -42,22 +42,6 @@ loadRouteComponent(() => import(/* webpackChunkName: "page-${route.id}" */"${com
   webpack: () => [require.resolveWeak("${componentModule}")],
   modules: ["${componentModule}"],
 })`.trim();
-  }
-
-  getViewModulePath(): string {
-    return resolveAppFile('index');
-  }
-
-  getRoutesNormalizerPath(): string {
-    return resolveAppFile('normalizeRoutes');
-  }
-
-  getAppModulePath(): string {
-    return resolveAppFile('App');
-  }
-
-  get404ModulePath(): string {
-    return resolveAppFile('page404');
   }
 }
 

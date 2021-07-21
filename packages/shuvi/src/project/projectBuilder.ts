@@ -28,18 +28,6 @@ class ProjectBuilder {
     });
   }
 
-  setViewModule(module: string) {
-    this._projectContext.viewModule = module;
-  }
-
-  setRoutesNormalizer(module: string) {
-    this._projectContext.routesNormalizer = module;
-  }
-
-  setAppModule(module: string | string[]) {
-    this._projectContext.appModule = module;
-  }
-
   setPluginModule(module: string | string[]) {
     this._projectContext.pluginModule = module;
   }
@@ -75,6 +63,10 @@ class ProjectBuilder {
     for (key in userModule) {
       this._projectContext.userModule[key] = userModule[key] || '';
     }
+  }
+
+  setPlatformDir(dir: string) {
+    this._projectContext.platformDir = dir;
   }
 
   addFile(options: FileOptions): void {

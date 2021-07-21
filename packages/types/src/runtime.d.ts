@@ -35,7 +35,7 @@ export {
   IParams
 };
 
-export interface IRoutesNormalizer {
+export interface IGetRoutes {
   (
     routes: IAppRouteConfig[] | undefined,
     options: {
@@ -211,7 +211,6 @@ export interface IApplicationModule {
       | IApplicationCreaterServerContext,
     options: {
       render: IAppRenderFn;
-      routesNormalizer: IRoutesNormalizer;
     }
   ): IApplication;
 }
@@ -278,12 +277,4 @@ export interface IRuntime<CompType = unknown> {
     componentModule: string,
     route: IUserRouteConfig & { id: string }
   ): string;
-
-  getAppModulePath(): string;
-
-  get404ModulePath(): string;
-
-  getViewModulePath(): string;
-
-  getRoutesNormalizerPath(): string;
 }
