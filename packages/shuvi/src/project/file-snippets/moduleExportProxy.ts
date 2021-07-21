@@ -35,7 +35,11 @@ export const getfirstExistedFilesByOrder = (
   return state;
 };
 
-export default (source: string | string[], defaultExport?: boolean): string => {
+export default (
+  source: string | string[],
+  defaultExport?: boolean,
+  exportString?: string
+): string => {
   // the last of source will be fallback file
   const lookups = Array.isArray(source) ? source.slice(0, -1) : [];
   const fallback = Array.isArray(source) ? source[source.length - 1] : source;
@@ -46,7 +50,7 @@ export default (source: string | string[], defaultExport?: boolean): string => {
     statements.push(`import temp from "${fileState.file}"`);
     statements.push(`export default temp`);
   } else {
-    statements.push(`export * from "${fileState.file}"`);
+    statements.push(`export ${exportString || '*'} from "${fileState.file}"`);
   }
   return statements.join('\n');
 };

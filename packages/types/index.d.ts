@@ -85,7 +85,7 @@ export interface IApi extends IHookable {
 
   addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;
   addAppFile: typeof ProjectBuilder.prototype.addFile;
-  addAppExport: typeof ProjectBuilder.prototype.addExport;
+  addAppService: typeof ProjectBuilder.prototype.addService;
   addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
   addRuntimePlugin: typeof ProjectBuilder.prototype.addRuntimePlugin;
 

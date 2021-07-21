@@ -114,12 +114,14 @@ export async function setupApp(api: Api) {
       : null
   );
 
-  api.addAppExport(runtime.getAppModulePath(), '{ default as App }');
+  api.addAppService(runtime.getAppModulePath(), '', 'app', true);
 
   // don not use absolute path, this module would't be bundled
-  api.addAppExport(
+  api.addAppService(
     'shuvi/lib/lib/runtimeConfig',
-    '{ default as getRuntimeConfig }'
+    '',
+    'getRuntimeConfig',
+    true
   );
 
   // todo: move into filePresets after `platform` refactoring

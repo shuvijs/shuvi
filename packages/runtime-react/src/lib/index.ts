@@ -13,11 +13,13 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
 
-    api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
-    api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
-    api.addAppExport(
+    api.addAppService(resolveAppFile('head/head'), '', 'head', true);
+    api.addAppService(resolveAppFile('dynamic'), '', 'dynamic', true);
+    api.addAppService(
       resolveLib('@shuvi/router-react'),
-      '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }'
+      '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }',
+      'router-react',
+      true
     );
     configBundler(api);
 

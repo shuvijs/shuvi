@@ -17,7 +17,6 @@ export interface ProjectContext {
   routesContent: string;
   routesNormalizer: string;
   polyfills: string[];
-  exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
   runtimeConfigContent: string | null;
   userModule: UserModule;
@@ -33,7 +32,6 @@ export const createProjectContext = () =>
     routesContent: 'export default []',
     routesNormalizer: '',
     polyfills: [],
-    exports: new Map(),
     runtimePlugins: new Map(),
     runtimeConfigContent: null,
     userModule: {

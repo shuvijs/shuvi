@@ -1,5 +1,6 @@
 import { getFileManager, FileManager, FileOptions } from '../file-manager';
 import { getFilePresets } from './file-presets';
+import { moduleExportProxy } from './file-snippets';
 
 import {
   ProjectContext,
@@ -15,8 +16,10 @@ class ProjectBuilder {
   private _projectContext: ProjectContext;
   private _fileManager: FileManager;
   private _internalFiles: FileOptions[];
+  private _services: Map<string, string>;
 
   constructor(option: ProjectBuilderOptions = {}) {
+    this._services = new Map();
     this._projectContext = createProjectContext();
     this._fileManager = getFileManager({
       watch: !option.static,
@@ -56,8 +59,29 @@ class ProjectBuilder {
     this._projectContext.entryCodes.push(content);
   }
 
-  addExport(source: string, exported: string) {
-    this._projectContext.exports.set(source, ([] as string[]).concat(exported));
+  addService(
+    source: string,
+    exported: string,
+    filePath: string,
+    useTypeScript: boolean
+  ) {
+    const service = this._services.get(filePath);
+    // check filePath
+    if (service) {
+      throw new Error(`filePath:${filePath} has exist, try other filePath`);
+    }
+    const fileContent = moduleExportProxy(source, !exported, exported);
+    this._services.set(filePath, fileContent);
+    const extensions = ['.js'];
+    if (useTypeScript) {
+      extensions.push('.ts');
+    }
+    extensions.forEach(extension => {
+      this.addFile({
+        name: `${filePath}${extension}`,
+        content: () => fileContent
+      });
+    });
   }
 
   addPolyfill(file: string) {

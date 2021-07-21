@@ -14,7 +14,12 @@ class CoreRuntime {
   async install(api: IApi): Promise<void> {
     // todo: move to core
     api.addEntryCode(`import "${entryModule}"`);
-    api.addAppExport(resolveAppFile('helper/getPageData'), '{ getPageData }');
+    api.addAppService(
+      resolveAppFile('helper/getPageData'),
+      '{ getPageData }',
+      'getPageData',
+      true
+    );
   }
 }
 

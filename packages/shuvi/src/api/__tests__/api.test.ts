@@ -107,7 +107,7 @@ describe('api', () => {
       'emitEvent',
       'addEntryCode',
       'addAppFile',
-      'addAppExport',
+      'addAppService',
       'addAppPolyfill',
       'resolveAppFile',
       'resolveUserFile',

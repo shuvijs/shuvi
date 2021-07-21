@@ -45,13 +45,13 @@ describe('app', () => {
     app.setAppModule('appModules');
     app.setViewModule('viewModules');
     app.addPolyfill('path/toPolyfill');
-    app.addExport('something to export', '*');
+    app.addService('something to export', '*', 'services/something', false);
 
     await app.build(BUILD_DIR);
 
     checkMatch([
       ['main.client.js', /run()/],
-      ['index.js', 'export * from "something to export"'],
+      ['services/something.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       [
@@ -74,13 +74,13 @@ describe('app', () => {
     app.setAppModule('appModules');
     app.setViewModule('viewModules');
     app.addPolyfill('path/toPolyfill');
-    app.addExport('something to export', '*');
+    app.addService('something to export', '*', 'services/something', false);
 
     await app.build(BUILD_DIR);
 
     checkMatch([
       ['main.client.js', /run()/],
-      ['index.js', 'export * from "something to export"'],
+      ['services/something.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       [
@@ -97,16 +97,14 @@ describe('app', () => {
     app.setRoutesContent('routes content 2');
     app.setAppModule('123');
     app.setViewModule('viewModules2');
-    app.addExport('export2', '*');
+    app.addService('export2', '*', 'services/export2', false);
 
     await wait(0);
 
     checkMatch([
       ['main.client.js', /run().*const a=1/s],
-      [
-        'index.js',
-        'export * from "something to export"\nexport * from "export2"'
-      ],
+      ['services/something.js', 'export * from "something to export"'],
+      ['services/export2.js', 'export * from "export2"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "123"\nexport default temp'],
       [
@@ -134,13 +132,13 @@ describe('app', () => {
     app.setRoutesContent('routes content');
     app.setAppModule('appModules');
     app.setViewModule('viewModules');
-    app.addExport('something to export', '*');
+    app.addService('something to export', '*', 'services/something', true);
     app.addPolyfill('path/toPolyfill');
 
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['index.js', 'export * from "something to export"'],
+      ['services/something.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/app.js', 'import temp from "appModules"\nexport default temp'],
       [
