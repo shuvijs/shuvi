@@ -26,7 +26,7 @@ import { PluginObj, types as BabelTypes } from '@babel/core';
 import { NodePath } from '@babel/traverse';
 
 export default function ({
-  types: t,
+  types: t
 }: {
   types: typeof BabelTypes;
 }): PluginObj {
@@ -34,10 +34,10 @@ export default function ({
     visitor: {
       ImportDeclaration(path: NodePath<BabelTypes.ImportDeclaration>) {
         let source = path.node.source.value;
-        if (source !== '@shuvi/app') return;
+        if (source !== '@shuvi/app/services/dynamic') return;
 
-        let dynamicSpecifier = path.get('specifiers').find((specifier) => {
-          return specifier.node.imported.name === 'dynamic';
+        let dynamicSpecifier = path.get('specifiers').find(specifier => {
+          return specifier.isImportDefaultSpecifier();
         });
 
         if (!dynamicSpecifier) return;
@@ -49,20 +49,16 @@ export default function ({
           return;
         }
 
-        binding.referencePaths.forEach((refPath) => {
+        binding.referencePaths.forEach(refPath => {
           const callExpression = refPath.parentPath;
 
           if (!callExpression.isCallExpression()) return;
 
           let args = callExpression.get('arguments');
-          if (args.length > 2) {
+          if (args.length === 0 || args.length > 2) {
             throw callExpression.buildCodeFrameError(
-              'shuvi/dynamic only accepts 2 arguments'
+              'shuvi/dynamic at least 1 arguments and at most 2 arguments'
             );
-          }
-
-          if (!args[0]) {
-            return;
           }
 
           let loader;
@@ -90,7 +86,7 @@ export default function ({
             >;
           } = {};
 
-          properties.forEach((property) => {
+          properties.forEach(property => {
             const key: any = property.get('key');
             propertiesMap[key.node.name] = property;
           });
@@ -114,7 +110,7 @@ export default function ({
               if (!Array.isArray(args)) return;
               const node: any = args[0].node;
               dynamicImports.push(node);
-            },
+            }
           });
 
           if (!dynamicImports.length) return;
@@ -125,7 +121,7 @@ export default function ({
               t.arrowFunctionExpression(
                 [],
                 t.arrayExpression(
-                  dynamicImports.map((dynamicImport) => {
+                  dynamicImports.map(dynamicImport => {
                     return t.callExpression(
                       t.memberExpression(
                         t.identifier('require'),
@@ -146,7 +142,7 @@ export default function ({
             )
           );
         });
-      },
-    },
+      }
+    }
   };
 }
