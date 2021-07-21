@@ -10,8 +10,7 @@ import {
   Runtime
 } from '@shuvi/types';
 import { IUserRouteConfig } from '@shuvi/core';
-import { ProjectBuilder, UserModule } from '../project/projectBuilder';
-import { FileOptions } from '../file-manager';
+import { ProjectBuilder, UserModule, FileOptions } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -277,7 +276,7 @@ class Api extends Hookable implements IApi {
 
   addAppFile(options: FileOptions): void {
     // make addAppFile root as files/
-    options.name = path.join('files', path.resolve('/',  options.name));
+    options.name = path.join('files', path.resolve('/', options.name));
     this._projectBuilder.addFile(options);
   }
 

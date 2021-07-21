@@ -1,5 +1,5 @@
 import { watch } from '@shuvi/utils/lib/fileWatcher';
-import { reactive } from '../../file-manager';
+import { reactive } from '../file-manager';
 import fse from 'fs-extra';
 
 const findFirstExistedFile = (files: string[]): string | null => {
