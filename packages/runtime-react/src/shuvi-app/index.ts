@@ -1,6 +1,7 @@
-declare const __BROWSER__: boolean;
-if (__BROWSER__) {
-  module.exports = require('./view/clientView');
-} else {
-  module.exports = require('./view/serverView');
-}
+//@ts-ignore
+
+import view from './view';
+import app from './App';
+import page404 from './page404';
+import getRoutes from './getRoutes';
+export { view, app, page404, getRoutes };

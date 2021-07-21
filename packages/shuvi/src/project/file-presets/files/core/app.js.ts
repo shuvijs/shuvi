@@ -1,10 +1,7 @@
-import { moduleExportProxyCreater } from '../../../file-snippets';
-import { ProjectContext } from '../../../projectContext';
-
-const moduleExportProxy = moduleExportProxyCreater();
+const content = `import userApp from '@shuvi/app/user/app'
+import { app as platformApp } from '@shuvi/app/core/platform'
+export default userApp || platformApp
+`;
 export default {
-  content: (context: ProjectContext) =>
-    moduleExportProxy.getContent(context.appModule, true),
-  mounted: moduleExportProxy.mounted,
-  unmounted: moduleExportProxy.unmounted
+  content: () => content
 };

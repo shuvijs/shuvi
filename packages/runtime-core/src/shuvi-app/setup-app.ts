@@ -1,8 +1,7 @@
 import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
 // renderer must be imported before application
 // we need to init init renderer before import AppComponent
-import view from '@shuvi/app/platform/view';
-import routesNormalizer from '@shuvi/app/platform/routesNormalizer';
+import { view } from '@shuvi/app/core/platform';
 import { create } from '@shuvi/app/core/client/application';
 import { getAppData } from './helper/getAppData';
 const appData = getAppData();
@@ -28,8 +27,7 @@ const app = create(
         appContainer,
         appContext
       });
-    },
-    routesNormalizer
+    }
   }
 );
 

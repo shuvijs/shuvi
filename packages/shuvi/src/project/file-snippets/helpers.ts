@@ -9,7 +9,7 @@ interface ICodeSnippet {
 }
 
 export function getCodeSnippet(content: string): ICodeSnippet {
-  let ast: BabelTypes.File;
+  let ast: any;
   try {
     ast = parse(content, {
       sourceType: 'module',

@@ -42,8 +42,6 @@ describe('app', () => {
 
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
-    app.setAppModule('appModules');
-    app.setViewModule('viewModules');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
 
@@ -53,11 +51,6 @@ describe('app', () => {
       ['main.client.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
-      ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      [
-        'platform/view.js',
-        'import temp from "viewModules"\nexport default temp'
-      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -71,8 +64,6 @@ describe('app', () => {
 
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
-    app.setAppModule('appModules');
-    app.setViewModule('viewModules');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
 
@@ -82,11 +73,6 @@ describe('app', () => {
       ['main.client.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
-      ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      [
-        'platform/view.js',
-        'import temp from "viewModules"\nexport default temp'
-      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);
@@ -95,8 +81,6 @@ describe('app', () => {
     app.addEntryCode('const a = 1');
     app.addPolyfill('path/toPolyfill2');
     app.setRoutesContent('routes content 2');
-    app.setAppModule('123');
-    app.setViewModule('viewModules2');
     app.addExport('export2', '*');
 
     await wait(0);
@@ -108,11 +92,6 @@ describe('app', () => {
         'export * from "something to export"\nexport * from "export2"'
       ],
       ['test.js', 'export default () => "test page"'],
-      ['core/app.js', 'import temp from "123"\nexport default temp'],
-      [
-        'platform/view.js',
-        'import temp from "viewModules2"\nexport default temp'
-      ],
       [
         'core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
@@ -132,8 +111,6 @@ describe('app', () => {
     });
 
     app.setRoutesContent('routes content');
-    app.setAppModule('appModules');
-    app.setViewModule('viewModules');
     app.addExport('something to export', '*');
     app.addPolyfill('path/toPolyfill');
 
@@ -142,11 +119,6 @@ describe('app', () => {
     checkMatch([
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
-      ['core/app.js', 'import temp from "appModules"\nexport default temp'],
-      [
-        'platform/view.js',
-        'import temp from "viewModules"\nexport default temp'
-      ],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
     ]);

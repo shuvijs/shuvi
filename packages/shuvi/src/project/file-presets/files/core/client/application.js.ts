@@ -1,5 +1,6 @@
 const applicationJsFile = `import AppComponent from "@shuvi/app/core/app";
 import routes from "@shuvi/app/core/routes";
+import { getRoutes } from "@shuvi/app/core/platform";
 import initPlugins from "@shuvi/app/user/plugin";
 import { pluginRecord } from "@shuvi/app/core/plugins";
 import { Application } from "@shuvi/core/lib/app/app-modules/application";
@@ -8,7 +9,6 @@ import { createRouter, createBrowserHistory, createHashHistory, createMemoryHist
 
 let app;
 let history;
-let routesNormalizer;
 let appContext;
 export function create(context, options) {
   // app is a singleton in client side
@@ -16,7 +16,6 @@ export function create(context, options) {
     return app;
   }
   const { historyMode } = context;
-  routesNormalizer = options.routesNormalizer;
   switch (historyMode) {
     case 'browser':
       history = createBrowserHistory();
@@ -33,7 +32,7 @@ export function create(context, options) {
   
   const router = createRouter({
     history,
-    routes: routesNormalizer(routes, context)
+    routes: getRoutes(routes, context)
   })
   app = new Application({
     AppComponent,
@@ -58,7 +57,7 @@ if (module.hot) {
       const routes = require('@shuvi/app/core/routes').default;
       const router = createRouter({
         history,
-        routes: routesNormalizer(routes, appContext)
+        routes: getRoutes(routes, appContext)
       });
       app.rerender({ router, AppComponent });
     }
