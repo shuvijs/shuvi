@@ -1,4 +1,4 @@
-import { getRuntimeConfig } from '@shuvi/app';
+import getRuntimeConfig from '@shuvi/app/services/getRuntimeConfig';
 
 const runtimeConfig = getRuntimeConfig();
 

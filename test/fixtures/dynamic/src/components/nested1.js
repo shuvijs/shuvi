@@ -1,6 +1,6 @@
-import { dynamic } from "@shuvi/app";
+import dynamic from '@shuvi/app/services/dynamic';
 
-const Nested2 = dynamic(() => import("./nested2"));
+const Nested2 = dynamic(() => import('./nested2'));
 
 export default () => (
   <div>

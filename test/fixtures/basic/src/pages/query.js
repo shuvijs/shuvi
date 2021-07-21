@@ -1,4 +1,4 @@
-import { useCurrentRoute } from '@shuvi/app';
+import { useCurrentRoute } from '@shuvi/app/services/router-react';
 
 export default () => {
   const { query } = useCurrentRoute();

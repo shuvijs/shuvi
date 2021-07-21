@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPageData } from '@shuvi/app';
+import { getPageData } from '@shuvi/app/services/getPageData';
 
 export default () => {
   const [isClient, setIsClient] = useState(false);

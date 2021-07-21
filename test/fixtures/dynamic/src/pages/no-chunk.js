@@ -1,7 +1,7 @@
-import { dynamic } from "@shuvi/app";
-import Welcome from "../components/welcome";
+import dynamic from '@shuvi/app/services/dynamic';
+import Welcome from '../components/welcome';
 
-const Welcome2 = dynamic(() => import("../components/welcome"));
+const Welcome2 = dynamic(() => import('../components/welcome'));
 
 export default () => (
   <div>
