@@ -1,4 +1,4 @@
-import { reactive } from '../file-manager';
+import { reactive } from './file-manager';
 
 export interface UserModule {
   document: string | string[];

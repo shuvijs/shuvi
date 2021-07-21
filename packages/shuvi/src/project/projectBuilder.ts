@@ -1,4 +1,4 @@
-import { getFileManager, FileManager, FileOptions } from '../file-manager';
+import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
 
 import {
