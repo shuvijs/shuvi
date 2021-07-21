@@ -1,6 +1,6 @@
 import React from 'react';
 // @ts-ignore
-import { Head } from '@shuvi/app';
+import { Head } from './head';
 
 const style = {
   container: {
