@@ -67,6 +67,7 @@ export interface IApiConfig {
   };
   routes?: Runtime.IUserRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
+  platform?: string;
   proxy?: any;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
