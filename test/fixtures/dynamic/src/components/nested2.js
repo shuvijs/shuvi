@@ -1,4 +1,4 @@
-import dynamic from '@shuvi/app/services/dynamic';
+import { dynamic } from '@shuvi/services';
 
 const BrowserLoaded = dynamic(
   async () => () => <div id="BrowserLoaded">Browser hydrated</div>,

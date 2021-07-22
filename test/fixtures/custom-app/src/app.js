@@ -1,4 +1,4 @@
-import App from '@shuvi/app/services/app';
+import { App } from '@shuvi/services';
 
 const MyApp = props => (
   <div>

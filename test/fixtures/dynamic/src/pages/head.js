@@ -1,5 +1,4 @@
-import Head from '@shuvi/app/services/head';
-import dynamic from '@shuvi/app/services/dynamic';
+import { Head, dynamic } from '@shuvi/services';
 
 const Test = dynamic({
   loader: async () => {

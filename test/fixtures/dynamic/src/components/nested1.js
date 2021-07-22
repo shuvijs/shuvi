@@ -1,4 +1,4 @@
-import dynamic from '@shuvi/app/services/dynamic';
+import { dynamic } from '@shuvi/services';
 
 const Nested2 = dynamic(() => import('./nested2'));
 

@@ -1,24 +1,24 @@
 // @ts-nocheck
 /**
-COPYRIGHT (c) 2017-present James Kyle <me@thejameskyle.com>
+ COPYRIGHT (c) 2017-present James Kyle <me@thejameskyle.com>
  MIT License
  Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
  The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+ included in all copies or substantial portions of the Software.
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWAR
-*/
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWAR
+ */
 // This file is https://github.com/jamiebuilds/react-loadable/blob/master/src/babel.js
 // Modified to also look for `shuvi/dynamic`
 
@@ -34,10 +34,10 @@ export default function ({
     visitor: {
       ImportDeclaration(path: NodePath<BabelTypes.ImportDeclaration>) {
         let source = path.node.source.value;
-        if (source !== '@shuvi/app/services/dynamic') return;
+        if (source !== '@shuvi/services') return;
 
         let dynamicSpecifier = path.get('specifiers').find(specifier => {
-          return specifier.isImportDefaultSpecifier();
+          return specifier.node.imported.name === 'dynamic';
         });
 
         if (!dynamicSpecifier) return;
@@ -55,10 +55,14 @@ export default function ({
           if (!callExpression.isCallExpression()) return;
 
           let args = callExpression.get('arguments');
-          if (args.length === 0 || args.length > 2) {
+          if (args.length > 2) {
             throw callExpression.buildCodeFrameError(
-              'shuvi/dynamic at least 1 arguments and at most 2 arguments'
+              'shuvi/dynamic only accepts 2 arguments'
             );
+          }
+
+          if (!args[0]) {
+            return;
           }
 
           let loader;

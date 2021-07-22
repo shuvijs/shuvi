@@ -1,5 +1,5 @@
 import getRuntimeConfig from '@shuvi/app/services/getRuntimeConfig';
-import App from '@shuvi/app/services/app';
+import { App } from '@shuvi/services';
 
 const isServer = typeof window === 'undefined';
 const runtimeConfig = getRuntimeConfig();

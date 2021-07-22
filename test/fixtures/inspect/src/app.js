@@ -1,4 +1,4 @@
-import App from '@shuvi/app/services/app';
+import { App } from '@shuvi/services';
 import { useRouter } from '@shuvi/app/services/router-react';
 
 const MyApp = () => {

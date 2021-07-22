@@ -1,4 +1,4 @@
-import Head from '@shuvi/app/services/head';
+import { Head } from '@shuvi/services';
 
 export default () => (
   <>

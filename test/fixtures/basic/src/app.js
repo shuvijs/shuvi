@@ -1,5 +1,5 @@
-import App from '@shuvi/app/services/app';
-import { useRouter } from '@shuvi/app/services/router-react';
+import { App } from '@shuvi/services';
+import { useRouter } from '@shuvi/services/router-react';
 
 const MyApp = () => {
   const router = useRouter();

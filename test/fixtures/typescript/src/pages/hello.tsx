@@ -1,6 +1,6 @@
 import React from 'react';
 // @ts-ignore FIXME
-import { useCurrentRoute } from '@shuvi/app/services/router-react';
+import { useCurrentRoute } from '@shuvi/services/router-react';
 import { hello } from '../components/hello';
 import { World } from '../components/world';
 

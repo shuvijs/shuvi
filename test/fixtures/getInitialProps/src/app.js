@@ -1,4 +1,4 @@
-import App from '@shuvi/app/services/app';
+import { App } from '@shuvi/services';
 import { normalizeContextForSerialize } from './utils';
 
 const MyApp = props => (
