@@ -10,8 +10,7 @@ import {
   Runtime
 } from '@shuvi/types';
 import { IUserRouteConfig } from '@shuvi/core';
-import { ProjectBuilder, UserModule } from '../project/projectBuilder';
-import { FileOptions } from '../file-manager';
+import { ProjectBuilder, UserModule, FileOptions } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -62,6 +61,7 @@ class Api extends Hookable implements IApi {
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
   private _runtime!: Runtime.IRuntime;
+  private _runtimeDir!: string;
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
@@ -105,11 +105,11 @@ class Api extends Hookable implements IApi {
   }
 
   get runtime() {
-    if (!this._runtime) {
-      const { runtime } = initRuntime(this.config.platform);
-      this._runtime = runtime;
-    }
     return this._runtime;
+  }
+
+  get runtimeDir() {
+    return this._runtimeDir;
   }
 
   async init() {
@@ -130,6 +130,11 @@ class Api extends Hookable implements IApi {
     if (history === 'auto') {
       this._config.router.history = ssr ? 'browser' : 'hash';
     }
+
+    const { runtime, runtimeDir } = initRuntime(this.config.platform);
+    this._runtime = runtime;
+    this._runtimeDir = runtimeDir;
+
     await this._initPresetsAndPlugins();
 
     initCoreResource(this);
@@ -167,18 +172,6 @@ class Api extends Hookable implements IApi {
 
   get clientManifest(): Bundler.IManifest {
     return this._resources.clientManifest;
-  }
-
-  setViewModule(path: string) {
-    this._projectBuilder.setViewModule(path);
-  }
-
-  setRoutesNormalizer(path: string) {
-    this._projectBuilder.setRoutesNormalizer(path);
-  }
-
-  setAppModule(module: string | string[]) {
-    this._projectBuilder.setAppModule(module);
   }
 
   setPluginModule(module: string | string[]) {
@@ -294,6 +287,10 @@ class Api extends Hookable implements IApi {
 
   addAppPolyfill(file: string): void {
     this._projectBuilder.addPolyfill(file);
+  }
+
+  setPlatformDir(dir: string): void {
+    this._projectBuilder.setPlatformDir(dir);
   }
 
   addRuntimePlugin(name: string, runtimePlugin: string): void {

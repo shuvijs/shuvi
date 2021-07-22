@@ -1,4 +1,4 @@
-import { getFileManager, FileManager, FileOptions } from '../file-manager';
+import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { moduleExportProxy } from './file-snippets';
 
@@ -29,18 +29,6 @@ class ProjectBuilder {
     this._internalFiles.forEach((file: FileOptions) => {
       this._fileManager.addFile(file);
     });
-  }
-
-  setViewModule(module: string) {
-    this._projectContext.viewModule = module;
-  }
-
-  setRoutesNormalizer(module: string) {
-    this._projectContext.routesNormalizer = module;
-  }
-
-  setAppModule(module: string | string[]) {
-    this._projectContext.appModule = module;
   }
 
   setPluginModule(module: string | string[]) {
@@ -99,6 +87,10 @@ class ProjectBuilder {
     for (key in userModule) {
       this._projectContext.userModule[key] = userModule[key] || '';
     }
+  }
+
+  setPlatformDir(dir: string) {
+    this._projectContext.platformDir = dir;
   }
 
   addFile(options: FileOptions): void {

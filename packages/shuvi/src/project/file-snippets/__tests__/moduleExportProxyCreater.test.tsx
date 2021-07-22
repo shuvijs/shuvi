@@ -2,7 +2,7 @@ import fse from 'fs-extra';
 import { readFileSync } from 'fs';
 import { wait } from 'shuvi-test-utils';
 import { moduleExportProxyCreater } from '../moduleExportProxy';
-import { getFileManager, reactive } from '../../../file-manager';
+import { getFileManager, reactive } from '../../file-manager';
 import { resolveFixture } from './utils';
 
 function file(name: string) {

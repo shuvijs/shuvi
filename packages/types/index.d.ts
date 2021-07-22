@@ -1,5 +1,4 @@
 import { ITemplateData, IHookable, AppHooks } from '@shuvi/core';
-import { ProjectBuilder } from '@shuvi/shuvi';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
 import * as Runtime from './src/runtime';
@@ -82,13 +81,11 @@ export interface IApi extends IHookable {
   readonly config: IApiConfig;
   readonly phase: IPhase;
   readonly clientManifest: Bundler.IManifest;
-
-  addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;
-  addAppFile: typeof ProjectBuilder.prototype.addFile;
-  addAppService: typeof ProjectBuilder.prototype.addService;
-  addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
-  addRuntimePlugin: typeof ProjectBuilder.prototype.addRuntimePlugin;
-
+  addEntryCode: any;
+  addAppFile: any;
+  addAppService: any;
+  addAppPolyfill: any;
+  addRuntimePlugin: any;
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
   resolveBuildFile(...paths: string[]): string;
