@@ -19,12 +19,14 @@ export function mount(
   const dir = path.dirname(fsPath);
   let fd: any;
   const componentEffect = () => {
+    const fileContent = content(context, setupState);
     // mount
     if (!instance.isMounted) {
-      fse.ensureDirSync(dir);
-      fd = fse.openSync(fsPath, 'w+');
-      const fileContent = content(context, setupState);
-      fse.writeSync(fd, fileContent, 0);
+      if (fileContent !== undefined) {
+        fse.ensureDirSync(dir);
+        fd = fse.openSync(fsPath, 'w+');
+        fse.writeSync(fd, fileContent, 0);
+      }
       /**
        * `mounted` hook could be excuted only in watch mode
        */
@@ -35,9 +37,10 @@ export function mount(
       defer.resolve(instance);
       return;
     }
-    const fileContent = content(context, setupState);
-    fse.ftruncateSync(fd, 0);
-    fse.writeSync(fd, fileContent, 0);
+    if (fileContent !== undefined) {
+      fse.ftruncateSync(fd, 0);
+      fse.writeSync(fd, fileContent, 0);
+    }
   };
   if (watch) {
     instance.update = effect(componentEffect, {

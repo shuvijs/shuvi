@@ -1,4 +1,4 @@
-import { reactive } from './file-manager';
+import { FileOptions, reactive } from './file-manager';
 
 export interface UserModule {
   document: string | string[];
@@ -16,6 +16,9 @@ export interface ProjectContext {
   entryFileContent: string;
   routesContent: string;
   polyfills: string[];
+  services: Array<
+    [(options: FileOptions) => void, string, string, string, boolean]
+  >; // message queue
   runtimePlugins: Map<string, string>;
   runtimeConfigContent: string | null;
   platformDir: string;
@@ -31,6 +34,7 @@ export const createProjectContext = () =>
     entryFileContent: '',
     routesContent: 'export default []',
     polyfills: [],
+    services: [],
     runtimePlugins: new Map(),
     runtimeConfigContent: null,
     platformDir: '',
