@@ -82,11 +82,9 @@ export async function setupApp(api: Api) {
   );
 
   // don not use absolute path, this module would't be bundled
-  api.addAppService(
+  api.addAppExport(
     'shuvi/lib/lib/runtimeConfig',
-    '',
-    'getRuntimeConfig',
-    true
+    '{ default as getRuntimeConfig }'
   );
   const { routes } = api.config;
   if (Array.isArray(routes) && routes.length) {

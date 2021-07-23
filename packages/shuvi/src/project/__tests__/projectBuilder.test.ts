@@ -43,13 +43,13 @@ describe('app', () => {
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.addPolyfill('path/toPolyfill');
-    app.addService('something to export', '*', 'services/something', false);
+    app.addExport('something to export', '*');
 
     await app.build(BUILD_DIR);
 
     checkMatch([
       ['main.client.js', /run()/],
-      ['services/something.js', 'export * from "something to export"'],
+      ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
@@ -65,13 +65,13 @@ describe('app', () => {
     app.addEntryCode('run()');
     app.setRoutesContent('routes content');
     app.addPolyfill('path/toPolyfill');
-    app.addService('something to export', '*', 'services/something', false);
+    app.addExport('something to export', '*');
 
     await app.build(BUILD_DIR);
 
     checkMatch([
       ['main.client.js', /run()/],
-      ['services/something.js', 'export * from "something to export"'],
+      ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']
@@ -81,14 +81,16 @@ describe('app', () => {
     app.addEntryCode('const a = 1');
     app.addPolyfill('path/toPolyfill2');
     app.setRoutesContent('routes content 2');
-    app.addService('export2', '*', 'services/export2', false);
+    app.addExport('export2', '*');
 
     await wait(0);
 
     checkMatch([
       ['main.client.js', /run().*const a=1/s],
-      ['services/something.js', 'export * from "something to export"'],
-      ['services/export2.js', 'export * from "export2"'],
+      [
+        'index.js',
+        'export * from "something to export"\nexport * from "export2"'
+      ],
       ['test.js', 'export default () => "test page"'],
       [
         'core/polyfill.js',
@@ -109,13 +111,13 @@ describe('app', () => {
     });
 
     app.setRoutesContent('routes content');
-    app.addService('something to export', '*', 'services/something', true);
+    app.addExport('something to export', '*');
     app.addPolyfill('path/toPolyfill');
 
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['services/something.ts', 'export * from "something to export"'],
+      ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
       ['core/routes.js', 'routes content']

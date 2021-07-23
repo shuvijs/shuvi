@@ -14,6 +14,7 @@ const apiProps: Array<keyof IApi> = [
   'addEntryCode',
   'addAppFile',
   'addAppService',
+  'addAppExport',
   'addAppPolyfill',
   'addRuntimePlugin',
   'resolveAppFile',
