@@ -55,19 +55,19 @@ function matchRouteBranch<T extends IRouteBaseObject>(
 }
 
 function rankRouteBranches<T extends [string, ...any[]]>(branches: T[]): T[] {
+  if (branches.length <= 1) {
+    return branches;
+  }
 
-  const normalizedPaths = branches.map((branch, index) =>{
-    const [ path ] = branch;
+  const normalizedPaths = branches.map((branch, index) => {
+    const [path] = branch;
     return {
       ...tokensToParser(tokenizePath(path)),
       path,
       index
-    }
-  })
-  normalizedPaths.sort((
-    a,
-    b
-  ) => comparePathParserScore(a, b))
+    };
+  });
+  normalizedPaths.sort((a, b) => comparePathParserScore(a, b));
 
   const newBranches: T[] = [];
 
@@ -77,13 +77,12 @@ function rankRouteBranches<T extends [string, ...any[]]>(branches: T[]): T[] {
   //     .join('\n')
   // )
 
-  normalizedPaths.forEach(((branch, newBranchesIndex) => {
+  normalizedPaths.forEach((branch, newBranchesIndex) => {
     const { index } = branch;
     newBranches[newBranchesIndex] = branches[index];
-  }))
+  });
 
   return newBranches;
-
 }
 
 export function flattenRoutes<T extends IRouteBaseObject>(

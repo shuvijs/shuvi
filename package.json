@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
+    "clean": "lerna exec rimraf lib esm shuvi-app --stream --parallel",
     "shuvi": "node ./packages/shuvi/lib/cli/cli.js",
     "build": "lerna run build --stream",
     "jest": "jest",
