@@ -81,11 +81,14 @@ export interface IApi extends IHookable {
   readonly config: IApiConfig;
   readonly phase: IPhase;
   readonly clientManifest: Bundler.IManifest;
+
   addEntryCode: any;
   addAppFile: any;
   addAppService: any;
+  addAppExport: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
+
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
   resolveBuildFile(...paths: string[]): string;

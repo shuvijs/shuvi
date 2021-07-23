@@ -42,6 +42,7 @@ class PluginApi implements IApi {
   addEntryCode: any;
   addAppFile: any;
   addAppService: any;
+  addAppExport: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
 

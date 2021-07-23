@@ -264,10 +264,6 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addEntryCode(content);
   }
 
-  addSelfFile(options: FileOptions): void {
-    this._projectBuilder.addFile(options);
-  }
-
   addAppFile(options: FileOptions): void {
     // make addAppFile root as files/
     options.name = path.join('files', path.resolve('/', options.name));
@@ -282,7 +278,11 @@ class Api extends Hookable implements IApi {
   ): void {
     // make addAppService root as services/
     const tempPath = path.join('services', path.resolve('/', filePath));
-    this._projectBuilder.addService(source, exported, tempPath, useTypeScript);
+    console.log(tempPath);
+  }
+
+  addAppExport(source: string, exported: string): void {
+    this._projectBuilder.addExport(source, exported);
   }
 
   addAppPolyfill(file: string): void {

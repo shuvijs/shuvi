@@ -44,21 +44,9 @@ class ProjectBuilder {
     this._projectContext.entryCodes.push(content);
   }
 
-  addService = (
-    source: string,
-    exported: string,
-    filePath: string,
-    useTypeScript: boolean
-  ) => {
-    // push message to queue
-    this._projectContext.services.push([
-      this.addFile,
-      source,
-      exported,
-      filePath,
-      useTypeScript
-    ]);
-  };
+  addExport(source: string, exported: string) {
+    this._projectContext.exports.set(source, ([] as string[]).concat(exported));
+  }
 
   addPolyfill(file: string) {
     if (!this._projectContext.polyfills.includes(file)) {
@@ -81,9 +69,9 @@ class ProjectBuilder {
     this._projectContext.platformDir = dir;
   }
 
-  addFile = (options: FileOptions): void => {
+  addFile(options: FileOptions): void {
     this._fileManager.addFile(options);
-  };
+  }
 
   /**
    * There is no longer `buildOnce` method.

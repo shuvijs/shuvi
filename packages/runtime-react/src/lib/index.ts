@@ -12,12 +12,12 @@ class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
     // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
-    api.addAppService(resolveAppFile('services'), '*', 'index', true);
-    api.addAppService(
+    api.addAppExport(resolveAppFile('App'), '{ default as App }');
+    api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
+    api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
+    api.addAppExport(
       resolveLib('@shuvi/router-react'),
-      '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }',
-      'router-react',
-      true
+      '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }'
     );
     configBundler(api);
 
