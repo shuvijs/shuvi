@@ -147,32 +147,28 @@ describe('api', () => {
         plugins: [
           api => {
             api.addAppFile({
-              name: 'test.js',
+              name: 'fileA.js',
               content: () => 'test.js'
             });
-            api.addAppService('source', 'exported', 'filePath.js');
-            api.addAppService('source', 'exported', 'filePath.ts');
-            api.addAppService('source', 'exported0', 'sameFile.js');
-            api.addAppService('source', 'exported1', 'sameFile.js');
-            api.addAppService('source', 'exported2', 'sameFile.js');
-            api.addAppService('source', 'exported0', 'sameFile.js');
-            api.addAppService('source', 'exported0', 'sameFile.js');
-            api.addAppService('source', 'exported0', 'sameFile.js');
+            api.addAppFile({
+              name: '../fileB.js',
+              content: () => 'test.js'
+            });
+            api.addAppFile({
+              name: '/fileC.js',
+              content: () => 'test.js'
+            });
+            api.addAppService('source', 'exported', 'a.js');
           }
         ]
       }
     });
     await api.buildApp();
     checkMatch([
-      ['files/test.js', 'test.js'],
-      ['services/filePath.js', 'export exported from "source"'],
-      ['services/filePath.ts', 'export exported from "source"'],
-      [
-        'services/sameFile.js',
-        'export exported0 from "source"\n' +
-          'export exported1 from "source"\n' +
-          'export exported2 from "source"'
-      ]
+      ['files/fileA.js', 'test.js'],
+      ['files/fileC.js', 'test.js'],
+      ['files/fileC.js', 'test.js'],
+      ['services/a.js', 'export exported from "source"']
     ]);
     await api.destory();
     rimraf.sync(shuviDir);

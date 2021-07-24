@@ -15,7 +15,10 @@ export interface FileInternalOptions {
 export interface FileOptionsBase<Data, Method extends MethodOptions>
   extends FileInternalOptions {
   name: string;
-  content: (this: CreateFilePublicInstance<Data, Method>, ctx: any) => string;
+  content: (
+    this: CreateFilePublicInstance<Data, Method>,
+    ctx: any
+  ) => string | null | undefined;
 
   // state
   // Limitation: we cannot expose RawBindings on the `this` context for data
