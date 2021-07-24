@@ -24,7 +24,9 @@ export function mount(
       fse.ensureDirSync(dir);
       fd = fse.openSync(fsPath, 'w+');
       const fileContent = content(context, setupState);
-      fse.writeSync(fd, fileContent, 0);
+      if (fileContent != undefined) {
+        fse.writeSync(fd, fileContent, 0);
+      }
       /**
        * `mounted` hook could be excuted only in watch mode
        */
