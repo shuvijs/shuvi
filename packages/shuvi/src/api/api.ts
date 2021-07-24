@@ -10,7 +10,12 @@ import {
   Runtime
 } from '@shuvi/types';
 import { IUserRouteConfig } from '@shuvi/core';
-import { ProjectBuilder, UserModule, FileOptions } from '../project';
+import {
+  ProjectBuilder,
+  UserModule,
+  FileOptions,
+  exportsFromObject
+} from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -35,6 +40,8 @@ import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
+
+const userDefinedServices: Map<string, Map<string, Set<string>>> = new Map();
 
 interface IApiOPtions {
   cwd?: string;
@@ -263,10 +270,6 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addEntryCode(content);
   }
 
-  addSelfFile(options: FileOptions): void {
-    this._projectBuilder.addFile(options);
-  }
-
   addAppFile(options: FileOptions): void {
     // make addAppFile root as files/
     options.name = path.join('files', path.resolve('/', options.name));
@@ -275,6 +278,38 @@ class Api extends Hookable implements IApi {
 
   addAppExport(source: string, exported: string): void {
     this._projectBuilder.addExport(source, exported);
+  }
+
+  addAppService(source: string, exported: string, filePath: string): void {
+    // make addAppService root as services/
+    const targetPath = path.join('services', path.resolve('/', filePath));
+    const userDefinedService = userDefinedServices.get(targetPath);
+    if (userDefinedService) {
+      const targetSource = userDefinedService.get(source);
+      if (targetSource) {
+        targetSource.add(exported);
+      } else {
+        const exportedSet: Set<string> = new Set();
+        exportedSet.add(exported);
+        userDefinedService.set(source, exportedSet);
+      }
+    } else {
+      const exportedSet: Set<string> = new Set();
+      exportedSet.add(exported);
+      const userDefinedService: Map<string, Set<string>> = new Map();
+      userDefinedService.set(source, exportedSet);
+      userDefinedServices.set(targetPath, userDefinedService);
+      this._projectBuilder.addFile({
+        name: targetPath,
+        content() {
+          const temp: { [key: string]: string[] } = {};
+          for (const [s, e] of userDefinedService) {
+            temp[s] = Array.from(e);
+          }
+          return exportsFromObject(temp);
+        }
+      });
+    }
   }
 
   addAppPolyfill(file: string): void {

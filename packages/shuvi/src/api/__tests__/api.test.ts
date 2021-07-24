@@ -2,7 +2,9 @@ import { getApi } from '../api';
 import { PluginApi } from '../pluginApi';
 import { IApiConfig, IPaths } from '@shuvi/types';
 import path from 'path';
+import rimraf from 'rimraf';
 import { resolvePreset, resolvePlugin } from './utils';
+import { readFileSync } from 'fs';
 
 jest.mock('../initCoreResource', () => ({
   initCoreResource: (api: any) => {
@@ -118,6 +120,62 @@ describe('api', () => {
       // @ts-ignore
       expect(typeof pluginApi[method]).toBe('function');
     });
+  });
+
+  test('add App files, add App services', async () => {
+    const shuviDir = path.join(__dirname, 'fixtures', 'rootDir', '.shuvi');
+    const shuviAppDir = path.join(shuviDir, 'app');
+    rimraf.sync(shuviDir);
+    function resolveBuildFile(...paths: string[]) {
+      return path.join(shuviAppDir, ...paths);
+    }
+    type TestRule = [string, string | RegExp];
+    function checkMatch(tests: TestRule[]) {
+      tests.forEach(([file, expected]) => {
+        if (typeof expected === 'string') {
+          expect(readFileSync(resolveBuildFile(file), 'utf8')).toBe(expected);
+        } else {
+          expect(readFileSync(resolveBuildFile(file), 'utf8')).toMatch(
+            expected
+          );
+        }
+      });
+    }
+    const api = await getApi({
+      config: {
+        rootDir: path.join(__dirname, 'fixtures', 'rootDir'),
+        plugins: [
+          api => {
+            api.addAppFile({
+              name: 'test.js',
+              content: () => 'test.js'
+            });
+            api.addAppService('source', 'exported', 'filePath.js');
+            api.addAppService('source', 'exported', 'filePath.ts');
+            api.addAppService('source', 'exported0', 'sameFile.js');
+            api.addAppService('source', 'exported1', 'sameFile.js');
+            api.addAppService('source', 'exported2', 'sameFile.js');
+            api.addAppService('source', 'exported0', 'sameFile.js');
+            api.addAppService('source', 'exported0', 'sameFile.js');
+            api.addAppService('source', 'exported0', 'sameFile.js');
+          }
+        ]
+      }
+    });
+    await api.buildApp();
+    checkMatch([
+      ['files/test.js', 'test.js'],
+      ['services/filePath.js', 'export exported from "source"'],
+      ['services/filePath.ts', 'export exported from "source"'],
+      [
+        'services/sameFile.js',
+        'export exported0 from "source"\n' +
+          'export exported1 from "source"\n' +
+          'export exported2 from "source"'
+      ]
+    ]);
+    await api.destory();
+    rimraf.sync(shuviDir);
   });
 
   test('should load dotEnv when init', async () => {
