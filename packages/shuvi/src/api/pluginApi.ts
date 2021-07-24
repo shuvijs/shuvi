@@ -14,6 +14,7 @@ const apiProps: Array<keyof IApi> = [
   'addEntryCode',
   'addAppFile',
   'addAppExport',
+  'addAppService',
   'addAppPolyfill',
   'addRuntimePlugin',
   'resolveAppFile',
@@ -42,6 +43,7 @@ class PluginApi implements IApi {
   addEntryCode: any;
   addAppFile: any;
   addAppExport: any;
+  addAppService: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
 
