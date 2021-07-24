@@ -85,6 +85,7 @@ export interface IApi extends IHookable {
   addEntryCode: any;
   addAppFile: any;
   addAppExport: any;
+  addAppService: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
 

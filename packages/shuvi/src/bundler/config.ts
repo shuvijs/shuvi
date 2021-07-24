@@ -73,6 +73,10 @@ export function createWepbackConfig(
 
   chain.resolve.alias.set('@shuvi/app', paths.appDir);
   chain.resolve.alias.set(
+    '@shuvi/services',
+    path.join(paths.appDir, 'services')
+  );
+  chain.resolve.alias.set(
     '@shuvi/runtime-core',
     path.dirname(require.resolve('@shuvi/runtime-core/package.json'))
   );
