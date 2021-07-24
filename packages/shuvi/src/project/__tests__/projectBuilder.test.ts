@@ -33,7 +33,7 @@ afterEach(async () => {
   removeSync(BUILD_DIR);
 });
 
-describe('app', () => {
+describe('projectBuilder', () => {
   test('should work', async () => {
     app.addFile({
       name: 'test.js',
@@ -131,5 +131,43 @@ describe('app', () => {
     expect(readFileSync(resolveBuildFile('core/routes.js'), 'utf8')).toBe(
       'routes content'
     );
+  });
+
+  describe('addService', () => {
+    test('should work', async () => {
+      app.addService('source', 'exported', 'services/a.js');
+      app.addService('source', 'exported', 'services/a.ts');
+      app.addService('source', 'exported0', 'services/b.js');
+      app.addService('source', 'exported1', 'services/b.js');
+
+      await app.build(BUILD_DIR);
+
+      checkMatch([
+        ['services/a.js', 'export exported from "source"'],
+        ['services/a.ts', 'export exported from "source"'],
+        [
+          'services/b.js',
+          [
+            'export exported0 from "source"',
+            'export exported1 from "source"'
+          ].join('\n')
+        ]
+      ]);
+
+      app.addService('source', 'exported2', 'services/b.js');
+
+      await wait(0);
+
+      checkMatch([
+        [
+          'services/b.js',
+          [
+            'export exported0 from "source"',
+            'export exported1 from "source"',
+            'export exported2 from "source"'
+          ].join('\n')
+        ]
+      ]);
+    });
   });
 });

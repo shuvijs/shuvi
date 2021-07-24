@@ -1,5 +1,6 @@
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
+import { exportsFromObject } from './file-snippets';
 
 import {
   ProjectContext,
@@ -67,6 +68,42 @@ class ProjectBuilder {
 
   setPlatformDir(dir: string) {
     this._projectContext.platformDir = dir;
+  }
+
+  addService(source: string, exported: string, filepath: string): void {
+    const serevices = this._projectContext.serevices;
+    const service = serevices.get(filepath);
+    if (service) {
+      const targetSource = service.get(source);
+      if (targetSource) {
+        targetSource.add(exported);
+      } else {
+        const exportedSet: Set<string> = new Set();
+        exportedSet.add(exported);
+        service.set(source, exportedSet);
+      }
+    } else {
+      const exportedSet: Set<string> = new Set();
+      exportedSet.add(exported);
+      const service: Map<string, Set<string>> = new Map();
+      service.set(source, exportedSet);
+      serevices.set(filepath, service);
+      this.addFile({
+        name: filepath,
+        content(context: ProjectContext) {
+          const exportsConfig: { [key: string]: string[] } = {};
+          const service = context.serevices.get(filepath);
+          if (!service) {
+            return null;
+          }
+
+          for (const [s, e] of service) {
+            exportsConfig[s] = Array.from(e);
+          }
+          return exportsFromObject(exportsConfig);
+        }
+      });
+    }
   }
 
   addFile(options: FileOptions): void {

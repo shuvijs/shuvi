@@ -16,6 +16,16 @@ export interface ProjectContext {
   entryFileContent: string;
   routesContent: string;
   polyfills: string[];
+
+  /**
+   * serevices：
+   * {
+   *   [namespace: string]: {
+   *     [module: string]: string[] // exported list
+   *   }
+   * }
+   */
+  serevices: Map<string, Map<string, Set<string>>>;
   exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
   runtimeConfigContent: string | null;
@@ -32,6 +42,7 @@ export const createProjectContext = () =>
     entryFileContent: '',
     routesContent: 'export default []',
     polyfills: [],
+    serevices: new Map(),
     exports: new Map(),
     runtimePlugins: new Map(),
     runtimeConfigContent: null,
