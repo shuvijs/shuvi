@@ -71,8 +71,8 @@ class ProjectBuilder {
   }
 
   addService(source: string, exported: string, filepath: string): void {
-    const serevices = this._projectContext.serevices;
-    const service = serevices.get(filepath);
+    const services = this._projectContext.services;
+    const service = services.get(filepath);
     if (service) {
       const targetSource = service.get(source);
       if (targetSource) {
@@ -87,12 +87,12 @@ class ProjectBuilder {
       exportedSet.add(exported);
       const service: Map<string, Set<string>> = new Map();
       service.set(source, exportedSet);
-      serevices.set(filepath, service);
+      services.set(filepath, service);
       this.addFile({
         name: filepath,
         content(context: ProjectContext) {
           const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.serevices.get(filepath);
+          const service = context.services.get(filepath);
           if (!service) {
             return null;
           }
