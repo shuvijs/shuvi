@@ -22,7 +22,7 @@ import { setRuntimeConfig } from '../lib/runtimeConfig';
 import {
   serializeRoutes,
   normalizeRoutes,
-  renameSourceToComponent
+  renameFilepathToComponent
 } from '../lib/pageRoutes';
 import {
   PUBLIC_PATH,
@@ -195,7 +195,7 @@ class Api extends Hookable implements IApi {
   async setPageRoutes(routes: IRouteRecord[], rename?: boolean): Promise<void> {
     let pageRoutes = [];
     if (rename) {
-      pageRoutes = renameSourceToComponent(routes);
+      pageRoutes = renameFilepathToComponent(routes);
     } else {
       pageRoutes = routes;
     }

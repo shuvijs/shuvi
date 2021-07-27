@@ -59,22 +59,22 @@ export function serializeRoutes<T extends IUserRouteConfig = IUserRouteConfig>(
   return serializeRoutesImpl(routes, templates, '');
 }
 
-export function renameSourceToComponent(
+export function renameFilepathToComponent(
   routes: IRouteRecord[]
 ): IUserRouteConfig[] {
   const res: IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
-    const { path, source, children } = routes[index];
+    const { path, filepath, children } = routes[index];
     const route = {
       path
     } as IUserRouteConfig;
 
-    if (source) {
-      route.component = source;
+    if (filepath) {
+      route.component = filepath;
     }
 
     if (children && children.length > 0) {
-      route.children = renameSourceToComponent(children);
+      route.children = renameFilepathToComponent(children);
     }
     res.push(route);
   }

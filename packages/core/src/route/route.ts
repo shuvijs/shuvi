@@ -136,7 +136,7 @@ export class Route {
                 isLayout(normalizeRoutePath(normalizeFilePath(route)))
               );
               if (layoutFile) {
-                route.source = join(pageDirectory, fileName, layoutFile);
+                route.filepath = join(pageDirectory, fileName, layoutFile);
                 // delete _layout
                 delete nestedRoute[layoutFile];
               }
@@ -145,7 +145,7 @@ export class Route {
                 join(pageDirectory, fileName)
               ); // inner directory
             } else {
-              route.source = join(pageDirectory, fileName);
+              route.filepath = join(pageDirectory, fileName);
             }
             routes.push(route);
           }
