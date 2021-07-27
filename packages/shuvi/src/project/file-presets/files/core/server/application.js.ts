@@ -1,5 +1,5 @@
 const applicationJsFile = `import AppComponent from "@shuvi/app/core/app";
-import routes from "@shuvi/app/core/routes";
+import pageRoutes from "@shuvi/app/core/pageRoutes";
 import { getRoutes } from "@shuvi/app/core/platform";
 import initPlugins from "@shuvi/app/user/plugin";
 import { pluginRecord } from "@shuvi/app/core/plugins";
@@ -13,10 +13,10 @@ export function create(context, options) {
     initialEntries: [req && req.url || '/'],
     initialIndex: 0
   })
-  
+
   const router = createRouter({
     history,
-    routes: getRoutes(routes, context)
+    routes: getRoutes(pageRoutes, context)
   })
   const app = new Application({
     AppComponent,

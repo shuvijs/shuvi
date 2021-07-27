@@ -1,10 +1,11 @@
+import { join, relative } from 'path';
+
 import eventEmitter from '@shuvi/utils/lib/eventEmitter';
 import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
-import { join, relative } from 'path';
-import { IUserRouteConfig } from '../types';
+import { IRouteRecord } from '@shuvi/router';
 
-export type SubscribeFn = (v: IUserRouteConfig[]) => void;
+export type SubscribeFn = (v: IRouteRecord[]) => void;
 
 const jsExtensions = ['js', 'jsx', 'ts', 'tsx'];
 
@@ -96,7 +97,7 @@ export class Route {
     this._pagesDir = pagesDir;
   }
 
-  async getRoutes(): Promise<IUserRouteConfig[]> {
+  async getRoutes(): Promise<IRouteRecord[]> {
     const files = await recursiveReadDir(this._pagesDir, {
       filter: filterRouteFile
     });
@@ -110,32 +111,32 @@ export class Route {
     }
   }
 
-  private _getRoutes(files: string[]): IUserRouteConfig[] {
+  private _getRoutes(files: string[]): IRouteRecord[] {
     const transformedFiles = transformFilesObject(files);
 
     const generateRoute = (
       fileToTransform: IFilesObject,
       pageDirectory: string
     ) => {
-      const routes: IUserRouteConfig[] = [];
+      const routes: IRouteRecord[] = [];
       Object.entries(fileToTransform).forEach(
         ([fileName, nestedRoute], _, arr) => {
-          let route: IUserRouteConfig;
+          let route: IRouteRecord;
           let routePath = normalizeRoutePath(normalizeFilePath(fileName));
           {
             const isDirectory = Object.values(nestedRoute).length > 0;
 
             route = {
               path: routePath
-            } as IUserRouteConfig;
+            } as IRouteRecord;
 
-            // if a directory have _layout, treat it as its own component
+            // if a directory have _layout, treat it as its own source
             if (isDirectory) {
               const layoutFile = Object.keys(nestedRoute).find(route =>
                 isLayout(normalizeRoutePath(normalizeFilePath(route)))
               );
               if (layoutFile) {
-                route.component = join(pageDirectory, fileName, layoutFile);
+                route.filepath = join(pageDirectory, fileName, layoutFile);
                 // delete _layout
                 delete nestedRoute[layoutFile];
               }
@@ -144,7 +145,7 @@ export class Route {
                 join(pageDirectory, fileName)
               ); // inner directory
             } else {
-              route.component = join(pageDirectory, fileName);
+              route.filepath = join(pageDirectory, fileName);
             }
             routes.push(route);
           }

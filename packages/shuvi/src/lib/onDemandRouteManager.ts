@@ -42,7 +42,7 @@ export class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const matchedRoutes = matchRoutes(this._api.getRoutes(), pathname);
+    const matchedRoutes = matchRoutes(this._api.getPageRoutes(), pathname);
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { component } }) =>
