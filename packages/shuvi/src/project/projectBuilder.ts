@@ -33,8 +33,8 @@ class ProjectBuilder {
     this._projectContext.pluginModule = module;
   }
 
-  setRoutesContent(content: string): void {
-    this._projectContext.routesContent = content;
+  setPageRoutesContent(content: string): void {
+    this._projectContext.pageRoutesContent = content;
   }
 
   setRuntimeConfigContent(content: string | null) {
