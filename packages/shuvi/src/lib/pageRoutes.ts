@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import path from 'path';
 import { IUserRouteConfig } from '@shuvi/core';
+import { IRouteRecord } from '@shuvi/router';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
@@ -56,6 +57,28 @@ export function serializeRoutes<T extends IUserRouteConfig = IUserRouteConfig>(
   templates: Templates<T> = {}
 ): string {
   return serializeRoutesImpl(routes, templates, '');
+}
+
+export function renameSourceToComponent(
+  routes: IRouteRecord[]
+): IUserRouteConfig[] {
+  const res: IUserRouteConfig[] = [];
+  for (let index = 0; index < routes.length; index++) {
+    const { path, source, children } = routes[index];
+    const route = {
+      path
+    } as IUserRouteConfig;
+
+    if (source) {
+      route.component = source;
+    }
+
+    if (children && children.length > 0) {
+      route.children = renameSourceToComponent(children);
+    }
+    res.push(route);
+  }
+  return (res as unknown) as IUserRouteConfig[];
 }
 
 export function normalizeRoutes(

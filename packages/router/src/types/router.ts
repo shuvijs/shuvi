@@ -14,11 +14,12 @@ export type IRouteComponentProps = Record<string, string>;
 export interface IRouteRecord<Element = any> {
   caseSensitive?: boolean;
   children?: IRouteRecord<Element>[];
-  component?: any; // For react will be React.Element
+  component?: Element; // For react will be React.Element
   redirect?: string;
   resolve?: NavigationGuardHookWithContext;
   props?: IRouteComponentProps;
   path: string;
+  source?: string;
 }
 
 export interface NavigationGuardHook<R extends IRouteRecord = any> {

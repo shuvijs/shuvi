@@ -11,7 +11,7 @@ import { tokensToParser, comparePathParserScore } from './pathParserRanker';
 import { tokenizePath } from './pathTokenizer';
 
 export interface IRouteBaseObject<Element = any>
-  extends Omit<IRouteRecord<Element>, 'children' | 'element'> {
+  extends Omit<IRouteRecord<Element>, 'children' | 'element' | 'source'> {
   children?: IRouteBaseObject<Element>[];
 }
 
