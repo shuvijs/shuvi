@@ -1,9 +1,10 @@
 import React, { useRef, useReducer } from 'react';
 import PropTypes from 'prop-types';
+import invariant from '@shuvi/utils/lib/invariant';
 import { RouterContext, RouteContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
-import { invariant, useIsomorphicEffect } from './utils';
+import { useIsomorphicEffect } from './utils';
 import { IRouterProps } from './types';
 
 /**

@@ -10,15 +10,15 @@ describe('route', () => {
     expect(routes[0]).toMatchObject({
       path: '/'
     });
-    expect(routes[0].component).toMatch(/index.js$/);
+    expect(routes[0].filepath).toMatch(/index.js$/);
     expect(routes[1]).toMatchObject({
       path: '/a'
     });
-    expect(routes[1].component).toMatch(/a.js$/);
+    expect(routes[1].filepath).toMatch(/a.js$/);
     expect(routes[2]).toMatchObject({
       path: '/snake-case'
     });
-    expect(routes[2].component).toMatch(/snake-case.js$/);
+    expect(routes[2].filepath).toMatch(/snake-case.js$/);
   });
 
   test('should work for nested dir', async () => {
@@ -29,21 +29,21 @@ describe('route', () => {
     expect(routes[0]).toMatchObject({
       path: '/'
     });
-    expect(routes[0].component).toMatch(/index.js$/);
+    expect(routes[0].filepath).toMatch(/index.js$/);
     expect(routes[1]).toMatchObject({
       path: '/sub'
     });
-    expect(routes[1].component).toBeUndefined();
+    expect(routes[1].filepath).toBeUndefined();
     const subRoutes = routes[1].children;
     expect(subRoutes[0]).toMatchObject({
       path: '/a'
     });
-    expect(subRoutes[0].component).toMatch(/sub\/a.js$/);
+    expect(subRoutes[0].filepath).toMatch(/sub\/a.js$/);
 
     expect(subRoutes[1]).toMatchObject({
       path: '/'
     });
-    expect(subRoutes[1].component).toMatch(/sub\/index.js$/);
+    expect(subRoutes[1].filepath).toMatch(/sub\/index.js$/);
   });
 
   test('should generate layout route', async () => {
@@ -54,11 +54,11 @@ describe('route', () => {
     expect(routes[0]).toMatchObject({
       path: '/'
     });
-    expect(routes[0].component).toMatch(/index.js$/);
+    expect(routes[0].filepath).toMatch(/index.js$/);
     expect(routes[1]).toMatchObject({
       path: '/b'
     });
-    expect(routes[1].component).toMatch(/b\/_layout.js$/);
+    expect(routes[1].filepath).toMatch(/b\/_layout.js$/);
 
     const b = routes[1];
     expect(b.children.length).toBe(3);
@@ -67,22 +67,22 @@ describe('route', () => {
     expect(b1).toMatchObject({
       path: '/b_1'
     });
-    expect(b1.component).toMatch(/b\/b_1.js$/);
+    expect(b1.filepath).toMatch(/b\/b_1.js$/);
     expect(bIndex).toMatchObject({
       path: '/'
     });
-    expect(bIndex.component).toMatch(/b\/index.js$/);
+    expect(bIndex.filepath).toMatch(/b\/index.js$/);
 
     expect(c).toMatchObject({
       path: '/c'
     });
-    expect(c.component).toMatch(/b\/c\/_layout.js$/);
+    expect(c.filepath).toMatch(/b\/c\/_layout.js$/);
 
     const [cIndex] = c.children;
 
     expect(cIndex).toMatchObject({
       path: '/'
     });
-    expect(cIndex.component).toMatch(/b\/c\/index.js$/);
+    expect(cIndex.filepath).toMatch(/b\/c\/index.js$/);
   });
 });

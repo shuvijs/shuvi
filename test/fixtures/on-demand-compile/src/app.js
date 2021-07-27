@@ -1,10 +1,10 @@
 import { App } from '@shuvi/app';
-import routes from '@shuvi/app/core/routes';
+import pageRoutes from '@shuvi/app/core/pageRoutes';
 
 const MyApp = () => <App />;
 
 MyApp.getInitialProps = async () => {
-  await Promise.all(routes.map(r => r.component.preload()));
+  await Promise.all(pageRoutes.map(r => r.component.preload()));
 };
 
 export default MyApp;

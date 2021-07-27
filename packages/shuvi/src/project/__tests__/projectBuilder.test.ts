@@ -41,7 +41,7 @@ describe('projectBuilder', () => {
     });
 
     app.addEntryCode('run()');
-    app.setRoutesContent('routes content');
+    app.setPageRoutesContent('routes content');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
 
@@ -52,7 +52,7 @@ describe('projectBuilder', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content']
+      ['core/pageRoutes.js', 'routes content']
     ]);
   });
 
@@ -63,7 +63,7 @@ describe('projectBuilder', () => {
     });
 
     app.addEntryCode('run()');
-    app.setRoutesContent('routes content');
+    app.setPageRoutesContent('routes content');
     app.addPolyfill('path/toPolyfill');
     app.addExport('something to export', '*');
 
@@ -74,13 +74,13 @@ describe('projectBuilder', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content']
+      ['core/pageRoutes.js', 'routes content']
     ]);
 
     // Change modules and content
     app.addEntryCode('const a = 1');
     app.addPolyfill('path/toPolyfill2');
-    app.setRoutesContent('routes content 2');
+    app.setPageRoutesContent('routes content 2');
     app.addExport('export2', '*');
 
     await wait(0);
@@ -96,7 +96,7 @@ describe('projectBuilder', () => {
         'core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
       ],
-      ['core/routes.js', 'routes content 2']
+      ['core/pageRoutes.js', 'routes content 2']
     ]);
 
     await app.stopBuild();
@@ -110,7 +110,7 @@ describe('projectBuilder', () => {
       content: () => 'export default () => "test page"'
     });
 
-    app.setRoutesContent('routes content');
+    app.setPageRoutesContent('routes content');
     app.addExport('something to export', '*');
     app.addPolyfill('path/toPolyfill');
 
@@ -120,21 +120,22 @@ describe('projectBuilder', () => {
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
-      ['core/routes.js', 'routes content']
+      ['core/pageRoutes.js', 'routes content']
     ]);
 
     // should not make changes after build
-    app.setRoutesContent('other content');
+    app.setPageRoutesContent('other content');
 
     await wait(0);
 
-    expect(readFileSync(resolveBuildFile('core/routes.js'), 'utf8')).toBe(
+    expect(readFileSync(resolveBuildFile('core/pageRoutes.js'), 'utf8')).toBe(
       'routes content'
     );
   });
 
   describe('addService', () => {
     test('should work', async () => {
+      app = new ProjectBuilder({ static: false });
       app.addService('source', 'exported', 'services/a.js');
       app.addService('source', 'exported', 'services/a.ts');
       app.addService('source', 'exported0', 'services/b.js');

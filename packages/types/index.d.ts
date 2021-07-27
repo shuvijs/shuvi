@@ -64,7 +64,7 @@ export interface IApiConfig {
   router: {
     history: IRouterHistoryMode;
   };
-  routes?: Runtime.IUserRouteConfig[];
+  pageRoutes?: Runtime.IUserRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
   proxy?: any;

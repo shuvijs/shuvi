@@ -86,18 +86,19 @@ export async function setupApp(api: Api) {
     'shuvi/lib/lib/runtimeConfig',
     '{ default as getRuntimeConfig }'
   );
-  const { routes } = api.config;
-  if (Array.isArray(routes) && routes.length) {
-    await api.setRoutes(routes);
+
+  const { pageRoutes } = api.config;
+  if (Array.isArray(pageRoutes) && pageRoutes.length) {
+    await api.setPageRoutes(pageRoutes);
   } else {
     const route = new Route(paths.pagesDir);
     if (api.mode === 'development') {
       route.subscribe(routes => {
-        api.setRoutes(routes);
+        api.setPageRoutes(routes, true);
       });
     } else {
       const routes = await route.getRoutes();
-      await api.setRoutes(routes);
+      await api.setPageRoutes(routes, true);
     }
   }
 }

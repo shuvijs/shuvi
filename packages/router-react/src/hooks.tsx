@@ -11,9 +11,10 @@ import {
   IPathPattern,
   matchPathname
 } from '@shuvi/router';
+import invariant from '@shuvi/utils/lib/invariant';
 import { __DEV__ } from './constants';
 import { RouterContext, RouteContext, MactedRouteContext } from './contexts';
-import { invariant, warning } from './utils';
+import { warning } from './utils';
 import { INavigateFunction } from './types';
 
 export function useCurrentRoute() {

@@ -1,7 +1,6 @@
 import { IParams, matchStringify } from '@shuvi/router';
 import { useLayoutEffect, useEffect } from 'react';
 import { __DEV__ } from './constants';
-import invariant from '@shuvi/utils/lib/invariant';
 
 export function useIsomorphicEffect(cb: any, deps: any): void {
   if (typeof window !== 'undefined') {
@@ -44,5 +43,3 @@ export function warningOnce(key: string, cond: boolean, message: string) {
 export function generatePath(path: string, params: IParams = {}): string {
   return matchStringify(path, params);
 }
-
-export { invariant };
