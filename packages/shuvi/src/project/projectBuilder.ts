@@ -5,7 +5,8 @@ import { exportsFromObject } from './file-snippets';
 import {
   ProjectContext,
   createProjectContext,
-  UserModule
+  UserModule,
+  RuntimeCoreModule
 } from './projectContext';
 
 interface ProjectBuilderOptions {
@@ -29,10 +30,6 @@ class ProjectBuilder {
     });
   }
 
-  setPluginModule(module: string | string[]) {
-    this._projectContext.pluginModule = module;
-  }
-
   setPageRoutesContent(content: string): void {
     this._projectContext.pageRoutesContent = content;
   }
@@ -43,6 +40,10 @@ class ProjectBuilder {
 
   addEntryCode(content: string) {
     this._projectContext.entryCodes.push(content);
+  }
+
+  setEntryWrapperContent(content: string) {
+    this._projectContext.entryWrapperContent = content;
   }
 
   addExport(source: string, exported: string) {
@@ -65,9 +66,11 @@ class ProjectBuilder {
       this._projectContext.userModule[key] = userModule[key] || '';
     }
   }
-
-  setPlatformDir(dir: string) {
-    this._projectContext.platformDir = dir;
+  setPlatformModule(module: string) {
+    this._projectContext.platformModule = module;
+  }
+  setRuntimeCoreModule(module: RuntimeCoreModule) {
+    this._projectContext.runtimeCoreModule = module;
   }
 
   addService(source: string, exported: string, filepath: string): void {
@@ -90,7 +93,7 @@ class ProjectBuilder {
       services.set(filepath, service);
       this.addFile({
         name: filepath,
-        content(context: ProjectContext) {
+        content: (context: ProjectContext) => {
           const exportsConfig: { [key: string]: string[] } = {};
           const service = context.services.get(filepath);
           if (!service) {
@@ -123,4 +126,4 @@ class ProjectBuilder {
   }
 }
 
-export { ProjectBuilder, UserModule };
+export { ProjectBuilder, UserModule, RuntimeCoreModule };

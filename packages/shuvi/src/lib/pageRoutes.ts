@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { IUserRouteConfig } from '@shuvi/core';
+import { IUserRouteConfig } from '../route/route';
+import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { IRouteRecord } from '@shuvi/router';
 
 export type Templates<T extends {}> = {
@@ -13,9 +14,8 @@ function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
-function serializeRoutesImpl(
+export function serializeRoutes(
   routes: IUserRouteConfig[],
-  templates: Templates<any> = {},
   parentPath: string = ''
 ): string {
   let res = '';
@@ -23,40 +23,33 @@ function serializeRoutesImpl(
     const { children: childRoutes, ...route } = routes[index];
     const fullpath = route.path ? parentPath + '/' + route.path : parentPath;
     const id = genRouteId(fullpath);
-
     let strRoute = `id: ${JSON.stringify(id)},\n`;
     const keys = Object.keys(route);
     for (let index = 0; index < keys.length; index++) {
       const key = keys[index] as RouteKeysWithoutChildren;
-      strRoute += `${key}: `;
-      const customSerialize = templates[key];
-      if (customSerialize) {
-        strRoute += customSerialize(route[key], { ...route, id });
+
+      if (key === 'component') {
+        const { component } = route;
+        const componentSource = component;
+        const componentSourceWithAffix = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
+        strRoute += `__componentSourceWithAffix__: "${componentSourceWithAffix}",
+__componentSource__: "${componentSource}",
+__import__: () => import(/* webpackChunkName: "page-${id}" */"${componentSourceWithAffix}"),
+__resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.trim();
       } else {
-        strRoute += JSON.stringify(route[key]);
+        strRoute += `${key}: ${JSON.stringify(route[key])}`;
       }
       strRoute += `,\n`;
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializeRoutesImpl(
-        childRoutes,
-        templates,
-        fullpath
-      )},\n`;
+      strRoute += `children: ${serializeRoutes(childRoutes, fullpath)},\n`;
     }
 
     res += `{${strRoute}},\n`;
   }
 
   return `[${res}]`;
-}
-
-export function serializeRoutes<T extends IUserRouteConfig = IUserRouteConfig>(
-  routes: T[],
-  templates: Templates<T> = {}
-): string {
-  return serializeRoutesImpl(routes, templates, '');
 }
 
 export function renameFilepathToComponent(
