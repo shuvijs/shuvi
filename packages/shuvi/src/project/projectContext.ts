@@ -8,13 +8,31 @@ export interface UserModule {
   '404': string | string[];
 }
 
+export interface ApplicationModule {
+  client: string;
+  server: string;
+}
+
+// set at runtime-core
+export interface RuntimeCoreModule {
+  client: {
+    application: string;
+    history: string;
+    entry: string;
+  };
+  server: {
+    application: string;
+    entry: string;
+  };
+}
+
+export type ShuviEntryModule = ApplicationModule;
+
 export interface ProjectContext {
-  viewModule: string;
-  appModule: string | string[];
-  pluginModule: string | string[];
   entryCodes: string[];
-  entryFileContent: string;
   pageRoutesContent: string;
+  entryWrapperContent: string;
+  routesContent: string;
   polyfills: string[];
 
   /**
@@ -29,24 +47,34 @@ export interface ProjectContext {
   exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
   runtimeConfigContent: string | null;
-  platformDir: string;
+  runtimeCoreModule: RuntimeCoreModule;
+  platformModule: string;
   userModule: UserModule;
 }
 
 export const createProjectContext = () =>
   reactive<ProjectContext>({
-    viewModule: '',
-    appModule: [],
-    pluginModule: [],
     entryCodes: [],
-    entryFileContent: '',
     pageRoutesContent: 'export default []',
+    entryWrapperContent: '',
+    routesContent: 'export default []',
     polyfills: [],
     services: new Map(),
     exports: new Map(),
     runtimePlugins: new Map(),
     runtimeConfigContent: null,
-    platformDir: '',
+    runtimeCoreModule: {
+      client: {
+        application: '',
+        history: '',
+        entry: ''
+      },
+      server: {
+        application: '',
+        entry: ''
+      }
+    },
+    platformModule: '',
     userModule: {
       document: '',
       server: '',

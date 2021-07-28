@@ -48,7 +48,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['main.client.js', /run()/],
+      ['entry.client.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
@@ -70,7 +70,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['main.client.js', /run()/],
+      ['entry.client.js', /run()/],
       ['index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['core/polyfill.js', 'import "path/toPolyfill"'],
@@ -86,7 +86,7 @@ describe('projectBuilder', () => {
     await wait(0);
 
     checkMatch([
-      ['main.client.js', /run().*const a=1/s],
+      ['entry.client.js', /run().*const a=1/s],
       [
         'index.js',
         'export * from "something to export"\nexport * from "export2"'

@@ -1,4 +1,4 @@
-import { Route } from '@shuvi/core';
+import { Route } from '../route';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
@@ -9,7 +9,7 @@ function withExts(file: string, extensions: string[]): string[] {
 }
 
 export async function setupApp(api: Api) {
-  const { paths, config, runtimeDir } = api;
+  const { paths, config } = api;
   await verifyTypeScriptSetup({
     projectDir: paths.rootDir,
     srcDir: paths.srcDir,
@@ -71,7 +71,13 @@ export async function setupApp(api: Api) {
     ]
   });
 
-  api.setPlatformDir(runtimeDir);
+  // set the content of @shuvi/app/entry.client-wrapper
+  // entry.client-wrapper just import or dynamicly import `entry.client.js`
+  let entryFile = "'@shuvi/app/entry.client'";
+  if (config.asyncEntry === true) {
+    entryFile = `(${entryFile})`;
+  }
+  api.setEntryWrapperContent(`import ${entryFile};`);
 
   // with none-ssr, we need create cruntimeConfig when build
   // with ssr, we get runtimeConfig from appData

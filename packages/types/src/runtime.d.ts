@@ -1,27 +1,30 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import { UrlWithParsedQuery } from 'url';
+import { IUserRouteConfig, IAppRouteConfig } from './route';
+
 import {
-  IUserRouteConfig,
-  IAppRouteConfig,
-  ITemplateData,
   IApplication,
   IAppRenderFn,
   IRenderOptions,
   IAppPlugin,
   IInitAppPlugins,
   IAppPluginRecord
-} from '@shuvi/core';
+} from './application';
+
 import {
   IRouteMatch,
   IRouteRecord,
   IPartialRouteRecord,
   IRouter,
-  IParams
+  IParams,
+  History
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 import { IApi, IRouterHistoryMode } from '../index';
 import { IManifest } from './bundler';
-
+interface ITemplateData {
+  [x: string]: any;
+}
 export {
   IUserRouteConfig,
   IAppRouteConfig,
@@ -32,15 +35,14 @@ export {
   IRouteRecord,
   IPartialRouteRecord,
   IRouter,
-  IParams
+  IParams,
+  History
 };
 
 export interface IGetRoutes {
   (
     routes: IAppRouteConfig[] | undefined,
-    options: {
-      context: object;
-    }
+    context: IApplicationCreaterContext
   ): IAppRouteConfig[];
 }
 
@@ -87,7 +89,7 @@ export interface IIncomingMessage extends IncomingMessage {
   [x: string]: any;
 }
 
-export interface ISeverAppContext {
+export interface IServerAppContext {
   req: IRequest;
   [x: string]: any;
 }
@@ -136,6 +138,7 @@ export type IAppData<Data = {}> = {
 
 export interface IClientRendererOptions<CompType = any, Data = {}>
   extends IRenderOptions<CompType> {
+  router: IRouter;
   appContainer: HTMLElement;
   appData: IAppData<Data>;
 }
@@ -148,6 +151,7 @@ export interface ITelestore {
 
 export interface IServerRendererOptions<CompType = any>
   extends IRenderOptions<CompType> {
+  router: IRouter;
   manifest: IManifest;
   getAssetPublicUrl(path: string): string;
 }
@@ -194,18 +198,20 @@ export interface IApplicationCreaterContext {
   routeProps?: { [x: string]: any };
   [x: string]: any;
 }
-export interface IApplicationCreaterServerContext {
+export interface IApplicationCreaterServerContext
+  extends IApplicationCreaterContext {
   req: IRequest;
 }
 
-export interface IApplicationCreaterClientContext {
+export interface IApplicationCreaterClientContext
+  extends IApplicationCreaterContext {
   pageData: any;
   routeProps: { [x: string]: any };
   historyMode: IRouterHistoryMode;
 }
 
-export interface IApplicationModule {
-  create(
+export interface ApplicationCreater {
+  (
     context:
       | IApplicationCreaterClientContext
       | IApplicationCreaterServerContext,
@@ -215,13 +221,17 @@ export interface IApplicationModule {
   ): IApplication;
 }
 
+export interface IApplicationModule {
+  create: ApplicationCreater;
+}
+
 export interface IDocumentModule {
   onDocumentProps(
     documentProps: IDocumentProps,
-    context: ISeverAppContext
+    context: IServerAppContext
   ): Promise<IDocumentProps> | IDocumentProps;
   getTemplateData(
-    context: ISeverAppContext
+    context: IServerAppContext
   ): Promise<ITemplateData> | ITemplateData;
 }
 
@@ -258,7 +268,7 @@ export interface IServerMiddlewareItem {
 export interface IServerModule {
   render?(
     renderAppToString: () => string,
-    appContext: ISeverAppContext
+    appContext: IServerAppContext
   ): string;
   onViewDone?(
     req: IncomingMessage,
@@ -272,9 +282,4 @@ export interface IServerModule {
 
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;
-
-  componentTemplate(
-    componentModule: string,
-    route: IUserRouteConfig & { id: string }
-  ): string;
 }

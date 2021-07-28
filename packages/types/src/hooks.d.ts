@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { defineHook } from '@shuvi/core';
+import { defineHook } from './hookable';
 import webpack, { MultiCompiler } from 'webpack';
 import { SyncHook } from 'tapable';
 import WebpackChain from 'webpack-chain';

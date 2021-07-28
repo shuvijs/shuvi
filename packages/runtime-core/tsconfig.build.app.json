@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "module": "esnext",
-    "outDir": "shuvi-app"
+    "outDir": "shuvi-app",
+    "types": ["node", "webpack-env"]
   },
   "include": ["src/shuvi-app"]
 }
