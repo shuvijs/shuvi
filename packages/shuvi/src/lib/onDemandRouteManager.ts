@@ -3,8 +3,7 @@ import { IRequestHandlerWithNext } from '../server';
 import { DevMiddleware } from './devMiddleware';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
-import { matchRoutes } from '@shuvi/core/lib/app/app-modules/matchRoutes';
-
+import { matchRoutes } from '@shuvi/router';
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
   public _api: Api;
@@ -42,7 +41,7 @@ export class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const matchedRoutes = matchRoutes(this._api.getPageRoutes(), pathname);
+    const matchedRoutes = matchRoutes(this._api.getPageRoutes(), pathname) || [];
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { component } }) =>
