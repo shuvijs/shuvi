@@ -8,7 +8,7 @@ export interface IRendererConstructorOptions {
 export type IRenderDocumentOptions = {
   app: Runtime.IApplication;
   AppComponent: any;
-  router: Runtime.IRouter;
+  router?: Runtime.IRouter;
   appContext: any;
   render?: Runtime.IServerModule['render'];
 };

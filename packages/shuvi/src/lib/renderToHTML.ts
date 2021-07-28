@@ -15,11 +15,9 @@ export async function renderToHTML({
   const renderer = new Renderer({ api });
   const {
     application,
-    applicationSpa,
     server: { render }
   } = api.resources.server;
-  const currentApplication = api.config.ssr ? application : applicationSpa;
-  const app = currentApplication.create(
+  const app = application.create(
     {
       req
     },

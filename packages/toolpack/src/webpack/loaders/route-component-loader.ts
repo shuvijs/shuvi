@@ -13,7 +13,6 @@ const routeComponentLoader: loader.Loader = function () {
     this,
     `${componentAbsolutePath}?__shuvi-route`
   );
-
   return `
 const = require(${stringifyRequest})
 `.trim();
