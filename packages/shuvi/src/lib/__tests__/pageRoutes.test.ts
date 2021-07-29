@@ -1,6 +1,6 @@
-import { serializeRoutes, normalizeRoutes } from '../pageRoutes';
+import { serializePageRoutes, normalizePageRoutes } from '../pageRoutes';
 
-describe('serializeRoutes', () => {
+describe('serializePageRoutes', () => {
   const routes = [
     {
       path: '/',
@@ -18,7 +18,7 @@ describe('serializeRoutes', () => {
     }
   ];
   test('should work', () => {
-    expect(serializeRoutes(routes)).toMatchInlineSnapshot(`
+    expect(serializePageRoutes(routes)).toMatchInlineSnapshot(`
       "[{id: \\"0042\\",
       path: \\"/\\",
       component: \\"Foo\\",
@@ -38,7 +38,7 @@ describe('serializeRoutes', () => {
 
   test('should work with custom serialize fns', () => {
     expect(
-      serializeRoutes(routes, {
+      serializePageRoutes(routes, {
         component(comp) {
           return `() => import("${comp}")`;
         }
@@ -62,10 +62,10 @@ describe('serializeRoutes', () => {
   });
 });
 
-describe('normalizeRoutes', () => {
+describe('normalizePageRoutes', () => {
   describe('component', () => {
     test('should convert relative path to absolute path', () => {
-      const routes = normalizeRoutes(
+      const routes = normalizePageRoutes(
         [
           {
             path: '/a',

@@ -24,6 +24,9 @@ export interface IPaths {
   // functional dirs
   pagesDir: string;
 
+  // api dirs
+  apisDir: string;
+
   publicDir: string;
 }
 
@@ -65,6 +68,7 @@ export interface IApiConfig {
     history: IRouterHistoryMode;
   };
   pageRoutes?: Runtime.IUserRouteConfig[];
+  apiRoutes?: Runtime.IUserRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
   proxy?: any;

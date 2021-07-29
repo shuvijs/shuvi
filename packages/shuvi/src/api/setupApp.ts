@@ -91,7 +91,7 @@ export async function setupApp(api: Api) {
   if (Array.isArray(pageRoutes) && pageRoutes.length) {
     await api.setPageRoutes(pageRoutes);
   } else {
-    const route = new Route(paths.pagesDir);
+    const route = new Route(paths.pagesDir, false);
     if (api.mode === 'development') {
       route.subscribe(routes => {
         api.setPageRoutes(routes, true);
@@ -99,6 +99,21 @@ export async function setupApp(api: Api) {
     } else {
       const routes = await route.getRoutes();
       await api.setPageRoutes(routes, true);
+    }
+  }
+
+  const { apiRoutes } = api.config;
+  if (Array.isArray(apiRoutes) && apiRoutes.length) {
+    await api.setApiRoutes(apiRoutes);
+  } else {
+    const route = new Route(paths.apisDir, true);
+    if (api.mode === 'development') {
+      route.subscribe(routes => {
+        api.setApiRoutes(routes, true);
+      });
+    } else {
+      const routes = await route.getRoutes();
+      await api.setApiRoutes(routes, true);
     }
   }
 }

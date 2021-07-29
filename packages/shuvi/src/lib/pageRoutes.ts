@@ -52,10 +52,9 @@ function serializeRoutesImpl(
   return `[${res}]`;
 }
 
-export function serializeRoutes<T extends IUserRouteConfig = IUserRouteConfig>(
-  routes: T[],
-  templates: Templates<T> = {}
-): string {
+export function serializePageRoutes<
+  T extends IUserRouteConfig = IUserRouteConfig
+>(routes: T[], templates: Templates<T> = {}): string {
   return serializeRoutesImpl(routes, templates, '');
 }
 
@@ -78,10 +77,10 @@ export function renameFilepathToComponent(
     }
     res.push(route);
   }
-  return (res as unknown) as IUserRouteConfig[];
+  return res;
 }
 
-export function normalizeRoutes(
+export function normalizePageRoutes(
   routes: IUserRouteConfig[],
   option: { componentDir: string }
 ): IUserRouteConfig[] {
@@ -97,7 +96,7 @@ export function normalizeRoutes(
     }
 
     if (route.children && route.children.length > 0) {
-      route.children = normalizeRoutes(route.children, option);
+      route.children = normalizePageRoutes(route.children, option);
     }
     res.push(route);
   }

@@ -37,6 +37,10 @@ class ProjectBuilder {
     this._projectContext.pageRoutesContent = content;
   }
 
+  setApiRoutesContent(content: string): void {
+    this._projectContext.apiRoutesContent = content;
+  }
+
   setRuntimeConfigContent(content: string | null) {
     this._projectContext.runtimeConfigContent = content;
   }

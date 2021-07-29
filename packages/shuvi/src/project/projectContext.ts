@@ -15,6 +15,7 @@ export interface ProjectContext {
   entryCodes: string[];
   entryFileContent: string;
   pageRoutesContent: string;
+  apiRoutesContent: string;
   polyfills: string[];
 
   /**
@@ -41,6 +42,7 @@ export const createProjectContext = () =>
     entryCodes: [],
     entryFileContent: '',
     pageRoutesContent: 'export default []',
+    apiRoutesContent: 'export default []',
     polyfills: [],
     services: new Map(),
     exports: new Map(),

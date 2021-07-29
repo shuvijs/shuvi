@@ -9,7 +9,7 @@ import {
   Bundler,
   Runtime
 } from '@shuvi/types';
-import { IUserRouteConfig } from '@shuvi/core';
+import { IUserRouteConfig, IApiRouteConfig } from '@shuvi/core';
 import { IRouteRecord } from '@shuvi/router';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
@@ -20,10 +20,15 @@ import coreRuntime from '@shuvi/runtime-core';
 import { ProjectBuilder, UserModule, FileOptions } from '../project';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import {
-  serializeRoutes,
-  normalizeRoutes,
+  serializePageRoutes,
+  normalizePageRoutes,
   renameFilepathToComponent
 } from '../lib/pageRoutes';
+import {
+  serializeApiRoutes,
+  normalizeApiRoutes,
+  renameFilepathToHandler
+} from '../lib/apiRoutes';
 import {
   PUBLIC_PATH,
   ROUTE_RESOURCE_QUERYSTRING,
@@ -204,7 +209,7 @@ class Api extends Hookable implements IApi {
       initialValue: pageRoutes
     });
 
-    pageRoutes = normalizeRoutes(pageRoutes, {
+    pageRoutes = normalizePageRoutes(pageRoutes, {
       componentDir: this.paths.pagesDir
     });
     pageRoutes.push({
@@ -215,7 +220,7 @@ class Api extends Hookable implements IApi {
 
     this._pageRoutes = pageRoutes;
 
-    const serialized = serializeRoutes(pageRoutes, {
+    const serialized = serializePageRoutes(pageRoutes, {
       component: (comp, route) => {
         return this.runtime.componentTemplate(
           `${comp}?${ROUTE_RESOURCE_QUERYSTRING}`,
@@ -234,6 +239,30 @@ class Api extends Hookable implements IApi {
 
   getPageRoutes() {
     return this._pageRoutes;
+  }
+
+  async setApiRoutes(routes: IApiRouteConfig[]): Promise<void>;
+  async setApiRoutes(routes: IRouteRecord[], rename: boolean): Promise<void>;
+  async setApiRoutes(routes: IRouteRecord[], rename?: boolean): Promise<void> {
+    let apiRoutes = [];
+    if (rename) {
+      apiRoutes = renameFilepathToHandler(routes);
+    } else {
+      apiRoutes = routes;
+    }
+
+    apiRoutes = normalizeApiRoutes(apiRoutes, {
+      apisDir: this.paths.apisDir
+    });
+
+    const serialized = serializeApiRoutes(apiRoutes);
+
+    let content = `export default ${serialized}`;
+    // content = await this.callHook<APIHooks.IHookAppRoutesFile>({
+    //   name: 'app:routesFile',
+    //   initialValue: content
+    // });
+    this._projectBuilder.setApiRoutesContent(content);
   }
 
   async buildApp(): Promise<void> {

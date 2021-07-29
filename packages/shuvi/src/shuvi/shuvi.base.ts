@@ -1,9 +1,15 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
+import { matchPathname } from '@shuvi/router';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
-import { IRequest, IResponse, INextFunc } from '../server';
+import {
+  IRequest,
+  IResponse,
+  INextFunc,
+  IRequestHandlerWithNext
+} from '../server';
 import { IConfig } from '../config';
 
 export interface IShuviConstructorOptions {
@@ -64,6 +70,32 @@ export default abstract class Shuvi {
 
     return html;
   }
+
+  protected apiRoutesHandler: IRequestHandlerWithNext = async (
+    req,
+    res,
+    next
+  ) => {
+    const { apiRoutes } = this._api.resources.server;
+    let reqHandler;
+    for (const { path, handler } of apiRoutes) {
+      const match = matchPathname(path, req.pathname);
+      if (match) {
+        req.params = match.params;
+        reqHandler = handler;
+        break;
+      }
+    }
+    if (reqHandler) {
+      try {
+        await reqHandler(req, res);
+      } catch (error) {
+        next(error);
+      }
+    } else {
+      next();
+    }
+  };
 
   async close() {
     await this._api.destory();
