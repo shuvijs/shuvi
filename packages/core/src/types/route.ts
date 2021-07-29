@@ -9,6 +9,12 @@ export interface IUserRouteConfig {
   id?: string;
 }
 
+export interface IApiRouteConfig {
+  children?: IApiRouteConfig[];
+  handler?: string;
+  path: string;
+}
+
 export interface IAppRouteConfig extends IRouteRecord {
   id: string;
   component?: any;

@@ -1,5 +1,5 @@
 import { join, relative } from 'path';
-
+import fs from 'fs';
 import eventEmitter from '@shuvi/utils/lib/eventEmitter';
 import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
@@ -24,7 +24,10 @@ interface IFilesObject {
  * Example ['/a/1', '/a/2', '/b/1'] will become
  * { a: { 1: {}, 2: {} }, b: { 1: {} } }
  * */
-const transformFilesObject = (files: string[]): IFilesObject => {
+const transformFilesObject = (
+  files: string[],
+  ignoreLayout: boolean
+): IFilesObject => {
   return files.reduce((acc, file) => {
     file
       .split('/')
@@ -32,7 +35,11 @@ const transformFilesObject = (files: string[]): IFilesObject => {
       .forEach((route, index, arr) => {
         let objToTraverse = acc;
 
-        if (index === 0 && normalizeFilePath(route) === '/_layout') {
+        if (
+          index === 0 &&
+          !ignoreLayout &&
+          normalizeFilePath(route) === '/_layout'
+        ) {
           console.warn(
             'Top level _layout is not supported and will be ignored.'
           );
@@ -89,16 +96,21 @@ function filterRouteFile(name: string) {
 }
 
 export class Route {
-  private _pagesDir: string;
+  private _filesDir: string;
   private _unwatch: any;
+  private _ignoreLayout: boolean = false;
   private _event = eventEmitter();
 
-  constructor(pagesDir: string) {
-    this._pagesDir = pagesDir;
+  constructor(filesDir: string, ignoreLayout: boolean) {
+    this._filesDir = filesDir;
+    this._ignoreLayout = ignoreLayout;
   }
 
   async getRoutes(): Promise<IRouteRecord[]> {
-    const files = await recursiveReadDir(this._pagesDir, {
+    if (!fs.existsSync(this._filesDir)) {
+      return [];
+    }
+    const files = await recursiveReadDir(this._filesDir, {
       filter: filterRouteFile
     });
     return this._getRoutes(files);
@@ -112,11 +124,12 @@ export class Route {
   }
 
   private _getRoutes(files: string[]): IRouteRecord[] {
-    const transformedFiles = transformFilesObject(files);
+    const transformedFiles = transformFilesObject(files, this._ignoreLayout);
 
     const generateRoute = (
       fileToTransform: IFilesObject,
-      pageDirectory: string
+      pageDirectory: string,
+      ignoreLayout: boolean
     ) => {
       const routes: IRouteRecord[] = [];
       Object.entries(fileToTransform).forEach(
@@ -132,17 +145,22 @@ export class Route {
 
             // if a directory have _layout, treat it as its own source
             if (isDirectory) {
-              const layoutFile = Object.keys(nestedRoute).find(route =>
-                isLayout(normalizeRoutePath(normalizeFilePath(route)))
-              );
-              if (layoutFile) {
-                route.filepath = join(pageDirectory, fileName, layoutFile);
-                // delete _layout
-                delete nestedRoute[layoutFile];
+              if (!ignoreLayout) {
+                const layoutFile = Object.keys(nestedRoute).find(route =>
+                  isLayout(normalizeRoutePath(normalizeFilePath(route)))
+                );
+                if (layoutFile) {
+                  route.filepath = join(pageDirectory, fileName, layoutFile);
+                  console.log(pageDirectory, fileName, layoutFile);
+                  console.log(route.filepath);
+                  // delete _layout
+                  delete nestedRoute[layoutFile];
+                }
               }
               route.children = generateRoute(
                 nestedRoute,
-                join(pageDirectory, fileName)
+                join(pageDirectory, fileName),
+                ignoreLayout
               ); // inner directory
             } else {
               route.filepath = join(pageDirectory, fileName);
@@ -154,7 +172,7 @@ export class Route {
       return routes;
     };
 
-    return generateRoute(transformedFiles, this._pagesDir);
+    return generateRoute(transformedFiles, this._filesDir, this._ignoreLayout);
   }
 
   private async _createWatcher() {
@@ -164,13 +182,13 @@ export class Route {
     this._event.emit('change', initialRoutes);
 
     return watch(
-      { directories: [this._pagesDir] },
+      { directories: [this._filesDir] },
       ({ changes, removals, getAllFiles }) => {
         const files: string[] = [];
         const rawFiles = getAllFiles();
         for (let index = 0; index < rawFiles.length; index++) {
           const absPath = rawFiles[index];
-          const relativePath = relative(this._pagesDir, absPath);
+          const relativePath = relative(this._filesDir, absPath);
           if (filterRouteFile(relativePath)) {
             files.push(relativePath);
           }
