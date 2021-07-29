@@ -3,6 +3,7 @@ import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import path from 'path';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
+import resolveRuntimCoreFile from '../lib/resolveRuntimCoreFile';
 import { Api } from './api';
 function withExts(file: string, extensions: string[]): string[] {
   return extensions.map(ext => `${file}.${ext}`);
@@ -71,7 +72,37 @@ export async function setupApp(api: Api) {
     ]
   });
 
-  // set the content of @shuvi/app/entry.client-wrapper
+  const {
+    ssr,
+    router: { history }
+  } = api.config;
+  let historyModule;
+  if (history === 'browser') {
+    historyModule = 'create-browser';
+  } else if (history === 'hash') {
+    historyModule = 'create-hash';
+  } else {
+    historyModule = 'create-memory';
+  }
+  api.setRuntimeCoreModule({
+    client: {
+      application: resolveRuntimCoreFile(
+        'application',
+        'create-application-client'
+      ),
+      history: resolveRuntimCoreFile('application', 'history', historyModule),
+      entry: resolveRuntimCoreFile('entry', 'client', 'index')
+    },
+    server: {
+      application: resolveRuntimCoreFile(
+        'application',
+        ssr ? 'create-application-server' : 'create-application-server-spa'
+      ),
+      entry: resolveRuntimCoreFile('entry', 'server', 'index')
+    }
+  });
+
+  // set the content of @shuvi/app/entry.client-wrapper.js
   // entry.client-wrapper just import or dynamicly import `entry.client.js`
   let entryFile = "'@shuvi/app/entry.client'";
   if (config.asyncEntry === true) {
@@ -87,6 +118,10 @@ export async function setupApp(api: Api) {
       : null
   );
 
+  api.addAppExport(
+    resolveRuntimCoreFile('helper/getPageData'),
+    '{ getPageData }'
+  );
   // don not use absolute path, this module would't be bundled
   api.addAppExport(
     'shuvi/lib/lib/runtimeConfig',

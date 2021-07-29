@@ -5,6 +5,7 @@ import os from 'os';
 export default {
   content: (context: ProjectContext) => {
     const codes = context.entryCodes;
+    codes.unshift(`import '${context.runtimeCoreModule.client.entry}'`);
     let imports = '';
     let body = '';
     for (let index = 0; index < codes.length; index++) {
