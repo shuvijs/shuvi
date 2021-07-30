@@ -1,15 +1,16 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
+import {
+  IShuviMode,
+  APIHooks,
+  Runtime,
+  IRequest,
+  IResponse
+} from '@shuvi/types';
 import { matchPathname } from '@shuvi/router';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
-import {
-  IRequest,
-  IResponse,
-  INextFunc,
-  IRequestHandlerWithNext
-} from '../server';
+import { INextFunc, IRequestHandlerWithNext } from '../server';
 import { IConfig } from '../config';
 
 export interface IShuviConstructorOptions {

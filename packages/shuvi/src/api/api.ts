@@ -9,15 +9,17 @@ import {
   Bundler,
   Runtime
 } from '@shuvi/types';
-import { IUserRouteConfig, IApiRouteConfig } from '@shuvi/core';
 import { IRouteRecord } from '@shuvi/router';
+import {
+  ProjectBuilder,
+  UserModule,
+  RuntimeCoreModule,
+  FileOptions
+} from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hooks';
-import coreRuntime from '@shuvi/runtime-core';
-
-import { ProjectBuilder, UserModule, FileOptions } from '../project';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import {
   serializePageRoutes,
@@ -29,12 +31,8 @@ import {
   normalizeApiRoutes,
   renameFilepathToHandler
 } from '../lib/apiRoutes';
-import {
-  PUBLIC_PATH,
-  ROUTE_RESOURCE_QUERYSTRING,
-  ROUTE_NOT_FOUND_NAME
-} from '../constants';
-import initRuntime from '../initRuntime';
+import { PUBLIC_PATH, ROUTE_NOT_FOUND_NAME } from '../constants';
+import initRuntime from '../lib/initRuntime';
 import { defaultConfig, IConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
@@ -64,7 +62,7 @@ class Api extends Hookable implements IApi {
   private _projectBuilder!: ProjectBuilder;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
-  private _pageRoutes: IUserRouteConfig[] = [];
+  private _pageRoutes: Runtime.IUserRouteConfig[] = [];
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
@@ -183,10 +181,6 @@ class Api extends Hookable implements IApi {
     return this._resources.clientManifest;
   }
 
-  setPluginModule(module: string | string[]) {
-    this._projectBuilder.setPluginModule(module);
-  }
-
   setRuntimeConfigContent(content: string | null) {
     this._projectBuilder.setRuntimeConfigContent(content);
   }
@@ -195,7 +189,11 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.setUserModule(userModule);
   }
 
-  async setPageRoutes(routes: IUserRouteConfig[]): Promise<void>;
+  setPlatformModule(module: string) {
+    this._projectBuilder.setPlatformModule(module);
+  }
+
+  async setPageRoutes(routes: Runtime.IUserRouteConfig[]): Promise<void>;
   async setPageRoutes(routes: IRouteRecord[], rename: boolean): Promise<void>;
   async setPageRoutes(routes: IRouteRecord[], rename?: boolean): Promise<void> {
     let pageRoutes = [];
@@ -219,29 +217,16 @@ class Api extends Hookable implements IApi {
     });
 
     this._pageRoutes = pageRoutes;
-
-    const serialized = serializePageRoutes(pageRoutes, {
-      component: (comp, route) => {
-        return this.runtime.componentTemplate(
-          `${comp}?${ROUTE_RESOURCE_QUERYSTRING}`,
-          route
-        );
-      }
-    });
-
-    let content = `export default ${serialized}`;
-    content = await this.callHook<APIHooks.IHookAppRoutesFile>({
-      name: 'app:routesFile',
-      initialValue: content
-    });
-    this._projectBuilder.setPageRoutesContent(content);
+    const serialized = serializePageRoutes(pageRoutes);
+    const pageRoutesContent = `export default ${serialized}`;
+    this._projectBuilder.setPageRoutesContent(pageRoutesContent);
   }
 
   getPageRoutes() {
     return this._pageRoutes;
   }
 
-  async setApiRoutes(routes: IApiRouteConfig[]): Promise<void>;
+  async setApiRoutes(routes: Runtime.IApiRouteConfig[]): Promise<void>;
   async setApiRoutes(routes: IRouteRecord[], rename: boolean): Promise<void>;
   async setApiRoutes(routes: IRouteRecord[], rename?: boolean): Promise<void> {
     let apiRoutes = [];
@@ -258,10 +243,6 @@ class Api extends Hookable implements IApi {
     const serialized = serializeApiRoutes(apiRoutes);
 
     let content = `export default ${serialized}`;
-    // content = await this.callHook<APIHooks.IHookAppRoutesFile>({
-    //   name: 'app:routesFile',
-    //   initialValue: content
-    // });
     this._projectBuilder.setApiRoutesContent(content);
   }
 
@@ -305,6 +286,10 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addEntryCode(content);
   }
 
+  setEntryWrapperContent(content: string) {
+    this._projectBuilder.setEntryWrapperContent(content);
+  }
+
   addAppFile(options: FileOptions): void {
     // make addAppFile root as files/
     options.name = path.join('files', path.resolve('/', options.name));
@@ -325,8 +310,8 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addPolyfill(file);
   }
 
-  setPlatformDir(dir: string): void {
-    this._projectBuilder.setPlatformDir(dir);
+  setRuntimeCoreModule(module: RuntimeCoreModule) {
+    this._projectBuilder.setRuntimeCoreModule(module);
   }
 
   addRuntimePlugin(name: string, runtimePlugin: string): void {
@@ -433,7 +418,6 @@ class Api extends Hookable implements IApi {
 
     // Runtime installation need to be executed before initializing presets and plugins
     // to make sure shuvi entry file at the top.
-    coreRuntime.install(this.getPluginApi());
     this.runtime.install(this.getPluginApi());
     runPlugins();
   }

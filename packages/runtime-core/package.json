@@ -15,13 +15,9 @@
     "template"
   ],
   "scripts": {
-    "dev": "run-p watch:*",
-    "watch:app": "tsc -p tsconfig.build.app.json -w",
-    "watch:node": "tsc -p tsconfig.build.node.json -w",
-    "prebuild": "rimraf lib shuvi-app",
-    "build": "run-p build:*",
-    "build:app": "tsc -p tsconfig.build.app.json",
-    "build:node": "tsc -p tsconfig.build.node.json"
+    "dev": "tsc -p tsconfig.build.json -w",
+    "prebuild": "rimraf lib",
+    "build": "tsc -p tsconfig.build.json"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -31,5 +27,8 @@
     "@shuvi/shared": "^0.0.1-rc.32",
     "@shuvi/toolpack": "^0.0.1-rc.32",
     "@shuvi/types": "^0.0.1-rc.32"
+  },
+  "devDependencies": {
+    "@types/webpack-env": "^1.16.2"
   }
 }

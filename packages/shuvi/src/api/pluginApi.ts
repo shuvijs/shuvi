@@ -17,6 +17,8 @@ const apiProps: Array<keyof IApi> = [
   'addAppService',
   'addAppPolyfill',
   'addRuntimePlugin',
+  'setPlatformModule',
+  'setRuntimeCoreModule',
   'resolveAppFile',
   'resolveUserFile',
   'resolveBuildFile',
@@ -46,6 +48,9 @@ class PluginApi implements IApi {
   addAppService: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
+
+  setPlatformModule: any;
+  setRuntimeCoreModule: any;
 
   resolveAppFile: any;
   resolveUserFile: any;

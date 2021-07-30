@@ -1,6 +1,9 @@
 import { ProjectContext } from '../../../projectContext';
+import { moduleExportProxyCreater } from '../../../file-snippets';
+
+const moduleExportProxy = moduleExportProxyCreater();
 
 export default {
   content: (context: ProjectContext) =>
-    `export * from "${context.platformDir}/shuvi-app"`
+    moduleExportProxy.getContent(context.platformModule)
 };

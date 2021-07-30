@@ -1,11 +1,17 @@
-import { ITemplateData, IHookable, AppHooks } from '@shuvi/core';
+import * as AppHooks from './src/application-hooks';
+import { IHookable, Hookable } from '@shuvi/hooks';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
 import * as Runtime from './src/runtime';
 import * as Bundler from './src/bundler';
 import * as APIHooks from './src/hooks';
-
+export * from './src/application';
+export * from './src/apiRoute';
 export { webpack, WebpackChain };
+export { IHookable, Hookable };
+interface ITemplateData {
+  [x: string]: any;
+}
 
 export { Runtime, Bundler, APIHooks, AppHooks, ITemplateData };
 
@@ -68,7 +74,7 @@ export interface IApiConfig {
     history: IRouterHistoryMode;
   };
   pageRoutes?: Runtime.IUserRouteConfig[];
-  apiRoutes?: Runtime.IUserRouteConfig[];
+  apiRoutes?: Runtime.IApiRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
   proxy?: any;
@@ -92,6 +98,9 @@ export interface IApi extends IHookable {
   addAppService: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
+
+  setPlatformModule: any;
+  setRuntimeCoreModule: any;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

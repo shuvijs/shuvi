@@ -8,6 +8,7 @@ import { IRenderDocumentOptions } from './types';
 
 import IData = Runtime.IData;
 import IAppData = Runtime.IAppData;
+import IRouter = Runtime.IRouter;
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps({
@@ -23,9 +24,12 @@ export class SsrRenderer extends BaseRenderer {
       server: { view }
     } = this._resources;
     const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
+    if (!router) {
+      throw new Error('router is null');
+    }
     const result = await view.renderApp({
       AppComponent,
-      router,
+      router: router as IRouter,
       appContext,
       manifest,
       getAssetPublicUrl,

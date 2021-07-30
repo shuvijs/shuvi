@@ -21,39 +21,23 @@ describe('serializePageRoutes', () => {
     expect(serializePageRoutes(routes)).toMatchInlineSnapshot(`
       "[{id: \\"0042\\",
       path: \\"/\\",
-      component: \\"Foo\\",
+      __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
+      __componentSource__: \\"Foo\\",
+      __import__: () => import(/* webpackChunkName: \\"page-0042\\" */\\"Foo?shuvi-route\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
       },
       {id: \\"0c46\\",
       path: \\"/nested\\",
-      component: \\"Foo\\",
+      __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
+      __componentSource__: \\"Foo\\",
+      __import__: () => import(/* webpackChunkName: \\"page-0c46\\" */\\"Foo?shuvi-route\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
       children: [{id: \\"f571\\",
       path: \\"/a\\",
-      component: \\"Bar\\",
-      },
-      ],
-      },
-      ]"
-    `);
-  });
-
-  test('should work with custom serialize fns', () => {
-    expect(
-      serializePageRoutes(routes, {
-        component(comp) {
-          return `() => import("${comp}")`;
-        }
-      })
-    ).toMatchInlineSnapshot(`
-      "[{id: \\"0042\\",
-      path: \\"/\\",
-      component: () => import(\\"Foo\\"),
-      },
-      {id: \\"0c46\\",
-      path: \\"/nested\\",
-      component: () => import(\\"Foo\\"),
-      children: [{id: \\"f571\\",
-      path: \\"/a\\",
-      component: () => import(\\"Bar\\"),
+      __componentSourceWithAffix__: \\"Bar?shuvi-route\\",
+      __componentSource__: \\"Bar\\",
+      __import__: () => import(/* webpackChunkName: \\"page-f571\\" */\\"Bar?shuvi-route\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Bar?shuvi-route\\")],
       },
       ],
       },

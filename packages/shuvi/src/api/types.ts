@@ -1,13 +1,11 @@
 import { Bundler, Runtime, IApiConfig, IPhase } from '@shuvi/types';
-import { IRequestHandler } from '../server';
 import { PluginApi } from './pluginApi';
 
 export type IBuiltResource = {
   server: {
     server: Runtime.IServerModule;
-    apiRoutes: { path: string; handler: IRequestHandler }[];
+    apiRoutes: Runtime.IApiRouteConfig[];
     application: Runtime.IApplicationModule;
-    applicationSpa: Runtime.IApplicationModule;
     document: Partial<Runtime.IDocumentModule>;
     view: Runtime.IViewServer;
   };

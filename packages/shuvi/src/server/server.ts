@@ -1,5 +1,6 @@
 import http from 'http';
 import { parse as parseUrl } from 'url';
+import { IRequest, IResponse } from '@shuvi/types';
 import { getType, isFunction } from '@shuvi/utils';
 import { parseQuery } from '@shuvi/router';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -9,8 +10,6 @@ import { getRouter, Router } from './router';
 import {
   IMiddlewareHandler,
   IRequestHandlerWithNext,
-  IRequest,
-  IResponse,
   INextFunc
 } from './serverTypes';
 

@@ -1,21 +1,24 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { IUserRouteConfig } from '@shuvi/core';
+import { Runtime } from '@shuvi/types';
+import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { IRouteRecord } from '@shuvi/router';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
 };
 
-type RouteKeysWithoutChildren = keyof Omit<IUserRouteConfig, 'children'>;
+type RouteKeysWithoutChildren = keyof Omit<
+  Runtime.IUserRouteConfig,
+  'children'
+>;
 
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
-function serializeRoutesImpl(
-  routes: IUserRouteConfig[],
-  templates: Templates<any> = {},
+export function serializePageRoutes(
+  routes: Runtime.IUserRouteConfig[],
   parentPath: string = ''
 ): string {
   let res = '';
@@ -23,27 +26,27 @@ function serializeRoutesImpl(
     const { children: childRoutes, ...route } = routes[index];
     const fullpath = route.path ? parentPath + '/' + route.path : parentPath;
     const id = genRouteId(fullpath);
-
     let strRoute = `id: ${JSON.stringify(id)},\n`;
     const keys = Object.keys(route);
     for (let index = 0; index < keys.length; index++) {
       const key = keys[index] as RouteKeysWithoutChildren;
-      strRoute += `${key}: `;
-      const customSerialize = templates[key];
-      if (customSerialize) {
-        strRoute += customSerialize(route[key], { ...route, id });
+
+      if (key === 'component') {
+        const { component } = route;
+        const componentSource = component;
+        const componentSourceWithAffix = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
+        strRoute += `__componentSourceWithAffix__: "${componentSourceWithAffix}",
+__componentSource__: "${componentSource}",
+__import__: () => import(/* webpackChunkName: "page-${id}" */"${componentSourceWithAffix}"),
+__resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.trim();
       } else {
-        strRoute += JSON.stringify(route[key]);
+        strRoute += `${key}: ${JSON.stringify(route[key])}`;
       }
       strRoute += `,\n`;
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializeRoutesImpl(
-        childRoutes,
-        templates,
-        fullpath
-      )},\n`;
+      strRoute += `children: ${serializePageRoutes(childRoutes, fullpath)},\n`;
     }
 
     res += `{${strRoute}},\n`;
@@ -52,21 +55,15 @@ function serializeRoutesImpl(
   return `[${res}]`;
 }
 
-export function serializePageRoutes<
-  T extends IUserRouteConfig = IUserRouteConfig
->(routes: T[], templates: Templates<T> = {}): string {
-  return serializeRoutesImpl(routes, templates, '');
-}
-
 export function renameFilepathToComponent(
   routes: IRouteRecord[]
-): IUserRouteConfig[] {
-  const res: IUserRouteConfig[] = [];
+): Runtime.IUserRouteConfig[] {
+  const res: Runtime.IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const { path, filepath, children } = routes[index];
     const route = {
       path
-    } as IUserRouteConfig;
+    } as Runtime.IUserRouteConfig;
 
     if (filepath) {
       route.component = filepath;
@@ -81,10 +78,10 @@ export function renameFilepathToComponent(
 }
 
 export function normalizePageRoutes(
-  routes: IUserRouteConfig[],
+  routes: Runtime.IUserRouteConfig[],
   option: { componentDir: string }
-): IUserRouteConfig[] {
-  const res: IUserRouteConfig[] = [];
+): Runtime.IUserRouteConfig[] {
+  const res: Runtime.IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
     if (route.component) {

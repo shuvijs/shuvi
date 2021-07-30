@@ -1,14 +1,19 @@
 import path from 'path';
-import { IApiRouteConfig } from '@shuvi/core';
 import { IRouteRecord, rankRouteBranches } from '@shuvi/router';
 
-type IApiRouteConfigWithoutChildren = Omit<IApiRouteConfig, 'children'>;
+export interface IApiRouteHandler {
+  children?: IApiRouteHandler[];
+  handler?: string;
+  path: string;
+}
+
+type IApiRouteHandlerWithoutChildren = Omit<IApiRouteHandler, 'children'>;
 
 function flattenApiRoutes(
-  routes: IApiRouteConfig[],
-  branches: IApiRouteConfigWithoutChildren[] = [],
+  routes: IApiRouteHandler[],
+  branches: IApiRouteHandlerWithoutChildren[] = [],
   parentPath = ''
-): IApiRouteConfigWithoutChildren[] {
+): IApiRouteHandlerWithoutChildren[] {
   routes.forEach(route => {
     const { children, handler } = route;
     let tempPath = path.join(parentPath, route.path);
@@ -27,7 +32,7 @@ function flattenApiRoutes(
   return branches;
 }
 
-export function serializeApiRoutes(routes: IApiRouteConfig[]): string {
+export function serializeApiRoutes(routes: IApiRouteHandler[]): string {
   let apiRoutes = flattenApiRoutes(routes);
   let rankApiRoutes = apiRoutes.map(
     apiRoute => [apiRoute.path, apiRoute] as [string, typeof apiRoute]
@@ -48,13 +53,13 @@ export function serializeApiRoutes(routes: IApiRouteConfig[]): string {
 
 export function renameFilepathToHandler(
   routes: IRouteRecord[]
-): IApiRouteConfig[] {
-  const res: IApiRouteConfig[] = [];
+): IApiRouteHandler[] {
+  const res: IApiRouteHandler[] = [];
   for (let index = 0; index < routes.length; index++) {
     const { path, filepath, children } = routes[index];
     const route = {
       path
-    } as IApiRouteConfig;
+    } as IApiRouteHandler;
 
     if (filepath) {
       route.handler = filepath;
@@ -69,10 +74,10 @@ export function renameFilepathToHandler(
 }
 
 export function normalizeApiRoutes(
-  routes: IApiRouteConfig[],
+  routes: IApiRouteHandler[],
   option: { apisDir: string }
-): IApiRouteConfig[] {
-  const res: IApiRouteConfig[] = [];
+): IApiRouteHandler[] {
+  const res: IApiRouteHandler[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
     if (route.handler) {
