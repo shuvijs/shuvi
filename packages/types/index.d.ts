@@ -75,6 +75,7 @@ export interface IApiConfig {
   };
   pageRoutes?: Runtime.IUserRouteConfig[];
   apiRoutes?: Runtime.IApiRouteConfig[];
+  apiRoutePrefix?: string;
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
   proxy?: any;

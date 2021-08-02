@@ -21,7 +21,6 @@ function flattenApiRoutes(
     if (children) {
       flattenApiRoutes(children, branches, tempPath);
     }
-
     if (handler) {
       branches.push({
         path: tempPath,
@@ -32,8 +31,11 @@ function flattenApiRoutes(
   return branches;
 }
 
-export function serializeApiRoutes(routes: IApiRouteHandler[]): string {
-  let apiRoutes = flattenApiRoutes(routes);
+export function serializeApiRoutes(
+  routes: IApiRouteHandler[],
+  parentPath = '/api'
+): string {
+  let apiRoutes = flattenApiRoutes(routes, [], path.resolve('/', parentPath));
   let rankApiRoutes = apiRoutes.map(
     apiRoute => [apiRoute.path, apiRoute] as [string, typeof apiRoute]
   );
