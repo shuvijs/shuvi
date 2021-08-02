@@ -5,6 +5,8 @@ import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { IRouteRecord } from '@shuvi/router';
 
+import parseDynamicPath from './parseDynamicPath';
+
 export type SubscribeFn = (v: IRouteRecord[]) => void;
 
 const jsExtensions = ['js', 'jsx', 'ts', 'tsx'];
@@ -81,10 +83,7 @@ function normalizeRoutePath(rawPath: string) {
     routePath = routePath.slice(0, -1);
   }
 
-  // /index -> /
-  if (routePath === '/index') {
-    routePath = '/';
-  }
+  routePath = parseDynamicPath(routePath);
 
   return routePath;
 }
