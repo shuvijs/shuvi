@@ -5,8 +5,12 @@ const dynamicMatchPartRegex = /\[(.+?)\]/g;
 
 export default function parseDynamicPath(normalizedRoute: string): string {
   invariant(
-    normalizedRoute,
-    'parseDynamicPath param normalizedRoute length should not empty'
+    normalizedRoute.length >= 1,
+    'parseDynamicPath param normalizedRoute length should not >= 1'
+  );
+  invariant(
+    !checkSpecialRegexChars(normalizedRoute),
+    'filePath should not be special regex chars: |\\{}()^$+*?'
   );
   const parameterizedRoute = normalizedRoute
     .slice(1)
@@ -42,4 +46,8 @@ function parseMatchRepeat(param: string, optional: boolean): string {
       ? `:${param}*`
       : `:${param}+`
     : `:${param}${optional ? '?' : ''}`;
+}
+
+function checkSpecialRegexChars(string: string): boolean {
+  return /[|\\{}()^$+*?]/g.test(string);
 }
