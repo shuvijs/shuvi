@@ -10,6 +10,7 @@ import { matchPathname } from '@shuvi/router';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
+import { apiRouteHandler } from '../lib/apiRouteHandler';
 import { INextFunc, IRequestHandlerWithNext } from '../server';
 import { IConfig } from '../config';
 
@@ -78,18 +79,19 @@ export default abstract class Shuvi {
     next
   ) => {
     const { apiRoutes } = this._api.resources.server;
-    let reqHandler;
+    let apiRoute;
     for (const { path, handler } of apiRoutes) {
       const match = matchPathname(path, req.pathname);
       if (match) {
         req.params = match.params;
-        reqHandler = handler;
+        apiRoute = handler;
         break;
       }
     }
-    if (reqHandler) {
+    if (apiRoute) {
       try {
-        await reqHandler(req, res);
+        const { apiRouteConfig } = this._api.config;
+        await apiRouteHandler(req, res, apiRoute, apiRouteConfig);
       } catch (error) {
         next(error);
       }

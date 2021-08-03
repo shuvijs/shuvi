@@ -1,5 +1,8 @@
-import { IRequest, IResponse, IRequestHandler } from '@shuvi/types';
-// export { IRequest, IResponse }
+import { IRequest, IResponse } from '@shuvi/types';
+import { ServerResponse } from 'http';
+
+export type IRequestHandler = (req: IRequest, res: ServerResponse) => void;
+
 export type INextFunc = (err?: any) => void;
 
 export type IRequestHandlerWithNext = (

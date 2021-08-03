@@ -240,10 +240,9 @@ class Api extends Hookable implements IApi {
       apisDir: this.paths.apisDir
     });
 
-    const serialized = serializeApiRoutes(
-      apiRoutes,
-      this.config.apiRoutePrefix
-    );
+    const { prefix } = this.config.apiRouteConfig || {};
+
+    const serialized = serializeApiRoutes(apiRoutes, prefix);
 
     let content = `export default ${serialized}`;
     this._projectBuilder.setApiRoutesContent(content);

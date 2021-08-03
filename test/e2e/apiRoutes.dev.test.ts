@@ -17,19 +17,19 @@ describe('apiRoutes development', () => {
   test('should work', async () => {
     let res;
 
-    res = await got.get(ctx.url('/defer'));
+    res = await got.get(ctx.url('/api/defer'));
     expect(res.body).toBe('defer OK');
 
-    res = await got.get(ctx.url('/dir/a'));
+    res = await got.get(ctx.url('/api/dir/a'));
     expect(res.body).toBe('dir/a OK');
 
-    res = await got.get(ctx.url('/dir/b'));
+    res = await got.get(ctx.url('/api/dir/b'));
     expect(res.body).toBe('dir/b OK');
 
-    res = await got.get(ctx.url('/dir'));
+    res = await got.get(ctx.url('/api/dir'));
     expect(res.body).toBe('dir/index OK');
 
-    res = await got.get(ctx.url('/set-header'));
+    res = await got.get(ctx.url('/api/set-header'));
     expect(res.body).toBe('200 OK');
     expect(res.headers).toHaveProperty('shuvi-custom-header', 'bar');
   });
@@ -50,7 +50,7 @@ describe('apiRoutes development', () => {
       let page;
 
       try {
-        page = await ctx.browser.page(ctx.url('/hmr-test'));
+        page = await ctx.browser.page(ctx.url('/api/hmr-test'));
         expect(await page.$text('body')).toBe('body_content');
 
         originalContent = readFileSync(filePath, 'utf8');
@@ -62,14 +62,14 @@ describe('apiRoutes development', () => {
         // change the content
         writeFileSync(filePath, editedContent, 'utf8');
 
-        page = await ctx.browser.page(ctx.url('/hmr-test'));
+        page = await ctx.browser.page(ctx.url('/api/hmr-test'));
 
         expect(await page.$text('body')).toBe('change_body_content');
 
         // add the original content
         writeFileSync(filePath, originalContent, 'utf8');
 
-        page = await ctx.browser.page(ctx.url('/hmr-test'));
+        page = await ctx.browser.page(ctx.url('/api/hmr-test'));
 
         expect(await page.$text('body')).toBe('body_content');
 

@@ -20,7 +20,6 @@ export interface IRouteRecord<Element = any> {
   props?: IRouteComponentProps;
   path: string;
   filepath?: string;
-  // handler?: (...args: any[]) =>void;
 }
 
 export interface NavigationGuardHook<R extends IRouteRecord = any> {

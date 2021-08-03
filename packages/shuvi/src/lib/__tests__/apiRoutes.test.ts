@@ -21,15 +21,15 @@ describe('serializeApiRoutes', () => {
     expect(serializeApiRoutes(routes)).toMatchInlineSnapshot(`
       "[
       {
-            path: \\"/nested/a\\",
-            handler: require(\\"Bar\\").default,
-          },
-      {
-            path: \\"/\\",
+            path: \\"/api/\\",
             handler: require(\\"Foo\\").default,
           },
       {
-            path: \\"/nested\\",
+            path: \\"/api/nested/a\\",
+            handler: require(\\"Bar\\").default,
+          },
+      {
+            path: \\"/api/nested\\",
             handler: require(\\"Foo\\").default,
           },]"
     `);
