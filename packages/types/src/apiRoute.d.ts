@@ -32,5 +32,10 @@ export type IApiRouteRequestHandler<T = any> = (
 
 export interface IApiRouteConfig {
   path: string;
-  handler: IApiRouteRequestHandler;
+  apiRouteModule: {
+    default: IApiRouteRequestHandler;
+    config?: {
+      [key: string]: any;
+    };
+  };
 }

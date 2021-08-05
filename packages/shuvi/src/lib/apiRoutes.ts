@@ -1,30 +1,30 @@
 import path from 'path';
 import { IRouteRecord, rankRouteBranches } from '@shuvi/router';
 
-export interface IApiRouteHandler {
-  children?: IApiRouteHandler[];
-  handler?: string;
+export interface IApiRouteModule {
+  children?: IApiRouteModule[];
+  apiRouteModule?: string;
   path: string;
 }
 
-type IApiRouteHandlerWithoutChildren = Omit<IApiRouteHandler, 'children'>;
+type IApiRouteHandlerWithoutChildren = Omit<IApiRouteModule, 'children'>;
 
 function flattenApiRoutes(
-  routes: IApiRouteHandler[],
+  routes: IApiRouteModule[],
   branches: IApiRouteHandlerWithoutChildren[] = [],
   parentPath = ''
 ): IApiRouteHandlerWithoutChildren[] {
   routes.forEach(route => {
-    const { children, handler } = route;
+    const { children, apiRouteModule } = route;
     let tempPath = path.join(parentPath, route.path);
 
     if (children) {
       flattenApiRoutes(children, branches, tempPath);
     }
-    if (handler) {
+    if (apiRouteModule) {
       branches.push({
         path: tempPath,
-        handler
+        apiRouteModule
       });
     }
   });
@@ -32,8 +32,8 @@ function flattenApiRoutes(
 }
 
 export function serializeApiRoutes(
-  routes: IApiRouteHandler[],
-  parentPath = '/api'
+  routes: IApiRouteModule[],
+  parentPath = ''
 ): string {
   let apiRoutes = flattenApiRoutes(routes, [], path.resolve('/', parentPath));
   let rankApiRoutes = apiRoutes.map(
@@ -43,32 +43,32 @@ export function serializeApiRoutes(
   apiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
   let res = '';
   for (let index = 0; index < apiRoutes.length; index++) {
-    const { handler, path } = apiRoutes[index];
+    const { apiRouteModule, path } = apiRoutes[index];
     let strRoute = `\n{
       path: "${path}",
-      ${handler ? `handler: require("${handler}").default,` : ''}
+      ${apiRouteModule ? `apiRouteModule: require("${apiRouteModule}"),` : ''}
     },`;
     res += strRoute;
   }
   return `[${res}]`;
 }
 
-export function renameFilepathToHandler(
+export function renameFilepathToModule(
   routes: IRouteRecord[]
-): IApiRouteHandler[] {
-  const res: IApiRouteHandler[] = [];
+): IApiRouteModule[] {
+  const res: IApiRouteModule[] = [];
   for (let index = 0; index < routes.length; index++) {
     const { path, filepath, children } = routes[index];
     const route = {
       path
-    } as IApiRouteHandler;
+    } as IApiRouteModule;
 
     if (filepath) {
-      route.handler = filepath;
+      route.apiRouteModule = filepath;
     }
 
     if (children && children.length > 0) {
-      route.children = renameFilepathToHandler(children);
+      route.children = renameFilepathToModule(children);
     }
     res.push(route);
   }
@@ -76,18 +76,18 @@ export function renameFilepathToHandler(
 }
 
 export function normalizeApiRoutes(
-  routes: IApiRouteHandler[],
+  routes: IApiRouteModule[],
   option: { apisDir: string }
-): IApiRouteHandler[] {
-  const res: IApiRouteHandler[] = [];
+): IApiRouteModule[] {
+  const res: IApiRouteModule[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
-    if (route.handler) {
-      const absPath = path.isAbsolute(route.handler)
-        ? route.handler
-        : path.resolve(option.apisDir, route.handler);
+    if (route.apiRouteModule) {
+      const absPath = path.isAbsolute(route.apiRouteModule)
+        ? route.apiRouteModule
+        : path.resolve(option.apisDir, route.apiRouteModule);
 
-      route.handler = absPath.replace(/\\/g, '/');
+      route.apiRouteModule = absPath.replace(/\\/g, '/');
     }
 
     if (route.children && route.children.length > 0) {

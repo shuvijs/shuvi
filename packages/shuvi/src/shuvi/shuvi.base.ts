@@ -79,19 +79,31 @@ export default abstract class Shuvi {
     next
   ) => {
     const { apiRoutes } = this._api.resources.server;
-    let apiRoute;
-    for (const { path, handler } of apiRoutes) {
+    const { prefix, ...otherConfig } = this._api.config.apiRouteConfig || {};
+    if (!req.url.startsWith(prefix!)) {
+      return next();
+    }
+    let tempApiRouteModule;
+    for (const { path, apiRouteModule } of apiRoutes) {
       const match = matchPathname(path, req.pathname);
       if (match) {
         req.params = match.params;
-        apiRoute = handler;
+        tempApiRouteModule = apiRouteModule;
         break;
       }
     }
-    if (apiRoute) {
+    if (tempApiRouteModule) {
       try {
-        const { apiRouteConfig } = this._api.config;
-        await apiRouteHandler(req, res, apiRoute, apiRouteConfig);
+        const {
+          config: { apiRouteConfig = {} } = {},
+          default: resolver
+        } = tempApiRouteModule;
+        let overridesConfig = {
+          ...otherConfig,
+          ...apiRouteConfig
+        };
+
+        await apiRouteHandler(req, res, resolver, overridesConfig);
       } catch (error) {
         next(error);
       }

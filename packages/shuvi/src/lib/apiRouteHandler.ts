@@ -15,7 +15,7 @@ import {
 export async function apiRouteHandler(
   req: IRequest,
   res: IResponse,
-  apiRoute: IApiRouteRequestHandler,
+  resolver: IApiRouteRequestHandler,
   apiRoutesConfig: any
 ): Promise<void> {
   const apiReq = req as IApiRequest;
@@ -28,10 +28,12 @@ export async function apiRouteHandler(
     apiReq.cookies = getCookieParser(req);
 
     // Parsing of body
-    apiReq.body = await parseBody(
-      apiReq,
-      bodyParser && bodyParser.sizeLimit ? bodyParser.sizeLimit : '1mb'
-    );
+    if (bodyParser && !apiReq.body) {
+      apiReq.body = await parseBody(
+        apiReq,
+        bodyParser && bodyParser.sizeLimit ? bodyParser.sizeLimit : '1mb'
+      );
+    }
 
     apiRes.status = (statusCode: number) => sendStatusCode(apiRes, statusCode);
     apiRes.send = (data: any) => sendData(apiReq, apiRes, data);
@@ -41,8 +43,13 @@ export async function apiRouteHandler(
 
     let wasPiped = false;
 
+    if (process.env.NODE_ENV !== 'production') {
+      // listen for pipe event and don't show resolve warning
+      res.once('pipe', () => (wasPiped = true));
+    }
+
     // Call API route method
-    await apiRoute(apiReq, apiRes);
+    await resolver(apiReq, apiRes);
 
     if (
       process.env.NODE_ENV !== 'production' &&

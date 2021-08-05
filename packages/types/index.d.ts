@@ -81,13 +81,13 @@ export interface IApiConfig {
      * The byte limit of the body. This is the number of bytes or any string
      * format supported by `bytes`, for example `1000`, `'500kb'` or `'3mb'`.
      */
-    bodyParser?: { sizeLimit?: number | string };
+    bodyParser?: { sizeLimit?: number | string } | boolean;
     /**
      * Flag to disable warning "API page resolved
      * without sending a response", due to explicitly
      * using an external API resolver, like express
      */
-    externalResolver?: true;
+    externalResolver?: boolean;
   };
   runtimeConfig?: IRuntimeConfig;
   platform?: string;

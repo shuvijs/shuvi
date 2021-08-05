@@ -29,7 +29,7 @@ import {
 import {
   serializeApiRoutes,
   normalizeApiRoutes,
-  renameFilepathToHandler
+  renameFilepathToModule
 } from '../lib/apiRoutes';
 import { PUBLIC_PATH, ROUTE_NOT_FOUND_NAME } from '../constants';
 import initRuntime from '../lib/initRuntime';
@@ -134,6 +134,14 @@ class Api extends Hookable implements IApi {
       ssr,
       router: { history }
     } = this._config;
+    // ensure apiRouteConfigPrefix starts with '/'
+    const apiRouteConfigPrefix = this._config.apiRouteConfig!.prefix;
+    if (apiRouteConfigPrefix) {
+      this._config.apiRouteConfig!.prefix = path.resolve(
+        '/',
+        apiRouteConfigPrefix
+      );
+    }
     // set history to a specific value
     if (history === 'auto') {
       this._config.router.history = ssr ? 'browser' : 'hash';
@@ -231,7 +239,7 @@ class Api extends Hookable implements IApi {
   async setApiRoutes(routes: IRouteRecord[], rename?: boolean): Promise<void> {
     let apiRoutes = [];
     if (rename) {
-      apiRoutes = renameFilepathToHandler(routes);
+      apiRoutes = renameFilepathToModule(routes);
     } else {
       apiRoutes = routes;
     }

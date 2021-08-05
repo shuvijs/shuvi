@@ -4,15 +4,15 @@ describe('serializeApiRoutes', () => {
   const routes = [
     {
       path: '/',
-      handler: 'Foo'
+      apiRouteModule: 'Foo'
     },
     {
       path: '/nested',
-      handler: 'Foo',
+      apiRouteModule: 'Foo',
       children: [
         {
           path: '/a',
-          handler: 'Bar'
+          apiRouteModule: 'Bar'
         }
       ]
     }
@@ -21,16 +21,16 @@ describe('serializeApiRoutes', () => {
     expect(serializeApiRoutes(routes)).toMatchInlineSnapshot(`
       "[
       {
-            path: \\"/api/\\",
-            handler: require(\\"Foo\\").default,
+            path: \\"/nested/a\\",
+            apiRouteModule: require(\\"Bar\\"),
           },
       {
-            path: \\"/api/nested/a\\",
-            handler: require(\\"Bar\\").default,
+            path: \\"/\\",
+            apiRouteModule: require(\\"Foo\\"),
           },
       {
-            path: \\"/api/nested\\",
-            handler: require(\\"Foo\\").default,
+            path: \\"/nested\\",
+            apiRouteModule: require(\\"Foo\\"),
           },]"
     `);
   });
@@ -43,17 +43,17 @@ describe('normalizeApiRoutes', () => {
         [
           {
             path: '/a',
-            handler: 'a',
+            apiRouteModule: 'a',
             children: [
               {
                 path: '/aa',
-                handler: 'a/aa'
+                apiRouteModule: 'a/aa'
               }
             ]
           },
           {
             path: '/b',
-            handler: '/b'
+            apiRouteModule: '/b'
           }
         ],
         { apisDir: '/test' }
@@ -62,17 +62,17 @@ describe('normalizeApiRoutes', () => {
       expect(routes).toMatchObject([
         {
           path: '/a',
-          handler: '/test/a',
+          apiRouteModule: '/test/a',
           children: [
             {
               path: '/aa',
-              handler: '/test/a/aa'
+              apiRouteModule: '/test/a/aa'
             }
           ]
         },
         {
           path: '/b',
-          handler: '/b'
+          apiRouteModule: '/b'
         }
       ]);
     });
