@@ -1,6 +1,10 @@
 export { createRoutesFromArray } from './createRoutesFromArray';
 export { matchPathname, matchStringify } from './matchPathname';
-export { matchRoutes, IRouteBaseObject } from './matchRoutes';
+export {
+  matchRoutes,
+  IRouteBaseObject,
+  rankRouteBranches
+} from './matchRoutes';
 
 export { pathToString, parseQuery } from './utils';
 export * from './types';

@@ -61,12 +61,18 @@ export async function serveFixtureAtCurrentProcess(
   return createTextContext(shuviApp);
 }
 
+interface IHandleStdoutStderr {
+  onStdout?: (data: string) => void;
+  onStderr?: (error: string) => void;
+}
+
 async function launchShuvi(
   path: string,
   port: number,
   isDev: boolean,
   configOverrides: Partial<IApiConfig>,
-  envOverrides: Partial<NodeJS.ProcessEnv>
+  envOverrides: Partial<NodeJS.ProcessEnv>,
+  handleStdoutStderr: IHandleStdoutStderr
 ): Promise<ChildProcess> {
   return new Promise(resolve => {
     // dynamic NODE_SERVER like EXPRESS, KOA default SHUVI
@@ -136,12 +142,14 @@ async function launchShuvi(
         if (data.includes('Ready on')) {
           resolve(shuviProcess);
         }
+        handleStdoutStderr.onStdout && handleStdoutStderr.onStdout(data);
       });
     }
     if (shuviProcess.stderr) {
       shuviProcess.stderr.setEncoding('utf-8');
       shuviProcess.stderr.on('data', data => {
         console.error(data);
+        handleStdoutStderr.onStderr && handleStdoutStderr.onStderr(data);
       });
     }
   });
@@ -151,7 +159,8 @@ export async function launchFixture(
   name: string,
   configOverrides: Partial<IApiConfig> = {},
   envOverrides: Partial<NodeJS.ProcessEnv> = {},
-  isDev: boolean = true
+  isDev: boolean = true,
+  handleStdoutStderr: IHandleStdoutStderr = {}
 ) {
   const path = resolveFixture(name);
   // remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect
@@ -163,7 +172,8 @@ export async function launchFixture(
     port,
     isDev,
     configOverrides,
-    envOverrides
+    envOverrides,
+    handleStdoutStderr
   );
   const browser = new Browser();
   await browser.start();
@@ -187,7 +197,14 @@ export async function launchFixture(
 export async function serveFixture(
   name: string,
   configOverrides: Partial<IApiConfig> = {},
-  envOverrides: Partial<NodeJS.ProcessEnv> = {}
+  envOverrides: Partial<NodeJS.ProcessEnv> = {},
+  handleStdoutStderr: IHandleStdoutStderr = {}
 ): Promise<AppCtx> {
-  return await launchFixture(name, configOverrides, envOverrides, false);
+  return await launchFixture(
+    name,
+    configOverrides,
+    envOverrides,
+    false,
+    handleStdoutStderr
+  );
 }

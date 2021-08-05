@@ -9,8 +9,6 @@ import {
   Bundler,
   Runtime
 } from '@shuvi/types';
-import { IUserRouteConfig } from '../route/route';
-import { IRouteRecord } from '@shuvi/router';
 import {
   ProjectBuilder,
   UserModule,
@@ -21,13 +19,9 @@ import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hooks';
-
 import { setRuntimeConfig } from '../lib/runtimeConfig';
-import {
-  serializeRoutes,
-  normalizeRoutes,
-  renameFilepathToComponent
-} from '../lib/pageRoutes';
+import { serializeRoutes, normalizeRoutes } from '../lib/routes';
+import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
 import { PUBLIC_PATH, ROUTE_NOT_FOUND_NAME } from '../constants';
 import initRuntime from '../lib/initRuntime';
 import { defaultConfig, IConfig, loadConfig } from '../config';
@@ -59,7 +53,7 @@ class Api extends Hookable implements IApi {
   private _projectBuilder!: ProjectBuilder;
   private _server!: Server;
   private _resources: IResources = {} as IResources;
-  private _pageRoutes: IUserRouteConfig[] = [];
+  private _routes: Runtime.IUserRouteConfig[] = [];
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
   private _presets!: IPreset[];
@@ -131,6 +125,11 @@ class Api extends Hookable implements IApi {
       ssr,
       router: { history }
     } = this._config;
+    // ensure apiRouteConfigPrefix starts with '/'
+    const apiRouteConfigPrefix = this._config.apiConfig!.prefix;
+    if (apiRouteConfigPrefix) {
+      this._config.apiConfig!.prefix = path.resolve('/', apiRouteConfigPrefix);
+    }
     // set history to a specific value
     if (history === 'auto') {
       this._config.router.history = ssr ? 'browser' : 'hash';
@@ -190,38 +189,42 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.setPlatformModule(module);
   }
 
-  async setPageRoutes(routes: IUserRouteConfig[]): Promise<void>;
-  async setPageRoutes(routes: IRouteRecord[], rename: boolean): Promise<void>;
-  async setPageRoutes(routes: IRouteRecord[], rename?: boolean): Promise<void> {
-    let pageRoutes = [];
-    if (rename) {
-      pageRoutes = renameFilepathToComponent(routes);
-    } else {
-      pageRoutes = routes;
-    }
-    pageRoutes = await this.callHook<APIHooks.IHookAppRoutes>({
+  async setRoutes(routes: Runtime.IUserRouteConfig[]): Promise<void> {
+    routes = await this.callHook<APIHooks.IHookAppRoutes>({
       name: 'app:routes',
-      initialValue: pageRoutes
+      initialValue: routes
     });
 
-    pageRoutes = normalizeRoutes(pageRoutes, {
+    routes = normalizeRoutes(routes, {
       componentDir: this.paths.pagesDir
     });
-    pageRoutes.push({
+    routes.push({
       path: ':other(.*)',
       component: this.resolveAppFile('core', '404'),
       name: ROUTE_NOT_FOUND_NAME
     });
 
-    this._pageRoutes = pageRoutes;
-
-    const serialized = serializeRoutes(pageRoutes);
-    const pageRoutesContent = `export default ${serialized}`;
-    this._projectBuilder.setPageRoutesContent(pageRoutesContent);
+    this._routes = routes;
+    const serialized = serializeRoutes(routes);
+    const RoutesContent = `export default ${serialized}`;
+    this._projectBuilder.setRoutesContent(RoutesContent);
   }
 
-  getPageRoutes() {
-    return this._pageRoutes;
+  getRoutes() {
+    return this._routes;
+  }
+
+  async setApiRoutes(apiRoutes: Runtime.IApiRouteConfig[]): Promise<void> {
+    apiRoutes = normalizeApiRoutes(apiRoutes, {
+      apisDir: this.paths.apisDir
+    });
+
+    const { prefix } = this.config.apiConfig || {};
+
+    const serialized = serializeApiRoutes(apiRoutes, prefix);
+
+    let content = `export default ${serialized}`;
+    this._projectBuilder.setApiRoutesContent(content);
   }
 
   async buildApp(): Promise<void> {
