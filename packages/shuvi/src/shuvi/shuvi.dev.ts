@@ -39,6 +39,7 @@ export default class ShuviDev extends Base {
       `${api.assetPublicPath}:path(.*)`,
       this._publicDirMiddleware
     );
+    api.server.use(this.apiRoutesHandler);
     api.server.use(this._pageMiddleware);
   }
 

@@ -4,13 +4,10 @@ import { PluginApi } from './pluginApi';
 export type IBuiltResource = {
   server: {
     server: Runtime.IServerModule;
+    apiRoutes: Runtime.IApiRouteConfig[];
     application: Runtime.IApplicationModule;
     document: Partial<Runtime.IDocumentModule>;
     view: Runtime.IViewServer;
-    matchRoutes(
-      routes: Runtime.IUserRouteConfig[],
-      pathname: string
-    ): Runtime.IMatchedRoute<Runtime.IUserRouteConfig>[];
   };
   documentTemplate: any;
   clientManifest: Bundler.IManifest;

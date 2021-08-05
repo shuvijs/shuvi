@@ -1,4 +1,5 @@
 import { IRouteRecord } from '@shuvi/router';
+
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
   name?: string;

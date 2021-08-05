@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { IUserRouteConfig } from '../route/route';
+import { Runtime } from '@shuvi/types';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { IRouteRecord } from '@shuvi/router';
 
@@ -8,14 +8,17 @@ export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
 };
 
-type RouteKeysWithoutChildren = keyof Omit<IUserRouteConfig, 'children'>;
+type RouteKeysWithoutChildren = keyof Omit<
+  Runtime.IUserRouteConfig,
+  'children'
+>;
 
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
 export function serializeRoutes(
-  routes: IUserRouteConfig[],
+  routes: Runtime.IUserRouteConfig[],
   parentPath: string = ''
 ): string {
   let res = '';
@@ -54,13 +57,13 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
 
 export function renameFilepathToComponent(
   routes: IRouteRecord[]
-): IUserRouteConfig[] {
-  const res: IUserRouteConfig[] = [];
+): Runtime.IUserRouteConfig[] {
+  const res: Runtime.IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const { path, filepath, children } = routes[index];
     const route = {
       path
-    } as IUserRouteConfig;
+    } as Runtime.IUserRouteConfig;
 
     if (filepath) {
       route.component = filepath;
@@ -71,14 +74,14 @@ export function renameFilepathToComponent(
     }
     res.push(route);
   }
-  return (res as unknown) as IUserRouteConfig[];
+  return res;
 }
 
 export function normalizeRoutes(
-  routes: IUserRouteConfig[],
+  routes: Runtime.IUserRouteConfig[],
   option: { componentDir: string }
-): IUserRouteConfig[] {
-  const res: IUserRouteConfig[] = [];
+): Runtime.IUserRouteConfig[] {
+  const res: Runtime.IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
     if (route.component) {

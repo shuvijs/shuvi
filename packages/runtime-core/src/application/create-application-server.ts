@@ -1,5 +1,5 @@
 import AppComponent from '@shuvi/app/core/app';
-import routes from '@shuvi/app/core/pageRoutes';
+import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 import initPlugins from '@shuvi/app/user/plugin';
 import { pluginRecord } from '@shuvi/app/core/plugins';

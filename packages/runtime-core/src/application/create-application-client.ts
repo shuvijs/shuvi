@@ -1,5 +1,5 @@
 import AppComponent from '@shuvi/app/core/app';
-import routes from '@shuvi/app/core/pageRoutes';
+import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 import initPlugins from '@shuvi/app/user/plugin';
 import { pluginRecord } from '@shuvi/app/core/plugins';
@@ -44,13 +44,13 @@ if (module.hot) {
     [
       '@shuvi/app/entry.client',
       '@shuvi/app/core/app',
-      '@shuvi/app/core/pageRoutes',
+      '@shuvi/app/core/routes',
       '@shuvi/app/user/plugin'
     ],
     async () => {
       const rerender = () => {
         const AppComponent = require('@shuvi/app/core/app').default;
-        const routes = require('@shuvi/app/core/pageRoutes').default;
+        const routes = require('@shuvi/app/core/routes').default;
         const router = createRouter({
           history,
           routes: getRoutes(routes, appContext)

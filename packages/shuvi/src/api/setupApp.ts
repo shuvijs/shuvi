@@ -1,9 +1,11 @@
-import { Route } from '../route';
+import path from 'path';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import path from 'path';
+import { renameFilepathToComponent } from '../lib/routes';
+import { renameFilepathToModule } from '../lib/apiRoutes';
+import { Route } from '../route';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
-import resolveRuntimCoreFile from '../lib/resolveRuntimCoreFile';
+import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
 import { Api } from './api';
 function withExts(file: string, extensions: string[]): string[] {
   return extensions.map(ext => `${file}.${ext}`);
@@ -86,19 +88,19 @@ export async function setupApp(api: Api) {
   }
   api.setRuntimeCoreModule({
     client: {
-      application: resolveRuntimCoreFile(
+      application: resolveRuntimeCoreFile(
         'application',
         'create-application-client'
       ),
-      history: resolveRuntimCoreFile('application', 'history', historyModule),
-      entry: resolveRuntimCoreFile('entry', 'client', 'index')
+      history: resolveRuntimeCoreFile('application', 'history', historyModule),
+      entry: resolveRuntimeCoreFile('entry', 'client', 'index')
     },
     server: {
-      application: resolveRuntimCoreFile(
+      application: resolveRuntimeCoreFile(
         'application',
         ssr ? 'create-application-server' : 'create-application-server-spa'
       ),
-      entry: resolveRuntimCoreFile('entry', 'server', 'index')
+      entry: resolveRuntimeCoreFile('entry', 'server', 'index')
     }
   });
 
@@ -119,7 +121,7 @@ export async function setupApp(api: Api) {
   );
 
   api.addAppExport(
-    resolveRuntimCoreFile('helper/getPageData'),
+    resolveRuntimeCoreFile('helper/getPageData'),
     '{ getPageData }'
   );
   // don not use absolute path, this module would't be bundled
@@ -128,18 +130,33 @@ export async function setupApp(api: Api) {
     '{ default as getRuntimeConfig }'
   );
 
-  const { pageRoutes } = api.config;
-  if (Array.isArray(pageRoutes) && pageRoutes.length) {
-    await api.setPageRoutes(pageRoutes);
+  const { routes } = api.config;
+  if (Array.isArray(routes) && routes.length) {
+    await api.setRoutes(routes);
   } else {
-    const route = new Route(paths.pagesDir);
+    const route = new Route(paths.pagesDir, false);
     if (api.mode === 'development') {
-      route.subscribe(routes => {
-        api.setPageRoutes(routes, true);
+      route.subscribe(tempRoutes => {
+        api.setRoutes(renameFilepathToComponent(tempRoutes));
       });
     } else {
-      const routes = await route.getRoutes();
-      await api.setPageRoutes(routes, true);
+      const tempRoutes = await route.getRoutes();
+      await api.setRoutes(renameFilepathToComponent(tempRoutes));
+    }
+  }
+
+  const { apiRoutes } = api.config;
+  if (Array.isArray(apiRoutes) && apiRoutes.length) {
+    await api.setApiRoutes(apiRoutes);
+  } else {
+    const apiRoute = new Route(paths.apisDir, true);
+    if (api.mode === 'development') {
+      apiRoute.subscribe(tempApiRoutes => {
+        api.setApiRoutes(renameFilepathToModule(tempApiRoutes));
+      });
+    } else {
+      const tempApiRoutes = await apiRoute.getRoutes();
+      await api.setApiRoutes(renameFilepathToModule(tempApiRoutes));
     }
   }
 }

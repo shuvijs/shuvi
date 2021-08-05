@@ -1,12 +1,11 @@
 import { getType, isFunction } from '@shuvi/utils';
+import { IRequest, IResponse } from '@shuvi/types';
 import invariant from '@shuvi/utils/lib/invariant';
 import { matchPathname } from '@shuvi/router';
 import {
   IRequestHandlerWithNext,
   IErrorHandlerWithNext,
   IMiddlewareHandler,
-  IRequest,
-  IResponse,
   INextFunc
 } from './serverTypes';
 

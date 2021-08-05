@@ -6,6 +6,7 @@ import * as Runtime from './src/runtime';
 import * as Bundler from './src/bundler';
 import * as APIHooks from './src/hooks';
 export * from './src/application';
+export * from './src/apiRoute';
 export { webpack, WebpackChain };
 export { IHookable, Hookable };
 interface ITemplateData {
@@ -28,6 +29,9 @@ export interface IPaths {
 
   // functional dirs
   pagesDir: string;
+
+  // api dirs
+  apisDir: string;
 
   publicDir: string;
 }
@@ -69,7 +73,17 @@ export interface IApiConfig {
   router: {
     history: IRouterHistoryMode;
   };
-  pageRoutes?: Runtime.IUserRouteConfig[];
+  routes?: Runtime.IUserRouteConfig[]; // generate by files what under src/pages or user defined
+  apiRoutes?: Runtime.IApiRouteConfig[]; // generate by files what under src/apis or user defined
+  apiConfig?: {
+    prefix?: string;
+    /**
+     * The byte limit of the body. This is the number of bytes or any string
+     * format supported by `bytes`, for example `1000`, `'500kb'` or `'3mb'`
+     * default is 1mb.
+     */
+    bodyParser?: { sizeLimit: number | string } | boolean;
+  };
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
   proxy?: any;

@@ -1,15 +1,31 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { IShuviMode, APIHooks, Runtime } from '@shuvi/types';
+import {
+  IShuviMode,
+  APIHooks,
+  Runtime,
+  IRequest,
+  IResponse
+} from '@shuvi/types';
+import { matchPathname } from '@shuvi/router';
 import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
-import { IRequest, IResponse, INextFunc } from '../server';
+import { apiRouteHandler, IApiRequestHandler } from '../lib/apiRouteHandler';
+import { INextFunc, IRequestHandlerWithNext } from '../server';
 import { IConfig } from '../config';
 
 export interface IShuviConstructorOptions {
   cwd: string;
   config: IConfig;
   configFile?: string;
+}
+interface IApiModule {
+  default: IApiRequestHandler;
+  config?: {
+    apiConfig?: {
+      bodyParser?: { sizeLimit: number | string } | boolean;
+    };
+  };
 }
 
 export default abstract class Shuvi {
@@ -64,6 +80,45 @@ export default abstract class Shuvi {
 
     return html;
   }
+
+  protected apiRoutesHandler: IRequestHandlerWithNext = async (
+    req,
+    res,
+    next
+  ) => {
+    const { apiRoutes } = this._api.resources.server;
+    const { prefix, ...otherConfig } = this._api.config.apiConfig || {};
+    if (!req.url.startsWith(prefix!)) {
+      return next();
+    }
+    let tempApiModule;
+    for (const { path, apiModule } of apiRoutes) {
+      const match = matchPathname(path, req.pathname);
+      if (match) {
+        req.params = match.params;
+        tempApiModule = apiModule;
+        break;
+      }
+    }
+    if (tempApiModule) {
+      try {
+        const {
+          config: { apiConfig = {} } = {},
+          default: resolver
+        } = (tempApiModule as unknown) as IApiModule;
+        let overridesConfig = {
+          ...otherConfig,
+          ...apiConfig
+        };
+
+        await apiRouteHandler(req, res, resolver, overridesConfig);
+      } catch (error) {
+        next(error);
+      }
+    } else {
+      next();
+    }
+  };
 
   async close() {
     await this._api.destory();

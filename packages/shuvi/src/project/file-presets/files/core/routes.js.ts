@@ -1,5 +1,5 @@
 import { ProjectContext } from '../../../projectContext';
 
 export default {
-  content: (context: ProjectContext) => context.pageRoutesContent
+  content: (context: ProjectContext) => context.routesContent
 };

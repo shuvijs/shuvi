@@ -1,7 +1,8 @@
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { applyHttpProxyMiddleware } from '../httpProxyMiddleware';
-import { Server, IRequest, IResponse, INextFunc } from '../../server';
+import { IRequest, IResponse } from '@shuvi/types';
+import { Server, INextFunc } from '../../server';
 
 const host = 'localhost';
 
