@@ -1,7 +1,6 @@
 import got from 'got';
 import { AppCtx, launchFixture, resolveFixture } from '../utils';
 import { readFileSync, writeFileSync } from 'fs';
-// import { join } from 'path';
 
 let ctx: AppCtx;
 let stderr = '';
@@ -494,16 +493,6 @@ describe('apiRoutes development', () => {
     const res = await got(ctx.url(apiURL));
     expect(stderr).toContain(
       `API resolved without sending a response for ${apiURL}, this may result in stalled requests.`
-    );
-    expect(res.body).toBe('hello world');
-  });
-
-  test('should not show warning if using externalResolver flag', async () => {
-    const startIdx = stderr.length > 0 ? stderr.length - 1 : stderr.length;
-    const apiURL = '/api/external-resolver';
-    const res = await got(ctx.url(apiURL));
-    expect(stderr.substr(startIdx)).not.toContain(
-      `API resolved without sending a response for ${apiURL}`
     );
     expect(res.body).toBe('hello world');
   });

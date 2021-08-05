@@ -73,21 +73,16 @@ export interface IApiConfig {
   router: {
     history: IRouterHistoryMode;
   };
-  pageRoutes?: Runtime.IUserRouteConfig[];
-  apiRoutes?: Runtime.IApiRouteConfig[];
-  apiRouteConfig?: {
+  routes?: Runtime.IUserRouteConfig[]; // generate by files what under src/pages or user defined
+  apiRoutes?: Runtime.IApiRouteConfig[]; // generate by files what under src/apis or user defined
+  apiConfig?: {
     prefix?: string;
     /**
      * The byte limit of the body. This is the number of bytes or any string
-     * format supported by `bytes`, for example `1000`, `'500kb'` or `'3mb'`.
+     * format supported by `bytes`, for example `1000`, `'500kb'` or `'3mb'`
+     * default is 1mb.
      */
-    bodyParser?: { sizeLimit?: number | string } | boolean;
-    /**
-     * Flag to disable warning "API page resolved
-     * without sending a response", due to explicitly
-     * using an external API resolver, like express
-     */
-    externalResolver?: boolean;
+    bodyParser?: { sizeLimit: number | string } | boolean;
   };
   runtimeConfig?: IRuntimeConfig;
   platform?: string;

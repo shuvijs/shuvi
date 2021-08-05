@@ -17,7 +17,7 @@ function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
-export function serializePageRoutes(
+export function serializeRoutes(
   routes: Runtime.IUserRouteConfig[],
   parentPath: string = ''
 ): string {
@@ -46,7 +46,7 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializePageRoutes(childRoutes, fullpath)},\n`;
+      strRoute += `children: ${serializeRoutes(childRoutes, fullpath)},\n`;
     }
 
     res += `{${strRoute}},\n`;
@@ -77,7 +77,7 @@ export function renameFilepathToComponent(
   return res;
 }
 
-export function normalizePageRoutes(
+export function normalizeRoutes(
   routes: Runtime.IUserRouteConfig[],
   option: { componentDir: string }
 ): Runtime.IUserRouteConfig[] {
@@ -93,7 +93,7 @@ export function normalizePageRoutes(
     }
 
     if (route.children && route.children.length > 0) {
-      route.children = normalizePageRoutes(route.children, option);
+      route.children = normalizeRoutes(route.children, option);
     }
     res.push(route);
   }

@@ -1,45 +1,73 @@
-import { IncomingMessage } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import { Stream } from 'stream';
 import querystring from 'querystring';
 import cookie from 'cookie';
 import getRawBody from 'raw-body';
 import contentType from 'content-type';
-import {
-  IRequest,
-  IResponse,
-  IApiRequest,
-  IApiResponse,
-  IApiRouteRequestHandler
-} from '@shuvi/types';
+import { IRequest, IResponse } from '@shuvi/types';
+import { IParams, ParsedQuery } from '@shuvi/router';
+
+export interface IApiReq {
+  pathname: string;
+  query: ParsedQuery;
+  params: IParams;
+  cookies: { [key: string]: string };
+  body?: { [key: string]: any };
+}
+
+export type IApiRequest = IRequest & IApiReq;
+
+type Send<T> = (body: T) => void;
+
+type IApiRes<T = any> = {
+  send: Send<T>;
+  json: Send<T>;
+  status: (statusCode: number) => IResponse;
+  redirect(url: string): IResponse;
+  redirect(status: number, url: string): IResponse;
+};
+
+export type IApiResponse<T = any> = ServerResponse & IApiRes<T>;
+
+export type IApiRequestHandler<T = any> = (
+  req: IApiRequest,
+  res: IApiResponse<T>
+) => void | Promise<void>;
 
 export async function apiRouteHandler(
   req: IRequest,
   res: IResponse,
-  resolver: IApiRouteRequestHandler,
+  resolver: IApiRequestHandler,
   apiRoutesConfig: any
 ): Promise<void> {
-  const apiReq = req as IApiRequest;
-  const apiRes = res as IApiResponse;
-
   try {
-    const { bodyParser, externalResolver = false } = apiRoutesConfig || {};
+    const { bodyParser } = apiRoutesConfig || {};
 
-    // Parsing of cookies
-    apiReq.cookies = getCookieParser(req);
+    const { pathname, query, params } = req;
+
+    const apiReq: IApiReq = {
+      pathname,
+      query,
+      params,
+      // Parsing of cookies
+      cookies: getCookieParser(req)
+    };
 
     // Parsing of body
     if (bodyParser && !apiReq.body) {
       apiReq.body = await parseBody(
-        apiReq,
+        req,
         bodyParser && bodyParser.sizeLimit ? bodyParser.sizeLimit : '1mb'
       );
     }
 
-    apiRes.status = (statusCode: number) => sendStatusCode(apiRes, statusCode);
-    apiRes.send = (data: any) => sendData(apiReq, apiRes, data);
-    apiRes.json = (data: any) => sendJson(apiRes, data);
-    apiRes.redirect = (statusOrUrl: number | string, url?: string) =>
-      redirect(apiRes, statusOrUrl, url);
+    const apiRes: IApiRes = {
+      status: (statusCode: number) => sendStatusCode(res, statusCode),
+      send: (data: any) => sendData(req, res, data),
+      json: (data: any) => sendJson(req, res, data),
+      redirect: (statusOrUrl: number | string, url?: string) =>
+        redirect(res, statusOrUrl, url)
+    };
 
     let wasPiped = false;
 
@@ -49,11 +77,10 @@ export async function apiRouteHandler(
     }
 
     // Call API route method
-    await resolver(apiReq, apiRes);
+    await resolver(Object.assign(req, apiReq), Object.assign(res, apiRes));
 
     if (
       process.env.NODE_ENV !== 'production' &&
-      !externalResolver &&
       !(res.finished || res.headersSent) &&
       !wasPiped
     ) {
@@ -71,7 +98,7 @@ export async function apiRouteHandler(
  * @param req request object
  */
 export async function parseBody(
-  req: IApiRequest,
+  req: IRequest,
   limit: string | number
 ): Promise<any> {
   let contentTypeObj;
@@ -146,10 +173,7 @@ export function getCookieParser(
  * @param res response object
  * @param statusCode `HTTP` status code of response
  */
-export function sendStatusCode(
-  res: IApiResponse,
-  statusCode: number
-): IApiResponse<any> {
+export function sendStatusCode(res: IResponse, statusCode: number): IResponse {
   res.statusCode = statusCode;
   return res;
 }
@@ -161,10 +185,10 @@ export function sendStatusCode(
  * @param url URL of redirect
  */
 export function redirect(
-  res: IApiResponse,
+  res: IResponse,
   statusOrUrl: string | number,
   url?: string
-): IApiResponse<any> {
+): IResponse {
   if (typeof statusOrUrl === 'string') {
     url = statusOrUrl;
     statusOrUrl = 307;
@@ -186,7 +210,7 @@ export function redirect(
  * @param res response object
  * @param body of response
  */
-export function sendData(req: IApiRequest, res: IApiResponse, body: any): void {
+export function sendData(req: IRequest, res: IResponse, body: any): void {
   if (body === null || body === undefined) {
     res.end();
     return;
@@ -227,12 +251,12 @@ export function sendData(req: IApiRequest, res: IApiResponse, body: any): void {
  * @param res response object
  * @param jsonBody of data
  */
-export function sendJson(res: IApiResponse, jsonBody: any): void {
+export function sendJson(req: IRequest, res: IResponse, jsonBody: any): void {
   // Set header to application/json
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
   // Use send to handle request
-  res.send(jsonBody);
+  return sendData(req, res, jsonBody);
 }
 
 /**

@@ -30,7 +30,7 @@ export type ShuviEntryModule = ApplicationModule;
 
 export interface ProjectContext {
   entryCodes: string[];
-  pageRoutesContent: string;
+  routesContent: string;
   apiRoutesContent: string;
   entryWrapperContent: string;
   polyfills: string[];
@@ -55,7 +55,7 @@ export interface ProjectContext {
 export const createProjectContext = () =>
   reactive<ProjectContext>({
     entryCodes: [],
-    pageRoutesContent: 'export default []',
+    routesContent: 'export default []',
     apiRoutesContent: 'export default []',
     entryWrapperContent: '',
     polyfills: [],

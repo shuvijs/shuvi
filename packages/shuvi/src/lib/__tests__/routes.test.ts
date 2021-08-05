@@ -1,6 +1,6 @@
-import { serializePageRoutes, normalizePageRoutes } from '../pageRoutes';
+import { serializeRoutes, normalizeRoutes } from '../routes';
 
-describe('serializePageRoutes', () => {
+describe('serializeRoutes', () => {
   const routes = [
     {
       path: '/',
@@ -18,7 +18,7 @@ describe('serializePageRoutes', () => {
     }
   ];
   test('should work', () => {
-    expect(serializePageRoutes(routes)).toMatchInlineSnapshot(`
+    expect(serializeRoutes(routes)).toMatchInlineSnapshot(`
       "[{id: \\"0042\\",
       path: \\"/\\",
       __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
@@ -46,10 +46,10 @@ describe('serializePageRoutes', () => {
   });
 });
 
-describe('normalizePageRoutes', () => {
+describe('normalizeRoutes', () => {
   describe('component', () => {
     test('should convert relative path to absolute path', () => {
-      const routes = normalizePageRoutes(
+      const routes = normalizeRoutes(
         [
           {
             path: '/a',

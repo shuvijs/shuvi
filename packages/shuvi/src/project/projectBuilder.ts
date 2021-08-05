@@ -30,8 +30,8 @@ class ProjectBuilder {
     });
   }
 
-  setPageRoutesContent(content: string): void {
-    this._projectContext.pageRoutesContent = content;
+  setRoutesContent(content: string): void {
+    this._projectContext.routesContent = content;
   }
 
   setApiRoutesContent(content: string): void {

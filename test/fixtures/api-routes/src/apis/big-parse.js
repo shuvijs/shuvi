@@ -1,5 +1,5 @@
 export const config = {
-  apiRouteConfig: {
+  apiConfig: {
     bodyParser: {
       sizeLimit: '5mb'
     }

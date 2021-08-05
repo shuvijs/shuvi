@@ -22,10 +22,9 @@ export const defaultConfig: IApiConfig = {
   router: {
     history: 'auto'
   },
-  apiRouteConfig: {
+  apiConfig: {
     prefix: '/api',
-    bodyParser: true,
-    externalResolver: false
+    bodyParser: true
   }
 };
 

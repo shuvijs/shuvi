@@ -1,7 +1,9 @@
-import { Route } from '../route';
+import path from 'path';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import path from 'path';
+import { renameFilepathToComponent } from '../lib/routes';
+import { renameFilepathToModule } from '../lib/apiRoutes';
+import { Route } from '../route';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
 import { Api } from './api';
@@ -128,18 +130,18 @@ export async function setupApp(api: Api) {
     '{ default as getRuntimeConfig }'
   );
 
-  const { pageRoutes } = api.config;
-  if (Array.isArray(pageRoutes) && pageRoutes.length) {
-    await api.setPageRoutes(pageRoutes);
+  const { routes } = api.config;
+  if (Array.isArray(routes) && routes.length) {
+    await api.setRoutes(routes);
   } else {
     const route = new Route(paths.pagesDir, false);
     if (api.mode === 'development') {
-      route.subscribe(routes => {
-        api.setPageRoutes(routes, true);
+      route.subscribe(tempRoutes => {
+        api.setRoutes(renameFilepathToComponent(tempRoutes));
       });
     } else {
-      const routes = await route.getRoutes();
-      await api.setPageRoutes(routes, true);
+      const tempRoutes = await route.getRoutes();
+      await api.setRoutes(renameFilepathToComponent(tempRoutes));
     }
   }
 
@@ -147,14 +149,14 @@ export async function setupApp(api: Api) {
   if (Array.isArray(apiRoutes) && apiRoutes.length) {
     await api.setApiRoutes(apiRoutes);
   } else {
-    const route = new Route(paths.apisDir, true);
+    const apiRoute = new Route(paths.apisDir, true);
     if (api.mode === 'development') {
-      route.subscribe(routes => {
-        api.setApiRoutes(routes, true);
+      apiRoute.subscribe(tempApiRoutes => {
+        api.setApiRoutes(renameFilepathToModule(tempApiRoutes));
       });
     } else {
-      const routes = await route.getRoutes();
-      await api.setApiRoutes(routes, true);
+      const tempApiRoutes = await apiRoute.getRoutes();
+      await api.setApiRoutes(renameFilepathToModule(tempApiRoutes));
     }
   }
 }

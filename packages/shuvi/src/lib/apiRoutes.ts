@@ -1,30 +1,28 @@
 import path from 'path';
+import { Runtime } from '@shuvi/types';
 import { IRouteRecord, rankRouteBranches } from '@shuvi/router';
 
-export interface IApiRouteModule {
-  children?: IApiRouteModule[];
-  apiRouteModule?: string;
-  path: string;
-}
-
-type IApiRouteHandlerWithoutChildren = Omit<IApiRouteModule, 'children'>;
+type IApiRouteHandlerWithoutChildren = Omit<
+  Runtime.IApiRouteConfig,
+  'children'
+>;
 
 function flattenApiRoutes(
-  routes: IApiRouteModule[],
+  apiRoutes: Runtime.IApiRouteConfig[],
   branches: IApiRouteHandlerWithoutChildren[] = [],
   parentPath = ''
 ): IApiRouteHandlerWithoutChildren[] {
-  routes.forEach(route => {
-    const { children, apiRouteModule } = route;
+  apiRoutes.forEach(route => {
+    const { children, apiModule } = route;
     let tempPath = path.join(parentPath, route.path);
 
     if (children) {
       flattenApiRoutes(children, branches, tempPath);
     }
-    if (apiRouteModule) {
+    if (apiModule) {
       branches.push({
         path: tempPath,
-        apiRouteModule
+        apiModule
       });
     }
   });
@@ -32,21 +30,25 @@ function flattenApiRoutes(
 }
 
 export function serializeApiRoutes(
-  routes: IApiRouteModule[],
+  apiRoutes: Runtime.IApiRouteConfig[],
   parentPath = ''
 ): string {
-  let apiRoutes = flattenApiRoutes(routes, [], path.resolve('/', parentPath));
-  let rankApiRoutes = apiRoutes.map(
+  let tempApiRoutes = flattenApiRoutes(
+    apiRoutes,
+    [],
+    path.resolve('/', parentPath)
+  );
+  let rankApiRoutes = tempApiRoutes.map(
     apiRoute => [apiRoute.path, apiRoute] as [string, typeof apiRoute]
   );
   rankApiRoutes = rankRouteBranches(rankApiRoutes);
-  apiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
+  tempApiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
   let res = '';
-  for (let index = 0; index < apiRoutes.length; index++) {
-    const { apiRouteModule, path } = apiRoutes[index];
+  for (let index = 0; index < tempApiRoutes.length; index++) {
+    const { apiModule, path } = tempApiRoutes[index];
     let strRoute = `\n{
       path: "${path}",
-      ${apiRouteModule ? `apiRouteModule: require("${apiRouteModule}"),` : ''}
+      ${apiModule ? `apiModule: require("${apiModule}"),` : ''}
     },`;
     res += strRoute;
   }
@@ -54,17 +56,17 @@ export function serializeApiRoutes(
 }
 
 export function renameFilepathToModule(
-  routes: IRouteRecord[]
-): IApiRouteModule[] {
-  const res: IApiRouteModule[] = [];
-  for (let index = 0; index < routes.length; index++) {
-    const { path, filepath, children } = routes[index];
+  apiRoutes: IRouteRecord[]
+): Runtime.IApiRouteConfig[] {
+  const res: Runtime.IApiRouteConfig[] = [];
+  for (let index = 0; index < apiRoutes.length; index++) {
+    const { path, filepath, children } = apiRoutes[index];
     const route = {
       path
-    } as IApiRouteModule;
+    } as Runtime.IApiRouteConfig;
 
     if (filepath) {
-      route.apiRouteModule = filepath;
+      route.apiModule = filepath;
     }
 
     if (children && children.length > 0) {
@@ -76,24 +78,24 @@ export function renameFilepathToModule(
 }
 
 export function normalizeApiRoutes(
-  routes: IApiRouteModule[],
+  apiRoutes: Runtime.IApiRouteConfig[],
   option: { apisDir: string }
-): IApiRouteModule[] {
-  const res: IApiRouteModule[] = [];
-  for (let index = 0; index < routes.length; index++) {
-    const route = { ...routes[index] };
-    if (route.apiRouteModule) {
-      const absPath = path.isAbsolute(route.apiRouteModule)
-        ? route.apiRouteModule
-        : path.resolve(option.apisDir, route.apiRouteModule);
+): Runtime.IApiRouteConfig[] {
+  const res: Runtime.IApiRouteConfig[] = [];
+  for (let index = 0; index < apiRoutes.length; index++) {
+    const apiRoute = { ...apiRoutes[index] };
+    if (apiRoute.apiModule) {
+      const absPath = path.isAbsolute(apiRoute.apiModule)
+        ? apiRoute.apiModule
+        : path.resolve(option.apisDir, apiRoute.apiModule);
 
-      route.apiRouteModule = absPath.replace(/\\/g, '/');
+      apiRoute.apiModule = absPath.replace(/\\/g, '/');
     }
 
-    if (route.children && route.children.length > 0) {
-      route.children = normalizeApiRoutes(route.children, option);
+    if (apiRoute.children && apiRoute.children.length > 0) {
+      apiRoute.children = normalizeApiRoutes(apiRoute.children, option);
     }
-    res.push(route);
+    res.push(apiRoute);
   }
 
   return res;
