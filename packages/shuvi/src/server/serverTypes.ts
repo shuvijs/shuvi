@@ -1,19 +1,9 @@
-import { IncomingMessage, ServerResponse } from 'http';
-import { ParsedQuery, IParams } from '@shuvi/router';
+import { IRequest, IResponse } from '@shuvi/types';
+import { ServerResponse } from 'http';
 
-export type { IncomingMessage, ServerResponse };
-
-export interface IRequest extends IncomingMessage {
-  url: string;
-  pathname: string;
-  query: ParsedQuery;
-  params: IParams;
-}
-export interface IResponse extends ServerResponse {}
+export type IRequestHandler = (req: IRequest, res: ServerResponse) => void;
 
 export type INextFunc = (err?: any) => void;
-
-export type IRequestHandler = (req: IRequest, res: IResponse) => void;
 
 export type IRequestHandlerWithNext = (
   req: IRequest,

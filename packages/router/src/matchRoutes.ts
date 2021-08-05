@@ -54,7 +54,9 @@ function matchRouteBranch<T extends IRouteBaseObject>(
   return matches;
 }
 
-function rankRouteBranches<T extends [string, ...any[]]>(branches: T[]): T[] {
+export function rankRouteBranches<T extends [string, ...any[]]>(
+  branches: T[]
+): T[] {
   if (branches.length <= 1) {
     return branches;
   }
@@ -85,7 +87,7 @@ function rankRouteBranches<T extends [string, ...any[]]>(branches: T[]): T[] {
   return newBranches;
 }
 
-export function flattenRoutes<T extends IRouteBaseObject>(
+function flattenRoutes<T extends IRouteBaseObject>(
   routes: T[],
   branches: IRouteBranch<T>[] = [],
   parentPath = '',

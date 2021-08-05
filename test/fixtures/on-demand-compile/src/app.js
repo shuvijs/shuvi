@@ -1,5 +1,5 @@
 import { App } from '@shuvi/app';
-import routes from '@shuvi/app/core/pageRoutes';
+import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 
 const MyApp = () => <App />;

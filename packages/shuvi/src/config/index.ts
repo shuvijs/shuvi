@@ -21,6 +21,10 @@ export const defaultConfig: IApiConfig = {
   publicPath: PUBLIC_PATH,
   router: {
     history: 'auto'
+  },
+  apiConfig: {
+    prefix: '/api',
+    bodyParser: true
   }
 };
 

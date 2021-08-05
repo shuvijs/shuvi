@@ -1,6 +1,6 @@
 module.exports = {
   ssr: true,
-  pageRoutes: [
+  routes: [
     {
       path: '/',
       exact: true,

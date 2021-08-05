@@ -3,86 +3,128 @@ import { Route } from '../route';
 
 describe('route', () => {
   test('should work', async () => {
-    const route = new Route(resolveFixture('basic'));
+    const route = new Route(resolveFixture('basic'), false);
     const routes = sortByPath(await route.getRoutes());
 
-    expect(routes.length).toBe(3);
-    expect(routes[0]).toMatchObject({
-      path: '/'
-    });
-    expect(routes[0].filepath).toMatch(/index.js$/);
-    expect(routes[1]).toMatchObject({
-      path: '/a'
-    });
-    expect(routes[1].filepath).toMatch(/a.js$/);
-    expect(routes[2]).toMatchObject({
-      path: '/snake-case'
-    });
-    expect(routes[2].filepath).toMatch(/snake-case.js$/);
+    expect(routes).toMatchObject([
+      {
+        path: '/',
+        filepath: resolveFixture('basic/index.js')
+      },
+      {
+        path: '/a',
+        filepath: resolveFixture('basic/a.js')
+      },
+      {
+        path: '/snake-case',
+        filepath: resolveFixture('basic/snake-case.js')
+      }
+    ]);
   });
 
   test('should work for nested dir', async () => {
-    const route = new Route(resolveFixture('nest'));
+    const route = new Route(resolveFixture('nest'), false);
     const routes = sortByPath(await route.getRoutes());
 
-    expect(routes.length).toBe(2);
-    expect(routes[0]).toMatchObject({
-      path: '/'
-    });
-    expect(routes[0].filepath).toMatch(/index.js$/);
-    expect(routes[1]).toMatchObject({
-      path: '/sub'
-    });
-    expect(routes[1].filepath).toBeUndefined();
-    const subRoutes = routes[1].children;
-    expect(subRoutes[0]).toMatchObject({
-      path: '/a'
-    });
-    expect(subRoutes[0].filepath).toMatch(/sub\/a.js$/);
-
-    expect(subRoutes[1]).toMatchObject({
-      path: '/'
-    });
-    expect(subRoutes[1].filepath).toMatch(/sub\/index.js$/);
+    expect(routes).toMatchObject([
+      {
+        path: '/',
+        filepath: resolveFixture('nest/index.js')
+      },
+      {
+        path: '/sub',
+        children: [
+          {
+            path: '/a',
+            filepath: resolveFixture('nest/sub/a.js')
+          },
+          {
+            path: '/',
+            filepath: resolveFixture('nest/sub/index.js')
+          }
+        ]
+      }
+    ]);
   });
 
-  test('should generate layout route', async () => {
-    const route = new Route(resolveFixture('layout'));
+  test('should generate layout route with false', async () => {
+    const route = new Route(resolveFixture('layout'), false);
     const routes = sortByPath(await route.getRoutes());
 
-    expect(routes.length).toBe(2);
-    expect(routes[0]).toMatchObject({
-      path: '/'
-    });
-    expect(routes[0].filepath).toMatch(/index.js$/);
-    expect(routes[1]).toMatchObject({
-      path: '/b'
-    });
-    expect(routes[1].filepath).toMatch(/b\/_layout.js$/);
+    expect(routes).toMatchObject([
+      {
+        path: '/',
+        filepath: resolveFixture('layout/index.js')
+      },
+      {
+        path: '/b',
+        filepath: resolveFixture('layout/b/_layout.js'),
+        children: [
+          {
+            path: '/b_1',
+            filepath: resolveFixture('layout/b/b_1.js')
+          },
+          {
+            path: '/c',
+            filepath: resolveFixture('layout/b/c/_layout.js'),
+            children: [
+              {
+                path: '/',
+                filepath: resolveFixture('layout/b/c/index.js')
+              }
+            ]
+          },
+          {
+            path: '/',
+            filepath: resolveFixture('layout/b/index.js')
+          }
+        ]
+      }
+    ]);
+  });
+  test('should generate layout route with true', async () => {
+    const route = new Route(resolveFixture('layout'), true);
+    const routes = sortByPath(await route.getRoutes());
 
-    const b = routes[1];
-    expect(b.children.length).toBe(3);
-
-    const [b1, c, bIndex] = b.children;
-    expect(b1).toMatchObject({
-      path: '/b_1'
-    });
-    expect(b1.filepath).toMatch(/b\/b_1.js$/);
-    expect(bIndex).toMatchObject({
-      path: '/'
-    });
-    expect(bIndex.filepath).toMatch(/b\/index.js$/);
-
-    expect(c).toMatchObject({
-      path: '/c'
-    });
-    expect(c.filepath).toMatch(/b\/c\/_layout.js$/);
-
-    const [cIndex] = c.children;
-
-    expect(cIndex).toMatchObject({
-      path: '/'
-    });
-    expect(cIndex.filepath).toMatch(/b\/c\/index.js$/);
+    expect(routes).toMatchObject([
+      {
+        path: '/',
+        filepath: resolveFixture('layout/index.js')
+      },
+      {
+        path: '/_layout',
+        filepath: resolveFixture('layout/_layout.js')
+      },
+      {
+        path: '/b',
+        children: [
+          {
+            path: '/_layout',
+            filepath: resolveFixture('layout/b/_layout.js')
+          },
+          {
+            path: '/b_1',
+            filepath: resolveFixture('layout/b/b_1.js')
+          },
+          {
+            path: '/c',
+            children: [
+              {
+                path: '/_layout',
+                filepath: resolveFixture('layout/b/c/_layout.js')
+              },
+              {
+                path: '/',
+                filepath: resolveFixture('layout/b/c/index.js')
+              }
+            ]
+          },
+          {
+            path: '/',
+            filepath: resolveFixture('layout/b/index.js')
+          }
+        ]
+      }
+    ]);
   });
 });

@@ -1,6 +1,7 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import { UrlWithParsedQuery } from 'url';
-import { IUserRouteConfig, IAppRouteConfig } from './route';
+import { IUserRouteConfig, IAppRouteConfig } from './pageRoute';
+import { IApiRouteConfig } from './apiRoute';
 
 import {
   IApplication,
@@ -28,6 +29,7 @@ interface ITemplateData {
 export {
   IUserRouteConfig,
   IAppRouteConfig,
+  IApiRouteConfig,
   IApplication,
   IAppPlugin,
   IInitAppPlugins,
