@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "strict": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "module": "commonjs",
+    "downlevelIteration": true,
+    "outDir": "lib",
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "stripInternal": true,
+    "noUnusedLocals": false,
+  },
+  "include": ["src/lib"]
+}

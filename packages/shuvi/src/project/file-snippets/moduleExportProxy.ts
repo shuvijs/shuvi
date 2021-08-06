@@ -43,8 +43,7 @@ export default (source: string | string[], defaultExport?: boolean): string => {
 
   let statements: string[] = [];
   if (defaultExport) {
-    statements.push(`import temp from "${fileState.file}"`);
-    statements.push(`export default temp`);
+    statements.push(`export { default } from "${fileState.file}"`);
   } else {
     statements.push(`export * from "${fileState.file}"`);
   }

@@ -15,8 +15,11 @@
       "@shuvi/runtime-core/lib/*": [
         "packages/runtime-core/src/*"
       ],
-      "@shuvi/runtime-react/lib/*": [
-        "packages/runtime-react/src/*"
+      "@shuvi/platform-react/lib/*": [
+        "packages/platform-react/src/*"
+      ],
+      "@shuvi/platform-taro/lib/*": [
+        "packages/platform-taro/src/*"
       ],
       "@shuvi/shared/lib/*": [
         "packages/shared/src/*"

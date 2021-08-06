@@ -72,6 +72,7 @@ export interface IApiConfig {
   pageRoutes?: Runtime.IUserRouteConfig[];
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
+  noServer?: boolean;
   proxy?: any;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
@@ -79,6 +80,25 @@ export interface IApiConfig {
   asyncEntry?: boolean;
 }
 
+interface FileSnippets {
+  tsDeclareModule: (
+    exports: { [source: string]: string | string[] },
+    typeName: string
+  ) => string;
+  exportsFromObject: (exports: { [source: string]: string[] }) => string;
+  moduleExportProxy: (
+    source: string | string[],
+    defaultExport?: boolean
+  ) => string;
+  moduleExportProxyCreater: () => {
+    getContent: (source: string | string[], defaultExport?: boolean) => string;
+    mounted: () => void;
+    unmounted: () => void;
+  };
+}
+interface ApiHelpers {
+  fileSnippets: FileSnippets;
+}
 // api for plugins
 export interface IApi extends IHookable {
   readonly mode: IShuviMode;
@@ -86,6 +106,7 @@ export interface IApi extends IHookable {
   readonly config: IApiConfig;
   readonly phase: IPhase;
   readonly clientManifest: Bundler.IManifest;
+  readonly helpers: ApiHelpers;
 
   addEntryCode: any;
   addAppFile: any;

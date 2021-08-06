@@ -15,7 +15,8 @@ import {
   ProjectBuilder,
   UserModule,
   RuntimeCoreModule,
-  FileOptions
+  FileOptions,
+  fileSnippets
 } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
@@ -67,6 +68,7 @@ class Api extends Hookable implements IApi {
   private _phase: IPhase;
   private _runtime!: Runtime.IRuntime;
   private _runtimeDir!: string;
+  helpers: IApi['helpers'];
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
@@ -81,7 +83,7 @@ class Api extends Hookable implements IApi {
     this._cwd = path.resolve(cwd || '.');
     this._configFile = configFile;
     this._userConfig = config;
-
+    this.helpers = { fileSnippets };
     if (phase) {
       this._phase = phase;
     } else {
@@ -134,6 +136,13 @@ class Api extends Hookable implements IApi {
     // set history to a specific value
     if (history === 'auto') {
       this._config.router.history = ssr ? 'browser' : 'hash';
+    }
+    // set default platform
+    if (!this._config.platform) {
+      this._config.platform = 'react';
+    }
+    if (['taro'].includes(this._config.platform)) {
+      this._config.noServer = true;
     }
     const { runtime, runtimeDir } = initRuntime(this.config.platform);
     this._runtime = runtime;
