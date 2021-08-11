@@ -1,7 +1,7 @@
 import { resolve, dirname, join } from 'path';
 
 export const PACKAGE_DIR = dirname(
-  require.resolve('@shuvi/runtime-react/package.json')
+  require.resolve('@shuvi/platform-react/package.json')
 );
 
 export const resolveAppFile = (...paths: string[]) =>

@@ -1,10 +1,10 @@
 {
-  "name": "@shuvi/runtime-react",
+  "name": "@shuvi/platform-taro",
   "version": "0.0.1-rc.32",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
-    "directory": "packages/runtime-react"
+    "directory": "packages/platform-taro"
   },
   "author": "liximomo",
   "license": "MIT",
@@ -28,18 +28,31 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
+    "@binance/mp-components": "^1.0.1",
+    "@binance/taro-plugin-platform-binance": "^0.0.18",
     "@next/react-refresh-utils": "10.0.5",
     "@shuvi/app": "^0.0.1-rc.32",
     "@shuvi/router-react": "^0.0.1-rc.32",
     "@shuvi/shared": "^0.0.1-rc.32",
     "@shuvi/utils": "^0.0.1-rc.32",
+    "@tarojs/react": "^3.3.2",
+    "@tarojs/runtime": "^3.3.1",
     "react": "16.13.0",
     "react-app-polyfill": "2.0.0",
     "react-dom": "16.13.0",
     "react-refresh": "0.9.0",
-    "use-subscription": "1.4.1"
+    "use-subscription": "1.4.1",
+    "webpack": "5.36.0"
   },
   "devDependencies": {
-    "@shuvi/types": "^0.0.1-rc.32"
+    "@shuvi/types": "^0.0.1-rc.32",
+    "@tarojs/mini-runner": "^3.3.2",
+    "@types/esm": "^3.2.0",
+    "copy-webpack-plugin": "^9.0.1",
+    "esm": "^3.2.25",
+    "less-loader": "^10.0.1",
+    "postcss-loader": "^6.1.1",
+    "sass-loader": "^12.1.0",
+    "url-loader": "^4.1.1"
   }
 }
