@@ -13,7 +13,7 @@ export function config(api: IApi) {
   const resolveUser = (m: string) =>
     path.join(api.paths.rootDir, 'node_modules', m);
   api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
-    name: 'runtime-react',
+    name: 'platform-react',
     fn: (config, { name }) => {
       // const oriExternal = config.get("externals");
       // const external: webpack.ExternalsFunctionElement = (
@@ -22,8 +22,8 @@ export function config(api: IApi) {
       //   callback
       // ) => {
       //   const externals = [
-      //     /@shuvi[/\/]runtime-react[/\/]lib[/\/]loadble/,
-      //     /@shuvi[/\/]runtime-react[/\/]es[/\/]loadble/
+      //     /@shuvi[/\/]platform-react[/\/]lib[/\/]loadble/,
+      //     /@shuvi[/\/]platform-react[/\/]es[/\/]loadble/
       //   ];
 
       //   function external() {
@@ -37,7 +37,7 @@ export function config(api: IApi) {
 
       // config.externals(external);
       // make sure we don't have multiple entity of following packages , becasue module variable will fail
-      config.resolve.alias.set('@shuvi/runtime-react', PACKAGE_DIR);
+      config.resolve.alias.set('@shuvi/platform-react', PACKAGE_DIR);
       config.resolve.alias.set(
         '@shuvi/router-react$',
         resolveLocal('@shuvi/router-react')

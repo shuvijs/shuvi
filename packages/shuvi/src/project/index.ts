@@ -1,3 +1,3 @@
 export * from './file-manager';
-export * from './file-snippets';
+export * as fileSnippets from './file-snippets';
 export * from './projectBuilder';
