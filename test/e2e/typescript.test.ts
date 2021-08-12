@@ -1,3 +1,4 @@
+import got from 'got';
 import { AppCtx, Page, launchFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
@@ -22,5 +23,11 @@ describe('TypesSript Suppport', () => {
     expect(await page.$text('[data-test-id="bigInt"]')).toMatch(
       /1000000000000/
     );
+  });
+
+  test('apis should work', async () => {
+    let res;
+    res = await got.get(ctx.url('/api'));
+    expect(JSON.parse(res.body)).toStrictEqual({ data: 'apis index success' });
   });
 });
