@@ -5,13 +5,8 @@ import { PACKAGE_DIR } from '../paths';
 import webpack from 'webpack';
 import fs from 'fs';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
+import LoadChunkPlugin from './plugins/load-chunk-plugin';
 export function config(api: IApi) {
-  const resolveLocal = (m: string, sub?: string) => {
-    const pck = path.dirname(require.resolve(`${m}/package.json`));
-    return sub ? `${pck}/${sub}` : pck;
-  };
-  const resolveUser = (m: string) =>
-    path.join(api.paths.rootDir, 'node_modules', m);
   const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
   const getAllFiles = (
@@ -55,6 +50,13 @@ export function config(api: IApi) {
       });
       config.entryPoints.clear();
       config.optimization.clear();
+      config.output.chunkFilename(
+        `${
+          process.env.NODE_ENV === 'development'
+            ? '[name]'
+            : '[name].[contenthash:8]'
+        }.js`
+      );
       config.merge({
         entry,
         resolve: {
@@ -65,12 +67,12 @@ export function config(api: IApi) {
             // 小程序使用 regenerator-runtime@0.11
             'regenerator-runtime': require.resolve('regenerator-runtime'),
             // 开发组件库时 link 到本地调试，runtime 包需要指向本地 node_modules 顶层的 runtime，保证闭包值 Current 一致
-            //'@tarojs/runtime': require.resolve('@tarojs/runtime')
+            '@tarojs/runtime': require.resolve('@tarojs/runtime'),
             '@binance/mp-service': '@tarojs/taro',
             '@binance/mp-components': '@tarojs/components',
             '@tarojs/components': '@tarojs/components/mini',
             '@binance/mp-api': '@tarojs/api',
-            // make sure only one version of react exsit
+            '@shuvi/platform-taro': PACKAGE_DIR,
             '@tarojs/react': '@tarojs/react',
             'react-dom$': '@tarojs/react',
             // 'react-reconciler$': resolveModule('react-reconciler'),
@@ -93,7 +95,39 @@ export function config(api: IApi) {
           modules: ['node_modules']
         },
         optimization: {
-          sideEffects: true
+          sideEffects: true,
+          runtimeChunk: {
+            name: 'runtime'
+          },
+          splitChunks: {
+            maxInitialRequests: Infinity,
+            minSize: 0,
+            usedExports: true,
+            automaticNameDelimiter: '.',
+            cacheGroups: {
+              common: {
+                name: 'common',
+                chunks: 'all',
+                minChunks: 2,
+                priority: 1
+              },
+              vendors: {
+                name: 'vendors',
+                chunks: 'all',
+                minChunks: 2,
+                test: (module: any) =>
+                  /[\\/]node_modules[\\/]/.test(module.resource),
+                priority: 10
+              },
+              taro: {
+                name: 'taro',
+                chunks: 'all',
+                test: (module: any) =>
+                  /@tarojs[\\/][a-z]+/.test(module.context),
+                priority: 100
+              }
+            }
+          }
         }
       });
 
@@ -109,19 +143,7 @@ export function config(api: IApi) {
         }
       ]);
       config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin);
-      config.resolve.alias.set('@shuvi/platform-react', PACKAGE_DIR);
-      config.resolve.alias.set(
-        '@shuvi/router-react$',
-        resolveLocal('@shuvi/router-react')
-      );
-      config.resolve.alias.set('@shuvi/router$', resolveLocal('@shuvi/router'));
-      // @ts-ignore
-      config.resolve.alias.set('react$', [
-        resolveUser('react'),
-        resolveLocal('react')
-      ]);
-      // @ts-ignore
-      config.resolve.alias.set('react-dom$', require.resolve('@tarojs/react'));
+      config.plugin('LoadChunkPlugin').use(LoadChunkPlugin);
       return config;
     }
   });
