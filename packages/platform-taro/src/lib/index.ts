@@ -34,9 +34,9 @@ class PlatformTaro implements Runtime.IRuntime<any> {
       api.addAppFile({
         name: `${page}.js`,
         content: () => `
+        import { createPageConfig } from '@tarojs/runtime';
         import pageComponent from '${pageFilePath}'
         import pageConfig from '${pageConfigFilePath}'
-        import { createPageConfig } from '@tarojs/runtime';
         const inst = Page(createPageConfig(pageComponent, '${page}', {root:{cn:[]}}, pageConfig || {}))
         `
       });
@@ -49,7 +49,7 @@ class PlatformTaro implements Runtime.IRuntime<any> {
       import { createReactApp, window } from '@tarojs/runtime';
       import app from '@shuvi/app/core/app';
       import appConfig from '${api.resolveUserFile('app.config.js')}';
-      import { initPxTransform } from '@tarojs/taro';      
+      import { initPxTransform } from '@tarojs/taro';
       import React from 'react';
       import ReactDOM from 'react-dom';
       window.__taroAppConfig = appConfig;
