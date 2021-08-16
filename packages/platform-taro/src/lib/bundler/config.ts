@@ -4,6 +4,7 @@ import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';
 import webpack from 'webpack';
 import fs from 'fs';
+import resolve from 'resolve';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import LoadChunkPlugin from './plugins/load-chunk-plugin';
 import DomEnvPlugin from './plugins/dom-env-plugin';
@@ -72,6 +73,9 @@ export function config(api: IApi) {
             'regenerator-runtime': require.resolve('regenerator-runtime'),
             // 开发组件库时 link 到本地调试，runtime 包需要指向本地 node_modules 顶层的 runtime，保证闭包值 Current 一致
             '@tarojs/runtime': require.resolve('@tarojs/runtime'),
+            '@tarojs/shared': require.resolve('@tarojs/shared'),
+            '@tarojs/taro': path.dirname(resolve.sync('@tarojs/taro', { basedir: __dirname })),
+            '@tarojs/api': path.dirname(resolve.sync('@tarojs/api', { basedir: __dirname })),
             '@binance/mp-service': '@tarojs/taro',
             '@binance/mp-components': '@tarojs/components',
             '@tarojs/components': '@tarojs/components/mini',
