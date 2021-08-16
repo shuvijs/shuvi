@@ -19,7 +19,7 @@ import {
   BUILD_SERVER_DIR
 } from '../constants';
 import {
-  createWepbackConfig,
+  createWebpackConfig,
   getClientEntry,
   getServerEntry,
   IWebpackConfigOptions
@@ -155,7 +155,7 @@ class WebpackBundler {
   }
 
   private _createConfig(options: IWebpackConfigOptions) {
-    return createWepbackConfig(this._api, options);
+    return createWebpackConfig(this._api, options);
   }
 
   private _watchTarget(name: string, options: WatchTargetOptions = {}) {
@@ -291,7 +291,7 @@ class WebpackBundler {
   private async _getInternalTargets(): Promise<Target[]> {
     const clientWebpackHelpers = webpackHelpers();
     // create base config
-    let clientChain = createWepbackConfig(this._api, {
+    let clientChain = createWebpackConfig(this._api, {
       name: BUNDLER_TARGET_CLIENT,
       node: false,
       entry: getClientEntry(this._api),
@@ -313,7 +313,7 @@ class WebpackBundler {
     );
 
     const serverWebpackHelpers = webpackHelpers();
-    let serverChain = createWepbackConfig(this._api, {
+    let serverChain = createWebpackConfig(this._api, {
       name: BUNDLER_TARGET_SERVER,
       node: true,
       entry: getServerEntry(this._api),

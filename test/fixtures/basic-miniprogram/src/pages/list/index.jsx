@@ -4,6 +4,7 @@ import consoleLogMain from '../../utils/consoleLogMain'
 import consoleLogSubCommon from '../../utils/consoleLogSubCommon'
 import testExcludeFunction from '../../utils/testExcludeFunction'
 import '../../css/sub-common.css'
+import style from './index.scss'
 import subCommonStyles from '../../css/sub-common.module.css'
 import _ from 'lodash'
 
@@ -16,13 +17,14 @@ export default class My extends Component {
 
   render () {
     return (
-      <View 
+      <View
         className={`
           sub-common
           ${subCommonStyles['sub-common-module']}
         `}
         >
         <Text>list page</Text>
+        <Text className={style.test}>list page</Text>
       </View>
     )
   }

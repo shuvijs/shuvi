@@ -6,6 +6,7 @@ import webpack from 'webpack';
 import fs from 'fs';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import LoadChunkPlugin from './plugins/load-chunk-plugin';
+import modifyStyle from './modifyStyle';
 export function config(api: IApi) {
   const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
@@ -50,6 +51,7 @@ export function config(api: IApi) {
       });
       config.entryPoints.clear();
       config.optimization.clear();
+      modifyStyle(config);
       config.output.chunkFilename(
         `${
           process.env.NODE_ENV === 'development'

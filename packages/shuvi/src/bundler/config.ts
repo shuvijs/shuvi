@@ -28,7 +28,7 @@ export interface IWebpackConfigOptions {
   webpackHelpers: IWebpackHelpers;
 }
 
-export function createWepbackConfig(
+export function createWebpackConfig(
   { mode, assetPublicPath, paths, config }: Api,
   { webpackHelpers, ...opts }: IWebpackConfigOptions
 ): WebpackChain {
