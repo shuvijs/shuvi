@@ -8,7 +8,9 @@
   },
   "author": "liximomo",
   "license": "MIT",
-  "sideEffects": false,
+  "sideEffects": [
+    "**/lib/runtime/**"
+  ],
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "files": [
@@ -29,26 +31,19 @@
   },
   "dependencies": {
     "@binance/mp-components": "^1.0.1",
-    "@binance/taro-plugin-platform-binance": "^0.0.18",
-    "@next/react-refresh-utils": "10.0.5",
     "@shuvi/app": "^0.0.1-rc.32",
-    "@shuvi/router-react": "^0.0.1-rc.32",
     "@shuvi/shared": "^0.0.1-rc.32",
+    "@shuvi/toolpack": "^0.0.1-rc.32",
     "@shuvi/utils": "^0.0.1-rc.32",
+    "@tarojs/components": "^3.3.3",
     "@tarojs/react": "^3.3.2",
     "@tarojs/runtime": "^3.3.1",
+    "@tarojs/taro": "^3.3.3",
     "react": "16.13.0",
     "react-app-polyfill": "2.0.0",
-    "react-dom": "16.13.0",
-    "react-refresh": "0.9.0",
-    "use-subscription": "1.4.1"
+    "react-dom": "16.13.0"
   },
   "devDependencies": {
-    "@shuvi/types": "^0.0.1-rc.32",
-    "@tarojs/mini-runner": "^3.3.2",
-    "@types/esm": "^3.2.0",
-    "copy-webpack-plugin": "^9.0.1",
-    "esm": "^3.2.25",
-    "webpack": "5.36.0"
+    "@shuvi/types": "^0.0.1-rc.32"
   }
 }
