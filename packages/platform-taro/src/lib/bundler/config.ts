@@ -6,7 +6,9 @@ import webpack from 'webpack';
 import fs from 'fs';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import LoadChunkPlugin from './plugins/load-chunk-plugin';
+import DomEnvPlugin from './plugins/dom-env-plugin';
 import modifyStyle from './modifyStyle';
+
 export function config(api: IApi) {
   const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
@@ -133,17 +135,7 @@ export function config(api: IApi) {
         }
       });
 
-      config.plugin('provide-tarojs').use(webpack.ProvidePlugin, [
-        {
-          window: ['@tarojs/runtime', 'window'],
-          document: ['@tarojs/runtime', 'document'],
-          navigator: ['@tarojs/runtime', 'navigator'],
-          requestAnimationFrame: ['@tarojs/runtime', 'requestAnimationFrame'],
-          cancelAnimationFrame: ['@tarojs/runtime', 'cancelAnimationFrame'],
-          Element: ['@tarojs/runtime', 'TaroElement'],
-          SVGElement: ['@tarojs/runtime', 'TaroElement']
-        }
-      ]);
+      config.plugin('DomEnvPlugin').use(DomEnvPlugin);
       config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin);
       config.plugin('LoadChunkPlugin').use(LoadChunkPlugin);
       return config;
