@@ -41,11 +41,12 @@ class PlatformTaro implements Runtime.IRuntime<any> {
         `
       });
     });
+    const PACKAGE_NAME = '@shuvi/platform-taro'
 
     api.addAppFile({
       name: 'app.js',
       content: () => `
-      import '@binance/taro-plugin-platform-binance/dist/runtime';
+      import '${PACKAGE_NAME}/lib/runtime';
       import { createReactApp, window } from '@tarojs/runtime';
       import app from '@shuvi/app/core/app';
       import appConfig from '${api.resolveUserFile('app.config.js')}';

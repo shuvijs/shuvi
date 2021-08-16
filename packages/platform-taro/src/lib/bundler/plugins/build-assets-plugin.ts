@@ -1,6 +1,21 @@
 import webpack, { Compiler, Compilation } from 'webpack';
 const { RawSource } = webpack.sources;
 
+const appConfig = {
+  pages: [
+    'pages/index/index',
+    'pages/sub/index',
+    'pages/detail/index',
+    'pages/list/index',
+    'pages/my/index'
+  ],
+  window: {
+    backgroundTextStyle: 'light',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTitleText: 'WeChat',
+    navigationBarTextStyle: 'black'
+  }
+};
 // add extra asset files
 export default class BuildAssetsPlugin {
   constructor() {}
@@ -15,7 +30,7 @@ export default class BuildAssetsPlugin {
         assets => {
           // todo set real file contents by user file
           assets['app.json'] = new RawSource(
-            '{"pages":["pages/index/index","pages/sub/index"],"window":{"backgroundTextStyle":"light","navigationBarBackgroundColor":"#fff","navigationBarTitleText":"WeChat","navigationBarTextStyle":"black"}}',
+            JSON.stringify(appConfig),
             true
           );
           assets['base.bxml'] = new RawSource('', true);
