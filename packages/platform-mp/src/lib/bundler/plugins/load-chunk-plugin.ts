@@ -2,7 +2,7 @@ import webpack, { sources } from 'webpack';
 const PLUGIN_NAME = 'LoadChunksPlugin';
 const commonChunks = ['runtime', 'vendors', 'taro', 'common'];
 const appChunk = 'app.js';
-const taroChunk = 'taro.js'
+const taroChunk = 'taro.js';
 
 export default class TaroLoadChunksPlugin {
   constructor() {}
@@ -36,7 +36,10 @@ export default class TaroLoadChunksPlugin {
                 taroChunk,
                 source =>
                   new sources.RawSource(
-                    (source.source() as string).replace("const isBrowser = typeof document !== 'undefined' && !!document.scripts", 'const isBrowser = false')
+                    (source.source() as string).replace(
+                      "const isBrowser = typeof document !== 'undefined' && !!document.scripts",
+                      'const isBrowser = false'
+                    )
                   )
               );
             }

@@ -340,13 +340,10 @@ class WebpackBundler {
     logger.debug(inspect(clientConfig.resolve?.plugins, { depth: 10 }));
     targets.push({ name: BUNDLER_TARGET_CLIENT, config: clientConfig });
 
-    if (!this._api.config.noServer) {
-      const serverConfig = serverChain.toConfig();
-      console.warn('serverConfig', serverConfig);
-      logger.debug('Server Config');
-      logger.debug(inspect(serverConfig.module, { depth: 10 }));
-      targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
-    }
+    const serverConfig = serverChain.toConfig();
+    logger.debug('Server Config');
+    logger.debug(inspect(serverConfig.module, { depth: 10 }));
+    targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
 
     return targets;
   }

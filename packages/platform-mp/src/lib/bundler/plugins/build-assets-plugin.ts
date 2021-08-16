@@ -29,10 +29,7 @@ export default class BuildAssetsPlugin {
         },
         assets => {
           // todo set real file contents by user file
-          assets['app.json'] = new RawSource(
-            JSON.stringify(appConfig),
-            true
-          );
+          assets['app.json'] = new RawSource(JSON.stringify(appConfig), true);
           assets['base.bxml'] = new RawSource('', true);
           assets['comb.bxml'] = new RawSource(
             `<import src="./base.bxml" />
