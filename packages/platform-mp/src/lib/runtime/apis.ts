@@ -2,62 +2,62 @@ import {
   publicApis,
   promiseApis,
   synchronizedApis,
-  otherApis,
-} from './apis-list'
+  otherApis
+} from './apis-list';
 
-declare const bn: any
-const noop = () => {}
+declare const bn: any;
+const noop = () => {};
 
 function processApis(taro: any) {
   const apis = [
     ...publicApis,
     ...promiseApis,
     ...synchronizedApis,
-    ...otherApis,
-  ]
-  apis.forEach((key) => {
-    console.info(`registering function ${key}`)
+    ...otherApis
+  ];
+  apis.forEach(key => {
+    console.info(`registering function ${key}`);
 
     if (key === 'request') {
       taro.request = (option: any) => {
-        console.log(`call ${key} here with ${option.data}, ${option.url}`)
-        const { data, header, success = noop, fail = noop, ...rest } = option
+        console.log(`call ${key} here with ${option.data}, ${option.url}`);
+        const { data, header, success = noop, fail = noop, ...rest } = option;
         const req = {
           body: data,
           headers: header,
-          ...rest,
-        }
+          ...rest
+        };
 
-        const res = bn.request(req)
+        const res = bn.request(req);
 
         const requestTask = res.then(
           (res: any) => {
             return res.text().then((data: any) => {
-              let dataTxt = data
+              let dataTxt = data;
 
               if (option.dataType && option.dataType.toLowerCase() === 'json') {
-                dataTxt = JSON.parse(data)
+                dataTxt = JSON.parse(data);
               }
               success({
                 data: dataTxt,
                 statusCode: res.status,
-                header: res.headers,
-              })
+                header: res.headers
+              });
               return {
                 data: dataTxt,
                 statusCode: res.status,
-                header: res.headers,
-              }
-            })
+                header: res.headers
+              };
+            });
           },
           (err: any) => {
-            fail(err)
-            return { errMsg: err }
+            fail(err);
+            return { errMsg: err };
           }
-        )
+        );
 
-        return requestTask
-      }
+        return requestTask;
+      };
     } else if (promiseApis.has(key)) {
       // Need to convert APIs into Promise version
       taro[key] = (options: any) => {
@@ -66,32 +66,32 @@ function processApis(taro: any) {
             .apply(bn, [options])
             .then((res: any) => {
               if (options?.success) {
-                options.success(res)
+                options.success(res);
               }
-              resolve(res)
+              resolve(res);
             })
             .catch((error: any) => {
               if (options?.fail) {
-                options.fail(error)
+                options.fail(error);
               }
-              reject(error)
+              reject(error);
             })
             .finally((res: any) => {
               if (options?.complete) {
-                options.complete(res)
+                options.complete(res);
               }
-            })
-        })
-      }
+            });
+        });
+      };
     } else {
       taro[key] = (...args: any[]) => {
-        console.log(`call ${key} here with ${args}`)
-        return bn[key].apply(bn, args)
-      }
+        console.log(`call ${key} here with ${args}`);
+        return bn[key].apply(bn, args);
+      };
     }
-  })
+  });
 }
 
 export function initNativeApi(taro: any) {
-  processApis(taro)
+  processApis(taro);
 }

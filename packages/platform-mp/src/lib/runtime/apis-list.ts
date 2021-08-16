@@ -111,8 +111,8 @@ export const publicApis = new Set([
   'getTabBar',
   'getUpdateManager',
   'hideLoading',
-  'hideToast',
-])
+  'hideToast'
+]);
 
 // 这些 API 都可以设置 success、fail、complete 回调
 // 需要对它们进行 Promise 化
@@ -213,8 +213,8 @@ export const promiseApis = new Set([
   'scanCode',
   'authorize',
   'getSetting',
-  'openSetting',
-])
+  'openSetting'
+]);
 
 // 这些 API 是同步调用，需要转化为同步方法
 export const synchronizedApis = new Set([
@@ -226,8 +226,8 @@ export const synchronizedApis = new Set([
   'getSystemInfoSync',
   'getLaunchOptionsSync',
   'getAccountInfoSync',
-  'getEnterOptionsSync',
-])
+  'getEnterOptionsSync'
+]);
 
 // 需要特殊处理的 API
-export const otherApis = new Set(['request'])
+export const otherApis = new Set(['request']);

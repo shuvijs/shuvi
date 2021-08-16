@@ -2,14 +2,13 @@
 import { IApi, Runtime } from '@shuvi/types';
 import { resolveAppFile, resolveDep, resolveLib } from './paths';
 import { config as configBundler } from './bundler/config';
+import { PACKAGE_NAME } from './constants';
+
 class PlatformTaro implements Runtime.IRuntime<any> {
   _api!: IApi;
+
   async install(api: IApi): Promise<void> {
     this._api = api;
-    /* api.addAppFile({
-      name: 'app.config.js',
-      content: () => api.helpers.fileSnippets.moduleExportProxy(api.resolveUserFile('app.config.js'), true)
-    }); */
 
     // todo parse runtime userAppConfig
     const appConfig = {
@@ -41,7 +40,6 @@ class PlatformTaro implements Runtime.IRuntime<any> {
         `
       });
     });
-    const PACKAGE_NAME = '@shuvi/platform-taro'
 
     api.addAppFile({
       name: 'app.js',
@@ -74,6 +72,7 @@ class PlatformTaro implements Runtime.IRuntime<any> {
       resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }'
     );
+
     configBundler(api);
   }
 }

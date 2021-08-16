@@ -86,7 +86,6 @@ export interface IApiConfig {
   };
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
-  noServer?: boolean;
   proxy?: any;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];

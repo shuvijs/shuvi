@@ -140,9 +140,6 @@ class Api extends Hookable implements IApi {
     if (!this._config.platform) {
       this._config.platform = 'react';
     }
-    if (['taro'].includes(this._config.platform)) {
-      this._config.noServer = true;
-    }
     const { runtime, runtimeDir } = initRuntime(this.config.platform);
     this._runtime = runtime;
     this._runtimeDir = runtimeDir;
