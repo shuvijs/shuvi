@@ -1,7 +1,8 @@
 import webpack, { sources } from 'webpack';
 const PLUGIN_NAME = 'LoadChunksPlugin';
 const commonChunks = ['runtime', 'vendors', 'taro', 'common'];
-const entryChunk = 'app.js';
+const appChunk = 'app.js';
+const taroChunk = 'taro.js'
 
 export default class TaroLoadChunksPlugin {
   constructor() {}
@@ -17,15 +18,25 @@ export default class TaroLoadChunksPlugin {
           },
           () => {
             // require other chunks at the top of app.js
-            const file = compilation.getAsset('app.js');
-            if (file) {
+            const appJs = compilation.getAsset(appChunk);
+            if (appJs) {
               compilation.updateAsset(
-                entryChunk,
+                appChunk,
                 source =>
                   new sources.RawSource(
                     commonChunks
                       .map(name => `require('./${name}');\n`)
                       .join('') + source.source()
+                  )
+              );
+            }
+            const taroJs = compilation.getAsset(taroChunk);
+            if (taroJs) {
+              compilation.updateAsset(
+                taroChunk,
+                source =>
+                  new sources.RawSource(
+                    (source.source() as string).replace("const isBrowser = typeof document !== 'undefined' && !!document.scripts", 'const isBrowser = false')
                   )
               );
             }
