@@ -1,5 +1,3 @@
-import path from 'path';
-import * as fs from 'fs-extra';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { shouldUseRelativeAssetPaths } from '@shuvi/toolpack/lib/webpack/config';
 import { WebpackChain } from '@shuvi/toolpack/lib/webpack/config';
@@ -46,7 +44,6 @@ export default function ensureExtractLoader(config: WebpackChain) {
   const ruleList = ['css-module', 'css', 'scss-module', 'scss'];
   ruleList.forEach(ruleName => {
     const ruleUses = oneOfs.get(ruleName).uses;
-    // console.log('ruleUses', ruleUses)
     // modify test regex
     if (['css-module', 'css'].includes(ruleName)) {
       oneOfs.get(ruleName).test(/\.(css|wxss)$/);
@@ -74,73 +71,7 @@ export default function ensureExtractLoader(config: WebpackChain) {
           ...args,
           sourceMap: true,
           sassOptions: {
-            // outputStyle: 'expanded',
-            fiber: false,
-            importer(
-              url: string,
-              prev: string,
-              done: (...arg: any[]) => void
-            ): any {
-              // 让 sass 文件里的 @import 能解析小程序原生样式文体，如 @import "a.wxss";
-              const extname = path.extname(url);
-              // fix: @import 文件可以不带scss/sass缀，如: @import "define";
-              if (
-                extname === '.scss' ||
-                extname === '.sass' ||
-                extname === '.css' ||
-                !extname
-              ) {
-                return null;
-              } else {
-                const filePath = path.resolve(path.dirname(prev), url);
-                fs.access(filePath, fs.constants.F_OK, err => {
-                  if (err) {
-                    console.log(err);
-                    return null;
-                  } else {
-                    return fs
-                      .readFile(filePath)
-                      .then(res => {
-                        done({ contents: res.toString() });
-                      })
-                      .catch(err => {
-                        console.log(err);
-                        return null;
-                      });
-                  }
-                });
-              }
-            }
-          }
-        };
-      });
-    }
-    const postcssLoader = ruleUses.get('postcss-loader');
-    if (postcssLoader) {
-      const defaultPxtransformOption = {
-        platform: 'weapp',
-        designWidth: 750,
-        deviceRatio: {
-          640: 1.17,
-          750: 1,
-          828: 0.905
-        }
-      };
-      const defaultUrlOption = {
-        limit: 1000,
-        url: 'inline'
-      };
-      postcssLoader.tap(args => {
-        const { sourceMap, postcssOptions } = args;
-        return {
-          sourceMap,
-          postcssOptions: {
-            plugins: [
-              ...postcssOptions.plugins,
-              require('postcss-pxtransform')(defaultPxtransformOption),
-              require('postcss-url')(defaultUrlOption),
-              require('postcss-html-transform')()
-            ]
+            outputStyle: 'expanded'
           }
         };
       });
