@@ -58,3 +58,7 @@ export const webpackHelpers = (): IWebpackHelpers => {
     }
   };
 };
+
+export function shouldUseRelativeAssetPaths(publicPath: string) {
+  return publicPath === './';
+}
