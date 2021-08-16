@@ -44,7 +44,9 @@ export function config(api: IApi) {
         pageFiles = getAllFiles(api.resolveAppFile('files', 'pages'));
       }
       const entry: Record<string, Record<string, any>> = {
-        app: [api.resolveAppFile('files', 'app')]
+        app: [api.resolveAppFile('files', 'app')],
+        comp: [api.resolveAppFile('files', 'comp')],
+        'custom-wrapper': [api.resolveAppFile('files', 'custom-wrapper')]
       };
       pageFiles.forEach(page => {
         entry['pages/' + page.name] = [page.filepath];
@@ -61,6 +63,9 @@ export function config(api: IApi) {
       );
       config.merge({
         entry,
+        output: {
+          globalObject: 'wx'
+        },
         resolve: {
           extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.vue'],
           mainFields: ['browser', 'module', 'jsnext:main', 'main'],

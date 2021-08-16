@@ -10,7 +10,7 @@ export default class Index extends Component {
 
   render () {
     return (
-      <View className='index'>
+      <View className='background-div color-white'>
         <View onClick={() => navigateTo({ url: '/pages/sub/index' })}>
           Go to sub
         </View>

@@ -62,6 +62,22 @@ class PlatformTaro implements Runtime.IRuntime<any> {
     `
     });
 
+    api.addAppFile({
+      name: 'comp.js',
+      content: () => `
+      import { createRecursiveComponentConfig } from '@tarojs/runtime'
+      Component(createRecursiveComponentConfig())
+    `
+    });
+
+    api.addAppFile({
+      name: 'custom-wrapper.js',
+      content: () => `
+      import { createRecursiveComponentConfig } from '@tarojs/runtime'
+      Component(createRecursiveComponentConfig('custom-wrapper'))
+    `
+    });
+
     api.setPlatformModule(resolveAppFile('index'));
     // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
