@@ -56,7 +56,7 @@ export function config(api: IApi) {
       });
       config.entryPoints.clear();
       config.optimization.clear();
-      modifyStyle(config);
+      modifyStyle(config, 'bxss');
       config.output.chunkFilename(
         `${
           process.env.NODE_ENV === 'development'

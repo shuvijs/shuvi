@@ -3,6 +3,7 @@ import { View } from '@binance/mp-components'
 import { navigateTo } from '@binance/mp-service'
 import consoleLogMain from '../../utils/consoleLogMain'
 import './index.scss'
+import style from './test.scss'
 export default class Index extends Component {
   componentDidMount() {
     consoleLogMain()
@@ -11,7 +12,7 @@ export default class Index extends Component {
   render () {
     return (
       <View className='index'>
-        <View onClick={() => navigateTo({ url: '/pages/sub/index' })}>
+        <View className={style.color} onClick={() => navigateTo({ url: '/pages/sub/index' })}>
           Go to sub
         </View>
         <View onClick={() => navigateTo({ url: '/pages/detail/index' })}>
