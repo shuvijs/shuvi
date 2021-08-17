@@ -33,7 +33,7 @@ import { WebpackChain } from '@shuvi/toolpack/lib/webpack/config';
 const miniCssExtractPluginOptions: [MiniCssExtractPlugin.PluginOptions] = [
   {
     filename: function (pathData: any) {
-      return `${pathData.chunk!.name}.wxss`;
+      return `${pathData.chunk!.name}.bxss`;
     }
   }
 ];
@@ -46,7 +46,7 @@ export default function ensureExtractLoader(config: WebpackChain) {
     const ruleUses = oneOfs.get(ruleName).uses;
     // modify test regex
     if (['css-module', 'css'].includes(ruleName)) {
-      oneOfs.get(ruleName).test(/\.(css|wxss)$/);
+      oneOfs.get(ruleName).test(/\.(css|bxss)$/);
     }
     if (ruleUses.get('style-loader')) {
       // replace style-loader to extract-loader
