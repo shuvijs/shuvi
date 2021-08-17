@@ -30,24 +30,27 @@ import { WebpackChain } from '@shuvi/toolpack/lib/webpack/config';
 //     postcss-url // inline-source 已实现
 //     postcss-import import from node_modules // 没有实现，感觉没用
 
-const miniCssExtractPluginOptions: [MiniCssExtractPlugin.PluginOptions] = [
-  {
-    filename: function (pathData: any) {
-      return `${pathData.chunk!.name}.wxss`;
+function generateMiniCssExtractPluginOptions(
+  extension: string
+): [MiniCssExtractPlugin.PluginOptions] {
+  return [
+    {
+      filename: function (pathData: any) {
+        return `${pathData.chunk!.name}.${extension}`;
+      }
     }
-  }
-];
+  ];
+}
 
-export default function ensureExtractLoader(config: WebpackChain) {
+export default function ensureExtractLoader(
+  config: WebpackChain,
+  extension: string = 'bxss'
+) {
   const oneOfs = config.module.rule('main').oneOfs;
   const publicPath = config.output.get('publicPath');
   const ruleList = ['css-module', 'css', 'scss-module', 'scss'];
   ruleList.forEach(ruleName => {
     const ruleUses = oneOfs.get(ruleName).uses;
-    // modify test regex
-    if (['css-module', 'css'].includes(ruleName)) {
-      oneOfs.get(ruleName).test(/\.(css|wxss)$/);
-    }
     if (ruleUses.get('style-loader')) {
       // replace style-loader to extract-loader
       ruleUses
@@ -81,10 +84,13 @@ export default function ensureExtractLoader(config: WebpackChain) {
   const plugins = config.plugins.get('mini-css-extract-plugin');
 
   if (plugins) {
-    plugins.tap(args => miniCssExtractPluginOptions);
+    plugins.tap(args => generateMiniCssExtractPluginOptions(extension));
   } else {
     config
       .plugin('mini-css-extract-plugin')
-      .use(MiniCssExtractPlugin, miniCssExtractPluginOptions);
+      .use(
+        MiniCssExtractPlugin,
+        generateMiniCssExtractPluginOptions(extension)
+      );
   }
 }
