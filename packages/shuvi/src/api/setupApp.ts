@@ -92,8 +92,7 @@ export async function setupApp(api: Api) {
         'application',
         'create-application-client'
       ),
-      history: resolveRuntimeCoreFile('application', 'history', historyModule),
-      entry: resolveRuntimeCoreFile('entry', 'client', 'index')
+      history: resolveRuntimeCoreFile('application', 'history', historyModule)
     },
     server: {
       application: resolveRuntimeCoreFile(
@@ -104,6 +103,9 @@ export async function setupApp(api: Api) {
     }
   });
 
+  api.addEntryCode(
+    `require('${resolveRuntimeCoreFile('entry', 'client', 'index')}')`
+  );
   // set the content of @shuvi/app/entry.client-wrapper.js
   // entry.client-wrapper just import or dynamicly import `entry.client.js`
   let entryFile = "'@shuvi/app/entry.client'";
@@ -131,7 +133,7 @@ export async function setupApp(api: Api) {
   );
 
   const { routes } = api.config;
-  if (Array.isArray(routes) && routes.length) {
+  if (Array.isArray(routes)) {
     await api.setRoutes(routes);
   } else {
     const route = new Route(paths.pagesDir, false);

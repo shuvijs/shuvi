@@ -1,5 +1,5 @@
 //@ts-ignore
-const view = { renderApp: () => {} };
+import view from './view';
 const app = null;
 const page404 = null;
 const getRoutes = (routes: any) => routes;
