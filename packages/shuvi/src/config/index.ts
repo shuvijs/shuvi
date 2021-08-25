@@ -17,6 +17,7 @@ export const defaultConfig: IApiConfig = {
   env: {},
   rootDir: process.cwd(),
   outputPath: 'dist',
+  platform: 'react',
   publicDir: 'public',
   publicPath: PUBLIC_PATH,
   router: {

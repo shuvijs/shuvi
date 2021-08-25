@@ -18,7 +18,6 @@ export interface RuntimeCoreModule {
   client: {
     application: string;
     history: string;
-    entry: string;
   };
   server: {
     application: string;
@@ -66,8 +65,7 @@ export const createProjectContext = () =>
     runtimeCoreModule: {
       client: {
         application: '',
-        history: '',
-        entry: ''
+        history: ''
       },
       server: {
         application: '',

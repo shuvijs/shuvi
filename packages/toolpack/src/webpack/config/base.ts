@@ -121,26 +121,7 @@ export function baseWebpackChain({
       'node_modules',
       ...nodePathList // Support for NODE_PATH environment variable
     ],
-    alias: {
-      '@binance/mp-service': '@tarojs/taro',
-      '@binance/mp-components': '@tarojs/components',
-      '@tarojs/components': '@tarojs/components/mini',
-      '@binance/mp-api': '@tarojs/api',
-      // make sure only one version of react exsit
-      '@tarojs/react': '@tarojs/react',
-      'react-dom$': '@tarojs/react',
-      // 'react-reconciler$': resolveModule('react-reconciler'),
-
-      '@binance/http': path.resolve(
-        __dirname,
-        '../dist/adapters/http/index.js'
-      ),
-      '@binance/fetch': path.resolve(__dirname, '../dist/adapters/fetch.js'),
-      'i18next-browser-languagedetector': path.resolve(
-        __dirname,
-        '../dist/adapters/i18n/LanguageDetector/index.js'
-      )
-    }
+    alias: {}
   });
 
   config.resolveLoader.merge({
