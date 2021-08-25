@@ -1,5 +1,6 @@
 import { getExportsContent } from './helpers';
 import moduleExportProxy, {
+  findFirstExistedFile,
   moduleExportProxyCreater
 } from './moduleExportProxy';
 
@@ -19,5 +20,6 @@ export {
   tsDeclareModule,
   exportsFromObject,
   moduleExportProxy,
-  moduleExportProxyCreater
+  moduleExportProxyCreater,
+  findFirstExistedFile
 };

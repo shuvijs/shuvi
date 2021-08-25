@@ -1,4 +1,7 @@
 import webpack, { sources } from 'webpack';
+import path from 'path';
+import { urlToRequest } from 'loader-utils';
+
 const PLUGIN_NAME = 'LoadChunksPlugin';
 const commonChunks = ['runtime', 'vendors', 'taro', 'common'];
 const appChunk = 'app.js';
@@ -23,13 +26,14 @@ export default class TaroLoadChunksPlugin {
               compilation.updateAsset(
                 appChunk,
                 source =>
-                  new sources.RawSource(
-                    commonChunks
-                      .map(name => `require('./${name}');\n`)
-                      .join('') + source.source()
+                  new sources.ConcatSource(
+                    ...commonChunks.map(name => `require('./${name}');\n`),
+                    source
                   )
               );
             }
+
+            // modify the source code of @tarojs/runtime
             const taroJs = compilation.getAsset(taroChunk);
             if (taroJs) {
               compilation.updateAsset(
@@ -39,6 +43,30 @@ export default class TaroLoadChunksPlugin {
                     (source.source() as string).replace(
                       "const isBrowser = typeof document !== 'undefined' && !!document.scripts",
                       'const isBrowser = false'
+                    )
+                  )
+              );
+            }
+
+            // require other style chunks at app.bxss
+            const appStyle = compilation.getAsset('app.bxss');
+            if (appStyle) {
+              const requiredFiles = compilation
+                .getAssets()
+                .map(asset => asset && asset.name)
+                .filter(name => {
+                  const fileName = path.basename(name, path.extname(name));
+                  return (
+                    /\.bxss$/.test(name) && commonChunks.includes(fileName)
+                  );
+                });
+              compilation.updateAsset(
+                'app.bxss',
+                source =>
+                  new sources.ConcatSource(
+                    source,
+                    ...requiredFiles.map(
+                      file => `\n@import ${JSON.stringify(urlToRequest(file))};`
                     )
                   )
               );

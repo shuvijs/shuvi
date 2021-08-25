@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
+    "lib": ["DOM", "ESNext"],
     "strict": false,
     "strictNullChecks": false,
     "strictFunctionTypes": false,

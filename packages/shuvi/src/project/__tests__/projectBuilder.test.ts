@@ -86,7 +86,7 @@ describe('projectBuilder', () => {
     await wait(0);
 
     checkMatch([
-      ['entry.client.js', /run().*const a=1/s],
+      ['entry.client.js', /run().*const a = 1/s],
       [
         'index.js',
         'export * from "something to export"\nexport * from "export2"'

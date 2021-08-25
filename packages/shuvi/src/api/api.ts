@@ -33,6 +33,7 @@ import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
+import rimraf from 'rimraf';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -136,10 +137,6 @@ class Api extends Hookable implements IApi {
     if (history === 'auto') {
       this._config.router.history = ssr ? 'browser' : 'hash';
     }
-    // set default platform
-    if (!this._config.platform) {
-      this._config.platform = 'react';
-    }
     const { runtime, runtimeDir } = initRuntime(this.config.platform);
     this._runtime = runtime;
     this._runtimeDir = runtimeDir;
@@ -233,8 +230,14 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.setApiRoutesContent(content);
   }
 
+  removeBuiltFiles() {
+    rimraf.sync(this.paths.appDir);
+    rimraf.sync(this.paths.buildDir);
+  }
+
   async buildApp(): Promise<void> {
     await setupApp(this);
+    this.removeBuiltFiles();
     await this._projectBuilder.build(this.paths.appDir);
     this.emitEvent<APIHooks.IEventAppReady>('app:ready');
   }

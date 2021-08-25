@@ -108,6 +108,7 @@ interface FileSnippets {
     mounted: () => void;
     unmounted: () => void;
   };
+  findFirstExistedFile: (files: string[]) => string | null;
 }
 interface ApiHelpers {
   fileSnippets: FileSnippets;

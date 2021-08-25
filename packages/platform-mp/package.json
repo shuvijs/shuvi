@@ -36,9 +36,11 @@
     "@shuvi/toolpack": "^0.0.1-rc.32",
     "@shuvi/utils": "^0.0.1-rc.32",
     "@tarojs/components": "^3.3.3",
+    "@tarojs/helper": "^3.3.3",
     "@tarojs/react": "^3.3.2",
     "@tarojs/runtime": "^3.3.1",
     "@tarojs/taro": "^3.3.3",
+    "md5": "^2.3.0",
     "react": "16.13.0",
     "react-app-polyfill": "2.0.0",
     "react-dom": "16.13.0"

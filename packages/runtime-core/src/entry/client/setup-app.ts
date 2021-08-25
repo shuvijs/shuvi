@@ -20,9 +20,6 @@ const app = create(
   {
     async render({ appContext, AppComponent, router }) {
       const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
-      if (!router) {
-        throw new Error('router not exist');
-      }
       view.renderApp({
         AppComponent: AppComponent,
         router: router as IRouter,

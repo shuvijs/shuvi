@@ -14,6 +14,7 @@ let app: IApplication;
 let history: History;
 let appContext: Runtime.IApplicationCreaterContext;
 export const create: Runtime.ApplicationCreater = function (context, options) {
+  appContext = context;
   // app is a singleton in client side
   if (app) {
     return app;

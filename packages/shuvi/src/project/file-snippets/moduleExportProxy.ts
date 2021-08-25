@@ -2,7 +2,7 @@ import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { reactive } from '../file-manager';
 import fse from 'fs-extra';
 
-const findFirstExistedFile = (files: string[]): string | null => {
+export const findFirstExistedFile = (files: string[]): string | null => {
   for (let index = 0; index < files.length; index++) {
     const file = files[index];
     if (fse.existsSync(file)) {
@@ -15,7 +15,7 @@ const findFirstExistedFile = (files: string[]): string | null => {
 /**
  * This method receive multiple sources input that will be observed and returns a reactive object wrapping the first existed source.
  */
-export const getfirstExistedFilesByOrder = (
+const getfirstExistedFilesByOrder = (
   lookups: string[],
   fallback: string
 ): { file: string } => {
