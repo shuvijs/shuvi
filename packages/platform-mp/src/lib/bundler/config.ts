@@ -1,6 +1,7 @@
 import path from 'path';
-import { IApi, APIHooks } from '@shuvi/types';
+import { IApi, APIHooks, Runtime } from '@shuvi/types';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
+import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
@@ -9,6 +10,7 @@ import DomEnvPlugin from './plugins/dom-env-plugin';
 import modifyStyle from './modifyStyle';
 import {
   resolveAppFile,
+  resolveRouterFile,
   resolveDep,
   resolveLib,
   PACKAGE_RESOLVED
@@ -75,10 +77,24 @@ export function installPlatform(api: IApi) {
     api.addAppFile({
       name: `${page}.js`,
       content: () => `
+        import * as React from 'react';
         import { createPageConfig } from '@tarojs/runtime';
-        import pageComponent from '${pageFile}'
-        const pageConfig = ${JSON.stringify(pageConfig)}
-        const inst = Page(createPageConfig(pageComponent, '${page}', {root:{cn:[]}}, pageConfig || {}))
+        import { addGlobalRoutes, getGlobalRoutes, MpRouter } from '@shuvi/services/router-mp';
+        import pageComponent from '${pageFile}';
+        const pageConfig = ${JSON.stringify(pageConfig)};
+        const pageName = '${page}';
+        addGlobalRoutes(pageName, pageComponent);
+        function MpRouterWrapper(){
+          return (
+            <MpRouter
+              initialEntries={['/' + pageName]}
+              routes={getGlobalRoutes()}
+            >
+            </MpRouter>
+          )
+        };
+        const component = MpRouterWrapper;
+        const inst = Page(createPageConfig(component, pageName, {root:{cn:[]}}, pageConfig || {}))
         `
     });
   });
@@ -94,15 +110,95 @@ export function installPlatform(api: IApi) {
   api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
   api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
   api.addAppExport(resolveAppFile('App'), '{ default as App }');
-  api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
-  api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
+  // api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
+  // api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
   api.addAppExport(
     resolveLib('@shuvi/router-react'),
-    '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }'
+    '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
   );
   api.addEntryCode(`require('${PACKAGE_NAME}/lib/runtime')`);
 
+  api.addAppService(resolveRouterFile('lib', 'index'), '*', 'router-mp.js');
+
   let pageFiles: any[];
+
+  type IUserRouteHandlerWithoutChildren = Omit<
+    Runtime.IUserRouteConfig,
+    'children'
+  >;
+
+  api.tap<APIHooks.IHookAppRoutes>('app:routes', {
+    name: 'mpPathToRoutes',
+    fn: routes => {
+      // map url to component
+      let routesMap: [string, string][] = [];
+      // flatten routes remove children
+      function flattenRoutes(
+        apiRoutes: Runtime.IUserRouteConfig[],
+        branches: IUserRouteHandlerWithoutChildren[] = [],
+        parentPath = ''
+      ): IUserRouteHandlerWithoutChildren[] {
+        apiRoutes.forEach(route => {
+          const { children, component } = route;
+          let tempPath = path.join(parentPath, route.path);
+
+          if (children) {
+            flattenRoutes(children, branches, tempPath);
+          }
+          if (component) {
+            branches.push({
+              path: tempPath,
+              component
+            });
+          }
+        });
+        return branches;
+      }
+
+      function removeConfigPathAddMpPath(
+        routes: IUserRouteHandlerWithoutChildren[]
+      ) {
+        for (let i = routes.length - 1; i >= 0; i--) {
+          const route = routes[i];
+          const { component } = route;
+          if (component) {
+            // remove config path, eg: miniprogram/src/pages/index/index.config.js
+            if (/.*\.config\.\w+$/.test(component)) {
+              routes.splice(i, 1);
+            } else {
+              let tempMpPath = component;
+              if (tempMpPath.startsWith(api.paths.pagesDir)) {
+                // ensure path relate to pagesDir
+                tempMpPath = path.relative(api.paths.pagesDir, tempMpPath);
+                // Remove the file extension from the end
+                tempMpPath = tempMpPath.replace(/\.\w+$/, '');
+              }
+              // ensure path starts with pages
+              if (!tempMpPath.startsWith('pages')) {
+                tempMpPath = path.join('pages', tempMpPath);
+              }
+              if (route.path !== tempMpPath) {
+                // generate routesMap
+                routesMap.push([route.path, tempMpPath]);
+                route.path = tempMpPath;
+              }
+            }
+          }
+        }
+      }
+      routes = flattenRoutes(routes);
+      removeConfigPathAddMpPath(routes);
+      console.log();
+      let rankRoutes = routesMap.map(r => [r[0], r] as [string, typeof r]);
+      rankRoutes = rankRouteBranches(rankRoutes);
+      routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
+      api.addAppFile({
+        name: 'routesMap.js',
+        content: () => `export default ${JSON.stringify(routesMap)}`
+      });
+      return []; // routes file no use, remove it
+    }
+  });
 
   api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
     name: 'platform-mp',
