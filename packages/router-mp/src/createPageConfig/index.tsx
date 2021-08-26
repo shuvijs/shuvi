@@ -19,11 +19,6 @@ import { eventHandler } from './eventHandler';
 import { getGlobalRoutes, addGlobalRoutes } from '../globalRoutes';
 import { MpRouter } from '../mpRouter';
 
-export const incrementId = () => {
-  let id = 0;
-  return () => (id++).toString();
-};
-
 export interface MpInstance {
   config: PageConfig;
   setData: (data: unknown, cb: () => void) => void;
@@ -37,7 +32,6 @@ export interface MpInstance {
 }
 
 const instances = new Map<string, Instance>();
-const pageId = incrementId();
 const hooks = container.get<IHooks>(SERVICE_IDENTIFIER.Hooks);
 
 export function safeExecute(
@@ -67,20 +61,18 @@ export function safeExecute(
 
 export function createPageConfig(
   component: any,
-  pageName?: string,
+  pageName: string,
   data?: Record<string, unknown>,
   pageConfig?: PageConfig
 ) {
-  const id = pageName ?? `taro_page_${pageId()}`;
+  const id = pageName;
   // 小程序 Page 构造器是一个傲娇小公主，不能把复杂的对象挂载到参数上
   let pageElement: TaroRootElement | null = null;
 
   let unmounting = false;
   let prepareMountList: (() => void)[] = [];
-  debugger;
   const config: PageInstance = {
     onLoad(this: MpInstance, options: any, cb?: (...args: any[]) => void) {
-      debugger;
       Current.page = this as any;
       this.config = pageConfig || {};
       options.$taroTimestamp = Date.now();
@@ -245,8 +237,6 @@ export function createPageConfig(
     config.data = data;
   }
 
-  debugger;
-  config.path = id;
   return config;
 }
 
