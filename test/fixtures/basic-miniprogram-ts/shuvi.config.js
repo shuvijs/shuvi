@@ -3,6 +3,5 @@ module.exports = {
   platform: 'mp',
   router: {
     history: 'memory'
-  },
-  routes: []
+  }
 };

@@ -11,8 +11,8 @@ export default class Index extends Component {
   render () {
     return (
       <View className='index'>
-        <View onClick={() => Taro.navigateTo({ url: '/pages/detail/index' })}>
-          Go to detail
+        <View onClick={() => Taro.navigateTo({ url: '/pages/detail/index?query=detail' })}>
+          Go to detail ?query=detail
         </View>
         <View onClick={() => Taro.navigateTo({ url: '/pages/my/index' })}>
           Go to my
