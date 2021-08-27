@@ -61,8 +61,6 @@ export function MpRouter({
       }
       current.query = query;
     }
-
-    console.log(routerRef.current.current);
   }
 
   return (

@@ -40,7 +40,10 @@ export function pathToString({
   hash = '',
   query = {}
 }: PartialPath): string {
-  search = search || `?${qs.stringify(query)}`;
+  if (!search) {
+    const queryString = qs.stringify(query);
+    search = queryString ? `?${queryString}` : '';
+  }
   return pathname + search + hash;
 }
 
