@@ -36,7 +36,7 @@ export const ACTION_PUSH: Action = 'PUSH';
  */
 export const ACTION_REPLACE: Action = 'REPLACE';
 
-interface TransitionOptions {
+export interface TransitionOptions {
   state?: State;
   action?: Action;
   redirectedFrom?: PathRecord;

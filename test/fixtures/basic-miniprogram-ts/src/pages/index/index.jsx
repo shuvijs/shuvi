@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View } from '@binance/mp-components'
-import { navigateTo } from '@binance/mp-service'
+import { navigateTo } from '@binance/mp-service';
+import { Link } from '@shuvi/services/router-mp';
 // import consoleLogMain from '../../utils/consoleLogMain'
 import './index.scss'
 import style from './test.scss'
@@ -8,7 +9,6 @@ export default () => {
   const [o, setO] = useState({ haha: 1234 })
   useEffect(() => {
     console.warn('sdfdsfsdfdf')
-    debugger;
   })
   return (
     <View className='index'>
@@ -24,6 +24,12 @@ export default () => {
       <View onClick={() => navigateTo({ url: '/pages/list/index' })}>
         Go to list
       </View>
+      <View onClick={() => navigateTo({ url: '/pages/list/index' })}>
+        Go to list
+      </View>
+      <Link target={'_blank'} to={'/my/a/b/c?query=query'}>
+        link test /my/a/b/c?query=query
+      </Link>
     </View>
   )
 }
