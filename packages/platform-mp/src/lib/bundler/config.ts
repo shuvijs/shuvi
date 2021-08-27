@@ -48,56 +48,26 @@ function withExts(file: string, extensions: string[]): string[] {
 }
 
 export interface AppConfig extends TaroAppConfig {
+  entryPagePath?: string;
   darkMode: boolean;
 }
 
 export interface PageConfigs {
   [name: string]: Config;
 }
+
 export function installPlatform(api: IApi) {
   const appConfigFile = api.helpers.fileSnippets.findFirstExistedFile([
     ...withExts(api.resolveUserFile('app.config'), moduleFileExtensions)
   ]);
   const appConfig: AppConfig = appConfigFile ? readConfig(appConfigFile) : {};
+
   if (isEmptyObject(appConfig)) {
     throw new Error('缺少 app 全局配置文件，请检查！');
   }
-  const appPages = appConfig.pages;
-  if (!appPages || !appPages.length) {
-    throw new Error('全局配置缺少 pages 字段，请检查！');
-  }
+
+  let appPages: string[] = [];
   const pageConfigs: PageConfigs = {};
-  (appConfig.pages || []).forEach(page => {
-    const pageFile = api.resolveUserFile(`${page}`);
-    const pageConfigFile = api.helpers.fileSnippets.findFirstExistedFile(
-      withExts(api.resolveUserFile(`${page}.config`), moduleFileExtensions)
-    );
-    const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
-    pageConfigs[page] = pageConfig;
-    api.addAppFile({
-      name: `${page}.js`,
-      content: () => `
-        import * as React from 'react';
-        import { createPageConfig } from '@tarojs/runtime';
-        import { addGlobalRoutes, getGlobalRoutes, MpRouter } from '@shuvi/services/router-mp';
-        import pageComponent from '${pageFile}';
-        const pageConfig = ${JSON.stringify(pageConfig)};
-        const pageName = '${page}';
-        addGlobalRoutes(pageName, pageComponent);
-        function MpRouterWrapper(){
-          return (
-            <MpRouter
-              initialEntries={['/' + pageName]}
-              routes={getGlobalRoutes()}
-            >
-            </MpRouter>
-          )
-        };
-        const component = MpRouterWrapper;
-        const inst = Page(createPageConfig(component, pageName, {root:{cn:[]}}, pageConfig || {}))
-        `
-    });
-  });
 
   const { themeLocation, darkmode: darkMode } = appConfig;
   let themeFilePath: string = '';
@@ -122,16 +92,22 @@ export function installPlatform(api: IApi) {
 
   let pageFiles: any[];
 
-  type IUserRouteHandlerWithoutChildren = Omit<
-    Runtime.IUserRouteConfig,
-    'children'
-  >;
-
+  let mpPathToRoutesDone: any;
+  const PromiseRoutes: Promise<any> = new Promise(resolve => {
+    mpPathToRoutesDone = resolve;
+  });
+  // this hooks works before webpack bundler
+  // orders can make sure appConfig.page and pageConfigs has correctly value
   api.tap<APIHooks.IHookAppRoutes>('app:routes', {
     name: 'mpPathToRoutes',
-    fn: routes => {
+    fn: async routes => {
+      type IUserRouteHandlerWithoutChildren = Omit<
+        Runtime.IUserRouteConfig,
+        'children'
+      >;
       // map url to component
       let routesMap: [string, string][] = [];
+      const routesName = new Set<string>();
       // flatten routes remove children
       function flattenRoutes(
         apiRoutes: Runtime.IUserRouteConfig[],
@@ -182,32 +158,76 @@ export function installPlatform(api: IApi) {
                 routesMap.push([route.path, tempMpPath]);
                 route.path = tempMpPath;
               }
+              routesName.add(route.path);
             }
           }
         }
       }
       routes = flattenRoutes(routes);
       removeConfigPathAddMpPath(routes);
-      console.log();
       let rankRoutes = routesMap.map(r => [r[0], r] as [string, typeof r]);
       rankRoutes = rankRouteBranches(rankRoutes);
       routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
-      api.addAppFile({
+      await api.addAppFile({
         name: 'routesMap.js',
         content: () => `export default ${JSON.stringify(routesMap)}`
       });
+
+      // make sure entryPagePath first postion on appPages
+      const entryPagePath = appConfig.entryPagePath;
+      if (entryPagePath && routesName.has(entryPagePath)) {
+        routesName.delete(entryPagePath);
+        routesName.add(entryPagePath);
+      }
+      appPages = [...routesName].reverse();
+      appConfig.pages = appPages;
+      if (!appPages || !appPages.length) {
+        throw new Error('shuvi config routes property pages config error');
+      }
+      for (const page of appPages) {
+        const pageFile = api.resolveUserFile(`${page}`);
+        const pageConfigFile = api.helpers.fileSnippets.findFirstExistedFile(
+          withExts(api.resolveUserFile(`${page}.config`), moduleFileExtensions)
+        );
+        const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
+        pageConfigs[page] = pageConfig;
+        await api.addAppFile({
+          name: `${page}.js`,
+          content: () => `
+        import * as React from 'react';
+        import { createPageConfig } from '@tarojs/runtime';
+        import { addGlobalRoutes, getGlobalRoutes, MpRouter } from '@shuvi/services/router-mp';
+        import pageComponent from '${pageFile}';
+        const pageConfig = ${JSON.stringify(pageConfig)};
+        const pageName = '${page}';
+        addGlobalRoutes(pageName, pageComponent);
+        function MpRouterWrapper(){
+          return (
+            <MpRouter
+              initialEntries={['/' + pageName]}
+              routes={getGlobalRoutes()}
+            >
+            </MpRouter>
+          )
+        };
+        const component = MpRouterWrapper;
+        const inst = Page(createPageConfig(component, pageName, {root:{cn:[]}}, pageConfig || {}))
+        `
+        });
+      }
+      mpPathToRoutesDone();
       return []; // routes file no use, remove it
     }
   });
 
   api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
     name: 'platform-mp',
-    fn: (config, { name }) => {
+    fn: async (config, { name }) => {
+      await PromiseRoutes;
       if (name === BUNDLER_TARGET_SERVER) {
         config.set('entry', '@shuvi/util/lib/noop');
         return config;
       }
-
       if (!pageFiles) {
         pageFiles = getAllFiles(api.resolveAppFile('files', 'pages'));
       }
