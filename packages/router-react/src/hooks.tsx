@@ -13,7 +13,7 @@ import {
 } from '@shuvi/router';
 import invariant from '@shuvi/utils/lib/invariant';
 import { __DEV__ } from './constants';
-import { RouterContext, RouteContext, MactedRouteContext } from './contexts';
+import { RouterContext, RouteContext, MatchedRouteContext } from './contexts';
 import { warning } from './utils';
 import { INavigateFunction } from './types';
 
@@ -103,7 +103,7 @@ export function useNavigate(): INavigateFunction {
   );
 
   const { router } = useContext(RouterContext);
-  const { pathname } = useContext(MactedRouteContext);
+  const { pathname } = useContext(MatchedRouteContext);
 
   const activeRef = React.useRef(false);
   React.useEffect(() => {
@@ -145,7 +145,7 @@ export function useNavigate(): INavigateFunction {
  * URL that were matched by the route path.
  */
 export function useParams(): IParams {
-  return useContext(MactedRouteContext).params;
+  return useContext(MatchedRouteContext).params;
 }
 
 /**
@@ -153,7 +153,7 @@ export function useParams(): IParams {
  */
 export function useResolvedPath(to: PathRecord): Path {
   const { router } = useContext(RouterContext);
-  const { pathname } = useContext(MactedRouteContext);
+  const { pathname } = useContext(MatchedRouteContext);
   return React.useMemo(() => router.resolve(to, pathname).path, [to, pathname]);
 }
 
