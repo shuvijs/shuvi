@@ -12,12 +12,13 @@ const runtimeConfig = getRuntimeConfig();
 import './index.scss'
 import style from './test.scss'
 
-export default () => {
+function IndexPage ({success}) {
   const { query, params } = useCurrentRoute();
   const [o, setO] = useState({ haha: 123 })
   useEffect(() => {
     console.warn('sdfdsfsdfdf')
   })
+  console.log(success, 'success')
   return (
     <View className='index'>
       <View className={style.color} onClick={() => navigateTo({ url: '/pages/sub/index' })}>
@@ -46,3 +47,12 @@ export default () => {
     </View>
   )
 }
+
+IndexPage.getInitialProps = ctx => {
+  console.log('getInitialProps')
+  return {
+    success: 'ok'
+  };
+};
+
+export default IndexPage;
