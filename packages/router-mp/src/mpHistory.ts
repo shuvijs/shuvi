@@ -10,13 +10,13 @@ import {
 } from '@shuvi/router';
 import invariant from '@shuvi/utils/lib/invariant';
 import { navigateTo, redirectTo, navigateBack } from './navigateApis';
-import BaseHisotry, {
+import BaseHistory, {
   PushOptions,
   ACTION_PUSH,
   TransitionOptions
 } from '@shuvi/router/lib/history/base';
 
-export class MpHistory extends BaseHisotry {
+export class MpHistory extends BaseHistory {
   private _entries: Location[] = [];
 
   constructor({
@@ -89,7 +89,7 @@ export class MpHistory extends BaseHisotry {
   ) {
     const { path } = this.resolve(to, this.location.pathname);
     const nextLocation = createLocation(path, { state, redirectedFrom });
-    this.doTransision(
+    this.doTransition(
       to,
       () => {
         onTransition({
