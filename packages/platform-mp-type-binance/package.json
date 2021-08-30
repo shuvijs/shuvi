@@ -1,0 +1,34 @@
+{
+  "name": "@shuvi/platform-mp-type-binance",
+  "version": "0.0.1-rc.32",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/platform-mp-type-binance"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "sideEffects": [
+    "**/lib/runtime/**"
+  ],
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "files": [
+    "lib",
+    "shuvi-app"
+  ],
+  "scripts": {
+    "dev": "tsc -p tsconfig.build.json -w",
+    "prebuild": "rimraf lib",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "dependencies": {
+    "@shuvi/platform-mp": "^0.0.1-rc.32"
+  },
+  "devDependencies": {
+    "@shuvi/types": "^0.0.1-rc.32"
+  }
+}

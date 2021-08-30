@@ -8,7 +8,7 @@ import style from './test.scss'
 export default () => {
   const [o, setO] = useState({ haha: 1234 })
   useEffect(() => {
-    console.warn('sdfdsfsdfdf')
+    console.warn('useEffect')
   })
   return (
     <View className='index'>

@@ -1,13 +1,15 @@
 // import React from 'react';
 import { IApi, Runtime } from '@shuvi/types';
-import { installPlatform } from './bundler/config';
 
-class PlatformTaro implements Runtime.IRuntime<any> {
-  _api!: IApi;
-
+const platform: Runtime.IRuntime<any> = {
   async install(api: IApi): Promise<void> {
-    installPlatform(api);
+    const { target = 'binance' } = api.config.buildOptions || {};
+    const packageName = `@shuvi/platform-mp-type-${target}`;
+    const PlatformConstructor: Runtime.IRuntime = require(packageName).default;
+    //@ts-ignore
+    const runtime = new PlatformConstructor(api);
+    runtime.install();
   }
-}
+};
 
-export default new PlatformTaro();
+export default platform;

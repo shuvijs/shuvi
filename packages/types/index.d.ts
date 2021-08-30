@@ -86,6 +86,8 @@ export interface IApiConfig {
   };
   runtimeConfig?: IRuntimeConfig;
   platform?: string;
+  framework?: string;
+  buildOptions?: any;
   proxy?: any;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];

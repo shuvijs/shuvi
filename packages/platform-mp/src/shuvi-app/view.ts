@@ -1,4 +1,4 @@
-import '@shuvi/platform-mp/lib/runtime';
+//import '@shuvi/platform-mp/lib/runtime';
 import { createReactApp, window } from '@tarojs/runtime';
 // @ts-ignore
 import appConfig from '@shuvi/user/app.config';

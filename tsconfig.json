@@ -18,8 +18,11 @@
       "@shuvi/platform-react/lib/*": [
         "packages/platform-react/src/*"
       ],
-      "@shuvi/platform-taro/lib/*": [
-        "packages/platform-taro/src/*"
+      "@shuvi/platform-mp/lib/*": [
+        "packages/platform-mp/src/lib/*"
+      ],
+      "@shuvi/platform-mp-type-binance/lib/*": [
+        "packages/platform-mp-type-binance/src/*"
       ],
       "@shuvi/shared/lib/*": [
         "packages/shared/src/*"

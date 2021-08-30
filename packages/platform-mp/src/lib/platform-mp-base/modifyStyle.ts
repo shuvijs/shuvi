@@ -36,7 +36,7 @@ function generateMiniCssExtractPluginOptions(
   return [
     {
       filename: function (pathData: any) {
-        return `${pathData.chunk!.name}.${extension}`;
+        return `${pathData.chunk!.name}${extension}`;
       }
     }
   ];
@@ -44,7 +44,7 @@ function generateMiniCssExtractPluginOptions(
 
 export default function ensureExtractLoader(
   config: WebpackChain,
-  extension: string = 'bxss'
+  extension: string = '.bxss'
 ) {
   const oneOfs = config.module.rule('main').oneOfs;
   const publicPath = config.output.get('publicPath');
