@@ -63,7 +63,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     this._history = history;
     this._routes = createRoutesFromArray(routes);
     this._current = START;
-    this._history.doTransision = this._doTransition.bind(this);
+    this._history.doTransition = this._doTransition.bind(this);
 
     const setup = () => this._history.setup();
     this._history.transitionTo(this._getCurrent(), {
