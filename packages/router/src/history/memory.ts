@@ -6,7 +6,7 @@ import {
   ResolvedPath
 } from '../types';
 import { createLocation, resolvePath, pathToString, warning } from '../utils';
-import BaseHisotry, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
 
 function clamp(n: number, lowerBound: number, upperBound: number) {
   return Math.min(Math.max(n, lowerBound), upperBound);
@@ -23,7 +23,7 @@ export type MemoryHistoryOptions = {
   initialIndex?: number;
 };
 
-export default class MemoryHistory extends BaseHisotry {
+export default class MemoryHistory extends BaseHistory {
   private _entries: Location[] = [];
 
   constructor({

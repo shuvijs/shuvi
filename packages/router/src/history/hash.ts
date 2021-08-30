@@ -15,7 +15,7 @@ import {
   pathToString,
   warning
 } from '../utils';
-import BaseHisotry, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
 
 function getBaseHref() {
   let base = document.querySelector('base');
@@ -38,7 +38,7 @@ function createHref(to: PathRecord) {
   );
 }
 
-export default class HashHistory extends BaseHisotry {
+export default class HashHistory extends BaseHistory {
   private _history: GlobalHistory = window.history;
 
   constructor() {

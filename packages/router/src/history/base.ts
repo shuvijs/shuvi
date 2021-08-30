@@ -56,7 +56,7 @@ export interface PushOptions {
 export default abstract class BaseHistory {
   action: Action = ACTION_POP;
   location: Location = createLocation('/');
-  doTransision: (
+  doTransition: (
     to: PathRecord,
     onComplete: Function,
     onAbort?: Function
@@ -123,7 +123,7 @@ export default abstract class BaseHistory {
       return;
     }
 
-    this.doTransision(
+    this.doTransition(
       to,
       () => {
         onTransition({
