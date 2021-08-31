@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import qs from 'query-string';
 import PropTypes from 'prop-types';
 import { Current as TaroCurrent } from '@tarojs/runtime';
-import { InitialEntry, createRouter, IRouter } from '@shuvi/router';
+import {
+  InitialEntry,
+  createRouter,
+  IRouter,
+  createRedirector
+} from '@shuvi/router';
 import { createMpHistory } from './mpHistory';
-import { Router, RouterView } from '@shuvi/router-react';
-import { IRouteRecord } from '@shuvi/router-react';
+import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
-import { createRedirector } from '@shuvi/platform-react/shuvi-app/utils/createRedirector';
-import AppContainer from '@shuvi/platform-react/shuvi-app/AppContainer';
 
 export interface IMpRouterProps {
   basename?: string;
@@ -93,7 +95,10 @@ export function MpRouter({
             // do nothing
           }
         });
-        matchRoute.props = props;
+        matchRoute.props = {
+          ...props,
+          ...(matchRoute.props || {})
+        };
         if (redirector.redirected) {
           router!.replace(redirector.state!.path);
           return;
@@ -104,18 +109,11 @@ export function MpRouter({
     runGetInitialProps();
   }, []);
 
-  if (!initProps) {
-    return null;
-  }
-
-  // return initProps && (
-  return (
+  return initProps ? (
     <Router router={routerRef.current}>
-      <AppContainer appContext={appContext}>
-        <RouterView />
-      </AppContainer>
+      <RouterView />
     </Router>
-  );
+  ) : null;
 }
 
 if (__DEV__) {

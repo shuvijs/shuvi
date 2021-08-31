@@ -105,8 +105,14 @@ export function installPlatform(api: IApi) {
         Runtime.IUserRouteConfig,
         'children'
       >;
+      type IUserRouteHandlerOtherData = Omit<
+        Runtime.IUserRouteConfig,
+        'children' | 'path' | 'component'
+      >;
       // map url to component
       let routesMap: [string, string][] = [];
+      // route other data
+      let routesStore = new Map<string, IUserRouteHandlerOtherData>();
       const routesName = new Set<string>();
       // flatten routes remove children
       function flattenRoutes(
@@ -115,7 +121,7 @@ export function installPlatform(api: IApi) {
         parentPath = ''
       ): IUserRouteHandlerWithoutChildren[] {
         apiRoutes.forEach(route => {
-          const { children, component } = route;
+          const { children, component, ...other } = route;
           let tempPath = path.join(parentPath, route.path);
 
           if (children) {
@@ -124,7 +130,8 @@ export function installPlatform(api: IApi) {
           if (component) {
             branches.push({
               path: tempPath,
-              component
+              component,
+              ...other
             });
           }
         });
@@ -136,7 +143,7 @@ export function installPlatform(api: IApi) {
       ) {
         for (let i = routes.length - 1; i >= 0; i--) {
           const route = routes[i];
-          const { component } = route;
+          const { component, path: routePath, ...other } = route;
           if (component) {
             // remove config path, eg: miniprogram/src/pages/index/index.config.js
             if (/.*\.config\.\w+$/.test(component)) {
@@ -159,6 +166,7 @@ export function installPlatform(api: IApi) {
                 route.path = tempMpPath;
               }
               routesName.add(route.path);
+              routesStore.set(route.path, other);
             }
           }
         }
@@ -173,7 +181,7 @@ export function installPlatform(api: IApi) {
         content: () => `export default ${JSON.stringify(routesMap)}`
       });
 
-      // make sure entryPagePath first postion on appPages
+      // make sure entryPagePath first position on appPages
       const entryPagePath = appConfig.entryPagePath;
       if (entryPagePath && routesName.has(entryPagePath)) {
         routesName.delete(entryPagePath);
@@ -200,7 +208,9 @@ export function installPlatform(api: IApi) {
         import pageComponent from '${pageFile}';
         const pageConfig = ${JSON.stringify(pageConfig)};
         const pageName = '${page}';
-        addGlobalRoutes(pageName, pageComponent);
+        addGlobalRoutes(pageName, pageComponent, ${JSON.stringify(
+          routesStore.get(page) || {}
+        )});
         function MpRouterWrapper(){
           return (
             <MpRouter

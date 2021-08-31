@@ -12,13 +12,12 @@ const runtimeConfig = getRuntimeConfig();
 import './index.scss'
 import style from './test.scss'
 
-function IndexPage ({success}) {
+function IndexPage ({success, routePropsTest}) {
   const { query, params } = useCurrentRoute();
   const [o, setO] = useState({ haha: 123 })
   useEffect(() => {
     console.warn('sdfdsfsdfdf')
   })
-  console.log(success, 'success')
   return (
     <View className='index'>
       <View className={style.color} onClick={() => navigateTo({ url: '/pages/sub/index' })}>
@@ -44,6 +43,10 @@ function IndexPage ({success}) {
       </View>
       <View>query：{JSON.stringify(query)}</View>
       <View>params：{JSON.stringify(params)}</View>
+      <View>routeProps：{JSON.stringify({
+        success,
+        routePropsTest
+      })}</View>
     </View>
   )
 }
