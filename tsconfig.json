@@ -27,8 +27,11 @@
       "@shuvi/router/lib/*": [
         "packages/router/src/*"
       ],
-      "@shuvi/react-router/lib/*": [
-        "packages/react-router/src/*"
+      "@shuvi/router-react/lib/*": [
+        "packages/router-react/src/*"
+      ],
+      "@shuvi/router-mp/lib/*": [
+        "packages/router-mp/src/*"
       ],
       "@shuvi/*": [
         "packages/*/src"
