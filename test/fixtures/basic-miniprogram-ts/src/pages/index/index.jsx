@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View } from '@binance/mp-components'
+import { View, Text } from '@binance/mp-components'
 import { navigateTo } from '@binance/mp-service';
 import { Link } from '@shuvi/services/router-mp';
 // import consoleLogMain from '../../utils/consoleLogMain'
@@ -13,7 +13,7 @@ export default () => {
   return (
     <View className='index'>
       <View className={style.color} onClick={() => navigateTo({ url: '/pages/sub/index' })}>
-        Go to <sub>{o.haha}</sub>
+        Go to <Text>{o.haha}</Text>
       </View>
       <View onClick={() => navigateTo({ url: '/pages/detail/index' })}>
         Go to detail

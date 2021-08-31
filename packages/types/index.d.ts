@@ -63,6 +63,11 @@ export declare type IPhase =
   | 'PHASE_DEVELOPMENT_SERVER'
   | 'PHASE_INSPECT_WEBPACK';
 
+interface IPlatform {
+  name: string;
+  target: string;
+  [index: string]: any;
+}
 export interface IApiConfig {
   outputPath: string;
   rootDir: string;
@@ -85,9 +90,11 @@ export interface IApiConfig {
     bodyParser?: { sizeLimit: number | string } | boolean;
   };
   runtimeConfig?: IRuntimeConfig;
-  platform?: string;
-  framework?: string;
-  buildOptions?: any;
+  /**
+   * specifically target for `platform-web`
+   */
+  target?: 'spa' | 'ssr';
+  platform?: IPlatform;
   proxy?: any;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];

@@ -57,9 +57,14 @@ export interface AppConfig extends TaroAppConfig {
   darkMode: boolean;
 }
 
-export interface PageConfigs {
+/**
+ * configs for app and pages
+ */
+export interface AppConfigs {
+  app: AppConfig;
   [name: string]: Config;
 }
+
 export interface IFileType {
   templ: string;
   style: string;
@@ -71,11 +76,10 @@ export interface IFileType {
 export default abstract class PlatformMpBase {
   _api: IApi;
   themeFilePath: string = '';
-  appConfig!: AppConfig;
-  pageConfigs: PageConfigs = {};
+  appConfigs!: AppConfigs;
   mpPathToRoutesDone: any;
-  PromiseRoutes: Promise<any>;
-  taroComponentsPath = `${__dirname}/runtime/components-react`;
+  promiseRoutes: Promise<any>;
+  taroComponentsPath?: string;
 
   abstract globalObject: string;
   abstract runtimePath: string | string[];
@@ -84,7 +88,7 @@ export default abstract class PlatformMpBase {
 
   constructor(api: IApi) {
     this._api = api;
-    this.PromiseRoutes = new Promise(resolve => {
+    this.promiseRoutes = new Promise(resolve => {
       this.mpPathToRoutesDone = resolve;
     });
   }
@@ -108,7 +112,9 @@ export default abstract class PlatformMpBase {
     if (isEmptyObject(appConfig)) {
       throw new Error('缺少 app 全局配置文件，请检查！');
     }
-    this.appConfig = appConfig;
+    this.appConfigs = {
+      app: appConfig
+    };
 
     const { themeLocation, darkmode: darkMode } = appConfig;
     if (darkMode && themeLocation && typeof themeLocation === 'string') {
@@ -211,7 +217,7 @@ export default abstract class PlatformMpBase {
         });
 
         // make sure entryPagePath first postion on appPages
-        const appConfig = this.appConfig;
+        const appConfig = this.appConfigs.app;
         const entryPagePath = appConfig.entryPagePath;
         if (entryPagePath && routesName.has(entryPagePath)) {
           routesName.delete(entryPagePath);
@@ -231,7 +237,7 @@ export default abstract class PlatformMpBase {
             )
           );
           const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
-          this.pageConfigs[page] = pageConfig;
+          this.appConfigs[page] = pageConfig;
           await api.addAppFile({
             name: `${page}.js`,
             content: () => `
@@ -267,7 +273,7 @@ export default abstract class PlatformMpBase {
     api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
       name: 'platform-mp',
       fn: async (config, { name }) => {
-        await this.PromiseRoutes;
+        await this.promiseRoutes;
         if (name === BUNDLER_TARGET_SERVER) {
           config.set('entry', {});
           return config;
@@ -308,7 +314,8 @@ export default abstract class PlatformMpBase {
               '@tarojs/shared': resolveLib('@tarojs/shared'),
               '@tarojs/taro': resolveLib('@tarojs/taro'),
               '@tarojs/api': resolveLib('@tarojs/api'),
-              '@tarojs/components$': this.taroComponentsPath,
+              '@tarojs/components$':
+                this.taroComponentsPath || '@tarojs/components/mini',
               '@tarojs/react': resolveLib('@tarojs/react'),
               'react-dom$': resolveLib('@tarojs/react'),
               react$: resolveLib('react'),
@@ -376,8 +383,7 @@ export default abstract class PlatformMpBase {
         config.plugin('DomEnvPlugin').use(DomEnvPlugin);
         config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
           {
-            appConfig: this.appConfig,
-            pageConfigs: this.pageConfigs,
+            appConfigs: this.appConfigs,
             themeFilePath: this.themeFilePath,
             paths: api.paths,
             fileType: this.fileType,

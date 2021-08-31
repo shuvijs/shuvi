@@ -1,5 +1,5 @@
 //import { AppConfig } from '@tarojs/taro';
-import { AppConfig, PageConfigs } from '..';
+import { AppConfigs } from '..';
 import { IPaths } from '@shuvi/types';
 import webpack, { Compiler, Compilation, sources } from 'webpack';
 import path from 'path';
@@ -17,8 +17,7 @@ interface CompilationAssets {
 }
 
 interface BuildAssetsPluginOptions {
-  appConfig: AppConfig;
-  pageConfigs: PageConfigs;
+  appConfigs: AppConfigs;
   paths: IPaths;
   fileType: IFileType;
   themeFilePath: string;
@@ -35,16 +34,13 @@ const getFullName = (fileName: string, ext: string) => {
 
 // add extra asset files
 export default class BuildAssetsPlugin {
-  appConfig: AppConfig;
-  pageConfigs: PageConfigs;
-  /** collection of paths */
+  appConfigs: AppConfigs;
   paths: IPaths;
   fileType: IFileType;
   themeFilePath: string;
   template: UnRecursiveTemplate | RecursiveTemplate;
   constructor(options: BuildAssetsPluginOptions) {
-    this.appConfig = options.appConfig;
-    this.pageConfigs = options.pageConfigs;
+    this.appConfigs = options.appConfigs;
     this.paths = options.paths;
     this.themeFilePath = options.themeFilePath;
     this.fileType = options.fileType;
@@ -111,7 +107,7 @@ export default class BuildAssetsPlugin {
           }
 
           // todo custom tabBar 支持
-          const { tabBar } = this.appConfig;
+          const { tabBar } = this.appConfigs.app;
           const list = (tabBar && tabBar.list) || [];
 
           list.forEach(item => {
@@ -161,7 +157,7 @@ export default class BuildAssetsPlugin {
             this.fileType.templ
           );
 
-          this.generateConfigFile(assets, 'app', this.appConfig);
+          this.generateConfigFile(assets, 'app', this.appConfigs.app);
 
           const baseCompConfig = {
             component: true,
@@ -186,7 +182,7 @@ export default class BuildAssetsPlugin {
               const importCustomWrapperPath = promoteRelativePath(
                 path.relative(chunk.name, customWrapperName)
               );
-              const pageConfig = this.pageConfigs[chunk.name] || {};
+              const pageConfig = this.appConfigs[chunk.name] || {};
               this.generateConfigFile(assets, chunk.name, {
                 ...pageConfig,
                 usingComponents: {

@@ -1,9 +1,8 @@
 module.exports = {
   ssr: false,
-  platform: 'mp',
-  framework: 'react',
-  buildOptions: {
-    target: 'weapp'
+  platform: {
+    name: 'mp',
+    target: 'binance'
   },
   router: {
     history: 'memory'

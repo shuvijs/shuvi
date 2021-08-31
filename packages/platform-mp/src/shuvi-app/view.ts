@@ -1,4 +1,3 @@
-//import '@shuvi/platform-mp/lib/runtime';
 import { createReactApp, window } from '@tarojs/runtime';
 // @ts-ignore
 import appConfig from '@shuvi/user/app.config';
@@ -9,7 +8,6 @@ export default {
   // @ts-ignore
   renderApp({ AppComponent }) {
     window.__taroAppConfig = appConfig;
-    // const TypedAppComponent = AppComponent as React.ComponentClass;
     // @ts-ignore
     App(createReactApp(AppComponent, React, ReactDOM, appConfig));
     initPxTransform({

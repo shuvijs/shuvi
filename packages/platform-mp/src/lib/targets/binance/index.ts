@@ -1,13 +1,13 @@
 // import React from 'react';
-import PlatformMpBase from '@shuvi/platform-mp/lib/platform-mp-base';
+import PlatformMpBase from '../../platform-mp-base';
 import template from './template';
-import { IApi, Runtime } from '@shuvi/types';
 
 //export default new PlatformTaro();
-import { PACKAGE_NAME } from './constants';
+//import { PACKAGE_NAME } from './constants';
 class PlatformMpBinance extends PlatformMpBase {
   globalObject = 'globalThis';
-  runtimePath = `${PACKAGE_NAME}/lib/runtime`;
+  runtimePath = `${__dirname}/runtime`;
+  taroComponentsPath = `${__dirname}/runtime/components-react`;
   template: any = template;
   fileType = {
     templ: '.bxml',
