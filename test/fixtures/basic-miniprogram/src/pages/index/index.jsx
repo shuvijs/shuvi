@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View } from '@binance/mp-components'
+import { View, Text } from '@binance/mp-components'
 import Taro, { navigateTo } from '@binance/mp-service'
 // import consoleLogMain from '../../utils/consoleLogMain'
 import { getRuntimeConfig } from '@shuvi/app';
@@ -16,12 +16,12 @@ function IndexPage ({success, routePropsTest}) {
   const { query, params } = useCurrentRoute();
   const [o, setO] = useState({ haha: 123 })
   useEffect(() => {
-    console.warn('sdfdsfsdfdf')
+    console.warn('useEffect')
   })
   return (
     <View className='index'>
       <View className={style.color} onClick={() => navigateTo({ url: '/pages/sub/index' })}>
-        Go to <sub>{o.haha}</sub>
+        Go to <Text>{o.haha}</Text>
       </View>
       <View onClick={() => navigateTo({ url: '/pages/detail/index?a=b&__params=%7B%22name%22%3A%22success%22%7D'})}>
         Go to detail

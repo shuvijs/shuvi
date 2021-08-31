@@ -18,8 +18,8 @@
       "@shuvi/platform-react/lib/*": [
         "packages/platform-react/src/*"
       ],
-      "@shuvi/platform-taro/lib/*": [
-        "packages/platform-taro/src/*"
+      "@shuvi/platform-mp/lib/*": [
+        "packages/platform-mp/src/lib/*"
       ],
       "@shuvi/shared/lib/*": [
         "packages/shared/src/*"
