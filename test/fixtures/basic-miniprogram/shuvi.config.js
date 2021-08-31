@@ -15,7 +15,10 @@ module.exports = {
   routes: [
     {
       path: '/',
-      component: 'pages/index/index'
+      component: 'pages/index/index',
+      props: {
+        routePropsTest: 'routePropsTest value'
+      }
     },
     {
       path: '/pages/sub/:title',
