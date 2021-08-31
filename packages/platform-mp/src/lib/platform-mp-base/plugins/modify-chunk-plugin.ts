@@ -1,14 +1,21 @@
 import webpack, { sources } from 'webpack';
 import path from 'path';
 import { urlToRequest } from 'loader-utils';
+import { IFileType } from '../index';
 
-const PLUGIN_NAME = 'LoadChunksPlugin';
+const PLUGIN_NAME = 'ModifyChunksPlugin';
 const commonChunks = ['runtime', 'vendors', 'taro', 'common'];
 const appChunk = 'app.js';
 const taroChunk = 'taro.js';
+interface ModifyChunkPluginOptions {
+  fileType: IFileType;
+}
 
-export default class TaroLoadChunksPlugin {
-  constructor() {}
+export default class ModifyChunkPlugin {
+  fileType: IFileType;
+  constructor(options: ModifyChunkPluginOptions) {
+    this.fileType = options.fileType;
+  }
 
   apply(compiler: webpack.Compiler) {
     compiler.hooks.thisCompilation.tap(
@@ -49,7 +56,8 @@ export default class TaroLoadChunksPlugin {
             }
 
             // require other style chunks at app.bxss
-            const appStyle = compilation.getAsset('app.bxss');
+            const appStyleName = `app${this.fileType.style}`;
+            const appStyle = compilation.getAsset(appStyleName);
             if (appStyle) {
               const requiredFiles = compilation
                 .getAssets()
@@ -61,7 +69,7 @@ export default class TaroLoadChunksPlugin {
                   );
                 });
               compilation.updateAsset(
-                'app.bxss',
+                appStyleName,
                 source =>
                   new sources.ConcatSource(
                     source,

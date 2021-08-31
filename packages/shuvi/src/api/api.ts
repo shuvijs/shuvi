@@ -137,7 +137,7 @@ class Api extends Hookable implements IApi {
     if (history === 'auto') {
       this._config.router.history = ssr ? 'browser' : 'hash';
     }
-    const { runtime, runtimeDir } = initRuntime(this.config.platform);
+    const { runtime, runtimeDir } = initRuntime(this.config.platform?.name);
     this._runtime = runtime;
     this._runtimeDir = runtimeDir;
 

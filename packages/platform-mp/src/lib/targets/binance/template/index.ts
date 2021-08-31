@@ -1,6 +1,6 @@
 import { UnRecursiveTemplate } from '@tarojs/shared/dist/template';
 
-export class BmpTemplate extends UnRecursiveTemplate {
+class BmpTemplate extends UnRecursiveTemplate {
   supportXS = false;
   Adapter = {
     if: 'bn:if',
@@ -36,3 +36,5 @@ export class BmpTemplate extends UnRecursiveTemplate {
     });
   }
 }
+
+export default new BmpTemplate();
