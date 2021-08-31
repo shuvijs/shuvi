@@ -148,8 +148,14 @@ export default abstract class PlatformMpBase {
           Runtime.IUserRouteConfig,
           'children'
         >;
+        type IUserRouteHandlerOtherData = Omit<
+          Runtime.IUserRouteConfig,
+          'children' | 'path' | 'component'
+        >;
         // map url to component
         let routesMap: [string, string][] = [];
+        // route other data
+        let routesStore = new Map<string, IUserRouteHandlerOtherData>();
         const routesName = new Set<string>();
         // flatten routes remove children
         function flattenRoutes(
@@ -158,7 +164,7 @@ export default abstract class PlatformMpBase {
           parentPath = ''
         ): IUserRouteHandlerWithoutChildren[] {
           apiRoutes.forEach(route => {
-            const { children, component } = route;
+            const { children, component, ...other } = route;
             let tempPath = path.join(parentPath, route.path);
 
             if (children) {
@@ -167,7 +173,8 @@ export default abstract class PlatformMpBase {
             if (component) {
               branches.push({
                 path: tempPath,
-                component
+                component,
+                ...other
               });
             }
           });
@@ -179,7 +186,7 @@ export default abstract class PlatformMpBase {
         ) {
           for (let i = routes.length - 1; i >= 0; i--) {
             const route = routes[i];
-            const { component } = route;
+            const { component, path: routePath, ...other } = route;
             if (component) {
               // remove config path, eg: miniprogram/src/pages/index/index.config.js
               if (/.*\.config\.\w+$/.test(component)) {
@@ -202,6 +209,7 @@ export default abstract class PlatformMpBase {
                   route.path = tempMpPath;
                 }
                 routesName.add(route.path);
+                routesStore.set(route.path, other);
               }
             }
           }
@@ -247,7 +255,9 @@ export default abstract class PlatformMpBase {
         import pageComponent from '${pageFile}';
         const pageConfig = ${JSON.stringify(pageConfig)};
         const pageName = '${page}';
-        addGlobalRoutes(pageName, pageComponent);
+        addGlobalRoutes(pageName, pageComponent, ${JSON.stringify(
+          routesStore.get(page) || {}
+        )});
         function MpRouterWrapper(){
           return (
             <MpRouter

@@ -6,7 +6,13 @@ export {
   rankRouteBranches
 } from './matchRoutes';
 
-export { pathToString, parseQuery, resolvePath, createLocation } from './utils';
+export {
+  pathToString,
+  parseQuery,
+  resolvePath,
+  createLocation,
+  createRedirector
+} from './utils';
 export * from './types';
 export * from './history';
 export * from './router';

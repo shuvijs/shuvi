@@ -12,7 +12,7 @@ const runtimeConfig = getRuntimeConfig();
 import './index.scss'
 import style from './test.scss'
 
-export default () => {
+function IndexPage ({success, routePropsTest}) {
   const { query, params } = useCurrentRoute();
   const [o, setO] = useState({ haha: 123 })
   useEffect(() => {
@@ -43,6 +43,19 @@ export default () => {
       </View>
       <View>query：{JSON.stringify(query)}</View>
       <View>params：{JSON.stringify(params)}</View>
+      <View>routeProps：{JSON.stringify({
+        success,
+        routePropsTest
+      })}</View>
     </View>
   )
 }
+
+IndexPage.getInitialProps = ctx => {
+  console.log('getInitialProps')
+  return {
+    success: 'ok'
+  };
+};
+
+export default IndexPage;

@@ -26,5 +26,5 @@ export const MatchedRouteContext = React.createContext<IRouteContextObject>({
 });
 
 if (__DEV__) {
-  MatchedRouteContext.displayName = 'MactedRoute';
+  MatchedRouteContext.displayName = 'MatchedRoute';
 }

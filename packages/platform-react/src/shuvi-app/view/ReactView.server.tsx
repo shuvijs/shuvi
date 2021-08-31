@@ -2,12 +2,12 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Runtime } from '@shuvi/types';
 import { Router } from '@shuvi/router-react';
+import { createRedirector } from '@shuvi/router';
 import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
-import { createRedirector } from '../utils/createRedirector';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;

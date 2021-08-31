@@ -8,7 +8,8 @@ export function getGlobalRoutes() {
 
 export function addGlobalRoutes(
   routePath: string,
-  routeComponent: React.ReactElement
+  routeComponent: React.ReactElement,
+  otherProperties: { [key: string]: any } = {}
 ) {
   for (let i = 0; i < _globalRoutes.length; i++) {
     const { path, component } = _globalRoutes[i];
@@ -17,6 +18,7 @@ export function addGlobalRoutes(
     }
   }
   _globalRoutes.push({
+    ...otherProperties,
     path: routePath,
     component: routeComponent
   });
