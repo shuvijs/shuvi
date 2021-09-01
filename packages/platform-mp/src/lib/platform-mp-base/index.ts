@@ -126,7 +126,8 @@ export default abstract class PlatformMpBase {
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
     api.addAppExport(resolveAppFile('App'), '{ default as App }');
-    // api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
+    api.addAppExport(resolveAppFile('Head'), '{default as Head}');
+    // api.addAppExport(resolveAppFile('getPageData'), '{default as getPageData}');
     // api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
     api.addAppExport(
       resolveLib('@shuvi/router-react'),
