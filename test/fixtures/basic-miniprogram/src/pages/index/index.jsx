@@ -2,9 +2,18 @@ import React, { useState, useEffect } from 'react'
 import { View, Text } from '@binance/mp-components'
 import Taro, { navigateTo } from '@binance/mp-service'
 // import consoleLogMain from '../../utils/consoleLogMain'
-import { getRuntimeConfig } from '@shuvi/app';
-import { useCurrentRoute } from '@shuvi/app';
+import { getRuntimeConfig, useCurrentRoute, Head, getPageData, dynamic } from '@shuvi/app';
 import { Link } from '@shuvi/services/router-mp';
+
+const Welcome = dynamic(() => import("../../components/welcome"));
+const Nested = dynamic(() => import("../../components/nested1"));
+const Hello = dynamic(async () => {
+  await new Promise(resolve => setTimeout(() => resolve(), 3000));
+  return import("../../components/hello")
+}, {
+  ssr: false,
+  loading: () => <Text>LOADING Hello</Text>
+});
 
 globalThis.Taro = Taro;
 
@@ -16,10 +25,14 @@ function IndexPage ({success, routePropsTest}) {
   const { query, params } = useCurrentRoute();
   const [o, setO] = useState({ haha: 123 })
   useEffect(() => {
-    console.warn('useEffect')
-  })
+    console.warn('useEffect');
+    console.log('getPageData', getPageData())
+  }, [])
   return (
     <View className='index'>
+      <Head>
+        <Text>head content</Text>
+      </Head>
       <View className={style.color} onClick={() => navigateTo({ url: '/pages/sub/index' })}>
         Go to <Text>{o.haha}</Text>
       </View>
@@ -47,6 +60,10 @@ function IndexPage ({success, routePropsTest}) {
         success,
         routePropsTest
       })}</View>
+      <Hello />
+      <Nested />
+      <Welcome name="normal" />
+      <Welcome name="dynamic" />
     </View>
   )
 }
