@@ -343,7 +343,7 @@ class WebpackBundler {
     const serverConfig = serverChain.toConfig();
     logger.debug('Server Config');
     logger.debug(inspect(serverConfig.module, { depth: 10 }));
-    targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
+    // targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
 
     return targets;
   }

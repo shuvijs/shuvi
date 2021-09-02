@@ -7,7 +7,8 @@ import fs from 'fs';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import ModifyChunkPlugin from './plugins/modify-chunk-plugin';
 import DomEnvPlugin from './plugins/dom-env-plugin';
-import modifyStyle from './modifyStyle';
+import modifyStyle from './modify-style';
+import addBabelPlugins from './add-babel-plugins';
 import {
   resolveAppFile,
   resolveRouterFile,
@@ -302,6 +303,7 @@ export default abstract class PlatformMpBase {
         config.entryPoints.clear();
         config.optimization.clear();
         modifyStyle(config, this.fileType.style);
+        addBabelPlugins(config);
         config.output.globalObject(this.globalObject);
         config.output.chunkFilename(
           `${
