@@ -65,7 +65,8 @@ export declare type IPhase =
 
 interface IPlatform {
   name: string;
-  target: string;
+  framework?: string;
+  target?: string;
   [index: string]: any;
 }
 export interface IApiConfig {
@@ -132,14 +133,16 @@ export interface IApi extends IHookable {
   readonly helpers: ApiHelpers;
 
   addEntryCode: any;
+  addEntryCodeToTop: any;
   addAppFile: any;
   addAppExport: any;
   addAppService: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
 
-  setPlatformModule: any;
-  setRuntimeCoreModule: any;
+  setPlatformModule: (module: string) => void;
+  setClientModule: any;
+  setServerModule: any;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

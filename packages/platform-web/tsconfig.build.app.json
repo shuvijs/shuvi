@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "outDir": "shuvi-app"
+  },
+  "include": ["src/shuvi-app"]
+}

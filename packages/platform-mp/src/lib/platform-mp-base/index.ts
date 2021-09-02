@@ -122,6 +122,11 @@ export default abstract class PlatformMpBase {
       this.themeFilePath = path.resolve(api.paths.srcDir, themeLocation);
     }
 
+    api.setClientModule({
+      application: resolveAppFile('application'),
+      entry: resolveAppFile('entry')
+    });
+
     api.setPlatformModule(resolveAppFile('index'));
     // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
@@ -134,7 +139,8 @@ export default abstract class PlatformMpBase {
       resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
     );
-    api.addEntryCode(`require('${this.runtimePath}')`);
+    // runtime code must run at first
+    api.addEntryCodeToTop(`require('${this.runtimePath}')`);
 
     api.addAppService(resolveRouterFile('lib', 'index'), '*', 'router-mp.js');
   }
@@ -287,7 +293,7 @@ export default abstract class PlatformMpBase {
       fn: async (config, { name }) => {
         await this.promiseRoutes;
         if (name === BUNDLER_TARGET_SERVER) {
-          config.set('entry', {});
+          config.entryPoints.clear();
           return config;
         }
         const pageFiles = getAllFiles(api.resolveAppFile('files', 'pages'));

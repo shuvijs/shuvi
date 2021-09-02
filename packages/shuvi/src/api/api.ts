@@ -12,7 +12,7 @@ import {
 import {
   ProjectBuilder,
   UserModule,
-  RuntimeCoreModule,
+  TargetModule,
   FileOptions,
   fileSnippets
 } from '../project';
@@ -276,6 +276,10 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addEntryCode(content);
   }
 
+  addEntryCodeToTop(content: string): void {
+    this._projectBuilder.addEntryCodeToTop(content);
+  }
+
   setEntryWrapperContent(content: string) {
     this._projectBuilder.setEntryWrapperContent(content);
   }
@@ -300,8 +304,11 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addPolyfill(file);
   }
 
-  setRuntimeCoreModule(module: RuntimeCoreModule) {
-    this._projectBuilder.setRuntimeCoreModule(module);
+  setClientModule(module: TargetModule) {
+    this._projectBuilder.setClientModule(module);
+  }
+  setServerModule(module: TargetModule) {
+    this._projectBuilder.setServerModule(module);
   }
 
   addRuntimePlugin(name: string, runtimePlugin: string): void {

@@ -18,7 +18,8 @@ export const defaultConfig: IApiConfig = {
   rootDir: process.cwd(),
   outputPath: 'dist',
   platform: {
-    name: 'react',
+    name: 'web',
+    framework: 'react',
     target: 'ssr'
   },
   publicDir: 'public',

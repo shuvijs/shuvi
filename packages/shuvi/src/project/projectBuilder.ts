@@ -6,7 +6,7 @@ import {
   ProjectContext,
   createProjectContext,
   UserModule,
-  RuntimeCoreModule
+  TargetModule
 } from './projectContext';
 
 interface ProjectBuilderOptions {
@@ -46,6 +46,10 @@ class ProjectBuilder {
     this._projectContext.entryCodes.push(content);
   }
 
+  addEntryCodeToTop(content: string) {
+    this._projectContext.entryCodes.unshift(content);
+  }
+
   setEntryWrapperContent(content: string) {
     this._projectContext.entryWrapperContent = content;
   }
@@ -73,8 +77,11 @@ class ProjectBuilder {
   setPlatformModule(module: string) {
     this._projectContext.platformModule = module;
   }
-  setRuntimeCoreModule(module: RuntimeCoreModule) {
-    this._projectContext.runtimeCoreModule = module;
+  setClientModule(module: TargetModule) {
+    this._projectContext.clientModule = module;
+  }
+  setServerModule(module: TargetModule) {
+    this._projectContext.serverModule = module;
   }
 
   addService(source: string, exported: string, filepath: string): void {
@@ -130,4 +137,4 @@ class ProjectBuilder {
   }
 }
 
-export { ProjectBuilder, UserModule, RuntimeCoreModule };
+export { ProjectBuilder, UserModule, TargetModule };
