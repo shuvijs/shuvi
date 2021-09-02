@@ -7,7 +7,8 @@ import fs from 'fs';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import ModifyChunkPlugin from './plugins/modify-chunk-plugin';
 import DomEnvPlugin from './plugins/dom-env-plugin';
-import modifyStyle from './modifyStyle';
+import modifyStyle from './modify-style';
+import addBabelPlugins from './add-babel-plugins';
 import {
   resolveAppFile,
   resolveRouterFile,
@@ -126,8 +127,9 @@ export default abstract class PlatformMpBase {
     api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
     api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
     api.addAppExport(resolveAppFile('App'), '{ default as App }');
-    // api.addAppExport(resolveAppFile('head/head'), '{default as Head}');
-    // api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
+    api.addAppExport(resolveAppFile('Head'), '{default as Head}');
+    // api.addAppExport(resolveAppFile('getPageData'), '{default as getPageData}');
+    api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
     api.addAppExport(
       resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
@@ -301,6 +303,7 @@ export default abstract class PlatformMpBase {
         config.entryPoints.clear();
         config.optimization.clear();
         modifyStyle(config, this.fileType.style);
+        addBabelPlugins(config);
         config.output.globalObject(this.globalObject);
         config.output.chunkFilename(
           `${
