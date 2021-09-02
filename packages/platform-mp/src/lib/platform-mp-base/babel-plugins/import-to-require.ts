@@ -1,5 +1,6 @@
+// @ts-nocheck
+
 // eg: import(SOURCE) => Promise.resolve(require(SOURCE))
-// @ts-ignore
 import syntax from '@babel/plugin-syntax-dynamic-import';
 
 import {
@@ -7,7 +8,7 @@ import {
   types as BabelTypes,
   template
 } from '@babel/core';
-// import { NodePath } from '@babel/traverse';
+import { NodePath } from '@babel/traverse';
 
 const buildImport = template(`
     Promise.resolve(require(SOURCE))
@@ -17,7 +18,7 @@ export default function ({ types: t }: { types: typeof BabelTypes }) {
   return {
     inherits: syntax,
     visitor: {
-      Import(path: any) {
+      Import(path: NodePath<BabelTypes.Import>) {
         const importArguments = path.parentPath.node.arguments;
         const isString =
           t.isStringLiteral(importArguments[0]) ||

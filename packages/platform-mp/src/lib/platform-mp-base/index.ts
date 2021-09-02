@@ -129,7 +129,7 @@ export default abstract class PlatformMpBase {
     api.addAppExport(resolveAppFile('App'), '{ default as App }');
     api.addAppExport(resolveAppFile('Head'), '{default as Head}');
     // api.addAppExport(resolveAppFile('getPageData'), '{default as getPageData}');
-    // api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
+    api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
     api.addAppExport(
       resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
