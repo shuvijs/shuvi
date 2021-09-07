@@ -1,6 +1,14 @@
 import { Application } from '../application';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 
+/**
+ * @shuvi/app files do not exist, so it needs to be mocked
+ */
+jest.mock('@shuvi/app/core/plugins', () => ({ pluginRecord: {} }), {
+  virtual: true
+});
+jest.mock('@shuvi/app/user/plugin', () => () => {}, { virtual: true });
+
 function getApp({ render }: any = {}) {
   const app = new Application({
     context: {

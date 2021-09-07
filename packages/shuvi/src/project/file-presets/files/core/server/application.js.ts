@@ -5,5 +5,5 @@ const moduleExportProxy = moduleExportProxyCreater();
 
 export default {
   content: (context: ProjectContext) =>
-    moduleExportProxy.getContent(context.runtimeCoreModule.server.application)
+    moduleExportProxy.getContent(context.serverModule.application)
 };
