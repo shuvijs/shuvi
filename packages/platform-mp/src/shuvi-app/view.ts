@@ -7,6 +7,7 @@ import ReactDOM from 'react-dom';
 export default {
   // @ts-ignore
   renderApp({ AppComponent }) {
+    // @ts-ignore
     window.__taroAppConfig = appConfig;
     // @ts-ignore
     App(createReactApp(AppComponent, React, ReactDOM, appConfig));

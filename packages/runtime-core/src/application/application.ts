@@ -8,6 +8,9 @@ import {
 import { Hookable } from '@shuvi/hooks';
 
 import { IRouter } from '@shuvi/router';
+import initPlugins from '@shuvi/app/user/plugin';
+import { pluginRecord } from '@shuvi/app/core/plugins';
+import runPlugins from './runPlugins';
 
 export type IContext = {
   [x: string]: any;
@@ -33,6 +36,8 @@ export class Application<Context extends {}> extends Hookable
     this.router = options.router;
     this._context = options.context;
     this._renderFn = options.render;
+    const tap = this.tap.bind(this);
+    runPlugins({ tap, initPlugins, pluginRecord });
   }
 
   async run() {

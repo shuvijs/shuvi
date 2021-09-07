@@ -33,6 +33,7 @@ export type IHookAppRoutesFile = defineHook<
     initialValue: string;
   }
 >;
+export type IHookBeforeProjectBuild = defineHook<'projectBuilder:beforeBuild'>;
 
 export type IEventAppReady = defineHook<'app:ready'>;
 

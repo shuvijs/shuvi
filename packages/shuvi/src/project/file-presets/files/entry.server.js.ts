@@ -3,5 +3,5 @@ import { ProjectContext } from '../../projectContext';
 
 export default {
   content: (context: ProjectContext) =>
-    moduleExportProxy(context.runtimeCoreModule.server.entry)
+    moduleExportProxy(context.serverModule.entry)
 };

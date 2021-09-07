@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { Runtime } from '@shuvi/types';
 import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 

@@ -1,0 +1,46 @@
+{
+  "name": "@shuvi/platform-web",
+  "version": "0.0.1-rc.32",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/platform-web"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "sideEffects": ["**/shuvi-app/entry/**"],
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "files": [
+    "lib",
+    "shuvi-app"
+  ],
+  "scripts": {
+    "dev": "run-p watch:*",
+    "watch:app": "tsc -p tsconfig.build.app.json -w",
+    "watch:node": "tsc -p tsconfig.build.node.json -w",
+    "prebuild": "rimraf lib shuvi-app",
+    "build": "run-p build:*",
+    "build:app": "tsc -p tsconfig.build.app.json",
+    "build:node": "tsc -p tsconfig.build.node.json"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "dependencies": {
+    "@next/react-refresh-utils": "10.0.5",
+    "@shuvi/app": "^0.0.1-rc.32",
+    "@shuvi/router-react": "^0.0.1-rc.32",
+    "@shuvi/runtime-core": "^0.0.1-rc.32",
+    "@shuvi/shared": "^0.0.1-rc.32",
+    "@shuvi/utils": "^0.0.1-rc.32",
+    "react": "16.13.0",
+    "react-app-polyfill": "2.0.0",
+    "react-dom": "16.13.0",
+    "react-refresh": "0.9.0",
+    "use-subscription": "1.4.1"
+  },
+  "devDependencies": {
+    "@shuvi/types": "^0.0.1-rc.32"
+  }
+}
