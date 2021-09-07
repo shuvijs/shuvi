@@ -8,7 +8,6 @@ import { components } from './runtime/components';
 //import { PACKAGE_NAME } from './constants';
 class PlatformMpWeapp extends PlatformMpBase {
   globalObject = 'wx';
-  runtimePath = `${__dirname}/runtime`;
   template: any = template;
   fileType = {
     templ: '.wxml',
@@ -17,6 +16,7 @@ class PlatformMpWeapp extends PlatformMpBase {
     script: '.js',
     xs: '.wxs'
   };
+  entryPath = `${__dirname}/entry`;
   taroComponentsPath = `${__dirname}/runtime/components-react`;
   modifyTemplate() {
     recursiveMerge(template.internalComponents, components);

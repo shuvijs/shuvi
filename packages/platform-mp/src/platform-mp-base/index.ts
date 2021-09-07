@@ -81,9 +81,9 @@ export default abstract class PlatformMpBase {
   mpPathToRoutesDone: any;
   promiseRoutes: Promise<any>;
   taroComponentsPath?: string;
+  entryPath?: string;
 
   abstract globalObject: string;
-  abstract runtimePath: string | string[];
   abstract fileType: IFileType;
   abstract template: RecursiveTemplate | UnRecursiveTemplate;
 
@@ -124,7 +124,7 @@ export default abstract class PlatformMpBase {
 
     api.setClientModule({
       application: resolveAppFile('application'),
-      entry: resolveAppFile('entry')
+      entry: this.entryPath || resolveAppFile('entry')
     });
 
     api.setPlatformModule(resolveAppFile('index'));
@@ -139,8 +139,6 @@ export default abstract class PlatformMpBase {
       resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
     );
-    // runtime code must run at first
-    api.addEntryCodeToTop(`require('${this.runtimePath}')`);
 
     api.addAppService(resolveRouterFile('lib', 'index'), '*', 'router-mp.js');
   }

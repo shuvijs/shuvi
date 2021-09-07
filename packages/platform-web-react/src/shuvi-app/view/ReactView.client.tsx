@@ -68,7 +68,6 @@ export class ReactClientView implements IReactClientView {
         </HeadManagerContext.Provider>
       </Router>
     );
-    console.warn('render', appContainer);
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
       this._isInitialRender = false;

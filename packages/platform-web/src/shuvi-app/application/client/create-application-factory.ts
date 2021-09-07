@@ -1,9 +1,7 @@
 import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
-import initPlugins from '@shuvi/app/user/plugin';
-import { pluginRecord } from '@shuvi/app/core/plugins';
-import { Application, runPlugins } from '@shuvi/runtime-core';
+import { Application } from '@shuvi/runtime-core';
 import { createRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
 import { Runtime, IApplication } from '@shuvi/types';
@@ -29,12 +27,6 @@ export const createFactory = (historyCreater: () => History) => {
       router,
       context,
       render: options.render
-    });
-
-    runPlugins({
-      tap: app.tap.bind(app),
-      initPlugins,
-      pluginRecord
     });
 
     return app;

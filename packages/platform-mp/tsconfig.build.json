@@ -16,5 +16,5 @@
     "stripInternal": true,
     "noUnusedLocals": false,
   },
-  "include": ["src/lib"]
+  "include": ["src"]
 }

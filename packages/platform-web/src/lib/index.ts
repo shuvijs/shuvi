@@ -30,7 +30,6 @@ const platform: Runtime.IRuntime<any> = {
       application: resolveAppFile('application', 'client', ApplicationModule),
       entry: resolveAppFile('entry', 'client')
     });
-    api.addEntryCode(`import '${resolveAppFile('entry', 'client')}'`);
 
     // install framework
     const { framework = 'react' } = api.config.platform || {};

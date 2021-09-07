@@ -47,7 +47,7 @@ export interface ProjectContext {
 
 export const createProjectContext = () =>
   reactive<ProjectContext>({
-    entryCodes: ['require("@shuvi/app/core/client/entry")'], // it has a default entryPoint
+    entryCodes: [],
     routesContent: 'export default []',
     apiRoutesContent: 'export default []',
     entryWrapperContent: '',

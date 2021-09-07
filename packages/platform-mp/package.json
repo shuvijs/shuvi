@@ -8,9 +8,7 @@
   },
   "author": "liximomo",
   "license": "MIT",
-  "sideEffects": [
-    "**/shuvi-app/entry/**"
-  ],
+  "sideEffects": true,
   "main": "./lib/index.js",
   "module": "./es/index.js",
   "files": [
@@ -18,13 +16,9 @@
     "shuvi-app"
   ],
   "scripts": {
-    "dev": "run-p watch:*",
-    "watch:app": "tsc -p tsconfig.build.app.json -w",
-    "watch:node": "tsc -p tsconfig.build.node.json -w",
-    "prebuild": "rimraf lib shuvi-app",
-    "build": "run-p build:*",
-    "build:app": "tsc -p tsconfig.build.app.json",
-    "build:node": "tsc -p tsconfig.build.node.json"
+    "dev": "tsc -p tsconfig.build.json -w",
+    "prebuild": "rimraf lib",
+    "build": "tsc -p tsconfig.build.json"
   },
   "engines": {
     "node": ">= 12.0.0"

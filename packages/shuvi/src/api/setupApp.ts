@@ -76,6 +76,9 @@ export async function setupApp(api: Api) {
     ]
   });
 
+  // set the content of @shuvi/app/entry.client.js
+  api.addEntryCode('import "@shuvi/app/core/client/entry"');
+
   // set the content of @shuvi/app/entry.client-wrapper.js
   // entry.client-wrapper just import or dynamicly import `entry.client.js`
   let entryFile = "'@shuvi/app/entry.client'";

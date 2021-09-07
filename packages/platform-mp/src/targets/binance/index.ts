@@ -6,8 +6,8 @@ import template from './template';
 //import { PACKAGE_NAME } from './constants';
 class PlatformMpBinance extends PlatformMpBase {
   globalObject = 'globalThis';
-  runtimePath = `${__dirname}/runtime`;
   taroComponentsPath = `${__dirname}/runtime/components-react`;
+  entryPath = `${__dirname}/entry`;
   template: any = template;
   fileType = {
     templ: '.bxml',

@@ -12,7 +12,7 @@ export interface LoadConfigOptions {
   overrides?: IConfig;
 }
 
-export const defaultConfig: IApiConfig = {
+export const createDefaultConfig: () => IApiConfig = () => ({
   ssr: true,
   env: {},
   rootDir: process.cwd(),
@@ -31,7 +31,7 @@ export const defaultConfig: IApiConfig = {
     prefix: '/api',
     bodyParser: true
   }
-};
+});
 
 export async function loadConfig({
   rootDir = '.',

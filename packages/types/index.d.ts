@@ -133,7 +133,6 @@ export interface IApi extends IHookable {
   readonly helpers: ApiHelpers;
 
   addEntryCode: any;
-  addEntryCodeToTop: any;
   addAppFile: any;
   addAppExport: any;
   addAppService: any;

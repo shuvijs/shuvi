@@ -13,6 +13,74 @@ interface ProjectBuilderOptions {
   static?: boolean;
 }
 
+type KeyOfProjectBuilder = keyof ProjectBuilder;
+type KeyRelativeMethod = KeyOfProjectBuilder | KeyOfProjectBuilder[];
+interface ContextValidatingRule {
+  ignore?: boolean;
+  method: KeyRelativeMethod;
+}
+
+type ContextValidatingRuleMap = {
+  [key in keyof ProjectContext]: KeyRelativeMethod | ContextValidatingRule;
+};
+
+const contextValidatingRuleMap: ContextValidatingRuleMap = {
+  entryCodes: 'addEntryCode',
+  routesContent: 'setRoutesContent',
+  apiRoutesContent: 'setApiRoutesContent',
+  entryWrapperContent: 'setEntryWrapperContent',
+  polyfills: {
+    ignore: true,
+    method: 'addPolyfill'
+  },
+  services: {
+    ignore: true,
+    method: 'addService'
+  },
+  exports: {
+    ignore: true,
+    method: 'addExport'
+  },
+  runtimePlugins: {
+    ignore: true,
+    method: 'addRuntimePlugin'
+  },
+  runtimeConfigContent: {
+    ignore: true,
+    method: 'setRuntimeConfigContent'
+  },
+  clientModule: 'setClientModule',
+  serverModule: {
+    ignore: true,
+    method: 'setServerModule'
+  },
+  platformModule: 'setPlatformModule',
+  userModule: 'setUserModule'
+};
+
+const isTruthy = (value: unknown, recursive = true): boolean => {
+  if (!value) return false;
+  if (typeof value === 'string') {
+    return Boolean(value);
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  if (value instanceof Map) {
+    return value.size > 0;
+  }
+  if (typeof value === 'object') {
+    if (recursive) {
+      return Object.values(value as Record<string, unknown>).every(x =>
+        isTruthy(x, false)
+      );
+    } else {
+      return true;
+    }
+  }
+  return Boolean(value);
+};
+
 class ProjectBuilder {
   private _projectContext: ProjectContext;
   private _fileManager: FileManager;
@@ -44,10 +112,6 @@ class ProjectBuilder {
 
   addEntryCode(content: string) {
     this._projectContext.entryCodes.push(content);
-  }
-
-  addEntryCodeToTop(content: string) {
-    this._projectContext.entryCodes.unshift(content);
   }
 
   setEntryWrapperContent(content: string) {
@@ -134,6 +198,28 @@ class ProjectBuilder {
 
   async stopBuild(): Promise<void> {
     await this._fileManager.unmount();
+  }
+  /**
+   * will throw an error if validate fails
+   */
+  validateCompleteness(caller: string): void {
+    let key: keyof ProjectContext;
+    for (key in contextValidatingRuleMap) {
+      const rule = contextValidatingRuleMap[key];
+      if (rule && (rule as ContextValidatingRule).ignore) {
+        continue;
+      }
+      const contextValue = this._projectContext[key];
+      if (!isTruthy(contextValue)) {
+        const method =
+          (rule as ContextValidatingRule).method || (rule as KeyRelativeMethod);
+        const methods = Array.isArray(method) ? method : [method];
+        const warningText = `Shuvi-app file completeness validation failed. ${key} not set. Please make sure that ${methods
+          .map((x: string) => `${caller}.${x}`)
+          .join(' or ')} has been called`;
+        throw new Error(warningText);
+      }
+    }
   }
 }
 

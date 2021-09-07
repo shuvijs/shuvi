@@ -13,15 +13,11 @@ const apiProps: Array<keyof IApi> = [
   'on',
   'emitEvent',
   'addEntryCode',
-  'addEntryCodeToTop',
   'addAppFile',
   'addAppExport',
   'addAppService',
   'addAppPolyfill',
   'addRuntimePlugin',
-  'setPlatformModule',
-  'setClientModule',
-  'setServerModule',
   'resolveAppFile',
   'resolveUserFile',
   'resolveBuildFile',
@@ -47,7 +43,6 @@ class PluginApi implements IApi {
   emitEvent: any;
 
   addEntryCode: any;
-  addEntryCodeToTop: any;
   addAppFile: any;
   addAppExport: any;
   addAppService: any;
