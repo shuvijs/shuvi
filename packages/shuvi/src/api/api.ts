@@ -12,7 +12,7 @@ import {
 import {
   ProjectBuilder,
   UserModule,
-  RuntimeCoreModule,
+  TargetModule,
   FileOptions,
   fileSnippets
 } from '../project';
@@ -25,7 +25,7 @@ import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
 import { PUBLIC_PATH, ROUTE_NOT_FOUND_NAME } from '../constants';
 import initRuntime from '../lib/initRuntime';
-import { defaultConfig, IConfig, loadConfig } from '../config';
+import { createDefaultConfig, IConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
@@ -123,7 +123,7 @@ class Api extends Hookable implements IApi {
       configFile: this._configFile,
       overrides: this._userConfig
     });
-    this._config = deepmerge(defaultConfig, configFromFile);
+    this._config = deepmerge(createDefaultConfig(), configFromFile);
     const {
       ssr,
       router: { history }
@@ -238,6 +238,7 @@ class Api extends Hookable implements IApi {
   async buildApp(): Promise<void> {
     await setupApp(this);
     this.removeBuiltFiles();
+    this._projectBuilder.validateCompleteness('api');
     await this._projectBuilder.build(this.paths.appDir);
     this.emitEvent<APIHooks.IEventAppReady>('app:ready');
   }
@@ -300,8 +301,11 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.addPolyfill(file);
   }
 
-  setRuntimeCoreModule(module: RuntimeCoreModule) {
-    this._projectBuilder.setRuntimeCoreModule(module);
+  setClientModule(module: TargetModule) {
+    this._projectBuilder.setClientModule(module);
+  }
+  setServerModule(module: TargetModule) {
+    this._projectBuilder.setServerModule(module);
   }
 
   addRuntimePlugin(name: string, runtimePlugin: string): void {
@@ -408,7 +412,7 @@ class Api extends Hookable implements IApi {
 
     // Runtime installation need to be executed before initializing presets and plugins
     // to make sure shuvi entry file at the top.
-    this.runtime.install(this.getPluginApi());
+    this.runtime.install(this);
     runPlugins();
   }
 

@@ -1,4 +1,4 @@
-import { APIHooks } from '@shuvi/types';
+import { APIHooks, WebpackChain } from '@shuvi/types';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
   createCodeFrameFormatter
@@ -48,6 +48,8 @@ interface Target {
 }
 
 const logger = Logger('shuvi:bundler');
+
+const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
 class WebpackBundler {
   private _api: Api;
@@ -334,16 +336,18 @@ class WebpackBundler {
     );
 
     const targets: Target[] = [];
-
-    const clientConfig = clientChain.toConfig();
-    logger.debug('Client Config');
-    logger.debug(inspect(clientConfig.resolve?.plugins, { depth: 10 }));
-    targets.push({ name: BUNDLER_TARGET_CLIENT, config: clientConfig });
-
-    const serverConfig = serverChain.toConfig();
-    logger.debug('Server Config');
-    logger.debug(inspect(serverConfig.module, { depth: 10 }));
-    // targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
+    if (hasEntry(clientChain)) {
+      const clientConfig = clientChain.toConfig();
+      logger.debug('Client Config');
+      logger.debug(inspect(clientConfig.resolve?.plugins, { depth: 10 }));
+      targets.push({ name: BUNDLER_TARGET_CLIENT, config: clientConfig });
+    }
+    if (hasEntry(serverChain)) {
+      const serverConfig = serverChain.toConfig();
+      logger.debug('Server Config');
+      logger.debug(inspect(serverConfig.module, { depth: 10 }));
+      targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
+    }
 
     return targets;
   }

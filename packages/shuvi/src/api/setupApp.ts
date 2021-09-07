@@ -1,4 +1,6 @@
 import path from 'path';
+import { APIHooks } from '@shuvi/types';
+
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import { renameFilepathToComponent } from '../lib/routes';
@@ -74,38 +76,9 @@ export async function setupApp(api: Api) {
     ]
   });
 
-  const {
-    ssr,
-    router: { history }
-  } = api.config;
-  let historyModule;
-  if (history === 'browser') {
-    historyModule = 'create-browser';
-  } else if (history === 'hash') {
-    historyModule = 'create-hash';
-  } else {
-    historyModule = 'create-memory';
-  }
-  api.setRuntimeCoreModule({
-    client: {
-      application: resolveRuntimeCoreFile(
-        'application',
-        'create-application-client'
-      ),
-      history: resolveRuntimeCoreFile('application', 'history', historyModule)
-    },
-    server: {
-      application: resolveRuntimeCoreFile(
-        'application',
-        ssr ? 'create-application-server' : 'create-application-server-spa'
-      ),
-      entry: resolveRuntimeCoreFile('entry', 'server', 'index')
-    }
-  });
+  // set the content of @shuvi/app/entry.client.js
+  api.addEntryCode('import "@shuvi/app/core/client/entry"');
 
-  api.addEntryCode(
-    `require('${resolveRuntimeCoreFile('entry', 'client', 'index')}')`
-  );
   // set the content of @shuvi/app/entry.client-wrapper.js
   // entry.client-wrapper just import or dynamicly import `entry.client.js`
   let entryFile = "'@shuvi/app/entry.client'";
@@ -132,7 +105,17 @@ export async function setupApp(api: Api) {
     '{ default as getRuntimeConfig }'
   );
 
-  const { routes } = api.config;
+  await setupRoutes(api);
+  await api.callHook<APIHooks.IHookBeforeProjectBuild>(
+    'projectBuilder:beforeBuild'
+  );
+}
+
+async function setupRoutes(api: Api) {
+  const {
+    paths,
+    config: { apiRoutes, routes }
+  } = api;
   if (Array.isArray(routes)) {
     await api.setRoutes(routes);
   } else {
@@ -146,8 +129,6 @@ export async function setupApp(api: Api) {
       await api.setRoutes(renameFilepathToComponent(tempRoutes));
     }
   }
-
-  const { apiRoutes } = api.config;
   if (Array.isArray(apiRoutes) && apiRoutes.length) {
     await api.setApiRoutes(apiRoutes);
   } else {

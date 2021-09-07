@@ -13,16 +13,9 @@ export interface ApplicationModule {
   server: string;
 }
 
-// set at runtime-core
-export interface RuntimeCoreModule {
-  client: {
-    application: string;
-    history: string;
-  };
-  server: {
-    application: string;
-    entry: string;
-  };
+export interface TargetModule {
+  application: string;
+  entry: string;
 }
 
 export type ShuviEntryModule = ApplicationModule;
@@ -46,9 +39,10 @@ export interface ProjectContext {
   exports: Map<string, string[]>;
   runtimePlugins: Map<string, string>;
   runtimeConfigContent: string | null;
-  runtimeCoreModule: RuntimeCoreModule;
   platformModule: string;
   userModule: UserModule;
+  clientModule: TargetModule;
+  serverModule: TargetModule;
 }
 
 export const createProjectContext = () =>
@@ -62,15 +56,13 @@ export const createProjectContext = () =>
     exports: new Map(),
     runtimePlugins: new Map(),
     runtimeConfigContent: null,
-    runtimeCoreModule: {
-      client: {
-        application: '',
-        history: ''
-      },
-      server: {
-        application: '',
-        entry: ''
-      }
+    clientModule: {
+      application: '',
+      entry: ''
+    },
+    serverModule: {
+      application: '',
+      entry: ''
     },
     platformModule: '',
     userModule: {
