@@ -317,6 +317,7 @@ export default abstract class PlatformMpBase {
           }.js`
         );
         config.plugins.delete('private/module-replace-plugin');
+        config.output.publicPath('');
         config.merge({
           entry,
           resolve: {
@@ -345,15 +346,15 @@ export default abstract class PlatformMpBase {
               '@binance/mp-api': '@tarojs/api',
               '@binance/http': path.join(
                 PACKAGE_RESOLVED,
-                'lib/bundler/adapters/http/index'
+                'lib/platform-mp-base/adapters/http/index'
               ),
               '@binance/fetch': path.join(
                 PACKAGE_RESOLVED,
-                'lib/bundler/adapters/fetch'
+                'lib/platform-mp-base/adapters/fetch'
               ),
               'i18next-browser-languagedetector': path.join(
                 PACKAGE_RESOLVED,
-                'lib/bundler/adapters/i18n/LanguageDetector/index'
+                'lib/platform-mp-base/adapters/i18n/LanguageDetector/index'
               )
             }
           },
@@ -418,6 +419,7 @@ export default abstract class PlatformMpBase {
           .use('file-loader');
         fileLoader.options({
           name: '[path][name].[ext]',
+          esModule: false,
           useRelativePath: true,
           context: api.paths.srcDir,
           publicPath: '/'
