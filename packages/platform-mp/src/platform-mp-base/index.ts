@@ -318,6 +318,16 @@ export default abstract class PlatformMpBase {
         );
         config.plugins.delete('private/module-replace-plugin');
         config.output.publicPath('');
+        config.plugins.get('define').tap(args => {
+          return [
+            {
+              ...(args[0] || {}),
+              ENABLE_INNER_HTML: true,
+              ENABLE_ADJACENT_HTML: true,
+              ENABLE_SIZE_APIS: false
+            }
+          ];
+        });
         config.merge({
           entry,
           resolve: {
