@@ -1,7 +1,8 @@
 import md5 from 'md5';
 import { fetch } from '../fetch';
-import { getCookie } from '../cookieLib';
+// import { getCookie } from '../cookieLib'
 import { config, getLocaleLanguage } from './init';
+
 const isClient = !!(typeof window !== 'undefined' && window.document);
 
 // TODO: 删除
@@ -119,7 +120,7 @@ const generateHeader = async (uuid: string, options: Options) => {
 
 const addAuthHeader = (options: any) => {
   if (typeof window === 'undefined') return options;
-  const csrftoken = getCookie('cr00');
+  const csrftoken = null;
   options.headers = options.headers || {};
   if (!options.headers.csrftoken) {
     options.headers.csrftoken = md5(csrftoken || '');
@@ -180,6 +181,7 @@ const request = async (url: string, opts: any, params?: any, page?: string) => {
     if (_bodyBlob && _bodyBlob.type === 'application/vnd.ms-excel') {
       return res.blob();
     }
+
     const result = await res.json();
     return result;
   } catch (err) {
@@ -249,14 +251,25 @@ function protocol(domain: string) {
 }
 
 declare var bn: any;
+declare var __mp_private_api__: any;
 
 export function fetchOrigin() {
   return {
     fetch: (url: string, options: any = {}) => {
-      return bn.request({
-        url,
-        ...options
-      });
+      if (
+        typeof __mp_private_api__ !== 'undefined' &&
+        typeof __mp_private_api__.request === 'function'
+      ) {
+        return __mp_private_api__.request({
+          url,
+          ...options
+        });
+      } else {
+        return bn.request({
+          url,
+          ...options
+        });
+      }
     }
   };
 }

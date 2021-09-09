@@ -4,7 +4,7 @@ import Taro, { navigateTo } from '@binance/mp-service'
 // import consoleLogMain from '../../utils/consoleLogMain'
 import { getRuntimeConfig, useCurrentRoute, Head, getPageData, dynamic } from '@shuvi/app';
 import { Link } from '@shuvi/services/router-mp';
-
+import Extend from '../../components/extend'
 const Welcome = dynamic(() => import("../../components/welcome"));
 const Nested = dynamic(() => import("../../components/nested1"));
 const Hello = dynamic(async () => {
@@ -64,6 +64,7 @@ function IndexPage ({success, routePropsTest}) {
       <Nested />
       <Welcome name="normal" />
       <Welcome name="dynamic" />
+      <Extend />
     </View>
   )
 }

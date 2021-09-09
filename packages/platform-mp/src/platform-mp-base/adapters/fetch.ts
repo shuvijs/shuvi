@@ -1,4 +1,4 @@
-import { getCookiesStr } from './cookieLib';
+// import { getCookiesStr } from './cookieLib'
 
 export interface IFetchOptions {
   body?: any;
@@ -7,17 +7,33 @@ export interface IFetchOptions {
 }
 
 declare var bn: any;
+declare var __mp_private_api__: any;
 
 export function fetch(url: string, options: IFetchOptions = {}) {
   const { headers, ...rest } = options;
 
-  return bn.request({
-    url,
-    headers: {
-      'content-type': 'application/json',
-      Cookie: getCookiesStr(),
-      ...headers
-    },
-    ...rest
-  });
+  if (
+    typeof __mp_private_api__ !== 'undefined' &&
+    typeof __mp_private_api__.request === 'function'
+  ) {
+    return __mp_private_api__.request({
+      url,
+      headers: {
+        'content-type': 'application/json',
+        // Cookie: getCookiesStr(),
+        ...headers
+      },
+      ...rest
+    });
+  } else {
+    return bn.request({
+      url,
+      headers: {
+        'content-type': 'application/json',
+        // Cookie: getCookiesStr(),
+        ...headers
+      },
+      ...rest
+    });
+  }
 }

@@ -317,6 +317,20 @@ export default abstract class PlatformMpBase {
           }.js`
         );
         config.plugins.delete('private/module-replace-plugin');
+        config.output.publicPath('');
+        config.plugins.get('define').tap(args => {
+          return [
+            {
+              ...(args[0] || {}),
+              ENABLE_INNER_HTML: true,
+              ENABLE_ADJACENT_HTML: true,
+              ENABLE_SIZE_APIS: false,
+              ['process.env.' +
+              `${api.config.platform?.name}_${api.config.platform?.target}`.toUpperCase()]: api
+                .config.platform?.target
+            }
+          ];
+        });
         config.merge({
           entry,
           resolve: {
@@ -345,15 +359,15 @@ export default abstract class PlatformMpBase {
               '@binance/mp-api': '@tarojs/api',
               '@binance/http': path.join(
                 PACKAGE_RESOLVED,
-                'lib/bundler/adapters/http/index'
+                'lib/platform-mp-base/adapters/http/index'
               ),
               '@binance/fetch': path.join(
                 PACKAGE_RESOLVED,
-                'lib/bundler/adapters/fetch'
+                'lib/platform-mp-base/adapters/fetch'
               ),
               'i18next-browser-languagedetector': path.join(
                 PACKAGE_RESOLVED,
-                'lib/bundler/adapters/i18n/LanguageDetector/index'
+                'lib/platform-mp-base/adapters/i18n/LanguageDetector/index'
               )
             }
           },
@@ -397,6 +411,16 @@ export default abstract class PlatformMpBase {
           }
         });
 
+        // https://webpack.js.org/configuration/resolve/#resolveextensions
+        // Attempt to resolve these extensions in order
+        const extensions = config.resolve.extensions.values();
+        config.resolve.extensions.clear();
+        config.resolve.extensions.merge(
+          extensions
+            .map(extend => `.${api.config.platform?.target}${extend}`)
+            .concat(extensions)
+        );
+
         config.plugin('DomEnvPlugin').use(DomEnvPlugin);
         config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
           {
@@ -418,6 +442,7 @@ export default abstract class PlatformMpBase {
           .use('file-loader');
         fileLoader.options({
           name: '[path][name].[ext]',
+          esModule: false,
           useRelativePath: true,
           context: api.paths.srcDir,
           publicPath: '/'
