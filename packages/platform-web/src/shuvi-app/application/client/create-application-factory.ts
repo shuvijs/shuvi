@@ -1,10 +1,10 @@
 import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
-import { Application } from '@shuvi/runtime-core';
+import { Application, IApplication } from '@shuvi/platform-core';
 import { createRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
-import { Runtime, IApplication } from '@shuvi/types';
+import { Runtime } from '@shuvi/types';
 declare let __SHUVI: any;
 let app: IApplication;
 let history: History;

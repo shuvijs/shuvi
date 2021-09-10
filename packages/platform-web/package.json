@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@shuvi/app": "^0.0.1-rc.32",
-    "@shuvi/runtime-core": "^0.0.1-rc.32",
+    "@shuvi/platform-core": "^0.0.1-rc.32",
     "@shuvi/shared": "^0.0.1-rc.32"
   },
   "devDependencies": {

@@ -1,4 +1,6 @@
 import { Runtime } from '@shuvi/types';
+import { IRouter } from '@shuvi/router'
+import { IApplication } from '@shuvi/runtime-core';
 import { Api } from '../api';
 
 export interface IRendererConstructorOptions {
@@ -6,9 +8,9 @@ export interface IRendererConstructorOptions {
 }
 
 export type IRenderDocumentOptions = {
-  app: Runtime.IApplication;
+  app: IApplication;
   AppComponent: any;
-  router?: Runtime.IRouter;
+  router?: IRouter;
   appContext: any;
   render?: Runtime.IServerModule['render'];
 };

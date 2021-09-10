@@ -78,8 +78,8 @@ export function createWebpackConfig(
     path.join(paths.appDir, 'services')
   );
   chain.resolve.alias.set(
-    '@shuvi/runtime-core',
-    path.dirname(require.resolve('@shuvi/runtime-core/package.json'))
+    '@shuvi/platform-core',
+    path.dirname(require.resolve('@shuvi/platform-core/package.json'))
   );
   chain.output.set('filename', ({ chunk }: { chunk: { name: string } }) => {
     // Use `[name]-[contenthash].js` in production
