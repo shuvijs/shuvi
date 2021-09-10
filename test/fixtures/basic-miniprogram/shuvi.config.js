@@ -2,7 +2,7 @@ module.exports = {
   ssr: false,
   platform: {
     name: 'mp',
-    target: 'binance'
+    target: 'bmp'
   },
   router: {
     history: 'memory'
