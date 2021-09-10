@@ -4,7 +4,7 @@ import template from './template';
 
 //export default new PlatformTaro();
 //import { PACKAGE_NAME } from './constants';
-class PlatformMpBinance extends PlatformMpBase {
+class PlatformMpBmp extends PlatformMpBase {
   globalObject = 'globalThis';
   taroComponentsPath = `${__dirname}/runtime/components-react`;
   entryPath = `${__dirname}/entry`;
@@ -17,4 +17,4 @@ class PlatformMpBinance extends PlatformMpBase {
     xs: '.bxs'
   };
 }
-export default PlatformMpBinance;
+export default PlatformMpBmp;
