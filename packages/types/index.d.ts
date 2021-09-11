@@ -1,11 +1,9 @@
-import * as AppHooks from './src/application-hooks';
-import { IHookable, Hookable } from '@shuvi/hooks';
+import { IHookable, Hookable } from '@shuvi/hook';
 import WebpackChain from 'webpack-chain';
 import webpack from 'webpack';
 import * as Runtime from './src/runtime';
 import * as Bundler from './src/bundler';
 import * as APIHooks from './src/hooks';
-export * from './src/application';
 export * from './src/apiRoute';
 export { webpack, WebpackChain };
 export { IHookable, Hookable };
@@ -13,7 +11,7 @@ interface ITemplateData {
   [x: string]: any;
 }
 
-export { Runtime, Bundler, APIHooks, AppHooks, ITemplateData };
+export { Runtime, Bundler, APIHooks, ITemplateData };
 
 export type IShuviMode = 'development' | 'production';
 

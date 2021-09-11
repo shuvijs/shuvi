@@ -7,18 +7,13 @@ import {
   IApplication,
   IAppRenderFn,
   IRenderOptions,
-  IAppPlugin,
-  IInitAppPlugins,
-  IAppPluginRecord
-} from './application';
+} from '@shuvi/runtime-core'
 
 import {
   IRouteMatch,
   IRouteRecord,
-  IPartialRouteRecord,
   IRouter,
   IParams,
-  History
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 import { IApi, IRouterHistoryMode } from '../index';
@@ -30,15 +25,6 @@ export {
   IUserRouteConfig,
   IAppRouteConfig,
   IApiRouteConfig,
-  IApplication,
-  IAppPlugin,
-  IInitAppPlugins,
-  IAppPluginRecord,
-  IRouteRecord,
-  IPartialRouteRecord,
-  IRouter,
-  IParams,
-  History
 };
 
 export interface IGetRoutes {
@@ -214,9 +200,7 @@ export interface IApplicationCreaterClientContext
 
 export interface ApplicationCreater {
   (
-    context:
-      | IApplicationCreaterClientContext
-      | IApplicationCreaterServerContext,
+    context: IApplicationCreaterContext,
     options: {
       render: IAppRenderFn;
     }
