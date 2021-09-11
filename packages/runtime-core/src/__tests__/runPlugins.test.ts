@@ -1,5 +1,4 @@
-import { IApplication, IAppPluginRecord, IInitAppPlugins } from '@shuvi/types';
-import runPlugins from '../runPlugins';
+import { runPlugins, IApplication, IAppPluginRecord, IInitAppPlugins } from '..';
 
 const initPlugins = jest.fn().mockImplementation(({ applyPluginOption }) => {
   applyPluginOption('testPlugin', {

@@ -1,4 +1,4 @@
-import { defineHook, defineEvent } from './hookable';
+import { defineHook, defineEvent } from '@shuvi/hook';
 
 export type IHookInit = defineHook<'init'>;
 

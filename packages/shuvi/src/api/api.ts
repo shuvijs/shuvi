@@ -19,7 +19,7 @@ import {
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
-import { Hookable } from '@shuvi/hooks';
+import { Hookable } from '@shuvi/hook';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
