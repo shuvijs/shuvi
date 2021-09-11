@@ -1,6 +1,25 @@
-import { IApplication, IAppPluginRecord, IInitAppPlugins } from '@shuvi/types';
+import { IApplication } from './application';
 
-const runPlugins = ({
+export interface IAppPlugin<O extends {} = {}> {
+  (tap: IApplication['tap'], options?: O): void;
+  options?: O;
+}
+
+export type IInitAppPlugins = (params: {
+  applyPluginOption: <T extends {}>(name: string, options: T) => void;
+  registerPlugin: IApplication['tap'];
+}) => void;
+
+export interface IPlugin<O extends {} = {}> {
+  (tap: IApplication['tap'], options?: O): void;
+  options?: O;
+}
+
+export type IAppPluginRecord = {
+  [name: string]: IPlugin;
+};
+
+export const runPlugins = ({
   tap,
   pluginRecord,
   initPlugins
@@ -27,5 +46,3 @@ const runPlugins = ({
 
   Object.values(pluginRecord).forEach(fn => fn(tap, fn.options));
 };
-
-export default runPlugins;

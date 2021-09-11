@@ -1,0 +1,26 @@
+{
+  "name": "@shuvi/hook",
+  "version": "0.0.1-rc.32",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "scripts": {
+    "dev": "run-p watch:*",
+    "watch:esm": "tsc -p tsconfig.build.esm.json -w",
+    "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
+    "prebuild": "rimraf lib esm",
+    "build": "run-p build:*",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "build:cjs": "tsc -p tsconfig.build.cjs.json"
+  },
+  "author": "Zheng Yu Tay",
+  "dependencies": {}
+}

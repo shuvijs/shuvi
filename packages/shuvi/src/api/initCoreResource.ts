@@ -24,7 +24,7 @@ function resolveDocument(api: Api) {
     return customDoc;
   }
 
-  return require.resolve('@shuvi/runtime-core/template/document.ejs');
+  return require.resolve('@shuvi/platform-core/template/document.ejs');
 }
 
 export function initCoreResource(api: Api) {

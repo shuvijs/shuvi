@@ -1,7 +1,7 @@
 import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
-import { Application } from '@shuvi/runtime-core';
+import { Application } from '@shuvi/platform-core';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 import { Runtime } from '@shuvi/types';
 

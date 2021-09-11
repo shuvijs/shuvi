@@ -1,21 +1,31 @@
-import {
-  IApplication,
-  IAppRenderFn,
-  IRerenderConfig,
-  AppHooks
-} from '@shuvi/types';
-
-import { Hookable } from '@shuvi/hooks';
-
+import * as AppHooks from './hooks';
+import { Hookable } from '@shuvi/hook';
 import { IRouter } from '@shuvi/router';
-import initPlugins from '@shuvi/app/user/plugin';
-import { pluginRecord } from '@shuvi/app/core/plugins';
-import runPlugins from './runPlugins';
 
 export type IContext = {
   [x: string]: any;
 };
+export interface IApplication extends Hookable {
+  AppComponent: any;
+  router?: IRouter;
+  run(): Promise<{ [k: string]: any }>;
+  rerender(config?: IRerenderConfig): Promise<void>;
+  dispose(): Promise<void>;
+}
+export interface IRenderOptions<CompType = any> {
+  AppComponent: CompType;
+  router?: IRouter;
+  appContext: Record<string, any>;
+  render?: (renderAppToString: () => string, appContext: any) => string;
+}
+export interface IAppRenderFn {
+  (options: IRenderOptions): Promise<any>;
+}
 
+export type IRerenderConfig = {
+  AppComponent?: any;
+  router?: IRouter;
+};
 export interface IApplicationOptions<Context> {
   AppComponent: any;
   router?: IRouter;
@@ -36,8 +46,6 @@ export class Application<Context extends {}> extends Hookable
     this.router = options.router;
     this._context = options.context;
     this._renderFn = options.render;
-    const tap = this.tap.bind(this);
-    runPlugins({ tap, initPlugins, pluginRecord });
   }
 
   async run() {

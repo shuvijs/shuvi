@@ -2,7 +2,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Runtime } from '@shuvi/types';
 import { Router } from '@shuvi/router-react';
-import { createRedirector } from '@shuvi/router';
+import { createRedirector, IParams } from '@shuvi/router';
 import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
@@ -12,7 +12,6 @@ import { Head } from '../head';
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
 import IHtmlTag = Runtime.IHtmlTag;
-import IParams = Runtime.IParams;
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
