@@ -2,6 +2,7 @@ import path from 'path';
 import { APIHooks } from '@shuvi/types';
 
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
+import { enhancedExts } from '@shuvi/shared/lib/enhancedExts';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import { renameFilepathToComponent } from '../lib/routes';
 import { renameFilepathToModule } from '../lib/apiRoutes';
@@ -9,8 +10,9 @@ import { Route } from '../route';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
 import { Api } from './api';
+
 function withExts(file: string, extensions: string[]): string[] {
-  return extensions.map(ext => `${file}.${ext}`);
+  return extensions.map(ext => `${file}${ext}`);
 }
 
 export async function setupApp(api: Api) {
@@ -49,9 +51,15 @@ export async function setupApp(api: Api) {
     }
   });
   const { useTypeScript } = await getTypeScriptInfo(paths.rootDir);
-  const moduleFileExtensions = useTypeScript
-    ? ['tsx', 'ts', 'js', 'jsx']
-    : ['js', 'jsx', 'tsx', 'ts'];
+
+  let moduleFileExtensions = useTypeScript
+    ? ['.tsx', '.ts', '.js', '.jsx']
+    : ['.js', '.jsx', '.tsx', '.ts'];
+
+  moduleFileExtensions = enhancedExts(
+    moduleFileExtensions,
+    config.platform?.target!
+  );
 
   api.setUserModule({
     app: [

@@ -1,6 +1,7 @@
 import path from 'path';
 import { IApi, APIHooks, Runtime } from '@shuvi/types';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
+import { enhancedExts } from '@shuvi/shared/lib/enhancedExts';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';
@@ -416,9 +417,7 @@ export default abstract class PlatformMpBase {
         const extensions = config.resolve.extensions.values();
         config.resolve.extensions.clear();
         config.resolve.extensions.merge(
-          extensions
-            .map(extend => `.${api.config.platform?.target}${extend}`)
-            .concat(extensions)
+          enhancedExts(extensions, api.config.platform?.target!)
         );
 
         config.plugin('DomEnvPlugin').use(DomEnvPlugin);
@@ -447,6 +446,7 @@ export default abstract class PlatformMpBase {
           context: api.paths.srcDir,
           publicPath: '/'
         });
+
         return config;
       }
     });
