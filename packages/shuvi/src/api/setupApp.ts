@@ -9,8 +9,9 @@ import { Route } from '../route';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
 import { Api } from './api';
+
 function withExts(file: string, extensions: string[]): string[] {
-  return extensions.map(ext => `${file}.${ext}`);
+  return extensions.map(ext => `${file}${ext}`);
 }
 
 export async function setupApp(api: Api) {
@@ -49,9 +50,10 @@ export async function setupApp(api: Api) {
     }
   });
   const { useTypeScript } = await getTypeScriptInfo(paths.rootDir);
-  const moduleFileExtensions = useTypeScript
-    ? ['tsx', 'ts', 'js', 'jsx']
-    : ['js', 'jsx', 'tsx', 'ts'];
+
+  let moduleFileExtensions = useTypeScript
+    ? ['.tsx', '.ts', '.js', '.jsx']
+    : ['.js', '.jsx', '.tsx', '.ts'];
 
   api.setUserModule({
     app: [

@@ -71,6 +71,10 @@ const getWatcher = (
   });
 };
 
+export function removeExt(filePath: string): string {
+  return filePath.replace(/(.*)\.(.*?)$/, '$1');
+}
+
 export const moduleExportProxyCreater = () => {
   let fileState: { file: string | string[] };
   let watcher: () => void;
@@ -103,11 +107,13 @@ export const moduleExportProxyCreater = () => {
       watcher = getWatcher(fileState, lookups, fallback);
     }
     let statements: string[] = [];
+    // remove Ext
+    const noExtPath = removeExt(fileState.file as string);
     if (defaultExport) {
-      statements.push(`import temp from "${fileState.file}"`);
+      statements.push(`import temp from "${noExtPath}"`);
       statements.push(`export default temp`);
     } else {
-      statements.push(`export * from "${fileState.file}"`);
+      statements.push(`export * from "${noExtPath}"`);
     }
     return statements.join('\n');
   };

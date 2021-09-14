@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import WebpackChain from 'webpack-chain';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
-import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
+// import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import { baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
 import { IWebpackHelpers } from '@shuvi/types/src/bundler';
@@ -33,11 +33,11 @@ export function createBrowserWebpackChain({
     '.json',
     '.wasm'
   ]);
-  if (baseOptions.target) {
-    chain.resolve
-      .plugin('private/prefer-resolver-plugin')
-      .use(PreferResolverPlugin, [{ suffix: baseOptions.target }]);
-  }
+  // if (baseOptions.target) {
+  //   chain.resolve
+  //     .plugin('private/prefer-resolver-plugin')
+  //     .use(PreferResolverPlugin, [{ suffix: baseOptions.target }]);
+  // }
 
   if (dev) {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
