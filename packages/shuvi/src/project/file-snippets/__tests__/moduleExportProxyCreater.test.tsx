@@ -1,7 +1,7 @@
 import fse from 'fs-extra';
 import { readFileSync } from 'fs';
 import { wait } from 'shuvi-test-utils';
-import { moduleExportProxyCreater } from '../moduleExportProxy';
+import { moduleExportProxyCreater, removeExt } from '../moduleExportProxy';
 import { getFileManager, reactive } from '../../file-manager';
 import { resolveFixture } from './utils';
 
@@ -45,7 +45,7 @@ describe('moduleExportProxyCreater', () => {
     });
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      'export * from "fallback.js"'
+      'export * from "fallback"'
     );
     await fm.unmount();
   });
@@ -65,7 +65,7 @@ describe('moduleExportProxyCreater', () => {
     });
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileA}"`
+      `export * from "${removeExt(fileA)}"`
     );
     await fm.unmount();
   });
@@ -85,7 +85,7 @@ describe('moduleExportProxyCreater', () => {
     });
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileA}"`
+      `export * from "${removeExt(fileA)}"`
     );
     await fm.unmount();
   });
@@ -105,14 +105,14 @@ describe('moduleExportProxyCreater', () => {
     });
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "fallback.js"`
+      `export * from "fallback"`
     );
 
     await fse.writeFile(unexistedFileC, '', 'utf8');
     await wait(1000);
 
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${unexistedFileC}"`
+      `export * from "${removeExt(unexistedFileC)}"`
     );
     await safeDelete(unexistedFileC);
     await fm.unmount();
@@ -133,14 +133,14 @@ describe('moduleExportProxyCreater', () => {
     });
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "fallback.js"`
+      `export * from "fallback"`
     );
 
     await fse.writeFile(unexistedFileC, '', 'utf8');
     await wait(1000);
 
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "fallback.js"`
+      `export * from "fallback"`
     );
     await safeDelete(unexistedFileC);
     await fm.unmount();
@@ -161,14 +161,14 @@ describe('moduleExportProxyCreater', () => {
     });
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileA}"`
+      `export * from "${removeExt(fileA)}"`
     );
 
     await fse.writeFile(unexistedFileC, '', 'utf8');
     await wait(1000);
 
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${unexistedFileC}"`
+      `export * from "${removeExt(unexistedFileC)}"`
     );
     await safeDelete(unexistedFileC);
     await fm.unmount();
@@ -190,13 +190,13 @@ describe('moduleExportProxyCreater', () => {
     });
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      'export * from "fallback.js"'
+      'export * from "fallback"'
     );
 
     context.source.unshift(fileA);
     await wait(100);
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileA}"`
+      `export * from "${removeExt(fileA)}"`
     );
     await fm.unmount();
   });
@@ -229,37 +229,37 @@ describe('moduleExportProxyCreater', () => {
 
     await fm.mount(resolveFixture('moduleExportProxyCreater'));
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileA}"`
+      `export * from "${removeExt(fileA)}"`
     );
     expect(readFileSync(file(FILE_RESULT_2), 'utf8')).toBe(
-      `export * from "${fileB}"`
+      `export * from "${removeExt(fileB)}"`
     );
 
     context.source1.unshift(fileB);
     context.source2.unshift(unexistedFileC, fileA);
     await wait(100);
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileB}"`
+      `export * from "${removeExt(fileB)}"`
     );
     expect(readFileSync(file(FILE_RESULT_2), 'utf8')).toBe(
-      `export * from "${fileA}"`
+      `export * from "${removeExt(fileA)}"`
     );
 
     await fse.writeFile(unexistedFileC, '', 'utf8');
     await wait(1000);
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileB}"`
+      `export * from "${removeExt(fileB)}"`
     );
     expect(readFileSync(file(FILE_RESULT_2), 'utf8')).toBe(
-      `export * from "${unexistedFileC}"`
+      `export * from "${removeExt(unexistedFileC)}"`
     );
 
     await safeDelete(unexistedFileC);
     expect(readFileSync(file(FILE_RESULT), 'utf8')).toBe(
-      `export * from "${fileB}"`
+      `export * from "${removeExt(fileB)}"`
     );
     expect(readFileSync(file(FILE_RESULT_2), 'utf8')).toBe(
-      `export * from "${fileA}"`
+      `export * from "${removeExt(fileA)}"`
     );
 
     await fm.unmount();
