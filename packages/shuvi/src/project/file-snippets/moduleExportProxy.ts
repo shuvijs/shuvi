@@ -71,6 +71,10 @@ const getWatcher = (
   });
 };
 
+export function removeExt(filePath: string): string {
+  return filePath.replace(/(.*)\.(.*?)$/, '$1');
+}
+
 export const moduleExportProxyCreater = () => {
   let fileState: { file: string | string[] };
   let watcher: () => void;
@@ -104,7 +108,7 @@ export const moduleExportProxyCreater = () => {
     }
     let statements: string[] = [];
     // remove Ext
-    const noExtPath = (fileState.file as string).replace(/(.*)\.(.*?)$/, '$1');
+    const noExtPath = removeExt(fileState.file as string);
     if (defaultExport) {
       statements.push(`import temp from "${noExtPath}"`);
       statements.push(`export default temp`);
