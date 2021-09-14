@@ -103,11 +103,13 @@ export const moduleExportProxyCreater = () => {
       watcher = getWatcher(fileState, lookups, fallback);
     }
     let statements: string[] = [];
+    // remove Ext
+    const noExtPath = (fileState.file as string).replace(/(.*)\.(.*?)$/, '$1');
     if (defaultExport) {
-      statements.push(`import temp from "${fileState.file}"`);
+      statements.push(`import temp from "${noExtPath}"`);
       statements.push(`export default temp`);
     } else {
-      statements.push(`export * from "${fileState.file}"`);
+      statements.push(`export * from "${noExtPath}"`);
     }
     return statements.join('\n');
   };

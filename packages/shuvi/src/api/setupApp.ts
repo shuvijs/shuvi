@@ -2,7 +2,6 @@ import path from 'path';
 import { APIHooks } from '@shuvi/types';
 
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
-import { enhancedExts } from '@shuvi/shared/lib/enhancedExts';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import { renameFilepathToComponent } from '../lib/routes';
 import { renameFilepathToModule } from '../lib/apiRoutes';
@@ -55,11 +54,6 @@ export async function setupApp(api: Api) {
   let moduleFileExtensions = useTypeScript
     ? ['.tsx', '.ts', '.js', '.jsx']
     : ['.js', '.jsx', '.tsx', '.ts'];
-
-  moduleFileExtensions = enhancedExts(
-    moduleFileExtensions,
-    config.platform?.target!
-  );
 
   api.setUserModule({
     app: [

@@ -1,7 +1,6 @@
 import path from 'path';
 import { IApi, APIHooks, Runtime } from '@shuvi/types';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import { enhancedExts } from '@shuvi/shared/lib/enhancedExts';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';
@@ -414,6 +413,11 @@ export default abstract class PlatformMpBase {
 
         // https://webpack.js.org/configuration/resolve/#resolveextensions
         // Attempt to resolve these extensions in order
+        function enhancedExts(extensions: string[], target: string): string[] {
+          return extensions
+            .map(extend => `.${target}${extend}`)
+            .concat(extensions);
+        }
         const extensions = config.resolve.extensions.values();
         config.resolve.extensions.clear();
         config.resolve.extensions.merge(
