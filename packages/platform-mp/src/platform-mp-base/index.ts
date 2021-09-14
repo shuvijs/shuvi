@@ -413,12 +413,15 @@ export default abstract class PlatformMpBase {
 
         // https://webpack.js.org/configuration/resolve/#resolveextensions
         // Attempt to resolve these extensions in order
+        function enhancedExts(extensions: string[], target: string): string[] {
+          return extensions
+            .map(extend => `.${target}${extend}`)
+            .concat(extensions);
+        }
         const extensions = config.resolve.extensions.values();
         config.resolve.extensions.clear();
         config.resolve.extensions.merge(
-          extensions
-            .map(extend => `.${api.config.platform?.target}${extend}`)
-            .concat(extensions)
+          enhancedExts(extensions, api.config.platform?.target!)
         );
 
         config.plugin('DomEnvPlugin').use(DomEnvPlugin);
@@ -447,6 +450,7 @@ export default abstract class PlatformMpBase {
           context: api.paths.srcDir,
           publicPath: '/'
         });
+
         return config;
       }
     });

@@ -68,6 +68,22 @@ export default function ensureExtractLoader(
         })
         .before('css-loader');
     }
+    if (ruleUses.get('postcss-loader')) {
+      ruleUses.get('postcss-loader').tap(args => {
+        return {
+          sourceMap: args.sourceMap,
+          postcssOptions: {
+            plugins: [
+              ...args.postcssOptions.plugins,
+              require('postcss-url')({
+                limit: 1000,
+                url: 'inline'
+              })
+            ]
+          }
+        };
+      });
+    }
     if (ruleUses.get('sass-loader')) {
       ruleUses.get('sass-loader').tap(args => {
         return {
