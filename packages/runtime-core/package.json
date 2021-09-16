@@ -10,9 +10,7 @@
   "license": "MIT",
   "main": "lib/index.js",
   "files": [
-    "lib",
-    "shuvi-app",
-    "template"
+    "lib"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
@@ -24,8 +22,8 @@
   },
   "dependencies": {
     "@shuvi/hook": "^0.0.1-rc.32",
-    "@shuvi/shared": "^0.0.1-rc.32",
-    "@shuvi/toolpack": "^0.0.1-rc.32"
+    "@shuvi/router": "^0.0.1-rc.32",
+    "@shuvi/shared": "^0.0.1-rc.32"
   },
   "devDependencies": {
     "@types/webpack-env": "^1.16.2"

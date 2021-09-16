@@ -1,23 +1,25 @@
 import path from 'path';
-import { loadConfig } from 'shuvi/lib/config';
+import { getConfigByRootDir } from '@shuvi/service/lib/config';
+import getPlatform from 'shuvi/lib/cli/lib/getPlatform';
 import { build } from './build';
-import { IConfig } from 'shuvi/lib/shuvi';
+import { IApiConfig, IConfig } from '@shuvi/service';
 
 export function resolveFixture(...paths: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...paths);
 }
 
-export async function loadFixture(
+export function loadFixture(
   fixture: string,
   overrides: IConfig = {}
-): Promise<IConfig> {
-  return loadConfig({
+): IApiConfig {
+  return getConfigByRootDir({
     rootDir: resolveFixture(fixture),
     overrides
   });
 }
 
 export async function buildFixture(fixture: string, overrides: IConfig = {}) {
-  const config = await loadFixture(fixture, overrides);
-  await build({ config });
+  const config = loadFixture(fixture, overrides);
+  const platform = getPlatform(config.platform.name);
+  await build({ config, platform });
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 import { Router } from '@shuvi/router-react';
 import { createRedirector, IParams } from '@shuvi/router';
 import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';

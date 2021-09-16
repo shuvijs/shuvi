@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 
 let appData: Runtime.IAppData | null = null;

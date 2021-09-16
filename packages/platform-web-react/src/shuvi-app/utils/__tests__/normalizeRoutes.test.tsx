@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Runtime } from '@shuvi/types/';
+import { Runtime } from '@shuvi/service';
 import { RouterView } from '@shuvi/router-react';
 import { renderRoutes } from './utils';
 import { ReactTestRenderer, act } from 'react-test-renderer';

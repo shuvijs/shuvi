@@ -1,11 +1,7 @@
-// import React from 'react';
+import { recursiveMerge } from '@tarojs/helper';
 import PlatformMpBase from '../../platform-mp-base';
 import template from './template';
-//import { IApi, Runtime } from '@shuvi/types';
-import { recursiveMerge } from '@tarojs/helper';
 import { components } from './runtime/components';
-//export default new PlatformTaro();
-//import { PACKAGE_NAME } from './constants';
 class PlatformMpWeapp extends PlatformMpBase {
   globalObject = 'wx';
   template: any = template;
