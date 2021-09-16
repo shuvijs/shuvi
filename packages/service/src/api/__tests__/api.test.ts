@@ -1,10 +1,10 @@
-import { getApi, IApiConfig, IPaths, PluginApi } from '..';
+import { getApi } from '../api';
+import { PluginApi } from '../pluginApi';
+import { IApiConfig, IPaths } from '..';
 import path from 'path';
 import rimraf from 'rimraf';
 import { resolvePreset, resolvePlugin } from './utils';
 import { readFileSync } from 'fs';
-import getPlatform from '../../lib/getPlatform';
-import { getConfig, getConfigByRootDir } from '../../config';
 
 jest.mock('../initCoreResource', () => ({
   initCoreResource: (api: any) => {
@@ -14,11 +14,8 @@ jest.mock('../initCoreResource', () => ({
 
 describe('api', () => {
   test('should has "production" be default mode', async () => {
-    const config = getConfig({});
-    const platform = getPlatform(config.platform.name);
     const prodApi = await getApi({
-      config,
-      platform
+      config: {}
     });
     expect(prodApi.mode).toBe('production');
   });
@@ -26,13 +23,9 @@ describe('api', () => {
   describe('plugins', () => {
     test('should work', async () => {
       let pluginApi: PluginApi;
-      const config = getConfig({ plugins: [api => (pluginApi = api)] });
-      const platform = getPlatform(config.platform.name);
       const api = await getApi({
-        config,
-        platform
+        config: { plugins: [api => (pluginApi = api)] }
       });
-
       expect(pluginApi!).toBeDefined();
       expect(pluginApi!.paths).toBe(api.paths);
     });
@@ -40,20 +33,18 @@ describe('api', () => {
     test('should access config and paths', async () => {
       let config: IApiConfig;
       let paths: IPaths;
-      config = getConfig({
-        rootDir: path.join(__dirname, 'fixtures', 'dotenv'),
-        publicPath: '/test',
-        plugins: [
-          api => {
-            config = api.config;
-            paths = api.paths;
-          }
-        ]
-      });
-      const platform = getPlatform(config.platform.name);
+
       await getApi({
-        config,
-        platform
+        config: {
+          rootDir: path.join(__dirname, 'fixtures', 'dotenv'),
+          publicPath: '/test',
+          plugins: [
+            api => {
+              config = api.config;
+              paths = api.paths;
+            }
+          ]
+        }
       });
       expect(config!.publicPath).toBe('/test');
       expect(paths!.rootDir).toBe(path.join(__dirname, 'fixtures', 'dotenv'));
@@ -62,13 +53,10 @@ describe('api', () => {
     describe('modifyConfig', () => {
       test('should work', async () => {
         let pluginApi: PluginApi;
-        const config = getConfig({
-          plugins: [resolvePlugin('modify-config'), api => (pluginApi = api)]
-        });
-        const platform = getPlatform(config.platform.name);
         const api = await getApi({
-          config,
-          platform
+          config: {
+            plugins: [resolvePlugin('modify-config'), api => (pluginApi = api)]
+          }
         });
         const plugins = (pluginApi! as any).__plugins;
         expect(plugins.length).toBe(1);
@@ -81,11 +69,8 @@ describe('api', () => {
 
   describe('presets', () => {
     test('should work', async () => {
-      const config = getConfig({ presets: [resolvePreset('a-b-preset')] });
-      const platform = getPlatform(config.platform.name);
       const api = await getApi({
-        config,
-        platform
+        config: { presets: [resolvePreset('a-b-preset')] }
       });
       const plugins = (api as any)._presetPlugins;
       expect(plugins.length).toBe(2);
@@ -94,13 +79,8 @@ describe('api', () => {
     });
 
     test('should work with nested preset', async () => {
-      const config = getConfig({
-        presets: [resolvePreset('nest-preset-preset')]
-      });
-      const platform = getPlatform(config.platform.name);
       const api = await getApi({
-        config,
-        platform
+        config: { presets: [resolvePreset('nest-preset-preset')] }
       });
       const plugins = (api as any)._presetPlugins;
       expect(plugins.length).toBe(3);
@@ -112,11 +92,8 @@ describe('api', () => {
 
   test('getPluginApi', async () => {
     let pluginApi!: PluginApi;
-    const config = getConfig({ plugins: [api => (pluginApi = api)] });
-    const platform = getPlatform(config.platform.name);
     const api = await getApi({
-      config,
-      platform
+      config: { plugins: [api => (pluginApi = api)] }
     });
 
     expect(pluginApi.mode).toBe(api.mode);
@@ -164,30 +141,27 @@ describe('api', () => {
         }
       });
     }
-    const config = getConfig({
-      rootDir: path.join(__dirname, 'fixtures', 'rootDir'),
-      plugins: [
-        api => {
-          api.addAppFile({
-            name: 'fileA.js',
-            content: () => 'test.js'
-          });
-          api.addAppFile({
-            name: '../fileB.js',
-            content: () => 'test.js'
-          });
-          api.addAppFile({
-            name: '/fileC.js',
-            content: () => 'test.js'
-          });
-          api.addAppService('source', 'exported', 'a.js');
-        }
-      ]
-    });
-    const platform = getPlatform(config.platform.name);
     const api = await getApi({
-      config,
-      platform
+      config: {
+        rootDir: path.join(__dirname, 'fixtures', 'rootDir'),
+        plugins: [
+          api => {
+            api.addAppFile({
+              name: 'fileA.js',
+              content: () => 'test.js'
+            });
+            api.addAppFile({
+              name: '../fileB.js',
+              content: () => 'test.js'
+            });
+            api.addAppFile({
+              name: '/fileC.js',
+              content: () => 'test.js'
+            });
+            api.addAppService('source', 'exported', 'a.js');
+          }
+        ]
+      }
     });
     await api.buildApp();
     checkMatch([
@@ -202,14 +176,11 @@ describe('api', () => {
 
   test('should load dotEnv when init', async () => {
     expect(process.env.READ_ENV).toBeUndefined();
-    const config = getConfigByRootDir({
-      rootDir: path.join(__dirname, 'fixtures', 'dotenv')
-    });
-    const platform = getPlatform(config.platform.name);
+
     await getApi({
-      config,
-      platform
+      cwd: path.join(__dirname, 'fixtures', 'dotenv')
     });
+
     expect(process.env.READ_ENV).toBe('true');
   });
 });
