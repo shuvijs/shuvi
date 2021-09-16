@@ -122,6 +122,8 @@ export interface IApiConfig {
   asyncEntry?: boolean;
 }
 
+export type IConfig = Partial<IApiConfig>;
+
 interface ApiHelpers {
   fileSnippets: FileSnippets;
 }

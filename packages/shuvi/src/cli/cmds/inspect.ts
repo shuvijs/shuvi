@@ -1,11 +1,12 @@
 import { inspect } from 'util';
+import path from 'path';
 import program from 'commander';
 import { highlight } from 'cli-highlight';
 import chalk from '@shuvi/utils/lib/chalk';
 import { getApi } from '@shuvi/service';
 import { getBundler } from '@shuvi/service/lib/bundler/bundler';
-import { getConfigFromCli } from '@shuvi/service/lib/config';
-import getPlatform from '@shuvi/service/lib/lib/getPlatform';
+import { getProjectDir, getConfigFromCli } from '../utils';
+
 //@ts-ignore
 import pkgInfo from '../../../package.json';
 
@@ -20,7 +21,7 @@ export default async function main(argv: string[]) {
     .option('--mode <mode>', 'specify env mode (default: development)')
     .option('--verbose', 'show full webpack config')
     .parse(argv, { from: 'user' });
-
+  const cwd = getProjectDir(program);
   const mode = ['development', 'production'].includes(program.mode)
     ? program.mode
     : 'development';
@@ -29,11 +30,11 @@ export default async function main(argv: string[]) {
     NODE_ENV: mode
   });
   const config = getConfigFromCli(program);
-  const platform = getPlatform(config.platform.name);
   const api = await getApi({
+    cwd,
     config,
+    configFile: program.config && path.resolve(cwd, program.config),
     mode,
-    platform,
     phase: 'PHASE_INSPECT_WEBPACK'
   });
   const bundler = getBundler(api);

@@ -1,1 +1,1 @@
-/// <reference types="shuvi/types/app-env" />
+/// <reference types="@shuvi/service/types/app-env" />

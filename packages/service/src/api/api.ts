@@ -11,6 +11,7 @@ import {
 } from './types';
 import * as Runtime from '../types/runtime';
 import * as APIHooks from '../types/hooks';
+import { IConfig } from '..';
 
 import {
   ProjectBuilder,
@@ -20,15 +21,14 @@ import {
   fileSnippets
 } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
-//import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hook';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
 import { PUBLIC_PATH, ROUTE_NOT_FOUND_NAME } from '../constants';
-import initRuntime from '../lib/initRuntime';
-//import { createDefaultConfig, IConfig, loadConfig } from '../config';
+import { createDefaultConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
@@ -37,20 +37,24 @@ import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
+import getPlatform from '../lib/getPlatform';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
 interface IApiOPtions {
   cwd?: string;
   mode?: IShuviMode;
-  config: IApiConfig;
-  platform: Runtime.IRuntime;
+  config?: IConfig;
+  configFile?: string;
   phase?: IPhase;
 }
 
 class Api extends Hookable implements IApi {
+  private _cwd: string;
   private _mode: IShuviMode;
+  private _userConfig?: IConfig;
   private _config!: IApiConfig;
+  private _configFile?: string;
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
   private _server!: Server;
@@ -61,12 +65,10 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private _platform: Runtime.IRuntime;
-  private _runtime!: Runtime.IRuntime;
-  private _runtimeDir!: string;
+  private _platform!: Runtime.IRuntime;
   helpers: IApi['helpers'];
 
-  constructor({ cwd, mode, config, phase, platform }: IApiOPtions) {
+  constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     super();
     if (mode) {
       this._mode = mode;
@@ -75,8 +77,9 @@ class Api extends Hookable implements IApi {
     } else {
       this._mode = 'production';
     }
-
-    path.resolve(cwd || '.');
+    this._cwd = path.resolve(cwd || '.');
+    this._configFile = configFile;
+    this._userConfig = config;
     this.helpers = { fileSnippets };
     if (phase) {
       this._phase = phase;
@@ -87,8 +90,8 @@ class Api extends Hookable implements IApi {
         this._phase = 'PHASE_PRODUCTION_SERVER';
       }
     }
-    this._config = config;
-    this._platform = platform || { install: () => {} };
+    this.initConfig();
+    this._platform = getPlatform(this.config.platform.name);
   }
 
   get mode() {
@@ -111,22 +114,32 @@ class Api extends Hookable implements IApi {
     return this._platform;
   }
 
-  get runtime() {
-    return this._runtime;
-  }
-
-  get runtimeDir() {
-    return this._runtimeDir;
+  initConfig() {
+    const configFromFile = loadConfig({
+      rootDir: this._cwd,
+      configFile: this._configFile,
+      overrides: this._userConfig
+    });
+    this._config = deepmerge(createDefaultConfig(), configFromFile);
+    const {
+      ssr,
+      router: { history }
+    } = this._config;
+    // ensure apiRouteConfigPrefix starts with '/'
+    const apiRouteConfigPrefix = this._config.apiConfig!.prefix;
+    if (apiRouteConfigPrefix) {
+      this._config.apiConfig!.prefix = path.resolve('/', apiRouteConfigPrefix);
+    }
+    // set history to a specific value
+    if (history === 'auto') {
+      this._config.router.history = ssr ? 'browser' : 'hash';
+    }
   }
 
   async init() {
     this._projectBuilder = new ProjectBuilder({
       static: this.mode === 'production'
     });
-    const { runtime, runtimeDir } = initRuntime(this.config.platform?.name);
-    this._runtime = runtime;
-    this._runtimeDir = runtimeDir;
-
     await this._initPresetsAndPlugins();
 
     initCoreResource(this);
@@ -443,10 +456,10 @@ export async function getApi({
   cwd,
   mode,
   config,
-  phase,
-  platform
+  configFile,
+  phase
 }: IApiOPtions): Promise<Api> {
-  const api = new Api({ cwd, mode, config, phase, platform });
+  const api = new Api({ cwd, mode, config, configFile, phase });
 
   await api.init();
   return api;

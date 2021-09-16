@@ -7,12 +7,12 @@ import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
 import { apiRouteHandler, IApiRequestHandler } from '../lib/apiRouteHandler';
 import { INextFunc, IRequestHandlerWithNext } from '../server';
-import { IApiConfig } from '../api';
+import { IConfig } from '.';
 
 export interface IShuviConstructorOptions {
   cwd: string;
-  config: IApiConfig;
-  platform: Runtime.IRuntime;
+  config: IConfig;
+  configFile?: string;
 }
 interface IApiModule {
   default: IApiRequestHandler;
@@ -27,12 +27,12 @@ export default abstract class Shuvi {
   protected _api!: Api;
   private _apiPromise: Promise<Api>;
 
-  constructor({ cwd, config, platform }: IShuviConstructorOptions) {
+  constructor({ cwd, config, configFile }: IShuviConstructorOptions) {
     this._apiPromise = getApi({
       cwd,
       config,
-      mode: this.getMode(),
-      platform
+      configFile,
+      mode: this.getMode()
     });
 
     this._handlePageRequest = this._handlePageRequest.bind(this);
