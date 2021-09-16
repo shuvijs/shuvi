@@ -1,17 +1,17 @@
 import path from 'path';
 import fse from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { Api, getApi, IApiConfig } from '../../api';
-import { APIHooks, Runtime } from '../../types';
+import { Api, getApi, IConfig } from '../../api';
+import { APIHooks } from '../../types';
 import { getBundler } from '../../bundler/bundler';
 import { BUILD_CLIENT_DIR } from '../../constants';
 import { renderToHTML } from '../../lib/renderToHTML';
 
 export interface IBuildOptions {
   cwd?: string;
-  config: IApiConfig;
+  config?: IConfig;
+  configFile?: string;
   target?: 'spa' | 'ssr';
-  platform: Runtime.IRuntime;
 }
 
 const defaultBuildOptions = {
@@ -82,10 +82,11 @@ export async function build(options: IBuildOptions) {
     ...options
   };
   const api = await getApi({
+    cwd: opts.cwd,
     mode: 'production',
     config: opts.config,
-    phase: 'PHASE_PRODUCTION_BUILD',
-    platform: opts.platform
+    configFile: opts.configFile,
+    phase: 'PHASE_PRODUCTION_BUILD'
   });
 
   // generate application

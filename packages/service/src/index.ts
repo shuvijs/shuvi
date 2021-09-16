@@ -5,7 +5,7 @@ export type { PluginApi, IApiConfig } from './api';
 export { IApi, Api, getApi } from './api';
 
 export { ProjectBuilder } from './project';
-export * from './types'
+export * from './types';
 export {
   BUNDLER_TARGET_CLIENT,
   BUNDLER_TARGET_SERVER,
