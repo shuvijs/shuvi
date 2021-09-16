@@ -2,7 +2,9 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { CommanderStatic } from 'commander';
 
-export function getProjectDir(cmd: CommanderStatic): string {
+export function getProjectDir(
+  cmd: CommanderStatic | Record<string, any>
+): string {
   const dir = path.resolve(cmd.args[0] || '.');
   if (!existsSync(dir)) {
     console.error(`> No such directory exists as the project root: ${dir}`);

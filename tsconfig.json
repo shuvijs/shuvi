@@ -6,6 +6,12 @@
       "@shuvi/toolpack/lib/*": [
         "packages/toolpack/src/*"
       ],
+      "@shuvi/hook/lib/*": [
+        "packages/hook/src/*"
+      ],
+      "@shuvi/service/lib/*": [
+        "packages/service/src/*"
+      ],
       "@shuvi/utils/lib/*": [
         "packages/utils/src/*"
       ],

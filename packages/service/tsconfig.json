@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/api/__tests__/fixtures/presets/simple-preset.js"]
+}

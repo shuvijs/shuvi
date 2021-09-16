@@ -4,7 +4,7 @@ import { getRoutes } from '@shuvi/app/core/platform';
 import { Application, IApplication } from '@shuvi/platform-core';
 import { createRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 declare let __SHUVI: any;
 let app: IApplication;
 let history: History;

@@ -1,3 +1,3 @@
-import { Runtime } from '@shuvi/types';
+import { IAppPluginRecord } from '@shuvi/runtime-core';
 
-export const pluginRecord: Runtime.IAppPluginRecord;
+export const pluginRecord: IAppPluginRecord;

@@ -1,5 +1,5 @@
 import path from 'path';
-import { IApi, APIHooks, Runtime } from '@shuvi/types';
+import { IApi, APIHooks, Runtime } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';

@@ -1,16 +1,15 @@
 import program from 'commander';
-import path from 'path';
-import { build } from '../apis/build';
+import { build } from '@shuvi/service/lib/cli/apis/build';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
-import { getProjectDir } from '../utils';
-
+import { getConfigFromCli } from '@shuvi/service/lib/config';
+import getPlatform from '@shuvi/service/lib/lib/getPlatform';
 interface CLIParams {
   publicPath?: string;
   target?: 'spa';
 }
 
-const CliConfigMap: Record<string, string | ((config: any) => void)> = {
+const cliConfigMap: Record<string, string | ((config: any) => void)> = {
   analyze: 'analyze',
   publicPath: 'publicPath',
   routerHistory: 'router.history',
@@ -18,42 +17,6 @@ const CliConfigMap: Record<string, string | ((config: any) => void)> = {
     config.ssr = false;
   }
 };
-
-function set(obj: any, path: string, value: any) {
-  const segments = path.split('.');
-  const final = segments.pop()!;
-  for (var i = 0; i < segments.length; i++) {
-    if (!obj) {
-      return;
-    }
-    obj = obj[segments[i]];
-  }
-  obj[final] = value;
-}
-
-function getConfigFromCli(cliOptions: Record<string, any>) {
-  const config = {};
-  Object.keys(CliConfigMap).forEach(key => {
-    if (typeof program[key] !== 'undefined') {
-      const value = CliConfigMap[key];
-      if (typeof value === 'function') {
-        value(config);
-      } else {
-        set(config, value, cliOptions[key]);
-      }
-    }
-  });
-  try {
-    const { configOverrides } = program;
-    if (configOverrides) {
-      const overrides = JSON.stringify(configOverrides);
-      Object.assign(config, overrides);
-    }
-  } catch (err) {
-    console.error(err);
-  }
-  return config;
-}
 
 export default async function main(argv: string[]) {
   program
@@ -73,22 +36,19 @@ export default async function main(argv: string[]) {
     .option('--analyze', 'generate html file to help analyze webpack bundle')
     .option('--config-overrides [json]', 'config overrides json')
     .parse(argv, { from: 'user' });
-
-  const cwd = getProjectDir(program);
   const cliParams = program as CLIParams;
-  const config = getConfigFromCli(cliParams);
-
+  const config = getConfigFromCli(program, cliConfigMap);
+  const platform = getPlatform(config.platform.name);
   try {
     await build({
-      cwd,
       config,
-      configFile: program.config && path.resolve(cwd, program.config),
-      target: cliParams.target
+      target: cliParams.target,
+      platform
     });
     console.log('Build successfully!');
   } catch (error) {
     console.error('Failed to build.\n');
-    console.error(error.message);
+    console.error((error as Error).message);
 
     process.exit(1);
   }
