@@ -1,6 +1,7 @@
 import qs from 'querystring';
-import { IApiConfig } from '@shuvi/types';
-import { shuvi, Shuvi } from 'shuvi';
+import { IApiConfig } from '@shuvi/service';
+import { shuvi, Shuvi } from '@shuvi/service';
+import getPlatform from 'shuvi/lib/cli/lib/getPlatform';
 import { loadFixture, resolveFixture } from './fixture';
 import { build } from './build';
 import { findPort } from './findPort';
@@ -47,7 +48,8 @@ export async function launchFixtureAtCurrentProcess(
   overrides: Partial<IApiConfig> = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const shuviApp = shuvi({ dev: true, config });
+  const platform = getPlatform(config.platform.name);
+  const shuviApp = shuvi({ dev: true, config, platform });
   return await createTextContext(shuviApp);
 }
 
@@ -56,8 +58,9 @@ export async function serveFixtureAtCurrentProcess(
   overrides: Partial<IApiConfig> = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  await build({ config });
-  const shuviApp = shuvi({ dev: false, config });
+  const platform = getPlatform(config.platform.name);
+  await build({ config, platform });
+  const shuviApp = shuvi({ dev: false, config, platform });
   return createTextContext(shuviApp);
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { IApi, Runtime } from '@shuvi/types';
+import { IApi, Runtime } from '@shuvi/service';
 import { resolveAppFile, resolveDep, resolveLib } from './paths';
 import { config as configBundler } from './bundler/config';
 

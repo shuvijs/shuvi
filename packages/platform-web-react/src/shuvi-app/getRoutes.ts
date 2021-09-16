@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 import { loadRouteComponent } from './loadRouteComponent';
 import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 

@@ -1,6 +1,6 @@
 // import resolve from "resolve";
 import { AppSourceRegexs } from '../../../constants';
-import { ExternalsFunction } from '@shuvi/types/src/bundler';
+import { ExternalsFunction } from '../../types';
 
 type Test = string | RegExp;
 
@@ -39,7 +39,9 @@ export function nodeExternals({
     }
 
     const notExternalModules: Test[] = [];
-    const externalModules: Test[] = [/shuvi[/\\]lib[/\\]lib[/\\]runtimeConfig/];
+    const externalModules: Test[] = [
+      /@shuvi[/\\]service[/\\]lib[/\\]lib[/\\]runtimeConfig/
+    ];
 
     // make sure we don't externalize anything that is
     // supposed to be transpiled

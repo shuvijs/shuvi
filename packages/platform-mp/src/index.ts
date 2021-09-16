@@ -1,5 +1,5 @@
 // import React from 'react';
-import { IApi, Runtime } from '@shuvi/types';
+import { IApi, Runtime } from '@shuvi/service';
 
 const platform: Runtime.IRuntime<any> = {
   async install(api: IApi): Promise<void> {

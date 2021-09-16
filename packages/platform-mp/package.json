@@ -28,6 +28,7 @@
     "@binance/mp-components": "^1.0.1",
     "@shuvi/app": "^0.0.1-rc.32",
     "@shuvi/platform-core": "^0.0.1-rc.32",
+    "@shuvi/service": "^0.0.1-rc.32",
     "@shuvi/shared": "^0.0.1-rc.32",
     "@shuvi/toolpack": "^0.0.1-rc.32",
     "@shuvi/utils": "^0.0.1-rc.32",
@@ -42,7 +43,5 @@
     "react-app-polyfill": "2.0.0",
     "react-dom": "16.13.0"
   },
-  "devDependencies": {
-    "@shuvi/types": "^0.0.1-rc.32"
-  }
+  "devDependencies": {}
 }

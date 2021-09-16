@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 import { createRedirector } from '@shuvi/router';
 
 const isServer = typeof window === 'undefined';

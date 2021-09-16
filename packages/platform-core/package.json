@@ -25,9 +25,9 @@
     "@shuvi/app": "^0.0.1-rc.32",
     "@shuvi/hook": "^0.0.1-rc.32",
     "@shuvi/runtime-core": "^0.0.1-rc.32",
+    "@shuvi/service": "^0.0.1-rc.32",
     "@shuvi/shared": "^0.0.1-rc.32",
-    "@shuvi/toolpack": "^0.0.1-rc.32",
-    "@shuvi/types": "^0.0.1-rc.32"
+    "@shuvi/toolpack": "^0.0.1-rc.32"
   },
   "devDependencies": {
     "@types/webpack-env": "^1.16.2"

@@ -1,9 +1,8 @@
-import { Runtime } from '@shuvi/types';
-
+import { IRedirectState, IRedirectFn } from '../types';
 interface IRedirector {
   redirected: boolean;
-  state?: Runtime.IRedirectState;
-  handler: Runtime.IRedirectFn;
+  state?: IRedirectState;
+  handler: IRedirectFn;
 }
 
 export function createRedirector(): IRedirector {

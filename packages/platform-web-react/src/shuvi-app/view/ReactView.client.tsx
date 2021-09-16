@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from '@shuvi/router-react';
 import { createRedirector } from '@shuvi/router';
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';

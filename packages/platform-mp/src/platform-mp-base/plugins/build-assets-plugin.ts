@@ -1,6 +1,6 @@
 //import { AppConfig } from '@tarojs/taro';
 import { AppConfigs } from '..';
-import { IPaths } from '@shuvi/types';
+import { IPaths } from '@shuvi/service/lib/api';
 import webpack, { Compiler, Compilation, sources } from 'webpack';
 import path from 'path';
 import fs from 'fs';

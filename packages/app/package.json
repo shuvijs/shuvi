@@ -13,6 +13,6 @@
   },
   "dependencies": {
     "@shuvi/runtime-core": "^0.0.1-rc.32",
-    "@shuvi/types": "^0.0.1-rc.32"
+    "@shuvi/service": "^0.0.1-rc.32"
   }
 }

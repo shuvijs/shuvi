@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 
 export type SideEffectProps = {
   reduceComponentsToState: <T>(

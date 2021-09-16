@@ -1,5 +1,5 @@
-import { Runtime } from '@shuvi/types';
+import { IInitAppPlugins } from '@shuvi/runtime-core';
 
-declare const initPlugins: Runtime.IInitAppPlugins;
+declare const initPlugins: IInitAppPlugins;
 
 export default initPlugins;

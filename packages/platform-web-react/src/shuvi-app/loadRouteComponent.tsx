@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 
 import React from 'react';
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 import dynamic, { DynamicOptions } from './dynamic';
 
 import RouteComponent = Runtime.IRouteComponent;

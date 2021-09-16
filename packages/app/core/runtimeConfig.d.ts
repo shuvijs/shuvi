@@ -1,4 +1,4 @@
-import { IRuntimeConfig } from '@shuvi/types';
+import { IRuntimeConfig } from '@shuvi/service/lib/api';
 
 declare const runtimneConfig: IRuntimeConfig | null;
 
