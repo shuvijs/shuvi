@@ -1,4 +1,4 @@
-import { IApi, Runtime } from '@shuvi/types';
+import { IApi, Runtime } from '@shuvi/service';
 import { resolveAppFile } from './paths';
 
 const platform: Runtime.IRuntime<any> = {

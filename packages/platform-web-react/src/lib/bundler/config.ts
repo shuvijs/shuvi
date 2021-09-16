@@ -1,5 +1,5 @@
 import path from 'path';
-import { IApi, APIHooks } from '@shuvi/types';
+import { IApi, APIHooks } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';

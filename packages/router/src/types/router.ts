@@ -99,3 +99,12 @@ export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
   beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
   afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
 }
+
+export interface IRedirectFn {
+  (status: number, path: string): void;
+  (path: string): void;
+}
+export interface IRedirectState {
+  status?: number;
+  path: string;
+}

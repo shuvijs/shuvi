@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 
 export declare function getPageData<T = unknown>(
   key: string,

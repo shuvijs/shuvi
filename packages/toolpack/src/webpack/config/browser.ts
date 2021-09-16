@@ -6,7 +6,7 @@ import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import { baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
-import { IWebpackHelpers } from '@shuvi/types/src/bundler';
+import { IWebpackHelpers } from '../types';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 

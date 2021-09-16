@@ -32,9 +32,7 @@
   "dependencies": {
     "@shuvi/app": "^0.0.1-rc.32",
     "@shuvi/platform-core": "^0.0.1-rc.32",
+    "@shuvi/service": "^0.0.1-rc.32",
     "@shuvi/shared": "^0.0.1-rc.32"
-  },
-  "devDependencies": {
-    "@shuvi/types": "^0.0.1-rc.32"
   }
 }
