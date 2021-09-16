@@ -1,13 +1,9 @@
 import program from 'commander';
+import path from 'path';
 import { build } from '@shuvi/service/lib/cli/apis/build';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
-import { getConfigFromCli } from '@shuvi/service/lib/config';
-import getPlatform from '@shuvi/service/lib/lib/getPlatform';
-interface CLIParams {
-  publicPath?: string;
-  target?: 'spa';
-}
+import { getProjectDir, getConfigFromCli } from '../utils';
 
 const cliConfigMap: Record<string, string | ((config: any) => void)> = {
   analyze: 'analyze',
@@ -36,14 +32,14 @@ export default async function main(argv: string[]) {
     .option('--analyze', 'generate html file to help analyze webpack bundle')
     .option('--config-overrides [json]', 'config overrides json')
     .parse(argv, { from: 'user' });
-  const cliParams = program as CLIParams;
+  const cwd = getProjectDir(program);
   const config = getConfigFromCli(program, cliConfigMap);
-  const platform = getPlatform(config.platform.name);
   try {
     await build({
+      cwd,
       config,
-      target: cliParams.target,
-      platform
+      configFile: program.config && path.resolve(cwd, program.config),
+      target: program.target
     });
     console.log('Build successfully!');
   } catch (error) {

@@ -1,5 +1,5 @@
 import path from 'path';
-import { IConfig } from '..';
+import { IConfig } from '../../api';
 import { loadConfig } from '../index';
 
 export function resolveFixture(name: string) {
