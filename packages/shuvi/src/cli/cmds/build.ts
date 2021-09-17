@@ -1,6 +1,6 @@
 import program from 'commander';
 import path from 'path';
-import { build } from '@shuvi/service/lib/cli/apis/build';
+import { build } from '@shuvi/service/lib/cli/build';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
 import { getProjectDir, getConfigFromCli } from '../utils';

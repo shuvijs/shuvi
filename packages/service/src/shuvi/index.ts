@@ -1,7 +1,7 @@
 import Shuvi, { IShuviConstructorOptions } from './shuvi.base';
 import { IConfig } from '../api';
 
-export { Shuvi, IConfig };
+export { Shuvi };
 
 export interface ShuviOptions {
   cwd?: string;

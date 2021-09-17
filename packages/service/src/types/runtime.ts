@@ -5,9 +5,9 @@ import {
   IRouterHistoryMode,
   IAppRouteConfig,
   IApiRouteConfig,
-  IUserRouteConfig,
-  Bundler
+  IUserRouteConfig
 } from '../api';
+import { Bundler } from './bundler';
 
 import {
   IApplication,
