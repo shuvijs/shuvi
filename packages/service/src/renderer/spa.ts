@@ -8,8 +8,7 @@ export class SpaRenderer extends BaseRenderer {
     const api = this._api;
     const appData: IAppData = {
       pageData: {},
-      ssr: api.config.ssr,
-      router: api.config.router
+      ssr: api.config.ssr
     };
     return {
       htmlAttrs: {},

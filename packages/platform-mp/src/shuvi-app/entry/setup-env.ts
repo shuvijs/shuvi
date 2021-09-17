@@ -9,7 +9,7 @@ import {
 } from '@shuvi/shared/lib/constants';
 import setRuntimeConfig from '@shuvi/app/core/setRuntimeConfig';
 import runtimeConfig from '@shuvi/app/core/runtimeConfig';
-import { helpers } from '@shuvi/platform-core';
+import { getAppData } from '@shuvi/platform-core/lib/helper';
 
 // === set public path ===
 declare let __webpack_public_path__: string;
@@ -27,7 +27,7 @@ if (win[IDENTITY_RUNTIME_PUBLICPATH]) {
 }
 
 // === set runtime config ===
-const appData = helpers.getAppData();
+const appData = getAppData();
 
 // build-time config for none-ssr
 if (runtimeConfig) {

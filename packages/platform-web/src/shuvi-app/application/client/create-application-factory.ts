@@ -2,6 +2,7 @@ import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 import { Application, IApplication } from '@shuvi/platform-core';
+import runPlugins from '@shuvi/platform-core/lib/runPlugins';
 import { createRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
 import { Runtime } from '@shuvi/service';
@@ -28,6 +29,7 @@ export const createFactory = (historyCreater: () => History) => {
       context,
       render: options.render
     });
+    runPlugins(app);
 
     return app;
   };

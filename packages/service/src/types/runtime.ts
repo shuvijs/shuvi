@@ -116,9 +116,6 @@ export type IAppData<Data = {}> = {
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
   routeProps?: { [x: string]: any };
-  router: {
-    history: IRouterHistoryMode;
-  };
 } & {
   [K in keyof Data]: Data[K];
 };
