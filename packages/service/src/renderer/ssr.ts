@@ -59,8 +59,7 @@ export class SsrRenderer extends BaseRenderer {
     const appData: IAppData = {
       ...result.appData,
       pageData,
-      ssr: api.config.ssr,
-      router: api.config.router
+      ssr: api.config.ssr
     };
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 

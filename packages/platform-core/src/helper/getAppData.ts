@@ -14,10 +14,7 @@ export function getAppData(): Runtime.IAppData {
   if (!el || !el.textContent) {
     return {
       ssr: false,
-      pageData: {},
-      router: {
-        history: 'auto'
-      }
+      pageData: {}
     };
   }
 

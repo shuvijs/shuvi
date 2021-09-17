@@ -9,7 +9,7 @@
   "author": "liximomo",
   "license": "MIT",
   "sideEffects": [
-    "**/shuvi-app/entry/**"
+    "**/shuvi-app/entry/client/**"
   ],
   "main": "./lib/index.js",
   "module": "./es/index.js",
