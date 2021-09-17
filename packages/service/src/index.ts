@@ -1,9 +1,5 @@
 export { shuvi, Shuvi } from './shuvi';
-export type { IConfig } from './shuvi';
-
-export type { PluginApi, IApiConfig } from './api';
-export { IApi, Api, getApi } from './api';
-
+export { IApi, Api, getApi, PluginApi, IApiConfig, IConfig } from './api';
 export { ProjectBuilder } from './project';
 export * from './types';
 export {

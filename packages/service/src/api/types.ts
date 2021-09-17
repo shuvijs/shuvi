@@ -1,13 +1,12 @@
-import { PluginApi } from '../pluginApi';
-import * as Runtime from '../../types/runtime';
-import { Bundler } from './bundler';
+import { PluginApi } from './pluginApi';
+import * as Runtime from '../types/runtime';
+import { Bundler } from '../types/bundler';
 
 import { IHookable } from '@shuvi/hook';
 import { IRouteRecord } from '@shuvi/router';
 
-import { FileSnippets } from '../../project/file-snippets';
-import { ProjectBuilder } from '../../project';
-export { Bundler };
+import { FileSnippets } from '../project/file-snippets';
+import { ProjectBuilder } from '../project';
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
   name?: string;
