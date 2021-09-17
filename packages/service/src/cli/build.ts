@@ -1,11 +1,11 @@
 import path from 'path';
 import fse from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { Api, getApi, IConfig } from '../../api';
-import { APIHooks } from '../../types';
-import { getBundler } from '../../bundler/bundler';
-import { BUILD_CLIENT_DIR } from '../../constants';
-import { renderToHTML } from '../../lib/renderToHTML';
+import { Api, getApi, IConfig } from '../api';
+import { APIHooks } from '../types';
+import { getBundler } from '../bundler/bundler';
+import { BUILD_CLIENT_DIR } from '../constants';
+import { renderToHTML } from '../lib/renderToHTML';
 
 export interface IBuildOptions {
   cwd?: string;

@@ -1,17 +1,17 @@
 import path from 'path';
 import {
   IApiConfig,
+  IConfig,
   IApi,
   IApiRouteConfig,
   IUserRouteConfig,
   IPaths,
   IShuviMode,
-  IPhase,
-  Bundler
+  IPhase
 } from './types';
+import { Bundler } from '../types/bundler';
 import * as Runtime from '../types/runtime';
 import * as APIHooks from '../types/hooks';
-import { IConfig } from '..';
 
 import {
   ProjectBuilder,

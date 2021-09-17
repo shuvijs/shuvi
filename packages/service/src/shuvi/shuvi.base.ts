@@ -1,13 +1,16 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { IShuviMode } from '../api';
-import { APIHooks, Runtime, IRequest, IResponse } from '../types';
+import { IShuviMode, IConfig, getApi, Api } from '../api';
+import { APIHooks, Runtime } from '../types';
 import { matchPathname } from '@shuvi/router';
-import { getApi, Api } from '../api';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
-import { apiRouteHandler, IApiRequestHandler } from '../lib/apiRouteHandler';
+import {
+  apiRouteHandler,
+  IApiRequestHandler,
+  IRequest,
+  IResponse
+} from '../lib/apiRouteHandler';
 import { INextFunc, IRequestHandlerWithNext } from '../server';
-import { IConfig } from '.';
 
 export interface IShuviConstructorOptions {
   cwd: string;

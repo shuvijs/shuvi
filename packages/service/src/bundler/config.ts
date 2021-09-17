@@ -4,7 +4,8 @@ import {
   createBrowserWebpackChain,
   createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
-import { Api, Bundler } from '../api';
+import { Api } from '../api';
+import { Bundler } from '../types/bundler';
 import {
   BUILD_MEDIA_PATH,
   BUILD_MANIFEST_PATH,
