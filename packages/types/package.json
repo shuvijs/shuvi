@@ -17,6 +17,6 @@
     "build": "echo \"lerna bug, without this, lerna can't get the right topology order\""
   },
   "dependencies": {
-    "@shuvi/service": "^0.0.1-rc.32"
+    "@shuvi/service": "0.0.1-rc.32"
   }
 }
