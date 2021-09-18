@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 
 export declare const getRoutes: Runtime.IGetRoutes;
 export declare const view: Runtime.IViewClient;

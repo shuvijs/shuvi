@@ -1,0 +1,13 @@
+{
+  "miniprogramRoot": ".bmp/build",
+  "projectname": "basic-miniprogram",
+  "description": "A Binance mini-program project",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}

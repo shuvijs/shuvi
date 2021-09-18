@@ -18,7 +18,7 @@ if (__DEV__) {
   RouterContext.displayName = 'Route';
 }
 
-export const MactedRouteContext = React.createContext<IRouteContextObject>({
+export const MatchedRouteContext = React.createContext<IRouteContextObject>({
   depth: 0,
   params: readOnly<IParams>({}),
   pathname: '',
@@ -26,5 +26,5 @@ export const MactedRouteContext = React.createContext<IRouteContextObject>({
 });
 
 if (__DEV__) {
-  MactedRouteContext.displayName = 'MactedRoute';
+  MatchedRouteContext.displayName = 'MatchedRoute';
 }

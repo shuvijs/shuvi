@@ -1,11 +1,8 @@
-import { Bundler } from '@shuvi/types';
+import { IModuleItem, IManifest } from '../types';
 import webpack, { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
 import Entrypoint from 'webpack/lib/Entrypoint';
 
 const { RawSource } = webpack.sources;
-
-import ModuleItem = Bundler.IModuleItem;
-import Manifest = Bundler.IManifest;
 
 type ModuleId = string | number;
 
@@ -48,7 +45,7 @@ function getFileExt(filepath: string): string {
 // It has a mapping of "entry" filename to real filename. Because the real filename can be hashed in production
 export default class BuildManifestPlugin implements Plugin {
   private _options: Options;
-  private _manifest!: Manifest;
+  private _manifest!: IManifest;
 
   constructor(options: Partial<Options> = {}) {
     this._options = {
@@ -234,7 +231,7 @@ export default class BuildManifestPlugin implements Plugin {
           this._pushLoadableModules(request, {
             id,
             name
-          } as ModuleItem);
+          } as IModuleItem);
         }
       }
     }
@@ -272,9 +269,9 @@ export default class BuildManifestPlugin implements Plugin {
     }
   }
 
-  private _pushLoadableModules(request: string, module: ModuleItem): void;
+  private _pushLoadableModules(request: string, module: IModuleItem): void;
   private _pushLoadableModules(request: string, file: string): void;
-  private _pushLoadableModules(request: string, value: string | ModuleItem) {
+  private _pushLoadableModules(request: string, value: string | IModuleItem) {
     const modules = this._manifest.loadble;
     if (!modules[request]) {
       modules[request] = {

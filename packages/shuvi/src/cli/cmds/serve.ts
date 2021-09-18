@@ -1,9 +1,9 @@
 import program from 'commander';
 import path from 'path';
-import { IConfig, shuvi } from '../../shuvi';
+import { shuvi } from '@shuvi/service';
 //@ts-ignore
 import pkgInfo from '../../../package.json';
-import { getProjectDir } from '../utils';
+import { getProjectDir, getConfigFromCli } from '../utils';
 
 export default async function main(argv: string[]) {
   program
@@ -15,20 +15,10 @@ export default async function main(argv: string[]) {
     .option('--port <port>', 'specify port')
     .option('--config-overrides [json]', 'config overrides json')
     .parse(argv, { from: 'user' });
-
   const cwd = getProjectDir(program);
   const port = Number(program.port) || 3000;
   const host = program.host || 'localhost';
-  let config: IConfig = {};
-  try {
-    const { configOverrides } = program;
-    if (configOverrides) {
-      const overrides = JSON.parse(configOverrides);
-      config = overrides;
-    }
-  } catch (err) {
-    console.error(err);
-  }
+  const config = getConfigFromCli(program);
   const shuviApp = shuvi({
     cwd,
     config,

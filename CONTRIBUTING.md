@@ -25,7 +25,7 @@ Core components.
 
 Core runtime of application.
 
-### runtime-react
+### platform-react
 
 React runtime for application.
 

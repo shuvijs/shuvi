@@ -12,9 +12,9 @@ import {
   addBlocker,
   warning
 } from '../utils';
-import BaseHisotry, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
 
-export default class BrowserHistory extends BaseHisotry {
+export default class BrowserHistory extends BaseHistory {
   private _history: GlobalHistory = window.history;
 
   constructor() {
