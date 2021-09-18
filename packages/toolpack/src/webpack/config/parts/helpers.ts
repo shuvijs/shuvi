@@ -1,5 +1,5 @@
-import { WebpackChain } from '@shuvi/types';
-import { ExternalsFunction, IWebpackHelpers } from '@shuvi/types/src/bundler';
+import WebpackChain from 'webpack-chain';
+import { ExternalsFunction, IWebpackHelpers } from '../../types';
 
 export const webpackHelpers = (): IWebpackHelpers => {
   const externalFns: ExternalsFunction[] = [];
@@ -58,3 +58,7 @@ export const webpackHelpers = (): IWebpackHelpers => {
     }
   };
 };
+
+export function shouldUseRelativeAssetPaths(publicPath: string) {
+  return publicPath === './';
+}

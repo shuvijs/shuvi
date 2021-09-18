@@ -267,7 +267,11 @@ export function baseWebpackChain({
     };
   };
 
-  config.cache(getCacheConfig());
+  config.cache(
+    typeof process.env.SHUVI_DEV_DISABLE_CACHE !== 'undefined'
+      ? false
+      : getCacheConfig()
+  );
 
   if (dev) {
     // For webpack-dev-middleware usage

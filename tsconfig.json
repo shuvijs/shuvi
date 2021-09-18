@@ -6,6 +6,12 @@
       "@shuvi/toolpack/lib/*": [
         "packages/toolpack/src/*"
       ],
+      "@shuvi/hook/lib/*": [
+        "packages/hook/src/*"
+      ],
+      "@shuvi/service/lib/*": [
+        "packages/service/src/*"
+      ],
       "@shuvi/utils/lib/*": [
         "packages/utils/src/*"
       ],
@@ -15,8 +21,11 @@
       "@shuvi/runtime-core/lib/*": [
         "packages/runtime-core/src/*"
       ],
-      "@shuvi/runtime-react/lib/*": [
-        "packages/runtime-react/src/*"
+      "@shuvi/platform-web-react/lib/*": [
+        "packages/platform-web-react/src/lib/*"
+      ],
+      "@shuvi/platform-mp/lib/*": [
+        "packages/platform-mp/src/*"
       ],
       "@shuvi/shared/lib/*": [
         "packages/shared/src/*"
@@ -24,8 +33,11 @@
       "@shuvi/router/lib/*": [
         "packages/router/src/*"
       ],
-      "@shuvi/react-router/lib/*": [
-        "packages/react-router/src/*"
+      "@shuvi/router-react/lib/*": [
+        "packages/router-react/src/*"
+      ],
+      "@shuvi/router-mp/lib/*": [
+        "packages/router-mp/src/*"
       ],
       "@shuvi/*": [
         "packages/*/src"

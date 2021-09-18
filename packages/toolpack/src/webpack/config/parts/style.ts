@@ -7,16 +7,13 @@ import Rule from 'webpack-chain/src/Rule';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import loaderUtils from 'loader-utils';
 import path from 'path';
+import { shouldUseRelativeAssetPaths } from './helpers';
 
 interface StyleOptions {
   publicPath?: string;
   extractCss?: boolean;
   sourceMap?: boolean;
   ssr?: boolean;
-}
-
-function shouldUseRelativeAssetPaths(publicPath: string) {
-  return publicPath === './';
 }
 
 function getCSSModuleLocalIdent(
