@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-mp",
-  "version": "0.0.1-rc.33",
+  "version": "0.0.1-rc.34",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -26,12 +26,12 @@
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@binance/mp-components": "^1.0.1",
-    "@shuvi/app": "0.0.1-rc.33",
-    "@shuvi/platform-core": "0.0.1-rc.33",
-    "@shuvi/service": "0.0.1-rc.33",
-    "@shuvi/shared": "0.0.1-rc.32",
-    "@shuvi/toolpack": "0.0.1-rc.33",
-    "@shuvi/utils": "0.0.1-rc.33",
+    "@shuvi/app": "^0.0.1-rc.34",
+    "@shuvi/platform-core": "^0.0.1-rc.34",
+    "@shuvi/service": "^0.0.1-rc.34",
+    "@shuvi/shared": "^0.0.1-rc.34",
+    "@shuvi/toolpack": "^0.0.1-rc.34",
+    "@shuvi/utils": "^0.0.1-rc.34",
     "@tarojs/components": "^3.3.3",
     "@tarojs/helper": "^3.3.3",
     "@tarojs/react": "^3.3.2",
