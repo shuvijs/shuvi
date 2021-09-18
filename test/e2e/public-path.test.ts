@@ -1,5 +1,5 @@
 import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
-import { PUBLIC_PATH } from 'shuvi/lib/constants';
+import { PUBLIC_PATH } from '@shuvi/service/lib/constants';
 import { AppCtx, Page, launchFixture } from '../utils';
 
 let ctx: AppCtx;

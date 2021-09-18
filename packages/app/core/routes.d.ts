@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/types';
+import { Runtime } from '@shuvi/service';
 
 declare const routes: Runtime.IAppRouteConfig[];
 

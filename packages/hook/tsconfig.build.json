@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "outDir": "lib",
+    "types": ["node", "webpack-env"]
+  },
+  "include": ["src"]
+}

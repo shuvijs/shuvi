@@ -4,7 +4,7 @@
 
 - [ ] @shuvi/core
   - [ ] app (liximomo)
-- [ ] @shuvi/runtime-react
+- [ ] @shuvi/platform-react
   - [ ] dynamic (liximomo)
   - [ ] head (kayne)
 - [x] @shuvi/utils (zhengyutay)

@@ -1,5 +1,5 @@
 const Koa = require('koa');
-const { shuvi } = require('../../../packages/shuvi/lib/index');
+const { shuvi } = require('../../../packages/service/lib/index');
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';

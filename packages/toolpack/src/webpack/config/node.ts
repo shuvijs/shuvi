@@ -4,7 +4,7 @@ import { baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
 import { resolvePreferTarget } from './parts/resolve';
-import { IWebpackHelpers } from '@shuvi/types/src/bundler';
+import { IWebpackHelpers } from '../types';
 
 export interface NodeOptions extends BaseOptions {
   webpackHelpers: IWebpackHelpers;

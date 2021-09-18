@@ -1,0 +1,36 @@
+{
+  "name": "@shuvi/router-mp",
+  "version": "0.0.1-rc.32",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/router-mp"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "dev": "run-p watch:*",
+    "watch:esm": "tsc -p tsconfig.build.esm.json -w",
+    "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
+    "prebuild": "rimraf lib esm",
+    "build": "run-p build:*",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "build:cjs": "tsc -p tsconfig.build.cjs.json"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "dependencies": {
+    "@shuvi/router": "^0.0.1-rc.32",
+    "@shuvi/router-react": "^0.0.1-rc.32"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.43"
+  }
+}

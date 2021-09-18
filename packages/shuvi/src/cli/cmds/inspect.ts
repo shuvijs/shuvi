@@ -1,10 +1,12 @@
 import { inspect } from 'util';
+import path from 'path';
 import program from 'commander';
 import { highlight } from 'cli-highlight';
 import chalk from '@shuvi/utils/lib/chalk';
-import { getProjectDir } from '../utils';
-import { getApi } from '../../api/api';
-import { getBundler } from '../../bundler/bundler';
+import { getApi } from '@shuvi/service';
+import { getBundler } from '@shuvi/service/lib/bundler/bundler';
+import { getProjectDir, getConfigFromCli } from '../utils';
+
 //@ts-ignore
 import pkgInfo from '../../../package.json';
 
@@ -14,10 +16,11 @@ export default async function main(argv: string[]) {
     .description('inspect internal webpack config')
     .usage('inspect [options] [...paths]')
     .helpOption()
+    .option('--config <file>', 'path to config file')
+    .option('--config-overrides [json]', 'config overrides json')
     .option('--mode <mode>', 'specify env mode (default: development)')
     .option('--verbose', 'show full webpack config')
     .parse(argv, { from: 'user' });
-
   const cwd = getProjectDir(program);
   const mode = ['development', 'production'].includes(program.mode)
     ? program.mode
@@ -26,9 +29,11 @@ export default async function main(argv: string[]) {
   Object.assign(process.env, {
     NODE_ENV: mode
   });
-
+  const config = getConfigFromCli(program);
   const api = await getApi({
     cwd,
+    config,
+    configFile: program.config && path.resolve(cwd, program.config),
     mode,
     phase: 'PHASE_INSPECT_WEBPACK'
   });

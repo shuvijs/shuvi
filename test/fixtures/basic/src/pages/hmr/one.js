@@ -1,3 +1,1 @@
-export default () => (
-  <div data-test-id="hmr-one">This is the one page</div>
-);
+export default () => <div data-test-id="hmr-one">This is the one page</div>;
