@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/hook",
-  "version": "0.0.1-rc.32",
+  "version": "0.0.1-rc.33",
   "license": "MIT",
   "main": "lib/index.js",
   "module": "esm/index.js",
@@ -21,6 +21,5 @@
     "build:esm": "tsc -p tsconfig.build.esm.json",
     "build:cjs": "tsc -p tsconfig.build.cjs.json"
   },
-  "author": "Zheng Yu Tay",
-  "dependencies": {}
+  "author": "Zheng Yu Tay"
 }
