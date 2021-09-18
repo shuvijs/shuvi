@@ -32,6 +32,7 @@
   "dependencies": {
     "@shuvi/app": "^0.0.1-rc.33",
     "@shuvi/platform-core": "^0.0.1-rc.33",
+    "@shuvi/platform-web-react": "^0.0.1-rc.33",
     "@shuvi/service": "^0.0.1-rc.33",
     "@shuvi/shared": "0.0.1-rc.32"
   }
