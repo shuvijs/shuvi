@@ -144,7 +144,7 @@ export class Server {
     } else {
       // not found
       res.statusCode = 404;
-      msg = `Cannot ${req.method} {req.url}`;
+      msg = `Cannot handleRequest ${req.method} ${req.url}`;
     }
 
     // cannot actually respond

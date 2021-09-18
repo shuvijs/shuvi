@@ -39,6 +39,10 @@ export function config(api: IApi) {
       // make sure we don't have multiple entity of following packages , becasue module variable will fail
       config.resolve.alias.set('@shuvi/platform-web-react', PACKAGE_DIR);
       config.resolve.alias.set(
+        '@shuvi/service',
+        resolveLocal('@shuvi/service')
+      );
+      config.resolve.alias.set(
         '@shuvi/router-react$',
         resolveLocal('@shuvi/router-react')
       );
