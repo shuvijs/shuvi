@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/shared",
-  "version": "0.0.1-rc.34",
+  "version": "0.0.1-pre.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
