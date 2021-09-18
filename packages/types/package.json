@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/types",
-  "version": "0.0.1-rc.34",
+  "version": "0.0.1-pre.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -17,6 +17,6 @@
     "build": "echo \"lerna bug, without this, lerna can't get the right topology order\""
   },
   "dependencies": {
-    "@shuvi/service": "0.0.1-rc.34"
+    "@shuvi/service": "0.0.1-pre.1"
   }
 }
