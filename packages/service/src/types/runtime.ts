@@ -140,7 +140,7 @@ export interface IServerRendererOptions<CompType = any>
   getAssetPublicUrl(path: string): string;
 }
 
-interface IView<
+export interface IView<
   RenderOption extends IRenderOptions = any,
   RenderResult = void
 > {
