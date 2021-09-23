@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "module": "esnext",
+    "outDir": "esm",
+    "strict": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "downlevelIteration": true,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "stripInternal": true,
+    "noUnusedLocals": false,
+    "lib": ["esnext", "DOM"]
+  },
+  "include": [
+    "src"
+  ]
+}

@@ -2,8 +2,10 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "module": "esnext",
-    "outDir": "lib",
-    "types": ["node", "webpack-env"]
+    "outDir": "esm",
+    "lib": ["esnext", "DOM"]
   },
-  "include": ["src"]
+  "include": [
+    "src/lib"
+  ]
 }
