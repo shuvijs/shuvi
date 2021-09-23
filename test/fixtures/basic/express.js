@@ -1,5 +1,5 @@
 const express = require('express');
-const { shuvi } = require('../../../packages/service/lib/index');
+const { shuvi } = require('shuvi');
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
