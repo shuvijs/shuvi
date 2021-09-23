@@ -1,6 +1,7 @@
 import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { reactive } from '../file-manager';
 import fse from 'fs-extra';
+import path from 'path';
 
 export const findFirstExistedFile = (files: string[]): string | null => {
   for (let index = 0; index < files.length; index++) {
@@ -72,7 +73,8 @@ const getWatcher = (
 };
 
 export function removeExt(filePath: string): string {
-  return filePath.replace(/(.*)\.(.*?)$/, '$1');
+  const parsed = path.parse(filePath);
+  return path.join(parsed.dir, parsed.name);
 }
 
 export const moduleExportProxyCreater = () => {
