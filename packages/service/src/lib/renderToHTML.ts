@@ -1,4 +1,4 @@
-import { Runtime } from '../types';
+import { IRequest, IRenderResultRedirect } from '../types/runtime';
 import { Renderer, isRedirect } from '../renderer';
 import { Api } from '../api';
 
@@ -7,9 +7,9 @@ export async function renderToHTML({
   api,
   onRedirect
 }: {
-  req: Runtime.IRequest;
+  req: IRequest;
   api: Api;
-  onRedirect?(redirect: Runtime.IRenderResultRedirect): void;
+  onRedirect?(redirect: IRenderResultRedirect): void;
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
   const renderer = new Renderer({ api });

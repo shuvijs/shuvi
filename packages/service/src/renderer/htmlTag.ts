@@ -1,4 +1,4 @@
-import { Runtime } from '../types';
+import { IHtmlAttrs, IHtmlTag } from '../types/runtime';
 import { htmlEscapeContent } from '@shuvi/utils/lib/htmlescape';
 
 /**
@@ -24,7 +24,7 @@ const voidTags = [
 ];
 
 // the result will have an extra leading space
-export function stringifyAttrs(attrs: Runtime.IHtmlAttrs): string {
+export function stringifyAttrs(attrs: IHtmlAttrs): string {
   const attrNames = Object.keys(attrs);
   const res: string[] = [''];
   for (let index = 0; index < attrNames.length; index++) {
@@ -49,7 +49,7 @@ export function stringifyAttrs(attrs: Runtime.IHtmlAttrs): string {
   return res.join(' ');
 }
 
-export function stringifyTag(tag: Runtime.IHtmlTag) {
+export function stringifyTag(tag: IHtmlTag) {
   const attr = stringifyAttrs(tag.attrs);
   const voidTag = voidTags.indexOf(tag.tagName) !== -1;
 
@@ -68,9 +68,9 @@ export function stringifyTag(tag: Runtime.IHtmlTag) {
 
 export function tag<T extends string>(
   tagName: T,
-  attrs: Runtime.IHtmlAttrs,
+  attrs: IHtmlAttrs,
   innerHTML?: string
-): Runtime.IHtmlTag<T> {
+): IHtmlTag<T> {
   return {
     tagName: tagName,
     attrs: attrs || {},

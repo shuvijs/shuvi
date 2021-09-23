@@ -1,5 +1,5 @@
 import path from 'path';
-import { APIHooks } from '../types';
+import * as APIHooks from '../types/hooks';
 
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';

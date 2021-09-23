@@ -9,9 +9,9 @@ import {
   IShuviMode,
   IPhase
 } from './types';
-import { Bundler } from '../types/bundler';
-import * as Runtime from '../types/runtime';
+import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 import * as APIHooks from '../types/hooks';
+import { IRuntime } from '../types/runtime';
 
 import {
   ProjectBuilder,
@@ -65,7 +65,7 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private _platform!: Runtime.IRuntime;
+  private _platform!: IRuntime;
   helpers: IApi['helpers'];
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
