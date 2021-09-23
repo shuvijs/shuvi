@@ -1,11 +1,11 @@
 import program from 'commander';
 import path from 'path';
 import { shuvi } from '@shuvi/service';
-//@ts-ignore
-import pkgInfo from '../../../package.json';
+import { getPackageInfo } from '../utils';
 import { getProjectDir, getConfigFromCli } from '../utils';
 
 export default async function main(argv: string[]) {
+  const pkgInfo = getPackageInfo();
   program
     .name(pkgInfo.name)
     .usage(`serve [dir] [options]`)

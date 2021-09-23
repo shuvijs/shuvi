@@ -86,9 +86,9 @@ async function launchShuvi(
     if (envOverrides) {
       Object.assign(spawnOptions.env, envOverrides);
     }
-    const cliAgent = require.resolve('shuvi/lib/cli/agent');
+    const cliAgent = require.resolve('shuvi/lib/agent');
     const getCliCommand = (command: string) =>
-      require.resolve('shuvi/lib/cli/cmds/' + command);
+      require.resolve('shuvi/lib/cmds/' + command);
     // At first, build when production mode
     if (!isDev) {
       sync('node', [cliAgent, getCliCommand('build'), path], spawnOptions);

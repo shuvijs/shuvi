@@ -1,9 +1,10 @@
 import program from 'commander';
 import path from 'path';
 import { build } from '@shuvi/service/lib/cli/build';
-//@ts-ignore
-import pkgInfo from '../../../package.json';
+import { getPackageInfo } from '../utils';
 import { getProjectDir, getConfigFromCli } from '../utils';
+
+const pkgInfo = getPackageInfo();
 
 const cliConfigMap: Record<string, string | ((config: any) => void)> = {
   analyze: 'analyze',

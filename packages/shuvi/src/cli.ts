@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import program from 'commander';
 import spawn from 'cross-spawn';
-//@ts-ignore
-import pkgInfo from '../../package.json';
+import { getPackageInfo } from './utils';
 
 const Commands = ['dev', 'build', 'serve', 'inspect'] as const;
 
 type CommandName = typeof Commands[number];
+
+const pkgInfo = getPackageInfo();
 
 // must be before .parse()
 program.on('--help', () => {

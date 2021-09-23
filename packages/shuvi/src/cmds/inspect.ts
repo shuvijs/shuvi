@@ -6,11 +6,10 @@ import chalk from '@shuvi/utils/lib/chalk';
 import { getApi } from '@shuvi/service';
 import { getBundler } from '@shuvi/service/lib/bundler/bundler';
 import { getProjectDir, getConfigFromCli } from '../utils';
-
-//@ts-ignore
-import pkgInfo from '../../../package.json';
+import { getPackageInfo } from '../utils';
 
 export default async function main(argv: string[]) {
+  const pkgInfo = getPackageInfo();
   program
     .name(pkgInfo.name)
     .description('inspect internal webpack config')
