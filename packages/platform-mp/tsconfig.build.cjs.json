@@ -1,13 +1,13 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "lib": ["DOM", "ESNext"],
+    "rootDir": "./src",
+    "module": "commonjs",
+    "outDir": "lib",
     "strict": false,
     "strictNullChecks": false,
     "strictFunctionTypes": false,
-    "module": "commonjs",
     "downlevelIteration": true,
-    "outDir": "lib",
     "strictPropertyInitialization": false,
     "noImplicitAny": false,
     "noFallthroughCasesInSwitch": true,
@@ -15,6 +15,9 @@
     "noImplicitThis": false,
     "stripInternal": true,
     "noUnusedLocals": false,
+    "lib": ["esnext", "DOM"]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

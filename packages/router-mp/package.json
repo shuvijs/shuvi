@@ -12,7 +12,8 @@
   "module": "esm/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "esm"
   ],
   "scripts": {
     "dev": "run-p watch:*",

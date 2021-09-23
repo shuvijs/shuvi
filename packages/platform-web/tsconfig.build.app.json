@@ -4,5 +4,7 @@
     "module": "esnext",
     "outDir": "shuvi-app"
   },
-  "include": ["src/shuvi-app"]
+  "include": [
+    "src/shuvi-app"
+  ]
 }
