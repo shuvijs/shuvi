@@ -43,7 +43,9 @@ interface Req {
 interface RequestOptions {
   mode: string;
   method: string;
-  headers: Object;
+  headers: {
+    [key: string]: any;
+  };
   page?: string;
   credentials?: string;
 }

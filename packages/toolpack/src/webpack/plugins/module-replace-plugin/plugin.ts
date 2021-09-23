@@ -72,7 +72,7 @@ const ModuleAction = {
 } as const;
 
 interface Handler {
-  resolve(): void;
+  resolve(value?: any): void;
   pending: Map<Compiler, boolean>;
 }
 

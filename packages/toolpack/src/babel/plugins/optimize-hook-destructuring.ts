@@ -10,7 +10,7 @@ const isHook = /^use[A-Z]/;
 const isBuiltInHook = /^use(Callback|Context|DebugValue|Effect|ImperativeHandle|LayoutEffect|Memo|Reducer|Ref|State)$/;
 
 export default function ({
-  types: t,
+  types: t
 }: {
   types: typeof BabelTypes;
 }): PluginObj<any> {
@@ -42,7 +42,7 @@ export default function ({
         const specifier = (binding.path.parent as BabelTypes.ImportDeclaration)
           .source.value;
         // not a match
-        if (!libs.some((lib) => lib === specifier)) return;
+        if (!libs.some((lib: any) => lib === specifier)) return;
       }
 
       // only match function calls with names that look like a hook
@@ -63,7 +63,7 @@ export default function ({
           []
         )
       );
-    },
+    }
   };
 
   return {
@@ -72,7 +72,7 @@ export default function ({
       // this is a workaround to run before preset-env destroys destructured assignments
       Program(path, state) {
         path.traverse(visitor, state);
-      },
-    },
+      }
+    }
   };
 }

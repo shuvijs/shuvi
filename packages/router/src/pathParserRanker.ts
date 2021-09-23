@@ -1,34 +1,34 @@
-import { Token, TokenType } from './pathTokenizer'
+import { Token, TokenType } from './pathTokenizer';
 
-type PathParams = Record<string, string | string[]>
+type PathParams = Record<string, string | string[]>;
 
 export type MatchPathParams = {
-  match: string,
-  params: PathParams
-}
+  match: string;
+  params: PathParams;
+};
 
 /**
  * A param in a url like `/users/:id`
  */
 export interface PathParserParamKey {
-  name: string
-  repeatable: boolean
-  optional: boolean
+  name: string;
+  repeatable: boolean;
+  optional: boolean;
 }
 
 export interface PathParser {
   /**
    * The regexp used to match a url
    */
-  re: RegExp
+  re: RegExp;
   /**
    * The score of the parser
    */
-  score: Array<number[]>
+  score: Array<number[]>;
   /**
    * Keys that appeared in the path
    */
-  keys: PathParserParamKey[]
+  keys: PathParserParamKey[];
   /**
    * Parses a url and returns the matched params or nul if it doesn't match. An
    * optional param that isn't preset will be an empty string. A repeatable
@@ -38,14 +38,14 @@ export interface PathParser {
    * @returns a Params object, empty if there are no params. `null` if there is
    * no match
    */
-  parse(path: string): MatchPathParams | null
+  parse(path: string): MatchPathParams | null;
   /**
    * Creates a string version of the url
    *
    * @param params - object of params
    * @returns a url
    */
-  stringify(params: PathParams): string
+  stringify(params: PathParams): string;
 }
 
 /**
@@ -55,37 +55,37 @@ export interface _PathParserOptions {
   /**
    * Makes the RegExp case sensitive. Defaults to false
    */
-  sensitive?: boolean
+  sensitive?: boolean;
   /**
    * Should we disallow a trailing slash. Defaults to false
    */
-  strict?: boolean
+  strict?: boolean;
   /**
    * Should the RegExp match from the beginning by prepending a `^` to it. Defaults to true
    * @internal
    */
-  start?: boolean
+  start?: boolean;
   /**
    * Should the RegExp match until the end by appending a `$` to it. Defaults to true
    * false make RegExp match end with next /|$
    */
-  end?: boolean
+  end?: boolean;
 }
 
 export type PathParserOptions = Pick<
   _PathParserOptions,
   'end' | 'sensitive' | 'strict'
->
+>;
 
 // default pattern for a param: non greedy everything but /
-const BASE_PARAM_PATTERN = '[^/]+?'
+const BASE_PARAM_PATTERN = '[^/]+?';
 
 const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
   sensitive: false,
   strict: false,
   start: true,
-  end: true,
-}
+  end: true
+};
 
 // Scoring values used in tokensToParser
 const enum PathScore {
@@ -101,11 +101,11 @@ const enum PathScore {
   BonusOptional = -0.8 * _multiplier, // /:w? or /:w*
   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
   BonusStrict = 0.07 * _multiplier, // when options strict: true is passed, as the regex omits \/?
-  BonusCaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+  BonusCaseSensitive = 0.025 * _multiplier // when options strict: true is passed, as the regex omits \/?
 }
 
 // Special Regex characters that must be escaped in static tokens
-const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g
+const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g;
 
 /**
  * Creates a path parser from an array of Segments (a segment is an array of Tokens)
@@ -118,58 +118,58 @@ export function tokensToParser(
   segments: Array<Token[]>,
   extraOptions?: _PathParserOptions
 ): PathParser {
-  const options = Object.assign({}, BASE_PATH_PARSER_OPTIONS, extraOptions)
+  const options = Object.assign({}, BASE_PATH_PARSER_OPTIONS, extraOptions);
 
   // the amount of scores is the same as the length of segments except for the root segment "/"
-  let score: Array<number[]> = []
+  let score: Array<number[]> = [];
   // the regexp as a string
-  let pattern = options.start ? '^' : ''
+  let pattern = options.start ? '^' : '';
   // extracted keys
-  const keys: PathParserParamKey[] = []
+  const keys: PathParserParamKey[] = [];
 
   for (const segment of segments) {
     // the root segment needs special treatment
-    const segmentScores: number[] = segment.length ? [] : [PathScore.Root]
+    const segmentScores: number[] = segment.length ? [] : [PathScore.Root];
 
     // allow trailing slash
-    if (options.strict && !segment.length) pattern += '/'
+    if (options.strict && !segment.length) pattern += '/';
 
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
-      const token = segment[tokenIndex]
+      const token = segment[tokenIndex];
       // resets the score if we are inside a sub segment /:a-other-:b
       let subSegmentScore: number =
         PathScore.Segment +
-        (options.sensitive ? PathScore.BonusCaseSensitive : 0)
+        (options.sensitive ? PathScore.BonusCaseSensitive : 0);
 
       if (token.type === TokenType.Static) {
         // prepend the slash if we are starting a new segment
-        if (!tokenIndex) pattern += '/'
-        pattern += token.value.replace(REGEX_CHARS_RE, '\\$&')
-        subSegmentScore += PathScore.Static
+        if (!tokenIndex) pattern += '/';
+        pattern += token.value.replace(REGEX_CHARS_RE, '\\$&');
+        subSegmentScore += PathScore.Static;
       } else if (token.type === TokenType.Param) {
-        const { value, repeatable, optional, regexp } = token
+        const { value, repeatable, optional, regexp } = token;
         keys.push({
           name: value,
           repeatable,
-          optional,
-        })
-        const re = regexp ? regexp : BASE_PARAM_PATTERN
+          optional
+        });
+        const re = regexp ? regexp : BASE_PARAM_PATTERN;
         // the user provided a custom regexp /:id(\\d+)
         if (re !== BASE_PARAM_PATTERN) {
-          subSegmentScore += PathScore.BonusCustomRegExp
+          subSegmentScore += PathScore.BonusCustomRegExp;
           // make sure the regexp is valid before using it
           try {
-            new RegExp(`(${re})`)
+            new RegExp(`(${re})`);
           } catch (err) {
             throw new Error(
               `Invalid custom RegExp for param "${value}" (${re}): ` +
                 err.message
-            )
+            );
           }
         }
 
         // when we repeat we must take care of the repeating leading slash
-        let subPattern = repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
+        let subPattern = repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`;
 
         // prepend the slash if we are starting a new segment
         if (!tokenIndex)
@@ -178,100 +178,102 @@ export function tokensToParser(
             // or /:p?-:p2
             optional && segment.length < 2
               ? `(?:/${subPattern})`
-              : '/' + subPattern
-        if (optional) subPattern += '?'
+              : '/' + subPattern;
+        if (optional) subPattern += '?';
 
-        pattern += subPattern
+        pattern += subPattern;
 
-        if (!options.end) pattern += '(?=\/|$)'
+        if (!options.end) pattern += '(?=/|$)';
 
-        subSegmentScore += PathScore.Dynamic
-        if (optional) subSegmentScore += PathScore.BonusOptional
-        if (repeatable) subSegmentScore += PathScore.BonusRepeatable
-        if (re === '.*') subSegmentScore += PathScore.BonusWildcard
+        subSegmentScore += PathScore.Dynamic;
+        if (optional) subSegmentScore += PathScore.BonusOptional;
+        if (repeatable) subSegmentScore += PathScore.BonusRepeatable;
+        if (re === '.*') subSegmentScore += PathScore.BonusWildcard;
       }
 
-      segmentScores.push(subSegmentScore)
+      segmentScores.push(subSegmentScore);
     }
 
     // an empty array like /home/ -> [[{home}], []]
     // if (!segment.length) pattern += '/'
 
-    score.push(segmentScores)
+    score.push(segmentScores);
   }
 
   // only apply the strict bonus to the last score
   if (options.strict && options.end) {
-    const i = score.length - 1
-    score[i][score[i].length - 1] += PathScore.BonusStrict
+    const i = score.length - 1;
+    score[i][score[i].length - 1] += PathScore.BonusStrict;
   }
 
   // TODO: dev only warn double trailing slash
-  if (!options.strict) pattern += '/*?'
+  if (!options.strict) pattern += '/*?';
 
-  if (options.end) pattern += '$'
+  if (options.end) pattern += '$';
   // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_something_else
-  else if (options.strict) pattern += '(?:/*|$)'
+  else if (options.strict) pattern += '(?:/*|$)';
 
-  const re = new RegExp(pattern, options.sensitive ? '' : 'i')
+  const re = new RegExp(pattern, options.sensitive ? '' : 'i');
 
   function parse(path: string): MatchPathParams | null {
-    const match = path.match(re)
-    const params: PathParams = {}
+    const match = path.match(re);
+    const params: PathParams = {};
 
-    if (!match) return null
+    if (!match) return null;
 
     for (let i = 1; i < match.length; i++) {
-      const value: string = match[i] || ''
-      const key = keys[i - 1]
-      params[key.name] = value && key.repeatable ? value.split('/') : value
+      const value: string = match[i] || '';
+      const key = keys[i - 1];
+      params[key.name] = value && key.repeatable ? value.split('/') : value;
     }
 
     return {
       match: match[0],
-      params,
-    }
+      params
+    };
   }
 
   function stringify(params: PathParams): string {
-    let path = ''
+    let path = '';
     // for optional parameters to allow to be empty
-    let avoidDuplicatedSlash: boolean = false
+    let avoidDuplicatedSlash: boolean = false;
     for (const segment of segments) {
-      if (!avoidDuplicatedSlash || !path.endsWith('/')) path += '/'
-      avoidDuplicatedSlash = false
+      if (!avoidDuplicatedSlash || !path.endsWith('/')) path += '/';
+      avoidDuplicatedSlash = false;
 
       for (const token of segment) {
         if (token.type === TokenType.Static) {
-          path += token.value
+          path += token.value;
         } else if (token.type === TokenType.Param) {
-          const { value, repeatable, optional } = token
+          const { value, repeatable, optional } = token;
           const param = params[value];
 
           if (Array.isArray(param) && !repeatable)
             throw new Error(
               `Provided param "${value}" is an array but it is not repeatable (* or + modifiers)`
-            )
-          if(param === undefined && !optional){
-            throw new Error(`Missing required param "${value}"`)
+            );
+          if (param === undefined && !optional) {
+            throw new Error(`Missing required param "${value}"`);
           }
-          const text: string = Array.isArray(param) ? param.join('/') : (param || '')
+          const text: string = Array.isArray(param)
+            ? param.join('/')
+            : param || '';
           if (!text && optional) {
             // if we have more than one optional param like /:a?-static we
             // don't need to care about the optional param
             if (segment.length < 2) {
               // remove the last slash as we could be at the end
-              if (path.endsWith('/')) path = path.slice(0, -1)
+              if (path.endsWith('/')) path = path.slice(0, -1);
               // do not append a slash on the next iteration
-              else avoidDuplicatedSlash = true
+              else avoidDuplicatedSlash = true;
             }
           }
-          path += text
+          path += text;
         }
       }
     }
 
-    return path
+    return path;
   }
 
   return {
@@ -279,8 +281,8 @@ export function tokensToParser(
     score,
     keys,
     parse,
-    stringify,
-  }
+    stringify
+  };
 }
 
 /**
@@ -292,13 +294,13 @@ export function tokensToParser(
  * should be sorted first
  */
 function compareScoreArray(a: number[], b: number[]): number {
-  let i = 0
+  let i = 0;
   while (i < a.length && i < b.length) {
-    const diff = b[i] - a[i]
+    const diff = b[i] - a[i];
     // only keep going if diff === 0
-    if (diff) return diff
+    if (diff) return diff;
 
-    i++
+    i++;
   }
 
   // if the last subsegment was Static, the shorter segments should be sorted first
@@ -306,14 +308,14 @@ function compareScoreArray(a: number[], b: number[]): number {
   if (a.length < b.length) {
     return a.length === 1 && a[0] === PathScore.Static + PathScore.Segment
       ? -1
-      : 1
+      : 1;
   } else if (a.length > b.length) {
     return b.length === 1 && b[0] === PathScore.Static + PathScore.Segment
       ? 1
-      : -1
+      : -1;
   }
 
-  return 0
+  return 0;
 }
 
 /**
@@ -324,24 +326,27 @@ function compareScoreArray(a: number[], b: number[]): number {
  */
 
 type PathParserIndex = PathParser & {
-  index: number
-}
+  index: number;
+};
 
-export function comparePathParserScore(a: PathParserIndex, b: PathParserIndex): number {
-  let i = 0
-  const aScore = a.score
-  const bScore = b.score
+export function comparePathParserScore(
+  a: PathParserIndex,
+  b: PathParserIndex
+): number {
+  let i = 0;
+  const aScore = a.score;
+  const bScore = b.score;
   while (i < aScore.length && i < bScore.length) {
-    const comp = compareScoreArray(aScore[i], bScore[i])
+    const comp = compareScoreArray(aScore[i], bScore[i]);
     // do not return if both are equal
-    if (comp) return comp
+    if (comp) return comp;
 
-    i++
+    i++;
   }
 
   // if a and b share the same score entries but b has more, sort b first
   const lengthDiff = bScore.length - aScore.length;
-  if(lengthDiff) return lengthDiff;
+  if (lengthDiff) return lengthDiff;
   // this is the ternary version
   // return aScore.length < bScore.length
   //   ? 1

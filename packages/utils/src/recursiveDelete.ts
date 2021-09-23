@@ -44,7 +44,7 @@ export async function recursiveDelete(
   {
     filter,
     ignore,
-    rootDir = dir,
+    rootDir = dir
   }: {
     filter?: RegExp;
     ignore?: RegExp;
@@ -64,7 +64,7 @@ export async function recursiveDelete(
   await Promise.all(
     result.map(async (part: string) => {
       const absolutePath = join(dir, part);
-      const pathStat = await fsStat(absolutePath).catch((e) => {
+      const pathStat = await fsStat(absolutePath).catch((e: any) => {
         if (e.code !== 'ENOENT') throw e;
       });
       if (!pathStat) {
@@ -83,7 +83,7 @@ export async function recursiveDelete(
         await recursiveDelete(absolutePath, {
           filter,
           ignore,
-          rootDir: pp,
+          rootDir: pp
         });
         return fsRmdir(absolutePath);
       }
