@@ -67,6 +67,7 @@ if (__DEV__) {
     replace: PropTypes.bool,
     state: PropTypes.object,
     target: PropTypes.string,
+    // @ts-ignore proptypes's bug?
     to: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.shape({
