@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/router-react",
-  "version": "0.0.1-pre.3",
+  "version": "0.0.1-pre.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -28,8 +28,8 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/router": "0.0.1-pre.3",
-    "@shuvi/service": "0.0.1-pre.3"
+    "@shuvi/router": "0.0.1-pre.4",
+    "@shuvi/service": "0.0.1-pre.4"
   },
   "devDependencies": {
     "@types/react": "^16.9.43",
