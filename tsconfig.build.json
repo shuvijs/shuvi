@@ -19,9 +19,7 @@
     "downlevelIteration": true,
     "noUnusedLocals": true,
     "declaration": true,
-    "outDir": "dist",
-    "experimentalDecorators": true,
-    "useUnknownInCatchVariables": false
+    "outDir": "dist"
   },
   "exclude": ["**/node_modules", "**/__tests__", "**/*.test.ts?(x)"]
 }
