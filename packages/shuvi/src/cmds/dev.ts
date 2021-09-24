@@ -34,7 +34,7 @@ export default async function main(argv: string[]) {
       host === '0.0.0.0' ? 'localhost' : host
     }:${port}`;
     console.log(`Ready on ${localUrl}`);
-  } catch (err) {
+  } catch (err: any) {
     if (err.code === 'EADDRINUSE') {
       let errorMessage = `Port ${port} is already in use.`;
       errorMessage += '\nUse `--port` to specify some other port.';

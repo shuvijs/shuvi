@@ -79,12 +79,12 @@ describe('server', () => {
 
       try {
         await got(`http://${host}:${port}/api/users`);
-      } catch (error) {
+      } catch (error: any) {
         expect(error.response.statusCode).toBe(404);
       }
       try {
         await got(`http://${host}:${port}/api/users/`);
-      } catch (error) {
+      } catch (error: any) {
         expect(error.response.statusCode).toBe(404);
       }
 
@@ -140,7 +140,7 @@ describe('server', () => {
 
     try {
       await anotherServer.listen(port);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.code).toBe('EADDRINUSE');
       expect(e.message).toMatch(/is being used./);
       done();

@@ -123,7 +123,7 @@ export async function parseBody(
 
   try {
     buffer = await getRawBody(req, { encoding, limit });
-  } catch (e) {
+  } catch (e: any) {
     if (e.type === 'entity.too.large') {
       throw new ApiError(413, `Body exceeded ${limit} limit`);
     } else {
@@ -164,9 +164,9 @@ function parseJson(str: string): object {
  * @param req request object
  */
 
-export function getCookieParser(
-  req: IncomingMessage
-): { [key: string]: string } {
+export function getCookieParser(req: IncomingMessage): {
+  [key: string]: string;
+} {
   const header: undefined | string | string[] = req.headers.cookie;
   if (!header) {
     return {};

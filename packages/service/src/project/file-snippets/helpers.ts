@@ -15,7 +15,7 @@ export function getCodeSnippet(content: string): ICodeSnippet {
       sourceType: 'module',
       plugins: ['jsx']
     });
-  } catch (error) {
+  } catch (error: any) {
     error.message = [
       error.message,
       '',

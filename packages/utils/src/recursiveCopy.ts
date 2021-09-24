@@ -33,7 +33,7 @@ export async function recursiveCopy(
     if (stats.isDirectory()) {
       try {
         await fsMkdir(target);
-      } catch (err) {
+      } catch (err: any) {
         // do not throw `folder already exists` errors
         if (err.code !== 'EEXIST') {
           throw err;
