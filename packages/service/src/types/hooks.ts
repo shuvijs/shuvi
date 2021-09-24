@@ -122,3 +122,10 @@ export type IHookRenderToHTML = defineHook<
     ) => Promise<string | null>;
   }
 >;
+
+export type IServerMiddleware = defineHook<
+  'serverMiddleware',
+  {
+    initialValue: any;
+  }
+>;
