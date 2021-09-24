@@ -33,7 +33,7 @@ describe('Public Dir', () => {
     // folder
     try {
       await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toBe(404);
     }
   });
@@ -62,7 +62,7 @@ describe('Public Dir', () => {
     // folder
     try {
       await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toBe(404);
     }
   });

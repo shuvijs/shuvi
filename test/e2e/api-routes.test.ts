@@ -37,7 +37,7 @@ describe('apiRoutes development', () => {
   test('should return 404 for undefined path', async () => {
     try {
       await got.get(ctx.url('/api/not/unexisting/page/really'));
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toBe(404);
     }
   });
@@ -100,7 +100,7 @@ describe('apiRoutes development', () => {
   test('should return custom error', async () => {
     try {
       await got.get(ctx.url('/api/error'));
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toEqual(500);
       expect(JSON.parse(error.response.body)).toEqual({
         error: 'Server error!'
@@ -111,7 +111,7 @@ describe('apiRoutes development', () => {
   test('should throw Internal Server Error', async () => {
     try {
       await got.get(ctx.url('/api/user-error'));
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toEqual(500);
       expect(error.response.body).toContain('User error');
     }
@@ -120,7 +120,7 @@ describe('apiRoutes development', () => {
   test('should throw Internal Server Error (async)', async () => {
     try {
       await got.get(ctx.url('/api/user-error-async'));
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toEqual(500);
       expect(error.response.body).toContain('User error');
     }
@@ -194,7 +194,7 @@ describe('apiRoutes development', () => {
         },
         body: `{"message":Invalid"}`
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toEqual(400);
       expect(error.response.body).toContain('Invalid JSON');
     }
@@ -209,7 +209,7 @@ describe('apiRoutes development', () => {
         },
         body: JSON.stringify(json)
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toEqual(413);
       expect(error.response.body).toContain('Body exceeded 1mb limit');
     }
@@ -281,7 +281,7 @@ describe('apiRoutes development', () => {
   test('should show friendly error for invalid redirect', async () => {
     try {
       await got.get(ctx.url('/api/redirect-error'));
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.body).toContain(
         `Invalid redirect arguments. Please use a single argument URL, e.g. res.redirect('/destination') or use a status code and URL, e.g. res.redirect(307, '/destination').`
       );
@@ -291,7 +291,7 @@ describe('apiRoutes development', () => {
   test('should show friendly error in case of passing null as first argument redirect', async () => {
     try {
       await got.get(ctx.url('/api/redirect-null'));
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.body).toContain(
         `Invalid redirect arguments. Please use a single argument URL, e.g. res.redirect('/destination') or use a status code and URL, e.g. res.redirect(307, '/destination').`
       );
@@ -310,7 +310,7 @@ describe('apiRoutes development', () => {
       await got(ctx.url('/api/redirect-307'), {
         followRedirect: true
       });
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.requestUrl).toContain('/api/redirect-307');
       expect(error.response.url).toContain('/login');
     }
@@ -420,7 +420,7 @@ describe('apiRoutes development', () => {
   test('should 404 on optional dynamic api page', async () => {
     try {
       await got(ctx.url('/api/blog/543/comment'));
-    } catch (error) {
+    } catch (error: any) {
       expect(error.response.statusCode).toEqual(404);
     }
   });
