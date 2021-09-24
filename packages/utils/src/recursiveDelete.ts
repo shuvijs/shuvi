@@ -11,7 +11,7 @@ const sleep = promisify(setTimeout);
 const unlinkFile = async (p: string, t = 1): Promise<void> => {
   try {
     await fsUnlink(p);
-  } catch (e) {
+  } catch (e: any) {
     if (
       (e.code === 'EBUSY' ||
         e.code === 'ENOTEMPTY' ||
@@ -54,7 +54,7 @@ export async function recursiveDelete(
   let result;
   try {
     result = await fsReaddir(dir);
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       return;
     }
