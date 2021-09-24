@@ -1,4 +1,4 @@
-import { Runtime } from '../types';
+import { IServerModule } from '../types/runtime';
 import { IRouter } from '@shuvi/router';
 import { IApplication } from '@shuvi/runtime-core';
 import { Api } from '../api';
@@ -12,5 +12,5 @@ export type IRenderDocumentOptions = {
   AppComponent: any;
   router?: IRouter;
   appContext: any;
-  render?: Runtime.IServerModule['render'];
+  render?: IServerModule['render'];
 };
