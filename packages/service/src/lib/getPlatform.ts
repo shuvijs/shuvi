@@ -1,7 +1,7 @@
-import { Runtime } from '../types';
+import { IRuntime } from '../types/runtime';
 
-export default function (platform: string | undefined): Runtime.IRuntime {
+export default function (platform: string | undefined): IRuntime {
   const platformName = `@shuvi/platform-${platform}`;
-  const platformInstance: Runtime.IRuntime = require(platformName).default;
+  const platformInstance: IRuntime = require(platformName).default;
   return platformInstance;
 }

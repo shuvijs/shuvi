@@ -1,4 +1,4 @@
-import { Runtime } from '../types';
+import { IAppData, IData } from '../types/runtime';
 import { AppHooks } from '@shuvi/runtime-core';
 import { IRouter } from '@shuvi/router';
 import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '../constants';
@@ -7,9 +7,6 @@ import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
-
-import IData = Runtime.IData;
-import IAppData = Runtime.IAppData;
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps({

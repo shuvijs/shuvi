@@ -7,7 +7,7 @@ import {
   IApiRouteConfig,
   IUserRouteConfig
 } from '../api';
-import { Bundler } from './bundler';
+import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 
 import {
   IApplication,
@@ -24,6 +24,8 @@ import {
   IRedirectFn
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
+
+export * from '@shuvi/runtime-core/lib/runPlugins';
 
 export interface ITemplateData {
   [x: string]: any;

@@ -5,7 +5,7 @@ import {
   createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
 import { Api } from '../api';
-import { Bundler } from '../types/bundler';
+import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import {
   BUILD_MEDIA_PATH,
   BUILD_MANIFEST_PATH,
@@ -14,7 +14,6 @@ import {
   BUILD_CLIENT_RUNTIME_POLYFILL,
   BUILD_SERVER_FILE_SERVER
 } from '../constants';
-import IWebpackHelpers = Bundler.IWebpackHelpers;
 
 export interface IWebpackEntry {
   [x: string]: string | string[];

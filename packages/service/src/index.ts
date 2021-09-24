@@ -1,7 +1,10 @@
+export * as Bundler from '@shuvi/toolpack/lib/webpack/types';
+export * as APIHooks from './types/hooks';
+export * as Runtime from './types/runtime';
+export { matchRoutes } from '@shuvi/router';
 export { shuvi, Shuvi } from './shuvi';
 export { IApi, Api, getApi, PluginApi, IApiConfig, IConfig } from './api';
 export { ProjectBuilder } from './project';
-export * from './types';
 export {
   BUNDLER_TARGET_CLIENT,
   BUNDLER_TARGET_SERVER,
