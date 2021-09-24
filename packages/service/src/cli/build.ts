@@ -2,7 +2,7 @@ import path from 'path';
 import fse from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import { Api, getApi, IConfig } from '../api';
-import { APIHooks } from '../types';
+import * as APIHooks from '../types/hooks';
 import { getBundler } from '../bundler/bundler';
 import { BUILD_CLIENT_DIR } from '../constants';
 import { renderToHTML } from '../lib/renderToHTML';

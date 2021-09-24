@@ -1,4 +1,12 @@
-import { Runtime, APIHooks } from '../types';
+import * as APIHooks from '../types/hooks';
+
+import {
+  IAppData,
+  IDocumentProps,
+  IHtmlTag,
+  IRenderResultRedirect,
+  ITemplateData
+} from '../types/runtime';
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
@@ -13,11 +21,6 @@ import { renderTemplate } from '../lib/viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
 import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
 import { Api, IBuiltResource } from '../api';
-
-import IHtmlTag = Runtime.IHtmlTag;
-import IDocumentProps = Runtime.IDocumentProps;
-import IRenderResultRedirect = Runtime.IRenderResultRedirect;
-import IAppData = Runtime.IAppData;
 
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;
@@ -200,7 +203,7 @@ export abstract class BaseRenderer {
 
   private _renderDocument(
     documentProps: IDocumentProps,
-    templateData: Runtime.ITemplateData = {}
+    templateData: ITemplateData = {}
   ) {
     const htmlAttrs = stringifyAttrs(documentProps.htmlAttrs);
     const head = documentProps.headTags.map(tag => stringifyTag(tag)).join('');

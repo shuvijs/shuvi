@@ -1,5 +1,4 @@
-import { Runtime } from '../types';
-import IAppData = Runtime.IAppData;
+import { IAppData } from '../types/runtime';
 import { BaseRenderer } from './base';
 
 export class SpaRenderer extends BaseRenderer {

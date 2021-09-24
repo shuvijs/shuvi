@@ -1,12 +1,17 @@
-import { PluginApi } from './pluginApi';
-import * as Runtime from '../types/runtime';
-import { Bundler } from '../types/bundler';
-
 import { IHookable } from '@shuvi/hook';
 import { IRouteRecord } from '@shuvi/router';
+import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 
+import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
+import {
+  IApplicationModule,
+  IDocumentModule,
+  IServerModule,
+  IViewServer
+} from '../types/runtime';
+
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
   name?: string;
@@ -133,7 +138,7 @@ export interface IApi extends IHookable {
   readonly paths: IPaths;
   readonly config: IApiConfig;
   readonly phase: IPhase;
-  readonly clientManifest: Bundler.IManifest;
+  readonly clientManifest: IManifest;
   readonly helpers: ApiHelpers;
 
   addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;
@@ -156,15 +161,15 @@ export interface IApi extends IHookable {
 
 export type IBuiltResource = {
   server: {
-    server: Runtime.IServerModule;
+    server: IServerModule;
     apiRoutes: IApiRouteConfig[];
-    application: Runtime.IApplicationModule;
-    document: Partial<Runtime.IDocumentModule>;
-    view: Runtime.IViewServer;
+    application: IApplicationModule;
+    document: Partial<IDocumentModule>;
+    view: IViewServer;
   };
   documentTemplate: any;
-  clientManifest: Bundler.IManifest;
-  serverManifest: Bundler.IManifest;
+  clientManifest: IManifest;
+  serverManifest: IManifest;
 };
 
 export type IResources<Extra = {}> = IBuiltResource & {

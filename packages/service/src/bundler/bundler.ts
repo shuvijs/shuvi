@@ -1,4 +1,4 @@
-import { APIHooks } from '../types';
+import * as APIHooks from '../types/hooks';
 import WebpackChain from 'webpack-chain';
 import ForkTsCheckerWebpackPlugin, {
   Issue,

@@ -1,4 +1,4 @@
-import { APIHooks } from '../types';
+import * as APIHooks from '../types/hooks';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
