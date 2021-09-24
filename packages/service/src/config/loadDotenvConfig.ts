@@ -48,7 +48,7 @@ export const loadDotenvConfig = (dir: string) => {
           err
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       if (err.code !== 'ENOENT') {
         throw new Error(`Failed to load env from ${envFile}\n${err}`);
       }

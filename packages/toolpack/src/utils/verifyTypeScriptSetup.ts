@@ -231,7 +231,7 @@ export async function verifyTypeScriptSetup({
     }
 
     parsedCompilerOptions = result.options;
-  } catch (e) {
+  } catch (e: any) {
     if (e && e.name === 'SyntaxError') {
       console.error(
         chalk.red.bold(

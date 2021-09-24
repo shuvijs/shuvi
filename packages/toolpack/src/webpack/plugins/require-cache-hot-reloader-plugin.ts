@@ -6,7 +6,7 @@ import { realpathSync } from 'fs';
 function deleteCache(filePath: string) {
   try {
     delete require.cache[realpathSync(filePath)];
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ENOENT') throw e;
   } finally {
     delete require.cache[filePath];

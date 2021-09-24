@@ -70,7 +70,7 @@ describe('shuvi inspect command', () => {
     try {
       const project = createCliTestProject('test/fixtures/xxx');
       await project.run('inspect');
-    } catch (e) {
+    } catch (e: any) {
       expect(e.code).toBe(1);
       expect(e.message).toMatch('No such directory exists as the project root');
     }

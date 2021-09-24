@@ -37,7 +37,7 @@ function waitForCompile(compiler: Compiler, initialCb: CompileDoneCallback) {
     if (queue.length) {
       try {
         pending = (job as CompileDoneCallback)(stats);
-      } catch (e) {
+      } catch (e: any) {
         finish(e);
         return;
       }
@@ -83,7 +83,7 @@ function waitForCompile(compiler: Compiler, initialCb: CompileDoneCallback) {
     try {
       await pending;
       shift(stats);
-    } catch (error) {
+    } catch (error: any) {
       finish(error);
     }
   });
@@ -96,7 +96,7 @@ export function createCompiler(
 ): Compiler {
   let compiler: Compiler;
   if (!(value instanceof webpack.Compiler)) {
-    compiler = (webpack({
+    compiler = webpack({
       mode: 'development',
       output: {
         filename: '[name].js',
@@ -104,16 +104,16 @@ export function createCompiler(
         path: resolveFixture('dist')
       },
       ...value
-    }) as any) as Compiler;
+    }) as any as Compiler;
   } else {
-    compiler = (value as any) as Compiler;
+    compiler = value as any as Compiler;
   }
 
   let watching: WebpackCompiler['watching'] | null = null;
   const fs = createFsFromVolume(new Volume());
   compiler.outputFileSystem = fs as any;
 
-  const originWatch = (compiler.watch as any) as WebpackCompiler['watch'];
+  const originWatch = compiler.watch as any as WebpackCompiler['watch'];
   compiler.watch = function () {
     return new Promise<any>((resolve, reject) => {
       watching = originWatch.call(

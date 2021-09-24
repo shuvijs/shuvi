@@ -74,7 +74,7 @@ describe('config', () => {
 
     try {
       await loadFixture('error');
-    } catch (e) {
+    } catch (err: any) {
       expect(
         e.message.startsWith(
           "Cannot find module './notFound' from 'shuvi.config.js'"

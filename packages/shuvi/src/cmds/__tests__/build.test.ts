@@ -26,7 +26,7 @@ describe('shuvi build command', () => {
     const project = createCliTestProject('test/fixtures/xxx');
     try {
       await project.run('build');
-    } catch (e) {
+    } catch (e: any) {
       expect(e.code).toBe(1);
       expect(e.message).toMatch('No such directory exists as the project root');
     }

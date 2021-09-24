@@ -160,7 +160,7 @@ export function tokensToParser(
           // make sure the regexp is valid before using it
           try {
             new RegExp(`(${re})`);
-          } catch (err) {
+          } catch (err: any) {
             throw new Error(
               `Invalid custom RegExp for param "${value}" (${re}): ` +
                 err.message

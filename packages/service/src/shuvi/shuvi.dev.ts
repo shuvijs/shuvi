@@ -60,7 +60,7 @@ export default class ShuviDev extends Base {
     let err = null;
     try {
       await serveStatic(req, res, assetAbsPath);
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 'ENOENT') {
         error.statusCode = 404;
       }
