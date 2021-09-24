@@ -44,6 +44,7 @@ export default abstract class Shuvi {
 
   async prepare(): Promise<void> {
     await this._ensureApiInited();
+    await this._serverMiddleware();
     await this.init();
   }
 
@@ -100,10 +101,8 @@ export default abstract class Shuvi {
     }
     if (tempApiModule) {
       try {
-        const {
-          config: { apiConfig = {} } = {},
-          default: resolver
-        } = (tempApiModule as unknown) as IApiModule;
+        const { config: { apiConfig = {} } = {}, default: resolver } =
+          tempApiModule as unknown as IApiModule;
         let overridesConfig = {
           ...otherConfig,
           ...apiConfig
@@ -177,5 +176,12 @@ export default abstract class Shuvi {
     }
 
     this._api = await this._apiPromise;
+  }
+
+  private async _serverMiddleware() {
+    await this._api.callHook<APIHooks.IServerMiddleware>({
+      name: 'serverMiddleware',
+      initialValue: this._api.server
+    });
   }
 }
