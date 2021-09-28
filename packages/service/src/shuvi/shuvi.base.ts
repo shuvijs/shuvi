@@ -1,6 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, IConfig, getApi, Api } from '../api';
 import * as APIHooks from '../types/hooks';
+import {
+  IIncomingMessage,
+  IServerAppResponse,
+  IServerAppNext,
+  IServerMiddlewareItem,
+  IServerMiddlewareHandler
+} from '../types/runtime';
 import { matchPathname } from '@shuvi/router';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
@@ -175,5 +182,40 @@ export default abstract class Shuvi {
     }
 
     this._api = await this._apiPromise;
+  }
+
+  protected _getServerMiddlewares() {
+    return this._api.getServerMiddlewares();
+  }
+
+  protected _runServerMiddlewares(
+    middlewares: IServerMiddlewareItem[]
+  ): IServerMiddlewareHandler {
+    return async (
+      req: IIncomingMessage,
+      res: IServerAppResponse,
+      next: IServerAppNext
+    ) => {
+      let i = 0;
+
+      const runNext = () => runMiddleware(middlewares[++i]);
+
+      const runMiddleware = async (middleware: any) => {
+        if (i === middlewares.length) {
+          return;
+        }
+        const matchedPath =
+          req.pathname && matchPathname(middleware.path, req.pathname);
+
+        if (!matchedPath) {
+          await runNext();
+          return;
+        }
+        req.params = matchedPath.params;
+        await middleware.handler(req, res, runNext);
+      };
+
+      await runMiddleware(middlewares[i]);
+    };
   }
 }

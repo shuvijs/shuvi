@@ -5,6 +5,7 @@ import { serveStatic } from '../lib/serveStatic';
 import { applyHttpProxyMiddleware } from '../lib/httpProxyMiddleware';
 import { IRequestHandlerWithNext } from '../server';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
+import { IIncomingMessage, NextHandleFunction } from '../types/runtime';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;
@@ -39,6 +40,7 @@ export default class ShuviDev extends Base {
       `${api.assetPublicPath}:path(.*)`,
       this._publicDirMiddleware
     );
+    api.server.use(this._createServerMiddlewaresHandler);
     api.server.use(this.apiRoutesHandler);
     api.server.use(this._pageMiddleware);
   }
@@ -46,6 +48,27 @@ export default class ShuviDev extends Base {
   protected getMode() {
     return 'development' as const;
   }
+
+  private _createServerMiddlewaresHandler: IRequestHandlerWithNext = async (
+    req,
+    res,
+    next
+  ) => {
+    const middlewares = this._getServerMiddlewares();
+
+    let err = null;
+
+    try {
+      const task = this._runServerMiddlewares(
+        middlewares
+      ) as unknown as NextHandleFunction;
+      await task(req as unknown as IIncomingMessage, res, next);
+    } catch (error: any) {
+      err = error;
+    }
+
+    return next(err);
+  };
 
   private _publicDirMiddleware: IRequestHandlerWithNext = async (
     req,
