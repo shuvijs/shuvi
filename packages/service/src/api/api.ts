@@ -9,11 +9,14 @@ import {
   IShuviMode,
   IPhase
 } from './types';
-import { IServerMiddlewareItem } from '../types/runtime';
 import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 import * as APIHooks from '../types/hooks';
-import { IRuntime } from '../types/runtime';
-import { normalizeServerMiddleware } from './serverMiddleware';
+import { IRuntime, IServerMiddlewareItem } from '../types/runtime';
+import {
+  IServerMiddleware,
+  IServerMiddlewareOptions,
+  normalizeServerMiddleware
+} from './serverMiddleware';
 import {
   ProjectBuilder,
   UserModule,
@@ -66,7 +69,7 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private extraServerMiddlewares: IServerMiddlewareItem[] = [];
+  private extraServerMiddlewares: IServerMiddleware[] = [];
   private _platform!: IRuntime;
   helpers: IApi['helpers'];
 
@@ -181,7 +184,7 @@ class Api extends Hookable implements IApi {
     return this._resources.clientManifest;
   }
 
-  addServerMiddleware(middleware: IServerMiddlewareItem) {
+  addServerMiddleware(middleware: IServerMiddleware) {
     this.extraServerMiddlewares.push(middleware);
   }
 
@@ -191,7 +194,7 @@ class Api extends Hookable implements IApi {
       paths: { rootDir }
     } = this;
 
-    let serverMiddleware: IServerMiddlewareItem[];
+    let serverMiddleware: IServerMiddlewareOptions[];
     try {
       // this.resources.server maybe don't exist
       serverMiddleware = this.resources.server.server.serverMiddleware || [];
