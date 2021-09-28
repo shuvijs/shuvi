@@ -6,6 +6,7 @@ import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
 import {
+  IServerMiddlewareItem,
   IApplicationModule,
   IDocumentModule,
   IServerModule,
@@ -151,6 +152,8 @@ export interface IApi extends IHookable {
   setPlatformModule: typeof ProjectBuilder.prototype.setPlatformModule;
   setClientModule: typeof ProjectBuilder.prototype.setClientModule;
   setServerModule: typeof ProjectBuilder.prototype.setServerModule;
+
+  addServerMiddleware: (serverMiddleware: IServerMiddlewareItem) => void;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

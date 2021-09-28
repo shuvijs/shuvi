@@ -115,6 +115,7 @@ describe('api', () => {
       'resolveUserFile',
       'resolveBuildFile',
       'resolvePublicFile',
+      'addServerMiddleware',
       'getAssetPublicUrl'
     ].forEach(method => {
       // @ts-ignore
@@ -182,5 +183,27 @@ describe('api', () => {
     });
 
     expect(process.env.READ_ENV).toBe('true');
+  });
+
+  describe('serverMiddleware', () => {
+    test('addServerMiddleware', async () => {
+      const api = await getApi({
+        config: {}
+      });
+
+      const serverMiddleware = jest.fn();
+      api.addServerMiddleware(serverMiddleware);
+
+      const firstServerMiddleware = jest.fn();
+      api.addServerMiddleware({ handler: firstServerMiddleware, order: 0 });
+
+      const secondServerMiddleware = jest.fn();
+      api.addServerMiddleware({ handler: secondServerMiddleware, order: 1 });
+
+      const fakeServerMiddleware = jest.fn();
+      api.addServerMiddleware(fakeServerMiddleware);
+
+      expect(api.getServerMiddlewares().length).toBe(4);
+    });
   });
 });

@@ -11,8 +11,12 @@ import {
 } from './types';
 import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 import * as APIHooks from '../types/hooks';
-import { IRuntime } from '../types/runtime';
-
+import { IRuntime, IServerMiddlewareItem } from '../types/runtime';
+import {
+  IServerMiddleware,
+  IServerMiddlewareOptions,
+  normalizeServerMiddleware
+} from './serverMiddleware';
 import {
   ProjectBuilder,
   UserModule,
@@ -65,6 +69,7 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
+  private extraServerMiddlewares: IServerMiddleware[] = [];
   private _platform!: IRuntime;
   helpers: IApi['helpers'];
 
@@ -177,6 +182,29 @@ class Api extends Hookable implements IApi {
 
   get clientManifest(): Bundler.IManifest {
     return this._resources.clientManifest;
+  }
+
+  addServerMiddleware(middleware: IServerMiddleware) {
+    this.extraServerMiddlewares.push(middleware);
+  }
+
+  getServerMiddlewares(): IServerMiddlewareItem[] {
+    const {
+      extraServerMiddlewares,
+      paths: { rootDir }
+    } = this;
+
+    let serverMiddleware: IServerMiddlewareOptions[];
+    try {
+      // this.resources.server maybe don't exist
+      serverMiddleware = this.resources.server.server.serverMiddleware || [];
+    } catch (error) {
+      serverMiddleware = [];
+    }
+
+    return [...serverMiddleware, ...extraServerMiddlewares]
+      .map(m => normalizeServerMiddleware(m, { rootDir }))
+      .sort((a, b) => a.order - b.order);
   }
 
   setRuntimeConfigContent(content: string | null) {

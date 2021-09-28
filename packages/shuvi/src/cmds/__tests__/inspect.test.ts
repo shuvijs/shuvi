@@ -17,7 +17,7 @@ describe('shuvi inspect command', () => {
       expect(message).toMatch(`name: 'shuvi/client'`);
       expect(message).not.toMatch(`__NAME__: '"shuvi/client"'`);
       expect(message).not.toMatch(`__NAME__: '"shuvi/server"'`);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.code).toBe(1);
       expect(e.message).toMatch('No such directory exists as the project root');
     }
