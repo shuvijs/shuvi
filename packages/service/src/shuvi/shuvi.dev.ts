@@ -49,25 +49,17 @@ export default class ShuviDev extends Base {
     return 'development' as const;
   }
 
-  private _createServerMiddlewaresHandler: IRequestHandlerWithNext = async (
+  private _createServerMiddlewaresHandler: IRequestHandlerWithNext = (
     req,
     res,
     next
   ) => {
     const middlewares = this._getServerMiddlewares();
 
-    let err = null;
-
-    try {
-      const task = this._runServerMiddlewares(
-        middlewares
-      ) as unknown as NextHandleFunction;
-      await task(req as unknown as IIncomingMessage, res, next);
-    } catch (error: any) {
-      err = error;
-    }
-
-    return next(err);
+    const task = this._runServerMiddlewares(
+      middlewares
+    ) as unknown as NextHandleFunction;
+    task(req as unknown as IIncomingMessage, res, next);
   };
 
   private _publicDirMiddleware: IRequestHandlerWithNext = async (
@@ -89,7 +81,7 @@ export default class ShuviDev extends Base {
       }
       err = error;
     }
-    next(err);
+    if (err) next(err);
   };
 
   private _pageMiddleware: IRequestHandlerWithNext = async (req, res, next) => {

@@ -191,31 +191,33 @@ export default abstract class Shuvi {
   protected _runServerMiddlewares(
     middlewares: IServerMiddlewareItem[]
   ): IServerMiddlewareHandler {
-    return async (
+    return (
       req: IIncomingMessage,
       res: IServerAppResponse,
       next: IServerAppNext
     ) => {
       let i = 0;
 
-      const runNext = () => runMiddleware(middlewares[++i]);
+      const runNext = (error: any) => {
+        if (error) return next(error);
+        runMiddleware(middlewares[++i]);
+      };
 
-      const runMiddleware = async (middleware: any) => {
+      const runMiddleware = (middleware: any) => {
         if (i === middlewares.length) {
-          return;
+          return next();
         }
         const matchedPath =
           req.pathname && matchPathname(middleware.path, req.pathname);
 
         if (!matchedPath) {
-          await runNext();
-          return;
+          return runNext(null);
         }
         req.params = matchedPath.params;
-        await middleware.handler(req, res, runNext);
+        return middleware.handler(req, res, runNext);
       };
 
-      await runMiddleware(middlewares[i]);
+      return runMiddleware(middlewares[i]);
     };
   }
 }
