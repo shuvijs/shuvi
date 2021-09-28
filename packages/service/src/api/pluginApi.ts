@@ -21,6 +21,7 @@ const apiProps: Array<keyof IApi> = [
   'resolveUserFile',
   'resolveBuildFile',
   'resolvePublicFile',
+  'addServerMiddleware',
   'getAssetPublicUrl'
 ];
 
@@ -56,6 +57,8 @@ class PluginApi implements IApi {
   resolveUserFile: any;
   resolveBuildFile: any;
   resolvePublicFile: any;
+
+  addServerMiddleware: any;
 
   getAssetPublicUrl: any;
 }

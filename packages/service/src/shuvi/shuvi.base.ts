@@ -1,6 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, IConfig, getApi, Api } from '../api';
 import * as APIHooks from '../types/hooks';
+import {
+  IIncomingMessage,
+  IServerAppResponse,
+  IServerAppNext,
+  IServerMiddlewareItem,
+  IServerMiddlewareHandler
+} from '../types/runtime';
 import { matchPathname } from '@shuvi/router';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
@@ -44,7 +51,6 @@ export default abstract class Shuvi {
 
   async prepare(): Promise<void> {
     await this._ensureApiInited();
-    await this._serverMiddleware();
     await this.init();
   }
 
@@ -178,10 +184,40 @@ export default abstract class Shuvi {
     this._api = await this._apiPromise;
   }
 
-  private async _serverMiddleware() {
-    await this._api.callHook<APIHooks.IServerMiddleware>({
-      name: 'serverMiddleware',
-      initialValue: this._api.server
-    });
+  protected _getServerMiddlewares() {
+    return this._api.getServerMiddlewares();
+  }
+
+  protected _runServerMiddlewares(
+    middlewares: IServerMiddlewareItem[]
+  ): IServerMiddlewareHandler {
+    return (
+      req: IIncomingMessage,
+      res: IServerAppResponse,
+      next: IServerAppNext
+    ) => {
+      let i = 0;
+
+      const runNext = (error: any) => {
+        if (error) return next(error);
+        runMiddleware(middlewares[++i]);
+      };
+
+      const runMiddleware = (middleware: any) => {
+        if (i === middlewares.length) {
+          return next();
+        }
+        const matchedPath =
+          req.pathname && matchPathname(middleware.path, req.pathname);
+
+        if (!matchedPath) {
+          return runNext(null);
+        }
+        req.params = matchedPath.params;
+        return middleware.handler(req, res, runNext);
+      };
+
+      return runMiddleware(middlewares[i]);
+    };
   }
 }
