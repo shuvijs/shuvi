@@ -203,7 +203,30 @@ describe('api', () => {
       const fakeServerMiddleware = jest.fn();
       api.addServerMiddleware(fakeServerMiddleware);
 
-      expect(api.getServerMiddlewares().length).toBe(4);
+      expect(api.getBeforePageMiddlewares().length).toBe(4);
+    });
+
+    test('addServerMiddlewareLast', async () => {
+      const api = await getApi({
+        config: {}
+      });
+
+      const serverMiddleware = jest.fn();
+      api.addServerMiddlewareLast(serverMiddleware);
+
+      const firstServerMiddleware = jest.fn();
+      api.addServerMiddlewareLast({ handler: firstServerMiddleware, order: 0 });
+
+      const secondServerMiddleware = jest.fn();
+      api.addServerMiddlewareLast({
+        handler: secondServerMiddleware,
+        order: 1
+      });
+
+      const fakeServerMiddleware = jest.fn();
+      api.addServerMiddlewareLast(fakeServerMiddleware);
+
+      expect(api.getAfterPageMiddlewares().length).toBe(4);
     });
   });
 });

@@ -5,14 +5,8 @@ import cookie from 'cookie';
 import getRawBody from 'raw-body';
 import contentType from 'content-type';
 import { IParams, ParsedQuery } from '@shuvi/router';
+import { IResponse, IRequest } from '../types/server';
 
-export interface IResponse extends ServerResponse {}
-export interface IRequest extends IncomingMessage {
-  url: string;
-  pathname: string;
-  query: ParsedQuery;
-  params: IParams;
-}
 export interface IApiReq {
   pathname: string;
   query: ParsedQuery;

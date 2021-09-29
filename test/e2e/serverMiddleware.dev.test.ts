@@ -74,7 +74,7 @@ describe('serverMiddleware development', () => {
     expect(await page.$text('body')).toMatch(/bob/);
 
     await page.goto(ctx.url('/users/bob/path'));
-    expect(await page.$text('body')).toMatch(/404/);
+    expect(await page.$text('body')).toMatch(/bob/);
 
     await page.close();
   });

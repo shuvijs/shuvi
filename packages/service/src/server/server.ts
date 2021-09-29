@@ -1,17 +1,16 @@
 import http from 'http';
 import { parse as parseUrl } from 'url';
-import { IRequest, IResponse } from '../lib/apiRouteHandler';
-import { getType, isFunction } from '@shuvi/utils';
 import { parseQuery } from '@shuvi/router';
-import invariant from '@shuvi/utils/lib/invariant';
 import detectPort from 'detect-port';
 import { sendHTML } from '../lib/utils';
 import { getRouter, Router } from './router';
 import {
+  IResponse,
+  IRequest,
   IMiddlewareHandler,
   IRequestHandlerWithNext,
   INextFunc
-} from './serverTypes';
+} from '../types/server';
 
 const prepareReq: IRequestHandlerWithNext = (req, res, next) => {
   const url = parseUrl(req.url, false);
@@ -36,28 +35,8 @@ export class Server {
 
   use(fn: IMiddlewareHandler): this;
   use(path: string, fn: IMiddlewareHandler): this;
-  use(path: any, fn?: any): this {
-    let handler: IMiddlewareHandler;
-    let routePath: string;
-
-    // first arg is the path
-    if (!isFunction(path)) {
-      routePath = path;
-      handler = fn;
-    } else {
-      // default route to '/'
-      routePath = '/';
-      handler = path;
-    }
-
-    invariant(
-      isFunction(handler),
-      `Server.use() requires a middleware function but got a ${getType(
-        handler
-      )}`
-    );
-
-    this._router.use(routePath, handler);
+  use(...args: [IMiddlewareHandler] | [string, IMiddlewareHandler]): this {
+    this._router.use(args[0], args[1]);
     return this;
   }
 

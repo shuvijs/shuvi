@@ -1,23 +1,22 @@
 import resolve from '@shuvi/utils/lib/resolve';
-import { IServerMiddlewareHandler } from '../types/runtime';
+import { IMiddlewareHandler } from '../types/server';
 
 interface Options {
   rootDir: string;
 }
 
-export interface IServerMiddlewareOptions {
-  handler: string | IServerMiddlewareHandler;
+interface IMiddlewareOptions {
+  handler: string | IMiddlewareHandler;
   path?: string;
   order?: number;
 }
 
-export type IServerMiddleware =
-  | string
-  | IServerMiddlewareHandler
-  | IServerMiddlewareOptions;
+export type IServerMiddlewareOptions = IMiddlewareOptions | IMiddlewareHandler;
 
-interface InternalServerMiddlewareOptions extends IServerMiddlewareOptions {
-  handler: IServerMiddlewareHandler;
+export type IServerMiddleware = string | IServerMiddlewareOptions;
+
+interface InternalServerMiddlewareOptions extends IMiddlewareOptions {
+  handler: IMiddlewareHandler;
   path: string;
   order: number;
 }
@@ -45,7 +44,7 @@ export function normalizeServerMiddleware(
     middlewareOptions = middleware;
   }
 
-  let handler: IServerMiddlewareHandler;
+  let handler: IMiddlewareHandler;
   if (typeof middlewareOptions.handler === 'string') {
     const resolvedPath = resolveHandler(middlewareOptions.handler, options);
     handler = require(resolvedPath);
