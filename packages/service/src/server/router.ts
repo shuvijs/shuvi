@@ -4,21 +4,17 @@ import { matchPathname } from '@shuvi/router';
 import {
   IRequestHandlerWithNext,
   IErrorHandlerWithNext,
+  IServerMiddlewareItem,
   IMiddlewareHandler,
   INextFunc,
   IRequest,
   IResponse
-} from '../types/runtime';
+} from '../types/server';
 
 interface RouteOptions {
   caseSensitive: boolean;
   // strict: boolean;
   end: boolean;
-}
-
-interface Route {
-  path: string;
-  handler: IMiddlewareHandler;
 }
 
 export interface Router {
@@ -30,7 +26,7 @@ export interface Router {
 
 class RouterImpl implements Router {
   private _options: RouteOptions;
-  private _routes: Route[] = [];
+  private _routes: IServerMiddlewareItem[] = [];
 
   constructor(options: RouteOptions) {
     this._options = options;

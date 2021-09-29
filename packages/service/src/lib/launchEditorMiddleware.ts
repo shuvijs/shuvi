@@ -1,5 +1,5 @@
 import launchEditor from 'launch-editor';
-import { IRequestHandlerWithNext } from '../types/runtime';
+import { IRequestHandlerWithNext } from '../types/server';
 
 function getSourcePath(source: string) {
   // Webpack prefixes certain source paths with this path

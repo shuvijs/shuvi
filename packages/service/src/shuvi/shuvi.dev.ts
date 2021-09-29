@@ -4,7 +4,7 @@ import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import { applyHttpProxyMiddleware } from '../lib/httpProxyMiddleware';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
-import { IRequestHandlerWithNext } from '../types/runtime';
+import { IRequestHandlerWithNext } from '../types/server';
 
 export default class ShuviDev extends Base {
   private _onDemandRouteMgr!: OnDemandRouteManager;

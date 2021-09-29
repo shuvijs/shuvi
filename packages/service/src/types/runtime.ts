@@ -1,5 +1,5 @@
-import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
-import { UrlWithParsedQuery } from 'url';
+import { IncomingMessage, ServerResponse } from 'http';
+import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 import {
   IApi,
   IRouterHistoryMode,
@@ -66,22 +66,6 @@ export interface IDocumentProps {
   mainTags: IHtmlTag[];
   scriptTags: IHtmlTag<'script'>[];
 }
-
-export interface IIncomingMessage extends IncomingMessage {
-  url: string;
-  parsedUrl: UrlWithParsedQuery;
-  originalUrl?: IncomingMessage['url'];
-  [x: string]: any;
-}
-
-export interface IRequest extends IIncomingMessage {
-  url: string;
-  pathname: string;
-  query: ParsedQuery;
-  params: IParams;
-  headers: IncomingHttpHeaders;
-}
-export interface IResponse extends ServerResponse {}
 
 export interface IServerAppContext {
   req: IRequest;
@@ -217,43 +201,6 @@ export interface IDocumentModule {
   getTemplateData(
     context: IServerAppContext
   ): Promise<ITemplateData> | ITemplateData;
-}
-
-export type IRequestHandler = (req: IRequest, res: IResponse) => void;
-
-export type INextFunc = (err?: any) => void;
-
-export type IRequestHandlerWithNext = (
-  req: IRequest,
-  res: IResponse,
-  next: INextFunc
-) => void;
-
-export type IErrorHandler = (err: any, req: IRequest, res: IResponse) => void;
-
-export type IErrorHandlerWithNext = (
-  err: any,
-  req: IRequest,
-  res: IResponse,
-  next: INextFunc
-) => void;
-
-export type IAsyncRequestHandler = (
-  req: IRequest,
-  res: IResponse,
-  next?: INextFunc
-) => Promise<any>;
-
-export type IMiddlewareHandler =
-  | IRequestHandler
-  | IRequestHandlerWithNext
-  | IAsyncRequestHandler
-  | IErrorHandler
-  | IErrorHandlerWithNext;
-
-export interface IServerMiddlewareItem {
-  path: string;
-  handler: IMiddlewareHandler;
 }
 
 export interface IServerModule {

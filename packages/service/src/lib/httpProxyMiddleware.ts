@@ -4,7 +4,7 @@ import {
   createProxyMiddleware
 } from 'http-proxy-middleware';
 import { Server } from '../server/server';
-import { IMiddlewareHandler } from '../types/runtime';
+import { IMiddlewareHandler } from '../types/server';
 
 export interface IProxyConfigItem extends ProxyOptions {
   context?: ProxyFilter;

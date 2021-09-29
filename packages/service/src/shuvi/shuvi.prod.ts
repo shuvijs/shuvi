@@ -1,7 +1,7 @@
 import { serveStatic } from '../lib/serveStatic';
 import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
-import { IRequestHandlerWithNext } from '../types/runtime';
+import { IRequestHandlerWithNext } from '../types/server';
 
 export default class ShuviProd extends Base {
   async init() {

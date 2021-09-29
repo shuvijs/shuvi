@@ -6,11 +6,11 @@ import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
 import { apiRouteHandler, IApiRequestHandler } from '../lib/apiRouteHandler';
 import {
+  IRequestHandlerWithNext,
   IResponse,
   IRequest,
-  IRequestHandlerWithNext,
   INextFunc
-} from '../types/runtime';
+} from '../types/server';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -150,11 +150,11 @@ export default abstract class Shuvi {
     }
   };
 
-  protected async _handlePageRequest(
+  protected _handlePageRequest = async (
     req: IRequest,
     res: IResponse,
     next: INextFunc
-  ) {
+  ) => {
     try {
       const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
         {
@@ -170,7 +170,7 @@ export default abstract class Shuvi {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   protected _getAfterPageMiddlewares() {
     return this._api.getAfterPageMiddlewares();

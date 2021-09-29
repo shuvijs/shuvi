@@ -10,7 +10,7 @@ import {
   IMiddlewareHandler,
   IRequestHandlerWithNext,
   INextFunc
-} from '../types/runtime';
+} from '../types/server';
 
 const prepareReq: IRequestHandlerWithNext = (req, res, next) => {
   const url = parseUrl(req.url, false);

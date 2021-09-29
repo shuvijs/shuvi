@@ -1,4 +1,5 @@
-import { IRequest, IRenderResultRedirect } from '../types/runtime';
+import { IRenderResultRedirect } from '../types/runtime';
+import { IRequest } from '../types/server';
 import { Renderer, isRedirect } from '../renderer';
 import { Api } from '../api';
 
