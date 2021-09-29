@@ -261,7 +261,7 @@ export interface IServerModule {
     renderAppToString: () => string,
     appContext: IServerAppContext
   ): string;
-  serverMiddleware: IServerMiddlewareItem[];
+  serverMiddleware: (IServerMiddlewareItem | IMiddlewareHandler)[];
   onViewDone?(
     req: IncomingMessage,
     res: ServerResponse,

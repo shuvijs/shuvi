@@ -5,18 +5,17 @@ interface Options {
   rootDir: string;
 }
 
-export interface IServerMiddlewareOptions {
+interface IMiddlewareOptions {
   handler: string | IMiddlewareHandler;
   path?: string;
   order?: number;
 }
 
-export type IServerMiddleware =
-  | string
-  | IMiddlewareHandler
-  | IServerMiddlewareOptions;
+export type IServerMiddlewareOptions = IMiddlewareOptions | IMiddlewareHandler;
 
-interface InternalServerMiddlewareOptions extends IServerMiddlewareOptions {
+export type IServerMiddleware = string | IServerMiddlewareOptions;
+
+interface InternalServerMiddlewareOptions extends IMiddlewareOptions {
   handler: IMiddlewareHandler;
   path: string;
   order: number;

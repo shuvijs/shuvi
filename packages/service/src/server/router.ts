@@ -170,7 +170,7 @@ class RouterImpl implements Router {
 const defaultOptions = {
   caseSensitive: false,
   // strict: false,
-  end: true
+  end: false
 };
 
 export function getRouter(options: Partial<RouteOptions> = {}): Router {

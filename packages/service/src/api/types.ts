@@ -6,12 +6,12 @@ import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
 import {
-  IServerMiddlewareItem,
   IApplicationModule,
   IDocumentModule,
   IServerModule,
   IViewServer
 } from '../types/runtime';
+import { IServerMiddleware } from './serverMiddleware';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -153,7 +153,8 @@ export interface IApi extends IHookable {
   setClientModule: typeof ProjectBuilder.prototype.setClientModule;
   setServerModule: typeof ProjectBuilder.prototype.setServerModule;
 
-  addServerMiddleware: (serverMiddleware: IServerMiddlewareItem) => void;
+  addServerMiddleware: (serverMiddleware: IServerMiddleware) => void;
+  addServerMiddlewareLast: (serverMiddleware: IServerMiddleware) => void;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
