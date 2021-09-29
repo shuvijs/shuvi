@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-web-react",
-  "version": "0.0.1-pre.4",
+  "version": "0.0.1-pre.5",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -33,11 +33,11 @@
   },
   "dependencies": {
     "@next/react-refresh-utils": "10.0.5",
-    "@shuvi/app": "0.0.1-pre.4",
-    "@shuvi/router-react": "0.0.1-pre.4",
-    "@shuvi/service": "0.0.1-pre.4",
-    "@shuvi/shared": "0.0.1-pre.4",
-    "@shuvi/utils": "0.0.1-pre.4",
+    "@shuvi/app": "0.0.1-pre.5",
+    "@shuvi/router-react": "0.0.1-pre.5",
+    "@shuvi/service": "0.0.1-pre.5",
+    "@shuvi/shared": "0.0.1-pre.5",
+    "@shuvi/utils": "0.0.1-pre.5",
     "react": "16.13.0",
     "react-app-polyfill": "2.0.0",
     "react-dom": "16.13.0",
