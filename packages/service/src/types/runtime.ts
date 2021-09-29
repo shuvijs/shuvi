@@ -7,6 +7,7 @@ import {
   IApiRouteConfig,
   IUserRouteConfig
 } from '../api';
+
 import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 
 import {
@@ -45,11 +46,6 @@ export type IData = {
 
 export type IQuery = ParsedQuery;
 
-export interface IRequest {
-  url: string;
-  headers: IncomingHttpHeaders;
-}
-
 export type IMatchedRoute<T = IRouteRecord> = IRouteMatch<T>;
 
 export type IHtmlAttrs = { textContent?: string } & {
@@ -77,6 +73,15 @@ export interface IIncomingMessage extends IncomingMessage {
   originalUrl?: IncomingMessage['url'];
   [x: string]: any;
 }
+
+export interface IRequest extends IIncomingMessage {
+  url: string;
+  pathname: string;
+  query: ParsedQuery;
+  params: IParams;
+  headers: IncomingHttpHeaders;
+}
+export interface IResponse extends ServerResponse {}
 
 export interface IServerAppContext {
   req: IRequest;
@@ -214,34 +219,41 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
-export type IServerAppRequest = IIncomingMessage;
-export type IServerAppResponse = ServerResponse;
-export type IServerAppNext = (err?: any) => void;
+export type IRequestHandler = (req: IRequest, res: IResponse) => void;
 
-export type NextHandleFunction = (
-  req: IServerAppRequest,
-  res: IServerAppResponse,
-  next: IServerAppNext
+export type INextFunc = (err?: any) => void;
+
+export type IRequestHandlerWithNext = (
+  req: IRequest,
+  res: IResponse,
+  next: INextFunc
 ) => void;
 
-export type ErrorHandleFunction = (
+export type IErrorHandler = (err: any, req: IRequest, res: IResponse) => void;
+
+export type IErrorHandlerWithNext = (
   err: any,
-  req: IServerAppRequest,
-  res: IServerAppResponse,
-  next: IServerAppNext
+  req: IRequest,
+  res: IResponse,
+  next: INextFunc
 ) => void;
 
-export type IServerAsyncMiddlewareHandler = (
-  req: IServerAppRequest,
-  res: IServerAppResponse,
-  next: IServerAppNext
+export type IAsyncRequestHandler = (
+  req: IRequest,
+  res: IResponse,
+  next?: INextFunc
 ) => Promise<any>;
 
-export type IServerMiddlewareHandler = NextHandleFunction | ErrorHandleFunction;
+export type IMiddlewareHandler =
+  | IRequestHandler
+  | IRequestHandlerWithNext
+  | IAsyncRequestHandler
+  | IErrorHandler
+  | IErrorHandlerWithNext;
 
 export interface IServerMiddlewareItem {
   path: string;
-  handler: IServerMiddlewareHandler;
+  handler: IMiddlewareHandler;
 }
 
 export interface IServerModule {

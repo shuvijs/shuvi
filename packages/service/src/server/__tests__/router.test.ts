@@ -1,9 +1,8 @@
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
 import { Server } from '../server';
-import { IRequest, IResponse } from '../../lib/apiRouteHandler';
-import { INextFunc } from '../serverTypes';
 import { Router, getRouter } from '../router';
+import { IRequest, IResponse, INextFunc } from '../../types/runtime';
 
 const host = 'localhost';
 

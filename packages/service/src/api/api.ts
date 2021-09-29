@@ -69,7 +69,8 @@ class Api extends Hookable implements IApi {
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private extraServerMiddlewares: IServerMiddleware[] = [];
+  private beforePageMiddlewares: IServerMiddleware[] = [];
+  private afterPageMiddlewares: IServerMiddleware[] = [];
   private _platform!: IRuntime;
   helpers: IApi['helpers'];
 
@@ -185,12 +186,12 @@ class Api extends Hookable implements IApi {
   }
 
   addServerMiddleware(middleware: IServerMiddleware) {
-    this.extraServerMiddlewares.push(middleware);
+    this.beforePageMiddlewares.push(middleware);
   }
 
-  getServerMiddlewares(): IServerMiddlewareItem[] {
+  getBeforePageMiddlewares(): IServerMiddlewareItem[] {
     const {
-      extraServerMiddlewares,
+      beforePageMiddlewares,
       paths: { rootDir }
     } = this;
 
@@ -202,7 +203,22 @@ class Api extends Hookable implements IApi {
       serverMiddleware = [];
     }
 
-    return [...serverMiddleware, ...extraServerMiddlewares]
+    return [...serverMiddleware, ...beforePageMiddlewares]
+      .map(m => normalizeServerMiddleware(m, { rootDir }))
+      .sort((a, b) => a.order - b.order);
+  }
+
+  addServerMiddlewareLast(middleware: IServerMiddleware) {
+    this.afterPageMiddlewares.push(middleware);
+  }
+
+  getAfterPageMiddlewares(): IServerMiddlewareItem[] {
+    const {
+      afterPageMiddlewares,
+      paths: { rootDir }
+    } = this;
+
+    return [...afterPageMiddlewares]
       .map(m => normalizeServerMiddleware(m, { rootDir }))
       .sort((a, b) => a.order - b.order);
   }
@@ -229,7 +245,7 @@ class Api extends Hookable implements IApi {
       componentDir: this.paths.pagesDir
     });
     routes.push({
-      path: ':other(.*)',
+      path: ':_(.*)',
       component: this.resolveAppFile('core', '404'),
       name: ROUTE_NOT_FOUND_NAME
     });

@@ -203,7 +203,7 @@ describe('api', () => {
       const fakeServerMiddleware = jest.fn();
       api.addServerMiddleware(fakeServerMiddleware);
 
-      expect(api.getServerMiddlewares().length).toBe(4);
+      expect(api.getBeforePageMiddlewares().length).toBe(4);
     });
   });
 });

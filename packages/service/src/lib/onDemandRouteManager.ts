@@ -1,5 +1,5 @@
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { IRequestHandlerWithNext } from '../server';
+import { IRequestHandlerWithNext } from '../types/runtime';
 import { DevMiddleware } from './devMiddleware';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
@@ -23,9 +23,8 @@ export class OnDemandRouteManager {
       }
 
       const chunkName = pathname.replace(this._api.assetPublicPath, '');
-      const chunkInitiatorModule = this._api.clientManifest.chunkRequest[
-        chunkName
-      ];
+      const chunkInitiatorModule =
+        this._api.clientManifest.chunkRequest[chunkName];
 
       if (!chunkInitiatorModule) {
         return next();

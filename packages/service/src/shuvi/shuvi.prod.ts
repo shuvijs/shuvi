@@ -1,8 +1,7 @@
 import { serveStatic } from '../lib/serveStatic';
-import { IRequestHandlerWithNext } from '../server';
 import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
-import { IIncomingMessage, NextHandleFunction } from '../types/runtime';
+import { IRequestHandlerWithNext } from '../types/runtime';
 
 export default class ShuviProd extends Base {
   async init() {
@@ -12,27 +11,15 @@ export default class ShuviProd extends Base {
     if (api.config.publicPath === PUBLIC_PATH) {
       api.server.use(`${api.assetPublicPath}:path(.*)`, this._assetsMiddleware);
     }
-    api.server.use(this._createServerMiddlewaresHandler);
+    this.createBeforePageMiddlewares();
     api.server.use(this.apiRoutesHandler);
     api.server.use(this._handlePageRequest);
+    this.createAfterPageMiddlewares();
   }
 
   protected getMode() {
     return 'production' as const;
   }
-
-  private _createServerMiddlewaresHandler: IRequestHandlerWithNext = (
-    req,
-    res,
-    next
-  ) => {
-    const middlewares = this._getServerMiddlewares();
-
-    const task = this._runServerMiddlewares(
-      middlewares
-    ) as unknown as NextHandleFunction;
-    task(req as unknown as IIncomingMessage, res, next);
-  };
 
   private _assetsMiddleware: IRequestHandlerWithNext = async (
     req,

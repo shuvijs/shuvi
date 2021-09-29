@@ -1,13 +1,14 @@
 import { getType, isFunction } from '@shuvi/utils';
-import { IRequest, IResponse } from '../lib/apiRouteHandler';
 import invariant from '@shuvi/utils/lib/invariant';
 import { matchPathname } from '@shuvi/router';
 import {
   IRequestHandlerWithNext,
   IErrorHandlerWithNext,
   IMiddlewareHandler,
-  INextFunc
-} from './serverTypes';
+  INextFunc,
+  IRequest,
+  IResponse
+} from '../types/runtime';
 
 interface RouteOptions {
   caseSensitive: boolean;
@@ -16,7 +17,7 @@ interface RouteOptions {
 }
 
 interface Route {
-  path: string;
+  path: string | undefined;
   handler: IMiddlewareHandler;
 }
 
@@ -40,15 +41,15 @@ class RouterImpl implements Router {
   use(path: string, fn: IMiddlewareHandler): this;
   use(path: any, fn?: any): this {
     let handler: IMiddlewareHandler;
-    let routePath: string;
+    let routePath: string | undefined;
 
     // first arg is the path
     if (!isFunction(path)) {
       routePath = path;
       handler = fn;
     } else {
-      // default route to '/'
-      routePath = '/';
+      // default route to undefined
+      routePath = undefined;
       handler = path;
     }
 
@@ -59,9 +60,6 @@ class RouterImpl implements Router {
       )}`
     );
 
-    if (routePath === '*') {
-      routePath = '/:_(.*)';
-    }
     this._routes.push({ path: routePath, handler });
 
     return this;
@@ -86,8 +84,8 @@ class RouterImpl implements Router {
       const { path, handler } = route;
 
       let match = null;
-      // fast slash
-      if (path === '/' && !this._options.end) {
+      // just run middleware fn
+      if (path === undefined) {
         match = {
           params: {}
         };
@@ -104,8 +102,7 @@ class RouterImpl implements Router {
 
       // skip this layer if the route doesn't match
       if (!match) {
-        next(err);
-        return;
+        return next(err);
       }
 
       req.params = match.params;
@@ -173,7 +170,7 @@ class RouterImpl implements Router {
 const defaultOptions = {
   caseSensitive: false,
   // strict: false,
-  end: false
+  end: true
 };
 
 export function getRouter(options: Partial<RouteOptions> = {}): Router {
