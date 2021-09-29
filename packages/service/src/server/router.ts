@@ -17,7 +17,7 @@ interface RouteOptions {
 }
 
 interface Route {
-  path: string | undefined;
+  path: string;
   handler: IMiddlewareHandler;
 }
 
@@ -41,15 +41,15 @@ class RouterImpl implements Router {
   use(path: string, fn: IMiddlewareHandler): this;
   use(path: any, fn?: any): this {
     let handler: IMiddlewareHandler;
-    let routePath: string | undefined;
+    let routePath: string;
 
     // first arg is the path
     if (!isFunction(path)) {
       routePath = path;
       handler = fn;
     } else {
-      // default route to undefined
-      routePath = undefined;
+      // default route to '/'
+      routePath = '/';
       handler = path;
     }
 
@@ -60,6 +60,9 @@ class RouterImpl implements Router {
       )}`
     );
 
+    if (routePath === '*') {
+      routePath = '/:_(.*)';
+    }
     this._routes.push({ path: routePath, handler });
 
     return this;
@@ -84,8 +87,8 @@ class RouterImpl implements Router {
       const { path, handler } = route;
 
       let match = null;
-      // just run middleware fn
-      if (path === undefined) {
+      // fast slash
+      if (path === '/' && !this._options.end) {
         match = {
           params: {}
         };
