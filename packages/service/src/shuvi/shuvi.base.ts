@@ -1,23 +1,16 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, IConfig, getApi, Api } from '../api';
 import * as APIHooks from '../types/hooks';
-import {
-  IIncomingMessage,
-  IServerAppResponse,
-  IServerAppNext,
-  IServerMiddlewareItem,
-  IServerMiddlewareHandler
-} from '../types/runtime';
 import { matchPathname } from '@shuvi/router';
 import { sendHTML } from '../lib/utils';
 import { renderToHTML } from '../lib/renderToHTML';
+import { apiRouteHandler, IApiRequestHandler } from '../lib/apiRouteHandler';
 import {
-  apiRouteHandler,
-  IApiRequestHandler,
+  IRequestHandlerWithNext,
+  IResponse,
   IRequest,
-  IResponse
-} from '../lib/apiRouteHandler';
-import { INextFunc, IRequestHandlerWithNext } from '../server';
+  INextFunc
+} from '../types/server';
 
 export interface IShuviConstructorOptions {
   cwd: string;
@@ -49,6 +42,18 @@ export default abstract class Shuvi {
     this.renderToHTML = this.renderToHTML.bind(this);
   }
 
+  protected abstract getMode(): IShuviMode;
+
+  protected abstract init(): Promise<void> | void;
+
+  private async _ensureApiInited() {
+    if (this._api) {
+      return;
+    }
+
+    this._api = await this._apiPromise;
+  }
+
   async prepare(): Promise<void> {
     await this._ensureApiInited();
     await this.init();
@@ -56,6 +61,17 @@ export default abstract class Shuvi {
 
   getRequestHandler() {
     return this._api.server.getRequestHandler();
+  }
+
+  protected _handleErrorSetStatusCode(
+    req: IRequest,
+    res: IResponse,
+    statusCode: number = 404,
+    errorMessage: string = ''
+  ) {
+    res.statusCode = statusCode;
+    res.end(errorMessage);
+    return;
   }
 
   async renderToHTML(
@@ -85,6 +101,17 @@ export default abstract class Shuvi {
 
     return html;
   }
+
+  protected _getBeforePageMiddlewares() {
+    return this._api.getBeforePageMiddlewares();
+  }
+
+  protected createBeforePageMiddlewares = () => {
+    const middlewares = this._getBeforePageMiddlewares();
+    middlewares.forEach(({ path, handler }) =>
+      this._api.server.use(path, handler)
+    );
+  };
 
   protected apiRoutesHandler: IRequestHandlerWithNext = async (
     req,
@@ -123,42 +150,11 @@ export default abstract class Shuvi {
     }
   };
 
-  async close() {
-    await this._api.destory();
-  }
-
-  async listen(port: number, hostname: string = 'localhost'): Promise<void> {
-    await this._ensureApiInited();
-    this._api.emitEvent<APIHooks.IEventServerListen>('server:listen', {
-      port,
-      hostname
-    });
-    await Promise.all([
-      this._api.server.listen(port, hostname),
-      this.prepare()
-    ]);
-  }
-
-  protected abstract getMode(): IShuviMode;
-
-  protected abstract init(): Promise<void> | void;
-
-  protected _handleErrorSetStatusCode(
-    req: IRequest,
-    res: IResponse,
-    statusCode: number = 404,
-    errorMessage: string = ''
-  ) {
-    res.statusCode = statusCode;
-    res.end(errorMessage);
-    return;
-  }
-
-  protected async _handlePageRequest(
+  protected _handlePageRequest = async (
     req: IRequest,
     res: IResponse,
     next: INextFunc
-  ) {
+  ) => {
     try {
       const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
         {
@@ -174,50 +170,32 @@ export default abstract class Shuvi {
     } catch (error) {
       next(error);
     }
+  };
+
+  protected _getAfterPageMiddlewares() {
+    return this._api.getAfterPageMiddlewares();
   }
 
-  private async _ensureApiInited() {
-    if (this._api) {
-      return;
-    }
+  protected createAfterPageMiddlewares = () => {
+    const middlewares = this._getAfterPageMiddlewares();
+    middlewares.forEach(({ path, handler }) =>
+      this._api.server.use(path, handler)
+    );
+  };
 
-    this._api = await this._apiPromise;
+  async listen(port: number, hostname: string = 'localhost'): Promise<void> {
+    await this._ensureApiInited();
+    this._api.emitEvent<APIHooks.IEventServerListen>('server:listen', {
+      port,
+      hostname
+    });
+    await Promise.all([
+      this._api.server.listen(port, hostname),
+      this.prepare()
+    ]);
   }
 
-  protected _getServerMiddlewares() {
-    return this._api.getServerMiddlewares();
-  }
-
-  protected _runServerMiddlewares(
-    middlewares: IServerMiddlewareItem[]
-  ): IServerMiddlewareHandler {
-    return (
-      req: IIncomingMessage,
-      res: IServerAppResponse,
-      next: IServerAppNext
-    ) => {
-      let i = 0;
-
-      const runNext = (error: any) => {
-        if (error) return next(error);
-        runMiddleware(middlewares[++i]);
-      };
-
-      const runMiddleware = (middleware: any) => {
-        if (i === middlewares.length) {
-          return next();
-        }
-        const matchedPath =
-          req.pathname && matchPathname(middleware.path, req.pathname);
-
-        if (!matchedPath) {
-          return runNext(null);
-        }
-        req.params = matchedPath.params;
-        return middleware.handler(req, res, runNext);
-      };
-
-      return runMiddleware(middlewares[i]);
-    };
+  async close() {
+    await this._api.destory();
   }
 }

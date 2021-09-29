@@ -1,5 +1,5 @@
-import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
-import { UrlWithParsedQuery } from 'url';
+import { IncomingMessage, ServerResponse } from 'http';
+import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 import {
   IApi,
   IRouterHistoryMode,
@@ -7,6 +7,7 @@ import {
   IApiRouteConfig,
   IUserRouteConfig
 } from '../api';
+
 import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 
 import {
@@ -45,11 +46,6 @@ export type IData = {
 
 export type IQuery = ParsedQuery;
 
-export interface IRequest {
-  url: string;
-  headers: IncomingHttpHeaders;
-}
-
 export type IMatchedRoute<T = IRouteRecord> = IRouteMatch<T>;
 
 export type IHtmlAttrs = { textContent?: string } & {
@@ -69,13 +65,6 @@ export interface IDocumentProps {
   >[];
   mainTags: IHtmlTag[];
   scriptTags: IHtmlTag<'script'>[];
-}
-
-export interface IIncomingMessage extends IncomingMessage {
-  url: string;
-  parsedUrl: UrlWithParsedQuery;
-  originalUrl?: IncomingMessage['url'];
-  [x: string]: any;
 }
 
 export interface IServerAppContext {
@@ -214,42 +203,12 @@ export interface IDocumentModule {
   ): Promise<ITemplateData> | ITemplateData;
 }
 
-export type IServerAppRequest = IIncomingMessage;
-export type IServerAppResponse = ServerResponse;
-export type IServerAppNext = (err?: any) => void;
-
-export type NextHandleFunction = (
-  req: IServerAppRequest,
-  res: IServerAppResponse,
-  next: IServerAppNext
-) => void;
-
-export type ErrorHandleFunction = (
-  err: any,
-  req: IServerAppRequest,
-  res: IServerAppResponse,
-  next: IServerAppNext
-) => void;
-
-export type IServerAsyncMiddlewareHandler = (
-  req: IServerAppRequest,
-  res: IServerAppResponse,
-  next: IServerAppNext
-) => Promise<any>;
-
-export type IServerMiddlewareHandler = NextHandleFunction | ErrorHandleFunction;
-
-export interface IServerMiddlewareItem {
-  path: string;
-  handler: IServerMiddlewareHandler;
-}
-
 export interface IServerModule {
   render?(
     renderAppToString: () => string,
     appContext: IServerAppContext
   ): string;
-  serverMiddleware: IServerMiddlewareItem[];
+  serverMiddleware: (IServerMiddlewareItem | IMiddlewareHandler)[];
   onViewDone?(
     req: IncomingMessage,
     res: ServerResponse,

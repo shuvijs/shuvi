@@ -1,23 +1,20 @@
 import { getType, isFunction } from '@shuvi/utils';
-import { IRequest, IResponse } from '../lib/apiRouteHandler';
 import invariant from '@shuvi/utils/lib/invariant';
 import { matchPathname } from '@shuvi/router';
 import {
   IRequestHandlerWithNext,
   IErrorHandlerWithNext,
+  IServerMiddlewareItem,
   IMiddlewareHandler,
-  INextFunc
-} from './serverTypes';
+  INextFunc,
+  IRequest,
+  IResponse
+} from '../types/server';
 
 interface RouteOptions {
   caseSensitive: boolean;
   // strict: boolean;
   end: boolean;
-}
-
-interface Route {
-  path: string;
-  handler: IMiddlewareHandler;
 }
 
 export interface Router {
@@ -29,7 +26,7 @@ export interface Router {
 
 class RouterImpl implements Router {
   private _options: RouteOptions;
-  private _routes: Route[] = [];
+  private _routes: IServerMiddlewareItem[] = [];
 
   constructor(options: RouteOptions) {
     this._options = options;
@@ -104,8 +101,7 @@ class RouterImpl implements Router {
 
       // skip this layer if the route doesn't match
       if (!match) {
-        next(err);
-        return;
+        return next(err);
       }
 
       req.params = match.params;

@@ -41,4 +41,20 @@ module.exports = api => {
       res.end('pluginServerMiddleware');
     }
   });
+
+  api.addServerMiddleware({
+    path: '/errorHandler',
+    handler: async (req, res, next) => {
+      next('errorHandler');
+    }
+  });
+
+  api.addServerMiddlewareLast({
+    handler: async (error, req, res, next) => {
+      const errorMessage = `catch => ${error}`;
+      console.log(errorMessage);
+      res.end(errorMessage);
+    },
+    order: 1
+  });
 };
