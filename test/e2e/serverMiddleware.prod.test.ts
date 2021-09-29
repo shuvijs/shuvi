@@ -69,7 +69,7 @@ describe('serverMiddleware production', () => {
     expect(await page.$text('body')).toMatch(/bob/);
 
     await page.goto(ctx.url('/users/bob/path'));
-    expect(await page.$text('body')).toMatch(/404/);
+    expect(await page.$text('body')).toMatch(/bob/);
 
     await page.close();
   });
@@ -137,6 +137,15 @@ describe('serverMiddleware production', () => {
         '10',
         ''
       ].join('\n')
+    );
+    await page.close();
+  });
+
+  test('catch error at by addServerMiddlewareLast', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    const page = await ctx.browser.page(ctx.url('/errorHandler'));
+    expect(consoleSpy).toHaveBeenLastCalledWith(
+      expect.stringMatching(/catch => errorHandler/)
     );
     await page.close();
   });

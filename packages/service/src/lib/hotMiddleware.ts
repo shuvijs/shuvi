@@ -23,7 +23,7 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import type webpack from 'webpack';
-import * as Runtime from '../types/runtime';
+import { IRequestHandlerWithNext, IResponse } from '../types/server';
 
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
@@ -57,11 +57,7 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware: Runtime.IServerMiddlewareHandler = (
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    next: Runtime.IServerAppNext
-  ) => {
+  middleware: IRequestHandlerWithNext = (req, res, next) => {
     if (this.closed) return next();
     if (!req.url?.startsWith(this._path)) return next();
     this.eventStream.handler(req, res, next);
@@ -102,7 +98,7 @@ export class WebpackHotMiddleware {
 }
 
 class EventStream {
-  clients: Set<Runtime.IServerAppResponse>;
+  clients: Set<IResponse>;
   interval: NodeJS.Timeout;
   constructor() {
     this.clients = new Set();
@@ -116,7 +112,7 @@ class EventStream {
     });
   };
 
-  everyClient(fn: (client: Runtime.IServerAppResponse) => void) {
+  everyClient(fn: (client: IResponse) => void) {
     for (const client of this.clients) {
       fn(client);
     }
@@ -130,11 +126,7 @@ class EventStream {
     this.clients.clear();
   }
 
-  handler(
-    req: Runtime.IIncomingMessage,
-    res: Runtime.IServerAppResponse,
-    next: Runtime.IServerAppNext
-  ) {
+  handler: IRequestHandlerWithNext = (req, res, next) => {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'text/event-stream;charset=utf-8',
@@ -159,7 +151,7 @@ class EventStream {
       if (!res.finished || !res.writableEnded) res.end();
       this.clients.delete(res);
     });
-  }
+  };
 
   publish(payload: any) {
     this.everyClient(client => {
