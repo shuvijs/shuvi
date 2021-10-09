@@ -26,7 +26,12 @@ import {
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 
-export * from '@shuvi/runtime-core/lib/runPlugins';
+export {
+  IAppPlugin,
+  IInitAppPlugins,
+  IPlugin,
+  IAppPluginRecord
+} from '@shuvi/runtime-core/lib/runPlugins';
 
 export interface ITemplateData {
   [x: string]: any;
