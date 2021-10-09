@@ -96,6 +96,9 @@ export async function setupApp(api: Api) {
       ? JSON.stringify(getPublicRuntimeConfig(config.runtimeConfig || {}))
       : null
   );
+  api.addAppExport('@shuvi/service/lib/types/runtime', '* as Runtime');
+  api.addAppExport('@shuvi/runtime-core/lib/hooks', '* as AppHooks');
+  api.addAppExport('@shuvi/router', '{ matchRoutes }');
 
   api.addAppExport(
     resolveRuntimeCoreFile('helper/getPageData'),

@@ -1,5 +1,6 @@
-import { Runtime } from '@shuvi/service';
-
+export * as Runtime from '@shuvi/service/lib/types/runtime';
+export * as AppHooks from '@shuvi/runtime-core/lib/hooks';
+export { matchRoutes } from '@shuvi/router';
 export declare function getPageData<T = unknown>(
   key: string,
   defaultValue?: T
