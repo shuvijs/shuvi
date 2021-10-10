@@ -310,13 +310,8 @@ export default abstract class PlatformMpBase {
         modifyStyle(config, this.fileType.style);
         addBabelPlugins(config);
         config.output.globalObject(this.globalObject);
-        config.output.chunkFilename(
-          `${
-            process.env.NODE_ENV === 'development'
-              ? '[name]'
-              : '[name].[contenthash:8]'
-          }.js`
-        );
+        config.output.chunkFilename('[name].js');
+        config.output.filename('[name].js');
         config.plugins.delete('private/module-replace-plugin');
         config.output.publicPath('');
         config.plugins.get('define').tap(args => {
