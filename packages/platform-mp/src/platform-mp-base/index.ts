@@ -139,6 +139,7 @@ export default abstract class PlatformMpBase {
       resolveLib('@shuvi/router-react'),
       '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
     );
+    api.addAppExport(resolveLib('@shuvi/router-mp'), '{ Link }');
 
     api.addAppService(resolveRouterFile('lib', 'index'), '*', 'router-mp.js');
   }
@@ -326,8 +327,8 @@ export default abstract class PlatformMpBase {
               ENABLE_ADJACENT_HTML: true,
               ENABLE_SIZE_APIS: false,
               ['process.env.' +
-              `${api.config.platform?.name}_${api.config.platform?.target}`.toUpperCase()]: api
-                .config.platform?.target
+              `${api.config.platform?.name}_${api.config.platform?.target}`.toUpperCase()]:
+                api.config.platform?.target
             }
           ];
         });
