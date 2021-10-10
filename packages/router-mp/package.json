@@ -29,9 +29,15 @@
   },
   "dependencies": {
     "@shuvi/router": "0.0.1-pre.6",
-    "@shuvi/router-react": "0.0.1-pre.6"
+    "@shuvi/router-react": "0.0.1-pre.6",
+    "@shuvi/utils": "0.0.1-pre.6"
   },
   "devDependencies": {
     "@types/react": "^16.9.43"
+  },
+  "peerDependencies": {
+    "@tarojs/components": "3.3.3",
+    "@tarojs/runtime": "3.3.3",
+    "@tarojs/taro": "3.3.3"
   }
 }
