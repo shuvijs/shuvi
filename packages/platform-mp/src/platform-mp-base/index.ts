@@ -321,6 +321,8 @@ export default abstract class PlatformMpBase {
               ENABLE_INNER_HTML: true,
               ENABLE_ADJACENT_HTML: true,
               ENABLE_SIZE_APIS: false,
+              ENABLE_TEMPLATE_CONTENT: true, // taro 3.3.9
+              ENABLE_CLONE_NODE: true, // taro 3.3.9
               ['process.env.' +
               `${api.config.platform?.name}_${api.config.platform?.target}`.toUpperCase()]:
                 api.config.platform?.target
