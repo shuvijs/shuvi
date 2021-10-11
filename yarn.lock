@@ -2927,7 +2927,7 @@
     "@babel/runtime" "^7.11.2"
     "@tarojs/runtime" "3.3.3"
 
-"@tarojs/components@^3.3.3":
+"@tarojs/components@3.3.3":
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/@tarojs/components/-/components-3.3.3.tgz#4c7d30c79229a252acd9dad7a14134ed069f2405"
   integrity sha512-lT85Pu9DtLWdpbzxEMCHZr2iLe87NbBnduB8CmL1nxFxisGj0v9BGtl8wnTzYEQHWqnlJXYUmYMEtKTSduCzjA==
@@ -2942,7 +2942,7 @@
     swiper "6.8.0"
     weui "^1.1.2"
 
-"@tarojs/helper@^3.3.3":
+"@tarojs/helper@3.3.3":
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/@tarojs/helper/-/helper-3.3.3.tgz#f8b6fae1958487ad691ebad034a22c067a5f3cdd"
   integrity sha512-1PHqAo3tnuo2daM7pbuXLG1cA+xBx7c7GbmO1QKcsR9DkPYmzaJuCht1AQhRzzJOdlVYHcfAg7XIYbCwCfmQZg==
@@ -2967,7 +2967,7 @@
     resolve "1.15.1"
     yauzl "2.10.0"
 
-"@tarojs/react@^3.3.2":
+"@tarojs/react@3.3.3":
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/@tarojs/react/-/react-3.3.3.tgz#6a194cdd4c7968040f42496a29a12337e1f2000a"
   integrity sha512-t1tIC7JQCbZRojEj7NDb2uBGHxBXeVCRObFPbt8cCHE80nQJAWHYvy18DEAAdVUhAW8LJRZgdJ7dfb9a8JLBnA==
@@ -2988,7 +2988,7 @@
     universal-router "^8.3.0"
     url-parse "^1.4.7"
 
-"@tarojs/runtime@3.3.3", "@tarojs/runtime@^3.3.1":
+"@tarojs/runtime@3.3.3":
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/@tarojs/runtime/-/runtime-3.3.3.tgz#f5ec81f2ba8a4de6fb5254a38439113d08d0b285"
   integrity sha512-16mE53E82frpzMxVg2bXT8HFu1nvZPNRPVZ5wQ2sg0b401PExfuBwI6/7W21N1VE4F9iwMLnM/31TXYlWqD4ow==
@@ -3017,7 +3017,7 @@
     raf "^3.4.1"
     whatwg-fetch "^3.4.0"
 
-"@tarojs/taro@3.3.3", "@tarojs/taro@^3.3.3":
+"@tarojs/taro@3.3.3":
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/@tarojs/taro/-/taro-3.3.3.tgz#b94f29090f35ce22b9bba149551e4d5fcf0fe525"
   integrity sha512-1+JDEhjN9aFmfx+stGDCTwU1/tmYiDI1wNoCRX2QyOBUVXC4bzcj7qjU3xbn2mChNjVYzbCLSod7T0jOCs+eFw==
