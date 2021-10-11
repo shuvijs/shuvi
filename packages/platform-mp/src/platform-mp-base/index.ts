@@ -312,6 +312,11 @@ export default abstract class PlatformMpBase {
         config.output.globalObject(this.globalObject);
         config.output.chunkFilename('[name].js');
         config.output.filename('[name].js');
+        const outputPath = config.output.get('path').split('/');
+        if (outputPath[outputPath.length - 1] === 'client') {
+          outputPath[outputPath.length - 1] = api.config.platform?.target;
+          config.output.path(outputPath.join('/'));
+        }
         config.plugins.delete('private/module-replace-plugin');
         config.output.publicPath('');
         config.plugins.get('define').tap(args => {
