@@ -22,15 +22,27 @@ export interface IUserRouteConfig {
   id?: string;
 }
 
+export interface IAppRouteConfigWithPrivateProps extends IRouteRecord {
+  id: string;
+  component?: any;
+  children?: IAppRouteConfigWithPrivateProps[];
+  path: string;
+  __componentSource__: string;
+  __componentSourceWithAffix__: string;
+  __import__: () => Promise<any>;
+  __resolveWeak__: () => any;
+  [x: string]: any;
+}
+
 export interface IAppRouteConfig extends IRouteRecord {
   id: string;
   component?: any;
   children?: IAppRouteConfig[];
   path: string;
-  __componentSource__?: string;
-  __componentSourceWithAffix__?: string;
-  __import__?: () => Promise<any>;
-  __resolveWeak__?: () => any;
+  __componentSource__?: never;
+  __componentSourceWithAffix__?: never;
+  __import__?: never;
+  __resolveWeak__?: never;
   [x: string]: any;
 }
 export interface IApiRouteConfig {
