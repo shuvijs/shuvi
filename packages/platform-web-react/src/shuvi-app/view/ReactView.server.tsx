@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Runtime } from '@shuvi/service';
-import { Router } from '@shuvi/router-react';
+import { Router, ErrorBoundary, whenCatchError } from '@shuvi/router-react';
 import { createRedirector, IParams } from '@shuvi/router';
 import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';
 import Loadable, { LoadableContext } from '../loadable';
@@ -75,10 +75,9 @@ export class ReactServerView implements IReactServerView {
       await Promise.all(pendingDataFetchs.map(fn => fn()));
     };
     let appInitialProps: { [x: string]: any } | undefined;
-    const appGetInitialProps = ((AppComponent as any) as IAppComponent<
-      React.Component,
-      any
-    >).getInitialProps;
+    const appGetInitialProps = (
+      AppComponent as any as IAppComponent<React.Component, any>
+    ).getInitialProps;
     if (appGetInitialProps) {
       appInitialProps = await appGetInitialProps({
         isServer: true,
@@ -105,15 +104,17 @@ export class ReactServerView implements IReactServerView {
     try {
       const renderAppToString = () =>
         renderToString(
-          <Router static router={router}>
-            <LoadableContext.Provider
-              value={moduleName => loadableModules.push(moduleName)}
-            >
-              <AppContainer appContext={appContext}>
-                <AppComponent {...appInitialProps} />
-              </AppContainer>
-            </LoadableContext.Provider>
-          </Router>
+          <ErrorBoundary onError={whenCatchError}>
+            <Router static router={router}>
+              <LoadableContext.Provider
+                value={moduleName => loadableModules.push(moduleName)}
+              >
+                <AppContainer appContext={appContext}>
+                  <AppComponent {...appInitialProps} />
+                </AppContainer>
+              </LoadableContext.Provider>
+            </Router>
+          </ErrorBoundary>
         );
 
       if (render) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from '@shuvi/router-react';
+import { Router, ErrorBoundary, whenCatchError } from '@shuvi/router-react';
 import { createRedirector } from '@shuvi/router';
 import { Runtime } from '@shuvi/service';
 import AppContainer from '../AppContainer';
@@ -30,9 +30,8 @@ export class ReactClientView implements IReactClientView {
     }
 
     const redirector = createRedirector();
-    const TypedAppComponent = AppComponent as Runtime.IAppComponent<
-      React.ComponentType
-    >;
+    const TypedAppComponent =
+      AppComponent as Runtime.IAppComponent<React.ComponentType>;
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
@@ -60,13 +59,15 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <Router router={router}>
-        <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer appContext={appContext}>
-            <TypedAppComponent {...appProps} />
-          </AppContainer>
-        </HeadManagerContext.Provider>
-      </Router>
+      <ErrorBoundary onError={whenCatchError}>
+        <Router router={router}>
+          <HeadManagerContext.Provider value={headManager.updateHead}>
+            <AppContainer appContext={appContext}>
+              <TypedAppComponent {...appProps} />
+            </AppContainer>
+          </HeadManagerContext.Provider>
+        </Router>
+      </ErrorBoundary>
     );
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
