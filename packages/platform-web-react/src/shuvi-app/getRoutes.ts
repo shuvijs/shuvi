@@ -3,18 +3,23 @@ import { loadRouteComponent } from './loadRouteComponent';
 import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 
 export default function getRoutes(
-  routes: Runtime.IAppRouteConfig[] | undefined,
+  routes: Runtime.IAppRouteConfigWithPrivateProps[],
   appContext: INormalizeRoutesContext = {}
 ): Runtime.IAppRouteConfig[] {
-  const getRoutesWithRequire = (routes: Runtime.IAppRouteConfig[]) =>
+  const getRoutesWithRequire = (
+    routes: Runtime.IAppRouteConfigWithPrivateProps[]
+  ): Runtime.IAppRouteConfig[] =>
     routes.map(x => {
-      const route = { ...x };
+      const originalRoute: Runtime.IAppRouteConfigWithPrivateProps = { ...x };
       const {
+        __componentSource__,
         __componentSourceWithAffix__,
         __import__,
         __resolveWeak__,
-        children
-      } = route;
+        children,
+        ...rest
+      } = originalRoute;
+      const route = { ...rest };
       if (children) {
         route.children = getRoutesWithRequire(children);
       }
