@@ -14,6 +14,9 @@ function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
+/**
+ * returns JSON string of IAppRouteConfigWithPrivateProps
+ */
 export function serializeRoutes(
   routes: IUserRouteConfig[],
   parentPath: string = ''
@@ -32,7 +35,8 @@ export function serializeRoutes(
         const { component } = route;
         const componentSource = component;
         const componentSourceWithAffix = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
-        strRoute += `__componentSourceWithAffix__: "${componentSourceWithAffix}",
+        strRoute +=
+          `__componentSourceWithAffix__: "${componentSourceWithAffix}",
 __componentSource__: "${componentSource}",
 __import__: () => import(/* webpackChunkName: "page-${id}" */"${componentSourceWithAffix}"),
 __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.trim();
