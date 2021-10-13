@@ -6,6 +6,8 @@ export interface UserModule {
   plugin: string | string[];
   app: string | string[];
   '404': string | string[];
+  '500': string | string[];
+  error: string | string[];
 }
 
 export interface ApplicationModule {
@@ -70,6 +72,8 @@ export const createProjectContext = () =>
       server: '',
       plugin: '',
       app: '',
-      '404': ''
+      '404': '',
+      '500': '',
+      error: ''
     }
   });

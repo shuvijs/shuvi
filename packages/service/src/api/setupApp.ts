@@ -64,6 +64,14 @@ export async function setupApp(api: Api) {
       ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
       require.resolve('@shuvi/utils/lib/nullish')
     ],
+    '500': [
+      ...withExts(api.resolveUserFile('500'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/nullish')
+    ],
+    error: [
+      ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/nullish')
+    ],
     plugin: [
       ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
       require.resolve('@shuvi/utils/lib/noopFn')

@@ -4,7 +4,7 @@ import { ProjectContext } from '../../../projectContext';
 const moduleExportProxy = moduleExportProxyCreater();
 export default {
   content: (context: ProjectContext) =>
-    moduleExportProxy.getContent(context.userModule['404'], true),
+    moduleExportProxy.getContent(context.userModule['500'], true),
   mounted: moduleExportProxy.mounted,
   unmounted: moduleExportProxy.unmounted
 };
