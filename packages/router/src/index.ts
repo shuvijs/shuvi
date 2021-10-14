@@ -11,7 +11,12 @@ export {
   parseQuery,
   resolvePath,
   createLocation,
-  createRedirector
+  createRedirector,
+  createError,
+  IPageError,
+  ShuviErrorCode,
+  IPageErrorFn,
+  IPageErrorHandler
 } from './utils';
 export * from './types';
 export * from './history';

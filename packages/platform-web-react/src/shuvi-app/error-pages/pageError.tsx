@@ -1,6 +1,7 @@
 import React from 'react';
+import { IPageError, ShuviErrorCode } from '@shuvi/router';
 // @ts-ignore
-import { Head } from './head';
+import { Head } from '../head';
 
 const style = {
   container: {
@@ -16,26 +17,23 @@ const style = {
   },
   error: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   errorCode: {
-    borderRight: '1px solid rgba(0, 0, 0, 0.3)',
-    paddingRight: '20px',
-    marginRight: '20px',
     fontSize: '24px',
     fontWeight: 500
   },
-  errorDesc: { fontSize: '16px', lineHeight: '1' }
+  errorDesc: {
+    fontSize: '16px',
+    lineHeight: '1',
+    borderLeft: '1px solid rgba(0, 0, 0, 0.3)',
+    paddingLeft: '20px',
+    marginLeft: '20px'
+  }
 } as const;
 
-export interface ErrorProps {
-  title: string;
-  errorCode: number;
-  errorDesc: string;
-}
-
-export default function Error({
+export default function pageError({
   title = '',
-  errorCode = 500,
+  errorCode,
   errorDesc = ''
-}: ErrorProps) {
+}: IPageError) {
   return (
     <div style={style.container}>
       <Head>
@@ -43,7 +41,9 @@ export default function Error({
       </Head>
 
       <div style={style.error}>
-        {errorCode && <div style={style.errorCode}>{errorCode}</div>}
+        <div style={style.errorCode}>
+          {errorCode || ShuviErrorCode.APP_ERROR}
+        </div>
         {errorDesc && <div style={style.errorDesc}>{errorDesc}</div>}
       </div>
     </div>

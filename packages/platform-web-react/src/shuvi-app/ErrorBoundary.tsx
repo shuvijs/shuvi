@@ -1,4 +1,6 @@
 import React from 'react';
+import { ShuviErrorCode } from '@shuvi/router';
+import ErrorPage from './ErrorPage';
 
 type ComponentStack = string | null;
 type ErrorBoundaryProps = {
@@ -24,21 +26,24 @@ class ErrorBoundary extends React.PureComponent<
   }
 
   render() {
-    return this.state.error
-      ? // The component has to be unmounted or else it would continue to error
-        null
-      : this.props.children;
+    return this.state.error ? (
+      // The component has to be unmounted or else it would continue to error
+      <ErrorPage
+        title={''}
+        errorCode={ShuviErrorCode.APP_ERROR}
+        errorDesc={''}
+      />
+    ) : (
+      this.props.children
+    );
   }
 }
 
-const whenCatchError = function (
-  error: Error,
-  componentStack?: ComponentStack
-) {
+const onCatchError = function (error: Error, componentStack?: ComponentStack) {
   console.error('the error is below: \n', error);
   if (componentStack) {
     console.error('the componentStack is below: ', componentStack);
   }
 };
 
-export { ErrorBoundary, whenCatchError };
+export { ErrorBoundary, onCatchError };

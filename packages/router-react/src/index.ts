@@ -4,7 +4,6 @@ export { RouterView } from './RouterView';
 export { Router } from './Router';
 export { Link } from './Link';
 export { withRouter } from './withRouter';
-export { ErrorBoundary, whenCatchError } from './ErrorBoundary';
 
 export * from './hooks';
 export * from './types';

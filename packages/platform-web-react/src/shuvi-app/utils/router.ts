@@ -1,5 +1,5 @@
 import { Runtime } from '@shuvi/service';
-import { createRedirector } from '@shuvi/router';
+import { createRedirector, createError } from '@shuvi/router';
 
 const isServer = typeof window === 'undefined';
 
@@ -50,14 +50,20 @@ export function normalizeRoutes(
             context.props = routeProps[id];
           } else {
             const redirector = createRedirector();
+            const errorHandler = createError();
             context.props = await Component.getInitialProps({
               isServer: false,
               query: to.query,
               pathname: to.pathname,
               params: to.params,
               redirect: redirector.handler,
+              error: errorHandler.handler,
               appContext
             } as IRouteComponentContext);
+
+            if (errorHandler.hasCalled) {
+              Component.getInitialProps.__errorHandler = errorHandler;
+            }
 
             if (redirector.redirected) {
               next(redirector.state!.path);

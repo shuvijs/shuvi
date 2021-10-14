@@ -22,7 +22,8 @@ import {
   IRouter,
   IParams,
   IRedirectState,
-  IRedirectFn
+  IRedirectFn,
+  IPageErrorFn
 } from '@shuvi/router';
 import { ParsedQuery } from 'query-string';
 
@@ -83,6 +84,7 @@ export interface IRouteComponentContext {
   query: IQuery;
   params: IParams;
   redirect: IRedirectFn;
+  error: IPageErrorFn;
   appContext: {
     // client only
     pageData?: IData;
