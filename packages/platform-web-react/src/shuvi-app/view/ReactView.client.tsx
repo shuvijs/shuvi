@@ -8,7 +8,7 @@ import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
-import { ErrorBoundary, onCatchError } from '../ErrorBoundary';
+import { ErrorBoundary, onCatchError } from './ErrorBoundary';
 
 const headManager = new HeadManager();
 
@@ -27,11 +27,9 @@ export class ReactClientView implements IReactClientView {
       ssr,
       appProps,
       dynamicIds,
-      errorHandler = {
-        hasCalled: false,
-        errorCode: ShuviErrorCode.APP_ERROR,
-        title: '',
-        errorDesc: ''
+      error = {
+        errorCode: undefined,
+        errorDesc: undefined
       }
     } = appData;
     // For e2e test
@@ -54,9 +52,13 @@ export class ReactClientView implements IReactClientView {
       let clientErrorHandler = createError();
 
       if (router.current.matches && router.current.matches.length) {
+        const { getInitialProps = {} } = router.current.matches[0].route.component;
         clientErrorHandler =
-          router.current.matches[0].route.component.getInitialProps
-            .__errorHandler;
+          getInitialProps
+            .__error || clientErrorHandler;
+      }else{
+        // no handler no matches
+        clientErrorHandler.handler(ShuviErrorCode.PAGE_NOT_FOUND)
       }
 
       if (TypedAppComponent.getInitialProps) {
@@ -73,7 +75,7 @@ export class ReactClientView implements IReactClientView {
           }
         });
       }
-      errorHandler = clientErrorHandler;
+      error = clientErrorHandler;
     }
 
     if (redirector.redirected) {
@@ -82,23 +84,16 @@ export class ReactClientView implements IReactClientView {
 
     const root = (
       <ErrorBoundary onError={onCatchError}>
-        {errorHandler.hasCalled ? (
-          <ErrorPage
-            errorCode={errorHandler.errorCode}
-            title={errorHandler.title}
-            errorDesc={errorHandler.errorDesc}
-          />
-        ) : (
-          <Router router={router}>
-            <HeadManagerContext.Provider value={headManager.updateHead}>
-              <AppContainer appContext={appContext}>
-                <TypedAppComponent {...appProps} />
-              </AppContainer>
-            </HeadManagerContext.Provider>
+        <HeadManagerContext.Provider value={headManager.updateHead}>
+          <Router router={router} error={error} ErrorComp={ErrorPage}>
+            <AppContainer appContext={appContext}>
+              <TypedAppComponent {...appProps} />
+            </AppContainer>
           </Router>
-        )}
+        </HeadManagerContext.Provider>
       </ErrorBoundary>
     );
+
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
       this._isInitialRender = false;

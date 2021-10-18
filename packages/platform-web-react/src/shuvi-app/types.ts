@@ -8,7 +8,7 @@ export type IReactAppData = {
   };
   dynamicIds?: Array<string | number>;
   routeProps: IRouteProps;
-  errorHandler?: IPageErrorHandler;
+  error?: IPageErrorHandler;
 };
 
 export interface IAppContainerProps {

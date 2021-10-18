@@ -4,13 +4,12 @@ export enum ShuviErrorCode {
 }
 
 export interface IPageError {
-  title: string;
-  errorCode: ShuviErrorCode;
-  errorDesc: string;
+  errorCode: ShuviErrorCode | undefined;
+  errorDesc?: string;
 }
 export type IPageErrorFn =
-  | ((errorCode: ShuviErrorCode, errorDesc?: string, title?: string) => void)
-  | ((errorDesc?: string, title?: string) => void);
+  ((errorCode?: ShuviErrorCode | string, errorDesc?: string ) => void)
+
 export interface IPageErrorHandler extends IPageError {
   handler: IPageErrorFn;
   hasCalled: Boolean;
@@ -18,30 +17,25 @@ export interface IPageErrorHandler extends IPageError {
 
 export function createError(): IPageErrorHandler {
   const pageError = {
-    hasCalled: false,
-    title: '',
+    title: undefined,
     errorCode: undefined,
-    errorDesc: ''
+    errorDesc: undefined
   } as unknown as IPageErrorHandler;
 
   pageError.handler = (
-    errorCode?: ShuviErrorCode,
+    errorCode?: ShuviErrorCode | string,
     errorDesc?: string,
-    title?: string
   ) => {
-    if (pageError.hasCalled) {
+    if (pageError.errorCode !== undefined) {
       return pageError;
     }
     if (typeof errorCode === 'number') {
       pageError.errorCode = errorCode;
-      pageError.errorDesc = errorDesc || '';
-      pageError.title = title || '';
+      pageError.errorDesc = errorDesc;
     } else {
       pageError.errorCode = ShuviErrorCode.APP_ERROR;
-      pageError.errorDesc = errorCode || '';
-      pageError.title = errorDesc || '';
+      pageError.errorDesc = errorCode;
     }
-    pageError.hasCalled = true;
     return pageError;
   };
 

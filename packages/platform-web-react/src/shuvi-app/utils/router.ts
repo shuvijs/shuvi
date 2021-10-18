@@ -50,19 +50,21 @@ export function normalizeRoutes(
             context.props = routeProps[id];
           } else {
             const redirector = createRedirector();
-            const errorHandler = createError();
+            const error = createError();
             context.props = await Component.getInitialProps({
               isServer: false,
               query: to.query,
               pathname: to.pathname,
               params: to.params,
               redirect: redirector.handler,
-              error: errorHandler.handler,
+              error: error.handler,
               appContext
             } as IRouteComponentContext);
 
-            if (errorHandler.hasCalled) {
-              Component.getInitialProps.__errorHandler = errorHandler;
+            if (error.errorCode !== undefined) {
+              Component.getInitialProps.__error = error;
+            }else{
+              Component.getInitialProps.__error = null;
             }
 
             if (redirector.redirected) {

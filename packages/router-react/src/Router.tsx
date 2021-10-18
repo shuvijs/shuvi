@@ -1,5 +1,6 @@
 import React, { useRef, useReducer } from 'react';
 import PropTypes from 'prop-types';
+import { IRoute, IPageError, ShuviErrorCode, IRouteRecord } from '@shuvi/router';
 import invariant from '@shuvi/utils/lib/invariant';
 import { RouterContext, RouteContext } from './contexts';
 import { useInRouterContext } from './hooks';
@@ -14,10 +15,33 @@ import { IRouterProps } from './types';
  * router that is more specific to your environment such as a <BrowserRouter>
  * in web browsers or a <StaticRouter> for server rendering.
  */
+
+const defaultErrorState = {
+  errorCode: undefined,
+  errorDesc: undefined
+}
+
+function checkError(routerCurrent: IRoute<IRouteRecord>, error: IPageError, ErrorComp?: React.ComponentType<any>) {
+  if(error.errorCode !== undefined){
+    return ErrorComp && <ErrorComp {...error} />
+  }
+  if(!routerCurrent.matches){
+    return ErrorComp && <ErrorComp errorCode={ShuviErrorCode.PAGE_NOT_FOUND} />
+  }
+  const matched = routerCurrent.matches[0];
+  const { route: {component} } = matched;
+  const __error = component?.getInitialProps?.__error
+  if(__error){
+    return ErrorComp && <ErrorComp {...__error} />
+  }
+  return null;
+}
 export function Router({
   children = null,
   static: staticProp = false,
-  router
+  router,
+  error = defaultErrorState,
+  ErrorComp
 }: IRouterProps): React.ReactElement {
   invariant(
     !useInRouterContext(),
@@ -35,12 +59,18 @@ export function Router({
   const unmount = useRef(false);
   const forceupdate = useReducer(s => s * -1, 1)[1];
 
+  const [errorState, removeSSRError] = useReducer((_s: IPageError): IPageError => defaultErrorState, error);
+
   useIsomorphicEffect(() => () => (unmount.current = true), []);
   useIsomorphicEffect(
     () =>
       router.listen(() => {
         if (unmount.current) {
           return;
+        }
+        // remove ssr error state
+        if(errorState?.errorCode !== undefined){
+          removeSSRError()
         }
         forceupdate();
       }),
@@ -49,7 +79,9 @@ export function Router({
 
   return (
     <RouterContext.Provider value={contextVal}>
-      <RouteContext.Provider children={children} value={router.current} />
+      {
+        checkError(router.current, errorState, ErrorComp) || <RouteContext.Provider children={children} value={router.current} />
+      }
     </RouterContext.Provider>
   );
 }
@@ -59,6 +91,8 @@ if (__DEV__) {
   Router.propTypes = {
     children: PropTypes.node,
     router: PropTypes.object,
-    static: PropTypes.bool
+    static: PropTypes.bool,
+    error: PropTypes.object,
+    ErrorComp: PropTypes.elementType,
   };
 }
