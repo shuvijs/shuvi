@@ -25,12 +25,20 @@ module.exports = {
       component: 'pages/sub/index'
     },
     {
+      path: '/error',
+      component: 'pages/error/index'
+    },
+    {
       path: '/pages/detail/:id',
       component: 'pages/detail/index'
     },
     {
       path: '/:first/:detail/:id',
       component: 'pages/detail/index'
+    },
+    {
+      path: 'pages/my/index',
+      component: 'pages/my/index'
     },
     {
       path: '/:other(.*)',

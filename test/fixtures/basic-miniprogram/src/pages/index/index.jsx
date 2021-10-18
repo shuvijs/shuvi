@@ -41,6 +41,15 @@ function IndexPage ({success, routePropsTest}) {
       <Link to={'/a/b/c?query=query'}>
         link test /a/b/c?query=query
       </Link>
+      <Link to={'/error'}>
+        link test /error
+      </Link>
+      <Link to={'/error?a=1'}>
+        link test /error?a=1
+      </Link>
+      <Link to={'/error/1/2/3/4?a=1'}>
+        link test /error/1/2/3/4?a=1
+      </Link>
       <Link target={'_blank'} to={'/pages/detail/1?query=other'}>
         link test /pages/detail/1?query=other
       </Link>

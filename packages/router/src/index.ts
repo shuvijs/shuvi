@@ -15,6 +15,7 @@ export {
   createError,
   IPageError,
   ShuviErrorCode,
+  DEFAULTERRORMESSAGE,
   IPageErrorFn,
   IPageErrorHandler
 } from './utils';

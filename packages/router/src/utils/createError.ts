@@ -3,6 +3,15 @@ export enum ShuviErrorCode {
   PAGE_NOT_FOUND = 404 //  对应 server 端的 404
 }
 
+export const DEFAULTERRORMESSAGE = {
+  [ShuviErrorCode.APP_ERROR]: {
+    errorDesc: 'Internal Server Error.',
+  },
+  [ShuviErrorCode.PAGE_NOT_FOUND]: {
+    errorDesc: 'This page could not be found.',
+  }
+}
+
 export interface IPageError {
   errorCode: ShuviErrorCode | undefined;
   errorDesc?: string;

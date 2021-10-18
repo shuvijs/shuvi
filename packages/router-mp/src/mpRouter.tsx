@@ -6,11 +6,13 @@ import {
   InitialEntry,
   createRouter,
   IRouter,
-  createRedirector
+  createRedirector,
+  createError
 } from '@shuvi/router';
 import { createMpHistory } from './mpHistory';
 import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
+import ErrorPage from './ErrorPage';
 
 export interface IMpRouterProps {
   basename?: string;
@@ -84,6 +86,7 @@ export function MpRouter({
       const matchRoute = matches && matches[0] && matches[0].route;
       let props = {};
       if (matchRoute && matchRoute.component.getInitialProps) {
+        const error = createError();
         props = await matchRoute.component.getInitialProps({
           isServer: false,
           pathname,
@@ -91,10 +94,16 @@ export function MpRouter({
           params,
           redirect: redirector.handler,
           appContext,
+          error: error.handler,
           async fetchInitialProps() {
             // do nothing
           }
         });
+        if (error.errorCode !== undefined) {
+          matchRoute.component.getInitialProps.__error = error;
+        }else{
+          matchRoute.component.getInitialProps.__error = null;
+        }
         matchRoute.props = {
           ...props,
           ...(matchRoute.props || {})
@@ -110,7 +119,7 @@ export function MpRouter({
   }, []);
 
   return initProps ? (
-    <Router router={routerRef.current}>
+    <Router router={routerRef.current} ErrorComp={ErrorPage}>
       <RouterView />
     </Router>
   ) : null;
