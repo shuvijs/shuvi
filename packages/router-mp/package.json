@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/router-mp",
-  "version": "0.0.1-pre.8",
+  "version": "0.0.1-pre.9",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -28,9 +28,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/router": "0.0.1-pre.8",
-    "@shuvi/router-react": "0.0.1-pre.8",
-    "@shuvi/utils": "0.0.1-pre.8"
+    "@shuvi/router": "0.0.1-pre.9",
+    "@shuvi/router-react": "0.0.1-pre.9",
+    "@shuvi/utils": "0.0.1-pre.9"
   },
   "devDependencies": {
     "@types/react": "^16.9.43"
