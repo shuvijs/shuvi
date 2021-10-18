@@ -43,7 +43,7 @@
     "@types/content-type": "^1.1.5",
     "@types/cookie": "^0.4.1",
     "@types/raw-body": "^2.3.0",
-    "@vue/reactivity": "^3.1.4",
+    "@vue/reactivity": "3.1.4",
     "cli-highlight": "^2.1.9",
     "commander": "5.1.0",
     "content-type": "^1.0.4",
