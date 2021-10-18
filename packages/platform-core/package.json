@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-core",
-  "version": "0.0.1-pre.8",
+  "version": "0.0.1-pre.9",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -30,12 +30,12 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/app": "0.0.1-pre.8",
-    "@shuvi/hook": "0.0.1-pre.8",
-    "@shuvi/runtime-core": "0.0.1-pre.8",
-    "@shuvi/service": "0.0.1-pre.8",
-    "@shuvi/shared": "0.0.1-pre.8",
-    "@shuvi/toolpack": "0.0.1-pre.8"
+    "@shuvi/app": "0.0.1-pre.9",
+    "@shuvi/hook": "0.0.1-pre.9",
+    "@shuvi/runtime-core": "0.0.1-pre.9",
+    "@shuvi/service": "0.0.1-pre.9",
+    "@shuvi/shared": "0.0.1-pre.9",
+    "@shuvi/toolpack": "0.0.1-pre.9"
   },
   "devDependencies": {
     "@types/webpack-env": "^1.16.2"
