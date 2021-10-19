@@ -38,8 +38,15 @@ export function normalizeRoutes(
 
         let Component: any;
         if (component.preload) {
-          const preloadComponent = await preload();
-          Component = preloadComponent.default || preloadComponent;
+          try {
+            const preloadComponent = await preload();
+            Component = preloadComponent.default || preloadComponent;
+          } catch (err) {
+            console.error(err);
+            Component = function () {
+              return null;
+            };
+          }
         } else {
           Component = component;
         }
@@ -63,7 +70,7 @@ export function normalizeRoutes(
 
             if (error.errorCode !== undefined) {
               Component.getInitialProps.__error = error;
-            }else{
+            } else {
               Component.getInitialProps.__error = null;
             }
 

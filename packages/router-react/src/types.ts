@@ -6,7 +6,7 @@ import {
   IRouteRecord as IOriginRouteRecord,
   IPartialRouteRecord as IOriginalRouteRecord,
   IRouter,
-  IPageError,
+  IPageError
 } from '@shuvi/router';
 
 export type IRouteRecord = IOriginRouteRecord<React.ReactNode>;
@@ -46,7 +46,7 @@ export interface IRouterProps {
   static?: boolean;
   router: IRouter;
   error?: IPageError;
-  ErrorComp?: React.ComponentType<any>;
+  ErrorComp?: React.ComponentType<IPageError>;
 }
 
 export interface IRoutesProps {

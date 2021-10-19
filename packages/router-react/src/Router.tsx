@@ -1,6 +1,11 @@
 import React, { useRef, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { IRoute, IPageError, ShuviErrorCode, IRouteRecord } from '@shuvi/router';
+import {
+  IRoute,
+  IPageError,
+  ShuviErrorCode,
+  IRouteRecord
+} from '@shuvi/router';
 import invariant from '@shuvi/utils/lib/invariant';
 import { RouterContext, RouteContext } from './contexts';
 import { useInRouterContext } from './hooks';
@@ -19,20 +24,26 @@ import { IRouterProps } from './types';
 const defaultErrorState = {
   errorCode: undefined,
   errorDesc: undefined
-}
+};
 
-function checkError(routerCurrent: IRoute<IRouteRecord>, error: IPageError, ErrorComp?: React.ComponentType<any>) {
-  if(error.errorCode !== undefined){
-    return ErrorComp && <ErrorComp {...error} />
+function checkError(
+  routerCurrent: IRoute<IRouteRecord>,
+  error: IPageError,
+  ErrorComp?: React.ComponentType<IPageError>
+) {
+  if (error.errorCode !== undefined) {
+    return ErrorComp && <ErrorComp {...error} />;
   }
-  if(!routerCurrent.matches){
-    return ErrorComp && <ErrorComp errorCode={ShuviErrorCode.PAGE_NOT_FOUND} />
+  if (!routerCurrent.matches) {
+    return ErrorComp && <ErrorComp errorCode={ShuviErrorCode.PAGE_NOT_FOUND} />;
   }
   const matched = routerCurrent.matches[0];
-  const { route: {component} } = matched;
-  const __error = component?.getInitialProps?.__error
-  if(__error){
-    return ErrorComp && <ErrorComp {...__error} />
+  const {
+    route: { component }
+  } = matched;
+  const __error = component?.getInitialProps?.__error;
+  if (__error) {
+    return ErrorComp && <ErrorComp {...__error} />;
   }
   return null;
 }
@@ -59,7 +70,10 @@ export function Router({
   const unmount = useRef(false);
   const forceupdate = useReducer(s => s * -1, 1)[1];
 
-  const [errorState, removeSSRError] = useReducer((_s: IPageError): IPageError => defaultErrorState, error);
+  const [errorState, removeSSRError] = useReducer(
+    (_s: IPageError): IPageError => defaultErrorState,
+    error
+  );
 
   useIsomorphicEffect(() => () => (unmount.current = true), []);
   useIsomorphicEffect(
@@ -69,8 +83,8 @@ export function Router({
           return;
         }
         // remove ssr error state
-        if(errorState?.errorCode !== undefined){
-          removeSSRError()
+        if (errorState?.errorCode !== undefined) {
+          removeSSRError();
         }
         forceupdate();
       }),
@@ -79,9 +93,9 @@ export function Router({
 
   return (
     <RouterContext.Provider value={contextVal}>
-      {
-        checkError(router.current, errorState, ErrorComp) || <RouteContext.Provider children={children} value={router.current} />
-      }
+      {checkError(router.current, errorState, ErrorComp) || (
+        <RouteContext.Provider children={children} value={router.current} />
+      )}
     </RouterContext.Provider>
   );
 }
@@ -93,6 +107,6 @@ if (__DEV__) {
     router: PropTypes.object,
     static: PropTypes.bool,
     error: PropTypes.object,
-    ErrorComp: PropTypes.elementType,
+    ErrorComp: PropTypes.elementType
   };
 }
