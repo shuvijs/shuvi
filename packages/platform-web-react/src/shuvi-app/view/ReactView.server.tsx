@@ -13,7 +13,7 @@ import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
-import { ErrorBoundary, onCatchError } from './ErrorBoundary';
+import { ErrorBoundary } from './ErrorBoundary';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -117,7 +117,7 @@ export class ReactServerView implements IReactServerView {
     try {
       const renderAppToString = () =>
         renderToString(
-          <ErrorBoundary onError={onCatchError}>
+          <ErrorBoundary>
             <Router static router={router}>
               <ErrorContainer store={serverErrorStore} ErrorComp={ErrorPage}>
                 <LoadableContext.Provider

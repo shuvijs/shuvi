@@ -12,7 +12,7 @@ import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
-import { ErrorBoundary, onCatchError } from './ErrorBoundary';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const headManager = new HeadManager();
 
@@ -82,7 +82,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <ErrorBoundary onError={onCatchError}>
+      <ErrorBoundary>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <Router router={router}>
             <ErrorContainer store={clientErrorStore} ErrorComp={ErrorPage}>

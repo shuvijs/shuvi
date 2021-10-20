@@ -75,7 +75,13 @@ export function normalizeRoutes(
             }
           }
         }
-        // not reset at method private _doTransition to Avoid splash screen
+        // not reset at method private _doTransition to Avoid splash screen，eg：
+        // /a special query a=1, trigger page 500 error
+        // in error page link=>/b when click link trigger error store reset() right now
+        // reset() make errorPage hide error and show /a page (splash screen)
+        // the splash time is lazy load /b
+        // route /b and component load show page /b
+
         if (error.errorCode !== undefined) {
           clientErrorStore.errorHandler(error.errorCode, error.errorDesc);
         } else {
