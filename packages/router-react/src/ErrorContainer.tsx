@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useReducer } from 'react';
+import React, { createContext, useMemo, useReducer, useRef } from 'react';
 import { ErrorStore, IPageError } from '@shuvi/router';
 import { useIsomorphicEffect } from './utils';
 
@@ -25,8 +25,17 @@ export function ErrorContainer({
   ErrorComp?: React.ComponentType<IPageError>;
   store: ErrorStore;
 }) {
+  const isRendered = useRef(true);
   const forceupdate = useReducer(s => s * -1, 1)[1];
-  useIsomorphicEffect(() => store.subscribe(forceupdate), [store]);
+  useIsomorphicEffect(() => {
+    isRendered.current = true;
+    store.subscribe(() => {
+      if (isRendered.current) forceupdate();
+    });
+    return () => {
+      isRendered.current = false;
+    };
+  }, [store]);
   const errorStore = useMemo(() => store, [store]);
 
   return (
