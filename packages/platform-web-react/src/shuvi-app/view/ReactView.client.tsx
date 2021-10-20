@@ -1,7 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from '@shuvi/router-react';
-import { createRedirector, createError, ShuviErrorCode } from '@shuvi/router';
+import { Router, ErrorContainer } from '@shuvi/router-react';
+import {
+  createRedirector,
+  ShuviErrorCode,
+  clientErrorStore
+} from '@shuvi/router';
 import { Runtime } from '@shuvi/service';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
@@ -45,20 +49,16 @@ export class ReactClientView implements IReactClientView {
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
+      if (isInitialRender && error.errorCode !== undefined) {
+        clientErrorStore.errorHandler(error.errorCode, error.errorDesc);
+      }
     } else {
       await router.ready;
       const { pathname, query, params } = router.current;
 
-      let clientErrorHandler = createError();
-
-      if (router.current.matches && router.current.matches.length) {
-        const { getInitialProps = {} } = router.current.matches[0].route.component;
-        clientErrorHandler =
-          getInitialProps
-            .__error || clientErrorHandler;
-      }else{
+      if (!router.current.matches) {
         // no handler no matches
-        clientErrorHandler.handler(ShuviErrorCode.PAGE_NOT_FOUND)
+        clientErrorStore.errorHandler(ShuviErrorCode.PAGE_NOT_FOUND);
       }
 
       if (TypedAppComponent.getInitialProps) {
@@ -68,14 +68,13 @@ export class ReactClientView implements IReactClientView {
           query,
           params,
           redirect: redirector.handler,
-          error: clientErrorHandler.handler,
+          error: clientErrorStore.errorHandler,
           appContext,
           async fetchInitialProps() {
             // do nothing
           }
         });
       }
-      error = clientErrorHandler;
     }
 
     if (redirector.redirected) {
@@ -85,10 +84,12 @@ export class ReactClientView implements IReactClientView {
     const root = (
       <ErrorBoundary onError={onCatchError}>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <Router router={router} error={error} ErrorComp={ErrorPage}>
-            <AppContainer appContext={appContext}>
-              <TypedAppComponent {...appProps} />
-            </AppContainer>
+          <Router router={router}>
+            <ErrorContainer store={clientErrorStore} ErrorComp={ErrorPage}>
+              <AppContainer appContext={appContext}>
+                <TypedAppComponent {...appProps} />
+              </AppContainer>
+            </ErrorContainer>
           </Router>
         </HeadManagerContext.Provider>
       </ErrorBoundary>

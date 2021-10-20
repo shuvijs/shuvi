@@ -12,12 +12,13 @@ export {
   resolvePath,
   createLocation,
   createRedirector,
-  createError,
-  IPageError,
   ShuviErrorCode,
   DEFAULTERRORMESSAGE,
-  IPageErrorFn,
-  IPageErrorHandler
+  ErrorStore,
+  clientErrorStore,
+  IPageError,
+  IErrorHandler,
+  createError
 } from './utils';
 export * from './types';
 export * from './history';

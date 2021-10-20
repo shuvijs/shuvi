@@ -1,5 +1,5 @@
 import { Runtime } from '@shuvi/service';
-import { createRedirector, createError } from '@shuvi/router';
+import { createRedirector, clientErrorStore, createError } from '@shuvi/router';
 
 const isServer = typeof window === 'undefined';
 
@@ -31,18 +31,19 @@ export function normalizeRoutes(
     const { id, component } = res;
     if (component) {
       res.resolve = async (to, from, next, context) => {
-        const preload = component.preload;
         if (isServer) {
           return next();
         }
 
         let Component: any;
-        if (component.preload) {
+        const preload = component.preload;
+        if (preload) {
           try {
             const preloadComponent = await preload();
             Component = preloadComponent.default || preloadComponent;
           } catch (err) {
             console.error(err);
+            clientErrorStore.errorHandler();
             Component = function () {
               return null;
             };
@@ -50,6 +51,7 @@ export function normalizeRoutes(
         } else {
           Component = component;
         }
+        const error = createError();
         if (Component.getInitialProps) {
           if (routeProps[id] !== undefined && !hydrated[id]) {
             // only hydrated once
@@ -57,7 +59,6 @@ export function normalizeRoutes(
             context.props = routeProps[id];
           } else {
             const redirector = createRedirector();
-            const error = createError();
             context.props = await Component.getInitialProps({
               isServer: false,
               query: to.query,
@@ -68,17 +69,17 @@ export function normalizeRoutes(
               appContext
             } as IRouteComponentContext);
 
-            if (error.errorCode !== undefined) {
-              Component.getInitialProps.__error = error;
-            } else {
-              Component.getInitialProps.__error = null;
-            }
-
             if (redirector.redirected) {
               next(redirector.state!.path);
               return;
             }
           }
+        }
+        // not reset at method private _doTransition to Avoid splash screen
+        if (error.errorCode !== undefined) {
+          clientErrorStore.errorHandler(error.errorCode, error.errorDesc);
+        } else {
+          clientErrorStore.reset();
         }
 
         next();

@@ -18,7 +18,8 @@ import {
   joinPaths,
   createEvents,
   resolvePath,
-  Events
+  Events,
+  clientErrorStore
 } from './utils';
 import { isError } from './utils/error';
 import { runQueue } from './utils/async';
@@ -151,6 +152,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       return this._history.replace(routeRedirect, {
         redirectedFrom: routeRedirect
       });
+    }
+
+    if (nextMatches.length === 0) {
+      clientErrorStore.errorHandler(404);
     }
 
     const routeContext = new Map<RouteRecord, NavigationHookContext>();
