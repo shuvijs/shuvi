@@ -6,18 +6,14 @@ import {
   InitialEntry,
   createRouter,
   IRouter,
-  createRedirector,
-  clientErrorStore
+  createRedirector
 } from '@shuvi/router';
 import { createMpHistory } from './mpHistory';
-import {
-  Router,
-  RouterView,
-  IRouteRecord,
-  ErrorContainer
-} from '@shuvi/router-react';
+import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
 import ErrorPage from './ErrorPage';
+import { getAppStore, getErrorHandler } from '@shuvi/platform-core';
+import { AppStore } from '@shuvi/platform-web-react/shuvi-app/AppStore';
 
 export interface IMpRouterProps {
   basename?: string;
@@ -39,6 +35,10 @@ export function MpRouter({
   const [initProps, setProps] = useState<boolean>(false);
 
   const redirector = createRedirector();
+
+  const appStore = getAppStore();
+
+  const error = getErrorHandler();
 
   if (routerRef.current == null) {
     routerRef.current = createRouter({
@@ -90,7 +90,7 @@ export function MpRouter({
       await router!.ready;
       const matchRoute = matches && matches[0] && matches[0].route;
       let props = {};
-      clientErrorStore.reset();
+      error.reset();
       if (matchRoute && matchRoute.component.getInitialProps) {
         props = await matchRoute.component.getInitialProps({
           isServer: false,
@@ -99,7 +99,7 @@ export function MpRouter({
           params,
           redirect: redirector.handler,
           appContext,
-          error: clientErrorStore.errorHandler,
+          error: error.errorHandler,
           async fetchInitialProps() {
             // do nothing
           }
@@ -120,9 +120,9 @@ export function MpRouter({
 
   return initProps ? (
     <Router router={routerRef.current}>
-      <ErrorContainer store={clientErrorStore} ErrorComp={ErrorPage}>
+      <AppStore store={appStore} ErrorComp={ErrorPage}>
         <RouterView />
-      </ErrorContainer>
+      </AppStore>
     </Router>
   ) : null;
 }

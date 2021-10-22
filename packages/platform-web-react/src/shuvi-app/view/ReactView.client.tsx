@@ -1,11 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, ErrorContainer } from '@shuvi/router-react';
-import {
-  createRedirector,
-  ShuviErrorCode,
-  clientErrorStore
-} from '@shuvi/router';
+import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { Router } from '@shuvi/router-react';
+import { createRedirector } from '@shuvi/router';
+import { getErrorHandler } from '@shuvi/platform-core';
 import { Runtime } from '@shuvi/service';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
@@ -13,6 +11,7 @@ import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
+import { AppStore } from '../AppStore';
 
 const headManager = new HeadManager();
 
@@ -24,18 +23,11 @@ export class ReactClientView implements IReactClientView {
     AppComponent,
     appData,
     router,
-    appContext
+    appContext,
+    appStore
   }) => {
     const { _isInitialRender: isInitialRender } = this;
-    let {
-      ssr,
-      appProps,
-      dynamicIds,
-      error = {
-        errorCode: undefined,
-        errorDesc: undefined
-      }
-    } = appData;
+    let { ssr, appProps, dynamicIds } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
       (window as any).__SHUVI.router = router;
@@ -44,13 +36,17 @@ export class ReactClientView implements IReactClientView {
     }
 
     const redirector = createRedirector();
+    const error = getErrorHandler();
     const TypedAppComponent =
       AppComponent as Runtime.IAppComponent<React.ComponentType>;
-
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
-      if (isInitialRender && error.errorCode !== undefined) {
-        clientErrorStore.errorHandler(error.errorCode, error.errorDesc);
+      // for ssr hmr, when rename a component
+      if (!isInitialRender) {
+        if (!router.current.matches) {
+          // no handler no matches
+          error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+        }
       }
     } else {
       await router.ready;
@@ -58,7 +54,7 @@ export class ReactClientView implements IReactClientView {
 
       if (!router.current.matches) {
         // no handler no matches
-        clientErrorStore.errorHandler(ShuviErrorCode.PAGE_NOT_FOUND);
+        error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
       }
 
       if (TypedAppComponent.getInitialProps) {
@@ -68,7 +64,7 @@ export class ReactClientView implements IReactClientView {
           query,
           params,
           redirect: redirector.handler,
-          error: clientErrorStore.errorHandler,
+          error: error.errorHandler,
           appContext,
           async fetchInitialProps() {
             // do nothing
@@ -85,11 +81,11 @@ export class ReactClientView implements IReactClientView {
       <ErrorBoundary>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <Router router={router}>
-            <ErrorContainer store={clientErrorStore} ErrorComp={ErrorPage}>
+            <AppStore store={appStore} ErrorComp={ErrorPage}>
               <AppContainer appContext={appContext}>
                 <TypedAppComponent {...appProps} />
               </AppContainer>
-            </ErrorContainer>
+            </AppStore>
           </Router>
         </HeadManagerContext.Provider>
       </ErrorBoundary>

@@ -1,10 +1,8 @@
 import React, { createContext, useMemo, useReducer, useRef } from 'react';
-import { ErrorStore, IPageError } from '@shuvi/router';
-import { useIsomorphicEffect } from './utils';
+import { IPageError, IAppStore } from '@shuvi/platform-core';
+import { useIsomorphicEffect } from '@shuvi/router-react';
 
-const ErrorContext = createContext<ErrorStore>(null as any);
-
-export { ErrorContext };
+export const AppStoreContext = createContext<IAppStore>(null as any);
 
 function checkError(
   errorState: IPageError,
@@ -16,31 +14,33 @@ function checkError(
   return null;
 }
 
-export function ErrorContainer({
+export function AppStore({
   children = null,
   ErrorComp,
   store
 }: {
   children: React.ReactNode;
   ErrorComp?: React.ComponentType<IPageError>;
-  store: ErrorStore;
+  store: IAppStore;
 }) {
   const isRendered = useRef(true);
   const forceupdate = useReducer(s => s * -1, 1)[1];
   useIsomorphicEffect(() => {
     isRendered.current = true;
-    store.subscribe(() => {
+    const unsubscribe = store.subscribe(() => {
       if (isRendered.current) forceupdate();
     });
     return () => {
+      unsubscribe && unsubscribe();
       isRendered.current = false;
     };
   }, [store]);
-  const errorStore = useMemo(() => store, [store]);
+  const appStore = useMemo(() => store, [store]);
+  const { error: errorState } = store.getState();
 
   return (
-    <ErrorContext.Provider value={errorStore}>
-      {checkError(store.getState(), ErrorComp) || children}
-    </ErrorContext.Provider>
+    <AppStoreContext.Provider value={appStore}>
+      {checkError(errorState, ErrorComp) || children}
+    </AppStoreContext.Provider>
   );
 }

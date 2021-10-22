@@ -1,6 +1,6 @@
 import React from 'react';
-import { View } from '@tarojs/components'
-import { IPageError } from '@shuvi/router';
+import { View } from '@tarojs/components';
+import { IPageError } from '@shuvi/platform-core';
 
 const style = {
   container: {
@@ -28,16 +28,11 @@ const style = {
   }
 } as const;
 
-export default function error({
-  errorCode,
-  errorDesc
-}: IPageError) {
+export default function error({ errorCode, errorDesc }: IPageError) {
   return (
     <View style={style.container}>
       <View style={style.error}>
-        <View style={style.errorCode}>
-          {errorCode}
-        </View>
+        <View style={style.errorCode}>{errorCode}</View>
         {errorDesc && <View style={style.errorDesc}>{errorDesc}</View>}
       </View>
     </View>

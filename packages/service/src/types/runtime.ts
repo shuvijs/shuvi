@@ -22,9 +22,9 @@ import {
   IRouter,
   IParams,
   IRedirectState,
-  IRedirectFn,
-  IErrorHandler
+  IRedirectFn
 } from '@shuvi/router';
+import { IAppStore, IErrorHandler, IPageError } from '@shuvi/platform-core';
 import { ParsedQuery } from 'query-string';
 
 export {
@@ -114,6 +114,9 @@ export type IAppData<Data = {}> = {
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
   routeProps?: { [x: string]: any };
+  appState?: {
+    error: IPageError;
+  };
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -123,6 +126,7 @@ export interface IClientRendererOptions<CompType = any, Data = {}>
   router: IRouter;
   appContainer: HTMLElement;
   appData: IAppData<Data>;
+  appStore: IAppStore;
 }
 
 export interface ITelestore {

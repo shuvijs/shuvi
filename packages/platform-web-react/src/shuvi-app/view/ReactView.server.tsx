@@ -1,19 +1,18 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { Runtime } from '@shuvi/service';
-import { Router, ErrorContainer } from '@shuvi/router-react';
-import {
-  createRedirector,
-  IParams,
-  ShuviErrorCode,
-  ErrorStore
-} from '@shuvi/router';
+import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { Router } from '@shuvi/router-react';
+import { createRedirector, IParams } from '@shuvi/router';
+import { initialStore } from '@shuvi/platform-core';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
+import { createError } from '../createError';
 import { ErrorBoundary } from './ErrorBoundary';
+import { AppStore } from '../AppStore';
 
 import IAppComponent = Runtime.IAppComponent;
 import IRouteComponent = Runtime.IRouteComponent;
@@ -32,7 +31,7 @@ export class ReactServerView implements IReactServerView {
 
     const redirector = createRedirector();
 
-    const serverErrorStore = new ErrorStore();
+    const errorComp = createError();
 
     await router.ready;
 
@@ -40,7 +39,7 @@ export class ReactServerView implements IReactServerView {
     // handler no matches
     if (!matches) {
       matches = [];
-      serverErrorStore.errorHandler(ShuviErrorCode.PAGE_NOT_FOUND);
+      errorComp.handler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
@@ -70,7 +69,7 @@ export class ReactServerView implements IReactServerView {
             appContext,
             params: matchedRoute.params,
             redirect: redirector.handler,
-            error: serverErrorStore.errorHandler
+            error: errorComp.handler
           });
           routeProps[appRoute.id] = props || {};
           matchedRoute.route.props = props;
@@ -93,7 +92,7 @@ export class ReactServerView implements IReactServerView {
         appContext,
         fetchInitialProps,
         redirect: redirector.handler,
-        error: serverErrorStore.errorHandler
+        error: errorComp.handler
       });
     } else {
       await fetchInitialProps();
@@ -105,21 +104,25 @@ export class ReactServerView implements IReactServerView {
       };
     }
 
-    const errorState = serverErrorStore.getState();
-
-    if (errorState.errorCode !== undefined) {
-      appContext.statusCode = errorState.errorCode;
+    if (errorComp.errorCode !== undefined) {
+      appContext.statusCode = errorComp.errorCode;
     }
 
     const loadableModules: string[] = [];
     let htmlContent: string;
     let head: IHtmlTag[];
+    const appStore = initialStore({
+      error: {
+        errorCode: errorComp.errorCode,
+        errorDesc: errorComp.errorDesc
+      }
+    });
     try {
       const renderAppToString = () =>
         renderToString(
           <ErrorBoundary>
             <Router static router={router}>
-              <ErrorContainer store={serverErrorStore} ErrorComp={ErrorPage}>
+              <AppStore store={appStore} ErrorComp={ErrorPage}>
                 <LoadableContext.Provider
                   value={moduleName => loadableModules.push(moduleName)}
                 >
@@ -127,7 +130,7 @@ export class ReactServerView implements IReactServerView {
                     <AppComponent {...appInitialProps} />
                   </AppContainer>
                 </LoadableContext.Provider>
-              </ErrorContainer>
+              </AppStore>
             </Router>
           </ErrorBoundary>
         );
@@ -189,7 +192,7 @@ export class ReactServerView implements IReactServerView {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
 
-    appData.error = errorState;
+    appData.appState = appStore.getState();
 
     return {
       appData,

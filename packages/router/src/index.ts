@@ -11,15 +11,9 @@ export {
   parseQuery,
   resolvePath,
   createLocation,
-  createRedirector,
-  ShuviErrorCode,
-  DEFAULTERRORMESSAGE,
-  ErrorStore,
-  clientErrorStore,
-  IPageError,
-  IErrorHandler,
-  createError
+  createRedirector
 } from './utils';
+
 export * from './types';
 export * from './history';
 export * from './router';

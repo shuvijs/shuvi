@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShuviErrorCode } from '@shuvi/router';
+import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import ErrorPage from '../ErrorPage';
 
 type ErrorBoundaryState = { error: Error | null };
@@ -30,7 +30,7 @@ class ErrorBoundary extends React.PureComponent<
   render() {
     return this.state.error ? (
       // The component has to be unmounted or else it would continue to error
-      <ErrorPage errorCode={ShuviErrorCode.APP_ERROR} />
+      <ErrorPage errorCode={SHUVI_ERROR_CODE.APP_ERROR} />
     ) : (
       this.props.children
     );

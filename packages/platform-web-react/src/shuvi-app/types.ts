@@ -1,5 +1,5 @@
 import { Runtime } from '@shuvi/service';
-import { IPageError } from '@shuvi/router';
+import { IPageError } from '@shuvi/platform-core';
 
 export type IReactAppData = {
   appProps?: Record<string, any>;
@@ -7,8 +7,10 @@ export type IReactAppData = {
     notFound: boolean;
   };
   dynamicIds?: Array<string | number>;
+  appState?: {
+    error: IPageError;
+  };
   routeProps: IRouteProps;
-  error?: IPageError;
 };
 
 export interface IAppContainerProps {

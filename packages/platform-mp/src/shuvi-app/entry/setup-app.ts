@@ -5,8 +5,11 @@ import { view } from '@shuvi/app/core/platform';
 import { create } from '@shuvi/app/core/client/application';
 import { getAppData } from '@shuvi/platform-core/lib/helper';
 import { IRouter } from '@shuvi/router/lib/types';
+import { getAppStore } from '@shuvi/platform-core';
+
 const appData = getAppData();
-const { routeProps = {} } = appData;
+const { routeProps = {}, appState } = appData;
+const appStore = getAppStore(appState);
 
 const app = create(
   {
@@ -21,7 +24,8 @@ const app = create(
         router: router as IRouter,
         appData,
         appContainer,
-        appContext
+        appContext,
+        appStore
       });
     }
   }

@@ -1,5 +1,7 @@
 import { Runtime } from '@shuvi/service';
-import { createRedirector, clientErrorStore, createError } from '@shuvi/router';
+import { createRedirector } from '@shuvi/router';
+import { getErrorHandler } from '@shuvi/platform-core';
+import { createError } from '../createError';
 
 const isServer = typeof window === 'undefined';
 
@@ -37,13 +39,14 @@ export function normalizeRoutes(
 
         let Component: any;
         const preload = component.preload;
+        const error = getErrorHandler();
         if (preload) {
           try {
             const preloadComponent = await preload();
             Component = preloadComponent.default || preloadComponent;
           } catch (err) {
             console.error(err);
-            clientErrorStore.errorHandler();
+            error.errorHandler();
             Component = function () {
               return null;
             };
@@ -51,12 +54,13 @@ export function normalizeRoutes(
         } else {
           Component = component;
         }
-        const error = createError();
+        const errorComp = createError();
         if (Component.getInitialProps) {
           if (routeProps[id] !== undefined && !hydrated[id]) {
             // only hydrated once
             hydrated[id] = true;
             context.props = routeProps[id];
+            return next();
           } else {
             const redirector = createRedirector();
             context.props = await Component.getInitialProps({
@@ -65,7 +69,7 @@ export function normalizeRoutes(
               pathname: to.pathname,
               params: to.params,
               redirect: redirector.handler,
-              error: error.handler,
+              error: errorComp.handler,
               appContext
             } as IRouteComponentContext);
 
@@ -81,11 +85,10 @@ export function normalizeRoutes(
         // reset() make errorPage hide error and show /a page (splash screen)
         // the splash time is lazy load /b
         // route /b and component load show page /b
-
-        if (error.errorCode !== undefined) {
-          clientErrorStore.errorHandler(error.errorCode, error.errorDesc);
+        if (errorComp.errorCode !== undefined) {
+          error.errorHandler(errorComp.errorCode, errorComp.errorDesc);
         } else {
-          clientErrorStore.reset();
+          error.reset();
         }
 
         next();

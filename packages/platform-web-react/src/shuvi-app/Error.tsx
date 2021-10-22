@@ -1,5 +1,5 @@
 import React from 'react';
-import { IPageError } from '@shuvi/router';
+import { IPageError } from '@shuvi/platform-core';
 // @ts-ignore
 import { Head } from './head';
 
@@ -29,10 +29,7 @@ const style = {
   }
 } as const;
 
-export default function error({
-  errorCode,
-  errorDesc
-}: IPageError) {
+export default function error({ errorCode, errorDesc }: IPageError) {
   return (
     <div style={style.container}>
       <Head>
@@ -40,9 +37,7 @@ export default function error({
       </Head>
 
       <div style={style.error}>
-        <div style={style.errorCode}>
-          {errorCode}
-        </div>
+        <div style={style.errorCode}>{errorCode}</div>
         {errorDesc && <div style={style.errorDesc}>{errorDesc}</div>}
       </div>
     </div>
