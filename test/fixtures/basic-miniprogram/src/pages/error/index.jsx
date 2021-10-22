@@ -13,7 +13,7 @@ ErrorPage.getInitialProps = ctx => {
   console.log(ctx);
   const {query, error} = ctx;
   if(query.a){
-    error(500, 'error');
+    error(502, 'custom error');
     return;
   }
   return {

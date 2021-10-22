@@ -42,7 +42,7 @@ module.exports = {
     },
     {
       path: '/:other(.*)',
-      component: 'pages/my/index'
+      component: 'pages/list/index'
     }
   ]
 };
