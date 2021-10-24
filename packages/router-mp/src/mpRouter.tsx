@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import qs from 'query-string';
 import PropTypes from 'prop-types';
 import { Current as TaroCurrent } from '@tarojs/runtime';
@@ -38,7 +38,7 @@ export function MpRouter({
 
   const appStore = getAppStore();
 
-  const error = getErrorHandler();
+  const error = getErrorHandler(appStore);
 
   if (routerRef.current == null) {
     routerRef.current = createRouter({
@@ -82,9 +82,10 @@ export function MpRouter({
     routeProps: {},
     historyMode: 'memory'
   };
-
+  const isRendered = useRef(true);
   useEffect(() => {
     const router = routerRef.current;
+    isRendered.current = true;
     const runGetInitialProps = async () => {
       const { pathname, query, params, matches } = router!.current;
       await router!.ready;
@@ -113,9 +114,12 @@ export function MpRouter({
           return;
         }
       }
-      setProps(true);
+      if (isRendered.current) setProps(true);
     };
     runGetInitialProps();
+    return () => {
+      isRendered.current = false;
+    };
   }, []);
 
   return initProps ? (

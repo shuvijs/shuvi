@@ -1,5 +1,7 @@
-import { IErrorHandler, IPageError } from '@shuvi/platform-core';
+import { IErrorHandler, IAppState } from '@shuvi/platform-core';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+
+type IPageError = IAppState['error'];
 
 export interface IPageErrorHandler extends IPageError {
   handler: IErrorHandler;

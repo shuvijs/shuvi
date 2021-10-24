@@ -1,6 +1,6 @@
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { IPageError, RESET_ERROR, UPDATE_ERROR } from './pageError/actions';
-import { getAppStore } from './getAppStore';
+import { IAppStore } from './getAppStore';
 
 export const DEFAULT_ERROR_MESSAGE = {
   [SHUVI_ERROR_CODE.APP_ERROR]: {
@@ -16,11 +16,10 @@ export type IErrorHandler = (
   errorDesc?: string
 ) => void;
 
-export function getErrorHandler(): {
+export function getErrorHandler(appStore: IAppStore): {
   errorHandler: IErrorHandler;
   reset: () => void;
 } {
-  const appStore = getAppStore();
   return {
     errorHandler(errorCode?: SHUVI_ERROR_CODE | string, errorDesc?: string) {
       const payload = {} as IPageError;

@@ -1,4 +1,5 @@
 import { Application } from '../application';
+import { createStore } from '@shuvi/shared/lib/miniRedux';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 
 /**
@@ -25,6 +26,7 @@ function getApp({ render }: any = {}) {
         }
       ]
     }),
+    appStore: createStore(() => {}),
     async render(options) {
       return render && render(options);
     }

@@ -24,8 +24,9 @@ import {
   IRedirectState,
   IRedirectFn
 } from '@shuvi/router';
-import { IAppStore, IErrorHandler, IPageError } from '@shuvi/platform-core';
+
 import { ParsedQuery } from 'query-string';
+import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 
 export {
   IAppPlugin,
@@ -78,6 +79,11 @@ export interface IServerAppContext {
   [x: string]: any;
 }
 
+export type IErrorHandler = (
+  errorCode?: SHUVI_ERROR_CODE | string,
+  errorDesc?: string
+) => void;
+
 export interface IRouteComponentContext {
   isServer: boolean;
   pathname: string;
@@ -109,24 +115,25 @@ export type IRouteComponent<C, P = {}> = C & {
   getInitialProps?(context: IRouteComponentContext): P | Promise<P>;
 };
 
-export type IAppData<Data = {}> = {
+export type IAppData<Data = {}, appState = any> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
   pageData?: IData;
   routeProps?: { [x: string]: any };
-  appState?: {
-    error: IPageError;
-  };
+  appState?: appState;
 } & {
   [K in keyof Data]: Data[K];
 };
 
-export interface IClientRendererOptions<CompType = any, Data = {}>
-  extends IRenderOptions<CompType> {
+export interface IClientRendererOptions<
+  CompType = any,
+  Data = {},
+  appStore = any
+> extends IRenderOptions<CompType> {
   router: IRouter;
   appContainer: HTMLElement;
   appData: IAppData<Data>;
-  appStore: IAppStore;
+  appStore: appStore;
 }
 
 export interface ITelestore {
@@ -135,9 +142,10 @@ export interface ITelestore {
   dump(): Record<string, any>;
 }
 
-export interface IServerRendererOptions<CompType = any>
+export interface IServerRendererOptions<CompType = any, appStore = any>
   extends IRenderOptions<CompType> {
   router: IRouter;
+  appStore: appStore;
   manifest: Bundler.IManifest;
   getAssetPublicUrl(path: string): string;
 }
@@ -191,11 +199,12 @@ export interface IApplicationCreaterClientContext
   historyMode: IRouterHistoryMode;
 }
 
-export interface ApplicationCreater {
+export interface ApplicationCreater<appState = any> {
   (
     context: IApplicationCreaterContext,
     options: {
       render: IAppRenderFn;
+      appState?: appState;
     }
   ): IApplication;
 }

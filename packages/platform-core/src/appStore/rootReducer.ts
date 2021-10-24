@@ -1,4 +1,4 @@
-import { combineReducers } from './miniRedux';
+import { combineReducers } from '@shuvi/shared/lib/miniRedux';
 import error from './pageError/reducer';
 
 const rootReducer = combineReducers({

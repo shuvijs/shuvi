@@ -4,13 +4,12 @@ import { Runtime } from '@shuvi/service';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector, IParams } from '@shuvi/router';
-import { initialStore } from '@shuvi/platform-core';
+import { getErrorHandler } from '@shuvi/platform-core';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
-import { createError } from '../createError';
 import { ErrorBoundary } from './ErrorBoundary';
 import { AppStore } from '../AppStore';
 
@@ -23,6 +22,7 @@ export class ReactServerView implements IReactServerView {
     AppComponent,
     router,
     appContext,
+    appStore,
     manifest,
     getAssetPublicUrl,
     render
@@ -31,7 +31,7 @@ export class ReactServerView implements IReactServerView {
 
     const redirector = createRedirector();
 
-    const errorComp = createError();
+    const error = getErrorHandler(appStore);
 
     await router.ready;
 
@@ -39,7 +39,7 @@ export class ReactServerView implements IReactServerView {
     // handler no matches
     if (!matches) {
       matches = [];
-      errorComp.handler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+      error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
@@ -69,7 +69,7 @@ export class ReactServerView implements IReactServerView {
             appContext,
             params: matchedRoute.params,
             redirect: redirector.handler,
-            error: errorComp.handler
+            error: error.errorHandler
           });
           routeProps[appRoute.id] = props || {};
           matchedRoute.route.props = props;
@@ -92,7 +92,7 @@ export class ReactServerView implements IReactServerView {
         appContext,
         fetchInitialProps,
         redirect: redirector.handler,
-        error: errorComp.handler
+        error: error.errorHandler
       });
     } else {
       await fetchInitialProps();
@@ -104,19 +104,16 @@ export class ReactServerView implements IReactServerView {
       };
     }
 
-    if (errorComp.errorCode !== undefined) {
-      appContext.statusCode = errorComp.errorCode;
+    const appState = appStore.getState();
+
+    if (appState.error.errorCode !== undefined) {
+      appContext.statusCode = appState.error.errorCode;
     }
 
     const loadableModules: string[] = [];
     let htmlContent: string;
     let head: IHtmlTag[];
-    const appStore = initialStore({
-      error: {
-        errorCode: errorComp.errorCode,
-        errorDesc: errorComp.errorDesc
-      }
-    });
+
     try {
       const renderAppToString = () =>
         renderToString(
@@ -192,7 +189,7 @@ export class ReactServerView implements IReactServerView {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
 
-    appData.appState = appStore.getState();
+    appData.appState = appState;
 
     return {
       appData,

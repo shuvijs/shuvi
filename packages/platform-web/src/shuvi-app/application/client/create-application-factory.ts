@@ -1,31 +1,50 @@
 import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
-import { Application, IApplication } from '@shuvi/platform-core';
+import {
+  Application,
+  IApplication,
+  getAppStore,
+  getErrorHandler,
+  IAppState
+} from '@shuvi/platform-core';
 import runPlugins from '@shuvi/platform-core/lib/runPlugins';
 import { createRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
 import { Runtime } from '@shuvi/service';
+import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 declare let __SHUVI: any;
 let app: IApplication;
 let history: History;
 let appContext: Runtime.IApplicationCreaterContext;
 
 export const createFactory = (historyCreater: () => History) => {
-  const create: Runtime.ApplicationCreater = function (context, options) {
+  const create: Runtime.ApplicationCreater<IAppState> = function (
+    context,
+    options
+  ) {
     appContext = context;
     // app is a singleton in client side
     if (app) {
       return app;
     }
     history = historyCreater();
+    const appStore = getAppStore(options.appState);
     const router = createRouter({
       history,
       routes: getRoutes(routes, context)
     });
+    router.afterEach(_current => {
+      if (!_current.matches) {
+        getErrorHandler(getAppStore()).errorHandler(
+          SHUVI_ERROR_CODE.PAGE_NOT_FOUND
+        );
+      }
+    });
     app = new Application({
       AppComponent,
       router,
+      appStore,
       context,
       render: options.render
     });

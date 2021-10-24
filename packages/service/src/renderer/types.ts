@@ -7,10 +7,11 @@ export interface IRendererConstructorOptions {
   api: Api;
 }
 
-export type IRenderDocumentOptions = {
+export type IRenderDocumentOptions<appStore = any> = {
   app: IApplication;
   AppComponent: any;
   router?: IRouter;
+  appStore: appStore;
   appContext: any;
   render?: IServerModule['render'];
 };

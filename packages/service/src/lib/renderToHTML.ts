@@ -23,13 +23,14 @@ export async function renderToHTML({
       req
     },
     {
-      async render({ appContext, AppComponent, router }) {
+      async render({ appContext, AppComponent, router, appStore }) {
         const result = await renderer.renderDocument({
           router,
           app,
           AppComponent,
           appContext,
-          render
+          render,
+          appStore
         });
 
         if (isRedirect(result)) {
@@ -37,7 +38,8 @@ export async function renderToHTML({
         } else {
           html = result;
         }
-      }
+      },
+      appState: undefined
     }
   );
 

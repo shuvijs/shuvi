@@ -1,7 +1,7 @@
 import { Runtime } from '@shuvi/service';
 import { createRedirector } from '@shuvi/router';
-import { getErrorHandler } from '@shuvi/platform-core';
-import { createError } from '../createError';
+import { getErrorHandler, getAppStore } from '@shuvi/platform-core';
+import { createError } from './createError';
 
 const isServer = typeof window === 'undefined';
 
@@ -39,7 +39,7 @@ export function normalizeRoutes(
 
         let Component: any;
         const preload = component.preload;
-        const error = getErrorHandler();
+        const error = getErrorHandler(getAppStore());
         if (preload) {
           try {
             const preloadComponent = await preload();

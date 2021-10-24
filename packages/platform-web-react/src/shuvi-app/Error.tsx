@@ -1,5 +1,5 @@
 import React from 'react';
-import { IPageError } from '@shuvi/platform-core';
+import { IAppState } from '@shuvi/platform-core';
 // @ts-ignore
 import { Head } from './head';
 
@@ -29,7 +29,7 @@ const style = {
   }
 } as const;
 
-export default function error({ errorCode, errorDesc }: IPageError) {
+export default function error({ errorCode, errorDesc }: IAppState['error']) {
   return (
     <div style={style.container}>
       <Head>

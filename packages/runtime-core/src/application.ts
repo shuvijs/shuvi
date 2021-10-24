@@ -12,12 +12,14 @@ export interface IApplication extends Hookable {
   rerender(config?: IRerenderConfig): Promise<void>;
   dispose(): Promise<void>;
 }
-export interface IRenderOptions<CompType = any> {
+export interface IRenderOptions<CompType = any, AppStore = any> {
   AppComponent: CompType;
   router?: IRouter;
   appContext: Record<string, any>;
+  appStore: AppStore;
   render?: (renderAppToString: () => string, appContext: any) => string;
 }
+
 export interface IAppRenderFn {
   (options: IRenderOptions): Promise<any>;
 }
@@ -26,25 +28,31 @@ export type IRerenderConfig = {
   AppComponent?: any;
   router?: IRouter;
 };
-export interface IApplicationOptions<Context> {
+
+export interface IApplicationOptions<Context, AppStore = any> {
   AppComponent: any;
   router?: IRouter;
   context: Context;
+  appStore: AppStore;
   render: IAppRenderFn;
 }
 
-export class Application<Context extends {}> extends Hookable
-  implements IApplication {
+export class Application<Context extends {}, AppStore = any>
+  extends Hookable
+  implements IApplication
+{
   AppComponent: any;
   router?: IRouter;
   private _renderFn: IAppRenderFn;
   private _context: IContext;
+  private _appStore: AppStore;
 
   constructor(options: IApplicationOptions<Context>) {
     super();
     this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;
+    this._appStore = options.appStore;
     this._renderFn = options.render;
   }
 
@@ -104,6 +112,7 @@ export class Application<Context extends {}> extends Hookable
   private async _render() {
     const result = await this._renderFn({
       appContext: this._context,
+      appStore: this._appStore,
       AppComponent: this.AppComponent,
       router: this.router
     });

@@ -5,11 +5,9 @@ import { view } from '@shuvi/app/core/platform';
 import { create } from '@shuvi/app/core/client/application';
 import { getAppData } from '@shuvi/platform-core/lib/helper';
 import { IRouter } from '@shuvi/router/lib/types';
-import { getAppStore } from '@shuvi/platform-core';
 
 const appData = getAppData();
 const { routeProps = {}, appState } = appData;
-const appStore = getAppStore(appState);
 
 const app = create(
   {
@@ -17,7 +15,7 @@ const app = create(
     routeProps
   },
   {
-    async render({ appContext, AppComponent, router }) {
+    async render({ appContext, AppComponent, router, appStore }) {
       const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
       view.renderApp({
         AppComponent: AppComponent,
@@ -27,7 +25,8 @@ const app = create(
         appContext,
         appStore
       });
-    }
+    },
+    appState
   }
 );
 

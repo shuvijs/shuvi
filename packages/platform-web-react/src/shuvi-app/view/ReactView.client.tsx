@@ -36,18 +36,13 @@ export class ReactClientView implements IReactClientView {
     }
 
     const redirector = createRedirector();
-    const error = getErrorHandler();
+
+    const error = getErrorHandler(appStore);
+
     const TypedAppComponent =
       AppComponent as Runtime.IAppComponent<React.ComponentType>;
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
-      // for ssr hmr, when rename a component
-      if (!isInitialRender) {
-        if (!router.current.matches) {
-          // no handler no matches
-          error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
-        }
-      }
     } else {
       await router.ready;
       const { pathname, query, params } = router.current;

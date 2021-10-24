@@ -76,6 +76,7 @@ export abstract class BaseRenderer {
     app,
     AppComponent,
     router,
+    appStore,
     appContext,
     render
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
@@ -83,6 +84,7 @@ export abstract class BaseRenderer {
       app,
       AppComponent,
       router,
+      appStore,
       appContext,
       render
     });

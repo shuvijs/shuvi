@@ -1,10 +1,9 @@
 export { Application, IApplication } from '@shuvi/runtime-core';
 export {
   getAppStore,
-  initialStore,
+  IAppState,
   IAppStore,
   IErrorHandler,
   getErrorHandler,
-  IPageError,
   DEFAULT_ERROR_MESSAGE
 } from './appStore';

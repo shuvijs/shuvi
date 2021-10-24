@@ -13,6 +13,7 @@ export class SsrRenderer extends BaseRenderer {
     app,
     AppComponent,
     router,
+    appStore,
     appContext,
     render
   }: IRenderDocumentOptions) {
@@ -28,6 +29,7 @@ export class SsrRenderer extends BaseRenderer {
     const result = await view.renderApp({
       AppComponent,
       router: router as IRouter,
+      appStore,
       appContext,
       manifest,
       getAssetPublicUrl,
@@ -42,13 +44,13 @@ export class SsrRenderer extends BaseRenderer {
 
     const mainAssetsTags = this._getMainAssetTags();
 
-    const pageDataList = ((await app.callHook<AppHooks.IHookServerGetPageData>(
+    const pageDataList = (await app.callHook<AppHooks.IHookServerGetPageData>(
       {
         name: 'server:getPageData',
         parallel: true
       },
       appContext
-    )) as any) as IData[];
+    )) as any as IData[];
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;
