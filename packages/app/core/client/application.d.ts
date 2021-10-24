@@ -1,16 +1,21 @@
 import { IAppRenderFn, IApplication } from '@shuvi/runtime-core';
 import { IAppState } from '@shuvi/platform-core';
-export interface IApplicationCreaterContext {
-  routeProps?: { [x: string]: any };
-  [x: string]: any;
-}
-export interface ApplicationCreater {
+import { IRouter } from '@shuvi/router';
+import { IAppRouteConfig } from '@shuvi/service/lib/api';
+import { Store } from '@shuvi/shared/lib/miniRedux';
+import { Runtime } from '@shuvi/service';
+
+export interface ApplicationCreater<appState = any> {
   (
-    context: IApplicationCreaterContext,
+    context: Runtime.IApplicationCreaterClientContext,
     options: {
-      render: IAppRenderFn;
-      appState?: IAppState;
+      render: IAppRenderFn<
+        Runtime.IApplicationCreaterClientContext,
+        IRouter<IAppRouteConfig>,
+        Store<appState, any>
+      >;
+      appState?: appState;
     }
   ): IApplication;
 }
-export const create: ApplicationCreater;
+export const create: ApplicationCreater<IAppState>;

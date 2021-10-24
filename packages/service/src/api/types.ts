@@ -33,6 +33,7 @@ export interface IAppRouteConfig extends IRouteRecord {
   __resolveWeak__?: () => any;
   [x: string]: any;
 }
+
 export interface IApiRouteConfig {
   path: string;
   children?: IApiRouteConfig[];

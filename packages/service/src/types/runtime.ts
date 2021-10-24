@@ -2,7 +2,6 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 import {
   IApi,
-  IRouterHistoryMode,
   IAppRouteConfig,
   IApiRouteConfig,
   IUserRouteConfig
@@ -27,6 +26,7 @@ import {
 
 import { ParsedQuery } from 'query-string';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { Store } from '@shuvi/shared/lib/miniRedux';
 
 export {
   IAppPlugin,
@@ -128,9 +128,11 @@ export type IAppData<Data = {}, appState = any> = {
 export interface IClientRendererOptions<
   CompType = any,
   Data = {},
-  appStore = any
-> extends IRenderOptions<CompType> {
-  router: IRouter;
+  Context = IApplicationCreaterClientContext,
+  Router = IRouter,
+  appStore = Store
+> extends IRenderOptions<Context, Router, appStore> {
+  router: Router;
   appContainer: HTMLElement;
   appData: IAppData<Data>;
   appStore: appStore;
@@ -142,27 +144,48 @@ export interface ITelestore {
   dump(): Record<string, any>;
 }
 
-export interface IServerRendererOptions<CompType = any, appStore = any>
-  extends IRenderOptions<CompType> {
-  router: IRouter;
+export interface IServerRendererOptions<
+  CompType = any,
+  Context = IApplicationCreaterServerContext,
+  Router = IRouter,
+  appStore = Store
+> extends IRenderOptions<Context, Router, appStore> {
+  router: Router;
   appStore: appStore;
   manifest: Bundler.IManifest;
   getAssetPublicUrl(path: string): string;
 }
 
 export interface IView<
-  RenderOption extends IRenderOptions = any,
+  RenderOption extends IRenderOptions<
+    IApplicationCreaterClientContext | IApplicationCreaterServerContext,
+    IRouter<IAppRouteConfig>,
+    Store
+  > = any,
   RenderResult = void
 > {
   renderApp(options: RenderOption): RenderResult;
 }
 
 export interface IViewClient<CompType = any, Data = {}>
-  extends IView<IClientRendererOptions<CompType, Data>> {}
+  extends IView<
+    IClientRendererOptions<
+      CompType,
+      Data,
+      IApplicationCreaterClientContext,
+      IRouter<any>,
+      Store
+    >
+  > {}
 
 export interface IViewServer<CompType = any, Data = {}>
   extends IView<
-    IServerRendererOptions<CompType>,
+    IServerRendererOptions<
+      CompType,
+      IApplicationCreaterServerContext,
+      IRouter<any>,
+      Store
+    >,
     Promise<IRenderAppResult<Data>>
   > {}
 
@@ -196,21 +219,24 @@ export interface IApplicationCreaterClientContext
   extends IApplicationCreaterContext {
   pageData: any;
   routeProps: { [x: string]: any };
-  historyMode: IRouterHistoryMode;
 }
 
 export interface ApplicationCreater<appState = any> {
   (
     context: IApplicationCreaterContext,
     options: {
-      render: IAppRenderFn;
+      render: IAppRenderFn<
+        IApplicationCreaterContext,
+        IRouter<IAppRouteConfig>,
+        Store<appState, any>
+      >;
       appState?: appState;
     }
   ): IApplication;
 }
 
-export interface IApplicationModule {
-  create: ApplicationCreater;
+export interface IApplicationModule<appState = any> {
+  create: ApplicationCreater<appState>;
 }
 
 export interface IDocumentModule {

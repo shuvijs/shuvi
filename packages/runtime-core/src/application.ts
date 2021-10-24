@@ -12,42 +12,45 @@ export interface IApplication extends Hookable {
   rerender(config?: IRerenderConfig): Promise<void>;
   dispose(): Promise<void>;
 }
-export interface IRenderOptions<CompType = any, AppStore = any> {
-  AppComponent: CompType;
-  router?: IRouter;
-  appContext: Record<string, any>;
+export interface IRenderOptions<Context, Router, AppStore> {
+  AppComponent: any;
+  router?: Router;
+  appContext: Context;
   appStore: AppStore;
   render?: (renderAppToString: () => string, appContext: any) => string;
 }
 
-export interface IAppRenderFn {
-  (options: IRenderOptions): Promise<any>;
+export interface IAppRenderFn<Context, Router, AppStore> {
+  (options: IRenderOptions<Context, Router, AppStore>): Promise<any>;
 }
 
 export type IRerenderConfig = {
   AppComponent?: any;
-  router?: IRouter;
 };
 
-export interface IApplicationOptions<Context, AppStore = any> {
+export interface IApplicationOptions<Context, Router, AppStore> {
   AppComponent: any;
-  router?: IRouter;
+  router?: Router;
   context: Context;
   appStore: AppStore;
-  render: IAppRenderFn;
+  render: IAppRenderFn<Context, Router, AppStore>;
 }
 
-export class Application<Context extends {}, AppStore = any>
+export class Application<
+    Context extends {},
+    Router extends IRouter = IRouter,
+    AppStore = any
+  >
   extends Hookable
   implements IApplication
 {
   AppComponent: any;
-  router?: IRouter;
-  private _renderFn: IAppRenderFn;
-  private _context: IContext;
+  router?: Router;
+  private _context: Context & IContext;
   private _appStore: AppStore;
+  private _renderFn: IAppRenderFn<Context, Router, AppStore>;
 
-  constructor(options: IApplicationOptions<Context>) {
+  constructor(options: IApplicationOptions<Context, Router, AppStore>) {
     super();
     this.AppComponent = options.AppComponent;
     this.router = options.router;
@@ -65,10 +68,7 @@ export class Application<Context extends {}, AppStore = any>
     return this._context;
   }
 
-  async rerender({ AppComponent, router }: IRerenderConfig = {}) {
-    if (router) {
-      this.router = router;
-    }
+  async rerender({ AppComponent }: IRerenderConfig = {}) {
     if (AppComponent) {
       this.AppComponent = AppComponent;
     }
@@ -96,7 +96,7 @@ export class Application<Context extends {}, AppStore = any>
     this._context = (await this.callHook<AppHooks.IHookCreateAppContext>({
       name: 'createAppContext',
       initialValue: this._context
-    })) as IContext;
+    })) as IContext & Context;
   }
 
   private async _getAppComponent() {
