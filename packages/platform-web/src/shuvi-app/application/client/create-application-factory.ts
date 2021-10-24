@@ -9,7 +9,7 @@ import {
   IAppState
 } from '@shuvi/platform-core';
 import runPlugins from '@shuvi/platform-core/lib/runPlugins';
-import { createRouter } from '@shuvi/router';
+import { createRouter, IRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
 import { Runtime } from '@shuvi/service';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
@@ -17,13 +17,13 @@ declare let __SHUVI: any;
 let app: IApplication;
 let history: History;
 let appContext: Runtime.IApplicationCreaterContext;
+let appRouter: IRouter<Runtime.IAppRouteConfig>;
 
 export const createFactory = (historyCreater: () => History) => {
   const create: Runtime.ApplicationCreater<IAppState> = function (
     context,
     options
   ) {
-    appContext = context;
     // app is a singleton in client side
     if (app) {
       return app;
@@ -41,9 +41,12 @@ export const createFactory = (historyCreater: () => History) => {
         );
       }
     });
+    appRouter = router;
+    appContext = context;
     app = new Application({
       AppComponent,
       router,
+      // router: (router as unknown as any),
       appStore,
       context,
       render: options.render
@@ -67,11 +70,8 @@ if (module.hot) {
       const rerender = () => {
         const AppComponent = require('@shuvi/app/core/app').default;
         const routes = require('@shuvi/app/core/routes').default;
-        const router = createRouter({
-          history,
-          routes: getRoutes(routes, appContext)
-        });
-        app.rerender({ router, AppComponent });
+        appRouter.replaceRoutes(getRoutes(routes, appContext));
+        app.rerender({ AppComponent });
       };
       // to solve routing problem, we need to rerender routes
       // wait navigation complete only rerender to ensure getInitialProps is called
