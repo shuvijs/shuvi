@@ -7,7 +7,7 @@ import Extend from '../../components/extend'
 const Welcome = dynamic(() => import("../../components/welcome"));
 const Nested = dynamic(() => import("../../components/nested1"));
 const Hello = dynamic(async () => {
-  await new Promise(resolve => setTimeout(() => resolve(), 3000));
+  await new Promise(resolve => setTimeout(() => resolve(), 1000));
   return import("../../components/hello")
 }, {
   ssr: false,
