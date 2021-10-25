@@ -3,6 +3,7 @@ import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 import {
   IApi,
   IAppRouteConfig,
+  IAppRouteConfigWithPrivateProps,
   IApiRouteConfig,
   IUserRouteConfig
 } from '../api';
@@ -38,11 +39,16 @@ export {
 export interface ITemplateData {
   [x: string]: any;
 }
-export { IUserRouteConfig, IAppRouteConfig, IApiRouteConfig };
+export {
+  IUserRouteConfig,
+  IAppRouteConfigWithPrivateProps,
+  IAppRouteConfig,
+  IApiRouteConfig
+};
 
 export interface IGetRoutes {
   (
-    routes: IAppRouteConfig[] | undefined,
+    routes: IAppRouteConfigWithPrivateProps[],
     context: IApplicationCreaterContext
   ): IAppRouteConfig[];
 }
