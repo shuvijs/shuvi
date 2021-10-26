@@ -27,6 +27,7 @@ export type IReactServerView = Runtime.IViewServer<
   React.ComponentType,
   IReactAppData
 >;
+
 export type IReactClientView = Runtime.IViewClient<
   React.ComponentType,
   IReactAppData

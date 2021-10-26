@@ -28,6 +28,7 @@ import {
 import { ParsedQuery } from 'query-string';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Store } from '@shuvi/shared/lib/miniRedux';
+import { IAppState, IAppStore } from '@shuvi/platform-core';
 
 export {
   IAppPlugin,
@@ -135,7 +136,7 @@ export interface IClientRendererOptions<
   CompType = any,
   Data = {},
   Context = IApplicationCreaterClientContext,
-  Router = IRouter,
+  Router = IRouter<any>,
   appStore = Store
 > extends IRenderOptions<Context, Router, appStore> {
   router: Router;
@@ -216,33 +217,15 @@ export interface IApplicationCreaterContext {
   routeProps?: { [x: string]: any };
   [x: string]: any;
 }
+
 export interface IApplicationCreaterServerContext
   extends IApplicationCreaterContext {
   req: IRequest;
 }
-
 export interface IApplicationCreaterClientContext
   extends IApplicationCreaterContext {
   pageData: any;
   routeProps: { [x: string]: any };
-}
-
-export interface ApplicationCreater<appState = any> {
-  (
-    context: IApplicationCreaterContext,
-    options: {
-      render: IAppRenderFn<
-        IApplicationCreaterContext,
-        IRouter<IAppRouteConfig>,
-        Store<appState, any>
-      >;
-      appState?: appState;
-    }
-  ): IApplication;
-}
-
-export interface IApplicationModule<appState = any> {
-  create: ApplicationCreater<appState>;
 }
 
 export interface IDocumentModule {
@@ -273,4 +256,19 @@ export interface IServerModule {
 
 export interface IRuntime<CompType = unknown> {
   install(api: IApi): void;
+}
+
+export interface ApplicationCreater<
+  Context extends
+    | IApplicationCreaterClientContext
+    | IApplicationCreaterServerContext,
+  AppState extends IAppState = any
+> {
+  (
+    context: Context,
+    options: {
+      render: IAppRenderFn<Context, IRouter<IAppRouteConfig>, IAppStore>;
+      appState?: AppState;
+    }
+  ): IApplication;
 }

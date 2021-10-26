@@ -5,6 +5,7 @@ import { IRouter } from '@shuvi/router';
 export type IContext = {
   [x: string]: any;
 };
+
 export interface IApplication extends Hookable {
   AppComponent: any;
   router?: IRouter;
@@ -12,6 +13,7 @@ export interface IApplication extends Hookable {
   rerender(config?: IRerenderConfig): Promise<void>;
   dispose(): Promise<void>;
 }
+
 export interface IRenderOptions<Context, Router, AppStore> {
   AppComponent: any;
   router?: Router;
@@ -30,7 +32,7 @@ export type IRerenderConfig = {
 
 export interface IApplicationOptions<Context, Router, AppStore> {
   AppComponent: any;
-  router?: Router;
+  router: Router;
   context: Context;
   appStore: AppStore;
   render: IAppRenderFn<Context, Router, AppStore>;
@@ -45,7 +47,7 @@ export class Application<
   implements IApplication
 {
   AppComponent: any;
-  router?: Router;
+  router: Router;
   private _context: Context & IContext;
   private _appStore: AppStore;
   private _renderFn: IAppRenderFn<Context, Router, AppStore>;

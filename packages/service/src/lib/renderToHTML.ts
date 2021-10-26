@@ -8,7 +8,7 @@ export async function renderToHTML({
   api,
   onRedirect
 }: {
-  req: Partial<IRequest>;
+  req: IRequest;
   api: Api;
   onRedirect?(redirect: IRenderResultRedirect): void;
 }): Promise<{ html: string | null; appContext: any }> {

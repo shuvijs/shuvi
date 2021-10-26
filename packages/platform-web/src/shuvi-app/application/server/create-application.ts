@@ -3,14 +3,22 @@ import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 import { Application, getAppStore, IAppState } from '@shuvi/platform-core';
 import runPlugins from '@shuvi/platform-core/lib/runPlugins';
-import { createRouter, createMemoryHistory } from '@shuvi/router';
-import { Runtime } from '@shuvi/service';
+import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
+import { IAppRenderFn } from '@shuvi/runtime-core';
+import { Store } from '@shuvi/shared/lib/miniRedux';
 
-export const create: Runtime.ApplicationCreater<IAppState> = function (
-  context,
-  options
+export function create<
+  Context extends { req: any },
+  Router extends IRouter<any>,
+  AppState extends IAppState
+>(
+  context: Context,
+  options: {
+    render: IAppRenderFn<Context, Router, Store>;
+    appState?: AppState;
+  }
 ) {
-  const { req } = context as Runtime.IApplicationCreaterServerContext;
+  const { req } = context;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
@@ -19,7 +27,7 @@ export const create: Runtime.ApplicationCreater<IAppState> = function (
   const router = createRouter({
     history,
     routes: getRoutes(routes, context)
-  });
+  }) as Router;
 
   const appStore = getAppStore(options.appState);
 
@@ -33,4 +41,4 @@ export const create: Runtime.ApplicationCreater<IAppState> = function (
   runPlugins(app);
 
   return app;
-};
+}

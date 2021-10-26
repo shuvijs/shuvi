@@ -13,6 +13,8 @@ import { createRouter, IRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
 import { Runtime } from '@shuvi/service';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { Store } from '@shuvi/shared/lib/miniRedux';
+import { IAppRenderFn } from '@shuvi/runtime-core';
 declare let __SHUVI: any;
 let app: IApplication;
 let history: History;
@@ -20,9 +22,16 @@ let appContext: Runtime.IApplicationCreaterContext;
 let appRouter: IRouter<Runtime.IAppRouteConfig>;
 
 export const createFactory = (historyCreater: () => History) => {
-  const create: Runtime.ApplicationCreater<IAppState> = function (
-    context,
-    options
+  return function create<
+    Context,
+    Router extends IRouter<any>,
+    AppState extends IAppState
+  >(
+    context: Context,
+    options: {
+      render: IAppRenderFn<Context, Router, Store>;
+      appState?: AppState;
+    }
   ) {
     // app is a singleton in client side
     if (app) {
@@ -33,7 +42,7 @@ export const createFactory = (historyCreater: () => History) => {
     const router = createRouter({
       history,
       routes: getRoutes(routes, context)
-    });
+    }) as Router;
     router.afterEach(_current => {
       if (!_current.matches) {
         getErrorHandler(getAppStore()).errorHandler(
@@ -46,7 +55,6 @@ export const createFactory = (historyCreater: () => History) => {
     app = new Application({
       AppComponent,
       router,
-      // router: (router as unknown as any),
       appStore,
       context,
       render: options.render
@@ -55,7 +63,6 @@ export const createFactory = (historyCreater: () => History) => {
 
     return app;
   };
-  return create;
 };
 
 if (module.hot) {

@@ -6,7 +6,8 @@ import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
 import {
-  IApplicationModule,
+  IApplicationCreaterServerContext,
+  ApplicationCreater,
   IDocumentModule,
   IServerModule,
   IViewServer
@@ -180,7 +181,9 @@ export type IBuiltResource = {
   server: {
     server: IServerModule;
     apiRoutes: IApiRouteConfig[];
-    application: IApplicationModule;
+    application: {
+      create: ApplicationCreater<IApplicationCreaterServerContext>;
+    };
     document: Partial<IDocumentModule>;
     view: IViewServer;
   };
