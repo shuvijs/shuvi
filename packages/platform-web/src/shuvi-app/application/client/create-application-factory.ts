@@ -6,7 +6,8 @@ import {
   IApplication,
   getAppStore,
   getErrorHandler,
-  IAppState
+  IAppState,
+  IAppRenderFn
 } from '@shuvi/platform-core';
 import runPlugins from '@shuvi/platform-core/lib/runPlugins';
 import { createRouter, IRouter } from '@shuvi/router';
@@ -14,7 +15,6 @@ import { History } from '@shuvi/router/lib/types';
 import { Runtime } from '@shuvi/service';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Store } from '@shuvi/shared/lib/miniRedux';
-import { IAppRenderFn } from '@shuvi/runtime-core';
 declare let __SHUVI: any;
 let app: IApplication;
 let history: History;
@@ -38,7 +38,6 @@ export const createFactory = (historyCreater: () => History) => {
       return app;
     }
     history = historyCreater();
-    const appStore = getAppStore(options.appState);
     const router = createRouter({
       history,
       routes: getRoutes(routes, context)
@@ -55,8 +54,8 @@ export const createFactory = (historyCreater: () => History) => {
     app = new Application({
       AppComponent,
       router,
-      appStore,
       context,
+      appState: options.appState,
       render: options.render
     });
     runPlugins(app);

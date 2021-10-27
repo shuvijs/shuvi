@@ -35,6 +35,15 @@ export enum SHUVI_ERROR_CODE {
   PAGE_NOT_FOUND = 404 //  对应 server 端的 404
 }
 
+export const DEFAULT_ERROR_MESSAGE = {
+  [SHUVI_ERROR_CODE.APP_ERROR]: {
+    errorDesc: 'Internal Server Error.'
+  },
+  [SHUVI_ERROR_CODE.PAGE_NOT_FOUND]: {
+    errorDesc: 'This page could not be found.'
+  }
+};
+
 // bundle
 export const BUNDLER_TARGET_CLIENT = `${NAME}/client`;
 

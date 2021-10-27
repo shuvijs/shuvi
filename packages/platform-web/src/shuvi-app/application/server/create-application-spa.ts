@@ -1,4 +1,4 @@
-import { Application, getAppStore, IAppState } from '@shuvi/platform-core';
+import { Application, IAppState } from '@shuvi/platform-core';
 import { IRouter } from '@shuvi/router';
 import { IAppRenderFn } from '@shuvi/runtime-core';
 import { Store } from '@shuvi/shared/lib/miniRedux';
@@ -14,13 +14,12 @@ export function create<
     appState?: AppState;
   }
 ) {
-  const appStore = getAppStore();
   const router = undefined;
   return new Application({
     AppComponent: null,
     context,
     router: router as never,
-    appStore,
+    appState: options.appState,
     render: options.render
   });
 }

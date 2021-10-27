@@ -9,7 +9,7 @@ import {
 } from '@shuvi/shared/lib/constants';
 import setRuntimeConfig from '@shuvi/app/core/setRuntimeConfig';
 import runtimeConfig from '@shuvi/app/core/runtimeConfig';
-import { getAppData } from '@shuvi/platform-core/lib/helper';
+import { getAppData } from '@shuvi/platform-core';
 // === set public path ===
 declare let __webpack_public_path__: string;
 

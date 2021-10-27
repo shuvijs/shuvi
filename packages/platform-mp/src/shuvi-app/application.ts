@@ -1,8 +1,7 @@
 import AppComponent from '@shuvi/app/core/app';
-import { Application, getAppStore, IAppState } from '@shuvi/platform-core';
+import { Application, IAppState, IAppRenderFn } from '@shuvi/platform-core';
 import runPlugins from '@shuvi/platform-core/lib/runPlugins';
 import { IRouter } from '@shuvi/router';
-import { IAppRenderFn } from '@shuvi/runtime-core';
 import { Store } from '@shuvi/shared/lib/miniRedux';
 
 export function create<
@@ -16,13 +15,12 @@ export function create<
     appState?: AppState;
   }
 ) {
-  const appStore = getAppStore();
   const router = undefined;
   const app = new Application({
     AppComponent,
     context,
     router: router as never,
-    appStore,
+    appState: options.appState,
     render: options.render
   });
   runPlugins(app);

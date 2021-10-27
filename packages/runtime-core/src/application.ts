@@ -1,6 +1,8 @@
 import * as AppHooks from './hooks';
 import { Hookable } from '@shuvi/hook';
 import { IRouter } from '@shuvi/router';
+import { IAppStore, IAppState, getAppStore } from './appStore';
+import { Store } from '@shuvi/shared/lib/miniRedux';
 
 export type IContext = {
   [x: string]: any;
@@ -30,18 +32,18 @@ export type IRerenderConfig = {
   AppComponent?: any;
 };
 
-export interface IApplicationOptions<Context, Router, AppStore> {
+export interface IApplicationOptions<Context, Router, AppState> {
   AppComponent: any;
   router: Router;
   context: Context;
-  appStore: AppStore;
-  render: IAppRenderFn<Context, Router, AppStore>;
+  appState: AppState;
+  render: IAppRenderFn<Context, Router, Store>;
 }
 
 export class Application<
     Context extends {},
     Router extends IRouter = IRouter,
-    AppStore = any
+    AppState extends IAppState | undefined = undefined
   >
   extends Hookable
   implements IApplication
@@ -49,15 +51,15 @@ export class Application<
   AppComponent: any;
   router: Router;
   private _context: Context & IContext;
-  private _appStore: AppStore;
-  private _renderFn: IAppRenderFn<Context, Router, AppStore>;
+  private _appStore: IAppStore;
+  private _renderFn: IAppRenderFn<Context, Router, IAppStore>;
 
-  constructor(options: IApplicationOptions<Context, Router, AppStore>) {
+  constructor(options: IApplicationOptions<Context, Router, AppState>) {
     super();
     this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;
-    this._appStore = options.appStore;
+    this._appStore = getAppStore(options.appState);
     this._renderFn = options.render;
   }
 

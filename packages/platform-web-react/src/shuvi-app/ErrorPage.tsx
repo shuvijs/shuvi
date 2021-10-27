@@ -1,5 +1,6 @@
 import React from 'react';
-import { IAppState, DEFAULT_ERROR_MESSAGE } from '@shuvi/platform-core';
+import { IAppState } from '@shuvi/platform-core';
+import { DEFAULT_ERROR_MESSAGE } from '@shuvi/shared/lib/constants';
 import error from './Error';
 // @ts-ignore
 import userError from '@shuvi/app/core/error';

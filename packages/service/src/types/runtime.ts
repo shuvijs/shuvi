@@ -28,7 +28,7 @@ import {
 import { ParsedQuery } from 'query-string';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Store } from '@shuvi/shared/lib/miniRedux';
-import { IAppState, IAppStore } from '@shuvi/platform-core';
+import { IAppState, IAppStore } from '@shuvi/runtime-core';
 
 export {
   IAppPlugin,

@@ -1,5 +1,9 @@
-import { IAppRenderFn, IApplication } from '@shuvi/runtime-core';
-import { IAppState, IAppStore } from '@shuvi/platform-core';
+import {
+  IAppRenderFn,
+  IApplication,
+  IAppState,
+  IAppStore
+} from '@shuvi/runtime-core';
 import { IRouter } from '@shuvi/router';
 import { IAppRouteConfig } from '@shuvi/service/lib/api';
 import { Runtime } from '@shuvi/service';
