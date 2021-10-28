@@ -5,12 +5,13 @@ import { IRouter } from '@shuvi/router';
 
 export function create<
   Context extends { req: any },
-  Router extends IRouter<any>,
+  Router extends IRouter,
+  CompType,
   AppState extends IAppState
 >(
   context: Context,
   options: {
-    render: IAppRenderFn<Context, never>;
+    render: IAppRenderFn<Context, never, CompType>;
     appState?: AppState;
   }
 ) {

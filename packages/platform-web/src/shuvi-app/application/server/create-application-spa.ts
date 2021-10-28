@@ -8,7 +8,8 @@ import { IRouter } from '@shuvi/router';
 
 export function create<
   Context extends IApplicationCreaterServerContext,
-  Router extends IRouter<any>,
+  Router extends IRouter,
+  CompType,
   AppState extends IAppState
 >(
   context: Context,

@@ -25,11 +25,12 @@ export const createFactory = (historyCreater: () => History) => {
   return function create<
     Context extends IApplicationCreaterClientContext,
     Router extends IRouter<IAppRouteConfig>,
+    CompType,
     AppState extends IAppState
   >(
     context: Context,
     options: {
-      render: IAppRenderFn<Context, Router>;
+      render: IAppRenderFn<Context, Router, CompType>;
       appState?: AppState;
     }
   ) {

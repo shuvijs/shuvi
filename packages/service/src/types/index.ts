@@ -68,16 +68,16 @@ export type IRenderAppResult<Data = {}> = {
 
 export interface IServerRendererOptions<
   CompType = any,
-  Router extends IRouter<any> = IRouter<any>
-> extends IRenderOptions<IApplicationCreaterServerContext, Router> {
+  Router extends IRouter = IRouter
+> extends IRenderOptions<IApplicationCreaterServerContext, Router, CompType> {
   router: Router;
   manifest: IManifest;
   getAssetPublicUrl(path: string): string;
 }
 
-export interface IViewServer<CompType = any, Data = {}>
+export interface IViewServer<CompType = any, Data = {}, Router extends IRouter = IRouter>
   extends IView<
-    IServerRendererOptions<CompType, IRouter<any>>,
+    IServerRendererOptions<CompType, Router>,
     Promise<IRenderAppResult<Data>>
   > {}
 

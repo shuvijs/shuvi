@@ -28,12 +28,14 @@ export type IApplicationCreaterContext =
 
 export interface ApplicationCreater<
   Context extends IApplicationCreaterContext,
-  AppState extends IAppState = any
-> {
+  Router extends IRouter = IRouter,
+  CompType = any,
+  AppState extends IAppState = any,
+  > {
   (
     context: Context,
     options: {
-      render: IAppRenderFn<Context, IRouter>;
+      render: IAppRenderFn<Context, Router, CompType>;
       appState?: AppState;
     }
   ): IApplication;
@@ -51,8 +53,8 @@ export interface IApplication extends Hookable {
   dispose(): Promise<void>;
 }
 
-export interface IRenderOptions<Context, Router extends IRouter> {
-  AppComponent: any;
+export interface IRenderOptions<Context, Router extends IRouter, CompType = any> {
+  AppComponent: CompType;
   router?: Router;
   appContext: Context;
   appStore: IAppStore;
@@ -69,8 +71,8 @@ export interface IView<
   renderApp(options: RenderOption): RenderResult;
 }
 
-export interface IAppRenderFn<Context, Router extends IRouter> {
-  (options: IRenderOptions<Context, Router>): Promise<any>;
+export interface IAppRenderFn<Context, Router extends IRouter, CompType = any> {
+  (options: IRenderOptions<Context, Router, CompType>): Promise<any>;
 }
 
 export type IRerenderConfig = {

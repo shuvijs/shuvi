@@ -65,14 +65,14 @@ interface IClientRendererOptions<
   CompType = any,
   Data = {},
   Router extends IRouter<any> = IRouter<any>
-> extends IRenderOptions<IApplicationCreaterClientContext, Router> {
+> extends IRenderOptions<IApplicationCreaterClientContext, Router, CompType> {
   router: Router;
   appContainer: HTMLElement;
   appData: IAppData<Data>;
 }
 
-export interface IViewClient<CompType = any, Data = {}>
-  extends IView<IClientRendererOptions<CompType, Data, IRouter<any>>> {}
+export interface IViewClient<CompType = any, Data = {}, Router extends IRouter = IRouter>
+  extends IView<IClientRendererOptions<CompType, Data, Router>> {}
 
 export interface IRouteComponentContext {
   isServer: boolean;

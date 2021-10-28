@@ -14,11 +14,12 @@ import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 export function create<
   Context extends IApplicationCreaterServerContext,
   Router extends IRouter<IAppRouteConfig>,
+  CompType,
   AppState extends IAppState
 >(
   context: Context,
   options: {
-    render: IAppRenderFn<Context, Router>;
+    render: IAppRenderFn<Context, Router, CompType>;
     appState?: AppState;
   }
 ) {
