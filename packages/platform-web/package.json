@@ -37,7 +37,9 @@
     "@shuvi/app": "0.0.1-pre.9",
     "@shuvi/platform-core": "0.0.1-pre.9",
     "@shuvi/platform-web-react": "0.0.1-pre.9",
+    "@shuvi/router": "0.0.1-pre.9",
     "@shuvi/service": "0.0.1-pre.9",
-    "@shuvi/shared": "0.0.1-pre.9"
+    "@shuvi/shared": "0.0.1-pre.9",
+    "@shuvi/toolpack": "0.0.1-pre.9"
   }
 }
