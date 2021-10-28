@@ -1,11 +1,12 @@
 // import React from 'react';
-import { IApi, Runtime } from '@shuvi/service';
+import { IApi } from '@shuvi/service';
+import { IRuntime } from '@shuvi/platform-core';
 
-const platform: Runtime.IRuntime<any> = {
+const platform: IRuntime = {
   async install(api: IApi): Promise<void> {
     const { target = 'bmp' } = api.config.platform || {};
-    const PlatformConstructor: Runtime.IRuntime = require(`./targets/${target}`)
-      .default;
+    const PlatformConstructor: IRuntime =
+      require(`./targets/${target}`).default;
     //@ts-ignore
     const runtime = new PlatformConstructor(api);
     runtime.install();

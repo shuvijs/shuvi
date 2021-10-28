@@ -1,5 +1,6 @@
 import path from 'path';
-import { IApi, APIHooks, Runtime } from '@shuvi/service';
+import { IApi, APIHooks } from '@shuvi/service';
+import { IUserRouteConfig } from '@shuvi/service/lib/types/index';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
@@ -152,11 +153,11 @@ export default abstract class PlatformMpBase {
       name: 'mpPathToRoutes',
       fn: async routes => {
         type IUserRouteHandlerWithoutChildren = Omit<
-          Runtime.IUserRouteConfig,
+          IUserRouteConfig,
           'children'
         >;
         type IUserRouteHandlerOtherData = Omit<
-          Runtime.IUserRouteConfig,
+          IUserRouteConfig,
           'children' | 'path' | 'component'
         >;
         // map url to component
@@ -166,7 +167,7 @@ export default abstract class PlatformMpBase {
         const routesName = new Set<string>();
         // flatten routes remove children
         function flattenRoutes(
-          apiRoutes: Runtime.IUserRouteConfig[],
+          apiRoutes: IUserRouteConfig[],
           branches: IUserRouteHandlerWithoutChildren[] = [],
           parentPath = ''
         ): IUserRouteHandlerWithoutChildren[] {

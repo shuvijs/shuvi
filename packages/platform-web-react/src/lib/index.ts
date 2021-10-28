@@ -1,9 +1,9 @@
-import React from 'react';
-import { IApi, Runtime } from '@shuvi/service';
+import { IApi } from '@shuvi/service';
+import { IRuntime } from '@shuvi/platform-core';
 import { resolveAppFile, resolveDep, resolveLib } from './paths';
 import { config as configBundler } from './bundler/config';
 
-class ReactRuntime implements Runtime.IRuntime<React.ComponentType<any>> {
+class ReactRuntime implements IRuntime {
   _api!: IApi;
   async install(api: IApi): Promise<void> {
     this._api = api;

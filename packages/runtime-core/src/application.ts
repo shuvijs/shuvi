@@ -1,8 +1,43 @@
-import * as AppHooks from './hooks';
+import { IncomingMessage } from 'http';
 import { Hookable } from '@shuvi/hook';
 import { IRouter } from '@shuvi/router';
+
+import * as AppHooks from './hooks';
 import { IAppStore, IAppState, getAppStore } from './appStore';
-import { Store } from '@shuvi/shared/lib/miniRedux';
+
+export interface IApplicationCreaterBase {
+  routeProps?: { [x: string]: any };
+  [x: string]: any;
+}
+
+export interface IApplicationCreaterServerContext
+  extends IApplicationCreaterBase {
+  req: IncomingMessage & {
+    [x: string]: any;
+  };
+}
+export interface IApplicationCreaterClientContext
+  extends IApplicationCreaterBase {
+  pageData: any;
+  routeProps: { [x: string]: any };
+}
+
+export type IApplicationCreaterContext =
+  | IApplicationCreaterClientContext
+  | IApplicationCreaterServerContext;
+
+export interface ApplicationCreater<
+  Context extends IApplicationCreaterContext,
+  AppState extends IAppState = any
+> {
+  (
+    context: Context,
+    options: {
+      render: IAppRenderFn<Context, IRouter>;
+      appState?: AppState;
+    }
+  ): IApplication;
+}
 
 export type IContext = {
   [x: string]: any;
@@ -16,32 +51,46 @@ export interface IApplication extends Hookable {
   dispose(): Promise<void>;
 }
 
-export interface IRenderOptions<Context, Router, AppStore> {
+export interface IRenderOptions<Context, Router extends IRouter> {
   AppComponent: any;
   router?: Router;
   appContext: Context;
-  appStore: AppStore;
+  appStore: IAppStore;
   render?: (renderAppToString: () => string, appContext: any) => string;
 }
 
-export interface IAppRenderFn<Context, Router, AppStore> {
-  (options: IRenderOptions<Context, Router, AppStore>): Promise<any>;
+export interface IView<
+  RenderOption extends IRenderOptions<
+    IApplicationCreaterContext,
+    IRouter
+  > = any,
+  RenderResult = void
+> {
+  renderApp(options: RenderOption): RenderResult;
+}
+
+export interface IAppRenderFn<Context, Router extends IRouter> {
+  (options: IRenderOptions<Context, Router>): Promise<any>;
 }
 
 export type IRerenderConfig = {
   AppComponent?: any;
 };
 
-export interface IApplicationOptions<Context, Router, AppState> {
+export interface IApplicationOptions<
+  Context extends IApplicationCreaterContext,
+  Router extends IRouter,
+  AppState extends IAppState | undefined
+> {
   AppComponent: any;
   router: Router;
   context: Context;
   appState: AppState;
-  render: IAppRenderFn<Context, Router, Store>;
+  render: IAppRenderFn<Context, Router>;
 }
 
 export class Application<
-    Context extends {},
+    Context extends IApplicationCreaterContext,
     Router extends IRouter = IRouter,
     AppState extends IAppState | undefined = undefined
   >
@@ -52,7 +101,7 @@ export class Application<
   router: Router;
   private _context: Context & IContext;
   private _appStore: IAppStore;
-  private _renderFn: IAppRenderFn<Context, Router, IAppStore>;
+  private _renderFn: IAppRenderFn<Context, Router>;
 
   constructor(options: IApplicationOptions<Context, Router, AppState>) {
     super();

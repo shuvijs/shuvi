@@ -2,7 +2,6 @@ import AppComponent from '@shuvi/app/core/app';
 import { Application, IAppState, IAppRenderFn } from '@shuvi/platform-core';
 import runPlugins from '@shuvi/platform-core/lib/runPlugins';
 import { IRouter } from '@shuvi/router';
-import { Store } from '@shuvi/shared/lib/miniRedux';
 
 export function create<
   Context extends { req: any },
@@ -11,7 +10,7 @@ export function create<
 >(
   context: Context,
   options: {
-    render: IAppRenderFn<Context, never, Store>;
+    render: IAppRenderFn<Context, never>;
     appState?: AppState;
   }
 ) {

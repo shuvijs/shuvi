@@ -1,11 +1,25 @@
 /// <reference lib="dom" />
-
-import { Runtime } from '@shuvi/service';
 import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 
-let appData: Runtime.IAppData | null = null;
+export type IData = {
+  [k: string]: string | number | boolean | undefined | null;
+};
 
-export function getAppData(): Runtime.IAppData {
+export type IAppData<Data = {}, appState = any> = {
+  ssr: boolean;
+  runtimeConfig?: Record<string, string>;
+  pageData?: {
+    [key: string]: any;
+  };
+  routeProps?: { [x: string]: any };
+  appState?: appState;
+} & {
+  [K in keyof Data]: Data[K];
+};
+
+let appData: IAppData | null = null;
+
+export function getAppData(): IAppData {
   if (appData) {
     return appData;
   }

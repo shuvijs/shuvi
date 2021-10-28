@@ -1,10 +1,15 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { Runtime } from '@shuvi/service';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector, IParams } from '@shuvi/router';
-import { getErrorHandler } from '@shuvi/platform-core';
+import {
+  getErrorHandler,
+  IAppComponent,
+  IRouteComponent,
+  IHtmlTag,
+  IAppRouteConfig
+} from '@shuvi/platform-core';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
@@ -12,10 +17,6 @@ import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
 import { AppStore } from '../AppStore';
-
-import IAppComponent = Runtime.IAppComponent;
-import IRouteComponent = Runtime.IRouteComponent;
-import IHtmlTag = Runtime.IHtmlTag;
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -55,7 +56,7 @@ export class ReactServerView implements IReactServerView {
     const params: IParams = {};
     for (let index = 0; index < matches.length; index++) {
       const matchedRoute = matches[index];
-      const appRoute = matchedRoute.route as Runtime.IAppRouteConfig;
+      const appRoute = matchedRoute.route as IAppRouteConfig;
       const comp = appRoute.component as
         | IRouteComponent<React.Component, any>
         | undefined;

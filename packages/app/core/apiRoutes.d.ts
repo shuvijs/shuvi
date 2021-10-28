@@ -1,5 +1,5 @@
-import { Runtime } from '@shuvi/service';
+import { IApiRouteConfig } from '@shuvi/service/lib/api';
 
-declare const apiRoutes: Runtime.IApiRouteConfig[];
+declare const apiRoutes: IApiRouteConfig[];
 
 export default apiRoutes;

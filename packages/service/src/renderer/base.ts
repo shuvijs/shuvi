@@ -1,12 +1,13 @@
 import * as APIHooks from '../types/hooks';
+import { IAppData } from '@shuvi/runtime-core';
+import { IHtmlTag } from '@shuvi/platform-core';
 
 import {
-  IAppData,
   IDocumentProps,
-  IHtmlTag,
   IRenderResultRedirect,
   ITemplateData
-} from '../types/runtime';
+} from '../types/index';
+
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {

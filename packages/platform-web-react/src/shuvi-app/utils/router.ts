@@ -1,14 +1,18 @@
-import { Runtime } from '@shuvi/service';
 import { createRedirector } from '@shuvi/router';
-import { getErrorHandler, getAppStore } from '@shuvi/platform-core';
+import {
+  getErrorHandler,
+  getAppStore,
+  IRouteComponentContext,
+  IAppRouteConfig,
+  IApplicationCreaterBase
+} from '@shuvi/platform-core';
 import { createError } from './createError';
 
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = Runtime.IApplicationCreaterContext;
+export type INormalizeRoutesContext = IApplicationCreaterBase;
 
-type IAppRouteWithElement = Runtime.IAppRouteConfig & { element?: any };
-type IRouteComponentContext = Runtime.IRouteComponentContext;
+type IAppRouteWithElement = IAppRouteConfig & { element?: any };
 
 let hydrated: { [x: string]: boolean } = {};
 
@@ -17,7 +21,7 @@ export function resetHydratedState() {
 }
 
 export function normalizeRoutes(
-  routes: Runtime.IAppRouteConfig[] | undefined,
+  routes: IAppRouteConfig[] | undefined,
   appContext: INormalizeRoutesContext = {}
 ): IAppRouteWithElement[] {
   const { routeProps = {} } = appContext;
@@ -25,7 +29,7 @@ export function normalizeRoutes(
     return [] as IAppRouteWithElement[];
   }
 
-  return routes.map((route: Runtime.IAppRouteConfig) => {
+  return routes.map((route: IAppRouteConfig) => {
     const res: IAppRouteWithElement = {
       ...route
     };

@@ -8,13 +8,4 @@ export {
   IErrorHandler,
   getErrorHandler
 } from './appStore';
-export { getAppData, getPageData } from './helper';
-
-type Foo<A> = {
-  //look the above 'A' is conflicting with the below 'A'
-  map: <B>(f: (_: A) => B) => Foo<B>;
-};
-
-const makeFoo = <A>(a: A): Foo<A> => ({
-  map: f => makeFoo(f(a)) //error!
-});
+export { IData, IAppData, getAppData, getPageData } from './helper';

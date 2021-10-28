@@ -1,5 +1,4 @@
-import { IAppData, IData } from '../types/runtime';
-import { AppHooks } from '@shuvi/runtime-core';
+import { AppHooks, IAppData, IData } from '@shuvi/runtime-core';
 import { IRouter } from '@shuvi/router';
 import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '../constants';
 import getRuntimeConfig from '../lib/runtimeConfig';

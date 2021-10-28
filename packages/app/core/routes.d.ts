@@ -1,5 +1,5 @@
-import { Runtime } from '@shuvi/service';
+import { IAppRouteConfigWithPrivateProps } from '@shuvi/platform-core';
 
-declare const routes: Runtime.IAppRouteConfigWithPrivateProps[];
+declare const routes: IAppRouteConfigWithPrivateProps[];
 
 export default routes;

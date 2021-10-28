@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector } from '@shuvi/router';
-import { getErrorHandler } from '@shuvi/platform-core';
-import { Runtime } from '@shuvi/service';
+import { getErrorHandler, IAppComponent } from '@shuvi/platform-core';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
@@ -40,7 +39,7 @@ export class ReactClientView implements IReactClientView {
     const error = getErrorHandler(appStore);
 
     const TypedAppComponent =
-      AppComponent as Runtime.IAppComponent<React.ComponentType>;
+      AppComponent as IAppComponent<React.ComponentType>;
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else {

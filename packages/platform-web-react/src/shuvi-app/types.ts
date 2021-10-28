@@ -1,5 +1,10 @@
-import { Runtime } from '@shuvi/service';
-import { IAppState } from '@shuvi/platform-core';
+import {
+  IAppState,
+  IAppComponent as PlatformAppComponent,
+  IRouteComponent as PlatformRouteComponent,
+  IViewClient,
+  IViewServer
+} from '@shuvi/platform-core';
 
 export type IReactAppData = {
   appProps?: Record<string, any>;
@@ -19,16 +24,10 @@ export type IRouteProps = {
   [x: string]: any;
 };
 
-export type IAppComponent = Runtime.IAppComponent<React.Component, any>;
+export type IAppComponent = PlatformAppComponent<React.Component, any>;
 
-export type IRouteComponent = Runtime.IRouteComponent<React.Component, any>;
+export type IRouteComponent = PlatformRouteComponent<React.Component, any>;
 
-export type IReactServerView = Runtime.IViewServer<
-  React.ComponentType,
-  IReactAppData
->;
+export type IReactServerView = IViewServer<React.ComponentType, IReactAppData>;
 
-export type IReactClientView = Runtime.IViewClient<
-  React.ComponentType,
-  IReactAppData
->;
+export type IReactClientView = IViewClient<React.ComponentType, IReactAppData>;

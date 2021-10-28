@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@shuvi/router": "0.0.1-pre.9",
-    "@shuvi/service": "0.0.1-pre.9"
+    "@shuvi/platform-core": "0.0.1-pre.9"
   },
   "devDependencies": {
     "@types/react": "^16.9.43",

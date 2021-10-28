@@ -17,6 +17,7 @@ export interface IRequest extends IIncomingMessage {
   params: IParams;
   headers: IncomingHttpHeaders;
 }
+
 export interface IResponse extends ServerResponse {}
 
 export type IRequestHandler = (req: IRequest, res: IResponse) => void;

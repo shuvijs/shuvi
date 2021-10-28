@@ -1,4 +1,4 @@
-import { Application } from '../application';
+import { Application, IApplicationCreaterContext } from '../application';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 
 /**
@@ -13,7 +13,7 @@ function getApp({ render }: any = {}) {
   const app = new Application({
     context: {
       test: true
-    },
+    } as unknown as IApplicationCreaterContext,
     AppComponent: {},
     router: createRouter({
       history: createMemoryHistory(),

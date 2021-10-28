@@ -7,29 +7,29 @@ import {
   getAppStore,
   getErrorHandler,
   IAppState,
-  IAppRenderFn
+  IAppRenderFn,
+  IApplicationCreaterClientContext,
+  IAppRouteConfig
 } from '@shuvi/platform-core';
 import runPlugins from '@shuvi/platform-core/lib/runPlugins';
 import { createRouter, IRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
-import { Runtime } from '@shuvi/service';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { Store } from '@shuvi/shared/lib/miniRedux';
 declare let __SHUVI: any;
 let app: IApplication;
 let history: History;
-let appContext: Runtime.IApplicationCreaterContext;
-let appRouter: IRouter<Runtime.IAppRouteConfig>;
+let appContext: IApplicationCreaterClientContext;
+let appRouter: IRouter<IAppRouteConfig>;
 
 export const createFactory = (historyCreater: () => History) => {
   return function create<
-    Context,
-    Router extends IRouter<any>,
+    Context extends IApplicationCreaterClientContext,
+    Router extends IRouter<IAppRouteConfig>,
     AppState extends IAppState
   >(
     context: Context,
     options: {
-      render: IAppRenderFn<Context, Router, Store>;
+      render: IAppRenderFn<Context, Router>;
       appState?: AppState;
     }
   ) {
