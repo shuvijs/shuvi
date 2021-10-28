@@ -34,6 +34,7 @@
     "@binance/mp-components": "^1.0.1",
     "@shuvi/app": "0.0.1-pre.9",
     "@shuvi/platform-core": "0.0.1-pre.9",
+    "@shuvi/router": "0.0.1-pre.9",
     "@shuvi/router-mp": "0.0.1-pre.9",
     "@shuvi/service": "0.0.1-pre.9",
     "@shuvi/shared": "0.0.1-pre.9",
