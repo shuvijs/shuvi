@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/runtime-core",
-  "version": "0.0.1-pre.9",
+  "version": "0.0.1-pre.10",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -29,9 +29,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/hook": "0.0.1-pre.9",
-    "@shuvi/router": "0.0.1-pre.9",
-    "@shuvi/shared": "0.0.1-pre.9"
+    "@shuvi/hook": "0.0.1-pre.10",
+    "@shuvi/router": "0.0.1-pre.10",
+    "@shuvi/shared": "0.0.1-pre.10"
   },
   "devDependencies": {
     "@types/webpack-env": "^1.16.2"
