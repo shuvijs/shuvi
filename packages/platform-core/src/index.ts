@@ -1,29 +1,24 @@
 import { ParsedQuery } from 'query-string';
-import {
-  IParams,
-  IRedirectFn,
-  IRedirectState,
-  IRouter,
-  IRouteRecord
-} from '@shuvi/router';
+import { IParams, IRedirectFn, IRouter, IRouteRecord } from '@shuvi/router';
+
 import {
   IAppData,
   IApplicationCreaterContext,
   IApplicationCreaterClientContext,
-  IApplicationCreaterServerContext,
   IRenderOptions,
   IErrorHandler,
   IView
 } from '@shuvi/runtime-core';
 
-import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-import { IApi } from '@shuvi/service';
+export {
+  IRuntime,
+  IViewServer,
+  IUserRouteConfig,
+  IHtmlAttrs,
+  IHtmlTag
+} from '@shuvi/service/lib/types/index';
 
 export type IQuery = ParsedQuery;
-
-export interface IRuntime {
-  install(api: IApi): void;
-}
 
 export {
   IData,
@@ -41,29 +36,6 @@ export {
   IApplicationCreaterClientContext,
   IApplicationCreaterServerContext
 } from '@shuvi/runtime-core';
-
-export type IRenderAppResult<Data = {}> = {
-  htmlAttrs?: IHtmlAttrs;
-  headBeginTags?: IHtmlTag[];
-  headEndTags?: IHtmlTag[];
-  mainBeginTags?: IHtmlTag[];
-  mainEndTags?: IHtmlTag[];
-  scriptBeginTags?: IHtmlTag[];
-  scriptEndTags?: IHtmlTag[];
-  appData?: Data;
-  appHtml?: string;
-  redirect?: IRedirectState;
-};
-
-interface IClientRendererOptions<
-  CompType = any,
-  Data = {},
-  Router extends IRouter<any> = IRouter<any>
-> extends IRenderOptions<IApplicationCreaterClientContext, Router> {
-  router: Router;
-  appContainer: HTMLElement;
-  appData: IAppData<Data>;
-}
 
 export interface IAppRouteConfig extends IRouteRecord {
   id: string;
@@ -89,17 +61,18 @@ export interface IAppRouteConfigWithPrivateProps extends IRouteRecord {
   [x: string]: any;
 }
 
+interface IClientRendererOptions<
+  CompType = any,
+  Data = {},
+  Router extends IRouter<any> = IRouter<any>
+> extends IRenderOptions<IApplicationCreaterClientContext, Router> {
+  router: Router;
+  appContainer: HTMLElement;
+  appData: IAppData<Data>;
+}
+
 export interface IViewClient<CompType = any, Data = {}>
   extends IView<IClientRendererOptions<CompType, Data, IRouter<any>>> {}
-
-export interface IServerRendererOptions<
-  CompType = any,
-  Router extends IRouter<any> = IRouter<any>
-> extends IRenderOptions<IApplicationCreaterServerContext, Router> {
-  router: Router;
-  manifest: IManifest;
-  getAssetPublicUrl(path: string): string;
-}
 
 export interface IRouteComponentContext {
   isServer: boolean;
@@ -122,19 +95,3 @@ export type IAppComponent<C, P = {}> = C & {
 export type IRouteComponent<C, P = {}> = C & {
   getInitialProps?(context: IRouteComponentContext): P | Promise<P>;
 };
-
-export interface IViewServer<CompType = any, Data = {}>
-  extends IView<
-    IServerRendererOptions<CompType, IRouter<any>>,
-    Promise<IRenderAppResult<Data>>
-  > {}
-
-export type IHtmlAttrs = { textContent?: string } & {
-  [x: string]: string | number | undefined | boolean;
-};
-
-export interface IHtmlTag<TagNames = string> {
-  tagName: TagNames;
-  attrs: IHtmlAttrs;
-  innerHTML?: string;
-}

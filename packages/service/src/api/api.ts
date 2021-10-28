@@ -11,7 +11,7 @@ import {
 } from './types';
 import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 import * as APIHooks from '../types/hooks';
-import { IRuntime } from '@shuvi/platform-core';
+import { IRuntime } from '../types/index';
 import { IServerMiddlewareItem } from '../types/server';
 import {
   IServerMiddleware,

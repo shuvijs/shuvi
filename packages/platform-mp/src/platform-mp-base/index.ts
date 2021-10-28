@@ -1,6 +1,6 @@
 import path from 'path';
 import { IApi, APIHooks } from '@shuvi/service';
-import { IUserRouteConfig } from '@shuvi/service/lib/types/index';
+import { IUserRouteConfig } from '@shuvi/platform-core';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';

@@ -7,8 +7,7 @@ import {
 import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
-import { IViewServer } from '@shuvi/platform-core';
-import { IDocumentModule, IServerModule } from '../types/index';
+import { IDocumentModule, IServerModule, IViewServer } from '../types/index';
 
 import { IServerMiddleware } from './serverMiddleware';
 

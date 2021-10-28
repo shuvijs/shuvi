@@ -1,4 +1,4 @@
-import { IRuntime } from '@shuvi/platform-core';
+import { IRuntime } from '../types/index';
 
 export default function (platform: string | undefined): IRuntime {
   const platformName = `@shuvi/platform-${platform}`;
