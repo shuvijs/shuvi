@@ -60,8 +60,8 @@ export async function setupApp(api: Api) {
       ...withExts(api.resolveUserFile('app'), moduleFileExtensions),
       require.resolve('@shuvi/utils/lib/nullish')
     ],
-    '404': [
-      ...withExts(api.resolveUserFile('404'), moduleFileExtensions),
+    error: [
+      ...withExts(api.resolveUserFile('error'), moduleFileExtensions),
       require.resolve('@shuvi/utils/lib/nullish')
     ],
     plugin: [
@@ -96,7 +96,7 @@ export async function setupApp(api: Api) {
       ? JSON.stringify(getPublicRuntimeConfig(config.runtimeConfig || {}))
       : null
   );
-  api.addAppExport('@shuvi/service/lib/types/runtime', '* as Runtime');
+  api.addAppExport('@shuvi/platform-core', '* as Runtime');
   api.addAppExport('@shuvi/runtime-core/lib/hooks', '* as AppHooks');
   api.addAppExport('@shuvi/router', '{ matchRoutes }');
 

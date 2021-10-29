@@ -14,6 +14,7 @@ import { IRouterProps } from './types';
  * router that is more specific to your environment such as a <BrowserRouter>
  * in web browsers or a <StaticRouter> for server rendering.
  */
+
 export function Router({
   children = null,
   static: staticProp = false,
@@ -36,16 +37,14 @@ export function Router({
   const forceupdate = useReducer(s => s * -1, 1)[1];
 
   useIsomorphicEffect(() => () => (unmount.current = true), []);
-  useIsomorphicEffect(
-    () =>
-      router.listen(() => {
-        if (unmount.current) {
-          return;
-        }
-        forceupdate();
-      }),
-    [router]
-  );
+  useIsomorphicEffect(() => {
+    router.listen(() => {
+      if (unmount.current) {
+        return;
+      }
+      forceupdate();
+    });
+  }, [router]);
 
   return (
     <RouterContext.Provider value={contextVal}>

@@ -1,4 +1,4 @@
-export { generatePath } from './utils';
+export { generatePath, useIsomorphicEffect } from './utils';
 export { MemoryRouter } from './MemoryRouter';
 export { RouterView } from './RouterView';
 export { Router } from './Router';

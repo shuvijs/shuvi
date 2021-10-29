@@ -1,10 +1,8 @@
 /// <reference lib="dom" />
 
 import React from 'react';
-import { Runtime } from '@shuvi/service';
+import { IRouteComponent } from '@shuvi/platform-core';
 import dynamic, { DynamicOptions } from './dynamic';
-
-import RouteComponent = Runtime.IRouteComponent;
 
 export function loadRouteComponent(
   loader: () => Promise<any>,
@@ -15,8 +13,9 @@ export function loadRouteComponent(
       loader().then(mod => {
         const comp = mod.default || mod;
         if (comp.getInitialProps) {
-          (DynamicComp as RouteComponent<React.ComponentType>).getInitialProps =
-            comp.getInitialProps;
+          (
+            DynamicComp as IRouteComponent<React.ComponentType>
+          ).getInitialProps = comp.getInitialProps;
         }
 
         return comp;

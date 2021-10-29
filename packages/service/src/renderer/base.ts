@@ -1,12 +1,13 @@
 import * as APIHooks from '../types/hooks';
+import { IAppData } from '@shuvi/runtime-core';
+import { IHtmlTag } from '../types/index';
 
 import {
-  IAppData,
   IDocumentProps,
-  IHtmlTag,
   IRenderResultRedirect,
   ITemplateData
-} from '../types/runtime';
+} from '../types/index';
+
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
@@ -76,6 +77,7 @@ export abstract class BaseRenderer {
     app,
     AppComponent,
     router,
+    appStore,
     appContext,
     render
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
@@ -83,6 +85,7 @@ export abstract class BaseRenderer {
       app,
       AppComponent,
       router,
+      appStore,
       appContext,
       render
     });

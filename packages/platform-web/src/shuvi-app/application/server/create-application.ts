@@ -1,13 +1,28 @@
 import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
-import { Application } from '@shuvi/platform-core';
-import runPlugins from '@shuvi/platform-core/lib/runPlugins';
-import { createRouter, createMemoryHistory } from '@shuvi/router';
-import { Runtime } from '@shuvi/service';
+import {
+  IAppState,
+  IAppRenderFn,
+  IApplicationCreaterServerContext,
+  IAppRouteConfig
+} from '@shuvi/platform-core';
+import platform from '@shuvi/platform-core/lib/platform';
+import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 
-export const create: Runtime.ApplicationCreater = function (context, options) {
-  const { req } = context as Runtime.IApplicationCreaterServerContext;
+export function create<
+  Context extends IApplicationCreaterServerContext,
+  Router extends IRouter<IAppRouteConfig>,
+  CompType,
+  AppState extends IAppState
+>(
+  context: Context,
+  options: {
+    render: IAppRenderFn<Context, Router, CompType>;
+    appState?: AppState;
+  }
+) {
+  const { req } = context;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
@@ -16,15 +31,13 @@ export const create: Runtime.ApplicationCreater = function (context, options) {
   const router = createRouter({
     history,
     routes: getRoutes(routes, context)
-  });
+  }) as Router;
 
-  const app = new Application({
+  return platform({
     AppComponent,
     router,
     context,
+    appState: options.appState,
     render: options.render
   });
-  runPlugins(app);
-
-  return app;
-};
+}

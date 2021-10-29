@@ -1,4 +1,4 @@
-import { Runtime } from '@shuvi/service';
+import { IHtmlTag } from '@shuvi/platform-core';
 
 export type SideEffectProps = {
   reduceComponentsToState: <T>(
@@ -16,6 +16,6 @@ export interface HeadElement {
   };
 }
 
-export type HeadState = Runtime.IHtmlTag[];
+export type HeadState = IHtmlTag[];
 
-export type HeadItem = Runtime.IHtmlTag;
+export type HeadItem = IHtmlTag;

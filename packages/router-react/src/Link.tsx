@@ -35,7 +35,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         // If the URL hasn't changed, a regular <a> will do a replace instead of
         // a push, so do the same here.
         let replace =
-          !!replaceProp || pathToString(location) === pathToString(path);
+          !!replaceProp || (location && pathToString(location)) === pathToString(path);
 
         navigate(to, { replace, state });
       }

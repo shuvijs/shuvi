@@ -1,13 +1,13 @@
 import { renderRoutes } from '../utils/__tests__/utils';
 import { normalizeRoutes, INormalizeRoutesContext } from '../utils/router';
-import { Runtime } from '@shuvi/service';
+import { IAppRouteConfig } from '@shuvi/platform-core';
 
 export const renderWithRoutes = (
   {
     routes = [],
     appContext = {}
   }: {
-    routes?: Runtime.IAppRouteConfig[];
+    routes?: IAppRouteConfig[];
     appContext?: INormalizeRoutesContext;
   } = {},
   { route = '/' }: { route?: string } = {}

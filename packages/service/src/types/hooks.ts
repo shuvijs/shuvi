@@ -4,7 +4,7 @@ import webpack, { MultiCompiler } from 'webpack';
 import { SyncHook } from 'tapable';
 import WebpackChain from 'webpack-chain';
 import { IApiConfig, IUserRouteConfig, IShuviMode } from '../api/types';
-import { IDocumentProps } from './runtime';
+import { IDocumentProps } from './';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 
 type ExtractSyncHookGeneric<Type> = Type extends SyncHook<infer X> ? X : never;

@@ -1,23 +1,29 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { Runtime } from '@shuvi/service';
+import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector, IParams } from '@shuvi/router';
-import { ROUTE_NOT_FOUND_NAME } from '@shuvi/shared/lib/constants';
+import {
+  getErrorHandler,
+  IAppComponent,
+  IRouteComponent,
+  IHtmlTag,
+  IAppRouteConfig
+} from '@shuvi/platform-core';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
+import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
-
-import IAppComponent = Runtime.IAppComponent;
-import IRouteComponent = Runtime.IRouteComponent;
-import IHtmlTag = Runtime.IHtmlTag;
+import { ErrorBoundary } from './ErrorBoundary';
+import { AppStore } from '../AppStore';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
     AppComponent,
     router,
     appContext,
+    appStore,
     manifest,
     getAssetPublicUrl,
     render
@@ -26,12 +32,15 @@ export class ReactServerView implements IReactServerView {
 
     const redirector = createRedirector();
 
+    const error = getErrorHandler(appStore);
+
     await router.ready;
 
     let { pathname, query, matches, redirected } = router.current;
-    // TODO: handler no matches
+    // handler no matches
     if (!matches) {
       matches = [];
+      error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
@@ -47,11 +56,7 @@ export class ReactServerView implements IReactServerView {
     const params: IParams = {};
     for (let index = 0; index < matches.length; index++) {
       const matchedRoute = matches[index];
-      const appRoute = matchedRoute.route as Runtime.IAppRouteConfig;
-      if (appRoute.name === ROUTE_NOT_FOUND_NAME) {
-        // set response code
-        appContext.statusCode = 404;
-      }
+      const appRoute = matchedRoute.route as IAppRouteConfig;
       const comp = appRoute.component as
         | IRouteComponent<React.Component, any>
         | undefined;
@@ -64,7 +69,8 @@ export class ReactServerView implements IReactServerView {
             query,
             appContext,
             params: matchedRoute.params,
-            redirect: redirector.handler
+            redirect: redirector.handler,
+            error: error.errorHandler
           });
           routeProps[appRoute.id] = props || {};
           matchedRoute.route.props = props;
@@ -75,10 +81,9 @@ export class ReactServerView implements IReactServerView {
       await Promise.all(pendingDataFetchs.map(fn => fn()));
     };
     let appInitialProps: { [x: string]: any } | undefined;
-    const appGetInitialProps = ((AppComponent as any) as IAppComponent<
-      React.Component,
-      any
-    >).getInitialProps;
+    const appGetInitialProps = (
+      AppComponent as any as IAppComponent<React.Component, any>
+    ).getInitialProps;
     if (appGetInitialProps) {
       appInitialProps = await appGetInitialProps({
         isServer: true,
@@ -87,7 +92,8 @@ export class ReactServerView implements IReactServerView {
         params,
         appContext,
         fetchInitialProps,
-        redirect: redirector.handler
+        redirect: redirector.handler,
+        error: error.errorHandler
       });
     } else {
       await fetchInitialProps();
@@ -99,21 +105,32 @@ export class ReactServerView implements IReactServerView {
       };
     }
 
+    const appState = appStore.getState();
+
+    if (appState.error.errorCode !== undefined) {
+      appContext.statusCode = appState.error.errorCode;
+    }
+
     const loadableModules: string[] = [];
     let htmlContent: string;
     let head: IHtmlTag[];
+
     try {
       const renderAppToString = () =>
         renderToString(
-          <Router static router={router}>
-            <LoadableContext.Provider
-              value={moduleName => loadableModules.push(moduleName)}
-            >
-              <AppContainer appContext={appContext}>
-                <AppComponent {...appInitialProps} />
-              </AppContainer>
-            </LoadableContext.Provider>
-          </Router>
+          <ErrorBoundary>
+            <Router static router={router}>
+              <AppStore store={appStore} ErrorComp={ErrorPage}>
+                <LoadableContext.Provider
+                  value={moduleName => loadableModules.push(moduleName)}
+                >
+                  <AppContainer appContext={appContext}>
+                    <AppComponent {...appInitialProps} />
+                  </AppContainer>
+                </LoadableContext.Provider>
+              </AppStore>
+            </Router>
+          </ErrorBoundary>
         );
 
       if (render) {
@@ -172,6 +189,8 @@ export class ReactServerView implements IReactServerView {
     if (dynamicImportIdSet.size) {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
+
+    appData.appState = appState;
 
     return {
       appData,

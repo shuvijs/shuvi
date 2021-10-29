@@ -1,5 +1,5 @@
-import { Runtime } from '@shuvi/service';
+import { IAppRouteConfig } from '@shuvi/platform-core';
 
-export const transformRoutes = (routes: Runtime.IAppRouteConfig[]) => {
+export const transformRoutes = (routes: IAppRouteConfig[]) => {
   return routes;
 };

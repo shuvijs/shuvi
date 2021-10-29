@@ -30,6 +30,20 @@ export const IDENTITY_SSR_RUNTIME_PUBLICPATH = `__${NAME}_ssr_public_path__`;
 
 export const ROUTE_NOT_FOUND_NAME = `404`;
 
+export enum SHUVI_ERROR_CODE {
+  APP_ERROR = 500, //  对应 server 端的 500
+  PAGE_NOT_FOUND = 404 //  对应 server 端的 404
+}
+
+export const DEFAULT_ERROR_MESSAGE = {
+  [SHUVI_ERROR_CODE.APP_ERROR]: {
+    errorDesc: 'Internal Server Error.'
+  },
+  [SHUVI_ERROR_CODE.PAGE_NOT_FOUND]: {
+    errorDesc: 'This page could not be found.'
+  }
+};
+
 // bundle
 export const BUNDLER_TARGET_CLIENT = `${NAME}/client`;
 

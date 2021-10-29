@@ -83,7 +83,7 @@ export interface IRoute<RouteRecord extends IRouteRecord = IRouteRecord>
   // href: string?
 }
 
-export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
+export interface IRouter<RouteRecord extends { path: string } = any> {
   current: IRoute<RouteRecord>;
   action: History['action'];
   push(to: PathRecord, state?: any): void;
@@ -98,6 +98,8 @@ export interface IRouter<RouteRecord extends IRouteRecord = IRouteRecord> {
   listen: (listener: Listener) => RemoveListenerCallback;
   beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
   afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
+
+  replaceRoutes: (routes: RouteRecord[]) => void;
 }
 
 export interface IRedirectFn {

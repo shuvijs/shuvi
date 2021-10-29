@@ -1,5 +1,16 @@
-import { Runtime } from '@shuvi/service';
+import {
+  ApplicationCreater,
+  IAppState
+} from '@shuvi/runtime-core';
+import { IRouter } from '@shuvi/router';
+import {
+  IAppRouteConfig,
+  IApplicationCreaterServerContext
+} from '@shuvi/platform-core';
 
-import IApplicationModule = Runtime.IApplicationModule;
-
-export const create: IApplicationModule['create'];
+export const create: ApplicationCreater<
+  IApplicationCreaterServerContext,
+  IRouter<IAppRouteConfig>,
+  React.ComponentType,
+  IAppState
+  >;

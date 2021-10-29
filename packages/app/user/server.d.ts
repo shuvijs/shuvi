@@ -1,5 +1,5 @@
-import { Runtime } from '@shuvi/service';
+import { IServerModule } from '@shuvi/service/lib/types';
 
-declare const server: Runtime.IServerModule;
+declare const server: IServerModule;
 
 export default server;

@@ -1,5 +1,4 @@
-import { IAppData, IData } from '../types/runtime';
-import { AppHooks } from '@shuvi/runtime-core';
+import { AppHooks, IAppData, IData } from '@shuvi/runtime-core';
 import { IRouter } from '@shuvi/router';
 import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '../constants';
 import getRuntimeConfig from '../lib/runtimeConfig';
@@ -13,6 +12,7 @@ export class SsrRenderer extends BaseRenderer {
     app,
     AppComponent,
     router,
+    appStore,
     appContext,
     render
   }: IRenderDocumentOptions) {
@@ -28,6 +28,7 @@ export class SsrRenderer extends BaseRenderer {
     const result = await view.renderApp({
       AppComponent,
       router: router as IRouter,
+      appStore,
       appContext,
       manifest,
       getAssetPublicUrl,
@@ -42,13 +43,13 @@ export class SsrRenderer extends BaseRenderer {
 
     const mainAssetsTags = this._getMainAssetTags();
 
-    const pageDataList = ((await app.callHook<AppHooks.IHookServerGetPageData>(
+    const pageDataList = (await app.callHook<AppHooks.IHookServerGetPageData>(
       {
         name: 'server:getPageData',
         parallel: true
       },
       appContext
-    )) as any) as IData[];
+    )) as any as IData[];
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;

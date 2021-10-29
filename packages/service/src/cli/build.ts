@@ -6,6 +6,7 @@ import * as APIHooks from '../types/hooks';
 import { getBundler } from '../bundler/bundler';
 import { BUILD_CLIENT_DIR } from '../constants';
 import { renderToHTML } from '../lib/renderToHTML';
+import { IRequest } from '../types/server';
 
 export interface IBuildOptions {
   cwd?: string;
@@ -64,7 +65,7 @@ async function buildHtml({
     req: {
       url: pathname,
       headers: {}
-    },
+    } as IRequest,
     api
   });
 

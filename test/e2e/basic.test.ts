@@ -175,4 +175,16 @@ describe('[SPA] Basic Features', () => {
     await page.waitForSelector('#process-env');
     expect(await page.$text('#process-env')).toBe('development');
   });
+
+  test('error-page', async () => {
+    page = await ctx.browser.page(ctx.url('/hmr/err?a=1'));
+    await page.waitForSelector('#error');
+    expect(await page.$text('#error')).toContain('custom error 502');
+    await page.shuvi.navigate('/about');
+    await page.waitForSelector('#about');
+    expect(await page.$text('#about')).toBe('About Page');
+    await page.shuvi.navigate('/hmr/err');
+    await page.waitForSelector('#err');
+    expect(await page.$text('#err')).toBe('Err Page Render');
+  });
 });

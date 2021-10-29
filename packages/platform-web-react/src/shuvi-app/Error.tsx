@@ -1,4 +1,5 @@
 import React from 'react';
+import { IAppState } from '@shuvi/platform-core';
 // @ts-ignore
 import { Head } from './head';
 
@@ -16,25 +17,28 @@ const style = {
   },
   error: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   errorCode: {
-    borderRight: '1px solid rgba(0, 0, 0, 0.3)',
-    paddingRight: '20px',
-    marginRight: '20px',
     fontSize: '24px',
     fontWeight: 500
   },
-  errorDesc: { fontSize: '16px', lineHeight: '1' }
+  errorDesc: {
+    fontSize: '16px',
+    lineHeight: '1',
+    borderLeft: '1px solid rgba(0, 0, 0, 0.3)',
+    paddingLeft: '20px',
+    marginLeft: '20px'
+  }
 } as const;
 
-export default function Page404() {
+export default function error({ errorCode, errorDesc }: IAppState['error']) {
   return (
     <div style={style.container}>
       <Head>
-        <title>404: Page not found</title>
+        <title>Page Error</title>
       </Head>
 
       <div style={style.error}>
-        <div style={style.errorCode}>404</div>
-        <div style={style.errorDesc}>This page could not be found.</div>
+        <div style={style.errorCode}>{errorCode}</div>
+        {errorDesc && <div style={style.errorDesc}>{errorDesc}</div>}
       </div>
     </div>
   );
