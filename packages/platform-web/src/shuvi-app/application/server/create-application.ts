@@ -2,13 +2,12 @@ import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 import {
-  Application,
   IAppState,
   IAppRenderFn,
   IApplicationCreaterServerContext,
   IAppRouteConfig
 } from '@shuvi/platform-core';
-import runPlugins from '@shuvi/platform-core/lib/runPlugins';
+import platform from '@shuvi/platform-core/lib/platform';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 
 export function create<
@@ -34,14 +33,11 @@ export function create<
     routes: getRoutes(routes, context)
   }) as Router;
 
-  const app = new Application({
+  return platform({
     AppComponent,
     router,
     context,
     appState: options.appState,
     render: options.render
   });
-  runPlugins(app);
-
-  return app;
 }

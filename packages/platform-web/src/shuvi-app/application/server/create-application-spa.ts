@@ -1,9 +1,9 @@
 import {
-  Application,
   IAppState,
   IAppRenderFn,
   IApplicationCreaterServerContext
 } from '@shuvi/platform-core';
+import platform from '@shuvi/platform-core/lib/platform';
 import { IRouter } from '@shuvi/router';
 
 export function create<
@@ -19,11 +19,14 @@ export function create<
   }
 ) {
   const router = undefined;
-  return new Application({
-    AppComponent: null,
-    context,
-    router: router as never,
-    appState: options.appState,
-    render: options.render
-  });
+  return platform(
+    {
+      AppComponent: null,
+      context,
+      router: router as never,
+      appState: options.appState,
+      render: options.render
+    },
+    false
+  );
 }

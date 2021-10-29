@@ -1,6 +1,6 @@
 import AppComponent from '@shuvi/app/core/app';
-import { Application, IAppState, IAppRenderFn } from '@shuvi/platform-core';
-import runPlugins from '@shuvi/platform-core/lib/runPlugins';
+import { IAppState, IAppRenderFn } from '@shuvi/platform-core';
+import platform from '@shuvi/platform-core/lib/platform';
 import { IRouter } from '@shuvi/router';
 
 export function create<
@@ -16,13 +16,11 @@ export function create<
   }
 ) {
   const router = undefined;
-  const app = new Application({
+  return platform({
     AppComponent,
     context,
     router: router as never,
     appState: options.appState,
     render: options.render
   });
-  runPlugins(app);
-  return app;
 }

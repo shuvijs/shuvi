@@ -2,7 +2,6 @@ import AppComponent from '@shuvi/app/core/app';
 import routes from '@shuvi/app/core/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 import {
-  Application,
   IApplication,
   getAppStore,
   getErrorHandler,
@@ -11,7 +10,7 @@ import {
   IApplicationCreaterClientContext,
   IAppRouteConfig
 } from '@shuvi/platform-core';
-import runPlugins from '@shuvi/platform-core/lib/runPlugins';
+import platform from '@shuvi/platform-core/lib/platform';
 import { createRouter, IRouter } from '@shuvi/router';
 import { History } from '@shuvi/router/lib/types';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
@@ -52,15 +51,13 @@ export const createFactory = (historyCreater: () => History) => {
     });
     appRouter = router;
     appContext = context;
-    app = new Application({
+    app = platform({
       AppComponent,
       router,
       context,
       appState: options.appState,
       render: options.render
     });
-    runPlugins(app);
-
     return app;
   };
 };

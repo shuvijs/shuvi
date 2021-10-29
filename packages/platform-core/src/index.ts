@@ -18,8 +18,6 @@ export {
   IHtmlTag
 } from '@shuvi/service/lib/types/index';
 
-export type IQuery = ParsedQuery;
-
 export {
   IData,
   Application,
@@ -36,6 +34,8 @@ export {
   IApplicationCreaterClientContext,
   IApplicationCreaterServerContext
 } from '@shuvi/runtime-core';
+
+export type IQuery = ParsedQuery;
 
 export interface IAppRouteConfig extends IRouteRecord {
   id: string;
@@ -71,8 +71,11 @@ interface IClientRendererOptions<
   appData: IAppData<Data>;
 }
 
-export interface IViewClient<CompType = any, Data = {}, Router extends IRouter = IRouter>
-  extends IView<IClientRendererOptions<CompType, Data, Router>> {}
+export interface IViewClient<
+  CompType = any,
+  Data = {},
+  Router extends IRouter = IRouter
+> extends IView<IClientRendererOptions<CompType, Data, Router>> {}
 
 export interface IRouteComponentContext {
   isServer: boolean;
