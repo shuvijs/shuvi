@@ -11,7 +11,7 @@ import {
 } from './types';
 import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 import * as APIHooks from '../types/hooks';
-import { IRuntime } from '../types/runtime';
+import { IRuntime } from '../types/index';
 import { IServerMiddlewareItem } from '../types/server';
 import {
   IServerMiddleware,
@@ -32,7 +32,7 @@ import { Hookable } from '@shuvi/hook';
 import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
-import { PUBLIC_PATH, ROUTE_NOT_FOUND_NAME } from '../constants';
+import { PUBLIC_PATH } from '../constants';
 import { createDefaultConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
@@ -244,11 +244,6 @@ class Api extends Hookable implements IApi {
 
     routes = normalizeRoutes(routes, {
       componentDir: this.paths.pagesDir
-    });
-    routes.push({
-      path: ':_(.*)',
-      component: this.resolveAppFile('core', '404'),
-      name: ROUTE_NOT_FOUND_NAME
     });
 
     this._routes = routes;

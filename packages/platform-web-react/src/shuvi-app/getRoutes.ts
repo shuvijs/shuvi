@@ -1,16 +1,19 @@
-import { Runtime } from '@shuvi/service';
+import {
+  IAppRouteConfig,
+  IAppRouteConfigWithPrivateProps
+} from '@shuvi/platform-core';
 import { loadRouteComponent } from './loadRouteComponent';
 import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 
 export default function getRoutes(
-  routes: Runtime.IAppRouteConfigWithPrivateProps[],
+  routes: IAppRouteConfigWithPrivateProps[],
   appContext: INormalizeRoutesContext = {}
-): Runtime.IAppRouteConfig[] {
+): IAppRouteConfig[] {
   const getRoutesWithRequire = (
-    routes: Runtime.IAppRouteConfigWithPrivateProps[]
-  ): Runtime.IAppRouteConfig[] =>
+    routes: IAppRouteConfigWithPrivateProps[]
+  ): IAppRouteConfig[] =>
     routes.map(x => {
-      const originalRoute: Runtime.IAppRouteConfigWithPrivateProps = { ...x };
+      const originalRoute: IAppRouteConfigWithPrivateProps = { ...x };
       const {
         __componentSource__,
         __componentSourceWithAffix__,

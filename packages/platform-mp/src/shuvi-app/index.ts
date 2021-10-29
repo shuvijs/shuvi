@@ -1,3 +1,4 @@
 import app from './App';
 import view from './view';
-export { view, app };
+const getRoutes = (routes: any) => routes;
+export { view, app, getRoutes };

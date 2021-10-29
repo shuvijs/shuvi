@@ -15,14 +15,14 @@ import GoForward from './TestSequences/GoForward.js';
 import BlockEverything from './TestSequences/BlockEverything.js';
 import BlockPopWithoutListening from './TestSequences/BlockPopWithoutListening.js';
 import { createRouter } from '../../router';
-import { IRouter } from '../../types';
+import { IRouter, IRouteRecord } from '../../types';
 
 describe('a memory history', () => {
   let router: IRouter;
   beforeEach(() => {
     let history = createMemoryHistory();
     router = createRouter({
-      routes: [],
+      routes: [] as IRouteRecord[],
       history
     });
   });

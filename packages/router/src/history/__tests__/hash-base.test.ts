@@ -4,7 +4,7 @@
 
 import { createHashHistory } from '..';
 import { createRouter } from '../../router';
-import { IRouter } from '../../types';
+import { IRouter, IRouteRecord } from '../../types';
 
 describe('a hash history on a page with a <base> tag', () => {
   let router: IRouter, base: HTMLBaseElement;
@@ -20,7 +20,7 @@ describe('a hash history on a page with a <base> tag', () => {
 
     let history = createHashHistory();
     router = createRouter({
-      routes: [],
+      routes: [] as IRouteRecord[],
       history
     });
   });

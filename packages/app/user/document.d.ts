@@ -1,5 +1,5 @@
-import { Runtime } from '@shuvi/service';
+import { IDocumentModule } from '@shuvi/service/lib/types';
 
-declare const document: Runtime.IDocumentModule;
+declare const document: IDocumentModule;
 
 export default document;

@@ -1,4 +1,4 @@
-import { IRenderResultRedirect } from '../types/runtime';
+import { IRenderResultRedirect } from '../types/index';
 import { IRequest } from '../types/server';
 import { Renderer, isRedirect } from '../renderer';
 import { Api } from '../api';
@@ -8,7 +8,7 @@ export async function renderToHTML({
   api,
   onRedirect
 }: {
-  req: Partial<IRequest>;
+  req: IRequest;
   api: Api;
   onRedirect?(redirect: IRenderResultRedirect): void;
 }): Promise<{ html: string | null; appContext: any }> {
@@ -23,13 +23,14 @@ export async function renderToHTML({
       req
     },
     {
-      async render({ appContext, AppComponent, router }) {
+      async render({ appContext, AppComponent, router, appStore }) {
         const result = await renderer.renderDocument({
           router,
           app,
           AppComponent,
           appContext,
-          render
+          render,
+          appStore
         });
 
         if (isRedirect(result)) {
@@ -37,7 +38,8 @@ export async function renderToHTML({
         } else {
           html = result;
         }
-      }
+      },
+      appState: undefined
     }
   );
 

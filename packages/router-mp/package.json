@@ -28,6 +28,8 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
+    "@shuvi/platform-core": "0.0.1-pre.10",
+    "@shuvi/platform-web-react": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/router-react": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10"

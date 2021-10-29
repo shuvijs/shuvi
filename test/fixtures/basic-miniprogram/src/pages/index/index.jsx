@@ -7,7 +7,7 @@ import Extend from '../../components/extend'
 const Welcome = dynamic(() => import("../../components/welcome"));
 const Nested = dynamic(() => import("../../components/nested1"));
 const Hello = dynamic(async () => {
-  await new Promise(resolve => setTimeout(() => resolve(), 3000));
+  await new Promise(resolve => setTimeout(() => resolve(), 1000));
   return import("../../components/hello")
 }, {
   ssr: false,
@@ -40,6 +40,15 @@ function IndexPage ({success, routePropsTest}) {
       </View>
       <Link to={'/a/b/c?query=query'}>
         link test /a/b/c?query=query
+      </Link>
+      <Link to={'/error'}>
+        link test /error
+      </Link>
+      <Link to={'/error?a=1'}>
+        link test /error?a=1
+      </Link>
+      <Link to={'/error/1/2/3/4?a=1'}>
+        link test /error/1/2/3/4?a=1
       </Link>
       <Link target={'_blank'} to={'/pages/detail/1?query=other'}>
         link test /pages/detail/1?query=other

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import qs from 'query-string';
 import PropTypes from 'prop-types';
 import { Current as TaroCurrent } from '@tarojs/runtime';
@@ -11,6 +11,9 @@ import {
 import { createMpHistory } from './mpHistory';
 import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
+import ErrorPage from './ErrorPage';
+import { getAppStore, getErrorHandler } from '@shuvi/platform-core';
+import { AppStore } from '@shuvi/platform-web-react/shuvi-app/AppStore';
 
 export interface IMpRouterProps {
   basename?: string;
@@ -32,6 +35,10 @@ export function MpRouter({
   const [initProps, setProps] = useState<boolean>(false);
 
   const redirector = createRedirector();
+
+  const appStore = getAppStore();
+
+  const error = getErrorHandler(appStore);
 
   if (routerRef.current == null) {
     routerRef.current = createRouter({
@@ -75,14 +82,16 @@ export function MpRouter({
     routeProps: {},
     historyMode: 'memory'
   };
-
+  const isRendered = useRef(true);
   useEffect(() => {
     const router = routerRef.current;
+    isRendered.current = true;
     const runGetInitialProps = async () => {
       const { pathname, query, params, matches } = router!.current;
       await router!.ready;
       const matchRoute = matches && matches[0] && matches[0].route;
       let props = {};
+      error.reset();
       if (matchRoute && matchRoute.component.getInitialProps) {
         props = await matchRoute.component.getInitialProps({
           isServer: false,
@@ -91,6 +100,7 @@ export function MpRouter({
           params,
           redirect: redirector.handler,
           appContext,
+          error: error.errorHandler,
           async fetchInitialProps() {
             // do nothing
           }
@@ -104,14 +114,19 @@ export function MpRouter({
           return;
         }
       }
-      setProps(true);
+      if (isRendered.current) setProps(true);
     };
     runGetInitialProps();
+    return () => {
+      isRendered.current = false;
+    };
   }, []);
 
   return initProps ? (
     <Router router={routerRef.current}>
-      <RouterView />
+      <AppStore store={appStore} ErrorComp={ErrorPage}>
+        <RouterView />
+      </AppStore>
     </Router>
   ) : null;
 }
