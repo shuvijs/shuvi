@@ -19,7 +19,7 @@ import GoForward from './TestSequences/GoForward.js';
 import BlockEverything from './TestSequences/BlockEverything.js';
 import BlockPopWithoutListening from './TestSequences/BlockPopWithoutListening.js';
 import { createRouter } from '../../router';
-import { IRouter } from '../../types';
+import { IRouter, IRouteRecord } from '../../types';
 
 describe('a browser history', () => {
   let router: IRouter;
@@ -27,7 +27,7 @@ describe('a browser history', () => {
     // @ts-ignore
     window.history.replaceState(null, null, '/');
     let history = createBrowserHistory();
-    router = createRouter({ routes: [], history });
+    router = createRouter({ routes: [] as IRouteRecord[], history });
   });
 
   it('knows how to create hrefs from location objects', () => {

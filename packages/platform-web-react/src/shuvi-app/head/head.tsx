@@ -1,13 +1,11 @@
 // Based on https://github.com/zeit/next.js
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
-import { Runtime } from '@shuvi/service';
 import React from 'react';
+import { IHtmlTag } from '@shuvi/platform-core';
 import withSideEffect from './side-effect';
 import { HeadManagerContext } from './head-manager-context';
 import { HeadElement, HeadState } from './types';
-
-import IHtmlTag = Runtime.IHtmlTag;
 
 export const SHUVI_HEAD_ATTRIBUTE = 'data-shuvi-head';
 
@@ -56,9 +54,9 @@ function onlyReactElement(
   // Adds support for React.Fragment
   if (child.type === React.Fragment) {
     return list.concat(
-      (React.Children.toArray(
-        child.props.children
-      ) as React.ReactChild[]).reduce(
+      (
+        React.Children.toArray(child.props.children) as React.ReactChild[]
+      ).reduce(
         (
           fragmentList: Array<React.ReactElement<any>>,
           fragmentChild: React.ReactChild
@@ -169,7 +167,7 @@ function reduceComponents(
     .filter(unique())
     .reverse()
     .map(e => {
-      const { type, props } = (e as any) as HeadElement;
+      const { type, props } = e as any as HeadElement;
       const headElement = {
         type,
         props: {

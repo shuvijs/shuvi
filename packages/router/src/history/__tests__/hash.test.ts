@@ -18,7 +18,7 @@ import GoBack from './TestSequences/GoBack.js';
 import GoForward from './TestSequences/GoForward.js';
 import BlockEverything from './TestSequences/BlockEverything.js';
 import BlockPopWithoutListening from './TestSequences/BlockPopWithoutListening.js';
-import { IRouter } from '../../types';
+import { IRouter, IRouteRecord } from '../../types';
 import { createRouter } from '../../router';
 
 describe('a hash history', () => {
@@ -28,7 +28,7 @@ describe('a hash history', () => {
     window.history.replaceState(null, null, '#/');
     let history = createHashHistory();
     router = createRouter({
-      routes: [],
+      routes: [] as IRouteRecord[],
       history
     });
   });

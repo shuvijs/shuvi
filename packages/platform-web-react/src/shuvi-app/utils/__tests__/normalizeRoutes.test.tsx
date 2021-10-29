@@ -3,13 +3,12 @@
  */
 
 import React from 'react';
-import { Runtime } from '@shuvi/service';
+import { IAppRouteConfig } from '@shuvi/platform-core';
 import { RouterView } from '@shuvi/router-react';
 import { renderRoutes } from './utils';
 import { ReactTestRenderer, act } from 'react-test-renderer';
 import { normalizeRoutes } from '../router';
 
-import IAppRouteConfig = Runtime.IAppRouteConfig;
 import { wait } from 'shuvi-test-utils';
 
 const createDummyComponent = (text: string): React.FC => {

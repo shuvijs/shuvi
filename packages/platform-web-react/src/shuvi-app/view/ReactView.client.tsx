@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector } from '@shuvi/router';
-import { Runtime } from '@shuvi/service';
+import { getErrorHandler, IAppComponent } from '@shuvi/platform-core';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { IReactClientView } from '../types';
+import ErrorPage from '../ErrorPage';
+import { ErrorBoundary } from './ErrorBoundary';
+import { AppStore } from '../AppStore';
 
 const headManager = new HeadManager();
 
@@ -18,7 +22,8 @@ export class ReactClientView implements IReactClientView {
     AppComponent,
     appData,
     router,
-    appContext
+    appContext,
+    appStore
   }) => {
     const { _isInitialRender: isInitialRender } = this;
     let { ssr, appProps, dynamicIds } = appData;
@@ -30,15 +35,21 @@ export class ReactClientView implements IReactClientView {
     }
 
     const redirector = createRedirector();
-    const TypedAppComponent = AppComponent as Runtime.IAppComponent<
-      React.ComponentType
-    >;
 
+    const error = getErrorHandler(appStore);
+
+    const TypedAppComponent =
+      AppComponent as IAppComponent<React.ComponentType>;
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
     } else {
       await router.ready;
       const { pathname, query, params } = router.current;
+
+      if (!router.current.matches) {
+        // no handler no matches
+        error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+      }
 
       if (TypedAppComponent.getInitialProps) {
         appProps = await TypedAppComponent.getInitialProps({
@@ -47,6 +58,7 @@ export class ReactClientView implements IReactClientView {
           query,
           params,
           redirect: redirector.handler,
+          error: error.errorHandler,
           appContext,
           async fetchInitialProps() {
             // do nothing
@@ -60,14 +72,19 @@ export class ReactClientView implements IReactClientView {
     }
 
     const root = (
-      <Router router={router}>
+      <ErrorBoundary>
         <HeadManagerContext.Provider value={headManager.updateHead}>
-          <AppContainer appContext={appContext}>
-            <TypedAppComponent {...appProps} />
-          </AppContainer>
+          <Router router={router}>
+            <AppStore store={appStore} ErrorComp={ErrorPage}>
+              <AppContainer appContext={appContext}>
+                <TypedAppComponent {...appProps} />
+              </AppContainer>
+            </AppStore>
+          </Router>
         </HeadManagerContext.Provider>
-      </Router>
+      </ErrorBoundary>
     );
+
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer);
       this._isInitialRender = false;

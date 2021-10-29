@@ -1,16 +1,14 @@
 import { IHookable } from '@shuvi/hook';
-import { IRouteRecord } from '@shuvi/router';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-
+import {
+  ApplicationCreater,
+  IApplicationCreaterServerContext
+} from '@shuvi/runtime-core';
 import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
-import {
-  IApplicationModule,
-  IDocumentModule,
-  IServerModule,
-  IViewServer
-} from '../types/runtime';
+import { IDocumentModule, IServerModule, IViewServer } from '../types/index';
+
 import { IServerMiddleware } from './serverMiddleware';
 
 export interface IUserRouteConfig {
@@ -22,32 +20,8 @@ export interface IUserRouteConfig {
   id?: string;
 }
 
-export interface IAppRouteConfigWithPrivateProps extends IRouteRecord {
-  id: string;
-  component?: any;
-  children?: IAppRouteConfigWithPrivateProps[];
-  path: string;
-  __componentSource__: string;
-  __componentSourceWithAffix__: string;
-  __import__: () => Promise<any>;
-  __resolveWeak__: () => any;
-  [x: string]: any;
-}
-
-export interface IAppRouteConfig extends IRouteRecord {
-  id: string;
-  component?: any;
-  children?: IAppRouteConfig[];
-  path: string;
-  __componentSource__?: never;
-  __componentSourceWithAffix__?: never;
-  __import__?: never;
-  __resolveWeak__?: never;
-  [x: string]: any;
-}
 export interface IApiRouteConfig {
   path: string;
-  children?: IApiRouteConfig[];
   apiModule: string;
 }
 
@@ -105,6 +79,7 @@ interface IPlatform {
   target?: string;
   [index: string]: any;
 }
+
 export interface IApiConfig {
   outputPath: string;
   rootDir: string;
@@ -179,7 +154,9 @@ export type IBuiltResource = {
   server: {
     server: IServerModule;
     apiRoutes: IApiRouteConfig[];
-    application: IApplicationModule;
+    application: {
+      create: ApplicationCreater<IApplicationCreaterServerContext>;
+    };
     document: Partial<IDocumentModule>;
     view: IViewServer;
   };

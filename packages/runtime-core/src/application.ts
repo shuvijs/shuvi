@@ -1,10 +1,50 @@
-import * as AppHooks from './hooks';
+import { IncomingMessage } from 'http';
 import { Hookable } from '@shuvi/hook';
 import { IRouter } from '@shuvi/router';
+
+import * as AppHooks from './hooks';
+import { IAppStore, IAppState, getAppStore } from './appStore';
+
+export interface IApplicationCreaterBase {
+  routeProps?: { [x: string]: any };
+  [x: string]: any;
+}
+
+export interface IApplicationCreaterServerContext
+  extends IApplicationCreaterBase {
+  req: IncomingMessage & {
+    [x: string]: any;
+  };
+}
+export interface IApplicationCreaterClientContext
+  extends IApplicationCreaterBase {
+  pageData: any;
+  routeProps: { [x: string]: any };
+}
+
+export type IApplicationCreaterContext =
+  | IApplicationCreaterClientContext
+  | IApplicationCreaterServerContext;
+
+export interface ApplicationCreater<
+  Context extends IApplicationCreaterContext,
+  Router extends IRouter = IRouter,
+  CompType = any,
+  AppState extends IAppState = any,
+  > {
+  (
+    context: Context,
+    options: {
+      render: IAppRenderFn<Context, Router, CompType>;
+      appState?: AppState;
+    }
+  ): IApplication;
+}
 
 export type IContext = {
   [x: string]: any;
 };
+
 export interface IApplication extends Hookable {
   AppComponent: any;
   router?: IRouter;
@@ -12,39 +52,65 @@ export interface IApplication extends Hookable {
   rerender(config?: IRerenderConfig): Promise<void>;
   dispose(): Promise<void>;
 }
-export interface IRenderOptions<CompType = any> {
+
+export interface IRenderOptions<Context, Router extends IRouter, CompType = any> {
   AppComponent: CompType;
-  router?: IRouter;
-  appContext: Record<string, any>;
+  router?: Router;
+  appContext: Context;
+  appStore: IAppStore;
   render?: (renderAppToString: () => string, appContext: any) => string;
 }
-export interface IAppRenderFn {
-  (options: IRenderOptions): Promise<any>;
+
+export interface IView<
+  RenderOption extends IRenderOptions<
+    IApplicationCreaterContext,
+    IRouter
+  > = any,
+  RenderResult = void
+> {
+  renderApp(options: RenderOption): RenderResult;
+}
+
+export interface IAppRenderFn<Context, Router extends IRouter, CompType = any> {
+  (options: IRenderOptions<Context, Router, CompType>): Promise<any>;
 }
 
 export type IRerenderConfig = {
   AppComponent?: any;
-  router?: IRouter;
 };
-export interface IApplicationOptions<Context> {
+
+export interface IApplicationOptions<
+  Context extends IApplicationCreaterContext,
+  Router extends IRouter,
+  AppState extends IAppState | undefined
+> {
   AppComponent: any;
-  router?: IRouter;
+  router: Router;
   context: Context;
-  render: IAppRenderFn;
+  appState: AppState;
+  render: IAppRenderFn<Context, Router>;
 }
 
-export class Application<Context extends {}> extends Hookable
-  implements IApplication {
+export class Application<
+    Context extends IApplicationCreaterContext,
+    Router extends IRouter = IRouter,
+    AppState extends IAppState | undefined = undefined
+  >
+  extends Hookable
+  implements IApplication
+{
   AppComponent: any;
-  router?: IRouter;
-  private _renderFn: IAppRenderFn;
-  private _context: IContext;
+  router: Router;
+  private _context: Context & IContext;
+  private _appStore: IAppStore;
+  private _renderFn: IAppRenderFn<Context, Router>;
 
-  constructor(options: IApplicationOptions<Context>) {
+  constructor(options: IApplicationOptions<Context, Router, AppState>) {
     super();
     this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;
+    this._appStore = getAppStore(options.appState);
     this._renderFn = options.render;
   }
 
@@ -57,10 +123,7 @@ export class Application<Context extends {}> extends Hookable
     return this._context;
   }
 
-  async rerender({ AppComponent, router }: IRerenderConfig = {}) {
-    if (router) {
-      this.router = router;
-    }
+  async rerender({ AppComponent }: IRerenderConfig = {}) {
     if (AppComponent) {
       this.AppComponent = AppComponent;
     }
@@ -88,7 +151,7 @@ export class Application<Context extends {}> extends Hookable
     this._context = (await this.callHook<AppHooks.IHookCreateAppContext>({
       name: 'createAppContext',
       initialValue: this._context
-    })) as IContext;
+    })) as IContext & Context;
   }
 
   private async _getAppComponent() {
@@ -104,6 +167,7 @@ export class Application<Context extends {}> extends Hookable
   private async _render() {
     const result = await this._renderFn({
       appContext: this._context,
+      appStore: this._appStore,
       AppComponent: this.AppComponent,
       router: this.router
     });

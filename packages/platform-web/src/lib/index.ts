@@ -1,8 +1,9 @@
-import { IApi, Runtime } from '@shuvi/service';
+import { IRuntime } from '@shuvi/platform-core';
+
 import { resolveAppFile } from './paths';
 
-const platform: Runtime.IRuntime<any> = {
-  async install(api: IApi): Promise<void> {
+const platformWeb: IRuntime = {
+  async install(api): Promise<void> {
     // set application and entry
     const {
       ssr,
@@ -33,10 +34,10 @@ const platform: Runtime.IRuntime<any> = {
 
     // install framework
     const { framework = 'react' } = api.config.platform || {};
-    const frameworkInstance: Runtime.IRuntime = require(`@shuvi/platform-web-${framework}`)
-      .default;
+    const frameworkInstance: IRuntime =
+      require(`@shuvi/platform-web-${framework}`).default;
     frameworkInstance.install(api);
   }
 };
 
-export default platform;
+export default platformWeb;

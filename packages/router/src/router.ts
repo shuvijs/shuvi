@@ -84,6 +84,20 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     return this._history.action;
   }
 
+  replaceRoutes(routes: RouteRecord[]) {
+    this._pending = null;
+    this._ready = false;
+    this._readyDefer = Defer<void>();
+    this._routes = createRoutesFromArray(routes);
+    this._current = START;
+
+    const setup = () => this._history.setup();
+    this._history.transitionTo(this._getCurrent(), {
+      onTransition: setup,
+      onAbort: setup
+    });
+  }
+
   push(to: any, state?: any) {
     return this._history.push(to, { state });
   }
@@ -145,6 +159,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const current = this._current;
 
     const nextMatches = nextRoute.matches || [];
+
     const routeRedirect = getRedirectFromRoutes(nextMatches);
 
     if (routeRedirect) {

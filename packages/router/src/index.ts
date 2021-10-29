@@ -13,6 +13,7 @@ export {
   createLocation,
   createRedirector
 } from './utils';
+
 export * from './types';
 export * from './history';
 export * from './router';
