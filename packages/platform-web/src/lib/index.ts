@@ -1,10 +1,9 @@
-import { IApi } from '@shuvi/service';
 import { IRuntime } from '@shuvi/platform-core';
 
 import { resolveAppFile } from './paths';
 
-const platform: IRuntime = {
-  async install(api: IApi): Promise<void> {
+const platformWeb: IRuntime = {
+  async install(api): Promise<void> {
     // set application and entry
     const {
       ssr,
@@ -41,4 +40,4 @@ const platform: IRuntime = {
   }
 };
 
-export default platform;
+export default platformWeb;
