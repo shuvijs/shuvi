@@ -1,6 +1,6 @@
 import * as APIHooks from '../types/hooks';
 import { IAppData } from '@shuvi/runtime-core';
-import { IHtmlTag } from '../types/index';
+import { IHtmlTag } from '@shuvi/platform-core';
 
 import {
   IDocumentProps,
