@@ -1,8 +1,8 @@
-import { IRuntime } from '@shuvi/platform-core';
+import { IRuntime } from '@shuvi/service';
 import { resolveAppFile, resolveDep, resolveLib } from './paths';
 import { config as configBundler } from './bundler/config';
 
-const webReactRuntime:IRuntime = {
+const webReactRuntime: IRuntime = {
   async install(api): Promise<void> {
     api.setPlatformModule(resolveAppFile('index'));
     // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
@@ -17,6 +17,6 @@ const webReactRuntime:IRuntime = {
     );
     configBundler(api);
   }
-}
+};
 
 export default webReactRuntime;

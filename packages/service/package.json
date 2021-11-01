@@ -36,6 +36,7 @@
     "@babel/traverse": "^7.14.7",
     "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
+    "@shuvi/platform-core": "0.0.1-pre.10",
     "@shuvi/runtime-core": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10",
     "@shuvi/toolpack": "0.0.1-pre.10",

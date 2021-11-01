@@ -1,3 +1,3 @@
-import { IRuntimeConfig } from '@shuvi/service/lib/api';
+import { IRuntimeConfig } from '@shuvi/platform-core';
 
 export default function setRuntimeConfig(config: IRuntimeConfig): void;

@@ -1,4 +1,4 @@
-import { IRuntimeConfig } from '../api';
+import { IRuntimeConfig } from '@shuvi/platform-core';
 
 let runtimeConfig: IRuntimeConfig | null;
 export default () => {
