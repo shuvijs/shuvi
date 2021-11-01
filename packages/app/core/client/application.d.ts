@@ -1,4 +1,4 @@
-import { IAppRenderFn, IApplication, IAppState, ApplicationCreater } from '@shuvi/runtime-core';
+import { IAppState, ApplicationCreater } from '@shuvi/runtime-core';
 import { IRouter } from '@shuvi/router';
 import {
   IAppRouteConfig,

@@ -1,37 +1,15 @@
-import { IncomingMessage } from 'http';
 import { Hookable } from '@shuvi/hook';
 import { IRouter } from '@shuvi/router';
 
 import * as AppHooks from './hooks';
 import { IAppStore, IAppState, getAppStore } from './appStore';
 
-export interface IApplicationCreaterBase {
-  routeProps?: { [x: string]: any };
-  [x: string]: any;
-}
-
-export interface IApplicationCreaterServerContext
-  extends IApplicationCreaterBase {
-  req: IncomingMessage & {
-    [x: string]: any;
-  };
-}
-export interface IApplicationCreaterClientContext
-  extends IApplicationCreaterBase {
-  pageData: any;
-  routeProps: { [x: string]: any };
-}
-
-export type IApplicationCreaterContext =
-  | IApplicationCreaterClientContext
-  | IApplicationCreaterServerContext;
-
 export interface ApplicationCreater<
-  Context extends IApplicationCreaterContext,
+  Context extends IContext,
   Router extends IRouter = IRouter,
   CompType = any,
-  AppState extends IAppState = any,
-  > {
+  AppState extends IAppState = any
+> {
   (
     context: Context,
     options: {
@@ -53,7 +31,11 @@ export interface IApplication extends Hookable {
   dispose(): Promise<void>;
 }
 
-export interface IRenderOptions<Context, Router extends IRouter, CompType = any> {
+export interface IRenderOptions<
+  Context,
+  Router extends IRouter,
+  CompType = any
+> {
   AppComponent: CompType;
   router?: Router;
   appContext: Context;
@@ -62,10 +44,7 @@ export interface IRenderOptions<Context, Router extends IRouter, CompType = any>
 }
 
 export interface IView<
-  RenderOption extends IRenderOptions<
-    IApplicationCreaterContext,
-    IRouter
-  > = any,
+  RenderOption extends IRenderOptions<IContext, IRouter> = any,
   RenderResult = void
 > {
   renderApp(options: RenderOption): RenderResult;
@@ -80,7 +59,7 @@ export type IRerenderConfig = {
 };
 
 export interface IApplicationOptions<
-  Context extends IApplicationCreaterContext,
+  Context extends IContext,
   Router extends IRouter,
   AppState extends IAppState | undefined
 > {
@@ -92,7 +71,7 @@ export interface IApplicationOptions<
 }
 
 export class Application<
-    Context extends IApplicationCreaterContext,
+    Context extends IContext,
     Router extends IRouter = IRouter,
     AppState extends IAppState | undefined = undefined
   >

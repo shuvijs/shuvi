@@ -1,13 +1,15 @@
 import { IHookable } from '@shuvi/hook';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import {
-  ApplicationCreater,
-  IApplicationCreaterServerContext
-} from '@shuvi/runtime-core';
+  IApplicationCreaterServerContext,
+  IViewServer,
+  IRuntimeConfig
+} from '@shuvi/platform-core';
+import { ApplicationCreater } from '@shuvi/runtime-core';
 import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
-import { IDocumentModule, IServerModule, IViewServer } from '../types/index';
+import { IDocumentModule, IServerModule } from '../types/index';
 
 import { IServerMiddleware } from './serverMiddleware';
 
@@ -64,8 +66,6 @@ export type IPluginConfig =
 export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
-
-export type IRuntimeConfig = Record<string, string>;
 
 export declare type IPhase =
   | 'PHASE_PRODUCTION_BUILD'

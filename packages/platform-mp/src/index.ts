@@ -1,5 +1,5 @@
 // import React from 'react';
-import { IRuntime } from '@shuvi/platform-core';
+import { IRuntime } from '@shuvi/service';
 
 const platformMp: IRuntime = {
   async install(api): Promise<void> {

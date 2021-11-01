@@ -2,12 +2,12 @@ import {
   runPlugins,
   Application,
   IApplicationOptions,
-  IAppState,
-  IApplicationCreaterContext
+  IAppState
 } from '@shuvi/runtime-core';
 import initPlugins from '@shuvi/app/user/plugin';
 import { pluginRecord } from '@shuvi/app/core/plugins';
 import { IRouter } from '@shuvi/router';
+import { IApplicationCreaterContext } from './index';
 
 export default function platform<
   Context extends IApplicationCreaterContext,

@@ -1,4 +1,4 @@
-import { IRuntimeConfig } from '../api';
+import { IRuntimeConfig } from '@shuvi/platform-core';
 
 export function getPublicRuntimeConfig(
   runtimeConfig: IRuntimeConfig
