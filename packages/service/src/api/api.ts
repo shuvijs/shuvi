@@ -147,7 +147,30 @@ class Api extends Hookable implements IApi {
     this._projectBuilder = new ProjectBuilder({
       static: this.mode === 'production'
     });
-    await this._initPresetsAndPlugins();
+
+    const runPluginsHandler = await this._initPresetsAndPlugins();
+
+    // prepare all properties befofre run plugins, so plugin can use all api of Api
+    this._config = await this.callHook<APIHooks.IHookGetConfig>({
+      name: 'getConfig',
+      initialValue: this.config
+    });
+    // do not allow to modify config
+    Object.freeze(this._config);
+
+    this._paths = getPaths({
+      rootDir: this._config.rootDir,
+      outputPath: this._config.outputPath,
+      publicDir: this._config.publicDir
+    });
+    // do not allow to modify paths
+    Object.freeze(this._paths);
+
+    // Runtime installation need to be executed before initializing presets and plugins
+    // to make sure shuvi entry file at the top.
+    this.platform.install(this);
+
+    runPluginsHandler();
 
     initCoreResource(this);
 
@@ -433,27 +456,7 @@ class Api extends Hookable implements IApi {
       });
     }
 
-    // prepare all properties befofre run plugins, so plugin can use all api of Api
-    this._config = await this.callHook<APIHooks.IHookGetConfig>({
-      name: 'getConfig',
-      initialValue: config
-    });
-    // do not allow to modify config
-    Object.freeze(this._config);
-
-    this._paths = getPaths({
-      rootDir: this._config.rootDir,
-      outputPath: this._config.outputPath,
-      publicDir: this._config.publicDir
-    });
-    // do not allow to modify paths
-    Object.freeze(this._paths);
-
-    // Runtime installation need to be executed before initializing presets and plugins
-    // to make sure shuvi entry file at the top.
-    //this.runtime.install(this);
-    this.platform.install(this);
-    runPlugins();
+    return runPlugins;
   }
 
   private _initPreset(preset: IPreset) {
