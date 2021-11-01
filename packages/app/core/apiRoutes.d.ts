@@ -1,4 +1,4 @@
-import { IApiRouteConfig } from '@shuvi/service/lib/api';
+import { IApiRouteConfig } from '@shuvi/service';
 
 declare const apiRoutes: IApiRouteConfig[];
 

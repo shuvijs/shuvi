@@ -1,4 +1,4 @@
-import { IRuntime } from '@shuvi/platform-core';
+import { IRuntime } from '@shuvi/service';
 
 import { resolveAppFile } from './paths';
 
