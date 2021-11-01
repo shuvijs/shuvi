@@ -6,12 +6,6 @@ import rimraf from 'rimraf';
 import { resolvePreset, resolvePlugin } from './utils';
 import { readFileSync } from 'fs';
 
-jest.mock('../initCoreResource', () => ({
-  initCoreResource: (api: any) => {
-    api.addResoure('clientManifest', () => ({ entries: [] }));
-  }
-}));
-
 describe('api', () => {
   test('should has "production" be default mode', async () => {
     const prodApi = await getApi({
@@ -95,6 +89,7 @@ describe('api', () => {
     const api = await getApi({
       config: { plugins: [api => (pluginApi = api)] }
     });
+    api.addResoure('clientManifest', () => ({ entries: [] }));
 
     expect(pluginApi.mode).toBe(api.mode);
     expect(pluginApi.paths).toBe(api.paths);

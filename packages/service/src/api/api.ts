@@ -29,7 +29,6 @@ import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hook';
-import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
 import { PUBLIC_PATH } from '../constants';
@@ -37,7 +36,6 @@ import { createDefaultConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
-import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
@@ -171,13 +169,6 @@ class Api extends Hookable implements IApi {
     this.platform.install(this);
 
     runPluginsHandler();
-
-    initCoreResource(this);
-
-    // TODO?: move into application
-    if (typeof this._config.runtimeConfig === 'object') {
-      setRuntimeConfig(this._config.runtimeConfig);
-    }
   }
 
   get server() {

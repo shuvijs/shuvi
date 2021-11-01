@@ -18,7 +18,7 @@ import {
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '../constants';
-import { renderTemplate } from '../lib/viewTemplate';
+import { renderTemplate } from './tempViewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
 import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
 import { Api, IBuiltResource } from '../api';

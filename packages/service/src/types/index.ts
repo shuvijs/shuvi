@@ -6,14 +6,14 @@ import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 
 import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 
-import { IApi, IApiRouteConfig, IUserRouteConfig } from '../api';
+import { Api, IApiRouteConfig, IUserRouteConfig } from '../api';
 
 export interface ITemplateData {
   [x: string]: any;
 }
 
 export interface IRuntime {
-  install(api: IApi): void;
+  install(api: Api): void;
 }
 
 export { IUserRouteConfig, IApiRouteConfig };

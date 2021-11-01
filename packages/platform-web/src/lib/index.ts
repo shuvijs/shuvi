@@ -1,9 +1,17 @@
 import { IRuntime } from '@shuvi/service';
 
 import { resolveAppFile } from './paths';
+import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
+import { initCoreResource } from './initCoreResource';
 
 const platformWeb: IRuntime = {
   async install(api): Promise<void> {
+    initCoreResource(api);
+
+    if (typeof api.config.runtimeConfig === 'object') {
+      setRuntimeConfig(api.config.runtimeConfig);
+    }
+
     // set application and entry
     const {
       ssr,
