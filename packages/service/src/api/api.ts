@@ -166,7 +166,7 @@ class Api extends Hookable implements IApi {
 
     // Runtime installation need to be executed before initializing presets and plugins
     // to make sure shuvi entry file at the top.
-    this.platform.install(this);
+    await this.platform.install(this);
 
     runPluginsHandler();
   }

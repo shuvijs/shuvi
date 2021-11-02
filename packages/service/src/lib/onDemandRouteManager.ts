@@ -4,6 +4,7 @@ import { DevMiddleware } from './devMiddleware';
 import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
 import { Api } from '../api/api';
 import { matchRoutes } from '@shuvi/router';
+import { acceptsHtml } from './utils';
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
   public _api: Api;
@@ -36,6 +37,29 @@ export class OnDemandRouteManager {
         await task;
       }
       next();
+    };
+  }
+
+  ensureRoutesMiddleware(): IRequestHandlerWithNext {
+    return async (req, res, next) => {
+      const accept = req.headers['accept'];
+      if (req.method !== 'GET') {
+        return next();
+      } else if (!accept) {
+        return next();
+      } else if (accept.indexOf('application/json') === 0) {
+        return next();
+      } else if (!acceptsHtml(accept, { htmlAcceptHeaders: ['text/html'] })) {
+        return next();
+      }
+
+      let err = null;
+      try {
+        await this.ensureRoutes(req.pathname || '/');
+      } catch (error) {
+        err = error;
+      }
+      next(err);
     };
   }
 

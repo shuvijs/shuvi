@@ -5,7 +5,7 @@ import cookie from 'cookie';
 import getRawBody from 'raw-body';
 import contentType from 'content-type';
 import { IParams, ParsedQuery } from '@shuvi/router';
-import { IResponse, IRequest } from '../types/server';
+import { IResponse, IRequest } from '@shuvi/service';
 
 export interface IApiReq {
   pathname: string;

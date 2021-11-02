@@ -1,27 +1,29 @@
-import * as APIHooks from '../types/hooks';
 import { IAppData } from '@shuvi/runtime-core';
 import { IHtmlTag } from '@shuvi/platform-core';
 
-import {
-  IDocumentProps,
-  IRenderResultRedirect,
-  ITemplateData
-} from '../types/index';
-
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
+
 import {
+  Api,
+  APIHooks,
+  IDocumentProps,
+  ITemplateData,
+  IBuiltResource,
   CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
-} from '../constants';
-import { renderTemplate } from './tempViewTemplate';
+} from '@shuvi/service';
+import { renderTemplate } from '../../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
-import { Api, IBuiltResource } from '../api';
+import {
+  IRendererConstructorOptions,
+  IRenderDocumentOptions,
+  IRenderResultRedirect
+} from './types';
 
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;

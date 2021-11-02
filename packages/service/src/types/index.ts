@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { IRouteMatch, IRouteRecord, IRedirectState } from '@shuvi/router';
+import { IRouteMatch, IRouteRecord } from '@shuvi/router';
 
 import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 
@@ -38,10 +38,6 @@ export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
   set(key: string, value: any): void;
   dump(): Record<string, any>;
-}
-
-export interface IRenderResultRedirect extends IRedirectState {
-  $type: 'redirect';
 }
 
 export interface IDocumentModule {
