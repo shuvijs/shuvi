@@ -13,20 +13,9 @@ import webpack, {
   Configuration
 } from 'webpack';
 import { Api } from '../api';
-import {
-  BUNDLER_TARGET_CLIENT,
-  BUNDLER_TARGET_SERVER,
-  BUILD_CLIENT_DIR,
-  BUILD_SERVER_DIR
-} from '../constants';
-import {
-  createWebpackConfig,
-  getClientEntry,
-  getServerEntry,
-  IWebpackConfigOptions
-} from './config';
+import { BUNDLER_TARGET_CLIENT } from '../constants';
+import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerErr = {
   moduleName: string;
@@ -66,19 +55,19 @@ class WebpackBundler {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
 
-      this._extraTargets = ((await this._api.callHook<
-        APIHooks.IHookBundlerExtraTarget
-      >(
-        {
-          name: 'bundler:extraTarget',
-          parallel: true
-        },
-        {
-          createConfig: this._createConfig.bind(this),
-          mode: this._api.mode,
-          webpack
-        }
-      )) as any).filter(Boolean) as Target[];
+      this._extraTargets = (
+        (await this._api.callHook<APIHooks.IHookBundlerExtraTarget>(
+          {
+            name: 'bundler:extraTarget',
+            parallel: true
+          },
+          {
+            createConfig: this._createConfig.bind(this),
+            mode: this._api.mode,
+            webpack
+          }
+        )) as any
+      ).filter(Boolean) as Target[];
       this._compiler = webpack(
         [...this._internalTargets, ...this._extraTargets].map(t => t.config)
       );
@@ -292,64 +281,31 @@ class WebpackBundler {
   }
 
   private async _getInternalTargets(): Promise<Target[]> {
-    const clientWebpackHelpers = webpackHelpers();
-    // create base config
-    let clientChain = createWebpackConfig(this._api, {
-      name: BUNDLER_TARGET_CLIENT,
-      node: false,
-      entry: getClientEntry(this._api),
-      outputDir: BUILD_CLIENT_DIR,
-      webpackHelpers: clientWebpackHelpers
-    });
-    // modify config by api hooks
-    clientChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
-      {
-        name: 'bundler:configTarget',
-        initialValue: clientChain
-      },
-      {
-        name: BUNDLER_TARGET_CLIENT,
-        mode: this._api.mode,
-        helpers: clientWebpackHelpers,
-        webpack: webpack
-      }
-    );
-
-    const serverWebpackHelpers = webpackHelpers();
-    let serverChain = createWebpackConfig(this._api, {
-      name: BUNDLER_TARGET_SERVER,
-      node: true,
-      entry: getServerEntry(this._api),
-      outputDir: BUILD_SERVER_DIR,
-      webpackHelpers: serverWebpackHelpers
-    });
-    serverChain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
-      {
-        name: 'bundler:configTarget',
-        initialValue: serverChain
-      },
-      {
-        name: BUNDLER_TARGET_SERVER,
-        mode: this._api.mode,
-        helpers: serverWebpackHelpers,
-        webpack: webpack
-      }
-    );
-
     const targets: Target[] = [];
-    if (hasEntry(clientChain)) {
-      const clientConfig = clientChain.toConfig();
-      logger.debug('Client Config');
-      logger.debug(inspect(clientConfig.resolve?.plugins, { depth: 10 }));
-      targets.push({ name: BUNDLER_TARGET_CLIENT, config: clientConfig });
+    // get base config
+    const buildTargets = this._api.getBuildTargets();
+    for (const buildTarget of buildTargets) {
+      let { chain, name, mode, helpers } = buildTarget;
+      // modify config by api hooks
+      chain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
+        {
+          name: 'bundler:configTarget',
+          initialValue: chain
+        },
+        {
+          name,
+          mode,
+          helpers,
+          webpack
+        }
+      );
+      if (hasEntry(chain)) {
+        const chainConfig = chain.toConfig();
+        logger.debug(`${name} Config`);
+        logger.debug(inspect(chainConfig.resolve?.plugins, { depth: 10 }));
+        targets.push({ name, config: chainConfig });
+      }
     }
-    if (hasEntry(serverChain)) {
-      const serverConfig = serverChain.toConfig();
-      logger.debug('Server Config');
-      logger.debug(inspect(serverConfig.module, { depth: 10 }));
-      targets.push({ name: BUNDLER_TARGET_SERVER, config: serverConfig });
-    }
-
     return targets;
   }
 }

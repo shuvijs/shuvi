@@ -1,11 +1,41 @@
 import fse from 'fs-extra';
 import path from 'path';
-import { Api, BUILD_CLIENT_DIR, IRequest, IRuntime } from '@shuvi/service';
+import {
+  Api,
+  BUILD_CLIENT_DIR,
+  BUILD_CLIENT_RUNTIME_MAIN,
+  BUILD_CLIENT_RUNTIME_POLYFILL,
+  BUILD_SERVER_DIR,
+  BUILD_SERVER_FILE_SERVER,
+  BUNDLER_TARGET_CLIENT,
+  BUNDLER_TARGET_SERVER,
+  IRequest,
+  IRuntime
+} from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
+import {
+  createWebpackConfig,
+  IWebpackEntry
+} from '@shuvi/service/lib/bundler/config';
+
 import { initCoreResource } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { getApiRoutesMiddleware } from './apiRoute';
 import { getSSRMiddleware, renderToHTML } from './SSR';
+
+export function getClientEntry(_api: Api): IWebpackEntry {
+  return {
+    [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
+    [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
+  };
+}
+
+export function getServerEntry(_api: Api): IWebpackEntry {
+  return {
+    [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/entry.server']
+  };
+}
 
 async function buildHtml({
   api,
@@ -39,6 +69,38 @@ const platformWeb: IRuntime = {
     if (typeof api.config.runtimeConfig === 'object') {
       setRuntimeConfig(api.config.runtimeConfig);
     }
+
+    const clientWebpackHelpers = webpackHelpers();
+    const clientChain = createWebpackConfig(api, {
+      name: BUNDLER_TARGET_CLIENT,
+      node: false,
+      entry: getClientEntry(api),
+      outputDir: BUILD_CLIENT_DIR,
+      webpackHelpers: clientWebpackHelpers
+    });
+
+    api.addBuildTargets({
+      chain: clientChain,
+      name: BUNDLER_TARGET_CLIENT,
+      mode: api.mode,
+      helpers: clientWebpackHelpers
+    });
+
+    const serverWebpackHelpers = webpackHelpers();
+    const serverChain = createWebpackConfig(api, {
+      name: BUNDLER_TARGET_SERVER,
+      node: true,
+      entry: getServerEntry(api),
+      outputDir: BUILD_SERVER_DIR,
+      webpackHelpers: serverWebpackHelpers
+    });
+
+    api.addBuildTargets({
+      chain: serverChain,
+      name: BUNDLER_TARGET_SERVER,
+      mode: api.mode,
+      helpers: serverWebpackHelpers
+    });
 
     // set application and entry
     const {
