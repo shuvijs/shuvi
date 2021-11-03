@@ -29,7 +29,6 @@ import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hook';
-import { setRuntimeConfig } from '../lib/runtimeConfig';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
 import { PUBLIC_PATH } from '../constants';
@@ -37,7 +36,6 @@ import { createDefaultConfig, loadConfig } from '../config';
 import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
-import { initCoreResource } from './initCoreResource';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
@@ -147,14 +145,30 @@ class Api extends Hookable implements IApi {
     this._projectBuilder = new ProjectBuilder({
       static: this.mode === 'production'
     });
-    await this._initPresetsAndPlugins();
 
-    initCoreResource(this);
+    const runPluginsHandler = await this._initPresetsAndPlugins();
 
-    // TODO?: move into application
-    if (typeof this._config.runtimeConfig === 'object') {
-      setRuntimeConfig(this._config.runtimeConfig);
-    }
+    // prepare all properties befofre run plugins, so plugin can use all api of Api
+    this._config = await this.callHook<APIHooks.IHookGetConfig>({
+      name: 'getConfig',
+      initialValue: this.config
+    });
+    // do not allow to modify config
+    Object.freeze(this._config);
+
+    this._paths = getPaths({
+      rootDir: this._config.rootDir,
+      outputPath: this._config.outputPath,
+      publicDir: this._config.publicDir
+    });
+    // do not allow to modify paths
+    Object.freeze(this._paths);
+
+    // Runtime installation need to be executed before initializing presets and plugins
+    // to make sure shuvi entry file at the top.
+    await this.platform.install(this);
+
+    runPluginsHandler();
   }
 
   get server() {
@@ -433,27 +447,7 @@ class Api extends Hookable implements IApi {
       });
     }
 
-    // prepare all properties befofre run plugins, so plugin can use all api of Api
-    this._config = await this.callHook<APIHooks.IHookGetConfig>({
-      name: 'getConfig',
-      initialValue: config
-    });
-    // do not allow to modify config
-    Object.freeze(this._config);
-
-    this._paths = getPaths({
-      rootDir: this._config.rootDir,
-      outputPath: this._config.outputPath,
-      publicDir: this._config.publicDir
-    });
-    // do not allow to modify paths
-    Object.freeze(this._paths);
-
-    // Runtime installation need to be executed before initializing presets and plugins
-    // to make sure shuvi entry file at the top.
-    //this.runtime.install(this);
-    this.platform.install(this);
-    runPlugins();
+    return runPlugins;
   }
 
   private _initPreset(preset: IPreset) {

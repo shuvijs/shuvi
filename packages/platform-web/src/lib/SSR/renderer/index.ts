@@ -1,8 +1,9 @@
+import { Api } from '@shuvi/service';
+
 import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
 import { BaseRenderer, isRedirect } from './base';
 import { SpaRenderer } from './spa';
 import { SsrRenderer } from './ssr';
-import { Api } from '../api';
 
 export * from './types';
 
