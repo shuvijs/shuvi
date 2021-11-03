@@ -1,19 +1,19 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { IRouteMatch, IRouteRecord, IRedirectState } from '@shuvi/router';
+import { IRouteMatch, IRouteRecord } from '@shuvi/router';
 
 import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 
 import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 
-import { IApi, IApiRouteConfig, IUserRouteConfig } from '../api';
+import { Api, IApiRouteConfig, IUserRouteConfig } from '../api';
 
 export interface ITemplateData {
   [x: string]: any;
 }
 
 export interface IRuntime {
-  install(api: IApi): void;
+  install(api: Api): void;
 }
 
 export { IUserRouteConfig, IApiRouteConfig };
@@ -38,10 +38,6 @@ export interface ITelestore {
   get<T = unknown>(key: string, defaultValue?: T): T | undefined;
   set(key: string, value: any): void;
   dump(): Record<string, any>;
-}
-
-export interface IRenderResultRedirect extends IRedirectState {
-  $type: 'redirect';
 }
 
 export interface IDocumentModule {

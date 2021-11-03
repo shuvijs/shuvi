@@ -5,8 +5,6 @@ import { Api, getApi, IConfig } from '../api';
 import * as APIHooks from '../types/hooks';
 import { getBundler } from '../bundler/bundler';
 import { BUILD_CLIENT_DIR } from '../constants';
-import { renderToHTML } from '../lib/renderToHTML';
-import { IRequest } from '../types/server';
 
 export interface IBuildOptions {
   cwd?: string;
@@ -52,31 +50,6 @@ function copyPublicFolder(api: Api) {
   );
 }
 
-async function buildHtml({
-  api,
-  pathname,
-  filename
-}: {
-  api: Api;
-  pathname: string;
-  filename: string;
-}) {
-  const { html } = await renderToHTML({
-    req: {
-      url: pathname,
-      headers: {}
-    } as IRequest,
-    api
-  });
-
-  if (html) {
-    await fse.writeFile(
-      path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
-      html
-    );
-  }
-}
-
 export async function build(options: IBuildOptions) {
   const opts = {
     ...defaultBuildOptions,
@@ -102,10 +75,6 @@ export async function build(options: IBuildOptions) {
 
   // transpile the application
   await bundle({ api });
-
-  if (opts.target === 'spa') {
-    await buildHtml({ api, pathname: '/', filename: 'index.html' });
-  }
 
   api.emitEvent<APIHooks.IEventAfterBuild>('afterBuild');
 }
