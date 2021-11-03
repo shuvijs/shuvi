@@ -1,6 +1,5 @@
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
-import { acceptsHtml } from '../lib/utils';
 import { serveStatic } from '../lib/serveStatic';
 import { applyHttpProxyMiddleware } from '../lib/httpProxyMiddleware';
 import Base, { IShuviConstructorOptions } from './shuvi.base';
@@ -35,13 +34,12 @@ export default class ShuviDev extends Base {
     // keep the order
     api.server.use(this._onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply();
+    api.server.use(this._onDemandRouteMgr.ensureRoutesMiddleware());
     api.server.use(
       `${api.assetPublicPath}:path(.*)`,
       this._publicDirMiddleware
     );
     this.createBeforePageMiddlewares();
-    api.server.use(this.apiRoutesHandler);
-    api.server.use(this._pageMiddleware);
     this.createAfterPageMiddlewares();
   }
 
@@ -69,27 +67,5 @@ export default class ShuviDev extends Base {
       err = error;
     }
     if (err) next(err);
-  };
-
-  private _pageMiddleware: IRequestHandlerWithNext = async (req, res, next) => {
-    const accept = req.headers['accept'];
-    if (req.method !== 'GET') {
-      return next();
-    } else if (!accept) {
-      return next();
-    } else if (accept.indexOf('application/json') === 0) {
-      return next();
-    } else if (!acceptsHtml(accept, { htmlAcceptHeaders: ['text/html'] })) {
-      return next();
-    }
-
-    let err = null;
-    try {
-      await this._onDemandRouteMgr.ensureRoutes(req.pathname || '/');
-      await this._handlePageRequest(req, res, next);
-    } catch (error) {
-      err = error;
-    }
-    next(err);
   };
 }

@@ -1,7 +1,5 @@
-import { IRenderResultRedirect } from '../types/index';
-import { IRequest } from '../types/server';
-import { Renderer, isRedirect } from '../renderer';
-import { Api } from '../api';
+import { Api, IRequest } from '@shuvi/service';
+import { Renderer, isRedirect, IRenderResultRedirect } from './renderer';
 
 export async function renderToHTML({
   req,

@@ -1,29 +1,11 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import { IShuviMode, IConfig, getApi, Api } from '../api';
 import * as APIHooks from '../types/hooks';
-import { matchPathname } from '@shuvi/router';
-import { sendHTML } from '../lib/utils';
-import { renderToHTML } from '../lib/renderToHTML';
-import { apiRouteHandler, IApiRequestHandler } from '../lib/apiRouteHandler';
-import {
-  IRequestHandlerWithNext,
-  IResponse,
-  IRequest,
-  INextFunc
-} from '../types/server';
+import { IResponse, IRequest } from '../types/server';
 
 export interface IShuviConstructorOptions {
   cwd: string;
   config: IConfig;
   configFile?: string;
-}
-interface IApiModule {
-  default: IApiRequestHandler;
-  config?: {
-    apiConfig?: {
-      bodyParser?: { sizeLimit: number | string } | boolean;
-    };
-  };
 }
 
 export default abstract class Shuvi {
@@ -37,9 +19,6 @@ export default abstract class Shuvi {
       configFile,
       mode: this.getMode()
     });
-
-    this._handlePageRequest = this._handlePageRequest.bind(this);
-    this.renderToHTML = this.renderToHTML.bind(this);
   }
 
   protected abstract getMode(): IShuviMode;
@@ -74,34 +53,6 @@ export default abstract class Shuvi {
     return;
   }
 
-  async renderToHTML(
-    req: IncomingMessage,
-    res: ServerResponse
-  ): Promise<string | null> {
-    const { server } = this._api.resources.server;
-    const { html, appContext } = await renderToHTML({
-      req: req as IRequest,
-      api: this._api,
-      onRedirect(redirect) {
-        res.writeHead(redirect.status ?? 302, { Location: redirect.path });
-        res.end();
-      }
-    });
-
-    // set 404 statusCode
-    if (appContext.statusCode) {
-      res.statusCode = appContext.statusCode;
-    } else {
-      res.statusCode = 200;
-    }
-
-    if (server.onViewDone) {
-      server.onViewDone(req, res, { html, appContext });
-    }
-
-    return html;
-  }
-
   protected _getBeforePageMiddlewares() {
     return this._api.getBeforePageMiddlewares();
   }
@@ -111,65 +62,6 @@ export default abstract class Shuvi {
     middlewares.forEach(({ path, handler }) =>
       this._api.server.use(path, handler)
     );
-  };
-
-  protected apiRoutesHandler: IRequestHandlerWithNext = async (
-    req,
-    res,
-    next
-  ) => {
-    const { apiRoutes } = this._api.resources.server;
-    const { prefix, ...otherConfig } = this._api.config.apiConfig || {};
-    if (!req.url.startsWith(prefix!)) {
-      return next();
-    }
-    let tempApiModule;
-    for (const { path, apiModule } of apiRoutes) {
-      const match = matchPathname(path, req.pathname);
-      if (match) {
-        req.params = match.params;
-        tempApiModule = apiModule;
-        break;
-      }
-    }
-    if (tempApiModule) {
-      try {
-        const { config: { apiConfig = {} } = {}, default: resolver } =
-          tempApiModule as unknown as IApiModule;
-        let overridesConfig = {
-          ...otherConfig,
-          ...apiConfig
-        };
-
-        await apiRouteHandler(req, res, resolver, overridesConfig);
-      } catch (error) {
-        next(error);
-      }
-    } else {
-      next();
-    }
-  };
-
-  protected _handlePageRequest = async (
-    req: IRequest,
-    res: IResponse,
-    next: INextFunc
-  ) => {
-    try {
-      const renderToHTML = await this._api.callHook<APIHooks.IHookRenderToHTML>(
-        {
-          name: 'renderToHTML',
-          initialValue: this.renderToHTML
-        }
-      );
-      const html = await renderToHTML(req, res);
-      if (html) {
-        // send the response
-        sendHTML(req, res, html);
-      }
-    } catch (error) {
-      next(error);
-    }
   };
 
   protected _getAfterPageMiddlewares() {

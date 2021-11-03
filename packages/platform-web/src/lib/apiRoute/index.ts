@@ -1,0 +1,1 @@
+export { getApiRoutesMiddleware } from './getApiRoutesMiddleware';

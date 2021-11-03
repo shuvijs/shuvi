@@ -12,8 +12,6 @@ export default class ShuviProd extends Base {
       api.server.use(`${api.assetPublicPath}:path(.*)`, this._assetsMiddleware);
     }
     this.createBeforePageMiddlewares();
-    api.server.use(this.apiRoutesHandler);
-    api.server.use(this._handlePageRequest);
     this.createAfterPageMiddlewares();
   }
 

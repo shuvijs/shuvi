@@ -1,8 +1,8 @@
 import { AppHooks, IAppData, IData } from '@shuvi/runtime-core';
 import { IRouter } from '@shuvi/router';
-import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '../constants';
-import getRuntimeConfig from '../lib/runtimeConfig';
-import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
+import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '@shuvi/service';
+import getRuntimeConfig from '@shuvi/service/lib/lib/runtimeConfig';
+import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
