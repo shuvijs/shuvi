@@ -1,7 +1,7 @@
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import { IRequestHandlerWithNext } from '../types/server';
 import { DevMiddleware } from './devMiddleware';
-import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
+import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { Api } from '../api/api';
 import { matchRoutes } from '@shuvi/router';
 import { acceptsHtml } from './utils';

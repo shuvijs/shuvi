@@ -1,6 +1,7 @@
 import path from 'path';
 import { IConfig, IApiConfig } from '../api';
-import { PUBLIC_PATH, CONFIG_FILE } from '../constants';
+import { PUBLIC_PATH } from '../constants';
+import { CONFIG_FILE } from '@shuvi/shared/lib/constants';
 import { loadDotenvConfig } from './loadDotenvConfig';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 

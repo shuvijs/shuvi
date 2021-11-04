@@ -7,11 +7,13 @@ import {
   BUILD_CLIENT_RUNTIME_POLYFILL,
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
-  BUNDLER_TARGET_CLIENT,
-  BUNDLER_TARGET_SERVER,
   IRequest,
   IRuntime
 } from '@shuvi/service';
+import {
+  BUNDLER_TARGET_CLIENT,
+  BUNDLER_TARGET_SERVER
+} from '@shuvi/shared/lib/constants';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import {

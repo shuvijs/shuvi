@@ -10,13 +10,15 @@ import {
   IDocumentProps,
   ITemplateData,
   IBuiltResource,
-  CLIENT_CONTAINER_ID,
   BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_POLYFILL,
+  BUILD_CLIENT_RUNTIME_POLYFILL
+} from '@shuvi/service';
+import {
+  CLIENT_CONTAINER_ID,
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
-} from '@shuvi/service';
+} from '@shuvi/shared/lib/constants';
 import { renderTemplate } from '../../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
 import {

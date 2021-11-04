@@ -8,7 +8,7 @@ import {
   BUNDLER_TARGET_CLIENT,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
-} from '../constants';
+} from '@shuvi/shared/lib/constants';
 
 export interface DevMiddleware {
   apply(): void;

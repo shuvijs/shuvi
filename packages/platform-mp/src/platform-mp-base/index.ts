@@ -1,10 +1,6 @@
 import path from 'path';
-import {
-  Api,
-  APIHooks,
-  IUserRouteConfig,
-  BUNDLER_TARGET_CLIENT
-} from '@shuvi/service';
+import { Api, APIHooks, IUserRouteConfig } from '@shuvi/service';
+import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';

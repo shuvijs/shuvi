@@ -1,7 +1,5 @@
 import { PATH_PREFIX } from '@shuvi/shared/lib/constants';
 
-export * from '@shuvi/shared/lib/constants';
-
 export const PUBLIC_PATH = `${PATH_PREFIX}/`;
 
 export const BUILD_MANIFEST_PATH = 'build-manifest.json';

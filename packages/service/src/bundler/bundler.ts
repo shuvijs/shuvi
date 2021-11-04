@@ -13,7 +13,7 @@ import webpack, {
   Configuration
 } from 'webpack';
 import { Api } from '../api';
-import { BUNDLER_TARGET_CLIENT } from '../constants';
+import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
 
