@@ -2,18 +2,13 @@ import fse from 'fs-extra';
 import path from 'path';
 import {
   Api,
-  BUILD_CLIENT_DIR,
-  BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_POLYFILL,
+  BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
   IRequest,
   IRuntime
 } from '@shuvi/service';
-import {
-  BUNDLER_DEFAULT_TARGET,
-  BUNDLER_TARGET_SERVER
-} from '@shuvi/shared/lib/constants';
+import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import {
@@ -25,13 +20,6 @@ import { initCoreResource } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { getApiRoutesMiddleware } from './apiRoute';
 import { getSSRMiddleware, renderToHTML } from './SSR';
-
-function getClientEntry(_api: Api): IWebpackEntry {
-  return {
-    [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
-    [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
-  };
-}
 
 function getServerEntry(_api: Api): IWebpackEntry {
   const { ssr } = _api.config;
@@ -61,7 +49,7 @@ async function buildHtml({
 
   if (html) {
     await fse.writeFile(
-      path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
+      path.resolve(api.paths.buildDir, BUILD_DEFAULT_DIR, filename),
       html
     );
   }
@@ -74,22 +62,6 @@ const platformWeb: IRuntime = {
     if (typeof api.config.runtimeConfig === 'object') {
       setRuntimeConfig(api.config.runtimeConfig);
     }
-
-    const clientWebpackHelpers = webpackHelpers();
-    const clientChain = createWebpackConfig(api, {
-      name: BUNDLER_DEFAULT_TARGET,
-      node: false,
-      entry: getClientEntry(api),
-      outputDir: BUILD_CLIENT_DIR,
-      webpackHelpers: clientWebpackHelpers
-    });
-
-    api.addBuildTargets({
-      chain: clientChain,
-      name: BUNDLER_DEFAULT_TARGET,
-      mode: api.mode,
-      helpers: clientWebpackHelpers
-    });
 
     const serverWebpackHelpers = webpackHelpers();
     const serverChain = createWebpackConfig(api, {

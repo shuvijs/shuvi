@@ -14,8 +14,18 @@ import webpack, {
 } from 'webpack';
 import { Api } from '../api';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
-import { createWebpackConfig, IWebpackConfigOptions } from './config';
+import {
+  createWebpackConfig,
+  IWebpackConfigOptions,
+  IWebpackEntry
+} from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
+import {
+  BUILD_DEFAULT_DIR,
+  BUILD_CLIENT_RUNTIME_MAIN,
+  BUILD_CLIENT_RUNTIME_POLYFILL
+} from '../constants';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerErr = {
   moduleName: string;
@@ -280,10 +290,38 @@ class WebpackBundler {
     });
   }
 
+  private initDefaultBuildTarget() {
+    function getDefaultEntry(_api: Api): IWebpackEntry {
+      return {
+        [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
+        [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
+      };
+    }
+    const defaultWebpackHelpers = webpackHelpers();
+    const defaultChain = createWebpackConfig(this._api, {
+      name: BUNDLER_DEFAULT_TARGET,
+      node: false,
+      entry: getDefaultEntry(this._api),
+      outputDir: BUILD_DEFAULT_DIR,
+      webpackHelpers: defaultWebpackHelpers
+    });
+    return [
+      {
+        chain: defaultChain,
+        name: BUNDLER_DEFAULT_TARGET,
+        mode: this._api.mode,
+        helpers: defaultWebpackHelpers
+      }
+    ];
+  }
+
   private async _getInternalTargets(): Promise<Target[]> {
     const targets: Target[] = [];
     // get base config
-    const buildTargets = this._api.getBuildTargets();
+    const buildTargets = this.initDefaultBuildTarget().concat(
+      this._api.getBuildTargets()
+    );
+
     for (const buildTarget of buildTargets) {
       let { chain, name, mode, helpers } = buildTarget;
       // modify config by api hooks

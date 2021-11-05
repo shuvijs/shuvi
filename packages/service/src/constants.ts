@@ -6,7 +6,7 @@ export const BUILD_MANIFEST_PATH = 'build-manifest.json';
 
 export const BUILD_MEDIA_PATH = 'static/media/[name].[hash:8].[ext]';
 
-export const BUILD_CLIENT_DIR = 'client';
+export const BUILD_DEFAULT_DIR = 'client';
 
 export const BUILD_CLIENT_RUNTIME_MAIN = `static/runtime/main`;
 

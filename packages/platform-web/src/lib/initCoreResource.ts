@@ -3,7 +3,7 @@ import fse from 'fs-extra';
 import { parseTemplateFile } from './viewTemplate';
 import {
   Api,
-  BUILD_CLIENT_DIR,
+  BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
   BUILD_MANIFEST_PATH,
   BUILD_SERVER_FILE_SERVER
@@ -31,7 +31,7 @@ export function initCoreResource(api: Api) {
   api.addResoure('clientManifest', () =>
     require(path.join(
       api.paths.buildDir,
-      BUILD_CLIENT_DIR,
+      BUILD_DEFAULT_DIR,
       BUILD_MANIFEST_PATH
     ))
   );

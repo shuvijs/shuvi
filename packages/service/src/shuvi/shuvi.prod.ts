@@ -1,5 +1,5 @@
 import { serveStatic } from '../lib/serveStatic';
-import { BUILD_CLIENT_DIR, PUBLIC_PATH } from '../constants';
+import { BUILD_DEFAULT_DIR, PUBLIC_PATH } from '../constants';
 import Base from './shuvi.base';
 import { IRequestHandlerWithNext } from '../types/server';
 
@@ -27,7 +27,7 @@ export default class ShuviProd extends Base {
     const api = this._api;
     let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
-    const assetAbsPath = api.resolveBuildFile(BUILD_CLIENT_DIR, path);
+    const assetAbsPath = api.resolveBuildFile(BUILD_DEFAULT_DIR, path);
     let err = null;
     try {
       await serveStatic(req, res, assetAbsPath);

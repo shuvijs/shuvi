@@ -34,6 +34,7 @@ export async function getDevMiddleware({
     }
   });
 
+  // webpackDevMiddleware make first compiler build assets as static sources
   const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
     stats: false, // disable stats on server
     publicPath: api.assetPublicPath,
