@@ -1,6 +1,10 @@
 import path from 'path';
-import { Api, APIHooks, IUserRouteConfig } from '@shuvi/service';
-import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
+import {
+  Api,
+  APIHooks,
+  IUserRouteConfig,
+  BUILD_DEFAULT_DIR
+} from '@shuvi/service';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';
@@ -23,8 +27,6 @@ import {
 } from '@tarojs/shared/dist/template';
 
 import { AppConfig as TaroAppConfig, Config } from '@tarojs/taro';
-import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
-import { createWebpackConfig } from '@shuvi/service/lib/bundler/config';
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
 const getAllFiles = (
@@ -289,161 +291,6 @@ export default abstract class PlatformMpBase {
 
   configWebpack() {
     const api = this._api;
-    const clientWebpackHelpers = webpackHelpers();
-    const clientChain = createWebpackConfig(api, {
-      name: BUNDLER_DEFAULT_TARGET,
-      node: false,
-      entry: {},
-      outputDir: api.config.platform?.target!,
-      webpackHelpers: clientWebpackHelpers
-    });
-
-    clientChain.optimization.clear();
-    modifyStyle(clientChain, this.fileType.style);
-    addBabelPlugins(clientChain);
-    clientChain.output.globalObject(this.globalObject);
-    clientChain.output.chunkFilename('[name].js');
-    clientChain.output.filename('[name].js');
-    clientChain.plugins.delete('private/module-replace-plugin');
-    clientChain.output.publicPath('');
-    clientChain.plugins.get('define').tap(args => {
-      return [
-        {
-          ...(args[0] || {}),
-          ENABLE_INNER_HTML: true,
-          ENABLE_ADJACENT_HTML: true,
-          ENABLE_SIZE_APIS: false,
-          ENABLE_TEMPLATE_CONTENT: true, // taro 3.3.9
-          ENABLE_CLONE_NODE: true, // taro 3.3.9
-          ['process.env.' +
-          `${api.config.platform?.name}_${api.config.platform?.target}`.toUpperCase()]:
-            api.config.platform?.target
-        }
-      ];
-    });
-
-    clientChain.plugin('DomEnvPlugin').use(DomEnvPlugin);
-    clientChain.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
-      {
-        appConfigs: this.appConfigs,
-        themeFilePath: this.themeFilePath,
-        paths: api.paths,
-        fileType: this.fileType,
-        template: this.template
-      }
-    ]);
-    clientChain.plugin('ModifyChunkPlugin').use(ModifyChunkPlugin, [
-      {
-        fileType: this.fileType
-      }
-    ]);
-    const fileLoader = clientChain.module
-      .rule('main')
-      .oneOfs.get('media')
-      .use('file-loader');
-    fileLoader.options({
-      name: '[path][name].[ext]',
-      esModule: false,
-      useRelativePath: true,
-      context: api.paths.srcDir,
-      publicPath: '/'
-    });
-
-    clientChain.merge({
-      resolve: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.vue'],
-        mainFields: ['jsnext:main', 'browser', 'module', 'main'],
-        symlinks: true,
-        alias: {
-          // 小程序使用 regenerator-runtime@0.11
-          'regenerator-runtime': resolveLib('regenerator-runtime'),
-          // 开发组件库时 link 到本地调试，runtime 包需要指向本地 node_modules 顶层的 runtime，保证闭包值 Current 一致
-          '@tarojs/runtime': resolveLib('@tarojs/runtime'),
-          '@tarojs/shared': resolveLib('@tarojs/shared'),
-          '@tarojs/taro': resolveLib('@tarojs/taro'),
-          '@tarojs/api': resolveLib('@tarojs/api'),
-          '@tarojs/components$':
-            this.taroComponentsPath || '@tarojs/components/mini',
-          '@tarojs/react': resolveLib('@tarojs/react'),
-          'react-dom$': resolveLib('@tarojs/react'),
-          react$: resolveLib('react'),
-          'react-reconciler$': resolveLib('react-reconciler'),
-          [PACKAGE_NAME]: PACKAGE_RESOLVED,
-
-          // @binance
-          '@binance/mp-service': '@tarojs/taro',
-          '@binance/mp-components$': this.taroComponentsPath,
-          '@binance/mp-api': '@tarojs/api',
-          '@binance/http': path.join(
-            PACKAGE_RESOLVED,
-            'lib/platform-mp-base/adapters/http/index'
-          ),
-          '@binance/fetch': path.join(
-            PACKAGE_RESOLVED,
-            'lib/platform-mp-base/adapters/fetch'
-          ),
-          'i18next-browser-languagedetector': path.join(
-            PACKAGE_RESOLVED,
-            'lib/platform-mp-base/adapters/i18n/LanguageDetector/index'
-          )
-        }
-      },
-      resolveLoader: {
-        modules: ['node_modules']
-      },
-      optimization: {
-        sideEffects: true,
-        runtimeChunk: {
-          name: 'runtime'
-        },
-        splitChunks: {
-          maxInitialRequests: Infinity,
-          minSize: 0,
-          usedExports: true,
-          automaticNameDelimiter: '.',
-          cacheGroups: {
-            common: {
-              name: 'common',
-              chunks: 'all',
-              minChunks: 2,
-              priority: 1
-            },
-            vendors: {
-              name: 'vendors',
-              chunks: 'all',
-              minChunks: 2,
-              test: (module: any) =>
-                /[\\/]node_modules[\\/]/.test(module.resource),
-              priority: 10
-            },
-            taro: {
-              name: 'taro',
-              chunks: 'all',
-              test: (module: any) => /@tarojs[\\/][a-z]+/.test(module.context),
-              priority: 100
-            }
-          }
-        }
-      }
-    });
-
-    // https://webpack.js.org/configuration/resolve/#resolveextensions
-    // Attempt to resolve these extensions in order
-    function enhancedExts(extensions: string[], target: string): string[] {
-      return extensions.map(extend => `.${target}${extend}`).concat(extensions);
-    }
-    const extensions = clientChain.resolve.extensions.values();
-    clientChain.resolve.extensions.clear();
-    clientChain.resolve.extensions.merge(
-      enhancedExts(extensions, api.config.platform?.target!)
-    );
-
-    api.addBuildTargets({
-      chain: clientChain,
-      name: BUNDLER_DEFAULT_TARGET,
-      mode: api.mode,
-      helpers: clientWebpackHelpers
-    });
 
     api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
       name: 'platform-mp',
@@ -461,9 +308,155 @@ export default abstract class PlatformMpBase {
           entry['pages/' + page.name] = [page.filepath];
         });
 
-        config.merge({
-          entry
+        config.entryPoints.clear();
+        config.optimization.clear();
+        modifyStyle(config, this.fileType.style);
+        addBabelPlugins(config);
+        config.output.globalObject(this.globalObject);
+        config.output.chunkFilename('[name].js');
+        config.output.filename('[name].js');
+        const outputPath = config.output.get('path').split('/');
+        if (outputPath[outputPath.length - 1] === BUILD_DEFAULT_DIR) {
+          outputPath[outputPath.length - 1] = api.config.platform?.target;
+          config.output.path(outputPath.join('/'));
+        }
+        config.plugins.delete('private/module-replace-plugin');
+        config.output.publicPath('');
+        config.plugins.get('define').tap(args => {
+          return [
+            {
+              ...(args[0] || {}),
+              ENABLE_INNER_HTML: true,
+              ENABLE_ADJACENT_HTML: true,
+              ENABLE_SIZE_APIS: false,
+              ENABLE_TEMPLATE_CONTENT: true, // taro 3.3.9
+              ENABLE_CLONE_NODE: true, // taro 3.3.9
+              ['process.env.' +
+              `${api.config.platform?.name}_${api.config.platform?.target}`.toUpperCase()]:
+                api.config.platform?.target
+            }
+          ];
         });
+
+        config.plugin('DomEnvPlugin').use(DomEnvPlugin);
+        config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
+          {
+            appConfigs: this.appConfigs,
+            themeFilePath: this.themeFilePath,
+            paths: api.paths,
+            fileType: this.fileType,
+            template: this.template
+          }
+        ]);
+        config.plugin('ModifyChunkPlugin').use(ModifyChunkPlugin, [
+          {
+            fileType: this.fileType
+          }
+        ]);
+        const fileLoader = config.module
+          .rule('main')
+          .oneOfs.get('media')
+          .use('file-loader');
+        fileLoader.options({
+          name: '[path][name].[ext]',
+          esModule: false,
+          useRelativePath: true,
+          context: api.paths.srcDir,
+          publicPath: '/'
+        });
+
+        config.merge({
+          entry,
+          resolve: {
+            extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.vue'],
+            mainFields: ['jsnext:main', 'browser', 'module', 'main'],
+            symlinks: true,
+            alias: {
+              // 小程序使用 regenerator-runtime@0.11
+              'regenerator-runtime': resolveLib('regenerator-runtime'),
+              // 开发组件库时 link 到本地调试，runtime 包需要指向本地 node_modules 顶层的 runtime，保证闭包值 Current 一致
+              '@tarojs/runtime': resolveLib('@tarojs/runtime'),
+              '@tarojs/shared': resolveLib('@tarojs/shared'),
+              '@tarojs/taro': resolveLib('@tarojs/taro'),
+              '@tarojs/api': resolveLib('@tarojs/api'),
+              '@tarojs/components$':
+                this.taroComponentsPath || '@tarojs/components/mini',
+              '@tarojs/react': resolveLib('@tarojs/react'),
+              'react-dom$': resolveLib('@tarojs/react'),
+              react$: resolveLib('react'),
+              'react-reconciler$': resolveLib('react-reconciler'),
+              [PACKAGE_NAME]: PACKAGE_RESOLVED,
+
+              // @binance
+              '@binance/mp-service': '@tarojs/taro',
+              '@binance/mp-components$': this.taroComponentsPath,
+              '@binance/mp-api': '@tarojs/api',
+              '@binance/http': path.join(
+                PACKAGE_RESOLVED,
+                'lib/platform-mp-base/adapters/http/index'
+              ),
+              '@binance/fetch': path.join(
+                PACKAGE_RESOLVED,
+                'lib/platform-mp-base/adapters/fetch'
+              ),
+              'i18next-browser-languagedetector': path.join(
+                PACKAGE_RESOLVED,
+                'lib/platform-mp-base/adapters/i18n/LanguageDetector/index'
+              )
+            }
+          },
+          resolveLoader: {
+            modules: ['node_modules']
+          },
+          optimization: {
+            sideEffects: true,
+            runtimeChunk: {
+              name: 'runtime'
+            },
+            splitChunks: {
+              maxInitialRequests: Infinity,
+              minSize: 0,
+              usedExports: true,
+              automaticNameDelimiter: '.',
+              cacheGroups: {
+                common: {
+                  name: 'common',
+                  chunks: 'all',
+                  minChunks: 2,
+                  priority: 1
+                },
+                vendors: {
+                  name: 'vendors',
+                  chunks: 'all',
+                  minChunks: 2,
+                  test: (module: any) =>
+                    /[\\/]node_modules[\\/]/.test(module.resource),
+                  priority: 10
+                },
+                taro: {
+                  name: 'taro',
+                  chunks: 'all',
+                  test: (module: any) =>
+                    /@tarojs[\\/][a-z]+/.test(module.context),
+                  priority: 100
+                }
+              }
+            }
+          }
+        });
+
+        // https://webpack.js.org/configuration/resolve/#resolveextensions
+        // Attempt to resolve these extensions in order
+        function enhancedExts(extensions: string[], target: string): string[] {
+          return extensions
+            .map(extend => `.${target}${extend}`)
+            .concat(extensions);
+        }
+        const extensions = config.resolve.extensions.values();
+        config.resolve.extensions.clear();
+        config.resolve.extensions.merge(
+          enhancedExts(extensions, api.config.platform?.target!)
+        );
 
         return config;
       }
