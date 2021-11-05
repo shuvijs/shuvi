@@ -138,7 +138,6 @@ export interface IApi extends IHookable {
 
   setPlatformModule: typeof ProjectBuilder.prototype.setPlatformModule;
   setClientModule: typeof ProjectBuilder.prototype.setClientModule;
-  setServerModule: typeof ProjectBuilder.prototype.setServerModule;
 
   addServerMiddleware: (serverMiddleware: IServerMiddleware) => void;
   addServerMiddlewareLast: (serverMiddleware: IServerMiddleware) => void;

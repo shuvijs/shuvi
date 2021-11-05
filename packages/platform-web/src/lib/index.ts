@@ -26,16 +26,19 @@ import { resolveAppFile } from './paths';
 import { getApiRoutesMiddleware } from './apiRoute';
 import { getSSRMiddleware, renderToHTML } from './SSR';
 
-export function getClientEntry(_api: Api): IWebpackEntry {
+function getClientEntry(_api: Api): IWebpackEntry {
   return {
     [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
     [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
   };
 }
 
-export function getServerEntry(_api: Api): IWebpackEntry {
+function getServerEntry(_api: Api): IWebpackEntry {
+  const { ssr } = _api.config;
   return {
-    [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/entry.server']
+    [BUILD_SERVER_FILE_SERVER]: [
+      resolveAppFile('entry', 'server', ssr ? 'ssr' : 'spa')
+    ]
   };
 }
 
@@ -106,7 +109,6 @@ const platformWeb: IRuntime = {
 
     // set application and entry
     const {
-      ssr,
       router: { history },
       target
     } = api.config;
@@ -118,15 +120,6 @@ const platformWeb: IRuntime = {
     } else {
       ApplicationModule = 'create-application-history-memory';
     }
-
-    api.setServerModule({
-      application: resolveAppFile(
-        'application',
-        'server',
-        ssr ? 'create-application' : 'create-application-spa'
-      ),
-      entry: resolveAppFile('entry', 'server')
-    });
 
     api.setClientModule({
       application: resolveAppFile('application', 'client', ApplicationModule),

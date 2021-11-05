@@ -375,9 +375,6 @@ class Api extends Hookable implements IApi {
   setClientModule(module: TargetModule) {
     this._projectBuilder.setClientModule(module);
   }
-  setServerModule(module: TargetModule) {
-    this._projectBuilder.setServerModule(module);
-  }
 
   addRuntimePlugin(name: string, runtimePlugin: string): void {
     this._projectBuilder.addRuntimePlugin(name, runtimePlugin);
