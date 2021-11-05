@@ -1,6 +1,6 @@
 import path from 'path';
 import { Api, APIHooks, IUserRouteConfig } from '@shuvi/service';
-import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
+import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';
@@ -291,7 +291,7 @@ export default abstract class PlatformMpBase {
     const api = this._api;
     const clientWebpackHelpers = webpackHelpers();
     const clientChain = createWebpackConfig(api, {
-      name: BUNDLER_TARGET_CLIENT,
+      name: BUNDLER_DEFAULT_TARGET,
       node: false,
       entry: {},
       outputDir: api.config.platform?.target!,
@@ -440,7 +440,7 @@ export default abstract class PlatformMpBase {
 
     api.addBuildTargets({
       chain: clientChain,
-      name: BUNDLER_TARGET_CLIENT,
+      name: BUNDLER_DEFAULT_TARGET,
       mode: api.mode,
       helpers: clientWebpackHelpers
     });

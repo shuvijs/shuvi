@@ -13,7 +13,7 @@ import webpack, {
   Configuration
 } from 'webpack';
 import { Api } from '../api';
-import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
+import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
 
@@ -118,7 +118,7 @@ class WebpackBundler {
     }
 
     [...this._internalTargets, ...this._extraTargets].forEach(({ name }) => {
-      if (name === BUNDLER_TARGET_CLIENT) {
+      if (name === BUNDLER_DEFAULT_TARGET) {
         this._watchTarget(name, {
           ...options,
           typeChecking: true

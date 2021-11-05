@@ -11,7 +11,7 @@ import {
   IRuntime
 } from '@shuvi/service';
 import {
-  BUNDLER_TARGET_CLIENT,
+  BUNDLER_DEFAULT_TARGET,
   BUNDLER_TARGET_SERVER
 } from '@shuvi/shared/lib/constants';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
@@ -74,7 +74,7 @@ const platformWeb: IRuntime = {
 
     const clientWebpackHelpers = webpackHelpers();
     const clientChain = createWebpackConfig(api, {
-      name: BUNDLER_TARGET_CLIENT,
+      name: BUNDLER_DEFAULT_TARGET,
       node: false,
       entry: getClientEntry(api),
       outputDir: BUILD_CLIENT_DIR,
@@ -83,7 +83,7 @@ const platformWeb: IRuntime = {
 
     api.addBuildTargets({
       chain: clientChain,
-      name: BUNDLER_TARGET_CLIENT,
+      name: BUNDLER_DEFAULT_TARGET,
       mode: api.mode,
       helpers: clientWebpackHelpers
     });
