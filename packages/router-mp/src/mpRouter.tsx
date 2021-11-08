@@ -13,7 +13,7 @@ import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
 import ErrorPage from './ErrorPage';
 import { getAppStore, getErrorHandler } from '@shuvi/platform-core';
-import { AppStore } from '@shuvi/platform-web-react/shuvi-app/AppStore';
+import AppContainer from '@shuvi/platform-web-react/shuvi-app/AppContainer';
 
 export interface IMpRouterProps {
   basename?: string;
@@ -82,6 +82,7 @@ export function MpRouter({
     routeProps: {},
     historyMode: 'memory'
   };
+
   const isRendered = useRef(true);
   useEffect(() => {
     const router = routerRef.current;
@@ -124,9 +125,13 @@ export function MpRouter({
 
   return initProps ? (
     <Router router={routerRef.current}>
-      <AppStore store={appStore} ErrorComp={ErrorPage}>
+      <AppContainer
+        appContext={appContext}
+        store={appStore}
+        ErrorComp={ErrorPage}
+      >
         <RouterView />
-      </AppStore>
+      </AppContainer>
     </Router>
   ) : null;
 }

@@ -10,7 +10,6 @@ import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
-import { AppStore } from '../AppStore';
 
 const headManager = new HeadManager();
 
@@ -75,11 +74,13 @@ export class ReactClientView implements IReactClientView {
       <ErrorBoundary>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <Router router={router}>
-            <AppStore store={appStore} ErrorComp={ErrorPage}>
-              <AppContainer appContext={appContext}>
-                <TypedAppComponent {...appProps} />
-              </AppContainer>
-            </AppStore>
+            <AppContainer
+              appContext={appContext}
+              store={appStore}
+              ErrorComp={ErrorPage}
+            >
+              <TypedAppComponent {...appProps} />
+            </AppContainer>
           </Router>
         </HeadManagerContext.Provider>
       </ErrorBoundary>

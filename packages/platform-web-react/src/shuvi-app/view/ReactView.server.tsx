@@ -16,7 +16,6 @@ import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
-import { AppStore } from '../AppStore';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -120,15 +119,17 @@ export class ReactServerView implements IReactServerView {
         renderToString(
           <ErrorBoundary>
             <Router static router={router}>
-              <AppStore store={appStore} ErrorComp={ErrorPage}>
-                <LoadableContext.Provider
-                  value={moduleName => loadableModules.push(moduleName)}
+              <LoadableContext.Provider
+                value={moduleName => loadableModules.push(moduleName)}
+              >
+                <AppContainer
+                  appContext={appContext}
+                  store={appStore}
+                  ErrorComp={ErrorPage}
                 >
-                  <AppContainer appContext={appContext}>
-                    <AppComponent {...appInitialProps} />
-                  </AppContainer>
-                </LoadableContext.Provider>
-              </AppStore>
+                  <AppComponent {...appInitialProps} />
+                </AppContainer>
+              </LoadableContext.Provider>
             </Router>
           </ErrorBoundary>
         );
