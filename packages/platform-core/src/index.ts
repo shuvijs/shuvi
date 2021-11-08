@@ -40,7 +40,6 @@ export {
   IRouteRecord,
   rankRouteBranches,
   parseQuery,
-  IRouteMatch,
   IParams
 } from '@shuvi/router';
 

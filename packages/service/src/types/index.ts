@@ -1,27 +1,16 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import {
-  IHtmlAttrs,
-  IHtmlTag,
-  IRouteMatch,
-  IRouteRecord
-} from '@shuvi/platform-core';
+import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 
 import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 
 import { Api, IApiRouteConfig, IUserRouteConfig } from '../api';
-
-export interface ITemplateData {
-  [x: string]: any;
-}
 
 export interface IRuntime {
   install(api: Api): void;
 }
 
 export { IUserRouteConfig, IApiRouteConfig };
-
-export type IMatchedRoute<T = IRouteRecord> = IRouteMatch<T>;
 
 export interface IDocumentProps {
   htmlAttrs: IHtmlAttrs;
@@ -37,10 +26,8 @@ interface IServerAppContext {
   [x: string]: any;
 }
 
-export interface ITelestore {
-  get<T = unknown>(key: string, defaultValue?: T): T | undefined;
-  set(key: string, value: any): void;
-  dump(): Record<string, any>;
+export interface ITemplateData {
+  [x: string]: any;
 }
 
 export interface IDocumentModule {
