@@ -42,7 +42,6 @@ export interface ProjectContext {
   platformModule: string;
   userModule: UserModule;
   clientModule: TargetModule;
-  serverModule: TargetModule;
 }
 
 export const createProjectContext = () =>
@@ -57,10 +56,6 @@ export const createProjectContext = () =>
     runtimePlugins: new Map(),
     runtimeConfigContent: null,
     clientModule: {
-      application: '',
-      entry: ''
-    },
-    serverModule: {
       application: '',
       entry: ''
     },

@@ -50,10 +50,6 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
     method: 'setRuntimeConfigContent'
   },
   clientModule: 'setClientModule',
-  serverModule: {
-    ignore: true,
-    method: 'setServerModule'
-  },
   platformModule: 'setPlatformModule',
   userModule: 'setUserModule'
 };
@@ -143,9 +139,6 @@ class ProjectBuilder {
   }
   setClientModule(module: TargetModule) {
     this._projectContext.clientModule = module;
-  }
-  setServerModule(module: TargetModule) {
-    this._projectContext.serverModule = module;
   }
 
   addService(source: string, exported: string, filepath: string): void {

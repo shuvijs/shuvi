@@ -1,4 +1,5 @@
 import path from 'path';
+import WebpackChain from 'webpack-chain';
 import {
   IApiConfig,
   IConfig,
@@ -41,6 +42,7 @@ import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
 import getPlatform from '../lib/getPlatform';
+import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -50,6 +52,13 @@ interface IApiOPtions {
   config?: IConfig;
   configFile?: string;
   phase?: IPhase;
+}
+
+interface IChain {
+  chain: WebpackChain;
+  name: string;
+  mode: IShuviMode;
+  helpers: IWebpackHelpers;
 }
 
 class Api extends Hookable implements IApi {
@@ -65,11 +74,12 @@ class Api extends Hookable implements IApi {
   private _routes: IUserRouteConfig[] = [];
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
+  private _webpackChains: IChain[] = [];
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private beforePageMiddlewares: IServerMiddleware[] = [];
-  private afterPageMiddlewares: IServerMiddleware[] = [];
+  private _beforePageMiddlewares: IServerMiddleware[] = [];
+  private _afterPageMiddlewares: IServerMiddleware[] = [];
   private _platform!: IRuntime;
   helpers: IApi['helpers'];
 
@@ -200,13 +210,21 @@ class Api extends Hookable implements IApi {
     return this._resources.clientManifest;
   }
 
+  getBuildTargets() {
+    return this._webpackChains;
+  }
+
+  addBuildTargets(chain: IChain) {
+    this._webpackChains.push(chain);
+  }
+
   addServerMiddleware(middleware: IServerMiddleware) {
-    this.beforePageMiddlewares.push(middleware);
+    this._beforePageMiddlewares.push(middleware);
   }
 
   getBeforePageMiddlewares(): IServerMiddlewareItem[] {
     const {
-      beforePageMiddlewares,
+      _beforePageMiddlewares,
       paths: { rootDir }
     } = this;
 
@@ -218,22 +236,22 @@ class Api extends Hookable implements IApi {
       serverMiddleware = [];
     }
 
-    return [...serverMiddleware, ...beforePageMiddlewares]
+    return [...serverMiddleware, ..._beforePageMiddlewares]
       .map(m => normalizeServerMiddleware(m, { rootDir }))
       .sort((a, b) => a.order - b.order);
   }
 
   addServerMiddlewareLast(middleware: IServerMiddleware) {
-    this.afterPageMiddlewares.push(middleware);
+    this._afterPageMiddlewares.push(middleware);
   }
 
   getAfterPageMiddlewares(): IServerMiddlewareItem[] {
     const {
-      afterPageMiddlewares,
+      _afterPageMiddlewares,
       paths: { rootDir }
     } = this;
 
-    return [...afterPageMiddlewares]
+    return [..._afterPageMiddlewares]
       .map(m => normalizeServerMiddleware(m, { rootDir }))
       .sort((a, b) => a.order - b.order);
   }
@@ -356,9 +374,6 @@ class Api extends Hookable implements IApi {
 
   setClientModule(module: TargetModule) {
     this._projectBuilder.setClientModule(module);
-  }
-  setServerModule(module: TargetModule) {
-    this._projectBuilder.setServerModule(module);
   }
 
   addRuntimePlugin(name: string, runtimePlugin: string): void {
