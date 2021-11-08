@@ -5,10 +5,10 @@ import { WebpackHotMiddleware } from './hotMiddleware';
 import { Api } from '../api';
 import { getBundler } from '../bundler';
 import {
-  BUNDLER_TARGET_CLIENT,
+  BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
-} from '../constants';
+} from '@shuvi/shared/lib/constants';
 
 export interface DevMiddleware {
   apply(): void;
@@ -34,6 +34,7 @@ export async function getDevMiddleware({
     }
   });
 
+  // webpackDevMiddleware make first compiler build assets as static sources
   const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
     stats: false, // disable stats on server
     publicPath: api.assetPublicPath,
@@ -41,7 +42,7 @@ export async function getDevMiddleware({
   });
 
   const webpackHotMiddleware = new WebpackHotMiddleware({
-    compiler: bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!,
+    compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!,
     path: DEV_HOT_MIDDLEWARE_PATH
   });
 

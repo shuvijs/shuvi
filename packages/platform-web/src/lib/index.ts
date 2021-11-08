@@ -1,11 +1,34 @@
 import fse from 'fs-extra';
 import path from 'path';
-import { Api, BUILD_CLIENT_DIR, IRequest, IRuntime } from '@shuvi/service';
+import {
+  Api,
+  BUILD_DEFAULT_DIR,
+  BUILD_SERVER_DIR,
+  BUILD_SERVER_FILE_SERVER,
+  IRequest,
+  IRuntime
+} from '@shuvi/service';
+import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
+import {
+  createWebpackConfig,
+  IWebpackEntry
+} from '@shuvi/service/lib/bundler/config';
+
 import { initCoreResource } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { getApiRoutesMiddleware } from './apiRoute';
 import { getSSRMiddleware, renderToHTML } from './SSR';
+
+function getServerEntry(_api: Api): IWebpackEntry {
+  const { ssr } = _api.config;
+  return {
+    [BUILD_SERVER_FILE_SERVER]: [
+      resolveAppFile('entry', 'server', ssr ? 'ssr' : 'spa')
+    ]
+  };
+}
 
 async function buildHtml({
   api,
@@ -26,7 +49,7 @@ async function buildHtml({
 
   if (html) {
     await fse.writeFile(
-      path.resolve(api.paths.buildDir, BUILD_CLIENT_DIR, filename),
+      path.resolve(api.paths.buildDir, BUILD_DEFAULT_DIR, filename),
       html
     );
   }
@@ -40,9 +63,24 @@ const platformWeb: IRuntime = {
       setRuntimeConfig(api.config.runtimeConfig);
     }
 
+    const serverWebpackHelpers = webpackHelpers();
+    const serverChain = createWebpackConfig(api, {
+      name: BUNDLER_TARGET_SERVER,
+      node: true,
+      entry: getServerEntry(api),
+      outputDir: BUILD_SERVER_DIR,
+      webpackHelpers: serverWebpackHelpers
+    });
+
+    api.addBuildTargets({
+      chain: serverChain,
+      name: BUNDLER_TARGET_SERVER,
+      mode: api.mode,
+      helpers: serverWebpackHelpers
+    });
+
     // set application and entry
     const {
-      ssr,
       router: { history },
       target
     } = api.config;
@@ -54,15 +92,6 @@ const platformWeb: IRuntime = {
     } else {
       ApplicationModule = 'create-application-history-memory';
     }
-
-    api.setServerModule({
-      application: resolveAppFile(
-        'application',
-        'server',
-        ssr ? 'create-application' : 'create-application-spa'
-      ),
-      entry: resolveAppFile('entry', 'server')
-    });
 
     api.setClientModule({
       application: resolveAppFile('application', 'client', ApplicationModule),

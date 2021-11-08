@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import path from 'path';
 import { IUserRouteConfig } from '../api';
-import { ROUTE_RESOURCE_QUERYSTRING } from '../constants';
+import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { IRouteRecord } from '@shuvi/router';
 
 export type Templates<T extends {}> = {

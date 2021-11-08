@@ -4,7 +4,7 @@ import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessag
 import { Api, getApi, IConfig } from '../api';
 import * as APIHooks from '../types/hooks';
 import { getBundler } from '../bundler/bundler';
-import { BUILD_CLIENT_DIR } from '../constants';
+import { BUILD_DEFAULT_DIR } from '../constants';
 
 export interface IBuildOptions {
   cwd?: string;
@@ -43,7 +43,7 @@ function copyPublicFolder(api: Api) {
 
   fse.copySync(
     api.paths.publicDir,
-    path.join(api.paths.buildDir, BUILD_CLIENT_DIR),
+    path.join(api.paths.buildDir, BUILD_DEFAULT_DIR),
     {
       dereference: true
     }

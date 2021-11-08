@@ -9,10 +9,7 @@ import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import {
   BUILD_MEDIA_PATH,
   BUILD_MANIFEST_PATH,
-  BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_WEBPACK,
-  BUILD_CLIENT_RUNTIME_POLYFILL,
-  BUILD_SERVER_FILE_SERVER
+  BUILD_CLIENT_RUNTIME_WEBPACK
 } from '../constants';
 
 export interface IWebpackEntry {
@@ -91,17 +88,4 @@ export function createWebpackConfig(
   });
 
   return chain;
-}
-
-export function getClientEntry(_api: Api): IWebpackEntry {
-  return {
-    [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
-    [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
-  };
-}
-
-export function getServerEntry(_api: Api): IWebpackEntry {
-  return {
-    [BUILD_SERVER_FILE_SERVER]: ['@shuvi/app/entry.server']
-  };
 }

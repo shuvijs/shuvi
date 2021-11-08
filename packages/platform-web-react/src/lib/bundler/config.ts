@@ -1,7 +1,7 @@
 import path from 'path';
 import { IApi, APIHooks } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
-import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
+import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';
 import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
 
@@ -58,7 +58,7 @@ export function config(api: IApi) {
         resolveLocal('react-dom')
       ]);
 
-      if (name === BUNDLER_TARGET_CLIENT && api.mode === 'development') {
+      if (name === BUNDLER_DEFAULT_TARGET && api.mode === 'development') {
         config.module
           .rule('main')
           .oneOf('js')

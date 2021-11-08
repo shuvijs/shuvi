@@ -18,8 +18,6 @@ import {
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IncomingMessage } from 'http';
 
-export { IUserRouteConfig } from '@shuvi/service/lib/types/index';
-
 export {
   IData,
   Application,
