@@ -1,4 +1,4 @@
-import { IDocumentModule } from '@shuvi/service/lib/types';
+import { IDocumentModule } from '@shuvi/platform-core';
 
 declare const document: IDocumentModule;
 

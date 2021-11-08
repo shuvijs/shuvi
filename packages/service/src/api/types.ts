@@ -4,14 +4,16 @@ import {
   IApplicationCreaterServerContext,
   ApplicationCreater,
   IViewServer,
-  IRuntimeConfig
+  IRuntimeConfig,
+  IServerModule,
+  IDocumentModule
 } from '@shuvi/platform-core';
 import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
-import { IDocumentModule, IServerModule } from '../types/index';
 
 import { IServerMiddleware } from './serverMiddleware';
+import { IRequest, IServerMiddlewareItem } from '../types/server';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -151,12 +153,15 @@ export interface IApi extends IHookable {
 
 export type IBuiltResource = {
   server: {
-    server: IServerModule;
+    server: IServerModule<
+      IRequest,
+      IServerMiddlewareItem | IServerMiddlewareItem['handler']
+    >;
     apiRoutes: IApiRouteConfig[];
     application: {
       create: ApplicationCreater<IApplicationCreaterServerContext>;
     };
-    document: Partial<IDocumentModule>;
+    document: Partial<IDocumentModule<IRequest>>;
     view: IViewServer;
   };
   documentTemplate: any;

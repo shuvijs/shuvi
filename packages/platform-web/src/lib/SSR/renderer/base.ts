@@ -1,5 +1,5 @@
 import { IAppData } from '@shuvi/runtime-core';
-import { IHtmlTag } from '@shuvi/platform-core';
+import { IHtmlTag, IDocumentProps, ITemplateData } from '@shuvi/platform-core';
 
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
@@ -7,8 +7,6 @@ import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
   Api,
   APIHooks,
-  IDocumentProps,
-  ITemplateData,
   IBuiltResource,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL

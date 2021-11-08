@@ -1,4 +1,4 @@
-import { IServerModule } from '@shuvi/service/lib/types';
+import { IServerModule } from '@shuvi/platform-core';
 
 declare const server: IServerModule;
 
