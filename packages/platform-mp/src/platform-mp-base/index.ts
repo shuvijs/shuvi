@@ -1,7 +1,10 @@
 import path from 'path';
-import { IApi, APIHooks } from '@shuvi/service';
-import { IUserRouteConfig } from '@shuvi/platform-core';
-import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
+import {
+  Api,
+  APIHooks,
+  IUserRouteConfig,
+  BUILD_DEFAULT_DIR
+} from '@shuvi/service';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';
@@ -76,7 +79,7 @@ export interface IFileType {
 }
 
 export default abstract class PlatformMpBase {
-  _api: IApi;
+  _api: Api;
   themeFilePath: string = '';
   appConfigs!: AppConfigs;
   mpPathToRoutesDone: any;
@@ -88,7 +91,7 @@ export default abstract class PlatformMpBase {
   abstract fileType: IFileType;
   abstract template: RecursiveTemplate | UnRecursiveTemplate;
 
-  constructor(api: IApi) {
+  constructor(api: Api) {
     this._api = api;
     this.promiseRoutes = new Promise(resolve => {
       this.mpPathToRoutesDone = resolve;
@@ -288,14 +291,11 @@ export default abstract class PlatformMpBase {
 
   configWebpack() {
     const api = this._api;
+
     api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
       name: 'platform-mp',
       fn: async (config, { name }) => {
         await this.promiseRoutes;
-        if (name === BUNDLER_TARGET_SERVER) {
-          config.entryPoints.clear();
-          return config;
-        }
         const pageFiles = getAllFiles(api.resolveAppFile('files', 'pages'));
 
         const entry: Record<string, Record<string, any>> = {
@@ -303,9 +303,11 @@ export default abstract class PlatformMpBase {
           comp: [resolveAppFile('template', 'comp')],
           'custom-wrapper': [resolveAppFile('template', 'custom-wrapper')]
         };
+
         pageFiles.forEach(page => {
           entry['pages/' + page.name] = [page.filepath];
         });
+
         config.entryPoints.clear();
         config.optimization.clear();
         modifyStyle(config, this.fileType.style);
@@ -314,7 +316,7 @@ export default abstract class PlatformMpBase {
         config.output.chunkFilename('[name].js');
         config.output.filename('[name].js');
         const outputPath = config.output.get('path').split('/');
-        if (outputPath[outputPath.length - 1] === 'client') {
+        if (outputPath[outputPath.length - 1] === BUILD_DEFAULT_DIR) {
           outputPath[outputPath.length - 1] = api.config.platform?.target;
           config.output.path(outputPath.join('/'));
         }
@@ -335,6 +337,34 @@ export default abstract class PlatformMpBase {
             }
           ];
         });
+
+        config.plugin('DomEnvPlugin').use(DomEnvPlugin);
+        config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
+          {
+            appConfigs: this.appConfigs,
+            themeFilePath: this.themeFilePath,
+            paths: api.paths,
+            fileType: this.fileType,
+            template: this.template
+          }
+        ]);
+        config.plugin('ModifyChunkPlugin').use(ModifyChunkPlugin, [
+          {
+            fileType: this.fileType
+          }
+        ]);
+        const fileLoader = config.module
+          .rule('main')
+          .oneOfs.get('media')
+          .use('file-loader');
+        fileLoader.options({
+          name: '[path][name].[ext]',
+          esModule: false,
+          useRelativePath: true,
+          context: api.paths.srcDir,
+          publicPath: '/'
+        });
+
         config.merge({
           entry,
           resolve: {
@@ -427,33 +457,6 @@ export default abstract class PlatformMpBase {
         config.resolve.extensions.merge(
           enhancedExts(extensions, api.config.platform?.target!)
         );
-
-        config.plugin('DomEnvPlugin').use(DomEnvPlugin);
-        config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
-          {
-            appConfigs: this.appConfigs,
-            themeFilePath: this.themeFilePath,
-            paths: api.paths,
-            fileType: this.fileType,
-            template: this.template
-          }
-        ]);
-        config.plugin('ModifyChunkPlugin').use(ModifyChunkPlugin, [
-          {
-            fileType: this.fileType
-          }
-        ]);
-        const fileLoader = config.module
-          .rule('main')
-          .oneOfs.get('media')
-          .use('file-loader');
-        fileLoader.options({
-          name: '[path][name].[ext]',
-          esModule: false,
-          useRelativePath: true,
-          context: api.paths.srcDir,
-          publicPath: '/'
-        });
 
         return config;
       }

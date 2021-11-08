@@ -52,7 +52,6 @@ class PluginApi implements IApi {
 
   setPlatformModule: any;
   setClientModule: any;
-  setServerModule: any;
 
   resolveAppFile: any;
   resolveUserFile: any;
