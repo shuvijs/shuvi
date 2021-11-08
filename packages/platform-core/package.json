@@ -32,6 +32,7 @@
   "dependencies": {
     "@shuvi/app": "0.0.1-pre.10",
     "@shuvi/runtime-core": "0.0.1-pre.10",
+    "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10"
   },
   "devDependencies": {

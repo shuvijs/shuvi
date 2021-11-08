@@ -29,8 +29,20 @@ export {
   IErrorHandler,
   IAppRenderFn,
   getAppData,
-  getPageData
+  getPageData,
+  ApplicationCreater // export for @shuvi/service
 } from '@shuvi/runtime-core';
+
+// export from @shuvi/router for @shuvi/service
+export {
+  matchRoutes,
+  matchPathname,
+  IRouteRecord,
+  rankRouteBranches,
+  parseQuery,
+  IRouteMatch,
+  IParams
+} from '@shuvi/router';
 
 export type IQuery = ParsedQuery;
 

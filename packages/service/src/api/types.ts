@@ -2,10 +2,10 @@ import { IHookable } from '@shuvi/hook';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import {
   IApplicationCreaterServerContext,
+  ApplicationCreater,
   IViewServer,
   IRuntimeConfig
 } from '@shuvi/platform-core';
-import { ApplicationCreater } from '@shuvi/runtime-core';
 import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';

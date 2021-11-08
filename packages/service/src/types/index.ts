@@ -1,8 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { IRouteMatch, IRouteRecord } from '@shuvi/router';
-
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
+import {
+  IHtmlAttrs,
+  IHtmlTag,
+  IRouteMatch,
+  IRouteRecord
+} from '@shuvi/platform-core';
 
 import { IRequest, IMiddlewareHandler, IServerMiddlewareItem } from './server';
 
