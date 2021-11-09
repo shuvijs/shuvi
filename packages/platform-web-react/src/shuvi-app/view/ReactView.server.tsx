@@ -125,7 +125,7 @@ export class ReactServerView implements IReactServerView {
                 <AppContainer
                   appContext={appContext}
                   store={appStore}
-                  ErrorComp={ErrorPage}
+                  errorComp={ErrorPage}
                 >
                   <AppComponent {...appInitialProps} />
                 </AppContainer>

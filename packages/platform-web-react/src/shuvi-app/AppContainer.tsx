@@ -25,11 +25,11 @@ function checkError(
 
 function AppStore({
   children = null,
-  ErrorComp,
+  errorComp,
   store
 }: {
   children: React.ReactNode;
-  ErrorComp?: React.ComponentType<IPageError>;
+  errorComp?: React.ComponentType<IPageError>;
   store: IAppStore;
 }) {
   const forceupdate = useReducer(s => s * -1, 1)[1];
@@ -44,7 +44,7 @@ function AppStore({
 
   return (
     <AppStoreContext.Provider value={appStore}>
-      {checkError(errorState, ErrorComp) || children}
+      {checkError(errorState, errorComp) || children}
     </AppStoreContext.Provider>
   );
 }
@@ -52,18 +52,18 @@ function AppStore({
 export default function AppContainer({
   children,
   appContext,
-  ErrorComp,
+  errorComp,
   store,
   ...appProps
 }: IAppContext & {
   children: React.ReactElement;
-  ErrorComp?: React.ComponentType<IPageError>;
+  errorComp?: React.ComponentType<IPageError>;
   store: IAppStore;
 }) {
   const appCtx: IAppContext = useMemo(() => ({ appContext }), [appContext]);
   return (
     <AppContext.Provider value={appCtx}>
-      <AppStore store={store} ErrorComp={ErrorComp}>
+      <AppStore store={store} errorComp={errorComp}>
         {React.cloneElement(children, {
           ...children.props,
           ...appProps

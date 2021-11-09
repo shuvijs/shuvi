@@ -128,7 +128,7 @@ export function MpRouter({
       <AppContainer
         appContext={appContext}
         store={appStore}
-        ErrorComp={ErrorPage}
+        errorComp={ErrorPage}
       >
         <RouterView />
       </AppContainer>

@@ -77,7 +77,7 @@ export class ReactClientView implements IReactClientView {
             <AppContainer
               appContext={appContext}
               store={appStore}
-              ErrorComp={ErrorPage}
+              errorComp={ErrorPage}
             >
               <TypedAppComponent {...appProps} />
             </AppContainer>
