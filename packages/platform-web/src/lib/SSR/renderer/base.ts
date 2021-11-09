@@ -1,16 +1,17 @@
 import { IAppData } from '@shuvi/runtime-core';
-import { IHtmlTag, IDocumentProps, ITemplateData } from '@shuvi/platform-core';
+import { IHtmlTag } from '@shuvi/platform-core';
+import { IDocumentProps, ITemplateData, IHookModifyHtml } from '../../types';
 
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 
 import {
   Api,
-  APIHooks,
   IBuiltResource,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL
 } from '@shuvi/service';
+
 import {
   CLIENT_CONTAINER_ID,
   DEV_STYLE_ANCHOR_ID,
@@ -91,6 +92,7 @@ export abstract class BaseRenderer {
       appContext,
       render
     });
+
     if (isRedirect(docProps)) {
       return docProps;
     }
@@ -105,10 +107,10 @@ export abstract class BaseRenderer {
       );
     }
 
-    docProps = await this._api.callHook<APIHooks.IHookModifyHtml>(
+    docProps = await this._api.callHook<IHookModifyHtml>(
       {
         name: 'modifyHtml',
-        initialValue: docProps
+        initialValue: docProps as IDocumentProps
       },
       appContext
     );

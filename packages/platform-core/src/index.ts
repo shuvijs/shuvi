@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage } from 'http';
 import { ParsedQuery } from 'query-string';
 import {
   IParams,
@@ -169,52 +169,3 @@ export type IApplicationCreaterContext =
   | IApplicationCreaterServerContext;
 
 export type IRuntimeConfig = Record<string, string>;
-
-export interface IDocumentProps {
-  htmlAttrs: IHtmlAttrs;
-  headTags: IHtmlTag<
-    'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
-  >[];
-  mainTags: IHtmlTag[];
-  scriptTags: IHtmlTag<'script'>[];
-}
-
-interface IServerAppContext<Request extends IncomingMessage> {
-  req: Request;
-  [x: string]: any;
-}
-
-export interface ITemplateData {
-  [x: string]: any;
-}
-
-export interface IDocumentModule<
-  Request extends IncomingMessage = IncomingMessage
-> {
-  onDocumentProps(
-    documentProps: IDocumentProps,
-    context: IServerAppContext<Request>
-  ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(
-    context: IServerAppContext<Request>
-  ): Promise<ITemplateData> | ITemplateData;
-}
-
-export interface IServerModule<
-  Request extends IncomingMessage = IncomingMessage,
-  Middleware = any
-> {
-  render?(
-    renderAppToString: () => string,
-    appContext: IServerAppContext<Request>
-  ): string;
-  serverMiddleware: Middleware[];
-  onViewDone?(
-    req: IncomingMessage,
-    res: ServerResponse,
-    payload: {
-      html: string | null;
-      appContext: any;
-    }
-  ): void;
-}

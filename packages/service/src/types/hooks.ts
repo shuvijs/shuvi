@@ -1,10 +1,8 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import { defineHook } from '@shuvi/hook';
 import webpack, { MultiCompiler } from 'webpack';
 import { SyncHook } from 'tapable';
 import WebpackChain from 'webpack-chain';
 import { IApiConfig, IUserRouteConfig, IShuviMode } from '../api/types';
-import { IDocumentProps } from '@shuvi/platform-core';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 
 type ExtractSyncHookGeneric<Type> = Type extends SyncHook<infer X> ? X : never;
@@ -101,24 +99,6 @@ export type IEventServerListen = defineHook<
   }
 >;
 
-export type IHookModifyHtml = defineHook<
-  'modifyHtml',
-  {
-    initialValue: IDocumentProps;
-    args: [object /* appContext */];
-  }
->;
-
 export type IHookDestroy = defineHook<'destroy'>;
 
 export type IEventAfterBuild = defineHook<'afterBuild'>;
-
-export type IHookRenderToHTML = defineHook<
-  'renderToHTML',
-  {
-    initialValue: (
-      req: IncomingMessage,
-      res: ServerResponse
-    ) => Promise<string | null>;
-  }
->;

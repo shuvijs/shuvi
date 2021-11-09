@@ -1,7 +1,7 @@
 import { IRedirectState, IRouter } from '@shuvi/router';
 import { IApplication, IAppStore } from '@shuvi/runtime-core';
 import { Api } from '@shuvi/service';
-import { IServerModule } from '@shuvi/platform-core';
+import { IServerModule } from '../../types';
 
 export interface IRenderResultRedirect extends IRedirectState {
   $type: 'redirect';
