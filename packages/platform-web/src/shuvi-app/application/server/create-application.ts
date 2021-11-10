@@ -1,6 +1,6 @@
-import AppComponent from '@shuvi/app/core/app';
+import getUserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/core/routes';
-import { getRoutes } from '@shuvi/app/core/platform';
+import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   IAppState,
   IAppRenderFn,
@@ -38,6 +38,7 @@ export function create<
     router,
     context,
     appState: options.appState,
-    render: options.render
+    render: options.render,
+    getUserAppComponent
   });
 }

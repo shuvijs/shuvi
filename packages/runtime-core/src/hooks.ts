@@ -9,6 +9,14 @@ export type IHookCreateAppContext = defineHook<
   }
 >;
 
+export type IHookGetRootAppComponent = defineHook<
+  'getRootAppComponent',
+  {
+    initialValue: object;
+    args: [object];
+  }
+>;
+
 export type IHookGetAppComponent = defineHook<
   'getAppComponent',
   {

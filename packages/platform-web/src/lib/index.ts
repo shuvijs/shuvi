@@ -105,6 +105,8 @@ const platformWeb: IRuntime = {
     api.addServerMiddlewareLast(getApiRoutesMiddleware(api));
     api.addServerMiddlewareLast(getSSRMiddleware(api));
 
+    api.addAppExport('@shuvi/platform-web/lib/types', '* as RuntimeServer');
+
     // install framework
     const { framework = 'react' } = api.config.platform || {};
     const frameworkInstance: IRuntime =
