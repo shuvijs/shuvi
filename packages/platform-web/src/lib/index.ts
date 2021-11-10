@@ -108,7 +108,7 @@ const platformWeb: IRuntime = {
     // install framework
     const { framework = 'react' } = api.config.platform || {};
     const frameworkInstance: IRuntime =
-      require(`@shuvi/platform-web-${framework}`).default;
+      require(`./targets/${framework}`).default;
     frameworkInstance.install(api);
   }
 };

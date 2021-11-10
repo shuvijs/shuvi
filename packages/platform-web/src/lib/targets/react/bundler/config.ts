@@ -1,10 +1,10 @@
 import path from 'path';
 import { IApi, APIHooks } from '@shuvi/service';
-import { IHookModifyHtml } from '@shuvi/platform-web/lib/types';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
-import { PACKAGE_DIR } from '../paths';
+import { PACKAGE_DIR } from '../../../paths';
 import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
+import { IHookModifyHtml } from '../../../types';
 
 export function config(api: IApi) {
   const resolveLocal = (m: string, sub?: string) => {
@@ -38,7 +38,7 @@ export function config(api: IApi) {
 
       // config.externals(external);
       // make sure we don't have multiple entity of following packages , becasue module variable will fail
-      config.resolve.alias.set('@shuvi/platform-web-react', PACKAGE_DIR);
+      config.resolve.alias.set('@shuvi/platform-web', PACKAGE_DIR);
       config.resolve.alias.set(
         '@shuvi/service',
         resolveLocal('@shuvi/service')
