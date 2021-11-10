@@ -22,8 +22,8 @@ describe('loadRouteComponent [web]', () => {
         routes: [
           {
             id: 'firstPage',
-            component: loadRouteComponent(() =>
-              import('./fixtures/loadRouteComponent/firstPage')
+            component: loadRouteComponent(
+              () => import('./fixtures/loadRouteComponent/firstPage')
             ),
             path: '/first'
           }
@@ -62,15 +62,15 @@ describe('loadRouteComponent [web]', () => {
         routes: [
           {
             id: 'firstPage',
-            component: loadRouteComponent(() =>
-              import('./fixtures/loadRouteComponent/firstPage')
+            component: loadRouteComponent(
+              () => import('./fixtures/loadRouteComponent/firstPage')
             ),
             path: '/first'
           },
           {
             id: 'secondPage',
-            component: loadRouteComponent(() =>
-              import('./fixtures/loadRouteComponent/secondPage')
+            component: loadRouteComponent(
+              () => import('./fixtures/loadRouteComponent/secondPage')
             ),
             path: '/second'
           }
@@ -130,15 +130,15 @@ describe('loadRouteComponent [web]', () => {
         routes: [
           {
             id: 'firstPage',
-            component: loadRouteComponent(() =>
-              import('./fixtures/loadRouteComponent/firstPage')
+            component: loadRouteComponent(
+              () => import('./fixtures/loadRouteComponent/firstPage')
             ),
             path: '/first'
           },
           {
             id: 'secondPage',
-            component: loadRouteComponent(() =>
-              import('./fixtures/loadRouteComponent/secondPage')
+            component: loadRouteComponent(
+              () => import('./fixtures/loadRouteComponent/secondPage')
             ),
             path: '/second'
           }
@@ -182,8 +182,8 @@ describe('loadRouteComponent [web]', () => {
         routes: [
           {
             id: 'detailPage',
-            component: loadRouteComponent(() =>
-              import('./fixtures/loadRouteComponent/detailPage')
+            component: loadRouteComponent(
+              () => import('./fixtures/loadRouteComponent/detailPage')
             ),
             path: '/detail/:id'
           }
