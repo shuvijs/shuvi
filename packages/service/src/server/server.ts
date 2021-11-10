@@ -1,6 +1,6 @@
 import http from 'http';
 import { parse as parseUrl } from 'url';
-import { parseQuery } from '@shuvi/router';
+import { parseQuery } from '@shuvi/platform-core';
 import detectPort from 'detect-port';
 import { sendHTML } from '../lib/utils';
 import { getRouter, Router } from './router';

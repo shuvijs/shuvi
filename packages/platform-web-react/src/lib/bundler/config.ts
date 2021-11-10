@@ -1,5 +1,6 @@
 import path from 'path';
 import { IApi, APIHooks } from '@shuvi/service';
+import { IHookModifyHtml } from '@shuvi/platform-web/lib/types';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../paths';
@@ -93,7 +94,7 @@ export function config(api: IApi) {
           }
         });
 
-        api.tap<APIHooks.IHookModifyHtml>('modifyHtml', {
+        api.tap<IHookModifyHtml>('modifyHtml', {
           name: 'insertReactRefreshEntryFile',
           fn: documentProps => {
             documentProps.scriptTags.unshift({

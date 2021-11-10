@@ -1,4 +1,5 @@
 import { Api, IRequest } from '@shuvi/service';
+import { IBuiltResource } from '../types';
 import { Renderer, isRedirect, IRenderResultRedirect } from './renderer';
 
 export async function renderToHTML({
@@ -15,7 +16,7 @@ export async function renderToHTML({
   const {
     application,
     server: { render }
-  } = api.resources.server;
+  } = api.resources.server as IBuiltResource['server'];
   const app = application.create(
     {
       req

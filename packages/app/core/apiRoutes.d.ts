@@ -1,5 +1,3 @@
-import { IApiRouteConfig } from '@shuvi/service';
+import { IApiRoutes } from '@shuvi/platform-web/lib/types';
 
-declare const apiRoutes: IApiRouteConfig[];
-
-export default apiRoutes;
+export default IApiRoutes;
