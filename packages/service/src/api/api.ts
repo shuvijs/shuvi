@@ -206,6 +206,7 @@ class Api extends Hookable implements IApi {
     return this._resources;
   }
 
+  // TODO: move to platform
   get clientManifest(): Bundler.IManifest {
     return this._resources.clientManifest;
   }
