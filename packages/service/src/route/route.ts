@@ -3,7 +3,7 @@ import fs from 'fs';
 import eventEmitter from '@shuvi/utils/lib/eventEmitter';
 import { watch } from '@shuvi/utils/lib/fileWatcher';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
-import { IRouteRecord } from '@shuvi/router';
+import { IRouteRecord } from '@shuvi/platform-core';
 
 import parseDynamicPath from './parseDynamicPath';
 

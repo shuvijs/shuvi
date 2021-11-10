@@ -6,13 +6,10 @@ import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 
 import {
   Api,
-  APIHooks,
-  IDocumentProps,
-  ITemplateData,
-  IBuiltResource,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL
 } from '@shuvi/service';
+
 import {
   CLIENT_CONTAINER_ID,
   DEV_STYLE_ANCHOR_ID,
@@ -21,6 +18,13 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { renderTemplate } from '../../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
+import {
+  IDocumentProps,
+  ITemplateData,
+  IHookModifyHtml,
+  IBuiltResource
+} from '../../types';
+
 import {
   IRendererConstructorOptions,
   IRenderDocumentOptions,
@@ -74,7 +78,7 @@ export abstract class BaseRenderer {
 
   constructor({ api }: IRendererConstructorOptions) {
     this._api = api;
-    this._resources = api.resources;
+    this._resources = api.resources as IBuiltResource;
   }
 
   async renderDocument({
@@ -93,6 +97,7 @@ export abstract class BaseRenderer {
       appContext,
       render
     });
+
     if (isRedirect(docProps)) {
       return docProps;
     }
@@ -107,10 +112,10 @@ export abstract class BaseRenderer {
       );
     }
 
-    docProps = await this._api.callHook<APIHooks.IHookModifyHtml>(
+    docProps = await this._api.callHook<IHookModifyHtml>(
       {
         name: 'modifyHtml',
-        initialValue: docProps
+        initialValue: docProps as IDocumentProps
       },
       appContext
     );
