@@ -1,20 +1,11 @@
 import { Api, IRequestHandlerWithNext } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
-
-import { apiRouteHandler, IApiRequestHandler } from './apiRouteHandler';
-
-interface IApiModule {
-  default: IApiRequestHandler;
-  config?: {
-    apiConfig?: {
-      bodyParser?: { sizeLimit: number | string } | boolean;
-    };
-  };
-}
+import { apiRouteHandler } from './apiRouteHandler';
+import { IBuiltResource } from '../types';
 
 export function getApiRoutesMiddleware(api: Api): IRequestHandlerWithNext {
   return async function (req, res, next) {
-    const { apiRoutes } = api.resources.server;
+    const { apiRoutes } = api.resources.server as IBuiltResource['server'];
     const { prefix, ...otherConfig } = api.config.apiConfig || {};
     if (!req.url.startsWith(prefix!)) {
       return next();
@@ -31,7 +22,7 @@ export function getApiRoutesMiddleware(api: Api): IRequestHandlerWithNext {
     if (tempApiModule) {
       try {
         const { config: { apiConfig = {} } = {}, default: resolver } =
-          tempApiModule as unknown as IApiModule;
+          tempApiModule;
         let overridesConfig = {
           ...otherConfig,
           ...apiConfig

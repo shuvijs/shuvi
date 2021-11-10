@@ -34,7 +34,7 @@ import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { createDefaultConfig, loadConfig } from '../config';
-import { IResources, IBuiltResource, IPlugin, IPreset } from './types';
+import { IResources, IPlugin, IPreset } from './types';
 import { Server } from '../server';
 import { setupApp } from './setupApp';
 import { resolvePlugins, resolvePresets } from './plugin';
@@ -202,7 +202,7 @@ class Api extends Hookable implements IApi {
     return prefix;
   }
 
-  get resources(): IBuiltResource {
+  get resources(): IResources {
     return this._resources;
   }
 

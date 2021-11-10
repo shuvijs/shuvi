@@ -1,6 +1,3 @@
-declare const apiRoutes: {
-  path: string;
-  apiModule: string;
-}[];
+import { IApiRoutes } from '@shuvi/platform-web/lib/types';
 
-export default apiRoutes;
+export default IApiRoutes;

@@ -1,13 +1,11 @@
 import { IAppData } from '@shuvi/runtime-core';
 import { IHtmlTag } from '@shuvi/platform-core';
-import { IDocumentProps, ITemplateData, IHookModifyHtml } from '../../types';
 
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 
 import {
   Api,
-  IBuiltResource,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL
 } from '@shuvi/service';
@@ -20,6 +18,13 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { renderTemplate } from '../../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
+import {
+  IDocumentProps,
+  ITemplateData,
+  IHookModifyHtml,
+  IBuiltResource
+} from '../../types';
+
 import {
   IRendererConstructorOptions,
   IRenderDocumentOptions,
@@ -73,7 +78,7 @@ export abstract class BaseRenderer {
 
   constructor({ api }: IRendererConstructorOptions) {
     this._api = api;
-    this._resources = api.resources;
+    this._resources = api.resources as IBuiltResource;
   }
 
   async renderDocument({

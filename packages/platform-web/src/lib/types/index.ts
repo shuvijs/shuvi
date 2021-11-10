@@ -1,7 +1,15 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
+import {
+  ApplicationCreater,
+  IApplicationCreaterServerContext,
+  IHtmlAttrs,
+  IHtmlTag,
+  IViewServer
+} from '@shuvi/platform-core';
 import { defineHook } from '@shuvi/hook';
 import { IRequest, IServerMiddlewareItem } from '@shuvi/service';
+import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
+import { IApiRequestHandler } from '../apiRoute/apiRouteHandler';
 
 export interface IDocumentProps {
   htmlAttrs: IHtmlAttrs;
@@ -67,3 +75,32 @@ export interface IServerModule {
     }
   ): void;
 }
+
+interface IApiModule {
+  default: IApiRequestHandler;
+  config?: {
+    apiConfig?: {
+      bodyParser?: { sizeLimit: number | string } | boolean;
+    };
+  };
+}
+
+export type IApiRoutes = {
+  path: string;
+  apiModule: IApiModule;
+}[];
+
+export type IBuiltResource = {
+  server: {
+    server: any;
+    apiRoutes: IApiRoutes;
+    application: {
+      create: ApplicationCreater<IApplicationCreaterServerContext>;
+    };
+    document: any;
+    view: IViewServer;
+  };
+  documentTemplate: any;
+  clientManifest: IManifest;
+  serverManifest: IManifest;
+};
