@@ -3,7 +3,7 @@ import { IRequestHandlerWithNext } from '../types/server';
 import { DevMiddleware } from './devMiddleware';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { Api } from '../api/api';
-import { matchRoutes } from '@shuvi/router';
+import { matchRoutes } from '@shuvi/platform-core';
 import { acceptsHtml } from './utils';
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;

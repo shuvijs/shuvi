@@ -1,15 +1,9 @@
 import { IHookable } from '@shuvi/hook';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-import {
-  IApplicationCreaterServerContext,
-  IViewServer,
-  IRuntimeConfig
-} from '@shuvi/platform-core';
-import { ApplicationCreater } from '@shuvi/runtime-core';
+import { IRuntimeConfig } from '@shuvi/platform-core';
 import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
-import { IDocumentModule, IServerModule } from '../types/index';
 
 import { IServerMiddleware } from './serverMiddleware';
 
@@ -149,22 +143,7 @@ export interface IApi extends IHookable {
   getAssetPublicUrl(...paths: string[]): string;
 }
 
-export type IBuiltResource = {
-  server: {
-    server: IServerModule;
-    apiRoutes: IApiRouteConfig[];
-    application: {
-      create: ApplicationCreater<IApplicationCreaterServerContext>;
-    };
-    document: Partial<IDocumentModule>;
-    view: IViewServer;
-  };
-  documentTemplate: any;
-  clientManifest: IManifest;
-  serverManifest: IManifest;
-};
-
-export type IResources<Extra = {}> = IBuiltResource & {
+export type IResources<Extra = {}> = {
   [x: string]: any;
 } & { [K in keyof Extra]: Extra[K] };
 

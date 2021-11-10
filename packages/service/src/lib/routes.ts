@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import path from 'path';
 import { IUserRouteConfig } from '../api';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { IRouteRecord } from '@shuvi/router';
+import { IRouteRecord } from '@shuvi/platform-core';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;

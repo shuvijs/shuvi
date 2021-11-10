@@ -1,3 +1,4 @@
+import { IncomingMessage } from 'http';
 import { ParsedQuery } from 'query-string';
 import {
   IParams,
@@ -16,7 +17,6 @@ import {
 } from '@shuvi/runtime-core';
 
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-import { IncomingMessage } from 'http';
 
 export {
   IData,
@@ -29,8 +29,19 @@ export {
   IErrorHandler,
   IAppRenderFn,
   getAppData,
-  getPageData
+  getPageData,
+  ApplicationCreater // export for @shuvi/service
 } from '@shuvi/runtime-core';
+
+// export from @shuvi/router for @shuvi/service
+export {
+  matchRoutes,
+  matchPathname,
+  IRouteRecord,
+  rankRouteBranches,
+  parseQuery,
+  IParams
+} from '@shuvi/router';
 
 export type IQuery = ParsedQuery;
 

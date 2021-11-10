@@ -1,14 +1,10 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import {
-  IRequest,
-  APIHooks,
-  Api,
-  IRequestHandlerWithNext
-} from '@shuvi/service';
+import { IRequest, Api, IRequestHandlerWithNext } from '@shuvi/service';
 
 import { sendHTML } from '@shuvi/service/lib/lib/utils';
 
 import { renderToHTML } from './renderToHTML';
+import { IHookRenderToHTML } from '../types';
 
 function initServerRender(api: Api) {
   return async function (
@@ -44,7 +40,7 @@ export function getSSRMiddleware(api: Api): IRequestHandlerWithNext {
   const serverRender = initServerRender(api);
   return async function (req, res, next) {
     try {
-      const renderToHTML = await api.callHook<APIHooks.IHookRenderToHTML>({
+      const renderToHTML = await api.callHook<IHookRenderToHTML>({
         name: 'renderToHTML',
         initialValue: serverRender
       });
