@@ -37,25 +37,25 @@ export interface BaseOptions {
   };
 }
 
-const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
-  parse: {
-    ecma: 2017 // es8 === 2017
-  },
-  compress: {
-    ecma: 5,
-    // The following two options are known to break valid JavaScript code
-    comparisons: false,
-    inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
-  },
-  mangle: { safari10: true },
-  output: {
-    ecma: 5,
-    safari10: true,
-    comments: false,
-    // Fixes usage of Emoji and certain Regex
-    ascii_only: true
-  }
-};
+// const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
+//   parse: {
+//     ecma: 2017 // es8 === 2017
+//   },
+//   compress: {
+//     ecma: 5,
+//     // The following two options are known to break valid JavaScript code
+//     comparisons: false,
+//     inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+//   },
+//   mangle: { safari10: true },
+//   output: {
+//     ecma: 5,
+//     safari10: true,
+//     comments: false,
+//     // Fixes usage of Emoji and certain Regex
+//     ascii_only: true
+//   }
+// };
 
 export { WebpackChain };
 
@@ -69,9 +69,8 @@ export function baseWebpackChain({
   publicPath = '/',
   env = {}
 }: BaseOptions): WebpackChain {
-  const { typeScriptPath, tsConfigPath, useTypeScript } = getTypeScriptInfo(
-    projectRoot
-  );
+  const { typeScriptPath, tsConfigPath, useTypeScript } =
+    getTypeScriptInfo(projectRoot);
   const config = new WebpackChain();
 
   config.mode(dev ? 'development' : 'production');
@@ -89,11 +88,13 @@ export function baseWebpackChain({
     realContentHash: false
   });
   if (!dev) {
+    // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
       {
-        extractComments: false,
-        parallel: true,
-        terserOptions
+        minify: TerserPlugin.esbuildMinify,
+        terserOptions: {
+          target: 'es2015'
+        }
       }
     ]);
   }
