@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { platform, arch } = require('os');
 const path = require('path');
 const Log = console;
@@ -7,7 +8,10 @@ const PlatformName = platform();
 
 let bindings;
 let loadError;
-const localFilePath = path.join(__dirname, './next-swc.darwin-x64.node');
+const localFilePath = path.resolve(
+  __dirname,
+  '../../../../swc-source/next-swc.darwin-x64.node'
+);
 if (fs.existsSync(localFilePath)) {
   // Log.log('Using locally built binary of next-swc')
   try {
@@ -64,9 +68,19 @@ function toBuffer(t) {
   return Buffer.from(JSON.stringify(t));
 }
 
+export async function minify(src, opts) {
+  return bindings.minify(toBuffer(src), toBuffer(opts ?? {}));
+}
+
+export function minifySync(src, opts) {
+  return bindings.minifySync(toBuffer(src), toBuffer(opts ?? {}));
+}
+
 export async function bundle(options) {
   return bindings.bundle(toBuffer(options));
 }
 
 module.exports.transform = transform;
 module.exports.transformSync = transformSync;
+module.exports.minify = minify;
+module.exports.minifySync = minifySync;

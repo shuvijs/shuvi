@@ -10,7 +10,7 @@
   "license": "MIT",
   "files": [
     "lib",
-    ""
+    "swc-source"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",

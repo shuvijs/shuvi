@@ -26,7 +26,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-import { transform } from '@shuvi/toolpack/swc-source';
+import { transform } from './load-sources';
 
 function getSWCOptions({
   filename,
