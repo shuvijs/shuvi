@@ -6,7 +6,7 @@ export type ClientPagesLoaderOptions = {
   page: string;
 };
 
-const nextClientPagesLoader: loader.Loader = function () {
+const nextClientPagesLoader: loader.Loader = function (this: any) {
   const { absolutePath, exportName, globalName } = loaderUtils.getOptions(this);
 
   const stringifyGlobalName = JSON.stringify(globalName);

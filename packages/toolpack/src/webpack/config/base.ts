@@ -88,6 +88,13 @@ export function baseWebpackChain({
     realContentHash: false
   });
   if (!dev) {
+    // config.optimization.minimizer('terser').use(TerserPlugin, [
+    //   {
+    //     extractComments: false,
+    //     parallel: true,
+    //     terserOptions
+    //   }
+    // ]);
     // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
       {
@@ -126,7 +133,7 @@ export function baseWebpackChain({
   });
 
   config.resolveLoader.merge({
-    alias: ['shuvi-babel-loader', 'route-component-loader'].reduce(
+    alias: ['shuvi-swc-loader', 'route-component-loader'].reduce(
       (alias, loader) => {
         alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
         return alias;
@@ -160,8 +167,8 @@ export function baseWebpackChain({
       return /node_modules/.test(path);
     })
     .end()
-    .use('shuvi-babel-loader')
-    .loader('@shuvi/shuvi-babel-loader')
+    .use('shuvi-swc-loader')
+    .loader('@shuvi/shuvi-swc-loader')
     .options({
       isNode: false,
       // webpack 5 have in-built cache.

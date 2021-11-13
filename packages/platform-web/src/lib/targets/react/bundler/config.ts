@@ -65,14 +65,14 @@ export function config(api: IApi) {
           .oneOf('js')
           .use('react-refresh-loader')
           .loader('@next/react-refresh-utils/loader')
-          .before('shuvi-babel-loader');
+          .before('shuvi-swc-loader');
 
         config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);
 
         config.module
           .rule('main')
           .oneOf('js')
-          .use('shuvi-babel-loader')
+          .use('shuvi-swc-loader')
           .tap(options => {
             const plugins = options.plugins || [];
             plugins.unshift([
