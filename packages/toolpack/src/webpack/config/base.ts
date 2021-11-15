@@ -1,5 +1,5 @@
 import WebpackChain from 'webpack-chain';
-import TerserPlugin from 'terser-webpack-plugin';
+// import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
 import path from 'path';
 import {
@@ -37,25 +37,25 @@ export interface BaseOptions {
   };
 }
 
-// const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
-//   parse: {
-//     ecma: 2017 // es8 === 2017
-//   },
-//   compress: {
-//     ecma: 5,
-//     // The following two options are known to break valid JavaScript code
-//     comparisons: false,
-//     inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
-//   },
-//   mangle: { safari10: true },
-//   output: {
-//     ecma: 5,
-//     safari10: true,
-//     comments: false,
-//     // Fixes usage of Emoji and certain Regex
-//     ascii_only: true
-//   }
-// };
+const terserOptions = {
+  parse: {
+    ecma: 2017 // es8 === 2017
+  },
+  compress: {
+    ecma: 5,
+    // The following two options are known to break valid JavaScript code
+    comparisons: false,
+    inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+  },
+  mangle: { safari10: true },
+  output: {
+    ecma: 5,
+    safari10: true,
+    comments: false,
+    // Fixes usage of Emoji and certain Regex
+    ascii_only: true
+  }
+};
 
 export { WebpackChain };
 
@@ -85,6 +85,22 @@ export function baseWebpackChain({
     splitChunks: false,
     runtimeChunk: undefined,
     minimize: !dev,
+    // minimizer: [
+    //   // Minify JavaScript
+    //   (compiler: webpack.Compiler) => {
+    //     // @ts-ignore No typings yet
+    //     const {
+    //       TerserPlugin,
+    //     } = require('../plugins/terser-webpack-plugin/index')
+    //     console.log(TerserPlugin, 'TerserPlugin')
+    //     new TerserPlugin({
+    //       // cacheDir: path.join(distDir, 'cache', 'next-minifier'),
+    //       parallel: 4,
+    //       swcMinify: true,
+    //       terserOptions,
+    //     }).apply(compiler)
+    //   },
+    // ],
     realContentHash: false
   });
   if (!dev) {
@@ -96,14 +112,23 @@ export function baseWebpackChain({
     //   }
     // ]);
     // @ts-ignore
-    config.optimization.minimizer('terser').use(TerserPlugin, [
-      {
-        minify: TerserPlugin.esbuildMinify,
-        terserOptions: {
-          target: 'es2015'
+    // config.optimization.minimizer('terser').use(TerserPlugin, [
+    //   {
+    //     minify: TerserPlugin.esbuildMinify,
+    //     terserOptions: {
+    //       target: 'es2015'
+    //     }
+    //   }
+    // ]);
+    config.optimization
+      .minimizer('terser')
+      .use(require('../plugins/terser-webpack-plugin/index').TerserPlugin, [
+        {
+          parallel: 4,
+          swcMinify: true,
+          terserOptions
         }
-      }
-    ]);
+      ]);
   }
 
   config.output.merge({

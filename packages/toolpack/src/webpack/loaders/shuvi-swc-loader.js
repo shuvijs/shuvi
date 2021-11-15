@@ -26,7 +26,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-import { transform } from './load-sources';
+import { transform } from '../../utils/load-sources';
 
 function getSWCOptions({
   filename,

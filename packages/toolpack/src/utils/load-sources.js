@@ -10,7 +10,7 @@ let bindings;
 let loadError;
 const localFilePath = path.resolve(
   __dirname,
-  '../../../../swc-source/next-swc.darwin-x64.node'
+  '../../swc-source/next-swc.darwin-x64.node'
 );
 if (fs.existsSync(localFilePath)) {
   // Log.log('Using locally built binary of next-swc')
