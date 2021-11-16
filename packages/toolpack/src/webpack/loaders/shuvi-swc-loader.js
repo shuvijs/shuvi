@@ -33,7 +33,6 @@ function getSWCOptions({
   isServer,
   development,
   isPageFile,
-  pagesDir,
   isNextDist,
   hasReactRefresh
 }) {
@@ -80,7 +79,6 @@ function getSWCOptions({
       disableNextSsg: true,
       disablePageConfig: true,
       isDevelopment: development,
-      pagesDir,
       isPageFile,
       env: {
         targets: {
@@ -103,7 +101,6 @@ function getSWCOptions({
         : {}),
       disableNextSsg: !isPageFile,
       isDevelopment: development,
-      pagesDir,
       isPageFile,
       jsc
     };
@@ -116,13 +113,11 @@ async function loaderTransform(source, inputSourceMap) {
 
   let loaderOptions = (this.getOptions && this.getOptions()) || {};
 
-  const { isNode, pagesDir, hasReactRefresh } = loaderOptions;
-  // const isPageFile = filename.startsWith(pagesDir)
+  const { isNode, hasReactRefresh } = loaderOptions;
 
   const isDev = this.mode === 'development';
 
   const swcOptions = getSWCOptions({
-    pagesDir,
     filename,
     isServer: isNode,
     isPageFile: true,
