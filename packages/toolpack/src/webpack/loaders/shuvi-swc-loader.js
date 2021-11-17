@@ -113,7 +113,7 @@ async function loaderTransform(source, inputSourceMap) {
 
   let loaderOptions = (this.getOptions && this.getOptions()) || {};
 
-  const { isNode, hasReactRefresh } = loaderOptions;
+  const { isNode } = loaderOptions;
 
   const isDev = this.mode === 'development';
 
@@ -179,4 +179,4 @@ export default function swcLoader(inputSource, inputSourceMap) {
 }
 
 // accept Buffers instead of strings
-// export const raw = true
+export const raw = true;

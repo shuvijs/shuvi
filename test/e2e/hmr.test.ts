@@ -128,8 +128,7 @@ describe('Hot Module Reloading', () => {
         // error box content
         await check(
           () => getIframeTextContent(page),
-          t =>
-            /Adjacent JSX elements must be wrapped in an enclosing tag/.test(t)
+          t => /Error: error/.test(t)
         );
 
         // add the original content

@@ -1,5 +1,5 @@
 import WebpackChain from 'webpack-chain';
-// import TerserPlugin from 'terser-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
 import path from 'path';
 import {
@@ -37,25 +37,25 @@ export interface BaseOptions {
   };
 }
 
-const terserOptions = {
-  parse: {
-    ecma: 2017 // es8 === 2017
-  },
-  compress: {
-    ecma: 5,
-    // The following two options are known to break valid JavaScript code
-    comparisons: false,
-    inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
-  },
-  mangle: { safari10: true },
-  output: {
-    ecma: 5,
-    safari10: true,
-    comments: false,
-    // Fixes usage of Emoji and certain Regex
-    ascii_only: true
-  }
-};
+// const terserOptions = {
+//   parse: {
+//     ecma: 2017 // es8 === 2017
+//   },
+//   compress: {
+//     ecma: 5,
+//     // The following two options are known to break valid JavaScript code
+//     comparisons: false,
+//     inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+//   },
+//   mangle: { safari10: true },
+//   output: {
+//     ecma: 5,
+//     safari10: true,
+//     comments: false,
+//     // Fixes usage of Emoji and certain Regex
+//     ascii_only: true
+//   }
+// };
 
 export { WebpackChain };
 
@@ -115,20 +115,29 @@ export function baseWebpackChain({
     // config.optimization.minimizer('terser').use(TerserPlugin, [
     //   {
     //     minify: TerserPlugin.esbuildMinify,
+    //     parallel: true,
     //     terserOptions: {
     //       target: 'es2015'
     //     }
     //   }
     // ]);
-    config.optimization
-      .minimizer('terser')
-      .use(require('../plugins/terser-webpack-plugin/index').TerserPlugin, [
-        {
-          parallel: 4,
-          swcMinify: true,
-          terserOptions
-        }
-      ]);
+    // @ts-ignore
+    config.optimization.minimizer('terser').use(TerserPlugin, [
+      {
+        minify: TerserPlugin.esbuildMinify,
+        parallel: true,
+        terserOptions: {}
+      }
+    ]);
+    // config.optimization
+    //   .minimizer('terser')
+    //   .use(require('../plugins/terser-webpack-plugin/index').TerserPlugin, [
+    //     {
+    //       parallel: 4,
+    //       swcMinify: true,
+    //       terserOptions
+    //     }
+    //   ]);
   }
 
   config.output.merge({

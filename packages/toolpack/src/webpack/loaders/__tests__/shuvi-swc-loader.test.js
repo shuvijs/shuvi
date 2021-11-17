@@ -60,9 +60,14 @@ const swc = async (
 describe('shuvi-swc-loader', () => {
   describe('replace constants', () => {
     test('should replace typeof window expression nested', async () => {
-      const code = await swc(
-        "import React from 'react';\n      import dynamic from 'next/dynamic'\n\n      dynamic(async () => {\n        await wait(500); \n        return () => React.createElement('div', null, '123')\n      }, {})"
-      );
+      const code = await swc(`
+      import React from 'react';
+      import { dynamic } from '@shuvi/app'
+
+      dynamic({
+        loader: () => import("./component")
+      })
+    `);
       expect(code).toMatchInlineSnapshot(
         `"function a(){console.log(\\"object\\");}"`
       );
