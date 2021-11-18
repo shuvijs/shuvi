@@ -10,7 +10,7 @@ let bindings;
 let loadError;
 const localFilePath = path.resolve(
   __dirname,
-  '../../swc-source/next-swc.darwin-x64.node'
+  '../../swc-source/shuvi-swc.darwin-x64.node'
 );
 if (fs.existsSync(localFilePath)) {
   // Log.log('Using locally built binary of next-swc')
@@ -26,9 +26,7 @@ if (!bindings) {
     console.error(loadError);
   }
 
-  Log.error(
-    `Failed to load SWC binary, see more info here: https://nextjs.org/docs/messages/failed-loading-swc`
-  );
+  Log.error(`Failed to load SWC binary`);
   process.exit(1);
 } else {
   loadError = null;
@@ -82,5 +80,3 @@ export async function bundle(options) {
 
 module.exports.transform = transform;
 module.exports.transformSync = transformSync;
-module.exports.minify = minify;
-module.exports.minifySync = minifySync;

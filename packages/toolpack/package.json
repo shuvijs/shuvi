@@ -15,7 +15,8 @@
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "build-native": "napi build --platform --cargo-cwd /swc ./swc-source"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -62,6 +63,8 @@
     "style-loader": "2.0.0",
     "terser-webpack-plugin": "5.2.5",
     "@swc/core": "^1.2.82",
+    "@napi-rs/triples": "1.0.3",
+    "@napi-rs/cli": "1.2.1",
     "vm-browserify": "1.1.2",
     "webpack-bundle-analyzer": "4.3.0",
     "webpack-chain": "6.5.1",
@@ -77,5 +80,22 @@
   },
   "peerDependencies": {
     "webpack": "5.36.0"
+  },
+  "napi": {
+    "name": "shuvi-swc",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "i686-pc-windows-msvc",
+        "aarch64-unknown-linux-gnu",
+        "armv7-unknown-linux-gnueabihf",
+        "aarch64-apple-darwin",
+        "aarch64-linux-android",
+        "x86_64-unknown-freebsd",
+        "x86_64-unknown-linux-musl",
+        "aarch64-unknown-linux-musl",
+        "aarch64-pc-windows-msvc"
+      ]
+    }
   }
 }
