@@ -74,7 +74,9 @@ describe('shuvi-swc-loader', () => {
     });
 
     test('should replace typeof window expression top level (client)', async () => {
-      const code = await swc('typeof window;');
+      const code = await swc(
+        "import { dynamic } from '@shuvi/app';\n      import './a'\n\n      dynamic(() => import(\"./component\"),{});\n      dynamic(() => import('../components/hello').then((mod) => mod.Hello),{});"
+      );
       expect(code).toMatchInlineSnapshot(`"\\"object\\";"`);
     });
 

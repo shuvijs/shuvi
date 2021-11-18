@@ -85,59 +85,17 @@ export function baseWebpackChain({
     splitChunks: false,
     runtimeChunk: undefined,
     minimize: !dev,
-    // minimizer: [
-    //   // Minify JavaScript
-    //   (compiler: webpack.Compiler) => {
-    //     // @ts-ignore No typings yet
-    //     const {
-    //       TerserPlugin,
-    //     } = require('../plugins/terser-webpack-plugin/index')
-    //     console.log(TerserPlugin, 'TerserPlugin')
-    //     new TerserPlugin({
-    //       // cacheDir: path.join(distDir, 'cache', 'next-minifier'),
-    //       parallel: 4,
-    //       swcMinify: true,
-    //       terserOptions,
-    //     }).apply(compiler)
-    //   },
-    // ],
     realContentHash: false
   });
   if (!dev) {
-    // config.optimization.minimizer('terser').use(TerserPlugin, [
-    //   {
-    //     extractComments: false,
-    //     parallel: true,
-    //     terserOptions
-    //   }
-    // ]);
-    // @ts-ignore
-    // config.optimization.minimizer('terser').use(TerserPlugin, [
-    //   {
-    //     minify: TerserPlugin.esbuildMinify,
-    //     parallel: true,
-    //     terserOptions: {
-    //       target: 'es2015'
-    //     }
-    //   }
-    // ]);
     // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
       {
-        minify: TerserPlugin.esbuildMinify,
-        parallel: true,
+        minify: TerserPlugin.swcMinify,
+        // parallel: true, // parallel not improved a lot
         terserOptions: {}
       }
     ]);
-    // config.optimization
-    //   .minimizer('terser')
-    //   .use(require('../plugins/terser-webpack-plugin/index').TerserPlugin, [
-    //     {
-    //       parallel: 4,
-    //       swcMinify: true,
-    //       terserOptions
-    //     }
-    //   ]);
   }
 
   config.output.merge({
@@ -204,9 +162,7 @@ export function baseWebpackChain({
     .use('shuvi-swc-loader')
     .loader('@shuvi/shuvi-swc-loader')
     .options({
-      isNode: false,
-      // webpack 5 have in-built cache.
-      cacheDirectory: false
+      isNode: false
     });
 
   mainRule

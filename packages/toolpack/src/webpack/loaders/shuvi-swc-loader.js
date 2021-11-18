@@ -30,10 +30,10 @@ import { transform } from '../../utils/load-sources';
 
 function getSWCOptions({
   filename,
-  isServer,
+  isNode,
   development,
-  isPageFile,
-  isNextDist,
+  dynamicImport,
+  disableShuviDynamic,
   hasReactRefresh
 }) {
   const isTSFile = filename.endsWith('.ts');
@@ -42,7 +42,7 @@ function getSWCOptions({
   const jsc = {
     parser: {
       syntax: isTypeScript ? 'typescript' : 'ecmascript',
-      dynamicImport: true,
+      dynamicImport,
       // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
       [isTypeScript ? 'tsx' : 'jsx']: isTSFile ? false : true
     },
@@ -54,7 +54,7 @@ function getSWCOptions({
         pragma: 'React.createElement',
         pragmaFrag: 'React.Fragment',
         throwIfNamespace: true,
-        development: development,
+        development,
         useBuiltins: true,
         refresh: hasReactRefresh
       },
@@ -62,7 +62,7 @@ function getSWCOptions({
         simplify: false,
         globals: {
           typeofs: {
-            window: isServer ? 'undefined' : 'object'
+            window: isNode ? 'undefined' : 'object'
           }
         }
       },
@@ -72,12 +72,12 @@ function getSWCOptions({
     }
   };
 
-  if (isServer) {
+  const isPageFile = true;
+
+  if (isNode) {
     return {
       jsc,
-      // Disables getStaticProps/getServerSideProps tree shaking on the server compilation for pages
-      disableNextSsg: true,
-      disablePageConfig: true,
+      disableShuviDynamic,
       isDevelopment: development,
       isPageFile,
       env: {
@@ -92,14 +92,10 @@ function getSWCOptions({
     jsc.target = 'es5';
     return {
       // Ensure Next.js internals are output as commonjs modules
-      ...(isNextDist
-        ? {
-            module: {
-              type: 'commonjs'
-            }
-          }
-        : {}),
-      disableNextSsg: !isPageFile,
+      // module: {
+      //   type: 'commonjs'
+      // },
+      disableShuviDynamic,
       isDevelopment: development,
       isPageFile,
       jsc
@@ -113,17 +109,23 @@ async function loaderTransform(source, inputSourceMap) {
 
   let loaderOptions = (this.getOptions && this.getOptions()) || {};
 
-  const { isNode } = loaderOptions;
+  const {
+    isNode,
+    dynamicImport = true,
+    hasReactRefresh,
+    disableShuviDynamic = false
+  } = loaderOptions;
 
   const isDev = this.mode === 'development';
 
   const swcOptions = getSWCOptions({
     filename,
-    isServer: isNode,
-    isPageFile: true,
+    isNode,
     development: isDev,
-    isNextDist: false,
-    hasReactRefresh: isDev && !isNode
+    dynamicImport,
+    disableShuviDynamic,
+    hasReactRefresh:
+      hasReactRefresh !== undefined ? hasReactRefresh : isDev && !isNode
   });
 
   const programmaticOptions = {
