@@ -5,9 +5,9 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('Custom Babel', () => {
+describe('Custom Swc', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('custom-babel');
+    ctx = await launchFixture('custom-swc');
   });
   afterAll(async () => {
     await ctx.close();
@@ -16,6 +16,7 @@ describe('Custom Babel', () => {
     await page.close();
   });
 
+  // todo swc support custom plugin
   test('should work with custom plugin', async () => {
     page = await ctx.browser.page(ctx.url('/'));
     expect(await page.$text('div')).toBe('Index Page');
