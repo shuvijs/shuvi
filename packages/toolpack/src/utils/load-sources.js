@@ -1,32 +1,48 @@
 const fs = require('fs');
 const { platform, arch } = require('os');
 const path = require('path');
-const Log = console;
-
+const { platformArchTriples } = require('@napi-rs/triples')
 const ArchName = arch();
 const PlatformName = platform();
 
 let bindings;
 let loadError;
-const localFilePath = path.resolve(
+
+const triples = platformArchTriples[PlatformName][ArchName]
+const swcSource = path.join(
   __dirname,
-  '../../swc-source/shuvi-swc.darwin-x64.node'
-);
-if (fs.existsSync(localFilePath)) {
-  // Log.log('Using locally built binary of next-swc')
+  '../../swc-source',
+)
+for (const triple of triples) {
   try {
-    bindings = require(localFilePath);
+    bindings = require(`${swcSource}/swc-${triple.platformArchABI}`)
+    break
   } catch (e) {
-    loadError = e;
+    const localFilePath = path.join(
+      swcSource,
+      `native/shuvi-swc.${triple.platformArchABI}.node`
+    )
+    if (fs.existsSync(localFilePath)) {
+      console.log('Using locally built binary of next-swc')
+      try {
+        bindings = require(localFilePath)
+      } catch (e) {
+        if (e?.code !== 'MODULE_NOT_FOUND') {
+          loadError = e
+        }
+      }
+      break
+    }
   }
 }
+
 
 if (!bindings) {
   if (loadError) {
     console.error(loadError);
   }
 
-  Log.error(`Failed to load SWC binary`);
+  console.error(`Failed to load SWC binary`);
   process.exit(1);
 } else {
   loadError = null;
