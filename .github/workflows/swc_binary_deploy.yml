@@ -22,7 +22,7 @@ jobs:
       - build-android-aarch64
       - build-linux-aarch64-musl
     env:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN_ELEVATED }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       # https://github.com/actions/virtual-environments/issues/1187
       - name: tune linux network
