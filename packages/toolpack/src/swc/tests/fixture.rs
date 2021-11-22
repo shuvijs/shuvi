@@ -1,5 +1,5 @@
-use next_swc::{
-    amp_attributes::amp_attributes, 
+use shuvi_swc::{
+    amp_attributes::amp_attributes,
     shuvi_dynamic::shuvi_dynamic,
     auto_css_module::auto_css_module
 };

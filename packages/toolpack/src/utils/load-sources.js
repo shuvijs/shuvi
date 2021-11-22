@@ -23,7 +23,7 @@ for (const triple of triples) {
       `native/shuvi-swc.${triple.platformArchABI}.node`
     )
     if (fs.existsSync(localFilePath)) {
-      console.log('Using locally built binary of next-swc')
+      console.log('Using locally built binary of shuvi-swc')
       try {
         bindings = require(localFilePath)
       } catch (e) {
