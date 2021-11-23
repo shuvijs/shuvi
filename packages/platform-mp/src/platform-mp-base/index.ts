@@ -12,7 +12,7 @@ import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import ModifyChunkPlugin from './plugins/modify-chunk-plugin';
 import DomEnvPlugin from './plugins/dom-env-plugin';
 import modifyStyle from './modify-style';
-import addBabelPlugins from './add-babel-plugins';
+import modifySwcLoader from './modify-swc-loader';
 import {
   resolveAppFile,
   resolveRouterFile,
@@ -145,7 +145,7 @@ export default abstract class PlatformMpBase {
     );
     api.addAppExport(resolveLib('@shuvi/router-mp'), '{ Link }');
 
-    api.addAppService(resolveRouterFile('lib', 'index'), '*', 'router-mp.js');
+    api.addAppService(resolveRouterFile('esm', 'index'), '*', 'router-mp.js');
   }
 
   setupRoutes() {
@@ -311,7 +311,7 @@ export default abstract class PlatformMpBase {
         config.entryPoints.clear();
         config.optimization.clear();
         modifyStyle(config, this.fileType.style);
-        addBabelPlugins(config);
+        modifySwcLoader(config);
         config.output.globalObject(this.globalObject);
         config.output.chunkFilename('[name].js');
         config.output.filename('[name].js');
