@@ -34,28 +34,27 @@ const { execSync } = require('child_process')
           path.join(nativePackagesDir, platform, 'package.json'),
           JSON.stringify(pkg, null, 2)
         )
-        execSync(
+        await execSync(
           `npm whoami`
         )
-        execSync(
+        await execSync(
           `npm publish ${path.join(
             nativePackagesDir,
             platform
           )} --access public`
+        )
+        await execSync(
+          `git update-index --skip-worktree ${path.join(
+            nativePackagesDir,
+            platform,
+            'package.json'
+          )}`
         )
       } catch (err) {
         // don't block publishing other versions on single platform error
         console.error(`Failed to publish`, binaryName)
         throw err
       }
-      // lerna publish in shuvi step will fail if git status is not clean
-      execSync(
-        `git update-index --skip-worktree ${path.join(
-          nativePackagesDir,
-          platform,
-          'package.json'
-        )}`
-      )
     }
   } catch (err) {
     console.error(err)
