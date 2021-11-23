@@ -13,6 +13,7 @@ const { execSync } = require('child_process')
     let nativePackagesDir = path.join(__dirname, '../src/swc/npm')
     let binaryNames = await readdir(binarySourcesDir)
     console.log(binaryNames)
+    return;
 
     for (let binaryName of binaryNames) {
       try {
