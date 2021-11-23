@@ -37,7 +37,7 @@ export interface BaseOptions {
   };
 }
 
-const terserOptions: TerserPlugin.TerserPluginOptions['terserOptions'] = {
+const terserOptions = {
   parse: {
     ecma: 2017 // es8 === 2017
   },
@@ -69,9 +69,8 @@ export function baseWebpackChain({
   publicPath = '/',
   env = {}
 }: BaseOptions): WebpackChain {
-  const { typeScriptPath, tsConfigPath, useTypeScript } = getTypeScriptInfo(
-    projectRoot
-  );
+  const { typeScriptPath, tsConfigPath, useTypeScript } =
+    getTypeScriptInfo(projectRoot);
   const config = new WebpackChain();
 
   config.mode(dev ? 'development' : 'production');
@@ -89,6 +88,7 @@ export function baseWebpackChain({
     realContentHash: false
   });
   if (!dev) {
+    // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
       {
         extractComments: false,
@@ -125,7 +125,7 @@ export function baseWebpackChain({
   });
 
   config.resolveLoader.merge({
-    alias: ['shuvi-babel-loader', 'route-component-loader'].reduce(
+    alias: ['shuvi-swc-loader', 'route-component-loader'].reduce(
       (alias, loader) => {
         alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
         return alias;
@@ -159,12 +159,10 @@ export function baseWebpackChain({
       return /node_modules/.test(path);
     })
     .end()
-    .use('shuvi-babel-loader')
-    .loader('@shuvi/shuvi-babel-loader')
+    .use('shuvi-swc-loader')
+    .loader('@shuvi/shuvi-swc-loader')
     .options({
-      isNode: false,
-      // webpack 5 have in-built cache.
-      cacheDirectory: false
+      isNode: false
     });
 
   mainRule

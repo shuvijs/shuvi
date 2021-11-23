@@ -9,12 +9,15 @@
   "author": "liximomo",
   "license": "MIT",
   "files": [
-    "lib"
+    "lib",
+    "swc-source"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "build-native": "napi build --platform --cargo-cwd /src/swc ./swc-source/native",
+    "publish-native": "node scripts/publish-native.js"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -59,21 +62,52 @@
     "stream-browserify": "3.0.0",
     "strip-ansi": "6.0.0",
     "style-loader": "2.0.0",
-    "terser-webpack-plugin": "5.1.1",
+    "terser-webpack-plugin": "5.2.5",
+    "@napi-rs/triples": "1.0.3",
+    "@napi-rs/cli": "1.2.1",
     "vm-browserify": "1.1.2",
     "webpack-bundle-analyzer": "4.3.0",
     "webpack-chain": "6.5.1",
     "webpack-sources": "2.2.0"
   },
+  "optionalDependencies": {
+    "@shuvi/swc-android-arm64": "latest",
+    "@shuvi/swc-darwin-arm64": "latest",
+    "@shuvi/swc-darwin-x64": "latest",
+    "@shuvi/swc-linux-arm-gnueabihf": "latest",
+    "@shuvi/swc-linux-arm64-gnu": "latest",
+    "@shuvi/swc-linux-arm64-musl": "latest",
+    "@shuvi/swc-linux-x64-gnu": "latest",
+    "@shuvi/swc-linux-x64-musl": "latest",
+    "@shuvi/swc-win32-arm64-msvc": "latest",
+    "@shuvi/swc-win32-ia32-msvc": "latest",
+    "@shuvi/swc-win32-x64-msvc": "latest"
+  },
   "devDependencies": {
     "@types/loader-utils": "2.0.1",
     "@types/mini-css-extract-plugin": "^1.2.2",
-    "@types/terser-webpack-plugin": "5.0.2",
     "@types/webpack-bundle-analyzer": "^3.8.0",
     "memfs": "^3.1.2",
     "webpack": "5.36.0"
   },
   "peerDependencies": {
     "webpack": "5.36.0"
+  },
+  "napi": {
+    "name": "shuvi-swc",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "i686-pc-windows-msvc",
+        "aarch64-unknown-linux-gnu",
+        "armv7-unknown-linux-gnueabihf",
+        "aarch64-apple-darwin",
+        "aarch64-linux-android",
+        "x86_64-unknown-freebsd",
+        "x86_64-unknown-linux-musl",
+        "aarch64-unknown-linux-musl",
+        "aarch64-pc-windows-msvc"
+      ]
+    }
   }
 }

@@ -1,0 +1,18 @@
+{
+  "name": "@shuvi/swc-android-arm64",
+  "version": "0.0.0",
+  "os": [
+    "android"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "shuvi-swc.android-arm64.node",
+  "files": [
+    "shuvi-swc.android-arm64.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
