@@ -4,8 +4,6 @@ const path = require('path')
 const { copy, readFile, readdir, writeFile } = require('fs-extra')
 const { execSync } = require('child_process')
 
-const cwd = process.cwd()
-
 ;(async function () {
   try {
     const version = require('./version').version
@@ -16,15 +14,14 @@ const cwd = process.cwd()
     let binaryNames = await readdir(binarySourcesDir)
     console.log(binaryNames)
 
-    return;
-
     for (let binaryName of binaryNames) {
       try {
-        let platform = binaryName.test(/^shuvi-swc\.(.*)\.node$/)
+        let platform = binaryName.trim().match(/^shuvi-swc\.(.*)\.node$/)
+        platform = platform && platform[1];
+        console.log(binaryName, '=>', platform);
         if(!platform){
           continue;
         }
-        platform = platform[1];
         await copy(
           path.join(binarySourcesDir, binaryName),
           path.join(nativePackagesDir, platform, binaryName)
@@ -45,7 +42,7 @@ const cwd = process.cwd()
         )
       } catch (err) {
         // don't block publishing other versions on single platform error
-        console.error(`Failed to publish`, platform)
+        console.error(`Failed to publish`, binaryName)
         throw err
       }
       // lerna publish in shuvi step will fail if git status is not clean
