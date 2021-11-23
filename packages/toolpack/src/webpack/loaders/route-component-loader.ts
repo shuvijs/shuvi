@@ -6,7 +6,7 @@ export type RouteComponentLoaderOptions = {
   active: boolean;
 };
 
-const routeComponentLoader: loader.Loader = function () {
+const routeComponentLoader: loader.Loader = function (this: any) {
   const { componentAbsolutePath }: any = loaderUtils.getOptions(this);
 
   const stringifyRequest = loaderUtils.stringifyRequest(
