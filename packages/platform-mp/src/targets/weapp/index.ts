@@ -2,6 +2,8 @@ import { recursiveMerge } from '@tarojs/helper';
 import PlatformMpBase from '../../platform-mp-base';
 import template from './template';
 import { components } from './runtime/components';
+import { resolveAppFile } from '../../paths';
+
 class PlatformMpWeapp extends PlatformMpBase {
   globalObject = 'wx';
   template: any = template;
@@ -12,7 +14,7 @@ class PlatformMpWeapp extends PlatformMpBase {
     script: '.js',
     xs: '.wxs'
   };
-  entryPath = `${__dirname}/entry`;
+  entryPath = resolveAppFile('../targets/weapp/entry');
   taroComponentsPath = `${__dirname}/runtime/components-react`;
   modifyTemplate() {
     recursiveMerge(template.internalComponents, components);
