@@ -15,7 +15,7 @@ const swcSource = path.join(
 )
 for (const triple of triples) {
   try {
-    bindings = require(`${swcSource}/swc-${triple.platformArchABI}`)
+    bindings = require(`@shuvi/swc-${triple.platformArchABI}`)
     break
   } catch (e) {
     const localFilePath = path.join(

@@ -2340,6 +2340,61 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
+"@shuvi/swc-android-arm64@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-android-arm64/-/swc-android-arm64-0.0.1-pre.2.tgz#749e065f0546308597603c50958d099aaa1eb69a"
+  integrity sha512-AZqqiDtaJS3VVxxPmGJ12+DAEGLmzD3EMkOYsDdv9LWEfCvjKGS7HuZdZSD8aS+EhtawWvIMPuSgQF/oKhbfUQ==
+
+"@shuvi/swc-darwin-arm64@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-darwin-arm64/-/swc-darwin-arm64-0.0.1-pre.2.tgz#523f18344d1b8862a3f45d171faa7d6208b0d96b"
+  integrity sha512-nIKOtV6YngDp6QXyKtD1L0JpAmhdKUxgE9YatRWJSCtZ7xwAwV68sGusTLyExN01RUHeqGC0rWNYRqdAipdIkw==
+
+"@shuvi/swc-darwin-x64@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-darwin-x64/-/swc-darwin-x64-0.0.1-pre.2.tgz#6fa59ad903e8c936722eccb6d8c8dec8a66fafe6"
+  integrity sha512-vby2QgXsvVbxG/aGuXFKqpIomlLUGfRZDeDDhp9ibM9ScpMyqPRdUFURdnE7M4HYaAN3mZGreqoqiTKedzJd5A==
+
+"@shuvi/swc-linux-arm-gnueabihf@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-linux-arm-gnueabihf/-/swc-linux-arm-gnueabihf-0.0.1-pre.2.tgz#a5acd43dfbb09cbc75ceb7839ea5578cdbd763c0"
+  integrity sha512-0cEUASkVSi1SpczUo0eiucpP0Dpjsm9mQrBpiS0NT7AjqM4qhhpBaC06FHncwTWgvWOMfWWm2WACgZ3A4bllHQ==
+
+"@shuvi/swc-linux-arm64-gnu@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-0.0.1-pre.2.tgz#9eda698e7cd375d1c5cd74e9ac0e1dce52120170"
+  integrity sha512-S6Ja/EOLd95m0dmKi+ywDZkd81p6UI7nZT4gWwrZhbhC5lhOuEj429UqHjdaogZcxaafmBWi4HXS+5sAayiuZA==
+
+"@shuvi/swc-linux-arm64-musl@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-linux-arm64-musl/-/swc-linux-arm64-musl-0.0.1-pre.2.tgz#7c8fd900cef9c38f68fa6f7f204fa6ab9ea874c0"
+  integrity sha512-cdgs+c8EJVlWBOd5VE5nF7/J47paM3d8LXmHIzUkKdaZiBA11M1GIvnhNDjG5Yr3K8AKuk0XA5lX2VhvW+ncxA==
+
+"@shuvi/swc-linux-x64-gnu@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-linux-x64-gnu/-/swc-linux-x64-gnu-0.0.1-pre.2.tgz#da18ef998ee7cda017d582f685426ee9f4953d76"
+  integrity sha512-UwLfIcuGs7LjWUwuzxI/Mm8/PWusLBVfSKpNGUuLYQEedNXtyekmoFAntSbaC6EUWn/loyZ75W3KmQ3LAs07Gg==
+
+"@shuvi/swc-linux-x64-musl@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-linux-x64-musl/-/swc-linux-x64-musl-0.0.1-pre.2.tgz#f35f7dd2e68f959d132329f2e01ea026c938925e"
+  integrity sha512-Ii8e94og7677eV6AWDvGNATxlt/wS2U7B4rVjJeXxyk8XnjG9PDryeUfIeQ9s0TentB95nYgjKK1gotfynJrzw==
+
+"@shuvi/swc-win32-arm64-msvc@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-0.0.1-pre.2.tgz#2ecb806f94adb0f7208665892d675319b817185d"
+  integrity sha512-h+Zio+/IG88BidygfI6pNmoXvpTE18i9/H51Vqg7vYHeXGI9h+jlclWjs1D2ycmUosoYdMy9InWNxyowQefxGA==
+
+"@shuvi/swc-win32-ia32-msvc@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-win32-ia32-msvc/-/swc-win32-ia32-msvc-0.0.1-pre.2.tgz#836f70f6fa272083e4af98000339dd2ac215ffaa"
+  integrity sha512-GZsHxWzdo6rKDmrsJkpSQsemCWm0vQ2DtleKh3WsT+jpa91RRTEnN1shfHmSXjk/QlvYIGvy7baEFa3Ar03OQw==
+
+"@shuvi/swc-win32-x64-msvc@latest":
+  version "0.0.1-pre.2"
+  resolved "https://registry.yarnpkg.com/@shuvi/swc-win32-x64-msvc/-/swc-win32-x64-msvc-0.0.1-pre.2.tgz#884ab568d4c20d5a2dc05667c714e459adf857c0"
+  integrity sha512-e8HSANwmbXho7c+3LGwLQb6CldNyZvPQgj/16oHhb5iZvkHfJPE9AYgyfxc/jl/G1Z98rmeelaZrL0+jZCDpog==
+
 "@sindresorhus/is@^2.0.0":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-2.1.1.tgz#ceff6a28a5b4867c2dd4a1ba513de278ccbe8bb1"
