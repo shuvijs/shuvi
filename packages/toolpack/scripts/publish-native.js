@@ -35,9 +35,6 @@ const { execSync } = require('child_process')
           JSON.stringify(pkg, null, 2)
         )
         await execSync(
-          `npm whoami`
-        )
-        await execSync(
           `npm publish ${path.join(
             nativePackagesDir,
             platform

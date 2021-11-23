@@ -69,23 +69,6 @@ export function config(api: IApi) {
 
         config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);
 
-        config.module
-          .rule('main')
-          .oneOf('js')
-          .use('shuvi-swc-loader')
-          .tap(options => {
-            const plugins = options.plugins || [];
-            plugins.unshift([
-              require('react-refresh/babel'),
-              { skipEnvCheck: true }
-            ]);
-
-            return {
-              ...options,
-              plugins
-            };
-          });
-
         config.merge({
           entry: {
             [BUILD_CLIENT_RUNTIME_REACT_REFRESH]: [
