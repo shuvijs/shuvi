@@ -83,7 +83,6 @@
   },
   "napi": {
     "name": "shuvi-swc",
-    "version": "0.0.1-pre.10",
     "triples": {
       "defaults": true,
       "additional": [

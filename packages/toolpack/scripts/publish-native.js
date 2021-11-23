@@ -35,10 +35,13 @@ const { execSync } = require('child_process')
           JSON.stringify(pkg, null, 2)
         )
         execSync(
+          `npm whoami`
+        )
+        execSync(
           `npm publish ${path.join(
             nativePackagesDir,
             platform
-          )} --access public --tag ${version}`
+          )} --access public`
         )
       } catch (err) {
         // don't block publishing other versions on single platform error
