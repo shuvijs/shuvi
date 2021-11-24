@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, synchronize]
 
-name: Build, test, and deploy
+name: SWC build, test, and deploy
 
 jobs:
   testsPass:
