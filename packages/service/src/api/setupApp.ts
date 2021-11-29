@@ -124,6 +124,7 @@ async function setupRoutes(api: Api) {
   } = api;
   if (Array.isArray(routes)) {
     await api.setRoutes(routes);
+    await api.setMiddlewaresRoutes(pickMiddlewareAndPath(routes));
   } else {
     const route = new Route(paths.pagesDir, false);
     if (api.mode === 'development') {
