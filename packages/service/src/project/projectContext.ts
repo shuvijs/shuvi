@@ -24,6 +24,7 @@ export interface ProjectContext {
   entryCodes: string[];
   routesContent: string;
   apiRoutesContent: string;
+  middlewareRoutesContent: string;
   entryWrapperContent: string;
   polyfills: string[];
 
@@ -49,6 +50,7 @@ export const createProjectContext = () =>
     entryCodes: [],
     routesContent: 'export default []',
     apiRoutesContent: 'export default []',
+    middlewareRoutesContent: 'export default []',
     entryWrapperContent: '',
     polyfills: [],
     services: new Map(),

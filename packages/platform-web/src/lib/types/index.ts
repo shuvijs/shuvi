@@ -7,7 +7,7 @@ import {
   IViewServer
 } from '@shuvi/platform-core';
 import { defineHook } from '@shuvi/hook';
-import { IRequest, IServerMiddlewareItem } from '@shuvi/service';
+import { IRequest, IServerMiddlewareItem, IRequestHandlerWithNext } from '@shuvi/service';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IApiRequestHandler } from '../apiRoute/apiRouteHandler';
 
@@ -90,10 +90,16 @@ export type IApiRoutes = {
   apiModule: IApiModule;
 }[];
 
+export type IMiddlewareRoutes = {
+  path: string;
+  middlewares: IRequestHandlerWithNext[];
+}[];
+
 export type IBuiltResource = {
   server: {
     server: any;
     apiRoutes: IApiRoutes;
+    middlewareRoutes: IMiddlewareRoutes;
     application: {
       create: ApplicationCreater<IApplicationCreaterServerContext>;
     };

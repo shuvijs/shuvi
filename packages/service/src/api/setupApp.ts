@@ -5,6 +5,7 @@ import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import { renameFilepathToComponent } from '../lib/routes';
 import { renameFilepathToModule } from '../lib/apiRoutes';
+import { pickMiddlewareAndPath } from '../lib/middlewaresRoutes';
 import { Route } from '../route';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
@@ -128,10 +129,12 @@ async function setupRoutes(api: Api) {
     if (api.mode === 'development') {
       route.subscribe(tempRoutes => {
         api.setRoutes(renameFilepathToComponent(tempRoutes));
+        api.setMiddlewaresRoutes(pickMiddlewareAndPath(tempRoutes));
       });
     } else {
       const tempRoutes = await route.getRoutes();
       await api.setRoutes(renameFilepathToComponent(tempRoutes));
+      await api.setMiddlewaresRoutes(pickMiddlewareAndPath(tempRoutes));
     }
   }
   if (Array.isArray(apiRoutes) && apiRoutes.length) {

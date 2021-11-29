@@ -221,7 +221,7 @@ describe('api', () => {
       const fakeServerMiddleware = jest.fn();
       api.addServerMiddlewareLast(fakeServerMiddleware);
       // default platform web add 2 middlewares
-      expect(api.getAfterPageMiddlewares().length).toBe(6);
+      expect(api.getAfterPageMiddlewares().length).toBe(7);
     });
   });
 });
