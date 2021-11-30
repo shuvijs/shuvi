@@ -138,6 +138,47 @@ describe('Basic Features', () => {
       expect(await localPage.title()).toBe('Test Title');
     });
   });
+
+  describe('Middleware function', () => {
+    let localPage: Page;
+    afterEach(async () => {
+      await localPage.close();
+    });
+
+    test('should return early by middleware', async () => {
+      localPage = await ctx.browser.page(ctx.url('/middleware/a/b?name=true'));
+      expect(await localPage.$text('body')).toMatch(
+        /when req\.query\.name true return earlier/
+      );
+      localPage = await ctx.browser.page(
+        ctx.url('/middleware/a/b/name?name=666')
+      );
+      expect(await localPage.$text('body')).toMatch(
+        /when req\.query\.name true return earlier/
+      );
+    });
+
+    test('should run middleware has order', async () => {
+      // ensure path has been compiled
+      localPage = await ctx.browser.page(
+        ctx.url('/middleware/a/deep/other/more')
+      );
+      const consoleSpy = jest.spyOn(console, 'log');
+      localPage = await ctx.browser.page(
+        ctx.url('/middleware/a/deep/other/more')
+      );
+      const consoleResult = consoleSpy.mock.calls.join('');
+      expect(consoleResult).toBe(
+        [
+          'root req.url  /middleware/a/deep/other/more',
+          '[local] req.url  /middleware/a/deep/other/more',
+          '[local]=>deep=>req.url  /middleware/a/deep/other/more',
+          '[local]=>deep=>[[...other]]=>req.url  /middleware/a/deep/other/more',
+          ''
+        ].join('\n')
+      );
+    });
+  });
 });
 
 describe('[SPA] Basic Features', () => {

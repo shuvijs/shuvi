@@ -13,6 +13,7 @@ const jsExtensions = ['js', 'jsx', 'ts', 'tsx'];
 
 const RouteFileRegExp = new RegExp(`\\.(?:${jsExtensions.join('|')})$`);
 
+const MIDDLEWAREFILE = '_middleware.js';
 function isLayout(filepath: string) {
   return filepath.endsWith('/_layout');
 }
@@ -128,48 +129,54 @@ export class Route {
     const generateRoute = (
       fileToTransform: IFilesObject,
       pageDirectory: string,
-      ignoreLayout: boolean
+      ignoreLayout: boolean,
+      middlewareArr: string[]
     ) => {
       const routes: IRouteRecord[] = [];
+      const hasMiddleware = !!fileToTransform[MIDDLEWAREFILE];
+      if(hasMiddleware){
+        delete fileToTransform[MIDDLEWAREFILE];
+        const middlewarePath = join(pageDirectory, MIDDLEWAREFILE)
+        middlewareArr.push(middlewarePath);
+      }
       Object.entries(fileToTransform).forEach(
         ([fileName, nestedRoute], _, arr) => {
           let route: IRouteRecord;
           let routePath = normalizeRoutePath(normalizeFilePath(fileName));
-          {
-            const isDirectory = Object.values(nestedRoute).length > 0;
+          const isDirectory = Object.values(nestedRoute).length > 0;
+          route = {
+            path: routePath,
+            middlewares: middlewareArr
+          } as IRouteRecord;
 
-            route = {
-              path: routePath
-            } as IRouteRecord;
-
-            // if a directory have _layout, treat it as its own source
-            if (isDirectory) {
-              if (!ignoreLayout) {
-                const layoutFile = Object.keys(nestedRoute).find(route =>
-                  isLayout(normalizeRoutePath(normalizeFilePath(route)))
-                );
-                if (layoutFile) {
-                  route.filepath = join(pageDirectory, fileName, layoutFile);
-                  // delete _layout
-                  delete nestedRoute[layoutFile];
-                }
+          // if a directory have _layout, treat it as its own source
+          if (isDirectory) {
+            if (!ignoreLayout) {
+              const layoutFile = Object.keys(nestedRoute).find(route =>
+                isLayout(normalizeRoutePath(normalizeFilePath(route)))
+              );
+              if (layoutFile) {
+                route.filepath = join(pageDirectory, fileName, layoutFile);
+                // delete _layout
+                delete nestedRoute[layoutFile];
               }
-              route.children = generateRoute(
-                nestedRoute,
-                join(pageDirectory, fileName),
-                ignoreLayout
-              ); // inner directory
-            } else {
-              route.filepath = join(pageDirectory, fileName);
             }
-            routes.push(route);
+            route.children = generateRoute(
+              nestedRoute,
+              join(pageDirectory, fileName),
+              ignoreLayout,
+              middlewareArr.slice()
+            ); // inner directory
+          } else {
+            route.filepath = join(pageDirectory, fileName);
           }
+          routes.push(route);
         }
       );
       return routes;
     };
 
-    return generateRoute(transformedFiles, this._filesDir, this._ignoreLayout);
+    return generateRoute(transformedFiles, this._filesDir, this._ignoreLayout, []);
   }
 
   private async _createWatcher() {

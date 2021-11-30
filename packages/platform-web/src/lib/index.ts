@@ -19,6 +19,7 @@ import {
 import { initCoreResource } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { getApiRoutesMiddleware } from './apiRoute';
+import { getMiddlewareRoutesMiddleware } from './middlewareRoute';
 import { getSSRMiddleware, renderToHTML } from './SSR';
 
 function getServerEntry(_api: Api): IWebpackEntry {
@@ -103,6 +104,7 @@ const platformWeb: IRuntime = {
     }
 
     api.addServerMiddlewareLast(getApiRoutesMiddleware(api));
+    api.addServerMiddlewareLast(getMiddlewareRoutesMiddleware(api));
     api.addServerMiddlewareLast(getSSRMiddleware(api));
 
     // install framework

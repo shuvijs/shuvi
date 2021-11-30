@@ -11,6 +11,7 @@ export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
   name?: string;
   component?: string;
+  middlewares?: string[];
   redirect?: string;
   path: string;
   id?: string;
@@ -19,6 +20,11 @@ export interface IUserRouteConfig {
 export interface IApiRouteConfig {
   path: string;
   apiModule: string;
+}
+
+export interface IMiddlewareRouteConfig {
+  path: string;
+  middlewares: string[];
 }
 
 export type IShuviMode = 'development' | 'production';
