@@ -5,6 +5,7 @@ import {
   IConfig,
   IApi,
   IApiRouteConfig,
+  IMiddlewareRouteConfig,
   IUserRouteConfig,
   IPaths,
   IShuviMode,
@@ -32,6 +33,7 @@ import invariant from '@shuvi/utils/lib/invariant';
 import { Hookable } from '@shuvi/hook';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
+import { normalizeMiddlewareRoutes, serializeMiddlewareRoutes } from '../lib/middlewaresRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { createDefaultConfig, loadConfig } from '../config';
 import { IResources, IPlugin, IPreset } from './types';
@@ -300,6 +302,17 @@ class Api extends Hookable implements IApi {
 
     let content = `export default ${serialized}`;
     this._projectBuilder.setApiRoutesContent(content);
+  }
+
+  async setMiddlewaresRoutes(middlewaresRoutes: IMiddlewareRouteConfig[]): Promise<void> {
+    middlewaresRoutes = normalizeMiddlewareRoutes(middlewaresRoutes, {
+      pagesDir: this.paths.pagesDir
+    });
+
+    const serialized = serializeMiddlewareRoutes(middlewaresRoutes);
+
+    let content = `export default ${serialized}`;
+    this._projectBuilder.setMiddlewareRoutesContent(content);
   }
 
   removeBuiltFiles() {

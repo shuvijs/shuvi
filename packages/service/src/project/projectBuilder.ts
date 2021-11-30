@@ -28,6 +28,7 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
   entryCodes: 'addEntryCode',
   routesContent: 'setRoutesContent',
   apiRoutesContent: 'setApiRoutesContent',
+  middlewareRoutesContent: 'setMiddlewareRoutesContent',
   entryWrapperContent: 'setEntryWrapperContent',
   polyfills: {
     ignore: true,
@@ -100,6 +101,10 @@ class ProjectBuilder {
 
   setApiRoutesContent(content: string): void {
     this._projectContext.apiRoutesContent = content;
+  }
+
+  setMiddlewareRoutesContent(content: string): void {
+    this._projectContext.middlewareRoutesContent = content;
   }
 
   setRuntimeConfigContent(content: string | null) {
