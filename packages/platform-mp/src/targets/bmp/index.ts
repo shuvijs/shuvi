@@ -1,14 +1,13 @@
 // import React from 'react';
 import PlatformMpBase from '../../platform-mp-base';
 import template from './template';
-import { resolveAppFile } from '../../paths';
 
 //export default new PlatformTaro();
 //import { PACKAGE_NAME } from './constants';
 class PlatformMpBmp extends PlatformMpBase {
   globalObject = 'globalThis';
   taroComponentsPath = `${__dirname}/runtime/components-react`;
-  entryPath = resolveAppFile('../targets/bmp/entry');
+  entryPath = `${__dirname}/entry`;
   template: any = template;
   fileType = {
     templ: '.bxml',
