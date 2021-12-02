@@ -92,9 +92,10 @@ function getSWCOptions({
     jsc.target = 'es5';
     return {
       // Ensure Next.js internals are output as commonjs modules
-      // module: {
-      //   type: 'commonjs'
-      // },
+      module: {
+        type: 'commonjs',
+        ignoreDynamic: true
+      },
       disableShuviDynamic,
       isDevelopment: development,
       isPageFile,
