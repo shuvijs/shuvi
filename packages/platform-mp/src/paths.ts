@@ -9,7 +9,7 @@ export const resolveLib = (module: string) =>
 export const PACKAGE_RESOLVED = resolveLib(PACKAGE_NAME);
 
 export const resolveAppFile = (...paths: string[]) =>
-  `${resolve(PACKAGE_RESOLVED, 'esm', 'shuvi-app', ...paths)}`;
+  `${resolve(PACKAGE_RESOLVED, 'lib', 'shuvi-app', ...paths)}`;
 
 export const resolveRouterFile = (...paths: string[]) =>
   `${resolve(resolveLib(PACKAGE_ROUTER), ...paths)}`;
