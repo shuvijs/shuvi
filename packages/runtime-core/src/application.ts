@@ -56,6 +56,7 @@ export interface IAppRenderFn<Context, Router extends IRouter, CompType = any> {
 
 export type IRerenderConfig = {
   AppComponent?: any;
+  getUserAppComponent?: <T>(appComponent: T) => T
 };
 
 export interface IApplicationOptions<
@@ -68,6 +69,7 @@ export interface IApplicationOptions<
   context: Context;
   appState: AppState;
   render: IAppRenderFn<Context, Router>;
+  getUserAppComponent?: <T>(appComponent: T) => T
 }
 
 export class Application<
@@ -83,6 +85,7 @@ export class Application<
   private _context: Context & IContext;
   private _appStore: IAppStore;
   private _renderFn: IAppRenderFn<Context, Router>;
+  private _getUserAppComponent?: <T>(appComponent: T) => T
 
   constructor(options: IApplicationOptions<Context, Router, AppState>) {
     super();
@@ -91,6 +94,7 @@ export class Application<
     this._context = options.context;
     this._appStore = getAppStore(options.appState);
     this._renderFn = options.render;
+    this._getUserAppComponent = options.getUserAppComponent
   }
 
   async run() {
@@ -102,9 +106,16 @@ export class Application<
     return this._context;
   }
 
-  async rerender({ AppComponent }: IRerenderConfig = {}) {
-    if (AppComponent) {
+  async rerender({ AppComponent, getUserAppComponent }: IRerenderConfig = {}) {
+    if (AppComponent && AppComponent !== this.AppComponent) {
       this.AppComponent = AppComponent;
+    }
+    if (getUserAppComponent) {
+      if (getUserAppComponent !== this._getUserAppComponent) {
+        this._getUserAppComponent = getUserAppComponent
+      }
+    } else {
+      this._getUserAppComponent = undefined
     }
 
     await this._getAppComponent();
@@ -134,6 +145,17 @@ export class Application<
   }
 
   private async _getAppComponent() {
+    this.AppComponent =
+      await this.callHook<AppHooks.IHookGetRootAppComponent>(
+        {
+          name: 'getRootAppComponent',
+          initialValue: this.AppComponent
+        },
+        this._context
+      );
+    if (this._getUserAppComponent && typeof this._getAppComponent === 'function') {
+      this.AppComponent = await this._getUserAppComponent(this.AppComponent)
+    }
     this.AppComponent = await this.callHook<AppHooks.IHookGetAppComponent>(
       {
         name: 'getAppComponent',

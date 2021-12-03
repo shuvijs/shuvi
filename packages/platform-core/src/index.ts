@@ -22,6 +22,7 @@ export {
   IData,
   Application,
   IApplication,
+  IInitAppPlugins,
   getAppStore,
   getErrorHandler,
   IAppState,

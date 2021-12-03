@@ -1,6 +1,6 @@
-import AppComponent from '@shuvi/app/core/app';
+import getUserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/core/routes';
-import { getRoutes } from '@shuvi/app/core/platform';
+import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   IApplication,
   getAppStore,
@@ -56,7 +56,8 @@ export const createFactory = (historyCreater: () => History) => {
       router,
       context,
       appState: options.appState,
-      render: options.render
+      render: options.render,
+      getUserAppComponent
     });
     return app;
   };
@@ -65,17 +66,18 @@ export const createFactory = (historyCreater: () => History) => {
 if (module.hot) {
   module.hot.accept(
     [
+      '@shuvi/app/user/app',
       '@shuvi/app/entry.client',
-      '@shuvi/app/core/app',
+      '@shuvi/platform-core/lib/platform',
       '@shuvi/app/core/routes',
       '@shuvi/app/user/plugin'
     ],
     async () => {
       const rerender = () => {
-        const AppComponent = require('@shuvi/app/core/app').default;
+        const getUserAppComponent = require('@shuvi/app/user/app').default;
         const routes = require('@shuvi/app/core/routes').default;
         appRouter.replaceRoutes(getRoutes(routes, appContext));
-        app.rerender({ AppComponent });
+        app.rerender({ AppComponent, getUserAppComponent });
       };
       // to solve routing problem, we need to rerender routes
       // wait navigation complete only rerender to ensure getInitialProps is called
