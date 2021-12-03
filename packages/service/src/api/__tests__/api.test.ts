@@ -1,12 +1,16 @@
-import { getApi } from '../api';
+import { getApi, Api } from '../api';
 import { PluginApi } from '../pluginApi';
 import { IApiConfig, IPaths } from '..';
+import { clear } from '../cliHooks';
 import path from 'path';
 import rimraf from 'rimraf';
 import { resolvePreset, resolvePlugin } from './utils';
 import { readFileSync } from 'fs';
 
 describe('api', () => {
+  beforeEach(() => {
+    clear();
+  });
   test('should has "production" be default mode', async () => {
     const prodApi = await getApi({
       config: {}
@@ -16,9 +20,17 @@ describe('api', () => {
 
   describe('plugins', () => {
     test('should work', async () => {
-      let pluginApi: PluginApi;
+      let pluginApi: Api;
       const api = await getApi({
-        config: { plugins: [api => (pluginApi = api)] }
+        config: {
+          plugins: [
+            {
+              legacyApi: api => {
+                pluginApi = api;
+              }
+            }
+          ]
+        }
       });
       expect(pluginApi!).toBeDefined();
       expect(pluginApi!.paths).toBe(api.paths);
@@ -33,9 +45,11 @@ describe('api', () => {
           rootDir: path.join(__dirname, 'fixtures', 'dotenv'),
           publicPath: '/test',
           plugins: [
-            api => {
-              config = api.config;
-              paths = api.paths;
+            {
+              legacyApi: api => {
+                config = api.config;
+                paths = api.paths;
+              }
             }
           ]
         }
@@ -49,7 +63,14 @@ describe('api', () => {
         let pluginApi: PluginApi;
         const api = await getApi({
           config: {
-            plugins: [resolvePlugin('modify-config'), api => (pluginApi = api)]
+            plugins: [
+              resolvePlugin('modify-config.ts'),
+              {
+                legacyApi: api => {
+                  pluginApi = api;
+                }
+              }
+            ]
           }
         });
         const plugins = (pluginApi! as any).__plugins;
@@ -68,8 +89,8 @@ describe('api', () => {
       });
       const plugins = (api as any)._presetPlugins;
       expect(plugins.length).toBe(2);
-      expect(plugins[0].id).toMatch(/plugin-a/);
-      expect(plugins[1].id).toMatch(/plugin-b/);
+      expect(plugins[0].name).toBe('a');
+      expect(plugins[1].name).toMatch('b');
     });
 
     test('should work with nested preset', async () => {
@@ -78,43 +99,9 @@ describe('api', () => {
       });
       const plugins = (api as any)._presetPlugins;
       expect(plugins.length).toBe(3);
-      expect(plugins[0].id).toMatch(/plugin-a/);
-      expect(plugins[1].id).toMatch(/plugin-b/);
-      expect(plugins[2].id).toMatch(/plugin-c/);
-    });
-  });
-
-  test('getPluginApi', async () => {
-    let pluginApi!: PluginApi;
-    const api = await getApi({
-      config: { plugins: [api => (pluginApi = api)] }
-    });
-    api.addResoure('clientManifest', () => ({ entries: [] }));
-
-    expect(pluginApi.mode).toBe(api.mode);
-    expect(pluginApi.paths).toBe(api.paths);
-    expect(pluginApi.config).toBe(api.config);
-    expect(pluginApi.phase).toBe(api.phase);
-    expect(pluginApi.clientManifest).toBe(api.clientManifest);
-
-    [
-      'tap',
-      'callHook',
-      'on',
-      'emitEvent',
-      'addEntryCode',
-      'addAppFile',
-      'addAppExport',
-      'addAppPolyfill',
-      'resolveAppFile',
-      'resolveUserFile',
-      'resolveBuildFile',
-      'resolvePublicFile',
-      'addServerMiddleware',
-      'getAssetPublicUrl'
-    ].forEach(method => {
-      // @ts-ignore
-      expect(typeof pluginApi[method]).toBe('function');
+      expect(plugins[0].name).toBe('a');
+      expect(plugins[1].name).toMatch('b');
+      expect(plugins[2].name).toMatch('c');
     });
   });
 
@@ -141,20 +128,22 @@ describe('api', () => {
       config: {
         rootDir: path.join(__dirname, 'fixtures', 'rootDir'),
         plugins: [
-          api => {
-            api.addAppFile({
-              name: 'fileA.js',
-              content: () => 'test.js'
-            });
-            api.addAppFile({
-              name: '../fileB.js',
-              content: () => 'test.js'
-            });
-            api.addAppFile({
-              name: '/fileC.js',
-              content: () => 'test.js'
-            });
-            api.addAppService('source', 'exported', 'a.js');
+          {
+            legacyApi: api => {
+              api.addAppFile({
+                name: 'fileA.js',
+                content: () => 'test.js'
+              });
+              api.addAppFile({
+                name: '../fileB.js',
+                content: () => 'test.js'
+              });
+              api.addAppFile({
+                name: '/fileC.js',
+                content: () => 'test.js'
+              });
+              api.addAppService('source', 'exported', 'a.js');
+            }
           }
         ]
       }

@@ -1,5 +1,4 @@
 import path from 'path';
-import * as APIHooks from '../types/hooks';
 
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
@@ -65,9 +64,9 @@ export async function setupApp(api: Api) {
       ...withExts(api.resolveUserFile('error'), moduleFileExtensions),
       require.resolve('@shuvi/utils/lib/nullish')
     ],
-    plugin: [
-      ...withExts(api.resolveUserFile('plugin'), moduleFileExtensions),
-      require.resolve('@shuvi/utils/lib/noopFn')
+    runtime: [
+      ...withExts(api.resolveUserFile('runtime'), moduleFileExtensions),
+      require.resolve('@shuvi/utils/lib/noop')
     ],
     server: [
       ...withExts(api.resolveUserFile('server'), moduleFileExtensions),
@@ -98,7 +97,11 @@ export async function setupApp(api: Api) {
       : null
   );
   api.addAppExport('@shuvi/platform-core', '* as Runtime');
-  api.addAppExport('@shuvi/runtime-core/lib/hooks', '* as AppHooks');
+
+  api.addAppExport(
+    '@shuvi/runtime-core/lib/runtimeHooks',
+    '{ createPlugin as createRuntimePlugin }'
+  );
   api.addAppExport('@shuvi/router', '{ matchRoutes }');
 
   api.addAppExport(
@@ -110,11 +113,7 @@ export async function setupApp(api: Api) {
     '@shuvi/service/lib/lib/runtimeConfig',
     '{ default as getRuntimeConfig }'
   );
-
   await setupRoutes(api);
-  await api.callHook<APIHooks.IHookBeforeProjectBuild>(
-    'projectBuilder:beforeBuild'
-  );
 }
 
 async function setupRoutes(api: Api) {

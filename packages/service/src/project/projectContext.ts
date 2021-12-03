@@ -1,9 +1,9 @@
 import { reactive } from './file-manager';
-
+import { IRuntimeOrServerPlugin } from '../api';
 export interface UserModule {
   document: string | string[];
   server: string | string[];
-  plugin: string | string[];
+  runtime: string | string[];
   app: string | string[];
   error: string | string[];
 }
@@ -38,7 +38,7 @@ export interface ProjectContext {
    */
   services: Map<string, Map<string, Set<string>>>;
   exports: Map<string, string[]>;
-  runtimePlugins: Map<string, string>;
+  runtimePlugins: IRuntimeOrServerPlugin[];
   runtimeConfigContent: string | null;
   platformModule: string;
   userModule: UserModule;
@@ -55,7 +55,7 @@ export const createProjectContext = () =>
     polyfills: [],
     services: new Map(),
     exports: new Map(),
-    runtimePlugins: new Map(),
+    runtimePlugins: [],
     runtimeConfigContent: null,
     clientModule: {
       application: '',
@@ -65,7 +65,7 @@ export const createProjectContext = () =>
     userModule: {
       document: '',
       server: '',
-      plugin: '',
+      runtime: '',
       app: '',
       error: ''
     }

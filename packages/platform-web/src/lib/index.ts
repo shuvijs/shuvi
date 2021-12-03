@@ -6,7 +6,8 @@ import {
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
   IRequest,
-  IRuntime
+  IPlatform,
+  createCliPlugin
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
@@ -21,7 +22,7 @@ import { resolveAppFile } from './paths';
 import { getApiRoutesMiddleware } from './apiRoute';
 import { getMiddlewareRoutesMiddleware } from './middlewareRoute';
 import { getSSRMiddleware, renderToHTML } from './SSR';
-
+import { initServerModule, initServerPlugins } from './serverHooks';
 function getServerEntry(_api: Api): IWebpackEntry {
   const { ssr } = _api.config;
   return {
@@ -40,6 +41,8 @@ async function buildHtml({
   pathname: string;
   filename: string;
 }) {
+  const { server } = api.resources.server;
+  initServerModule(server);
   const { html } = await renderToHTML({
     req: {
       url: pathname,
@@ -56,63 +59,76 @@ async function buildHtml({
   }
 }
 
-const platformWeb: IRuntime = {
-  async install(api): Promise<void> {
-    initCoreResource(api);
+const platform: IPlatform = async context => {
+  let shuviApi: Api;
+  const mainPlugin = createCliPlugin({
+    legacyApi: (api: Api) => {
+      shuviApi = api;
+      initCoreResource(api);
+      if (typeof api.config.runtimeConfig === 'object') {
+        setRuntimeConfig(api.config.runtimeConfig);
+      }
 
-    if (typeof api.config.runtimeConfig === 'object') {
-      setRuntimeConfig(api.config.runtimeConfig);
+      const serverWebpackHelpers = webpackHelpers();
+      const serverChain = createWebpackConfig(api, {
+        name: BUNDLER_TARGET_SERVER,
+        node: true,
+        entry: getServerEntry(api),
+        outputDir: BUILD_SERVER_DIR,
+        webpackHelpers: serverWebpackHelpers
+      });
+      api.addBuildTargets({
+        chain: serverChain,
+        name: BUNDLER_TARGET_SERVER,
+        mode: api.mode,
+        helpers: serverWebpackHelpers
+      });
+
+      // set application and entry
+      const {
+        router: { history }
+      } = api.config;
+      let ApplicationModule;
+      if (history === 'browser') {
+        ApplicationModule = 'create-application-history-browser';
+      } else if (history === 'hash') {
+        ApplicationModule = 'create-application-history-hash';
+      } else {
+        ApplicationModule = 'create-application-history-memory';
+      }
+
+      api.setClientModule({
+        application: resolveAppFile('application', 'client', ApplicationModule),
+        entry: resolveAppFile('entry', 'client')
+      });
+
+      api.addServerMiddlewareLast(getApiRoutesMiddleware(api));
+      api.addServerMiddlewareLast(getMiddlewareRoutesMiddleware(api));
+      api.addServerMiddlewareLast(getSSRMiddleware(api));
+
+      api.addAppExport('@shuvi/platform-web/lib/types', '* as RuntimeServer');
+      initServerPlugins(api.serverPlugins, api.pluginContext);
+    },
+    appReady: async context => {
+      if (
+        context.config.platform.target === 'spa' &&
+        context.mode === 'production'
+      ) {
+        await buildHtml({
+          api: shuviApi,
+          pathname: '/',
+          filename: 'index.html'
+        });
+      }
+    },
+    bundlerDone: (_, context) => {
+      const { server } = context.resources.server;
+      initServerModule(server);
     }
-
-    const serverWebpackHelpers = webpackHelpers();
-    const serverChain = createWebpackConfig(api, {
-      name: BUNDLER_TARGET_SERVER,
-      node: true,
-      entry: getServerEntry(api),
-      outputDir: BUILD_SERVER_DIR,
-      webpackHelpers: serverWebpackHelpers
-    });
-
-    api.addBuildTargets({
-      chain: serverChain,
-      name: BUNDLER_TARGET_SERVER,
-      mode: api.mode,
-      helpers: serverWebpackHelpers
-    });
-
-    // set application and entry
-    const {
-      router: { history },
-      target
-    } = api.config;
-    let ApplicationModule;
-    if (history === 'browser') {
-      ApplicationModule = 'create-application-history-browser';
-    } else if (history === 'hash') {
-      ApplicationModule = 'create-application-history-hash';
-    } else {
-      ApplicationModule = 'create-application-history-memory';
-    }
-
-    api.setClientModule({
-      application: resolveAppFile('application', 'client', ApplicationModule),
-      entry: resolveAppFile('entry', 'client')
-    });
-
-    if (target === 'spa' && api.mode === 'production') {
-      await buildHtml({ api, pathname: '/', filename: 'index.html' });
-    }
-
-    api.addServerMiddlewareLast(getApiRoutesMiddleware(api));
-    api.addServerMiddlewareLast(getMiddlewareRoutesMiddleware(api));
-    api.addServerMiddlewareLast(getSSRMiddleware(api));
-
-    // install framework
-    const { framework = 'react' } = api.config.platform || {};
-    const frameworkInstance: IRuntime =
-      require(`./targets/${framework}`).default;
-    frameworkInstance.install(api);
-  }
+  });
+  const { framework = 'react' } = context.config.platform || {};
+  const frameworkPlugins: IPlatform = require(`./targets/${framework}`).default;
+  return [mainPlugin, ...(await frameworkPlugins(context))];
 };
 
-export default platformWeb;
+export default platform;
