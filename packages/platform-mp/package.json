@@ -19,10 +19,12 @@
   ],
   "scripts": {
     "dev": "run-p watch:*",
+    "watch:app": "tsc -p tsconfig.build.app.json -w",
     "watch:esm": "tsc -p tsconfig.build.esm.json -w",
     "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
-    "prebuild": "rimraf lib esm",
+    "prebuild": "rimraf lib esm shuvi-app",
     "build": "run-p build:*",
+    "build:app": "tsc -p tsconfig.build.app.json",
     "build:esm": "tsc -p tsconfig.build.esm.json",
     "build:cjs": "tsc -p tsconfig.build.cjs.json"
   },

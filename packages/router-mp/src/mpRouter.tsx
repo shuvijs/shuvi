@@ -60,10 +60,14 @@ export function MpRouter({
       }
       if (query.__params) {
         // move __params to params, rewrite search property
-        current.params = {
-          ...current.params,
-          ...JSON.parse(query.__params as string)
-        };
+        try {
+          current.params = {
+            ...current.params,
+            ...JSON.parse(decodeURIComponent(query.__params as string))
+          };
+        } catch (e) {
+          console.error(e);
+        }
         delete query.__params;
         if (query.__pathname) {
           current.pathname = query.__pathname as string;

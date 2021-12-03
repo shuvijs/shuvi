@@ -5,7 +5,7 @@ const getApp = App => {
       <App />
     </div>
   );
-  
+
   MyApp.getInitialProps = async ({ fetchInitialProps, appContext }) => {
     let pathname;
     if (appContext.req) {
@@ -13,15 +13,14 @@ const getApp = App => {
     } else {
       pathname = window.location.pathname;
     }
-  
+
     await fetchInitialProps();
-  
+
     return {
       pathname
     };
   };
-  return MyApp
-}
-
+  return MyApp;
+};
 
 export default getApp;

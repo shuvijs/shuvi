@@ -7,12 +7,12 @@ const getApp = App => {
       <App />
     </div>
   );
-  
+
   MyApp.getInitialProps = async ctx => {
     await ctx.fetchInitialProps();
     return normalizeContextForSerialize(ctx);
   };
-  return MyApp
-}
+  return MyApp;
+};
 
 export default getApp;

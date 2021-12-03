@@ -2,6 +2,7 @@ module.exports = {
   ssr: false,
   platform: {
     name: 'mp',
+    // target: 'weapp',
     target: 'bmp'
   },
   router: {
