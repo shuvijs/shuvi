@@ -23,9 +23,11 @@ export default class ShuviDev extends Base {
     const devMiddleware = await getDevMiddleware({
       api
     });
+
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
     await devMiddleware.waitUntilValid();
+    console.warn('init waitUntilValid');
 
     if (api.config.proxy) {
       applyHttpProxyMiddleware(api.server, api.config.proxy);
@@ -41,6 +43,7 @@ export default class ShuviDev extends Base {
     );
     this.createBeforePageMiddlewares();
     this.createAfterPageMiddlewares();
+    console.warn('init finish');
   }
 
   protected getMode() {

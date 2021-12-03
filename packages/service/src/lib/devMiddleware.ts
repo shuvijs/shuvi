@@ -1,4 +1,3 @@
-import * as APIHooks from '../types/hooks';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
@@ -9,6 +8,7 @@ import {
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
+import { createPlugin, usePlugin } from '../api/cliHooks';
 
 export interface DevMiddleware {
   apply(): void;
@@ -74,15 +74,14 @@ export async function getDevMiddleware({
     });
   };
 
-  api.tap<APIHooks.IHookDestroy>('destroy', {
-    name: 'DevMiddleware',
-    fn() {
-      return new Promise(resolve => {
+  usePlugin(
+    createPlugin({
+      destroy: async () => {
         webpackHotMiddleware.close();
-        webpackDevMiddleware.close(resolve);
-      });
-    }
-  });
+        webpackDevMiddleware.close();
+      }
+    })
+  );
 
   return {
     apply,
