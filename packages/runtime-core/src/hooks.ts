@@ -25,8 +25,6 @@ export type IHookGetAppComponent = defineHook<
   }
 >;
 
-export type IHookRender = defineHook<'render'>;
-
 export type IHookServerGetPageData = defineHook<
   'server:getPageData',
   {

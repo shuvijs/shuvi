@@ -1,4 +1,3 @@
-export * as AppHooks from '@shuvi/runtime-core/lib/hooks';
 export { matchRoutes } from '@shuvi/router';
 export declare function getPageData<T = unknown>(
   key: string,
@@ -10,3 +9,5 @@ export const App: any;
 export const getRuntimeConfig: () => Record<string, string>;
 
 export const Head: React.FC;
+
+export { createPlugin as createServerPlugin } from '@shuvi/platform-web/lib/serverHooks';

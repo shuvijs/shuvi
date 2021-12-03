@@ -1,4 +1,5 @@
 import { Application, IContext } from '../application';
+import { usePlugin, createPlugin } from '../runPlugins';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 
 /**
@@ -30,19 +31,25 @@ function getApp({ render }: any = {}) {
       return render && render(options);
     }
   });
+  usePlugin(
+    createPlugin({
+      context: context => {
+        context.foo = 'bar';
+        return context;
+      },
+      appComponent: async (AppComponent: any, context: any) => {
+        const WrapApp = () => AppComponent;
+        WrapApp.test = 'test';
+        return WrapApp;
+      }
+    })
+  );
   return app;
 }
 
 describe('application', () => {
   test('should add createAppContext hook', async () => {
     const app = getApp();
-    app.tap('createAppContext', {
-      name: 'test',
-      fn(context: any) {
-        context.foo = 'bar';
-        return context;
-      }
-    });
     await app.run();
     const ctx = app.getContext();
     expect(ctx.foo).toBe('bar');
@@ -66,7 +73,7 @@ describe('application', () => {
   test('should wrap getAppComponent hook', async () => {
     const app = getApp();
 
-    app.tap('getAppComponent', {
+    /* app.tap('getAppComponent', {
       name: 'wrapAppComponent',
       fn: (AppComponent: any, context: any) => {
         expect(context.test).toBe(true);
@@ -75,7 +82,7 @@ describe('application', () => {
         WrapApp.test = 'test';
         return WrapApp;
       }
-    });
+    }); */
 
     await app.run();
 

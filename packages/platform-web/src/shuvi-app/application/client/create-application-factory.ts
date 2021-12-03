@@ -70,7 +70,7 @@ if (module.hot) {
       '@shuvi/app/entry.client',
       '@shuvi/platform-core/lib/platform',
       '@shuvi/app/core/routes',
-      '@shuvi/app/user/plugin'
+      '@shuvi/app/user/runtime'
     ],
     async () => {
       const rerender = () => {

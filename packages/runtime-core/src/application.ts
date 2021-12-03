@@ -1,7 +1,7 @@
 import { Hookable } from '@shuvi/hook';
 import { IRouter } from '@shuvi/router';
 
-import * as AppHooks from './hooks';
+import { runner } from './runPlugins';
 import { IAppStore, IAppState, getAppStore } from './appStore';
 
 export interface ApplicationCreater<
@@ -56,7 +56,7 @@ export interface IAppRenderFn<Context, Router extends IRouter, CompType = any> {
 
 export type IRerenderConfig = {
   AppComponent?: any;
-  getUserAppComponent?: <T>(appComponent: T) => T
+  getUserAppComponent?: <T>(appComponent: T) => T;
 };
 
 export interface IApplicationOptions<
@@ -69,7 +69,7 @@ export interface IApplicationOptions<
   context: Context;
   appState: AppState;
   render: IAppRenderFn<Context, Router>;
-  getUserAppComponent?: <T>(appComponent: T) => T
+  getUserAppComponent?: <T>(appComponent: T) => T;
 }
 
 export class Application<
@@ -82,10 +82,10 @@ export class Application<
 {
   AppComponent: any;
   router: Router;
-  private _context: Context & IContext;
+  private _context: Context;
   private _appStore: IAppStore;
   private _renderFn: IAppRenderFn<Context, Router>;
-  private _getUserAppComponent?: <T>(appComponent: T) => T
+  private _getUserAppComponent?: <T>(appComponent: T) => T;
 
   constructor(options: IApplicationOptions<Context, Router, AppState>) {
     super();
@@ -94,7 +94,7 @@ export class Application<
     this._context = options.context;
     this._appStore = getAppStore(options.appState);
     this._renderFn = options.render;
-    this._getUserAppComponent = options.getUserAppComponent
+    this._getUserAppComponent = options.getUserAppComponent;
   }
 
   async run() {
@@ -112,10 +112,10 @@ export class Application<
     }
     if (getUserAppComponent) {
       if (getUserAppComponent !== this._getUserAppComponent) {
-        this._getUserAppComponent = getUserAppComponent
+        this._getUserAppComponent = getUserAppComponent;
       }
     } else {
-      this._getUserAppComponent = undefined
+      this._getUserAppComponent = undefined;
     }
 
     await this._getAppComponent();
@@ -123,10 +123,7 @@ export class Application<
   }
 
   async dispose() {
-    await this.callHook<AppHooks.IHookDispose>({
-      name: 'dispose',
-      parallel: true
-    });
+    await runner.dispose();
   }
 
   getContext() {
@@ -134,33 +131,26 @@ export class Application<
   }
 
   private async _init() {
-    await this.callHook<AppHooks.IHookInit>('init');
+    await runner.init();
   }
 
   private async _createApplicationContext() {
-    this._context = (await this.callHook<AppHooks.IHookCreateAppContext>({
-      name: 'createAppContext',
-      initialValue: this._context
-    })) as IContext & Context;
+    this._context = (await runner.context(this._context)) as IContext & Context;
   }
 
   private async _getAppComponent() {
-    this.AppComponent =
-      await this.callHook<AppHooks.IHookGetRootAppComponent>(
-        {
-          name: 'getRootAppComponent',
-          initialValue: this.AppComponent
-        },
-        this._context
-      );
-    if (this._getUserAppComponent && typeof this._getAppComponent === 'function') {
-      this.AppComponent = await this._getUserAppComponent(this.AppComponent)
+    this.AppComponent = await runner.rootAppComponent(
+      this.AppComponent,
+      this._context
+    );
+    if (
+      this._getUserAppComponent &&
+      typeof this._getAppComponent === 'function'
+    ) {
+      this.AppComponent = this._getUserAppComponent(this.AppComponent);
     }
-    this.AppComponent = await this.callHook<AppHooks.IHookGetAppComponent>(
-      {
-        name: 'getAppComponent',
-        initialValue: this.AppComponent
-      },
+    this.AppComponent = await runner.appComponent(
+      this.AppComponent,
       this._context
     );
   }
@@ -172,6 +162,6 @@ export class Application<
       AppComponent: this.AppComponent,
       router: this.router
     });
-    this.emitEvent<AppHooks.IEventRenderDone>('renderDone', result);
+    runner.renderDone(result);
   }
 }
