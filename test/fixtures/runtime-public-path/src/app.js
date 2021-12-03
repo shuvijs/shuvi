@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const MyApp = () => {
+const getApp = App => () => {
   const [render, setRender] = useState(false);
 
   useEffect(() => {
@@ -14,4 +14,4 @@ const MyApp = () => {
   );
 };
 
-export default MyApp;
+export default getApp;

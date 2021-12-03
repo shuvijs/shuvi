@@ -1,4 +1,3 @@
-export * as AppHooks from '@shuvi/runtime-core/lib/hooks';
 export { matchRoutes } from '@shuvi/router';
 export declare function getPageData<T = unknown>(
   key: string,

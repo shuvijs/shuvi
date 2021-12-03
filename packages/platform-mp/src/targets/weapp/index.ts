@@ -21,11 +21,13 @@ class PlatformMpWeapp extends PlatformMpBase {
     this.template.voidElements.delete('textarea');
     this.template.focusComponents.add('editor');
   }
-  install() {
+  getPlugins() {
     this.modifyTemplate();
-    this.setupApp();
-    this.setupRoutes();
-    this.configWebpack();
+    return [
+      this.getSetupAppPlugin(),
+      this.getSetupRoutesPlugin(),
+      this.getConfigWebpackPlugin()
+    ];
   }
 }
 export default PlatformMpWeapp;

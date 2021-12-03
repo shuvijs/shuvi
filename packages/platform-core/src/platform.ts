@@ -1,10 +1,10 @@
 import {
-  runPlugins,
+  initPlugins,
   Application,
   IApplicationOptions,
   IAppState
 } from '@shuvi/runtime-core';
-import initPlugins from '@shuvi/app/user/plugin';
+import * as customRuntime from '@shuvi/app/user/runtime';
 import { pluginRecord } from '@shuvi/app/core/plugins';
 import { IRouter } from '@shuvi/router';
 import { IApplicationCreaterContext } from './index';
@@ -17,8 +17,7 @@ export default function platform<
   options: IApplicationOptions<Context, Router, AppState>,
   isRunPlugins: boolean = true
 ) {
+  initPlugins(customRuntime, pluginRecord);
   const application = new Application(options);
-  const tap = application.tap.bind(application);
-  if (isRunPlugins) runPlugins({ tap, initPlugins, pluginRecord });
   return application;
 }
