@@ -9,5 +9,3 @@ export const App: any;
 export const getRuntimeConfig: () => Record<string, string>;
 
 export const Head: React.FC;
-
-export { createPlugin as createServerPlugin } from '@shuvi/platform-web/lib/serverHooks';

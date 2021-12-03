@@ -20,7 +20,7 @@ export const manager = createHookGroup<typeof hooksMap, IPluginContext>(
   hooksMap
 );
 
-export const { createPlugin, usePlugin, runner, setContext } = manager;
+export const { createPlugin, usePlugin, runner, setContext, clear } = manager;
 export type IServerPluginConstructor = ArrayItem<
   Parameters<typeof createPlugin>[0]
 >;
@@ -44,6 +44,7 @@ export const initServerPlugins = (
   serverPlugins: IRuntimeOrServerPlugin[],
   pluginContext: IPluginContext
 ) => {
+  clear();
   setContext(pluginContext);
   serverPlugins.forEach(({ plugin, options }) => {
     const resolved = resolvePlugin(plugin);

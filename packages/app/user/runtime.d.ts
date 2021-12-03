@@ -1,7 +1,7 @@
 import { IRuntimeModule } from '@shuvi/runtime-core';
-export declare const init: IRuntimeModule['init'];
-export declare const appComponent: IRuntimeModule['appComponent'];
-export declare const rootAppComponent: IRuntimeModule['rootAppComponent'];
-export declare const context: IRuntimeModule['context'];
-export declare const renderDone: IRuntimeModule['renderDone'];
-export declare const dispose: IRuntimeModule['dispose'];
+export declare const onInit: IRuntimeModule['onInit'];
+export declare const getAppComponent: IRuntimeModule['getAppComponent'];
+export declare const getRootAppComponent: IRuntimeModule['getRootAppComponent'];
+export declare const getContext: IRuntimeModule['getContext'];
+export declare const onRenderDone: IRuntimeModule['onRenderDone'];
+export declare const onDispose: IRuntimeModule['onDispose'];

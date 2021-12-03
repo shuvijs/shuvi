@@ -44,7 +44,8 @@ import {
   runner,
   usePlugin,
   setContext,
-  ICliPluginInstance as IPlugin
+  ICliPluginInstance as IPlugin,
+  clear
 } from './cliHooks';
 import { setupApp } from './setupApp';
 import { resolvePlugins, resolvePresets } from './plugin';
@@ -130,6 +131,7 @@ class Api implements IApi {
       resources: this.resources,
       getAssetPublicUrl: this.getAssetPublicUrl.bind(this)
     };
+    clear();
     setContext(this._pluginContext);
   }
 

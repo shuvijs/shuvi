@@ -1,8 +1,7 @@
 import React from 'react';
-import React from 'react';
 import { useRouter } from '@shuvi/app';
 
-const getApp = (App) => {
+const getApp = App => {
   const MyApp = () => {
     const router = useRouter();
 
@@ -16,7 +15,7 @@ const getApp = (App) => {
 
     return <App />;
   };
-  return MyApp
-}
+  return MyApp;
+};
 
 export default getApp;

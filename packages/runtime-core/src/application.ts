@@ -1,7 +1,6 @@
-import { Hookable } from '@shuvi/hook';
 import { IRouter } from '@shuvi/router';
 
-import { runner } from './runPlugins';
+import { runner } from './runtimeHooks';
 import { IAppStore, IAppState, getAppStore } from './appStore';
 
 export interface ApplicationCreater<
@@ -23,7 +22,7 @@ export type IContext = {
   [x: string]: any;
 };
 
-export interface IApplication extends Hookable {
+export interface IApplication {
   AppComponent: any;
   router?: IRouter;
   run(): Promise<{ [k: string]: any }>;
@@ -73,12 +72,10 @@ export interface IApplicationOptions<
 }
 
 export class Application<
-    Context extends IContext,
-    Router extends IRouter = IRouter,
-    AppState extends IAppState | undefined = undefined
-  >
-  extends Hookable
-  implements IApplication
+  Context extends IContext,
+  Router extends IRouter = IRouter,
+  AppState extends IAppState | undefined = undefined
+> implements IApplication
 {
   AppComponent: any;
   router: Router;
@@ -88,7 +85,6 @@ export class Application<
   private _getUserAppComponent?: <T>(appComponent: T) => T;
 
   constructor(options: IApplicationOptions<Context, Router, AppState>) {
-    super();
     this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;

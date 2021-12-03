@@ -15,7 +15,6 @@ import {
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IApiRequestHandler } from '../apiRoute/apiRouteHandler';
 import { IServerPluginConstructor } from '../serverHooks';
-
 export interface IDocumentProps {
   htmlAttrs: IHtmlAttrs;
   headTags: IHtmlTag<
