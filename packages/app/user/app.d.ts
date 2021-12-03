@@ -1,2 +1,2 @@
-declare const getUserAppComponent: <T>(appComponent: T) => T
+declare const getUserAppComponent: <T>(appComponent: T) => T;
 export default getUserAppComponent;
