@@ -1,25 +1,26 @@
-import { App } from '@shuvi/app';
+const getApp = App => {
+  const MyApp = props => (
+    <div>
+      <div id="pathname">{props.pathname}</div>
+      <App />
+    </div>
+  );
 
-const MyApp = props => (
-  <div>
-    <div id="pathname">{props.pathname}</div>
-    <App />
-  </div>
-);
+  MyApp.getInitialProps = async ({ fetchInitialProps, appContext }) => {
+    let pathname;
+    if (appContext.req) {
+      pathname = appContext.req.pathname;
+    } else {
+      pathname = window.location.pathname;
+    }
 
-MyApp.getInitialProps = async ({ fetchInitialProps, appContext }) => {
-  let pathname;
-  if (appContext.req) {
-    pathname = appContext.req.pathname;
-  } else {
-    pathname = window.location.pathname;
-  }
+    await fetchInitialProps();
 
-  await fetchInitialProps();
-
-  return {
-    pathname
+    return {
+      pathname
+    };
   };
+  return MyApp;
 };
 
-export default MyApp;
+export default getApp;

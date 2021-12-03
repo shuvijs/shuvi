@@ -1,11 +1,12 @@
 import path from 'path';
+import { createPlugin, runner, usePlugin, clear } from '../cliHooks';
 import { IPluginConfig, IPresetConfig } from '..';
 import { resolvePlugins, resolvePresets } from '../plugin';
 
-function callPlugins(context: any, ...plugins: IPluginConfig[]) {
+function callPlugins(...plugins: IPluginConfig[]) {
   resolvePlugins(plugins, {
     dir: path.join(__dirname, 'fixtures/plugins')
-  }).forEach(p => p.get().apply(context));
+  }).forEach(p => usePlugin(p));
 }
 
 function callPresets(context: any, ...presets: IPresetConfig[]) {
@@ -15,81 +16,96 @@ function callPresets(context: any, ...presets: IPresetConfig[]) {
 }
 
 describe('plugin', () => {
-  test('should accept class module as a plugin', () => {
-    const api = {};
-    callPlugins(api, './simple-class');
-    const plugins = (api as any).__plugins;
-    expect(plugins.length).toBe(1);
-    expect(plugins[0].name).toBe('simple-class');
+  beforeEach(() => {
+    clear();
+  });
+  test('should accept plugin instance object as a plugin', async () => {
+    console.log = jest.fn();
+    callPlugins('./simple-plugin-instance.ts');
+    await runner.appReady();
+    expect(console.log).toHaveBeenCalledWith('simple-plugin-instance');
   });
 
-  test('should accept function module as a plugin', () => {
-    const api = {};
-    callPlugins(api, './simple-function');
-    const plugins = (api as any).__plugins;
-    expect(plugins.length).toBe(1);
-    expect(plugins[0].name).toBe('simple-function');
+  test('should accept plugin instance creater with options as a plugin', async () => {
+    console.log = jest.fn();
+    const options = { name: 'test' };
+    callPlugins(['./simple-plugin-instance-creater-with-options.ts', options]);
+    await runner.appReady();
+    expect(console.log).toHaveBeenCalledWith(options);
+  });
+  test('should accept inline plugin constructor object as a plugin', async () => {
+    const api: any = {};
+    callPlugins({
+      appReady: () => {
+        api.__test = true;
+      }
+    });
+    await runner.appReady();
+    expect(api.__test).toBe(true);
   });
 
-  test('should accept inline function as a plugin', () => {
-    const api = {};
-    callPlugins(api, api => ((api as any).__test = true));
-
-    expect((api as any).__test).toBe(true);
+  test('should accept inline plugin instance as a plugin', async () => {
+    console.log = jest.fn();
+    callPlugins(
+      createPlugin({
+        appReady: () => {
+          console.log('simple-plugin-instance');
+        }
+      })
+    );
+    await runner.appReady();
+    expect(console.log).toHaveBeenCalledWith('simple-plugin-instance');
   });
 
-  describe('array plugin', () => {
-    test('should accept module and option', () => {
-      const api = {};
-      callPlugins(api, ['./simple-class', { test: 1 }]);
-      const plugins = (api as any).__plugins;
+  test('should accept inline plugin instance creater with options as a plugin', async () => {
+    console.log = jest.fn();
+    const options = { name: 'test' };
+    callPlugins([
+      (options: any) =>
+        createPlugin({
+          appReady: () => {
+            console.log(options);
+          }
+        }),
+      options
+    ]);
+    await runner.appReady();
+    expect(console.log).toHaveBeenCalledWith(options);
+  });
 
-      expect(plugins.length).toBe(1);
-      expect(plugins[0].name).toBe('simple-class');
-      expect(plugins[0].options).toMatchObject({ test: 1 });
-    });
-
-    test('should accept module and name', () => {
-      const api = {};
-      callPlugins(api, ['./simple-class', 'one']);
-      const plugins = (api as any).__plugins;
-
-      expect(plugins.length).toBe(1);
-      expect(plugins[0].name).toBe('simple-class');
-      expect(plugins[0].options).toMatchObject({});
-    });
-
-    test('should accept module, options and name', () => {
-      const api = {};
-      callPlugins(
-        api,
-        ['./simple-class', { test: 1 }, 'one'],
-        ['./simple-class', { test: 2 }, 'two']
-      );
-      const plugins = (api as any).__plugins;
-
-      expect(plugins.length).toBe(2);
-      expect(plugins[0].name).toBe('simple-class');
-      expect(plugins[0].options).toMatchObject({ test: 1 });
-      expect(plugins[1].name).toBe('simple-class');
-      expect(plugins[1].options).toMatchObject({ test: 2 });
-    });
+  test('array plugin', async () => {
+    console.log = jest.fn();
+    const options = { name: 'test' };
+    const api: any = {};
+    callPlugins(
+      {
+        appReady: () => {
+          api.__test = true;
+        }
+      },
+      './simple-plugin-instance.ts',
+      ['./simple-plugin-instance-creater-with-options.ts', options]
+    );
+    await runner.appReady();
+    expect(api.__test).toBe(true);
+    expect(console.log).toHaveBeenNthCalledWith(1, 'simple-plugin-instance');
+    expect(console.log).toHaveBeenNthCalledWith(2, options);
   });
 });
 
 describe('preset', () => {
   test('should accept function module as a plugin', () => {
-    const api = {};
-    callPresets(api, './simple-preset');
-    const presets = (api as any).__presets;
+    const context = {};
+    callPresets(context, './simple-preset');
+    const presets = (context as any).__presets;
     expect(presets.length).toBe(1);
     expect(presets[0].name).toBe('simple-preset');
   });
 
   test('should accept module and option', () => {
-    const api = {};
-    callPresets(api, ['./simple-preset', { test: 1 }]);
-    const presets = (api as any).__presets;
+    const context = {};
+    callPresets(context, ['./simple-preset', { test: 1 }]);
+    const presets = (context as any).__presets;
     expect(presets.length).toBe(1);
     expect(presets[0].name).toBe('simple-preset');
     expect(presets[0].options).toMatchObject({ test: 1 });

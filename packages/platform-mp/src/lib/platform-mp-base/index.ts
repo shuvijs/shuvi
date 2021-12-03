@@ -1,7 +1,7 @@
 import path from 'path';
 import {
   Api,
-  APIHooks,
+  createCliPlugin,
   IUserRouteConfig,
   BUILD_DEFAULT_DIR
 } from '@shuvi/service';
@@ -79,7 +79,7 @@ export interface IFileType {
 }
 
 export default abstract class PlatformMpBase {
-  _api: Api;
+  _api!: Api;
   themeFilePath: string = '';
   appConfigs!: AppConfigs;
   mpPathToRoutesDone: any;
@@ -91,70 +91,77 @@ export default abstract class PlatformMpBase {
   abstract fileType: IFileType;
   abstract template: RecursiveTemplate | UnRecursiveTemplate;
 
-  constructor(api: Api) {
-    this._api = api;
+  constructor() {
     this.promiseRoutes = new Promise(resolve => {
       this.mpPathToRoutesDone = resolve;
     });
   }
 
-  install() {
-    this.setupApp();
-    this.setupRoutes();
-    this.configWebpack();
+  getPlugins() {
+    return [
+      this.getSetupAppPlugin(),
+      this.getSetupRoutesPlugin(),
+      this.getConfigWebpackPlugin()
+    ];
   }
 
   /**
    * setup app files
    */
-  setupApp() {
-    const api = this._api;
-    const appConfigFile = api.helpers.fileSnippets.findFirstExistedFile([
-      ...withExts(api.resolveUserFile('app.config'), moduleFileExtensions)
-    ]);
-    const appConfig: AppConfig = appConfigFile ? readConfig(appConfigFile) : {};
+  getSetupAppPlugin() {
+    return createCliPlugin({
+      legacyApi: api => {
+        this._api = api;
+        const appConfigFile = api.helpers.fileSnippets.findFirstExistedFile([
+          ...withExts(api.resolveUserFile('app.config'), moduleFileExtensions)
+        ]);
+        const appConfig: AppConfig = appConfigFile
+          ? readConfig(appConfigFile)
+          : {};
 
-    if (isEmptyObject(appConfig)) {
-      throw new Error('缺少 app 全局配置文件，请检查！');
-    }
-    this.appConfigs = {
-      app: appConfig
-    };
+        if (isEmptyObject(appConfig)) {
+          throw new Error('缺少 app 全局配置文件，请检查！');
+        }
+        this.appConfigs = {
+          app: appConfig
+        };
 
-    const { themeLocation, darkmode: darkMode } = appConfig;
-    if (darkMode && themeLocation && typeof themeLocation === 'string') {
-      this.themeFilePath = path.resolve(api.paths.srcDir, themeLocation);
-    }
+        const { themeLocation, darkmode: darkMode } = appConfig;
+        if (darkMode && themeLocation && typeof themeLocation === 'string') {
+          this.themeFilePath = path.resolve(api.paths.srcDir, themeLocation);
+        }
 
-    api.setClientModule({
-      application: resolveAppFile('application'),
-      entry: this.entryPath || resolveAppFile('entry')
+        api.setClientModule({
+          application: resolveAppFile('application'),
+          entry: this.entryPath || resolveAppFile('entry')
+        });
+
+        api.setPlatformModule(resolveAppFile('index'));
+        // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
+        api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
+        api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
+        api.addAppExport(resolveAppFile('App'), '{ default as App }');
+        api.addAppExport(resolveAppFile('Head'), '{default as Head}');
+        // api.addAppExport(resolveAppFile('getPageData'), '{default as getPageData}');
+        api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
+        api.addAppExport(
+          resolveLib('@shuvi/router-react'),
+          '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
+        );
+        api.addAppExport(resolveLib('@shuvi/router-mp'), '{ Link }');
+        api.addAppService(
+          resolveRouterFile('esm', 'index'),
+          '*',
+          'router-mp.js'
+        );
+      }
     });
-
-    api.setPlatformModule(resolveAppFile('index'));
-    // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
-    api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
-    api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
-    api.addAppExport(resolveAppFile('App'), '{ default as App }');
-    api.addAppExport(resolveAppFile('Head'), '{default as Head}');
-    // api.addAppExport(resolveAppFile('getPageData'), '{default as getPageData}');
-    api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
-    api.addAppExport(
-      resolveLib('@shuvi/router-react'),
-      '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
-    );
-    api.addAppExport(resolveLib('@shuvi/router-mp'), '{ Link }');
-
-    api.addAppService(resolveRouterFile('esm', 'index'), '*', 'router-mp.js');
   }
 
-  setupRoutes() {
-    const api = this._api;
-    // this hooks works before webpack bundler
-    // orders can make sure appConfig.page and pageConfigs has correctly value
-    api.tap<APIHooks.IHookAppRoutes>('app:routes', {
-      name: 'mpPathToRoutes',
-      fn: async routes => {
+  getSetupRoutesPlugin() {
+    return createCliPlugin({
+      appRoutes: async routes => {
+        const api = this._api;
         type IUserRouteHandlerWithoutChildren = Omit<
           IUserRouteConfig,
           'children'
@@ -289,12 +296,10 @@ export default abstract class PlatformMpBase {
     });
   }
 
-  configWebpack() {
-    const api = this._api;
-
-    api.tap<APIHooks.IHookBundlerConfig>('bundler:configTarget', {
-      name: 'platform-mp',
-      fn: async (config, { name }) => {
+  getConfigWebpackPlugin() {
+    return createCliPlugin({
+      configWebpack: async (config, { name }) => {
+        const api = this._api;
         await this.promiseRoutes;
         const pageFiles = getAllFiles(api.resolveAppFile('files', 'pages'));
 

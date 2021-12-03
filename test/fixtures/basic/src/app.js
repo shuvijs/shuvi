@@ -1,18 +1,20 @@
 import React from 'react';
-import { App, useRouter } from '@shuvi/app';
+import { useRouter } from '@shuvi/app';
+const getApp = App => {
+  const MyApp = () => {
+    const router = useRouter();
 
-const MyApp = () => {
-  const router = useRouter();
+    React.useEffect(() => {
+      if (typeof window !== 'undefined') {
+        router.listen(() => {
+          console.log('history change');
+        });
+      }
+    }, []);
 
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      router.listen(() => {
-        console.log('history change');
-      });
-    }
-  }, []);
-
-  return <App />;
+    return <App />;
+  };
+  return MyApp;
 };
 
-export default MyApp;
+export default getApp;

@@ -1,81 +1,64 @@
 import {
   IPluginConfig,
-  IApi,
+  IPluginContext,
   IPresetConfig,
-  IPlugin,
-  IPluginSpec,
   IPreset,
   IPresetSpec
 } from '.';
 import resolve from '@shuvi/utils/lib/resolve';
+import { isPluginInstance } from '@shuvi/hook';
+import {
+  createPlugin,
+  ICliPluginInstance,
+  ICliPluginConstructor
+} from './cliHooks';
 
 export interface ResolvePluginOptions {
   dir: string;
 }
 
-let uid = 0;
-
 function resolvePlugin(
   pluginConfig: IPluginConfig,
   resolveOptions: ResolvePluginOptions
-): IPlugin {
-  let pluginPath: string;
-  let name: string;
+): ICliPluginInstance {
+  let pluginOrPath: string | ((param: any) => ICliPluginInstance);
   let options: any;
 
   if (Array.isArray(pluginConfig)) {
-    if (pluginConfig.length === 2) {
-      pluginPath = pluginConfig[0];
-      const nameOrOption = pluginConfig[1];
-      if (typeof nameOrOption === 'string') {
-        name = nameOrOption;
-        options = {};
-      } else {
-        options = nameOrOption;
-        name = '';
-      }
-    } else {
-      [pluginPath, options = {}, name = ''] = pluginConfig;
+    pluginOrPath = pluginConfig[0];
+    options = pluginConfig[1];
+    if (typeof pluginOrPath === 'function') {
+      return pluginOrPath(options);
+    }
+    if (typeof pluginOrPath === 'object' && isPluginInstance(pluginOrPath)) {
+      return pluginOrPath;
     }
   } else if (typeof pluginConfig === 'string') {
-    pluginPath = pluginConfig;
-    name = '';
+    pluginOrPath = pluginConfig;
     options = {};
-  } else if (typeof pluginConfig === 'function') {
-    return {
-      id: `InlinePlugin${uid++}`,
-      get: () => ({
-        apply(api: IApi) {
-          pluginConfig(api);
-        }
-      })
-    };
+  } else if (typeof pluginConfig === 'object') {
+    if (isPluginInstance(pluginConfig)) {
+      return pluginConfig as ICliPluginInstance;
+    }
+    return createPlugin(pluginConfig as ICliPluginConstructor);
   } else {
-    throw new Error(`Plugin must be one of type [string, array, function]`);
+    throw new Error(
+      `Plugin must be one of type [string, array, ICliPluginConstructor, ICliPluginInstance]`
+    );
   }
 
-  pluginPath = resolve.sync(pluginPath, { basedir: resolveOptions.dir });
-
-  const id = name ? `${pluginPath}@${name}` : pluginPath;
-  let pluginInst: IPluginSpec;
-  let plugin = require(pluginPath);
+  pluginOrPath = resolve.sync(pluginOrPath, { basedir: resolveOptions.dir });
+  let pluginInst: any;
+  let plugin = require(pluginOrPath);
   plugin = plugin.default || plugin;
-  if (plugin.prototype && typeof plugin.prototype.apply === 'function') {
-    // class plugin
-    pluginInst = new plugin(options);
+  if (isPluginInstance(plugin)) {
+    pluginInst = plugin;
+  } else if (typeof plugin === 'function') {
+    pluginInst = plugin(options);
   } else {
-    // function plugin
-    pluginInst = {
-      apply(...args: any[]) {
-        plugin(...args);
-      }
-    };
+    pluginInst = createPlugin({});
   }
-
-  return {
-    id,
-    get: () => pluginInst
-  };
+  return pluginInst;
 }
 
 function resolvePreset(
@@ -105,8 +88,8 @@ function resolvePreset(
   const id = presetPath;
   let preset = require(presetPath);
   preset = preset.default || preset;
-  const presetFn: IPresetSpec = (api: IApi) => {
-    return preset(api, options);
+  const presetFn: IPresetSpec = (context: IPluginContext) => {
+    return preset(context, options);
   };
 
   return {
@@ -118,7 +101,7 @@ function resolvePreset(
 export function resolvePlugins(
   plugins: IPluginConfig[],
   options: ResolvePluginOptions
-): IPlugin[] {
+): ICliPluginInstance[] {
   return plugins.map(plugin => resolvePlugin(plugin, options));
 }
 

@@ -9,11 +9,11 @@ import {
   IUserRouteConfig,
   IPaths,
   IShuviMode,
-  IPhase
+  IPhase,
+  IRuntimeOrServerPlugin
 } from './types';
 import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
-import * as APIHooks from '../types/hooks';
-import { IRuntime } from '../types/index';
+import { IPlatform } from '../types/index';
 import { IServerMiddlewareItem } from '../types/server';
 import {
   IServerMiddleware,
@@ -30,14 +30,23 @@ import {
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import invariant from '@shuvi/utils/lib/invariant';
-import { Hookable } from '@shuvi/hook';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
-import { normalizeMiddlewareRoutes, serializeMiddlewareRoutes } from '../lib/middlewaresRoutes';
+import {
+  normalizeMiddlewareRoutes,
+  serializeMiddlewareRoutes
+} from '../lib/middlewaresRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { createDefaultConfig, loadConfig } from '../config';
-import { IResources, IPlugin, IPreset } from './types';
+import { IResources, IPreset, IPluginContext } from './types';
 import { Server } from '../server';
+import {
+  runner,
+  usePlugin,
+  setContext,
+  ICliPluginInstance as IPlugin,
+  clear
+} from './cliHooks';
 import { setupApp } from './setupApp';
 import { resolvePlugins, resolvePresets } from './plugin';
 import { createPluginApi, PluginApi } from './pluginApi';
@@ -63,7 +72,7 @@ interface IChain {
   helpers: IWebpackHelpers;
 }
 
-class Api extends Hookable implements IApi {
+class Api implements IApi {
   private _cwd: string;
   private _mode: IShuviMode;
   private _userConfig?: IConfig;
@@ -76,17 +85,19 @@ class Api extends Hookable implements IApi {
   private _routes: IUserRouteConfig[] = [];
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
+  private _serverPlugins: IRuntimeOrServerPlugin[] = [];
   private _webpackChains: IChain[] = [];
   private _presets!: IPreset[];
   private _pluginApi!: PluginApi;
   private _phase: IPhase;
   private _beforePageMiddlewares: IServerMiddleware[] = [];
   private _afterPageMiddlewares: IServerMiddleware[] = [];
-  private _platform!: IRuntime;
+  private _platform!: IPlatform;
+  private _pluginContext!: IPluginContext;
   helpers: IApi['helpers'];
+  serverPlugins: IRuntimeOrServerPlugin[] = [];
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
-    super();
     if (mode) {
       this._mode = mode;
     } else if (ServiceModes.includes(process.env.NODE_ENV as any)) {
@@ -109,8 +120,24 @@ class Api extends Hookable implements IApi {
     }
     this.initConfig();
     this._platform = getPlatform(this.config.platform.name);
+    this._pluginContext = {
+      mode: this._mode,
+      paths: this.paths,
+      config: this.config,
+      phase: this.phase,
+      // helpers
+      helpers: this.helpers,
+      // resources
+      resources: this.resources,
+      getAssetPublicUrl: this.getAssetPublicUrl.bind(this)
+    };
+    clear();
+    setContext(this._pluginContext);
   }
 
+  get pluginContext() {
+    return this._pluginContext;
+  }
   get mode() {
     return this._mode;
   }
@@ -129,6 +156,11 @@ class Api extends Hookable implements IApi {
 
   get platform() {
     return this._platform;
+  }
+
+  async initPlatformPlugin() {
+    const platformPlugins = await this.platform(this.pluginContext);
+    usePlugin(...platformPlugins);
   }
 
   initConfig() {
@@ -157,15 +189,10 @@ class Api extends Hookable implements IApi {
     this._projectBuilder = new ProjectBuilder({
       static: this.mode === 'production'
     });
+    await this._initPresetsAndPlugins();
+    await this.initPlatformPlugin();
+    this._config = await runner.config(this.config, this.phase);
 
-    const runPluginsHandler = await this._initPresetsAndPlugins();
-
-    // prepare all properties befofre run plugins, so plugin can use all api of Api
-    this._config = await this.callHook<APIHooks.IHookGetConfig>({
-      name: 'getConfig',
-      initialValue: this.config
-    });
-    // do not allow to modify config
     Object.freeze(this._config);
 
     this._paths = getPaths({
@@ -175,12 +202,13 @@ class Api extends Hookable implements IApi {
     });
     // do not allow to modify paths
     Object.freeze(this._paths);
-
+    this._pluginContext.paths = this._paths;
+    // must run first so that platform could get serverPlugin
+    await this.initRuntimeAndServerPlugin();
+    await runner.legacyApi(this);
     // Runtime installation need to be executed before initializing presets and plugins
     // to make sure shuvi entry file at the top.
-    await this.platform.install(this);
-
-    runPluginsHandler();
+    //await this.platform.install(this);
   }
 
   get server() {
@@ -248,6 +276,27 @@ class Api extends Hookable implements IApi {
     this._afterPageMiddlewares.push(middleware);
   }
 
+  async initRuntimeAndServerPlugin() {
+    const normalize = (
+      x: string | IRuntimeOrServerPlugin
+    ): IRuntimeOrServerPlugin => {
+      if (typeof x === 'string') {
+        return {
+          plugin: x
+        };
+      }
+      return x;
+    };
+    const serverPlugins: IRuntimeOrServerPlugin[] = (
+      await runner.serverPlugin()
+    )
+      .flat()
+      .map(normalize);
+    const runtimePlugins = (await runner.runtimePlugin()).flat().map(normalize);
+    this.serverPlugins = serverPlugins;
+    this.addRuntimePlugin(...runtimePlugins);
+  }
+
   getAfterPageMiddlewares(): IServerMiddlewareItem[] {
     const {
       _afterPageMiddlewares,
@@ -272,10 +321,7 @@ class Api extends Hookable implements IApi {
   }
 
   async setRoutes(routes: IUserRouteConfig[]): Promise<void> {
-    routes = await this.callHook<APIHooks.IHookAppRoutes>({
-      name: 'app:routes',
-      initialValue: routes
-    });
+    routes = await runner.appRoutes(routes);
 
     routes = normalizeRoutes(routes, {
       componentDir: this.paths.pagesDir
@@ -304,7 +350,9 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.setApiRoutesContent(content);
   }
 
-  async setMiddlewaresRoutes(middlewaresRoutes: IMiddlewareRouteConfig[]): Promise<void> {
+  async setMiddlewaresRoutes(
+    middlewaresRoutes: IMiddlewareRouteConfig[]
+  ): Promise<void> {
     middlewaresRoutes = normalizeMiddlewareRoutes(middlewaresRoutes, {
       pagesDir: this.paths.pagesDir
     });
@@ -325,7 +373,7 @@ class Api extends Hookable implements IApi {
     this.removeBuiltFiles();
     this._projectBuilder.validateCompleteness('api');
     await this._projectBuilder.build(this.paths.appDir);
-    this.emitEvent<APIHooks.IEventAppReady>('app:ready');
+    runner.appReady();
   }
 
   addResoure(identifier: string, loader: () => any): void {
@@ -390,8 +438,12 @@ class Api extends Hookable implements IApi {
     this._projectBuilder.setClientModule(module);
   }
 
-  addRuntimePlugin(name: string, runtimePlugin: string): void {
-    this._projectBuilder.addRuntimePlugin(name, runtimePlugin);
+  addRuntimePlugin(...plugins: IRuntimeOrServerPlugin[]): void {
+    this._projectBuilder.addRuntimePlugin(...plugins);
+  }
+
+  addServerPlugin(config: IRuntimeOrServerPlugin) {
+    this._serverPlugins.push(config);
   }
 
   getAssetPublicUrl(...paths: string[]): string {
@@ -419,7 +471,7 @@ class Api extends Hookable implements IApi {
       await this._server.close();
     }
     await this._projectBuilder.stopBuild();
-    await this.callHook<APIHooks.IHookDestroy>('destroy');
+    await runner.destroy();
   }
 
   getPluginApi(): PluginApi {
@@ -431,7 +483,7 @@ class Api extends Hookable implements IApi {
   }
 
   private async _initPresetsAndPlugins() {
-    const { phase, _config: config } = this;
+    const { _config: config } = this;
     // init presets
     this._presets = resolvePresets(config.presets || [], {
       dir: config.rootDir
@@ -445,43 +497,14 @@ class Api extends Hookable implements IApi {
       dir: this._config.rootDir
     });
     const allPlugins = this._presetPlugins.concat(this._plugins);
-
-    let runPlugins = function runNext(
-      next?: Function,
-      cur: Function = () => void 0
-    ) {
-      if (next) {
-        return (n: Function) =>
-          runNext(n, () => {
-            cur();
-            next();
-          });
-      }
-      return cur();
-    };
-
     for (const plugin of allPlugins) {
-      const pluginInst = plugin.get();
-      if (typeof pluginInst.modifyConfig === 'function') {
-        this.tap<APIHooks.IHookGetConfig>('getConfig', {
-          name: 'pluginModifyConfig',
-          fn(config) {
-            pluginInst.modifyConfig!(config, phase);
-            return config;
-          }
-        });
-      }
-      runPlugins = runPlugins(() => {
-        pluginInst.apply(this.getPluginApi());
-      });
+      usePlugin(plugin);
     }
-
-    return runPlugins;
   }
 
   private _initPreset(preset: IPreset) {
     const { id, get: getPreset } = preset;
-    const { presets, plugins } = getPreset()(this.getPluginApi());
+    const { presets, plugins } = getPreset()(this._pluginContext);
 
     if (presets) {
       invariant(

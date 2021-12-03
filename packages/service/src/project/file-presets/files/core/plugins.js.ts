@@ -1,15 +1,19 @@
 import { ProjectContext } from '../../../projectContext';
-
 export default {
   content: (context: ProjectContext) => {
     const plugins = context.runtimePlugins;
-    let pluginRecord = '';
+    const pluginRecord: string[] = [];
     let content = '';
-    plugins.forEach((value, name) => {
-      content += `import ${name} from "${value}"\n`;
-      pluginRecord += `${name},`;
+    plugins.forEach(({ plugin, options }, index) => {
+      const name = `plugin${index}`;
+      content += `import ${name}File from "${plugin}";
+const ${name} = {
+  plugin: ${name}File,
+  options: '${JSON.stringify(options)}'
+};\n`;
+      pluginRecord.push(name);
     });
-    content += `const pluginRecord = {${pluginRecord}}\n`;
+    content += `const pluginRecord = { ${pluginRecord.join(', ')} };\n`;
     content += `export { pluginRecord };`;
     return content;
   }

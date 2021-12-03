@@ -7,10 +7,6 @@ const apiProps: Array<keyof IApi> = [
   'config',
   'helpers',
   'clientManifest',
-  'tap',
-  'callHook',
-  'on',
-  'emitEvent',
   'addEntryCode',
   'addAppFile',
   'addAppExport',
@@ -37,18 +33,13 @@ class PluginApi implements IApi {
   // resources
   clientManifest: any;
 
-  // methods
-  tap: any;
-  callHook: any;
-  on: any;
-  emitEvent: any;
-
   addEntryCode: any;
   addAppFile: any;
   addAppExport: any;
   addAppService: any;
   addAppPolyfill: any;
   addRuntimePlugin: any;
+  addServerPlugin: any;
 
   setPlatformModule: any;
   setClientModule: any;
