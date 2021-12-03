@@ -7,10 +7,14 @@ import {
   IViewServer
 } from '@shuvi/platform-core';
 import { defineHook } from '@shuvi/hook';
-import { IRequest, IServerMiddlewareItem, IRequestHandlerWithNext } from '@shuvi/service';
+import {
+  IRequest,
+  IServerMiddlewareItem,
+  IRequestHandlerWithNext
+} from '@shuvi/service';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IApiRequestHandler } from '../apiRoute/apiRouteHandler';
-
+import { IServerPluginConstructor } from '../serverHooks';
 export interface IDocumentProps {
   htmlAttrs: IHtmlAttrs;
   headTags: IHtmlTag<
@@ -27,6 +31,11 @@ export type IHookModifyHtml = defineHook<
     args: [object /* appContext */];
   }
 >;
+
+export type IRenderToHTML = (
+  req: IncomingMessage,
+  res: ServerResponse
+) => Promise<string | null>;
 
 export type IHookRenderToHTML = defineHook<
   'renderToHTML',
@@ -58,22 +67,25 @@ export interface IDocumentModule {
 }
 
 export interface IServerModule {
-  render?(
+  render?: (
     renderAppToString: () => string,
     appContext: IServerAppContext
-  ): string;
+  ) => string;
   serverMiddleware: (
     | IServerMiddlewareItem
     | IServerMiddlewareItem['handler']
   )[];
-  onViewDone?(
+  onViewDone?: (
     req: IncomingMessage,
     res: ServerResponse,
     payload: {
       html: string | null;
       appContext: any;
     }
-  ): void;
+  ) => void;
+  pageData: IServerPluginConstructor['pageData'];
+  renderToHTML: IServerPluginConstructor['renderToHTML'];
+  modifyHtml: IServerPluginConstructor['modifyHtml'];
 }
 
 interface IApiModule {

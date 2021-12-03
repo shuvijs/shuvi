@@ -1,7 +1,7 @@
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { exportsFromObject } from './file-snippets';
-
+import { IRuntimeOrServerPlugin } from '../api';
 import {
   ProjectContext,
   createProjectContext,
@@ -129,8 +129,8 @@ class ProjectBuilder {
     }
   }
 
-  addRuntimePlugin(name: string, runtimePlugin: string) {
-    this._projectContext.runtimePlugins.set(name, runtimePlugin);
+  addRuntimePlugin(...plugins: IRuntimeOrServerPlugin[]) {
+    this._projectContext.runtimePlugins.push(...plugins);
   }
 
   setUserModule(userModule: Partial<UserModule>) {

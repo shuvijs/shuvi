@@ -23,6 +23,7 @@ export default class ShuviDev extends Base {
     const devMiddleware = await getDevMiddleware({
       api
     });
+
     this._onDemandRouteMgr.devMiddleware = devMiddleware;
 
     await devMiddleware.waitUntilValid();

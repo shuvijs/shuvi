@@ -1,3 +1,4 @@
 module.exports = {
-  ssr: true
+  ssr: true,
+  publicPath: '/'
 };

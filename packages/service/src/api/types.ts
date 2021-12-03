@@ -1,11 +1,9 @@
-import { IHookable } from '@shuvi/hook';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IRuntimeConfig } from '@shuvi/platform-core';
-import { PluginApi } from './pluginApi';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
-
 import { IServerMiddleware } from './serverMiddleware';
+import { ICliPluginConstructor, ICliPluginInstance } from './cliHooks';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -56,13 +54,9 @@ export type IRouterHistoryMode = 'browser' | 'hash' | 'memory' | 'auto';
 
 export type IPluginConfig =
   | string
-  | [
-      string /* plugin module */,
-      any? /* plugin options */,
-      string? /* identifier */
-    ]
-  | ((api: IApi) => void);
-
+  | ICliPluginConstructor
+  | ICliPluginInstance
+  | [string | ((param: any) => ICliPluginInstance), any?];
 export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
@@ -120,8 +114,13 @@ interface ApiHelpers {
   fileSnippets: FileSnippets;
 }
 
+export type IRuntimeOrServerPlugin = {
+  plugin: string;
+  options?: any;
+};
+
 // api for plugins
-export interface IApi extends IHookable {
+export interface IApi {
   readonly mode: IShuviMode;
   readonly paths: IPaths;
   readonly config: IApiConfig;
@@ -134,7 +133,8 @@ export interface IApi extends IHookable {
   addAppExport: typeof ProjectBuilder.prototype.addExport;
   addAppService: typeof ProjectBuilder.prototype.addService;
   addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
-  addRuntimePlugin: typeof ProjectBuilder.prototype.addRuntimePlugin;
+  addRuntimePlugin: (config: IRuntimeOrServerPlugin) => void;
+  addServerPlugin: (config: IRuntimeOrServerPlugin) => void;
 
   setPlatformModule: typeof ProjectBuilder.prototype.setPlatformModule;
   setClientModule: typeof ProjectBuilder.prototype.setClientModule;
@@ -153,24 +153,26 @@ export type IResources<Extra = {}> = {
   [x: string]: any;
 } & { [K in keyof Extra]: Extra[K] };
 
-export interface IPluginSpec {
-  modifyConfig?(config: IApiConfig, phase: IPhase): Promise<IApiConfig>;
-  apply(api: PluginApi): void;
-}
-
 export interface IPresetSpec {
-  (api: PluginApi): {
+  (context: IPluginContext): {
     presets?: IApiConfig['presets'];
     plugins?: IApiConfig['plugins'];
   };
-}
-
-export interface IPlugin {
-  id: string;
-  get: () => IPluginSpec;
 }
 
 export interface IPreset {
   id: string;
   get: () => IPresetSpec;
 }
+
+export type IPluginContext = {
+  mode: IShuviMode;
+  paths: IPaths;
+  config: IApiConfig;
+  phase: IPhase;
+  // helpers
+  helpers: IApi['helpers'];
+  // resources
+  resources: IResources;
+  getAssetPublicUrl: (...paths: string[]) => string;
+};

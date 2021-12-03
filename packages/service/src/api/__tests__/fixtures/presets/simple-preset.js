@@ -1,6 +1,6 @@
-module.exports = (api, options) => {
-  api.__presets = api.__presets || [];
-  api.__presets.push({
+module.exports = (context, options) => {
+  context.__presets = context.__presets || [];
+  context.__presets.push({
     name: 'simple-preset',
     options
   });

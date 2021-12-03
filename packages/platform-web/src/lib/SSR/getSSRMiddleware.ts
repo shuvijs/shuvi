@@ -4,7 +4,7 @@ import { IRequest, Api, IRequestHandlerWithNext } from '@shuvi/service';
 import { sendHTML } from '@shuvi/service/lib/lib/utils';
 
 import { renderToHTML } from './renderToHTML';
-import { IHookRenderToHTML } from '../types';
+import { runner } from '../serverHooks';
 
 function initServerRender(api: Api) {
   return async function (
@@ -40,10 +40,7 @@ export function getSSRMiddleware(api: Api): IRequestHandlerWithNext {
   const serverRender = initServerRender(api);
   return async function (req, res, next) {
     try {
-      const renderToHTML = await api.callHook<IHookRenderToHTML>({
-        name: 'renderToHTML',
-        initialValue: serverRender
-      });
+      const renderToHTML = await runner.renderToHTML(serverRender);
       const html = await renderToHTML(req, res);
       if (html) {
         // send the response

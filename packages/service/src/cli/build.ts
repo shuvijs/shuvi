@@ -2,9 +2,9 @@ import path from 'path';
 import fse from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import { Api, getApi, IConfig } from '../api';
-import * as APIHooks from '../types/hooks';
 import { getBundler } from '../bundler/bundler';
 import { BUILD_DEFAULT_DIR } from '../constants';
+import { runner } from '../api/cliHooks';
 
 export interface IBuildOptions {
   cwd?: string;
@@ -55,6 +55,15 @@ export async function build(options: IBuildOptions) {
     ...defaultBuildOptions,
     ...options
   };
+  // target `spa` is an alias for `web/react/spa`
+  const config = opts.config || {};
+  if (opts.target === 'spa') {
+    config.platform = {
+      name: 'web',
+      framework: 'react',
+      target: 'spa'
+    };
+  }
   const api = await getApi({
     cwd: opts.cwd,
     mode: 'production',
@@ -75,6 +84,5 @@ export async function build(options: IBuildOptions) {
 
   // transpile the application
   await bundle({ api });
-
-  api.emitEvent<APIHooks.IEventAfterBuild>('afterBuild');
+  runner.afterBuild();
 }

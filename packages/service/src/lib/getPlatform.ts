@@ -1,7 +1,7 @@
-import { IRuntime } from '../types/index';
+import { IPlatform } from '../types/index';
 
-export default function (platform: string | undefined): IRuntime {
+export default function (platform: string | undefined): IPlatform {
   const platformName = `@shuvi/platform-${platform}`;
-  const platformInstance: IRuntime = require(platformName).default;
+  const platformInstance: IPlatform = require(platformName).default;
   return platformInstance;
 }

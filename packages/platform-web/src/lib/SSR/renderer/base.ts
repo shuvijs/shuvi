@@ -18,18 +18,15 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { renderTemplate } from '../../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import {
-  IDocumentProps,
-  ITemplateData,
-  IHookModifyHtml,
-  IBuiltResource
-} from '../../types';
+import { IDocumentProps, ITemplateData, IBuiltResource } from '../../types';
 
 import {
   IRendererConstructorOptions,
   IRenderDocumentOptions,
   IRenderResultRedirect
 } from './types';
+
+import { runner } from '../../serverHooks';
 
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;
@@ -112,13 +109,7 @@ export abstract class BaseRenderer {
       );
     }
 
-    docProps = await this._api.callHook<IHookModifyHtml>(
-      {
-        name: 'modifyHtml',
-        initialValue: docProps as IDocumentProps
-      },
-      appContext
-    );
+    docProps = await runner.modifyHtml(docProps as IDocumentProps, appContext);
 
     return this._renderDocument(
       addDefaultHtmlTags(docProps),

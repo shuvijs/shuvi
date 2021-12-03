@@ -1,6 +1,5 @@
 export * from './application';
-export * from './runPlugins';
-export * as AppHooks from './hooks';
+export * from './runtimeHooks';
 export {
   getAppStore,
   IAppState,

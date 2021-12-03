@@ -11,3 +11,27 @@ export function onViewDone(req, res, { html, appContext }) {
     res.end(html);
   }
 }
+
+export const pageData = () => {
+  return {
+    foo: 'bar'
+  };
+};
+
+export const modifyHtml = documentProps => {
+  documentProps.headTags.push({
+    tagName: 'meta',
+    attrs: {
+      name: 'testDocumentProps'
+    }
+  });
+  return documentProps;
+};
+
+export const renderToHTML = renderToHTML => {
+  return async (req, res) => {
+    const html = await renderToHTML(req, res);
+    console.log('custom-renderToHTML', html);
+    return html;
+  };
+};

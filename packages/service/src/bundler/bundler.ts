@@ -1,4 +1,3 @@
-import * as APIHooks from '../types/hooks';
 import WebpackChain from 'webpack-chain';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
@@ -9,10 +8,10 @@ import Logger from '@shuvi/utils/lib/logger';
 import { inspect } from 'util';
 import webpack, {
   MultiCompiler as WebapckMultiCompiler,
-  Compiler as WebapckCompiler,
-  Configuration
+  Compiler as WebapckCompiler
 } from 'webpack';
 import { Api } from '../api';
+import { runner, Target } from '../api/cliHooks';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import {
   createWebpackConfig,
@@ -42,11 +41,6 @@ interface WatchTargetOptions {
   onWarns?(warns: CompilerErr[]): void;
 }
 
-interface Target {
-  name: string;
-  config: Configuration;
-}
-
 const logger = Logger('shuvi:bundler');
 
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
@@ -64,19 +58,12 @@ class WebpackBundler {
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
       this._internalTargets = await this._getInternalTargets();
-
       this._extraTargets = (
-        (await this._api.callHook<APIHooks.IHookBundlerExtraTarget>(
-          {
-            name: 'bundler:extraTarget',
-            parallel: true
-          },
-          {
-            createConfig: this._createConfig.bind(this),
-            mode: this._api.mode,
-            webpack
-          }
-        )) as any
+        await runner.extraTarget({
+          createConfig: this._createConfig.bind(this),
+          mode: this._api.mode,
+          webpack
+        })
       ).filter(Boolean) as Target[];
       this._compiler = webpack(
         [...this._internalTargets, ...this._extraTargets].map(t => t.config)
@@ -100,10 +87,7 @@ class WebpackBundler {
         if (isSuccessful) {
           setImmediate(first => {
             // make sure this event is fired after all bundler:target-done
-            this._api.emitEvent<APIHooks.IEventBundlerDone>('bundler:done', {
-              first,
-              stats: stats
-            });
+            runner.bundlerDone({ first, stats });
           }, isFirstSuccessfulCompile);
           isFirstSuccessfulCompile = false;
         }
@@ -161,7 +145,6 @@ class WebpackBundler {
   }
 
   private _watchTarget(name: string, options: WatchTargetOptions = {}) {
-    const api = this._api;
     const compiler = this.getSubCompiler(name)!;
     let isFirstSuccessfulCompile = true;
     let tsMessagesPromise: Promise<CompilerDiagnostics> | undefined;
@@ -262,7 +245,7 @@ class WebpackBundler {
         !messages.errors?.length && !messages.warnings?.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
-        await api.emitEvent<APIHooks.IEventTargetDone>('bundler:targetDone', {
+        await runner.bundlerTargetDone({
           first: isFirstSuccessfulCompile,
           name: compiler.name!,
           stats
@@ -325,18 +308,13 @@ class WebpackBundler {
     for (const buildTarget of buildTargets) {
       let { chain, name, mode, helpers } = buildTarget;
       // modify config by api hooks
-      chain = await this._api.callHook<APIHooks.IHookBundlerConfig>(
-        {
-          name: 'bundler:configTarget',
-          initialValue: chain
-        },
-        {
-          name,
-          mode,
-          helpers,
-          webpack
-        }
-      );
+
+      chain = await runner.configWebpack(chain, {
+        name,
+        mode,
+        helpers,
+        webpack
+      });
       if (hasEntry(chain)) {
         const chainConfig = chain.toConfig();
         logger.debug(`${name} Config`);

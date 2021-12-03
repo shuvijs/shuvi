@@ -30,6 +30,7 @@ export {
   IAppRenderFn,
   getAppData,
   getPageData,
+  IRuntimeModule,
   ApplicationCreater // export for @shuvi/service
 } from '@shuvi/runtime-core';
 

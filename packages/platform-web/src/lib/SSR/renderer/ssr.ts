@@ -1,4 +1,4 @@
-import { AppHooks, IAppData, IData } from '@shuvi/runtime-core';
+import { IAppData, IData } from '@shuvi/runtime-core';
 import { IRouter } from '@shuvi/router';
 import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import getRuntimeConfig from '@shuvi/service/lib/lib/runtimeConfig';
@@ -6,6 +6,7 @@ import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeC
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
+import { runner } from '../../serverHooks';
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps({
@@ -42,18 +43,11 @@ export class SsrRenderer extends BaseRenderer {
     }
 
     const mainAssetsTags = this._getMainAssetTags();
-
-    const pageDataList = (await app.callHook<AppHooks.IHookServerGetPageData>(
-      {
-        name: 'server:getPageData',
-        parallel: true
-      },
-      appContext
-    )) as any as IData[];
+    const pageDataList = await runner.pageData(appContext);
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;
-    }, {});
+    }, {}) as IData;
     const appData: IAppData = {
       ...result.appData,
       pageData,

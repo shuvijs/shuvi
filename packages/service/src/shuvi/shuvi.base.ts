@@ -1,5 +1,5 @@
 import { IShuviMode, IConfig, getApi, Api } from '../api';
-import * as APIHooks from '../types/hooks';
+import { runner } from '../api/cliHooks';
 import { IResponse, IRequest } from '../types/server';
 
 export interface IShuviConstructorOptions {
@@ -77,10 +77,7 @@ export default abstract class Shuvi {
 
   async listen(port: number, hostname: string = 'localhost'): Promise<void> {
     await this._ensureApiInited();
-    this._api.emitEvent<APIHooks.IEventServerListen>('server:listen', {
-      port,
-      hostname
-    });
+    runner.serverListen({ port, hostname });
     await Promise.all([
       this._api.server.listen(port, hostname),
       this.prepare()
