@@ -216,7 +216,7 @@ export default abstract class PlatformMpBase {
                 }
                 if (route.path !== tempMpPath) {
                   // generate routesMap
-                  routesMap.push([route.path, tempMpPath]);
+                  routesMap.push([route.path, path.resolve('/', tempMpPath)]);
                   route.path = tempMpPath;
                 }
                 routesName.add(route.path);
