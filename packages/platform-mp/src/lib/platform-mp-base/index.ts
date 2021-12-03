@@ -145,7 +145,7 @@ export default abstract class PlatformMpBase {
     );
     api.addAppExport(resolveLib('@shuvi/router-mp'), '{ Link }');
 
-    api.addAppService(resolveRouterFile('lib', 'index'), '*', 'router-mp.js');
+    api.addAppService(resolveRouterFile('esm', 'index'), '*', 'router-mp');
   }
 
   setupRoutes() {
