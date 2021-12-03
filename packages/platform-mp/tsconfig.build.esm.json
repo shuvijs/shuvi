@@ -1,9 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "rootDir": "esm",
-    "module": "esnext",
-    "outDir": "esm",
     "strict": false,
     "strictNullChecks": false,
     "strictFunctionTypes": false,
@@ -15,6 +12,9 @@
     "noImplicitThis": false,
     "stripInternal": true,
     "noUnusedLocals": false,
+    "rootDir": "./src/lib",
+    "module": "esnext",
+    "outDir": "esm",
     "lib": ["esnext", "DOM"]
   },
   "include": [
