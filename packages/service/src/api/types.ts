@@ -1,4 +1,3 @@
-import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IRuntimeConfig } from '@shuvi/platform-core';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
@@ -125,7 +124,6 @@ export interface IApi {
   readonly paths: IPaths;
   readonly config: IApiConfig;
   readonly phase: IPhase;
-  readonly clientManifest: IManifest;
   readonly helpers: ApiHelpers;
 
   addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;

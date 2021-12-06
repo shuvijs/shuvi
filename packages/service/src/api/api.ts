@@ -12,7 +12,6 @@ import {
   IPhase,
   IRuntimeOrServerPlugin
 } from './types';
-import * as Bundler from '@shuvi/toolpack/lib/webpack/types';
 import { IPlatform } from '../types/index';
 import { IServerMiddlewareItem } from '../types/server';
 import {
@@ -234,11 +233,6 @@ class Api implements IApi {
 
   get resources(): IResources {
     return this._resources;
-  }
-
-  // TODO: move to platform
-  get clientManifest(): Bundler.IManifest {
-    return this._resources.clientManifest;
   }
 
   getBuildTargets() {
