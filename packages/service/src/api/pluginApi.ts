@@ -6,7 +6,6 @@ const apiProps: Array<keyof IApi> = [
   'paths',
   'config',
   'helpers',
-  'clientManifest',
   'addEntryCode',
   'addAppFile',
   'addAppExport',
@@ -30,8 +29,6 @@ class PluginApi implements IApi {
   phase: any;
   // helpers
   helpers: any;
-  // resources
-  clientManifest: any;
 
   addEntryCode: any;
   addAppFile: any;
