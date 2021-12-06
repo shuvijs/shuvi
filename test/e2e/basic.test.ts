@@ -137,6 +137,13 @@ describe('Basic Features', () => {
       await localPage.waitForSelector('#head');
       expect(await localPage.title()).toBe('Test Title');
     });
+
+    test('support commonjs function', async () => {
+      localPage = await ctx.browser.page(ctx.url('/support-commonjs'));
+      expect(await localPage.$text('#support-commonjs')).toEqual(
+        'exports.default'
+      );
+    });
   });
 
   describe('Middleware function', () => {
@@ -215,6 +222,11 @@ describe('[SPA] Basic Features', () => {
     await page.shuvi.navigate('/process-env');
     await page.waitForSelector('#process-env');
     expect(await page.$text('#process-env')).toBe('development');
+  });
+
+  test('support commonjs function', async () => {
+    await page.goto(ctx.url('/support-commonjs'));
+    expect(await page.$text('#support-commonjs')).toEqual('exports.default');
   });
 
   test('error-page', async () => {
