@@ -49,6 +49,7 @@ function getSWCOptions({
 
     transform: {
       react: {
+        importSource: 'react',
         runtime: 'automatic',
         // runtime: 'classic',
         pragma: 'React.createElement',
@@ -63,6 +64,9 @@ function getSWCOptions({
         globals: {
           typeofs: {
             window: isNode ? 'undefined' : 'object'
+          },
+          envs: {
+            NODE_ENV: development ? '"development"' : '"production"'
           }
         }
       },
@@ -77,6 +81,10 @@ function getSWCOptions({
   if (isNode) {
     return {
       jsc,
+      module: {
+        type: 'commonjs',
+        ignoreDynamic: true
+      },
       disableShuviDynamic,
       isDevelopment: development,
       isPageFile,
