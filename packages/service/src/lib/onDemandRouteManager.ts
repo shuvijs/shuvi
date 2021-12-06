@@ -25,7 +25,7 @@ export class OnDemandRouteManager {
 
       const chunkName = pathname.replace(this._api.assetPublicPath, '');
       const chunkInitiatorModule =
-        this._api.clientManifest.chunkRequest[chunkName];
+        this._api.resources?.clientManifest?.chunkRequest[chunkName];
 
       if (!chunkInitiatorModule) {
         return next();
