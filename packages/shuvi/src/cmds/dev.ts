@@ -1,8 +1,10 @@
 import program from 'commander';
 import path from 'path';
-import { shuvi } from '@shuvi/service';
+// @ts-ignore
+import { shuvi, getApi, createShuviServer } from '@shuvi/service';
 import { getPackageInfo } from '../utils';
 import { getProjectDir, getConfigFromCli } from '../utils';
+// import dev from '@shuvi/service/lib/cmds/dev'
 
 export default async function main(argv: string[]) {
   const pkgInfo = getPackageInfo();
@@ -20,13 +22,13 @@ export default async function main(argv: string[]) {
   const port = Number(program.port) || 3000;
   const host = program.host || 'localhost';
   const config = getConfigFromCli(program);
-  const shuviApp = shuvi({
-    dev: true,
+  const api = await getApi({
     cwd,
     config,
     configFile: program.config && path.resolve(cwd, program.config)
   });
-
+  await api.buildApp();
+  const shuviApp = await createShuviServer(api.cliContext, true);
   try {
     console.log('Starting the development server...');
     await shuviApp.listen(port, host);

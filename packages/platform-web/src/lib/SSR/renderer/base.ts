@@ -5,9 +5,9 @@ import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 
 import {
-  Api,
   BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_POLYFILL
+  BUILD_CLIENT_RUNTIME_POLYFILL,
+  IServerPluginContext
 } from '@shuvi/service';
 
 import {
@@ -25,8 +25,6 @@ import {
   IRenderDocumentOptions,
   IRenderResultRedirect
 } from './types';
-
-import { runner } from '../../serverHooks';
 
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;
@@ -70,12 +68,12 @@ export function isRedirect(obj: any): obj is IRenderResultRedirect {
 }
 
 export abstract class BaseRenderer {
-  protected _api: Api;
+  protected _serverPluginContext: IServerPluginContext;
   protected _resources: IBuiltResource;
 
-  constructor({ api }: IRendererConstructorOptions) {
-    this._api = api;
-    this._resources = api.resources as IBuiltResource;
+  constructor({ serverPluginContext }: IRendererConstructorOptions) {
+    this._serverPluginContext = serverPluginContext;
+    this._resources = serverPluginContext.resources as IBuiltResource;
   }
 
   async renderDocument({
@@ -83,16 +81,14 @@ export abstract class BaseRenderer {
     AppComponent,
     router,
     appStore,
-    appContext,
-    render
+    appContext
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
     let docProps = await this.getDocumentProps({
       app,
       AppComponent,
       router,
       appStore,
-      appContext,
-      render
+      appContext
     });
 
     if (isRedirect(docProps)) {
@@ -109,7 +105,10 @@ export abstract class BaseRenderer {
       );
     }
 
-    docProps = await runner.modifyHtml(docProps as IDocumentProps, appContext);
+    docProps = await this._serverPluginContext.serverPluginRunner.modifyHtml(
+      docProps as IDocumentProps,
+      appContext
+    );
 
     return this._renderDocument(
       addDefaultHtmlTags(docProps),
@@ -130,18 +129,18 @@ export abstract class BaseRenderer {
   } {
     const styles: IHtmlTag<'link' | 'style'>[] = [];
     const scripts: IHtmlTag<'script'>[] = [];
-    const { clientManifest } = this._api.resources;
+    const { clientManifest } = this._serverPluginContext.resources;
     const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
     const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
     scripts.push(
       tag('script', {
-        src: this._api.getAssetPublicUrl(polyfill)
+        src: this._serverPluginContext.getAssetPublicUrl(polyfill)
       })
     );
     entrypoints.js.forEach((asset: string) => {
       scripts.push(
         tag('script', {
-          src: this._api.getAssetPublicUrl(asset)
+          src: this._serverPluginContext.getAssetPublicUrl(asset)
         })
       );
     });
@@ -150,12 +149,12 @@ export abstract class BaseRenderer {
         styles.push(
           tag('link', {
             rel: 'stylesheet',
-            href: this._api.getAssetPublicUrl(asset)
+            href: this._serverPluginContext.getAssetPublicUrl(asset)
           })
         );
       });
     }
-    if (this._api.mode === 'development') {
+    if (this._serverPluginContext.mode === 'development') {
       styles.push(
         tag(
           'style',
@@ -215,12 +214,15 @@ export abstract class BaseRenderer {
       .map(tag => stringifyTag(tag))
       .join('');
 
-    return renderTemplate(this._api.resources.documentTemplate, {
-      htmlAttrs,
-      head,
-      main,
-      script,
-      ...templateData
-    });
+    return renderTemplate(
+      this._serverPluginContext.resources.documentTemplate,
+      {
+        htmlAttrs,
+        head,
+        main,
+        script,
+        ...templateData
+      }
+    );
   }
 }

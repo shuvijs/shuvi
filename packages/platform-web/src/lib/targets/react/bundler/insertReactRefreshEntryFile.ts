@@ -1,6 +1,6 @@
-import { createPlugin } from '../../../serverHooks';
+import { createServerPlugin } from '@shuvi/service';
 import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
-export default createPlugin({
+export default createServerPlugin({
   modifyHtml: (documentProps, appContext, context) => {
     if (context.mode === 'development') {
       documentProps.scriptTags.unshift({

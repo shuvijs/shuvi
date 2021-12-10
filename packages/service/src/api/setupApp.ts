@@ -114,6 +114,7 @@ export async function setupApp(api: Api) {
     '{ default as getRuntimeConfig }'
   );
   await setupRoutes(api);
+  await api.initProjectBuilderConfigs();
 }
 
 async function setupRoutes(api: Api) {

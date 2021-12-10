@@ -9,3 +9,5 @@ export const App: any;
 export const getRuntimeConfig: () => Record<string, string>;
 
 export const Head: React.FC;
+
+export { createPlugin as createRuntimePlugin } from '@shuvi/runtime-core/lib/runtimeHooks';

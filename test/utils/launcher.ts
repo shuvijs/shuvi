@@ -1,6 +1,6 @@
 import qs from 'querystring';
 import { IConfig } from '@shuvi/service';
-import { shuvi, Shuvi } from '@shuvi/service';
+import { getApi, createShuviServer, ShuviServer } from '@shuvi/service';
 import { loadFixture, resolveFixture } from './fixture';
 import { build } from './build';
 import { findPort } from './findPort';
@@ -10,15 +10,13 @@ import { SpawnOptions, ChildProcess } from 'child_process';
 import rimraf from 'rimraf';
 import Path from 'path';
 
-export { Shuvi };
-
 export interface AppCtx {
   browser: Browser;
   url: (x: string, query?: Record<string, any>) => string;
   close(): Promise<void>;
 }
 
-async function createTextContext(app: Shuvi): Promise<AppCtx> {
+async function createTextContext(app: ShuviServer): Promise<AppCtx> {
   const port = await findPort();
   await app.listen(port);
   const browser = new Browser();
@@ -47,7 +45,9 @@ export async function launchFixtureAtCurrentProcess(
   overrides: IConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const shuviApp = shuvi({ dev: true, config });
+  const api = await getApi({ config });
+  await api.buildApp();
+  const shuviApp = await createShuviServer(api.cliContext, true);
   return await createTextContext(shuviApp);
 }
 
@@ -56,8 +56,8 @@ export async function serveFixtureAtCurrentProcess(
   overrides: IConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  await build({ config });
-  const shuviApp = shuvi({ dev: false, config });
+  const cliContext = await build({ config });
+  const shuviApp = await createShuviServer(cliContext, true);
   return createTextContext(shuviApp);
 }
 

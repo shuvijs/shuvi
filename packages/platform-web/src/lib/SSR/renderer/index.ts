@@ -1,4 +1,4 @@
-import { Api } from '@shuvi/service';
+import { IServerPluginContext } from '@shuvi/service';
 
 import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
 import { BaseRenderer, isRedirect } from './base';
@@ -10,18 +10,18 @@ export * from './types';
 export { isRedirect };
 
 export class Renderer {
-  private _api: Api;
+  private _serverPluginContext: IServerPluginContext;
   private _ssrRenderer: BaseRenderer;
   private _spaRenderer: BaseRenderer;
 
   constructor(options: IRendererConstructorOptions) {
-    this._api = options.api;
+    this._serverPluginContext = options.serverPluginContext;
     this._ssrRenderer = new SsrRenderer(options);
     this._spaRenderer = new SpaRenderer(options);
   }
 
   renderDocument(options: IRenderDocumentOptions) {
-    if (this._api.config.ssr) {
+    if (this._serverPluginContext.config.ssr) {
       return this._ssrRenderer.renderDocument(options);
     }
 
