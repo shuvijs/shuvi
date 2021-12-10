@@ -1,6 +1,6 @@
 import {
   IPluginConfig,
-  IPluginContext,
+  ICliContext,
   IPresetConfig,
   IPreset,
   IPresetSpec
@@ -88,7 +88,7 @@ function resolvePreset(
   const id = presetPath;
   let preset = require(presetPath);
   preset = preset.default || preset;
-  const presetFn: IPresetSpec = (context: IPluginContext) => {
+  const presetFn: IPresetSpec = (context: ICliContext) => {
     return preset(context, options);
   };
 

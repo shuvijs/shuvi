@@ -1,16 +1,11 @@
-import { getApi, Api } from '../api';
-import { PluginApi } from '../pluginApi';
+import { getApi } from '../api';
 import { IApiConfig, IPaths } from '..';
-import { clear } from '../cliHooks';
 import path from 'path';
 import rimraf from 'rimraf';
 import { resolvePreset, resolvePlugin } from './utils';
 import { readFileSync } from 'fs';
 
 describe('api', () => {
-  beforeEach(() => {
-    clear();
-  });
   test('should has "production" be default mode', async () => {
     const prodApi = await getApi({
       config: {}
@@ -20,20 +15,20 @@ describe('api', () => {
 
   describe('plugins', () => {
     test('should work', async () => {
-      let pluginApi: Api;
+      let context: any;
       const api = await getApi({
         config: {
           plugins: [
             {
-              legacyApi: api => {
-                pluginApi = api;
+              setup: cliContext => {
+                context = cliContext;
               }
             }
           ]
         }
       });
-      expect(pluginApi!).toBeDefined();
-      expect(pluginApi!.paths).toBe(api.paths);
+      expect(context!).toBeDefined();
+      expect(context!.paths).toBe(api.cliContext.paths);
     });
 
     test('should access config and paths', async () => {
@@ -46,7 +41,7 @@ describe('api', () => {
           publicPath: '/test',
           plugins: [
             {
-              legacyApi: api => {
+              setup: api => {
                 config = api.config;
                 paths = api.paths;
               }
@@ -60,24 +55,26 @@ describe('api', () => {
 
     describe('modifyConfig', () => {
       test('should work', async () => {
-        let pluginApi: PluginApi;
+        let context: any;
         const api = await getApi({
           config: {
             plugins: [
               resolvePlugin('modify-config.ts'),
               {
-                legacyApi: api => {
-                  pluginApi = api;
+                setup: cliContext => {
+                  context = cliContext;
                 }
               }
             ]
           }
         });
-        const plugins = (pluginApi! as any).__plugins;
+        const plugins = (context! as any).__plugins;
         expect(plugins.length).toBe(1);
         expect(plugins[0].name).toBe('modify-config');
-        expect(api.config.publicPath).toBe('/bar');
-        expect((api.config as any)._phase).toBe('PHASE_PRODUCTION_SERVER');
+        expect(api.cliContext.config.publicPath).toBe('/bar');
+        expect((api.cliContext.config as any)._phase).toBe(
+          'PHASE_PRODUCTION_SERVER'
+        );
       });
     });
   });
@@ -129,21 +126,25 @@ describe('api', () => {
         rootDir: path.join(__dirname, 'fixtures', 'rootDir'),
         plugins: [
           {
-            legacyApi: api => {
-              api.addAppFile({
+            appFile: () => [
+              {
                 name: 'fileA.js',
                 content: () => 'test.js'
-              });
-              api.addAppFile({
+              },
+              {
                 name: '../fileB.js',
                 content: () => 'test.js'
-              });
-              api.addAppFile({
+              },
+              {
                 name: '/fileC.js',
                 content: () => 'test.js'
-              });
-              api.addAppService('source', 'exported', 'a.js');
-            }
+              }
+            ],
+            appService: () => ({
+              source: 'source',
+              exported: 'exported',
+              filepath: 'a.js'
+            })
           }
         ]
       }
@@ -167,50 +168,5 @@ describe('api', () => {
     });
 
     expect(process.env.READ_ENV).toBe('true');
-  });
-
-  describe('serverMiddleware', () => {
-    test('addServerMiddleware', async () => {
-      const api = await getApi({
-        config: {}
-      });
-
-      const serverMiddleware = jest.fn();
-      api.addServerMiddleware(serverMiddleware);
-
-      const firstServerMiddleware = jest.fn();
-      api.addServerMiddleware({ handler: firstServerMiddleware, order: 0 });
-
-      const secondServerMiddleware = jest.fn();
-      api.addServerMiddleware({ handler: secondServerMiddleware, order: 1 });
-
-      const fakeServerMiddleware = jest.fn();
-      api.addServerMiddleware(fakeServerMiddleware);
-
-      expect(api.getBeforePageMiddlewares().length).toBe(4);
-    });
-
-    test('addServerMiddlewareLast', async () => {
-      const api = await getApi({
-        config: {}
-      });
-
-      const serverMiddleware = jest.fn();
-      api.addServerMiddlewareLast(serverMiddleware);
-
-      const firstServerMiddleware = jest.fn();
-      api.addServerMiddlewareLast({ handler: firstServerMiddleware, order: 0 });
-
-      const secondServerMiddleware = jest.fn();
-      api.addServerMiddlewareLast({
-        handler: secondServerMiddleware,
-        order: 1
-      });
-
-      const fakeServerMiddleware = jest.fn();
-      api.addServerMiddlewareLast(fakeServerMiddleware);
-      // default platform web add 2 middlewares
-      expect(api.getAfterPageMiddlewares().length).toBe(7);
-    });
   });
 });

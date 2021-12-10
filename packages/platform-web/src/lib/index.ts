@@ -1,30 +1,29 @@
 import fse from 'fs-extra';
 import path from 'path';
 import {
-  Api,
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
   IRequest,
   IPlatform,
-  createCliPlugin
+  createCliPlugin,
+  ICliContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
+import {
+  initServerModule,
+  initServerPlugins,
+  getManager
+} from '@shuvi/service/lib/shuviServer/serverHooks';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
-import {
-  createWebpackConfig,
-  IWebpackEntry
-} from '@shuvi/service/lib/bundler/config';
+import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 
-import { initCoreResource } from './initCoreResource';
+import { getCoreResources } from './initCoreResource';
 import { resolveAppFile } from './paths';
-import { getApiRoutesMiddleware } from './apiRoute';
-import { getMiddlewareRoutesMiddleware } from './middlewareRoute';
-import { getSSRMiddleware, renderToHTML } from './SSR';
-import { initServerModule, initServerPlugins } from './serverHooks';
-function getServerEntry(_api: Api): IWebpackEntry {
-  const { ssr } = _api.config;
+import { renderToHTML } from './SSR';
+function getServerEntry(context: ICliContext): IWebpackEntry {
+  const { ssr } = context.config;
   return {
     [BUILD_SERVER_FILE_SERVER]: [
       resolveAppFile('entry', 'server', ssr ? 'ssr' : 'spa')
@@ -33,61 +32,51 @@ function getServerEntry(_api: Api): IWebpackEntry {
 }
 
 async function buildHtml({
-  api,
+  context,
   pathname,
   filename
 }: {
-  api: Api;
+  context: ICliContext;
   pathname: string;
   filename: string;
 }) {
-  const { server } = api.resources.server;
-  initServerModule(server);
+  const serverPlugins = context.serverPlugins;
+  const pluginManger = getManager();
+  const serverPluginContext = initServerPlugins(
+    pluginManger,
+    serverPlugins,
+    context
+  );
+  const { server } = context.resources.server;
+  initServerModule(pluginManger, server);
   const { html } = await renderToHTML({
     req: {
       url: pathname,
       headers: {}
     } as IRequest,
-    api
+    serverPluginContext
   });
 
   if (html) {
     await fse.writeFile(
-      path.resolve(api.paths.buildDir, BUILD_DEFAULT_DIR, filename),
+      path.resolve(context.paths.buildDir, BUILD_DEFAULT_DIR, filename),
       html
     );
   }
 }
 
 const platform: IPlatform = async context => {
-  let shuviApi: Api;
   const mainPlugin = createCliPlugin({
-    legacyApi: (api: Api) => {
-      shuviApi = api;
-      initCoreResource(api);
-      if (typeof api.config.runtimeConfig === 'object') {
-        setRuntimeConfig(api.config.runtimeConfig);
+    setup: context => {
+      if (typeof context.config.runtimeConfig === 'object') {
+        setRuntimeConfig(context.config.runtimeConfig);
       }
-
-      const serverWebpackHelpers = webpackHelpers();
-      const serverChain = createWebpackConfig(api, {
-        name: BUNDLER_TARGET_SERVER,
-        node: true,
-        entry: getServerEntry(api),
-        outputDir: BUILD_SERVER_DIR,
-        webpackHelpers: serverWebpackHelpers
-      });
-      api.addBuildTargets({
-        chain: serverChain,
-        name: BUNDLER_TARGET_SERVER,
-        mode: api.mode,
-        helpers: serverWebpackHelpers
-      });
-
-      // set application and entry
+    },
+    bundleResource: context => getCoreResources(context),
+    clientModule: context => {
       const {
         router: { history }
-      } = api.config;
+      } = context.config;
       let ApplicationModule;
       if (history === 'browser') {
         ApplicationModule = 'create-application-history-browser';
@@ -96,34 +85,41 @@ const platform: IPlatform = async context => {
       } else {
         ApplicationModule = 'create-application-history-memory';
       }
-
-      api.setClientModule({
+      return {
         application: resolveAppFile('application', 'client', ApplicationModule),
         entry: resolveAppFile('entry', 'client')
-      });
-
-      api.addServerMiddlewareLast(getApiRoutesMiddleware(api));
-      api.addServerMiddlewareLast(getMiddlewareRoutesMiddleware(api));
-      api.addServerMiddlewareLast(getSSRMiddleware(api));
-
-      api.addAppExport('@shuvi/platform-web/lib/types', '* as RuntimeServer');
-      initServerPlugins(api.serverPlugins, api.pluginContext);
+      };
     },
-    appReady: async context => {
+    appExport: () => ({
+      source: '@shuvi/platform-web/lib/types',
+      exported: '* as RuntimeServer'
+    }),
+    extraTarget: ({ createConfig }, context) => {
+      const serverWebpackHelpers = webpackHelpers();
+      const serverChain = createConfig({
+        name: BUNDLER_TARGET_SERVER,
+        node: true,
+        entry: getServerEntry(context),
+        outputDir: BUILD_SERVER_DIR,
+        webpackHelpers: serverWebpackHelpers
+      });
+      return {
+        name: BUNDLER_TARGET_SERVER,
+        chain: serverChain
+      };
+    },
+    serverPlugin: () => require.resolve('./serverPlugin'),
+    afterBuild: async context => {
       if (
         context.config.platform.target === 'spa' &&
         context.mode === 'production'
       ) {
         await buildHtml({
-          api: shuviApi,
+          context,
           pathname: '/',
           filename: 'index.html'
         });
       }
-    },
-    bundlerDone: (_, context) => {
-      const { server } = context.resources.server;
-      initServerModule(server);
     }
   });
   const { framework = 'react' } = context.config.platform || {};

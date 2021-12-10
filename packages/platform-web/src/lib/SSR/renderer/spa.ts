@@ -4,10 +4,10 @@ import { BaseRenderer } from './base';
 export class SpaRenderer extends BaseRenderer {
   getDocumentProps() {
     const assets = this._getMainAssetTags();
-    const api = this._api;
+    const serverPluginContext = this._serverPluginContext;
     const appData: IAppData = {
       pageData: {},
-      ssr: api.config.ssr
+      ssr: serverPluginContext.config.ssr
     };
     return {
       htmlAttrs: {},

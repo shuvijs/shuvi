@@ -4,5 +4,5 @@ import {
 } from '@shuvi/service/lib/cli/build';
 
 export async function build(options: IBuildOptions = {}) {
-  await shuviBuild(options);
+  return await shuviBuild(options);
 }

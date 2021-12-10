@@ -1,22 +1,20 @@
-import { Api, IRequest } from '@shuvi/service';
+import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { IBuiltResource } from '../types';
 import { Renderer, isRedirect, IRenderResultRedirect } from './renderer';
 
 export async function renderToHTML({
   req,
-  api,
+  serverPluginContext,
   onRedirect
 }: {
   req: IRequest;
-  api: Api;
+  serverPluginContext: IServerPluginContext;
   onRedirect?(redirect: IRenderResultRedirect): void;
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;
-  const renderer = new Renderer({ api });
-  const {
-    application,
-    server: { render }
-  } = api.resources.server as IBuiltResource['server'];
+  const renderer = new Renderer({ serverPluginContext });
+  const { application } = serverPluginContext.resources
+    .server as IBuiltResource['server'];
   const app = application.create(
     {
       req
@@ -28,7 +26,6 @@ export async function renderToHTML({
           app,
           AppComponent,
           appContext,
-          render,
           appStore
         });
 

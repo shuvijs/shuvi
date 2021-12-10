@@ -39,7 +39,10 @@ export interface IRenderOptions<
   router?: Router;
   appContext: Context;
   appStore: IAppStore;
-  render?: (renderAppToString: () => string, appContext: any) => string;
+  render?: (
+    renderAppToString: () => string,
+    appContext: any
+  ) => string | void | undefined;
 }
 
 export interface IView<

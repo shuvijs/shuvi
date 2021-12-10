@@ -28,21 +28,21 @@ type AnyHook =
   | SyncWaterfallHook<any, any>
   | AsyncParallelHook<any, any, any>
   | AsyncSeriesWaterfallHook<any, any>;
-type HookMap = {
+interface HookMap {
   [x: string]: AnyHook;
-};
+}
 
 // 这意味着context需要在一开始就确定
-type hookGroup<HM extends HookMap, C = void> = {
+type hookGroup<HM extends HookMap, C, EHM extends HookMap> = {
   createPlugin: (
-    pluginHandlers: IPluginHandlers<HM, C>,
+    pluginHandlers: IPluginHandlers<HM & EHM, C>,
     options?: PluginOptions
-  ) => IPlugin<HM, C>;
-  usePlugin: (...plugins: IPlugin<HM, C>[]) => void;
-  runner: RunnerType<HM>;
+  ) => IPlugin<HM & EHM, C>;
+  usePlugin: (...plugins: IPlugin<HM & EHM, C>[]) => void;
+  runner: RunnerType<HM & EHM>;
   setContext: (context: C) => void;
   clear: () => void;
-  hooks: HM;
+  hooks: HM | (HM & EHM);
 };
 
 type RunnerType<HM> = {
@@ -50,8 +50,8 @@ type RunnerType<HM> = {
 };
 type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
   ? SyncHook<T, E, R>['run']
-  : H extends SyncBailHook<infer T, infer E>
-  ? SyncBailHook<T, E>['run']
+  : H extends SyncBailHook<infer T, infer E, infer R>
+  ? SyncBailHook<T, E, R>['run']
   : H extends SyncWaterfallHook<infer T, infer E>
   ? SyncWaterfallHook<T, E>['run']
   : H extends AsyncParallelHook<infer T, infer E, infer R>
@@ -87,6 +87,7 @@ export type PluginOptions = {
   post?: string[];
   rivals?: string[];
   required?: string[];
+  order?: number;
   [x: string]: any;
 };
 
@@ -95,7 +96,8 @@ export const DEFAULT_OPTIONS: Required<PluginOptions> = {
   pre: [],
   post: [],
   rivals: [],
-  required: []
+  required: [],
+  order: 0
 };
 
 const SYNC_PLUGIN_SYMBOL = 'SYNC_PLUGIN_SYMBOL';
@@ -107,7 +109,7 @@ export const isPluginInstance = (plugin: any) =>
 
 const sortPlugins = <T extends IPlugin<any, any>[]>(input: T): T => {
   let plugins: T = input.slice() as T;
-
+  plugins.sort((a, b) => (a.order as number) - (b.order as number));
   for (let i = 0; i < plugins.length; i++) {
     let plugin = plugins[i];
     if (plugin.pre) {
@@ -166,39 +168,50 @@ const checkPlugins = (plugins: IPlugin<any, any>[]) => {
   }
 };
 
-export const createHookGroup = <HM extends HookMap, C = void>(
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+export const createHookGroup = <
+  HM extends HookMap,
+  C = void,
+  EHM extends HookMap = {}
+>(
   hookMap: HM,
   context?: C
-): hookGroup<HM, C> => {
-  const _hookMap: HM = hookMap;
-  let _plugins: IPlugin<HM, C>[] = [];
+): hookGroup<HM, C, EHM> => {
+  const _hookMap: HM | (HM & EHM) = hookMap;
+  let _plugins: IPlugin<HM & EHM, C>[] = [];
   let _context: C;
   let _loaded = false;
   if (context) {
     _context = context;
   }
-  let index = 0;
   const createPlugin = (
-    pluginHandlers: IPluginHandlers<HM, C>,
+    pluginHandlers: IPluginHandlers<HM & EHM, C>,
     options: PluginOptions = {}
-  ): IPlugin<HM, C> => {
+  ): IPlugin<HM & EHM, C> => {
     return {
       ...DEFAULT_OPTIONS,
-      name: `No.${index++} plugin`,
+      name: `plugin-id-${uuid()}`,
       ...options,
       handlers: pluginHandlers,
       SYNC_PLUGIN_SYMBOL
     };
   };
-  const usePlugin = (...plugins: IPlugin<HM, C>[]) => {
+  const usePlugin = (...plugins: IPlugin<HM & EHM, C>[]) => {
     if (_loaded) {
       return;
     }
     _plugins.push(...plugins);
   };
   const load = () => {
-    const plugins = _plugins;
-    sortPlugins(plugins);
+    let plugins = _plugins;
+    plugins = sortPlugins(plugins);
     checkPlugins(plugins);
     plugins.forEach(plugin => {
       const handlers = plugin.handlers;
@@ -219,19 +232,22 @@ export const createHookGroup = <HM extends HookMap, C = void>(
     });
     _loaded = false;
   };
-  const runner: RunnerType<HM> = Object.entries(hookMap).reduce((acc, cur) => {
-    const [hookName, hook] = cur;
-    // @ts-ignore
-    acc[hookName] = (...args: any[]) => {
-      if (!_loaded) {
-        load();
-        _loaded = true;
-      }
+  const runner: RunnerType<HM & EHM> = Object.entries(hookMap).reduce(
+    (acc, cur) => {
+      const [hookName, hook] = cur;
       // @ts-ignore
-      return hook.run(...args, _context);
-    };
-    return acc;
-  }, {} as RunnerType<HM>);
+      acc[hookName] = (...args: any[]) => {
+        if (!_loaded) {
+          load();
+          _loaded = true;
+        }
+        // @ts-ignore
+        return hook.run(...args, _context);
+      };
+      return acc;
+    },
+    {} as RunnerType<HM & EHM>
+  );
 
   return {
     createPlugin,

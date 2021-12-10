@@ -1,10 +1,10 @@
 import path from 'path';
 import {
-  Api,
   createCliPlugin,
   IUserRouteConfig,
   BUILD_DEFAULT_DIR
 } from '@shuvi/service';
+import { findFirstExistedFile } from '@shuvi/service/lib/project/file-snippets';
 import { rankRouteBranches } from '@shuvi/router';
 import { PACKAGE_NAME } from '../constants';
 import fs from 'fs';
@@ -79,7 +79,6 @@ export interface IFileType {
 }
 
 export default abstract class PlatformMpBase {
-  _api!: Api;
   themeFilePath: string = '';
   appConfigs!: AppConfigs;
   mpPathToRoutesDone: any;
@@ -110,10 +109,12 @@ export default abstract class PlatformMpBase {
    */
   getSetupAppPlugin() {
     return createCliPlugin({
-      legacyApi: api => {
-        this._api = api;
-        const appConfigFile = api.helpers.fileSnippets.findFirstExistedFile([
-          ...withExts(api.resolveUserFile('app.config'), moduleFileExtensions)
+      setup: context => {
+        const appConfigFile = findFirstExistedFile([
+          ...withExts(
+            context.resolveUserFile('app.config'),
+            moduleFileExtensions
+          )
         ]);
         const appConfig: AppConfig = appConfigFile
           ? readConfig(appConfigFile)
@@ -128,40 +129,62 @@ export default abstract class PlatformMpBase {
 
         const { themeLocation, darkmode: darkMode } = appConfig;
         if (darkMode && themeLocation && typeof themeLocation === 'string') {
-          this.themeFilePath = path.resolve(api.paths.srcDir, themeLocation);
+          this.themeFilePath = path.resolve(
+            context.paths.srcDir,
+            themeLocation
+          );
         }
-
-        api.setClientModule({
-          application: resolveAppFile('application'),
-          entry: this.entryPath || resolveAppFile('entry')
-        });
-
-        api.setPlatformModule(resolveAppFile('index'));
-        // IE11 polyfill: https://github.com/facebook/create-react-app/blob/c38aecf73f8581db4a61288268be3a56b12e8af6/packages/react-app-polyfill/README.md#polyfilling-other-language-features
-        api.addAppPolyfill(resolveDep('react-app-polyfill/ie11'));
-        api.addAppPolyfill(resolveDep('react-app-polyfill/stable'));
-        api.addAppExport(resolveAppFile('App'), '{ default as App }');
-        api.addAppExport(resolveAppFile('Head'), '{default as Head}');
-        // api.addAppExport(resolveAppFile('getPageData'), '{default as getPageData}');
-        api.addAppExport(resolveAppFile('dynamic'), '{default as dynamic}');
-        api.addAppExport(
-          resolveLib('@shuvi/router-react'),
-          '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
-        );
-        api.addAppExport(resolveLib('@shuvi/router-mp'), '{ Link }');
-        api.addAppService(
-          resolveRouterFile('esm', 'index'),
-          '*',
-          'router-mp.js'
-        );
-      }
+      },
+      clientModule: () => ({
+        application: resolveAppFile('application'),
+        entry: this.entryPath || resolveAppFile('entry')
+      }),
+      platformModule: () => resolveAppFile('index'),
+      appPolyfill: () => [
+        resolveDep('react-app-polyfill/ie11'),
+        resolveDep('react-app-polyfill/stable')
+      ],
+      appExport: () => [
+        {
+          source: resolveAppFile('App'),
+          exported: '{ default as App }'
+        },
+        {
+          source: resolveAppFile('Head'),
+          exported: '{default as Head}'
+        },
+        {
+          source: resolveAppFile('dynamic'),
+          exported: '{default as dynamic}'
+        },
+        {
+          source: resolveLib('@shuvi/router-react'),
+          exported:
+            '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
+        },
+        {
+          source: resolveLib('@shuvi/router-mp'),
+          exported: '{ Link }'
+        }
+      ],
+      appService: () => ({
+        source: resolveRouterFile('esm', 'index'),
+        exported: '*',
+        filepath: 'router-mp.js'
+      })
     });
   }
 
   getSetupRoutesPlugin() {
+    let appRoutes: IUserRouteConfig[];
     return createCliPlugin({
-      appRoutes: async routes => {
-        const api = this._api;
+      appRoutes: routes => {
+        appRoutes = routes;
+        return [];
+      },
+      appFile: async (fileSnippets, context) => {
+        let routes = appRoutes;
+        const appFiles = [];
         type IUserRouteHandlerWithoutChildren = Omit<
           IUserRouteConfig,
           'children'
@@ -177,11 +200,11 @@ export default abstract class PlatformMpBase {
         const routesName = new Set<string>();
         // flatten routes remove children
         function flattenRoutes(
-          apiRoutes: IUserRouteConfig[],
+          contextRoutes: IUserRouteConfig[],
           branches: IUserRouteHandlerWithoutChildren[] = [],
           parentPath = ''
         ): IUserRouteHandlerWithoutChildren[] {
-          apiRoutes.forEach(route => {
+          contextRoutes.forEach(route => {
             const { children, component, ...other } = route;
             let tempPath = path.join(parentPath, route.path);
 
@@ -211,9 +234,12 @@ export default abstract class PlatformMpBase {
                 routes.splice(i, 1);
               } else {
                 let tempMpPath = component;
-                if (tempMpPath.startsWith(api.paths.pagesDir)) {
+                if (tempMpPath.startsWith(context.paths.pagesDir)) {
                   // ensure path relate to pagesDir
-                  tempMpPath = path.relative(api.paths.pagesDir, tempMpPath);
+                  tempMpPath = path.relative(
+                    context.paths.pagesDir,
+                    tempMpPath
+                  );
                   // Remove the file extension from the end
                   tempMpPath = tempMpPath.replace(/\.\w+$/, '');
                 }
@@ -236,8 +262,8 @@ export default abstract class PlatformMpBase {
         removeConfigPathAddMpPath(routes);
         let rankRoutes = routesMap.map(r => [r[0], r] as [string, typeof r]);
         rankRoutes = rankRouteBranches(rankRoutes);
-        routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
-        await api.addAppFile({
+        routesMap = rankRoutes.map(contextRoute => contextRoute[1]);
+        appFiles.push({
           name: 'routesMap.js',
           content: () => `export default ${JSON.stringify(routesMap)}`
         });
@@ -255,16 +281,16 @@ export default abstract class PlatformMpBase {
           throw new Error('shuvi config routes property pages config error');
         }
         for (const page of appPages) {
-          const pageFile = api.resolveUserFile(`${page}`);
-          const pageConfigFile = api.helpers.fileSnippets.findFirstExistedFile(
+          const pageFile = context.resolveUserFile(`${page}`);
+          const pageConfigFile = fileSnippets.findFirstExistedFile(
             withExts(
-              api.resolveUserFile(`${page}.config`),
+              context.resolveUserFile(`${page}.config`),
               moduleFileExtensions
             )
           );
           const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
           this.appConfigs[page] = pageConfig;
-          await api.addAppFile({
+          appFiles.push({
             name: `${page}.js`,
             content: () => `
         import * as React from 'react';
@@ -291,20 +317,19 @@ export default abstract class PlatformMpBase {
           });
         }
         this.mpPathToRoutesDone();
-        return []; // routes file no use, remove it
+        return appFiles; // routes file no use, remove it
       }
     });
   }
 
   getConfigWebpackPlugin() {
     return createCliPlugin({
-      configWebpack: async (config, { name }) => {
-        const api = this._api;
+      configWebpack: async (config, { name }, context) => {
         await this.promiseRoutes;
-        const pageFiles = getAllFiles(api.resolveAppFile('files', 'pages'));
+        const pageFiles = getAllFiles(context.resolveAppFile('files', 'pages'));
 
         const entry: Record<string, Record<string, any>> = {
-          app: [api.resolveAppFile('entry.client')],
+          app: [context.resolveAppFile('entry.client')],
           comp: [resolveAppFile('template', 'comp')],
           'custom-wrapper': [resolveAppFile('template', 'custom-wrapper')]
         };
@@ -322,7 +347,7 @@ export default abstract class PlatformMpBase {
         config.output.filename('[name].js');
         const outputPath = config.output.get('path').split('/');
         if (outputPath[outputPath.length - 1] === BUILD_DEFAULT_DIR) {
-          outputPath[outputPath.length - 1] = api.config.platform?.target;
+          outputPath[outputPath.length - 1] = context.config.platform?.target;
           config.output.path(outputPath.join('/'));
         }
         config.plugins.delete('private/module-replace-plugin');
@@ -333,12 +358,12 @@ export default abstract class PlatformMpBase {
               ...(args[0] || {}),
               ENABLE_INNER_HTML: true,
               ENABLE_ADJACENT_HTML: true,
-              ENABLE_SIZE_APIS: false,
+              ENABLE_SIZE_contextS: false,
               ENABLE_TEMPLATE_CONTENT: true, // taro 3.3.9
               ENABLE_CLONE_NODE: true, // taro 3.3.9
               ['process.env.' +
-              `${api.config.platform?.name}_${api.config.platform?.target}`.toUpperCase()]:
-                api.config.platform?.target
+              `${context.config.platform?.name}_${context.config.platform?.target}`.toUpperCase()]:
+                context.config.platform?.target
             }
           ];
         });
@@ -348,7 +373,7 @@ export default abstract class PlatformMpBase {
           {
             appConfigs: this.appConfigs,
             themeFilePath: this.themeFilePath,
-            paths: api.paths,
+            paths: context.paths,
             fileType: this.fileType,
             template: this.template
           }
@@ -366,7 +391,7 @@ export default abstract class PlatformMpBase {
           name: '[path][name].[ext]',
           esModule: false,
           useRelativePath: true,
-          context: api.paths.srcDir,
+          context: context.paths.srcDir,
           publicPath: '/'
         });
 
@@ -383,7 +408,7 @@ export default abstract class PlatformMpBase {
               '@tarojs/runtime': resolveLib('@tarojs/runtime'),
               '@tarojs/shared': resolveLib('@tarojs/shared'),
               '@tarojs/taro': resolveLib('@tarojs/taro'),
-              '@tarojs/api': resolveLib('@tarojs/api'),
+              '@tarojs/context': resolveLib('@tarojs/context'),
               '@tarojs/components$':
                 this.taroComponentsPath || '@tarojs/components/mini',
               '@tarojs/react': resolveLib('@tarojs/react'),
@@ -395,7 +420,7 @@ export default abstract class PlatformMpBase {
               // @binance
               '@binance/mp-service': '@tarojs/taro',
               '@binance/mp-components$': this.taroComponentsPath,
-              '@binance/mp-api': '@tarojs/api',
+              '@binance/mp-context': '@tarojs/context',
               '@binance/http': path.join(
                 PACKAGE_RESOLVED,
                 'lib/platform-mp-base/adapters/http/index'
@@ -460,7 +485,7 @@ export default abstract class PlatformMpBase {
         const extensions = config.resolve.extensions.values();
         config.resolve.extensions.clear();
         config.resolve.extensions.merge(
-          enhancedExts(extensions, api.config.platform?.target!)
+          enhancedExts(extensions, context.config.platform?.target!)
         );
 
         return config;

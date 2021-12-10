@@ -1,4 +1,4 @@
-import { Api, IApiRouteConfig, IUserRouteConfig, IPluginContext } from '../api';
+import { Api, IApiRouteConfig, IUserRouteConfig, ICliContext } from '../api';
 import {
   ICliPluginConstructor,
   ICliPluginInstance,
@@ -13,5 +13,5 @@ export {
 
 export type IRuntime = { install: (api: Api) => void } & ICliPluginConstructor;
 export type IPlatform = (
-  context: IPluginContext
+  context: ICliContext
 ) => Promise<ICliPluginInstance[]> | ICliPluginInstance[];

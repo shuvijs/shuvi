@@ -1,7 +1,7 @@
-const { createPlugin } = require('@shuvi/platform-web/lib/serverHooks');
+const { createServerPlugin } = require('@shuvi/service');
 
 module.exports = option =>
-  createPlugin({
+  createServerPlugin({
     pageData: () => {
       return {
         foo: 'bar' + option
@@ -22,5 +22,20 @@ module.exports = option =>
         console.log('custom-renderToHTML', html);
         return html;
       };
+    },
+    serverListen: () => {
+      console.warn('serverListen');
+    },
+    render: (renderAppToString, appContext) => {
+      if (appContext.forbidden) {
+        return '403 Custom HTML by custom render';
+      }
+      return renderAppToString();
+    },
+    onViewDone: ({ res, html, appContext }) => {
+      if (appContext.forbidden) {
+        res.statusCode = 403;
+        res.end(html);
+      }
     }
   });

@@ -1,1 +1,3 @@
-export default () => <div id="index">Index Page</div>;
+export default () => {
+  return <div id="index">Index Page</div>;
+};

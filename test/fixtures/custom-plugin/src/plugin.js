@@ -14,5 +14,17 @@ module.exports = createCliPlugin({
       plugin: require.resolve('./runtimePlugin.jsx'),
       options: 'hello'
     };
+  },
+  appReady: () => {
+    console.warn('appReady');
+  },
+  afterBuild: () => {
+    console.warn('afterBuild');
+  },
+  bundlerDone: () => {
+    console.warn('bundlerDone');
+  },
+  bundlerTargetDone: () => {
+    console.warn('bundlerTargetDone');
   }
 });

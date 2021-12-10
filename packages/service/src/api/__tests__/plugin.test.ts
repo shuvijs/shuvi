@@ -1,13 +1,12 @@
 import path from 'path';
-import { createPlugin, runner, usePlugin, clear } from '../cliHooks';
+import {
+  createPlugin,
+  getManager,
+  PluginRunner,
+  PluginManager
+} from '../cliHooks';
 import { IPluginConfig, IPresetConfig } from '..';
 import { resolvePlugins, resolvePresets } from '../plugin';
-
-function callPlugins(...plugins: IPluginConfig[]) {
-  resolvePlugins(plugins, {
-    dir: path.join(__dirname, 'fixtures/plugins')
-  }).forEach(p => usePlugin(p));
-}
 
 function callPresets(context: any, ...presets: IPresetConfig[]) {
   resolvePresets(presets, {
@@ -16,8 +15,18 @@ function callPresets(context: any, ...presets: IPresetConfig[]) {
 }
 
 describe('plugin', () => {
+  let manager: PluginManager;
+  let runner: PluginRunner;
+
+  function callPlugins(...plugins: IPluginConfig[]) {
+    resolvePlugins(plugins, {
+      dir: path.join(__dirname, 'fixtures/plugins')
+    }).forEach(p => manager.usePlugin(p));
+  }
+
   beforeEach(() => {
-    clear();
+    manager = getManager();
+    runner = manager.runner;
   });
   test('should accept plugin instance object as a plugin', async () => {
     console.log = jest.fn();

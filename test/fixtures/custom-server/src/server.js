@@ -1,18 +1,18 @@
 export function render(renderAppToString, appContext) {
-  if (appContext.notFound) {
-    return '404 Custom HTML';
+  if (appContext.forbidden) {
+    return '403 Custom HTML by custom render';
   }
   return renderAppToString();
 }
 
-export function onViewDone(req, res, { html, appContext }) {
-  if (appContext.notFound) {
-    res.statusCode = 404;
+export function onViewDone({ res, html, appContext }) {
+  if (appContext.forbidden) {
+    res.statusCode = 403;
     res.end(html);
   }
 }
 
-export const pageData = () => {
+export const getPageData = () => {
   return {
     foo: 'bar'
   };
