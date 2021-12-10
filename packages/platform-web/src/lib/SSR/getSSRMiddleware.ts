@@ -30,7 +30,7 @@ function initServerRender(serverPluginContext: IServerPluginContext) {
       res.statusCode = 200;
     }
 
-    serverPluginContext.serverPluginManager.runner.onViewDone({
+    serverPluginContext.serverPluginRunner.onViewDone({
       req,
       res,
       html,
@@ -47,7 +47,7 @@ export function getSSRMiddleware(
   const serverRender = initServerRender(api);
   return async function (req, res, next) {
     try {
-      const renderToHTML = await api.serverPluginManager.runner.renderToHTML(
+      const renderToHTML = await api.serverPluginRunner.renderToHTML(
         serverRender
       );
       const html = await renderToHTML(req, res);

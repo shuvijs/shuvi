@@ -1,4 +1,5 @@
 import {
+  createSyncHook,
   createSyncBailHook,
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook,
@@ -67,7 +68,7 @@ const serverListen =
 const pageData = createAsyncParallelHook<void, any, Record<string, unknown>>();
 const renderToHTML = createAsyncSeriesWaterfallHook<IRenderToHTML>();
 const modifyHtml = createAsyncSeriesWaterfallHook<IDocumentProps, any>();
-const onViewDone = createSyncBailHook<OnViewDoneParams, void, any>();
+const onViewDone = createSyncHook<OnViewDoneParams, void, void>();
 const render = createSyncBailHook<() => string, IServerAppContext, string>();
 export const hooksMap = {
   serverMiddleware,
@@ -81,7 +82,7 @@ export const hooksMap = {
 };
 
 export type IServerPluginContext = ICliContext & {
-  serverPluginManager: PluginManager;
+  serverPluginRunner: PluginManager['runner'];
 };
 
 export const getManager = () =>
@@ -139,7 +140,7 @@ export const initServerPlugins = (
   pluginContext: ICliContext
 ): IServerPluginContext => {
   const serverContext = Object.assign(
-    { serverPluginManager: manager },
+    { serverPluginRunner: manager.runner },
     pluginContext
   );
   manager.setContext(serverContext);
@@ -160,5 +161,45 @@ export const initServerPlugins = (
       throw new Error(`serverPlugin load failed. path: ${plugin}`);
     }
   });
+  const serverModulePlugin = manager.createPlugin(
+    {
+      serverMiddleware: context => {
+        return context.resources?.server?.server?.serverMiddleware || [];
+      },
+      pageData: (appContext, context) => {
+        return (
+          context.resources?.server?.server?.getPageData?.(
+            appContext,
+            context
+          ) || {}
+        );
+      },
+      renderToHTML: (renderToHTML, context) => {
+        return (
+          context.resources?.server?.server?.renderToHTML?.(renderToHTML) ||
+          renderToHTML
+        );
+      },
+      modifyHtml: (documentProps, appContext, context) => {
+        return (
+          context.resources?.server?.server?.modifyHtml?.(
+            documentProps,
+            appContext
+          ) || documentProps
+        );
+      },
+      onViewDone: (params, context) => {
+        context.resources?.server?.server?.onViewDone?.(params);
+      },
+      render: (renderAppToString, appContext, context) => {
+        return context.resources?.server?.server?.render?.(
+          renderAppToString,
+          appContext
+        );
+      }
+    },
+    { order: -100, name: 'serverModule' }
+  );
+  manager.usePlugin(serverModulePlugin);
   return serverContext;
 };

@@ -105,11 +105,10 @@ export abstract class BaseRenderer {
       );
     }
 
-    docProps =
-      await this._serverPluginContext.serverPluginManager.runner.modifyHtml(
-        docProps as IDocumentProps,
-        appContext
-      );
+    docProps = await this._serverPluginContext.serverPluginRunner.modifyHtml(
+      docProps as IDocumentProps,
+      appContext
+    );
 
     return this._renderDocument(
       addDefaultHtmlTags(docProps),

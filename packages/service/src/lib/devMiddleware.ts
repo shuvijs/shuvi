@@ -73,17 +73,6 @@ export async function getDevMiddleware(
     });
   };
 
-  /* const { usePlugin, createPlugin } = api.pluginManager;
-
-  usePlugin(
-    createPlugin({
-      destroy: async () => {
-        webpackHotMiddleware.close();
-        webpackDevMiddleware.close();
-      }
-    })
-  ); */
-
   return {
     apply,
     send,

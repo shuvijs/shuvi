@@ -8,12 +8,7 @@ import { normalizeServerMiddleware } from '../api/serverMiddleware';
 import { applyHttpProxyMiddleware } from '../lib/httpProxyMiddleware';
 import { BUILD_DEFAULT_DIR, PUBLIC_PATH } from '../constants';
 
-import {
-  PluginManager,
-  getManager,
-  initServerPlugins,
-  initServerModule
-} from './serverHooks';
+import { PluginManager, getManager, initServerPlugins } from './serverHooks';
 
 const getPublicDirMiddleware = (
   cliContext: IServerPluginContext
@@ -115,7 +110,7 @@ export class ShuviServer {
     // initServerModule: get server module and transform it into server plugin
     // This is a fixed logic because we must initiate all of the server plugin before runner runs.
     // todo: Or in another way. We could allow usePlugin after runner runs.
-    initServerModule(pluginManager, context.resources?.server?.server);
+    // initServerModule(pluginManager, context.resources?.server?.server);
     const { rootDir } = context.paths;
     const serverMiddlewares = (await pluginManager.runner.serverMiddleware())
       .flat()

@@ -20,8 +20,8 @@ export class SsrRenderer extends BaseRenderer {
       clientManifest: manifest,
       server: { view }
     } = this._resources;
-    const { getAssetPublicUrl, serverPluginManager } = serverPluginContext;
-    const render = serverPluginManager.runner.render;
+    const { getAssetPublicUrl, serverPluginRunner } = serverPluginContext;
+    const render = serverPluginRunner.render;
     if (!router) {
       throw new Error('router is null');
     }
@@ -42,8 +42,9 @@ export class SsrRenderer extends BaseRenderer {
     }
 
     const mainAssetsTags = this._getMainAssetTags();
-    const pageDataList =
-      await serverPluginContext.serverPluginManager.runner.pageData(appContext);
+    const pageDataList = await serverPluginContext.serverPluginRunner.pageData(
+      appContext
+    );
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;

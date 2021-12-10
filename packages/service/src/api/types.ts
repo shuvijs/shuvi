@@ -1,5 +1,4 @@
 import { IRuntimeConfig } from '@shuvi/platform-core';
-import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
 import {
   ICliPluginConstructor,
@@ -113,10 +112,6 @@ export interface IApiConfig {
 
 export type IConfig = Partial<IApiConfig>;
 
-interface ApiHelpers {
-  fileSnippets: FileSnippets;
-}
-
 export type IRuntimeOrServerPlugin = {
   plugin: string;
   options?: any;
@@ -128,8 +123,6 @@ export interface IApi {
   readonly paths: IPaths;
   readonly config: IApiConfig;
   readonly phase: IPhase;
-  readonly helpers: ApiHelpers;
-
   pluginManager: PluginManager;
 
   // precursor shuvi app
@@ -169,11 +162,10 @@ export interface IPreset {
 }
 
 export type ICliContext = {
-  readonly mode: IShuviMode;
+  mode: IShuviMode;
   paths: IPaths;
   config: IApiConfig;
-  readonly phase: IPhase;
-  pluginManager: PluginManager;
+  phase: IPhase;
   pluginRunner: PluginRunner;
   serverPlugins: IRuntimeOrServerPlugin[];
   // resources

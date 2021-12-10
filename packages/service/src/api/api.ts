@@ -70,8 +70,9 @@ class Api implements IApi {
   private _platform!: IPlatform;
   cliContext: ICliContext;
   pluginManager: PluginManager;
-  helpers: IApi['helpers'];
   serverPlugins: IRuntimeOrServerPlugin[] = [];
+
+  // todo remove mode
 
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     if (mode) {
@@ -84,7 +85,6 @@ class Api implements IApi {
     this._cwd = path.resolve(cwd || '.');
     this._configFile = configFile;
     this._userConfig = config;
-    this.helpers = { fileSnippets };
     if (phase) {
       this._phase = phase;
     } else {
@@ -103,7 +103,6 @@ class Api implements IApi {
       paths: this.paths,
       config: this.config,
       phase: this.phase,
-      pluginManager: this.pluginManager,
       pluginRunner: this.pluginManager.runner,
       serverPlugins: this.serverPlugins,
       // resources

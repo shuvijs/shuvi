@@ -85,6 +85,6 @@ export async function build(options: IBuildOptions) {
 
   // transpile the application
   await bundle(cliContext);
-  cliContext.pluginManager.runner.afterBuild();
+  cliContext.pluginRunner.afterBuild();
   return cliContext;
 }
