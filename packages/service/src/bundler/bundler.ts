@@ -10,8 +10,8 @@ import webpack, {
   MultiCompiler as WebapckMultiCompiler,
   Compiler as WebapckCompiler
 } from 'webpack';
-import { Api } from '../api';
-import { runner, Target } from '../api/cliHooks';
+import { ICliContext } from '../api';
+import { Target, TargetChain } from '../api/cliHooks';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import {
   createWebpackConfig,
@@ -46,28 +46,20 @@ const logger = Logger('shuvi:bundler');
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
 class WebpackBundler {
-  private _api: Api;
+  private _cliContext: ICliContext;
   private _compiler: WebapckMultiCompiler | null = null;
-  private _internalTargets: Target[] = [];
-  private _extraTargets: Target[] = [];
+  /* private _internalTargets: Target[] = [];
+  private _extraTargets: Target[] = []; */
+  private _targets: Target[] = [];
 
-  constructor(api: Api) {
-    this._api = api;
+  constructor(cliContext: ICliContext) {
+    this._cliContext = cliContext;
   }
 
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
     if (!this._compiler) {
-      this._internalTargets = await this._getInternalTargets();
-      this._extraTargets = (
-        await runner.extraTarget({
-          createConfig: this._createConfig.bind(this),
-          mode: this._api.mode,
-          webpack
-        })
-      ).filter(Boolean) as Target[];
-      this._compiler = webpack(
-        [...this._internalTargets, ...this._extraTargets].map(t => t.config)
-      );
+      this._targets = await this._getTargets();
+      this._compiler = webpack(this._targets.map(t => t.config));
 
       let isFirstSuccessfulCompile = true;
       this._compiler.hooks.done.tap('done', async stats => {
@@ -87,7 +79,7 @@ class WebpackBundler {
         if (isSuccessful) {
           setImmediate(first => {
             // make sure this event is fired after all bundler:target-done
-            runner.bundlerDone({ first, stats });
+            this._cliContext.pluginManager.runner.bundlerDone({ first, stats });
           }, isFirstSuccessfulCompile);
           isFirstSuccessfulCompile = false;
         }
@@ -111,7 +103,7 @@ class WebpackBundler {
       return;
     }
 
-    [...this._internalTargets, ...this._extraTargets].forEach(({ name }) => {
+    this._targets.forEach(({ name }) => {
       if (name === BUNDLER_DEFAULT_TARGET) {
         this._watchTarget(name, {
           ...options,
@@ -137,11 +129,11 @@ class WebpackBundler {
   }
 
   public async resolveWebpackConfig(): Promise<Target[]> {
-    return await this._getInternalTargets();
+    return await this._getTargets();
   }
 
   private _createConfig(options: IWebpackConfigOptions) {
-    return createWebpackConfig(this._api, options);
+    return createWebpackConfig(this._cliContext, options);
   }
 
   private _watchTarget(name: string, options: WatchTargetOptions = {}) {
@@ -245,7 +237,7 @@ class WebpackBundler {
         !messages.errors?.length && !messages.warnings?.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
-        await runner.bundlerTargetDone({
+        await this._cliContext.pluginManager.runner.bundlerTargetDone({
           first: isFirstSuccessfulCompile,
           name: compiler.name!,
           stats
@@ -273,46 +265,49 @@ class WebpackBundler {
     });
   }
 
-  private initDefaultBuildTarget() {
-    function getDefaultEntry(_api: Api): IWebpackEntry {
+  private initDefaultBuildTarget(): TargetChain[] {
+    function getDefaultEntry(_cliContext: ICliContext): IWebpackEntry {
       return {
         [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
         [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
       };
     }
     const defaultWebpackHelpers = webpackHelpers();
-    const defaultChain = createWebpackConfig(this._api, {
+    const defaultChain = createWebpackConfig(this._cliContext, {
       name: BUNDLER_DEFAULT_TARGET,
       node: false,
-      entry: getDefaultEntry(this._api),
+      entry: getDefaultEntry(this._cliContext),
       outputDir: BUILD_DEFAULT_DIR,
       webpackHelpers: defaultWebpackHelpers
     });
     return [
       {
         chain: defaultChain,
-        name: BUNDLER_DEFAULT_TARGET,
-        mode: this._api.mode,
-        helpers: defaultWebpackHelpers
+        name: BUNDLER_DEFAULT_TARGET
       }
     ];
   }
-
-  private async _getInternalTargets(): Promise<Target[]> {
+  private async _getTargets(): Promise<Target[]> {
     const targets: Target[] = [];
+    const defaultWebpackHelpers = webpackHelpers();
     // get base config
-    const buildTargets = this.initDefaultBuildTarget().concat(
-      this._api.getBuildTargets()
-    );
+    const buildTargets = this.initDefaultBuildTarget();
+    const extraTargets = (
+      await this._cliContext.pluginManager.runner.extraTarget({
+        createConfig: this._createConfig.bind(this),
+        mode: this._cliContext.mode,
+        webpack
+      })
+    ).filter(Boolean);
+    buildTargets.push(...extraTargets);
 
     for (const buildTarget of buildTargets) {
-      let { chain, name, mode, helpers } = buildTarget;
+      let { chain, name } = buildTarget;
       // modify config by api hooks
-
-      chain = await runner.configWebpack(chain, {
+      chain = await this._cliContext.pluginManager.runner.configWebpack(chain, {
         name,
-        mode,
-        helpers,
+        mode: this._cliContext.mode,
+        helpers: defaultWebpackHelpers,
         webpack
       });
       if (hasEntry(chain)) {
@@ -326,6 +321,6 @@ class WebpackBundler {
   }
 }
 
-export function getBundler(_api: Api) {
-  return new WebpackBundler(_api);
+export function getBundler(_cliContext: ICliContext) {
+  return new WebpackBundler(_cliContext);
 }

@@ -1,28 +1,26 @@
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
-import { Api } from '../api';
 import { getBundler } from '../bundler';
+import { Server } from '../server';
 import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
-import { createPlugin, usePlugin } from '../api/cliHooks';
+import { IServerPluginContext } from '..';
 
 export interface DevMiddleware {
-  apply(): void;
+  apply(server?: Server): void;
   send(action: string, payload?: any): void;
   invalidate(): Promise<unknown>;
   waitUntilValid(force?: boolean): void;
 }
 
-export async function getDevMiddleware({
-  api
-}: {
-  api: Api;
-}): Promise<DevMiddleware> {
-  const bundler = getBundler(api);
+export async function getDevMiddleware(
+  serverPluginContext: IServerPluginContext
+): Promise<DevMiddleware> {
+  const bundler = getBundler(serverPluginContext);
   const compiler = await bundler.getWebpackCompiler();
   // watch before pass compiler to WebpackDevMiddleware
   bundler.watch({
@@ -37,7 +35,7 @@ export async function getDevMiddleware({
   // webpackDevMiddleware make first compiler build assets as static sources
   const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
     stats: false, // disable stats on server
-    publicPath: api.assetPublicPath,
+    publicPath: serverPluginContext.assetPublicPath,
     writeToDisk: true
   });
 
@@ -46,10 +44,11 @@ export async function getDevMiddleware({
     path: DEV_HOT_MIDDLEWARE_PATH
   });
 
-  const apply = () => {
-    api.server.use(webpackDevMiddleware);
-    api.server.use(webpackHotMiddleware.middleware as any);
-    api.server.use(
+  const apply = (server: Server) => {
+    const targetServer = server;
+    targetServer.use(webpackDevMiddleware);
+    targetServer.use(webpackHotMiddleware.middleware as any);
+    targetServer.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );
   };
@@ -74,6 +73,8 @@ export async function getDevMiddleware({
     });
   };
 
+  /* const { usePlugin, createPlugin } = api.pluginManager;
+
   usePlugin(
     createPlugin({
       destroy: async () => {
@@ -81,7 +82,7 @@ export async function getDevMiddleware({
         webpackDevMiddleware.close();
       }
     })
-  );
+  ); */
 
   return {
     apply,

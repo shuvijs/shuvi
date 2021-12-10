@@ -1,5 +1,4 @@
 import path from 'path';
-import WebpackChain from 'webpack-chain';
 import {
   IApiConfig,
   IConfig,
@@ -13,12 +12,6 @@ import {
   IRuntimeOrServerPlugin
 } from './types';
 import { IPlatform } from '../types/index';
-import { IServerMiddlewareItem } from '../types/server';
-import {
-  IServerMiddleware,
-  IServerMiddlewareOptions,
-  normalizeServerMiddleware
-} from './serverMiddleware';
 import {
   ProjectBuilder,
   UserModule,
@@ -37,22 +30,17 @@ import {
 } from '../lib/middlewaresRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { createDefaultConfig, loadConfig } from '../config';
-import { IResources, IPreset, IPluginContext } from './types';
-import { Server } from '../server';
+import { IResources, IPreset, ICliContext } from './types';
 import {
-  runner,
-  usePlugin,
-  setContext,
   ICliPluginInstance as IPlugin,
-  clear
+  getManager,
+  PluginManager
 } from './cliHooks';
 import { setupApp } from './setupApp';
 import { resolvePlugins, resolvePresets } from './plugin';
-import { createPluginApi, PluginApi } from './pluginApi';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
 import getPlatform from '../lib/getPlatform';
-import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -64,13 +52,6 @@ interface IApiOPtions {
   phase?: IPhase;
 }
 
-interface IChain {
-  chain: WebpackChain;
-  name: string;
-  mode: IShuviMode;
-  helpers: IWebpackHelpers;
-}
-
 class Api implements IApi {
   private _cwd: string;
   private _mode: IShuviMode;
@@ -79,20 +60,16 @@ class Api implements IApi {
   private _configFile?: string;
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
-  private _server!: Server;
   private _resources: IResources = {} as IResources;
   private _routes: IUserRouteConfig[] = [];
   private _presetPlugins: IPlugin[] = [];
   private _plugins!: IPlugin[];
   private _serverPlugins: IRuntimeOrServerPlugin[] = [];
-  private _webpackChains: IChain[] = [];
   private _presets!: IPreset[];
-  private _pluginApi!: PluginApi;
   private _phase: IPhase;
-  private _beforePageMiddlewares: IServerMiddleware[] = [];
-  private _afterPageMiddlewares: IServerMiddleware[] = [];
   private _platform!: IPlatform;
-  private _pluginContext!: IPluginContext;
+  cliContext: ICliContext;
+  pluginManager: PluginManager;
   helpers: IApi['helpers'];
   serverPlugins: IRuntimeOrServerPlugin[] = [];
 
@@ -117,26 +94,31 @@ class Api implements IApi {
         this._phase = 'PHASE_PRODUCTION_SERVER';
       }
     }
+    this.pluginManager = getManager();
+    this.pluginManager.clear();
     this.initConfig();
     this._platform = getPlatform(this.config.platform.name);
-    this._pluginContext = {
+    this.cliContext = {
       mode: this._mode,
       paths: this.paths,
       config: this.config,
       phase: this.phase,
-      // helpers
-      helpers: this.helpers,
+      pluginManager: this.pluginManager,
+      pluginRunner: this.pluginManager.runner,
+      serverPlugins: this.serverPlugins,
       // resources
       resources: this.resources,
-      getAssetPublicUrl: this.getAssetPublicUrl.bind(this)
+      assetPublicPath: this.assetPublicPath,
+      getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
+      resolveAppFile: this.resolveAppFile.bind(this),
+      resolveUserFile: this.resolveUserFile.bind(this),
+      resolveBuildFile: this.resolveBuildFile.bind(this),
+      resolvePublicFile: this.resolvePublicFile.bind(this),
+      getRoutes: this.getRoutes.bind(this)
     };
-    clear();
-    setContext(this._pluginContext);
+    this.pluginManager.setContext(this.cliContext);
   }
 
-  get pluginContext() {
-    return this._pluginContext;
-  }
   get mode() {
     return this._mode;
   }
@@ -158,8 +140,8 @@ class Api implements IApi {
   }
 
   async initPlatformPlugin() {
-    const platformPlugins = await this.platform(this.pluginContext);
-    usePlugin(...platformPlugins);
+    const platformPlugins = await this.platform(this.cliContext);
+    this.pluginManager.usePlugin(...platformPlugins);
   }
 
   initConfig() {
@@ -190,7 +172,10 @@ class Api implements IApi {
     });
     await this._initPresetsAndPlugins();
     await this.initPlatformPlugin();
-    this._config = await runner.config(this.config, this.phase);
+    this._config = await this.pluginManager.runner.config(
+      this.config,
+      this.phase
+    );
 
     Object.freeze(this._config);
 
@@ -201,21 +186,18 @@ class Api implements IApi {
     });
     // do not allow to modify paths
     Object.freeze(this._paths);
-    this._pluginContext.paths = this._paths;
+    // need to reset config and paths in cliContext
+    this.cliContext.config = this.config;
+    this.cliContext.paths = this.paths;
     // must run first so that platform could get serverPlugin
     await this.initRuntimeAndServerPlugin();
-    await runner.legacyApi(this);
-    // Runtime installation need to be executed before initializing presets and plugins
-    // to make sure shuvi entry file at the top.
-    //await this.platform.install(this);
-  }
-
-  get server() {
-    if (!this._server) {
-      this._server = new Server();
-    }
-
-    return this._server;
+    await this.pluginManager.runner.setup();
+    const bundleResources = (
+      await this.pluginManager.runner.bundleResource()
+    ).flat();
+    bundleResources.forEach(({ identifier, loader }) => {
+      this.addResoure(identifier, loader);
+    });
   }
 
   get assetPublicPath(): string {
@@ -235,41 +217,41 @@ class Api implements IApi {
     return this._resources;
   }
 
-  getBuildTargets() {
-    return this._webpackChains;
+  async initProjectBuilderConfigs() {
+    const runner = this.pluginManager.runner;
+    const appPolyfills = (await runner.appPolyfill()).flat();
+    const appFiles = (await runner.appFile(fileSnippets)).flat();
+    const appExports = (await runner.appExport()).flat();
+    const appEntryCodes = (await runner.appEntryCode()).flat();
+    const appServices = (await runner.appService()).flat();
+    const platformModule = (await runner.platformModule()) as string;
+    const clientModule = (await runner.clientModule()) as TargetModule;
+    const userModule = (await runner.userModule()) as UserModule;
+
+    appPolyfills.forEach(file => {
+      this.addAppPolyfill(file);
+    });
+
+    appFiles.forEach(options => {
+      this.addAppFile(options);
+    });
+
+    appExports.forEach(({ source, exported }) => {
+      this.addAppExport(source, exported);
+    });
+
+    appEntryCodes.forEach(content => {
+      this.addEntryCode(content);
+    });
+
+    appServices.forEach(({ source, exported, filepath }) => {
+      this.addAppService(source, exported, filepath);
+    });
+
+    this.setPlatformModule(platformModule);
+    this.setClientModule(clientModule);
+    this.setUserModule(userModule);
   }
-
-  addBuildTargets(chain: IChain) {
-    this._webpackChains.push(chain);
-  }
-
-  addServerMiddleware(middleware: IServerMiddleware) {
-    this._beforePageMiddlewares.push(middleware);
-  }
-
-  getBeforePageMiddlewares(): IServerMiddlewareItem[] {
-    const {
-      _beforePageMiddlewares,
-      paths: { rootDir }
-    } = this;
-
-    let serverMiddleware: IServerMiddlewareOptions[];
-    try {
-      // this.resources.server maybe don't exist
-      serverMiddleware = this.resources.server.server.serverMiddleware || [];
-    } catch (error) {
-      serverMiddleware = [];
-    }
-
-    return [...serverMiddleware, ..._beforePageMiddlewares]
-      .map(m => normalizeServerMiddleware(m, { rootDir }))
-      .sort((a, b) => a.order - b.order);
-  }
-
-  addServerMiddlewareLast(middleware: IServerMiddleware) {
-    this._afterPageMiddlewares.push(middleware);
-  }
-
   async initRuntimeAndServerPlugin() {
     const normalize = (
       x: string | IRuntimeOrServerPlugin
@@ -282,24 +264,15 @@ class Api implements IApi {
       return x;
     };
     const serverPlugins: IRuntimeOrServerPlugin[] = (
-      await runner.serverPlugin()
+      await this.pluginManager.runner.serverPlugin()
     )
       .flat()
       .map(normalize);
-    const runtimePlugins = (await runner.runtimePlugin()).flat().map(normalize);
-    this.serverPlugins = serverPlugins;
+    const runtimePlugins = (await this.pluginManager.runner.runtimePlugin())
+      .flat()
+      .map(normalize);
+    this.serverPlugins.push(...serverPlugins);
     this.addRuntimePlugin(...runtimePlugins);
-  }
-
-  getAfterPageMiddlewares(): IServerMiddlewareItem[] {
-    const {
-      _afterPageMiddlewares,
-      paths: { rootDir }
-    } = this;
-
-    return [..._afterPageMiddlewares]
-      .map(m => normalizeServerMiddleware(m, { rootDir }))
-      .sort((a, b) => a.order - b.order);
   }
 
   setRuntimeConfigContent(content: string | null) {
@@ -315,7 +288,7 @@ class Api implements IApi {
   }
 
   async setRoutes(routes: IUserRouteConfig[]): Promise<void> {
-    routes = await runner.appRoutes(routes);
+    routes = await this.pluginManager.runner.appRoutes(routes);
 
     routes = normalizeRoutes(routes, {
       componentDir: this.paths.pagesDir
@@ -367,7 +340,7 @@ class Api implements IApi {
     this.removeBuiltFiles();
     this._projectBuilder.validateCompleteness('api');
     await this._projectBuilder.build(this.paths.appDir);
-    runner.appReady();
+    this.pluginManager.runner.appReady();
   }
 
   addResoure(identifier: string, loader: () => any): void {
@@ -461,19 +434,8 @@ class Api implements IApi {
   }
 
   async destory() {
-    if (this._server) {
-      await this._server.close();
-    }
     await this._projectBuilder.stopBuild();
-    await runner.destroy();
-  }
-
-  getPluginApi(): PluginApi {
-    if (!this._pluginApi) {
-      this._pluginApi = createPluginApi(this);
-    }
-
-    return this._pluginApi;
+    await this.pluginManager.runner.destroy();
   }
 
   private async _initPresetsAndPlugins() {
@@ -492,13 +454,13 @@ class Api implements IApi {
     });
     const allPlugins = this._presetPlugins.concat(this._plugins);
     for (const plugin of allPlugins) {
-      usePlugin(plugin);
+      this.pluginManager.usePlugin(plugin);
     }
   }
 
   private _initPreset(preset: IPreset) {
     const { id, get: getPreset } = preset;
-    const { presets, plugins } = getPreset()(this._pluginContext);
+    const { presets, plugins } = getPreset()(this.cliContext);
 
     if (presets) {
       invariant(

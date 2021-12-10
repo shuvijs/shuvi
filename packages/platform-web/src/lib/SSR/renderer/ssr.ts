@@ -6,7 +6,6 @@ import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeC
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
-import { runner } from '../../serverHooks';
 
 export class SsrRenderer extends BaseRenderer {
   async getDocumentProps({
@@ -14,15 +13,15 @@ export class SsrRenderer extends BaseRenderer {
     AppComponent,
     router,
     appStore,
-    appContext,
-    render
+    appContext
   }: IRenderDocumentOptions) {
-    const api = this._api;
+    const serverPluginContext = this._serverPluginContext;
     const {
       clientManifest: manifest,
       server: { view }
     } = this._resources;
-    const getAssetPublicUrl = api.getAssetPublicUrl.bind(api);
+    const { getAssetPublicUrl, serverPluginManager } = serverPluginContext;
+    const render = serverPluginManager.runner.render;
     if (!router) {
       throw new Error('router is null');
     }
@@ -43,7 +42,8 @@ export class SsrRenderer extends BaseRenderer {
     }
 
     const mainAssetsTags = this._getMainAssetTags();
-    const pageDataList = await runner.pageData(appContext);
+    const pageDataList =
+      await serverPluginContext.serverPluginManager.runner.pageData(appContext);
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;
@@ -51,7 +51,7 @@ export class SsrRenderer extends BaseRenderer {
     const appData: IAppData = {
       ...result.appData,
       pageData,
-      ssr: api.config.ssr
+      ssr: serverPluginContext.config.ssr
     };
     appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
 
@@ -72,7 +72,7 @@ export class SsrRenderer extends BaseRenderer {
         tag(
           'script',
           {},
-          `${IDENTITY_SSR_RUNTIME_PUBLICPATH} = "${api.assetPublicPath}"`
+          `${IDENTITY_SSR_RUNTIME_PUBLICPATH} = "${serverPluginContext.assetPublicPath}"`
         ),
         ...(result.scriptBeginTags || []),
         ...mainAssetsTags.scripts,

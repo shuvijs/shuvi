@@ -2,7 +2,7 @@ import { createPlugin } from '../../../cliHooks';
 
 export default createPlugin(
   {
-    legacyApi: () => {}
+    setup: () => {}
   },
   { name: 'b' }
 );

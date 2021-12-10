@@ -1,10 +1,9 @@
 import path from 'path';
 import fse from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { Api, getApi, IConfig } from '../api';
+import { getApi, IConfig, ICliContext } from '../api';
 import { getBundler } from '../bundler/bundler';
 import { BUILD_DEFAULT_DIR } from '../constants';
-import { runner } from '../api/cliHooks';
 
 export interface IBuildOptions {
   cwd?: string;
@@ -17,8 +16,8 @@ const defaultBuildOptions = {
   target: 'ssr'
 } as const;
 
-async function bundle({ api }: { api: Api }) {
-  const bundler = getBundler(api);
+async function bundle(context: ICliContext) {
+  const bundler = getBundler(context);
   const result = await bundler.build();
   const messages = formatWebpackMessages(result);
 
@@ -36,14 +35,14 @@ async function bundle({ api }: { api: Api }) {
   }
 }
 
-function copyPublicFolder(api: Api) {
-  if (!fse.existsSync(api.paths.publicDir)) {
+function copyPublicFolder(context: ICliContext) {
+  if (!fse.existsSync(context.paths.publicDir)) {
     return;
   }
 
   fse.copySync(
-    api.paths.publicDir,
-    path.join(api.paths.buildDir, BUILD_DEFAULT_DIR),
+    context.paths.publicDir,
+    path.join(context.paths.buildDir, BUILD_DEFAULT_DIR),
     {
       dereference: true
     }
@@ -75,14 +74,17 @@ export async function build(options: IBuildOptions) {
   // generate application
   await api.buildApp();
 
+  const { cliContext } = api;
+
   // Remove all content but keep the directory so that
   // if you're in it, you don't end up in Trash
-  fse.emptyDirSync(api.paths.buildDir);
+  fse.emptyDirSync(cliContext.paths.buildDir);
 
   // Merge with the public folder
-  copyPublicFolder(api);
+  copyPublicFolder(cliContext);
 
   // transpile the application
-  await bundle({ api });
-  runner.afterBuild();
+  await bundle(cliContext);
+  cliContext.pluginManager.runner.afterBuild();
+  return cliContext;
 }

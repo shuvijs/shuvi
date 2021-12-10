@@ -133,9 +133,13 @@ export class ReactServerView implements IReactServerView {
             </Router>
           </ErrorBoundary>
         );
-
       if (render) {
-        htmlContent = render(renderAppToString, appContext as any);
+        const renderContent = render(renderAppToString, appContext);
+        if (renderContent) {
+          htmlContent = renderContent;
+        } else {
+          htmlContent = renderAppToString();
+        }
       } else {
         htmlContent = renderAppToString();
       }

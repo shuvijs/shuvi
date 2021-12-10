@@ -5,14 +5,14 @@ export function render(renderAppToString, appContext) {
   return renderAppToString();
 }
 
-export function onViewDone(req, res, { html, appContext }) {
+export function onViewDone({ res, html, appContext }) {
   if (appContext.notFound) {
     res.statusCode = 404;
     res.end(html);
   }
 }
 
-export const pageData = () => {
+export const getPageData = () => {
   return {
     foo: 'bar'
   };

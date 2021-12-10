@@ -1,8 +1,12 @@
 import { IRuntimeConfig } from '@shuvi/platform-core';
 import { FileSnippets } from '../project/file-snippets';
 import { ProjectBuilder } from '../project';
-import { IServerMiddleware } from './serverMiddleware';
-import { ICliPluginConstructor, ICliPluginInstance } from './cliHooks';
+import {
+  ICliPluginConstructor,
+  ICliPluginInstance,
+  PluginManager,
+  PluginRunner
+} from './cliHooks';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -126,19 +130,20 @@ export interface IApi {
   readonly phase: IPhase;
   readonly helpers: ApiHelpers;
 
+  pluginManager: PluginManager;
+
+  // precursor shuvi app
   addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;
   addAppFile: typeof ProjectBuilder.prototype.addFile;
   addAppExport: typeof ProjectBuilder.prototype.addExport;
   addAppService: typeof ProjectBuilder.prototype.addService;
   addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
-  addRuntimePlugin: (config: IRuntimeOrServerPlugin) => void;
-  addServerPlugin: (config: IRuntimeOrServerPlugin) => void;
 
   setPlatformModule: typeof ProjectBuilder.prototype.setPlatformModule;
   setClientModule: typeof ProjectBuilder.prototype.setClientModule;
 
-  addServerMiddleware: (serverMiddleware: IServerMiddleware) => void;
-  addServerMiddlewareLast: (serverMiddleware: IServerMiddleware) => void;
+  addRuntimePlugin: (config: IRuntimeOrServerPlugin) => void;
+  addServerPlugin: (config: IRuntimeOrServerPlugin) => void;
 
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
@@ -152,7 +157,7 @@ export type IResources<Extra = {}> = {
 } & { [K in keyof Extra]: Extra[K] };
 
 export interface IPresetSpec {
-  (context: IPluginContext): {
+  (context: ICliContext): {
     presets?: IApiConfig['presets'];
     plugins?: IApiConfig['plugins'];
   };
@@ -163,14 +168,21 @@ export interface IPreset {
   get: () => IPresetSpec;
 }
 
-export type IPluginContext = {
-  mode: IShuviMode;
+export type ICliContext = {
+  readonly mode: IShuviMode;
   paths: IPaths;
   config: IApiConfig;
-  phase: IPhase;
-  // helpers
-  helpers: IApi['helpers'];
+  readonly phase: IPhase;
+  pluginManager: PluginManager;
+  pluginRunner: PluginRunner;
+  serverPlugins: IRuntimeOrServerPlugin[];
   // resources
+  assetPublicPath: string;
   resources: IResources;
-  getAssetPublicUrl: (...paths: string[]) => string;
+  resolveAppFile(...paths: string[]): string;
+  resolveUserFile(...paths: string[]): string;
+  resolveBuildFile(...paths: string[]): string;
+  resolvePublicFile(...paths: string[]): string;
+  getAssetPublicUrl(...paths: string[]): string;
+  getRoutes(): IUserRouteConfig[];
 };

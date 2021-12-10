@@ -1,14 +1,13 @@
 import { IRedirectState, IRouter } from '@shuvi/router';
 import { IApplication, IAppStore } from '@shuvi/runtime-core';
-import { Api } from '@shuvi/service';
-import { IServerModule } from '../../types';
+import { IServerPluginContext } from '@shuvi/service';
 
 export interface IRenderResultRedirect extends IRedirectState {
   $type: 'redirect';
 }
 
 export interface IRendererConstructorOptions {
-  api: Api;
+  serverPluginContext: IServerPluginContext;
 }
 
 export type IRenderDocumentOptions = {
@@ -17,5 +16,4 @@ export type IRenderDocumentOptions = {
   router?: IRouter;
   appStore: IAppStore;
   appContext: any;
-  render?: IServerModule['render'];
 };
