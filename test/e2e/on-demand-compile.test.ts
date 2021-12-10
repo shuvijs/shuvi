@@ -18,13 +18,15 @@ function isPageCompiled(page: string) {
 describe('On Demand Compile', () => {
   let ctx: AppCtx;
   let page: Page;
-
+  const originalNodeEnv: string = (process.env as any).NODE_ENV;
   beforeAll(async () => {
+    (process.env as any).NODE_ENV = 'development';
     ctx = await launchFixtureAtCurrentProcess('on-demand-compile');
   });
   afterAll(async () => {
     await page.close();
     await ctx.close();
+    (process.env as any).NODE_ENV = originalNodeEnv;
   });
 
   test('should compile at first request', async () => {

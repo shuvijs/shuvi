@@ -9,7 +9,7 @@ export default createPlugin({
     config.publicPath = '/bar';
     return config;
   },
-  legacyApi: api => {
-    (api as any).__plugins = [{ name: 'modify-config' }];
+  setup: context => {
+    (context as any).__plugins = [{ name: 'modify-config' }];
   }
 });

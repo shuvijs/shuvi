@@ -4,7 +4,7 @@ import {
   createBrowserWebpackChain,
   createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
-import { Api } from '../api';
+import { ICliContext } from '../api';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import {
   BUILD_MEDIA_PATH,
@@ -26,7 +26,7 @@ export interface IWebpackConfigOptions {
 }
 
 export function createWebpackConfig(
-  { mode, assetPublicPath, paths, config }: Api,
+  { mode, assetPublicPath, paths, config }: ICliContext,
   { webpackHelpers, ...opts }: IWebpackConfigOptions
 ): WebpackChain {
   const dev = mode === 'development';

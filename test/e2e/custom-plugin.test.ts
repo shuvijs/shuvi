@@ -50,6 +50,16 @@ describe('Plugin', () => {
       expect(await page.$text('div')).toMatch(/404/);
     });
 
+    test('should work with custom render and onViewDone', async () => {
+      page = await ctx.browser.page(ctx.url('/403'), {
+        disableJavaScript: true
+      });
+      expect(page.statusCode).toBe(403);
+      expect(await page.$text('div')).toMatch(
+        /403 Custom HTML by custom render/
+      );
+    });
+
     test('should get pageData in client and custom documentProps', async () => {
       page = await ctx.browser.page(ctx.url('/page-data'));
       await page.waitFor('[data-test-id="page-data"]');

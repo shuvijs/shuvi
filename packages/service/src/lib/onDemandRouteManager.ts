@@ -2,30 +2,35 @@ import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-repl
 import { IRequestHandlerWithNext } from '../types/server';
 import { DevMiddleware } from './devMiddleware';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { Api } from '../api/api';
 import { matchRoutes } from '@shuvi/platform-core';
 import { acceptsHtml } from './utils';
+import { IServerPluginContext } from '..';
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
-  public _api: Api;
+  public _serverPluginContext: IServerPluginContext;
 
-  constructor(api: Api) {
-    this._api = api;
+  constructor(serverPluginContext: IServerPluginContext) {
+    this._serverPluginContext = serverPluginContext;
   }
 
   getServerMiddleware(): IRequestHandlerWithNext {
     return async (req, res, next) => {
       const pathname = req.pathname;
-      if (!pathname.startsWith(this._api.assetPublicPath)) {
+      if (!pathname.startsWith(this._serverPluginContext.assetPublicPath)) {
         return next();
       }
       if (!this.devMiddleware) {
         return next();
       }
 
-      const chunkName = pathname.replace(this._api.assetPublicPath, '');
+      const chunkName = pathname.replace(
+        this._serverPluginContext.assetPublicPath,
+        ''
+      );
       const chunkInitiatorModule =
-        this._api.resources?.clientManifest?.chunkRequest[chunkName];
+        this._serverPluginContext.resources?.clientManifest?.chunkRequest[
+          chunkName
+        ];
 
       if (!chunkInitiatorModule) {
         return next();
@@ -64,7 +69,8 @@ export class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const matchedRoutes = matchRoutes(this._api.getRoutes(), pathname) || [];
+    const matchedRoutes =
+      matchRoutes(this._serverPluginContext.getRoutes(), pathname) || [];
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { component } }) =>
