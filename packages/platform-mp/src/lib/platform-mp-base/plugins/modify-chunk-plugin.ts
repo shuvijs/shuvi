@@ -1,7 +1,7 @@
 import webpack, { sources } from 'webpack';
 import path from 'path';
 import { urlToRequest } from 'loader-utils';
-import { IFileType } from '../index';
+import { IFileType } from '../types';
 
 const PLUGIN_NAME = 'ModifyChunksPlugin';
 const commonChunks = ['runtime', 'vendors', 'taro', 'common'];
