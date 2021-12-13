@@ -387,7 +387,7 @@ export default abstract class PlatformMpBase {
               '@tarojs/runtime': resolveLib('@tarojs/runtime'),
               '@tarojs/shared': resolveLib('@tarojs/shared'),
               '@tarojs/taro': resolveLib('@tarojs/taro'),
-              '@tarojs/context': resolveLib('@tarojs/context'),
+              '@tarojs/api': resolveLib('@tarojs/api'),
               '@tarojs/components$':
                 this.taroComponentsPath || '@tarojs/components/mini',
               '@tarojs/react': resolveLib('@tarojs/react'),
@@ -399,7 +399,7 @@ export default abstract class PlatformMpBase {
               // @binance
               '@binance/mp-service': '@tarojs/taro',
               '@binance/mp-components$': this.taroComponentsPath,
-              '@binance/mp-context': '@tarojs/context',
+              '@binance/mp-context': '@tarojs/api',
               '@binance/http': path.join(
                 PACKAGE_RESOLVED,
                 'lib/platform-mp-base/adapters/http/index'

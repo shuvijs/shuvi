@@ -24,7 +24,9 @@ export default async function main(argv: string[]) {
     config,
     configFile: program.config && path.resolve(cwd, program.config)
   });
-  const shuviApp = await createShuviServer(api.cliContext);
+  const shuviApp = await createShuviServer({
+    context: api.cliContext
+  });
   try {
     await shuviApp.listen(port, host);
     console.log(`Ready on http://${host}:${port}`);

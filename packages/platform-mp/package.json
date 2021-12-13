@@ -43,6 +43,7 @@
     "@shuvi/toolpack": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",
     "@tarojs/components": "3.3.3",
+    "@tarojs/context": "3.3.3",
     "@tarojs/helper": "3.3.3",
     "@tarojs/react": "3.3.3",
     "@tarojs/runtime": "3.3.3",
