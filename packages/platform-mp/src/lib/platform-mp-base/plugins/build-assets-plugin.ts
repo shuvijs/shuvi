@@ -1,5 +1,4 @@
-//import { AppConfig } from '@tarojs/taro';
-import { AppConfigs } from '..';
+import { AppConfigs, IFileType } from '../types';
 import { IPaths } from '@shuvi/service/lib/api';
 import webpack, { Compiler, Compilation, sources } from 'webpack';
 import path from 'path';
@@ -10,7 +9,6 @@ import {
   RecursiveTemplate
 } from '@tarojs/shared/dist/template';
 import { componentConfig } from '../template/component';
-import { IFileType } from '../index';
 const { RawSource } = webpack.sources;
 interface CompilationAssets {
   [index: string]: sources.Source;
