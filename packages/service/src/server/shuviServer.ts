@@ -6,14 +6,12 @@ import { IShuviServer, ShuviServerOptions } from './shuviServerTypes';
 import { PluginManager, getManager, initServerPlugins } from './serverHooks';
 
 export abstract class ShuviServer implements IShuviServer {
-  // rootDir: string;
 
   protected _server: Server;
   protected _pluginManager: PluginManager;
   protected _serverContext: IServerPluginContext;
 
   constructor(cliContext: ICliContext, options: ShuviServerOptions) {
-    // this.rootDir = options.rootDir;
     this._pluginManager = getManager();
     this._server = new Server();
     const serverPlugins = cliContext.serverPlugins;
