@@ -1,14 +1,18 @@
-import { ICliContext } from '../api';
+import {
+  PluginManager,
+  getManager,
+  initServerPlugins,
+  IServerPluginContext
+} from './serverHooks';
 import { Server } from '../server';
-import { IRequestHandlerWithNext, IServerPluginContext } from '..';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { serveStatic } from '../lib/serveStatic';
 import { normalizeServerMiddleware } from '../api/serverMiddleware';
 import { applyHttpProxyMiddleware } from '../lib/httpProxyMiddleware';
 import { BUILD_DEFAULT_DIR, PUBLIC_PATH } from '../constants';
-
-import { PluginManager, getManager, initServerPlugins } from './serverHooks';
+import { IRequestHandlerWithNext } from '../types/server';
+import { ICliContext } from '../api';
 
 const getPublicDirMiddleware = (
   cliContext: IServerPluginContext
