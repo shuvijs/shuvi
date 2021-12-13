@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import {
   createCliPlugin,
@@ -6,8 +7,12 @@ import {
 } from '@shuvi/service';
 import { findFirstExistedFile } from '@shuvi/service/lib/project/file-snippets';
 import { rankRouteBranches } from '@shuvi/router';
+import { isEmptyObject, readConfig } from '@tarojs/helper';
+import {
+  UnRecursiveTemplate,
+  RecursiveTemplate
+} from '@tarojs/shared/dist/template';
 import { PACKAGE_NAME } from '../constants';
-import fs from 'fs';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import ModifyChunkPlugin from './plugins/modify-chunk-plugin';
 import DomEnvPlugin from './plugins/dom-env-plugin';
@@ -20,13 +25,8 @@ import {
   resolveLib,
   PACKAGE_RESOLVED
 } from '../paths';
-import { isEmptyObject, readConfig } from '@tarojs/helper';
-import {
-  UnRecursiveTemplate,
-  RecursiveTemplate
-} from '@tarojs/shared/dist/template';
+import { AppConfig, AppConfigs, IFileType } from './types';
 
-import { AppConfig as TaroAppConfig, Config } from '@tarojs/taro';
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
 const getAllFiles = (
@@ -55,27 +55,6 @@ const getAllFiles = (
 const moduleFileExtensions = ['js', 'jsx', 'tsx', 'ts'];
 function withExts(file: string, extensions: string[]): string[] {
   return extensions.map(ext => `${file}.${ext}`);
-}
-
-export interface AppConfig extends TaroAppConfig {
-  entryPagePath?: string;
-  darkMode: boolean;
-}
-
-/**
- * configs for app and pages
- */
-export interface AppConfigs {
-  app: AppConfig;
-  [name: string]: Config;
-}
-
-export interface IFileType {
-  templ: string;
-  style: string;
-  config: string;
-  script: string;
-  xs: string;
 }
 
 export default abstract class PlatformMpBase {

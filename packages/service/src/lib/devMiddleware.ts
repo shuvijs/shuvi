@@ -1,14 +1,14 @@
-import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
-import WebpackDevMiddleware from 'webpack-dev-middleware';
-import { WebpackHotMiddleware } from './hotMiddleware';
-import { getBundler } from '../bundler';
-import { Server } from '../server';
 import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
-import { IServerPluginContext } from '..';
+import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
+import WebpackDevMiddleware from 'webpack-dev-middleware';
+import { WebpackHotMiddleware } from './hotMiddleware';
+import { getBundler } from '../bundler';
+import { Server } from '../server';
+import { IServerPluginContext } from '../shuviServer/serverHooks';
 
 export interface DevMiddleware {
   apply(server?: Server): void;
