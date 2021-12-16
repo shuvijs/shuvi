@@ -1,17 +1,5 @@
-import { Api, IApiRouteConfig, IUserRouteConfig, ICliContext } from '../api';
-import {
-  ICliPluginConstructor,
-  ICliPluginInstance,
-  createPlugin as createCliPlugin
-} from '../api/cliHooks';
-export {
-  IUserRouteConfig,
-  IApiRouteConfig,
-  createCliPlugin,
-  ICliPluginConstructor
-};
+import { Api, ICliContext } from '../api';
 
-export type IRuntime = { install: (api: Api) => void } & ICliPluginConstructor;
-export type IPlatform = (
-  context: ICliContext
-) => Promise<ICliPluginInstance[]> | ICliPluginInstance[];
+// TODO: types
+export type IRuntime = { install: (api: Api) => void } & any;
+export type IPlatform = (context: ICliContext) => Promise<any[]> | any[];

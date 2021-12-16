@@ -1,5 +1,5 @@
 import resolve from '@shuvi/utils/lib/resolve';
-import { IMiddlewareHandler } from '../server';
+import { IMiddlewareHandler } from './http-server';
 
 interface Options {
   rootDir: string;
@@ -15,7 +15,7 @@ export type IServerMiddlewareOptions = IMiddlewareOptions | IMiddlewareHandler;
 
 export type IServerMiddleware = string | IServerMiddlewareOptions;
 
-interface InternalServerMiddlewareOptions extends IMiddlewareOptions {
+export interface NormalizedServerMiddleware extends IMiddlewareOptions {
   handler: IMiddlewareHandler;
   path: string;
   order: number;
@@ -34,7 +34,7 @@ function resolveHandler(handler: string, options: Options) {
 export function normalizeServerMiddleware(
   middleware: IServerMiddleware,
   options: Options
-): InternalServerMiddlewareOptions {
+): NormalizedServerMiddleware {
   let middlewareOptions: IServerMiddlewareOptions;
   if (typeof middleware !== 'object') {
     middlewareOptions = {

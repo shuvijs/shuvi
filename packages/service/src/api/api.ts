@@ -72,8 +72,6 @@ class Api implements IApi {
   pluginManager: PluginManager;
   serverPlugins: IRuntimeOrServerPlugin[] = [];
 
-  // todo remove mode
-
   constructor({ cwd, mode, config, configFile, phase }: IApiOPtions) {
     if (mode) {
       this._mode = mode;
@@ -251,6 +249,7 @@ class Api implements IApi {
     this.setClientModule(clientModule);
     this.setUserModule(userModule);
   }
+
   async initRuntimeAndServerPlugin() {
     const normalize = (
       x: string | IRuntimeOrServerPlugin

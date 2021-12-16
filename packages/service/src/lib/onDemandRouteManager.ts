@@ -2,15 +2,15 @@ import { matchRoutes } from '@shuvi/platform-core';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import { IRequestHandlerWithNext } from '../server';
-import { DevMiddleware } from './devMiddleware';
+import { DevMiddleware } from '../server/middlewares/devMiddleware';
 import { acceptsHtml } from './utils';
-import { IServerPluginContext } from '../server/serverHooks';
+import { IPluginContext } from '../server';
 
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
-  public _serverPluginContext: IServerPluginContext;
+  public _serverPluginContext: IPluginContext;
 
-  constructor(serverPluginContext: IServerPluginContext) {
+  constructor(serverPluginContext: IPluginContext) {
     this._serverPluginContext = serverPluginContext;
   }
 

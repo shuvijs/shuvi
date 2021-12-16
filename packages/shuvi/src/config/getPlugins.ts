@@ -1,27 +1,28 @@
-import {
-  IPluginConfig,
-  ICliContext,
-  IPresetConfig,
-  IPreset,
-  IPresetSpec
-} from '.';
+import invariant from '@shuvi/utils/lib/invariant';
 import resolve from '@shuvi/utils/lib/resolve';
 import { isPluginInstance } from '@shuvi/hook';
 import {
-  createPlugin,
-  ICliPluginInstance,
-  ICliPluginConstructor
-} from './cliHooks';
+  createServerPlugin,
+  IServerPluginInstance,
+  IServerPluginConstructor
+} from '@shuvi/service';
+import {
+  IPreset,
+  NormalizedUserConfig,
+  IPluginConfig,
+  IPresetConfig,
+  IPresetSpec
+} from './types';
 
-export interface ResolvePluginOptions {
+interface ResolvePluginOptions {
   dir: string;
 }
 
 function resolvePlugin(
   pluginConfig: IPluginConfig,
   resolveOptions: ResolvePluginOptions
-): ICliPluginInstance {
-  let pluginOrPath: string | ((param: any) => ICliPluginInstance);
+): IServerPluginInstance {
+  let pluginOrPath: string | ((param: any) => IServerPluginInstance);
   let options: any;
 
   if (Array.isArray(pluginConfig)) {
@@ -38,9 +39,9 @@ function resolvePlugin(
     options = {};
   } else if (typeof pluginConfig === 'object') {
     if (isPluginInstance(pluginConfig)) {
-      return pluginConfig as ICliPluginInstance;
+      return pluginConfig as IServerPluginInstance;
     }
-    return createPlugin(pluginConfig as ICliPluginConstructor);
+    return createServerPlugin(pluginConfig as IServerPluginConstructor);
   } else {
     throw new Error(
       `Plugin must be one of type [string, array, ICliPluginConstructor, ICliPluginInstance]`
@@ -56,7 +57,7 @@ function resolvePlugin(
   } else if (typeof plugin === 'function') {
     pluginInst = plugin(options);
   } else {
-    pluginInst = createPlugin({});
+    pluginInst = createServerPlugin({});
   }
   return pluginInst;
 }
@@ -88,8 +89,8 @@ function resolvePreset(
   const id = presetPath;
   let preset = require(presetPath);
   preset = preset.default || preset;
-  const presetFn: IPresetSpec = (context: ICliContext) => {
-    return preset(context, options);
+  const presetFn: IPresetSpec = () => {
+    return preset(options);
   };
 
   return {
@@ -101,7 +102,7 @@ function resolvePreset(
 export function resolvePlugins(
   plugins: IPluginConfig[],
   options: ResolvePluginOptions
-): ICliPluginInstance[] {
+): IServerPluginInstance[] {
   return plugins.map(plugin => resolvePlugin(plugin, options));
 }
 
@@ -110,4 +111,63 @@ export function resolvePresets(
   options: ResolvePluginOptions
 ): IPreset[] {
   return presets.map(preset => resolvePreset(preset, options));
+}
+
+function initPreset(
+  rootDir: string,
+  preset: IPreset,
+  collection: IServerPluginInstance[]
+) {
+  const { id, get: getPreset } = preset;
+  const { presets, plugins } = getPreset()();
+
+  if (presets) {
+    invariant(
+      Array.isArray(presets),
+      `presets returned from preset ${id} must be Array.`
+    );
+
+    const resolvedPresets = resolvePresets(presets, {
+      dir: rootDir
+    });
+
+    for (const preset of resolvedPresets) {
+      initPreset(rootDir, preset, collection);
+    }
+  }
+
+  if (plugins) {
+    invariant(
+      Array.isArray(plugins),
+      `presets returned from preset ${id} must be Array.`
+    );
+
+    collection.push(
+      ...resolvePlugins(plugins, {
+        dir: rootDir
+      })
+    );
+  }
+}
+
+export function getPlugins(
+  config: NormalizedUserConfig
+): IServerPluginInstance[] {
+  const rootDir = config.rootDir!;
+  const presetPlugins: IServerPluginInstance[] = [];
+  // init presets
+  const presets = resolvePresets(config.presets || [], {
+    dir: rootDir
+  });
+
+  for (const preset of presets) {
+    initPreset(rootDir, preset, presetPlugins);
+  }
+
+  // init plugins
+  const plugins = resolvePlugins(config.plugins || [], {
+    dir: rootDir
+  });
+  const allPlugins = presetPlugins.concat(plugins);
+  return allPlugins;
 }

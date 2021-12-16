@@ -5,10 +5,10 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
+import { getBundler } from '../../../bundler';
+import { Server } from '../../http-server';
+import { IPluginContext } from '../../shuviServerTypes';
 import { WebpackHotMiddleware } from './hotMiddleware';
-import { getBundler } from '../bundler';
-import { Server } from '../server';
-import { IServerPluginContext } from '../server/serverHooks';
 
 export interface DevMiddleware {
   apply(server?: Server): void;
@@ -18,9 +18,9 @@ export interface DevMiddleware {
 }
 
 export async function getDevMiddleware(
-  serverPluginContext: IServerPluginContext
+  context: IPluginContext
 ): Promise<DevMiddleware> {
-  const bundler = getBundler(serverPluginContext);
+  const bundler = getBundler(context);
   const compiler = await bundler.getWebpackCompiler();
   // watch before pass compiler to WebpackDevMiddleware
   bundler.watch({
@@ -35,7 +35,7 @@ export async function getDevMiddleware(
   // webpackDevMiddleware make first compiler build assets as static sources
   const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
     stats: false, // disable stats on server
-    publicPath: serverPluginContext.assetPublicPath,
+    publicPath: context.assetPublicPath,
     writeToDisk: true
   });
 

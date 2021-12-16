@@ -10,7 +10,7 @@ import webpack, {
   MultiCompiler as WebapckMultiCompiler,
   Compiler as WebapckCompiler
 } from 'webpack';
-import { ICliContext } from '../api';
+import { IPluginContext } from '../server';
 import { Target, TargetChain } from '../api/cliHooks';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import {
@@ -46,14 +46,14 @@ const logger = Logger('shuvi:bundler');
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
 class WebpackBundler {
-  private _cliContext: ICliContext;
+  private _context: IPluginContext;
   private _compiler: WebapckMultiCompiler | null = null;
   /* private _internalTargets: Target[] = [];
   private _extraTargets: Target[] = []; */
   private _targets: Target[] = [];
 
-  constructor(cliContext: ICliContext) {
-    this._cliContext = cliContext;
+  constructor(context: IPluginContext) {
+    this._context = context;
   }
 
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
@@ -79,7 +79,7 @@ class WebpackBundler {
         if (isSuccessful) {
           setImmediate(first => {
             // make sure this event is fired after all bundler:target-done
-            this._cliContext.pluginRunner.bundlerDone({ first, stats });
+            this._context.pluginRunner.bundlerDone({ first, stats });
           }, isFirstSuccessfulCompile);
           isFirstSuccessfulCompile = false;
         }
@@ -133,7 +133,7 @@ class WebpackBundler {
   }
 
   private _createConfig(options: IWebpackConfigOptions) {
-    return createWebpackConfig(this._cliContext, options);
+    return createWebpackConfig(this._context, options);
   }
 
   private _watchTarget(name: string, options: WatchTargetOptions = {}) {
@@ -237,7 +237,7 @@ class WebpackBundler {
         !messages.errors?.length && !messages.warnings?.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
-        await this._cliContext.pluginRunner.bundlerTargetDone({
+        await this._context.pluginRunner.bundlerTargetDone({
           first: isFirstSuccessfulCompile,
           name: compiler.name!,
           stats
@@ -266,17 +266,17 @@ class WebpackBundler {
   }
 
   private initDefaultBuildTarget(): TargetChain[] {
-    function getDefaultEntry(_cliContext: ICliContext): IWebpackEntry {
+    function getDefaultEntry(_context: IPluginContext): IWebpackEntry {
       return {
         [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
         [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
       };
     }
     const defaultWebpackHelpers = webpackHelpers();
-    const defaultChain = createWebpackConfig(this._cliContext, {
+    const defaultChain = createWebpackConfig(this._context, {
       name: BUNDLER_DEFAULT_TARGET,
       node: false,
-      entry: getDefaultEntry(this._cliContext),
+      entry: getDefaultEntry(this._context),
       outputDir: BUILD_DEFAULT_DIR,
       webpackHelpers: defaultWebpackHelpers
     });
@@ -293,9 +293,9 @@ class WebpackBundler {
     // get base config
     const buildTargets = this.initDefaultBuildTarget();
     const extraTargets = (
-      await this._cliContext.pluginRunner.extraTarget({
+      await this._context.pluginRunner.extraTarget({
         createConfig: this._createConfig.bind(this),
-        mode: this._cliContext.mode,
+        mode: this._context.mode,
         webpack
       })
     ).filter(Boolean);
@@ -304,9 +304,9 @@ class WebpackBundler {
     for (const buildTarget of buildTargets) {
       let { chain, name } = buildTarget;
       // modify config by api hooks
-      chain = await this._cliContext.pluginRunner.configWebpack(chain, {
+      chain = await this._context.pluginRunner.configWebpack(chain, {
         name,
-        mode: this._cliContext.mode,
+        mode: this._context.mode,
         helpers: defaultWebpackHelpers,
         webpack
       });
@@ -321,6 +321,6 @@ class WebpackBundler {
   }
 }
 
-export function getBundler(_cliContext: ICliContext) {
-  return new WebpackBundler(_cliContext);
+export function getBundler(_context: IPluginContext) {
+  return new WebpackBundler(_context);
 }

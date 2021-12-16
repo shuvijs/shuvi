@@ -1,5 +1,5 @@
 import { loadFixture, resolveFixture } from './utils';
-import { loadConfig } from '..';
+import { loadConfig } from '../loadConfig';
 
 describe('config', () => {
   test('should work without config file', async () => {
@@ -75,9 +75,7 @@ describe('config', () => {
     try {
       await loadFixture('error');
     } catch (err: any) {
-      expect(
-        err.message
-      ).toContain('Cannot find module \'./notFound\'');
+      expect(err.message).toContain("Cannot find module './notFound'");
     }
   });
 });
