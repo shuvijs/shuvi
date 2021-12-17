@@ -19,6 +19,7 @@ import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 
+import storePlugin from './store-plugin';
 import { getCoreResources } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { renderToHTML } from './SSR';
@@ -124,7 +125,7 @@ const platform: IPlatform = async context => {
   });
   const { framework = 'react' } = context.config.platform || {};
   const frameworkPlugins: IPlatform = require(`./targets/${framework}`).default;
-  return [mainPlugin, ...(await frameworkPlugins(context))];
+  return [mainPlugin, storePlugin, ...(await frameworkPlugins(context))];
 };
 
 export default platform;
