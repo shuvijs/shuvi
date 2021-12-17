@@ -1,7 +1,7 @@
 import React from 'react';
-import { Provider } from '@shuvi/plugins/esm/state';
 
 export const withRedux = (App: any, appContext: any) => {
+  const { Provider } = require('@shuvi/plugins/esm/state');
   const ReduxAppWrapper = (appProps: any) => {
     return (
       <Provider store={appContext.store}>
@@ -10,7 +10,8 @@ export const withRedux = (App: any, appContext: any) => {
     );
   };
 
-  ReduxAppWrapper.getInitialProps = App.getInitialProps;
+  App?.getInitialProps &&
+    (ReduxAppWrapper.getInitialProps = App.getInitialProps);
   ReduxAppWrapper.displayName = 'ReduxAppWrapper';
 
   return ReduxAppWrapper;
