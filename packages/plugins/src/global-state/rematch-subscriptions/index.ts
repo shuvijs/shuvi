@@ -28,6 +28,7 @@ const subscriptionsPlugin = <
       model: Model<TModels> & {
         name: string;
         _subscriptions?: Record<string, () => void>;
+        actions?: Record<string, () => void>;
       }
     ) {
       // a list of actions is only necessary
@@ -47,7 +48,6 @@ const subscriptionsPlugin = <
     createMiddleware(rematchBag) {
       return store => (next: (action: Action) => any) => (action: Action) => {
         const { type } = action;
-        console.log(action, 'action');
         next(action);
         // exact match
         if (subscriptions.has(type)) {
