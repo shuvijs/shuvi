@@ -11,7 +11,7 @@ import { init, Models, Plugin, NamedModel } from '@rematch/core';
 import invariant from '@shuvi/utils/lib/invariant';
 import { createBatchManager } from './batchManager';
 import { createSelectorManager, mapStateBySelect } from './selectorManager';
-import subscriptionsPlugin from './rematch-subscriptions';
+import subscriptionsPlugin from './plugins/subscriptions';
 import { shadowEqual } from './utils';
 
 type initConfig = Parameters<typeof init>[0];
@@ -67,7 +67,7 @@ function getStateDispatch(
   ] as [any, any];
 }
 
-const createGlobalStore = (config: Config) => {
+const createContainer = (config: Config) => {
   let configFromProvider: Config | null = null;
 
   const Context = createContext<{
@@ -242,4 +242,4 @@ const createGlobalStore = (config: Config) => {
   };
 };
 
-export default createGlobalStore;
+export default createContainer;

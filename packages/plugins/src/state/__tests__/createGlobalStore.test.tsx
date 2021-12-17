@@ -8,7 +8,7 @@ import { act } from 'react-dom/test-utils';
 import {
   useModel,
   Provider,
-  createGlobalStore,
+  createContainer,
   useStaticModel,
   useLocalModel
 } from '..';
@@ -53,7 +53,7 @@ describe('test createGlobalStore', () => {
     (node as unknown as null) = null;
   });
   it('createGlobalStore should return Provider and useModel', () => {
-    const { Provider: _Provider, useModel: _useModel } = createGlobalStore({});
+    const { Provider: _Provider, useModel: _useModel } = createContainer({});
 
     expect(_Provider).toBeTruthy();
     expect(_useModel).toBeTruthy();
@@ -79,7 +79,7 @@ describe('test createGlobalStore', () => {
   });
 
   it('Local Provider and useModel should work', () => {
-    const { Provider: LocalProvider, useModel: useLModel } = createGlobalStore(
+    const { Provider: LocalProvider, useModel: useLModel } = createContainer(
       {}
     );
 

@@ -34,10 +34,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@modern-js-reduck/react": "^1.0.1",
-    "@modern-js-reduck/store": "^1.0.1",
     "@next/react-refresh-utils": "10.0.5",
     "@shuvi/app": "0.0.1-pre.10",
+    "@shuvi/plugins": "0.0.1-pre.10",
     "@shuvi/platform-core": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/router-react": "0.0.1-pre.10",

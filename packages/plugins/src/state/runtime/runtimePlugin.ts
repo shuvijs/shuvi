@@ -1,22 +1,27 @@
 import { createPlugin } from '@shuvi/runtime-core/lib/runtimeHooks';
-import { createStore } from '@modern-js-reduck/store';
+import { init } from '@rematch/core';
+import subscriptionsPlugin from '../plugins/subscriptions';
+
 import { withRedux } from './withRedux';
 
 export default createPlugin({
   appComponent: async (App, appContext) => {
-    return withRedux(App, appContext)
+    return withRedux(App, appContext);
   },
-  context: (ctx) => {
+  context: ctx => {
     if (!ctx.store) {
       let initialState = {};
       if (ctx.pageData && ctx.pageData.redux) {
         initialState = ctx.pageData.redux;
       }
-      ctx.store = createStore({
-        initialState
+      ctx.store = init({
+        name: 'GlobalStore',
+        redux: {
+          initialState
+        },
+        plugins: [subscriptionsPlugin()]
       });
     }
-    // console.log('appContext', ctx)
-    return ctx
-  },
-})
+    return ctx;
+  }
+});

@@ -1,6 +1,5 @@
 import React from 'react';
-// import { Provider } from 'react-redux';
-import { Provider } from '@modern-js-reduck/react'
+import { Provider } from '@shuvi/plugins/esm/state';
 
 export const withRedux = (App: any, appContext: any) => {
   const ReduxAppWrapper = (appProps: any) => {
