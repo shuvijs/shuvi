@@ -1,6 +1,6 @@
 import React from 'react';
-import { user } from './pages/index'
-import { useModel } from '@shuvi/services/model'
+import { user } from './pages/index';
+import { useModel } from '@shuvi/services/store';
 
 const getApp = (App: any) => {
   const MyApp = () => {
@@ -9,11 +9,13 @@ const getApp = (App: any) => {
       <div>
         <div>
           <div>this is App.ts</div>
-          <div>name:{state.name} id:{state.id}</div>
+          <div>
+            name:{state.name} id:{state.id}
+          </div>
         </div>
-        <App/>
+        <App />
       </div>
-    )
+    );
   };
   return MyApp;
 };
