@@ -2,9 +2,9 @@ import path from 'path';
 
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import { renameFilepathToComponent } from '../lib/routes';
-import { renameFilepathToModule } from '../lib/apiRoutes';
-import { pickMiddlewareAndPath } from '../lib/middlewaresRoutes';
+import { renameFilepathToComponent } from '../server/helper/routes';
+import { renameFilepathToModule } from '../server/helper/apiRoutes';
+import { pickMiddlewareAndPath } from '../server/helper/middlewaresRoutes';
 import { Route } from '../route';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
@@ -127,28 +127,27 @@ async function setupRoutes(api: Api) {
     await api.setMiddlewaresRoutes(pickMiddlewareAndPath(routes));
   } else {
     const route = new Route(paths.pagesDir, false);
+    const tempRoutes = await route.getRoutes();
+    await api.setRoutes(renameFilepathToComponent(tempRoutes));
+    await api.setMiddlewaresRoutes(pickMiddlewareAndPath(tempRoutes));
     if (api.mode === 'development') {
-      route.subscribe(tempRoutes => {
+      route.watch(tempRoutes => {
         api.setRoutes(renameFilepathToComponent(tempRoutes));
         api.setMiddlewaresRoutes(pickMiddlewareAndPath(tempRoutes));
       });
-    } else {
-      const tempRoutes = await route.getRoutes();
-      await api.setRoutes(renameFilepathToComponent(tempRoutes));
-      await api.setMiddlewaresRoutes(pickMiddlewareAndPath(tempRoutes));
     }
   }
+
   if (Array.isArray(apiRoutes) && apiRoutes.length) {
     await api.setApiRoutes(apiRoutes);
   } else {
     const apiRoute = new Route(paths.apisDir, true);
+    const tempApiRoutes = await apiRoute.getRoutes();
+    await api.setApiRoutes(renameFilepathToModule(tempApiRoutes));
     if (api.mode === 'development') {
-      apiRoute.subscribe(tempApiRoutes => {
+      apiRoute.watch(tempApiRoutes => {
         api.setApiRoutes(renameFilepathToModule(tempApiRoutes));
       });
-    } else {
-      const tempApiRoutes = await apiRoute.getRoutes();
-      await api.setApiRoutes(renameFilepathToModule(tempApiRoutes));
     }
   }
 }

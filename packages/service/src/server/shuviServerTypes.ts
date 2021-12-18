@@ -1,5 +1,6 @@
 import { IRuntimeConfig } from '@shuvi/platform-core';
 import { IServerPluginInstance, PluginRunner } from './plugin';
+import { IServerMiddlewareItem } from './http-server';
 
 export type IShuviServerMode = 'development' | 'production';
 
@@ -36,6 +37,10 @@ export interface IMiddlewareRouteConfig {
   path: string;
   middlewares: string[];
 }
+
+export type IServerMiddleware =
+  | IServerMiddlewareItem
+  | IServerMiddlewareItem['handler'];
 
 interface IPlatformConfig {
   name: string;

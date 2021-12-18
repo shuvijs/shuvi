@@ -33,23 +33,20 @@ function flattenApiRoutes(
 
 export function serializeApiRoutes(
   apiRoutes: IApiRouteConfig[],
-  parentPath = ''
+  prefix = ''
 ): string {
-  let tempApiRoutes = flattenApiRoutes(
-    apiRoutes,
-    [],
-    path.resolve('/', parentPath)
+  const rankApiRoutes = rankRouteBranches(
+    apiRoutes.map(
+      apiRoute => [apiRoute.path, apiRoute] as [string, typeof apiRoute]
+    )
   );
-  let rankApiRoutes = tempApiRoutes.map(
-    apiRoute => [apiRoute.path, apiRoute] as [string, typeof apiRoute]
-  );
-  rankApiRoutes = rankRouteBranches(rankApiRoutes);
-  tempApiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
+  const tempApiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
   let res = '';
   for (let index = 0; index < tempApiRoutes.length; index++) {
-    const { apiModule, path } = tempApiRoutes[index];
+    const { apiModule, path: routePath } = tempApiRoutes[index];
+    const p = `${prefix}${routePath}`;
     let strRoute = `\n{
-      path: "${path}",
+      path: "${p}",
       ${apiModule ? `apiModule: require("${apiModule}"),` : ''}
     },`;
     res += strRoute;

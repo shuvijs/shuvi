@@ -22,7 +22,8 @@ import { IServerMiddlewareItem, IRequest } from './http-server';
 import {
   IShuviServerMode,
   IUserRouteConfig,
-  IPluginContext
+  IPluginContext,
+  IServerMiddleware
 } from './shuviServerTypes';
 
 type ExtraTargetAssistant = {
@@ -163,10 +164,6 @@ type OnViewDoneParams = {
   html: string | null;
   appContext: any;
 };
-
-type IServerMiddleware =
-  | IServerMiddlewareItem
-  | IServerMiddlewareItem['handler'];
 
 const serverMiddleware = createAsyncParallelHook<
   void,

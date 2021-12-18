@@ -1,10 +1,14 @@
 import { resolveFixture, sortByPath } from './utils';
-import { Route } from '../route';
+import { getRoutes } from '../fileSystemRoute';
 
 describe('route', () => {
   test('should work', async () => {
-    const route = new Route(resolveFixture('basic'), false);
-    const routes = sortByPath(await route.getRoutes());
+    const routes = sortByPath(
+      await getRoutes({
+        dir: resolveFixture('basic'),
+        ignoreLayout: false
+      })
+    );
 
     expect(routes).toMatchObject([
       {
@@ -23,8 +27,12 @@ describe('route', () => {
   });
 
   test('should work for nested dir', async () => {
-    const route = new Route(resolveFixture('nest'), false);
-    const routes = sortByPath(await route.getRoutes());
+    const routes = sortByPath(
+      await getRoutes({
+        dir: resolveFixture('nest'),
+        ignoreLayout: false
+      })
+    );
 
     expect(routes).toMatchObject([
       {
@@ -48,8 +56,12 @@ describe('route', () => {
   });
 
   test('should generate layout route with false', async () => {
-    const route = new Route(resolveFixture('layout'), false);
-    const routes = sortByPath(await route.getRoutes());
+    const routes = sortByPath(
+      await getRoutes({
+        dir: resolveFixture('layout'),
+        ignoreLayout: false
+      })
+    );
 
     expect(routes).toMatchObject([
       {
@@ -82,9 +94,13 @@ describe('route', () => {
       }
     ]);
   });
-  test('should generate layout route with true', async () => {
-    const route = new Route(resolveFixture('layout'), true);
-    const routes = sortByPath(await route.getRoutes());
+  test('should generate layout route with ignoreLayout true', async () => {
+    const routes = sortByPath(
+      await getRoutes({
+        dir: resolveFixture('layout'),
+        ignoreLayout: true
+      })
+    );
 
     expect(routes).toMatchObject([
       {

@@ -7,7 +7,7 @@ import {
   IMiddlewareRouteConfig
 } from './shuviServerTypes';
 import { IRequestHandlerWithNext } from '../server/http-server';
-import { serveStatic } from '../lib/serveStatic';
+import { serveStatic } from './helper/serveStatic';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { ProjectBuilder } from '../project';
 import { getDevMiddleware } from './middlewares/devMiddleware';

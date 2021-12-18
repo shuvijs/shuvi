@@ -14,7 +14,8 @@ import {
   IPlatform,
   IUserRouteConfig,
   IApiRouteConfig,
-  IMiddlewareRouteConfig
+  IMiddlewareRouteConfig,
+  IServerMiddleware
 } from './shuviServerTypes';
 import { PluginManager, getManager, IServerPluginInstance } from './plugin';
 import { getPaths } from './paths';
@@ -45,8 +46,8 @@ export abstract class ShuviServer implements IShuviServer {
   private _plugins: IServerPluginInstance[];
   private _resources: IResources;
   private _paths: IPaths;
-  private _middlewares: NormalizedServerMiddleware[];
-  private _afterMiddlewares: NormalizedServerMiddleware[];
+  private _middlewares: IServerMiddleware[];
+  private _afterMiddlewares: IServerMiddleware[];
 
   constructor({ rootDir, config, plugins = [] }: ShuviServerOptions) {
     this._rootDir = path.resolve(rootDir);
