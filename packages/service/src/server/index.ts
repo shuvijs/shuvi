@@ -4,15 +4,6 @@ export * from './http-server';
 
 export * from './paths';
 
-export {
-  getManager,
-  createPlugin as createServerPlugin,
-  PluginRunner,
-  PluginManager,
-  IServerPluginInstance,
-  IServerPluginConstructor
-} from './plugin';
-
 export * from './shuviServerTypes';
 
 export interface CreateShuviServerOptions extends ShuviServerOptions {

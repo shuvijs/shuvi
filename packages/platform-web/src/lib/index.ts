@@ -6,23 +6,21 @@ import {
   BUILD_SERVER_FILE_SERVER,
   IRequest,
   IPlatform,
-  createCliPlugin,
-  ICliContext
+  createServerPlugin,
+  IPluginContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import {
-  initServerPlugins,
-  getManager
-} from '@shuvi/service/lib/server/serverHooks';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 
 import { getCoreResources } from './initCoreResource';
 import { resolveAppFile } from './paths';
-import { renderToHTML } from './SSR';
+import { renderToHTML, getSSRMiddleware } from './SSR';
+import { getApiRoutesMiddleware } from './apiRoute';
+import { getMiddlewareRoutesMiddleware } from './middlewareRoute';
 
-function getServerEntry(context: ICliContext): IWebpackEntry {
+function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
   return {
     [BUILD_SERVER_FILE_SERVER]: [
@@ -36,23 +34,16 @@ async function buildHtml({
   pathname,
   filename
 }: {
-  context: ICliContext;
+  context: IPluginContext;
   pathname: string;
   filename: string;
 }) {
-  const serverPlugins = context.serverPlugins;
-  const pluginManger = getManager();
-  const serverPluginContext = initServerPlugins(
-    pluginManger,
-    serverPlugins,
-    context
-  );
   const { html } = await renderToHTML({
     req: {
       url: pathname,
       headers: {}
     } as IRequest,
-    serverPluginContext
+    serverPluginContext: context
   });
 
   if (html) {
@@ -64,11 +55,18 @@ async function buildHtml({
 }
 
 const platform: IPlatform = async context => {
-  const mainPlugin = createCliPlugin({
+  const mainPlugin = createServerPlugin({
     setup: context => {
       if (typeof context.config.runtimeConfig === 'object') {
         setRuntimeConfig(context.config.runtimeConfig);
       }
+    },
+    serverMiddlewareLast: context => {
+      return [
+        getApiRoutesMiddleware(context),
+        getMiddlewareRoutesMiddleware(context),
+        getSSRMiddleware(context)
+      ];
     },
     bundleResource: context => getCoreResources(context),
     clientModule: context => {
@@ -106,7 +104,6 @@ const platform: IPlatform = async context => {
         chain: serverChain
       };
     },
-    serverPlugin: () => require.resolve('./serverPlugin'),
     afterBuild: async context => {
       if (
         context.config.platform.target === 'spa' &&

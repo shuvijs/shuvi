@@ -4,7 +4,7 @@ import {
   createBrowserWebpackChain,
   createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
-import { IPluginContext } from '../server';
+import { IPluginContext } from '../plugin';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import {
   BUILD_MEDIA_PATH,

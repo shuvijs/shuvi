@@ -4,7 +4,7 @@ import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-repl
 import { IRequestHandlerWithNext } from '../server';
 import { DevMiddleware } from '../server/middlewares/devMiddleware';
 import { acceptsHtml } from './utils';
-import { IPluginContext } from '../server';
+import { IPluginContext } from '../plugin';
 
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;

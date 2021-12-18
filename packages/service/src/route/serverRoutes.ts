@@ -46,104 +46,92 @@ function flattenRoutes(
   return res;
 }
 
-function tranformRoutes<T extends { children?: T[] }>(
+export function getPageRoutes(
   routes: IRouteRecord[],
-  transform: (route: IRouteRecord) => T
-): T[] {
-  const res: T[] = [];
-  for (let index = 0; index < routes.length; index++) {
-    const route = routes[index];
-    const transformedRoute = transform(route);
-
-    if (route.children && route.children.length > 0) {
-      transformedRoute.children = tranformRoutes<T>(route.children, transform);
-    }
-    res.push(transformedRoute);
-  }
-  return res;
-}
-
-export function getPageRoutes(routes: IRouteRecord[]): IUserRouteConfig[] {
+  options: { pagesDir: string }
+): IUserRouteConfig[] {
   const res: IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
-    const { path, filepath, children } = routes[index];
+    const { path: routePath, filepath, children } = routes[index];
     const route = {
-      path
+      path: routePath
     } as IUserRouteConfig;
 
     if (filepath) {
-      route.component = filepath;
+      const absPath = path.isAbsolute(filepath)
+        ? filepath
+        : path.resolve(options.pagesDir, filepath);
+      route.component = absPath.replace(/\\/g, '/');
     }
 
     if (children && children.length > 0) {
-      route.children = getPageRoutes(children);
+      route.children = getPageRoutes(children, options);
     }
+
     res.push(route);
   }
   return res;
 }
 
 export function getMiddlewareRoutes(
-  middlewareRoutes: IRouteRecord[]
+  routes: IRouteRecord[],
+  { pagesDir }: { pagesDir: string }
 ): IMiddlewareRouteConfig[] {
+  const middlewareRoutes = flattenRoutes(routes) as (IRouteRecord & {
+    middlewares: string[];
+  })[];
   const res: IMiddlewareRouteConfig[] = [];
 
-  const _getMiddlewareRoutes = (
-    routes: IRouteRecord[],
-    parentPath: string,
-    col: IMiddlewareRouteConfig[]
-  ) => {
-    for (let index = 0; index < routes.length; index++) {
-      const {
-        path: routePath,
-        middlewares,
-        children
-      } = routes[index] as IRouteRecord & {
-        middlewares: any;
-      };
-      const currentPath = path.join(parentPath, routePath);
+  for (let index = 0; index < middlewareRoutes.length; index++) {
+    const route = middlewareRoutes[index];
+    const middlewares = route.middlewares.map(middleware => {
+      const absPath = path.isAbsolute(middleware)
+        ? middleware
+        : path.resolve(pagesDir, middleware);
 
-      if (children && children.length > 0) {
-        _getMiddlewareRoutes(children, currentPath, col);
-      }
+      middleware = absPath.replace(/\\/g, '/');
+      return middleware;
+    });
 
-      if (middlewares) {
-        res.push({
-          path: currentPath,
-          middlewares
-        });
-      }
-    }
-  };
-
-  _getMiddlewareRoutes(middlewareRoutes, '/', res);
+    res.push({
+      path: route.path,
+      middlewares
+    });
+  }
 
   return res;
 }
 
-function createServerRoutes(
-  tempPageRoutes: IRouteRecord[],
-  tempApiRoutes: IRouteRecord[]
-): ServerRoutes {
-  const pageRoutes = getPageRoutes(tempPageRoutes);
-  const middlewareRoutes = (
-    flattenRoutes(tempPageRoutes) as (IRouteRecord & {
-      middlewares: any;
-    })[]
-  )
-    .filter(item => item.middlewares)
-    .map(({ path, middlewares }) => {
-      return {
-        path,
-        middlewares
-      };
-    });
-  const apiRoutes = flattenRoutes(tempApiRoutes).map(({ path, filepath }) => {
+export function getApiRoutes(
+  routes: IRouteRecord[],
+  { apisDir }: { apisDir: string }
+): IApiRouteConfig[] {
+  return flattenRoutes(routes).map(route => {
+    const absPath = path.isAbsolute(route.filepath)
+      ? route.filepath
+      : path.resolve(apisDir, route.filepath);
+
+    const apiModule = absPath.replace(/\\/g, '/');
+
     return {
-      path,
-      apiModule: filepath
+      path: route.path,
+      apiModule
     };
   });
+}
+
+function createServerRoutes(
+  tempPageRoutes: IRouteRecord[],
+  tempApiRoutes: IRouteRecord[],
+  options: RouteOptions
+): ServerRoutes {
+  const pageRoutes = getPageRoutes(tempPageRoutes, {
+    pagesDir: options.pagesDir
+  });
+  const middlewareRoutes = getMiddlewareRoutes(tempPageRoutes, {
+    pagesDir: options.pagesDir
+  });
+  const apiRoutes = getApiRoutes(tempApiRoutes, { apisDir: options.apisDir });
 
   return {
     pageRoutes,
@@ -163,7 +151,7 @@ export async function getServerRoutes(
     dir: options.apisDir,
     ignoreLayout: true
   });
-  return createServerRoutes(tempPageRoutes, tempApiRoutes);
+  return createServerRoutes(tempPageRoutes, tempApiRoutes, options);
 }
 
 export function watchServerRoutes(
@@ -176,7 +164,7 @@ export function watchServerRoutes(
       ignoreLayout: false
     },
     routes => {
-      const res = createServerRoutes(routes, []);
+      const res = createServerRoutes(routes, [], options);
       cb({
         pageRoutes: res.pageRoutes,
         middlewareRoutes: res.middlewareRoutes
@@ -189,7 +177,7 @@ export function watchServerRoutes(
       ignoreLayout: true
     },
     routes => {
-      const res = createServerRoutes(routes, []);
+      const res = createServerRoutes(routes, [], options);
       cb({
         apiRoutes: res.apiRoutes
       });

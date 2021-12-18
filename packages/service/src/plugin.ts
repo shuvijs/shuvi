@@ -9,22 +9,20 @@ import {
 import WebpackChain from 'webpack-chain';
 import webpack, { Configuration } from 'webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
-import {
-  UserModule,
-  TargetModule,
-  FileOptions,
-  fileSnippets
-} from '../project';
-import { IWebpackConfigOptions } from '../bundler/config';
+import { UserModule, TargetModule, FileOptions, fileSnippets } from './project';
+import { IWebpackConfigOptions } from './bundler/config';
 import { IncomingMessage, ServerResponse } from 'http';
 import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
-import { IServerMiddlewareItem, IRequest } from './http-server';
+import { IRequest } from './server/http-server';
 import {
   IShuviServerMode,
   IUserRouteConfig,
-  IPluginContext,
-  IServerMiddleware
-} from './shuviServerTypes';
+  IServerMiddleware,
+  IShuviServerPhase,
+  IPaths,
+  NormalizedShuviServerConfig,
+  IResources
+} from './server';
 
 type ExtraTargetAssistant = {
   createConfig(options: IWebpackConfigOptions): WebpackChain;
@@ -39,7 +37,7 @@ type ConfigWebpackAssistant = {
   helpers: IWebpackHelpers;
 };
 
-type IRuntimePluginConfig = {
+export type IRuntimePluginConfig = {
   plugin: string;
   options?: any;
 };
@@ -238,6 +236,18 @@ export type IServerPluginInstance = ArrayItem<
 export type IServerPluginConstructor = ArrayItem<
   Parameters<PluginManager['createPlugin']>[0]
 >;
+
+export interface IPluginContext {
+  mode: IShuviServerMode;
+  phase: IShuviServerPhase;
+  paths: IPaths;
+  config: NormalizedShuviServerConfig;
+  pluginRunner: PluginRunner;
+  // resources
+  assetPublicPath: string;
+  resources: IResources;
+  getRoutes(): IUserRouteConfig[];
+}
 
 type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
 

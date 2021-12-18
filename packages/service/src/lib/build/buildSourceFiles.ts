@@ -2,25 +2,32 @@ import path from 'path';
 import { IRuntimeConfig } from '@shuvi/platform-core';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
+import resolveRuntimeCoreFile from '../resolveRuntimeCoreFile';
 import {
   ProjectBuilder,
   UserModule,
   TargetModule,
   fileSnippets
-} from '../project';
+} from '../../project';
 import {
   NormalizedShuviServerConfig,
   getPaths,
-  resolvePath,
-  PluginRunner
-} from '../server';
+  resolvePath
+} from '../../server';
+import { PluginRunner } from '../../plugin';
+import {
+  getServerRoutes,
+  watchServerRoutes,
+  serializePageRoutes,
+  serializeApiRoutes,
+  serializeMiddlewareRoutes
+} from '../../route';
 
 export interface Options {
-  builder: ProjectBuilder;
   rootDir: string;
   config: NormalizedShuviServerConfig;
   runner: PluginRunner;
+  watch: boolean;
 }
 
 function withExts(file: string, extensions: string[]): string[] {
@@ -40,11 +47,14 @@ function getPublicRuntimeConfig(runtimeConfig: IRuntimeConfig): IRuntimeConfig {
 }
 
 export async function buildSourceFiles({
-  builder,
   rootDir,
   config,
-  runner
+  runner,
+  watch
 }: Options) {
+  const builder = new ProjectBuilder({
+    static: watch === false
+  });
   const paths = getPaths({
     rootDir,
     outputPath: config.publicDir,
@@ -202,4 +212,41 @@ export async function buildSourceFiles({
   builder.setPlatformModule(platformModule);
   builder.setClientModule(clientModule);
   builder.setUserModule(userModule);
+
+  const serverRoutesOption = {
+    pagesDir: paths.pagesDir,
+    apisDir: paths.apisDir
+  };
+  const routes = await getServerRoutes(serverRoutesOption);
+
+  const { prefix = '' } = config.apiConfig || {};
+  builder.setRoutesContent(
+    `export default ${serializePageRoutes(routes.pageRoutes)}`
+  );
+  builder.setApiRoutesContent(
+    `export default ${serializeApiRoutes(routes.apiRoutes, prefix)}`
+  );
+  builder.setMiddlewareRoutesContent(
+    `export default ${serializeMiddlewareRoutes(routes.middlewareRoutes)}`
+  );
+
+  if (watch) {
+    watchServerRoutes(serverRoutesOption, routes => {
+      if (routes.pageRoutes) {
+        builder.setRoutesContent(
+          `export default ${serializePageRoutes(routes.pageRoutes)}`
+        );
+      }
+      if (routes.apiRoutes) {
+        builder.setApiRoutesContent(
+          `export default ${serializeApiRoutes(routes.apiRoutes, prefix)}`
+        );
+      }
+      if (routes.middlewareRoutes) {
+        builder.setMiddlewareRoutesContent(
+          `export default ${serializeMiddlewareRoutes(routes.middlewareRoutes)}`
+        );
+      }
+    });
+  }
 }

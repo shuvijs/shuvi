@@ -1,6 +1,80 @@
-import { serializeRoutes, normalizeRoutes } from '../routes';
+import { serializePageRoutes, serializeApiRoutes } from '../serializeRoutes';
+import { getPageRoutes, getApiRoutes } from '../serverRoutes';
 
-describe('serializeRoutes', () => {
+describe('serializeApiRoutes', () => {
+  const routes = [
+    {
+      path: '/',
+      apiModule: 'Foo'
+    },
+    {
+      path: '/nested',
+      apiModule: 'Foo',
+      children: [
+        {
+          path: '/a',
+          apiModule: 'Bar'
+        }
+      ]
+    }
+  ];
+  test('should work', () => {
+    expect(serializeApiRoutes(routes)).toMatchInlineSnapshot(`
+      "[
+      {
+            path: \\"/nested/a\\",
+            apiModule: require(\\"Bar\\"),
+          },
+      {
+            path: \\"/\\",
+            apiModule: require(\\"Foo\\"),
+          },
+      {
+            path: \\"/nested\\",
+            apiModule: require(\\"Foo\\"),
+          },]"
+    `);
+  });
+});
+
+describe('normalizeApiRoutes', () => {
+  describe('handler', () => {
+    test('should convert relative path to absolute path', () => {
+      const routes = getApiRoutes(
+        [
+          {
+            path: '/a',
+            filepath: 'a'
+          },
+          {
+            path: '/b',
+            filepath: '/b'
+          }
+        ],
+        { apisDir: '/test' }
+      );
+
+      expect(routes).toMatchObject([
+        {
+          path: '/a',
+          apiModule: '/test/a',
+          children: [
+            {
+              path: '/aa',
+              apiModule: '/test/a/aa'
+            }
+          ]
+        },
+        {
+          path: '/b',
+          apiModule: '/b'
+        }
+      ]);
+    });
+  });
+});
+
+describe('serializePageRoutes', () => {
   const routes = [
     {
       path: '/',
@@ -18,7 +92,7 @@ describe('serializeRoutes', () => {
     }
   ];
   test('should work', () => {
-    expect(serializeRoutes(routes)).toMatchInlineSnapshot(`
+    expect(serializePageRoutes(routes)).toMatchInlineSnapshot(`
       "[{id: \\"0042\\",
       path: \\"/\\",
       __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
@@ -49,24 +123,24 @@ describe('serializeRoutes', () => {
 describe('normalizeRoutes', () => {
   describe('component', () => {
     test('should convert relative path to absolute path', () => {
-      const routes = normalizeRoutes(
+      const routes = getPageRoutes(
         [
           {
             path: '/a',
-            component: 'a',
+            filepath: 'a',
             children: [
               {
                 path: '/aa',
-                component: 'aa'
+                filepath: 'aa'
               }
             ]
           },
           {
             path: '/b',
-            component: '/b'
+            filepath: '/b'
           }
         ],
-        { componentDir: '/test' }
+        { pagesDir: '/test' }
       );
 
       expect(routes).toMatchObject([

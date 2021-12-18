@@ -6,8 +6,8 @@ import {
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { getBundler } from '../../../bundler';
+import { IPluginContext } from '../../../plugin';
 import { Server } from '../../http-server';
-import { IPluginContext } from '../../shuviServerTypes';
 import { WebpackHotMiddleware } from './hotMiddleware';
 
 export interface DevMiddleware {

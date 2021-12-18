@@ -1,5 +1,5 @@
 import { ShuviServer } from './shuviServer';
-import { IPluginContext } from './shuviServerTypes';
+import { IPluginContext } from '../plugin';
 import { IRequestHandlerWithNext } from '../server/http-server';
 import { serveStatic } from './helper/serveStatic';
 import { BUILD_DEFAULT_DIR, PUBLIC_PATH } from '../constants';
@@ -35,12 +35,11 @@ export class ShuviProdServer extends ShuviServer {
     return 'production' as const;
   }
 
-  async init() {
+  async _init() {
     const context = this._getPluginContext();
     const assetsMiddleware = getAssetMiddleware(context);
     if (context.config.publicPath === PUBLIC_PATH) {
       this._server.use(`${context.assetPublicPath}:path(.*)`, assetsMiddleware);
     }
-    await this._initMiddlewares();
   }
 }

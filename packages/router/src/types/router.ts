@@ -19,7 +19,7 @@ export interface IRouteRecord<Element = any> {
   resolve?: NavigationGuardHookWithContext;
   props?: IRouteComponentProps;
   path: string;
-  filepath: string;
+  [x: string]: any;
 }
 
 export interface NavigationGuardHook<R extends IRouteRecord = any> {

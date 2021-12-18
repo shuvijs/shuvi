@@ -1,5 +1,6 @@
 import { reactive } from './file-manager';
-import { IRuntimeOrServerPlugin } from '../api';
+import { IRuntimePluginConfig } from '../plugin';
+
 export interface UserModule {
   document: string | string[];
   server: string | string[];
@@ -38,7 +39,7 @@ export interface ProjectContext {
    */
   services: Map<string, Map<string, Set<string>>>;
   exports: Map<string, string[]>;
-  runtimePlugins: IRuntimeOrServerPlugin[];
+  runtimePlugins: IRuntimePluginConfig[];
   runtimeConfigContent: string | null;
   platformModule: string;
   userModule: UserModule;

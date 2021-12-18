@@ -2,14 +2,14 @@ import { IncomingMessage, ServerResponse } from 'http';
 import {
   IRequest,
   IRequestHandlerWithNext,
-  IServerPluginContext
+  IPluginContext
 } from '@shuvi/service';
 
 import { sendHTML } from '@shuvi/service/lib/lib/utils';
 
 import { renderToHTML } from './renderToHTML';
 
-function initServerRender(serverPluginContext: IServerPluginContext) {
+function initServerRender(serverPluginContext: IPluginContext) {
   return async function (
     req: IncomingMessage,
     res: ServerResponse
@@ -41,15 +41,11 @@ function initServerRender(serverPluginContext: IServerPluginContext) {
   };
 }
 
-export function getSSRMiddleware(
-  api: IServerPluginContext
-): IRequestHandlerWithNext {
+export function getSSRMiddleware(api: IPluginContext): IRequestHandlerWithNext {
   const serverRender = initServerRender(api);
   return async function (req, res, next) {
     try {
-      const renderToHTML = await api.serverPluginRunner.renderToHTML(
-        serverRender
-      );
+      const renderToHTML = await api.pluginRunner.renderToHTML(serverRender);
       const html = await renderToHTML(req, res);
       if (html) {
         // send the response

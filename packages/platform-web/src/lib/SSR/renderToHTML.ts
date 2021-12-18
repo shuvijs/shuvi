@@ -1,4 +1,4 @@
-import { IRequest, IServerPluginContext } from '@shuvi/service';
+import { IRequest, IPluginContext } from '@shuvi/service';
 import { IBuiltResource } from '../types';
 import { Renderer, isRedirect, IRenderResultRedirect } from './renderer';
 
@@ -8,7 +8,7 @@ export async function renderToHTML({
   onRedirect
 }: {
   req: IRequest;
-  serverPluginContext: IServerPluginContext;
+  serverPluginContext: IPluginContext;
   onRedirect?(redirect: IRenderResultRedirect): void;
 }): Promise<{ html: string | null; appContext: any }> {
   let html: null | string = null;

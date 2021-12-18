@@ -7,7 +7,7 @@ import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
-  IServerPluginContext
+  IPluginContext
 } from '@shuvi/service';
 
 import {
@@ -67,8 +67,10 @@ export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
 }
 
+function getAssetPublicUrl(publicPath: string, ...paths: string[]) {}
+
 export abstract class BaseRenderer {
-  protected _serverPluginContext: IServerPluginContext;
+  protected _serverPluginContext: IPluginContext;
   protected _resources: IBuiltResource;
 
   constructor({ serverPluginContext }: IRendererConstructorOptions) {
@@ -105,7 +107,7 @@ export abstract class BaseRenderer {
       );
     }
 
-    docProps = await this._serverPluginContext.serverPluginRunner.modifyHtml(
+    docProps = await this._serverPluginContext.pluginRunner.modifyHtml(
       docProps as IDocumentProps,
       appContext
     );
@@ -134,13 +136,13 @@ export abstract class BaseRenderer {
     const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
     scripts.push(
       tag('script', {
-        src: this._serverPluginContext.getAssetPublicUrl(polyfill)
+        src: this._getAssetPublicUrl(polyfill)
       })
     );
     entrypoints.js.forEach((asset: string) => {
       scripts.push(
         tag('script', {
-          src: this._serverPluginContext.getAssetPublicUrl(asset)
+          src: this._getAssetPublicUrl(asset)
         })
       );
     });
@@ -149,7 +151,7 @@ export abstract class BaseRenderer {
         styles.push(
           tag('link', {
             rel: 'stylesheet',
-            href: this._serverPluginContext.getAssetPublicUrl(asset)
+            href: this._getAssetPublicUrl(asset)
           })
         );
       });
@@ -201,6 +203,10 @@ export abstract class BaseRenderer {
       },
       htmlEscapeJsonString(data)
     );
+  }
+
+  protected _getAssetPublicUrl(path: string) {
+    return `${this._serverPluginContext.assetPublicPath}${path}`;
   }
 
   private _renderDocument(

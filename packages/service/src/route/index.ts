@@ -1,1 +1,6 @@
-export { getRoutes, watchRoutes } from './fileSystemRoute';
+export { getServerRoutes, watchServerRoutes } from './serverRoutes';
+export {
+  serializePageRoutes,
+  serializeApiRoutes,
+  serializeMiddlewareRoutes
+} from './serializeRoutes';

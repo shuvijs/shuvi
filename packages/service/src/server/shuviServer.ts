@@ -1,7 +1,9 @@
 import path from 'path';
 import { PUBLIC_PATH } from '../constants';
-import { Route } from '../route';
-import { normalizeServerMiddleware } from './serverMiddleware';
+import {
+  normalizeServerMiddleware,
+  NormalizedServerMiddleware
+} from './serverMiddleware';
 import { Server } from './http-server';
 import {
   IShuviServer,
@@ -13,19 +15,11 @@ import {
   IPaths,
   IPlatform,
   IUserRouteConfig,
-  IApiRouteConfig,
-  IMiddlewareRouteConfig,
-  IServerMiddleware
+  IApiRouteConfig
 } from './shuviServerTypes';
-import { PluginManager, getManager, IServerPluginInstance } from './plugin';
+import { PluginManager, getManager, IServerPluginInstance } from '../plugin';
 import { getPaths } from './paths';
 import { normalizeConfig } from './config';
-import { normalizeRoutes, renameFilepathToComponent } from './helper/routes';
-import { normalizeApiRoutes, renameFilepathToModule } from './helper/apiRoutes';
-import {
-  normalizeMiddlewareRoutes,
-  pickMiddlewareAndPath
-} from './helper/middlewaresRoutes';
 
 function getPlatform(platform: string | undefined): IPlatform {
   const platformName = `@shuvi/platform-${platform}`;
@@ -46,8 +40,8 @@ export abstract class ShuviServer implements IShuviServer {
   private _plugins: IServerPluginInstance[];
   private _resources: IResources;
   private _paths: IPaths;
-  private _middlewares: IServerMiddleware[];
-  private _afterMiddlewares: IServerMiddleware[];
+  private _middlewares: NormalizedServerMiddleware[];
+  private _afterMiddlewares: NormalizedServerMiddleware[];
 
   constructor({ rootDir, config, plugins = [] }: ShuviServerOptions) {
     this._rootDir = path.resolve(rootDir);
@@ -87,8 +81,11 @@ export abstract class ShuviServer implements IShuviServer {
   abstract get mode(): IShuviServerMode;
 
   async init() {
+    // self init
     await this._initPlugin();
-    await Promise.all([this._initMiddlewares(), this._initRoutes()]);
+    await Promise.all([this._initResource(), this._initMiddlewares()]);
+
+    // subclass init
     await this._init();
 
     this._middlewares.forEach(({ path, handler }) =>
@@ -123,42 +120,6 @@ export abstract class ShuviServer implements IShuviServer {
       pluginManager.usePlugin(plugin);
     }
     await pluginManager.runner.setup();
-  }
-
-  private async _initRoutes() {
-    const {
-      _paths: paths,
-      _config: { apiRoutes, routes }
-    } = this;
-    if (Array.isArray(routes)) {
-      await this._setPageRoutes(routes);
-      await this._setMiddlewaresRoutes(pickMiddlewareAndPath(routes));
-    } else {
-      const route = new Route(paths.pagesDir, false);
-      if (this.mode === 'development') {
-        route.subscribe(tempRoutes => {
-          this._setPageRoutes(renameFilepathToComponent(tempRoutes));
-          this._setMiddlewaresRoutes(pickMiddlewareAndPath(tempRoutes));
-        });
-      } else {
-        const tempRoutes = await route.getRoutes();
-        await this._setPageRoutes(renameFilepathToComponent(tempRoutes));
-        await this._setMiddlewaresRoutes(pickMiddlewareAndPath(tempRoutes));
-      }
-    }
-    if (Array.isArray(apiRoutes) && apiRoutes.length) {
-      await this._setApiRoutes(apiRoutes);
-    } else {
-      const apiRoute = new Route(paths.apisDir, true);
-      if (this.mode === 'development') {
-        apiRoute.subscribe(tempApiRoutes => {
-          this._setApiRoutes(renameFilepathToModule(tempApiRoutes));
-        });
-      } else {
-        const tempApiRoutes = await apiRoute.getRoutes();
-        await this._setApiRoutes(renameFilepathToModule(tempApiRoutes));
-      }
-    }
   }
 
   private async _initMiddlewares() {
@@ -198,27 +159,10 @@ export abstract class ShuviServer implements IShuviServer {
     };
   }
 
-  protected async _setPageRoutes(routes: IUserRouteConfig[]): Promise<void> {
-    routes = await this._pluginManager.runner.appRoutes(routes);
-    routes = normalizeRoutes(routes, {
-      componentDir: this._paths.pagesDir
-    });
-    this._pageRoutes = routes;
-  }
-
-  protected async _setApiRoutes(routes: IApiRouteConfig[]): Promise<void> {
-    this._apiRoutes = normalizeApiRoutes(routes, {
-      apisDir: this._paths.apisDir
-    });
-  }
-
-  protected async _setMiddlewaresRoutes(
-    middlewaresRoutes: IMiddlewareRouteConfig[]
-  ): Promise<void> {
-    middlewaresRoutes = normalizeMiddlewareRoutes(middlewaresRoutes, {
-      pagesDir: this._paths.pagesDir
-    });
-  }
+  // protected async _setPageRoutes(routes: IUserRouteConfig[]): Promise<void> {
+  //   routes = await this._pluginManager.runner.appRoutes(routes);
+  //   this._pageRoutes = routes;
+  // }
 
   private _addResoure(identifier: string, loader: () => any): void {
     const cacheable = this.mode === 'production';

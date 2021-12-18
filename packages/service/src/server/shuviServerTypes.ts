@@ -1,5 +1,5 @@
 import { IRuntimeConfig } from '@shuvi/platform-core';
-import { IServerPluginInstance, PluginRunner } from './plugin';
+import { IServerPluginInstance, IPluginContext } from '../plugin';
 import { IServerMiddlewareItem } from './http-server';
 
 export type IShuviServerMode = 'development' | 'production';
@@ -119,18 +119,6 @@ export interface IPaths {
   apisDir: string;
 
   publicDir: string;
-}
-
-export interface IPluginContext {
-  mode: IShuviServerMode;
-  phase: IShuviServerPhase;
-  paths: IPaths;
-  config: NormalizedShuviServerConfig;
-  pluginRunner: PluginRunner;
-  // resources
-  assetPublicPath: string;
-  resources: IResources;
-  getRoutes(): IUserRouteConfig[];
 }
 
 export type IPlatform = (context: IPluginContext) => Promise<any[]> | any[];
