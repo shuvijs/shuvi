@@ -2,7 +2,7 @@ import { ShuviServer } from './shuviServer';
 import { IRequestHandlerWithNext } from '../server/http-server';
 import { serveStatic } from '../lib/serveStatic';
 import { BUILD_DEFAULT_DIR, PUBLIC_PATH } from '../constants';
-import { IServerPluginContext } from './serverHooks';
+import { IServerPluginContext } from './plugin';
 
 const getAssetMiddleware = (
   cliContext: IServerPluginContext

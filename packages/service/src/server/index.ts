@@ -3,6 +3,8 @@ import { IShuviServer } from './shuviServerTypes';
 
 export * from './http-server';
 
+export * from './plugin';
+
 export * from './shuviServerTypes';
 
 export interface CreateShuviServerOptions {

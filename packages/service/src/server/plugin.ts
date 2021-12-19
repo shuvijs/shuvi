@@ -6,29 +6,18 @@ import {
   createHookGroup,
   isPluginInstance
 } from '@shuvi/hook';
-import { IncomingMessage, ServerResponse } from 'http';
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 import { IRuntimeOrServerPlugin, ICliContext } from '../api';
-import { IServerMiddlewareItem, IRequest } from './http-server';
+import {
+  IServerAppContext,
+  IServerMiddleware,
+  IRenderToHTML,
+  IDocumentProps,
+  OnViewDoneParams
+} from './pluginTypes';
 
-export interface IDocumentProps {
-  htmlAttrs: IHtmlAttrs;
-  headTags: IHtmlTag<
-    'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
-  >[];
-  mainTags: IHtmlTag[];
-  scriptTags: IHtmlTag<'script'>[];
-}
+export * from './pluginTypes';
 
-export type IRenderToHTML = (
-  req: IncomingMessage,
-  res: ServerResponse
-) => Promise<string | null>;
-
-export interface IServerAppContext {
-  req: IRequest;
-  [x: string]: any;
-}
+type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
 
 export interface IServerModule {
   serverMiddleware?: IServerMiddleware | IServerMiddleware[];
@@ -42,16 +31,23 @@ export interface IServerModule {
   ) => string | void | undefined;
 }
 
-type OnViewDoneParams = {
-  req: IncomingMessage;
-  res: ServerResponse;
-  html: string | null;
-  appContext: any;
+export type IServerPluginContext = ICliContext & {
+  serverPluginRunner: PluginManager['runner'];
 };
 
-type IServerMiddleware =
-  | IServerMiddlewareItem
-  | IServerMiddlewareItem['handler'];
+export type PluginManager = ReturnType<typeof getManager>;
+
+export type PluginRunner = PluginManager['runner'];
+
+export type CreatePlugin = PluginManager['createPlugin'];
+
+export type IServerPluginInstance = ArrayItem<
+  Parameters<PluginManager['usePlugin']>
+>;
+
+export type IServerPluginConstructor = ArrayItem<
+  Parameters<PluginManager['createPlugin']>[0]
+>;
 
 const serverMiddleware = createAsyncParallelHook<
   void,
@@ -77,7 +73,7 @@ const onViewDone = createSyncHook<OnViewDoneParams, void, void>();
 
 const render = createSyncBailHook<() => string, IServerAppContext, string>();
 
-export const hooksMap = {
+const hooksMap = {
   serverMiddleware,
   serverMiddlewareLast,
   serverListen,
@@ -88,30 +84,10 @@ export const hooksMap = {
   render
 };
 
-export type IServerPluginContext = ICliContext & {
-  serverPluginRunner: PluginManager['runner'];
-};
-
 export const getManager = () =>
   createHookGroup<typeof hooksMap, IServerPluginContext>(hooksMap);
 
-export const { createPlugin } = getManager();
-
-export type PluginManager = ReturnType<typeof getManager>;
-
-export type PluginRunner = PluginManager['runner'];
-
-export type CreatePlugin = PluginManager['createPlugin'];
-
-export type IServerPluginInstance = ArrayItem<
-  Parameters<PluginManager['usePlugin']>
->;
-
-export type IServerPluginConstructor = ArrayItem<
-  Parameters<PluginManager['createPlugin']>[0]
->;
-
-type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
+export const { createPlugin: createServerPlugin } = getManager();
 
 const resolvePlugin = (path: string) => {
   const resolved = require(path);

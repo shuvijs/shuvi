@@ -33,7 +33,7 @@ interface HookMap {
 }
 
 // 这意味着context需要在一开始就确定
-type hookGroup<HM extends HookMap, C, EHM extends HookMap> = {
+export type HookGroup<HM extends HookMap, C, EHM extends HookMap> = {
   createPlugin: (
     pluginHandlers: IPluginHandlers<HM & EHM, C>,
     options?: PluginOptions
@@ -183,7 +183,7 @@ export const createHookGroup = <
 >(
   hookMap: HM,
   context?: C
-): hookGroup<HM, C, EHM> => {
+): HookGroup<HM, C, EHM> => {
   const _hookMap: HM | (HM & EHM) = hookMap;
   let _plugins: IPlugin<HM & EHM, C>[] = [];
   let _context: C;

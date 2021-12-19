@@ -4,9 +4,9 @@ import {
   getManager,
   PluginRunner,
   PluginManager
-} from '../cliHooks';
+} from '../plugin';
 import { IPluginConfig, IPresetConfig } from '..';
-import { resolvePlugins, resolvePresets } from '../plugin';
+import { resolvePlugins, resolvePresets } from '../getPlugins';
 
 function callPresets(context: any, ...presets: IPresetConfig[]) {
   resolvePresets(presets, {

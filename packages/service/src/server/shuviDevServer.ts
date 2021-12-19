@@ -2,7 +2,7 @@ import { ShuviServer } from './shuviServer';
 import { IRequestHandlerWithNext } from '../server/http-server';
 import { serveStatic } from '../lib/serveStatic';
 import { getDevMiddleware } from '../lib/devMiddleware';
-import { IServerPluginContext } from './serverHooks';
+import { IServerPluginContext } from './plugin';
 import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
 
