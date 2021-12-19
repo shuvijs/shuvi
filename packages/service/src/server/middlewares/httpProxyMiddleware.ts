@@ -3,8 +3,7 @@ import {
   Filter as ProxyFilter,
   createProxyMiddleware
 } from 'http-proxy-middleware';
-import { Server } from '../server/server';
-import { IMiddlewareHandler } from '../types/server';
+import { Server, IMiddlewareHandler } from '../http-server';
 
 export interface IProxyConfigItem extends ProxyOptions {
   context?: ProxyFilter;

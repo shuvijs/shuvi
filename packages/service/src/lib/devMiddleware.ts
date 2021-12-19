@@ -8,7 +8,7 @@ import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../bundler';
 import { Server } from '../server';
-import { IServerPluginContext } from '../shuviServer/serverHooks';
+import { IServerPluginContext } from '../server/plugin';
 
 export interface DevMiddleware {
   apply(server?: Server): void;

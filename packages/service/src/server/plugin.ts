@@ -6,29 +6,18 @@ import {
   createHookGroup,
   isPluginInstance
 } from '@shuvi/hook';
-import { IncomingMessage, ServerResponse } from 'http';
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 import { IRuntimeOrServerPlugin, ICliContext } from '../api';
-import { IServerMiddlewareItem, IRequest } from '../types/server';
+import {
+  IServerAppContext,
+  IServerMiddleware,
+  IRenderToHTML,
+  IDocumentProps,
+  OnViewDoneParams
+} from './pluginTypes';
 
-export interface IDocumentProps {
-  htmlAttrs: IHtmlAttrs;
-  headTags: IHtmlTag<
-    'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
-  >[];
-  mainTags: IHtmlTag[];
-  scriptTags: IHtmlTag<'script'>[];
-}
+export * from './pluginTypes';
 
-export type IRenderToHTML = (
-  req: IncomingMessage,
-  res: ServerResponse
-) => Promise<string | null>;
-
-export interface IServerAppContext {
-  req: IRequest;
-  [x: string]: any;
-}
+type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
 
 export interface IServerModule {
   serverMiddleware?: IServerMiddleware | IServerMiddleware[];
@@ -42,53 +31,9 @@ export interface IServerModule {
   ) => string | void | undefined;
 }
 
-type OnViewDoneParams = {
-  req: IncomingMessage;
-  res: ServerResponse;
-  html: string | null;
-  appContext: any;
-};
-
-type IServerMiddleware =
-  | IServerMiddlewareItem
-  | IServerMiddlewareItem['handler'];
-
-const serverMiddleware = createAsyncParallelHook<
-  void,
-  void,
-  IServerMiddleware | IServerMiddleware[]
->();
-const serverMiddlewareLast = createAsyncParallelHook<
-  void,
-  void,
-  IServerMiddleware | IServerMiddleware[]
->();
-const serverListen =
-  createAsyncParallelHook<{ port: number; hostname?: string }>();
-const pageData = createAsyncParallelHook<void, any, Record<string, unknown>>();
-const renderToHTML = createAsyncSeriesWaterfallHook<IRenderToHTML>();
-const modifyHtml = createAsyncSeriesWaterfallHook<IDocumentProps, any>();
-const onViewDone = createSyncHook<OnViewDoneParams, void, void>();
-const render = createSyncBailHook<() => string, IServerAppContext, string>();
-export const hooksMap = {
-  serverMiddleware,
-  serverMiddlewareLast,
-  serverListen,
-  pageData,
-  renderToHTML,
-  modifyHtml,
-  onViewDone,
-  render
-};
-
 export type IServerPluginContext = ICliContext & {
   serverPluginRunner: PluginManager['runner'];
 };
-
-export const getManager = () =>
-  createHookGroup<typeof hooksMap, IServerPluginContext>(hooksMap);
-
-export const { createPlugin } = getManager();
 
 export type PluginManager = ReturnType<typeof getManager>;
 
@@ -104,30 +49,45 @@ export type IServerPluginConstructor = ArrayItem<
   Parameters<PluginManager['createPlugin']>[0]
 >;
 
-type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
+const serverMiddleware = createAsyncParallelHook<
+  void,
+  void,
+  IServerMiddleware | IServerMiddleware[]
+>();
+const serverMiddlewareLast = createAsyncParallelHook<
+  void,
+  void,
+  IServerMiddleware | IServerMiddleware[]
+>();
 
-export const initServerModule = (
-  manager: PluginManager,
-  serverModule: IServerModule
-) => {
-  const {
-    serverMiddleware,
-    getPageData,
-    renderToHTML,
-    modifyHtml,
-    onViewDone,
-    render
-  } = serverModule || {};
-  const { usePlugin, createPlugin } = manager;
-  const constructor: IServerPluginConstructor = {};
-  if (serverMiddleware) constructor.serverMiddleware = () => serverMiddleware;
-  if (getPageData) constructor.pageData = getPageData;
-  if (renderToHTML) constructor.renderToHTML = renderToHTML;
-  if (modifyHtml) constructor.modifyHtml = modifyHtml;
-  if (onViewDone) constructor.onViewDone = onViewDone;
-  if (render) constructor.render = render;
-  usePlugin(createPlugin(constructor, { order: -100, name: 'serverModule' }));
+const serverListen =
+  createAsyncParallelHook<{ port: number; hostname?: string }>();
+
+const pageData = createAsyncParallelHook<void, any, Record<string, unknown>>();
+
+const renderToHTML = createAsyncSeriesWaterfallHook<IRenderToHTML>();
+
+const modifyHtml = createAsyncSeriesWaterfallHook<IDocumentProps, any>();
+
+const onViewDone = createSyncHook<OnViewDoneParams, void, void>();
+
+const render = createSyncBailHook<() => string, IServerAppContext, string>();
+
+const hooksMap = {
+  serverMiddleware,
+  serverMiddlewareLast,
+  serverListen,
+  pageData,
+  renderToHTML,
+  modifyHtml,
+  onViewDone,
+  render
 };
+
+export const getManager = () =>
+  createHookGroup<typeof hooksMap, IServerPluginContext>(hooksMap);
+
+export const { createPlugin: createServerPlugin } = getManager();
 
 const resolvePlugin = (path: string) => {
   const resolved = require(path);

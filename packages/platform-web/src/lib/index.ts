@@ -10,11 +10,7 @@ import {
   ICliContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import {
-  initServerModule,
-  initServerPlugins,
-  getManager
-} from '@shuvi/service/lib/shuviServer/serverHooks';
+import { initServerPlugins, getManager } from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
@@ -22,6 +18,7 @@ import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getCoreResources } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { renderToHTML } from './SSR';
+
 function getServerEntry(context: ICliContext): IWebpackEntry {
   const { ssr } = context.config;
   return {
@@ -47,8 +44,6 @@ async function buildHtml({
     serverPlugins,
     context
   );
-  const { server } = context.resources.server;
-  initServerModule(pluginManger, server);
   const { html } = await renderToHTML({
     req: {
       url: pathname,

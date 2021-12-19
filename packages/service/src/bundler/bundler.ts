@@ -11,7 +11,7 @@ import webpack, {
   Compiler as WebapckCompiler
 } from 'webpack';
 import { ICliContext } from '../api';
-import { Target, TargetChain } from '../api/cliHooks';
+import { Target, TargetChain } from '../api/plugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import {
   createWebpackConfig,

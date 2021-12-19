@@ -1,4 +1,4 @@
-import type { Api } from './api';
+export type { Api } from './api';
 export { getApi } from './api';
-export type { Api };
 export * from './types';
+export * from './plugin';
