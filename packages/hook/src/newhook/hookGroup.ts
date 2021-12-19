@@ -104,7 +104,7 @@ const SYNC_PLUGIN_SYMBOL = 'SYNC_PLUGIN_SYMBOL';
 
 export const isPluginInstance = (plugin: any) =>
   plugin &&
-  plugin.hasOwnProperty('SYNC_PLUGIN_SYMBOL') &&
+  plugin.hasOwnProperty(SYNC_PLUGIN_SYMBOL) &&
   plugin.SYNC_PLUGIN_SYMBOL === SYNC_PLUGIN_SYMBOL;
 
 const sortPlugins = <T extends IPlugin<any, any>[]>(input: T): T => {

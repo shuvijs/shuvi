@@ -1,7 +1,6 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
 import { UrlWithParsedQuery } from 'url';
-import { ParsedQuery } from 'query-string';
-import { IParams } from '@shuvi/platform-core';
+import { IParams, IQuery } from '@shuvi/platform-core';
 
 export interface IIncomingMessage extends IncomingMessage {
   url: string;
@@ -13,7 +12,7 @@ export interface IIncomingMessage extends IncomingMessage {
 export interface IRequest extends IIncomingMessage {
   url: string;
   pathname: string;
-  query: ParsedQuery;
+  query: IQuery;
   params: IParams;
   headers: IncomingHttpHeaders;
 }

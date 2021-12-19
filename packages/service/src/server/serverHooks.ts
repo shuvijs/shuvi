@@ -9,7 +9,7 @@ import {
 import { IncomingMessage, ServerResponse } from 'http';
 import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 import { IRuntimeOrServerPlugin, ICliContext } from '../api';
-import { IServerMiddlewareItem, IRequest } from '../types/server';
+import { IServerMiddlewareItem, IRequest } from './http-server';
 
 export interface IDocumentProps {
   htmlAttrs: IHtmlAttrs;
@@ -63,13 +63,20 @@ const serverMiddlewareLast = createAsyncParallelHook<
   void,
   IServerMiddleware | IServerMiddleware[]
 >();
+
 const serverListen =
   createAsyncParallelHook<{ port: number; hostname?: string }>();
+
 const pageData = createAsyncParallelHook<void, any, Record<string, unknown>>();
+
 const renderToHTML = createAsyncSeriesWaterfallHook<IRenderToHTML>();
+
 const modifyHtml = createAsyncSeriesWaterfallHook<IDocumentProps, any>();
+
 const onViewDone = createSyncHook<OnViewDoneParams, void, void>();
+
 const render = createSyncBailHook<() => string, IServerAppContext, string>();
+
 export const hooksMap = {
   serverMiddleware,
   serverMiddlewareLast,
@@ -105,29 +112,6 @@ export type IServerPluginConstructor = ArrayItem<
 >;
 
 type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
-
-export const initServerModule = (
-  manager: PluginManager,
-  serverModule: IServerModule
-) => {
-  const {
-    serverMiddleware,
-    getPageData,
-    renderToHTML,
-    modifyHtml,
-    onViewDone,
-    render
-  } = serverModule || {};
-  const { usePlugin, createPlugin } = manager;
-  const constructor: IServerPluginConstructor = {};
-  if (serverMiddleware) constructor.serverMiddleware = () => serverMiddleware;
-  if (getPageData) constructor.pageData = getPageData;
-  if (renderToHTML) constructor.renderToHTML = renderToHTML;
-  if (modifyHtml) constructor.modifyHtml = modifyHtml;
-  if (onViewDone) constructor.onViewDone = onViewDone;
-  if (render) constructor.render = render;
-  usePlugin(createPlugin(constructor, { order: -100, name: 'serverModule' }));
-};
 
 const resolvePlugin = (path: string) => {
   const resolved = require(path);

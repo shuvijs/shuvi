@@ -1,5 +1,5 @@
 import resolve from '@shuvi/utils/lib/resolve';
-import { IMiddlewareHandler } from '../types/server';
+import { IMiddlewareHandler } from '../server';
 
 interface Options {
   rootDir: string;
