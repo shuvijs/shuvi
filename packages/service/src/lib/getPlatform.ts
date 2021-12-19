@@ -1,4 +1,4 @@
-import { IPlatform } from '../types/index';
+import { IPlatform } from '../api';
 
 export default function (platform: string | undefined): IPlatform {
   const platformName = `@shuvi/platform-${platform}`;

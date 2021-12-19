@@ -192,9 +192,9 @@ export default abstract class PlatformMpBase {
             }
             if (component) {
               branches.push({
+                ...other,
                 path: tempPath,
-                component,
-                ...other
+                component
               });
             }
           });

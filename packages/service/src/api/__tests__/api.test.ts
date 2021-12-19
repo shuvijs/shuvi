@@ -79,29 +79,6 @@ describe('api', () => {
     });
   });
 
-  describe('presets', () => {
-    test('should work', async () => {
-      const api = await getApi({
-        config: { presets: [resolvePreset('a-b-preset')] }
-      });
-      const plugins = (api as any)._presetPlugins;
-      expect(plugins.length).toBe(2);
-      expect(plugins[0].name).toBe('a');
-      expect(plugins[1].name).toMatch('b');
-    });
-
-    test('should work with nested preset', async () => {
-      const api = await getApi({
-        config: { presets: [resolvePreset('nest-preset-preset')] }
-      });
-      const plugins = (api as any)._presetPlugins;
-      expect(plugins.length).toBe(3);
-      expect(plugins[0].name).toBe('a');
-      expect(plugins[1].name).toMatch('b');
-      expect(plugins[2].name).toMatch('c');
-    });
-  });
-
   test('add App files, add App services', async () => {
     const shuviDir = path.join(__dirname, 'fixtures', 'rootDir', '.shuvi');
     const shuviAppDir = path.join(shuviDir, 'app');

@@ -1,4 +1,4 @@
-import { createPlugin } from '../../../cliHooks';
+import { createPlugin } from '../../../plugin';
 
 export default (options: any) =>
   createPlugin({

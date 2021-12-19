@@ -2,7 +2,7 @@ import http from 'http';
 import { parse as parseUrl } from 'url';
 import { parseQuery } from '@shuvi/platform-core';
 import detectPort from 'detect-port';
-import { sendHTML } from '../lib/utils';
+import { sendHTML } from '../../lib/utils';
 import { getRouter, Router } from './router';
 import {
   IResponse,
@@ -10,7 +10,7 @@ import {
   IMiddlewareHandler,
   IRequestHandlerWithNext,
   INextFunc
-} from '../types/server';
+} from './serverTypes';
 
 const prepareReq: IRequestHandlerWithNext = (req, res, next) => {
   const url = parseUrl(req.url, false);

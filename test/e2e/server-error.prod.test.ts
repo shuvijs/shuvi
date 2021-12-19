@@ -30,7 +30,7 @@ describe('Custom Server.js with error production', () => {
     expect(await page.$text('body')).toMatch('Server Render Error');
     expect(await page.$text('body')).not.toContain('Error: Something wrong');
     expect(await page.$text('body')).not.toContain(
-      'shuvi/test/fixtures/custom-server-with-error/dist/server/server.js'
+      'test/fixtures/custom-server-with-error/dist/server/server.js'
     );
 
     // Note: Server

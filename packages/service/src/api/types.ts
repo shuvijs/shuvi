@@ -5,7 +5,7 @@ import {
   ICliPluginInstance,
   PluginManager,
   PluginRunner
-} from './cliHooks';
+} from './plugin';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -69,12 +69,16 @@ export declare type IPhase =
   | 'PHASE_DEVELOPMENT_SERVER'
   | 'PHASE_INSPECT_WEBPACK';
 
-interface IPlatform {
+interface IPlatformConfig {
   name: string;
   framework?: string;
   target?: string;
   [index: string]: any;
 }
+
+export type IPlatform = (
+  context: ICliContext
+) => Promise<ICliPluginInstance[]> | ICliPluginInstance[];
 
 export interface IApiConfig {
   outputPath: string;
@@ -102,7 +106,7 @@ export interface IApiConfig {
    * specifically target for `platform-web`
    */
   target?: 'spa' | 'ssr';
-  platform: IPlatform;
+  platform: IPlatformConfig;
   proxy?: any;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];

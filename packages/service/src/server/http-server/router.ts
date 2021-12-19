@@ -9,7 +9,7 @@ import {
   INextFunc,
   IRequest,
   IResponse
-} from '../types/server';
+} from './serverTypes';
 
 interface RouteOptions {
   caseSensitive: boolean;
