@@ -5,8 +5,9 @@ import {
   PluginRunner,
   PluginManager
 } from '../plugin';
-import { IPluginConfig, IPresetConfig } from '..';
-import { resolvePlugins, resolvePresets } from '../getPlugins';
+import { IPluginConfig, IPresetConfig } from '../types';
+import { resolvePlugins, resolvePresets, getPlugins } from '../getPlugins';
+import { resolvePreset } from './utils';
 
 function callPresets(context: any, ...presets: IPresetConfig[]) {
   resolvePresets(presets, {
@@ -103,6 +104,16 @@ describe('plugin', () => {
 });
 
 describe('preset', () => {
+  test('should works', async () => {
+    const plugins = await getPlugins({
+      rootDir: '',
+      config: { presets: [resolvePreset('a-b-preset')] }
+    } as any);
+    expect(plugins.length).toBe(2);
+    expect(plugins[0].name).toBe('a');
+    expect(plugins[1].name).toMatch('b');
+  });
+
   test('should accept function module as a plugin', () => {
     const context = {};
     callPresets(context, './simple-preset');
@@ -118,5 +129,16 @@ describe('preset', () => {
     expect(presets.length).toBe(1);
     expect(presets[0].name).toBe('simple-preset');
     expect(presets[0].options).toMatchObject({ test: 1 });
+  });
+
+  test('should work with nested preset', async () => {
+    const plugins = await getPlugins({
+      rootDir: '',
+      config: { presets: [resolvePreset('nest-preset-preset')] }
+    } as any);
+    expect(plugins.length).toBe(3);
+    expect(plugins[0].name).toBe('a');
+    expect(plugins[1].name).toMatch('b');
+    expect(plugins[2].name).toMatch('c');
   });
 });

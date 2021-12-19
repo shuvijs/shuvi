@@ -89,8 +89,8 @@ function resolvePreset(
   const id = presetPath;
   let preset = require(presetPath);
   preset = preset.default || preset;
-  const presetFn: IPresetSpec = () => {
-    return preset(options);
+  const presetFn: IPresetSpec = (context: ICliContext) => {
+    return preset(context, options);
   };
 
   return {
