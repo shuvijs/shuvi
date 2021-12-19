@@ -1,10 +1,10 @@
-import { IServerPluginContext, IRequestHandlerWithNext } from '@shuvi/service';
+import { IPluginContext, IRequestHandlerWithNext } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
 import { apiRouteHandler } from './apiRouteHandler';
 import { IBuiltResource } from '../types';
 
 export function getApiRoutesMiddleware(
-  api: IServerPluginContext
+  api: IPluginContext
 ): IRequestHandlerWithNext {
   return async function (req, res, next) {
     const { apiRoutes } = api.resources.server as IBuiltResource['server'];

@@ -2,7 +2,7 @@ import invariant from '@shuvi/utils/lib/invariant';
 import resolve from '@shuvi/utils/lib/resolve';
 import { isPluginInstance } from '@shuvi/hook';
 import {
-  createServerPlugin,
+  createPlugin,
   IServerPluginInstance,
   IServerPluginConstructor
 } from '@shuvi/service';
@@ -41,7 +41,7 @@ function resolvePlugin(
     if (isPluginInstance(pluginConfig)) {
       return pluginConfig as IServerPluginInstance;
     }
-    return createServerPlugin(pluginConfig as IServerPluginConstructor);
+    return createPlugin(pluginConfig as IServerPluginConstructor);
   } else {
     throw new Error(
       `Plugin must be one of type [string, array, ICliPluginConstructor, ICliPluginInstance]`
@@ -57,7 +57,7 @@ function resolvePlugin(
   } else if (typeof plugin === 'function') {
     pluginInst = plugin(options);
   } else {
-    pluginInst = createServerPlugin({});
+    pluginInst = createPlugin({});
   }
   return pluginInst;
 }

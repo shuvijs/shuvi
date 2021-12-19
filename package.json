@@ -12,7 +12,7 @@
     "dev": "lerna run dev --stream --parallel",
     "clean": "lerna exec rimraf lib esm shuvi-app --stream --parallel",
     "shuvi": "SHUVI_DEV_DISABLE_CACHE=true node ./packages/shuvi/lib/cli.js",
-    "build": "lerna run build --stream",
+    "build": "lerna run build --stream --ignore @shuvi/platform-mp",
     "jest": "jest",
     "test": "yarn test:fixtures && yarn test:unit",
     "test:unit": "jest packages",

@@ -1,7 +1,7 @@
 import { existsSync } from 'fs';
 import path from 'path';
 import { CommanderStatic } from 'commander';
-import { IConfig } from '@shuvi/service';
+import { ShuviServerConfig } from '@shuvi/service';
 //@ts-ignore
 import pkgInfo from '../package.json';
 
@@ -39,7 +39,7 @@ export function getConfigFromCli(
     string,
     string | ((config: any, optionValue: any) => void)
   > = {}
-): IConfig {
+): ShuviServerConfig {
   const config = {};
   Object.keys(cliOptionsKeyMap).forEach(key => {
     if (typeof cliOptions[key] !== 'undefined') {

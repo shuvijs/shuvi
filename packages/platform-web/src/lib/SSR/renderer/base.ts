@@ -67,8 +67,6 @@ export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
 }
 
-function getAssetPublicUrl(publicPath: string, ...paths: string[]) {}
-
 export abstract class BaseRenderer {
   protected _serverPluginContext: IPluginContext;
   protected _resources: IBuiltResource;

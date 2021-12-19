@@ -30,7 +30,7 @@ function initServerRender(serverPluginContext: IPluginContext) {
       res.statusCode = 200;
     }
 
-    serverPluginContext.serverPluginRunner.onViewDone({
+    serverPluginContext.pluginRunner.onViewDone({
       req,
       res,
       html,

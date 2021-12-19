@@ -26,15 +26,15 @@ export default async function main(argv: string[]) {
     overrides: getConfigFromCli(program)
   });
   const plugins = getPlugins(config);
-  const shuviApp = await createShuviServer({
-    dev: true,
-    rootDir: cwd,
-    config: config,
-    plugins
-  });
   try {
     console.log('Starting the development server...');
-    await shuviApp.listen(port, host);
+    const app = await createShuviServer({
+      dev: true,
+      rootDir: cwd,
+      config: config,
+      plugins
+    });
+    await app.listen(port, host);
     const localUrl = `http://${
       host === '0.0.0.0' ? 'localhost' : host
     }:${port}`;

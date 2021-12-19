@@ -3,32 +3,119 @@ import {
   createSyncBailHook,
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook,
-  createHookGroup,
-  isPluginInstance
+  createHookGroup
 } from '@shuvi/hook';
 import WebpackChain from 'webpack-chain';
+import webpack, { Configuration } from 'webpack';
+import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import { UserModule, TargetModule, FileOptions, fileSnippets } from './project';
+import { IWebpackConfigOptions } from './bundler/config';
 import { IncomingMessage, ServerResponse } from 'http';
 import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
 import { IRequest } from './server/http-server';
-import { IUserRouteConfig, IServerMiddleware } from './server';
 import {
-  BundlerDoneExtra,
-  BundlerTargetDoneExtra,
-  ConfigWebpackAssistant,
-  ExtraTargetAssistant,
-  TargetChain,
-  IRuntimePluginConfig,
-  AppService,
-  AppExport,
-  BundleResource,
-  OnViewDoneParams,
-  IPluginContext
-} from './pluginTypes';
-
-export * from './pluginTypes';
+  IShuviServerMode,
+  IUserRouteConfig,
+  IServerMiddleware,
+  IShuviServerPhase,
+  IPaths,
+  NormalizedShuviServerConfig,
+  IResources
+} from './server';
 
 type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
+
+export type ExtraTargetAssistant = {
+  createConfig(options: IWebpackConfigOptions): WebpackChain;
+  mode: IShuviServerMode;
+  webpack: typeof webpack;
+};
+
+export type ConfigWebpackAssistant = {
+  name: string;
+  mode: IShuviServerMode;
+  webpack: typeof webpack;
+  helpers: IWebpackHelpers;
+};
+
+export type IRuntimePluginConfig = {
+  plugin: string;
+  options?: any;
+};
+
+export interface TargetChain {
+  name: string;
+  chain: WebpackChain;
+}
+export interface Target {
+  name: string;
+  config: Configuration;
+}
+
+export type BundlerDoneExtra = {
+  first: boolean;
+  stats: webpack.MultiStats;
+};
+
+export type BundlerTargetDoneExtra = {
+  first: boolean;
+  name: string;
+  stats: webpack.Stats;
+};
+
+export type AppExport = {
+  source: string;
+  exported: string;
+};
+
+export type AppService = {
+  source: string;
+  exported: string;
+  filepath: string;
+};
+
+export type BundleResource = {
+  identifier: string;
+  loader: () => any;
+};
+
+export interface IDocumentProps {
+  htmlAttrs: IHtmlAttrs;
+  headTags: IHtmlTag<
+    'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
+  >[];
+  mainTags: IHtmlTag[];
+  scriptTags: IHtmlTag<'script'>[];
+}
+
+export type IRenderToHTML = (
+  req: IncomingMessage,
+  res: ServerResponse
+) => Promise<string | null>;
+
+export interface IServerAppContext {
+  req: IRequest;
+  [x: string]: any;
+}
+
+export interface IServerModule {
+  serverMiddleware?: IServerMiddleware | IServerMiddleware[];
+  getPageData?: IServerPluginConstructor['pageData'];
+  renderToHTML?: IServerPluginConstructor['renderToHTML'];
+  modifyHtml?: IServerPluginConstructor['modifyHtml'];
+  onViewDone?: IServerPluginConstructor['onViewDone'];
+  render?: (
+    renderAppToString: () => string,
+    appContext: IServerAppContext
+  ) => string | void | undefined;
+}
+
+export type OnViewDoneParams = {
+  req: IncomingMessage;
+  res: ServerResponse;
+  html: string | null;
+  appContext: any;
+};
 
 const appRoutes = createAsyncSeriesWaterfallHook<IUserRouteConfig[]>();
 const appReady = createAsyncParallelHook<void>();
@@ -76,37 +163,6 @@ const appService = createAsyncParallelHook<
   void,
   AppService | AppService[]
 >();
-
-export interface IDocumentProps {
-  htmlAttrs: IHtmlAttrs;
-  headTags: IHtmlTag<
-    'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
-  >[];
-  mainTags: IHtmlTag[];
-  scriptTags: IHtmlTag<'script'>[];
-}
-
-export type IRenderToHTML = (
-  req: IncomingMessage,
-  res: ServerResponse
-) => Promise<string | null>;
-
-export interface IServerAppContext {
-  req: IRequest;
-  [x: string]: any;
-}
-
-export interface IServerModule {
-  serverMiddleware?: IServerMiddleware | IServerMiddleware[];
-  getPageData?: IServerPluginConstructor['pageData'];
-  renderToHTML?: IServerPluginConstructor['renderToHTML'];
-  modifyHtml?: IServerPluginConstructor['modifyHtml'];
-  onViewDone?: IServerPluginConstructor['onViewDone'];
-  render?: (
-    renderAppToString: () => string,
-    appContext: IServerAppContext
-  ) => string | void | undefined;
-}
 
 const serverMiddleware = createAsyncParallelHook<
   void,
@@ -163,8 +219,6 @@ export const hooksMap = {
   render
 };
 
-export { isPluginInstance };
-
 export const getManager = () =>
   createHookGroup<typeof hooksMap, IPluginContext>(hooksMap);
 
@@ -183,3 +237,15 @@ export type IServerPluginInstance = ArrayItem<
 export type IServerPluginConstructor = ArrayItem<
   Parameters<PluginManager['createPlugin']>[0]
 >;
+
+export interface IPluginContext {
+  mode: IShuviServerMode;
+  phase: IShuviServerPhase;
+  paths: IPaths;
+  config: NormalizedShuviServerConfig;
+  pluginRunner: PluginRunner;
+  // resources
+  assetPublicPath: string;
+  resources: IResources;
+  getRoutes(): IUserRouteConfig[];
+}

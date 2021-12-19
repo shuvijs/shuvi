@@ -6,7 +6,7 @@ import {
   BUILD_SERVER_FILE_SERVER,
   IRequest,
   IPlatform,
-  createServerPlugin,
+  createPlugin,
   IPluginContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
@@ -55,7 +55,7 @@ async function buildHtml({
 }
 
 const platform: IPlatform = async context => {
-  const mainPlugin = createServerPlugin({
+  const mainPlugin = createPlugin({
     setup: context => {
       if (typeof context.config.runtimeConfig === 'object') {
         setRuntimeConfig(context.config.runtimeConfig);

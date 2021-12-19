@@ -17,7 +17,14 @@ import {
   IUserRouteConfig,
   IApiRouteConfig
 } from './shuviServerTypes';
-import { PluginManager, getManager, IServerPluginInstance } from '../plugin';
+import {
+  PluginManager,
+  getManager,
+  IServerPluginInstance,
+  IRuntimePluginConfig,
+  IPluginContext,
+  isPluginInstance
+} from '../plugin';
 import { getPaths } from './paths';
 import { normalizeConfig } from './config';
 
@@ -119,6 +126,48 @@ export abstract class ShuviServer implements IShuviServer {
     for (const plugin of plugins) {
       pluginManager.usePlugin(plugin);
     }
+
+    const serverModulePlugin = pluginManager.createPlugin(
+      {
+        serverMiddleware: context => {
+          return context.resources?.server?.server?.serverMiddleware || [];
+        },
+        pageData: (appContext, context) => {
+          return (
+            context.resources?.server?.server?.getPageData?.(
+              appContext,
+              context
+            ) || {}
+          );
+        },
+        renderToHTML: (renderToHTML, context) => {
+          return (
+            context.resources?.server?.server?.renderToHTML?.(renderToHTML) ||
+            renderToHTML
+          );
+        },
+        modifyHtml: (documentProps, appContext, context) => {
+          return (
+            context.resources?.server?.server?.modifyHtml?.(
+              documentProps,
+              appContext
+            ) || documentProps
+          );
+        },
+        onViewDone: (params, context) => {
+          context.resources?.server?.server?.onViewDone?.(params);
+        },
+        render: (renderAppToString, appContext, context) => {
+          return context.resources?.server?.server?.render?.(
+            renderAppToString,
+            appContext
+          );
+        }
+      },
+      { order: -100, name: 'serverModule' }
+    );
+    pluginManager.usePlugin(serverModulePlugin);
+
     await pluginManager.runner.setup();
   }
 

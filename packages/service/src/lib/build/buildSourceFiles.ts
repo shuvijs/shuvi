@@ -220,6 +220,7 @@ export async function buildSourceFiles({
   const routes = await getServerRoutes(serverRoutesOption);
 
   const { prefix = '' } = config.apiConfig || {};
+
   builder.setRoutesContent(
     `export default ${serializePageRoutes(routes.pageRoutes)}`
   );
