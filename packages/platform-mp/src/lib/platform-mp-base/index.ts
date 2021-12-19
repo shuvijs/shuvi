@@ -179,11 +179,11 @@ export default abstract class PlatformMpBase {
         const routesName = new Set<string>();
         // flatten routes remove children
         function flattenRoutes(
-          contextRoutes: IUserRouteConfig[],
+          apiRoutes: IUserRouteConfig[],
           branches: IUserRouteHandlerWithoutChildren[] = [],
           parentPath = ''
         ): IUserRouteHandlerWithoutChildren[] {
-          contextRoutes.forEach(route => {
+          apiRoutes.forEach(route => {
             const { children, component, ...other } = route;
             let tempPath = path.join(parentPath, route.path);
 
@@ -241,7 +241,7 @@ export default abstract class PlatformMpBase {
         removeConfigPathAddMpPath(routes);
         let rankRoutes = routesMap.map(r => [r[0], r] as [string, typeof r]);
         rankRoutes = rankRouteBranches(rankRoutes);
-        routesMap = rankRoutes.map(contextRoute => contextRoute[1]);
+        routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
         appFiles.push({
           name: 'routesMap.js',
           content: () => `export default ${JSON.stringify(routesMap)}`
@@ -337,7 +337,7 @@ export default abstract class PlatformMpBase {
               ...(args[0] || {}),
               ENABLE_INNER_HTML: true,
               ENABLE_ADJACENT_HTML: true,
-              ENABLE_SIZE_contextS: false,
+              ENABLE_SIZE_APIS: false,
               ENABLE_TEMPLATE_CONTENT: true, // taro 3.3.9
               ENABLE_CLONE_NODE: true, // taro 3.3.9
               ['process.env.' +
@@ -387,7 +387,7 @@ export default abstract class PlatformMpBase {
               '@tarojs/runtime': resolveLib('@tarojs/runtime'),
               '@tarojs/shared': resolveLib('@tarojs/shared'),
               '@tarojs/taro': resolveLib('@tarojs/taro'),
-              '@tarojs/context': resolveLib('@tarojs/context'),
+              '@tarojs/api': resolveLib('@tarojs/api'),
               '@tarojs/components$':
                 this.taroComponentsPath || '@tarojs/components/mini',
               '@tarojs/react': resolveLib('@tarojs/react'),
@@ -399,7 +399,7 @@ export default abstract class PlatformMpBase {
               // @binance
               '@binance/mp-service': '@tarojs/taro',
               '@binance/mp-components$': this.taroComponentsPath,
-              '@binance/mp-context': '@tarojs/context',
+              '@binance/mp-api': '@tarojs/api',
               '@binance/http': path.join(
                 PACKAGE_RESOLVED,
                 'lib/platform-mp-base/adapters/http/index'
