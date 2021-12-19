@@ -9,9 +9,9 @@ import {
   IPaths,
   IShuviMode,
   IPhase,
-  IRuntimeOrServerPlugin
+  IRuntimeOrServerPlugin,
+  IPlatform
 } from './types';
-import { IPlatform } from '../types/index';
 import {
   ProjectBuilder,
   UserModule,
@@ -21,7 +21,6 @@ import {
 } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import invariant from '@shuvi/utils/lib/invariant';
 import { serializeRoutes, normalizeRoutes } from '../lib/routes';
 import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
 import {
@@ -30,14 +29,10 @@ import {
 } from '../lib/middlewaresRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { createDefaultConfig, loadConfig } from '../config';
-import { IResources, IPreset, ICliContext } from './types';
-import {
-  ICliPluginInstance as IPlugin,
-  getManager,
-  PluginManager
-} from './cliHooks';
+import { IResources, ICliContext } from './types';
+import { getManager, PluginManager } from './plugin';
 import { setupApp } from './setupApp';
-import { resolvePlugins, resolvePresets } from './plugin';
+import { getPlugins } from './getPlugins';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
 import getPlatform from '../lib/getPlatform';
@@ -62,10 +57,7 @@ class Api implements IApi {
   private _projectBuilder!: ProjectBuilder;
   private _resources: IResources = {} as IResources;
   private _routes: IUserRouteConfig[] = [];
-  private _presetPlugins: IPlugin[] = [];
-  private _plugins!: IPlugin[];
   private _serverPlugins: IRuntimeOrServerPlugin[] = [];
-  private _presets!: IPreset[];
   private _phase: IPhase;
   private _platform!: IPlatform;
   cliContext: ICliContext;
@@ -169,7 +161,13 @@ class Api implements IApi {
     this._projectBuilder = new ProjectBuilder({
       static: this.mode === 'production'
     });
-    await this._initPresetsAndPlugins();
+
+    // init plugins
+    const allPlugins = await getPlugins(this.cliContext);
+    for (const plugin of allPlugins) {
+      this.pluginManager.usePlugin(plugin);
+    }
+
     await this.initPlatformPlugin();
     this._config = await this.pluginManager.runner.config(
       this.config,
@@ -435,59 +433,6 @@ class Api implements IApi {
   async destory() {
     await this._projectBuilder.stopBuild();
     await this.pluginManager.runner.destroy();
-  }
-
-  private async _initPresetsAndPlugins() {
-    const { _config: config } = this;
-    // init presets
-    this._presets = resolvePresets(config.presets || [], {
-      dir: config.rootDir
-    });
-    for (const preset of this._presets) {
-      this._initPreset(preset);
-    }
-
-    // init plugins
-    this._plugins = resolvePlugins(this._config.plugins || [], {
-      dir: this._config.rootDir
-    });
-    const allPlugins = this._presetPlugins.concat(this._plugins);
-    for (const plugin of allPlugins) {
-      this.pluginManager.usePlugin(plugin);
-    }
-  }
-
-  private _initPreset(preset: IPreset) {
-    const { id, get: getPreset } = preset;
-    const { presets, plugins } = getPreset()(this.cliContext);
-
-    if (presets) {
-      invariant(
-        Array.isArray(presets),
-        `presets returned from preset ${id} must be Array.`
-      );
-
-      const resolvedPresets = resolvePresets(presets, {
-        dir: this._config.rootDir
-      });
-
-      for (const preset of resolvedPresets) {
-        this._initPreset(preset);
-      }
-    }
-
-    if (plugins) {
-      invariant(
-        Array.isArray(plugins),
-        `presets returned from preset ${id} must be Array.`
-      );
-
-      this._presetPlugins.push(
-        ...resolvePlugins(plugins, {
-          dir: this._config.rootDir
-        })
-      );
-    }
   }
 }
 

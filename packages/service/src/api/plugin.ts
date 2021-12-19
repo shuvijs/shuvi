@@ -1,113 +1,129 @@
 import {
-  IPluginConfig,
-  ICliContext,
-  IPresetConfig,
-  IPreset,
-  IPresetSpec
-} from '.';
-import resolve from '@shuvi/utils/lib/resolve';
-import { isPluginInstance } from '@shuvi/hook';
+  createSyncBailHook,
+  createAsyncSeriesWaterfallHook,
+  createHookGroup,
+  createAsyncParallelHook
+} from '@shuvi/hook';
+import WebpackChain from 'webpack-chain';
 import {
-  createPlugin,
-  ICliPluginInstance,
-  ICliPluginConstructor
-} from './cliHooks';
+  UserModule,
+  TargetModule,
+  FileOptions,
+  fileSnippets
+} from '../project';
+import {
+  ExtraTargetAssistant,
+  ConfigWebpackAssistant,
+  TargetChain,
+  BundlerDoneExtra,
+  BundlerTargetDoneExtra,
+  AppExport,
+  AppService,
+  BundleResource
+} from './pluginTypes';
+import {
+  IApiConfig,
+  IUserRouteConfig,
+  ICliContext,
+  IPhase,
+  IRuntimeOrServerPlugin
+} from './types';
 
-export interface ResolvePluginOptions {
-  dir: string;
-}
+export * from './pluginTypes';
 
-function resolvePlugin(
-  pluginConfig: IPluginConfig,
-  resolveOptions: ResolvePluginOptions
-): ICliPluginInstance {
-  let pluginOrPath: string | ((param: any) => ICliPluginInstance);
-  let options: any;
+type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
 
-  if (Array.isArray(pluginConfig)) {
-    pluginOrPath = pluginConfig[0];
-    options = pluginConfig[1];
-    if (typeof pluginOrPath === 'function') {
-      return pluginOrPath(options);
-    }
-    if (typeof pluginOrPath === 'object' && isPluginInstance(pluginOrPath)) {
-      return pluginOrPath;
-    }
-  } else if (typeof pluginConfig === 'string') {
-    pluginOrPath = pluginConfig;
-    options = {};
-  } else if (typeof pluginConfig === 'object') {
-    if (isPluginInstance(pluginConfig)) {
-      return pluginConfig as ICliPluginInstance;
-    }
-    return createPlugin(pluginConfig as ICliPluginConstructor);
-  } else {
-    throw new Error(
-      `Plugin must be one of type [string, array, ICliPluginConstructor, ICliPluginInstance]`
-    );
-  }
+export type PluginManager = ReturnType<typeof getManager>;
 
-  pluginOrPath = resolve.sync(pluginOrPath, { basedir: resolveOptions.dir });
-  let pluginInst: any;
-  let plugin = require(pluginOrPath);
-  plugin = plugin.default || plugin;
-  if (isPluginInstance(plugin)) {
-    pluginInst = plugin;
-  } else if (typeof plugin === 'function') {
-    pluginInst = plugin(options);
-  } else {
-    pluginInst = createPlugin({});
-  }
-  return pluginInst;
-}
+export type PluginRunner = PluginManager['runner'];
 
-function resolvePreset(
-  presetConfig: IPresetConfig,
-  resolveOptions: ResolvePluginOptions
-): IPreset {
-  let presetPath: string;
-  let options: any;
+export type CreatePlugin = PluginManager['createPlugin'];
 
-  if (Array.isArray(presetConfig)) {
-    presetPath = presetConfig[0];
-    const nameOrOption = presetConfig[1];
-    if (typeof nameOrOption === 'string') {
-      options = {};
-    } else {
-      options = nameOrOption;
-    }
-  } else if (typeof presetConfig === 'string') {
-    presetPath = presetConfig;
-    options = {};
-  } else {
-    throw new Error(`Plugin must be one of type [string, array, function]`);
-  }
+export type ICliPluginInstance = ArrayItem<
+  Parameters<PluginManager['usePlugin']>
+>;
 
-  presetPath = resolve.sync(presetPath, { basedir: resolveOptions.dir });
+export type ICliPluginConstructor = ArrayItem<
+  Parameters<PluginManager['createPlugin']>[0]
+>;
 
-  const id = presetPath;
-  let preset = require(presetPath);
-  preset = preset.default || preset;
-  const presetFn: IPresetSpec = (context: ICliContext) => {
-    return preset(context, options);
-  };
+const config = createAsyncSeriesWaterfallHook<IApiConfig, IPhase>();
+const appRoutes = createAsyncSeriesWaterfallHook<IUserRouteConfig[]>();
+const appReady = createAsyncParallelHook<void>();
+const bundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
+const bundlerTargetDone = createAsyncParallelHook<BundlerTargetDoneExtra>();
+const configWebpack = createAsyncSeriesWaterfallHook<
+  WebpackChain,
+  ConfigWebpackAssistant
+>();
+const destroy = createAsyncParallelHook<void>();
+const afterBuild = createAsyncParallelHook<void>();
+const extraTarget = createAsyncParallelHook<
+  ExtraTargetAssistant,
+  void,
+  TargetChain
+>();
+const runtimePlugin = createAsyncParallelHook<
+  void,
+  void,
+  string | string[] | IRuntimeOrServerPlugin | IRuntimeOrServerPlugin[]
+>();
+const serverPlugin = createAsyncParallelHook<
+  void,
+  void,
+  string | string[] | IRuntimeOrServerPlugin | IRuntimeOrServerPlugin[]
+>();
+const setup = createAsyncParallelHook<void>();
+const platformModule = createSyncBailHook<void, void, string>();
+const clientModule = createSyncBailHook<void, void, TargetModule>();
+const userModule = createSyncBailHook<void, void, UserModule>();
+const bundleResource = createAsyncParallelHook<
+  void,
+  void,
+  BundleResource | BundleResource[]
+>();
+const appPolyfill = createAsyncParallelHook<void, void, string | string[]>();
+const appFile = createAsyncParallelHook<
+  void,
+  fileSnippets.FileSnippets,
+  FileOptions | FileOptions[]
+>();
+const appExport = createAsyncParallelHook<
+  void,
+  void,
+  AppExport | AppExport[]
+>();
+const appEntryCode = createAsyncParallelHook<void, void, string | string[]>();
+const appService = createAsyncParallelHook<
+  void,
+  void,
+  AppService | AppService[]
+>();
 
-  return {
-    id,
-    get: () => presetFn
-  };
-}
+const hooksMap = {
+  config,
+  appRoutes,
+  appReady,
+  bundlerDone,
+  bundlerTargetDone,
+  configWebpack,
+  destroy,
+  afterBuild,
+  extraTarget,
+  runtimePlugin,
+  serverPlugin,
+  setup,
+  platformModule,
+  clientModule,
+  userModule,
+  bundleResource,
+  appPolyfill,
+  appFile,
+  appExport,
+  appEntryCode,
+  appService
+};
+export const getManager = () =>
+  createHookGroup<typeof hooksMap, ICliContext>(hooksMap);
 
-export function resolvePlugins(
-  plugins: IPluginConfig[],
-  options: ResolvePluginOptions
-): ICliPluginInstance[] {
-  return plugins.map(plugin => resolvePlugin(plugin, options));
-}
-
-export function resolvePresets(
-  presets: IPresetConfig[],
-  options: ResolvePluginOptions
-): IPreset[] {
-  return presets.map(preset => resolvePreset(preset, options));
-}
+export const { createPlugin } = getManager();
