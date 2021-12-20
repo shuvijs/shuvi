@@ -8,8 +8,7 @@ export default {
       const name = `plugin${index}`;
       content += `import ${name}File from "${plugin}";
 const ${name} = {
-  plugin: ${name}File,
-  options: '${JSON.stringify(options)}'
+  plugin: ${name}File, ${options ? `options: '${JSON.stringify(options)}'\n` : ''}
 };\n`;
       pluginRecord.push(name);
     });

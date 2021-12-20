@@ -36,6 +36,16 @@ export async function setupApp(api: Api) {
             ),
             paths.appDir
           ) + '/index'
+        ],
+        '@shuvi/services/*': [
+          path.relative(
+            path.resolve(
+              paths.rootDir,
+              appTsConfig.compilerOptions.baseUrl ||
+                parsedCompilerOptions.baseUrl
+            ),
+            paths.appDir
+          ) + '/services/*'
         ]
       };
 

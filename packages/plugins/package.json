@@ -1,0 +1,41 @@
+{
+  "name": "@shuvi/plugins",
+  "version": "0.0.1-pre.10",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/plugins"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "files": [
+    "lib",
+    "esm"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "dev": "run-p watch:*",
+    "watch:esm": "tsc -p tsconfig.build.esm.json -w",
+    "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
+    "prebuild": "rimraf lib esm",
+    "build": "run-p build:*",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "build:cjs": "tsc -p tsconfig.build.cjs.json"
+  },
+  "dependencies": {
+    "@rematch/core": "2.2.0",
+    "redux": "4.1.2",
+    "@shuvi/service": "0.0.1-pre.10",
+    "@shuvi/utils": "0.0.1-pre.10"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.43"
+  },
+  "peerDependencies": {
+    "react": ">=16.8",
+    "react-dom": ">=16.8"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  }
+}
