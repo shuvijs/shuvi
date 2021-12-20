@@ -1,6 +1,6 @@
 const isDev = process.env.NODE_ENV === 'development';
 
-module.exports = {
+export default {
   ssr: true,
   plugins: [
     {

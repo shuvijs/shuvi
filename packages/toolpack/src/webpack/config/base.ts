@@ -20,8 +20,6 @@ const dumbRouteComponent = require.resolve('../../utils/emptyComponent');
 
 const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);
-// const resolvePlugin = (name: string) =>
-//   path.join(__dirname, `../plugins/${name}`);
 
 export interface BaseOptions {
   dev: boolean;
@@ -33,7 +31,7 @@ export interface BaseOptions {
   target?: string;
   publicPath?: string;
   env?: {
-    [x: string]: string;
+    [x: string]: string | undefined;
   };
 }
 
