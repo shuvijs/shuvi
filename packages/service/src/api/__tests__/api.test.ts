@@ -2,7 +2,7 @@ import { getApi } from '../api';
 import { IApiConfig, IPaths } from '..';
 import path from 'path';
 import rimraf from 'rimraf';
-import { resolvePreset, resolvePlugin } from './utils';
+import { resolvePlugin } from './utils';
 import { readFileSync } from 'fs';
 
 describe('api', () => {

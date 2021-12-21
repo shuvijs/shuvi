@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   ssr: true,
   plugins: [['./plugins/pluginServerMiddleware.js']]
 };

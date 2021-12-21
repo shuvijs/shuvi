@@ -1,17 +1,7 @@
 import { watch } from '@shuvi/utils/lib/fileWatcher';
-import { reactive } from '../file-manager';
-import fse from 'fs-extra';
+import { findFirstExistedFile } from '@shuvi/utils/lib/file';
 import path from 'path';
-
-export const findFirstExistedFile = (files: string[]): string | null => {
-  for (let index = 0; index < files.length; index++) {
-    const file = files[index];
-    if (fse.existsSync(file)) {
-      return file;
-    }
-  }
-  return null;
-};
+import { reactive } from '../file-manager';
 
 /**
  * This method receive multiple sources input that will be observed and returns a reactive object wrapping the first existed source.
@@ -137,3 +127,5 @@ export const moduleExportProxyCreater = () => {
     unmounted
   };
 };
+
+export { findFirstExistedFile }

@@ -34,6 +34,7 @@
     "@babel/generator": "^7.14.5",
     "@babel/parser": "^7.14.7",
     "@babel/traverse": "^7.14.7",
+    "@modern-js/node-bundle-require": "^1.1.1",
     "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/platform-core": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10",

@@ -7,14 +7,14 @@ export function resolveFixture(...paths: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...paths);
 }
 
-export function loadFixture(fixture: string, overrides: IConfig = {}): IConfig {
-  return loadConfig({
+export async function loadFixture(fixture: string, overrides: IConfig = {}): Promise<IConfig> {
+  return await loadConfig({
     rootDir: resolveFixture(fixture),
     overrides
   });
 }
 
 export async function buildFixture(fixture: string, overrides: IConfig = {}) {
-  const config = loadFixture(fixture, overrides);
+  const config = await loadFixture(fixture, overrides);
   await build({ config });
 }

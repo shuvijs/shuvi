@@ -1,9 +1,11 @@
+import fs from 'fs';
 import path from 'path';
+import { bundleRequire } from '@modern-js/node-bundle-require';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file'
 import { IConfig, IApiConfig } from '../api';
 import { PUBLIC_PATH } from '../constants';
-import { CONFIG_FILE } from '@shuvi/shared/lib/constants';
 import { loadDotenvConfig } from './loadDotenvConfig';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 
 export interface LoadConfigOptions {
   rootDir?: string;
@@ -32,29 +34,41 @@ export const createDefaultConfig: () => IApiConfig = () => ({
   }
 });
 
-export function loadConfig({
-  rootDir = '.',
-  configFile = CONFIG_FILE,
-  overrides = {}
-}: LoadConfigOptions = {}): IConfig {
-  rootDir = path.resolve(rootDir);
-  configFile = path.resolve(rootDir, configFile);
+const DEFAUL_CONFIG_FILE_NAME = 'shuvi.config'
+const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs']
 
+export const defineConfig = (config: IConfig) => config
+
+export async function loadConfig({
+  rootDir = '.',
+  configFile = '',
+  overrides = {}
+}: LoadConfigOptions = {}): Promise<IConfig> {
+  rootDir = path.resolve(rootDir);
   // read dotenv so we can get env in shuvi.config.js
   loadDotenvConfig(rootDir);
 
+  let configFilePath: string
+  if (configFile) {
+    configFilePath = path.resolve(rootDir, configFile);
+    if (!fs.existsSync(configFilePath)) {
+      console.warn('Config file not found: ' + configFile);
+      return deepmerge({ rootDir }, overrides)
+    }
+  } else {
+    const defaultFiles = withExts(path.resolve(rootDir, DEFAUL_CONFIG_FILE_NAME), validExts)
+    configFilePath = findFirstExistedFile(defaultFiles) as string
+    if (!configFilePath) {
+      return deepmerge({ rootDir }, overrides)
+    }
+  }
+
   let fileConfig: IConfig = {};
   try {
-    fileConfig = require(configFile);
+    fileConfig = await bundleRequire(configFilePath);
     fileConfig = (fileConfig as any).default || fileConfig;
   } catch (err) {
-    if (
-      (err as Error).message.indexOf(`Cannot find module '${configFile}'`) < 0
-    ) {
-      throw err;
-    } else if (configFile !== path.resolve(rootDir, CONFIG_FILE)) {
-      console.warn('Config file not found: ' + configFile);
-    }
+    throw err;
   }
   return deepmerge({ rootDir }, fileConfig, overrides);
 }
