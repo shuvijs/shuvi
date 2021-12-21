@@ -11,7 +11,7 @@ export async function loadFixture(
   userConfig: IConfig = {},
   configFile?: string
 ) {
-  return loadConfig({
+  return await loadConfig({
     rootDir: resolveFixture(name),
     overrides: userConfig,
     configFile

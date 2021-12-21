@@ -86,7 +86,7 @@ export interface IApiConfig {
   ssr: boolean;
   publicDir: string;
   publicPath: string;
-  env: Record<string, string>;
+  env: Record<string, string | undefined>;
   router: {
     history: IRouterHistoryMode;
   };

@@ -5,7 +5,7 @@ import {
   IUserRouteConfig,
   BUILD_DEFAULT_DIR
 } from '@shuvi/service';
-import { findFirstExistedFile } from '@shuvi/service/lib/project/file-snippets';
+import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
@@ -52,10 +52,7 @@ const getAllFiles = (
   return currentFileList;
 };
 
-const moduleFileExtensions = ['js', 'jsx', 'tsx', 'ts'];
-function withExts(file: string, extensions: string[]): string[] {
-  return extensions.map(ext => `${file}.${ext}`);
-}
+const moduleFileExtensions = ['.js', '.jsx', '.tsx', '.ts'];
 
 export default abstract class PlatformMpBase {
   themeFilePath: string = '';

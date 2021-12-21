@@ -1,4 +1,5 @@
-module.exports = {
+import { defineConfig } from 'shuvi'
+export default defineConfig({
   ssr: false,
   platform: {
     name: 'mp',
@@ -29,4 +30,4 @@ module.exports = {
       component: 'pages/my/index'
     }
   ]
-};
+});

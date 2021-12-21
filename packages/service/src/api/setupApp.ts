@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
+import { withExts } from '@shuvi/utils/lib/file';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
 import { renameFilepathToComponent } from '../lib/routes';
 import { renameFilepathToModule } from '../lib/apiRoutes';
@@ -9,10 +10,6 @@ import { Route } from '../route';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
 import { Api } from './api';
-
-function withExts(file: string, extensions: string[]): string[] {
-  return extensions.map(ext => `${file}${ext}`);
-}
 
 export async function setupApp(api: Api) {
   const { paths, config } = api;

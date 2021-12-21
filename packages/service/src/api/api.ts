@@ -60,7 +60,7 @@ class Api implements IApi {
   private _serverPlugins: IRuntimeOrServerPlugin[] = [];
   private _phase: IPhase;
   private _platform!: IPlatform;
-  cliContext: ICliContext;
+  cliContext!: ICliContext;
   pluginManager: PluginManager;
   serverPlugins: IRuntimeOrServerPlugin[] = [];
 
@@ -88,26 +88,7 @@ class Api implements IApi {
     }
     this.pluginManager = getManager();
     this.pluginManager.clear();
-    this.initConfig();
-    this._platform = getPlatform(this.config.platform.name);
-    this.cliContext = {
-      mode: this._mode,
-      paths: this.paths,
-      config: this.config,
-      phase: this.phase,
-      pluginRunner: this.pluginManager.runner,
-      serverPlugins: this.serverPlugins,
-      // resources
-      resources: this.resources,
-      assetPublicPath: this.assetPublicPath,
-      getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
-      resolveAppFile: this.resolveAppFile.bind(this),
-      resolveUserFile: this.resolveUserFile.bind(this),
-      resolveBuildFile: this.resolveBuildFile.bind(this),
-      resolvePublicFile: this.resolvePublicFile.bind(this),
-      getRoutes: this.getRoutes.bind(this)
-    };
-    this.pluginManager.setContext(this.cliContext);
+
   }
 
   get mode() {
@@ -135,13 +116,14 @@ class Api implements IApi {
     this.pluginManager.usePlugin(...platformPlugins);
   }
 
-  initConfig() {
-    const configFromFile = loadConfig({
+  async initConfig() {
+    const configFromFile = await loadConfig({
       rootDir: this._cwd,
       configFile: this._configFile,
       overrides: this._userConfig
     });
     this._config = deepmerge(createDefaultConfig(), configFromFile);
+
     const {
       ssr,
       router: { history }
@@ -158,6 +140,26 @@ class Api implements IApi {
   }
 
   async init() {
+    await this.initConfig();
+    this._platform = getPlatform(this.config.platform.name);
+    this.cliContext = {
+      mode: this._mode,
+      paths: this.paths,
+      config: this.config,
+      phase: this.phase,
+      pluginRunner: this.pluginManager.runner,
+      serverPlugins: this.serverPlugins,
+      // resources
+      resources: this.resources,
+      assetPublicPath: this.assetPublicPath,
+      getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
+      resolveAppFile: this.resolveAppFile.bind(this),
+      resolveUserFile: this.resolveUserFile.bind(this),
+      resolveBuildFile: this.resolveBuildFile.bind(this),
+      resolvePublicFile: this.resolvePublicFile.bind(this),
+      getRoutes: this.getRoutes.bind(this)
+    };
+    this.pluginManager.setContext(this.cliContext);
     this._projectBuilder = new ProjectBuilder({
       static: this.mode === 'production'
     });
