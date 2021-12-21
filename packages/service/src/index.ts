@@ -8,7 +8,8 @@ export {
   IPlatform,
   IUserRouteConfig,
   ICliPluginConstructor,
-  loadConfig
+  loadConfig,
+  defineConfig
 } from './core';
 export { ProjectBuilder } from './project';
 export { getBundler } from './bundler';

@@ -1,1 +1,1 @@
-export { loadConfig, resolveConfig, mergeConfig } from './config';
+export { defineConfig, loadConfig, resolveConfig, mergeConfig } from './config';
