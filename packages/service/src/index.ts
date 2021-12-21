@@ -9,7 +9,7 @@ export {
   IUserRouteConfig,
   ICliPluginConstructor
 } from './api';
-export { ProjectBuilder } from './project';
+export { defineConfig } from './config'
 export * from './constants';
 export * from './server';
 export { createPlugin as createCliPlugin } from './api/plugin';
