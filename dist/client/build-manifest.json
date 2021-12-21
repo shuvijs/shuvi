@@ -1,0 +1,35 @@
+{
+  "entries": {
+    "static/runtime/main": {
+      "js": [
+        "static/runtime/webpack.js",
+        "static/runtime/main.js"
+      ]
+    },
+    "static/runtime/polyfill": {
+      "js": [
+        "static/runtime/webpack.js",
+        "static/runtime/polyfill.js"
+      ]
+    },
+    "static/runtime/react-refresh": {
+      "js": [
+        "static/runtime/webpack.js",
+        "static/runtime/react-refresh.js"
+      ]
+    }
+  },
+  "bundles": {
+    "static/runtime/webpack": "static/runtime/webpack.js",
+    "static/runtime/main": "static/runtime/main.js",
+    "static/runtime/polyfill": "static/runtime/polyfill.js",
+    "static/runtime/react-refresh": "static/runtime/react-refresh.js"
+  },
+  "chunkRequest": {
+    "static/runtime/webpack.js": "/Users/lixi/Workspace/github/shuvi/node_modules/@next/react-refresh-utils/runtime.js",
+    "static/runtime/main.js": "@shuvi/app/entry.client-wrapper",
+    "static/runtime/polyfill.js": "@shuvi/app/core/polyfill",
+    "static/runtime/react-refresh.js": "/Users/lixi/Workspace/github/shuvi/node_modules/@next/react-refresh-utils/runtime.js"
+  },
+  "loadble": {}
+}

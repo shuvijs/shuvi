@@ -1,5 +1,5 @@
 import qs from 'querystring';
-import { IConfig } from '@shuvi/service';
+import { UserConfig } from '@shuvi/service';
 import { getApi, createShuviServer, IShuviServer } from '@shuvi/service';
 import { loadFixture, resolveFixture } from './fixture';
 import { build } from './build';
@@ -42,13 +42,13 @@ async function createTestContext(app: IShuviServer): Promise<AppCtx> {
 
 export async function launchFixtureAtCurrentProcess(
   name: string,
-  overrides: IConfig = {}
+  overrides: UserConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const api = await getApi({ config });
+  const api = await getApi({ cwd: resolveFixture(name), config });
   await api.buildApp();
   const shuviApp = await createShuviServer({
-    context: api.cliContext,
+    context: api.pluginContext,
     dev: true
   });
   return await createTestContext(shuviApp);
@@ -56,10 +56,10 @@ export async function launchFixtureAtCurrentProcess(
 
 export async function serveFixtureAtCurrentProcess(
   name: string,
-  overrides: IConfig = {}
+  overrides: UserConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const cliContext = await build({ config });
+  const cliContext = await build({ cwd: resolveFixture(name), config });
   const shuviApp = await createShuviServer({
     context: cliContext,
     dev: true
@@ -76,7 +76,7 @@ async function launchShuvi(
   path: string,
   port: number,
   isDev: boolean,
-  configOverrides: IConfig,
+  configOverrides: UserConfig,
   envOverrides: Partial<NodeJS.ProcessEnv>,
   handleStdoutStderr: IHandleStdoutStderr
 ): Promise<ChildProcess> {
@@ -163,7 +163,7 @@ async function launchShuvi(
 
 export async function launchFixture(
   name: string,
-  configOverrides: IConfig = {},
+  configOverrides: UserConfig = {},
   envOverrides: Partial<NodeJS.ProcessEnv> = {},
   isDev: boolean = true,
   handleStdoutStderr: IHandleStdoutStderr = {}
@@ -202,7 +202,7 @@ export async function launchFixture(
 
 export async function serveFixture(
   name: string,
-  configOverrides: IConfig = {},
+  configOverrides: UserConfig = {},
   envOverrides: Partial<NodeJS.ProcessEnv> = {},
   handleStdoutStderr: IHandleStdoutStderr = {}
 ): Promise<AppCtx> {

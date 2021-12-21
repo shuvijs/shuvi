@@ -12,10 +12,10 @@ export default async function main(argv: string[]) {
     .name(pkgInfo.name)
     .usage(`dev [dir] [options]`)
     .helpOption()
-    .option('--config <file>', 'path to config file')
     .option('--host <host>', 'specify host')
     .option('--port <port>', 'specify port')
-    .option('--config-overrides [json]', 'config overrides json')
+    .option('--config <file>', 'path to config file')
+    .option('--config-overrides <json>', 'config overrides json')
     .parse(argv, { from: 'user' });
 
   const cwd = getProjectDir(program);
@@ -29,7 +29,7 @@ export default async function main(argv: string[]) {
   });
   await api.buildApp();
   const shuviApp = await createShuviServer({
-    context: api.cliContext,
+    context: api.pluginContext,
     dev: true
   });
   try {
