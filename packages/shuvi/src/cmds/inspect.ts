@@ -15,10 +15,10 @@ export default async function main(argv: string[]) {
     .description('inspect internal webpack config')
     .usage('inspect [options] [...paths]')
     .helpOption()
-    .option('--config <file>', 'path to config file')
-    .option('--config-overrides [json]', 'config overrides json')
     .option('--mode <mode>', 'specify env mode (default: development)')
     .option('--verbose', 'show full webpack config')
+    .option('--config <file>', 'path to config file')
+    .option('--config-overrides [json]', 'config overrides json')
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
   const mode = ['development', 'production'].includes(program.mode)
@@ -36,7 +36,7 @@ export default async function main(argv: string[]) {
     mode,
     phase: 'PHASE_INSPECT_WEBPACK'
   });
-  const bundler = getBundler(api.cliContext);
+  const bundler = getBundler(api.pluginContext);
 
   const configs = await bundler.resolveWebpackConfig();
 

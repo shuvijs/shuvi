@@ -1,8 +1,7 @@
 // import React from 'react';
 import { IPlatform } from '@shuvi/service';
 
-const platform: IPlatform = context => {
-  const { target = 'bmp' } = context.config.platform || {};
+const platform: IPlatform = ({ target = 'bmp' } = {}) => {
   const PlatformConstructor = require(`./targets/${target}`).default;
   //@ts-ignore
   const runtime = new PlatformConstructor();

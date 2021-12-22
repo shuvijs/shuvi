@@ -1,8 +1,6 @@
 // common
 export const NAME = 'shuvi';
 
-export const CONFIG_FILE = 'shuvi.config.js';
-
 export const PATH_PREFIX = `/_${NAME}`;
 
 export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route`;

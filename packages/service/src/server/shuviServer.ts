@@ -1,5 +1,5 @@
-import { ICliContext } from '../api';
-import { normalizeServerMiddleware } from '../api/serverMiddleware';
+import { IPluginContext } from '../core';
+import { normalizeServerMiddleware } from './serverMiddleware';
 import { IServerPluginContext } from './plugin';
 import { Server } from './http-server';
 import { IShuviServer, ShuviServerOptions } from './shuviServerTypes';
@@ -10,7 +10,7 @@ export abstract class ShuviServer implements IShuviServer {
   protected _pluginManager: PluginManager;
   protected _serverContext: IServerPluginContext;
 
-  constructor(cliContext: ICliContext, options: ShuviServerOptions) {
+  constructor(cliContext: IPluginContext, options: ShuviServerOptions) {
     this._pluginManager = getManager();
     this._server = new Server();
     const serverPlugins = cliContext.serverPlugins;

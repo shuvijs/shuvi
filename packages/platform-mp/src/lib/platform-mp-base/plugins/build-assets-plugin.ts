@@ -1,5 +1,5 @@
 import { AppConfigs, IFileType } from '../types';
-import { IPaths } from '@shuvi/service/lib/api';
+import { IPaths } from '@shuvi/service';
 import webpack, { Compiler, Compilation, sources } from 'webpack';
 import path from 'path';
 import fs from 'fs';

@@ -1,7 +1,7 @@
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { exportsFromObject } from './file-snippets';
-import { IRuntimeOrServerPlugin } from '../api';
+import { IRuntimeOrServerPlugin } from '../core';
 import {
   ProjectContext,
   createProjectContext,

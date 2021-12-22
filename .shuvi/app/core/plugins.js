@@ -1,0 +1,2 @@
+const pluginRecord = {};
+export { pluginRecord };

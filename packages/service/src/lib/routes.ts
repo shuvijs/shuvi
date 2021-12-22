@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { IUserRouteConfig } from '../api';
+import { IUserRouteConfig } from '../core';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { IRouteRecord } from '@shuvi/platform-core';
 
