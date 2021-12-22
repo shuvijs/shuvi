@@ -6,7 +6,7 @@ import {
   createHookGroup,
   isPluginInstance
 } from '@shuvi/hook';
-import { IRuntimeOrServerPlugin, ICliContext } from '../api';
+import { IRuntimeOrServerPlugin, IPluginContext } from '../core';
 import {
   IServerAppContext,
   IServerMiddleware,
@@ -31,7 +31,7 @@ export interface IServerModule {
   ) => string | void | undefined;
 }
 
-export type IServerPluginContext = ICliContext & {
+export type IServerPluginContext = IPluginContext & {
   serverPluginRunner: PluginManager['runner'];
 };
 
@@ -97,7 +97,7 @@ const resolvePlugin = (path: string) => {
 export const initServerPlugins = (
   manager: PluginManager,
   serverPlugins: IRuntimeOrServerPlugin[],
-  pluginContext: ICliContext
+  pluginContext: IPluginContext
 ): IServerPluginContext => {
   const serverContext = Object.assign(
     { serverPluginRunner: manager.runner },

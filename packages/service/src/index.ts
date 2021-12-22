@@ -1,15 +1,18 @@
 export {
-  IApi,
   Api,
   getApi,
-  IApiConfig,
-  IConfig,
-  ICliContext,
+  UserConfig,
+  IPaths,
+  Config,
+  IPluginContext,
   IPlatform,
   IUserRouteConfig,
-  ICliPluginConstructor
-} from './api';
-export { defineConfig } from './config'
+  ICliPluginConstructor,
+  loadConfig,
+  defineConfig
+} from './core';
+export { ProjectBuilder } from './project';
+export { getBundler } from './bundler';
 export * from './constants';
 export * from './server';
-export { createPlugin as createCliPlugin } from './api/plugin';
+export { createPlugin as createCliPlugin } from './core/plugin';

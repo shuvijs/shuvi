@@ -6,10 +6,10 @@ import {
   BUILD_SERVER_DIR,
   BUILD_MANIFEST_PATH,
   BUILD_SERVER_FILE_SERVER,
-  ICliContext
+  IPluginContext
 } from '@shuvi/service';
 
-function resolveServerDist(api: ICliContext, name: string) {
+function resolveServerDist(api: IPluginContext, name: string) {
   const manifest = api.resources.serverManifest;
   return path.join(
     api.paths.buildDir,
@@ -18,7 +18,7 @@ function resolveServerDist(api: ICliContext, name: string) {
   );
 }
 
-function resolveDocument(api: ICliContext) {
+function resolveDocument(api: IPluginContext) {
   const customDoc = api.resolveUserFile('document.ejs');
   if (fse.existsSync(customDoc)) {
     return customDoc;
@@ -27,7 +27,7 @@ function resolveDocument(api: ICliContext) {
   return require.resolve('@shuvi/platform-core/template/document.ejs');
 }
 
-export const getCoreResources = (context: ICliContext) => {
+export const getCoreResources = (context: IPluginContext) => {
   const { buildDir } = context.paths;
   return [
     {
