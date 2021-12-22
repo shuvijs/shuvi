@@ -10,12 +10,12 @@ import React, {
 import { init, Models, Plugin, NamedModel } from '@rematch/core';
 import invariant from '@shuvi/utils/lib/invariant';
 import { createBatchManager } from './batchManager';
-import { createSelectorManager, mapStateBySelect } from './selectorManager';
+import { createViewsManager, getViewsProxy } from './viewsManager';
 import subscriptionsPlugin from './plugins/subscriptions';
 import { shadowEqual } from './utils';
+import { Store } from './types'
 
 type initConfig = Parameters<typeof init>[0];
-type Store = ReturnType<typeof init>;
 type Config = initConfig & {
   plugins?: ((...args: any[]) => Plugin<any, any>) | Plugin<any, any>;
 };
@@ -25,22 +25,23 @@ interface INamedModel<
   TState = any,
   TBaseState = TState
 > extends NamedModel<TModels, TState, TBaseState> {
-  selector?: Record<string, (state: TState) => void>;
+  views?: Record<string, (state: TState, RootState: any, views: any, args: any) => any>;
 }
 
 export interface IUseModel {
   <TModels extends Models<TModels>, TState = any, TBaseState = TState>(
-    model: INamedModel<TModels, TState, TBaseState>
+    model: INamedModel<TModels, TState, TBaseState>,
+    args?: any
   ): [any, any];
 }
 
 function initModel(
-  name: string,
   model: INamedModel<any>,
   store: Store,
   batchManager: ReturnType<typeof createBatchManager>,
-  selectorManager: ReturnType<typeof createSelectorManager>
+  viewsManager: ReturnType<typeof createViewsManager>
 ) {
+  const name = model.name || '';
   if (!batchManager.hasInitModel(name)) {
     (
       model as INamedModel<any> & { _subscriptions: Record<string, () => void> }
@@ -49,20 +50,21 @@ function initModel(
         batchManager.triggerSubsribe(name);
       }
     };
-    selectorManager.addSelector(name, model.selector);
+    viewsManager.addView(name, model.views);
     store.addModel(model);
+    batchManager.addSubsribe(name);
   }
 }
 
 function getStateDispatch(
   name: string,
   store: Store,
-  selectorManager: ReturnType<typeof createSelectorManager>
+  viewsManager: ReturnType<typeof createViewsManager>,
+  args: any
 ) {
-  const state = store.getState();
   const dispatch = store.dispatch;
   return [
-    mapStateBySelect(state[name], selectorManager.getSelector(name)),
+    getViewsProxy(name, viewsManager, store, args),
     dispatch[name]
   ] as [any, any];
 }
@@ -73,7 +75,7 @@ const createContainer = (config: Config) => {
   const Context = createContext<{
     store: Store;
     batchManager: ReturnType<typeof createBatchManager>;
-    selectorManager: ReturnType<typeof createSelectorManager>;
+    viewsManager: ReturnType<typeof createViewsManager>;
   }>(null as any);
 
   function getFinalConfig() {
@@ -103,10 +105,10 @@ const createContainer = (config: Config) => {
       store = init(getFinalConfig());
     }
     const batchManager = createBatchManager();
-    const selectorManager = createSelectorManager();
+    const viewsManager = createViewsManager();
 
     return (
-      <Context.Provider value={{ store, batchManager, selectorManager }}>
+      <Context.Provider value={{ store, batchManager, viewsManager }}>
         {children}
       </Context.Provider>
     );
@@ -116,9 +118,9 @@ const createContainer = (config: Config) => {
     (
       store: Store,
       batchManager: ReturnType<typeof createBatchManager>,
-      selectorManager: ReturnType<typeof createSelectorManager>
+      viewsManager: ReturnType<typeof createViewsManager>
     ): IUseModel =>
-    model => {
+      (model, args) => {
       invariant(
         Boolean(model.name),
         `createUseModel param model.name is necessary for Model.`
@@ -128,9 +130,9 @@ const createContainer = (config: Config) => {
         any,
         Record<string, (...args: any[]) => void>
       ] => {
-        initModel(name, model, store, batchManager, selectorManager);
-        return getStateDispatch(name, store, selectorManager);
-      }, [model, name]);
+        initModel(model, store, batchManager, viewsManager);
+        return getStateDispatch(name, store, viewsManager, args);
+      }, [model, name, args]);
 
       const [modelValue, setModelValue] = useState(initialValue);
 
@@ -138,10 +140,9 @@ const createContainer = (config: Config) => {
 
       useEffect(() => {
         const fn = () => {
-          const newValue = getStateDispatch(name, store, selectorManager);
+          const newValue = getStateDispatch(name, store, viewsManager, args);
           if (
-            !shadowEqual(lastValueRef.current[0], newValue[0]) ||
-            !shadowEqual(lastValueRef.current[1], newValue[1])
+            !shadowEqual(lastValueRef.current[0], newValue[0])
           ) {
             setModelValue(newValue as any);
             lastValueRef.current = newValue;
@@ -157,7 +158,7 @@ const createContainer = (config: Config) => {
       return modelValue;
     };
 
-  const useModel: IUseModel = model => {
+  const useModel: IUseModel = (model, args) => {
     invariant(Boolean(model), `useModel param model is necessary`);
 
     const context = useContext(Context);
@@ -167,15 +168,15 @@ const createContainer = (config: Config) => {
       `You should wrap your Component in CreateApp().Provider.`
     );
 
-    const { store, batchManager, selectorManager } = context;
+    const { store, batchManager, viewsManager } = context;
 
     return useMemo(
-      () => createUseModel(store, batchManager, selectorManager),
+      () => createUseModel(store, batchManager, viewsManager),
       [store]
-    )(model);
+    )(model, args);
   };
 
-  const useStaticModel: IUseModel = model => {
+  const useStaticModel: IUseModel = (model, args) => {
     const context = useContext(Context);
 
     invariant(
@@ -188,12 +189,12 @@ const createContainer = (config: Config) => {
       `useStaticModel param model and model.name is necessary`
     );
 
-    const { store, batchManager, selectorManager } = context;
+    const { store, batchManager, viewsManager } = context;
     const name = model.name || '';
     const initialValue = useMemo(() => {
-      initModel(name, model, store, batchManager, selectorManager);
-      return getStateDispatch(name, store, selectorManager);
-    }, [model, name]);
+      initModel(model, store, batchManager, viewsManager);
+      return getStateDispatch(name, store, viewsManager, args);
+    }, [model, name, args]);
 
     const value = useRef<[any, any]>([
       // deep clone state in case mutate origin state accidentlly.
@@ -203,7 +204,7 @@ const createContainer = (config: Config) => {
 
     useEffect(() => {
       const fn = () => {
-        const newValue = getStateDispatch(name, store, selectorManager);
+        const newValue = getStateDispatch(name, store, viewsManager, args);
         if (
           Object.prototype.toString.call(value.current[0]) === '[object Object]'
         ) {
@@ -222,16 +223,16 @@ const createContainer = (config: Config) => {
     return value.current;
   };
 
-  const useLocalModel: IUseModel = model => {
+  const useLocalModel: IUseModel = (model, args) => {
     const [store, batchManager, selectorManager] = useMemo(() => {
       const newStore = init(getFinalConfig());
-      return [newStore, createBatchManager(), createSelectorManager()];
+      return [newStore, createBatchManager(), createViewsManager()];
     }, []);
 
     return useMemo(
       () => createUseModel(store, batchManager, selectorManager),
       []
-    )(model);
+    )(model, args);
   };
 
   return {

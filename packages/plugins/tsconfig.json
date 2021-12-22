@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": ["esnext", "DOM"]
+    "lib": [
+      "esnext",
+      "DOM",
+      "es2015.proxy"
+    ]
   },
   "include": [
     "src",
