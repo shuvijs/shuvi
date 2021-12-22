@@ -1,4 +1,4 @@
-import { ICliContext } from '../api';
+import { IPluginContext } from '../core';
 import { IShuviServer } from './shuviServerTypes';
 
 export * from './http-server';
@@ -8,7 +8,7 @@ export * from './plugin';
 export * from './shuviServerTypes';
 
 export interface CreateShuviServerOptions {
-  context: ICliContext;
+  context: IPluginContext;
   dev?: boolean;
 }
 

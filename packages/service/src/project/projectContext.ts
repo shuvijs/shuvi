@@ -1,5 +1,5 @@
 import { reactive } from './file-manager';
-import { IRuntimeOrServerPlugin } from '../api';
+import { IRuntimeOrServerPlugin } from '../core';
 export interface UserModule {
   document: string | string[];
   server: string | string[];

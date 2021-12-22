@@ -7,20 +7,19 @@ import {
   IRequest,
   IPlatform,
   createCliPlugin,
-  ICliContext
+  IPluginContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { initServerPlugins, getManager } from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
-
 import statePlugin from '@shuvi/plugins/lib/state/runtime';
 import { getCoreResources } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { renderToHTML } from './SSR';
 
-function getServerEntry(context: ICliContext): IWebpackEntry {
+function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
   return {
     [BUILD_SERVER_FILE_SERVER]: [
@@ -34,7 +33,7 @@ async function buildHtml({
   pathname,
   filename
 }: {
-  context: ICliContext;
+  context: IPluginContext;
   pathname: string;
   filename: string;
 }) {
@@ -61,7 +60,7 @@ async function buildHtml({
   }
 }
 
-const platform: IPlatform = async context => {
+const platform: IPlatform = async ({ framework = 'react' } = {}) => {
   const mainPlugin = createCliPlugin({
     setup: context => {
       if (typeof context.config.runtimeConfig === 'object') {
@@ -118,9 +117,8 @@ const platform: IPlatform = async context => {
       }
     }
   });
-  const { framework = 'react' } = context.config.platform || {};
   const frameworkPlugins: IPlatform = require(`./targets/${framework}`).default;
-  return [mainPlugin, statePlugin, ...(await frameworkPlugins(context))];
+  return [mainPlugin, statePlugin, ...(await frameworkPlugins())];
 };
 
 export default platform;
