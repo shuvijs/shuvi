@@ -9,26 +9,46 @@ export const user = {
   },
   reducers: {
     add: (state, step) => {
+      // return state;
       return {
         ...state,
         id: state.id + step
       };
     }
   },
-  // old Proxy => (getState, args)=> double()
-  // new Proxy => (getState, args)=> double()
   views: {
     one(state, rootState){
+      console.log('one computed')
       return rootState.dome.number;
     },
     double (state, rootState, views, args) {
-      console.log('views', state, rootState, views, args);
+      // console.log('views', state, rootState, views, args);
       // console.log('this', this)
       // console.log('this', views.one)
+      // return state.id * args;
+      console.log('double computed')
       return state.id * args + views.one;
     },
   },
 };
+
+
+export const other = {
+  name: 'other',
+  state: {
+    other: [
+      'other'
+    ],
+  },
+  reducers:{
+    add: (state, step) => {
+      return {
+        ...state,
+        other: [...state.other, step]
+      };
+    }
+  }
+}
 
 export const dome = {
   name: 'dome',
@@ -36,37 +56,63 @@ export const dome = {
     number: 666,
   },
   reducers:{
-
+    add: (state, step) => {
+      // return state;
+      return {
+        ...state,
+        number: state.number + step
+      };
+    }
   }
 }
 
 
 export default function Index() {
   const [index, setIndex] = useState(0);
-  const [] = useModel(dome);
-  const [state, actions] = useModel(user, 2);
+  const [stateOther, actionsOther] = useModel(other);
+  const [stateDome, actionsDome] = useModel(dome);
+  const [views, actions] = useModel(user);
 
   return (
     <div>
       <div>
-        state.double: {state.double}
+        state.double 3: {views.double(3)}
         <hr/>
-        User {state.name} {state.id}
       </div>
       <button
         onClick={() => {
           actions.add(2);
         }}
       >
-        actions add
+        actions user1
       </button>
-      <div id="index">Index 112213 {index}</div>
+      <hr/>
+      {JSON.stringify(stateDome)}
+      <hr/>
+      <button
+        onClick={() => {
+          actionsDome.add(1);
+        }}
+      >
+        actions dome
+      </button>
+      <hr/>
+      {JSON.stringify(stateOther)}
+      <hr/>
+      <button
+        onClick={() => {
+          actionsOther.add(1);
+        }}
+      >
+        actions other
+      </button>
+      <div id="index">Index: {index}</div>
       <button
         onClick={() => {
           setIndex(index + 1);
         }}
       >
-        plus one
+        trigger useState
       </button>
     </div>
   );

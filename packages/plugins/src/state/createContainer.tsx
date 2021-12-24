@@ -10,7 +10,7 @@ import React, {
 import { init, Models, Plugin, NamedModel } from '@rematch/core';
 import invariant from '@shuvi/utils/lib/invariant';
 import { createBatchManager } from './batchManager';
-import { createViewsManager, getViewsProxy } from './viewsManager';
+import { createViewsManager, getStateOrViews } from './viewsManager';
 import subscriptionsPlugin from './plugins/subscriptions';
 import { shadowEqual } from './utils';
 import { Store } from './types'
@@ -30,8 +30,7 @@ interface INamedModel<
 
 export interface IUseModel {
   <TModels extends Models<TModels>, TState = any, TBaseState = TState>(
-    model: INamedModel<TModels, TState, TBaseState>,
-    args?: any
+    model: INamedModel<TModels, TState, TBaseState>
   ): [any, any];
 }
 
@@ -60,11 +59,10 @@ function getStateDispatch(
   name: string,
   store: Store,
   viewsManager: ReturnType<typeof createViewsManager>,
-  args: any
 ) {
   const dispatch = store.dispatch;
   return [
-    getViewsProxy(name, viewsManager, store, args),
+    getStateOrViews(name, viewsManager, store),
     dispatch[name]
   ] as [any, any];
 }
@@ -105,7 +103,7 @@ const createContainer = (config: Config) => {
       store = init(getFinalConfig());
     }
     const batchManager = createBatchManager();
-    const viewsManager = createViewsManager();
+    const viewsManager = createViewsManager(store);
 
     return (
       <Context.Provider value={{ store, batchManager, viewsManager }}>
@@ -120,7 +118,7 @@ const createContainer = (config: Config) => {
       batchManager: ReturnType<typeof createBatchManager>,
       viewsManager: ReturnType<typeof createViewsManager>
     ): IUseModel =>
-      (model, args) => {
+      (model) => {
       invariant(
         Boolean(model.name),
         `createUseModel param model.name is necessary for Model.`
@@ -131,8 +129,8 @@ const createContainer = (config: Config) => {
         Record<string, (...args: any[]) => void>
       ] => {
         initModel(model, store, batchManager, viewsManager);
-        return getStateDispatch(name, store, viewsManager, args);
-      }, [model, name, args]);
+        return getStateDispatch(name, store, viewsManager);
+      }, [model, name]);
 
       const [modelValue, setModelValue] = useState(initialValue);
 
@@ -140,7 +138,7 @@ const createContainer = (config: Config) => {
 
       useEffect(() => {
         const fn = () => {
-          const newValue = getStateDispatch(name, store, viewsManager, args);
+          const newValue = getStateDispatch(name, store, viewsManager);
           if (
             !shadowEqual(lastValueRef.current[0], newValue[0])
           ) {
@@ -158,7 +156,7 @@ const createContainer = (config: Config) => {
       return modelValue;
     };
 
-  const useModel: IUseModel = (model, args) => {
+  const useModel: IUseModel = (model) => {
     invariant(Boolean(model), `useModel param model is necessary`);
 
     const context = useContext(Context);
@@ -173,10 +171,10 @@ const createContainer = (config: Config) => {
     return useMemo(
       () => createUseModel(store, batchManager, viewsManager),
       [store]
-    )(model, args);
+    )(model);
   };
 
-  const useStaticModel: IUseModel = (model, args) => {
+  const useStaticModel: IUseModel = (model) => {
     const context = useContext(Context);
 
     invariant(
@@ -193,8 +191,8 @@ const createContainer = (config: Config) => {
     const name = model.name || '';
     const initialValue = useMemo(() => {
       initModel(model, store, batchManager, viewsManager);
-      return getStateDispatch(name, store, viewsManager, args);
-    }, [model, name, args]);
+      return getStateDispatch(name, store, viewsManager);
+    }, [model, name]);
 
     const value = useRef<[any, any]>([
       // deep clone state in case mutate origin state accidentlly.
@@ -204,7 +202,7 @@ const createContainer = (config: Config) => {
 
     useEffect(() => {
       const fn = () => {
-        const newValue = getStateDispatch(name, store, viewsManager, args);
+        const newValue = getStateDispatch(name, store, viewsManager);
         if (
           Object.prototype.toString.call(value.current[0]) === '[object Object]'
         ) {
@@ -223,16 +221,16 @@ const createContainer = (config: Config) => {
     return value.current;
   };
 
-  const useLocalModel: IUseModel = (model, args) => {
+  const useLocalModel: IUseModel = (model) => {
     const [store, batchManager, selectorManager] = useMemo(() => {
       const newStore = init(getFinalConfig());
-      return [newStore, createBatchManager(), createViewsManager()];
+      return [newStore, createBatchManager(), createViewsManager(newStore)];
     }, []);
 
     return useMemo(
       () => createUseModel(store, batchManager, selectorManager),
       []
-    )(model, args);
+    )(model);
   };
 
   return {
