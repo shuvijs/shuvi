@@ -34,7 +34,7 @@ type selector<TState = any> = (state: TState, views: any) => any
 export interface IUseModel {
   <TModels extends Models<TModels>, TState = any, TBaseState = TState>(
     model: INamedModel<TModels, TState, TBaseState>,
-    selector: selector<TState>
+    selector?: selector<TState>
   ): [any, any];
 }
 
@@ -63,7 +63,7 @@ function getStateDispatch(
   name: string,
   store: Store,
   viewsManager: ReturnType<typeof createViewsManager>,
-  selector: selector,
+  selector?: selector,
 ) {
   const dispatch = store.dispatch;
   return [
