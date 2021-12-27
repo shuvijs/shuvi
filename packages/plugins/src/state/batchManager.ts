@@ -6,17 +6,17 @@ const createBatchManager = () => {
 
   // add models to listen
   // when name === '', mean global state listen;
-  const addSubsribe = function (name: string, fn: () => void) {
+  const addSubsribe = function (name: string, fn?: () => void) {
     let modelsFnSet = usingModelsMap.get(name);
     if (!modelsFnSet) {
       modelsFnSet = new Set();
-      modelsFnSet.add(fn);
+      fn && modelsFnSet.add(fn);
       usingModelsMap.set(name, modelsFnSet);
     } else {
-      modelsFnSet.add(fn);
+      fn && modelsFnSet.add(fn);
     }
     return function () {
-      return removeSubsribe(name, fn);
+      return fn && removeSubsribe(name, fn);
     };
   };
 
