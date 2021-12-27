@@ -304,6 +304,7 @@ const createViewsManager = (store: Store) => {
     if(views){
       const proxyObj: Record<string, any>= {};
       Object.keys(views || {}).forEach((selectorName: string) => {
+        // todo: get dep by api
         const cacheFun = cacheFactory(name, ['dome', 'other'], views[selectorName], getView)
         proxyObj[selectorName] = function(args: any){
           const state = store.getState();
@@ -325,29 +326,12 @@ function getStateOrViews<T = any>(
   store: Store,
   selector?: (state: any, views: any)=> any,
 ) {
-
-  const views = viewsManager.getView(modelName);
-  if (!views) {
-    return store.getState()[modelName];
+  const modelState = store.getState()[modelName];
+  const ModelViews = viewsManager.getView(modelName);
+  if(!selector){
+    return modelState
   }
-
-  const keys = Object.keys(views);
-  const result = {} as Record<string, (args: any)=> any>;
-  keys.forEach(key=>{
-    result[key] = function(args: any){
-      const fn = views[key];
-      if(typeof fn === 'function') return fn(args)
-      return fn;
-    }
-  })
-  return result;
-
-  // const modelState = store.getState()[modelName];
-  // const ModelViews = viewsManager.getView(modelName);
-  // if(!selector){
-  //   return modelState
-  // }
-  // return selector(modelState, ModelViews)
+  return selector(modelState, ModelViews);
 }
 
 export { createViewsManager, getStateOrViews };

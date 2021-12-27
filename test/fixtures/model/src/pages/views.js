@@ -80,16 +80,23 @@ export default function Index() {
   const [index, setIndex] = useState(0);
   const [stateOther, actionsOther] = useModel(other);
   const [stateDome, actionsDome] = useModel(dome);
-  const [views, actions] = useModel(user);
+  const [views, actions] = useModel(user, function(state, views){
+    return {
+      stateData: state.id,
+      one: views.one(),
+      double: views.double(3),
+      d: views.d().number
+    }
+  });
 
   // const d = views.d().number;
 
   return (
     <div>
       <div>
-        state.double 3: {views.double(3)}
-        {views.one()}
-        {views.d().number}
+        state.double 3: {views.double}
+        {views.one}
+        {views.d}
         <hr/>
       </div>
       <button

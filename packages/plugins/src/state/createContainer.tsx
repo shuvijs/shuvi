@@ -14,7 +14,6 @@ import { createViewsManager, getStateOrViews } from './viewsManager';
 import subscriptionsPlugin from './plugins/subscriptions';
 import { shadowEqual } from './utils';
 import { Store } from './types'
-import { Selector } from 'reselect';
 
 type initConfig = Parameters<typeof init>[0];
 type Config = initConfig & {
@@ -29,10 +28,12 @@ interface INamedModel<
   views?: Record<string, (state: TState, RootState: any, views: any, args: any) => any>;
 }
 
+type selector<TState = any> = (state: TState, views: any) => any
+
 export interface IUseModel {
   <TModels extends Models<TModels>, TState = any, TBaseState = TState>(
     model: INamedModel<TModels, TState, TBaseState>,
-    selector: (state: TState, views: any) => any
+    selector: selector<TState>
   ): [any, any];
 }
 
@@ -61,10 +62,11 @@ function getStateDispatch(
   name: string,
   store: Store,
   viewsManager: ReturnType<typeof createViewsManager>,
+  selector: selector,
 ) {
   const dispatch = store.dispatch;
   return [
-    getStateOrViews(name, viewsManager, store),
+    getStateOrViews(name, viewsManager, store, selector),
     dispatch[name]
   ] as [any, any];
 }
@@ -120,7 +122,7 @@ const createContainer = (config: Config) => {
       batchManager: ReturnType<typeof createBatchManager>,
       viewsManager: ReturnType<typeof createViewsManager>
     ): IUseModel =>
-      (model) => {
+      (model, selector) => {
       invariant(
         Boolean(model.name),
         `createUseModel param model.name is necessary for Model.`
@@ -131,8 +133,8 @@ const createContainer = (config: Config) => {
         Record<string, (...args: any[]) => void>
       ] => {
         initModel(model, store, batchManager, viewsManager);
-        return getStateDispatch(name, store, viewsManager);
-      }, [model, name]);
+        return getStateDispatch(name, store, viewsManager, selector);
+      }, [model, name, selector]);
 
       const [modelValue, setModelValue] = useState(initialValue);
 
@@ -140,7 +142,7 @@ const createContainer = (config: Config) => {
 
       useEffect(() => {
         const fn = () => {
-          const newValue = getStateDispatch(name, store, viewsManager);
+          const newValue = getStateDispatch(name, store, viewsManager, selector);
           if (
             !shadowEqual(lastValueRef.current[0], newValue[0])
           ) {
@@ -158,7 +160,7 @@ const createContainer = (config: Config) => {
       return modelValue;
     };
 
-  const useModel: IUseModel = (model) => {
+  const useModel: IUseModel = (model, selector) => {
     invariant(Boolean(model), `useModel param model is necessary`);
 
     const context = useContext(Context);
@@ -173,10 +175,10 @@ const createContainer = (config: Config) => {
     return useMemo(
       () => createUseModel(store, batchManager, viewsManager),
       [store]
-    )(model);
+    )(model, selector);
   };
 
-  const useStaticModel: IUseModel = (model) => {
+  const useStaticModel: IUseModel = (model, selector) => {
     const context = useContext(Context);
 
     invariant(
@@ -193,7 +195,7 @@ const createContainer = (config: Config) => {
     const name = model.name || '';
     const initialValue = useMemo(() => {
       initModel(model, store, batchManager, viewsManager);
-      return getStateDispatch(name, store, viewsManager);
+      return getStateDispatch(name, store, viewsManager, selector);
     }, [model, name]);
 
     const value = useRef<[any, any]>([
@@ -204,7 +206,7 @@ const createContainer = (config: Config) => {
 
     useEffect(() => {
       const fn = () => {
-        const newValue = getStateDispatch(name, store, viewsManager);
+        const newValue = getStateDispatch(name, store, viewsManager, selector);
         if (
           Object.prototype.toString.call(value.current[0]) === '[object Object]'
         ) {
@@ -223,7 +225,7 @@ const createContainer = (config: Config) => {
     return value.current;
   };
 
-  const useLocalModel: IUseModel = (model) => {
+  const useLocalModel: IUseModel = (model, selector) => {
     const [store, batchManager, selectorManager] = useMemo(() => {
       const newStore = init(getFinalConfig());
       return [newStore, createBatchManager(), createViewsManager(newStore)];
@@ -232,7 +234,7 @@ const createContainer = (config: Config) => {
     return useMemo(
       () => createUseModel(store, batchManager, selectorManager),
       []
-    )(model);
+    )(model, selector);
   };
 
   return {
