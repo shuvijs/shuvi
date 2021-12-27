@@ -1,9 +1,14 @@
 import { createSelector } from 'reselect';
-import { shadowEqual } from './utils'
+import { isComplexObject } from './utils'
 import { Store } from './types'
 
 interface ICompare {
-  new: Set<string>,
+  keys: string[][],
+  values: Map<any, {
+    children: {
+      [key: string]: any
+    },
+  }>,
   isSimpleValue: boolean;
 }
 
@@ -11,66 +16,187 @@ interface IViewsCompare {
   new: Map<string, any>,
 }
 
-const getProxyHandler = (compare: IViewsCompare, otherArgs: any) =>{
+// process backtracking generate keys chain, compare.keys = result; clear momery used
+// app get root object first os tree root is the valuesMap first
+function generateCompareKeys(compare: ICompare) {
+  const valuesMap = compare.values;
+  const root = [...valuesMap.keys()][0];
+  const result: string[][] = [];
+  if(root){
+    // Backtracking generate keys chain
+    function visitTree(target: any, keysChain: string[]){
+      if(!target || !valuesMap.has(target)){
+        result.push([...keysChain])
+        return;
+      }
+      const node = valuesMap.get(target);
+      if(!node){
+        return;
+      }
+      const children = node.children;
+      const keys = Object.keys(children);
+      for(let i = 0; i < keys.length; i++){
+        const key = keys[i];
+        const child = children[key];
+        keysChain.push(key);
+        visitTree(child, keysChain);
+        keysChain.pop();
+      }
+    }
+    visitTree(root, []);
+  }
+  compare.keys = result;
+  valuesMap.clear();
+}
+
+let isCollectionKeys = false;
+
+let viewsStatePos: IViewsCompare;
+const getProxyHandler = () =>{
   const handler =  {
     get: function(target: Record<string, (...args: any[]) => any>, prop: string) {
       let result = target[prop];
       if(typeof result === 'function'){
-        result = result(otherArgs);
+        result = result();
       }
-      if(!compare.new.has(prop)){
-        compare.new.set(prop, result);
+      if(isCollectionKeys){
+        if(!viewsStatePos.new.has(prop)){
+          viewsStatePos.new.set(prop, result);
+        }
       }
       return  result;
     }
   }
   return handler;
 }
-
-const getCollectionHandler = (compare: ICompare) => {
-  const handler = {
-    get(target: any, p: string, receiver: any): any {
-      const result = target[p]
-      compare.new.add(p);
+let compareStatePos: ICompare;
+const getStateCollection = () => {
+  return {
+    get(target: any, p: string): any {
+      let result = target[p];
+      const isComplexObjectResult = isComplexObject(result);
+      if(isCollectionKeys){
+        const compareValues = compareStatePos.values;
+        if(compareValues.has(target)){
+          const treeNode = compareValues.get(target);
+          treeNode && (treeNode!.children[p] = isComplexObjectResult ? result : null);
+        }else{
+          compareValues.set(target, {
+            children: {
+              [p]: isComplexObjectResult ? result : null
+            },
+          });
+        }
+      }
+      if(isComplexObjectResult){
+        result = createProxyObj(result, getStateCollection);
+      }
       return result;
     }
   }
-  return handler;
 }
 
+let compareRootStatePos: ICompare;
+const getRootStateCollection = () => {
+  return {
+    get(target: any, p: string): any {
+      let result = target[p];
+      const isComplexObjectResult = isComplexObject(result);
+      if(isCollectionKeys){
+        const compareValues = compareRootStatePos.values;
+        if(compareValues.has(target)){
+          const treeNode = compareValues.get(target);
+          treeNode && (treeNode!.children[p] = isComplexObjectResult ? result : null);
+        }else{
+          compareValues.set(target, {
+            children: {
+              [p]: isComplexObjectResult ? result : null
+            },
+          });
+        }
+      }
+      if(isComplexObjectResult){
+        result = createProxyObj(result, getRootStateCollection);
+      }
+      return result;
+    }
+  }
+}
+
+const proxyObjMap = new WeakMap<Record<string, any>, typeof Proxy>();
+function createProxyObj(target: Record<string, any>, collection: typeof getStateCollection) {
+  if(proxyObjMap.has(target)){
+    return proxyObjMap.get(target);
+  }
+  const proxy = new Proxy(target, collection())
+  proxyObjMap.set(target, proxy);
+  return proxy;
+}
+
+const proxyViewsMap = new Map<string, typeof Proxy>();
+function createProxyViews(modelName: string, getView: ReturnType<typeof createViewsManager>['getView']) {
+  if(proxyViewsMap.has(modelName)){
+    return proxyViewsMap.get(modelName);
+  }
+  const target = getView(modelName) || {}
+  const proxy = new Proxy<any>(target, getProxyHandler())
+  proxyViewsMap.set(modelName, proxy);
+  return proxy;
+}
+
+// return false => need recomputed, true => use last cache
 function compareArguments(prev: any, next: any, compare: ICompare) {
   if(compare.isSimpleValue){
-    return shadowEqual(prev, next)
+    return prev === next;
   }
-  const keys = [...compare.new];
-  for(let i = 0; i<keys.length; i++){
-    const key = keys[i];
-    if(!shadowEqual(prev[key], next[key])){
+  const keysChains = compare.keys;
+  for(let i = 0; i<keysChains.length; i++){
+    const keys = keysChains[i];
+    let tempPrev = prev;
+    let tempNext = next;
+    for(let j = 0; j< keys.length; j++){
+      const key = keys[j];
+      if(tempNext.hasOwnProperty(key)){
+        tempPrev = tempPrev[key];
+        tempNext = tempNext[key];
+      }else{
+        return false
+      }
+    }
+    if(tempPrev !== tempNext){
       return false;
     }
   }
   return true;
 }
 
-function cacheFactory(modelName: string, dependencies: string[], fn, getView) {
+function cacheFactory(
+  modelName: string,
+  dependencies: string[],
+  fn: (...args: any[]) => void,
+  getView: ReturnType<typeof createViewsManager>['getView']
+) {
   const stateCompare = {
-    new: new Set<string>(),
+    keys: [],
+    values: new Map(),
     isSimpleValue: false,  // may be not a object
   };
 
   const rootStateCompare = {
-    new: new Set<string>(),
+    keys: [],
+    values: new Map(),
     isSimpleValue: false,
   };
 
   const otherArgsCompare = {
-    new: new Set<string>(),
+    keys: [],
+    values: new Map(),
     isSimpleValue: false, // may be not a object
   }
 
   const viewsCompare = {
     new: new Map<string, any>(),
-    viewsProxy: Proxy.revocable({}, {}),
+    viewsProxy: new Proxy({}, {}),
   };
 
   let argumentsPosition = 0;
@@ -90,53 +216,44 @@ function cacheFactory(modelName: string, dependencies: string[], fn, getView) {
     (state, rootState, otherArgs) => {
       // reset compare
       argumentsPosition = 0;
-      stateCompare.new.clear();
-      rootStateCompare.new.clear();
-      otherArgsCompare.new.clear();
+      stateCompare.keys = [];
+      stateCompare.values.clear();
+      rootStateCompare.keys = [];
+      rootStateCompare.values.clear();
+      // otherArgsCompare.keys = [];
+      // otherArgsCompare.values.clear();
       viewsCompare.new.clear();
-      if(typeof viewsCompare.viewsProxy.revoke === 'function'){
-        viewsCompare.viewsProxy.revoke();
-      }
 
       let tempState = state;
-      let stateProxy;
-      if(typeof state === 'object'){
+      if(isComplexObject(state)){
         // Collection deps
         stateCompare.isSimpleValue = false;
-        stateProxy = Proxy.revocable(state, getCollectionHandler(stateCompare));
-        tempState = stateProxy.proxy
+        compareStatePos = stateCompare;
+        tempState = createProxyObj(state, getStateCollection);
       }else{
         stateCompare.isSimpleValue = true;
       }
 
-      const rootStateProxy = Proxy.revocable(rootState, getCollectionHandler(rootStateCompare));
-      const tempRootStateProxy = rootStateProxy.proxy;
+      compareRootStatePos = rootStateCompare;
+      const tempRootStateProxy = createProxyObj(rootState, getRootStateCollection);
 
       let tempOtherArgs = otherArgs;
-      let otherArgsProxy;
-      if(typeof otherArgs === 'object'){
-        // Collection deps
-        otherArgsCompare.isSimpleValue = false;
-        otherArgsProxy = Proxy.revocable(otherArgs, getCollectionHandler(otherArgsCompare));
-        tempOtherArgs = otherArgsProxy.proxy
-      }else{
-        otherArgsCompare.isSimpleValue = true;
-      }
 
-      const viewsProxy = Proxy.revocable(getView(modelName), getProxyHandler(viewsCompare, otherArgs));
-      viewsCompare.viewsProxy = viewsProxy;
-      const tempViewsProxy = viewsProxy.proxy;
+      viewsStatePos = viewsCompare;
+      viewsCompare.viewsProxy = createProxyViews(modelName, getView)!;
+      const tempViewsProxy = viewsCompare.viewsProxy;
+      isCollectionKeys = true; // just keep collection keys when fn call
       const res = fn.call(tempViewsProxy, tempState, tempRootStateProxy, tempViewsProxy, tempOtherArgs);
-      stateProxy?.revoke && stateProxy.revoke();
-      rootStateProxy.revoke();
-      otherArgsProxy?.revoke && otherArgsProxy.revoke();
+      isCollectionKeys = false;
+      generateCompareKeys(stateCompare); // collection keys by compare's values
+      generateCompareKeys(rootStateCompare);
+      // console.log('modelName=>', modelName, stateCompare, rootStateCompare, otherArgsCompare, viewsCompare);
       return res;
     },
     {
       // New in 4.1: Pass options through to the built-in `defaultMemoize` function
       memoizeOptions: {
-        equalityCheck: (prev, next) => {
-          // console.log('modelName=>', modelName, stateCompare, rootStateCompare, otherArgsCompare, viewsCompare);
+        equalityCheck: (prev: any, next: any) => {
           let res = true;
           if(argumentsPosition === 0){ // stateCompare
             res = compareArguments(prev, next, stateCompare);
@@ -149,9 +266,9 @@ function cacheFactory(modelName: string, dependencies: string[], fn, getView) {
             if(res){
               // viewsCompare
               const proxyKeysMap = viewsCompare.new;
-              const viewsProxy = viewsCompare.viewsProxy.proxy || {};
+              const viewsProxy = viewsCompare.viewsProxy as Record<string, any>;
               for (const [key, value] of proxyKeysMap.entries()) {
-                if(!shadowEqual(value, viewsProxy[key])){
+                if(value !== viewsProxy[key]){
                   res = false;
                   break;
                 }
@@ -167,7 +284,7 @@ function cacheFactory(modelName: string, dependencies: string[], fn, getView) {
           return res;
         },
         maxSize: 1,
-        resultEqualityCheck: false
+        resultEqualityCheck: undefined
       }
     }
   );
@@ -175,7 +292,7 @@ function cacheFactory(modelName: string, dependencies: string[], fn, getView) {
 
 
 
-const createViewsManager = (store) => {
+const createViewsManager = (store: Store) => {
   const viewsModelsMap = new Map<string, Record<string, (...args: any[]) => any>>();
   const getView = function (name: string) {
     return viewsModelsMap.get(name);
@@ -188,7 +305,7 @@ const createViewsManager = (store) => {
       const proxyObj: Record<string, any>= {};
       Object.keys(views || {}).forEach((selectorName: string) => {
         const cacheFun = cacheFactory(name, ['dome', 'other'], views[selectorName], getView)
-        proxyObj[selectorName] = function(args){
+        proxyObj[selectorName] = function(args: any){
           const state = store.getState();
           return cacheFun(state, args)
         }
@@ -206,14 +323,16 @@ function getStateOrViews<T = any>(
   modelName: string,
   viewsManager: ReturnType<typeof createViewsManager>,
   store: Store,
+  selector?: (state: any, views: any)=> any,
 ) {
+
   const views = viewsManager.getView(modelName);
   if (!views) {
     return store.getState()[modelName];
   }
 
   const keys = Object.keys(views);
-  const result = {};
+  const result = {} as Record<string, (args: any)=> any>;
   keys.forEach(key=>{
     result[key] = function(args: any){
       const fn = views[key];
@@ -222,6 +341,13 @@ function getStateOrViews<T = any>(
     }
   })
   return result;
+
+  // const modelState = store.getState()[modelName];
+  // const ModelViews = viewsManager.getView(modelName);
+  // if(!selector){
+  //   return modelState
+  // }
+  // return selector(modelState, ModelViews)
 }
 
 export { createViewsManager, getStateOrViews };

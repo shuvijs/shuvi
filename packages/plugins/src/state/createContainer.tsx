@@ -14,6 +14,7 @@ import { createViewsManager, getStateOrViews } from './viewsManager';
 import subscriptionsPlugin from './plugins/subscriptions';
 import { shadowEqual } from './utils';
 import { Store } from './types'
+import { Selector } from 'reselect';
 
 type initConfig = Parameters<typeof init>[0];
 type Config = initConfig & {
@@ -30,7 +31,8 @@ interface INamedModel<
 
 export interface IUseModel {
   <TModels extends Models<TModels>, TState = any, TBaseState = TState>(
-    model: INamedModel<TModels, TState, TBaseState>
+    model: INamedModel<TModels, TState, TBaseState>,
+    selector: (state: TState, views: any) => any
   ): [any, any];
 }
 
@@ -46,7 +48,7 @@ function initModel(
       model as INamedModel<any> & { _subscriptions: Record<string, () => void> }
     )._subscriptions = {
       [`${name}/*`]: () => {
-        batchManager.triggerSubsribe(name);
+        batchManager.triggerSubsribe(name);  // render
       }
     };
     viewsManager.addView(name, model.views);

@@ -17,8 +17,17 @@ export const user = {
     }
   },
   views: {
-    one(state, rootState){
-      console.log('one computed')
+    d(state, rootState, views, args){
+      console.log(state.id);
+      const a = rootState.other;
+      console.log(rootState.dome.number);
+      console.log(a.other[0])
+      console.log('d computed')
+      return rootState.dome;
+    },
+    one(state, rootState, views, args){
+      console.log('one computed', rootState)
+      console.log(state, rootState, views, args)
       return rootState.dome.number;
     },
     double (state, rootState, views, args) {
@@ -27,7 +36,7 @@ export const user = {
       // console.log('this', views.one)
       // return state.id * args;
       console.log('double computed')
-      return state.id * args + views.one;
+      return `state.id=>${state.id}, args=>${args},views.one=>${views.one}`;
     },
   },
 };
@@ -73,10 +82,14 @@ export default function Index() {
   const [stateDome, actionsDome] = useModel(dome);
   const [views, actions] = useModel(user);
 
+  // const d = views.d().number;
+
   return (
     <div>
       <div>
         state.double 3: {views.double(3)}
+        {views.one()}
+        {views.d().number}
         <hr/>
       </div>
       <button

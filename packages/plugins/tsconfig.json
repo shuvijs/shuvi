@@ -4,7 +4,6 @@
     "lib": [
       "esnext",
       "DOM",
-      "es2015.proxy"
     ]
   },
   "include": [
