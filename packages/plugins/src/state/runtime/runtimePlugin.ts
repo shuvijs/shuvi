@@ -1,7 +1,6 @@
 import { createPlugin } from '@shuvi/runtime-core/lib/runtimeHooks';
 import { init } from '@rematch/core';
 import subscriptionsPlugin from '../plugins/subscriptions';
-
 import { withRedux } from './withRedux';
 
 export default createPlugin({
