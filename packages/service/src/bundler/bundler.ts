@@ -10,8 +10,8 @@ import webpack, {
   MultiCompiler as WebapckMultiCompiler,
   Compiler as WebapckCompiler
 } from 'webpack';
-import { ICliContext } from '../api';
-import { Target, TargetChain } from '../api/cliHooks';
+import { IPluginContext } from '../core';
+import { Target, TargetChain } from '../core/plugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import {
   createWebpackConfig,
@@ -46,13 +46,13 @@ const logger = Logger('shuvi:bundler');
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
 class WebpackBundler {
-  private _cliContext: ICliContext;
+  private _cliContext: IPluginContext;
   private _compiler: WebapckMultiCompiler | null = null;
   /* private _internalTargets: Target[] = [];
   private _extraTargets: Target[] = []; */
   private _targets: Target[] = [];
 
-  constructor(cliContext: ICliContext) {
+  constructor(cliContext: IPluginContext) {
     this._cliContext = cliContext;
   }
 
@@ -266,7 +266,7 @@ class WebpackBundler {
   }
 
   private initDefaultBuildTarget(): TargetChain[] {
-    function getDefaultEntry(_cliContext: ICliContext): IWebpackEntry {
+    function getDefaultEntry(_cliContext: IPluginContext): IWebpackEntry {
       return {
         [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
         [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
@@ -321,6 +321,6 @@ class WebpackBundler {
   }
 }
 
-export function getBundler(_cliContext: ICliContext) {
+export function getBundler(_cliContext: IPluginContext) {
   return new WebpackBundler(_cliContext);
 }

@@ -15,7 +15,7 @@ export const shadowEqual = (a: any, b: any) => {
   return Object.keys(a).every(key => a[key] === b[key]);
 };
 
-export function isObject(obj: any): boolean {
+function isObject(obj: any): boolean {
   return objectToString.call(obj) === '[object Object]'
 }
 

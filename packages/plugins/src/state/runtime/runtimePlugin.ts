@@ -18,9 +18,7 @@ export default createPlugin({
         redux: {
           initialState
         },
-        plugins: [
-          subscriptionsPlugin()
-        ]
+        plugins: [subscriptionsPlugin()]
       });
     }
     return ctx;

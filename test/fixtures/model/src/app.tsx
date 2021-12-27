@@ -10,10 +10,9 @@ const getApp = (App: any) => {
         <div>
           <div>this is App.ts</div>
           <div>
-            App name:{state.name} id:{state.id}
+            name:{state.name} id:{state.id}
           </div>
         </div>
-        <hr/>
         <App />
       </div>
     );

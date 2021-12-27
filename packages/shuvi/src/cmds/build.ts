@@ -1,6 +1,6 @@
 import program from 'commander';
 import path from 'path';
-import { build } from '@shuvi/service/lib/cli/build';
+import { build } from '../tasks/build';
 import { getPackageInfo } from '../utils';
 import { getProjectDir, getConfigFromCli } from '../utils';
 
@@ -20,7 +20,6 @@ export default async function main(argv: string[]) {
     .name(pkgInfo.name)
     .usage(`build [dir] [options]`)
     .helpOption()
-    .option('--config <file>', 'path to config file')
     .option(
       '--public-path <url>',
       'specify the asset prefix. eg: https://some.cdn.com'
@@ -31,7 +30,8 @@ export default async function main(argv: string[]) {
       "specify the hisotry type. 'browser' or 'hash'"
     )
     .option('--analyze', 'generate html file to help analyze webpack bundle')
-    .option('--config-overrides [json]', 'config overrides json')
+    .option('--config <file>', 'path to config file')
+    .option('--config-overrides <json>', 'config overrides json')
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
   const config = getConfigFromCli(program, cliConfigMap);

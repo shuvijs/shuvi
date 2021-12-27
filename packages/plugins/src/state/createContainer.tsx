@@ -16,6 +16,7 @@ import { shadowEqual } from './utils';
 import { Store } from './types'
 
 type initConfig = Parameters<typeof init>[0];
+
 type Config = initConfig & {
   plugins?: ((...args: any[]) => Plugin<any, any>) | Plugin<any, any>;
 };
@@ -179,6 +180,7 @@ const createContainer = (config: Config) => {
   };
 
   const useStaticModel: IUseModel = (model, selector) => {
+
     const context = useContext(Context);
 
     invariant(
