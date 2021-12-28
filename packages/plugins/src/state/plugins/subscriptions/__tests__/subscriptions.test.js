@@ -1,4 +1,4 @@
-import { init } from '@rematch/core';
+import { init } from '../../../rematch';
 import subscriptionsPlugin from '../index';
 
 describe('subscriptions:', () => {
