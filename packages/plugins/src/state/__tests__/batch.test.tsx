@@ -6,28 +6,27 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { useModel, Provider } from '..';
-
-const countModel = {
-  name: 'countModel',
+import { model } from '../news'
+const countModel = model('countModel').define({
   state: {
     value: 1,
     value1: 1
   },
-  reducers: {
-    addValue(state: { value: number; value1: number }) {
+  actions: {
+    addValue(state) {
       return {
         ...state,
         value: state.value + 1
       };
     },
-    addValue1(state: { value: number; value1: number }) {
+    addValue1(state) {
       return {
         ...state,
         value1: state.value1 + 1
       };
     }
   }
-};
+});
 
 describe('test batch', () => {
   let node: HTMLDivElement;
@@ -45,7 +44,7 @@ describe('test batch', () => {
 
     function SubApp() {
       renderCount += 1;
-
+      //@ts-ignore
       const [{ value1 }, { addValue1 }] = useModel(countModel);
 
       return (
@@ -64,6 +63,7 @@ describe('test batch', () => {
     }
 
     function App() {
+      //@ts-ignore
       const [{ value }, { addValue }] = useModel(countModel);
       return (
         <div>
