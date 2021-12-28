@@ -1,10 +1,11 @@
 import { useModel, defineModel } from '@shuvi/services/store';
 
-const sleep = (time: number) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve(null)
-  }, time)
-})
+const sleep = (time: number) =>
+  new Promise(resolve => {
+    setTimeout(() => {
+      resolve(null);
+    }, time);
+  });
 
 const core = defineModel({
   name: 'core',
@@ -13,72 +14,81 @@ const core = defineModel({
     step: 1
   },
   reducers: {
-    addStep: (state) => {
+    addStep: state => {
       return {
         ...state,
         step: state.step + 1
-      }
+      };
     }
   },
   effects: {
     addStepAsync: async (payload, state, dispatch) => {
-      await sleep(1000)
-      dispatch.addStep()
+      await sleep(1000);
+      dispatch.addStep();
     }
   }
-})
+});
 
-const base = defineModel({
-  name: 'base',
-  state: {
-    hello: 'base',
-    step: 1
-  },
-  reducers: {
-    addStep: (state) => {
-      return {
-        ...state,
-        step: state.step + 1
+const base = defineModel(
+  {
+    name: 'base',
+    state: {
+      hello: 'base',
+      step: 1
+    },
+    reducers: {
+      addStep: state => {
+        return {
+          ...state,
+          step: state.step + 1
+        };
+      }
+    },
+    effects: {
+      addStepAsync: async (payload, state, dispatch) => {
+        await sleep(1000);
+        dispatch.addStep();
       }
     }
   },
-  effects: {
-    addStepAsync: async (payload, state, dispatch) => {
-      await sleep(1000)
-      dispatch.addStep()
-    }
-  }
-}, { core })
+  { core }
+);
 
-
-const count = defineModel({
-  name: 'count',
-  state: {
-    hello: 'count',
-    num: 1
-  },
-  reducers: {
-    addCount: (state, payload: number) => {
-      return {
-        ...state,
-        num: state.num + payload
+const count = defineModel(
+  {
+    name: 'count',
+    state: {
+      hello: 'count',
+      num: 1
+    },
+    reducers: {
+      addCount: (state, payload: number) => {
+        return {
+          ...state,
+          num: state.num + payload
+        };
+      }
+    },
+    effects: {
+      addCountAsync: async (
+        payload,
+        state,
+        dispatch,
+        rootState,
+        rootDispatch
+      ) => {
+        console.warn('addCountAsyncState', state);
+        dispatch.addCount(rootState.base.step);
+        await rootDispatch.base.addStepAsync();
       }
     }
   },
-  effects: {
-    addCountAsync: async (payload, state, dispatch, rootState, rootDispatch) => {
-      console.warn('addCountAsyncState', state)
-      dispatch.addCount(rootState.base.step)
-      await rootDispatch.base.addStepAsync()
-    }
-  }
-}, { base })
+  { base }
+);
 
 export default function Index() {
-  //@ts-ignore
   const [{ num, hello: helloCount }, { addCountAsync }] = useModel(count);
-  // @ts-ignore
-  const [{ hello: helloBase, step }, { addStepAsync }] = useModel(base)
+  const [{ hello: helloBase, step }, { addStepAsync }] = useModel(base);
   return (
     <div>
       <div>

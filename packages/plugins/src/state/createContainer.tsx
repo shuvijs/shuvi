@@ -26,6 +26,7 @@ interface INamedModel<
   TState = any,
   TBaseState = TState
 > extends NamedModel<TModels, TState, TBaseState> {
+  _beDepends: Set<string>;
   views?: Record<
     string,
     (state: TState, RootState: any, views: any, args: any) => any
@@ -47,24 +48,28 @@ function initModel(
   batchManager: ReturnType<typeof createBatchManager>,
   viewsManager: ReturnType<typeof createViewsManager>
 ) {
+  //@ts-ignore
+  const rootModels = model._rootModels;
+  if (rootModels) {
+    Object.values(rootModels).forEach(model => {
+      //@ts-ignore
+      initModel(model, store, batchManager, viewsManager);
+    });
+  }
   const name = model.name || '';
   if (!batchManager.hasInitModel(name)) {
-    //@ts-ignore
-    const rootModels = model._rootModels;
-    if (rootModels) {
-      Object.values(rootModels).forEach(model => {
-        //@ts-ignore
-        initModel(model, store, batchManager, viewsManager);
-      });
-    }
     (
       model as INamedModel<any> & { _subscriptions: Record<string, () => void> }
     )._subscriptions = {
       [`${name}/*`]: () => {
-        batchManager.triggerSubsribe(name); // render
+        batchManager.triggerSubsribe(name); // render self;
+        const _beDepends = [...(model._beDepends || [])];
+        _beDepends.forEach(deDepend => {
+          batchManager.triggerSubsribe(deDepend); // render deDepend;
+        });
       }
     };
-    viewsManager.addView(name, model.views);
+    viewsManager.addView(model);
     store.addModel(model);
     batchManager.addSubsribe(name);
   }
