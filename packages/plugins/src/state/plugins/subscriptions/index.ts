@@ -1,4 +1,4 @@
-import { Action, Model, Plugin, Models } from '@rematch/core';
+import { Action, Model, Plugin, Models } from '../../rematch';
 import { createSubscription } from './create';
 import { createUnsubscribe } from './unsubscribe';
 import { IMatched, IMatchedMap } from './types';

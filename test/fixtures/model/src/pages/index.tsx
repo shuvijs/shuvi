@@ -1,45 +1,109 @@
-import { useState } from 'react';
-import { useModel } from '@shuvi/services/store';
+import { useModel, defineModel } from '@shuvi/services/store';
 
-export const user = {
-  name: 'user',
+const sleep = (time: number) => new Promise((resolve) => {
+  setTimeout(() => {
+    resolve(null)
+  }, time)
+})
+
+const core = defineModel({
+  name: 'core',
   state: {
-    id: 1,
-    name: 'haha'
+    hello: 'core',
+    step: 1
   },
   reducers: {
-    add: (state: any, step: any) => {
+    addStep: (state) => {
       return {
         ...state,
-        id: state.id + step
-      };
+        step: state.step + 1
+      }
+    }
+  },
+  effects: {
+    addStepAsync: async (payload, state, dispatch) => {
+      await sleep(1000)
+      dispatch.addStep()
     }
   }
-};
+})
+
+const base = defineModel({
+  name: 'base',
+  state: {
+    hello: 'base',
+    step: 1
+  },
+  reducers: {
+    addStep: (state) => {
+      return {
+        ...state,
+        step: state.step + 1
+      }
+    }
+  },
+  effects: {
+    addStepAsync: async (payload, state, dispatch) => {
+      await sleep(1000)
+      dispatch.addStep()
+    }
+  }
+}, { core })
+
+
+const count = defineModel({
+  name: 'count',
+  state: {
+    hello: 'count',
+    num: 1
+  },
+  reducers: {
+    addCount: (state, payload: number) => {
+      return {
+        ...state,
+        num: state.num + payload
+      }
+    }
+  },
+  effects: {
+    addCountAsync: async (payload, state, dispatch, rootState, rootDispatch) => {
+      console.warn('addCountAsyncState', state)
+      dispatch.addCount(rootState.base.step)
+      await rootDispatch.base.addStepAsync()
+    }
+  }
+}, { base })
 
 export default function Index() {
-  const [index, setIndex] = useState(0);
-  const [state, actions] = useModel(user);
+  //@ts-ignore
+  const [{ num, hello: helloCount }, { addCountAsync }] = useModel(count);
+  // @ts-ignore
+  const [{ hello: helloBase, step }, { addStepAsync }] = useModel(base)
   return (
     <div>
       <div>
-        User {state.name} {state.id}
+        Count: {helloCount} {num}
+        <button
+          onClick={() => {
+            // @ts-ignore
+            addCountAsync();
+          }}
+        >
+          Add Count
+        </button>
       </div>
-      <button
-        onClick={() => {
-          actions.add(2);
-        }}
-      >
-        actions add
-      </button>
-      <div id="index">Index 112213 {index}</div>
-      <button
-        onClick={() => {
-          setIndex(index + 1);
-        }}
-      >
-        plus one sdfsdfsf
-      </button>
+
+      <div>
+        Base: {helloBase} {step}
+        <button
+          onClick={() => {
+            // @ts-ignore
+            addStepAsync();
+          }}
+        >
+          Add Step
+        </button>
+      </div>
     </div>
   );
 }

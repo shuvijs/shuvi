@@ -23,5 +23,5 @@ export async function buildFixture(
   overrides: UserConfig = {}
 ) {
   const config = await loadFixture(fixture, overrides);
-  await build({ config });
+  await build({ config, cwd: resolveFixture(fixture) });
 }

@@ -27,6 +27,7 @@ function mapStateBySelect<T = any>(
     (res, key) => (res[key] = selector[key](s)),
     result
   );
+  console.warn('state', result)
   return result;
 }
 

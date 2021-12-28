@@ -7,13 +7,13 @@ import React, {
   useMemo,
   useRef
 } from 'react';
-import { init, Models, Plugin, NamedModel } from '@rematch/core';
+import { init, Models, Plugin, NamedModel } from './rematch';
 import invariant from '@shuvi/utils/lib/invariant';
 import { createBatchManager } from './batchManager';
 import { createViewsManager, getStateOrViews } from './viewsManager';
 import subscriptionsPlugin from './plugins/subscriptions';
 import { shadowEqual } from './utils';
-import { Store } from './types'
+import { Store } from './types';
 
 type initConfig = Parameters<typeof init>[0];
 
@@ -26,10 +26,13 @@ interface INamedModel<
   TState = any,
   TBaseState = TState
 > extends NamedModel<TModels, TState, TBaseState> {
-  views?: Record<string, (state: TState, RootState: any, views: any, args: any) => any>;
+  views?: Record<
+    string,
+    (state: TState, RootState: any, views: any, args: any) => any
+  >;
 }
 
-type selector<TState = any> = (state: TState, views: any) => any
+type selector<TState = any> = (state: TState, views: any) => any;
 
 export interface IUseModel {
   <TModels extends Models<TModels>, TState = any, TBaseState = TState>(
@@ -46,11 +49,19 @@ function initModel(
 ) {
   const name = model.name || '';
   if (!batchManager.hasInitModel(name)) {
+    //@ts-ignore
+    const rootModels = model._rootModels;
+    if (rootModels) {
+      Object.values(rootModels).forEach(model => {
+        //@ts-ignore
+        initModel(model, store, batchManager, viewsManager);
+      });
+    }
     (
       model as INamedModel<any> & { _subscriptions: Record<string, () => void> }
     )._subscriptions = {
       [`${name}/*`]: () => {
-        batchManager.triggerSubsribe(name);  // render
+        batchManager.triggerSubsribe(name); // render
       }
     };
     viewsManager.addView(name, model.views);
@@ -63,7 +74,7 @@ function getStateDispatch(
   name: string,
   store: Store,
   viewsManager: ReturnType<typeof createViewsManager>,
-  selector?: selector,
+  selector?: selector
 ) {
   const dispatch = store.dispatch;
   return [
@@ -123,7 +134,8 @@ const createContainer = (config: Config) => {
       batchManager: ReturnType<typeof createBatchManager>,
       viewsManager: ReturnType<typeof createViewsManager>
     ): IUseModel =>
-      (model, selector) => {
+    //@ts-ignore
+    (model, selector) => {
       invariant(
         Boolean(model.name),
         `createUseModel param model.name is necessary for Model.`
@@ -143,10 +155,13 @@ const createContainer = (config: Config) => {
 
       useEffect(() => {
         const fn = () => {
-          const newValue = getStateDispatch(name, store, viewsManager, selector);
-          if (
-            !shadowEqual(lastValueRef.current[0], newValue[0])
-          ) {
+          const newValue = getStateDispatch(
+            name,
+            store,
+            viewsManager,
+            selector
+          );
+          if (!shadowEqual(lastValueRef.current[0], newValue[0])) {
             setModelValue(newValue as any);
             lastValueRef.current = newValue;
           }
@@ -180,7 +195,6 @@ const createContainer = (config: Config) => {
   };
 
   const useStaticModel: IUseModel = (model, selector) => {
-
     const context = useContext(Context);
 
     invariant(
