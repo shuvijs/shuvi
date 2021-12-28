@@ -800,7 +800,7 @@ declare module 'redux' {
 /**
  * Patch for the incompatibility between Redux.Dispatch and RematchDispatch
  */
-declare module 'react-redux' {
+/* declare module 'react-redux' {
 	interface Connect {
 		<RM extends Models<RM>, State, TStateProps, TDispatchProps, TOwnProps>(
 			mapStateToProps: MapStateToPropsParam<TStateProps, TOwnProps, State>,
@@ -837,7 +837,7 @@ declare module 'react-redux' {
 		TOwnProps,
 		RM extends Models<RM>
 	> = (dispatch: any, ownProps: TOwnProps) => TDispatchProps
-}
+} */
 
 declare global {
 	interface Window {

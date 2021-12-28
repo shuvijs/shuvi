@@ -83,7 +83,7 @@ function createEffectsMiddleware<
 				// then run the effect and return its result
 				return (bag.effects as any)[action.type](
 					action.payload,
-					store.getState(),
+					// store.getState(),
 					action.meta
 				)
 			}

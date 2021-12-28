@@ -36,7 +36,6 @@ const createActionDispatcher = <
 			if (typeof meta !== 'undefined') {
 				action.meta = meta
 			}
-
 			return rematch.dispatch(action)
 		},
 		{

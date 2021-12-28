@@ -1,6 +1,8 @@
 import { createPlugin } from '@shuvi/runtime-core/lib/runtimeHooks';
-import { init } from '@rematch/core';
+import { init } from '../rematch';
 import subscriptionsPlugin from '../plugins/subscriptions';
+import effectsPlugin from '../plugins/effects';
+
 import { withRedux } from './withRedux';
 
 export default createPlugin({
@@ -18,7 +20,7 @@ export default createPlugin({
         redux: {
           initialState
         },
-        plugins: [subscriptionsPlugin()]
+        plugins: [subscriptionsPlugin(), effectsPlugin()]
       });
     }
     return ctx;
