@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { isComplexObject } from './utils';
 import { Store } from './types';
+import { InternalModel } from './model';
 
 interface ICompare {
   keys: string[][];
@@ -322,17 +323,18 @@ const createViewsManager = (store: Store) => {
   const getView = function (name: string) {
     return viewsModelsMap.get(name);
   };
-  const addView = function (model) {
+  const addView = function (model: InternalModel<any, any, any, any, any>) {
     const views = model.views;
     const name = model.name;
     const dependencies =
       (model._rootModels &&
-        Object.values(model._rootModels).map(m => m.name)) ||
+        Object.values(model._rootModels).map(
+          m => (m as { name: string }).name
+        )) ||
       [];
     if (views) {
       const proxyObj: Record<string, any> = {};
       Object.keys(views || {}).forEach((selectorName: string) => {
-        // todo: get dep by api
         const cacheFun = cacheFactory(
           name,
           dependencies,

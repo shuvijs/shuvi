@@ -48,28 +48,28 @@ function initModel(
   batchManager: ReturnType<typeof createBatchManager>,
   viewsManager: ReturnType<typeof createViewsManager>
 ) {
-  //@ts-ignore
-  const rootModels = model._rootModels;
-  if (rootModels) {
-    Object.values(rootModels).forEach(model => {
-      //@ts-ignore
-      initModel(model, store, batchManager, viewsManager);
-    });
-  }
   const name = model.name || '';
   if (!batchManager.hasInitModel(name)) {
+    //@ts-ignore
+    const rootModels = model._rootModels;
+    if (rootModels) {
+      Object.values(rootModels).forEach(model => {
+        //@ts-ignore
+        initModel(model, store, batchManager, viewsManager);
+      });
+    }
     (
       model as INamedModel<any> & { _subscriptions: Record<string, () => void> }
     )._subscriptions = {
       [`${name}/*`]: () => {
         batchManager.triggerSubsribe(name); // render self;
         const _beDepends = [...(model._beDepends || [])];
-        _beDepends.forEach(deDepend => {
-          batchManager.triggerSubsribe(deDepend); // render deDepend;
+        _beDepends.forEach(beDepend => {
+          batchManager.triggerSubsribe(beDepend); // render deDepend;
         });
       }
     };
-    viewsManager.addView(model);
+    viewsManager.addView(model as any);
     store.addModel(model);
     batchManager.addSubsribe(name);
   }

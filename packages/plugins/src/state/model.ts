@@ -158,6 +158,7 @@ export const defineModel = <
       // @ts-ignore
       finalModel.effects[effectName] = (
         payload,
+        // @ts-ignore
         { state, dispatch, rootState, rootDispatch }
       ) => {
         return effectFunction(
