@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from './createSelector';
 import { isComplexObject } from './utils';
 import { Store } from './types';
 import { InternalModel } from './model';
@@ -211,8 +211,6 @@ function cacheFactory(
     viewsProxy: new Proxy({}, {})
   };
 
-  let argumentsPosition = 0;
-
   return createSelector(
     (state: any) => state[modelName],
     (state: any) => {
@@ -225,9 +223,8 @@ function cacheFactory(
       return result;
     },
     (state: any, otherArgs?: any) => otherArgs,
-    (state, rootState, otherArgs) => {
+    (state: any, rootState: any, otherArgs: any) => {
       // reset compare
-      argumentsPosition = 0;
       stateCompare.keys = [];
       stateCompare.values.clear();
       rootStateCompare.keys = [];
@@ -263,43 +260,32 @@ function cacheFactory(
       return res;
     },
     {
-      // New in 4.1: Pass options through to the built-in `defaultMemoize` function
-      memoizeOptions: {
-        equalityCheck: (prev: any, next: any) => {
-          let res = true;
-          if (argumentsPosition === 0) {
-            // stateCompare
-            res = compareArguments(prev, next, stateCompare);
-          } else if (argumentsPosition === 1) {
-            // rootStateCompare
-            res = compareArguments(prev, next, rootStateCompare);
-          } else if (argumentsPosition === 2) {
-            // otherArgsCompare
-            if (prev !== next) {
-              res = false;
-            }
-            if (res) {
-              // viewsCompare
-              const proxyKeysMap = viewsCompare.new;
-              const viewsProxy = viewsCompare.viewsProxy as Record<string, any>;
-              for (const [key, value] of proxyKeysMap.entries()) {
-                if (value !== viewsProxy[key]) {
-                  res = false;
-                  break;
-                }
+      equalityCheck: (prev: any, next: any, argsIndex: number) => {
+        let res = true;
+        if (argsIndex === 0) {
+          // stateCompare
+          res = compareArguments(prev, next, stateCompare);
+        } else if (argsIndex === 1) {
+          // rootStateCompare
+          res = compareArguments(prev, next, rootStateCompare);
+        } else if (argsIndex === 2) {
+          // otherArgsCompare
+          if (prev !== next) {
+            res = false;
+          }
+          if (res) {
+            // viewsCompare
+            const proxyKeysMap = viewsCompare.new;
+            const viewsProxy = viewsCompare.viewsProxy as Record<string, any>;
+            for (const [key, value] of proxyKeysMap.entries()) {
+              if (value !== viewsProxy[key]) {
+                res = false;
+                break;
               }
             }
           }
-          // res return false fun value will be recomputed
-          if (argumentsPosition <= 1) {
-            argumentsPosition++;
-          } else {
-            argumentsPosition = 0; // reset for nest compare
-          }
-          return res;
-        },
-        maxSize: 1,
-        resultEqualityCheck: undefined
+        }
+        return res;
       }
     }
   );
