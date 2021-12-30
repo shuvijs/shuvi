@@ -160,16 +160,25 @@ function createProxyViews(
 
 // return false => need recomputed, true => use last cache
 function compareArguments(prev: any, next: any, compare: ICompare) {
+  if (prev === next) {
+    // Object address has not changed
+    return true;
+  }
   const keysChains = compare.keys;
-  for (let i = 0; i < keysChains.length; i++) {
-    const keys = keysChains[i];
+  loopKeysChains: for (let i = 0; i < keysChains.length; i++) {
     let tempPrev = prev;
     let tempNext = next;
-    for (let j = 0; j < keys.length; j++) {
+    const keys = keysChains[i];
+    loopKeys: for (let j = 0; j < keys.length; j++) {
       const key = keys[j];
       if (tempNext.hasOwnProperty(key)) {
         tempPrev = tempPrev[key];
         tempNext = tempNext[key];
+        if (tempPrev === tempNext) {
+          // closet key's object address has not changed
+          break loopKeys;
+          continue loopKeysChains;
+        }
       } else {
         return false;
       }

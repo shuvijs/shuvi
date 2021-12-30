@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useModel, defineModel } from '@shuvi/services/store';
 
+// todo: test model state should be object
 const error = defineModel({
   name: 'error',
   state: {},
