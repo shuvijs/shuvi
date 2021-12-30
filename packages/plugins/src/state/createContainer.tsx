@@ -26,6 +26,7 @@ interface INamedModel<
   TState = any,
   TBaseState = TState
 > extends NamedModel<TModels, TState, TBaseState> {
+  _beDepends: Set<string>;
   views?: Record<
     string,
     (state: TState, RootState: any, views: any, args: any) => any
@@ -61,10 +62,14 @@ function initModel(
       model as INamedModel<any> & { _subscriptions: Record<string, () => void> }
     )._subscriptions = {
       [`${name}/*`]: () => {
-        batchManager.triggerSubsribe(name); // render
+        batchManager.triggerSubsribe(name); // render self;
+        const _beDepends = [...(model._beDepends || [])];
+        _beDepends.forEach(beDepend => {
+          batchManager.triggerSubsribe(beDepend); // render deDepend;
+        });
       }
     };
-    viewsManager.addView(name, model.views);
+    viewsManager.addView(model as any);
     store.addModel(model);
     batchManager.addSubsribe(name);
   }
