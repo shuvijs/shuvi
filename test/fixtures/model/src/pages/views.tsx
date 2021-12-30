@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { useModel, defineModel } from '@shuvi/services/store';
 
+const error = defineModel({
+  name: 'error',
+  state: {},
+  reducers: {}
+});
+
 const other = defineModel({
   name: 'other',
   state: {

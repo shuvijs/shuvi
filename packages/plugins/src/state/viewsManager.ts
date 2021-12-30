@@ -13,7 +13,6 @@ interface ICompare {
       };
     }
   >;
-  isSimpleValue: boolean;
 }
 
 interface IViewsCompare {
@@ -161,9 +160,6 @@ function createProxyViews(
 
 // return false => need recomputed, true => use last cache
 function compareArguments(prev: any, next: any, compare: ICompare) {
-  if (compare.isSimpleValue) {
-    return prev === next;
-  }
   const keysChains = compare.keys;
   for (let i = 0; i < keysChains.length; i++) {
     const keys = keysChains[i];
@@ -193,20 +189,12 @@ function cacheFactory(
 ) {
   const stateCompare = {
     keys: [],
-    values: new Map(),
-    isSimpleValue: false // may be not a object
+    values: new Map()
   };
 
   const rootStateCompare = {
     keys: [],
-    values: new Map(),
-    isSimpleValue: false
-  };
-
-  const otherArgsCompare = {
-    keys: [],
-    values: new Map(),
-    isSimpleValue: false // may be not a object
+    values: new Map()
   };
 
   const viewsCompare = {
@@ -235,19 +223,10 @@ function cacheFactory(
       stateCompare.values.clear();
       rootStateCompare.keys = [];
       rootStateCompare.values.clear();
-      // otherArgsCompare.keys = [];
-      // otherArgsCompare.values.clear();
       viewsCompare.new.clear();
 
-      let tempState = state;
-      if (isComplexObject(state)) {
-        // Collection deps
-        stateCompare.isSimpleValue = false;
-        compareStatePos = stateCompare;
-        tempState = createProxyObj(state, getStateCollection);
-      } else {
-        stateCompare.isSimpleValue = true;
-      }
+      compareStatePos = stateCompare;
+      const tempState = createProxyObj(state, getStateCollection);
 
       compareRootStatePos = rootStateCompare;
       const tempRootStateProxy = createProxyObj(
@@ -271,7 +250,7 @@ function cacheFactory(
       isCollectionKeys = false;
       generateCompareKeys(stateCompare); // collection keys by compare's values
       generateCompareKeys(rootStateCompare);
-      // console.log('modelName=>', modelName, stateCompare, rootStateCompare, otherArgsCompare, viewsCompare);
+      // console.log('modelName=>', modelName, stateCompare, rootStateCompare, viewsCompare);
       return res;
     },
     {
@@ -286,8 +265,10 @@ function cacheFactory(
             // rootStateCompare
             res = compareArguments(prev, next, rootStateCompare);
           } else if (argumentsPosition === 2) {
-            // otherArgsCompare viewsCompare
-            res = compareArguments(prev, next, otherArgsCompare);
+            // otherArgsCompare
+            if (prev !== next) {
+              res = false;
+            }
             if (res) {
               // viewsCompare
               const proxyKeysMap = viewsCompare.new;
