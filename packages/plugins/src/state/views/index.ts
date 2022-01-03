@@ -1,7 +1,7 @@
 import { createSelector } from './createSelector';
-import { isComplexObject } from './utils';
-import { Store } from './types';
-import { InternalModel } from './model';
+import { isComplexObject } from '../utils';
+import { Store } from '../types';
+import { InternalModel } from '../model';
 
 interface ICompare {
   keys: string[][];
@@ -212,18 +212,20 @@ function cacheFactory(
   };
 
   return createSelector(
-    (state: any) => state[modelName],
-    (state: any) => {
+    // @ts-ignore todo: typescript
+    state => state[modelName],
+    state => {
       const result: Record<string, any> = {};
       // generate rootState by dependencies
       dependencies.forEach(function (dep) {
+        // @ts-ignore todo: typescript
         result[dep] = state[dep];
       });
       // result must be a object
       return result;
     },
-    (state: any, otherArgs?: any) => otherArgs,
-    (state: any, rootState: any, otherArgs: any) => {
+    (_state, otherArgs) => otherArgs,
+    (state, rootState, otherArgs) => {
       // reset compare
       stateCompare.keys = [];
       stateCompare.values.clear();

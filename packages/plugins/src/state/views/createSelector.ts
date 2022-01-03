@@ -1,11 +1,27 @@
 import invariant from '@shuvi/utils/lib/invariant';
-import { isObject } from './utils';
-import {
-  UnknownFunction,
-  SelectorArray,
-  EqualityFn,
-  DropFirst
-} from './createSelectorTypes';
+import { isObject } from '../utils';
+
+type Selector<
+  // The state can be anything
+  State = any,
+  // The result will be inferred
+  Result = unknown,
+  // There are either 0 params, or N params
+  Params extends never | readonly any[] = any[]
+  // If there are 0 params, type the function as just State in, Result out.
+  // Otherwise, type it as State + Params in, Result out.
+> = [Params] extends [never]
+  ? (state: State) => Result
+  : (state: State, ...params: Params) => Result;
+
+/** An array of input selectors */
+type SelectorArray = ReadonlyArray<Selector>;
+
+/** A standard function returning true if two values are considered equal */
+type EqualityFn = (a: any, b: any, i: number) => boolean;
+
+/** Any function with arguments */
+type UnknownFunction = (...args: any[]) => unknown;
 
 function getDependencies(funcs: unknown[]) {
   const dependencies = Array.isArray(funcs[0]) ? funcs[0] : funcs;
@@ -27,82 +43,82 @@ function getDependencies(funcs: unknown[]) {
 
   return dependencies as SelectorArray;
 }
+type paramsFun<State extends Record<string, any> = {}> = (
+  state: State,
+  _otherArgs?: any
+) => any;
+type paramsOtherArgs<OtherArgs> = (
+  _state: any,
+  otherArgs?: OtherArgs
+) => OtherArgs;
+type resultF<State extends Record<string, any> = {}, OtherArgs = any> = (
+  param1: ReturnType<paramsFun<State>>,
+  param2: ReturnType<paramsFun<State>>,
+  param3: ReturnType<paramsOtherArgs<OtherArgs>>
+) => any;
 
 function createSelectorCreator<
   /** Selectors will eventually accept some function to be memoized */
-  F extends (...args: unknown[]) => unknown,
+  F extends UnknownFunction,
   /** A memoizer such as defaultMemoize that accepts a function + some possible options */
-  MemoizeFunction extends (func: F, ...options: any[]) => F,
+  MemoizeFunction extends typeof defaultMemoize,
   /** The additional options arguments to the memoizer */
-  MemoizeOptions extends unknown[] = DropFirst<Parameters<MemoizeFunction>>
+  MemoizeOptions extends Parameters<MemoizeFunction>[1]
 >(memoize: MemoizeFunction) {
-  const createSelector = (...funcs: Function[]) => {
-    // Normally, the result func or "output selector" is the last arg
-    let resultFunc = funcs.pop();
-
-    const directlyPassedOptions = resultFunc as any;
-
+  const createSelector = <
+    State extends Record<string, any> = {},
+    OtherArgs = any
+  >(
+    param1: paramsFun<State>,
+    param2: paramsFun<State>,
+    otherArgs: paramsOtherArgs<OtherArgs>,
+    resultFunc: resultF<State, OtherArgs>,
+    memoizeOption: { equalityCheck: EqualityFn }
+  ) => {
     invariant(
-      isObject(directlyPassedOptions),
-      `createSelector expects an object last inputs, but received: [${typeof directlyPassedOptions}]`
+      isObject(memoizeOption),
+      `createSelector expects an object last inputs, but received: [${typeof memoizeOption}]`
     );
-
-    // and pop the real result func off
-    resultFunc = funcs.pop();
 
     invariant(
       typeof resultFunc === 'function',
       `createSelector expects an output function after the inputs, but received: [${typeof resultFunc}]`
     );
 
-    // Determine which set of options we're using. Prefer options passed directly,
-    // but fall back to options given to createSelectorCreator.
-    const { equalityCheck } = directlyPassedOptions;
+    const { equalityCheck } = memoizeOption;
 
-    const dependencies = getDependencies(funcs);
+    const dependencies = getDependencies([param1, param2, otherArgs]);
 
     const memoizedResultFunc = memoize(
       function () {
         // apply arguments instead of spreading for performance.
-        return resultFunc!.apply(null, arguments);
+        return resultFunc.apply(null, arguments as any);
       } as F,
       equalityCheck
     );
 
     // If a selector is called with the exact same arguments we don't need to traverse our dependencies again.
     const selector = memoize(
-      function () {
+      function (state: State, args: OtherArgs) {
         const params = [];
         const length = dependencies.length;
 
         for (let i = 0; i < length; i++) {
           // apply arguments instead of spreading and mutate a local list of params for performance.
-          // @ts-ignore
-          params.push(dependencies[i].apply(null, arguments));
+          params.push(dependencies[i].call(null, state, args));
         }
 
         // apply arguments instead of spreading for performance.
         return memoizedResultFunc.apply(null, params);
-      } as F,
+      },
       function (prev: any, next: any, i: number) {
         return prev === next;
       }
     );
 
-    Object.assign(selector, {
-      resultFunc,
-      memoizedResultFunc,
-      dependencies
-    });
-
     return selector;
   };
-  // @ts-ignore
-  return createSelector as CreateSelectorFunction<
-    F,
-    MemoizeFunction,
-    MemoizeOptions
-  >;
+  return createSelector;
 }
 
 const NOT_FOUND = 'NOT_FOUND';
