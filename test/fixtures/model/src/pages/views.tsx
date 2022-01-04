@@ -73,6 +73,7 @@ const user = defineModel(
         console.log(state.id);
         const a = rootState.other;
         console.log(rootState.dome.number);
+        console.log(rootState.dome);
         console.log(a.other[0]);
         console.log('d computed');
         return rootState.dome;
@@ -80,6 +81,7 @@ const user = defineModel(
       one: (state, rootState, views, args) => {
         console.log('one computed', rootState);
         console.log(state, rootState, views, args);
+        console.log(rootState.dome);
         return rootState.dome.number;
       },
       double: (state, rootState, views, args) => {

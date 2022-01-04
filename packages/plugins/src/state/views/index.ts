@@ -8,6 +8,7 @@ interface ICompare {
   values: Map<
     any,
     {
+      keysChain: string[];
       children: {
         [key: string]: any;
       };
@@ -19,34 +20,36 @@ interface IViewsCompare {
   new: Map<string, any>;
 }
 
-// process backtracking generate keys chain, compare.keys = result; clear momery used
+// process level-order-traversal generate keys chain, compare.keys = result; clear Map at last
 // app get root object first os tree root is the valuesMap first
 function generateCompareKeys(compare: ICompare) {
   const valuesMap = compare.values;
   const root = [...valuesMap.keys()][0];
   const result: string[][] = [];
-  if (root) {
-    // Backtracking generate keys chain
-    function visitTree(target: any, keysChain: string[]) {
-      if (!target || !valuesMap.has(target)) {
-        result.push([...keysChain]);
-        return;
+  if (!root) {
+    return;
+  }
+  // level-order-traversal
+  let arr = [root];
+  while (arr.length) {
+    const nextLevel: any[] = [];
+    for (let i = 0; i < arr.length; i++) {
+      const target = arr[i];
+      if (!valuesMap.has(target)) {
+        continue;
       }
-      const node = valuesMap.get(target);
-      if (!node) {
-        return;
-      }
-      const children = node.children;
-      const keys = Object.keys(children);
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
+      const values = valuesMap.get(target);
+      const children = (values && values.children) || {};
+      Object.keys(children).forEach(key => {
         const child = children[key];
-        keysChain.push(key);
-        visitTree(child, keysChain);
-        keysChain.pop();
-      }
+        if (child === null || !valuesMap.has(child)) {
+          result.push([...values!.keysChain, key]);
+        } else {
+          nextLevel.push(child);
+        }
+      });
     }
-    visitTree(root, []);
+    arr = nextLevel;
   }
   compare.keys = result;
   valuesMap.clear();
@@ -76,7 +79,7 @@ const getProxyHandler = () => {
   return handler;
 };
 let compareStatePos: ICompare;
-const getStateCollection = () => {
+const getStateCollection = (keysChain: string[]) => {
   return {
     get(target: any, p: string): any {
       let result = target[p];
@@ -89,6 +92,7 @@ const getStateCollection = () => {
             (treeNode!.children[p] = isComplexObjectResult ? result : null);
         } else {
           compareValues.set(target, {
+            keysChain: [...keysChain],
             children: {
               [p]: isComplexObjectResult ? result : null
             }
@@ -96,7 +100,7 @@ const getStateCollection = () => {
         }
       }
       if (isComplexObjectResult) {
-        result = createProxyObj(result, getStateCollection);
+        result = createProxyObj(result, getStateCollection, [...keysChain, p]);
       }
       return result;
     }
@@ -104,7 +108,7 @@ const getStateCollection = () => {
 };
 
 let compareRootStatePos: ICompare;
-const getRootStateCollection = () => {
+const getRootStateCollection = (keysChain: string[]) => {
   return {
     get(target: any, p: string): any {
       let result = target[p];
@@ -117,6 +121,7 @@ const getRootStateCollection = () => {
             (treeNode!.children[p] = isComplexObjectResult ? result : null);
         } else {
           compareValues.set(target, {
+            keysChain: [...keysChain],
             children: {
               [p]: isComplexObjectResult ? result : null
             }
@@ -124,7 +129,10 @@ const getRootStateCollection = () => {
         }
       }
       if (isComplexObjectResult) {
-        result = createProxyObj(result, getRootStateCollection);
+        result = createProxyObj(result, getRootStateCollection, [
+          ...keysChain,
+          p
+        ]);
       }
       return result;
     }
@@ -134,12 +142,13 @@ const getRootStateCollection = () => {
 const proxyObjMap = new WeakMap<Record<string, any>, typeof Proxy>();
 function createProxyObj(
   target: Record<string, any>,
-  collection: typeof getStateCollection
+  collection: typeof getStateCollection,
+  keysChain: string[]
 ) {
   if (proxyObjMap.has(target)) {
     return proxyObjMap.get(target);
   }
-  const proxy = new Proxy(target, collection());
+  const proxy = new Proxy(target, collection(keysChain));
   proxyObjMap.set(target, proxy);
   return proxy;
 }
@@ -234,12 +243,13 @@ function cacheFactory(
       viewsCompare.new.clear();
 
       compareStatePos = stateCompare;
-      const tempState = createProxyObj(state, getStateCollection);
+      const tempState = createProxyObj(state, getStateCollection, []);
 
       compareRootStatePos = rootStateCompare;
       const tempRootStateProxy = createProxyObj(
         rootState,
-        getRootStateCollection
+        getRootStateCollection,
+        []
       );
 
       let tempOtherArgs = otherArgs;
@@ -258,7 +268,13 @@ function cacheFactory(
       isCollectionKeys = false;
       generateCompareKeys(stateCompare); // collection keys by compare's values
       generateCompareKeys(rootStateCompare);
-      // console.log('modelName=>', modelName, stateCompare, rootStateCompare, viewsCompare);
+      console.log(
+        'modelName=>',
+        modelName,
+        stateCompare,
+        rootStateCompare,
+        viewsCompare
+      );
       return res;
     },
     {
