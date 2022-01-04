@@ -1,4 +1,6 @@
+import invariant from '@shuvi/utils/lib/invariant';
 import { ExtractRematchDispatcherFromReducer } from './rematch/types';
+import { isObject } from './utils';
 export type State = any;
 
 export type StateCollection = Record<string, State>;
@@ -127,6 +129,10 @@ export const defineModel = <
   modelOptions: Model<S, RM, R, E, V>,
   depends?: RM
 ) => {
+  invariant(
+    isObject(modelOptions.state),
+    'defineModel param model property state should be object'
+  );
   // collection _beDepends, a depends b, when b update, call a need update
   if (depends) {
     let dependModels = [];
@@ -172,14 +178,4 @@ export const defineModel = <
     }
   }
   return finalModel;
-};
-
-export const getDependentModels = (model: any): any => {
-  const rootModels = model._rootModels;
-  return rootModels
-    ? Object.values(rootModels).reduce(
-        (acc, model) => Object.assign(acc, getDependentModels(model)),
-        rootModels
-      )
-    : {};
 };
