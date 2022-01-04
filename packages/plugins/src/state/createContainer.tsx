@@ -10,7 +10,7 @@ import React, {
 import { init, Models, Plugin, NamedModel } from './rematch';
 import invariant from '@shuvi/utils/lib/invariant';
 import { createBatchManager } from './batchManager';
-import { createViewsManager, getStateOrViews } from './viewsManager';
+import { createViewsManager, getStateOrViews } from './views';
 import subscriptionsPlugin from './plugins/subscriptions';
 import { shadowEqual } from './utils';
 import { Store } from './types';

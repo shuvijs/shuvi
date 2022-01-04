@@ -15,10 +15,10 @@ export const shadowEqual = (a: any, b: any) => {
   return Object.keys(a).every(key => a[key] === b[key]);
 };
 
-function isObject(obj: any): boolean {
-  return objectToString.call(obj) === '[object Object]'
+export function isObject(obj: any): boolean {
+  return objectToString.call(obj) === '[object Object]';
 }
 
 export function isComplexObject(obj: any): boolean {
-  return isObject(obj) || Array.isArray(obj)
+  return isObject(obj) || Array.isArray(obj);
 }

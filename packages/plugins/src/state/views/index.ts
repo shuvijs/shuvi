@@ -1,7 +1,7 @@
-import { createSelector } from 'reselect';
-import { isComplexObject } from './utils';
-import { Store } from './types';
-import { InternalModel } from './model';
+import { createSelector } from './createSelector';
+import { isComplexObject } from '../utils';
+import { Store } from '../types';
+import { InternalModel } from '../model';
 
 interface ICompare {
   keys: string[][];
@@ -13,7 +13,6 @@ interface ICompare {
       };
     }
   >;
-  isSimpleValue: boolean;
 }
 
 interface IViewsCompare {
@@ -161,19 +160,25 @@ function createProxyViews(
 
 // return false => need recomputed, true => use last cache
 function compareArguments(prev: any, next: any, compare: ICompare) {
-  if (compare.isSimpleValue) {
-    return prev === next;
+  if (prev === next) {
+    // Object address has not changed
+    return true;
   }
   const keysChains = compare.keys;
-  for (let i = 0; i < keysChains.length; i++) {
-    const keys = keysChains[i];
+  loopKeysChains: for (let i = 0; i < keysChains.length; i++) {
     let tempPrev = prev;
     let tempNext = next;
-    for (let j = 0; j < keys.length; j++) {
+    const keys = keysChains[i];
+    loopKeys: for (let j = 0; j < keys.length; j++) {
       const key = keys[j];
       if (tempNext.hasOwnProperty(key)) {
         tempPrev = tempPrev[key];
         tempNext = tempNext[key];
+        if (tempPrev === tempNext) {
+          // closet key's object address has not changed
+          break loopKeys;
+          continue loopKeysChains;
+        }
       } else {
         return false;
       }
@@ -193,20 +198,12 @@ function cacheFactory(
 ) {
   const stateCompare = {
     keys: [],
-    values: new Map(),
-    isSimpleValue: false // may be not a object
+    values: new Map()
   };
 
   const rootStateCompare = {
     keys: [],
-    values: new Map(),
-    isSimpleValue: false
-  };
-
-  const otherArgsCompare = {
-    keys: [],
-    values: new Map(),
-    isSimpleValue: false // may be not a object
+    values: new Map()
   };
 
   const viewsCompare = {
@@ -214,40 +211,30 @@ function cacheFactory(
     viewsProxy: new Proxy({}, {})
   };
 
-  let argumentsPosition = 0;
-
   return createSelector(
-    (state: any) => state[modelName],
-    (state: any) => {
+    // @ts-ignore todo: typescript
+    state => state[modelName],
+    state => {
       const result: Record<string, any> = {};
       // generate rootState by dependencies
       dependencies.forEach(function (dep) {
+        // @ts-ignore todo: typescript
         result[dep] = state[dep];
       });
       // result must be a object
       return result;
     },
-    (state: any, otherArgs?: any) => otherArgs,
+    (_state, otherArgs) => otherArgs,
     (state, rootState, otherArgs) => {
       // reset compare
-      argumentsPosition = 0;
       stateCompare.keys = [];
       stateCompare.values.clear();
       rootStateCompare.keys = [];
       rootStateCompare.values.clear();
-      // otherArgsCompare.keys = [];
-      // otherArgsCompare.values.clear();
       viewsCompare.new.clear();
 
-      let tempState = state;
-      if (isComplexObject(state)) {
-        // Collection deps
-        stateCompare.isSimpleValue = false;
-        compareStatePos = stateCompare;
-        tempState = createProxyObj(state, getStateCollection);
-      } else {
-        stateCompare.isSimpleValue = true;
-      }
+      compareStatePos = stateCompare;
+      const tempState = createProxyObj(state, getStateCollection);
 
       compareRootStatePos = rootStateCompare;
       const tempRootStateProxy = createProxyObj(
@@ -271,45 +258,36 @@ function cacheFactory(
       isCollectionKeys = false;
       generateCompareKeys(stateCompare); // collection keys by compare's values
       generateCompareKeys(rootStateCompare);
-      // console.log('modelName=>', modelName, stateCompare, rootStateCompare, otherArgsCompare, viewsCompare);
+      // console.log('modelName=>', modelName, stateCompare, rootStateCompare, viewsCompare);
       return res;
     },
     {
-      // New in 4.1: Pass options through to the built-in `defaultMemoize` function
-      memoizeOptions: {
-        equalityCheck: (prev: any, next: any) => {
-          let res = true;
-          if (argumentsPosition === 0) {
-            // stateCompare
-            res = compareArguments(prev, next, stateCompare);
-          } else if (argumentsPosition === 1) {
-            // rootStateCompare
-            res = compareArguments(prev, next, rootStateCompare);
-          } else if (argumentsPosition === 2) {
-            // otherArgsCompare viewsCompare
-            res = compareArguments(prev, next, otherArgsCompare);
-            if (res) {
-              // viewsCompare
-              const proxyKeysMap = viewsCompare.new;
-              const viewsProxy = viewsCompare.viewsProxy as Record<string, any>;
-              for (const [key, value] of proxyKeysMap.entries()) {
-                if (value !== viewsProxy[key]) {
-                  res = false;
-                  break;
-                }
+      equalityCheck: (prev: any, next: any, argsIndex: number) => {
+        let res = true;
+        if (argsIndex === 0) {
+          // stateCompare
+          res = compareArguments(prev, next, stateCompare);
+        } else if (argsIndex === 1) {
+          // rootStateCompare
+          res = compareArguments(prev, next, rootStateCompare);
+        } else if (argsIndex === 2) {
+          // otherArgsCompare
+          if (prev !== next) {
+            res = false;
+          }
+          if (res) {
+            // viewsCompare
+            const proxyKeysMap = viewsCompare.new;
+            const viewsProxy = viewsCompare.viewsProxy as Record<string, any>;
+            for (const [key, value] of proxyKeysMap.entries()) {
+              if (value !== viewsProxy[key]) {
+                res = false;
+                break;
               }
             }
           }
-          // res return false fun value will be recomputed
-          if (argumentsPosition <= 1) {
-            argumentsPosition++;
-          } else {
-            argumentsPosition = 0; // reset for nest compare
-          }
-          return res;
-        },
-        maxSize: 1,
-        resultEqualityCheck: undefined
+        }
+        return res;
       }
     }
   );
