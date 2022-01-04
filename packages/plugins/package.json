@@ -26,8 +26,7 @@
     "@rematch/core": "2.2.0",
     "@shuvi/service": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",
-    "redux": "4.1.2",
-    "reselect": "4.1.5"
+    "redux": "4.1.2"
   },
   "devDependencies": {
     "@types/react": "^16.9.43"
