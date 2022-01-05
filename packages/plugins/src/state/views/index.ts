@@ -4,52 +4,16 @@ import { Store } from '../types';
 import { InternalModel } from '../model';
 
 interface ICompare {
-  keys: string[][];
-  values: Map<
-    any,
+  tree: Map<
+    Record<string, any>,
     {
-      children: {
-        [key: string]: any;
-      };
+      children: Record<string, any>;
     }
   >;
 }
 
 interface IViewsCompare {
   new: Map<string, any>;
-}
-
-// process backtracking generate keys chain, compare.keys = result; clear momery used
-// app get root object first os tree root is the valuesMap first
-function generateCompareKeys(compare: ICompare) {
-  const valuesMap = compare.values;
-  const root = [...valuesMap.keys()][0];
-  const result: string[][] = [];
-  if (root) {
-    // Backtracking generate keys chain
-    function visitTree(target: any, keysChain: string[]) {
-      if (!target || !valuesMap.has(target)) {
-        result.push([...keysChain]);
-        return;
-      }
-      const node = valuesMap.get(target);
-      if (!node) {
-        return;
-      }
-      const children = node.children;
-      const keys = Object.keys(children);
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        const child = children[key];
-        keysChain.push(key);
-        visitTree(child, keysChain);
-        keysChain.pop();
-      }
-    }
-    visitTree(root, []);
-  }
-  compare.keys = result;
-  valuesMap.clear();
 }
 
 let isCollectionKeys = false;
@@ -80,22 +44,20 @@ const getStateCollection = () => {
   return {
     get(target: any, p: string): any {
       let result = target[p];
-      const isComplexObjectResult = isComplexObject(result);
       if (isCollectionKeys) {
-        const compareValues = compareStatePos.values;
-        if (compareValues.has(target)) {
-          const treeNode = compareValues.get(target);
-          treeNode &&
-            (treeNode!.children[p] = isComplexObjectResult ? result : null);
+        const compareTree = compareStatePos.tree;
+        if (compareTree.has(target)) {
+          const treeNode = compareTree.get(target);
+          treeNode && (treeNode!.children[p] = result);
         } else {
-          compareValues.set(target, {
+          compareTree.set(target, {
             children: {
-              [p]: isComplexObjectResult ? result : null
+              [p]: result
             }
           });
         }
       }
-      if (isComplexObjectResult) {
+      if (isComplexObject(result)) {
         result = createProxyObj(result, getStateCollection);
       }
       return result;
@@ -108,22 +70,20 @@ const getRootStateCollection = () => {
   return {
     get(target: any, p: string): any {
       let result = target[p];
-      const isComplexObjectResult = isComplexObject(result);
       if (isCollectionKeys) {
-        const compareValues = compareRootStatePos.values;
-        if (compareValues.has(target)) {
-          const treeNode = compareValues.get(target);
-          treeNode &&
-            (treeNode!.children[p] = isComplexObjectResult ? result : null);
+        const compareTree = compareRootStatePos.tree;
+        if (compareTree.has(target)) {
+          const treeNode = compareTree.get(target);
+          treeNode && (treeNode!.children[p] = result);
         } else {
-          compareValues.set(target, {
+          compareTree.set(target, {
             children: {
-              [p]: isComplexObjectResult ? result : null
+              [p]: result
             }
           });
         }
       }
-      if (isComplexObjectResult) {
+      if (isComplexObject(result)) {
         result = createProxyObj(result, getRootStateCollection);
       }
       return result;
@@ -158,36 +118,38 @@ function createProxyViews(
   return proxy;
 }
 
-// return false => need recomputed, true => use last cache
-function compareArguments(prev: any, next: any, compare: ICompare) {
-  if (prev === next) {
-    // Object address has not changed
+function compareObject(obj: any, compareObj: any, tree: ICompare['tree']) {
+  if (!isComplexObject(obj)) {
+    return obj === compareObj;
+  } else if (obj === compareObj) {
+    // Object address has not changed, children are same
     return true;
   }
-  const keysChains = compare.keys;
-  loopKeysChains: for (let i = 0; i < keysChains.length; i++) {
-    let tempPrev = prev;
-    let tempNext = next;
-    const keys = keysChains[i];
-    loopKeys: for (let j = 0; j < keys.length; j++) {
-      const key = keys[j];
-      if (tempNext.hasOwnProperty(key)) {
-        tempPrev = tempPrev[key];
-        tempNext = tempNext[key];
-        if (tempPrev === tempNext) {
-          // closet key's object address has not changed
-          break loopKeys;
-          continue loopKeysChains;
-        }
-      } else {
-        return false;
-      }
-    }
-    if (tempPrev !== tempNext) {
+  if (!tree.has(obj)) {
+    return true;
+  }
+  const treeNode = tree.get(obj);
+  const children = treeNode!.children;
+  const keys = Object.keys(children);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const childrenObj = children[key];
+    if (!compareObject(childrenObj, compareObj[key], tree)) {
       return false;
     }
   }
   return true;
+}
+
+// return false => need recomputed, true => use last cache
+function compareArguments(next: any, compare: ICompare) {
+  const tree = compare.tree;
+  const root = [...tree.keys()][0]; // app get root object first so tree root is the Map first
+  if (!root) {
+    // use nothings
+    return true;
+  }
+  return compareObject(root, next, tree);
 }
 
 function cacheFactory(
@@ -197,13 +159,11 @@ function cacheFactory(
   getView: ReturnType<typeof createViewsManager>['getView']
 ) {
   const stateCompare = {
-    keys: [],
-    values: new Map()
+    tree: new Map()
   };
 
   const rootStateCompare = {
-    keys: [],
-    values: new Map()
+    tree: new Map()
   };
 
   const viewsCompare = {
@@ -227,10 +187,8 @@ function cacheFactory(
     (_state, otherArgs) => otherArgs,
     (state, rootState, otherArgs) => {
       // reset compare
-      stateCompare.keys = [];
-      stateCompare.values.clear();
-      rootStateCompare.keys = [];
-      rootStateCompare.values.clear();
+      stateCompare.tree.clear();
+      rootStateCompare.tree.clear();
       viewsCompare.new.clear();
 
       compareStatePos = stateCompare;
@@ -256,9 +214,13 @@ function cacheFactory(
         tempOtherArgs
       );
       isCollectionKeys = false;
-      generateCompareKeys(stateCompare); // collection keys by compare's values
-      generateCompareKeys(rootStateCompare);
-      // console.log('modelName=>', modelName, stateCompare, rootStateCompare, viewsCompare);
+      console.log(
+        'modelName=>',
+        modelName,
+        stateCompare,
+        rootStateCompare,
+        viewsCompare
+      );
       return res;
     },
     {
@@ -266,10 +228,10 @@ function cacheFactory(
         let res = true;
         if (argsIndex === 0) {
           // stateCompare
-          res = compareArguments(prev, next, stateCompare);
+          res = compareArguments(next, stateCompare);
         } else if (argsIndex === 1) {
           // rootStateCompare
-          res = compareArguments(prev, next, rootStateCompare);
+          res = compareArguments(next, rootStateCompare);
         } else if (argsIndex === 2) {
           // otherArgsCompare
           if (prev !== next) {
