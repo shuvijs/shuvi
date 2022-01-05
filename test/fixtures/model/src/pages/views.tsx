@@ -95,18 +95,21 @@ const user = defineModel(
   { other, dome }
 );
 
+const selector = function (state, views) {
+  console.log(2222222222); // todo test useMemo
+  return {
+    stateData: state.id,
+    one: views.one(),
+    double: views.double(3),
+    d: views.d().number
+  };
+};
+
 export default function Index() {
   const [index, setIndex] = useState(0);
   const [stateOther, actionsOther] = useModel(other);
   const [stateDome, actionsDome] = useModel(dome);
-  const [views, actions] = useModel(user, function (state, views) {
-    return {
-      stateData: state.id,
-      one: views.one(),
-      double: views.double(3),
-      d: views.d().number
-    };
-  });
+  const [views, actions] = useModel(user, selector);
 
   return (
     <div>

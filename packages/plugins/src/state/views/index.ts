@@ -104,17 +104,16 @@ function createProxyObj(
   return proxy;
 }
 
-const proxyViewsMap = new Map<string, typeof Proxy>();
-function createProxyViews(
-  modelName: string,
-  getView: ReturnType<typeof createViewsManager>['getView']
-) {
-  if (proxyViewsMap.has(modelName)) {
-    return proxyViewsMap.get(modelName);
+const proxyViewsMap = new Map<
+  Record<string, (args: any) => any>,
+  typeof Proxy
+>();
+function createProxyViews(proxyObj: Record<string, (args: any) => any>) {
+  if (proxyViewsMap.has(proxyObj)) {
+    return proxyViewsMap.get(proxyObj);
   }
-  const target = getView(modelName) || {};
-  const proxy = new Proxy<any>(target, getProxyHandler());
-  proxyViewsMap.set(modelName, proxy);
+  const proxy = new Proxy<any>(proxyObj, getProxyHandler());
+  proxyViewsMap.set(proxyObj, proxy);
   return proxy;
 }
 
@@ -153,10 +152,8 @@ function compareArguments(next: any, compare: ICompare) {
 }
 
 function cacheFactory(
-  modelName: string,
-  dependencies: string[],
-  fn: (...args: any[]) => void,
-  getView: ReturnType<typeof createViewsManager>['getView']
+  fn: (...args: any[]) => any,
+  proxyObj: Record<string, (args: any) => any>
 ) {
   const stateCompare = {
     tree: new Map()
@@ -172,19 +169,6 @@ function cacheFactory(
   };
 
   return createSelector(
-    // @ts-ignore todo: typescript
-    state => state[modelName],
-    state => {
-      const result: Record<string, any> = {};
-      // generate rootState by dependencies
-      dependencies.forEach(function (dep) {
-        // @ts-ignore todo: typescript
-        result[dep] = state[dep];
-      });
-      // result must be a object
-      return result;
-    },
-    (_state, otherArgs) => otherArgs,
     (state, rootState, otherArgs) => {
       // reset compare
       stateCompare.tree.clear();
@@ -203,7 +187,7 @@ function cacheFactory(
       let tempOtherArgs = otherArgs;
 
       viewsStatePos = viewsCompare;
-      viewsCompare.viewsProxy = createProxyViews(modelName, getView)!;
+      viewsCompare.viewsProxy = createProxyViews(proxyObj);
       const tempViewsProxy = viewsCompare.viewsProxy;
       isCollectionKeys = true; // just keep collection keys when fn call
       const res = fn.call(
@@ -214,13 +198,13 @@ function cacheFactory(
         tempOtherArgs
       );
       isCollectionKeys = false;
-      console.log(
-        'modelName=>',
-        modelName,
-        stateCompare,
-        rootStateCompare,
-        viewsCompare
-      );
+      // console.log(
+      //   'modelName=>',
+      //   modelName,
+      //   stateCompare,
+      //   rootStateCompare,
+      //   viewsCompare
+      // );
       return res;
     },
     {
@@ -273,17 +257,18 @@ const createViewsManager = (store: Store) => {
         )) ||
       [];
     if (views) {
-      const proxyObj: Record<string, any> = {};
+      const proxyObj: Record<string, (args: any) => any> = {};
       Object.keys(views || {}).forEach((selectorName: string) => {
-        const cacheFun = cacheFactory(
-          name,
-          dependencies,
-          views[selectorName],
-          getView
-        );
+        const cacheFun = cacheFactory(views[selectorName], proxyObj);
         proxyObj[selectorName] = function (args: any) {
-          const state = store.getState();
-          return cacheFun(state, args);
+          const State = store.getState();
+          const state = State[name];
+          const rootState: Record<string, any> = {};
+          // generate rootState by dependencies
+          dependencies.forEach(function (dep: string) {
+            rootState[dep] = State[dep];
+          });
+          return cacheFun(state, rootState, args);
         };
       });
       viewsModelsMap.set(name, proxyObj);
