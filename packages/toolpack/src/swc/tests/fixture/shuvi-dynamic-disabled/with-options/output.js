@@ -1,4 +1,4 @@
-import { aaa, dynamic, vvv } from '@shuvi/app';
+import { aaa, dynamic, vvv } from '@shuvi/runtime';
 const DynamicComponentWithCustomLoading = dynamic(
   () => import('../components/hello'),
   {

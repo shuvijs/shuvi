@@ -15,8 +15,8 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "@shuvi/app": [".shuvi/app/index"],
-      "@shuvi/services/*": [".shuvi/app/services/*"]
+      "@shuvi/runtime": [".shuvi/runtime"],
+      "@shuvi/runtime/*": [".shuvi/runtime/*"]
     }
   },
   "exclude": ["node_modules"],

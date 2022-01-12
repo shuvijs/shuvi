@@ -78,10 +78,9 @@ describe('plugins', () => {
 
 test('add App files, add App services', async () => {
   const shuviDir = path.join(__dirname, 'fixtures', 'rootDir', '.shuvi');
-  const shuviAppDir = path.join(shuviDir, 'app');
   rimraf.sync(shuviDir);
   function resolveBuildFile(...paths: string[]) {
-    return path.join(shuviAppDir, ...paths);
+    return path.join(shuviDir, ...paths);
   }
   type TestRule = [string, string | RegExp];
   function checkMatch(tests: TestRule[]) {
@@ -98,7 +97,7 @@ test('add App files, add App services', async () => {
     config: {
       plugins: [
         {
-          appFile: () => [
+          appRuntimeFile: () => [
             {
               name: 'fileA.js',
               content: () => 'test.js'
@@ -112,7 +111,7 @@ test('add App files, add App services', async () => {
               content: () => 'test.js'
             }
           ],
-          appService: () => ({
+          runtimeService: () => ({
             source: 'source',
             exported: 'exported',
             filepath: 'a.js'
@@ -123,10 +122,10 @@ test('add App files, add App services', async () => {
   });
   await api.buildApp();
   checkMatch([
-    ['files/fileA.js', 'test.js'],
-    ['files/fileC.js', 'test.js'],
-    ['files/fileC.js', 'test.js'],
-    ['services/a.js', 'export exported from "source"']
+    ['app/files/fileA.js', 'test.js'],
+    ['app/files/fileC.js', 'test.js'],
+    ['app/files/fileC.js', 'test.js'],
+    ['runtime/a.js', 'export exported from "source"']
   ]);
   await api.destory();
   rimraf.sync(shuviDir);

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { View, Text } from '@tarojs/components'
-import { useCurrentRoute } from '@shuvi/app';
+import { useCurrentRoute } from '@shuvi/runtime';
 
 export default () => {
   const { query, params } = useCurrentRoute();

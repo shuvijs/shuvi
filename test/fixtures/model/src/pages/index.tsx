@@ -1,4 +1,4 @@
-import { useModel, defineModel } from '@shuvi/services/store';
+import { useModel, defineModel } from '@shuvi/runtime/model';
 
 const sleep = (time: number) =>
   new Promise(resolve => {
@@ -22,9 +22,9 @@ const core = defineModel({
     }
   },
   effects: {
-    addStepAsync: async (payload, state, dispatch) => {
+    async addStepAsync () {
       await sleep(1000);
-      dispatch.addStep();
+      this.addStep();
     }
   }
 });
@@ -45,9 +45,9 @@ const base = defineModel(
       }
     },
     effects: {
-      addStepAsync: async (payload, state, dispatch) => {
+      async addStepAsync () {
         await sleep(1000);
-        dispatch.addStep();
+        this.addStep();
       }
     }
   },
@@ -70,16 +70,10 @@ const count = defineModel(
       }
     },
     effects: {
-      addCountAsync: async (
-        payload,
-        state,
-        dispatch,
-        rootState,
-        rootDispatch
-      ) => {
-        console.warn('addCountAsyncState', state);
-        dispatch.addCount(rootState.base.step);
-        await rootDispatch.base.addStepAsync();
+      async addCountAsync(_payload: void, _state, depends) {
+        const { getState, dispatch: { base } } = depends
+        this.addCount(getState().base.step);
+        await base.addStepAsync();
       }
     }
   },
@@ -95,7 +89,6 @@ export default function Index() {
         Count: {helloCount} {num}
         <button
           onClick={() => {
-            // @ts-ignore
             addCountAsync();
           }}
         >
@@ -107,7 +100,6 @@ export default function Index() {
         Base: {helloBase} {step}
         <button
           onClick={() => {
-            // @ts-ignore
             addStepAsync();
           }}
         >

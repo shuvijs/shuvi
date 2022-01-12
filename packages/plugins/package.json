@@ -24,6 +24,8 @@
   },
   "dependencies": {
     "@rematch/core": "2.2.0",
+    "@shuvi/redox": "0.0.1-pre.4",
+    "@shuvi/redox-react": "0.0.1-pre.4",
     "@shuvi/service": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",
     "redux": "4.1.2"
