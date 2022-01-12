@@ -35,13 +35,9 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
     ignore: true,
     method: 'addPolyfill'
   },
-  services: {
+  runtimeServices: {
     ignore: true,
     method: 'addRuntimeService'
-  },
-  exports: {
-    ignore: true,
-    method: 'addExport'
   },
   runtimePlugins: {
     ignore: true,
@@ -144,7 +140,7 @@ class ProjectBuilder {
   }
 
   addRuntimeService(source: string, exported: string, filepath: string = 'index.js'): void {
-    const services = this._projectContext.services;
+    const services = this._projectContext.runtimeServices;
     filepath = path.join('runtime', path.resolve('/', filepath));
     const service = services.get(filepath);
     if (service) {
@@ -166,7 +162,7 @@ class ProjectBuilder {
         name: filepath,
         content: (context: ProjectContext) => {
           const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.services.get(filepath);
+          const service = context.runtimeServices.get(filepath);
           if (!service) {
             return null;
           }
