@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useModel, defineModel } from '@shuvi/services/store';
+import { useModel, defineModel } from '@shuvi/runtime/model';
 
 // todo: test model state should be object
 const error = defineModel({
@@ -55,21 +55,8 @@ const user = defineModel(
         };
       }
     },
-    effects: {
-      addCountAsync: async (
-        payload,
-        state,
-        dispatch,
-        rootState,
-        rootDispatch
-      ) => {
-        console.warn('addCountAsyncState', state);
-        dispatch.addCount(rootState.other.other[0]);
-        await rootDispatch.base.addStepAsync();
-      }
-    },
     views: {
-      d: (state, rootState, views, args) => {
+      d (state, rootState) {
         console.log(state.id);
         const a = rootState.other;
         console.log(rootState.dome.number);
@@ -77,25 +64,23 @@ const user = defineModel(
         console.log('d computed');
         return rootState.dome;
       },
-      one: (state, rootState, views, args) => {
-        console.log('one computed', rootState);
-        console.log(state, rootState, views, args);
+      one (_state, rootState) {
         return rootState.dome.number;
       },
-      double: (state, rootState, views, args) => {
+      double (state, _rootState, args) {
         // console.log('views', state, rootState, views, args);
         // console.log('this', this)
         // console.log('this', views.one)
         // return state.id * args;
         console.log('double computed');
-        return `state.id=>${state.id}, args=>${args},views.one=>${views.one}`;
+        return `state.id=>${state.id}, args=>${args},views.one=>${this.one}`;
       }
     }
   },
   { other, dome }
 );
 
-const selector = function (state, views) {
+const selector = function (state: any, views: any) {
   console.log(2222222222); // todo test useMemo
   return {
     stateData: state.id,

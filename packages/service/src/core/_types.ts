@@ -132,8 +132,7 @@ export interface IApi {
   // precursor shuvi app
   addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;
   addAppFile: typeof ProjectBuilder.prototype.addFile;
-  addAppExport: typeof ProjectBuilder.prototype.addExport;
-  addAppService: typeof ProjectBuilder.prototype.addService;
+  addRuntimeService: typeof ProjectBuilder.prototype.addRuntimeService;
   addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
 
   setPlatformModule: typeof ProjectBuilder.prototype.setPlatformModule;

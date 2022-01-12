@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRouter } from '@shuvi/app';
+import { useRouter } from '@shuvi/runtime';
 
 const getApp = App => {
   const MyApp = () => {

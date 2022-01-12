@@ -47,8 +47,8 @@ const defaultConfig = {
           config.resolve.alias.set('react', path.resolve(__dirname, path.resolve('../../nezha/web/node_modules/react')))
           config.resolve.alias.set('@binance/fingerprint', path.resolve(__dirname, './src/adapters/fingerprint'))
           config.resolve.alias.set('@binance/ws-http-sdk', path.resolve(__dirname, './src/adapters/ws-http-sdk'))
-          // already support @shuvi/app apis, no need adapters
-          // config.resolve.alias.set('@shuvi/app', path.resolve(__dirname, '../src/adapters/shuvi'))
+          // already support @shuvi/runtime apis, no need adapters
+          // config.resolve.alias.set('@shuvi/runtime', path.resolve(__dirname, '../src/adapters/shuvi'))
           config.resolve.alias.set('@binance/uikit-core', path.resolve(__dirname, '../../libs/uikit-taro'))
           config.resolve.alias.set('@binance/uikit-widget', path.resolve(__dirname, '../../libs/uikit-taro'))
           config.resolve.alias.set('@binance/uikit-icons', path.resolve(__dirname, './src/adapters/icons/components'))
@@ -64,7 +64,7 @@ module.exports = defaultConfig
 ```
 ### tips
 
-1. support @shuvi/app apis, eg: import { getRuntimeConfig, useParams, useRouter, useCurrentRoute, RouterView, withRouter } from '@shuvi/app'
+1. support @shuvi/runtime apis, eg: import { getRuntimeConfig, useParams, useRouter, useCurrentRoute, RouterView, withRouter } from '@shuvi/runtime'
 1. support web routes way, but must navigate by methods under useRouter()
 1. component should not return undefined;
 1. resolve file by extensions: a.bmp.js>a.js;

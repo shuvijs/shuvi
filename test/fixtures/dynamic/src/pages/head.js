@@ -1,4 +1,4 @@
-import { Head, dynamic } from "@shuvi/app";
+import { Head, dynamic } from "@shuvi/runtime";
 
 const Test = dynamic({
   loader: async () => {

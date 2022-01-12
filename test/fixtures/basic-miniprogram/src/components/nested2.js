@@ -1,4 +1,4 @@
-import { dynamic } from '@shuvi/app';
+import { dynamic } from '@shuvi/runtime';
 import { View } from '@tarojs/components';
 
 const BrowserLoaded = dynamic(

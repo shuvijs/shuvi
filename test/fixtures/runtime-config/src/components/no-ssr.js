@@ -1,5 +1,5 @@
-import { getRuntimeConfig } from '@shuvi/app';
-import { dynamic } from '@shuvi/app';
+import { getRuntimeConfig } from '@shuvi/runtime';
+import { dynamic } from '@shuvi/runtime';
 
 export default dynamic(
   () =>
