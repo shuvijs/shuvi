@@ -38,15 +38,10 @@ export type BundlerTargetDoneExtra = {
   stats: webpack.Stats;
 };
 
-export type AppExport = {
+export type RuntimeService = {
   source: string;
   exported: string;
-};
-
-export type AppService = {
-  source: string;
-  exported: string;
-  filepath: string;
+  filepath?: string;
 };
 
 export type BundleResource = {

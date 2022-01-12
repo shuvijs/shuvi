@@ -1,3 +1,4 @@
+import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { exportsFromObject } from './file-snippets';
@@ -34,13 +35,9 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
     ignore: true,
     method: 'addPolyfill'
   },
-  services: {
+  runtimeServices: {
     ignore: true,
-    method: 'addService'
-  },
-  exports: {
-    ignore: true,
-    method: 'addExport'
+    method: 'addRuntimeService'
   },
   runtimePlugins: {
     ignore: true,
@@ -119,10 +116,6 @@ class ProjectBuilder {
     this._projectContext.entryWrapperContent = content;
   }
 
-  addExport(source: string, exported: string) {
-    this._projectContext.exports.set(source, ([] as string[]).concat(exported));
-  }
-
   addPolyfill(file: string) {
     if (!this._projectContext.polyfills.includes(file)) {
       this._projectContext.polyfills.push(file);
@@ -146,8 +139,9 @@ class ProjectBuilder {
     this._projectContext.clientModule = module;
   }
 
-  addService(source: string, exported: string, filepath: string): void {
-    const services = this._projectContext.services;
+  addRuntimeService(source: string, exported: string, filepath: string = 'index.js'): void {
+    const services = this._projectContext.runtimeServices;
+    filepath = path.join('runtime', path.resolve('/', filepath));
     const service = services.get(filepath);
     if (service) {
       const targetSource = service.get(source);
@@ -168,7 +162,7 @@ class ProjectBuilder {
         name: filepath,
         content: (context: ProjectContext) => {
           const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.services.get(filepath);
+          const service = context.runtimeServices.get(filepath);
           if (!service) {
             return null;
           }
@@ -182,6 +176,9 @@ class ProjectBuilder {
     }
   }
 
+  /**
+   * default path is the root path
+   */
   addFile(options: FileOptions): void {
     this._fileManager.addFile(options);
   }

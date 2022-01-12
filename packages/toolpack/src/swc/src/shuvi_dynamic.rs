@@ -37,7 +37,7 @@ impl Fold for NextDynamicPatcher {
       ref specifiers,
       ..
     } = decl;
-    if &src.value == "@shuvi/app" {
+    if &src.value == "@shuvi/runtime" {
       for specifier in specifiers {
         if let ImportSpecifier::Named(dynamic_specifier) = specifier {
           if "dynamic" == dynamic_specifier.local.sym.to_string() {
@@ -75,7 +75,7 @@ impl Fold for NextDynamicPatcher {
               handler
                 .struct_span_err(
                   identifier.span,
-                  "@shuvi/app requires at least one argument",
+                  "@shuvi/runtime requires at least one argument",
                 )
                 .emit()
             });
@@ -83,7 +83,7 @@ impl Fold for NextDynamicPatcher {
           } else if expr.args.len() > 2 {
             HANDLER.with(|handler| {
               handler
-                .struct_span_err(identifier.span, "@shuvi/app only accepts 2 arguments")
+                .struct_span_err(identifier.span, "@shuvi/runtime only accepts 2 arguments")
                 .emit()
             });
             return expr;

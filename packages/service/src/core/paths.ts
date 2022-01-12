@@ -20,6 +20,8 @@ export function getPaths(opts: IPathsOpts): IPaths {
     pagesDir: srcChildDir('pages'),
     apisDir: srcChildDir('apis'),
     appDir: toAbsolute(`.${NAME}/app`),
+    privateDir: toAbsolute(`.${NAME}`),
+    runtimeDir: toAbsolute(`.${NAME}/runtime`),
     buildDir: toAbsolute(outputPath),
     publicDir: toAbsolute(publicDir)
   };

@@ -189,10 +189,9 @@ class Api {
   async initProjectBuilderConfigs() {
     const runner = this.pluginManager.runner;
     const appPolyfills = (await runner.appPolyfill()).flat();
-    const appFiles = (await runner.appFile(fileSnippets)).flat();
-    const appExports = (await runner.appExport()).flat();
+    const appRuntimeFiles = (await runner.appRuntimeFile(fileSnippets)).flat();
     const appEntryCodes = (await runner.appEntryCode()).flat();
-    const appServices = (await runner.appService()).flat();
+    const runtimeServices = (await runner.runtimeService()).flat();
     const platformModule = (await runner.platformModule()) as string;
     const clientModule = (await runner.clientModule()) as TargetModule;
     const userModule = (await runner.userModule()) as UserModule;
@@ -201,20 +200,16 @@ class Api {
       this.addAppPolyfill(file);
     });
 
-    appFiles.forEach(options => {
+    appRuntimeFiles.forEach(options => {
       this.addAppFile(options);
-    });
-
-    appExports.forEach(({ source, exported }) => {
-      this.addAppExport(source, exported);
     });
 
     appEntryCodes.forEach(content => {
       this.addEntryCode(content);
     });
 
-    appServices.forEach(({ source, exported, filepath }) => {
-      this.addAppService(source, exported, filepath);
+    runtimeServices.forEach(({ source, exported, filepath }) => {
+      this.addRuntimeService(source, exported, filepath);
     });
 
     this.setPlatformModule(platformModule);
@@ -308,7 +303,7 @@ class Api {
     await setupApp(this);
     this.removeBuiltFiles();
     this._projectBuilder.validateCompleteness('api');
-    await this._projectBuilder.build(this.paths.appDir);
+    await this._projectBuilder.build(this.paths.privateDir);
     this.pluginManager.runner.appReady();
   }
 
@@ -351,19 +346,13 @@ class Api {
   }
 
   addAppFile(options: FileOptions): void {
-    // make addAppFile root as files/
-    options.name = path.join('files', path.resolve('/', options.name));
+    // make addAppFile root as .shuvi/app/files/
+    options.name = path.join('app', 'files', path.resolve('/', options.name));
     this._projectBuilder.addFile(options);
   }
 
-  addAppExport(source: string, exported: string): void {
-    this._projectBuilder.addExport(source, exported);
-  }
-
-  addAppService(source: string, exported: string, filepath: string): void {
-    // make addAppService root as services/
-    const targetPath = path.join('services', path.resolve('/', filepath));
-    this._projectBuilder.addService(source, exported, targetPath);
+  addRuntimeService(source: string, exported: string, filepath?: string): void {
+    this._projectBuilder.addRuntimeService(source, exported, filepath);
   }
 
   addAppPolyfill(file: string): void {

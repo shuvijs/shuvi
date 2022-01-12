@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text } from '@binance/mp-components'
 import { navigateTo } from '@binance/mp-service';
-import { Link } from '@shuvi/services/router-mp';
+import { Link } from '@shuvi/runtime/router-mp';
 // import consoleLogMain from '../../utils/consoleLogMain'
 import './index.scss'
 import style from './test.scss'

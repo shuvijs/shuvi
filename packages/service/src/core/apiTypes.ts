@@ -53,6 +53,11 @@ export interface IPaths {
   // dir to store shuvi generated src files
   appDir: string;
 
+  privateDir: string
+
+  // dir to runtime libraries
+  runtimeDir: string
+
   // user src dir
   srcDir: string;
 

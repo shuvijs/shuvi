@@ -1,3 +1,3 @@
-import { dynamic } from '@shuvi/app';
+import { dynamic } from '@shuvi/runtime';
 
 const DynamicComponent = dynamic(() => import('../components/hello'));

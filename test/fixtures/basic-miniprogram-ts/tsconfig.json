@@ -19,16 +19,14 @@
     "jsx": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@shuvi/app": [
-        ".shuvi/app/index"
-      ]
+      "@shuvi/runtime": [".shuvi/runtime"],
+      "@shuvi/runtime/*": [".shuvi/runtime/*"]
     }
   },
   "exclude": [
     "node_modules"
   ],
   "include": [
-    "src",
-    ".shuvi/app/index.d.ts"
+    "src"
   ]
 }

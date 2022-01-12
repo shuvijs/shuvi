@@ -69,11 +69,8 @@ export function createWebpackConfig(
   });
 
   chain.resolve.alias.set('@shuvi/app', paths.appDir);
+  chain.resolve.alias.set('@shuvi/runtime', paths.runtimeDir);
   chain.resolve.alias.set('@shuvi/user', paths.srcDir);
-  chain.resolve.alias.set(
-    '@shuvi/services',
-    path.join(paths.appDir, 'services')
-  );
   chain.resolve.alias.set(
     '@shuvi/platform-core',
     path.dirname(require.resolve('@shuvi/platform-core/package.json'))

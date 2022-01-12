@@ -8,7 +8,7 @@ const webReactMainPlugin = createCliPlugin({
     resolveDep('react-app-polyfill/ie11'),
     resolveDep('react-app-polyfill/stable')
   ],
-  appExport: () => [
+  runtimeService: () => [
     {
       source: resolveAppFile('react/App'),
       exported: '{ default as App }'

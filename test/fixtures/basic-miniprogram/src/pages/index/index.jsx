@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text } from '@binance/mp-components'
 import Taro, { navigateTo } from '@binance/mp-service'
 // import consoleLogMain from '../../utils/consoleLogMain'
-import { getRuntimeConfig, useCurrentRoute, Head, getPageData, dynamic, Link } from '@shuvi/app';
+import { getRuntimeConfig, useCurrentRoute, Head, getPageData, dynamic, Link } from '@shuvi/runtime';
 import Extend from '../../components/extend'
 const Welcome = dynamic(() => import("../../components/welcome"));
 const Nested = dynamic(() => import("../../components/nested1"));

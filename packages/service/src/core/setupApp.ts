@@ -21,28 +21,28 @@ export async function setupApp(api: Api) {
         appTsConfig.compilerOptions.baseUrl = './';
       }
 
-      // resolve @shuvi/app to the real file
+      // resolve @shuvi/runtime to the real file
       appTsConfig.compilerOptions.paths = {
         ...parsedCompilerOptions.paths,
-        '@shuvi/app': [
+        '@shuvi/runtime': [
           path.relative(
             path.resolve(
               paths.rootDir,
               appTsConfig.compilerOptions.baseUrl ||
                 parsedCompilerOptions.baseUrl
             ),
-            paths.appDir
-          ) + '/index'
+            paths.runtimeDir
+          )
         ],
-        '@shuvi/services/*': [
+        '@shuvi/runtime/*': [
           path.relative(
             path.resolve(
               paths.rootDir,
               appTsConfig.compilerOptions.baseUrl ||
                 parsedCompilerOptions.baseUrl
             ),
-            paths.appDir
-          ) + '/services/*'
+            paths.runtimeDir
+          ) + '/*'
         ]
       };
 
@@ -52,7 +52,7 @@ export async function setupApp(api: Api) {
       }
 
       if (parsedTsConfig.include == null) {
-        appTsConfig.include = ['src', '.shuvi/app/index.d.ts'];
+        appTsConfig.include = ['src'];
       }
     }
   });
@@ -103,20 +103,20 @@ export async function setupApp(api: Api) {
       ? JSON.stringify(getPublicRuntimeConfig(config.runtimeConfig || {}))
       : null
   );
-  api.addAppExport('@shuvi/platform-core', '* as Runtime');
+  api.addRuntimeService('@shuvi/platform-core', '* as Runtime');
 
-  api.addAppExport(
+  api.addRuntimeService(
     '@shuvi/runtime-core/lib/runtimeHooks',
     '{ createPlugin as createRuntimePlugin }'
   );
-  api.addAppExport('@shuvi/router', '{ matchRoutes }');
+  api.addRuntimeService('@shuvi/router', '{ matchRoutes }');
 
-  api.addAppExport(
+  api.addRuntimeService(
     resolveRuntimeCoreFile('helper/getPageData'),
     '{ getPageData }'
   );
   // don not use absolute path, this module would't be bundled
-  api.addAppExport(
+  api.addRuntimeService(
     '@shuvi/service/lib/lib/runtimeConfig',
     '{ default as getRuntimeConfig }'
   );

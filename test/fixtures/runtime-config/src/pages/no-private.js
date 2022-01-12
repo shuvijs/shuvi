@@ -1,4 +1,4 @@
-import { getRuntimeConfig } from "@shuvi/app";
+import { getRuntimeConfig } from "@shuvi/runtime";
 
 function App() {
   return <div id="no-private">{getRuntimeConfig().$serverOnly}</div>;

@@ -120,7 +120,7 @@ export default abstract class PlatformMpBase {
         resolveDep('react-app-polyfill/ie11'),
         resolveDep('react-app-polyfill/stable')
       ],
-      appExport: () => [
+      runtimeService: () => [
         {
           source: resolveAppFile('App'),
           exported: '{ default as App }'
@@ -141,13 +141,13 @@ export default abstract class PlatformMpBase {
         {
           source: resolveLib('@shuvi/router-mp'),
           exported: '{ Link }'
+        },
+        {
+          source: resolveRouterFile('esm', 'index'),
+          exported: '*',
+          filepath: 'router-mp.js'
         }
-      ],
-      appService: () => ({
-        source: resolveRouterFile('esm', 'index'),
-        exported: '*',
-        filepath: 'router-mp.js'
-      })
+      ]
     });
   }
 
@@ -158,7 +158,7 @@ export default abstract class PlatformMpBase {
         appRoutes = routes;
         return [];
       },
-      appFile: async (fileSnippets, context) => {
+      appRuntimeFile: async (fileSnippets, context) => {
         let routes = appRoutes;
         const appFiles = [];
         type IUserRouteHandlerWithoutChildren = Omit<
@@ -271,7 +271,7 @@ export default abstract class PlatformMpBase {
             content: () => `
         import * as React from 'react';
         import { createPageConfig } from '@tarojs/runtime';
-        import { addGlobalRoutes, getGlobalRoutes, MpRouter } from '@shuvi/services/router-mp';
+        import { addGlobalRoutes, getGlobalRoutes, MpRouter } from '@shuvi/runtime/router-mp';
         import pageComponent from '${pageFile}';
         const pageConfig = ${JSON.stringify(pageConfig)};
         const pageName = '${page}';
