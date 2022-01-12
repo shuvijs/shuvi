@@ -1,3 +1,4 @@
+import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { exportsFromObject } from './file-snippets';
@@ -36,7 +37,7 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
   },
   services: {
     ignore: true,
-    method: 'addService'
+    method: 'addRuntimeService'
   },
   exports: {
     ignore: true,
@@ -119,10 +120,6 @@ class ProjectBuilder {
     this._projectContext.entryWrapperContent = content;
   }
 
-  addExport(source: string, exported: string) {
-    this._projectContext.exports.set(source, ([] as string[]).concat(exported));
-  }
-
   addPolyfill(file: string) {
     if (!this._projectContext.polyfills.includes(file)) {
       this._projectContext.polyfills.push(file);
@@ -146,8 +143,9 @@ class ProjectBuilder {
     this._projectContext.clientModule = module;
   }
 
-  addService(source: string, exported: string, filepath: string): void {
+  addRuntimeService(source: string, exported: string, filepath: string = 'index.js'): void {
     const services = this._projectContext.services;
+    filepath = path.join('runtime', path.resolve('/', filepath));
     const service = services.get(filepath);
     if (service) {
       const targetSource = service.get(source);
@@ -182,6 +180,9 @@ class ProjectBuilder {
     }
   }
 
+  /**
+   * default path is the root path
+   */
   addFile(options: FileOptions): void {
     this._fileManager.addFile(options);
   }

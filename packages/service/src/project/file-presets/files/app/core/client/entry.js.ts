@@ -1,5 +1,5 @@
-import { ProjectContext } from '../../../../projectContext';
-import { moduleExportProxyCreater } from '../../../../file-snippets';
+import { ProjectContext } from '../../../../../projectContext';
+import { moduleExportProxyCreater } from '../../../../../file-snippets';
 
 const moduleExportProxy = moduleExportProxyCreater();
 

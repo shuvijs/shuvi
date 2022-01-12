@@ -1,4 +1,4 @@
-import { useCurrentRoute } from '@shuvi/app';
+import { useCurrentRoute } from '@shuvi/runtime';
 
 export default () => {
   const { query } = useCurrentRoute();

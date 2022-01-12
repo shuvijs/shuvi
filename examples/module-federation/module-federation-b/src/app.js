@@ -1,4 +1,4 @@
-import { App } from '@shuvi/app';
+import { App } from '@shuvi/runtime';
 
 const MyApp = () => {
   return <App />;

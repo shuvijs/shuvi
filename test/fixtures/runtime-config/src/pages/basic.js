@@ -1,4 +1,4 @@
-import { getRuntimeConfig } from '@shuvi/app';
+import { getRuntimeConfig } from '@shuvi/runtime';
 import NoSSR from '../components/no-ssr';
 
 function App(props) {

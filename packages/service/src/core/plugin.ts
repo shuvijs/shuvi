@@ -17,8 +17,7 @@ import {
   TargetChain,
   BundlerDoneExtra,
   BundlerTargetDoneExtra,
-  AppExport,
-  AppService,
+  RuntimeService,
   BundleResource
 } from './pluginTypes';
 import {
@@ -83,21 +82,16 @@ const bundleResource = createAsyncParallelHook<
   BundleResource | BundleResource[]
 >();
 const appPolyfill = createAsyncParallelHook<void, void, string | string[]>();
-const appFile = createAsyncParallelHook<
+const appRuntimeFile = createAsyncParallelHook<
   void,
   fileSnippets.FileSnippets,
   FileOptions | FileOptions[]
 >();
-const appExport = createAsyncParallelHook<
-  void,
-  void,
-  AppExport | AppExport[]
->();
 const appEntryCode = createAsyncParallelHook<void, void, string | string[]>();
-const appService = createAsyncParallelHook<
+const runtimeService = createAsyncParallelHook<
   void,
   void,
-  AppService | AppService[]
+  RuntimeService | RuntimeService[]
 >();
 
 const hooksMap = {
@@ -118,10 +112,9 @@ const hooksMap = {
   userModule,
   bundleResource,
   appPolyfill,
-  appFile,
-  appExport,
+  appRuntimeFile,
   appEntryCode,
-  appService
+  runtimeService
 };
 export const getManager = () =>
   createHookGroup<typeof hooksMap, IPluginContext>(hooksMap);

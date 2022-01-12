@@ -1,4 +1,4 @@
-import { Link } from '@shuvi/app';
+import { Link } from '@shuvi/runtime';
 export default ({ errorCode, errorDesc }) => {
   return (
     <div id="error" style={{ color: 'red' }}>

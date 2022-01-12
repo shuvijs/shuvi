@@ -34,7 +34,7 @@ export default function ({
     visitor: {
       ImportDeclaration(path: NodePath<BabelTypes.ImportDeclaration>) {
         let source = path.node.source.value;
-        if (source !== '@shuvi/app') return;
+        if (source !== '@shuvi/runtime') return;
 
         let dynamicSpecifier = path.get('specifiers').find((specifier) => {
           return specifier.node.imported.name === 'dynamic';

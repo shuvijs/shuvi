@@ -14,7 +14,7 @@ import { initServerPlugins, getManager } from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
-import statePlugin from '@shuvi/plugins/lib/state/runtime';
+import statePlugin from '@shuvi/plugins/lib/model';
 import { getCoreResources } from './initCoreResource';
 import { resolveAppFile } from './paths';
 import { renderToHTML } from './SSR';
@@ -85,7 +85,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         entry: resolveAppFile('entry', 'client')
       };
     },
-    appExport: () => ({
+    runtimeService: () => ({
       source: '@shuvi/platform-web/lib/types',
       exported: '* as RuntimeServer'
     }),

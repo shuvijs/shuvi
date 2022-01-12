@@ -1,5 +1,5 @@
-import { getCodeSnippet } from '../../file-snippets/helpers';
-import { ProjectContext } from '../../projectContext';
+import { getCodeSnippet } from '../../../file-snippets/helpers';
+import { ProjectContext } from '../../../projectContext';
 import os from 'os';
 
 export default {

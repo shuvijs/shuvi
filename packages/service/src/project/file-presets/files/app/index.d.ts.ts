@@ -1,5 +1,5 @@
-import { tsDeclareModule } from '../../file-snippets';
-import { ProjectContext } from '../../projectContext';
+import { tsDeclareModule } from '../../../file-snippets';
+import { ProjectContext } from '../../../projectContext';
 
 export default {
   content: (context: ProjectContext) =>
