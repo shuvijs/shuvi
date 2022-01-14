@@ -39,6 +39,10 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
     ignore: true,
     method: 'addRuntimeService'
   },
+  resources: {
+    ignore: true,
+    method: 'addResources'
+  },
   runtimePlugins: {
     ignore: true,
     method: 'addRuntimePlugin'
@@ -139,7 +143,11 @@ class ProjectBuilder {
     this._projectContext.clientModule = module;
   }
 
-  addRuntimeService(source: string, exported: string, filepath: string = 'index.js'): void {
+  addRuntimeService(
+    source: string,
+    exported: string,
+    filepath: string = 'index.js'
+  ): void {
     const services = this._projectContext.runtimeServices;
     filepath = path.join('runtime', path.resolve('/', filepath));
     const service = services.get(filepath);
@@ -167,6 +175,46 @@ class ProjectBuilder {
             return null;
           }
 
+          for (const [s, e] of service) {
+            exportsConfig[s] = Array.from(e);
+          }
+          return exportsFromObject(exportsConfig);
+        }
+      });
+    }
+  }
+
+  addResources(
+    source: string,
+    exported: string,
+    filepath: string = 'index.js'
+  ): void {
+    const services = this._projectContext.resources;
+    filepath = path.join('resources', path.resolve('/', filepath));
+    const service = services.get(filepath);
+    if (service) {
+      const targetSource = service.get(source);
+      if (targetSource) {
+        targetSource.add(exported);
+      } else {
+        const exportedSet: Set<string> = new Set();
+        exportedSet.add(exported);
+        service.set(source, exportedSet);
+      }
+    } else {
+      const exportedSet: Set<string> = new Set();
+      exportedSet.add(exported);
+      const service: Map<string, Set<string>> = new Map();
+      service.set(source, exportedSet);
+      services.set(filepath, service);
+      this.addFile({
+        name: filepath,
+        content: (context: ProjectContext) => {
+          const exportsConfig: { [key: string]: string[] } = {};
+          const service = context.runtimeServices.get(filepath);
+          if (!service) {
+            return null;
+          }
           for (const [s, e] of service) {
             exportsConfig[s] = Array.from(e);
           }

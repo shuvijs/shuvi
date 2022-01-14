@@ -133,6 +133,7 @@ export interface IApi {
   addEntryCode: typeof ProjectBuilder.prototype.addEntryCode;
   addAppFile: typeof ProjectBuilder.prototype.addFile;
   addRuntimeService: typeof ProjectBuilder.prototype.addRuntimeService;
+  addResources: typeof ProjectBuilder.prototype.addResources;
   addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
 
   setPlatformModule: typeof ProjectBuilder.prototype.setPlatformModule;
