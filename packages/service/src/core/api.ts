@@ -148,6 +148,7 @@ class Api {
       serverPlugins: this.serverPlugins,
       // resources
       resources: this.resources,
+      addResources: this.addResources.bind(this),
       assetPublicPath: this.assetPublicPath,
       getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
       resolveAppFile: this.resolveAppFile.bind(this),
@@ -353,6 +354,10 @@ class Api {
 
   addRuntimeService(source: string, exported: string, filepath?: string): void {
     this._projectBuilder.addRuntimeService(source, exported, filepath);
+  }
+
+  addResources(source: string, exported: string, filepath?: string): void {
+    this._projectBuilder.addResources(source, exported, filepath);
   }
 
   addAppPolyfill(file: string): void {
