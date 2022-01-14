@@ -37,6 +37,7 @@ export interface ProjectContext {
    * }
    */
   runtimeServices: Map<string, Map<string, Set<string>>>;
+  resources: Map<string, Map<string, Set<string>>>;
   runtimePlugins: IRuntimeOrServerPlugin[];
   runtimeConfigContent: string | null;
   platformModule: string;
@@ -53,6 +54,7 @@ export const createProjectContext = () =>
     entryWrapperContent: '',
     polyfills: [],
     runtimeServices: new Map(),
+    resources: new Map(),
     runtimePlugins: [],
     runtimeConfigContent: null,
     clientModule: {
