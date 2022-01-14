@@ -53,10 +53,10 @@ export interface IPaths {
   // dir to store shuvi generated src files
   appDir: string;
 
-  privateDir: string
+  privateDir: string;
 
   // dir to runtime libraries
-  runtimeDir: string
+  runtimeDir: string;
 
   // user src dir
   srcDir: string;
@@ -154,6 +154,7 @@ export type IPluginContext = {
   // resources
   assetPublicPath: string;
   resources: IResources;
+  addResources: (source: string, exported: string, filepath?: string) => void;
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
   resolveBuildFile(...paths: string[]): string;
