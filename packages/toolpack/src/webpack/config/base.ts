@@ -306,5 +306,10 @@ export function baseWebpackChain({
       .use(webpack.ids.HashedModuleIdsPlugin);
   }
 
+  // https://github.com/jaredwray/keyv/issues/45#issuecomment-755814594
+  config
+    .plugin('private/keyv')
+    .use(new webpack.ContextReplacementPlugin(/keyv/));
+
   return config;
 }
