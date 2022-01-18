@@ -43,8 +43,3 @@ export type RuntimeService = {
   exported: string;
   filepath?: string;
 };
-
-export type BundleResource = {
-  identifier: string;
-  loader: () => any;
-};

@@ -94,15 +94,21 @@ const resolvePlugin = (path: string) => {
   return resolved.default || resolved;
 };
 
-export const initServerPlugins = (
+export const initServerContext = (
   manager: PluginManager,
-  serverPlugins: IRuntimeOrServerPlugin[],
   pluginContext: IPluginContext
 ): IServerPluginContext => {
-  const serverContext = Object.assign(
+  return Object.assign(
     { serverPluginRunner: manager.runner },
     pluginContext
   );
+}
+
+export const initServerPlugins = (
+  manager: PluginManager,
+  serverPlugins: IRuntimeOrServerPlugin[],
+  serverContext: IServerPluginContext
+): void => {
   manager.setContext(serverContext);
   serverPlugins.forEach(({ plugin, options }) => {
     const resolved = resolvePlugin(plugin);
@@ -124,11 +130,11 @@ export const initServerPlugins = (
   const serverModulePlugin = manager.createPlugin(
     {
       serverMiddleware: context => {
-        return context.resources?.server?.server?.serverMiddleware || [];
+        return require('@shuvi/service/resources').server?.server?.serverMiddleware || [];
       },
       pageData: (appContext, context) => {
         return (
-          context.resources?.server?.server?.getPageData?.(
+          require('@shuvi/service/resources').server?.server?.getPageData?.(
             appContext,
             context
           ) || {}
@@ -136,23 +142,23 @@ export const initServerPlugins = (
       },
       renderToHTML: (renderToHTML, context) => {
         return (
-          context.resources?.server?.server?.renderToHTML?.(renderToHTML) ||
+          require('@shuvi/service/resources').server?.server?.renderToHTML?.(renderToHTML) ||
           renderToHTML
         );
       },
       modifyHtml: (documentProps, appContext, context) => {
         return (
-          context.resources?.server?.server?.modifyHtml?.(
+          require('@shuvi/service/resources').server?.server?.modifyHtml?.(
             documentProps,
             appContext
           ) || documentProps
         );
       },
       onViewDone: (params, context) => {
-        context.resources?.server?.server?.onViewDone?.(params);
+        require('@shuvi/service/resources').server?.server?.onViewDone?.(params);
       },
       render: (renderAppToString, appContext, context) => {
-        return context.resources?.server?.server?.render?.(
+        return require('@shuvi/service/resources').server?.server?.render?.(
           renderAppToString,
           appContext
         );
@@ -161,5 +167,4 @@ export const initServerPlugins = (
     { order: -100, name: 'serverModule' }
   );
   manager.usePlugin(serverModulePlugin);
-  return serverContext;
 };

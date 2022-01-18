@@ -22,6 +22,7 @@ export function getPaths(opts: IPathsOpts): IPaths {
     appDir: toAbsolute(`.${NAME}/app`),
     privateDir: toAbsolute(`.${NAME}`),
     runtimeDir: toAbsolute(`.${NAME}/runtime`),
+    resourcesDir: toAbsolute(`.${NAME}/resources`),
     buildDir: toAbsolute(outputPath),
     publicDir: toAbsolute(publicDir)
   };

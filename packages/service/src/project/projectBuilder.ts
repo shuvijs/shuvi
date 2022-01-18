@@ -211,14 +211,14 @@ class ProjectBuilder {
         name: filepath,
         content: (context: ProjectContext) => {
           const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.runtimeServices.get(filepath);
+          const service = context.resources.get(filepath);
           if (!service) {
             return null;
           }
           for (const [s, e] of service) {
             exportsConfig[s] = Array.from(e);
           }
-          return exportsFromObject(exportsConfig);
+          return exportsFromObject(exportsConfig, true);
         }
       });
     }

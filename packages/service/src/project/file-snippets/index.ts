@@ -1,4 +1,4 @@
-import { getExportsContent } from './helpers';
+import { getExportsContent, getExportsContentCmd } from './helpers';
 import moduleExportProxy, {
   findFirstExistedFile,
   moduleExportProxyCreater
@@ -13,8 +13,8 @@ const tsDeclareModule = (
   }`;
 };
 
-const exportsFromObject = (exports: { [source: string]: string[] }): string =>
-  getExportsContent(exports);
+const exportsFromObject = (exports: { [source: string]: string[] }, isCmd: boolean = false): string =>
+  isCmd ? getExportsContentCmd(exports) : getExportsContent(exports);
 
 export interface FileSnippets {
   tsDeclareModule: typeof tsDeclareModule;

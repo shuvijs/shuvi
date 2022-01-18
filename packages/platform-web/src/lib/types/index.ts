@@ -73,7 +73,7 @@ export type IBuiltResource = {
     document: any;
     view: IViewServer;
   };
-  documentTemplate: any;
+  documentPath: string;
   clientManifest: IManifest;
   serverManifest: IManifest;
 };

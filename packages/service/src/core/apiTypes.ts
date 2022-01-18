@@ -29,11 +29,6 @@ export type IRouterHistoryMode = 'browser' | 'hash' | 'memory' | 'auto';
 
 export type IShuviMode = 'development' | 'production';
 
-// TODO
-export type IResources<Extra = {}> = {
-  [x: string]: any;
-} & { [K in keyof Extra]: Extra[K] };
-
 export interface IPresetSpec {
   (options: any): {
     presets?: UserConfig['presets'];
@@ -57,6 +52,9 @@ export interface IPaths {
 
   // dir to runtime libraries
   runtimeDir: string;
+
+  // dir to resources
+  resourcesDir: string;
 
   // user src dir
   srcDir: string;
@@ -151,9 +149,7 @@ export type IPluginContext = {
   phase: IPhase;
   pluginRunner: PluginRunner;
   serverPlugins: IRuntimeOrServerPlugin[];
-  // resources
   assetPublicPath: string;
-  resources: IResources;
   addResources: (source: string, exported: string, filepath?: string) => void;
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

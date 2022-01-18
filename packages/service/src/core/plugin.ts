@@ -18,7 +18,6 @@ import {
   BundlerDoneExtra,
   BundlerTargetDoneExtra,
   RuntimeService,
-  BundleResource
 } from './pluginTypes';
 import {
   UserConfig,
@@ -76,11 +75,6 @@ const setup = createAsyncParallelHook<void>();
 const platformModule = createSyncBailHook<void, void, string>();
 const clientModule = createSyncBailHook<void, void, TargetModule>();
 const userModule = createSyncBailHook<void, void, UserModule>();
-const bundleResource = createAsyncParallelHook<
-  void,
-  void,
-  BundleResource | BundleResource[]
->();
 const appPolyfill = createAsyncParallelHook<void, void, string | string[]>();
 const appRuntimeFile = createAsyncParallelHook<
   void,
@@ -110,11 +104,10 @@ const hooksMap = {
   platformModule,
   clientModule,
   userModule,
-  bundleResource,
   appPolyfill,
   appRuntimeFile,
   appEntryCode,
-  runtimeService
+  runtimeService,
 };
 export const getManager = () =>
   createHookGroup<typeof hooksMap, IPluginContext>(hooksMap);

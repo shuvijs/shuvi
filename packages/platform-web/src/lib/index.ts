@@ -10,14 +10,14 @@ import {
   IPluginContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import { initServerPlugins, getManager } from '@shuvi/service';
+import { initServerContext, getManager } from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import statePlugin from '@shuvi/plugins/lib/model';
-import { getCoreResources } from './initCoreResource';
+import generateResource from './generateResource';
 import { resolveAppFile } from './paths';
-import { renderToHTML } from './SSR';
+import removeRequireCache from './removeRequireCache'
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -37,13 +37,12 @@ async function buildHtml({
   pathname: string;
   filename: string;
 }) {
-  const serverPlugins = context.serverPlugins;
   const pluginManger = getManager();
-  const serverPluginContext = initServerPlugins(
+  const serverPluginContext = initServerContext(
     pluginManger,
-    serverPlugins,
     context
   );
+  const renderToHTML = require('./SSR').renderToHTML
   const { html } = await renderToHTML({
     req: {
       url: pathname,
@@ -67,7 +66,6 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         setRuntimeConfig(context.config.runtimeConfig);
       }
     },
-    bundleResource: context => getCoreResources(context),
     clientModule: context => {
       const {
         router: { history }
@@ -104,7 +102,12 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       };
     },
     serverPlugin: () => require.resolve('./serverPlugin'),
+    bundlerDone: (_, context) => {
+      generateResource(context);
+      removeRequireCache('@shuvi/service/resources')
+    },
     afterBuild: async context => {
+      generateResource(context);
       if (
         context.config.platform.target === 'spa' &&
         context.mode === 'production'

@@ -77,10 +77,11 @@ class WebpackBundler {
 
         const isSuccessful = !warnings.length && !errors.length;
         if (isSuccessful) {
-          setImmediate(first => {
-            // make sure this event is fired after all bundler:target-done
-            this._cliContext.pluginRunner.bundlerDone({ first, stats });
-          }, isFirstSuccessfulCompile);
+          this._cliContext.pluginRunner.bundlerDone({ first: isFirstSuccessfulCompile, stats });
+          // setImmediate(first => {
+          //   // make sure this event is fired after all bundler:target-done
+          //   this._cliContext.pluginRunner.bundlerDone({ first, stats });
+          // }, isFirstSuccessfulCompile);
           isFirstSuccessfulCompile = false;
         }
       });

@@ -29,7 +29,7 @@ export class OnDemandRouteManager {
         ''
       );
       const chunkInitiatorModule =
-        this._serverPluginContext.resources?.clientManifest?.chunkRequest[
+        require('@shuvi/service/resources').clientManifest?.chunkRequest[
           chunkName
         ];
 

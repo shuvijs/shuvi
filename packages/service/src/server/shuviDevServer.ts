@@ -34,6 +34,7 @@ export class ShuviDevServer extends ShuviServer {
     const publicDirMiddleware = getPublicDirMiddleware(context);
     const devMiddleware = await getDevMiddleware(context);
     await devMiddleware.waitUntilValid();
+
     onDemandRouteMgr.devMiddleware = devMiddleware;
     if (context.config.proxy) {
       applyHttpProxyMiddleware(server, context.config.proxy);
@@ -43,6 +44,8 @@ export class ShuviDevServer extends ShuviServer {
     devMiddleware.apply(server);
     server.use(onDemandRouteMgr.ensureRoutesMiddleware());
     server.use(`${context.assetPublicPath}:path(.*)`, publicDirMiddleware);
+
+    this._initServerPlugins();
 
     await this._initMiddlewares();
   }

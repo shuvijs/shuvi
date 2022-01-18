@@ -11,7 +11,6 @@ import {
   IRuntimeOrServerPlugin,
   IPlatform,
   IPluginContext,
-  IResources
 } from './apiTypes';
 import {
   ProjectBuilder,
@@ -57,7 +56,6 @@ class Api {
   private _phase: IPhase;
   private _configFile?: string;
   private _userConfig: UserConfig;
-  private _resources: IResources = {} as IResources;
   private _routes: IUserRouteConfig[] = [];
   private _serverPlugins: IRuntimeOrServerPlugin[] = [];
   private _config!: Config;
@@ -146,8 +144,6 @@ class Api {
       phase: this._phase,
       pluginRunner: this.pluginManager.runner,
       serverPlugins: this.serverPlugins,
-      // resources
-      resources: this.resources,
       addResources: this.addResources.bind(this),
       assetPublicPath: this.assetPublicPath,
       getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
@@ -162,12 +158,6 @@ class Api {
     // must run first so that platform could get serverPlugin
     await this.initRuntimeAndServerPlugin();
     await this.pluginManager.runner.setup();
-    const bundleResources = (
-      await this.pluginManager.runner.bundleResource()
-    ).flat();
-    bundleResources.forEach(({ identifier, loader }) => {
-      this.addResoure(identifier, loader);
-    });
   }
 
   get assetPublicPath(): string {
@@ -181,10 +171,6 @@ class Api {
     }
 
     return prefix;
-  }
-
-  get resources(): IResources {
-    return this._resources;
   }
 
   async initProjectBuilderConfigs() {
@@ -306,36 +292,6 @@ class Api {
     this._projectBuilder.validateCompleteness('api');
     await this._projectBuilder.build(this.paths.privateDir);
     this.pluginManager.runner.appReady();
-  }
-
-  addResoure(identifier: string, loader: () => any): void {
-    const cacheable = this.mode === 'production';
-    const api = this;
-    // TODO: warn exitsed identifier
-    if (cacheable) {
-      Object.defineProperty(api._resources, identifier, {
-        get() {
-          const value = loader();
-          Object.defineProperty(api._resources, identifier, {
-            value,
-            enumerable: true,
-            configurable: false,
-            writable: false
-          });
-          return value;
-        },
-        enumerable: true,
-        configurable: true
-      });
-    } else {
-      Object.defineProperty(this._resources, identifier, {
-        get() {
-          return loader();
-        },
-        enumerable: true,
-        configurable: false
-      });
-    }
   }
 
   addEntryCode(content: string): void {

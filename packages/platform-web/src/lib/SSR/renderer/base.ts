@@ -16,9 +16,10 @@ import {
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '@shuvi/shared/lib/constants';
-import { renderTemplate } from '../../viewTemplate';
+import { clientManifest, server, documentPath } from '@shuvi/service/resources'
+import { parseTemplateFile, renderTemplate } from '../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IDocumentProps, ITemplateData, IBuiltResource } from '../../types';
+import { IDocumentProps, ITemplateData } from '../../types';
 
 import {
   IRendererConstructorOptions,
@@ -67,13 +68,13 @@ export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
 }
 
+const documentTemplate = parseTemplateFile(documentPath)
+
 export abstract class BaseRenderer {
   protected _serverPluginContext: IServerPluginContext;
-  protected _resources: IBuiltResource;
 
   constructor({ serverPluginContext }: IRendererConstructorOptions) {
     this._serverPluginContext = serverPluginContext;
-    this._resources = serverPluginContext.resources as IBuiltResource;
   }
 
   async renderDocument({
@@ -95,7 +96,7 @@ export abstract class BaseRenderer {
       return docProps;
     }
 
-    const { document } = this._resources.server;
+    const { document } = server;
 
     if (document.onDocumentProps) {
       docProps = await document.onDocumentProps(docProps, appContext);
@@ -129,7 +130,6 @@ export abstract class BaseRenderer {
   } {
     const styles: IHtmlTag<'link' | 'style'>[] = [];
     const scripts: IHtmlTag<'script'>[] = [];
-    const { clientManifest } = this._serverPluginContext.resources;
     const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
     const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
     scripts.push(
@@ -215,7 +215,7 @@ export abstract class BaseRenderer {
       .join('');
 
     return renderTemplate(
-      this._serverPluginContext.resources.documentTemplate,
+      documentTemplate,
       {
         htmlAttrs,
         head,

@@ -1,5 +1,6 @@
 import { IServerPluginContext, IRequestHandlerWithNext } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
+import { server } from '@shuvi/service/resources';
 import { apiRouteHandler } from './apiRouteHandler';
 import { IBuiltResource } from '../types';
 
@@ -7,7 +8,7 @@ export function getApiRoutesMiddleware(
   api: IServerPluginContext
 ): IRequestHandlerWithNext {
   return async function (req, res, next) {
-    const { apiRoutes } = api.resources.server as IBuiltResource['server'];
+    const { apiRoutes } = server as IBuiltResource['server'];
     const { prefix, ...otherConfig } = api.config.apiConfig || {};
     if (!req.url.startsWith(prefix!)) {
       return next();
