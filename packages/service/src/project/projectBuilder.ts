@@ -1,7 +1,7 @@
 import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
-import { exportsFromObject } from './file-snippets';
+import { exportsFromObject, tsDeclareModule, getContentProxyObj } from './file-snippets';
 import { IRuntimeOrServerPlugin } from '../core';
 import {
   ProjectContext,
@@ -42,6 +42,10 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
   resources: {
     ignore: true,
     method: 'addResources'
+  },
+  resourcesTS: {
+    ignore: true,
+    method: 'addResourcesTS'
   },
   runtimePlugins: {
     ignore: true,
@@ -185,12 +189,41 @@ class ProjectBuilder {
   }
 
   addResources(
-    source: string,
-    exported: string,
-    filepath: string = 'index.js'
+    key: string,
+    requireStr?: string,
   ): void {
     const services = this._projectContext.resources;
-    filepath = path.join('resources', path.resolve('/', filepath));
+    const filepath = path.join('resources', path.resolve('/', 'index.js'));
+    const service = services.get(filepath);
+    if (service) {
+      service.set(key, requireStr);
+    } else {
+      const service: Map<string, string | undefined> = new Map();
+      service.set(key, requireStr);
+      services.set(filepath, service);
+      this.addFile({
+        name: filepath,
+        content: (context: ProjectContext) => {
+          const proxyObj: { [key: string]: string | undefined } = {};
+          const service = context.resources.get(filepath);
+          if (!service) {
+            return null;
+          }
+          for (const [k, r] of service) {
+            proxyObj[k] = r;
+          }
+          return getContentProxyObj(proxyObj);
+        }
+      });
+    }
+  }
+
+  addResourcesTS(
+    source: string,
+    exported: string,
+  ): void {
+    const services = this._projectContext.resourcesTS;
+    const filepath = path.join('resources', path.resolve('/', 'index.d.ts'));
     const service = services.get(filepath);
     if (service) {
       const targetSource = service.get(source);
@@ -211,14 +244,14 @@ class ProjectBuilder {
         name: filepath,
         content: (context: ProjectContext) => {
           const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.resources.get(filepath);
+          const service = context.resourcesTS.get(filepath);
           if (!service) {
             return null;
           }
           for (const [s, e] of service) {
             exportsConfig[s] = Array.from(e);
           }
-          return exportsFromObject(exportsConfig, true);
+          return tsDeclareModule(exportsConfig, '@shuvi/service/resources');
         }
       });
     }

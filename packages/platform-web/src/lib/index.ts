@@ -17,7 +17,6 @@ import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import statePlugin from '@shuvi/plugins/lib/model';
 import generateResource from './generateResource';
 import { resolveAppFile } from './paths';
-import removeRequireCache from './removeRequireCache'
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -104,7 +103,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
     serverPlugin: () => require.resolve('./serverPlugin'),
     bundlerDone: (_, context) => {
       generateResource(context);
-      removeRequireCache('@shuvi/service/resources')
+      context.addResourcesTS('@shuvi/platform-web/lib/types', '{ IBuiltResource as default }')
     },
     afterBuild: async context => {
       generateResource(context);

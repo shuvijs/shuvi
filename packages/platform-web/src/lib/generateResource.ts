@@ -14,10 +14,10 @@ const generateResources = (context: IPluginContext) => {
   const serverManifestPath = path.join(buildDir, BUILD_SERVER_DIR, BUILD_MANIFEST_PATH);
   const serverManifest = require(serverManifestPath)
 
-  addResources(path.join(buildDir, BUILD_DEFAULT_DIR, BUILD_MANIFEST_PATH), 'clientManifest')
-  addResources(serverManifestPath, 'serverManifest')
+  addResources('clientManifest', path.join(buildDir, BUILD_DEFAULT_DIR, BUILD_MANIFEST_PATH))
+  addResources('serverManifest', serverManifestPath)
 
-  addResources(path.join(buildDir, BUILD_SERVER_DIR, serverManifest.bundles[BUILD_SERVER_FILE_SERVER]), 'server')
+  addResources('server', path.join(buildDir, BUILD_SERVER_DIR, serverManifest.bundles[BUILD_SERVER_FILE_SERVER]))
 
   const customDoc = resolveUserFile('document.ejs');
   let documentPath = require.resolve('@shuvi/platform-core/template/document.ejs');
@@ -25,7 +25,7 @@ const generateResources = (context: IPluginContext) => {
     documentPath = customDoc;
   }
 
-  addResources('', `documentPath = "${documentPath}";`)
+  addResources(`documentPath = "${documentPath}"`)
 
 };
 

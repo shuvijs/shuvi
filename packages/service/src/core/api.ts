@@ -145,6 +145,7 @@ class Api {
       pluginRunner: this.pluginManager.runner,
       serverPlugins: this.serverPlugins,
       addResources: this.addResources.bind(this),
+      addResourcesTS: this.addResourcesTS.bind(this),
       assetPublicPath: this.assetPublicPath,
       getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
       resolveAppFile: this.resolveAppFile.bind(this),
@@ -312,8 +313,12 @@ class Api {
     this._projectBuilder.addRuntimeService(source, exported, filepath);
   }
 
-  addResources(source: string, exported: string, filepath?: string): void {
-    this._projectBuilder.addResources(source, exported, filepath);
+  addResources(key: string, requireStr?: string): void {
+    this._projectBuilder.addResources(key, requireStr);
+  }
+
+  addResourcesTS(source: string, exported: string): void {
+    this._projectBuilder.addResourcesTS(source, exported);
   }
 
   addAppPolyfill(file: string): void {
