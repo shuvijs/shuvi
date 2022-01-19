@@ -45,8 +45,6 @@ export class ShuviDevServer extends ShuviServer {
     server.use(onDemandRouteMgr.ensureRoutesMiddleware());
     server.use(`${context.assetPublicPath}:path(.*)`, publicDirMiddleware);
 
-    this._initServerPlugins();
-
     await this._initMiddlewares();
   }
 }

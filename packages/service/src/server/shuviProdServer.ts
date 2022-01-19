@@ -32,7 +32,6 @@ export class ShuviProdServer extends ShuviServer {
     if (context.config.publicPath === PUBLIC_PATH) {
       this._server.use(`${context.assetPublicPath}:path(.*)`, assetsMiddleware);
     }
-    this._initServerPlugins();
     await this._initMiddlewares();
   }
 }

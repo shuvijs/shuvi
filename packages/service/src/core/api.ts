@@ -10,7 +10,7 @@ import {
   IPhase,
   IRuntimeOrServerPlugin,
   IPlatform,
-  IPluginContext,
+  IPluginContext
 } from './apiTypes';
 import {
   ProjectBuilder,
@@ -33,6 +33,7 @@ import { setupApp } from './setupApp';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
 import { getPlugins } from './getPlugins';
+import { _setResourceEnv } from '../resources';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
 
@@ -136,6 +137,8 @@ class Api {
     });
     Object.freeze(this._config);
     Object.freeze(this._paths);
+
+    _setResourceEnv(this.mode === 'production', this.paths.resources);
 
     this._pluginContext = {
       mode: this._mode,

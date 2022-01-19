@@ -16,7 +16,12 @@ import {
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '@shuvi/shared/lib/constants';
-import { clientManifest, server, documentPath } from '@shuvi/service/resources'
+// @ts-ignore
+import {
+  clientManifest,
+  server,
+  documentPath
+} from '@shuvi/service/lib/resources';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
 import { IDocumentProps, ITemplateData } from '../../types';
@@ -68,13 +73,13 @@ export function isRedirect(obj: any): obj is IRenderResultRedirect {
   return obj && (obj as IRenderResultRedirect).$type === 'redirect';
 }
 
-const documentTemplate = parseTemplateFile(documentPath)
-
 export abstract class BaseRenderer {
   protected _serverPluginContext: IServerPluginContext;
+  protected _documentTemplate: ReturnType<typeof parseTemplateFile>;
 
   constructor({ serverPluginContext }: IRendererConstructorOptions) {
     this._serverPluginContext = serverPluginContext;
+    this._documentTemplate = parseTemplateFile(documentPath);
   }
 
   async renderDocument({
@@ -214,15 +219,12 @@ export abstract class BaseRenderer {
       .map(tag => stringifyTag(tag))
       .join('');
 
-    return renderTemplate(
-      documentTemplate,
-      {
-        htmlAttrs,
-        head,
-        main,
-        script,
-        ...templateData
-      }
-    );
+    return renderTemplate(this._documentTemplate, {
+      htmlAttrs,
+      head,
+      main,
+      script,
+      ...templateData
+    });
   }
 }

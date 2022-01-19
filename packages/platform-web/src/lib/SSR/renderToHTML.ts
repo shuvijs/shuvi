@@ -1,5 +1,6 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
-import { server } from '@shuvi/service/resources';
+// @ts-ignore
+import { server } from '@shuvi/service/lib/resources';
 import { IBuiltResource } from '../types';
 import { Renderer, isRedirect, IRenderResultRedirect } from './renderer';
 

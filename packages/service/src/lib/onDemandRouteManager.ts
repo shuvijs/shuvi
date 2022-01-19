@@ -5,6 +5,8 @@ import { IRequestHandlerWithNext } from '../server';
 import { DevMiddleware } from './devMiddleware';
 import { acceptsHtml } from './utils';
 import { IServerPluginContext } from '../server/plugin';
+// @ts-ignore
+import { clientManifest } from '../resources';
 
 export class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
@@ -28,10 +30,7 @@ export class OnDemandRouteManager {
         this._serverPluginContext.assetPublicPath,
         ''
       );
-      const chunkInitiatorModule =
-        require('@shuvi/service/resources').clientManifest?.chunkRequest[
-          chunkName
-        ];
+      const chunkInitiatorModule = clientManifest.chunkRequest[chunkName];
 
       if (!chunkInitiatorModule) {
         return next();

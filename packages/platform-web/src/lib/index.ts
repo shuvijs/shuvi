@@ -10,7 +10,7 @@ import {
   IPluginContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import { initServerContext, getManager } from '@shuvi/service';
+import { initServerPlugins, getManager } from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
@@ -36,12 +36,14 @@ async function buildHtml({
   pathname: string;
   filename: string;
 }) {
+  const serverPlugins = context.serverPlugins;
   const pluginManger = getManager();
-  const serverPluginContext = initServerContext(
+  const serverPluginContext = initServerPlugins(
     pluginManger,
+    serverPlugins,
     context
   );
-  const renderToHTML = require('./SSR').renderToHTML
+  const renderToHTML = require('./SSR').renderToHTML;
   const { html } = await renderToHTML({
     req: {
       url: pathname,
@@ -101,12 +103,21 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       };
     },
     serverPlugin: () => require.resolve('./serverPlugin'),
-    bundlerDone: (_, context) => {
-      generateResource(context);
-      context.addResourcesTS('@shuvi/platform-web/lib/types', '{ IBuiltResource as default }')
+    bundlerDone: ({ first }, context) => {
+      if (first) {
+        generateResource(context, context.mode === 'production');
+        context.addResourcesTS(
+          '@shuvi/platform-web/lib/types',
+          '{ IBuiltResource as default }'
+        );
+      }
     },
     afterBuild: async context => {
-      generateResource(context);
+      generateResource(context, context.mode === 'production');
+      context.addResourcesTS(
+        '@shuvi/platform-web/lib/types',
+        '{ IBuiltResource as default }'
+      );
       if (
         context.config.platform.target === 'spa' &&
         context.mode === 'production'

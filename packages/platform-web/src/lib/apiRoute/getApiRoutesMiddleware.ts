@@ -1,6 +1,7 @@
 import { IServerPluginContext, IRequestHandlerWithNext } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
-import { server } from '@shuvi/service/resources';
+// @ts-ignore
+import { server } from '@shuvi/service/lib/resources';
 import { apiRouteHandler } from './apiRouteHandler';
 import { IBuiltResource } from '../types';
 
