@@ -103,21 +103,12 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       };
     },
     serverPlugin: () => require.resolve('./serverPlugin'),
-    bundlerDone: ({ first }, context) => {
-      if (first) {
-        generateResource(context, context.mode === 'production');
-        context.addResourcesTS(
-          '@shuvi/platform-web/lib/types',
-          '{ IBuiltResource as default }'
-        );
-      }
-    },
+    bundleResources: context => generateResource(context),
+    bundleResourcesTS: () => [
+      '@shuvi/platform-web/lib/types',
+      '{ IBuiltResource as default }'
+    ],
     afterBuild: async context => {
-      generateResource(context, context.mode === 'production');
-      context.addResourcesTS(
-        '@shuvi/platform-web/lib/types',
-        '{ IBuiltResource as default }'
-      );
       if (
         context.config.platform.target === 'spa' &&
         context.mode === 'production'

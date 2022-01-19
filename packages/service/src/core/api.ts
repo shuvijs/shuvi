@@ -28,7 +28,7 @@ import {
 } from '../lib/middlewaresRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { loadConfig, resolveConfig, mergeConfig } from './config';
-import { getManager, PluginManager } from './plugin';
+import { getManager, PluginManager, Resources, ResourcesTS } from './plugin';
 import { setupApp } from './setupApp';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
@@ -147,8 +147,6 @@ class Api {
       phase: this._phase,
       pluginRunner: this.pluginManager.runner,
       serverPlugins: this.serverPlugins,
-      addResources: this.addResources.bind(this),
-      addResourcesTS: this.addResourcesTS.bind(this),
       assetPublicPath: this.assetPublicPath,
       getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
       resolveAppFile: this.resolveAppFile.bind(this),
@@ -162,6 +160,19 @@ class Api {
     // must run first so that platform could get serverPlugin
     await this.initRuntimeAndServerPlugin();
     await this.pluginManager.runner.setup();
+
+    const bundleResources = (
+      await this.pluginManager.runner.bundleResources()
+    ).flat() as Resources[];
+    bundleResources.forEach(([key, requireStr]) => {
+      this.addResources(key, requireStr);
+    });
+    const bundleResourcesTS = (
+      await this.pluginManager.runner.bundleResourcesTS()
+    ).flat() as ResourcesTS[];
+    bundleResourcesTS.forEach(([source, exportsStr]) => {
+      this.addResourcesTS(source, exportsStr);
+    });
   }
 
   get assetPublicPath(): string {

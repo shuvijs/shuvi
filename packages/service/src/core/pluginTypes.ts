@@ -43,3 +43,7 @@ export type RuntimeService = {
   exported: string;
   filepath?: string;
 };
+
+export type Resources = [string, string | undefined];
+
+export type ResourcesTS = [string, string];

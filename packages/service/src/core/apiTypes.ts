@@ -150,8 +150,6 @@ export type IPluginContext = {
   pluginRunner: PluginRunner;
   serverPlugins: IRuntimeOrServerPlugin[];
   assetPublicPath: string;
-  addResources: (key: string, requireStr?: string, isCache?: boolean) => void;
-  addResourcesTS: (source: string, exported: string) => void;
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
   resolveBuildFile(...paths: string[]): string;

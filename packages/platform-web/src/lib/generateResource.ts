@@ -8,32 +8,34 @@ import {
   IPluginContext
 } from '@shuvi/service';
 
-const generateResources = (context: IPluginContext, isCache: boolean) => {
-  const { addResources, resolveUserFile } = context;
+const generateResources = (context: IPluginContext) => {
+  const { resolveUserFile } = context;
   const { buildDir } = context.paths;
   const serverManifestPath = path.join(
     buildDir,
     BUILD_SERVER_DIR,
     BUILD_MANIFEST_PATH
   );
-  const serverManifest = require(serverManifestPath);
 
-  addResources(
+  const result: [string, string | undefined][] = [];
+
+  result.push([
     'clientManifest',
-    path.join(buildDir, BUILD_DEFAULT_DIR, BUILD_MANIFEST_PATH),
-    isCache
-  );
-  addResources('serverManifest', serverManifestPath, isCache);
+    path.join(buildDir, BUILD_DEFAULT_DIR, BUILD_MANIFEST_PATH)
+  ]);
+  result.push(['serverManifest', serverManifestPath]);
 
-  addResources(
-    'server',
-    path.join(
-      buildDir,
-      BUILD_SERVER_DIR,
-      serverManifest.bundles[BUILD_SERVER_FILE_SERVER]
-    ),
-    isCache
-  );
+  result.push([
+    `server = function() {
+    var path = require('path');
+    return require(path.join(
+      '${buildDir}',
+      '${BUILD_SERVER_DIR}',
+      require('${serverManifestPath}')['bundles']['${BUILD_SERVER_FILE_SERVER}']
+    ))
+  }`,
+    undefined
+  ]);
 
   const customDoc = resolveUserFile('document.ejs');
   let documentPath = require.resolve(
@@ -43,7 +45,9 @@ const generateResources = (context: IPluginContext, isCache: boolean) => {
     documentPath = customDoc;
   }
 
-  addResources(`documentPath = "${documentPath}"`, undefined, isCache);
+  result.push([`documentPath = "${documentPath}"`, undefined]);
+
+  return result;
 };
 
 export default generateResources;
