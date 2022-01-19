@@ -104,10 +104,6 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
     },
     serverPlugin: () => require.resolve('./serverPlugin'),
     bundleResources: context => generateResource(context),
-    bundleResourcesTS: () => [
-      '@shuvi/platform-web/lib/types',
-      '{ IBuiltResource as default }'
-    ],
     afterBuild: async context => {
       if (
         context.config.platform.target === 'spa' &&

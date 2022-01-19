@@ -1,7 +1,7 @@
 import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
-import { exportsFromObject, tsDeclareModule, getContentProxyObj } from './file-snippets';
+import { exportsFromObject, getContentProxyObj } from './file-snippets';
 import { IRuntimeOrServerPlugin } from '../core';
 import {
   ProjectContext,
@@ -42,10 +42,6 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
   resources: {
     ignore: true,
     method: 'addResources'
-  },
-  resourcesTS: {
-    ignore: true,
-    method: 'addResourcesTS'
   },
   runtimePlugins: {
     ignore: true,
@@ -188,10 +184,7 @@ class ProjectBuilder {
     }
   }
 
-  addResources(
-    key: string,
-    requireStr?: string,
-  ): void {
+  addResources(key: string, requireStr?: string): void {
     const services = this._projectContext.resources;
     const filepath = path.join('resources', path.resolve('/', 'index.js'));
     const service = services.get(filepath);
@@ -213,45 +206,6 @@ class ProjectBuilder {
             proxyObj[k] = r;
           }
           return getContentProxyObj(proxyObj);
-        }
-      });
-    }
-  }
-
-  addResourcesTS(
-    source: string,
-    exported: string,
-  ): void {
-    const services = this._projectContext.resourcesTS;
-    const filepath = path.join('resources', path.resolve('/', 'index.d.ts'));
-    const service = services.get(filepath);
-    if (service) {
-      const targetSource = service.get(source);
-      if (targetSource) {
-        targetSource.add(exported);
-      } else {
-        const exportedSet: Set<string> = new Set();
-        exportedSet.add(exported);
-        service.set(source, exportedSet);
-      }
-    } else {
-      const exportedSet: Set<string> = new Set();
-      exportedSet.add(exported);
-      const service: Map<string, Set<string>> = new Map();
-      service.set(source, exportedSet);
-      services.set(filepath, service);
-      this.addFile({
-        name: filepath,
-        content: (context: ProjectContext) => {
-          const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.resourcesTS.get(filepath);
-          if (!service) {
-            return null;
-          }
-          for (const [s, e] of service) {
-            exportsConfig[s] = Array.from(e);
-          }
-          return tsDeclareModule(exportsConfig, '@shuvi/service/resources');
         }
       });
     }

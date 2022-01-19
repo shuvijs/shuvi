@@ -18,8 +18,7 @@ import {
   BundlerDoneExtra,
   BundlerTargetDoneExtra,
   RuntimeService,
-  Resources,
-  ResourcesTS
+  Resources
 } from './pluginTypes';
 import {
   UserConfig,
@@ -82,11 +81,6 @@ const bundleResources = createAsyncParallelHook<
   void,
   Resources | Resources[]
 >();
-const bundleResourcesTS = createAsyncParallelHook<
-  void,
-  void,
-  ResourcesTS | ResourcesTS[]
->();
 const appPolyfill = createAsyncParallelHook<void, void, string | string[]>();
 const appRuntimeFile = createAsyncParallelHook<
   void,
@@ -117,7 +111,6 @@ const hooksMap = {
   clientModule,
   userModule,
   bundleResources,
-  bundleResourcesTS,
   appPolyfill,
   appRuntimeFile,
   appEntryCode,

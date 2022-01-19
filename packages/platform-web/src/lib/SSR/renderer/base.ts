@@ -16,7 +16,6 @@ import {
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '@shuvi/shared/lib/constants';
-// @ts-ignore
 import {
   clientManifest,
   server,

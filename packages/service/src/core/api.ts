@@ -28,7 +28,7 @@ import {
 } from '../lib/middlewaresRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { loadConfig, resolveConfig, mergeConfig } from './config';
-import { getManager, PluginManager, Resources, ResourcesTS } from './plugin';
+import { getManager, PluginManager, Resources } from './plugin';
 import { setupApp } from './setupApp';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
@@ -166,12 +166,6 @@ class Api {
     ).flat() as Resources[];
     bundleResources.forEach(([key, requireStr]) => {
       this.addResources(key, requireStr);
-    });
-    const bundleResourcesTS = (
-      await this.pluginManager.runner.bundleResourcesTS()
-    ).flat() as ResourcesTS[];
-    bundleResourcesTS.forEach(([source, exportsStr]) => {
-      this.addResourcesTS(source, exportsStr);
     });
   }
 
@@ -329,10 +323,6 @@ class Api {
 
   addResources(key: string, requireStr?: string): void {
     this._projectBuilder.addResources(key, requireStr);
-  }
-
-  addResourcesTS(source: string, exported: string): void {
-    this._projectBuilder.addResourcesTS(source, exported);
   }
 
   addAppPolyfill(file: string): void {

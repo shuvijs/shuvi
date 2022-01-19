@@ -3,7 +3,6 @@ import { IRouter } from '@shuvi/router';
 import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import getRuntimeConfig from '@shuvi/service/lib/lib/runtimeConfig';
 import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
-// @ts-ignore
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';

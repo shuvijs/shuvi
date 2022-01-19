@@ -45,5 +45,3 @@ export type RuntimeService = {
 };
 
 export type Resources = [string, string | undefined];
-
-export type ResourcesTS = [string, string];
