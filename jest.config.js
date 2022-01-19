@@ -42,6 +42,9 @@ module.exports = {
   ],
 
   moduleNameMapper: {
-    '^shuvi-test-utils(/?.*)$': '<rootDir>/test/utils/$1'
+    '^shuvi-test-utils(/?.*)$': '<rootDir>/test/utils/$1',
+    // https://github.com/ilearnio/module-alias#usage-with-jest
+    // just for on-demand-compile test
+    "@shuvi/service/resources": "<rootDir>/test/fixtures/on-demand-compile/.shuvi/resources"
   }
 };
