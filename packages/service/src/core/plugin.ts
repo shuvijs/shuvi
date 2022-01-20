@@ -76,7 +76,7 @@ const setup = createAsyncParallelHook<void>();
 const platformModule = createSyncBailHook<void, void, string>();
 const clientModule = createSyncBailHook<void, void, TargetModule>();
 const userModule = createSyncBailHook<void, void, UserModule>();
-const bundleResources = createAsyncParallelHook<
+const addResource = createAsyncParallelHook<
   void,
   void,
   Resources | Resources[]
@@ -110,7 +110,7 @@ const hooksMap = {
   platformModule,
   clientModule,
   userModule,
-  bundleResources,
+  addResource,
   appPolyfill,
   appRuntimeFile,
   appEntryCode,

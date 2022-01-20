@@ -161,10 +161,10 @@ class Api {
     await this.initRuntimeAndServerPlugin();
     await this.pluginManager.runner.setup();
 
-    const bundleResources = (
-      await this.pluginManager.runner.bundleResources()
+    const resources = (
+      await this.pluginManager.runner.addResource()
     ).flat() as Resources[];
-    bundleResources.forEach(([key, requireStr]) => {
+    resources.forEach(([key, requireStr]) => {
       this.addResources(key, requireStr);
     });
   }

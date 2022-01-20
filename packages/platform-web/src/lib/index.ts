@@ -103,7 +103,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       };
     },
     serverPlugin: () => require.resolve('./serverPlugin'),
-    bundleResources: context => generateResource(context),
+    addResource: context => generateResource(context),
     afterBuild: async context => {
       if (
         context.config.platform.target === 'spa' &&
