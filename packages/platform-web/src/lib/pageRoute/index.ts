@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { IUserRouteConfig } from '../core';
+import { renameFilepathToComponent } from '@shuvi/service/lib/route'
+import { IUserRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { IRouteRecord } from '@shuvi/platform-core';
 
@@ -56,28 +57,6 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
   return `[${res}]`;
 }
 
-export function renameFilepathToComponent(
-  routes: IRouteRecord[]
-): IUserRouteConfig[] {
-  const res: IUserRouteConfig[] = [];
-  for (let index = 0; index < routes.length; index++) {
-    const { path, filepath, children } = routes[index];
-    const route = {
-      path
-    } as IUserRouteConfig;
-
-    if (filepath) {
-      route.component = filepath;
-    }
-
-    if (children && children.length > 0) {
-      route.children = renameFilepathToComponent(children);
-    }
-    res.push(route);
-  }
-  return res;
-}
-
 export function normalizeRoutes(
   routes: IUserRouteConfig[],
   option: { componentDir: string }
@@ -100,4 +79,34 @@ export function normalizeRoutes(
   }
 
   return res;
+}
+
+export const getNormalizedRoutes = (routes: IUserRouteConfig[], componentDir: string) => {
+  const res: IUserRouteConfig[] = [];
+  for (let index = 0; index < routes.length; index++) {
+    const route = { ...routes[index] };
+    if (route.component) {
+      const absPath = path.isAbsolute(route.component)
+        ? route.component
+        : path.resolve(componentDir, route.component);
+
+      route.component = absPath.replace(/\\/g, '/');
+    }
+
+    if (route.children && route.children.length > 0) {
+      route.children = getNormalizedRoutes(route.children, componentDir);
+    }
+    res.push(route);
+  }
+  return res;
+}
+
+export const getRoutesContent = (routes: IUserRouteConfig[], componentDir: string): string => {
+  const serialized = serializeRoutes(routes);
+  const routesContent = `export default ${serialized}`;
+  return routesContent
+}
+
+export const getRoutesFromRawRoutes = (rawRoutes: IRouteRecord[], componentDir: string): IUserRouteConfig[] => {
+  return getNormalizedRoutes(renameFilepathToComponent(rawRoutes), componentDir)
 }

@@ -106,3 +106,11 @@ export function normalizeMiddlewareRoutes(
 
   return res;
 }
+
+export function getMiddlewareRoutesContentFromRawRoutes(rawRoutes: IRouteRecord[], pagesDir: string): string {
+  const middlewareRoutes = pickMiddlewareAndPath(rawRoutes);
+  const normalizedRoutes = normalizeMiddlewareRoutes(middlewareRoutes, { pagesDir });
+  const serialized = serializeMiddlewareRoutes(normalizedRoutes);
+  const content = `export default ${serialized}`;
+  return content;
+}

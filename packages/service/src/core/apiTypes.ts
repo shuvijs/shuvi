@@ -155,5 +155,4 @@ export type IPluginContext = {
   resolveBuildFile(...paths: string[]): string;
   resolvePublicFile(...paths: string[]): string;
   getAssetPublicUrl(...paths: string[]): string;
-  getRoutes(): IUserRouteConfig[];
 };

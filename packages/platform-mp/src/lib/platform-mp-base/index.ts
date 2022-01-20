@@ -7,6 +7,9 @@ import {
 } from '@shuvi/service';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
+import { getRoutesFromFiles } from '@shuvi/service/lib/route'
+import { renameFilepathToComponent } from '@shuvi/service/lib/route'
+import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
   UnRecursiveTemplate,
@@ -54,6 +57,15 @@ const getAllFiles = (
 
 const moduleFileExtensions = ['.js', '.jsx', '.tsx', '.ts'];
 
+
+type IUserRouteHandlerWithoutChildren = Omit<
+  IUserRouteConfig,
+  'children'
+>;
+type IUserRouteHandlerOtherData = Omit<
+  IUserRouteConfig,
+  'children' | 'path' | 'component'
+>;
 export default abstract class PlatformMpBase {
   themeFilePath: string = '';
   appConfigs!: AppConfigs;
@@ -152,123 +164,111 @@ export default abstract class PlatformMpBase {
   }
 
   getSetupRoutesPlugin() {
-    let appRoutes: IUserRouteConfig[];
     return createCliPlugin({
-      appRoutes: routes => {
-        appRoutes = routes;
-        return [];
-      },
-      appRuntimeFile: async (fileSnippets, context) => {
-        let routes = appRoutes;
-        const appFiles = [];
-        type IUserRouteHandlerWithoutChildren = Omit<
-          IUserRouteConfig,
-          'children'
-        >;
-        type IUserRouteHandlerOtherData = Omit<
-          IUserRouteConfig,
-          'children' | 'path' | 'component'
-        >;
-        // map url to component
-        let routesMap: [string, string][] = [];
-        // route other data
-        let routesStore = new Map<string, IUserRouteHandlerOtherData>();
-        const routesName = new Set<string>();
-        // flatten routes remove children
-        function flattenRoutes(
-          apiRoutes: IUserRouteConfig[],
-          branches: IUserRouteHandlerWithoutChildren[] = [],
-          parentPath = ''
-        ): IUserRouteHandlerWithoutChildren[] {
-          apiRoutes.forEach(route => {
-            const { children, component, ...other } = route;
-            let tempPath = path.join(parentPath, route.path);
+      appRuntimeFile: async ({ fileSnippets }, context) => {
+        const getFiles = (routes: IUserRouteConfig[]) => {
+          const appFiles = [];
 
-            if (children) {
-              flattenRoutes(children, branches, tempPath);
-            }
-            if (component) {
-              branches.push({
-                ...other,
-                path: tempPath,
-                component
-              });
-            }
-          });
-          return branches;
-        }
+          // map url to component
+          let routesMap: [string, string][] = [];
+          // route other data
+          let routesStore = new Map<string, IUserRouteHandlerOtherData>();
+          const routesName = new Set<string>();
+          // flatten routes remove children
+          function flattenRoutes(
+            apiRoutes: IUserRouteConfig[],
+            branches: IUserRouteHandlerWithoutChildren[] = [],
+            parentPath = ''
+          ): IUserRouteHandlerWithoutChildren[] {
+            apiRoutes.forEach(route => {
+              const { children, component, ...other } = route;
+              let tempPath = path.join(parentPath, route.path);
 
-        function removeConfigPathAddMpPath(
-          routes: IUserRouteHandlerWithoutChildren[]
-        ) {
-          for (let i = routes.length - 1; i >= 0; i--) {
-            const route = routes[i];
-            const { component, path: routePath, ...other } = route;
-            if (component) {
-              // remove config path, eg: miniprogram/src/pages/index/index.config.js
-              if (/.*\.config\.\w+$/.test(component)) {
-                routes.splice(i, 1);
-              } else {
-                let tempMpPath = component;
-                if (tempMpPath.startsWith(context.paths.pagesDir)) {
-                  // ensure path relate to pagesDir
-                  tempMpPath = path.relative(
-                    context.paths.pagesDir,
-                    tempMpPath
-                  );
-                  // Remove the file extension from the end
-                  tempMpPath = tempMpPath.replace(/\.\w+$/, '');
+              if (children) {
+                flattenRoutes(children, branches, tempPath);
+              }
+              if (component) {
+                branches.push({
+                  ...other,
+                  path: tempPath,
+                  component
+                });
+              }
+            });
+            return branches;
+          }
+
+          function removeConfigPathAddMpPath(
+            routes: IUserRouteHandlerWithoutChildren[]
+          ) {
+            for (let i = routes.length - 1; i >= 0; i--) {
+              const route = routes[i];
+              const { component, path: routePath, ...other } = route;
+              if (component) {
+                // remove config path, eg: miniprogram/src/pages/index/index.config.js
+                if (/.*\.config\.\w+$/.test(component)) {
+                  routes.splice(i, 1);
+                } else {
+                  let tempMpPath = component;
+                  if (tempMpPath.startsWith(context.paths.pagesDir)) {
+                    // ensure path relate to pagesDir
+                    tempMpPath = path.relative(
+                      context.paths.pagesDir,
+                      tempMpPath
+                    );
+                    // Remove the file extension from the end
+                    tempMpPath = tempMpPath.replace(/\.\w+$/, '');
+                  }
+                  // ensure path starts with pages
+                  if (!tempMpPath.startsWith('pages')) {
+                    tempMpPath = path.join('pages', tempMpPath);
+                  }
+                  if (route.path !== tempMpPath) {
+                    // generate routesMap
+                    routesMap.push([route.path, path.resolve('/', tempMpPath)]);
+                    route.path = tempMpPath;
+                  }
+                  routesName.add(route.path);
+                  routesStore.set(route.path, other);
                 }
-                // ensure path starts with pages
-                if (!tempMpPath.startsWith('pages')) {
-                  tempMpPath = path.join('pages', tempMpPath);
-                }
-                if (route.path !== tempMpPath) {
-                  // generate routesMap
-                  routesMap.push([route.path, path.resolve('/', tempMpPath)]);
-                  route.path = tempMpPath;
-                }
-                routesName.add(route.path);
-                routesStore.set(route.path, other);
               }
             }
           }
-        }
-        routes = flattenRoutes(routes);
-        removeConfigPathAddMpPath(routes);
-        let rankRoutes = routesMap.map(r => [r[0], r] as [string, typeof r]);
-        rankRoutes = rankRouteBranches(rankRoutes);
-        routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
-        appFiles.push({
-          name: 'routesMap.js',
-          content: () => `export default ${JSON.stringify(routesMap)}`
-        });
-
-        // make sure entryPagePath first postion on appPages
-        const appConfig = this.appConfigs.app;
-        const entryPagePath = appConfig.entryPagePath;
-        if (entryPagePath && routesName.has(entryPagePath)) {
-          routesName.delete(entryPagePath);
-          routesName.add(entryPagePath);
-        }
-        const appPages = [...routesName].reverse();
-        appConfig.pages = appPages;
-        if (!appPages || !appPages.length) {
-          throw new Error('shuvi config routes property pages config error');
-        }
-        for (const page of appPages) {
-          const pageFile = context.resolveUserFile(`${page}`);
-          const pageConfigFile = fileSnippets.findFirstExistedFile(
-            withExts(
-              context.resolveUserFile(`${page}.config`),
-              moduleFileExtensions
-            )
-          );
-          const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
-          this.appConfigs[page] = pageConfig;
+          routes = flattenRoutes(routes);
+          removeConfigPathAddMpPath(routes);
+          let rankRoutes = routesMap.map(r => [r[0], r] as [string, typeof r]);
+          rankRoutes = rankRouteBranches(rankRoutes);
+          routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
           appFiles.push({
-            name: `${page}.js`,
-            content: () => `
+            name: 'routesMap.js',
+            content: () => `export default ${JSON.stringify(routesMap)}`
+          });
+
+          // make sure entryPagePath first postion on appPages
+          const appConfig = this.appConfigs.app;
+          const entryPagePath = appConfig.entryPagePath;
+          if (entryPagePath && routesName.has(entryPagePath)) {
+            routesName.delete(entryPagePath);
+            routesName.add(entryPagePath);
+          }
+          const appPages = [...routesName].reverse();
+          appConfig.pages = appPages;
+          if (!appPages || !appPages.length) {
+            throw new Error('shuvi config routes property pages config error');
+          }
+          for (const page of appPages) {
+            const pageFile = context.resolveUserFile(`${page}`);
+            const pageConfigFile = fileSnippets.findFirstExistedFile(
+              withExts(
+                context.resolveUserFile(`${page}.config`),
+                moduleFileExtensions
+              )
+            );
+            const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
+            this.appConfigs[page] = pageConfig;
+            appFiles.push({
+              name: `${page}.js`,
+              content: () => `
         import * as React from 'react';
         import { createPageConfig } from '@tarojs/runtime';
         import { addGlobalRoutes, getGlobalRoutes, MpRouter } from '@shuvi/runtime/router-mp';
@@ -290,10 +290,17 @@ export default abstract class PlatformMpBase {
         const component = MpRouterWrapper;
         const inst = Page(createPageConfig(component, pageName, {root:{cn:[]}}, pageConfig || {}))
         `
-          });
+            });
+          }
+          this.mpPathToRoutesDone();
+          return appFiles; // routes file no use, remove it
         }
-        this.mpPathToRoutesDone();
-        return appFiles; // routes file no use, remove it
+        let { routes } = context.config
+        if (!routes) {
+          const allFiles = recursiveReadDirSync(context.paths.pagesDir, { rootDir: '' })
+          routes = renameFilepathToComponent(getRoutesFromFiles(allFiles, context.paths.pagesDir))
+        }
+        return getFiles(routes)
       }
     });
   }
@@ -313,7 +320,6 @@ export default abstract class PlatformMpBase {
         pageFiles.forEach(page => {
           entry['pages/' + page.name] = [page.filepath];
         });
-
         config.entryPoints.clear();
         config.optimization.clear();
         modifyStyle(config, this.fileType.style);

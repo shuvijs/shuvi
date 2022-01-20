@@ -1,9 +1,9 @@
 import { ShuviServer } from './shuviServer';
+import { normalizeServerMiddleware } from './serverMiddleware'
 import { IRequestHandlerWithNext } from '../server/http-server';
 import { serveStatic } from '../lib/serveStatic';
 import { getDevMiddleware } from '../lib/devMiddleware';
 import { IServerPluginContext } from './plugin';
-import { OnDemandRouteManager } from '../lib/onDemandRouteManager';
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
 
 const getPublicDirMiddleware = (
@@ -30,19 +30,24 @@ export class ShuviDevServer extends ShuviServer {
   async init() {
     const { _serverContext: context, _server: server } = this;
 
-    const onDemandRouteMgr = new OnDemandRouteManager(context);
     const publicDirMiddleware = getPublicDirMiddleware(context);
     const devMiddleware = await getDevMiddleware(context);
     await devMiddleware.waitUntilValid();
-
-    onDemandRouteMgr.devMiddleware = devMiddleware;
     if (context.config.proxy) {
       applyHttpProxyMiddleware(server, context.config.proxy);
     }
+
+    const { rootDir } = context.paths;
+    const serverMiddlewaresBeforeDevMiddleware = (await context.serverPluginRunner.serverMiddlewareBeforeDevMiddleware(devMiddleware))
+      .flat()
+      .map(m => normalizeServerMiddleware(m, { rootDir }))
+      .sort((a, b) => a.order - b.order);
+    serverMiddlewaresBeforeDevMiddleware.forEach(({ path, handler }) => {
+      server.use(path, handler);
+    });
+
     // keep the order
-    server.use(onDemandRouteMgr.getServerMiddleware());
     devMiddleware.apply(server);
-    server.use(onDemandRouteMgr.ensureRoutesMiddleware());
     server.use(`${context.assetPublicPath}:path(.*)`, publicDirMiddleware);
 
     await this._initMiddlewares();

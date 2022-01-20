@@ -23,10 +23,11 @@ interface BuildAssetsPluginOptions {
 }
 
 const getFullName = (fileName: string, ext: string) => {
-  const extName = path.extname(fileName);
+  // temporarily commented due to parsing error at file `[[...other]].js`
+  /* const extName = path.extname(fileName);
   if (extName) {
     return fileName.replace(extName, ext);
-  }
+  } */
   return fileName + ext;
 };
 

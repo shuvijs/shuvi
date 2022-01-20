@@ -1,10 +1,16 @@
 import { resolveFixture, sortByPath } from './utils';
-import { Route } from '../route';
+import { getRoutesFromFiles } from '../route';
+import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
+
+
+const getRoutes = (dir: string, ignoreLayout?: boolean) => {
+  const files = recursiveReadDirSync(dir, { rootDir: '' })
+  return getRoutesFromFiles(files, dir, ignoreLayout)
+}
 
 describe('route', () => {
   test('should work', async () => {
-    const route = new Route(resolveFixture('basic'), false);
-    const routes = sortByPath(await route.getRoutes());
+    const routes = sortByPath(getRoutes(resolveFixture('basic'), false));
 
     expect(routes).toMatchObject([
       {
@@ -23,8 +29,7 @@ describe('route', () => {
   });
 
   test('should work for nested dir', async () => {
-    const route = new Route(resolveFixture('nest'), false);
-    const routes = sortByPath(await route.getRoutes());
+    const routes = sortByPath(getRoutes(resolveFixture('nest'), false));
 
     expect(routes).toMatchObject([
       {
@@ -48,8 +53,7 @@ describe('route', () => {
   });
 
   test('should generate layout route with false', async () => {
-    const route = new Route(resolveFixture('layout'), false);
-    const routes = sortByPath(await route.getRoutes());
+    const routes = sortByPath(getRoutes(resolveFixture('layout'), false));
 
     expect(routes).toMatchObject([
       {
@@ -83,8 +87,7 @@ describe('route', () => {
     ]);
   });
   test('should generate layout route with true', async () => {
-    const route = new Route(resolveFixture('layout'), true);
-    const routes = sortByPath(await route.getRoutes());
+    const routes = sortByPath(getRoutes(resolveFixture('layout'), true));
 
     expect(routes).toMatchObject([
       {

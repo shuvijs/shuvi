@@ -1,8 +1,6 @@
 import { reactive } from './file-manager';
 import { IRuntimeOrServerPlugin } from '../core';
 export interface UserModule {
-  document: string | string[];
-  server: string | string[];
   runtime: string | string[];
   app: string | string[];
   error: string | string[];
@@ -22,9 +20,6 @@ export type ShuviEntryModule = ApplicationModule;
 
 export interface ProjectContext {
   entryCodes: string[];
-  routesContent: string;
-  apiRoutesContent: string;
-  middlewareRoutesContent: string;
   entryWrapperContent: string;
   polyfills: string[];
 
@@ -48,9 +43,6 @@ export interface ProjectContext {
 export const createProjectContext = () =>
   reactive<ProjectContext>({
     entryCodes: [],
-    routesContent: 'export default []',
-    apiRoutesContent: 'export default []',
-    middlewareRoutesContent: 'export default []',
     entryWrapperContent: '',
     polyfills: [],
     runtimeServices: new Map(),
@@ -63,8 +55,6 @@ export const createProjectContext = () =>
     },
     platformModule: '',
     userModule: {
-      document: '',
-      server: '',
       runtime: '',
       app: '',
       error: ''

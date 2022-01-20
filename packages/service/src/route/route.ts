@@ -1,8 +1,5 @@
 import { join, relative } from 'path';
-import fs from 'fs';
-import eventEmitter from '@shuvi/utils/lib/eventEmitter';
-import { watch } from '@shuvi/utils/lib/fileWatcher';
-import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
+import { IUserRouteConfig } from '../core/_types'
 import { IRouteRecord } from '@shuvi/platform-core';
 
 import parseDynamicPath from './parseDynamicPath';
@@ -95,110 +92,80 @@ function filterRouteFile(name: string) {
   return RouteFileRegExp.test(name);
 }
 
-export class Route {
-  private _filesDir: string;
-  private _unwatch: any;
-  private _ignoreLayout: boolean = false;
-  private _event = eventEmitter();
-
-  constructor(filesDir: string, ignoreLayout: boolean) {
-    this._filesDir = filesDir;
-    this._ignoreLayout = ignoreLayout;
+export const generateRoute = (
+  fileToTransform: IFilesObject,
+  pageDirectory: string,
+  ignoreLayout: boolean,
+  middlewareArr: string[]
+) => {
+  const routes: IRouteRecord[] = [];
+  const hasMiddleware = !!fileToTransform[MIDDLEWAREFILE];
+  if(hasMiddleware){
+    delete fileToTransform[MIDDLEWAREFILE];
+    const middlewarePath = join(pageDirectory, MIDDLEWAREFILE)
+    middlewareArr.push(middlewarePath);
   }
+  Object.entries(fileToTransform).forEach(
+    ([fileName, nestedRoute], _, arr) => {
+      let route: IRouteRecord;
+      let routePath = normalizeRoutePath(normalizeFilePath(fileName));
+      const isDirectory = Object.values(nestedRoute).length > 0;
+      route = {
+        path: routePath,
+        middlewares: middlewareArr
+      } as IRouteRecord;
 
-  async getRoutes(): Promise<IRouteRecord[]> {
-    if (!fs.existsSync(this._filesDir)) {
-      return [];
-    }
-    const files = await recursiveReadDir(this._filesDir, {
-      filter: filterRouteFile
-    });
-    return this._getRoutes(files);
-  }
-
-  subscribe(listener: SubscribeFn) {
-    this._event.on('change', listener);
-    if (!this._unwatch) {
-      this._unwatch = this._createWatcher();
-    }
-  }
-
-  private _getRoutes(files: string[]): IRouteRecord[] {
-    const transformedFiles = transformFilesObject(files, this._ignoreLayout);
-
-    const generateRoute = (
-      fileToTransform: IFilesObject,
-      pageDirectory: string,
-      ignoreLayout: boolean,
-      middlewareArr: string[]
-    ) => {
-      const routes: IRouteRecord[] = [];
-      const hasMiddleware = !!fileToTransform[MIDDLEWAREFILE];
-      if(hasMiddleware){
-        delete fileToTransform[MIDDLEWAREFILE];
-        const middlewarePath = join(pageDirectory, MIDDLEWAREFILE)
-        middlewareArr.push(middlewarePath);
-      }
-      Object.entries(fileToTransform).forEach(
-        ([fileName, nestedRoute], _, arr) => {
-          let route: IRouteRecord;
-          let routePath = normalizeRoutePath(normalizeFilePath(fileName));
-          const isDirectory = Object.values(nestedRoute).length > 0;
-          route = {
-            path: routePath,
-            middlewares: middlewareArr
-          } as IRouteRecord;
-
-          // if a directory have _layout, treat it as its own source
-          if (isDirectory) {
-            if (!ignoreLayout) {
-              const layoutFile = Object.keys(nestedRoute).find(route =>
-                isLayout(normalizeRoutePath(normalizeFilePath(route)))
-              );
-              if (layoutFile) {
-                route.filepath = join(pageDirectory, fileName, layoutFile);
-                // delete _layout
-                delete nestedRoute[layoutFile];
-              }
-            }
-            route.children = generateRoute(
-              nestedRoute,
-              join(pageDirectory, fileName),
-              ignoreLayout,
-              middlewareArr.slice()
-            ); // inner directory
-          } else {
-            route.filepath = join(pageDirectory, fileName);
-          }
-          routes.push(route);
-        }
-      );
-      return routes;
-    };
-
-    return generateRoute(transformedFiles, this._filesDir, this._ignoreLayout, []);
-  }
-
-  private async _createWatcher() {
-    // watcher won't trigger the initial event
-    // so we fire the initial event manually.
-    const initialRoutes = await this.getRoutes();
-    this._event.emit('change', initialRoutes);
-
-    return watch(
-      { directories: [this._filesDir] },
-      ({ changes, removals, getAllFiles }) => {
-        const files: string[] = [];
-        const rawFiles = getAllFiles();
-        for (let index = 0; index < rawFiles.length; index++) {
-          const absPath = rawFiles[index];
-          const relativePath = relative(this._filesDir, absPath);
-          if (filterRouteFile(relativePath)) {
-            files.push(relativePath);
+      // if a directory have _layout, treat it as its own source
+      if (isDirectory) {
+        if (!ignoreLayout) {
+          const layoutFile = Object.keys(nestedRoute).find(route =>
+            isLayout(normalizeRoutePath(normalizeFilePath(route)))
+          );
+          if (layoutFile) {
+            route.filepath = join(pageDirectory, fileName, layoutFile);
+            // delete _layout
+            delete nestedRoute[layoutFile];
           }
         }
-        this._event.emit('change', this._getRoutes(files));
+        route.children = generateRoute(
+          nestedRoute,
+          join(pageDirectory, fileName),
+          ignoreLayout,
+          middlewareArr.slice()
+        ); // inner directory
+      } else {
+        route.filepath = join(pageDirectory, fileName);
       }
-    );
+      routes.push(route);
+    }
+  );
+  return routes;
+};
+
+export const getRoutesFromFiles = (files: string[], filesDir: string, ignoreLayout: boolean = false) :IRouteRecord[] => {
+  const filteredFiles = files.map(file => relative(filesDir, file)).filter(filterRouteFile)
+  const transformedFiles = transformFilesObject(filteredFiles, ignoreLayout);
+  return generateRoute(transformedFiles, filesDir, ignoreLayout, []);
+}
+
+export function renameFilepathToComponent(
+  routes: IRouteRecord[]
+): IUserRouteConfig[] {
+  const res: IUserRouteConfig[] = [];
+  for (let index = 0; index < routes.length; index++) {
+    const { path, filepath, children } = routes[index];
+    const route = {
+      path
+    } as IUserRouteConfig;
+
+    if (filepath) {
+      route.component = filepath;
+    }
+
+    if (children && children.length > 0) {
+      route.children = renameFilepathToComponent(children);
+    }
+    res.push(route);
   }
+  return res;
 }

@@ -1,19 +1,19 @@
 import { matchRoutes } from '@shuvi/platform-core';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
+import { clientManifest } from '@shuvi/service/lib/resources';
+import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
+import { DevMiddleware } from '@shuvi/service/lib/lib/devMiddleware'
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { IRequestHandlerWithNext } from '../server';
-import { DevMiddleware } from './devMiddleware';
-import { acceptsHtml } from './utils';
-import { IServerPluginContext } from '../server/plugin';
-// @ts-ignore
-import { clientManifest } from '../resources';
+import { ServerOptions } from '../serverPlugin'
 
-export class OnDemandRouteManager {
+export default class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
   public _serverPluginContext: IServerPluginContext;
+  private _serverOptions: ServerOptions
 
-  constructor(serverPluginContext: IServerPluginContext) {
+  constructor(serverPluginContext: IServerPluginContext, serverOptions: ServerOptions) {
     this._serverPluginContext = serverPluginContext;
+    this._serverOptions = serverOptions
   }
 
   getServerMiddleware(): IRequestHandlerWithNext {
@@ -70,7 +70,7 @@ export class OnDemandRouteManager {
 
   async ensureRoutes(pathname: string): Promise<void> {
     const matchedRoutes =
-      matchRoutes(this._serverPluginContext.getRoutes(), pathname) || [];
+      matchRoutes(this._serverOptions.routes, pathname) || [];
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { component } }) =>
@@ -94,4 +94,19 @@ export class OnDemandRouteManager {
       await Promise.all(tasks);
     }
   }
+}
+
+
+export function acceptsHtml(
+  header: string,
+  {
+    htmlAcceptHeaders = ['text/html', '*/*']
+  }: { htmlAcceptHeaders?: string[] } = {}
+) {
+  for (var i = 0; i < htmlAcceptHeaders.length; i++) {
+    if (header.indexOf(htmlAcceptHeaders[i]) !== -1) {
+      return true;
+    }
+  }
+  return false;
 }
