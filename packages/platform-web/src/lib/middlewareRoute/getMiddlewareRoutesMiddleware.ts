@@ -1,13 +1,12 @@
 import { IServerPluginContext, IRequestHandlerWithNext } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
-import { IBuiltResource } from '../types';
+import { server } from '@shuvi/service/lib/resources';
 
 export function getMiddlewareRoutesMiddleware(
   api: IServerPluginContext
 ): IRequestHandlerWithNext {
   return async function (req, res, next) {
-    const { middlewareRoutes } = api.resources
-      .server as IBuiltResource['server'];
+    const { middlewareRoutes = [] } = server;
     // match path for get middlewares
     let middlewares: IRequestHandlerWithNext[] = [];
     for (let i = 0; i < middlewareRoutes.length; i++) {

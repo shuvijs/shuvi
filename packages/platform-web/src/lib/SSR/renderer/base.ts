@@ -16,9 +16,14 @@ import {
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '@shuvi/shared/lib/constants';
-import { renderTemplate } from '../../viewTemplate';
+import {
+  clientManifest,
+  server,
+  documentPath
+} from '@shuvi/service/lib/resources';
+import { parseTemplateFile, renderTemplate } from '../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IDocumentProps, ITemplateData, IBuiltResource } from '../../types';
+import { IDocumentProps, ITemplateData } from '../../types';
 
 import {
   IRendererConstructorOptions,
@@ -69,11 +74,11 @@ export function isRedirect(obj: any): obj is IRenderResultRedirect {
 
 export abstract class BaseRenderer {
   protected _serverPluginContext: IServerPluginContext;
-  protected _resources: IBuiltResource;
+  protected _documentTemplate: ReturnType<typeof parseTemplateFile>;
 
   constructor({ serverPluginContext }: IRendererConstructorOptions) {
     this._serverPluginContext = serverPluginContext;
-    this._resources = serverPluginContext.resources as IBuiltResource;
+    this._documentTemplate = parseTemplateFile(documentPath);
   }
 
   async renderDocument({
@@ -95,7 +100,7 @@ export abstract class BaseRenderer {
       return docProps;
     }
 
-    const { document } = this._resources.server;
+    const { document } = server;
 
     if (document.onDocumentProps) {
       docProps = await document.onDocumentProps(docProps, appContext);
@@ -129,7 +134,6 @@ export abstract class BaseRenderer {
   } {
     const styles: IHtmlTag<'link' | 'style'>[] = [];
     const scripts: IHtmlTag<'script'>[] = [];
-    const { clientManifest } = this._serverPluginContext.resources;
     const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
     const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
     scripts.push(
@@ -214,15 +218,12 @@ export abstract class BaseRenderer {
       .map(tag => stringifyTag(tag))
       .join('');
 
-    return renderTemplate(
-      this._serverPluginContext.resources.documentTemplate,
-      {
-        htmlAttrs,
-        head,
-        main,
-        script,
-        ...templateData
-      }
-    );
+    return renderTemplate(this._documentTemplate, {
+      htmlAttrs,
+      head,
+      main,
+      script,
+      ...templateData
+    });
   }
 }
