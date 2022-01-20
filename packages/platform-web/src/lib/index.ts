@@ -15,9 +15,8 @@ import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import statePlugin from '@shuvi/plugins/lib/model';
-import { getCoreResources } from './initCoreResource';
+import generateResource from './generateResource';
 import { resolveAppFile } from './paths';
-import { renderToHTML } from './SSR';
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -44,6 +43,7 @@ async function buildHtml({
     serverPlugins,
     context
   );
+  const renderToHTML = require('./SSR').renderToHTML;
   const { html } = await renderToHTML({
     req: {
       url: pathname,
@@ -67,7 +67,6 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         setRuntimeConfig(context.config.runtimeConfig);
       }
     },
-    bundleResource: context => getCoreResources(context),
     clientModule: context => {
       const {
         router: { history }
@@ -104,6 +103,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       };
     },
     serverPlugin: () => require.resolve('./serverPlugin'),
+    addResource: context => generateResource(context),
     afterBuild: async context => {
       if (
         context.config.platform.target === 'spa' &&

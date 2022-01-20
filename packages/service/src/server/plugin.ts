@@ -15,6 +15,9 @@ import {
   OnViewDoneParams
 } from './pluginTypes';
 
+// @ts-ignore
+import { server } from '../resources';
+
 export * from './pluginTypes';
 
 type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
@@ -124,38 +127,25 @@ export const initServerPlugins = (
   const serverModulePlugin = manager.createPlugin(
     {
       serverMiddleware: context => {
-        return context.resources?.server?.server?.serverMiddleware || [];
+        return server?.server?.serverMiddleware || [];
       },
       pageData: (appContext, context) => {
-        return (
-          context.resources?.server?.server?.getPageData?.(
-            appContext,
-            context
-          ) || {}
-        );
+        return server?.server?.getPageData?.(appContext, context) || {};
       },
       renderToHTML: (renderToHTML, context) => {
-        return (
-          context.resources?.server?.server?.renderToHTML?.(renderToHTML) ||
-          renderToHTML
-        );
+        return server?.server?.renderToHTML?.(renderToHTML) || renderToHTML;
       },
       modifyHtml: (documentProps, appContext, context) => {
         return (
-          context.resources?.server?.server?.modifyHtml?.(
-            documentProps,
-            appContext
-          ) || documentProps
+          server?.server?.modifyHtml?.(documentProps, appContext) ||
+          documentProps
         );
       },
       onViewDone: (params, context) => {
-        context.resources?.server?.server?.onViewDone?.(params);
+        server?.server?.onViewDone?.(params);
       },
       render: (renderAppToString, appContext, context) => {
-        return context.resources?.server?.server?.render?.(
-          renderAppToString,
-          appContext
-        );
+        return server?.server?.render?.(renderAppToString, appContext);
       }
     },
     { order: -100, name: 'serverModule' }

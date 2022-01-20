@@ -3,6 +3,7 @@ import { IRouter } from '@shuvi/router';
 import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import getRuntimeConfig from '@shuvi/service/lib/lib/runtimeConfig';
 import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
+import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
@@ -16,10 +17,7 @@ export class SsrRenderer extends BaseRenderer {
     appContext
   }: IRenderDocumentOptions) {
     const serverPluginContext = this._serverPluginContext;
-    const {
-      clientManifest: manifest,
-      server: { view }
-    } = this._resources;
+    const { view } = server;
     const { getAssetPublicUrl, serverPluginRunner } = serverPluginContext;
     const render = serverPluginRunner.render;
     if (!router) {
@@ -30,7 +28,7 @@ export class SsrRenderer extends BaseRenderer {
       router: router as IRouter,
       appStore,
       appContext,
-      manifest,
+      manifest: clientManifest,
       getAssetPublicUrl,
       render
     });

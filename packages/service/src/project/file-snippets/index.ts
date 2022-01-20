@@ -1,4 +1,5 @@
 import { getExportsContent } from './helpers';
+import { getContentProxyObj } from './proxyObj';
 import moduleExportProxy, {
   findFirstExistedFile,
   moduleExportProxyCreater
@@ -13,13 +14,13 @@ const tsDeclareModule = (
   }`;
 };
 
-const exportsFromObject = (exports: { [source: string]: string[] }): string =>
-  getExportsContent(exports);
+const exportsFromObject = (exports: { [source: string]: string[] }): string => getExportsContent(exports);
 
 export interface FileSnippets {
   tsDeclareModule: typeof tsDeclareModule;
   exportsFromObject: typeof exportsFromObject;
   moduleExportProxy: typeof moduleExportProxy;
+  getContentProxyObj: typeof getContentProxyObj;
   moduleExportProxyCreater: typeof moduleExportProxyCreater;
   findFirstExistedFile: typeof findFirstExistedFile;
 }
@@ -28,6 +29,7 @@ export {
   tsDeclareModule,
   exportsFromObject,
   moduleExportProxy,
+  getContentProxyObj,
   moduleExportProxyCreater,
   findFirstExistedFile
 };

@@ -1,9 +1,13 @@
 import { IPluginContext } from '../core';
 import { normalizeServerMiddleware } from './serverMiddleware';
-import { IServerPluginContext } from './plugin';
 import { Server } from './http-server';
 import { IShuviServer, ShuviServerOptions } from './shuviServerTypes';
-import { PluginManager, getManager, initServerPlugins } from './plugin';
+import {
+  PluginManager,
+  getManager,
+  initServerPlugins,
+  IServerPluginContext
+} from './plugin';
 
 export abstract class ShuviServer implements IShuviServer {
   protected _server: Server;
