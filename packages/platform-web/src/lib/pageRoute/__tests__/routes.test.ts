@@ -1,4 +1,4 @@
-import { serializeRoutes, normalizeRoutes } from '../routes';
+import { serializeRoutes, normalizeRoutes } from '..';
 
 describe('serializeRoutes', () => {
   const routes = [

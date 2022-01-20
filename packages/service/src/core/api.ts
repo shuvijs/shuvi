@@ -2,9 +2,6 @@ import path from 'path';
 import {
   UserConfig,
   Config,
-  IApiRouteConfig,
-  IMiddlewareRouteConfig,
-  IUserRouteConfig,
   IPaths,
   IShuviMode,
   IPhase,
@@ -17,15 +14,10 @@ import {
   UserModule,
   TargetModule,
   FileOptions,
-  fileSnippets
+  fileSnippets,
+  createFile
 } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
-import { serializeRoutes, normalizeRoutes } from '../lib/routes';
-import { serializeApiRoutes, normalizeApiRoutes } from '../lib/apiRoutes';
-import {
-  normalizeMiddlewareRoutes,
-  serializeMiddlewareRoutes
-} from '../lib/middlewaresRoutes';
 import { PUBLIC_PATH } from '../constants';
 import { loadConfig, resolveConfig, mergeConfig } from './config';
 import { getManager, PluginManager, Resources } from './plugin';
@@ -57,7 +49,6 @@ class Api {
   private _phase: IPhase;
   private _configFile?: string;
   private _userConfig: UserConfig;
-  private _routes: IUserRouteConfig[] = [];
   private _serverPlugins: IRuntimeOrServerPlugin[] = [];
   private _config!: Config;
   private _paths!: IPaths;
@@ -153,7 +144,6 @@ class Api {
       resolveUserFile: this.resolveUserFile.bind(this),
       resolveBuildFile: this.resolveBuildFile.bind(this),
       resolvePublicFile: this.resolvePublicFile.bind(this),
-      getRoutes: this.getRoutes.bind(this)
     };
     this.pluginManager.setContext(this._pluginContext);
 
@@ -185,7 +175,7 @@ class Api {
   async initProjectBuilderConfigs() {
     const runner = this.pluginManager.runner;
     const appPolyfills = (await runner.appPolyfill()).flat();
-    const appRuntimeFiles = (await runner.appRuntimeFile(fileSnippets)).flat();
+    const appRuntimeFiles = (await runner.appRuntimeFile({ createFile, fileSnippets })).flat();
     const appEntryCodes = (await runner.appEntryCode()).flat();
     const runtimeServices = (await runner.runtimeService()).flat();
     const platformModule = (await runner.platformModule()) as string;
@@ -245,49 +235,6 @@ class Api {
 
   setPlatformModule(module: string) {
     this._projectBuilder.setPlatformModule(module);
-  }
-
-  async setRoutes(routes: IUserRouteConfig[]): Promise<void> {
-    routes = await this.pluginManager.runner.appRoutes(routes);
-
-    routes = normalizeRoutes(routes, {
-      componentDir: this.paths.pagesDir
-    });
-
-    this._routes = routes;
-    const serialized = serializeRoutes(routes);
-    const RoutesContent = `export default ${serialized}`;
-    this._projectBuilder.setRoutesContent(RoutesContent);
-  }
-
-  getRoutes() {
-    return this._routes;
-  }
-
-  async setApiRoutes(apiRoutes: IApiRouteConfig[]): Promise<void> {
-    apiRoutes = normalizeApiRoutes(apiRoutes, {
-      apisDir: this.paths.apisDir
-    });
-
-    const { prefix } = this.config.apiConfig || {};
-
-    const serialized = serializeApiRoutes(apiRoutes, prefix);
-
-    let content = `export default ${serialized}`;
-    this._projectBuilder.setApiRoutesContent(content);
-  }
-
-  async setMiddlewaresRoutes(
-    middlewaresRoutes: IMiddlewareRouteConfig[]
-  ): Promise<void> {
-    middlewaresRoutes = normalizeMiddlewareRoutes(middlewaresRoutes, {
-      pagesDir: this.paths.pagesDir
-    });
-
-    const serialized = serializeMiddlewareRoutes(middlewaresRoutes);
-
-    let content = `export default ${serialized}`;
-    this._projectBuilder.setMiddlewareRoutesContent(content);
   }
 
   removeBuiltFiles() {

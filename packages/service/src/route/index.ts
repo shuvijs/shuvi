@@ -1,1 +1,1 @@
-export { Route } from './route';
+export { getRoutesFromFiles, renameFilepathToComponent } from './route';

@@ -41,7 +41,6 @@ describe('projectBuilder', () => {
     });
 
     app.addEntryCode('run()');
-    app.setRoutesContent('routes content');
     app.addPolyfill('path/toPolyfill');
     app.addRuntimeService('something to export', '*');
 
@@ -52,7 +51,6 @@ describe('projectBuilder', () => {
       ['runtime/index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['app/core/polyfill.js', 'import "path/toPolyfill"'],
-      ['app/core/routes.js', 'routes content']
     ]);
   });
 
@@ -63,7 +61,6 @@ describe('projectBuilder', () => {
     });
 
     app.addEntryCode('run()');
-    app.setRoutesContent('routes content');
     app.addPolyfill('path/toPolyfill');
     app.addRuntimeService('something to export', '*');
 
@@ -74,13 +71,11 @@ describe('projectBuilder', () => {
       ['runtime/index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['app/core/polyfill.js', 'import "path/toPolyfill"'],
-      ['app/core/routes.js', 'routes content']
     ]);
 
     // Change modules and content
     app.addEntryCode('const a = 1');
     app.addPolyfill('path/toPolyfill2');
-    app.setRoutesContent('routes content 2');
     app.addRuntimeService('export2', '*');
 
     await wait(0);
@@ -96,7 +91,6 @@ describe('projectBuilder', () => {
         'app/core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
       ],
-      ['app/core/routes.js', 'routes content 2']
     ]);
 
     await app.stopBuild();
@@ -110,7 +104,6 @@ describe('projectBuilder', () => {
       content: () => 'export default () => "test page"'
     });
 
-    app.setRoutesContent('routes content');
     app.addRuntimeService('something to export', '*');
     app.addPolyfill('path/toPolyfill');
 
@@ -120,17 +113,7 @@ describe('projectBuilder', () => {
       ['runtime/index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
       ['app/core/polyfill.js', 'import "path/toPolyfill"'],
-      ['app/core/routes.js', 'routes content']
     ]);
-
-    // should not make changes after build
-    app.setRoutesContent('other content');
-
-    await wait(0);
-
-    expect(readFileSync(resolveBuildFile('app/core/routes.js'), 'utf8')).toBe(
-      'routes content'
-    );
   });
 
   describe('addRuntimeService', () => {

@@ -1,4 +1,4 @@
-import routes from '@shuvi/app/core/routes';
+import routes from '@shuvi/app/files/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
 
 const getApp = App => {
