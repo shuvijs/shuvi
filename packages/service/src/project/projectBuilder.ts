@@ -1,7 +1,7 @@
 import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
-import { exportsFromObject } from './file-snippets';
+import { exportsFromObject, getContentProxyObj } from './file-snippets';
 import { IRuntimeOrServerPlugin } from '../core';
 import {
   ProjectContext,
@@ -184,41 +184,28 @@ class ProjectBuilder {
     }
   }
 
-  addResources(
-    source: string,
-    exported: string,
-    filepath: string = 'index.js'
-  ): void {
+  addResources(key: string, requireStr?: string): void {
     const services = this._projectContext.resources;
-    filepath = path.join('resources', path.resolve('/', filepath));
+    const filepath = path.join('resources', path.resolve('/', 'index.js'));
     const service = services.get(filepath);
     if (service) {
-      const targetSource = service.get(source);
-      if (targetSource) {
-        targetSource.add(exported);
-      } else {
-        const exportedSet: Set<string> = new Set();
-        exportedSet.add(exported);
-        service.set(source, exportedSet);
-      }
+      service.set(key, requireStr);
     } else {
-      const exportedSet: Set<string> = new Set();
-      exportedSet.add(exported);
-      const service: Map<string, Set<string>> = new Map();
-      service.set(source, exportedSet);
+      const service: Map<string, string | undefined> = new Map();
+      service.set(key, requireStr);
       services.set(filepath, service);
       this.addFile({
         name: filepath,
         content: (context: ProjectContext) => {
-          const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.runtimeServices.get(filepath);
+          const proxyObj: { [key: string]: string | undefined } = {};
+          const service = context.resources.get(filepath);
           if (!service) {
             return null;
           }
-          for (const [s, e] of service) {
-            exportsConfig[s] = Array.from(e);
+          for (const [k, r] of service) {
+            proxyObj[k] = r;
           }
-          return exportsFromObject(exportsConfig);
+          return getContentProxyObj(proxyObj);
         }
       });
     }
