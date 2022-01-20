@@ -1,5 +1,5 @@
 import getUserAppComponent from '@shuvi/app/user/app';
-import routes from '@shuvi/app/core/routes';
+import routes from '@shuvi/app/files/routes';
 import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   IApplication,
@@ -69,13 +69,13 @@ if (module.hot) {
       '@shuvi/app/user/app',
       '@shuvi/app/entry.client',
       '@shuvi/platform-core/lib/platform',
-      '@shuvi/app/core/routes',
+      '@shuvi/app/files/routes',
       '@shuvi/app/user/runtime'
     ],
     async () => {
       const rerender = () => {
         const getUserAppComponent = require('@shuvi/app/user/app').default;
-        const routes = require('@shuvi/app/core/routes').default;
+        const routes = require('@shuvi/app/files/routes').default;
         appRouter.replaceRoutes(getRoutes(routes, appContext));
         app.rerender({ AppComponent, getUserAppComponent });
       };

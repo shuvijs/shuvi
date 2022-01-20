@@ -27,9 +27,6 @@ type ContextValidatingRuleMap = {
 
 const contextValidatingRuleMap: ContextValidatingRuleMap = {
   entryCodes: 'addEntryCode',
-  routesContent: 'setRoutesContent',
-  apiRoutesContent: 'setApiRoutesContent',
-  middlewareRoutesContent: 'setMiddlewareRoutesContent',
   entryWrapperContent: 'setEntryWrapperContent',
   polyfills: {
     ignore: true,
@@ -94,18 +91,6 @@ class ProjectBuilder {
     this._internalFiles.forEach((file: FileOptions) => {
       this._fileManager.addFile(file);
     });
-  }
-
-  setRoutesContent(content: string): void {
-    this._projectContext.routesContent = content;
-  }
-
-  setApiRoutesContent(content: string): void {
-    this._projectContext.apiRoutesContent = content;
-  }
-
-  setMiddlewareRoutesContent(content: string): void {
-    this._projectContext.middlewareRoutesContent = content;
   }
 
   setRuntimeConfigContent(content: string | null) {

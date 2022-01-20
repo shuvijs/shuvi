@@ -9,7 +9,8 @@ import {
   UserModule,
   TargetModule,
   FileOptions,
-  fileSnippets
+  fileSnippets,
+  createFile
 } from '../project';
 import {
   ExtraTargetAssistant,
@@ -22,7 +23,6 @@ import {
 } from './pluginTypes';
 import {
   UserConfig,
-  IUserRouteConfig,
   IPluginContext,
   IPhase,
   IRuntimeOrServerPlugin
@@ -47,7 +47,6 @@ export type ICliPluginConstructor = ArrayItem<
 >;
 
 const config = createAsyncParallelHook<UserConfig, IPhase, UserConfig>();
-const appRoutes = createAsyncSeriesWaterfallHook<IUserRouteConfig[]>();
 const appReady = createAsyncParallelHook<void>();
 const bundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
 const bundlerTargetDone = createAsyncParallelHook<BundlerTargetDoneExtra>();
@@ -82,9 +81,15 @@ const addResource = createAsyncParallelHook<
   Resources | Resources[]
 >();
 const appPolyfill = createAsyncParallelHook<void, void, string | string[]>();
+
+export interface AppRuntimeFileUtils {
+  fileSnippets: fileSnippets.FileSnippets
+  createFile: typeof createFile
+}
+
 const appRuntimeFile = createAsyncParallelHook<
   void,
-  fileSnippets.FileSnippets,
+  AppRuntimeFileUtils,
   FileOptions | FileOptions[]
 >();
 const appEntryCode = createAsyncParallelHook<void, void, string | string[]>();
@@ -96,7 +101,6 @@ const runtimeService = createAsyncParallelHook<
 
 const hooksMap = {
   config,
-  appRoutes,
   appReady,
   bundlerDone,
   bundlerTargetDone,
