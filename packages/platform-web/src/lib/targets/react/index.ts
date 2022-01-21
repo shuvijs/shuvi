@@ -1,8 +1,8 @@
-import { createCliPlugin } from '@shuvi/service';
+import { createPlugin } from '@shuvi/service';
 import bundlerPlugin from './bundler';
 import { resolveAppFile, resolveDep, resolveLib } from '../../paths';
 
-const webReactMainPlugin = createCliPlugin({
+const webReactMainPlugin = createPlugin({
   platformModule: () => resolveAppFile('react/index'),
   appPolyfill: () => [
     resolveDep('react-app-polyfill/ie11'),

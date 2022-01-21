@@ -1,14 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import {
-  createCliPlugin,
+  createPlugin,
   IUserRouteConfig,
   BUILD_DEFAULT_DIR
 } from '@shuvi/service';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
-import { getRoutesFromFiles } from '@shuvi/service/lib/route'
-import { renameFilepathToComponent } from '@shuvi/service/lib/route'
+import { getRoutesFromFiles } from '@shuvi/service/lib/route';
+import { renameFilepathToComponent } from '@shuvi/service/lib/route';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
@@ -57,11 +57,7 @@ const getAllFiles = (
 
 const moduleFileExtensions = ['.js', '.jsx', '.tsx', '.ts'];
 
-
-type IUserRouteHandlerWithoutChildren = Omit<
-  IUserRouteConfig,
-  'children'
->;
+type IUserRouteHandlerWithoutChildren = Omit<IUserRouteConfig, 'children'>;
 type IUserRouteHandlerOtherData = Omit<
   IUserRouteConfig,
   'children' | 'path' | 'component'
@@ -96,7 +92,7 @@ export default abstract class PlatformMpBase {
    * setup app files
    */
   getSetupAppPlugin() {
-    return createCliPlugin({
+    return createPlugin({
       setup: context => {
         const appConfigFile = findFirstExistedFile([
           ...withExts(
@@ -164,7 +160,7 @@ export default abstract class PlatformMpBase {
   }
 
   getSetupRoutesPlugin() {
-    return createCliPlugin({
+    return createPlugin({
       appRuntimeFile: async ({ fileSnippets }, context) => {
         const getFiles = (routes: IUserRouteConfig[]) => {
           const appFiles = [];
@@ -294,19 +290,23 @@ export default abstract class PlatformMpBase {
           }
           this.mpPathToRoutesDone();
           return appFiles; // routes file no use, remove it
-        }
-        let { routes } = context.config
+        };
+        let { routes } = context.config;
         if (!routes) {
-          const allFiles = recursiveReadDirSync(context.paths.pagesDir, { rootDir: '' })
-          routes = renameFilepathToComponent(getRoutesFromFiles(allFiles, context.paths.pagesDir))
+          const allFiles = recursiveReadDirSync(context.paths.pagesDir, {
+            rootDir: ''
+          });
+          routes = renameFilepathToComponent(
+            getRoutesFromFiles(allFiles, context.paths.pagesDir)
+          );
         }
-        return getFiles(routes)
+        return getFiles(routes);
       }
     });
   }
 
   getConfigWebpackPlugin() {
-    return createCliPlugin({
+    return createPlugin({
       configWebpack: async (config, { name }, context) => {
         await this.promiseRoutes;
         const pageFiles = getAllFiles(context.resolveAppFile('files', 'pages'));

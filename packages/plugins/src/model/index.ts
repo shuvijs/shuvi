@@ -1,6 +1,6 @@
-import { createCliPlugin } from '@shuvi/service';
+import { createPlugin } from '@shuvi/service';
 
-export default createCliPlugin({
+export default createPlugin({
   runtimePlugin: () => require.resolve('./runtimePlugin'),
   serverPlugin: () => require.resolve('./serverPlugin'),
   runtimeService: () => [
