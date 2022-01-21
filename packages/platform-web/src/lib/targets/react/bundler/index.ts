@@ -1,5 +1,5 @@
 import path from 'path';
-import { ICliPluginConstructor, createCliPlugin } from '@shuvi/service';
+import { ICliPluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../../../paths';
@@ -58,7 +58,7 @@ const serverPlugin: ICliPluginConstructor['serverPlugin'] = context => {
   return require.resolve('./insertReactRefreshEntryFile');
 };
 
-export default createCliPlugin({
+export default createPlugin({
   configWebpack,
   serverPlugin
 });
