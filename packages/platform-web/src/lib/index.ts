@@ -6,7 +6,7 @@ import {
   BUILD_SERVER_FILE_SERVER,
   IRequest,
   IPlatform,
-  createCliPlugin,
+  createPlugin,
   IPluginContext,
   IUserRouteConfig
 } from '@shuvi/service';
@@ -15,13 +15,20 @@ import { initServerPlugins, getManager } from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
-import { getUserCustomFileCandidates } from '@shuvi/service/lib/project'
-import { getRoutesFromFiles } from '@shuvi/service/lib/route'
+import { getUserCustomFileCandidates } from '@shuvi/service/lib/project';
+import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import statePlugin from '@shuvi/plugins/lib/model';
 import generateResource from './generateResource';
-import { getApiRoutesContent, getApiRoutesContentFromRawRoutes } from './apiRoute'
-import { getNormalizedRoutes, getRoutesContent, getRoutesFromRawRoutes } from './pageRoute'
-import { getMiddlewareRoutesContentFromRawRoutes } from './middlewareRoute'
+import {
+  getApiRoutesContent,
+  getApiRoutesContentFromRawRoutes
+} from './apiRoute';
+import {
+  getNormalizedRoutes,
+  getRoutesContent,
+  getRoutesFromRawRoutes
+} from './pageRoute';
+import { getMiddlewareRoutesContentFromRawRoutes } from './middlewareRoute';
 import { resolveAppFile } from './paths';
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
@@ -49,7 +56,7 @@ async function buildHtml({
     serverPlugins,
     context
   );
-  const renderToHTML = require('./SSR').renderToHTML;
+  const renderToHTML = require('./ssr').renderToHTML;
   const { html } = await renderToHTML({
     req: {
       url: pathname,
@@ -66,76 +73,126 @@ async function buildHtml({
   }
 }
 
-
 const platform: IPlatform = async ({ framework = 'react' } = {}) => {
-  const serverOptions: { routes: IUserRouteConfig[] } = { routes: [] }
-  const mainPlugin = createCliPlugin({
+  const serverOptions: { routes: IUserRouteConfig[] } = { routes: [] };
+  const mainPlugin = createPlugin({
     appRuntimeFile: ({ createFile, fileSnippets }, context) => {
-      const { config: { apiRoutes, routes }, paths } = context
+      const {
+        config: { apiRoutes, routes },
+        paths
+      } = context;
       // if config.routes is defined, use config
-      const hasConfigRoutes = Array.isArray(routes)
-      const routesFile = hasConfigRoutes ? createFile({
-        name: 'routes.js',
-        content: () => {
-          const normalizedRoutes = getNormalizedRoutes(routes, paths.pagesDir)
-          serverOptions.routes = normalizedRoutes
-          return getRoutesContent(normalizedRoutes, paths.pagesDir)
-        }
-      }) : createFile({
-        name: 'routes.js',
-        content: ({ getAllFiles }) => {
-          const rawRoutes = getRoutesFromFiles(getAllFiles(), paths.pagesDir)
-          const normalizedRoutes = getRoutesFromRawRoutes(rawRoutes, paths.pagesDir)
-          serverOptions.routes = normalizedRoutes
-          return getRoutesContent(normalizedRoutes, paths.pagesDir)
-        },
-        dependencies: [paths.pagesDir]
-      })
+      const hasConfigRoutes = Array.isArray(routes);
+      const routesFile = hasConfigRoutes
+        ? createFile({
+            name: 'routes.js',
+            content: () => {
+              const normalizedRoutes = getNormalizedRoutes(
+                routes,
+                paths.pagesDir
+              );
+              serverOptions.routes = normalizedRoutes;
+              return getRoutesContent(normalizedRoutes, paths.pagesDir);
+            }
+          })
+        : createFile({
+            name: 'routes.js',
+            content: ({ getAllFiles }) => {
+              const rawRoutes = getRoutesFromFiles(
+                getAllFiles(),
+                paths.pagesDir
+              );
+              const normalizedRoutes = getRoutesFromRawRoutes(
+                rawRoutes,
+                paths.pagesDir
+              );
+              serverOptions.routes = normalizedRoutes;
+              return getRoutesContent(normalizedRoutes, paths.pagesDir);
+            },
+            dependencies: [paths.pagesDir]
+          });
 
-      const middlewareRoutesFile = hasConfigRoutes ? createFile({
-        name: 'middlewareRoutes.js',
-        content: () => {
-          return getMiddlewareRoutesContentFromRawRoutes(routes, paths.pagesDir)
-        }
-      }) : createFile({
-        name: 'middlewareRoutes.js',
-        content: ({ getAllFiles }) => {
-          const rawRoutes = getRoutesFromFiles(getAllFiles(), paths.pagesDir)
-          return getMiddlewareRoutesContentFromRawRoutes(rawRoutes, paths.pagesDir)
-        },
-        dependencies: [paths.pagesDir]
-      })
+      const middlewareRoutesFile = hasConfigRoutes
+        ? createFile({
+            name: 'middlewareRoutes.js',
+            content: () => {
+              return getMiddlewareRoutesContentFromRawRoutes(
+                routes,
+                paths.pagesDir
+              );
+            }
+          })
+        : createFile({
+            name: 'middlewareRoutes.js',
+            content: ({ getAllFiles }) => {
+              const rawRoutes = getRoutesFromFiles(
+                getAllFiles(),
+                paths.pagesDir
+              );
+              return getMiddlewareRoutesContentFromRawRoutes(
+                rawRoutes,
+                paths.pagesDir
+              );
+            },
+            dependencies: [paths.pagesDir]
+          });
 
-      const { prefix } = context.config.apiConfig || {}
-      const apiRoutesFile = Array.isArray(apiRoutes) && apiRoutes.length ? createFile({
-        name: 'apiRoutes.js',
-        content: () => getApiRoutesContent(apiRoutes, paths.apisDir, prefix)
-      }) : createFile({
-        name: 'apiRoutes.js',
-        content: ({ getAllFiles }) => {
-          const rawRoutes = getRoutesFromFiles(getAllFiles(), paths.apisDir, true)
-          return getApiRoutesContentFromRawRoutes(rawRoutes, paths.apisDir, prefix)
-        },
-        dependencies: [paths.apisDir]
-      })
+      const { prefix } = context.config.apiConfig || {};
+      const apiRoutesFile =
+        Array.isArray(apiRoutes) && apiRoutes.length
+          ? createFile({
+              name: 'apiRoutes.js',
+              content: () =>
+                getApiRoutesContent(apiRoutes, paths.apisDir, prefix)
+            })
+          : createFile({
+              name: 'apiRoutes.js',
+              content: ({ getAllFiles }) => {
+                const rawRoutes = getRoutesFromFiles(
+                  getAllFiles(),
+                  paths.apisDir,
+                  true
+                );
+                return getApiRoutesContentFromRawRoutes(
+                  rawRoutes,
+                  paths.apisDir,
+                  prefix
+                );
+              },
+              dependencies: [paths.apisDir]
+            });
 
-      const userDocumentFileModuleExportProxy = fileSnippets.moduleExportProxyCreater()
+      const userDocumentFileModuleExportProxy =
+        fileSnippets.moduleExportProxyCreater();
       const userDocumentFile = {
         name: 'user/document.js',
-        content: () => userDocumentFileModuleExportProxy.getContent(getUserCustomFileCandidates(paths.rootDir, 'document', 'noop')),
+        content: () =>
+          userDocumentFileModuleExportProxy.getContent(
+            getUserCustomFileCandidates(paths.rootDir, 'document', 'noop')
+          ),
         mounted: userDocumentFileModuleExportProxy.mounted,
         unmounted: userDocumentFileModuleExportProxy.unmounted
-      }
+      };
 
-      const userServerFileModuleExportProxy = fileSnippets.moduleExportProxyCreater()
+      const userServerFileModuleExportProxy =
+        fileSnippets.moduleExportProxyCreater();
       const userServerFile = {
         name: 'user/server.js',
-        content: () => userServerFileModuleExportProxy.getContent(getUserCustomFileCandidates(paths.rootDir, 'server', 'noop')),
+        content: () =>
+          userServerFileModuleExportProxy.getContent(
+            getUserCustomFileCandidates(paths.rootDir, 'server', 'noop')
+          ),
         mounted: userServerFileModuleExportProxy.mounted,
         unmounted: userServerFileModuleExportProxy.unmounted
-      }
+      };
 
-      return [routesFile, middlewareRoutesFile, apiRoutesFile, userServerFile, userDocumentFile]
+      return [
+        routesFile,
+        middlewareRoutesFile,
+        apiRoutesFile,
+        userServerFile,
+        userDocumentFile
+      ];
     },
     setup: context => {
       if (typeof context.config.runtimeConfig === 'object') {
