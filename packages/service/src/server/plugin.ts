@@ -14,7 +14,7 @@ import {
   IDocumentProps,
   OnViewDoneParams
 } from './pluginTypes';
-import { DevMiddleware } from '../lib/devMiddleware'
+import { DevMiddleware } from '../lib/devMiddleware';
 
 // @ts-ignore
 import { server } from '../resources';
@@ -63,11 +63,6 @@ const serverMiddleware = createAsyncParallelHook<
   void,
   IServerMiddleware | IServerMiddleware[]
 >();
-const serverMiddlewareLast = createAsyncParallelHook<
-  void,
-  void,
-  IServerMiddleware | IServerMiddleware[]
->();
 
 const serverListen =
   createAsyncParallelHook<{ port: number; hostname?: string }>();
@@ -85,7 +80,6 @@ const render = createSyncBailHook<() => string, IServerAppContext, string>();
 const hooksMap = {
   serverMiddlewareBeforeDevMiddleware,
   serverMiddleware,
-  serverMiddlewareLast,
   serverListen,
   pageData,
   renderToHTML,

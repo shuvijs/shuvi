@@ -37,18 +37,8 @@ export abstract class ShuviServer implements IShuviServer {
     const { rootDir } = context.paths;
     const serverMiddlewares = (await pluginManager.runner.serverMiddleware())
       .flat()
-      .map(m => normalizeServerMiddleware(m, { rootDir }))
-      .sort((a, b) => a.order - b.order);
-    const serverMiddlewaresLast = (
-      await pluginManager.runner.serverMiddlewareLast()
-    )
-      .flat()
-      .map(m => normalizeServerMiddleware(m, { rootDir }))
-      .sort((a, b) => a.order - b.order);
+      .map(m => normalizeServerMiddleware(m, { rootDir }));
     serverMiddlewares.forEach(({ path, handler }) => {
-      server.use(path, handler);
-    });
-    serverMiddlewaresLast.forEach(({ path, handler }) => {
       server.use(path, handler);
     });
   }

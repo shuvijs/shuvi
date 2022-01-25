@@ -32,7 +32,6 @@ export const serverMiddleware = [
     handler: (req, res, next) => {
       console.log(10);
       return next();
-    },
-    order: 10
+    }
   }
 ];

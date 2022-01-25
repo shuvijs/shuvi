@@ -17,10 +17,11 @@ export default (options: ServerOptions) => {
       return onDemandRouteManager.getServerMiddleware();
     },
     // onDemandRouteManager will be undefined in production mode
-    serverMiddleware: () =>
-      onDemandRouteManager ? onDemandRouteManager.ensureRoutesMiddleware() : [],
-    serverMiddlewareLast: context => {
+    serverMiddleware: context => {
       return [
+        ...(onDemandRouteManager
+          ? [onDemandRouteManager.ensureRoutesMiddleware()]
+          : []),
         getApiRoutesMiddleware(context),
         getMiddlewareRoutesMiddleware(context),
         getSSRMiddleware(context)
