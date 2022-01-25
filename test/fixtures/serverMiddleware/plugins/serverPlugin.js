@@ -6,8 +6,7 @@ module.exports = createServerPlugin({
       handler: (req, res, next) => {
         console.log(1);
         next();
-      },
-      order: 1
+      }
     },
     {
       path: 'testorder',
@@ -21,16 +20,14 @@ module.exports = createServerPlugin({
       handler: async (req, res, next) => {
         console.log(-1);
         next();
-      },
-      order: -1
+      }
     },
     {
       path: 'testorder',
       handler: async (req, res, next) => {
         console.log(9);
         next();
-      },
-      order: 9
+      }
     },
     {
       path: 'pluginservermiddleware',
@@ -50,8 +47,7 @@ module.exports = createServerPlugin({
         const errorMessage = `catch => ${error}`;
         console.log(errorMessage);
         res.end(errorMessage);
-      },
-      order: 1
+      }
     }
   ]
 });
