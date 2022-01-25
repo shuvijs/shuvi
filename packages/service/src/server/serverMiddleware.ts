@@ -8,7 +8,6 @@ interface Options {
 interface IMiddlewareOptions {
   handler: string | IMiddlewareHandler;
   path?: string;
-  order?: number;
 }
 
 export type IServerMiddlewareOptions = IMiddlewareOptions | IMiddlewareHandler;
@@ -18,7 +17,6 @@ export type IServerMiddleware = string | IServerMiddlewareOptions;
 interface InternalServerMiddlewareOptions extends IMiddlewareOptions {
   handler: IMiddlewareHandler;
   path: string;
-  order: number;
 }
 
 function resolveHandler(handler: string, options: Options) {
@@ -59,7 +57,6 @@ export function normalizeServerMiddleware(
   return {
     handler,
     // Note: default to match all routes
-    path: middlewareOptions.path ?? '/:_(.*)',
-    order: middlewareOptions.order ?? 0
+    path: middlewareOptions.path ?? '/:_(.*)'
   };
 }

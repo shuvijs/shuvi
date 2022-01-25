@@ -1,5 +1,5 @@
 import { ShuviServer } from './shuviServer';
-import { normalizeServerMiddleware } from './serverMiddleware'
+import { normalizeServerMiddleware } from './serverMiddleware';
 import { IRequestHandlerWithNext } from '../server/http-server';
 import { serveStatic } from '../lib/serveStatic';
 import { getDevMiddleware } from '../lib/devMiddleware';
@@ -38,10 +38,13 @@ export class ShuviDevServer extends ShuviServer {
     }
 
     const { rootDir } = context.paths;
-    const serverMiddlewaresBeforeDevMiddleware = (await context.serverPluginRunner.serverMiddlewareBeforeDevMiddleware(devMiddleware))
+    const serverMiddlewaresBeforeDevMiddleware = (
+      await context.serverPluginRunner.serverMiddlewareBeforeDevMiddleware(
+        devMiddleware
+      )
+    )
       .flat()
-      .map(m => normalizeServerMiddleware(m, { rootDir }))
-      .sort((a, b) => a.order - b.order);
+      .map(m => normalizeServerMiddleware(m, { rootDir }));
     serverMiddlewaresBeforeDevMiddleware.forEach(({ path, handler }) => {
       server.use(path, handler);
     });

@@ -1,6 +1,6 @@
-const { createCliPlugin } = require('shuvi');
+const { createPlugin } = require('shuvi');
 
-module.exports = createCliPlugin({
+module.exports = createPlugin({
   serverPlugin: () => {
     return [
       {
