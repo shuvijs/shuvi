@@ -3,7 +3,7 @@ import {
   createSyncBailHook,
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook,
-  createHookGroup,
+  createHookManager,
   isPluginInstance
 } from '@shuvi/hook';
 import { IRuntimeOrServerPlugin, IPluginContext } from '../core';
@@ -89,7 +89,7 @@ const hooksMap = {
 };
 
 export const getManager = () =>
-  createHookGroup<typeof hooksMap, IServerPluginContext>(hooksMap);
+  createHookManager<typeof hooksMap, IServerPluginContext>(hooksMap);
 
 export const { createPlugin: createServerPlugin } = getManager();
 

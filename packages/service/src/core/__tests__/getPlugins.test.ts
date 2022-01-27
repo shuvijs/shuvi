@@ -3,9 +3,10 @@ import {
   createPlugin,
   getManager,
   PluginRunner,
-  PluginManager
+  PluginManager,
 } from '../plugin';
 import { IPluginConfig, IPresetConfig } from '../apiTypes';
+import { IPluginContext } from '..'
 import { resolvePlugins, resolvePresets, getPlugins } from '../getPlugins';
 import { resolvePreset } from './utils';
 
@@ -28,6 +29,7 @@ describe('plugin', () => {
   beforeEach(() => {
     manager = getManager();
     runner = manager.runner;
+    manager.setContext({} as IPluginContext)
   });
   test('should accept plugin instance object as a plugin', async () => {
     console.log = jest.fn();

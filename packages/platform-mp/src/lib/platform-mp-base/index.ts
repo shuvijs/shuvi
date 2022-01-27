@@ -93,7 +93,7 @@ export default abstract class PlatformMpBase {
    */
   getSetupAppPlugin() {
     return createPlugin({
-      setup: context => {
+      afterInit: context => {
         const appConfigFile = findFirstExistedFile([
           ...withExts(
             context.resolveUserFile('app.config'),

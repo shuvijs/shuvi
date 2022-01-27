@@ -2,7 +2,7 @@ import {
   createSyncHook,
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook,
-  createHookGroup,
+  createHookManager,
   isPluginInstance
 } from '@shuvi/hook';
 import { IContext } from './application';
@@ -23,11 +23,14 @@ const hooksMap = {
   dispose
 };
 
-export const manager = createHookGroup(hooksMap);
+export const getManager = () => createHookManager(hooksMap, false);
 export { isPluginInstance };
-export const { createPlugin, usePlugin, runner, hooks, clear } = manager;
-export type IRuntimePluginConstructor = Parameters<typeof createPlugin>[0];
-export type IRuntimePluginInstance = ArrayItem<Parameters<typeof usePlugin>>;
+export type PluginManager = ReturnType<typeof getManager>;
+
+export const { createPlugin } = getManager();
+
+export type IRuntimePluginConstructor = Parameters<PluginManager['createPlugin']>[0];
+export type IRuntimePluginInstance = ArrayItem<Parameters<PluginManager['usePlugin']>>;
 export type IRuntimePluginWithOptions = (
   ...params: any[]
 ) => IRuntimePluginInstance;
@@ -58,12 +61,13 @@ type SerializedPluginOptions = string;
 type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
 
 export const initPlugins = async (
+  pluginManager: PluginManager,
   runtimeModule: Partial<IRuntimeModule>, // 内联plugin，不含options
   pluginRecord: IPluginRecord // 外部plugin
 ) => {
   // clear plugin at development mode every time
   if (process.env.NODE_ENV === 'development') {
-    clear();
+    pluginManager.clear();
   }
   for (const name in pluginRecord) {
     const { plugin, options } = pluginRecord[name];
@@ -72,9 +76,9 @@ export const initPlugins = async (
       parsedOptions = JSON.parse(options);
     }
     if (isPluginInstance(plugin)) {
-      usePlugin(plugin as IRuntimePluginInstance);
+      pluginManager.usePlugin(plugin as IRuntimePluginInstance);
     } else {
-      usePlugin((plugin as IRuntimePluginWithOptions)(parsedOptions));
+      pluginManager.usePlugin((plugin as IRuntimePluginWithOptions)(parsedOptions));
     }
   }
   const pluginConstructor: IRuntimePluginConstructor = {};
@@ -93,5 +97,5 @@ export const initPlugins = async (
   if (getContext) pluginConstructor.context = getContext;
   if (onRenderDone) pluginConstructor.renderDone = onRenderDone;
   if (onDispose) pluginConstructor.dispose = onDispose;
-  usePlugin(createPlugin(pluginConstructor));
+  pluginManager.usePlugin(pluginManager.createPlugin(pluginConstructor));
 };
