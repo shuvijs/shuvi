@@ -107,19 +107,14 @@ class Api {
     const userConfig: UserConfig = mergeConfig(fileConfig, this._userConfig);
     // init plugins
     const allPlugins = await getPlugins(this._cwd, userConfig);
+    const { runner, setContext, usePlugin } = this.pluginManager
     this.pluginManager.usePlugin(...allPlugins);
     // todo: platform as a plugin?
     this._platform = getPlatform(userConfig.platform?.name);
     const platformPlugins = await this.platform(userConfig.platform);
-    this.pluginManager.usePlugin(...platformPlugins);
-
-    const extraConfigs = await this.pluginManager.runner.config(
-      userConfig,
-      this.phase
-    );
+    usePlugin(...platformPlugins);
     const config = (this._config = resolveConfig({
-      config: userConfig,
-      overrides: extraConfigs
+      config: userConfig
     }));
     this._paths = getPaths({
       rootDir: this._cwd,
@@ -145,14 +140,14 @@ class Api {
       resolveBuildFile: this.resolveBuildFile.bind(this),
       resolvePublicFile: this.resolvePublicFile.bind(this),
     };
-    this.pluginManager.setContext(this._pluginContext);
+    setContext(this._pluginContext);
 
     // must run first so that platform could get serverPlugin
     await this.initRuntimeAndServerPlugin();
-    await this.pluginManager.runner.setup();
+    await runner.afterInit();
 
     const resources = (
-      await this.pluginManager.runner.addResource()
+      await runner.addResource()
     ).flat() as Resources[];
     resources.forEach(([key, requireStr]) => {
       this.addResources(key, requireStr);

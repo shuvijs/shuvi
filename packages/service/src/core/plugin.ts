@@ -1,8 +1,9 @@
 import {
   createSyncBailHook,
   createAsyncSeriesWaterfallHook,
-  createHookGroup,
-  createAsyncParallelHook
+  createHookManager,
+  createAsyncParallelHook,
+  HookMap
 } from '@shuvi/hook';
 import WebpackChain from 'webpack-chain';
 import {
@@ -71,7 +72,7 @@ const serverPlugin = createAsyncParallelHook<
   void,
   string | string[] | IRuntimeOrServerPlugin | IRuntimeOrServerPlugin[]
 >();
-const setup = createAsyncParallelHook<void>();
+const afterInit = createAsyncParallelHook<void>();
 const platformModule = createSyncBailHook<void, void, string>();
 const clientModule = createSyncBailHook<void, void, TargetModule>();
 const userModule = createSyncBailHook<void, void, UserModule>();
@@ -99,7 +100,7 @@ const runtimeService = createAsyncParallelHook<
   RuntimeService | RuntimeService[]
 >();
 
-const hooksMap = {
+const internalPluginHooks = {
   config,
   appReady,
   bundlerDone,
@@ -110,7 +111,7 @@ const hooksMap = {
   extraTarget,
   runtimePlugin,
   serverPlugin,
-  setup,
+  afterInit,
   platformModule,
   clientModule,
   userModule,
@@ -120,7 +121,12 @@ const hooksMap = {
   appEntryCode,
   runtimeService
 };
+
+export type InternalPluginHooks = typeof internalPluginHooks
+
+export interface PluginHooks extends HookMap {}
+
 export const getManager = () =>
-  createHookGroup<typeof hooksMap, IPluginContext>(hooksMap);
+  createHookManager<InternalPluginHooks, IPluginContext, PluginHooks>(internalPluginHooks);
 
 export const { createPlugin } = getManager();

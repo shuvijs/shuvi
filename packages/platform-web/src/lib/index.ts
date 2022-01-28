@@ -1,5 +1,6 @@
 import fse from 'fs-extra';
 import path from 'path';
+import { createSyncWaterfallHook } from '@shuvi/hook'
 import {
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
@@ -26,7 +27,8 @@ import {
 import {
   getNormalizedRoutes,
   getRoutesContent,
-  getRoutesFromRawRoutes
+  getRoutesFromRawRoutes,
+  setRoutes
 } from './pageRoute';
 import { getMiddlewareRoutesContentFromRawRoutes } from './middlewareRoute';
 import { resolveAppFile } from './paths';
@@ -74,13 +76,21 @@ async function buildHtml({
 }
 
 const platform: IPlatform = async ({ framework = 'react' } = {}) => {
-  const serverOptions: { routes: IUserRouteConfig[] } = { routes: [] };
   const mainPlugin = createPlugin({
-    appRuntimeFile: ({ createFile, fileSnippets }, context) => {
+    setup: ({ addHooks }) => {
+      const appRoutes = createSyncWaterfallHook<IUserRouteConfig[]>();
+      addHooks({ appRoutes })
+    },
+    appRuntimeFile: async ({ createFile, fileSnippets }, context) => {
       const {
         config: { apiRoutes, routes },
-        paths
+        paths,
+        pluginRunner
       } = context;
+
+      const getFinalRoutes = (routes: IUserRouteConfig[]) =>
+        pluginRunner.appRoutes(routes)
+
       // if config.routes is defined, use config
       const hasConfigRoutes = Array.isArray(routes);
       const routesFile = hasConfigRoutes
@@ -91,8 +101,9 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
                 routes,
                 paths.pagesDir
               );
-              serverOptions.routes = normalizedRoutes;
-              return getRoutesContent(normalizedRoutes, paths.pagesDir);
+              const finalRoutes = getFinalRoutes(normalizedRoutes)
+              setRoutes(finalRoutes)
+              return getRoutesContent(finalRoutes, paths.pagesDir);
             }
           })
         : createFile({
@@ -106,8 +117,9 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
                 rawRoutes,
                 paths.pagesDir
               );
-              serverOptions.routes = normalizedRoutes;
-              return getRoutesContent(normalizedRoutes, paths.pagesDir);
+              const finalRoutes = getFinalRoutes(normalizedRoutes)
+              setRoutes(finalRoutes)
+              return getRoutesContent(finalRoutes, paths.pagesDir);
             },
             dependencies: [paths.pagesDir]
           });
@@ -194,7 +206,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         userDocumentFile
       ];
     },
-    setup: context => {
+    afterInit: context => {
       if (typeof context.config.runtimeConfig === 'object') {
         setRuntimeConfig(context.config.runtimeConfig);
       }
@@ -234,10 +246,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         chain: serverChain
       };
     },
-    serverPlugin: () => ({
-      plugin: require.resolve('./serverPlugin'),
-      options: serverOptions
-    }),
+    serverPlugin: () => require.resolve('./serverPlugin'),
     addResource: context => generateResource(context),
     afterBuild: async context => {
       if (

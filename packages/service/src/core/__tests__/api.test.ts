@@ -19,7 +19,7 @@ describe('plugins', () => {
       config: {
         plugins: [
           {
-            setup: cliContext => {
+            afterInit: cliContext => {
               context = cliContext;
             }
           }
@@ -40,7 +40,7 @@ describe('plugins', () => {
         publicPath: '/test',
         plugins: [
           {
-            setup: api => {
+            afterInit: api => {
               config = api.config;
               paths = api.paths;
             }
@@ -50,29 +50,6 @@ describe('plugins', () => {
     });
     expect(config!.publicPath).toBe('/test');
     expect(api.cwd).toBe(path.join(__dirname, 'fixtures', 'dotenv'));
-  });
-
-  describe('modifyConfig', () => {
-    test('should work', async () => {
-      let context: any;
-      await getApi({
-        config: {
-          plugins: [
-            resolvePlugin('modify-config.ts'),
-            {
-              setup: cliContext => {
-                context = cliContext;
-              }
-            }
-          ]
-        }
-      });
-      const plugins = (context! as any).__plugins;
-      expect(plugins.length).toBe(1);
-      expect(plugins[0].name).toBe('modify-config');
-      expect(context.config.publicPath).toBe('/bar');
-      expect((context.config as any)._phase).toBe('PHASE_PRODUCTION_SERVER');
-    });
   });
 });
 

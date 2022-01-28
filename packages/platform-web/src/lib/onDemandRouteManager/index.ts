@@ -4,16 +4,15 @@ import { clientManifest } from '@shuvi/service/lib/resources';
 import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/lib/devMiddleware'
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { ServerOptions } from '../serverPlugin'
+import { getRoutes } from '../pageRoute'
+
 
 export default class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
   public _serverPluginContext: IServerPluginContext;
-  private _serverOptions: ServerOptions
 
-  constructor(serverPluginContext: IServerPluginContext, serverOptions: ServerOptions) {
+  constructor(serverPluginContext: IServerPluginContext) {
     this._serverPluginContext = serverPluginContext;
-    this._serverOptions = serverOptions
   }
 
   getServerMiddleware(): IRequestHandlerWithNext {
@@ -70,7 +69,7 @@ export default class OnDemandRouteManager {
 
   async ensureRoutes(pathname: string): Promise<void> {
     const matchedRoutes =
-      matchRoutes(this._serverOptions.routes, pathname) || [];
+      matchRoutes(getRoutes(), pathname) || [];
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { component } }) =>

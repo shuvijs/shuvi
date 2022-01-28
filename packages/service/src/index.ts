@@ -15,4 +15,4 @@ export { ProjectBuilder } from './project';
 export { getBundler } from './bundler';
 export * from './constants';
 export * from './server';
-export { createPlugin } from './core/plugin';
+export { createPlugin, PluginHooks } from './core/plugin';

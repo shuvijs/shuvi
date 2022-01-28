@@ -17,7 +17,7 @@ export default function platform<
   options: IApplicationOptions<Context, Router, AppState>,
   isRunPlugins: boolean = true
 ) {
-  initPlugins(customRuntime, pluginRecord);
   const application = new Application(options);
+  initPlugins(application.pluginManager, customRuntime, pluginRecord);
   return application;
 }

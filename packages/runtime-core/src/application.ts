@@ -1,6 +1,6 @@
 import { IRouter } from '@shuvi/router';
 
-import { runner } from './runtimeHooks';
+import { getManager, PluginManager } from './runtimeHooks';
 import { IAppStore, IAppState, getAppStore } from './appStore';
 
 export interface ApplicationCreater<
@@ -25,6 +25,7 @@ export type IContext = {
 export interface IApplication {
   AppComponent: any;
   router?: IRouter;
+  pluginManager: PluginManager;
   run(): Promise<{ [k: string]: any }>;
   rerender(config?: IRerenderConfig): Promise<void>;
   dispose(): Promise<void>;
@@ -82,6 +83,7 @@ export class Application<
 {
   AppComponent: any;
   router: Router;
+  pluginManager: PluginManager;
   private _context: Context;
   private _appStore: IAppStore;
   private _renderFn: IAppRenderFn<Context, Router>;
@@ -94,6 +96,7 @@ export class Application<
     this._appStore = getAppStore(options.appState);
     this._renderFn = options.render;
     this._getUserAppComponent = options.getUserAppComponent;
+    this.pluginManager = getManager()
   }
 
   async run() {
@@ -122,7 +125,7 @@ export class Application<
   }
 
   async dispose() {
-    await runner.dispose();
+    await this.pluginManager.runner.dispose();
   }
 
   getContext() {
@@ -130,15 +133,15 @@ export class Application<
   }
 
   private async _init() {
-    await runner.init();
+    await this.pluginManager.runner.init();
   }
 
   private async _createApplicationContext() {
-    this._context = (await runner.context(this._context)) as IContext & Context;
+    this._context = (await this.pluginManager.runner.context(this._context)) as IContext & Context;
   }
 
   private async _getAppComponent() {
-    this.AppComponent = await runner.rootAppComponent(
+    this.AppComponent = await this.pluginManager.runner.rootAppComponent(
       this.AppComponent,
       this._context
     );
@@ -148,7 +151,7 @@ export class Application<
     ) {
       this.AppComponent = this._getUserAppComponent(this.AppComponent);
     }
-    this.AppComponent = await runner.appComponent(
+    this.AppComponent = await this.pluginManager.runner.appComponent(
       this.AppComponent,
       this._context
     );
@@ -161,6 +164,6 @@ export class Application<
       AppComponent: this.AppComponent,
       router: this.router
     });
-    runner.renderDone(result);
+    this.pluginManager.runner.renderDone(result);
   }
 }

@@ -2,7 +2,7 @@ import { createPlugin } from '../../../plugin';
 
 export default createPlugin(
   {
-    setup: () => {}
+    afterInit: () => {}
   },
   { name: 'c' }
 );
