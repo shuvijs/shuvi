@@ -9,7 +9,7 @@ export default createPlugin({
   appReady: () => {
     console.log('simple-plugin-instance');
   },
-  setup: context => {
+  afterInit: context => {
     (context as any).__plugins = [{ name: 'modify-config' }];
   }
 });

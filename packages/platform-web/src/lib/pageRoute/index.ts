@@ -110,3 +110,5 @@ export const getRoutesContent = (routes: IUserRouteConfig[], componentDir: strin
 export const getRoutesFromRawRoutes = (rawRoutes: IRouteRecord[], componentDir: string): IUserRouteConfig[] => {
   return getNormalizedRoutes(renameFilepathToComponent(rawRoutes), componentDir)
 }
+
+export * from './store'
