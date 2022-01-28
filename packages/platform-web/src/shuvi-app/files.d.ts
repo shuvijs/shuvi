@@ -23,7 +23,7 @@ declare module '@shuvi/app/files/user/document' {
 }
 
 declare module '@shuvi/app/files/user/server' {
-  import { IServerModule } from '@shuvi/service/lib/server/plugin';
-  declare const server: IServerModule;
+  import { IServerModule } from '@shuvi/platform-web/lib/serverPlugin/hooks';
+  declare const server: IServerModule
   export default server;
 }

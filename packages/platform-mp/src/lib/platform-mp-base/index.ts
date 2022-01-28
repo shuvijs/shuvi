@@ -3,18 +3,24 @@ import path from 'path';
 import {
   createPlugin,
   IUserRouteConfig,
-  BUILD_DEFAULT_DIR
+  BUILD_DEFAULT_DIR,
+  BUILD_SERVER_FILE_SERVER,
+  BUILD_SERVER_DIR
 } from '@shuvi/service';
+import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import { renameFilepathToComponent } from '@shuvi/service/lib/route';
+import { getUserCustomFileCandidates } from '@shuvi/service/lib/project';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
   UnRecursiveTemplate,
   RecursiveTemplate
 } from '@tarojs/shared/dist/template';
+import generateResource from './generateResource';
 import { PACKAGE_NAME } from '../constants';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
 import ModifyChunkPlugin from './plugins/modify-chunk-plugin';
@@ -82,10 +88,47 @@ export default abstract class PlatformMpBase {
 
   getPlugins() {
     return [
+      process.env.NODE_ENV === 'development' ? this.getSetupServerPlugin(): null,
       this.getSetupAppPlugin(),
       this.getSetupRoutesPlugin(),
       this.getConfigWebpackPlugin()
-    ];
+    ].filter(Boolean);
+  }
+
+  getSetupServerPlugin() {
+    return createPlugin({
+      serverPlugin: () => require.resolve('./serverPlugin'),
+      addResource: context => generateResource(context),
+      appRuntimeFile: async ({ fileSnippets }, context) => {
+        const userServerFileModuleExportProxy =
+          fileSnippets.moduleExportProxyCreater();
+        return {
+          name: 'user/server.js',
+          content: () =>
+            userServerFileModuleExportProxy.getContent(
+              getUserCustomFileCandidates(context.paths.rootDir, 'server', 'noop')
+            ),
+          mounted: userServerFileModuleExportProxy.mounted,
+          unmounted: userServerFileModuleExportProxy.unmounted
+        };
+      },
+      extraTarget: ({ createConfig }) => {
+        const serverWebpackHelpers = webpackHelpers();
+        const serverChain = createConfig({
+          name: BUNDLER_TARGET_SERVER,
+          node: true,
+          entry: {
+            [BUILD_SERVER_FILE_SERVER]: resolveAppFile('entry', 'server'),
+          },
+          outputDir: BUILD_SERVER_DIR,
+          webpackHelpers: serverWebpackHelpers
+        });
+        return {
+          name: BUNDLER_TARGET_SERVER,
+          chain: serverChain
+        };
+      },
+    })
   }
 
   /**
@@ -272,8 +315,8 @@ export default abstract class PlatformMpBase {
         const pageConfig = ${JSON.stringify(pageConfig)};
         const pageName = '${page}';
         addGlobalRoutes(pageName, pageComponent, ${JSON.stringify(
-          routesStore.get(page) || {}
-        )});
+                routesStore.get(page) || {}
+              )});
         function MpRouterWrapper(){
           return (
             <MpRouter
@@ -308,6 +351,7 @@ export default abstract class PlatformMpBase {
   getConfigWebpackPlugin() {
     return createPlugin({
       configWebpack: async (config, { name }, context) => {
+        if (name === BUNDLER_TARGET_SERVER) return config
         await this.promiseRoutes;
         const pageFiles = getAllFiles(context.resolveAppFile('files', 'pages'));
 
@@ -344,7 +388,7 @@ export default abstract class PlatformMpBase {
               ENABLE_TEMPLATE_CONTENT: true, // taro 3.3.9
               ENABLE_CLONE_NODE: true, // taro 3.3.9
               ['process.env.' +
-              `${context.config.platform?.name}_${context.config.platform?.target}`.toUpperCase()]:
+                `${context.config.platform?.name}_${context.config.platform?.target}`.toUpperCase()]:
                 context.config.platform?.target
             }
           ];
