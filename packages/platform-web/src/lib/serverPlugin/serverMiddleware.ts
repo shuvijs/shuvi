@@ -1,8 +1,8 @@
 import { createServerPlugin } from '@shuvi/service';
-import { getApiRoutesMiddleware } from './apiRoute';
-import { getMiddlewareRoutesMiddleware } from './middlewareRoute';
-import { getSSRMiddleware } from './ssr';
-import OnDemandRouteManager from './onDemandRouteManager';
+import { getApiRoutesMiddleware } from '../apiRoute';
+import { getMiddlewareRoutesMiddleware } from '../middlewareRoute';
+import { getSSRMiddleware } from '../ssr';
+import OnDemandRouteManager from '../onDemandRouteManager';
 
 export default () => {
   let onDemandRouteManager: OnDemandRouteManager;

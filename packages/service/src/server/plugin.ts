@@ -1,39 +1,18 @@
 import {
-  createSyncHook,
-  createSyncBailHook,
   createAsyncParallelHook,
-  createAsyncSeriesWaterfallHook,
   createHookManager,
-  isPluginInstance
+  isPluginInstance,
+  HookMap
 } from '@shuvi/hook';
 import { IRuntimeOrServerPlugin, IPluginContext } from '../core';
 import {
-  IServerAppContext,
   IServerMiddleware,
-  IRenderToHTML,
-  IDocumentProps,
-  OnViewDoneParams
 } from './pluginTypes';
 import { DevMiddleware } from '../lib/devMiddleware';
-
-// @ts-ignore
-import { server } from '../resources';
 
 export * from './pluginTypes';
 
 type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
-
-export interface IServerModule {
-  serverMiddleware?: IServerMiddleware | IServerMiddleware[];
-  getPageData?: IServerPluginConstructor['pageData'];
-  renderToHTML?: IServerPluginConstructor['renderToHTML'];
-  modifyHtml?: IServerPluginConstructor['modifyHtml'];
-  onViewDone?: IServerPluginConstructor['onViewDone'];
-  render?: (
-    renderAppToString: () => string,
-    appContext: IServerAppContext
-  ) => string | void | undefined;
-}
 
 export type IServerPluginContext = IPluginContext & {
   serverPluginRunner: PluginManager['runner'];
@@ -66,30 +45,18 @@ const serverMiddleware = createAsyncParallelHook<
 
 const serverListen =
   createAsyncParallelHook<{ port: number; hostname?: string }>();
-
-const pageData = createAsyncParallelHook<void, any, Record<string, unknown>>();
-
-const renderToHTML = createAsyncSeriesWaterfallHook<IRenderToHTML>();
-
-const modifyHtml = createAsyncSeriesWaterfallHook<IDocumentProps, any>();
-
-const onViewDone = createSyncHook<OnViewDoneParams, void, void>();
-
-const render = createSyncBailHook<() => string, IServerAppContext, string>();
-
-const hooksMap = {
+const internalHooks = {
   serverMiddlewareBeforeDevMiddleware,
   serverMiddleware,
   serverListen,
-  pageData,
-  renderToHTML,
-  modifyHtml,
-  onViewDone,
-  render
 };
 
+export type InternalServerPluginHooks = typeof internalHooks
+
+export interface ServerPluginHooks extends HookMap {}
+
 export const getManager = () =>
-  createHookManager<typeof hooksMap, IServerPluginContext>(hooksMap);
+  createHookManager<typeof internalHooks, IServerPluginContext, ServerPluginHooks>(internalHooks);
 
 export const { createPlugin: createServerPlugin } = getManager();
 
@@ -125,32 +92,5 @@ export const initServerPlugins = (
       throw new Error(`serverPlugin load failed. path: ${plugin}`);
     }
   });
-  const serverModulePlugin = manager.createPlugin(
-    {
-      serverMiddleware: context => {
-        return server?.server?.serverMiddleware || [];
-      },
-      pageData: (appContext, context) => {
-        return server?.server?.getPageData?.(appContext, context) || {};
-      },
-      renderToHTML: (renderToHTML, context) => {
-        return server?.server?.renderToHTML?.(renderToHTML) || renderToHTML;
-      },
-      modifyHtml: (documentProps, appContext, context) => {
-        return (
-          server?.server?.modifyHtml?.(documentProps, appContext) ||
-          documentProps
-        );
-      },
-      onViewDone: (params, context) => {
-        server?.server?.onViewDone?.(params);
-      },
-      render: (renderAppToString, appContext, context) => {
-        return server?.server?.render?.(renderAppToString, appContext);
-      }
-    },
-    { order: -100, name: 'serverModule' }
-  );
-  manager.usePlugin(serverModulePlugin);
   return serverContext;
 };
