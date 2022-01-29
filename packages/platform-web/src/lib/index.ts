@@ -1,6 +1,5 @@
 import fse from 'fs-extra';
 import path from 'path';
-import { createSyncWaterfallHook } from '@shuvi/hook'
 import {
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
@@ -32,6 +31,7 @@ import {
 } from './pageRoute';
 import { getMiddlewareRoutesContentFromRawRoutes } from './middlewareRoute';
 import { resolveAppFile } from './paths';
+import { appRoutes } from './hooks'
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -78,7 +78,6 @@ async function buildHtml({
 const platform: IPlatform = async ({ framework = 'react' } = {}) => {
   const mainPlugin = createPlugin({
     setup: ({ addHooks }) => {
-      const appRoutes = createSyncWaterfallHook<IUserRouteConfig[]>();
       addHooks({ appRoutes })
     },
     appRuntimeFile: async ({ createFile, fileSnippets }, context) => {
@@ -246,7 +245,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         chain: serverChain
       };
     },
-    serverPlugin: () => require.resolve('./serverPlugin'),
+    serverPlugin: () => [require.resolve('./serverPlugin/serverMiddleware'), require.resolve('./serverPlugin/customFiles')],
     addResource: context => generateResource(context),
     afterBuild: async context => {
       if (
