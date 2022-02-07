@@ -82,11 +82,21 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
     },
     appRuntimeFile: async ({ createFile, fileSnippets }, context) => {
       const {
-        config: { apiRoutes, routes },
+        config: {
+          apiRoutes,
+          routes,
+          router: { history }
+        },
         paths,
         pluginRunner
       } = context;
 
+      const routerConfigFile = createFile({
+        name: 'routerConfig.js',
+        content: () => {
+          return `export const historyMode = "${history}";`;
+        }
+      });
       const getFinalRoutes = (routes: IUserRouteConfig[]) =>
         pluginRunner.appRoutes(routes);
 
@@ -198,6 +208,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       };
 
       return [
+        routerConfigFile,
         routesFile,
         middlewareRoutesFile,
         apiRoutesFile,
@@ -210,22 +221,8 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         setRuntimeConfig(context.config.runtimeConfig);
       }
     },
-    clientModule: context => {
-      const {
-        router: { history }
-      } = context.config;
-      let ApplicationModule;
-      if (history === 'browser') {
-        ApplicationModule = 'create-application-history-browser';
-      } else if (history === 'hash') {
-        ApplicationModule = 'create-application-history-hash';
-      } else {
-        ApplicationModule = 'create-application-history-memory';
-      }
-      return {
-        application: resolveAppFile('application', 'client', ApplicationModule),
-        entry: resolveAppFile('entry', 'client')
-      };
+    appEntryCode: () => {
+      return `import "${resolveAppFile('entry', 'client')}"`;
     },
     runtimeService: () => ({
       source: '@shuvi/platform-web/lib/types',

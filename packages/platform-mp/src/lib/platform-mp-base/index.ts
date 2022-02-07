@@ -88,7 +88,9 @@ export default abstract class PlatformMpBase {
 
   getPlugins() {
     return [
-      process.env.NODE_ENV === 'development' ? this.getSetupServerPlugin(): null,
+      process.env.NODE_ENV === 'development'
+        ? this.getSetupServerPlugin()
+        : null,
       this.getSetupAppPlugin(),
       this.getSetupRoutesPlugin(),
       this.getConfigWebpackPlugin()
@@ -106,7 +108,11 @@ export default abstract class PlatformMpBase {
           name: 'user/server.js',
           content: () =>
             userServerFileModuleExportProxy.getContent(
-              getUserCustomFileCandidates(context.paths.rootDir, 'server', 'noop')
+              getUserCustomFileCandidates(
+                context.paths.rootDir,
+                'server',
+                'noop'
+              )
             ),
           mounted: userServerFileModuleExportProxy.mounted,
           unmounted: userServerFileModuleExportProxy.unmounted
@@ -118,7 +124,7 @@ export default abstract class PlatformMpBase {
           name: BUNDLER_TARGET_SERVER,
           node: true,
           entry: {
-            [BUILD_SERVER_FILE_SERVER]: resolveAppFile('entry', 'server'),
+            [BUILD_SERVER_FILE_SERVER]: resolveAppFile('entry', 'server')
           },
           outputDir: BUILD_SERVER_DIR,
           webpackHelpers: serverWebpackHelpers
@@ -127,8 +133,8 @@ export default abstract class PlatformMpBase {
           name: BUNDLER_TARGET_SERVER,
           chain: serverChain
         };
-      },
-    })
+      }
+    });
   }
 
   /**
@@ -315,8 +321,8 @@ export default abstract class PlatformMpBase {
         const pageConfig = ${JSON.stringify(pageConfig)};
         const pageName = '${page}';
         addGlobalRoutes(pageName, pageComponent, ${JSON.stringify(
-                routesStore.get(page) || {}
-              )});
+          routesStore.get(page) || {}
+        )});
         function MpRouterWrapper(){
           return (
             <MpRouter
@@ -351,12 +357,12 @@ export default abstract class PlatformMpBase {
   getConfigWebpackPlugin() {
     return createPlugin({
       configWebpack: async (config, { name }, context) => {
-        if (name === BUNDLER_TARGET_SERVER) return config
+        if (name === BUNDLER_TARGET_SERVER) return config;
         await this.promiseRoutes;
         const pageFiles = getAllFiles(context.resolveAppFile('files', 'pages'));
 
         const entry: Record<string, Record<string, any>> = {
-          app: [context.resolveAppFile('entry.client')],
+          app: [context.resolveAppFile('entry')],
           comp: [resolveAppFile('template', 'comp')],
           'custom-wrapper': [resolveAppFile('template', 'custom-wrapper')]
         };
@@ -388,7 +394,7 @@ export default abstract class PlatformMpBase {
               ENABLE_TEMPLATE_CONTENT: true, // taro 3.3.9
               ENABLE_CLONE_NODE: true, // taro 3.3.9
               ['process.env.' +
-                `${context.config.platform?.name}_${context.config.platform?.target}`.toUpperCase()]:
+              `${context.config.platform?.name}_${context.config.platform?.target}`.toUpperCase()]:
                 context.config.platform?.target
             }
           ];

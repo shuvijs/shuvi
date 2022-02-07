@@ -55,7 +55,6 @@ export function getCodeSnippet(content: string): ICodeSnippet {
   };
 
   return {
-    // @ts-ignore
     imports: generate(importAst, generateOpt).code,
     body: generate(bodyAst, generateOpt).code
   };

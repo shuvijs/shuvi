@@ -4,6 +4,10 @@ declare module '@shuvi/app/files/middlewareRoutes' {
   export default middlewareRoutes;
 }
 
+declare module '@shuvi/app/files/routerConfig' {
+  export const historyMode: 'browser' | 'hash';
+}
+
 declare module '@shuvi/app/files/routes' {
   import { IAppRouteConfigWithPrivateProps } from '@shuvi/platform-core';
   declare const routes: IAppRouteConfigWithPrivateProps[];
@@ -24,6 +28,6 @@ declare module '@shuvi/app/files/user/document' {
 
 declare module '@shuvi/app/files/user/server' {
   import { IServerModule } from '@shuvi/platform-web/lib/serverPlugin/hooks';
-  declare const server: IServerModule
+  declare const server: IServerModule;
   export default server;
 }

@@ -6,13 +6,7 @@ import {
   HookMap
 } from '@shuvi/hook';
 import WebpackChain from 'webpack-chain';
-import {
-  UserModule,
-  TargetModule,
-  FileOptions,
-  fileSnippets,
-  createFile
-} from '../project';
+import { UserModule, FileOptions, fileSnippets, createFile } from '../project';
 import {
   ExtraTargetAssistant,
   ConfigWebpackAssistant,
@@ -74,7 +68,6 @@ const serverPlugin = createAsyncParallelHook<
 >();
 const afterInit = createAsyncParallelHook<void>();
 const platformModule = createSyncBailHook<void, void, string>();
-const clientModule = createSyncBailHook<void, void, TargetModule>();
 const userModule = createSyncBailHook<void, void, UserModule>();
 const addResource = createAsyncParallelHook<
   void,
@@ -84,8 +77,8 @@ const addResource = createAsyncParallelHook<
 const appPolyfill = createAsyncParallelHook<void, void, string | string[]>();
 
 export interface AppRuntimeFileUtils {
-  fileSnippets: fileSnippets.FileSnippets
-  createFile: typeof createFile
+  fileSnippets: fileSnippets.FileSnippets;
+  createFile: typeof createFile;
 }
 
 const appRuntimeFile = createAsyncParallelHook<
@@ -113,7 +106,6 @@ const internalPluginHooks = {
   serverPlugin,
   afterInit,
   platformModule,
-  clientModule,
   userModule,
   addResource,
   appPolyfill,
@@ -122,11 +114,13 @@ const internalPluginHooks = {
   runtimeService
 };
 
-export type InternalPluginHooks = typeof internalPluginHooks
+export type InternalPluginHooks = typeof internalPluginHooks;
 
 export interface PluginHooks extends HookMap {}
 
 export const getManager = () =>
-  createHookManager<InternalPluginHooks, IPluginContext, PluginHooks>(internalPluginHooks);
+  createHookManager<InternalPluginHooks, IPluginContext, PluginHooks>(
+    internalPluginHooks
+  );
 
 export const { createPlugin } = getManager();

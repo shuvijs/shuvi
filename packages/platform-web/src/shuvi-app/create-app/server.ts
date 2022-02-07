@@ -10,7 +10,7 @@ import {
 import platform from '@shuvi/platform-core/lib/platform';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 
-export function create<
+export function createApp<
   Context extends IApplicationCreaterServerContext,
   Router extends IRouter<IAppRouteConfig>,
   CompType,

@@ -14,7 +14,7 @@ export async function renderToHTML({
   let html: null | string = null;
   const renderer = new Renderer({ serverPluginContext });
   const { application } = server;
-  const app = application.create(
+  const app = application.createApp(
     {
       req
     },
