@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import { getUserCustomFileCandidates } from '../project'
+import { getUserCustomFileCandidates } from '../project';
 import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
 import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
 import { Api } from './api';
@@ -52,21 +52,21 @@ export async function setupApp(api: Api) {
     }
   });
 
-  const getCandidates = (fileName: string, fallbackType: 'nullish' | 'noop' | 'noopFn'): string[] =>
-    getUserCustomFileCandidates(paths.rootDir, fileName, fallbackType)
+  const getCandidates = (
+    fileName: string,
+    fallbackType: 'nullish' | 'noop' | 'noopFn'
+  ): string[] =>
+    getUserCustomFileCandidates(paths.rootDir, fileName, fallbackType);
 
   api.setUserModule({
     app: getCandidates('app', 'nullish'),
     error: getCandidates('error', 'nullish'),
-    runtime:getCandidates('runtime', 'noop')
+    runtime: getCandidates('runtime', 'noop')
   });
 
-  // set the content of @shuvi/app/entry.client.js
-  api.addEntryCode('import "@shuvi/app/core/client/entry"');
-
-  // set the content of @shuvi/app/entry.client-wrapper.js
-  // entry.client-wrapper just import or dynamicly import `entry.client.js`
-  let entryFile = "'@shuvi/app/entry.client'";
+  // set the content of @shuvi/app/entry-wrapper.js
+  // entry-wrapper just import or dynamicly import `entry.js`
+  let entryFile = "'@shuvi/app/entry'";
   if (config.asyncEntry === true) {
     entryFile = `(${entryFile})`;
   }

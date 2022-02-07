@@ -137,7 +137,6 @@ export interface IApi {
   addAppPolyfill: typeof ProjectBuilder.prototype.addPolyfill;
 
   setPlatformModule: typeof ProjectBuilder.prototype.setPlatformModule;
-  setClientModule: typeof ProjectBuilder.prototype.setClientModule;
 
   addRuntimePlugin: (config: IRuntimeOrServerPlugin) => void;
   addServerPlugin: (config: IRuntimeOrServerPlugin) => void;

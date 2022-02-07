@@ -6,8 +6,7 @@ import { IRuntimeOrServerPlugin } from '../core';
 import {
   ProjectContext,
   createProjectContext,
-  UserModule,
-  TargetModule
+  UserModule
 } from './projectContext';
 
 interface ProjectBuilderOptions {
@@ -48,7 +47,6 @@ const contextValidatingRuleMap: ContextValidatingRuleMap = {
     ignore: true,
     method: 'setRuntimeConfigContent'
   },
-  clientModule: 'setClientModule',
   platformModule: 'setPlatformModule',
   userModule: 'setUserModule'
 };
@@ -124,10 +122,6 @@ class ProjectBuilder {
   setPlatformModule(module: string) {
     this._projectContext.platformModule = module;
   }
-  setClientModule(module: TargetModule) {
-    this._projectContext.clientModule = module;
-  }
-
   addRuntimeService(
     source: string,
     exported: string,
@@ -238,4 +232,4 @@ class ProjectBuilder {
   }
 }
 
-export { ProjectBuilder, UserModule, TargetModule };
+export { ProjectBuilder, UserModule };

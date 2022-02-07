@@ -268,7 +268,7 @@ class WebpackBundler {
   private initDefaultBuildTarget(): TargetChain[] {
     function getDefaultEntry(_cliContext: IPluginContext): IWebpackEntry {
       return {
-        [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry.client-wrapper'],
+        [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry-wrapper'],
         [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
       };
     }

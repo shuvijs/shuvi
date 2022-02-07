@@ -12,7 +12,6 @@ import {
 import {
   ProjectBuilder,
   UserModule,
-  TargetModule,
   FileOptions,
   fileSnippets,
   createFile
@@ -107,7 +106,7 @@ class Api {
     const userConfig: UserConfig = mergeConfig(fileConfig, this._userConfig);
     // init plugins
     const allPlugins = await getPlugins(this._cwd, userConfig);
-    const { runner, setContext, usePlugin } = this.pluginManager
+    const { runner, setContext, usePlugin } = this.pluginManager;
     this.pluginManager.usePlugin(...allPlugins);
     // todo: platform as a plugin?
     this._platform = getPlatform(userConfig.platform?.name);
@@ -138,7 +137,7 @@ class Api {
       resolveAppFile: this.resolveAppFile.bind(this),
       resolveUserFile: this.resolveUserFile.bind(this),
       resolveBuildFile: this.resolveBuildFile.bind(this),
-      resolvePublicFile: this.resolvePublicFile.bind(this),
+      resolvePublicFile: this.resolvePublicFile.bind(this)
     };
     setContext(this._pluginContext);
 
@@ -146,9 +145,7 @@ class Api {
     await this.initRuntimeAndServerPlugin();
     await runner.afterInit();
 
-    const resources = (
-      await runner.addResource()
-    ).flat() as Resources[];
+    const resources = (await runner.addResource()).flat() as Resources[];
     resources.forEach(([key, requireStr]) => {
       this.addResources(key, requireStr);
     });
@@ -170,11 +167,12 @@ class Api {
   async initProjectBuilderConfigs() {
     const runner = this.pluginManager.runner;
     const appPolyfills = (await runner.appPolyfill()).flat();
-    const appRuntimeFiles = (await runner.appRuntimeFile({ createFile, fileSnippets })).flat();
+    const appRuntimeFiles = (
+      await runner.appRuntimeFile({ createFile, fileSnippets })
+    ).flat();
     const appEntryCodes = (await runner.appEntryCode()).flat();
     const runtimeServices = (await runner.runtimeService()).flat();
     const platformModule = (await runner.platformModule()) as string;
-    const clientModule = (await runner.clientModule()) as TargetModule;
     const userModule = (await runner.userModule()) as UserModule;
 
     appPolyfills.forEach(file => {
@@ -194,7 +192,6 @@ class Api {
     });
 
     this.setPlatformModule(platformModule);
-    this.setClientModule(clientModule);
     this.setUserModule(userModule);
   }
   async initRuntimeAndServerPlugin() {
@@ -269,10 +266,6 @@ class Api {
 
   addAppPolyfill(file: string): void {
     this._projectBuilder.addPolyfill(file);
-  }
-
-  setClientModule(module: TargetModule) {
-    this._projectBuilder.setClientModule(module);
   }
 
   addRuntimePlugin(...plugins: IRuntimeOrServerPlugin[]): void {
