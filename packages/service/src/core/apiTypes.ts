@@ -25,7 +25,7 @@ export interface IMiddlewareRouteConfig {
   middlewares: string[];
 }
 
-export type IRouterHistoryMode = 'browser' | 'hash' | 'memory' | 'auto';
+export type IRouterHistoryMode = 'browser' | 'hash' | 'auto';
 
 export type IShuviMode = 'development' | 'production';
 
