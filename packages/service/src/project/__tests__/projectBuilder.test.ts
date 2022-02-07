@@ -47,10 +47,10 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['app/entry.client.js', /run()/],
+      ['app/entry.js', /run()/],
       ['runtime/index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
-      ['app/core/polyfill.js', 'import "path/toPolyfill"'],
+      ['app/core/polyfill.js', 'import "path/toPolyfill"']
     ]);
   });
 
@@ -67,10 +67,10 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['app/entry.client.js', /run()/],
+      ['app/entry.js', /run()/],
       ['runtime/index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
-      ['app/core/polyfill.js', 'import "path/toPolyfill"'],
+      ['app/core/polyfill.js', 'import "path/toPolyfill"']
     ]);
 
     // Change modules and content
@@ -81,7 +81,7 @@ describe('projectBuilder', () => {
     await wait(0);
 
     checkMatch([
-      ['app/entry.client.js', /run().*const a=1/s],
+      ['app/entry.js', /run().*const a=1/s],
       [
         'runtime/index.js',
         'export * from "something to export"\nexport * from "export2"'
@@ -90,7 +90,7 @@ describe('projectBuilder', () => {
       [
         'app/core/polyfill.js',
         'import "path/toPolyfill"\nimport "path/toPolyfill2"'
-      ],
+      ]
     ]);
 
     await app.stopBuild();
@@ -112,7 +112,7 @@ describe('projectBuilder', () => {
     checkMatch([
       ['runtime/index.js', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"'],
-      ['app/core/polyfill.js', 'import "path/toPolyfill"'],
+      ['app/core/polyfill.js', 'import "path/toPolyfill"']
     ]);
   });
 

@@ -2,14 +2,15 @@ import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
 // renderer must be imported before application
 // we need to init init renderer before import AppComponent
 import { view } from '@shuvi/app/core/platform';
-import { create } from '@shuvi/app/core/client/application';
 import { IRouter } from '@shuvi/router';
 import { getAppData, IAppRouteConfig } from '@shuvi/platform-core';
+import { createApp } from '../../create-app/client';
+
 const appData = getAppData();
 const { routeProps = {} } = appData;
 const { appState } = appData;
 
-const app = create(
+const app = createApp(
   {
     pageData: appData.pageData || {},
     routeProps
