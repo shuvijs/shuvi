@@ -79,6 +79,17 @@ function ssrCssRule({
       }
     });
 
+  // rule
+  //   .use('parcel-css-loader')
+  //   .loader('@shuvi/parcel-css-loader')
+  //   .options({
+  //     sourceMap: false,
+  //     modules: {
+  //       getLocalIdent: getCSSModuleLocalIdent,
+  //       exportOnlyLocals: true
+  //     }
+  //   });
+
   if (scss) {
     rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
       sourceMap: false
@@ -158,38 +169,49 @@ function cssRule({
       });
   }
 
-  rule
-    .use('css-loader')
-    .loader(require.resolve('css-loader'))
-    .options({
-      sourceMap,
-      importLoaders: scss ? 2 : 1,
-      esModule: true,
-      ...(cssModule && {
-        modules: {
-          getLocalIdent: getCSSModuleLocalIdent
-          // exportOnlyLocals: true,
-        }
-      })
-    });
+  // rule
+  //   .use('css-loader')
+  //   .loader(require.resolve('css-loader'))
+  //   .options({
+  //     sourceMap,
+  //     importLoaders: scss ? 2 : 1,
+  //     esModule: true,
+  //     ...(cssModule && {
+  //       modules: {
+  //         getLocalIdent: getCSSModuleLocalIdent
+  //         // exportOnlyLocals: true,
+  //       }
+  //     })
+  //   });
+
+  // rule
+  //   .use('postcss-loader')
+  //   .loader(require.resolve('postcss-loader'))
+  //   .options({
+  //     sourceMap,
+  //     postcssOptions: {
+  //       plugins: [
+  //         // Make Flexbox behave like the spec cross-browser.
+  //         require('postcss-flexbugs-fixes'),
+  //         // Run Autoprefixer and compile new CSS features.
+  //         require('postcss-preset-env')({
+  //           autoprefixer: {
+  //             flexbox: 'no-2009'
+  //           },
+  //           stage: 3
+  //         })
+  //       ]
+  //     }
+  //   });
 
   rule
-    .use('postcss-loader')
-    .loader(require.resolve('postcss-loader'))
+    .use('parcel-css-loader')
+    .loader('@shuvi/parcel-css-loader')
     .options({
-      sourceMap,
-      postcssOptions: {
-        plugins: [
-          // Make Flexbox behave like the spec cross-browser.
-          require('postcss-flexbugs-fixes'),
-          // Run Autoprefixer and compile new CSS features.
-          require('postcss-preset-env')({
-            autoprefixer: {
-              flexbox: 'no-2009'
-            },
-            stage: 3
-          })
-        ]
+      sourceMap: false,
+      modules: {
+        getLocalIdent: getCSSModuleLocalIdent,
+        exportOnlyLocals: true
       }
     });
 
@@ -297,6 +319,8 @@ export function withStyle(
       publicPath
     }).after('scss-module')
   );
+
+  console.log(oneOfs);
 
   return chain;
 }

@@ -123,13 +123,14 @@ export function baseWebpackChain({
   });
 
   config.resolveLoader.merge({
-    alias: ['shuvi-swc-loader', 'route-component-loader'].reduce(
-      (alias, loader) => {
-        alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
-        return alias;
-      },
-      {} as Record<string, string>
-    )
+    alias: [
+      'shuvi-swc-loader',
+      'route-component-loader',
+      'parcel-css-loader'
+    ].reduce((alias, loader) => {
+      alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
+      return alias;
+    }, {} as Record<string, string>)
   });
 
   config.module.set('strictExportPresence', true);

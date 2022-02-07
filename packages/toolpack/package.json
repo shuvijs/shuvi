@@ -51,6 +51,7 @@
     "loader-utils": "2.0.0",
     "mini-css-extract-plugin": "1.3.9",
     "path-browserify": "1.0.1",
+    "@parcel/css": "1.0.3",
     "postcss": "8.2.3",
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-loader": "4.1.0",
