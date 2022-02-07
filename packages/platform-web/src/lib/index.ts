@@ -31,7 +31,7 @@ import {
 } from './pageRoute';
 import { getMiddlewareRoutesContentFromRawRoutes } from './middlewareRoute';
 import { resolveAppFile } from './paths';
-import { appRoutes } from './hooks'
+import { appRoutes } from './hooks';
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -78,7 +78,7 @@ async function buildHtml({
 const platform: IPlatform = async ({ framework = 'react' } = {}) => {
   const mainPlugin = createPlugin({
     setup: ({ addHooks }) => {
-      addHooks({ appRoutes })
+      addHooks({ appRoutes });
     },
     appRuntimeFile: async ({ createFile, fileSnippets }, context) => {
       const {
@@ -88,7 +88,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       } = context;
 
       const getFinalRoutes = (routes: IUserRouteConfig[]) =>
-        pluginRunner.appRoutes(routes)
+        pluginRunner.appRoutes(routes);
 
       // if config.routes is defined, use config
       const hasConfigRoutes = Array.isArray(routes);
@@ -100,8 +100,8 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
                 routes,
                 paths.pagesDir
               );
-              const finalRoutes = getFinalRoutes(normalizedRoutes)
-              setRoutes(finalRoutes)
+              const finalRoutes = getFinalRoutes(normalizedRoutes);
+              setRoutes(finalRoutes);
               return getRoutesContent(finalRoutes, paths.pagesDir);
             }
           })
@@ -116,8 +116,8 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
                 rawRoutes,
                 paths.pagesDir
               );
-              const finalRoutes = getFinalRoutes(normalizedRoutes)
-              setRoutes(finalRoutes)
+              const finalRoutes = getFinalRoutes(normalizedRoutes);
+              setRoutes(finalRoutes);
               return getRoutesContent(finalRoutes, paths.pagesDir);
             },
             dependencies: [paths.pagesDir]
@@ -245,7 +245,10 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         chain: serverChain
       };
     },
-    serverPlugin: () => [require.resolve('./serverPlugin/serverMiddleware'), require.resolve('./serverPlugin/customFiles')],
+    serverPlugin: () => [
+      require.resolve('./serverPlugin/serverMiddleware'),
+      require.resolve('./serverPlugin/customFiles')
+    ],
     addResource: context => generateResource(context),
     afterBuild: async context => {
       if (
