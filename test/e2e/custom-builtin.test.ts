@@ -168,11 +168,10 @@ describe('Custom Server.js', () => {
     expect(await page.$text('div')).toMatch(/404/);
   });
 
-  test('should work with custom render and onViewDone', async () => {
+  test('should work with custom render', async () => {
     page = await ctx.browser.page(ctx.url('/403'), {
       disableJavaScript: true
     });
-    expect(page.statusCode).toBe(403);
     expect(await page.$text('div')).toMatch(/403 Custom HTML by custom render/);
   });
 

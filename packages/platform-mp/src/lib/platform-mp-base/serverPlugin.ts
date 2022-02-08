@@ -3,7 +3,7 @@ import { server } from '@shuvi/service/lib/resources';
 
 import { IServerMiddleware } from '@shuvi/service';
 export interface IServerModule {
-  serverMiddleware?: IServerMiddleware | IServerMiddleware[];
+  middlewares?: IServerMiddleware | IServerMiddleware[];
 }
 
 declare module '@shuvi/service/lib/resources' {
@@ -14,8 +14,8 @@ declare module '@shuvi/service/lib/resources' {
 
 export default createServerPlugin(
   {
-    serverMiddleware: () => {
-      return server?.server?.serverMiddleware || [];
+    addMiddleware: () => {
+      return server?.server?.middlewares || [];
     },
   },
   { order: -100, name: 'serverModule' }
