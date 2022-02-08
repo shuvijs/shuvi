@@ -105,9 +105,9 @@ class Api {
     });
     const userConfig: UserConfig = mergeConfig(fileConfig, this._userConfig);
     // init plugins
-    const allPlugins = await getPlugins(this._cwd, userConfig);
     const { runner, setContext, usePlugin } = this.pluginManager;
-    this.pluginManager.usePlugin(...allPlugins);
+    const allPlugins = await getPlugins(this._cwd, userConfig);
+    usePlugin(...allPlugins);
     // todo: platform as a plugin?
     this._platform = getPlatform(userConfig.platform?.name);
     const platformPlugins = await this.platform(userConfig.platform);
@@ -166,14 +166,11 @@ class Api {
 
   async initProjectBuilderConfigs() {
     const runner = this.pluginManager.runner;
-    const appPolyfills = (await runner.appPolyfill()).flat();
-    const appRuntimeFiles = (
-      await runner.appRuntimeFile({ createFile, fileSnippets })
-    ).flat();
-    const appEntryCodes = (await runner.appEntryCode()).flat();
-    const runtimeServices = (await runner.runtimeService()).flat();
-    const platformModule = (await runner.platformModule()) as string;
-    const userModule = (await runner.userModule()) as UserModule;
+    const appPolyfills = (await runner.addPolyfill()).flat();
+    const appRuntimeFiles = (await runner.addRuntimeFile({ createFile, fileSnippets })).flat();
+    const appEntryCodes = (await runner.addEntryCode()).flat();
+    const runtimeServices = (await runner.addRuntimeService()).flat();
+    const platformModule = (await runner.setPlatformModule()) as string;
 
     appPolyfills.forEach(file => {
       this.addAppPolyfill(file);
@@ -192,7 +189,6 @@ class Api {
     });
 
     this.setPlatformModule(platformModule);
-    this.setUserModule(userModule);
   }
   async initRuntimeAndServerPlugin() {
     const normalize = (
@@ -206,11 +202,11 @@ class Api {
       return x;
     };
     const serverPlugins: IRuntimeOrServerPlugin[] = (
-      await this.pluginManager.runner.serverPlugin()
+      await this.pluginManager.runner.addServerPlugin()
     )
       .flat()
       .map(normalize);
-    const runtimePlugins = (await this.pluginManager.runner.runtimePlugin())
+    const runtimePlugins = (await this.pluginManager.runner.addRuntimePlugin())
       .flat()
       .map(normalize);
     this.serverPlugins.push(...serverPlugins);
@@ -239,7 +235,6 @@ class Api {
     this.removeBuiltFiles();
     this._projectBuilder.validateCompleteness('api');
     await this._projectBuilder.build(this.paths.privateDir);
-    this.pluginManager.runner.appReady();
   }
 
   addEntryCode(content: string): void {
@@ -298,7 +293,7 @@ class Api {
 
   async destory() {
     await this._projectBuilder.stopBuild();
-    await this.pluginManager.runner.destroy();
+    await this.pluginManager.runner.afterDestroy();
   }
 }
 

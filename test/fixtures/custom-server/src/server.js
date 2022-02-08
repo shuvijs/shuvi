@@ -5,13 +5,6 @@ export function render(renderAppToString, appContext) {
   return renderAppToString();
 }
 
-export function onViewDone({ res, html, appContext }) {
-  if (appContext.forbidden) {
-    res.statusCode = 403;
-    res.end(html);
-  }
-}
-
 export const getPageData = () => {
   return {
     foo: 'bar'

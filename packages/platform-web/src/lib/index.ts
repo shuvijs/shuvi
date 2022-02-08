@@ -12,7 +12,7 @@ import {
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { initServerPlugins, getManager } from '@shuvi/service';
-import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
+// import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getUserCustomFileCandidates } from '@shuvi/service/lib/project';
@@ -80,7 +80,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
     setup: ({ addHooks }) => {
       addHooks({ appRoutes });
     },
-    appRuntimeFile: async ({ createFile, fileSnippets }, context) => {
+    addRuntimeFile: async ({ createFile, fileSnippets }, context) => {
       const {
         config: {
           apiRoutes,
@@ -216,19 +216,14 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         userDocumentFile
       ];
     },
-    afterInit: context => {
-      if (typeof context.config.runtimeConfig === 'object') {
-        setRuntimeConfig(context.config.runtimeConfig);
-      }
-    },
-    appEntryCode: () => {
+    addEntryCode: () => {
       return `import "${resolveAppFile('entry', 'client')}"`;
     },
-    runtimeService: () => ({
+    addRuntimeService: () => ({
       source: '@shuvi/platform-web/lib/types',
       exported: '* as RuntimeServer'
     }),
-    extraTarget: ({ createConfig }, context) => {
+    addExtraTarget: ({ createConfig }, context) => {
       const serverWebpackHelpers = webpackHelpers();
       const serverChain = createConfig({
         name: BUNDLER_TARGET_SERVER,
@@ -242,10 +237,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         chain: serverChain
       };
     },
-    serverPlugin: () => [
-      require.resolve('./serverPlugin/serverMiddleware'),
-      require.resolve('./serverPlugin/customFiles')
-    ],
+    addServerPlugin: () => [require.resolve('./serverPlugin/internalMiddlewares'), require.resolve('./serverPlugin/customServerFile')],
     addResource: context => generateResource(context),
     afterBuild: async context => {
       if (

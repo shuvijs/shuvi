@@ -30,13 +30,6 @@ function initServerRender(serverPluginContext: IServerPluginContext) {
       res.statusCode = 200;
     }
 
-    serverPluginContext.serverPluginRunner.onViewDone({
-      req,
-      res,
-      html,
-      appContext
-    });
-
     return html;
   };
 }

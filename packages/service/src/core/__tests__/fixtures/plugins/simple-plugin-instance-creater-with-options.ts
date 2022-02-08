@@ -2,7 +2,7 @@ import { createPlugin } from '../../../plugin';
 
 export default (options: any) =>
   createPlugin({
-    appReady: () => {
+    afterInit: () => {
       console.log(options);
     }
   });

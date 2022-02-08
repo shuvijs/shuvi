@@ -34,7 +34,7 @@ describe('plugin', () => {
   test('should accept plugin instance object as a plugin', async () => {
     console.log = jest.fn();
     callPlugins('./simple-plugin-instance.ts');
-    await runner.appReady();
+    await runner.afterInit();
     expect(console.log).toHaveBeenCalledWith('simple-plugin-instance');
   });
 
@@ -42,17 +42,17 @@ describe('plugin', () => {
     console.log = jest.fn();
     const options = { name: 'test' };
     callPlugins(['./simple-plugin-instance-creater-with-options.ts', options]);
-    await runner.appReady();
+    await runner.afterInit();
     expect(console.log).toHaveBeenCalledWith(options);
   });
   test('should accept inline plugin constructor object as a plugin', async () => {
     const api: any = {};
     callPlugins({
-      appReady: () => {
+      afterInit: () => {
         api.__test = true;
       }
     });
-    await runner.appReady();
+    await runner.afterInit();
     expect(api.__test).toBe(true);
   });
 
@@ -60,12 +60,12 @@ describe('plugin', () => {
     console.log = jest.fn();
     callPlugins(
       createPlugin({
-        appReady: () => {
+        afterInit: () => {
           console.log('simple-plugin-instance');
         }
       })
     );
-    await runner.appReady();
+    await runner.afterInit();
     expect(console.log).toHaveBeenCalledWith('simple-plugin-instance');
   });
 
@@ -75,13 +75,13 @@ describe('plugin', () => {
     callPlugins([
       (options: any) =>
         createPlugin({
-          appReady: () => {
+          afterInit: () => {
             console.log(options);
           }
         }),
       options
     ]);
-    await runner.appReady();
+    await runner.afterInit();
     expect(console.log).toHaveBeenCalledWith(options);
   });
 
@@ -91,14 +91,14 @@ describe('plugin', () => {
     const api: any = {};
     callPlugins(
       {
-        appReady: () => {
+        afterInit: () => {
           api.__test = true;
         }
       },
       './simple-plugin-instance.ts',
       ['./simple-plugin-instance-creater-with-options.ts', options]
     );
-    await runner.appReady();
+    await runner.afterInit();
     expect(api.__test).toBe(true);
     expect(console.log).toHaveBeenNthCalledWith(1, 'simple-plugin-instance');
     expect(console.log).toHaveBeenNthCalledWith(2, options);

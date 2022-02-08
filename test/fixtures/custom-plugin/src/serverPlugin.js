@@ -23,19 +23,13 @@ module.exports = option =>
         return html;
       };
     },
-    serverListen: () => {
-      console.warn('serverListen');
+    onListen: () => {
+      console.warn('onListen');
     },
     render: (renderAppToString, appContext) => {
       if (appContext.forbidden) {
         return '403 Custom HTML by custom render';
       }
       return renderAppToString();
-    },
-    onViewDone: ({ res, html, appContext }) => {
-      if (appContext.forbidden) {
-        res.statusCode = 403;
-        res.end(html);
-      }
     }
   });

@@ -54,11 +54,11 @@ const configWebpack: ICliPluginConstructor['configWebpack'] = (
   return config;
 };
 
-const serverPlugin: ICliPluginConstructor['serverPlugin'] = context => {
+const addServerPlugin: ICliPluginConstructor['addServerPlugin'] = context => {
   return require.resolve('./insertReactRefreshEntryFile');
 };
 
 export default createPlugin({
   configWebpack,
-  serverPlugin
+  addServerPlugin
 });

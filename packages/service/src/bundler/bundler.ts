@@ -79,7 +79,7 @@ class WebpackBundler {
         if (isSuccessful) {
           setImmediate(first => {
             // make sure this event is fired after all bundler:target-done
-            this._cliContext.pluginRunner.bundlerDone({ first, stats });
+            this._cliContext.pluginRunner.afterBundlerDone({ first, stats });
           }, isFirstSuccessfulCompile);
           isFirstSuccessfulCompile = false;
         }
@@ -237,7 +237,7 @@ class WebpackBundler {
         !messages.errors?.length && !messages.warnings?.length;
       if (isSuccessful) {
         _log('Compiled successfully!');
-        await this._cliContext.pluginRunner.bundlerTargetDone({
+        await this._cliContext.pluginRunner.afterBundlerTargetDone({
           first: isFirstSuccessfulCompile,
           name: compiler.name!,
           stats
@@ -293,7 +293,7 @@ class WebpackBundler {
     // get base config
     const buildTargets = this.initDefaultBuildTarget();
     const extraTargets = (
-      await this._cliContext.pluginRunner.extraTarget({
+      await this._cliContext.pluginRunner.addExtraTarget({
         createConfig: this._createConfig.bind(this),
         mode: this._cliContext.mode,
         webpack

@@ -1,12 +1,13 @@
 import {
   createSyncBailHook,
+  createSyncWaterfallHook,
   createAsyncSeriesWaterfallHook,
   createHookManager,
   createAsyncParallelHook,
   HookMap
 } from '@shuvi/hook';
 import WebpackChain from 'webpack-chain';
-import { UserModule, FileOptions, fileSnippets, createFile } from '../project';
+import { FileOptions, fileSnippets, createFile } from '../project';
 import {
   ExtraTargetAssistant,
   ConfigWebpackAssistant,
@@ -14,12 +15,11 @@ import {
   BundlerDoneExtra,
   BundlerTargetDoneExtra,
   RuntimeService,
-  Resources
+  Resources,
+  IRuntimeConfig
 } from './pluginTypes';
 import {
-  UserConfig,
   IPluginContext,
-  IPhase,
   IRuntimeOrServerPlugin
 } from './apiTypes';
 
@@ -41,77 +41,76 @@ export type ICliPluginConstructor = ArrayItem<
   Parameters<PluginManager['createPlugin']>[0]
 >;
 
-const config = createAsyncParallelHook<UserConfig, IPhase, UserConfig>();
-const appReady = createAsyncParallelHook<void>();
-const bundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
-const bundlerTargetDone = createAsyncParallelHook<BundlerTargetDoneExtra>();
+const afterInit = createAsyncParallelHook<void>();
+const afterBuild = createAsyncParallelHook<void>();
+const afterDestroy = createAsyncParallelHook<void>();
+const afterBundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
+const afterBundlerTargetDone = createAsyncParallelHook<BundlerTargetDoneExtra>();
 const configWebpack = createAsyncSeriesWaterfallHook<
   WebpackChain,
   ConfigWebpackAssistant
 >();
-const destroy = createAsyncParallelHook<void>();
-const afterBuild = createAsyncParallelHook<void>();
-const extraTarget = createAsyncParallelHook<
+const modifyAsyncEntry = createSyncWaterfallHook<boolean>()
+const modifyRuntimeConfig = createAsyncSeriesWaterfallHook<IRuntimeConfig, void>();
+const setPlatformModule = createSyncBailHook<void, void, string>();
+const addExtraTarget = createAsyncParallelHook<
   ExtraTargetAssistant,
   void,
   TargetChain
 >();
-const runtimePlugin = createAsyncParallelHook<
+const addRuntimePlugin = createAsyncParallelHook<
   void,
   void,
   string | string[] | IRuntimeOrServerPlugin | IRuntimeOrServerPlugin[]
 >();
-const serverPlugin = createAsyncParallelHook<
+const addServerPlugin = createAsyncParallelHook<
   void,
   void,
   string | string[] | IRuntimeOrServerPlugin | IRuntimeOrServerPlugin[]
 >();
-const afterInit = createAsyncParallelHook<void>();
-const platformModule = createSyncBailHook<void, void, string>();
-const userModule = createSyncBailHook<void, void, UserModule>();
 const addResource = createAsyncParallelHook<
   void,
   void,
   Resources | Resources[]
 >();
-const appPolyfill = createAsyncParallelHook<void, void, string | string[]>();
+const addPolyfill = createAsyncParallelHook<void, void, string | string[]>();
 
 export interface AppRuntimeFileUtils {
   fileSnippets: fileSnippets.FileSnippets;
   createFile: typeof createFile;
 }
 
-const appRuntimeFile = createAsyncParallelHook<
+const addRuntimeFile = createAsyncParallelHook<
   void,
   AppRuntimeFileUtils,
   FileOptions | FileOptions[]
 >();
-const appEntryCode = createAsyncParallelHook<void, void, string | string[]>();
-const runtimeService = createAsyncParallelHook<
+
+const addRuntimeService = createAsyncParallelHook<
   void,
   void,
   RuntimeService | RuntimeService[]
 >();
+const addEntryCode = createAsyncParallelHook<void, void, string | string[]>();
 
 const internalPluginHooks = {
-  config,
-  appReady,
-  bundlerDone,
-  bundlerTargetDone,
-  configWebpack,
-  destroy,
-  afterBuild,
-  extraTarget,
-  runtimePlugin,
-  serverPlugin,
   afterInit,
-  platformModule,
-  userModule,
+  afterBuild,
+  afterDestroy,
+  afterBundlerDone,
+  afterBundlerTargetDone,
+  configWebpack,
+  modifyAsyncEntry,
+  modifyRuntimeConfig,
+  setPlatformModule,
+  addExtraTarget,
+  addRuntimePlugin,
+  addServerPlugin,
   addResource,
-  appPolyfill,
-  appRuntimeFile,
-  appEntryCode,
-  runtimeService
+  addPolyfill,
+  addRuntimeFile,
+  addRuntimeService,
+  addEntryCode
 };
 
 export type InternalPluginHooks = typeof internalPluginHooks;

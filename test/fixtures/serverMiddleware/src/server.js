@@ -5,7 +5,7 @@ import user from './api/user';
 import setting from './api/setting';
 import modifyHtml from './api/modify-html';
 
-export const serverMiddleware = [
+export const middlewares = [
   setHeader,
   { path: '/health-check:other(.*)', handler: setCookie },
   { path: '/health-check', handler: healthCheck },

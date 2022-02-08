@@ -3,12 +3,12 @@ import bundlerPlugin from './bundler';
 import { resolveAppFile, resolveDep, resolveLib } from '../../paths';
 
 const webReactMainPlugin = createPlugin({
-  platformModule: () => resolveAppFile('react/index'),
-  appPolyfill: () => [
+  setPlatformModule: () => resolveAppFile('react/index'),
+  addPolyfill: () => [
     resolveDep('react-app-polyfill/ie11'),
     resolveDep('react-app-polyfill/stable')
   ],
-  runtimeService: () => [
+  addRuntimeService: () => [
     {
       source: resolveAppFile('react/App'),
       exported: '{ default as App }'

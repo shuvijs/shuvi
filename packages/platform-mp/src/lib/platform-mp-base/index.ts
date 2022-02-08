@@ -99,9 +99,9 @@ export default abstract class PlatformMpBase {
 
   getSetupServerPlugin() {
     return createPlugin({
-      serverPlugin: () => require.resolve('./serverPlugin'),
+      addServerPlugin: () => require.resolve('./serverPlugin'),
       addResource: context => generateResource(context),
-      appRuntimeFile: async ({ fileSnippets }, context) => {
+      addRuntimeFile: async ({ fileSnippets }, context) => {
         const userServerFileModuleExportProxy =
           fileSnippets.moduleExportProxyCreater();
         return {
@@ -118,7 +118,7 @@ export default abstract class PlatformMpBase {
           unmounted: userServerFileModuleExportProxy.unmounted
         };
       },
-      extraTarget: ({ createConfig }) => {
+      addExtraTarget: ({ createConfig }) => {
         const serverWebpackHelpers = webpackHelpers();
         const serverChain = createConfig({
           name: BUNDLER_TARGET_SERVER,
@@ -168,16 +168,15 @@ export default abstract class PlatformMpBase {
           );
         }
       },
-      clientModule: () => ({
-        application: resolveAppFile('application'),
-        entry: this.entryPath || resolveAppFile('entry')
-      }),
-      platformModule: () => resolveAppFile('index'),
-      appPolyfill: () => [
+      addEntryCode: () => {
+        return `import "${this.entryPath || resolveAppFile('entry')}"`;
+      },
+      setPlatformModule: () => resolveAppFile('index'),
+      addPolyfill: () => [
         resolveDep('react-app-polyfill/ie11'),
         resolveDep('react-app-polyfill/stable')
       ],
-      runtimeService: () => [
+      addRuntimeService: () => [
         {
           source: resolveAppFile('App'),
           exported: '{ default as App }'
@@ -210,7 +209,7 @@ export default abstract class PlatformMpBase {
 
   getSetupRoutesPlugin() {
     return createPlugin({
-      appRuntimeFile: async ({ fileSnippets }, context) => {
+      addRuntimeFile: async ({ fileSnippets }, context) => {
         const getFiles = (routes: IUserRouteConfig[]) => {
           const appFiles = [];
 

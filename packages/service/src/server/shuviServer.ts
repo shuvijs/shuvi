@@ -35,7 +35,7 @@ export abstract class ShuviServer implements IShuviServer {
     } = this;
 
     const { rootDir } = context.paths;
-    const serverMiddlewares = (await pluginManager.runner.serverMiddleware())
+    const serverMiddlewares = (await pluginManager.runner.addMiddleware())
       .flat()
       .map(m => normalizeServerMiddleware(m, { rootDir }));
     serverMiddlewares.forEach(({ path, handler }) => {
@@ -45,7 +45,7 @@ export abstract class ShuviServer implements IShuviServer {
 
   async listen(port: number, hostname?: string) {
     await this._server.listen(port, hostname);
-    await this._pluginManager.runner.serverListen({ port, hostname });
+    await this._pluginManager.runner.onListen({ port, hostname });
   }
 
   async close() {

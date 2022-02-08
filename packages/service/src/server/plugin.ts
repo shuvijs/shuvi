@@ -5,7 +5,7 @@ import {
   HookMap
 } from '@shuvi/hook';
 import { IRuntimeOrServerPlugin, IPluginContext } from '../core';
-import { IServerMiddleware } from './pluginTypes';
+import { IServerMiddleware, IProxy } from './pluginTypes';
 import { DevMiddleware } from '../lib/devMiddleware';
 
 export * from './pluginTypes';
@@ -29,24 +29,28 @@ export type IServerPluginInstance = ArrayItem<
 export type IServerPluginConstructor = ArrayItem<
   Parameters<PluginManager['createPlugin']>[0]
 >;
-
-const serverMiddlewareBeforeDevMiddleware = createAsyncParallelHook<
+const addMiddlewareBeforeDevMiddleware = createAsyncParallelHook<
   void,
   DevMiddleware,
   IServerMiddleware | IServerMiddleware[]
 >();
-const serverMiddleware = createAsyncParallelHook<
+
+const addMiddleware = createAsyncParallelHook<
   void,
   void,
   IServerMiddleware | IServerMiddleware[]
 >();
-const serverListen =
+
+const onListen =
   createAsyncParallelHook<{ port: number; hostname?: string }>();
 
+const addProxy = createAsyncParallelHook<void, void, IProxy>()
+
 const internalHooks = {
-  serverMiddlewareBeforeDevMiddleware,
-  serverMiddleware,
-  serverListen
+  addMiddlewareBeforeDevMiddleware,
+  addMiddleware,
+  addProxy,
+  onListen
 };
 
 export type InternalServerPluginHooks = typeof internalHooks;
