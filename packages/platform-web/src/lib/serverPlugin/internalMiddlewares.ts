@@ -7,13 +7,13 @@ import OnDemandRouteManager from '../onDemandRouteManager';
 export default () => {
   let onDemandRouteManager: OnDemandRouteManager;
   return createServerPlugin({
-    serverMiddlewareBeforeDevMiddleware: (devMiddleware, context) => {
+    addMiddlewareBeforeDevMiddleware: (devMiddleware, context) => {
       onDemandRouteManager = new OnDemandRouteManager(context);
       onDemandRouteManager.devMiddleware = devMiddleware;
       return onDemandRouteManager.getServerMiddleware();
     },
     // onDemandRouteManager will be undefined in production mode
-    serverMiddleware: context => {
+    addMiddleware: context => {
       return [
         ...(onDemandRouteManager
           ? [onDemandRouteManager.ensureRoutesMiddleware()]
@@ -23,5 +23,7 @@ export default () => {
         getSSRMiddleware(context)
       ];
     }
-  });
+  },
+  // internalMiddlewares plugin must be at the end
+  { order: 10000, name: 'internalMiddlewares' });
 };

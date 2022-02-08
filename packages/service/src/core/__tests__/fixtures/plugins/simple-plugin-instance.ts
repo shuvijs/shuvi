@@ -1,7 +1,7 @@
 import { createPlugin } from '../../../plugin';
 
 export default createPlugin({
-  appReady: () => {
+  afterInit: () => {
     console.log('simple-plugin-instance');
   }
 });

@@ -33,13 +33,22 @@ export class ShuviDevServer extends ShuviServer {
     const publicDirMiddleware = getPublicDirMiddleware(context);
     const devMiddleware = await getDevMiddleware(context);
     await devMiddleware.waitUntilValid();
-    if (context.config.proxy) {
-      applyHttpProxyMiddleware(server, context.config.proxy);
+    const proxy = (await context.serverPluginRunner.addProxy()).flat()
+    let proxyFromConfig = context.config.proxy
+    if (proxyFromConfig && typeof proxyFromConfig === 'object') {
+      if (Array.isArray(proxyFromConfig)) {
+        proxy.unshift(...proxyFromConfig)
+      } else if (Object.keys(proxyFromConfig).length) {
+        proxy.unshift(proxyFromConfig)
+      }
+    }
+    if (proxy.length) {
+      applyHttpProxyMiddleware(server, proxy);
     }
 
     const { rootDir } = context.paths;
     const serverMiddlewaresBeforeDevMiddleware = (
-      await context.serverPluginRunner.serverMiddlewareBeforeDevMiddleware(
+      await context.serverPluginRunner.addMiddlewareBeforeDevMiddleware(
         devMiddleware
       )
     )

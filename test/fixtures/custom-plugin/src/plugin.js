@@ -1,7 +1,7 @@
 const { createPlugin } = require('shuvi');
 
 module.exports = createPlugin({
-  serverPlugin: () => {
+  addServerPlugin: () => {
     return [
       {
         plugin: require.resolve('./serverPlugin'),
@@ -9,22 +9,22 @@ module.exports = createPlugin({
       }
     ];
   },
-  runtimePlugin: () => {
+  addRuntimePlugin: () => {
     return {
       plugin: require.resolve('./runtimePlugin.jsx'),
       options: 'hello'
     };
   },
-  appReady: () => {
-    console.warn('appReady');
+  afterInit: () => {
+    console.warn('afterInit');
   },
   afterBuild: () => {
     console.warn('afterBuild');
   },
-  bundlerDone: () => {
+  afterBundlerDone: () => {
     console.warn('bundlerDone');
   },
-  bundlerTargetDone: () => {
+  afterBundlerTargetDone: () => {
     console.warn('bundlerTargetDone');
   }
 });

@@ -74,7 +74,7 @@ test('add App files, add App services', async () => {
     config: {
       plugins: [
         {
-          appRuntimeFile: () => [
+          addRuntimeFile: () => [
             {
               name: 'fileA.js',
               content: () => 'test.js'
@@ -88,7 +88,7 @@ test('add App files, add App services', async () => {
               content: () => 'test.js'
             }
           ],
-          runtimeService: () => ({
+          addRuntimeService: () => ({
             source: 'source',
             exported: 'exported',
             filepath: 'a.js'

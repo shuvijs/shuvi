@@ -1,9 +1,9 @@
 import { createPlugin } from '@shuvi/service';
 
 export default createPlugin({
-  runtimePlugin: () => require.resolve('./runtimePlugin'),
-  serverPlugin: () => require.resolve('./serverPlugin'),
-  runtimeService: () => [
+  addRuntimePlugin: () => require.resolve('./runtimePlugin'),
+  addServerPlugin: () => require.resolve('./serverPlugin'),
+  addRuntimeService: () => [
     {
       source: require.resolve('@shuvi/redox-react'),
       exported: '*',
