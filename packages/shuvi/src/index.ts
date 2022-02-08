@@ -1,1 +1,2 @@
-export * from '@shuvi/service';
+export { defineConfig } from '@shuvi/service'
+export * from './plugins'

@@ -34,6 +34,12 @@ export interface HookMap {
 }
 
 export type Setup<EHM> = (utils: { addHooks: (hook: Partial<EHM>) => void }) => void
+export type CreatePlugin<HM extends HookMap, C, EHM extends HookMap> = (
+  pluginHandlers: IPluginHandlers<HM & EHM, C> & {
+    setup?: Setup<EHM>
+  },
+  options?: PluginOptions
+) => IPlugin<HM & EHM, C>;
 
 // 这意味着context需要在一开始就确定
 export type HookManager<HM extends HookMap, C, EHM extends HookMap> = {
