@@ -1,1 +1,1 @@
-export * from '@shuvi/service';
+export * from '@shuvi/service'

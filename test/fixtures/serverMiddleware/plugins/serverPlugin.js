@@ -1,6 +1,6 @@
 const { createServerPlugin } = require('shuvi');
 module.exports = createServerPlugin({
-  serverMiddleware: () => [
+  addMiddleware: () => [
     {
       path: 'testorder',
       handler: (req, res, next) => {

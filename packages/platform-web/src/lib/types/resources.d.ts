@@ -5,10 +5,11 @@ import {
 } from '@shuvi/platform-core';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IApiRoutes, IDocumentModule, IMiddlewareRoutes } from './index';
+import { IServerModule } from '../serverPlugin/hooks'
 
 declare module '@shuvi/service/lib/resources' {
   export const server: {
-    server: any;
+    server: IServerModule;
     apiRoutes: IApiRoutes;
     middlewareRoutes: IMiddlewareRoutes;
     application: {
