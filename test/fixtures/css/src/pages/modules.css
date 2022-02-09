@@ -1,0 +1,53 @@
+.foo {
+  background-color: red;
+}
+
+.one :local(.bar) {
+  background-color: green;
+}
+
+.two :global(.baz) {
+  background-color: blue;
+}
+
+:local(.header-baz) {
+  color: red;
+}
+
+:local(.body) {
+  color: coral;
+}
+
+
+:global(.globalClassName) {
+  color: orange;
+}
+
+
+.otherClassName {
+  composes: foo;
+  background: #000;
+}
+
+
+.className1 {
+  color: green;
+  background: red;
+}
+
+.otherClassName2 {
+  composes: className1;
+  color: yellow;
+}
+
+.simple {
+  display: block;
+  composes: order-1 from '../css/order/order-1.css';
+  composes: order-2 from '../css/order/order-2.css';
+  composes: order-1-1 from '../css/order/order-1.css';
+  composes: order-2-2 from '../css/order/order-2.css';
+}
+
+.nextButton {
+  composes:primaryButton from '../css/buttons/primary-button.css';
+}
