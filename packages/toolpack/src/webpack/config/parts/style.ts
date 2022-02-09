@@ -9,6 +9,8 @@ import loaderUtils from 'loader-utils';
 import path from 'path';
 import { shouldUseRelativeAssetPaths } from './helpers';
 
+const isParcelCssExperimental = true;
+
 interface StyleOptions {
   publicPath?: string;
   extractCss?: boolean;
@@ -66,29 +68,33 @@ function ssrCssRule({
     rule.resourceQuery(resourceQuery);
   }
 
-  rule
-    .use('css-loader')
-    .loader(require.resolve('css-loader'))
-    .options({
-      sourceMap: false,
-      importLoaders: scss ? 1 : 0,
-      esModule: true,
-      modules: {
-        getLocalIdent: getCSSModuleLocalIdent,
-        exportOnlyLocals: true
-      }
-    });
-
-  // rule
-  //   .use('parcel-css-loader')
-  //   .loader('@shuvi/parcel-css-loader')
-  //   .options({
-  //     sourceMap: false,
-  //     modules: {
-  //       getLocalIdent: getCSSModuleLocalIdent,
-  //       exportOnlyLocals: true
-  //     }
-  //   });
+  if (isParcelCssExperimental) {
+    rule
+      .use('parcel-css-loader')
+      .loader('@shuvi/parcel-css-loader')
+      .options({
+        sourceMap: false,
+        importLoaders: scss ? 1 : 0,
+        esModule: true,
+        modules: {
+          // getLocalIdent: getCSSModuleLocalIdent,
+          exportOnlyLocals: true
+        }
+      });
+  } else {
+    rule
+      .use('css-loader')
+      .loader(require.resolve('css-loader'))
+      .options({
+        sourceMap: false,
+        importLoaders: scss ? 1 : 0,
+        esModule: true,
+        modules: {
+          getLocalIdent: getCSSModuleLocalIdent,
+          exportOnlyLocals: true
+        }
+      });
+  }
 
   if (scss) {
     rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
@@ -169,51 +175,56 @@ function cssRule({
       });
   }
 
-  // rule
-  //   .use('css-loader')
-  //   .loader(require.resolve('css-loader'))
-  //   .options({
-  //     sourceMap,
-  //     importLoaders: scss ? 2 : 1,
-  //     esModule: true,
-  //     ...(cssModule && {
-  //       modules: {
-  //         getLocalIdent: getCSSModuleLocalIdent
-  //         // exportOnlyLocals: true,
-  //       }
-  //     })
-  //   });
+  if (isParcelCssExperimental) {
+    rule
+      .use('parcel-css-loader')
+      .loader('@shuvi/parcel-css-loader')
+      .options({
+        sourceMap,
+        importLoaders: scss ? 2 : 1,
+        esModule: true,
+        ...(cssModule && {
+          modules: {
+            // exportOnlyLocals: true,
+          }
+        })
+      });
+  } else {
+    rule
+      .use('css-loader')
+      .loader(require.resolve('css-loader'))
+      .options({
+        sourceMap,
+        importLoaders: scss ? 2 : 1,
+        esModule: true,
+        ...(cssModule && {
+          modules: {
+            getLocalIdent: getCSSModuleLocalIdent
+            // exportOnlyLocals: true,
+          }
+        })
+      });
 
-  // rule
-  //   .use('postcss-loader')
-  //   .loader(require.resolve('postcss-loader'))
-  //   .options({
-  //     sourceMap,
-  //     postcssOptions: {
-  //       plugins: [
-  //         // Make Flexbox behave like the spec cross-browser.
-  //         require('postcss-flexbugs-fixes'),
-  //         // Run Autoprefixer and compile new CSS features.
-  //         require('postcss-preset-env')({
-  //           autoprefixer: {
-  //             flexbox: 'no-2009'
-  //           },
-  //           stage: 3
-  //         })
-  //       ]
-  //     }
-  //   });
-
-  rule
-    .use('parcel-css-loader')
-    .loader('@shuvi/parcel-css-loader')
-    .options({
-      sourceMap: false,
-      modules: {
-        getLocalIdent: getCSSModuleLocalIdent,
-        exportOnlyLocals: true
-      }
-    });
+    rule
+      .use('postcss-loader')
+      .loader(require.resolve('postcss-loader'))
+      .options({
+        sourceMap,
+        postcssOptions: {
+          plugins: [
+            // Make Flexbox behave like the spec cross-browser.
+            require('postcss-flexbugs-fixes'),
+            // Run Autoprefixer and compile new CSS features.
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009'
+              },
+              stage: 3
+            })
+          ]
+        }
+      });
+  }
 
   if (scss) {
     rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
@@ -319,8 +330,6 @@ export function withStyle(
       publicPath
     }).after('scss-module')
   );
-
-  console.log(oneOfs);
 
   return chain;
 }
