@@ -1,5 +1,6 @@
 import WebpackChain from 'webpack-chain';
 import TerserPlugin from 'terser-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import webpack from 'webpack';
 import path from 'path';
 import {
@@ -85,6 +86,7 @@ export function baseWebpackChain({
     minimize: !dev,
     realContentHash: false
   });
+
   if (!dev) {
     // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
@@ -94,6 +96,7 @@ export function baseWebpackChain({
         terserOptions
       }
     ]);
+    config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin);
   }
 
   config.output.merge({

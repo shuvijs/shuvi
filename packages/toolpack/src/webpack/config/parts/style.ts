@@ -9,13 +9,12 @@ import loaderUtils from 'loader-utils';
 import path from 'path';
 import { shouldUseRelativeAssetPaths } from './helpers';
 
-const isParcelCssExperimental = true;
-
 interface StyleOptions {
   publicPath?: string;
   extractCss?: boolean;
   sourceMap?: boolean;
   ssr?: boolean;
+  parcelCss?: boolean;
 }
 
 function getCSSModuleLocalIdent(
@@ -56,11 +55,13 @@ const sassRegex = /\.(scss|sass)$/;
 function ssrCssRule({
   test,
   resourceQuery,
-  scss
+  scss,
+  parcelCss
 }: {
   test: any;
   resourceQuery?: any;
   scss?: boolean;
+  parcelCss?: boolean;
 }): Config.Rule {
   const rule: Config.Rule = new Rule();
   rule.test(test);
@@ -68,7 +69,7 @@ function ssrCssRule({
     rule.resourceQuery(resourceQuery);
   }
 
-  if (isParcelCssExperimental) {
+  if (parcelCss) {
     rule
       .use('parcel-css-loader')
       .loader('@shuvi/parcel-css-loader')
@@ -97,9 +98,15 @@ function ssrCssRule({
   }
 
   if (scss) {
-    rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
-      sourceMap: false
-    });
+    rule
+      .use('sass-loader')
+      .loader(require.resolve('sass-loader'))
+      .options({
+        sourceMap: false,
+        sassOptions: {
+          outputStyle: 'expanded'
+        }
+      });
   }
 
   return rule;
@@ -110,6 +117,7 @@ function cssRule({
   test,
   resourceQuery,
   cssModule,
+  parcelCss,
   extractCss,
   sourceMap,
   scss
@@ -118,6 +126,7 @@ function cssRule({
   test: any;
   resourceQuery?: any;
   cssModule?: boolean;
+  parcelCss?: boolean;
   extractCss?: boolean;
   sourceMap?: boolean;
   scss?: boolean;
@@ -175,7 +184,7 @@ function cssRule({
       });
   }
 
-  if (isParcelCssExperimental) {
+  if (parcelCss) {
     rule
       .use('parcel-css-loader')
       .loader('@shuvi/parcel-css-loader')
@@ -227,9 +236,15 @@ function cssRule({
   }
 
   if (scss) {
-    rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
-      sourceMap
-    });
+    rule
+      .use('sass-loader')
+      .loader(require.resolve('sass-loader'))
+      .options({
+        sourceMap,
+        sassOptions: {
+          outputStyle: 'expanded'
+        }
+      });
   }
 
   return rule;
@@ -237,7 +252,7 @@ function cssRule({
 
 export function withStyle(
   chain: Config,
-  { extractCss, sourceMap, ssr, publicPath }: StyleOptions
+  { extractCss, sourceMap, ssr, publicPath, parcelCss }: StyleOptions
 ): Config {
   const oneOfs = chain.module.rule('main').oneOfs;
   if (ssr) {
@@ -247,7 +262,8 @@ export function withStyle(
       ssrCssRule({
         test: cssRegex,
         resourceQuery: cssModuleQueryRegex,
-        scss: false
+        scss: false,
+        parcelCss
       }).after('js')
     );
     oneOfs.set(
@@ -256,7 +272,8 @@ export function withStyle(
       ssrCssRule({
         test: sassRegex,
         resourceQuery: cssModuleQueryRegex,
-        scss: true
+        scss: true,
+        parcelCss
       }).after('css-module')
     );
     const ignoreRule: Config.Rule = new Rule();
@@ -287,6 +304,7 @@ export function withStyle(
       test: cssRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
+      parcelCss,
       scss: false,
       extractCss,
       sourceMap,
@@ -312,6 +330,7 @@ export function withStyle(
       test: sassRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
+      parcelCss,
       scss: true,
       extractCss,
       sourceMap,
@@ -324,6 +343,7 @@ export function withStyle(
     cssRule({
       test: sassRegex,
       cssModule: false,
+      parcelCss,
       scss: true,
       extractCss,
       sourceMap,
