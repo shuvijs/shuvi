@@ -21,9 +21,6 @@
       "@shuvi/runtime-core/lib/*": [
         "packages/runtime-core/src/*"
       ],
-      "@shuvi/platform-web-react/lib/*": [
-        "packages/platform-web-react/src/lib/*"
-      ],
       "@shuvi/platform-mp/lib/*": [
         "packages/platform-mp/src/*"
       ],

@@ -104,17 +104,15 @@ class Api {
       filepath: this._configFile
     });
     const userConfig: UserConfig = mergeConfig(fileConfig, this._userConfig);
-    // init plugins
-    const { runner, setContext, usePlugin } = this.pluginManager;
-    const allPlugins = await getPlugins(this._cwd, userConfig);
-    usePlugin(...allPlugins);
-    // todo: platform as a plugin?
-    this._platform = getPlatform(userConfig.platform?.name);
-    const platformPlugins = await this.platform(userConfig.platform);
-    usePlugin(...platformPlugins);
     const config = (this._config = resolveConfig({
       config: userConfig
     }));
+    // init plugins
+    const { runner, setContext, usePlugin } = this.pluginManager;
+    const allPlugins = await getPlugins(this._cwd, config);
+    usePlugin(...allPlugins);
+
+    await this.initPlatformPlugins();
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: config.outputPath,
@@ -164,13 +162,22 @@ class Api {
     return prefix;
   }
 
+  async initPlatformPlugins() {
+    const platformConfig = this._config.platform;
+    this._platform = getPlatform(platformConfig.name);
+    const platformContent = await this.platform(platformConfig);
+    this.pluginManager.usePlugin(...platformContent.plugins);
+    this.setPlatformModule(platformContent.platformModule);
+  }
+
   async initProjectBuilderConfigs() {
     const runner = this.pluginManager.runner;
     const appPolyfills = (await runner.addPolyfill()).flat();
-    const appRuntimeFiles = (await runner.addRuntimeFile({ createFile, fileSnippets })).flat();
+    const appRuntimeFiles = (
+      await runner.addRuntimeFile({ createFile, fileSnippets })
+    ).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();
     const runtimeServices = (await runner.addRuntimeService()).flat();
-    const platformModule = (await runner.setPlatformModule()) as string;
 
     appPolyfills.forEach(file => {
       this.addAppPolyfill(file);
@@ -187,8 +194,6 @@ class Api {
     runtimeServices.forEach(({ source, exported, filepath }) => {
       this.addRuntimeService(source, exported, filepath);
     });
-
-    this.setPlatformModule(platformModule);
   }
   async initRuntimeAndServerPlugin() {
     const normalize = (

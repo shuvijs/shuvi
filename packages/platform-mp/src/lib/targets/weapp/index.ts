@@ -24,11 +24,7 @@ class PlatformMpWeapp extends PlatformMpBase {
   }
   getPlugins() {
     this.modifyTemplate();
-    return [
-      this.getSetupAppPlugin(),
-      this.getSetupRoutesPlugin(),
-      this.getConfigWebpackPlugin()
-    ];
+    return super.getPlugins();
   }
 }
 export default PlatformMpWeapp;

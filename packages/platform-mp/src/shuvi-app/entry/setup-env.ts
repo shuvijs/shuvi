@@ -7,9 +7,8 @@ import {
   IDENTITY_RUNTIME_PUBLICPATH,
   IDENTITY_SSR_RUNTIME_PUBLICPATH
 } from '@shuvi/shared/lib/constants';
-import setRuntimeConfig from '@shuvi/app/core/setRuntimeConfig';
-import runtimeConfig from '@shuvi/app/core/runtimeConfig';
-import { getAppData } from '@shuvi/platform-core';
+import setRuntimeConfig from '@shuvi/app/files/setRuntimeConfig';
+import runtimeConfig from '@shuvi/app/files/runtimeConfig';
 
 // === set public path ===
 declare let __webpack_public_path__: string;
@@ -26,15 +25,7 @@ if (win[IDENTITY_RUNTIME_PUBLICPATH]) {
   __webpack_public_path__ = win[IDENTITY_RUNTIME_PUBLICPATH];
 }
 
-// === set runtime config ===
-const appData = getAppData();
-
 // build-time config for none-ssr
 if (runtimeConfig) {
   setRuntimeConfig(runtimeConfig);
-}
-
-// runtime config from server
-if (appData.runtimeConfig) {
-  setRuntimeConfig(appData.runtimeConfig);
 }

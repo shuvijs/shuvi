@@ -3,6 +3,7 @@ import path from 'path';
 import {
   createPlugin,
   IUserRouteConfig,
+  IPlatformContent,
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_FILE_SERVER,
   BUILD_SERVER_DIR
@@ -10,6 +11,7 @@ import {
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
+import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import { renameFilepathToComponent } from '@shuvi/service/lib/route';
 import { getUserCustomFileCandidates } from '@shuvi/service/lib/project';
@@ -86,6 +88,13 @@ export default abstract class PlatformMpBase {
     });
   }
 
+  getPlatformContent(): IPlatformContent {
+    return {
+      plugins: this.getPlugins() as any,
+      platformModule: resolveAppFile('index')
+    };
+  }
+
   getPlugins() {
     return [
       process.env.NODE_ENV === 'development'
@@ -93,8 +102,40 @@ export default abstract class PlatformMpBase {
         : null,
       this.getSetupAppPlugin(),
       this.getSetupRoutesPlugin(),
-      this.getConfigWebpackPlugin()
+      this.getConfigWebpackPlugin(),
+      this.getRuntimeConfigPlugin()
     ].filter(Boolean);
+  }
+
+  getRuntimeConfigPlugin() {
+    return createPlugin({
+      addRuntimeFile: async ({ createFile }, context) => {
+        const { pluginRunner, config } = context;
+        const runtimeConfig = await pluginRunner.modifyRuntimeConfig(
+          config.runtimeConfig || {}
+        );
+        const runtimeConfigFile = createFile({
+          name: 'runtimeConfig.js',
+          content: () => {
+            const runtimeConfigContent = Object.keys(runtimeConfig)
+              ? JSON.stringify(getPublicRuntimeConfig(runtimeConfig))
+              : null;
+            return `export default ${runtimeConfigContent}`;
+          }
+        });
+
+        const setRuntimeConfigFile = createFile({
+          name: 'setRuntimeConfig.js',
+          content: () =>
+            `export { setRuntimeConfig as default } from '@shuvi/service/lib/lib/runtimeConfig'`
+        });
+        return [runtimeConfigFile, setRuntimeConfigFile];
+      },
+      addRuntimeService: () => ({
+        source: '@shuvi/service/lib/lib/runtimeConfig',
+        exported: '{ default as getRuntimeConfig }'
+      })
+    });
   }
 
   getSetupServerPlugin() {
@@ -171,7 +212,6 @@ export default abstract class PlatformMpBase {
       addEntryCode: () => {
         return `import "${this.entryPath || resolveAppFile('entry')}"`;
       },
-      setPlatformModule: () => resolveAppFile('index'),
       addPolyfill: () => [
         resolveDep('react-app-polyfill/ie11'),
         resolveDep('react-app-polyfill/stable')

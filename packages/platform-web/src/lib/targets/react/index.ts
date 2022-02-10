@@ -1,9 +1,8 @@
-import { createPlugin } from '@shuvi/service';
+import { createPlugin, IPlatform } from '@shuvi/service';
 import bundlerPlugin from './bundler';
 import { resolveAppFile, resolveDep, resolveLib } from '../../paths';
 
 const webReactMainPlugin = createPlugin({
-  setPlatformModule: () => resolveAppFile('react/index'),
   addPolyfill: () => [
     resolveDep('react-app-polyfill/ie11'),
     resolveDep('react-app-polyfill/stable')
@@ -29,4 +28,11 @@ const webReactMainPlugin = createPlugin({
   ]
 });
 
-export default () => [webReactMainPlugin, bundlerPlugin];
+const platformWebReact: IPlatform = () => {
+  return {
+    plugins: [webReactMainPlugin, bundlerPlugin],
+    platformModule: resolveAppFile('react/index')
+  };
+};
+
+export default platformWebReact;

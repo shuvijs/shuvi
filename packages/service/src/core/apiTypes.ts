@@ -95,9 +95,14 @@ export interface IPlatformConfig {
   [index: string]: any;
 }
 
+export type IPlatformContent = {
+  plugins: ICliPluginInstance[];
+  platformModule: string;
+};
+
 export type IPlatform = (
   config?: Omit<IPlatformConfig, 'name'>
-) => Promise<ICliPluginInstance[]> | ICliPluginInstance[];
+) => Promise<IPlatformContent> | IPlatformContent;
 
 export interface IRouterConfig {
   history?: IRouterHistoryMode;
