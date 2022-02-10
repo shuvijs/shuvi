@@ -104,7 +104,6 @@ export function baseWebpackChain({
         minify: parcelCss
           ? CssMinimizerPlugin.parcelCssMinify
           : CssMinimizerPlugin.cssnanoMinify
-        // minify: CssMinimizerPlugin.esbuildMinify,
       }
     ]);
   }

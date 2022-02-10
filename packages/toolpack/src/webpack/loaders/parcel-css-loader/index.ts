@@ -22,7 +22,7 @@ import {
 } from './utils';
 
 const browsersTargets = browserslistToTargets(
-  browserslist('last 2 major versions')
+  browserslist('last 1 major versions')
 );
 
 export default async function loader(
