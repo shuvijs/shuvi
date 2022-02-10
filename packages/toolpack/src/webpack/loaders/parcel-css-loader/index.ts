@@ -64,6 +64,7 @@ export default async function loader(
     ParcelCssRes = transform({
       filename: path.relative(this.rootContext, this.resourcePath),
       code: content instanceof Buffer ? content : Buffer.from(content),
+      // minify: this.mode === 'production',
       cssModules: needToUseIcssPlugin,
       analyzeDependencies: true,
       sourceMap: options.sourceMap,

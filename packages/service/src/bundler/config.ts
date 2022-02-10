@@ -32,11 +32,14 @@ export function createWebpackConfig(
   const dev = mode === 'development';
   let chain: WebpackChain;
 
+  const parcelCss = !!config.experimental.parcelCss;
+
   const srcDirs = [paths.appDir, paths.srcDir, ...(opts.srcDirs || [])];
   if (opts.node) {
     chain = createNodeWebpackChain({
       buildManifestFilename: BUILD_MANIFEST_PATH,
       dev,
+      parcelCss,
       env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,
       name: opts.name,
@@ -51,6 +54,7 @@ export function createWebpackConfig(
       analyze: config.analyze,
       buildManifestFilename: BUILD_MANIFEST_PATH,
       dev,
+      parcelCss,
       env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,
       name: opts.name,

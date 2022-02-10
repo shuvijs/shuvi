@@ -24,6 +24,7 @@ const resolveLocalLoader = (name: string) =>
 
 export interface BaseOptions {
   dev: boolean;
+  parcelCss: boolean;
   name: string;
   projectRoot: string;
   srcDirs: string[];
@@ -60,6 +61,7 @@ export { WebpackChain };
 
 export function baseWebpackChain({
   dev,
+  parcelCss,
   projectRoot,
   srcDirs,
   mediaFilename,
@@ -96,7 +98,15 @@ export function baseWebpackChain({
         terserOptions
       }
     ]);
-    config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin);
+    config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin, [
+      {
+        // @ts-ignore
+        minify: parcelCss
+          ? CssMinimizerPlugin.parcelCssMinify
+          : CssMinimizerPlugin.cssnanoMinify
+        // minify: CssMinimizerPlugin.esbuildMinify,
+      }
+    ]);
   }
 
   config.output.merge({
