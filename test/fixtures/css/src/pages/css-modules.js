@@ -9,6 +9,8 @@ export default () => (
     <div className={m.otherClassName}>otherClassName</div>
     <div className={m.otherClassName2}>otherClassName2</div>
     <div className={m.simple}>simple</div>
-    <div className={m.nextButton}>nextButton</div>
+    <div id="next-button" className={m.nextButton}>
+      nextButton
+    </div>
   </div>
 );
