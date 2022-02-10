@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "@next/react-refresh-utils": "10.0.5",
-    "@shuvi/app": "0.0.1-pre.10",
     "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/plugins": "0.0.1-pre.10",
     "@shuvi/platform-core": "0.0.1-pre.10",
