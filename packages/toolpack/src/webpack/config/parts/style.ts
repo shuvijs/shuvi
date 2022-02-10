@@ -78,7 +78,6 @@ function ssrCssRule({
         importLoaders: scss ? 1 : 0,
         esModule: true,
         modules: {
-          // getLocalIdent: getCSSModuleLocalIdent,
           exportOnlyLocals: true
         }
       });
@@ -193,9 +192,7 @@ function cssRule({
         importLoaders: scss ? 2 : 1,
         esModule: true,
         ...(cssModule && {
-          modules: {
-            // exportOnlyLocals: true,
-          }
+          modules: {}
         })
       });
   } else {
@@ -317,6 +314,7 @@ export function withStyle(
     cssRule({
       test: cssRegex,
       cssModule: false,
+      parcelCss,
       scss: false,
       extractCss,
       sourceMap,
