@@ -1,9 +1,6 @@
 import path from 'path';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import { setRuntimeConfig } from '../lib/runtimeConfig'
 import { getUserCustomFileCandidates } from '../project';
-import { getPublicRuntimeConfig } from '../lib/getPublicRuntimeConfig';
-import resolveRuntimeCoreFile from '../lib/resolveRuntimeCoreFile';
 import { Api } from './api';
 
 export async function setupApp(api: Api) {
@@ -68,20 +65,14 @@ export async function setupApp(api: Api) {
   // entry-wrapper just import or dynamicly import `entry.js`
   let entryFile = "'@shuvi/app/entry'";
 
-  const { pluginRunner } = api.pluginContext
+  const { pluginRunner } = api.pluginContext;
 
-  const asyncEntry = pluginRunner.modifyAsyncEntry(config.asyncEntry)
+  const asyncEntry = pluginRunner.modifyAsyncEntry(config.asyncEntry);
 
   if (asyncEntry === true) {
     entryFile = `(${entryFile})`;
   }
   api.setEntryWrapperContent(`import ${entryFile};`);
-
-  // with none-ssr, we need create runtimeConfig when build
-  // with ssr, we get runtimeConfig from appData
-  const runtimeConfig = await pluginRunner.modifyRuntimeConfig(config.runtimeConfig || {})
-  api.setRuntimeConfigContent(JSON.stringify(getPublicRuntimeConfig(runtimeConfig)))
-  setRuntimeConfig(runtimeConfig);
 
   api.addRuntimeService('@shuvi/platform-core', '* as Runtime');
 
@@ -91,14 +82,5 @@ export async function setupApp(api: Api) {
   );
   api.addRuntimeService('@shuvi/router', '{ matchRoutes }');
 
-  api.addRuntimeService(
-    resolveRuntimeCoreFile('helper/getPageData'),
-    '{ getPageData }'
-  );
-  // do not use absolute path, this module would't be bundled
-  api.addRuntimeService(
-    '@shuvi/service/lib/lib/runtimeConfig',
-    '{ default as getRuntimeConfig }'
-  );
   await api.initProjectBuilderConfigs();
 }

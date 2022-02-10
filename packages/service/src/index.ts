@@ -6,6 +6,7 @@ export {
   Config,
   IPluginContext,
   IPlatform,
+  IPlatformContent,
   IUserRouteConfig,
   ICliPluginConstructor,
   loadConfig,
