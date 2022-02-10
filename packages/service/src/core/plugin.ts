@@ -1,5 +1,4 @@
 import {
-  createSyncBailHook,
   createSyncWaterfallHook,
   createAsyncSeriesWaterfallHook,
   createHookManager,
@@ -18,10 +17,7 @@ import {
   Resources,
   IRuntimeConfig
 } from './pluginTypes';
-import {
-  IPluginContext,
-  IRuntimeOrServerPlugin
-} from './apiTypes';
+import { IPluginContext, IRuntimeOrServerPlugin } from './apiTypes';
 
 export * from './pluginTypes';
 
@@ -45,14 +41,17 @@ const afterInit = createAsyncParallelHook<void>();
 const afterBuild = createAsyncParallelHook<void>();
 const afterDestroy = createAsyncParallelHook<void>();
 const afterBundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
-const afterBundlerTargetDone = createAsyncParallelHook<BundlerTargetDoneExtra>();
+const afterBundlerTargetDone =
+  createAsyncParallelHook<BundlerTargetDoneExtra>();
 const configWebpack = createAsyncSeriesWaterfallHook<
   WebpackChain,
   ConfigWebpackAssistant
 >();
-const modifyAsyncEntry = createSyncWaterfallHook<boolean>()
-const modifyRuntimeConfig = createAsyncSeriesWaterfallHook<IRuntimeConfig, void>();
-const setPlatformModule = createSyncBailHook<void, void, string>();
+const modifyAsyncEntry = createSyncWaterfallHook<boolean>();
+const modifyRuntimeConfig = createAsyncSeriesWaterfallHook<
+  IRuntimeConfig,
+  void
+>();
 const addExtraTarget = createAsyncParallelHook<
   ExtraTargetAssistant,
   void,
@@ -102,7 +101,6 @@ const internalPluginHooks = {
   configWebpack,
   modifyAsyncEntry,
   modifyRuntimeConfig,
-  setPlatformModule,
   addExtraTarget,
   addRuntimePlugin,
   addServerPlugin,

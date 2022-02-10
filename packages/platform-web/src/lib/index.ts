@@ -1,5 +1,6 @@
 import fse from 'fs-extra';
 import path from 'path';
+import { IRuntimeConfig } from '@shuvi/platform-core';
 import {
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
@@ -12,7 +13,9 @@ import {
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { initServerPlugins, getManager } from '@shuvi/service';
-// import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
+import resolveRuntimeCoreFile from '@shuvi/service/lib/lib/resolveRuntimeCoreFile';
+import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
+import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getUserCustomFileCandidates } from '@shuvi/service/lib/project';
@@ -76,9 +79,23 @@ async function buildHtml({
 }
 
 const platform: IPlatform = async ({ framework = 'react' } = {}) => {
+  const platformFramework: IPlatform =
+    require(`./targets/${framework}`).default;
+  const platformFrameworkContent = await platformFramework();
+  let publicRuntimeConfig: IRuntimeConfig;
   const mainPlugin = createPlugin({
     setup: ({ addHooks }) => {
       addHooks({ appRoutes });
+    },
+    afterInit: async context => {
+      const { pluginRunner, config } = context;
+      const runtimeConfig = await pluginRunner.modifyRuntimeConfig(
+        config.runtimeConfig || {}
+      );
+      publicRuntimeConfig = runtimeConfig;
+      if (Object.keys(publicRuntimeConfig)) {
+        setRuntimeConfig(context.config.runtimeConfig);
+      }
     },
     addRuntimeFile: async ({ createFile, fileSnippets }, context) => {
       const {
@@ -207,22 +224,53 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         unmounted: userServerFileModuleExportProxy.unmounted
       };
 
+      const runtimeConfigFile = createFile({
+        name: 'runtimeConfig.js',
+        content: () => {
+          // with none-ssr, we need create runtimeConfig when build
+          // with ssr, we get runtimeConfig from appData
+          const runtimeConfigContent =
+            Object.keys(publicRuntimeConfig) || !context.config.ssr
+              ? JSON.stringify(getPublicRuntimeConfig(publicRuntimeConfig))
+              : null;
+          return `export default ${runtimeConfigContent}`;
+        }
+      });
+
+      const setRuntimeConfigFile = createFile({
+        name: 'setRuntimeConfig.js',
+        content: () =>
+          `export { setRuntimeConfig as default } from '@shuvi/service/lib/lib/runtimeConfig'`
+      });
+
       return [
         routerConfigFile,
         routesFile,
         middlewareRoutesFile,
         apiRoutesFile,
         userServerFile,
-        userDocumentFile
+        userDocumentFile,
+        runtimeConfigFile,
+        setRuntimeConfigFile
       ];
     },
     addEntryCode: () => {
       return `import "${resolveAppFile('entry', 'client')}"`;
     },
-    addRuntimeService: () => ({
-      source: '@shuvi/platform-web/lib/types',
-      exported: '* as RuntimeServer'
-    }),
+    addRuntimeService: () => [
+      {
+        source: '@shuvi/platform-web/lib/types',
+        exported: '* as RuntimeServer'
+      },
+      {
+        source: '@shuvi/service/lib/lib/runtimeConfig',
+        exported: '{ default as getRuntimeConfig }'
+      },
+      {
+        source: resolveRuntimeCoreFile('helper/getPageData'),
+        exported: '{ getPageData }'
+      }
+    ],
     addExtraTarget: ({ createConfig }, context) => {
       const serverWebpackHelpers = webpackHelpers();
       const serverChain = createConfig({
@@ -237,7 +285,10 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         chain: serverChain
       };
     },
-    addServerPlugin: () => [require.resolve('./serverPlugin/internalMiddlewares'), require.resolve('./serverPlugin/customServerFile')],
+    addServerPlugin: () => [
+      require.resolve('./serverPlugin/internalMiddlewares'),
+      require.resolve('./serverPlugin/customServerFile')
+    ],
     addResource: context => generateResource(context),
     afterBuild: async context => {
       if (
@@ -252,8 +303,10 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       }
     }
   });
-  const frameworkPlugins: IPlatform = require(`./targets/${framework}`).default;
-  return [mainPlugin, statePlugin, ...(await frameworkPlugins())];
+  return {
+    plugins: [mainPlugin, statePlugin, ...platformFrameworkContent.plugins],
+    platformModule: platformFrameworkContent.platformModule
+  };
 };
 
 export default platform;

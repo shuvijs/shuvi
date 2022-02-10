@@ -5,7 +5,7 @@ const platform: IPlatform = ({ target = 'bmp' } = {}) => {
   const PlatformConstructor = require(`./targets/${target}`).default;
   //@ts-ignore
   const runtime = new PlatformConstructor();
-  return runtime.getPlugins();
+  return runtime.getPlatformContent();
 };
 
 export default platform;
