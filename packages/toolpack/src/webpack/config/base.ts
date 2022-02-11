@@ -1,5 +1,6 @@
 import WebpackChain from 'webpack-chain';
 import TerserPlugin from 'terser-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import webpack from 'webpack';
 import path from 'path';
 import {
@@ -23,6 +24,7 @@ const resolveLocalLoader = (name: string) =>
 
 export interface BaseOptions {
   dev: boolean;
+  parcelCss: boolean;
   name: string;
   projectRoot: string;
   srcDirs: string[];
@@ -59,6 +61,7 @@ export { WebpackChain };
 
 export function baseWebpackChain({
   dev,
+  parcelCss,
   projectRoot,
   srcDirs,
   mediaFilename,
@@ -85,6 +88,7 @@ export function baseWebpackChain({
     minimize: !dev,
     realContentHash: false
   });
+
   if (!dev) {
     // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
@@ -92,6 +96,14 @@ export function baseWebpackChain({
         extractComments: false,
         parallel: true,
         terserOptions
+      }
+    ]);
+    config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin, [
+      {
+        // @ts-ignore
+        minify: parcelCss
+          ? CssMinimizerPlugin.parcelCssMinify
+          : CssMinimizerPlugin.cssnanoMinify
       }
     ]);
   }
@@ -123,13 +135,14 @@ export function baseWebpackChain({
   });
 
   config.resolveLoader.merge({
-    alias: ['shuvi-swc-loader', 'route-component-loader'].reduce(
-      (alias, loader) => {
-        alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
-        return alias;
-      },
-      {} as Record<string, string>
-    )
+    alias: [
+      'shuvi-swc-loader',
+      'route-component-loader',
+      'parcel-css-loader'
+    ].reduce((alias, loader) => {
+      alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
+      return alias;
+    }, {} as Record<string, string>)
   });
 
   config.module.set('strictExportPresence', true);

@@ -38,6 +38,9 @@ const createDefaultConfig: () => UserConfig = () => ({
   apiConfig: {
     prefix: '/api',
     bodyParser: true
+  },
+  experimental: {
+    parcelCss: false
   }
 });
 
