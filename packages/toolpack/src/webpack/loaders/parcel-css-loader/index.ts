@@ -372,6 +372,11 @@ export default async function loader(
     }
   }
 
+  parcelImportsMap.clear();
+  parcelUrlsMap.clear();
+  icssMap.clear();
+  parcelReplacementsMap.clear();
+
   const importCode = getImportCode(parcelImports, options);
 
   let moduleCode;
