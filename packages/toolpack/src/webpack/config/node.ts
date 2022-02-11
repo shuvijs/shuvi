@@ -66,5 +66,5 @@ export function createNodeWebpackChain({
     }
   ]);
 
-  return withStyle(chain, { ssr: true });
+  return withStyle(chain, { ssr: true, parcelCss: baseOptions.parcelCss });
 }

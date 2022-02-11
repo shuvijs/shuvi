@@ -88,10 +88,7 @@ export default function ensureExtractLoader(
       ruleUses.get('sass-loader').tap(args => {
         return {
           ...args,
-          sourceMap: true,
-          sassOptions: {
-            outputStyle: 'expanded'
-          }
+          sourceMap: true
         };
       });
     }

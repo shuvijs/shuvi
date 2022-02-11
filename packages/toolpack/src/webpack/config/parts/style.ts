@@ -14,6 +14,7 @@ interface StyleOptions {
   extractCss?: boolean;
   sourceMap?: boolean;
   ssr?: boolean;
+  parcelCss?: boolean;
 }
 
 function getCSSModuleLocalIdent(
@@ -54,11 +55,13 @@ const sassRegex = /\.(scss|sass)$/;
 function ssrCssRule({
   test,
   resourceQuery,
-  scss
+  scss,
+  parcelCss
 }: {
   test: any;
   resourceQuery?: any;
   scss?: boolean;
+  parcelCss?: boolean;
 }): Config.Rule {
   const rule: Config.Rule = new Rule();
   rule.test(test);
@@ -66,23 +69,43 @@ function ssrCssRule({
     rule.resourceQuery(resourceQuery);
   }
 
-  rule
-    .use('css-loader')
-    .loader(require.resolve('css-loader'))
-    .options({
-      sourceMap: false,
-      importLoaders: scss ? 1 : 0,
-      esModule: true,
-      modules: {
-        getLocalIdent: getCSSModuleLocalIdent,
-        exportOnlyLocals: true
-      }
-    });
+  if (parcelCss) {
+    rule
+      .use('parcel-css-loader')
+      .loader('@shuvi/parcel-css-loader')
+      .options({
+        sourceMap: false,
+        importLoaders: scss ? 1 : 0,
+        esModule: true,
+        modules: {
+          exportOnlyLocals: true
+        }
+      });
+  } else {
+    rule
+      .use('css-loader')
+      .loader(require.resolve('css-loader'))
+      .options({
+        sourceMap: false,
+        importLoaders: scss ? 1 : 0,
+        esModule: true,
+        modules: {
+          getLocalIdent: getCSSModuleLocalIdent,
+          exportOnlyLocals: true
+        }
+      });
+  }
 
   if (scss) {
-    rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
-      sourceMap: false
-    });
+    rule
+      .use('sass-loader')
+      .loader(require.resolve('sass-loader'))
+      .options({
+        sourceMap: false,
+        sassOptions: {
+          outputStyle: 'expanded'
+        }
+      });
   }
 
   return rule;
@@ -93,6 +116,7 @@ function cssRule({
   test,
   resourceQuery,
   cssModule,
+  parcelCss,
   extractCss,
   sourceMap,
   scss
@@ -101,6 +125,7 @@ function cssRule({
   test: any;
   resourceQuery?: any;
   cssModule?: boolean;
+  parcelCss?: boolean;
   extractCss?: boolean;
   sourceMap?: boolean;
   scss?: boolean;
@@ -158,45 +183,65 @@ function cssRule({
       });
   }
 
-  rule
-    .use('css-loader')
-    .loader(require.resolve('css-loader'))
-    .options({
-      sourceMap,
-      importLoaders: scss ? 2 : 1,
-      esModule: true,
-      ...(cssModule && {
-        modules: {
-          getLocalIdent: getCSSModuleLocalIdent
-          // exportOnlyLocals: true,
-        }
-      })
-    });
+  if (parcelCss) {
+    rule
+      .use('parcel-css-loader')
+      .loader('@shuvi/parcel-css-loader')
+      .options({
+        sourceMap,
+        importLoaders: scss ? 2 : 1,
+        esModule: true,
+        ...(cssModule && {
+          modules: {}
+        })
+      });
+  } else {
+    rule
+      .use('css-loader')
+      .loader(require.resolve('css-loader'))
+      .options({
+        sourceMap,
+        importLoaders: scss ? 2 : 1,
+        esModule: true,
+        ...(cssModule && {
+          modules: {
+            getLocalIdent: getCSSModuleLocalIdent
+            // exportOnlyLocals: true,
+          }
+        })
+      });
 
-  rule
-    .use('postcss-loader')
-    .loader(require.resolve('postcss-loader'))
-    .options({
-      sourceMap,
-      postcssOptions: {
-        plugins: [
-          // Make Flexbox behave like the spec cross-browser.
-          require('postcss-flexbugs-fixes'),
-          // Run Autoprefixer and compile new CSS features.
-          require('postcss-preset-env')({
-            autoprefixer: {
-              flexbox: 'no-2009'
-            },
-            stage: 3
-          })
-        ]
-      }
-    });
+    rule
+      .use('postcss-loader')
+      .loader(require.resolve('postcss-loader'))
+      .options({
+        sourceMap,
+        postcssOptions: {
+          plugins: [
+            // Make Flexbox behave like the spec cross-browser.
+            require('postcss-flexbugs-fixes'),
+            // Run Autoprefixer and compile new CSS features.
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009'
+              },
+              stage: 3
+            })
+          ]
+        }
+      });
+  }
 
   if (scss) {
-    rule.use('sass-loader').loader(require.resolve('sass-loader')).options({
-      sourceMap
-    });
+    rule
+      .use('sass-loader')
+      .loader(require.resolve('sass-loader'))
+      .options({
+        sourceMap,
+        sassOptions: {
+          outputStyle: 'expanded'
+        }
+      });
   }
 
   return rule;
@@ -204,7 +249,7 @@ function cssRule({
 
 export function withStyle(
   chain: Config,
-  { extractCss, sourceMap, ssr, publicPath }: StyleOptions
+  { extractCss, sourceMap, ssr, publicPath, parcelCss }: StyleOptions
 ): Config {
   const oneOfs = chain.module.rule('main').oneOfs;
   if (ssr) {
@@ -214,7 +259,8 @@ export function withStyle(
       ssrCssRule({
         test: cssRegex,
         resourceQuery: cssModuleQueryRegex,
-        scss: false
+        scss: false,
+        parcelCss
       }).after('js')
     );
     oneOfs.set(
@@ -223,7 +269,8 @@ export function withStyle(
       ssrCssRule({
         test: sassRegex,
         resourceQuery: cssModuleQueryRegex,
-        scss: true
+        scss: true,
+        parcelCss
       }).after('css-module')
     );
     const ignoreRule: Config.Rule = new Rule();
@@ -254,6 +301,7 @@ export function withStyle(
       test: cssRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
+      parcelCss,
       scss: false,
       extractCss,
       sourceMap,
@@ -266,6 +314,7 @@ export function withStyle(
     cssRule({
       test: cssRegex,
       cssModule: false,
+      parcelCss,
       scss: false,
       extractCss,
       sourceMap,
@@ -279,6 +328,7 @@ export function withStyle(
       test: sassRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
+      parcelCss,
       scss: true,
       extractCss,
       sourceMap,
@@ -291,6 +341,7 @@ export function withStyle(
     cssRule({
       test: sassRegex,
       cssModule: false,
+      parcelCss,
       scss: true,
       extractCss,
       sourceMap,

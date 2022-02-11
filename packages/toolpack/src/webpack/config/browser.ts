@@ -162,5 +162,9 @@ export function createBrowserWebpackChain({
     }
   ]);
 
-  return withStyle(chain, { extractCss: !dev, publicPath });
+  return withStyle(chain, {
+    extractCss: !dev,
+    publicPath,
+    parcelCss: baseOptions.parcelCss
+  });
 }

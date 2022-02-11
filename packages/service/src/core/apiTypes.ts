@@ -139,6 +139,9 @@ export interface UserConfig {
   presets?: IPresetConfig[];
   analyze?: boolean;
   asyncEntry?: boolean;
+  experimental?: {
+    parcelCss?: boolean;
+  };
 }
 
 export interface Config
