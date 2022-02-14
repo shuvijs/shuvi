@@ -1,4 +1,4 @@
-import { getCodeSnippet } from '../helpers';
+import { getCodeSnippet } from '../getCodeSnippet';
 import { trim } from 'shuvi-test-utils';
 
 describe('collectDeps', () => {

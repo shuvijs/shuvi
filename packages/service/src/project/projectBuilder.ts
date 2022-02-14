@@ -1,7 +1,7 @@
 import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
-import { exportsFromObject, getContentProxyObj } from './file-snippets';
+import { getExportsFromObject, getContentProxyObj } from './file-utils';
 import { IRuntimeOrServerPlugin } from '../core';
 import {
   ProjectContext,
@@ -157,7 +157,7 @@ class ProjectBuilder {
           for (const [s, e] of service) {
             exportsConfig[s] = Array.from(e);
           }
-          return exportsFromObject(exportsConfig);
+          return getExportsFromObject(exportsConfig);
         }
       });
     }
