@@ -14,7 +14,10 @@ import { rankRouteBranches } from '@shuvi/router';
 import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import { renameFilepathToComponent } from '@shuvi/service/lib/route';
-import { getUserCustomFileCandidates } from '@shuvi/service/lib/project';
+import {
+  getUserCustomFileCandidates,
+  getFisrtModuleExport
+} from '@shuvi/service/lib/project/file-utils';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
@@ -142,22 +145,23 @@ export default abstract class PlatformMpBase {
     return createPlugin({
       addServerPlugin: () => require.resolve('./serverPlugin'),
       addResource: context => generateResource(context),
-      addRuntimeFile: async ({ fileSnippets }, context) => {
-        const userServerFileModuleExportProxy =
-          fileSnippets.moduleExportProxyCreater();
-        return {
+      addRuntimeFile: async ({ createFile, getAllFiles }, context) => {
+        const serverCandidates = getUserCustomFileCandidates(
+          context.paths.rootDir,
+          'server',
+          'noop'
+        );
+        const userServerFile = createFile({
           name: 'user/server.js',
-          content: () =>
-            userServerFileModuleExportProxy.getContent(
-              getUserCustomFileCandidates(
-                context.paths.rootDir,
-                'server',
-                'noop'
-              )
-            ),
-          mounted: userServerFileModuleExportProxy.mounted,
-          unmounted: userServerFileModuleExportProxy.unmounted
-        };
+          content: () => {
+            return getFisrtModuleExport(
+              getAllFiles(serverCandidates),
+              serverCandidates
+            );
+          },
+          dependencies: serverCandidates
+        });
+        return userServerFile;
       },
       addExtraTarget: ({ createConfig }) => {
         const serverWebpackHelpers = webpackHelpers();
@@ -249,7 +253,7 @@ export default abstract class PlatformMpBase {
 
   getSetupRoutesPlugin() {
     return createPlugin({
-      addRuntimeFile: async ({ fileSnippets }, context) => {
+      addRuntimeFile: async ({ createFile }, context) => {
         const getFiles = (routes: IUserRouteConfig[]) => {
           const appFiles = [];
 
@@ -323,10 +327,12 @@ export default abstract class PlatformMpBase {
           let rankRoutes = routesMap.map(r => [r[0], r] as [string, typeof r]);
           rankRoutes = rankRouteBranches(rankRoutes);
           routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
-          appFiles.push({
-            name: 'routesMap.js',
-            content: () => `export default ${JSON.stringify(routesMap)}`
-          });
+          appFiles.push(
+            createFile({
+              name: 'routesMap.js',
+              content: () => `export default ${JSON.stringify(routesMap)}`
+            })
+          );
 
           // make sure entryPagePath first postion on appPages
           const appConfig = this.appConfigs.app;
@@ -342,7 +348,7 @@ export default abstract class PlatformMpBase {
           }
           for (const page of appPages) {
             const pageFile = context.resolveUserFile(`${page}`);
-            const pageConfigFile = fileSnippets.findFirstExistedFile(
+            const pageConfigFile = findFirstExistedFile(
               withExts(
                 context.resolveUserFile(`${page}.config`),
                 moduleFileExtensions
@@ -350,9 +356,10 @@ export default abstract class PlatformMpBase {
             );
             const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
             this.appConfigs[page] = pageConfig;
-            appFiles.push({
-              name: `${page}.js`,
-              content: () => `
+            appFiles.push(
+              createFile({
+                name: `${page}.js`,
+                content: () => `
         import * as React from 'react';
         import { createPageConfig } from '@tarojs/runtime';
         import { addGlobalRoutes, getGlobalRoutes, MpRouter } from '@shuvi/runtime/router-mp';
@@ -374,7 +381,8 @@ export default abstract class PlatformMpBase {
         const component = MpRouterWrapper;
         const inst = Page(createPageConfig(component, pageName, {root:{cn:[]}}, pageConfig || {}))
         `
-            });
+              })
+            );
           }
           this.mpPathToRoutesDone();
           return appFiles; // routes file no use, remove it

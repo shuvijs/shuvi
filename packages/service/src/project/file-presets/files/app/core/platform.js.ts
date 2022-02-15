@@ -1,9 +1,13 @@
 import { ProjectContext } from '../../../../projectContext';
-import { moduleExportProxyCreater } from '../../../../file-snippets';
+import { createFileWithoutName, fileUtils } from '../../../..';
 
-const moduleExportProxy = moduleExportProxyCreater();
+const { getModuleExport } = fileUtils;
 
-export default {
-  content: (context: ProjectContext) =>
-    moduleExportProxy.getContent(context.platformModule)
-};
+export default createFileWithoutName<ProjectContext>(context => {
+  const platform = context.platformModule;
+  return {
+    content: () => {
+      return getModuleExport(platform);
+    }
+  };
+});
