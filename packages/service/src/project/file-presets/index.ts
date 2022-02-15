@@ -24,8 +24,8 @@ const getAllFiles = (
     } else if (/\.(js|ts)$/.test(file) && !/\.d\.ts$/.test(file)) {
       const options = require(filepath).default;
       currentFileList.push({
-        name,
-        ...options
+        ...options,
+        name
       });
     }
   });
