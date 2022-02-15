@@ -6,7 +6,7 @@ import {
   HookMap
 } from '@shuvi/hook';
 import WebpackChain from 'webpack-chain';
-import { FileOptions, fileSnippets, createFile } from '../project';
+import { createFile, fileUtils, FileOptions } from '../project';
 import {
   ExtraTargetAssistant,
   ConfigWebpackAssistant,
@@ -74,14 +74,14 @@ const addResource = createAsyncParallelHook<
 >();
 const addPolyfill = createAsyncParallelHook<void, void, string | string[]>();
 
-export interface AppRuntimeFileUtils {
-  fileSnippets: fileSnippets.FileSnippets;
+type AddRuntimeFileUtils = {
   createFile: typeof createFile;
-}
+  getAllFiles: typeof fileUtils.getAllFiles;
+};
 
 const addRuntimeFile = createAsyncParallelHook<
   void,
-  AppRuntimeFileUtils,
+  AddRuntimeFileUtils,
   FileOptions | FileOptions[]
 >();
 

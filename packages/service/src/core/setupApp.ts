@@ -1,6 +1,6 @@
 import path from 'path';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import { getUserCustomFileCandidates } from '../project';
+import { getUserCustomFileCandidates } from '../project/file-utils';
 import { Api } from './api';
 
 export async function setupApp(api: Api) {

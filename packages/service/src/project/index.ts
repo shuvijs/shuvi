@@ -1,5 +1,3 @@
 export * from './file-manager';
-export * as fileSnippets from './file-snippets';
+export * as fileUtils from './file-utils';
 export * from './projectBuilder';
-export * from './utils'
-

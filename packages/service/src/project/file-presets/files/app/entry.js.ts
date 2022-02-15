@@ -1,8 +1,9 @@
-import { getCodeSnippet } from '../../../file-snippets/helpers';
+import { createFileWithoutName } from '../../..';
+import { getCodeSnippet } from '../../../file-utils';
 import { ProjectContext } from '../../../projectContext';
 import os from 'os';
 
-export default {
+export default createFileWithoutName({
   content: (context: ProjectContext) => {
     const codes = context.entryCodes;
     let imports = '';
@@ -20,4 +21,4 @@ export default {
     }
     return `${imports}${os.EOL}${body}`;
   }
-};
+});

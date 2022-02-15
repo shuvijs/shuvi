@@ -10,11 +10,11 @@ import {
   IPluginContext
 } from './apiTypes';
 import {
+  createFile,
+  fileUtils,
   ProjectBuilder,
   UserModule,
-  FileOptions,
-  fileSnippets,
-  createFile
+  FileOptions
 } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { PUBLIC_PATH } from '../constants';
@@ -173,8 +173,12 @@ class Api {
   async initProjectBuilderConfigs() {
     const runner = this.pluginManager.runner;
     const appPolyfills = (await runner.addPolyfill()).flat();
+    const addRuntimeFileUtils = {
+      createFile,
+      getAllFiles: fileUtils.getAllFiles
+    };
     const appRuntimeFiles = (
-      await runner.addRuntimeFile({ createFile, fileSnippets })
+      await runner.addRuntimeFile(addRuntimeFileUtils)
     ).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();
     const runtimeServices = (await runner.addRuntimeService()).flat();

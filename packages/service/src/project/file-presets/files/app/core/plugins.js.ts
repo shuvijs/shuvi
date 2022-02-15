@@ -1,5 +1,7 @@
+import { createFileWithoutName } from '../../../..';
 import { ProjectContext } from '../../../../projectContext';
-export default {
+
+export default createFileWithoutName({
   content: (context: ProjectContext) => {
     const plugins = context.runtimePlugins;
     const pluginRecord: string[] = [];
@@ -8,7 +10,9 @@ export default {
       const name = `plugin${index}`;
       content += `import ${name}File from "${plugin}";
 const ${name} = {
-  plugin: ${name}File, ${options ? `options: '${JSON.stringify(options)}'\n` : ''}
+  plugin: ${name}File, ${
+        options ? `options: '${JSON.stringify(options)}'\n` : ''
+      }
 };\n`;
       pluginRecord.push(name);
     });
@@ -16,4 +20,4 @@ const ${name} = {
     content += `export { pluginRecord };`;
     return content;
   }
-};
+});

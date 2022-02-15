@@ -1,6 +1,6 @@
 import { reactive } from '@vue/reactivity';
 import { getFileManager, FileManager } from './fileManager';
-
+export { createFile, createFileWithoutName } from './createFile';
 export type { FileOptions } from './file';
 export { onMounted, onUnmounted } from './lifecycle';
 

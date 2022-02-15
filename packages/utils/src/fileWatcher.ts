@@ -1,4 +1,4 @@
-import Watchpack, { TimeInfo } from "watchpack";
+import Watchpack, { TimeInfo } from 'watchpack';
 
 export { TimeInfo };
 
@@ -11,6 +11,7 @@ export interface WatchEvent {
 export interface WatchOptions {
   files?: string[];
   directories?: string[];
+  missing?: string[];
 }
 
 export type WatchCallback = (event: WatchEvent) => void;
@@ -21,7 +22,7 @@ const options = {
   // fire "aggregated" event when after a change for 1000ms no additional change occurred
   // aggregated defaults to undefined, which doesn't fire an "aggregated" event
 
-  ignored: ["**/.git"]
+  ignored: ['**/.git']
   // ignored: "string" - a glob pattern for files or folders that should not be watched
   // ignored: ["string", "string"] - multiple glob patterns that should be ignored
   // ignored: /regexp/ - a regular expression for files or folders that should not be watched
@@ -29,11 +30,11 @@ const options = {
 };
 
 export function watch(
-  { files, directories }: WatchOptions,
+  { files, directories, missing }: WatchOptions,
   cb: WatchCallback
 ): () => void {
   const wp = new Watchpack(options);
-  wp.on("aggregated", (changes: Set<string>, removals: Set<string>) => {
+  wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
     const knownFiles = wp.getTimeInfoEntries();
     cb({
       changes: Array.from(changes),
@@ -45,12 +46,11 @@ export function watch(
             res.push(file);
           }
         }
-
         return res;
       }
     });
   });
-  wp.watch({ files, directories });
+  wp.watch({ files, directories, missing });
 
   return () => {
     wp.close();

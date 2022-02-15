@@ -1,10 +1,15 @@
-import { moduleExportProxyCreater } from '../../../../file-snippets';
 import { ProjectContext } from '../../../../projectContext';
+import { createFileWithoutName, fileUtils } from '../../../..';
 
-const moduleExportProxy = moduleExportProxyCreater();
-export default {
-  content: (context: ProjectContext) =>
-    moduleExportProxy.getContent(context.userModule['error'], true),
-  mounted: moduleExportProxy.mounted,
-  unmounted: moduleExportProxy.unmounted
-};
+const { getAllFiles, getFisrtModuleExport } = fileUtils;
+
+export default createFileWithoutName<ProjectContext>(context => {
+  const { error } = context.userModule;
+  const candidates = Array.isArray(error) ? error : [error];
+  return {
+    dependencies: candidates,
+    content: () => {
+      return getFisrtModuleExport(getAllFiles(candidates), candidates, true);
+    }
+  };
+});

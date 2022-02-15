@@ -1,4 +1,4 @@
-import { getContentProxyObj } from '../proxyObj';
+import { getContentProxyObj } from '../';
 import { trim } from 'shuvi-test-utils';
 
 describe('proxyObj', () => {
