@@ -1,10 +1,3 @@
-export function render(renderAppToString, appContext) {
-  if (appContext.forbidden) {
-    return '403 Custom HTML by custom render';
-  }
-  return renderAppToString();
-}
-
 export const getPageData = () => {
   return {
     foo: 'bar'

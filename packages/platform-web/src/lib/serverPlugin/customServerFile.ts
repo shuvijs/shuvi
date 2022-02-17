@@ -14,15 +14,15 @@ export default createServerPlugin(
       return server?.server?.getPageData?.(appContext, context) || {};
     },
     renderToHTML: (renderToHTML, context) => {
-      return server?.server?.renderToHTML?.(renderToHTML, context) || renderToHTML;
+      return (
+        server?.server?.renderToHTML?.(renderToHTML, context) || renderToHTML
+      );
     },
     modifyHtml: (documentProps, appContext, context) => {
       return (
-        server?.server?.modifyHtml?.(documentProps, appContext, context) || documentProps
+        server?.server?.modifyHtml?.(documentProps, appContext, context) ||
+        documentProps
       );
-    },
-    render: (renderAppToString, appContext, context) => {
-      return server?.server?.render?.(renderAppToString, appContext);
     }
   },
   // customServer plugin must be at the first
