@@ -18,8 +18,7 @@ export class SsrRenderer extends BaseRenderer {
   }: IRenderDocumentOptions) {
     const serverPluginContext = this._serverPluginContext;
     const { view } = server;
-    const { getAssetPublicUrl, serverPluginRunner } = serverPluginContext;
-    const render = serverPluginRunner.render;
+    const { getAssetPublicUrl } = serverPluginContext;
     if (!router) {
       throw new Error('router is null');
     }
@@ -29,8 +28,7 @@ export class SsrRenderer extends BaseRenderer {
       appStore,
       appContext,
       manifest: clientManifest,
-      getAssetPublicUrl,
-      render
+      getAssetPublicUrl
     });
     if (result.redirect) {
       return {
