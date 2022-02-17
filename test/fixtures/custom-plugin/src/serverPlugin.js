@@ -25,11 +25,5 @@ module.exports = option =>
     },
     onListen: () => {
       console.warn('onListen');
-    },
-    render: (renderAppToString, appContext) => {
-      if (appContext.forbidden) {
-        return '403 Custom HTML by custom render';
-      }
-      return renderAppToString();
     }
   });

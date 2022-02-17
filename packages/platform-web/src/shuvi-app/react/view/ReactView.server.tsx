@@ -24,8 +24,7 @@ export class ReactServerView implements IReactServerView {
     appContext,
     appStore,
     manifest,
-    getAssetPublicUrl,
-    render
+    getAssetPublicUrl
   }) => {
     await Loadable.preloadAll();
 
@@ -115,34 +114,23 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
 
     try {
-      const renderAppToString = () =>
-        renderToString(
-          <ErrorBoundary>
-            <Router static router={router}>
-              <LoadableContext.Provider
-                value={moduleName => loadableModules.push(moduleName)}
+      htmlContent = renderToString(
+        <ErrorBoundary>
+          <Router static router={router}>
+            <LoadableContext.Provider
+              value={moduleName => loadableModules.push(moduleName)}
+            >
+              <AppContainer
+                appContext={appContext}
+                store={appStore}
+                errorComp={ErrorPage}
               >
-                <AppContainer
-                  appContext={appContext}
-                  store={appStore}
-                  errorComp={ErrorPage}
-                >
-                  <AppComponent {...appInitialProps} />
-                </AppContainer>
-              </LoadableContext.Provider>
-            </Router>
-          </ErrorBoundary>
-        );
-      if (render) {
-        const renderContent = render(renderAppToString, appContext);
-        if (renderContent) {
-          htmlContent = renderContent;
-        } else {
-          htmlContent = renderAppToString();
-        }
-      } else {
-        htmlContent = renderAppToString();
-      }
+                <AppComponent {...appInitialProps} />
+              </AppContainer>
+            </LoadableContext.Provider>
+          </Router>
+        </ErrorBoundary>
+      );
     } finally {
       head = Head.rewind() || [];
     }

@@ -40,10 +40,6 @@ export interface IRenderOptions<
   router?: Router;
   appContext: Context;
   appStore: IAppStore;
-  render?: (
-    renderAppToString: () => string,
-    appContext: any
-  ) => string | void | undefined;
 }
 
 export interface IView<
@@ -96,7 +92,7 @@ export class Application<
     this._appStore = getAppStore(options.appState);
     this._renderFn = options.render;
     this._getUserAppComponent = options.getUserAppComponent;
-    this.pluginManager = getManager()
+    this.pluginManager = getManager();
   }
 
   async run() {
@@ -137,7 +133,9 @@ export class Application<
   }
 
   private async _createApplicationContext() {
-    this._context = (await this.pluginManager.runner.context(this._context)) as IContext & Context;
+    this._context = (await this.pluginManager.runner.context(
+      this._context
+    )) as IContext & Context;
   }
 
   private async _getAppComponent() {
