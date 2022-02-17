@@ -43,22 +43,22 @@ export function normalizeRoutes(
 
         let Component: any;
         const preload = component.preload;
-        const error = getErrorHandler(getAppStore());
+        const errorComp = createError();
         if (preload) {
           try {
             const preloadComponent = await preload();
             Component = preloadComponent.default || preloadComponent;
           } catch (err) {
             console.error(err);
-            error.errorHandler();
+            errorComp.handler();
             Component = function () {
               return null;
             };
+            return next();
           }
         } else {
           Component = component;
         }
-        const errorComp = createError();
         if (Component.getInitialProps) {
           if (routeProps[id] !== undefined && !hydrated[id]) {
             // only hydrated once
@@ -89,6 +89,7 @@ export function normalizeRoutes(
         // reset() make errorPage hide error and show /a page (splash screen)
         // the splash time is lazy load /b
         // route /b and component load show page /b
+        const error = getErrorHandler(getAppStore());
         if (errorComp.errorCode !== undefined) {
           error.errorHandler(errorComp.errorCode, errorComp.errorDesc);
         } else {

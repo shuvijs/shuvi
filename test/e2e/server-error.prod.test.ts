@@ -20,22 +20,17 @@ describe('Custom Server.js with error production', () => {
     });
     ctx = await serveFixture('custom-server-with-error');
     page = await ctx.browser.page();
-    const result = await page.goto(ctx.url('/'));
+    let result = await page.goto(ctx.url('/'));
 
     if (!result) {
       throw Error('no result');
     }
     // Note: Client
     expect(result.status()).toBe(501);
-    expect(await page.$text('body')).toMatch('Server Render Error');
-    expect(await page.$text('body')).not.toContain('Error: Something wrong');
-    expect(await page.$text('body')).not.toContain(
-      'test/fixtures/custom-server-with-error/dist/server/server.js'
-    );
+    expect(await page.$text('body')).toContain('Something wrong');
 
-    // Note: Server
-    expect(logSpy).toHaveBeenLastCalledWith(
-      expect.stringMatching(/server error: \/[\s\S]+Something wrong/)
-    );
+    result = await page.goto(ctx.url('/error'));
+    expect(result!.status()).toBe(500);
+    expect(await page.$text('body')).toContain('Something other wrong');
   });
 });
