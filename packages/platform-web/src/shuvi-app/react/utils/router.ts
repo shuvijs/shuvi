@@ -20,8 +20,6 @@ export function resetHydratedState() {
   hydrated = {};
 }
 
-let isFirstRender = false;
-
 export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
   appContext: INormalizeRoutesContext = {}
@@ -45,8 +43,9 @@ export function normalizeRoutes(
 
         const appStore = getAppStore();
 
-        if (!isFirstRender) {
-          isFirstRender = true;
+        const shouldHydrated = routeProps[id] !== undefined && !hydrated[id];
+
+        if (shouldHydrated) {
           const { error } = appStore.getState();
           if (error.errorCode !== undefined) {
             hydrated[id] = true; // hydrated error page, run Component.getInitialProps by client
@@ -72,8 +71,7 @@ export function normalizeRoutes(
           Component = component;
         }
         if (Component.getInitialProps) {
-          if (routeProps[id] !== undefined && !hydrated[id]) {
-            console.log('-> 6666', 6666);
+          if (shouldHydrated) {
             // only hydrated once, use server state
             hydrated[id] = true;
             context.props = routeProps[id];
