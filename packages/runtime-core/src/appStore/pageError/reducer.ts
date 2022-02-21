@@ -1,9 +1,5 @@
 import { RESET_ERROR, UPDATE_ERROR, IPageErrorAction } from './actions';
-
-const DEFAULTERRORSTATE = {
-  errorCode: undefined,
-  errorDesc: undefined
-};
+import { DEFAULTERRORSTATE } from '../constants';
 
 const error = (state = DEFAULTERRORSTATE, action: IPageErrorAction) => {
   switch (action.type) {

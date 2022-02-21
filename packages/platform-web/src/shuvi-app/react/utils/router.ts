@@ -20,6 +20,8 @@ export function resetHydratedState() {
   hydrated = {};
 }
 
+let isFirstRender = false;
+
 export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
   appContext: INormalizeRoutesContext = {}
@@ -41,6 +43,17 @@ export function normalizeRoutes(
           return next();
         }
 
+        const appStore = getAppStore();
+
+        if (!isFirstRender) {
+          isFirstRender = true;
+          const { error } = appStore.getState();
+          if (error.errorCode !== undefined) {
+            hydrated[id] = true; // hydrated error page, run Component.getInitialProps by client
+            return next();
+          }
+        }
+
         let Component: any;
         const preload = component.preload;
         const errorComp = createError();
@@ -50,18 +63,18 @@ export function normalizeRoutes(
             Component = preloadComponent.default || preloadComponent;
           } catch (err) {
             console.error(err);
-            errorComp.handler();
+            errorComp.handler(500);
             Component = function () {
               return null;
             };
-            return next();
           }
         } else {
           Component = component;
         }
         if (Component.getInitialProps) {
           if (routeProps[id] !== undefined && !hydrated[id]) {
-            // only hydrated once
+            console.log('-> 6666', 6666);
+            // only hydrated once, use server state
             hydrated[id] = true;
             context.props = routeProps[id];
             return next();
@@ -89,7 +102,7 @@ export function normalizeRoutes(
         // reset() make errorPage hide error and show /a page (splash screen)
         // the splash time is lazy load /b
         // route /b and component load show page /b
-        const error = getErrorHandler(getAppStore());
+        const error = getErrorHandler(appStore);
         if (errorComp.errorCode !== undefined) {
           error.errorHandler(errorComp.errorCode, errorComp.errorDesc);
         } else {

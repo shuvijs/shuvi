@@ -8,7 +8,6 @@ import { createApp } from '../../create-app/client';
 
 const appData = getAppData();
 const { routeProps = {} } = appData;
-const { appState } = appData;
 
 const app = createApp(
   {
@@ -27,7 +26,7 @@ const app = createApp(
         appStore
       });
     },
-    appState
+    appState: undefined
   }
 );
 
