@@ -4,9 +4,7 @@ import { DEFAULT_ERRORSTATE } from '../constants';
 const error = (state = DEFAULT_ERRORSTATE, action: IPageErrorAction) => {
   switch (action.type) {
     case RESET_ERROR:
-      return {
-        ...DEFAULT_ERRORSTATE
-      };
+      return DEFAULT_ERRORSTATE;
     case UPDATE_ERROR:
       return {
         ...state,
