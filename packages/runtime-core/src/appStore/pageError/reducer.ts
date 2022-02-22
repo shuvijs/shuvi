@@ -1,11 +1,11 @@
 import { RESET_ERROR, UPDATE_ERROR, IPageErrorAction } from './actions';
-import { DEFAULTERRORSTATE } from '../constants';
+import { DEFAULT_ERRORSTATE } from '../constants';
 
-const error = (state = DEFAULTERRORSTATE, action: IPageErrorAction) => {
+const error = (state = DEFAULT_ERRORSTATE, action: IPageErrorAction) => {
   switch (action.type) {
     case RESET_ERROR:
       return {
-        ...DEFAULTERRORSTATE
+        ...DEFAULT_ERRORSTATE
       };
     case UPDATE_ERROR:
       return {

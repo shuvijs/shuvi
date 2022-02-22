@@ -1,7 +1,7 @@
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { IPageError, RESET_ERROR, UPDATE_ERROR } from './pageError/actions';
 import { IAppStore } from './getAppStore';
-import { DEFAULTERRORSTATE } from './constants';
+import { DEFAULT_ERRORSTATE } from './constants';
 
 export type IErrorHandler = (
   errorCode?: SHUVI_ERROR_CODE | string,
@@ -30,8 +30,8 @@ export function getErrorHandler(appStore: IAppStore): {
     reset() {
       const { error } = appStore.getState();
       if (
-        error.errorCode === DEFAULTERRORSTATE.errorCode &&
-        error.errorDesc === DEFAULTERRORSTATE.errorDesc
+        error.errorCode === DEFAULT_ERRORSTATE.errorCode &&
+        error.errorDesc === DEFAULT_ERRORSTATE.errorDesc
       ) {
         return;
       }
