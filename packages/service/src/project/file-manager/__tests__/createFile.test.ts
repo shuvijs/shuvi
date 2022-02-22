@@ -25,12 +25,26 @@ const fileA = file('a');
 const fileB = file('b');
 const unexistedFileC = file('c');
 
+const directoryA = file('directory-a');
+const directoryB = file('directory-b');
+const daa = file('directory-a', 'aa');
+const dab = file('directory-a', 'ab');
+const dba = file('directory-b', 'ba');
+
 const FILE_RESULT = 'result-file';
 
 afterEach(async () => {
+  // reset fixtures
   await wait(500);
+  fs.rmSync(file(), { recursive: true, force: true });
+  fs.mkdirSync(file());
+  fs.mkdirSync(directoryA);
+  fs.mkdirSync(directoryB);
   fs.writeFileSync(fileA, 'a\n', 'utf8');
   fs.writeFileSync(fileB, 'b\n', 'utf8');
+  fs.writeFileSync(daa, 'daa\n', 'utf8');
+  fs.writeFileSync(dab, 'dab\n', 'utf8');
+  fs.writeFileSync(file('directory-b', 'empty'), '', 'utf8');
 });
 
 describe('createFile', () => {
@@ -88,10 +102,6 @@ describe('createFile', () => {
 
       test('should update when dependency files and directories update', async () => {
         const fileManager = getFileManager({ watch: true });
-        const directoryA = file('directory-a');
-        const directoryB = file('directory-b');
-        const daa = file('directory-a', 'aa');
-        const dba = file('directory-b', 'ba');
         const dependencies = [
           fileA,
           fileB,
