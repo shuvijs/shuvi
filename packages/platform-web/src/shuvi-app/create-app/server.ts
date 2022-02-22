@@ -5,7 +5,8 @@ import {
   IAppState,
   IAppRenderFn,
   IApplicationCreaterServerContext,
-  IAppRouteConfig
+  IAppRouteConfig,
+  getAppStore
 } from '@shuvi/platform-core';
 import platform from '@shuvi/platform-core/lib/platform';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
@@ -23,11 +24,11 @@ export function createApp<
   }
 ) {
   const { req } = context;
+  const appStore = getAppStore(options.appState);
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
   });
-
   const router = createRouter({
     history,
     routes: getRoutes(routes, context)
@@ -37,7 +38,7 @@ export function createApp<
     AppComponent,
     router,
     context,
-    appState: options.appState,
+    appStore,
     render: options.render,
     getUserAppComponent
   });

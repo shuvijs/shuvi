@@ -10,7 +10,7 @@ const Error = userError || error;
 export default function ErrorPage({
   errorCode,
   errorDesc
-}: IAppState['error']) {
+}: Omit<IAppState['error'], 'hasError'>) {
   const defaultErrorMessage = DEFAULT_ERROR_MESSAGE[errorCode!];
   if (defaultErrorMessage) {
     if (errorDesc === undefined) errorDesc = defaultErrorMessage.errorDesc;

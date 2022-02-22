@@ -13,7 +13,9 @@ export function getErrorHandler(appStore: IAppStore): {
 } {
   return {
     errorHandler(errorCode?: SHUVI_ERROR_CODE | string, errorDesc?: string) {
-      const payload = {} as IPageError;
+      const payload = {
+        hasError: true
+      } as IPageError;
       if (typeof errorCode === 'number') {
         payload.errorCode = errorCode;
         payload.errorDesc = errorDesc;
@@ -27,6 +29,10 @@ export function getErrorHandler(appStore: IAppStore): {
       });
     },
     reset() {
+      const { error } = appStore.getState();
+      if (!error.hasError) {
+        return;
+      }
       appStore.dispatch({
         type: RESET_ERROR
       });

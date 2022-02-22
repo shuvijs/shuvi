@@ -1,16 +1,15 @@
 import { RESET_ERROR, UPDATE_ERROR, IPageErrorAction } from './actions';
 
-const DEFAULTERRORSTATE = {
+const DEFAULT_ERRORSTATE = {
   errorCode: undefined,
-  errorDesc: undefined
+  errorDesc: undefined,
+  hasError: false
 };
 
-const error = (state = DEFAULTERRORSTATE, action: IPageErrorAction) => {
+const error = (state = DEFAULT_ERRORSTATE, action: IPageErrorAction) => {
   switch (action.type) {
     case RESET_ERROR:
-      return {
-        ...DEFAULTERRORSTATE
-      };
+      return DEFAULT_ERRORSTATE;
     case UPDATE_ERROR:
       return {
         ...state,
