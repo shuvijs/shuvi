@@ -1,7 +1,6 @@
 import { createStore, Store } from '@shuvi/shared/lib/miniRedux';
 import rootReducer from './rootReducer';
 import { IPageError, IPageErrorAction } from './pageError/actions';
-import { getAppData } from '../helper';
 
 export type IAppState = {
   error: IPageError;
@@ -26,9 +25,8 @@ const getAppStore = (preloadedState?: IAppState) => {
   if (appStore) {
     return appStore;
   }
-  const appData = getAppData();
-  const { appState } = appData;
-  appStore = initialStore(appState as any);
+
+  appStore = initialStore(preloadedState as any);
 
   return appStore;
 };

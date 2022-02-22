@@ -1,7 +1,8 @@
 import {
   IAppState,
   IAppRenderFn,
-  IApplicationCreaterServerContext
+  IApplicationCreaterServerContext,
+  getAppStore
 } from '@shuvi/platform-core';
 import platform from '@shuvi/platform-core/lib/platform';
 import { IRouter } from '@shuvi/router';
@@ -18,13 +19,14 @@ export function createApp<
     appState?: AppState;
   }
 ) {
+  const appStore = getAppStore(options.appState);
   const router = undefined;
   return platform(
     {
       AppComponent: null,
       context,
       router: router as never,
-      appState: options.appState,
+      appStore,
       render: options.render
     },
     false

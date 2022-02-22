@@ -1,7 +1,7 @@
 import { IRouter } from '@shuvi/router';
 
 import { getManager, PluginManager } from './runtimeHooks';
-import { IAppStore, IAppState, getAppStore } from './appStore';
+import { IAppStore, IAppState } from './appStore';
 
 export interface ApplicationCreater<
   Context extends IContext,
@@ -61,12 +61,12 @@ export type IRerenderConfig = {
 export interface IApplicationOptions<
   Context extends IContext,
   Router extends IRouter,
-  AppState extends IAppState | undefined
+  AppStore extends IAppStore
 > {
   AppComponent: any;
   router: Router;
   context: Context;
-  appState: AppState;
+  appStore: AppStore;
   render: IAppRenderFn<Context, Router>;
   getUserAppComponent?: <T>(appComponent: T) => T;
 }
@@ -74,7 +74,7 @@ export interface IApplicationOptions<
 export class Application<
   Context extends IContext,
   Router extends IRouter = IRouter,
-  AppState extends IAppState | undefined = undefined
+  AppStore extends IAppStore = IAppStore
 > implements IApplication
 {
   AppComponent: any;
@@ -85,11 +85,11 @@ export class Application<
   private _renderFn: IAppRenderFn<Context, Router>;
   private _getUserAppComponent?: <T>(appComponent: T) => T;
 
-  constructor(options: IApplicationOptions<Context, Router, AppState>) {
+  constructor(options: IApplicationOptions<Context, Router, AppStore>) {
     this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;
-    this._appStore = getAppStore(options.appState);
+    this._appStore = options.appStore;
     this._renderFn = options.render;
     this._getUserAppComponent = options.getUserAppComponent;
     this.pluginManager = getManager();
