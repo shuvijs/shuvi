@@ -5,12 +5,12 @@ declare module '@shuvi/app/files/user/server' {
 }
 
 declare module '@shuvi/app/files/runtimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/platform-core';
+  import { IRuntimeConfig } from '@shuvi/runtime-core';
   declare const runtimneConfig: IRuntimeConfig | null;
   export default runtimneConfig;
 }
 
 declare module '@shuvi/app/files/setRuntimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/platform-core';
+  import { IRuntimeConfig } from '@shuvi/runtime-core';
   export default function setRuntimeConfig(config: IRuntimeConfig): void;
 }

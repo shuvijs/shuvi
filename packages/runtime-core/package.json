@@ -14,7 +14,8 @@
   "types": "lib/index.d.ts",
   "files": [
     "lib",
-    "esm"
+    "esm",
+    "template"
   ],
   "scripts": {
     "dev": "run-p watch:*",
@@ -29,8 +30,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
+    "@shuvi/toolpack": "0.0.1-pre.10",
+    "@shuvi/service": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10"
   },
   "devDependencies": {

@@ -1,4 +1,5 @@
 import { Application, IContext } from '../application';
+import { getAppStore } from '../appStore';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 
 function getApp({ render }: any = {}) {
@@ -17,7 +18,7 @@ function getApp({ render }: any = {}) {
         }
       ]
     }),
-    appState: undefined,
+    appStore: getAppStore(),
     async render(options) {
       return render && render(options);
     }
@@ -28,7 +29,9 @@ function getApp({ render }: any = {}) {
 describe('application', () => {
   test('should add createAppContext hook', async () => {
     const app = getApp();
-    const { hooks: { context } } = app.pluginManager
+    const {
+      hooks: { context }
+    } = app.pluginManager;
     context.use(context => {
       context.foo = 'bar';
       return context;
@@ -42,7 +45,9 @@ describe('application', () => {
     const render = jest.fn().mockReturnValue('render result');
     const app = getApp({ render });
     let renderResult;
-    const { hooks: { renderDone } } = app.pluginManager
+    const {
+      hooks: { renderDone }
+    } = app.pluginManager;
     renderDone.use(result => {
       renderResult = result;
     });
@@ -56,7 +61,9 @@ describe('application', () => {
 
   test('should wrap getAppComponent hook', async () => {
     const app = getApp();
-    const { hooks: { appComponent } } = app.pluginManager
+    const {
+      hooks: { appComponent }
+    } = app.pluginManager;
     appComponent.use((AppComponent: any, context: any) => {
       expect(context.test).toBe(true);
       const WrapApp = () => AppComponent;

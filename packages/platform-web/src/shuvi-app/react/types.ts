@@ -5,7 +5,7 @@ import {
   IViewClient,
   IViewServer,
   IAppRouteConfig
-} from '@shuvi/platform-core';
+} from '@shuvi/runtime-core';
 
 import { IRouter } from '@shuvi/router';
 

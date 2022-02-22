@@ -1,4 +1,4 @@
-import { IAppRouteConfig } from '@shuvi/platform-core';
+import { IAppRouteConfig } from '@shuvi/runtime-core';
 
 export const transformRoutes = (routes: IAppRouteConfig[]) => {
   return routes;

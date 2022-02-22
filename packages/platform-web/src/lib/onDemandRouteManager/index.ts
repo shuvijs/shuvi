@@ -1,11 +1,10 @@
-import { matchRoutes } from '@shuvi/platform-core';
+import { matchRoutes } from '@shuvi/runtime-core';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { clientManifest } from '@shuvi/service/lib/resources';
 import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
-import { DevMiddleware } from '@shuvi/service/lib/lib/devMiddleware'
+import { DevMiddleware } from '@shuvi/service/lib/lib/devMiddleware';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { getRoutes } from '../pageRoute'
-
+import { getRoutes } from '../pageRoute';
 
 export default class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
@@ -68,8 +67,7 @@ export default class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const matchedRoutes =
-      matchRoutes(getRoutes(), pathname) || [];
+    const matchedRoutes = matchRoutes(getRoutes(), pathname) || [];
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { component } }) =>
@@ -94,7 +92,6 @@ export default class OnDemandRouteManager {
     }
   }
 }
-
 
 export function acceptsHtml(
   header: string,

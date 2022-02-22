@@ -4,7 +4,7 @@ import {
   IRouteComponent as PlatformRouteComponent,
   IViewClient,
   IViewServer
-} from '@shuvi/platform-core';
+} from '@shuvi/runtime-core';
 
 export type IReactAppData = {
   appProps?: Record<string, any>;

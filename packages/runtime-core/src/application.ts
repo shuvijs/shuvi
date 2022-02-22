@@ -1,5 +1,4 @@
 import { IRouter } from '@shuvi/router';
-
 import { getManager, PluginManager } from './runtimeHooks';
 import { IAppStore, IAppState } from './appStore';
 
