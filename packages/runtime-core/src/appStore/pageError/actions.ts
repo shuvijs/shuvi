@@ -3,7 +3,7 @@ import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 export interface IPageError {
   errorCode: SHUVI_ERROR_CODE | undefined;
   errorDesc?: string;
-  isDefault: boolean;
+  hasError: boolean;
 }
 
 export const RESET_ERROR = 'RESET_ERROR';
