@@ -42,6 +42,7 @@ export function createApp<
   if (app) {
     return app;
   }
+  const appStore = getAppStore(options.appState);
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory();
@@ -65,7 +66,7 @@ export function createApp<
     AppComponent,
     router,
     context,
-    appState: options.appState,
+    appStore,
     render: options.render,
     getUserAppComponent
   });

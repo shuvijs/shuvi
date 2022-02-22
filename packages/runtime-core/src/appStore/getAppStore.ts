@@ -17,12 +17,15 @@ const initialStore = (preloadedState: IAppState) => {
 // for client, singleton mode
 // for server, return new store
 const getAppStore = (preloadedState?: IAppState) => {
+  // for server
   if (typeof window === 'undefined') {
     return initialStore(preloadedState as any);
   }
+  // for client is singleton, just init once
   if (appStore) {
     return appStore;
   }
+
   appStore = initialStore(preloadedState as any);
 
   return appStore;
