@@ -1,5 +1,4 @@
 import {
-  createSyncWaterfallHook,
   createAsyncSeriesWaterfallHook,
   createHookManager,
   createAsyncParallelHook,
@@ -14,10 +13,9 @@ import {
   BundlerDoneExtra,
   BundlerTargetDoneExtra,
   RuntimeService,
-  Resources,
-  IRuntimeConfig
+  Resources
 } from './pluginTypes';
-import { IPluginContext, IRuntimeOrServerPlugin } from './apiTypes';
+import { IPluginContext, IPlugin } from './apiTypes';
 
 export * from './pluginTypes';
 
@@ -47,32 +45,21 @@ const configWebpack = createAsyncSeriesWaterfallHook<
   WebpackChain,
   ConfigWebpackAssistant
 >();
-const modifyAsyncEntry = createSyncWaterfallHook<boolean>();
-const modifyRuntimeConfig = createAsyncSeriesWaterfallHook<
-  IRuntimeConfig,
-  void
->();
 const addExtraTarget = createAsyncParallelHook<
   ExtraTargetAssistant,
   void,
   TargetChain
 >();
-const addRuntimePlugin = createAsyncParallelHook<
-  void,
-  void,
-  string | string[] | IRuntimeOrServerPlugin | IRuntimeOrServerPlugin[]
->();
 const addServerPlugin = createAsyncParallelHook<
   void,
   void,
-  string | string[] | IRuntimeOrServerPlugin | IRuntimeOrServerPlugin[]
+  string | string[] | IPlugin | IPlugin[]
 >();
 const addResource = createAsyncParallelHook<
   void,
   void,
   Resources | Resources[]
 >();
-const addPolyfill = createAsyncParallelHook<void, void, string | string[]>();
 
 type AddRuntimeFileUtils = {
   createFile: typeof createFile;
@@ -90,7 +77,6 @@ const addRuntimeService = createAsyncParallelHook<
   void,
   RuntimeService | RuntimeService[]
 >();
-const addEntryCode = createAsyncParallelHook<void, void, string | string[]>();
 
 const internalPluginHooks = {
   afterInit,
@@ -99,16 +85,11 @@ const internalPluginHooks = {
   afterBundlerDone,
   afterBundlerTargetDone,
   configWebpack,
-  modifyAsyncEntry,
-  modifyRuntimeConfig,
   addExtraTarget,
-  addRuntimePlugin,
   addServerPlugin,
   addResource,
-  addPolyfill,
   addRuntimeFile,
-  addRuntimeService,
-  addEntryCode
+  addRuntimeService
 };
 
 export type InternalPluginHooks = typeof internalPluginHooks;

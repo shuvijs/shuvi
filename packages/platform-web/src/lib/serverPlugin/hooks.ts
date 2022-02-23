@@ -3,7 +3,7 @@ import {
   createAsyncSeriesWaterfallHook
 } from '@shuvi/hook';
 import { IncomingMessage, ServerResponse } from 'http';
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
+import { IHtmlAttrs, IHtmlTag } from '@shuvi/runtime-core';
 import { IRequest } from '@shuvi/service/lib/server/http-server';
 import { IServerMiddleware, IServerPluginConstructor } from '@shuvi/service';
 

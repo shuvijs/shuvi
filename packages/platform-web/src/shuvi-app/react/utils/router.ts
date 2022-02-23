@@ -5,7 +5,7 @@ import {
   IRouteComponentContext,
   IAppRouteConfig,
   IApplicationCreaterBase
-} from '@shuvi/platform-core';
+} from '@shuvi/runtime-core';
 import { createError } from './createError';
 
 const isServer = typeof window === 'undefined';

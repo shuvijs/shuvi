@@ -1,5 +1,5 @@
 import path from 'path';
-import { IRouteRecord, rankRouteBranches } from '@shuvi/platform-core';
+import { IRouteRecord, rankRouteBranches } from '@shuvi/runtime-core';
 
 export interface IMiddlewareRouteConfig {
   path: string;
@@ -7,7 +7,10 @@ export interface IMiddlewareRouteConfig {
   middlewares: string[];
 }
 
-type IMiddlewareRouteHandlerWithoutChildren = Omit<IMiddlewareRouteConfig, 'children'>;
+type IMiddlewareRouteHandlerWithoutChildren = Omit<
+  IMiddlewareRouteConfig,
+  'children'
+>;
 
 function flattenMiddlewareRoutes(
   middlewareRoutes: IMiddlewareRouteConfig[],
@@ -41,16 +44,28 @@ export function serializeMiddlewareRoutes(
     path.resolve('/', parentPath)
   );
   let rankmiddlewareRoutes = tempMiddlewareRoutes.map(
-    middlewareRoute => [middlewareRoute.path, middlewareRoute] as [string, typeof middlewareRoute]
+    middlewareRoute =>
+      [middlewareRoute.path, middlewareRoute] as [
+        string,
+        typeof middlewareRoute
+      ]
   );
   rankmiddlewareRoutes = rankRouteBranches(rankmiddlewareRoutes);
-  tempMiddlewareRoutes = rankmiddlewareRoutes.map(middlewareRoute => middlewareRoute[1]);
+  tempMiddlewareRoutes = rankmiddlewareRoutes.map(
+    middlewareRoute => middlewareRoute[1]
+  );
   let res = '';
   for (let index = 0; index < tempMiddlewareRoutes.length; index++) {
     const { middlewares, path } = tempMiddlewareRoutes[index];
     let strRoute = `\n{
       path: "${path}",
-      ${middlewares ? `middlewares: [${middlewares.map(middleware=>`require("${middleware}").middleware`).join(',')}],` : ''}
+      ${
+        middlewares
+          ? `middlewares: [${middlewares
+              .map(middleware => `require("${middleware}").middleware`)
+              .join(',')}],`
+          : ''
+      }
     },`;
     res += strRoute;
   }
@@ -62,7 +77,9 @@ export function pickMiddlewareAndPath(
 ): IMiddlewareRouteConfig[] {
   const res: IMiddlewareRouteConfig[] = [];
   for (let index = 0; index < middlewareRoutes.length; index++) {
-    const { path, middlewares, children } = middlewareRoutes[index] as IRouteRecord & {middlewares: any} ;
+    const { path, middlewares, children } = middlewareRoutes[
+      index
+    ] as IRouteRecord & { middlewares: any };
     const route = {
       path
     } as IMiddlewareRouteConfig;
@@ -87,19 +104,23 @@ export function normalizeMiddlewareRoutes(
   for (let index = 0; index < middlewareRoutes.length; index++) {
     const middlewareRoute = { ...middlewareRoutes[index] };
     if (middlewareRoute.middlewares) {
-      middlewareRoute.middlewares = middlewareRoute.middlewares.map(middleware=>{
-        const absPath = path.isAbsolute(middleware)
-          ? middleware
-          : path.resolve(option.pagesDir, middleware);
+      middlewareRoute.middlewares = middlewareRoute.middlewares.map(
+        middleware => {
+          const absPath = path.isAbsolute(middleware)
+            ? middleware
+            : path.resolve(option.pagesDir, middleware);
 
-        middleware = absPath.replace(/\\/g, '/');
-        return middleware;
-      })
-
+          middleware = absPath.replace(/\\/g, '/');
+          return middleware;
+        }
+      );
     }
 
     if (middlewareRoute.children && middlewareRoute.children.length > 0) {
-      middlewareRoute.children = normalizeMiddlewareRoutes(middlewareRoute.children, option);
+      middlewareRoute.children = normalizeMiddlewareRoutes(
+        middlewareRoute.children,
+        option
+      );
     }
     res.push(middlewareRoute);
   }
@@ -107,9 +128,14 @@ export function normalizeMiddlewareRoutes(
   return res;
 }
 
-export function getMiddlewareRoutesContentFromRawRoutes(rawRoutes: IRouteRecord[], pagesDir: string): string {
+export function getMiddlewareRoutesContentFromRawRoutes(
+  rawRoutes: IRouteRecord[],
+  pagesDir: string
+): string {
   const middlewareRoutes = pickMiddlewareAndPath(rawRoutes);
-  const normalizedRoutes = normalizeMiddlewareRoutes(middlewareRoutes, { pagesDir });
+  const normalizedRoutes = normalizeMiddlewareRoutes(middlewareRoutes, {
+    pagesDir
+  });
   const serialized = serializeMiddlewareRoutes(normalizedRoutes);
   const content = `export default ${serialized}`;
   return content;

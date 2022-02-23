@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useReducer } from 'react';
-import { IAppState, IAppStore } from '@shuvi/platform-core';
+import { IAppState, IAppStore } from '@shuvi/runtime-core';
 import { useIsomorphicEffect } from '@shuvi/router-react';
 
 export interface IAppContext {

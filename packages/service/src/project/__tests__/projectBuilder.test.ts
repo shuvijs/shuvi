@@ -39,18 +39,13 @@ describe('projectBuilder', () => {
       name: 'test.js',
       content: () => 'export default () => "test page"'
     });
-
-    app.addEntryCode('run()');
-    app.addPolyfill('path/toPolyfill');
     app.addRuntimeService('something to export', '*');
 
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['app/entry.js', /run()/],
       ['runtime/index.js', 'export * from "something to export"'],
-      ['test.js', 'export default () => "test page"'],
-      ['app/core/polyfill.js', 'import "path/toPolyfill"']
+      ['test.js', 'export default () => "test page"']
     ]);
   });
 
@@ -60,37 +55,26 @@ describe('projectBuilder', () => {
       content: () => 'export default () => "test page"'
     });
 
-    app.addEntryCode('run()');
-    app.addPolyfill('path/toPolyfill');
     app.addRuntimeService('something to export', '*');
 
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['app/entry.js', /run()/],
       ['runtime/index.js', 'export * from "something to export"'],
-      ['test.js', 'export default () => "test page"'],
-      ['app/core/polyfill.js', 'import "path/toPolyfill"']
+      ['test.js', 'export default () => "test page"']
     ]);
 
     // Change modules and content
-    app.addEntryCode('const a = 1');
-    app.addPolyfill('path/toPolyfill2');
     app.addRuntimeService('export2', '*');
 
     await wait(0);
 
     checkMatch([
-      ['app/entry.js', /run().*const a=1/s],
       [
         'runtime/index.js',
         'export * from "something to export"\nexport * from "export2"'
       ],
-      ['test.js', 'export default () => "test page"'],
-      [
-        'app/core/polyfill.js',
-        'import "path/toPolyfill"\nimport "path/toPolyfill2"'
-      ]
+      ['test.js', 'export default () => "test page"']
     ]);
 
     await app.stopBuild();
@@ -105,14 +89,12 @@ describe('projectBuilder', () => {
     });
 
     app.addRuntimeService('something to export', '*');
-    app.addPolyfill('path/toPolyfill');
 
     await app.build(BUILD_DIR);
 
     checkMatch([
       ['runtime/index.js', 'export * from "something to export"'],
-      ['test.js', 'export default () => "test page"'],
-      ['app/core/polyfill.js', 'import "path/toPolyfill"']
+      ['test.js', 'export default () => "test page"']
     ]);
   });
 

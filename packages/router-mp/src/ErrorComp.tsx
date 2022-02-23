@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from '@tarojs/components';
-import { IAppState } from '@shuvi/platform-core';
+import { IAppState } from '@shuvi/runtime-core';
 
 const style = {
   container: {

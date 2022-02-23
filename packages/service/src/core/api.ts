@@ -5,17 +5,11 @@ import {
   IPaths,
   IShuviMode,
   IPhase,
-  IRuntimeOrServerPlugin,
+  IPlugin,
   IPlatform,
   IPluginContext
 } from './apiTypes';
-import {
-  createFile,
-  fileUtils,
-  ProjectBuilder,
-  UserModule,
-  FileOptions
-} from '../project';
+import { createFile, fileUtils, ProjectBuilder, FileOptions } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { PUBLIC_PATH } from '../constants';
 import { loadConfig, resolveConfig, mergeConfig } from './config';
@@ -24,6 +18,7 @@ import { setupApp } from './setupApp';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';
 import { getPlugins } from './getPlugins';
+import { normalizePlugin } from '../server';
 import { _setResourceEnv } from '../resources';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
@@ -48,14 +43,13 @@ class Api {
   private _phase: IPhase;
   private _configFile?: string;
   private _userConfig: UserConfig;
-  private _serverPlugins: IRuntimeOrServerPlugin[] = [];
   private _config!: Config;
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
   private _platform!: IPlatform;
   private _pluginContext!: IPluginContext;
   pluginManager: PluginManager;
-  serverPlugins: IRuntimeOrServerPlugin[] = [];
+  serverPlugins: IPlugin[] = [];
 
   constructor({ cwd, mode, config, phase, configFile }: IApiOPtions) {
     this._cwd = cwd;
@@ -107,12 +101,7 @@ class Api {
     const config = (this._config = resolveConfig({
       config: userConfig
     }));
-    // init plugins
-    const { runner, setContext, usePlugin } = this.pluginManager;
-    const allPlugins = await getPlugins(this._cwd, config);
-    usePlugin(...allPlugins);
 
-    await this.initPlatformPlugins();
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: config.outputPath,
@@ -137,7 +126,14 @@ class Api {
       resolveBuildFile: this.resolveBuildFile.bind(this),
       resolvePublicFile: this.resolvePublicFile.bind(this)
     };
+
+    const { runner, setContext, usePlugin } = this.pluginManager;
     setContext(this._pluginContext);
+    // init plugins
+    const allPlugins = await getPlugins(this._cwd, config);
+    usePlugin(...allPlugins);
+
+    await this.initPlatformPlugins();
 
     // must run first so that platform could get serverPlugin
     await this.initRuntimeAndServerPlugin();
@@ -166,13 +162,23 @@ class Api {
     const platformConfig = this._config.platform;
     this._platform = getPlatform(platformConfig.name);
     const platformContent = await this.platform(platformConfig);
-    this.pluginManager.usePlugin(...platformContent.plugins);
-    this.setPlatformModule(platformContent.platformModule);
+    const { usePlugin, createPlugin } = this.pluginManager;
+    usePlugin(...platformContent.plugins);
+    usePlugin(
+      createPlugin({
+        afterInit: async context => {
+          const internalRuntimeFiles =
+            await platformContent.getInternalRuntimeFiles(context);
+          internalRuntimeFiles.forEach(file => {
+            this.addInternalRuntimeFile(file);
+          });
+        }
+      })
+    );
   }
 
   async initProjectBuilderConfigs() {
     const runner = this.pluginManager.runner;
-    const appPolyfills = (await runner.addPolyfill()).flat();
     const addRuntimeFileUtils = {
       createFile,
       getAllFiles: fileUtils.getAllFiles
@@ -180,19 +186,10 @@ class Api {
     const appRuntimeFiles = (
       await runner.addRuntimeFile(addRuntimeFileUtils)
     ).flat();
-    const appEntryCodes = (await runner.addEntryCode()).flat();
     const runtimeServices = (await runner.addRuntimeService()).flat();
 
-    appPolyfills.forEach(file => {
-      this.addAppPolyfill(file);
-    });
-
     appRuntimeFiles.forEach(options => {
-      this.addAppFile(options);
-    });
-
-    appEntryCodes.forEach(content => {
-      this.addEntryCode(content);
+      this.addRuntimeFile(options);
     });
 
     runtimeServices.forEach(({ source, exported, filepath }) => {
@@ -200,38 +197,12 @@ class Api {
     });
   }
   async initRuntimeAndServerPlugin() {
-    const normalize = (
-      x: string | IRuntimeOrServerPlugin
-    ): IRuntimeOrServerPlugin => {
-      if (typeof x === 'string') {
-        return {
-          plugin: x
-        };
-      }
-      return x;
-    };
-    const serverPlugins: IRuntimeOrServerPlugin[] = (
+    const serverPlugins: IPlugin[] = (
       await this.pluginManager.runner.addServerPlugin()
     )
       .flat()
-      .map(normalize);
-    const runtimePlugins = (await this.pluginManager.runner.addRuntimePlugin())
-      .flat()
-      .map(normalize);
+      .map(normalizePlugin);
     this.serverPlugins.push(...serverPlugins);
-    this.addRuntimePlugin(...runtimePlugins);
-  }
-
-  setRuntimeConfigContent(content: string | null) {
-    this._projectBuilder.setRuntimeConfigContent(content);
-  }
-
-  setUserModule(userModule: Partial<UserModule>) {
-    this._projectBuilder.setUserModule(userModule);
-  }
-
-  setPlatformModule(module: string) {
-    this._projectBuilder.setPlatformModule(module);
   }
 
   removeBuiltFiles() {
@@ -242,21 +213,16 @@ class Api {
   async buildApp(): Promise<void> {
     await setupApp(this);
     this.removeBuiltFiles();
-    this._projectBuilder.validateCompleteness('api');
     await this._projectBuilder.build(this.paths.privateDir);
   }
 
-  addEntryCode(content: string): void {
-    this._projectBuilder.addEntryCode(content);
-  }
-
-  setEntryWrapperContent(content: string) {
-    this._projectBuilder.setEntryWrapperContent(content);
-  }
-
-  addAppFile(options: FileOptions): void {
+  addRuntimeFile(options: FileOptions): void {
     // make addAppFile root as .shuvi/app/files/
     options.name = path.join('app', 'files', path.resolve('/', options.name));
+    this._projectBuilder.addFile(options);
+  }
+
+  addInternalRuntimeFile(options: FileOptions): void {
     this._projectBuilder.addFile(options);
   }
 
@@ -266,18 +232,6 @@ class Api {
 
   addResources(key: string, requireStr?: string): void {
     this._projectBuilder.addResources(key, requireStr);
-  }
-
-  addAppPolyfill(file: string): void {
-    this._projectBuilder.addPolyfill(file);
-  }
-
-  addRuntimePlugin(...plugins: IRuntimeOrServerPlugin[]): void {
-    this._projectBuilder.addRuntimePlugin(...plugins);
-  }
-
-  addServerPlugin(config: IRuntimeOrServerPlugin) {
-    this._serverPlugins.push(config);
   }
 
   getAssetPublicUrl(...paths: string[]): string {

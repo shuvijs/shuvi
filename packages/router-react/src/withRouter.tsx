@@ -1,5 +1,5 @@
 import { IRouter } from '@shuvi/router';
-import { IRouteComponent } from '@shuvi/platform-core';
+import { IRouteComponent } from '@shuvi/runtime-core';
 import React from 'react';
 import { useRouter } from './hooks';
 

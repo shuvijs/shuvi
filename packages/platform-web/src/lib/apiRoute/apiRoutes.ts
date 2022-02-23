@@ -1,5 +1,5 @@
 import path from 'path';
-import { IRouteRecord, rankRouteBranches } from '@shuvi/platform-core';
+import { IRouteRecord, rankRouteBranches } from '@shuvi/runtime-core';
 
 export interface IApiRouteConfig {
   path: string;
@@ -103,12 +103,24 @@ export function normalizeApiRoutes(
   return res;
 }
 
-export const getApiRoutesContent = (apiRoutes: IApiRouteConfig[], apisDir: string, prefix?: string): string => {
-  const normalizedRoutes = normalizeApiRoutes(apiRoutes, { apisDir })
+export const getApiRoutesContent = (
+  apiRoutes: IApiRouteConfig[],
+  apisDir: string,
+  prefix?: string
+): string => {
+  const normalizedRoutes = normalizeApiRoutes(apiRoutes, { apisDir });
   const serialized = serializeApiRoutes(normalizedRoutes, prefix);
   return `export default ${serialized}`;
-}
+};
 
-export const getApiRoutesContentFromRawRoutes = (rawRoutes: IRouteRecord[], apisDir: string, prefix?: string): string => {
-  return getApiRoutesContent(renameFilepathToModule(rawRoutes), apisDir, prefix)
-}
+export const getApiRoutesContentFromRawRoutes = (
+  rawRoutes: IRouteRecord[],
+  apisDir: string,
+  prefix?: string
+): string => {
+  return getApiRoutesContent(
+    renameFilepathToModule(rawRoutes),
+    apisDir,
+    prefix
+  );
+};

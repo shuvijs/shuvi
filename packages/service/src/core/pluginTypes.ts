@@ -4,8 +4,6 @@ import webpack, { Configuration } from 'webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import { IShuviMode } from './apiTypes';
 
-export { IRuntimeConfig } from '@shuvi/platform-core'
-
 export type ExtraTargetAssistant = {
   createConfig(options: IWebpackConfigOptions): WebpackChain;
   mode: IShuviMode;

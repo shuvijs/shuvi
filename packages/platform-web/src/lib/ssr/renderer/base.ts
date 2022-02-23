@@ -1,5 +1,4 @@
-import { IAppData } from '@shuvi/runtime-core';
-import { IHtmlTag } from '@shuvi/platform-core';
+import { IAppData, IHtmlTag } from '@shuvi/runtime-core';
 
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
