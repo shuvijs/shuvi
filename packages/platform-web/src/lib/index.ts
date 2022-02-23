@@ -1,10 +1,12 @@
 import fse from 'fs-extra';
 import path from 'path';
-import { IRuntimeConfig } from '@shuvi/platform-core';
+import { IRuntimeConfig } from '@shuvi/runtime-core';
 import {
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
+  BUILD_CLIENT_RUNTIME_MAIN,
+  BUILD_CLIENT_RUNTIME_POLYFILL,
   IRequest,
   IPlatform,
   createPlugin,
@@ -13,9 +15,7 @@ import {
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { initServerPlugins, getManager } from '@shuvi/service';
-import resolveRuntimeCoreFile from '@shuvi/service/lib/lib/resolveRuntimeCoreFile';
-import { setRuntimeConfig } from '@shuvi/service/lib/lib/runtimeConfig';
-import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
+import { setRuntimeConfig } from '@shuvi/platform-shared/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import {
@@ -24,6 +24,11 @@ import {
 } from '@shuvi/service/lib/project/file-utils';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import statePlugin from '@shuvi/plugins/lib/model';
+import {
+  addHooksPlugin,
+  getInternalRuntimeFilesCreator,
+  getPublicRuntimeConfig
+} from '@shuvi/platform-shared';
 import generateResource from './generateResource';
 import {
   getApiRoutesContent,
@@ -82,8 +87,7 @@ async function buildHtml({
 }
 
 const platform: IPlatform = async ({ framework = 'react' } = {}) => {
-  const platformFramework: IPlatform =
-    require(`./targets/${framework}`).default;
+  const platformFramework = require(`./targets/${framework}`).default;
   const platformFrameworkContent = await platformFramework();
   let publicRuntimeConfig: IRuntimeConfig;
   const mainPlugin = createPlugin({
@@ -252,7 +256,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       const setRuntimeConfigFile = createFile({
         name: 'setRuntimeConfig.js',
         content: () =>
-          `export { setRuntimeConfig as default } from '@shuvi/service/lib/lib/runtimeConfig'`
+          `export { setRuntimeConfig as default } from '@shuvi/platform-shared/lib/lib/runtimeConfig'`
       });
 
       return [
@@ -266,20 +270,17 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         setRuntimeConfigFile
       ];
     },
-    addEntryCode: () => {
-      return `import "${resolveAppFile('entry', 'client')}"`;
-    },
     addRuntimeService: () => [
       {
         source: '@shuvi/platform-web/lib/types',
         exported: '* as RuntimeServer'
       },
       {
-        source: '@shuvi/service/lib/lib/runtimeConfig',
+        source: '@shuvi/platform-shared/lib/lib/runtimeConfig',
         exported: '{ default as getRuntimeConfig }'
       },
       {
-        source: resolveRuntimeCoreFile('helper/getPageData'),
+        source: require.resolve('@shuvi/runtime-core/lib/helper/getPageData'),
         exported: '{ getPageData }'
       }
     ],
@@ -301,6 +302,15 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       require.resolve('./serverPlugin/internalMiddlewares'),
       require.resolve('./serverPlugin/customServerFile')
     ],
+    configWebpack: chain => {
+      chain.merge({
+        entry: {
+          [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry'],
+          [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
+        }
+      });
+      return chain;
+    },
     addResource: context => generateResource(context),
     afterBuild: async context => {
       if (
@@ -315,9 +325,25 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       }
     }
   });
+
+  const platformModule = platformFrameworkContent.platformModule as string;
+  const entry = `import "${resolveAppFile('entry', 'client')}"`;
+  const polyfills = platformFrameworkContent.polyfills as string[];
+
+  const getInternalRuntimeFiles = getInternalRuntimeFilesCreator(
+    platformModule,
+    entry,
+    polyfills
+  );
+
   return {
-    plugins: [mainPlugin, statePlugin, ...platformFrameworkContent.plugins],
-    platformModule: platformFrameworkContent.platformModule
+    plugins: [
+      mainPlugin,
+      statePlugin,
+      addHooksPlugin,
+      ...platformFrameworkContent.plugins
+    ],
+    getInternalRuntimeFiles
   };
 };
 

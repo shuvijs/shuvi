@@ -1,9 +1,9 @@
 import { createHash } from 'crypto';
 import path from 'path';
-import { renameFilepathToComponent } from '@shuvi/service/lib/route'
+import { renameFilepathToComponent } from '@shuvi/service/lib/route';
 import { IUserRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { IRouteRecord } from '@shuvi/platform-core';
+import { IRouteRecord } from '@shuvi/runtime-core';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
@@ -81,7 +81,10 @@ export function normalizeRoutes(
   return res;
 }
 
-export const getNormalizedRoutes = (routes: IUserRouteConfig[], componentDir: string) => {
+export const getNormalizedRoutes = (
+  routes: IUserRouteConfig[],
+  componentDir: string
+) => {
   const res: IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
@@ -99,16 +102,25 @@ export const getNormalizedRoutes = (routes: IUserRouteConfig[], componentDir: st
     res.push(route);
   }
   return res;
-}
+};
 
-export const getRoutesContent = (routes: IUserRouteConfig[], componentDir: string): string => {
+export const getRoutesContent = (
+  routes: IUserRouteConfig[],
+  componentDir: string
+): string => {
   const serialized = serializeRoutes(routes);
   const routesContent = `export default ${serialized}`;
-  return routesContent
-}
+  return routesContent;
+};
 
-export const getRoutesFromRawRoutes = (rawRoutes: IRouteRecord[], componentDir: string): IUserRouteConfig[] => {
-  return getNormalizedRoutes(renameFilepathToComponent(rawRoutes), componentDir)
-}
+export const getRoutesFromRawRoutes = (
+  rawRoutes: IRouteRecord[],
+  componentDir: string
+): IUserRouteConfig[] => {
+  return getNormalizedRoutes(
+    renameFilepathToComponent(rawRoutes),
+    componentDir
+  );
+};
 
-export * from './store'
+export * from './store';

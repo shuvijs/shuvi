@@ -4,7 +4,7 @@ import {
   isPluginInstance,
   HookMap
 } from '@shuvi/hook';
-import { IRuntimeOrServerPlugin, IPluginContext } from '../core';
+import { IPlugin, IPluginContext } from '../core';
 import { IServerMiddleware, IProxy } from './pluginTypes';
 import { DevMiddleware } from '../lib/devMiddleware';
 
@@ -41,10 +41,9 @@ const addMiddleware = createAsyncParallelHook<
   IServerMiddleware | IServerMiddleware[]
 >();
 
-const onListen =
-  createAsyncParallelHook<{ port: number; hostname?: string }>();
+const onListen = createAsyncParallelHook<{ port: number; hostname?: string }>();
 
-const addProxy = createAsyncParallelHook<void, void, IProxy>()
+const addProxy = createAsyncParallelHook<void, void, IProxy>();
 
 const internalHooks = {
   addMiddlewareBeforeDevMiddleware,
@@ -73,7 +72,7 @@ const resolvePlugin = (path: string) => {
 
 export const initServerPlugins = (
   manager: PluginManager,
-  serverPlugins: IRuntimeOrServerPlugin[],
+  serverPlugins: IPlugin[],
   pluginContext: IPluginContext
 ): IServerPluginContext => {
   const serverContext = Object.assign(
@@ -99,4 +98,13 @@ export const initServerPlugins = (
     }
   });
   return serverContext;
+};
+
+export const normalizePlugin = (x: string | IPlugin): IPlugin => {
+  if (typeof x === 'string') {
+    return {
+      plugin: x
+    };
+  }
+  return x;
 };

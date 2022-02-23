@@ -4,11 +4,7 @@
     "rootDir": "./src",
     "module": "esnext",
     "outDir": "esm",
-    "lib": ["esnext", "DOM"],
-    "types": [
-      "node",
-      "webpack-env"
-    ]
+    "lib": ["esnext", "DOM"]
   },
   "include": [
     "src"

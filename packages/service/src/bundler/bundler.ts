@@ -13,17 +13,9 @@ import webpack, {
 import { IPluginContext } from '../core';
 import { Target, TargetChain } from '../core/plugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
-import {
-  createWebpackConfig,
-  IWebpackConfigOptions,
-  IWebpackEntry
-} from './config';
+import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import {
-  BUILD_DEFAULT_DIR,
-  BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_POLYFILL
-} from '../constants';
+import { BUILD_DEFAULT_DIR } from '../constants';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 
 type CompilerErr = {
@@ -266,17 +258,11 @@ class WebpackBundler {
   }
 
   private initDefaultBuildTarget(): TargetChain[] {
-    function getDefaultEntry(_cliContext: IPluginContext): IWebpackEntry {
-      return {
-        [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry-wrapper'],
-        [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
-      };
-    }
     const defaultWebpackHelpers = webpackHelpers();
     const defaultChain = createWebpackConfig(this._cliContext, {
       name: BUNDLER_DEFAULT_TARGET,
       node: false,
-      entry: getDefaultEntry(this._cliContext),
+      entry: {},
       outputDir: BUILD_DEFAULT_DIR,
       webpackHelpers: defaultWebpackHelpers
     });

@@ -11,13 +11,17 @@ import {
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
-import { getPublicRuntimeConfig } from '@shuvi/service/lib/lib/getPublicRuntimeConfig';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import { renameFilepathToComponent } from '@shuvi/service/lib/route';
 import {
   getUserCustomFileCandidates,
   getFisrtModuleExport
 } from '@shuvi/service/lib/project/file-utils';
+import {
+  addHooksPlugin,
+  getInternalRuntimeFilesCreator,
+  getPublicRuntimeConfig
+} from '@shuvi/platform-shared';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
@@ -92,9 +96,19 @@ export default abstract class PlatformMpBase {
   }
 
   getPlatformContent(): IPlatformContent {
+    const platformModule = resolveAppFile('index');
+    const entry = `import "${this.entryPath || resolveAppFile('entry')}"`;
+    const polyfills = [
+      resolveDep('react-app-polyfill/ie11'),
+      resolveDep('react-app-polyfill/stable')
+    ];
     return {
       plugins: this.getPlugins() as any,
-      platformModule: resolveAppFile('index')
+      getInternalRuntimeFiles: getInternalRuntimeFilesCreator(
+        platformModule,
+        entry,
+        polyfills
+      )
     };
   }
 
@@ -106,7 +120,8 @@ export default abstract class PlatformMpBase {
       this.getSetupAppPlugin(),
       this.getSetupRoutesPlugin(),
       this.getConfigWebpackPlugin(),
-      this.getRuntimeConfigPlugin()
+      this.getRuntimeConfigPlugin(),
+      addHooksPlugin
     ].filter(Boolean);
   }
 
@@ -130,12 +145,12 @@ export default abstract class PlatformMpBase {
         const setRuntimeConfigFile = createFile({
           name: 'setRuntimeConfig.js',
           content: () =>
-            `export { setRuntimeConfig as default } from '@shuvi/service/lib/lib/runtimeConfig'`
+            `export { setRuntimeConfig as default } from '@shuvi/platform-shared/lib/lib/runtimeConfig'`
         });
         return [runtimeConfigFile, setRuntimeConfigFile];
       },
       addRuntimeService: () => ({
-        source: '@shuvi/service/lib/lib/runtimeConfig',
+        source: '@shuvi/platform-shared/lib/lib/runtimeConfig',
         exported: '{ default as getRuntimeConfig }'
       })
     });
@@ -213,13 +228,6 @@ export default abstract class PlatformMpBase {
           );
         }
       },
-      addEntryCode: () => {
-        return `import "${this.entryPath || resolveAppFile('entry')}"`;
-      },
-      addPolyfill: () => [
-        resolveDep('react-app-polyfill/ie11'),
-        resolveDep('react-app-polyfill/stable')
-      ],
       addRuntimeService: () => [
         {
           source: resolveAppFile('App'),
