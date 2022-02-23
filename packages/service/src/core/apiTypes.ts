@@ -1,9 +1,10 @@
-import { IRuntimeConfig } from '@shuvi/platform-core';
 import {
   ICliPluginConstructor,
   ICliPluginInstance,
   PluginRunner
 } from './plugin';
+
+import { FileOptions } from '../project';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -83,7 +84,7 @@ export declare type IPhase =
   | 'PHASE_DEVELOPMENT_SERVER'
   | 'PHASE_INSPECT_WEBPACK';
 
-export type IRuntimeOrServerPlugin = {
+export type IPlugin = {
   plugin: string;
   options?: any;
 };
@@ -97,7 +98,9 @@ export interface IPlatformConfig {
 
 export type IPlatformContent = {
   plugins: ICliPluginInstance[];
-  platformModule: string;
+  getInternalRuntimeFiles: (
+    context: IPluginContext
+  ) => FileOptions[] | Promise<FileOptions[]>;
 };
 
 export type IPlatform = (
@@ -117,6 +120,8 @@ export interface IApiConfig {
    */
   bodyParser?: { sizeLimit: number | string } | boolean;
 }
+
+export type IRuntimeConfig = Record<string, string>;
 
 export interface UserConfig {
   outputPath?: string;
@@ -156,7 +161,7 @@ export type IPluginContext = {
   config: Config;
   phase: IPhase;
   pluginRunner: PluginRunner;
-  serverPlugins: IRuntimeOrServerPlugin[];
+  serverPlugins: IPlugin[];
   assetPublicPath: string;
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

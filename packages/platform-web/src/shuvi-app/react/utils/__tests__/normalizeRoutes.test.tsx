@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { IAppRouteConfig } from '@shuvi/platform-core';
+import { IAppRouteConfig } from '@shuvi/runtime-core';
 import { RouterView } from '@shuvi/router-react';
 import { renderRoutes } from './utils';
 import { ReactTestRenderer, act } from 'react-test-renderer';

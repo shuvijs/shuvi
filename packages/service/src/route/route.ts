@@ -1,6 +1,6 @@
 import { join, relative } from 'path';
-import { IUserRouteConfig } from '../core/_types'
-import { IRouteRecord } from '@shuvi/platform-core';
+import { IUserRouteConfig } from '../core';
+import { IRouteRecord } from '@shuvi/router';
 
 import parseDynamicPath from './parseDynamicPath';
 
@@ -100,53 +100,57 @@ export const generateRoute = (
 ) => {
   const routes: IRouteRecord[] = [];
   const hasMiddleware = !!fileToTransform[MIDDLEWAREFILE];
-  if(hasMiddleware){
+  if (hasMiddleware) {
     delete fileToTransform[MIDDLEWAREFILE];
-    const middlewarePath = join(pageDirectory, MIDDLEWAREFILE)
+    const middlewarePath = join(pageDirectory, MIDDLEWAREFILE);
     middlewareArr.push(middlewarePath);
   }
-  Object.entries(fileToTransform).forEach(
-    ([fileName, nestedRoute], _, arr) => {
-      let route: IRouteRecord;
-      let routePath = normalizeRoutePath(normalizeFilePath(fileName));
-      const isDirectory = Object.values(nestedRoute).length > 0;
-      route = {
-        path: routePath,
-        middlewares: middlewareArr
-      } as IRouteRecord;
+  Object.entries(fileToTransform).forEach(([fileName, nestedRoute], _, arr) => {
+    let route: IRouteRecord;
+    let routePath = normalizeRoutePath(normalizeFilePath(fileName));
+    const isDirectory = Object.values(nestedRoute).length > 0;
+    route = {
+      path: routePath,
+      middlewares: middlewareArr
+    } as IRouteRecord;
 
-      // if a directory have _layout, treat it as its own source
-      if (isDirectory) {
-        if (!ignoreLayout) {
-          const layoutFile = Object.keys(nestedRoute).find(route =>
-            isLayout(normalizeRoutePath(normalizeFilePath(route)))
-          );
-          if (layoutFile) {
-            route.filepath = join(pageDirectory, fileName, layoutFile);
-            // delete _layout
-            delete nestedRoute[layoutFile];
-          }
+    // if a directory have _layout, treat it as its own source
+    if (isDirectory) {
+      if (!ignoreLayout) {
+        const layoutFile = Object.keys(nestedRoute).find(route =>
+          isLayout(normalizeRoutePath(normalizeFilePath(route)))
+        );
+        if (layoutFile) {
+          route.filepath = join(pageDirectory, fileName, layoutFile);
+          // delete _layout
+          delete nestedRoute[layoutFile];
         }
-        route.children = generateRoute(
-          nestedRoute,
-          join(pageDirectory, fileName),
-          ignoreLayout,
-          middlewareArr.slice()
-        ); // inner directory
-      } else {
-        route.filepath = join(pageDirectory, fileName);
       }
-      routes.push(route);
+      route.children = generateRoute(
+        nestedRoute,
+        join(pageDirectory, fileName),
+        ignoreLayout,
+        middlewareArr.slice()
+      ); // inner directory
+    } else {
+      route.filepath = join(pageDirectory, fileName);
     }
-  );
+    routes.push(route);
+  });
   return routes;
 };
 
-export const getRoutesFromFiles = (files: string[], filesDir: string, ignoreLayout: boolean = false) :IRouteRecord[] => {
-  const filteredFiles = files.map(file => relative(filesDir, file)).filter(filterRouteFile)
+export const getRoutesFromFiles = (
+  files: string[],
+  filesDir: string,
+  ignoreLayout: boolean = false
+): IRouteRecord[] => {
+  const filteredFiles = files
+    .map(file => relative(filesDir, file))
+    .filter(filterRouteFile);
   const transformedFiles = transformFilesObject(filteredFiles, ignoreLayout);
   return generateRoute(transformedFiles, filesDir, ignoreLayout, []);
-}
+};
 
 export function renameFilepathToComponent(
   routes: IRouteRecord[]

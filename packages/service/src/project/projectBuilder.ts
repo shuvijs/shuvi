@@ -1,55 +1,11 @@
 import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
-import { getFilePresets } from './file-presets';
 import { getExportsFromObject, getContentProxyObj } from './file-utils';
-import { IRuntimeOrServerPlugin } from '../core';
-import {
-  ProjectContext,
-  createProjectContext,
-  UserModule
-} from './projectContext';
+import { ProjectContext, createProjectContext } from './projectContext';
 
 interface ProjectBuilderOptions {
   static?: boolean;
 }
-
-type KeyOfProjectBuilder = keyof ProjectBuilder;
-type KeyRelativeMethod = KeyOfProjectBuilder | KeyOfProjectBuilder[];
-interface ContextValidatingRule {
-  ignore?: boolean;
-  method: KeyRelativeMethod;
-}
-
-type ContextValidatingRuleMap = {
-  [key in keyof ProjectContext]: KeyRelativeMethod | ContextValidatingRule;
-};
-
-const contextValidatingRuleMap: ContextValidatingRuleMap = {
-  entryCodes: 'addEntryCode',
-  entryWrapperContent: 'setEntryWrapperContent',
-  polyfills: {
-    ignore: true,
-    method: 'addPolyfill'
-  },
-  runtimeServices: {
-    ignore: true,
-    method: 'addRuntimeService'
-  },
-  resources: {
-    ignore: true,
-    method: 'addResources'
-  },
-  runtimePlugins: {
-    ignore: true,
-    method: 'addRuntimePlugin'
-  },
-  runtimeConfigContent: {
-    ignore: true,
-    method: 'setRuntimeConfigContent'
-  },
-  platformModule: 'setPlatformModule',
-  userModule: 'setUserModule'
-};
 
 const isTruthy = (value: unknown, recursive = true): boolean => {
   if (!value) return false;
@@ -77,7 +33,6 @@ const isTruthy = (value: unknown, recursive = true): boolean => {
 class ProjectBuilder {
   private _projectContext: ProjectContext;
   private _fileManager: FileManager;
-  private _internalFiles: FileOptions[];
 
   constructor(option: ProjectBuilderOptions = {}) {
     this._projectContext = createProjectContext();
@@ -85,42 +40,6 @@ class ProjectBuilder {
       watch: !option.static,
       context: this._projectContext
     });
-    this._internalFiles = getFilePresets();
-    this._internalFiles.forEach((file: FileOptions) => {
-      this._fileManager.addFile(file);
-    });
-  }
-
-  setRuntimeConfigContent(content: string | null) {
-    this._projectContext.runtimeConfigContent = content;
-  }
-
-  addEntryCode(content: string) {
-    this._projectContext.entryCodes.push(content);
-  }
-
-  setEntryWrapperContent(content: string) {
-    this._projectContext.entryWrapperContent = content;
-  }
-
-  addPolyfill(file: string) {
-    if (!this._projectContext.polyfills.includes(file)) {
-      this._projectContext.polyfills.push(file);
-    }
-  }
-
-  addRuntimePlugin(...plugins: IRuntimeOrServerPlugin[]) {
-    this._projectContext.runtimePlugins.push(...plugins);
-  }
-
-  setUserModule(userModule: Partial<UserModule>) {
-    let key: keyof UserModule;
-    for (key in userModule) {
-      this._projectContext.userModule[key] = userModule[key] || '';
-    }
-  }
-  setPlatformModule(module: string) {
-    this._projectContext.platformModule = module;
   }
   addRuntimeService(
     source: string,
@@ -208,28 +127,6 @@ class ProjectBuilder {
   async stopBuild(): Promise<void> {
     await this._fileManager.unmount();
   }
-  /**
-   * will throw an error if validate fails
-   */
-  validateCompleteness(caller: string): void {
-    let key: keyof ProjectContext;
-    for (key in contextValidatingRuleMap) {
-      const rule = contextValidatingRuleMap[key];
-      if (rule && (rule as ContextValidatingRule).ignore) {
-        continue;
-      }
-      const contextValue = this._projectContext[key];
-      if (!isTruthy(contextValue)) {
-        const method =
-          (rule as ContextValidatingRule).method || (rule as KeyRelativeMethod);
-        const methods = Array.isArray(method) ? method : [method];
-        const warningText = `Shuvi-app file completeness validation failed. ${key} not set. Please make sure that ${methods
-          .map((x: string) => `${caller}.${x}`)
-          .join(' or ')} has been called`;
-        throw new Error(warningText);
-      }
-    }
-  }
 }
 
-export { ProjectBuilder, UserModule };
+export { ProjectBuilder };

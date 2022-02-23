@@ -7,8 +7,8 @@ import {
   IApplicationCreaterServerContext,
   IAppRouteConfig,
   getAppStore
-} from '@shuvi/platform-core';
-import platform from '@shuvi/platform-core/lib/platform';
+} from '@shuvi/runtime-core';
+import platform from '@shuvi/runtime-core/lib/platform';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 
 export function createApp<

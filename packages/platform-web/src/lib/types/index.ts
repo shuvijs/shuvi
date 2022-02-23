@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-core';
+import { IHtmlAttrs, IHtmlTag } from '@shuvi/runtime-core';
 
 import { IRequest, IRequestHandlerWithNext } from '@shuvi/service';
 import { IApiRequestHandler } from '../apiRoute/apiRouteHandler';

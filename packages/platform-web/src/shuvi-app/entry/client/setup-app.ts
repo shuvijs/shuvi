@@ -3,7 +3,7 @@ import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
 // we need to init init renderer before import AppComponent
 import { view } from '@shuvi/app/core/platform';
 import { IRouter } from '@shuvi/router';
-import { getAppData, IAppRouteConfig } from '@shuvi/platform-core';
+import { getAppData, IAppRouteConfig } from '@shuvi/runtime-core';
 import { createApp } from '../../create-app/client';
 
 const appData = getAppData();
