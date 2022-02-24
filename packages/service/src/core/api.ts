@@ -13,7 +13,7 @@ import { createFile, fileUtils, ProjectBuilder, FileOptions } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { PUBLIC_PATH } from '../constants';
 import { loadConfig, resolveConfig, mergeConfig } from './config';
-import { getManager, PluginManager, Resources } from './plugin';
+import { getManager, PluginManager, Resources } from './lifecycle';
 import { setupApp } from './setupApp';
 import { getPaths } from './paths';
 import rimraf from 'rimraf';

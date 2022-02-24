@@ -1,5 +1,5 @@
 import { IRouter } from '@shuvi/router';
-import { getManager, PluginManager } from './runtimeHooks';
+import { getManager, PluginManager } from './lifecycle';
 import { IAppStore, IAppState } from './appStore';
 
 export interface ApplicationCreater<
@@ -132,13 +132,13 @@ export class Application<
   }
 
   private async _createApplicationContext() {
-    this._context = (await this.pluginManager.runner.context(
+    this._context = (await this.pluginManager.runner.getAppContext(
       this._context
     )) as IContext & Context;
   }
 
   private async _getAppComponent() {
-    this.AppComponent = await this.pluginManager.runner.rootAppComponent(
+    this.AppComponent = await this.pluginManager.runner.getRootAppComponent(
       this.AppComponent,
       this._context
     );
@@ -148,19 +148,18 @@ export class Application<
     ) {
       this.AppComponent = this._getUserAppComponent(this.AppComponent);
     }
-    this.AppComponent = await this.pluginManager.runner.appComponent(
+    this.AppComponent = await this.pluginManager.runner.getAppComponent(
       this.AppComponent,
       this._context
     );
   }
 
   private async _render() {
-    const result = await this._renderFn({
+    await this._renderFn({
       appContext: this._context,
       appStore: this._appStore,
       AppComponent: this.AppComponent,
       router: this.router
     });
-    this.pluginManager.runner.renderDone(result);
   }
 }

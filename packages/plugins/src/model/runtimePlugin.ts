@@ -1,13 +1,13 @@
-import { createPlugin } from '@shuvi/runtime-core/lib/runtimeHooks';
+import { createPlugin } from '@shuvi/runtime-core/lib/lifecycle';
 import { init } from '@shuvi/redox';
 
 import { withRedux } from './withRedux';
 
 export default createPlugin({
-  appComponent: async (App, appContext) => {
+  getAppComponent: async (App, appContext) => {
     return withRedux(App, appContext);
   },
-  context: ctx => {
+  getAppContext: ctx => {
     if (!ctx.store) {
       let initialState = {};
       if (ctx.pageData && ctx.pageData.redux) {

@@ -27,12 +27,23 @@ function getApp({ render }: any = {}) {
 }
 
 describe('application', () => {
+  test('should add init hook', async () => {
+    const app = getApp();
+    const fn = jest.fn();
+    const {
+      hooks: { init }
+    } = app.pluginManager;
+    init.use(fn);
+    await app.run();
+    expect(fn).toHaveBeenCalled();
+  });
+
   test('should add createAppContext hook', async () => {
     const app = getApp();
     const {
-      hooks: { context }
+      hooks: { getAppContext }
     } = app.pluginManager;
-    context.use(context => {
+    getAppContext.use(context => {
       context.foo = 'bar';
       return context;
     });
@@ -41,30 +52,12 @@ describe('application', () => {
     expect(ctx.foo).toBe('bar');
   });
 
-  test('should emit renderDone event', async () => {
-    const render = jest.fn().mockReturnValue('render result');
-    const app = getApp({ render });
-    let renderResult;
-    const {
-      hooks: { renderDone }
-    } = app.pluginManager;
-    renderDone.use(result => {
-      renderResult = result;
-    });
-    await app.run();
-    expect(renderResult).toBe('render result');
-    const renderPrarmas = render.mock.calls[0][0];
-    expect(renderPrarmas['AppComponent']).toBeDefined();
-    expect(renderPrarmas['router']).toBeDefined();
-    expect(renderPrarmas['appContext']).toBeDefined();
-  });
-
   test('should wrap getAppComponent hook', async () => {
     const app = getApp();
     const {
-      hooks: { appComponent }
+      hooks: { getAppComponent }
     } = app.pluginManager;
-    appComponent.use((AppComponent: any, context: any) => {
+    getAppComponent.use((AppComponent: any, context: any) => {
       expect(context.test).toBe(true);
       const WrapApp = () => AppComponent;
       WrapApp.test = 'test';
@@ -74,5 +67,17 @@ describe('application', () => {
 
     expect(typeof app.AppComponent).toBe('function');
     expect(app.AppComponent.test).toBe('test');
+  });
+
+  test('should add dispose hook', async () => {
+    const app = getApp();
+    const fn = jest.fn();
+    const {
+      hooks: { dispose }
+    } = app.pluginManager;
+    dispose.use(fn);
+    await app.run();
+    await app.dispose();
+    expect(fn).toHaveBeenCalled();
   });
 });

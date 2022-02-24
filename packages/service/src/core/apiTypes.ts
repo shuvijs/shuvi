@@ -2,7 +2,7 @@ import {
   ICliPluginConstructor,
   ICliPluginInstance,
   PluginRunner
-} from './plugin';
+} from './lifecycle';
 
 import { FileOptions } from '../project';
 

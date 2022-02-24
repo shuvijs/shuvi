@@ -38,7 +38,7 @@ export {
   IErrorHandler
 } from './appStore';
 
-export { IRuntimeModule, createPlugin } from './runtimeHooks';
+export { IRuntimeModule, createPlugin } from './lifecycle';
 
 export type IQuery = ParsedQuery;
 
