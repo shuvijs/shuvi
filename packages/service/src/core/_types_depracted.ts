@@ -112,7 +112,6 @@ export interface UserConfig {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;
-  asyncEntry?: boolean;
 }
 
 export type Config = Required<UserConfig>;

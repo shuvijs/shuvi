@@ -143,7 +143,6 @@ export interface UserConfig {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   analyze?: boolean;
-  asyncEntry?: boolean;
   experimental?: {
     parcelCss?: boolean;
   };
