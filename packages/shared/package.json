@@ -15,12 +15,12 @@
   "sideEffects": false,
   "scripts": {
     "dev": "run-p watch:*",
-    "watch:esm": "tsc -p tsconfig.build.esm.json -w",
-    "watch:cjs": "tsc -p tsconfig.build.cjs.json -w",
+    "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
+    "watch:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib -w",
     "prebuild": "rimraf lib esm",
     "build": "run-p build:*",
-    "build:esm": "tsc -p tsconfig.build.esm.json",
-    "build:cjs": "tsc -p tsconfig.build.cjs.json"
+    "build:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm",
+    "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
   "engines": {
     "node": ">= 12.0.0"

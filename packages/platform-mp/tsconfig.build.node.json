@@ -13,8 +13,6 @@
     "stripInternal": true,
     "noUnusedLocals": false,
     "rootDir": "./src/lib",
-    "module": "commonjs",
-    "outDir": "lib",
     "lib": ["esnext", "DOM"]
   },
   "include": [
