@@ -1,7 +1,6 @@
 import {
   createAsyncParallelHook,
-  createAsyncSeriesWaterfallHook,
-  createSyncWaterfallHook
+  createAsyncSeriesWaterfallHook
 } from '@shuvi/hook';
 import { createPlugin } from '@shuvi/service';
 import { IPlugin, IRuntimeConfig } from '@shuvi/service/lib/core';
@@ -21,7 +20,6 @@ export const addPolyfill = createAsyncParallelHook<
   void,
   string | string[]
 >();
-export const modifyAsyncEntry = createSyncWaterfallHook<boolean>();
 const modifyRuntimeConfig = createAsyncSeriesWaterfallHook<
   IRuntimeConfig,
   void
@@ -32,7 +30,6 @@ export const addHooksPlugin = createPlugin({
       addEntryCode,
       addPolyfill,
       addRuntimePlugin,
-      modifyAsyncEntry,
       modifyRuntimeConfig
     });
   }
@@ -43,7 +40,6 @@ declare module '@shuvi/service' {
     addEntryCode: typeof addEntryCode;
     addPolyfill: typeof addPolyfill;
     addRuntimePlugin: typeof addRuntimePlugin;
-    modifyAsyncEntry: typeof modifyAsyncEntry;
     modifyRuntimeConfig: typeof modifyRuntimeConfig;
   }
 }
