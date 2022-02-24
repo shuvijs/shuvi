@@ -1,11 +1,10 @@
 import {
   createAsyncSeriesWaterfallHook,
   createHookManager,
-  createAsyncParallelHook,
-  HookMap
+  createAsyncParallelHook
 } from '@shuvi/hook';
 import WebpackChain from 'webpack-chain';
-import { createFile, fileUtils, FileOptions } from '../project';
+import { FileOptions } from '../project';
 import {
   ExtraTargetAssistant,
   ConfigWebpackAssistant,
@@ -13,27 +12,15 @@ import {
   BundlerDoneExtra,
   BundlerTargetDoneExtra,
   RuntimeService,
-  Resources
-} from './pluginTypes';
+  Resources,
+  AddRuntimeFileUtils,
+  PluginHooks
+} from './lifecycleTypes';
 import { IPluginContext, IPlugin } from './apiTypes';
 
-export * from './pluginTypes';
-
-type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
+export * from './lifecycleTypes';
 
 export type PluginManager = ReturnType<typeof getManager>;
-
-export type PluginRunner = PluginManager['runner'];
-
-export type CreatePlugin = PluginManager['createPlugin'];
-
-export type ICliPluginInstance = ArrayItem<
-  Parameters<PluginManager['usePlugin']>
->;
-
-export type ICliPluginConstructor = ArrayItem<
-  Parameters<PluginManager['createPlugin']>[0]
->;
 
 const afterInit = createAsyncParallelHook<void>();
 const afterBuild = createAsyncParallelHook<void>();
@@ -61,11 +48,6 @@ const addResource = createAsyncParallelHook<
   Resources | Resources[]
 >();
 
-type AddRuntimeFileUtils = {
-  createFile: typeof createFile;
-  getAllFiles: typeof fileUtils.getAllFiles;
-};
-
 const addRuntimeFile = createAsyncParallelHook<
   void,
   AddRuntimeFileUtils,
@@ -78,7 +60,7 @@ const addRuntimeService = createAsyncParallelHook<
   RuntimeService | RuntimeService[]
 >();
 
-const internalPluginHooks = {
+const builtinPluginHooks = {
   afterInit,
   afterBuild,
   afterDestroy,
@@ -92,13 +74,11 @@ const internalPluginHooks = {
   addRuntimeService
 };
 
-export type InternalPluginHooks = typeof internalPluginHooks;
-
-export interface PluginHooks extends HookMap {}
+type BuiltinPluginHooks = typeof builtinPluginHooks;
 
 export const getManager = () =>
-  createHookManager<InternalPluginHooks, IPluginContext, PluginHooks>(
-    internalPluginHooks
+  createHookManager<BuiltinPluginHooks, IPluginContext, PluginHooks>(
+    builtinPluginHooks
   );
 
 export const { createPlugin } = getManager();

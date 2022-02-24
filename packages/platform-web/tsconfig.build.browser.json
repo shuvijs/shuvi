@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "module": "esnext",
+    "jsx": "preserve",
     "outDir": "shuvi-app"
   },
   "include": [

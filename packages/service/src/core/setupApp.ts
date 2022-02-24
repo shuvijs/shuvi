@@ -48,9 +48,8 @@ export async function setupApp(api: Api) {
     }
   });
   api.addRuntimeService('@shuvi/runtime-core', '* as Runtime');
-
   api.addRuntimeService(
-    '@shuvi/runtime-core/lib/runtimeHooks',
+    '@shuvi/runtime-core/lib/lifecycle',
     '{ createPlugin as createRuntimePlugin }'
   );
   api.addRuntimeService('@shuvi/router', '{ matchRoutes }');
