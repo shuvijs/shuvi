@@ -29,8 +29,12 @@ export type PluginManager = ReturnType<typeof getManager>;
 
 export const { createPlugin } = getManager();
 
-export type IRuntimePluginConstructor = Parameters<PluginManager['createPlugin']>[0];
-export type IRuntimePluginInstance = ArrayItem<Parameters<PluginManager['usePlugin']>>;
+export type IRuntimePluginConstructor = Parameters<
+  PluginManager['createPlugin']
+>[0];
+export type IRuntimePluginInstance = ArrayItem<
+  Parameters<PluginManager['usePlugin']>
+>;
 export type IRuntimePluginWithOptions = (
   ...params: any[]
 ) => IRuntimePluginInstance;
@@ -38,12 +42,9 @@ export type IRuntimePlugin = IRuntimePluginInstance | IRuntimePluginWithOptions;
 export type IRuntimePluginOptions = Record<string, unknown>;
 
 export type IRuntimeModule = {
-  onInit: IRuntimePluginConstructor['init'];
   getAppComponent: IRuntimePluginConstructor['appComponent'];
   getRootAppComponent: IRuntimePluginConstructor['rootAppComponent'];
   getContext: IRuntimePluginConstructor['context'];
-  onRenderDone: IRuntimePluginConstructor['renderDone'];
-  onDispose: IRuntimePluginConstructor['dispose'];
 };
 
 export type IPluginModule = {
@@ -78,24 +79,16 @@ export const initPlugins = async (
     if (isPluginInstance(plugin)) {
       pluginManager.usePlugin(plugin as IRuntimePluginInstance);
     } else {
-      pluginManager.usePlugin((plugin as IRuntimePluginWithOptions)(parsedOptions));
+      pluginManager.usePlugin(
+        (plugin as IRuntimePluginWithOptions)(parsedOptions)
+      );
     }
   }
   const pluginConstructor: IRuntimePluginConstructor = {};
-  const {
-    onInit,
-    getAppComponent,
-    getRootAppComponent,
-    getContext,
-    onRenderDone,
-    onDispose
-  } = runtimeModule;
-  if (onInit) pluginConstructor.init = onInit;
+  const { getAppComponent, getRootAppComponent, getContext } = runtimeModule;
   if (getAppComponent) pluginConstructor.appComponent = getAppComponent;
   if (getRootAppComponent)
     pluginConstructor.rootAppComponent = getRootAppComponent;
   if (getContext) pluginConstructor.context = getContext;
-  if (onRenderDone) pluginConstructor.renderDone = onRenderDone;
-  if (onDispose) pluginConstructor.dispose = onDispose;
   pluginManager.usePlugin(pluginManager.createPlugin(pluginConstructor));
 };
