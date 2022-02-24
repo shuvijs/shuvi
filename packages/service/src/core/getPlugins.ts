@@ -5,7 +5,7 @@ import {
   createPlugin,
   ICliPluginInstance,
   ICliPluginConstructor
-} from './plugin';
+} from './lifecycle';
 import {
   IPreset,
   IPluginConfig,

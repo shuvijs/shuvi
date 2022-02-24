@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { FileOptions } from '@shuvi/service/lib/project';
 import { ProjectContext } from '../projectContext';
+
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
 /**

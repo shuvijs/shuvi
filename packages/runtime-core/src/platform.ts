@@ -1,6 +1,6 @@
 import { Application, IApplicationOptions } from './application';
 import { IAppStore } from './appStore';
-import { initPlugins } from './runtimeHooks';
+import { initPlugins } from './lifecycle';
 import * as customRuntime from '@shuvi/app/user/runtime';
 import { pluginRecord } from '@shuvi/app/core/plugins';
 import { IRouter } from '@shuvi/router';

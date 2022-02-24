@@ -4,7 +4,7 @@ import {
   ICliPluginInstance,
   PluginManager,
   PluginRunner
-} from './plugin';
+} from './lifecycle';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];

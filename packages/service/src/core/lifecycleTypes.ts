@@ -1,8 +1,27 @@
 import WebpackChain from 'webpack-chain';
-import { IWebpackConfigOptions } from '../bundler/config';
 import webpack, { Configuration } from 'webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
+import { HookMap } from '@shuvi/hook';
+import { createFile, fileUtils } from '../project';
+import { IWebpackConfigOptions } from '../bundler/config';
 import { IShuviMode } from './apiTypes';
+import type { PluginManager } from './lifecycle';
+
+type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
+
+export interface PluginHooks extends HookMap {}
+
+export type PluginRunner = PluginManager['runner'];
+
+export type CreatePlugin = PluginManager['createPlugin'];
+
+export type ICliPluginInstance = ArrayItem<
+  Parameters<PluginManager['usePlugin']>
+>;
+
+export type ICliPluginConstructor = ArrayItem<
+  Parameters<PluginManager['createPlugin']>[0]
+>;
 
 export type ExtraTargetAssistant = {
   createConfig(options: IWebpackConfigOptions): WebpackChain;
@@ -45,3 +64,8 @@ export type RuntimeService = {
 };
 
 export type Resources = [string, string | undefined];
+
+export type AddRuntimeFileUtils = {
+  createFile: typeof createFile;
+  getAllFiles: typeof fileUtils.getAllFiles;
+};
