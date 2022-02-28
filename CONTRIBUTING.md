@@ -53,15 +53,15 @@ Type definitions for shuvi.
 
 1. Clone the repo with `git clone https://github.com/liximomo/shuvi`
 
-2. Run `yarn` in the root folder.
+2. Run `pnpm i` in the root folder.
 
-3. Run `yarn build` in the root folder.
+3. Run `pnpm build` in the root folder.
 
 ### Local Development
 
 1. Open two terminal at the root folder.
 
-2. Run `yarn dev`
+2. Run `pnpm dev`
 
 3. Create a 'Hello world' page:
 
@@ -72,4 +72,4 @@ export default () => <div>hello, world</div>
 EOF
 ```
 
-Once it is done, you can run shuvi cli by `yarn shuvi` in another terminal. It will serve the application in the specified dir.
+Once it is done, you can run shuvi cli by `pnpm shuvi` in another terminal. It will serve the application in the specified dir.

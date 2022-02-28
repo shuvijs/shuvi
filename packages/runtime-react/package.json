@@ -30,6 +30,7 @@
   "dependencies": {
     "@next/react-refresh-utils": "10.0.5",
     "@shuvi/app": "^0.0.1-rc.36",
+    "@shuvi/router": "^0.0.1-rc.36",
     "@shuvi/router-react": "^0.0.1-rc.36",
     "@shuvi/shared": "^0.0.1-rc.36",
     "@shuvi/utils": "^0.0.1-rc.36",

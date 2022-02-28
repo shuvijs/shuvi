@@ -1,9 +1,7 @@
 import { IApi } from '@shuvi/types';
 import path from 'path';
 
-const PACKAGE_DIR = path.dirname(
-  require.resolve('@shuvi/runtime-core/package.json')
-);
+const PACKAGE_DIR = path.resolve(__dirname, '..');
 
 const resolveAppFile = (...paths: string[]) =>
   `${path.join(PACKAGE_DIR, 'shuvi-app', ...paths)}`;

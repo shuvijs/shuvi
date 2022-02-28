@@ -1,5 +1,5 @@
 {
-  "name": "shuvi",
+  "name": "shuvi-monorepo",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -9,14 +9,15 @@
     "url": "git+https://github.com/shuvijs/shuvi.git"
   },
   "scripts": {
-    "dev": "lerna run dev --stream --parallel",
-    "shuvi": "node ./packages/shuvi/lib/cli/cli.js",
-    "build": "lerna run build --stream",
+    "dev": "pnpm -r run dev--stream --parallel",
+    "build": "pnpm -r run build",
+    "clean": "pnpm -r --parallel exec rm -rf node_modules lib esm shuvi-app && pnpm exec rm -rf node_modules",
+    "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",
-    "test": "yarn test:fixtures && yarn test:unit",
+    "test": "pnpm test:fixtures && pnpm test:unit",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
-    "test:e2e": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand"
+    "test:e2e": "cd test && pnpm test"
   },
   "husky": {
     "hooks": {
@@ -47,7 +48,6 @@
     "husky": "^4.2.3",
     "is-wsl": "^2.1.1",
     "jest": "^25.3.0",
-    "lerna": "^3.22.1",
     "lint-staged": "^10.1.2",
     "lodash": "^4.17.15",
     "memfs": "^3.1.2",
@@ -57,9 +57,6 @@
     "puppeteer-core": "4.0.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^25.3.1",
-    "typescript": "^3.8.3"
-  },
-  "resolutions": {
-    "@babel/types": "7.12.11"
+    "typescript": "3.8.3"
   }
 }

@@ -18,11 +18,6 @@ beforeEach(() => {
   buildFixture = require('../utils').buildFixture;
 });
 
-afterEach(() => {
-  // force require to load file to make sure compiled file get load correctlly
-  jest.resetModules();
-});
-
 describe('fixtures', () => {
   fixtures.forEach(fixture => {
     test(

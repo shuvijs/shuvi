@@ -38,6 +38,7 @@
     "react": "16.13.0"
   },
   "devDependencies": {
+    "@babel/types": "7.17.0",
     "@types/babel__code-frame": "^7.0.1",
     "@types/ejs": "3.0.4",
     "react-test-renderer": "^16.13.1"
