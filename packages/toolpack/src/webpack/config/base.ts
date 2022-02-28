@@ -255,7 +255,8 @@ export function baseWebpackChain({
       return `${prev}|${key}=${value}`;
     }, '');
 
-    const SHUVI_VERSION = require('shuvi/package.json').version;
+    const PACKAGE_JSON = path.resolve(__dirname, '../../../package.json');
+    const SHUVI_VERSION = require(PACKAGE_JSON).version;
 
     return {
       cacheDirectory: path.resolve(

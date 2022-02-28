@@ -1,6 +1,5 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
-// @ts-ignore
 import puppeteer, {
   DirectNavigationOptions,
   ConsoleMessage

@@ -1,0 +1,33 @@
+{
+  "name": "shuvi-test",
+  "private": true,
+  "version": "0.0.1-rc.36",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "test"
+  },
+  "scripts": {
+    "test": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "devDependencies": {
+    "@shuvi/core": "workspace:*",
+    "@shuvi/hooks": "0.0.1-beta.38",
+    "@shuvi/router": "workspace:*",
+    "@shuvi/runtime-core": "workspace:*",
+    "@shuvi/runtime-react": "workspace:*",
+    "@shuvi/shared": "workspace:*",
+    "@shuvi/toolpack": "workspace:*",
+    "@shuvi/types": "workspace:*",
+    "@shuvi/utils": "workspace:*",
+    "@types/jest": "^25.1.3",
+    "buffer": "6.0.3",
+    "koa-lowercase": "2.0.11",
+    "@types/rimraf": "^3.0.0",
+    "jest": "^25.3.0",
+    "ts-jest": "^25.3.1",
+    "shuvi": "workspace:*"
+  }
+}

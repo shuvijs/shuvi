@@ -1,6 +1,12 @@
-import { create, act, ReactTestRenderer, ReactTestInstance } from 'react-test-renderer';
+import {
+  create,
+  act,
+  ReactTestRenderer,
+  ReactTestInstance,
+  ReactTestRendererJSON
+} from 'react-test-renderer';
 
-export { act, ReactTestInstance, ReactTestRenderer };
+export { act, ReactTestInstance, ReactTestRenderer, ReactTestRendererJSON };
 
 let currents: ReactTestRenderer[] = [];
 export function render(el: React.ReactElement): ReactTestRenderer {

@@ -23,22 +23,19 @@ module.exports = {
     }
   },
 
+  setupFilesAfterEnv: ['<rootDir>/setup.ts'],
+
+  globalTeardown: '<rootDir>/teardown.ts',
+
   testEnvironment: 'node',
 
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 
   preset: 'ts-jest/presets/js-with-ts',
 
-  roots: ['<rootDir>/packages', '<rootDir>/test'],
+  roots: ['<rootDir>'],
 
   watchPathIgnorePatterns: ['/fixtures'],
 
-  testMatch: [
-    '<rootDir>/test/**/*.test.[jt]s?(x)',
-    '**/__tests__/**/*.test.[jt]s?(x)'
-  ],
-
-  moduleNameMapper: {
-    '^shuvi-test-utils(/?.*)$': '<rootDir>/test/utils/$1'
-  }
+  testMatch: ['<rootDir>/**/*.test.[jt]s?(x)']
 };
