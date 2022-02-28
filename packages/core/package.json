@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/core",
-  "version": "0.0.1-rc.36",
+  "version": "0.0.1-rc.37",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -28,7 +28,7 @@
     "@babel/traverse": "7.12.12",
     "@shuvi/hooks": "0.0.1-beta.38",
     "@shuvi/react-fs": "0.0.1-rc.36",
-    "@shuvi/router": "0.0.1-rc.36",
+    "@shuvi/router": "0.0.1-rc.37",
     "@shuvi/shared": "0.0.1-rc.36",
     "@shuvi/utils": "0.0.1-rc.36",
     "ejs": "3.1.5",
