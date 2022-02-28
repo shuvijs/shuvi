@@ -17,7 +17,8 @@
     "test": "pnpm test:fixtures && pnpm test:unit",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
-    "test:e2e": "cd test && pnpm test"
+    "test:e2e": "cd test && pnpm test",
+    "release": "pnpm clean && pnpm i && pnpm build && pnpm test && pnpm changeset publish"
   },
   "husky": {
     "hooks": {

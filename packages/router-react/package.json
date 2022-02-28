@@ -27,9 +27,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/router": "^0.0.1-rc.36",
-    "@shuvi/types": "^0.0.1-rc.36",
-    "@shuvi/utils": "^0.0.1-rc.36"
+    "@shuvi/router": "0.0.1-rc.36",
+    "@shuvi/types": "0.0.1-rc.36",
+    "@shuvi/utils": "0.0.1-rc.36"
   },
   "devDependencies": {
     "@types/react": "^16.9.43",
