@@ -43,6 +43,15 @@ function getConfigFromCli(cliOptions: Record<string, any>) {
       }
     }
   });
+  try {
+    const { configOverrides } = program;
+    if (configOverrides) {
+      const overrides = JSON.stringify(configOverrides);
+      Object.assign(config, overrides);
+    }
+  } catch (err) {
+    console.error(err);
+  }
   return config;
 }
 
@@ -62,6 +71,7 @@ export default async function main(argv: string[]) {
       "specify the hisotry type. 'browser' or 'hash'"
     )
     .option('--analyze', 'generate html file to help analyze webpack bundle')
+    .option('--config-overrides [json]', 'config overrides json')
     .parse(argv, { from: 'user' });
 
   const cwd = getProjectDir(program);
