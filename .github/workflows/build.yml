@@ -1,15 +1,19 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    types: [opened, synchronize]
 
-on: [push, pull_request]
+name: Build, test
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    env:
+        CI: true
     strategy:
       matrix:
         node-version: [14.x]
@@ -23,5 +27,4 @@ jobs:
     - run: yarn install --pure-lockfile
     - run: yarn build
     - run: yarn test
-      env:
-        CI: true
+
