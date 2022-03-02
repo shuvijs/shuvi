@@ -35,12 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build-native
-      - build-windows-i686
-      - build-windows-aarch64
-      - build-linux-musl
-      - build-linux-arm7
-      - build-linux-aarch64
-      - build-linux-aarch64-musl
+      - build-in-docker
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
@@ -69,8 +64,21 @@ jobs:
       - run: yarn install
       - run: node ./packages/toolpack/scripts/publish-native.js $GITHUB_REF
 
+  build-in-docker:
+    name: build swc binaries in docker
+    runs-on: ubuntu-latest
+    needs:
+      - build-windows-i686
+      - build-windows-aarch64
+      - build-linux-musl
+      - build-linux-arm7
+      - build-linux-aarch64
+      - build-linux-aarch64-musl
+    steps:
+      - run: exit 0
+
   # Build binaries for publishing
-  build-native:
+  build-in-native:
     # Build the matrix
     # Can be understood as a for loop
     strategy:
