@@ -59,7 +59,6 @@ fn shuvi_dynamic_fixture(input: PathBuf) {
         syntax(),
         &|_tr| {
             shuvi_dynamic(
-                FileName::Real(PathBuf::from("/some-project/src/some-file.js")),
                 true
             )
         },
@@ -76,7 +75,6 @@ fn shuvi_dynamic_disabled_fixture(input: PathBuf) {
         syntax(),
         &|_tr| {
             shuvi_dynamic(
-                FileName::Real(PathBuf::from("/some-project/src/some-file.js")),
                 false
             )
         },

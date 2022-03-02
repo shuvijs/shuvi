@@ -86,12 +86,12 @@ pub struct TransformOptions {
     pub is_development: bool,
 }
 
-pub fn custom_before_pass(name: &FileName, opts: &TransformOptions) -> impl Fold {
+pub fn custom_before_pass(_name: &FileName, opts: &TransformOptions) -> impl Fold {
     chain!(
         auto_css_module::auto_css_module(opts.flag.clone()),
         hook_optimizer::hook_optimizer(),
         amp_attributes::amp_attributes(),
-        shuvi_dynamic::shuvi_dynamic(name.clone(), !opts.disable_shuvi_dynamic.clone())
+        shuvi_dynamic::shuvi_dynamic(!opts.disable_shuvi_dynamic.clone())
     )
 }
 
