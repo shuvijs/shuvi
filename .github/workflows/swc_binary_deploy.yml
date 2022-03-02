@@ -34,7 +34,7 @@ jobs:
     name: Potentially publish release
     runs-on: ubuntu-latest
     needs:
-      - build-native
+      - build-in-native
       - build-in-docker
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
