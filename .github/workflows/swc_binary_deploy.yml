@@ -1,8 +1,8 @@
 on:
   push:
     branches: [dev]
-    paths:
-      - "packages/toolpack/scripts/version.js"
+#    paths:
+#      - "packages/toolpack/scripts/version.js"
   pull_request:
     types: [opened, synchronize]
 
