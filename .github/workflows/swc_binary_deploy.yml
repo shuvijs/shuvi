@@ -37,11 +37,14 @@ jobs:
       - build-in-docker
     if: always() && (needs.job1.build-in-native == 'failure' || needs.job2.build-in-docker == 'failure')
     steps:
+
       - name: clear upload
-      - uses: geekyeggo/delete-artifact@v1
+        uses: geekyeggo/delete-artifact@v1
         with:
           name: shuvi-swc-binaries
-          run: exit 1
+
+      - name: exit with error
+      run: exit 1
 
 
   publishRelease:
