@@ -30,6 +30,7 @@ jobs:
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
 
   when-build-failed:
+    name: when build failed
     runs-on: ubuntu-latest
     needs:
       - build-in-native
@@ -38,9 +39,9 @@ jobs:
     steps:
       - name: clear upload
       - uses: geekyeggo/delete-artifact@v1
-      with:
-        name: shuvi-swc-binaries
-        run: exit 1
+        with:
+          name: shuvi-swc-binaries
+          run: exit 1
 
 
   publishRelease:
