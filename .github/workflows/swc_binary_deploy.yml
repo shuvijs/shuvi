@@ -29,6 +29,19 @@ jobs:
       - run: cd packages/toolpack/src/swc && cargo test
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
 
+  when-build-failed:
+    runs-on: ubuntu-latest
+    needs:
+      - build-in-native
+      - build-in-docker
+    if: always() && (needs.job1.build-in-native == 'failure' || needs.job2.build-in-docker == 'failure')
+    steps:
+      - name: clear upload
+      - uses: geekyeggo/delete-artifact@v1
+      with:
+        name: shuvi-swc-binaries
+        run: exit 1
+
 
   publishRelease:
     name: Potentially publish release
