@@ -135,6 +135,7 @@ jobs:
     name: stable - ${{ matrix.settings.target }} - node@16
     runs-on: ${{ matrix.settings.host }}
     steps:
+      # https://github.com/actions/virtual-environments/issues/1187
       - name: tune linux network
         run: sudo ethtool -K eth0 tx off rx off
         if: ${{ matrix.settings.host == 'ubuntu-18.04' }}
@@ -163,15 +164,15 @@ jobs:
             shuvi-swc-cargo-cache-${{ matrix.settings.target }}
 
       - name: Turbo Cache
-      id: turbo-cache
-      uses: actions/cache@v2
-      with:
-        path: .turbo
-        key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ needs.build.outputs.weekNum }}-${{ github.sha }}
-        restore-keys: |
-          turbo-${{ github.job }}-
-          turbo-${{ github.job }}-${{ github.ref_name }}-${{ needs.build.outputs.weekNum }}-
-          turbo-${{ github.job }}-canary-${{ needs.build.outputs.weekNum }}-
+        id: turbo-cache
+        uses: actions/cache@v2
+        with:
+          path: .turbo
+          key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ needs.build.outputs.weekNum }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ github.job }}-
+            turbo-${{ github.job }}-${{ github.ref_name }}-${{ needs.build.outputs.weekNum }}-
+            turbo-${{ github.job }}-canary-${{ needs.build.outputs.weekNum }}-
 
         - name: Setup node
           uses: actions/setup-node@v2
