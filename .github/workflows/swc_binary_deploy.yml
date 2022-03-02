@@ -61,7 +61,7 @@ jobs:
               rustup default nightly-2021-11-15 &&
               rustup target add x86_64-unknown-linux-gnu &&
               npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
-              turbo run build-native --cache-dir=".turbo" -- --release --target x86_64-unknown-linux-gnu --zig --zig-abi-suffix 2.12 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target x86_64-unknown-linux-gnu &&
               llvm-strip -x packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-musl'
@@ -94,7 +94,7 @@ jobs:
               rustup default nightly-2021-11-15 &&
               rustup target add aarch64-unknown-linux-gnu &&
               npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
-              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-unknown-linux-gnu --zig --zig-abi-suffix 2.12 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-unknown-linux-gnu &&
               llvm-strip -x packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: ubuntu-18.04
             target: 'armv7-unknown-linux-gnueabihf'
@@ -148,7 +148,7 @@ jobs:
       - name: Cache built files
         uses: actions/cache@v2
         with:
-          path: ./packages/toolpack/src/swc/target
+          path: ./packages/toolpack/target
           key: shuvi-swc-cargo-cache-${{ matrix.settings.target }}--${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             shuvi-swc-cargo-cache-${{ matrix.settings.target }}
