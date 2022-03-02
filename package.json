@@ -67,5 +67,17 @@
   },
   "resolutions": {
     "@babel/types": "7.12.11"
+  },
+  "turbo": {
+    "pipeline": {
+      "build-native": {
+        "dependsOn": [
+          "^build-native"
+        ],
+        "outputs": [
+          "swc-source/native/*.node"
+        ]
+      }
+    }
   }
 }

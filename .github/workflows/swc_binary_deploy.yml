@@ -48,18 +48,18 @@ jobs:
           - host: macos-latest
             target: 'x86_64-apple-darwin'
             build: |
-              npm i -g @napi-rs/cli@1.2.1
-              npm run build-native --release
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28
+              turbo run build-native --cache-dir=".turbo" -- --release
               strip -x packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: windows-latest
             build: |
-              npm i -g @napi-rs/cli@1.2.1
-              npm run build-native --release
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28
+              turbo run build-native --cache-dir=".turbo" -- --release
             target: 'x86_64-pc-windows-msvc'
           - host: windows-latest
             build: |
-              npm i -g @napi-rs/cli@1.2.1
-              npm run build-native --release --target i686-pc-windows-msvc
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28
+              turbo run build-native --cache-dir=".turbo" -- --release --target i686-pc-windows-msvc
             target: 'i686-pc-windows-msvc'
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-gnu'
@@ -70,8 +70,8 @@ jobs:
               rustup toolchain install nightly-2021-08-12 &&
               rustup default nightly-2021-08-12 &&
               rustup target add x86_64-unknown-linux-gnu &&
-              npm i -g @napi-rs/cli@1.2.1 &&
-              npm run build-native --release --target x86_64-unknown-linux-gnu &&
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target x86_64-unknown-linux-gnu --zig --zig-abi-suffix 2.12 &&
               llvm-strip -x packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-musl'
@@ -81,8 +81,8 @@ jobs:
               rustup toolchain install nightly-2021-08-12 &&
               rustup default nightly-2021-08-12 &&
               rustup target add x86_64-unknown-linux-musl &&
-              npm i -g @napi-rs/cli@1.2.1 &&
-              npm run build-native --release --target x86_64-unknown-linux-musl &&
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target x86_64-unknown-linux-musl &&
               strip packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: macos-latest
             target: 'aarch64-apple-darwin'
@@ -92,8 +92,8 @@ jobs:
               export CXX=$(xcrun -f clang++);
               SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
               export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
-              npm i -g @napi-rs/cli@1.2.1 &&
-              npm run build-native --release --target aarch64-apple-darwin
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-apple-darwin
               strip -x packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-gnu'
@@ -103,8 +103,8 @@ jobs:
               rustup toolchain install nightly-2021-08-12 &&
               rustup default nightly-2021-08-12 &&
               rustup target add aarch64-unknown-linux-gnu &&
-              npm i -g @napi-rs/cli@1.2.1 &&
-              npm run build-native --release --target aarch64-unknown-linux-gnu &&
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-unknown-linux-gnu --zig --zig-abi-suffix 2.12 &&
               llvm-strip -x packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: ubuntu-18.04
             target: 'armv7-unknown-linux-gnueabihf'
@@ -112,25 +112,25 @@ jobs:
               sudo apt-get update
               sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
             build: |
-              npm i -g @napi-rs/cli@1.2.1 &&
-              npm run build-native --release --target armv7-unknown-linux-gnueabihf
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target armv7-unknown-linux-gnueabihf
               arm-linux-gnueabihf-strip packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-musl'
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
             build: >-
               set -e &&
-              npm i -g @napi-rs/cli@1.2.1 &&
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
               rustup toolchain install nightly-2021-08-12 &&
               rustup default nightly-2021-08-12 &&
               rustup target add aarch64-unknown-linux-musl &&
-              npm run build-native --release --target aarch64-unknown-linux-musl &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-unknown-linux-musl &&
               llvm-strip -x packages/toolpack/swc-source/native/shuvi-swc.*.node
           - host: windows-latest
             target: 'aarch64-pc-windows-msvc'
             build: |
-              npm i -g @napi-rs/cli@1.2.1 &&
-              npm run build-native --release --target aarch64-pc-windows-msvc
+              npm i -g @napi-rs/cli@1.2.1 turbo@1.0.28 &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-pc-windows-msvc
     needs: testUnit
     name: stable - ${{ matrix.settings.target }} - node@16
     runs-on: ${{ matrix.settings.host }}
@@ -162,6 +162,17 @@ jobs:
           key: shuvi-swc-cargo-cache-${{ matrix.settings.target }}--${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             shuvi-swc-cargo-cache-${{ matrix.settings.target }}
+
+      - name: Turbo Cache
+       id: turbo-cache
+       uses: actions/cache@v2
+       with:
+         path: .turbo
+         key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ needs.build.outputs.weekNum }}-${{ github.sha }}
+         restore-keys: |
+           turbo-${{ github.job }}-
+           turbo-${{ github.job }}-${{ github.ref_name }}-${{ needs.build.outputs.weekNum }}-
+           turbo-${{ github.job }}-canary-${{ needs.build.outputs.weekNum }}-
 
       - name: Setup node
         uses: actions/setup-node@v2
@@ -221,7 +232,6 @@ jobs:
     name: Potentially publish release
     runs-on: ubuntu-latest
     needs:
-      - testsPass
       - buildNative
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
