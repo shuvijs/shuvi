@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [ dev ]
+    branches: [ feat-0301-swcWorkFlows ]
   #    paths:
   #      - "packages/toolpack/scripts/version.js"
   pull_request:
@@ -158,11 +158,10 @@ jobs:
       - name: Cache built files
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/target
+          path: ./packages/toolpack/target
           key: shuvi-swc-cargo-cache-${{ matrix.settings.target }}--${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             shuvi-swc-cargo-cache-${{ matrix.settings.target }}
-
       - name: Turbo Cache
         id: turbo-cache
         uses: actions/cache@v2
@@ -174,59 +173,58 @@ jobs:
             turbo-${{ github.job }}-${{ github.ref_name }}-${{ needs.build.outputs.weekNum }}-
             turbo-${{ github.job }}-canary-${{ needs.build.outputs.weekNum }}-
 
-        - name: Setup node
-          uses: actions/setup-node@v2
-          if: ${{ !matrix.settings.docker }}
-          with:
-            node-version: 16
-            check-latest: true
-            cache: yarn
+      - name: Setup node
+        uses: actions/setup-node@v2
+        if: ${{ !matrix.settings.docker }}
+        with:
+          node-version: 16
+          check-latest: true
+          cache: yarn
 
-        - name: Install
-          uses: actions-rs/toolchain@v1
-          if: ${{ !matrix.settings.docker }}
-          with:
-            profile: minimal
-            override: true
-            toolchain: nightly-2021-08-12
-            target: ${{ matrix.settings.target }}
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        if: ${{ !matrix.settings.docker }}
+        with:
+          profile: minimal
+          override: true
+          toolchain: nightly-2021-11-15
+          target: ${{ matrix.settings.target }}
 
-        - name: Cache cargo registry
-          uses: actions/cache@v2
-          with:
-            path: ~/.cargo/registry
-            key: ${{ matrix.settings.target }}-cargo-registry
+      - name: Cache cargo registry
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/registry
+          key: ${{ matrix.settings.target }}-cargo-registry
 
-        - name: Cache cargo index
-          uses: actions/cache@v2
-          with:
-            path: ~/.cargo/git
-            key: ${{ matrix.settings.target }}-cargo-index
+      - name: Cache cargo index
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/git
+          key: ${{ matrix.settings.target }}-cargo-index
 
-        - name: Setup toolchain
-          run: ${{ matrix.settings.setup }}
-          if: ${{ matrix.settings.setup }}
-          shell: bash
+      - name: Setup toolchain
+        run: ${{ matrix.settings.setup }}
+        if: ${{ matrix.settings.setup }}
+        shell: bash
 
-        - name: Build in docker
-          uses: addnab/docker-run-action@v3
-          if: ${{ matrix.settings.docker }}
-          with:
-            image: ${{ matrix.settings.docker }}
-            options: -v ${{ env.HOME }}/.cargo/git:/root/.cargo/git -v ${{ env.HOME }}/.cargo/registry:/root/.cargo/registry -v ${{ github.workspace }}:/build -w /build
-            run: ${{ matrix.settings.build }}
-
-        - name: 'Build'
+      - name: Build in docker
+        uses: addnab/docker-run-action@v3
+        if: ${{ matrix.settings.docker }}
+        with:
+          image: ${{ matrix.settings.docker }}
+          options: -v ${{ env.HOME }}/.cargo/git:/root/.cargo/git -v ${{ env.HOME }}/.cargo/registry:/root/.cargo/registry -v ${{ github.workspace }}:/build -w /build
           run: ${{ matrix.settings.build }}
-          if: ${{ !matrix.settings.docker }}
-          shell: bash
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v2
-          with:
-            name: shuivi-swc-binaries
-            path: packages/toolpack/swc-source/native/shuvi-swc.*.node
+      - name: 'Build'
+        run: ${{ matrix.settings.build }}
+        if: ${{ !matrix.settings.docker }}
+        shell: bash
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: shuvi-swc-binaries
+          path: packages/toolpack/swc-source/native/shuvi-swc.*.node
 
   publishRelease:
     name: Potentially publish release
