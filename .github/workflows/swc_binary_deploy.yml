@@ -148,7 +148,7 @@ jobs:
       - name: Cache built files
         uses: actions/cache@v2
         with:
-          path: ./packages/toolpack/target
+          path: ./packages/toolpack/src/swc/target
           key: shuvi-swc-cargo-cache-${{ matrix.settings.target }}--${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             shuvi-swc-cargo-cache-${{ matrix.settings.target }}
