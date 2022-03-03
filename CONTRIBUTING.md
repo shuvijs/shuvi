@@ -70,3 +70,11 @@ e.g.
 ```
 pnpm shuvi dev test/fixtures/basic
 ```
+
+## About Publishing
+
+Shuvi uses [changesets](https://github.com/changesets/changesets) to manage monorepo versions and publish.
+
+### For Developers
+
+After writing code and complete test, run `pnpm changeset` to add a changeset, or run `pnpm changeset pre enter xxx` to add a changeset with prereleases version. And then bring this changeset file to git.
