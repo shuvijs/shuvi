@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, synchronize]
 
-name: SWC build, test, and deploy
+name: Release binary
 
 jobs:
 
@@ -29,8 +29,8 @@ jobs:
       - run: cd packages/toolpack/src/swc && cargo test
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
 
-  publishRelease:
-    name: Potentially publish release
+  release:
+    name: publish release
     runs-on: ubuntu-latest
     needs:
       - build-in-native
