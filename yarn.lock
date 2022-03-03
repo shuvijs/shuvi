@@ -2432,11 +2432,6 @@
     immer "^8.0.1"
     tiny-invariant "^1.2.0"
 
-"@shuvi/swc-android-arm64@latest":
-  version "0.0.1-pre.2"
-  resolved "https://registry.yarnpkg.com/@shuvi/swc-android-arm64/-/swc-android-arm64-0.0.1-pre.2.tgz#749e065f0546308597603c50958d099aaa1eb69a"
-  integrity sha512-AZqqiDtaJS3VVxxPmGJ12+DAEGLmzD3EMkOYsDdv9LWEfCvjKGS7HuZdZSD8aS+EhtawWvIMPuSgQF/oKhbfUQ==
-
 "@shuvi/swc-darwin-arm64@latest":
   version "0.0.1-pre.2"
   resolved "https://registry.yarnpkg.com/@shuvi/swc-darwin-arm64/-/swc-darwin-arm64-0.0.1-pre.2.tgz#523f18344d1b8862a3f45d171faa7d6208b0d96b"

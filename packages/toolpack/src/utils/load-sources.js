@@ -9,15 +9,12 @@ let bindings;
 let loadError;
 
 const triples = platformArchTriples[PlatformName][ArchName]
-const swcSource = path.join(
-  __dirname,
-  '../../swc-source',
-)
 for (const triple of triples) {
   try {
-    bindings = require(`@shuvi/swc-${triple.platformArchABI}`)
-    break
-  } catch (e) {
+    const swcSource = path.join(
+      __dirname,
+      '../../swc-source',
+    )
     const localFilePath = path.join(
       swcSource,
       `native/shuvi-swc.${triple.platformArchABI}.node`
@@ -33,6 +30,9 @@ for (const triple of triples) {
       }
       break
     }
+    break
+  } catch (e) {
+    bindings = require(`@shuvi/swc-${triple.platformArchABI}`)
   }
 }
 
