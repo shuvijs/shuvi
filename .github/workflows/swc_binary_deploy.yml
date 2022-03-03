@@ -198,6 +198,7 @@ jobs:
         with:
           name: shuvi-swc-binaries
           path: packages/toolpack/swc-source/native/shuvi-swc.${{ matrix.name }}.node
+          retention-days: 1
 
       - name: Clear the cargo caches
         run: |
@@ -260,6 +261,7 @@ jobs:
         with:
           name: shuvi-swc-binaries
           path: packages/toolpack/swc-source/native/shuvi-swc.win32-ia32-msvc.node
+          retention-days: 1
 
   build-windows-aarch64:
     name: shuvi-swc - windows-aarch64 - node@14
@@ -306,6 +308,7 @@ jobs:
         with:
           name: shuvi-swc-binaries
           path: packages/toolpack/swc-source/native/shuvi-swc.win32-arm64-msvc.node
+          retention-days: 1
 
   build-linux-musl:
     name: shuvi-swc - linux-musl - node@lts
@@ -354,6 +357,7 @@ jobs:
         with:
           name: shuvi-swc-binaries
           path: packages/toolpack/swc-source/native/shuvi-swc.linux-x64-musl.node
+          retention-days: 1
 
   build-linux-aarch64:
     name: shuvi-swc - aarch64-unknown-linux-gnu - node@14
@@ -413,6 +417,7 @@ jobs:
         with:
           name: shuvi-swc-binaries
           path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm64-gnu.node
+          retention-days: 1
 
   build-linux-aarch64-musl:
     name: shuvi-swc - aarch64-unknown-linux-musl - node@14
@@ -470,6 +475,7 @@ jobs:
         with:
           name: shuvi-swc-binaries
           path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm64-musl.node
+          retention-days: 1
 
   build-linux-arm7:
     name: shuvi-swc - arm7-unknown-linux-gnu - node@14
@@ -529,3 +535,4 @@ jobs:
         with:
           name: shuvi-swc-binaries
           path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm-gnueabihf.node
+          retention-days: 1
