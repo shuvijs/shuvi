@@ -3,7 +3,8 @@
 
 on:
   push:
-    branches: [master, dev]
+    branches:
+      - '**'
   pull_request:
     types: [opened, synchronize]
 
