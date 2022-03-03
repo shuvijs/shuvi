@@ -1,1 +1,2 @@
-export { defineConfig, loadConfig, resolveConfig, mergeConfig } from './config';
+export * from './config';
+export * from './loadDotenvConfig';

@@ -1,10 +1,11 @@
 import path from 'path';
-import fse from 'fs-extra';
+import fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import {
   getApi,
   UserConfig,
   IPluginContext,
+  IPlatform,
   getBundler,
   BUILD_DEFAULT_DIR
 } from '@shuvi/service';
@@ -12,7 +13,7 @@ import {
 export interface IBuildOptions {
   cwd?: string;
   config?: UserConfig;
-  configFile?: string;
+  platform?: IPlatform;
   target?: 'spa' | 'ssr';
 }
 
@@ -40,11 +41,11 @@ async function bundle(context: IPluginContext) {
 }
 
 function copyPublicFolder(context: IPluginContext) {
-  if (!fse.existsSync(context.paths.publicDir)) {
+  if (!fs.existsSync(context.paths.publicDir)) {
     return;
   }
 
-  fse.copySync(
+  fs.copySync(
     context.paths.publicDir,
     path.join(context.paths.buildDir, BUILD_DEFAULT_DIR),
     {
@@ -71,7 +72,7 @@ export async function build(options: IBuildOptions) {
     cwd: opts.cwd,
     mode: 'production',
     config: opts.config,
-    configFile: opts.configFile,
+    platform: opts.platform,
     phase: 'PHASE_PRODUCTION_BUILD'
   });
 
@@ -82,7 +83,7 @@ export async function build(options: IBuildOptions) {
 
   // Remove all content but keep the directory so that
   // if you're in it, you don't end up in Trash
-  fse.emptyDirSync(pluginContext.paths.buildDir);
+  fs.emptyDirSync(pluginContext.paths.buildDir);
 
   // Merge with the public folder
   copyPublicFolder(pluginContext);

@@ -1,6 +1,7 @@
 import qs from 'querystring';
 import { UserConfig } from '@shuvi/service';
 import { getApi, createShuviServer, IShuviServer } from '@shuvi/service';
+import { getPlatform } from 'shuvi/lib/utils';
 import { loadFixture, resolveFixture } from './fixture';
 import { build } from './build';
 import { findPort } from './findPort';
@@ -45,7 +46,8 @@ export async function launchFixtureAtCurrentProcess(
   overrides: UserConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const api = await getApi({ cwd: resolveFixture(name), config });
+  const platform = getPlatform(config.platform.name);
+  const api = await getApi({ cwd: resolveFixture(name), config, platform });
   await api.buildApp();
   const shuviApp = await createShuviServer({
     context: api.pluginContext,
@@ -59,7 +61,12 @@ export async function serveFixtureAtCurrentProcess(
   overrides: UserConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const cliContext = await build({ cwd: resolveFixture(name), config });
+  const platform = getPlatform(config.platform.name);
+  const cliContext = await build({
+    cwd: resolveFixture(name),
+    config,
+    platform
+  });
   const shuviApp = await createShuviServer({
     context: cliContext,
     dev: true

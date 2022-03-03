@@ -1,17 +1,24 @@
 import program from 'commander';
-import path from 'path';
 import { build } from '../tasks/build';
 import { getPackageInfo } from '../utils';
-import { getProjectDir, getConfigFromCli } from '../utils';
+import {
+  getProjectDir,
+  getConfigFromCli,
+  getPlatform,
+  OptionsKeyMap
+} from '../utils';
 
 const pkgInfo = getPackageInfo();
 
-const cliConfigMap: Record<string, string | ((config: any) => void)> = {
+const cliConfigMap: OptionsKeyMap = {
   analyze: 'analyze',
   publicPath: 'publicPath',
   routerHistory: 'router.history',
-  target(config) {
-    config.ssr = false;
+  target(config, optionValue) {
+    if (optionValue === 'spa') {
+      config.ssr = false;
+      config.platform = { name: 'web', framework: 'react', target: 'spa' };
+    }
   }
 };
 
@@ -34,13 +41,13 @@ export default async function main(argv: string[]) {
     .option('--config-overrides <json>', 'config overrides json')
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
-  const config = getConfigFromCli(program, cliConfigMap);
+  const config = await getConfigFromCli(cwd, program, cliConfigMap);
+  const platform = getPlatform(config.platform.name);
   try {
     await build({
       cwd,
       config,
-      configFile: program.config && path.resolve(cwd, program.config),
-      target: program.target
+      platform
     });
     console.log('Build successfully!');
   } catch (error) {

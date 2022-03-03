@@ -1,4 +1,4 @@
-import { createPlugin } from '@shuvi/runtime-core/lib/lifecycle';
+import { createPlugin, PluginInstance } from '@shuvi/runtime-core';
 import { init } from '@shuvi/redox';
 
 import { withRedux } from './withRedux';
@@ -23,4 +23,4 @@ export default createPlugin({
     }
     return ctx;
   }
-});
+}) as PluginInstance;

@@ -9,15 +9,15 @@
     "url": "git+https://github.com/shuvijs/shuvi.git"
   },
   "scripts": {
-    "dev": "lerna run dev --stream --parallel",
-    "clean": "lerna exec rimraf lib esm shuvi-app --stream --parallel",
-    "shuvi": "SHUVI_DEV_DISABLE_CACHE=true node ./packages/shuvi/lib/cli.js",
-    "build": "lerna run build --stream",
+    "dev": "pnpm -r --stream --parallel run dev",
+    "build": "pnpm -r run build",
+    "clean": "pnpm -r --parallel exec rm -rf node_modules lib esm shuvi-app && pnpm exec rm -rf node_modules",
+    "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",
-    "test": "yarn test:fixtures && yarn test:unit",
+    "test": "pnpm test:fixtures && pnpm test:unit",
     "test:unit": "jest packages",
     "test:fixtures": "jest test/fixtures",
-    "test:e2e": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand",
+    "test:e2e": "cd test && pnpm test",
     "test:e2e:express": "NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
     "test:e2e:koa": "NODE_SERVER=KOA jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=KOA jest test/e2e/basic --runInBand",
     "postinstall": "node scripts/install-native.js"
@@ -64,7 +64,7 @@
     "puppeteer-core": "4.0.1",
     "rimraf": "^3.0.2",
     "ts-jest": "26.5.6",
-    "typescript": "^4.4.3"
+    "typescript": "^4.5.2"
   },
   "resolutions": {
     "@babel/types": "7.12.11"

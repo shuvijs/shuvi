@@ -1,11 +1,11 @@
 import { IncomingMessage } from 'http';
-import { ParsedQuery } from 'query-string';
 import {
   IParams,
   IRedirectFn,
   IRedirectState,
   IRouter,
-  IRouteRecord
+  IRouteRecord,
+  ParsedQuery
 } from '@shuvi/router';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IAppData } from './helper';
@@ -38,7 +38,7 @@ export {
   IErrorHandler
 } from './appStore';
 
-export { IRuntimeModule, createPlugin } from './lifecycle';
+export { IRuntimeModule, createPlugin, PluginInstance } from './lifecycle';
 
 export type IQuery = ParsedQuery;
 

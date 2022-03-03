@@ -1,13 +1,12 @@
 import { getApi } from '../api';
-import { UserConfig, IPaths } from '..';
+import { UserConfig, IPaths, getFullUserConfig } from '..';
 import path from 'path';
 import rimraf from 'rimraf';
-import { resolvePlugin } from './utils';
 import { readFileSync } from 'fs';
 
 test('should has "production" be default mode', async () => {
   const prodApi = await getApi({
-    config: {}
+    config: getFullUserConfig()
   });
   expect(prodApi.mode).toBe('production');
 });
@@ -16,7 +15,7 @@ describe('plugins', () => {
   test('should work', async () => {
     let context: any;
     await getApi({
-      config: {
+      config: getFullUserConfig({
         plugins: [
           {
             afterInit: cliContext => {
@@ -24,7 +23,7 @@ describe('plugins', () => {
             }
           }
         ]
-      }
+      })
     });
     expect(context!).toBeDefined();
     expect(context!.paths).toBeDefined();
@@ -32,21 +31,19 @@ describe('plugins', () => {
 
   test('should access config and paths', async () => {
     let config: UserConfig;
-    let paths: IPaths;
 
     const api = await getApi({
       cwd: path.join(__dirname, 'fixtures', 'dotenv'),
-      config: {
+      config: getFullUserConfig({
         publicPath: '/test',
         plugins: [
           {
             afterInit: api => {
               config = api.config;
-              paths = api.paths;
             }
           }
         ]
-      }
+      })
     });
     expect(config!.publicPath).toBe('/test');
     expect(api.cwd).toBe(path.join(__dirname, 'fixtures', 'dotenv'));
@@ -71,7 +68,7 @@ test('add App files, add App services', async () => {
   }
   const api = await getApi({
     cwd: path.join(__dirname, 'fixtures', 'rootDir'),
-    config: {
+    config: getFullUserConfig({
       plugins: [
         {
           addRuntimeFile: () => [
@@ -95,7 +92,7 @@ test('add App files, add App services', async () => {
           })
         }
       ]
-    }
+    })
   });
   await api.buildApp();
   checkMatch([
@@ -106,14 +103,4 @@ test('add App files, add App services', async () => {
   ]);
   await api.destory();
   rimraf.sync(shuviDir);
-});
-
-test('should load dotEnv when init', async () => {
-  expect(process.env.READ_ENV).toBeUndefined();
-
-  await getApi({
-    cwd: path.join(__dirname, 'fixtures', 'dotenv')
-  });
-
-  expect(process.env.READ_ENV).toBe('true');
 });

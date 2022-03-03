@@ -47,6 +47,7 @@
     "@shuvi/utils": "0.0.1-pre.10",
     "content-type": "^1.0.4",
     "cookie": "^0.4.1",
+    "ejs": "3.1.5",
     "fs-extra": "9.0.1",
     "raw-body": "^2.4.1",
     "react": "16.14.0",

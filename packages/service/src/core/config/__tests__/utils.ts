@@ -1,6 +1,6 @@
 import path from 'path';
 import { UserConfig } from '../../apiTypes';
-import { loadConfig, resolveConfig } from '../config';
+import { loadConfig, resolveConfig, getFullUserConfig } from '../config';
 
 export function resolveFixture(name: string) {
   return path.join(__dirname, 'fixtures', name);
@@ -15,8 +15,5 @@ export async function loadFixture(
     rootDir: resolveFixture(name),
     filepath: configFile
   });
-  return resolveConfig({
-    config,
-    overrides: [userConfig]
-  });
+  return resolveConfig(getFullUserConfig(config), [userConfig]);
 }

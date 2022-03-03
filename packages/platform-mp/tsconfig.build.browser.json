@@ -2,19 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "module": "esnext",
-    "outDir": "shuvi-app",
-    "strict": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "downlevelIteration": true,
-    "strictPropertyInitialization": false,
-    "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": false,
-    "noImplicitThis": false,
-    "stripInternal": true,
-    "noUnusedLocals": false,
-    "lib": ["esnext", "DOM"]
+    "jsx": "preserve",
+    "outDir": "shuvi-app"
   },
   "include": [
     "src/shuvi-app"

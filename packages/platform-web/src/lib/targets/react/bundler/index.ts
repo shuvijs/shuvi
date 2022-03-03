@@ -38,7 +38,7 @@ const configWebpack: ICliPluginConstructor['configWebpack'] = (
       .rule('main')
       .oneOf('js')
       .use('react-refresh-loader')
-      .loader('@next/react-refresh-utils/loader')
+      .loader(require.resolve('@next/react-refresh-utils/loader'))
       .before('shuvi-swc-loader');
 
     config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);

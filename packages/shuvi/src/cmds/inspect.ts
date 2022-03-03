@@ -1,11 +1,10 @@
 import { inspect } from 'util';
-import path from 'path';
 import program from 'commander';
 import { highlight } from 'cli-highlight';
 import chalk from '@shuvi/utils/lib/chalk';
 import { getApi } from '@shuvi/service';
 import { getBundler } from '@shuvi/service/lib/bundler/bundler';
-import { getProjectDir, getConfigFromCli } from '../utils';
+import { getProjectDir, getConfigFromCli, getPlatform } from '../utils';
 import { getPackageInfo } from '../utils';
 
 export default async function main(argv: string[]) {
@@ -28,11 +27,12 @@ export default async function main(argv: string[]) {
   Object.assign(process.env, {
     NODE_ENV: mode
   });
-  const config = getConfigFromCli(program);
+  const config = await getConfigFromCli(cwd, program);
+  const platform = getPlatform(config.platform.name);
   const api = await getApi({
     cwd,
     config,
-    configFile: program.config && path.resolve(cwd, program.config),
+    platform,
     mode,
     phase: 'PHASE_INSPECT_WEBPACK'
   });

@@ -9,14 +9,18 @@ import {
   SyncWaterfallHookHandler,
   AsyncParallelHookHandler,
   AsyncSeriesWaterfallHookHandler,
-  createSyncHook
+  createSyncHook,
+  createSyncBailHook,
+  createSyncWaterfallHook,
+  createAsyncParallelHook,
+  createAsyncSeriesWaterfallHook
 } from './hooks';
 
-type PatchPluginParameter<T, C> = RemoveVoidParameter<
+export type PatchPluginParameter<T, C> = RemoveManagerVoidParameter<
   AddContextParameter<T, C>
 >;
 
-type AddContextParameter<T, C> = T extends (
+export type AddContextParameter<T, C> = T extends (
   initalValue: infer I,
   extraArg: infer E
 ) => infer R
@@ -33,35 +37,38 @@ export interface HookMap {
   [x: string]: AnyHook;
 }
 
-export type Setup<EHM> = (utils: { addHooks: (hook: Partial<EHM>) => void }) => void
+export type Setup<EHM> = (utils: {
+  addHooks: (hook: Partial<EHM>) => void;
+}) => void;
 export type CreatePlugin<HM extends HookMap, C, EHM extends HookMap> = (
   pluginHandlers: IPluginHandlers<HM & EHM, C> & {
-    setup?: Setup<EHM>
+    setup?: Setup<EHM>;
   },
   options?: PluginOptions
-) => IPlugin<HM & EHM, C>;
+) => IPluginInstance<HM & EHM, C>;
 
 // 这意味着context需要在一开始就确定
 export type HookManager<HM extends HookMap, C, EHM extends HookMap> = {
   createPlugin: (
     pluginHandlers: IPluginHandlers<HM & EHM, C> & {
-      setup?: Setup<EHM>
+      setup?: Setup<EHM>;
     },
     options?: PluginOptions
-  ) => IPlugin<HM & EHM, C>;
-  usePlugin: (...plugins: IPlugin<HM & EHM, C>[]) => void;
+  ) => IPluginInstance<HM & EHM, C>;
+  usePlugin: (...plugins: IPluginInstance<HM & EHM, C>[]) => void;
   runner: RunnerType<HM, EHM>;
   setContext: (context: C) => void;
   clear: () => void;
   addHooks: (hook: Partial<EHM>) => void;
   hooks: HM | (HM & EHM);
+  getPlugins: () => IPluginInstance<HM & EHM, C>[];
 };
 
-type RunnerType<HM, EHM> = {
+export type RunnerType<HM, EHM> = {
   [K in keyof (HM & EHM)]: HookRunnerType<(HM & EHM)[K]>;
-} & { setup: Setup<EHM> }
+} & { setup: Setup<EHM> };
 
-type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
+export type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
   ? SyncHook<T, E, R>['run']
   : H extends SyncBailHook<infer T, infer E, infer R>
   ? SyncBailHook<T, E, R>['run']
@@ -73,14 +80,14 @@ type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
   ? AsyncSeriesWaterfallHook<T, E>['run']
   : never;
 
-type IPlugin<HM, C> = {
+export type IPluginInstance<HM, C> = {
   handlers: IPluginHandlers<HM, C>;
   SYNC_PLUGIN_SYMBOL: 'SYNC_PLUGIN_SYMBOL';
 } & PluginOptions;
 
-type IPluginHandlers<HM, C> = Partial<IPluginHandlersFullMap<HM, C>>;
+export type IPluginHandlers<HM, C> = Partial<IPluginHandlersFullMap<HM, C>>;
 
-type IPluginHandlersFullMap<HM, C> = {
+export type IPluginHandlersFullMap<HM, C> = {
   [K in keyof HM]: HM[K] extends SyncHook<infer T, infer E, infer R>
     ? PatchPluginParameter<SyncHookHandler<T, E, R>, C>
     : HM[K] extends SyncBailHook<infer T, infer E, infer R>
@@ -113,14 +120,14 @@ export const DEFAULT_OPTIONS: Required<PluginOptions> = {
   order: 0
 };
 
-const SYNC_PLUGIN_SYMBOL = 'SYNC_PLUGIN_SYMBOL';
+export const SYNC_PLUGIN_SYMBOL = 'SYNC_PLUGIN_SYMBOL';
 
 export const isPluginInstance = (plugin: any) =>
   plugin &&
   plugin.hasOwnProperty(SYNC_PLUGIN_SYMBOL) &&
   plugin.SYNC_PLUGIN_SYMBOL === SYNC_PLUGIN_SYMBOL;
 
-const sortPlugins = <T extends IPlugin<any, any>[]>(input: T): T => {
+const sortPlugins = <T extends IPluginInstance<any, any>[]>(input: T): T => {
   let plugins: T = input.slice() as T;
   plugins.sort((a, b) => (a.order as number) - (b.order as number));
   for (let i = 0; i < plugins.length; i++) {
@@ -158,7 +165,7 @@ const sortPlugins = <T extends IPlugin<any, any>[]>(input: T): T => {
   return plugins;
 };
 
-const checkPlugins = (plugins: IPlugin<any, any>[]) => {
+const checkPlugins = (plugins: IPluginInstance<any, any>[]) => {
   for (const origin of plugins) {
     if (origin.rivals) {
       for (const rival of origin.rivals) {
@@ -190,8 +197,36 @@ function uuid() {
 }
 
 export type ArrayElements<T extends {}> = {
-  [K in keyof T]: T[K][]
-}
+  [K in keyof T]: T[K][];
+};
+
+const copyHookMap = <HM extends HookMap | Partial<HookMap>>(
+  hookMap: HM
+): HM => {
+  const newHookMap: HookMap = {};
+  for (const hookName in hookMap) {
+    const hook = hookMap[hookName];
+    switch (hook?.type) {
+      case 'SyncHook':
+        newHookMap[hookName] = createSyncHook();
+        break;
+      case 'SyncBailHook':
+        newHookMap[hookName] = createSyncBailHook();
+        break;
+      case 'SyncWaterfallHook':
+        newHookMap[hookName] = createSyncWaterfallHook();
+        break;
+      case 'AsyncParallelHook':
+        newHookMap[hookName] = createAsyncParallelHook();
+        break;
+      case 'AsyncSeriesWaterfallHook':
+        newHookMap[hookName] = createAsyncSeriesWaterfallHook();
+        break;
+      default:
+    }
+  }
+  return newHookMap as HM;
+};
 
 export const createHookManager = <
   HM extends HookMap,
@@ -201,22 +236,26 @@ export const createHookManager = <
   hookMap: HM,
   hasContext: boolean = true
 ): HookManager<HM, C, EHM> => {
-  const setupHook = createSyncHook<void, Setup<EHM>>()
-  const _hookMap: HM | (HM & EHM) = { ...hookMap, setup: setupHook };
-  let _plugins: IPlugin<HM & EHM, C>[] = [];
-  let _hookHandlers: ArrayElements<IPluginHandlers<HM & EHM, C>> = {} as ArrayElements<IPluginHandlers<HM & EHM, C>>
-  let _internalRunners: RunnerType<HM, EHM> = {} as RunnerType<HM, EHM>
+  const setupHook = createSyncHook<void, Setup<EHM>>();
+  const _hookMap: HM | (HM & EHM) = {
+    ...copyHookMap(hookMap),
+    setup: setupHook
+  };
+  let _plugins: IPluginInstance<HM & EHM, C>[] = [];
+  let _hookHandlers: ArrayElements<IPluginHandlers<HM & EHM, C>> =
+    {} as ArrayElements<IPluginHandlers<HM & EHM, C>>;
+  let _internalRunners: RunnerType<HM, EHM> = {} as RunnerType<HM, EHM>;
   let _context: C;
-  let _initiated = false
+  let _initiated = false;
   const init = () => {
-    load()
-    const setupRunner = getRunner('setup')
-    setupRunner({ addHooks })
-  }
+    load();
+    const setupRunner = getRunner('setup');
+    setupRunner({ addHooks });
+  };
   const createPlugin = (
     pluginHandlers: IPluginHandlers<HM & EHM, C>,
     options: PluginOptions = {}
-  ): IPlugin<HM & EHM, C> => {
+  ): IPluginInstance<HM & EHM, C> => {
     return {
       ...DEFAULT_OPTIONS,
       name: `plugin-id-${uuid()}`,
@@ -225,7 +264,7 @@ export const createHookManager = <
       SYNC_PLUGIN_SYMBOL
     };
   };
-  const usePlugin = (...plugins: IPlugin<HM & EHM, C>[]) => {
+  const usePlugin = (...plugins: IPluginInstance<HM & EHM, C>[]) => {
     if (_initiated) {
       return;
     }
@@ -240,9 +279,9 @@ export const createHookManager = <
       let hookName: keyof HM;
       for (hookName in handlers) {
         if (!_hookHandlers[hookName]) {
-          _hookHandlers[hookName] = []
+          _hookHandlers[hookName] = [];
         }
-        _hookHandlers[hookName].push(handlers[hookName])
+        _hookHandlers[hookName].push(handlers[hookName]);
       }
     });
   };
@@ -255,91 +294,98 @@ export const createHookManager = <
     Object.values(_hookMap).forEach(cur => {
       cur.clear();
     });
-    _plugins = []
-    _hookHandlers = {} as ArrayElements<IPluginHandlers<HM & EHM, C>>
-    _internalRunners = {} as RunnerType<HM, EHM>
+    _plugins = [];
+    _hookHandlers = {} as ArrayElements<IPluginHandlers<HM & EHM, C>>;
+    _internalRunners = {} as RunnerType<HM, EHM>;
     _initiated = false;
   };
 
   const addHooks = (extraHookMap: Partial<EHM>) => {
-    for (const hookName in extraHookMap) {
+    const extraHookMapNew = copyHookMap(extraHookMap);
+    for (const hookName in extraHookMapNew) {
       // connot override existed hooks
       if (!_hookMap[hookName]) {
         //@ts-ignore
-        _hookMap[hookName] = extraHookMap[hookName]
+        _hookMap[hookName] = extraHookMapNew[hookName];
         if (_internalRunners[hookName]) {
-          delete _internalRunners[hookName]
+          delete _internalRunners[hookName];
         }
+      } else {
+        console.log('has been added', hookName);
       }
     }
-  }
+  };
 
   const getRunner = (hookName: keyof (HM & EHM)) => {
     if (_internalRunners[hookName]) {
-      return _internalRunners[hookName]
+      return _internalRunners[hookName];
     }
-    const currentRunner = getSingerRunner(hookName)
-    _internalRunners[hookName] = currentRunner as any
-    return currentRunner
-  }
+    const currentRunner = getSingerRunner(hookName);
+    _internalRunners[hookName] = currentRunner as any;
+    return currentRunner;
+  };
   const getSingerRunner = (hookName: keyof (HM & EHM)) => {
-    let used = false
-    const hook = _hookMap[hookName] as AnyHook
-    const handlers = _hookHandlers[hookName] || []
-    if (!hook) return () => {}
-    const isSetupHook = hookName === 'setup'
+    let used = false;
+    const hook = _hookMap[hookName] as AnyHook;
+    const handlers = _hookHandlers[hookName] || [];
+    if (!hook) return () => {};
+    const isSetupHook = hookName === 'setup';
     if (isSetupHook) {
       return (util: any) => {
-        let setupDone = false
+        let setupDone = false;
         if (!used) {
-          hook.use(...handlers as any[])
+          hook.use(...(handlers as any[]));
           // every time setup hook runs, set setupDone to true at the end
           // to make sure util methods cannot be used outside of the hook
-          hook.use(() => { setupDone = true })
-          used = true
+          hook.use(() => {
+            setupDone = true;
+          });
+          used = true;
         }
-        const getDisposableFunctionProxy = (func: Function) => new Proxy(func, {
-          apply(target, thisArg, argArray) {
-            if (setupDone) {
-              return
+        const getDisposableFunctionProxy = (func: Function) =>
+          new Proxy(func, {
+            apply(target, thisArg, argArray) {
+              if (setupDone) {
+                return;
+              }
+              return target.apply(thisArg, argArray);
             }
-            return target.apply(thisArg, argArray);
-          }
-        })
-        const wrappedUtil = { ...util }
+          });
+        const wrappedUtil = { ...util };
         for (let key in wrappedUtil) {
           if (typeof wrappedUtil[key] === 'function') {
-            wrappedUtil[key] = getDisposableFunctionProxy(wrappedUtil[key])
+            wrappedUtil[key] = getDisposableFunctionProxy(wrappedUtil[key]);
           }
         }
         // @ts-ignore
-        return hook.run(wrappedUtil)
-      }
+        return hook.run(wrappedUtil);
+      };
     }
     return (...args: any[]) => {
       if (!used) {
-        hook.use(...handlers as any[])
-        used = true
+        hook.use(...(handlers as any[]));
+        used = true;
       }
       if (hasContext && !_context) {
-        throw new Error(`Context not set. Hook ${hookName} running failed.`)
+        throw new Error(`Context not set. Hook ${hookName} running failed.`);
       }
       // @ts-ignore
       return hook.run(...args, _context);
-    }
-  }
+    };
+  };
 
-
-
-  const runnerProxy = new Proxy({}, {
-    get(_, prop) {
-      if (!_initiated) {
-        init()
-        _initiated = true;
+  const runnerProxy = new Proxy(
+    {},
+    {
+      get(_, prop) {
+        if (!_initiated) {
+          init();
+          _initiated = true;
+        }
+        return getRunner(prop as keyof (HM & EHM));
       }
-      return getRunner(prop as keyof (HM & EHM))
     }
-  }) as RunnerType<HM, EHM>
+  ) as RunnerType<HM, EHM>;
 
   return {
     createPlugin,
@@ -348,10 +394,11 @@ export const createHookManager = <
     clear,
     addHooks,
     hooks,
-    setContext
+    setContext,
+    getPlugins: () => _plugins
   };
 };
-type RemoveVoidParameter<T> = T extends (
+export type RemoveManagerVoidParameter<T> = T extends (
   initalValue: infer I,
   extraArg: infer E,
   context: infer C
