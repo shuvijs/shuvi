@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [feat-0302-swcFlow]
-#    paths:
-#      - "packages/toolpack/scripts/version.js"
+    branches: [dev]
+    paths:
+      - "packages/toolpack/scripts/version.js"
   pull_request:
     types: [opened, synchronize]
 
