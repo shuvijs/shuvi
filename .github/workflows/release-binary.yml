@@ -132,7 +132,7 @@ jobs:
           node-version: 14
           check-latest: true
           cache: 'pnpm'
-        working-directory: ./
+        working-directory: './'
 
       # we use checkout here instead of the build cache since
       # it can fail to restore in different OS'
@@ -296,7 +296,7 @@ jobs:
         with:
           node-version: 14
           cache: 'pnpm'
-        working-directory: ./
+        working-directory: './'
 
       # we use checkout here instead of the build cache since
       # it can fail to restore in different OS'
@@ -401,7 +401,7 @@ jobs:
         with:
           node-version: 14
           cache: 'pnpm'
-        working-directory: ./
+        working-directory: './'
 
       # we use checkout here instead of the build cache since
       # it can fail to restore in different OS'
@@ -466,7 +466,7 @@ jobs:
         with:
           node-version: 14
           cache: 'pnpm'
-        working-directory: ./
+        working-directory: './'
 
       # we use checkout here instead of the build cache since
       # it can fail to restore in different OS'
@@ -533,7 +533,7 @@ jobs:
         with:
           node-version: 14
           cache: 'pnpm'
-        working-directory: ./
+        working-directory: './'
 
       # we use checkout here instead of the build cache since
       # it can fail to restore in different OS'
