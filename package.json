@@ -20,7 +20,8 @@
     "test:e2e": "cd test && pnpm test",
     "test:e2e:express": "NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
     "test:e2e:koa": "NODE_SERVER=KOA jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=KOA jest test/e2e/basic --runInBand",
-    "postinstall": "node scripts/install-native.js"
+    "postinstall": "node scripts/install-native.js",
+    "release": "pnpm clean && pnpm i && pnpm build && pnpm test && pnpm changeset publish"
   },
   "husky": {
     "hooks": {

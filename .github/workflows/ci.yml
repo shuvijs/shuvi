@@ -18,10 +18,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
+
       - name: Use Node.js 16
         uses: actions/setup-node@v2
         with:
           node-version: 16
+          cache: 'pnpm'
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
@@ -29,10 +36,6 @@ jobs:
           toolchain: nightly-2021-08-12
           profile: minimal
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: 6.0.2
 
       - run: pnpm install --frozen-lockfile
 
