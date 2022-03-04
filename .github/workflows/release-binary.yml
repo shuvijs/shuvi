@@ -1,10 +1,8 @@
 on:
   push:
-    branches: [dev]
+    branches: [release/*]
     paths:
       - "packages/toolpack/scripts/version.js"
-  pull_request:
-    types: [opened, synchronize]
 
 name: Release binary
 
