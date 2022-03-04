@@ -1,18 +1,13 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "lib",
     "strict": false,
-    "strictNullChecks": false,
     "strictFunctionTypes": false,
-    "downlevelIteration": true,
-    "strictPropertyInitialization": false,
+
     "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": false,
-    "noImplicitThis": false,
-    "stripInternal": true,
-    "noUnusedLocals": false,
-    "rootDir": "./src/lib",
     "lib": ["esnext", "DOM"]
   },
   "include": [

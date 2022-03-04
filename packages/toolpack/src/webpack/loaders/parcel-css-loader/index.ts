@@ -30,7 +30,7 @@ export default async function loader(
   content: string | Buffer,
   map?: string
 ) {
-  const rawOptions = this.getOptions();
+  const rawOptions = (this as any).getOptions();
   const callback = this.async();
 
   let options;
@@ -38,8 +38,9 @@ export default async function loader(
   try {
     options = normalizeOptions(rawOptions, this);
   } catch (error) {
-    callback(error);
-
+    if (callback) {
+      callback(error as Error);
+    }
     return;
   }
 
@@ -80,7 +81,11 @@ export default async function loader(
     }
   } catch (error: any) {
     console.error('-> error', error);
-    callback(error.name === 'SyntaxError' ? new CssSyntaxError(error) : error);
+    if (callback) {
+      callback(
+        error.name === 'SyntaxError' ? new CssSyntaxError(error) : error
+      );
+    }
     return;
   }
   const { dependencies = [] } = ParcelCssRes;
@@ -126,7 +131,7 @@ export default async function loader(
           prefix = queryParts.join('!');
         }
       }
-      const resolver = this.getResolve({
+      const resolver = (this as any).getResolve({
         dependencyType: 'css',
         conditionNames: ['style'],
         mainFields: ['css', 'style', 'main', '...'],
@@ -219,7 +224,7 @@ export default async function loader(
       hash += hashOrQuery ? `#${hashOrQuery}` : '';
 
       const resolver = !options.esModule
-        ? this.getResolve({ mainFiles: [], extensions: [] })
+        ? (this as any).getResolve({ mainFiles: [], extensions: [] })
         : undefined;
       const request = requestify(pathname, this.rootContext, Boolean(resolver));
       if (!resolver) {
@@ -272,7 +277,7 @@ export default async function loader(
     }
   }
   if (ParcelCssRes.exports) {
-    const resolver = this.getResolve({
+    const resolver = (this as any).getResolve({
       dependencyType: 'icss',
       conditionNames: ['style'],
       extensions: ['...'],
@@ -390,8 +395,9 @@ export default async function loader(
       this
     );
   } catch (error) {
-    callback(error);
-
+    if (callback) {
+      callback(error as Error);
+    }
     return;
   }
   const exportCode = getExportCode(
@@ -402,8 +408,9 @@ export default async function loader(
   );
 
   const resultCode = `${importCode}${moduleCode}${exportCode}`;
-
-  callback(null, resultCode);
+  if (callback) {
+    callback(null, resultCode);
+  }
 }
 
 // accept Buffers instead of strings

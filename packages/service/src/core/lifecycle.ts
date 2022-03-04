@@ -1,9 +1,9 @@
 import {
   createAsyncSeriesWaterfallHook,
   createHookManager,
-  createAsyncParallelHook
+  createAsyncParallelHook,
+  IPluginInstance
 } from '@shuvi/hook';
-import WebpackChain from 'webpack-chain';
 import { FileOptions } from '../project';
 import {
   ExtraTargetAssistant,
@@ -14,13 +14,10 @@ import {
   RuntimeService,
   Resources,
   AddRuntimeFileUtils,
-  PluginHooks
+  PluginHooks,
+  WebpackChainType
 } from './lifecycleTypes';
 import { IPluginContext, IPlugin } from './apiTypes';
-
-export * from './lifecycleTypes';
-
-export type PluginManager = ReturnType<typeof getManager>;
 
 const afterInit = createAsyncParallelHook<void>();
 const afterBuild = createAsyncParallelHook<void>();
@@ -29,7 +26,7 @@ const afterBundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
 const afterBundlerTargetDone =
   createAsyncParallelHook<BundlerTargetDoneExtra>();
 const configWebpack = createAsyncSeriesWaterfallHook<
-  WebpackChain,
+  WebpackChainType,
   ConfigWebpackAssistant
 >();
 const addExtraTarget = createAsyncParallelHook<
@@ -74,11 +71,20 @@ const builtinPluginHooks = {
   addRuntimeService
 };
 
+export * from './lifecycleTypes';
+
 type BuiltinPluginHooks = typeof builtinPluginHooks;
+
+export type PluginInstance = IPluginInstance<
+  BuiltinPluginHooks & PluginHooks,
+  IPluginContext
+>;
 
 export const getManager = () =>
   createHookManager<BuiltinPluginHooks, IPluginContext, PluginHooks>(
     builtinPluginHooks
   );
+
+export type PluginManager = ReturnType<typeof getManager>;
 
 export const { createPlugin } = getManager();

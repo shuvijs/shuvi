@@ -36,7 +36,7 @@ const FILE_RESULT = 'result-file';
 afterEach(async () => {
   // reset fixtures
   await wait(500);
-  fs.rmSync(file(), { recursive: true, force: true });
+  (fs as any).rmSync(file(), { recursive: true, force: true });
   fs.mkdirSync(file());
   fs.mkdirSync(directoryA);
   fs.mkdirSync(directoryB);

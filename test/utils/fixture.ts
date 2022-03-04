@@ -1,8 +1,9 @@
 import path from 'path';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { loadConfig } from '@shuvi/service';
+import { loadConfig, UserConfig } from '@shuvi/service';
+import { createDefaultConfig } from '@shuvi/service/lib/core/config';
+import { getPlatform } from 'shuvi/lib/utils';
 import { build } from './build';
-import { UserConfig } from '@shuvi/service';
 
 export function resolveFixture(...paths: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...paths);
@@ -11,11 +12,11 @@ export function resolveFixture(...paths: string[]) {
 export async function loadFixture(
   fixture: string,
   overrides: UserConfig = {}
-): Promise<UserConfig> {
+): Promise<Required<UserConfig>> {
   const config = await loadConfig({
     rootDir: resolveFixture(fixture)
   });
-  return deepmerge(config, overrides);
+  return deepmerge(createDefaultConfig(), config, overrides);
 }
 
 export async function buildFixture(
@@ -23,5 +24,6 @@ export async function buildFixture(
   overrides: UserConfig = {}
 ) {
   const config = await loadFixture(fixture, overrides);
-  await build({ config, cwd: resolveFixture(fixture) });
+  const platform = getPlatform(config.platform.name);
+  await build({ config, cwd: resolveFixture(fixture), platform });
 }
