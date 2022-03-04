@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 import { FileOptions } from '@shuvi/service/lib/project';
 import { ProjectContext } from '../projectContext';

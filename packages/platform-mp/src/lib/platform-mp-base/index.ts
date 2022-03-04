@@ -4,6 +4,7 @@ import {
   createPlugin,
   IUserRouteConfig,
   IPlatformContent,
+  PluginInstance,
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_FILE_SERVER,
   BUILD_SERVER_DIR
@@ -11,8 +12,11 @@ import {
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
-import { getRoutesFromFiles } from '@shuvi/service/lib/route';
-import { renameFilepathToComponent } from '@shuvi/service/lib/route';
+import {
+  getRoutesFromFiles,
+  renameFilepathToComponent
+} from '@shuvi/service/lib/route';
+import { FileOptions } from '@shuvi/service/lib/project';
 import {
   getUserCustomFileCandidates,
   getFisrtModuleExport
@@ -125,7 +129,10 @@ export default abstract class PlatformMpBase {
     ].filter(Boolean);
   }
 
-  getRuntimeConfigPlugin() {
+  getRuntimeConfigPlugin(): PluginInstance {
+    const runtimeConfigPath = require.resolve(
+      '@shuvi/platform-shared/lib/lib/runtimeConfig'
+    );
     return createPlugin({
       addRuntimeFile: async ({ createFile }, context) => {
         const { pluginRunner, config } = context;
@@ -145,18 +152,18 @@ export default abstract class PlatformMpBase {
         const setRuntimeConfigFile = createFile({
           name: 'setRuntimeConfig.js',
           content: () =>
-            `export { setRuntimeConfig as default } from '@shuvi/platform-shared/lib/lib/runtimeConfig'`
+            `export { setRuntimeConfig as default } from '${runtimeConfigPath}'`
         });
         return [runtimeConfigFile, setRuntimeConfigFile];
       },
       addRuntimeService: () => ({
-        source: '@shuvi/platform-shared/lib/lib/runtimeConfig',
+        source: runtimeConfigPath,
         exported: '{ default as getRuntimeConfig }'
       })
-    });
+    }) as PluginInstance;
   }
 
-  getSetupServerPlugin() {
+  getSetupServerPlugin(): PluginInstance {
     return createPlugin({
       addServerPlugin: () => require.resolve('./serverPlugin'),
       addResource: context => generateResource(context),
@@ -200,7 +207,7 @@ export default abstract class PlatformMpBase {
   /**
    * setup app files
    */
-  getSetupAppPlugin() {
+  getSetupAppPlugin(): PluginInstance {
     return createPlugin({
       afterInit: context => {
         const appConfigFile = findFirstExistedFile([
@@ -259,11 +266,11 @@ export default abstract class PlatformMpBase {
     });
   }
 
-  getSetupRoutesPlugin() {
+  getSetupRoutesPlugin(): PluginInstance {
     return createPlugin({
       addRuntimeFile: async ({ createFile }, context) => {
         const getFiles = (routes: IUserRouteConfig[]) => {
-          const appFiles = [];
+          const appFiles: FileOptions[] = [];
 
           // map url to component
           let routesMap: [string, string][] = [];
@@ -409,7 +416,7 @@ export default abstract class PlatformMpBase {
     });
   }
 
-  getConfigWebpackPlugin() {
+  getConfigWebpackPlugin(): PluginInstance {
     return createPlugin({
       configWebpack: async (config, { name }, context) => {
         if (name === BUNDLER_TARGET_SERVER) return config;
@@ -501,7 +508,6 @@ export default abstract class PlatformMpBase {
               '@tarojs/react': resolveLib('@tarojs/react'),
               'react-dom$': resolveLib('@tarojs/react'),
               react$: resolveLib('react'),
-              'react-reconciler$': resolveLib('react-reconciler'),
               [PACKAGE_NAME]: PACKAGE_RESOLVED,
 
               // @binance

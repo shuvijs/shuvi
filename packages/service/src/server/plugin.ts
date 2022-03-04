@@ -2,7 +2,8 @@ import {
   createAsyncParallelHook,
   createHookManager,
   isPluginInstance,
-  HookMap
+  HookMap,
+  IPluginInstance
 } from '@shuvi/hook';
 import { IPlugin, IPluginContext } from '../core';
 import { IServerMiddleware, IProxy } from './pluginTypes';
@@ -64,6 +65,11 @@ export const getManager = () =>
   >(internalHooks);
 
 export const { createPlugin: createServerPlugin } = getManager();
+
+export type ServerPluginInstance = IPluginInstance<
+  InternalServerPluginHooks & ServerPluginHooks,
+  IServerPluginContext
+>;
 
 const resolvePlugin = (path: string) => {
   const resolved = require(path);

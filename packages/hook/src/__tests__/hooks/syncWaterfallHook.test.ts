@@ -8,9 +8,9 @@ describe('syncHook', () => {
   console.log = jest.fn();
   test('not used', () => {
     const hook = createSyncWaterfallHook<number>();
-    const result = hook.run(10)
-    expect(result).toBe(10)
-  })
+    const result = hook.run(10);
+    expect(result).toBe(10);
+  });
   test('initialValue-void', async () => {
     const hook = createSyncWaterfallHook<void>();
     hook.use(() => {

@@ -40,7 +40,7 @@ export function nodeExternals({
 
     const notExternalModules: Test[] = [];
     const externalModules: Test[] = [
-      /@shuvi[/\\]platform-shared[/\\]lib[/\\]lib[/\\]runtimeConfig/
+      /platform-shared[/\\]lib[/\\]lib[/\\]runtimeConfig/
     ];
 
     // make sure we don't externalize anything that is
