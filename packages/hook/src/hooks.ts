@@ -13,7 +13,7 @@ export type HookRunnerFromHandler<T> = T extends (...args: infer A) => infer R
     ? (...args: A) => void
     : (...args: A) => R[]
   : T;
-type RemoveVoidParameter<T> = T extends (
+export type RemoveVoidParameter<T> = T extends (
   initalValue: infer I,
   extraArg: infer E
 ) => infer R
@@ -111,6 +111,7 @@ export type SyncHook<I = void, E = void, R = void> = {
   use: (...handlers: RemoveVoidParameter<SyncHookHandler<I, E, R>>[]) => void;
   run: RemoveVoidParameter<(initalValue: I, extraArg: E) => R[]>;
   clear: () => void;
+  type: string;
 };
 
 /** Has return value with `any` type */
@@ -120,6 +121,7 @@ export type SyncBailHook<I = void, E = void, R = I> = {
   ) => void;
   run: RemoveVoidParameter<SyncBailHookHandler<I, E, R>>;
   clear: () => void;
+  type: string;
 };
 
 /** Has return value with given type */
@@ -129,6 +131,7 @@ export type SyncWaterfallHook<I, E = void> = {
   ) => void;
   run: RemoveVoidParameter<SyncWaterfallHookHandler<I, E>>;
   clear: () => void;
+  type: string;
 };
 
 /** Normal async hook. No return value
@@ -146,6 +149,7 @@ export type AsyncParallelHook<I = void, E = void, R = void> = {
   ) => void;
   run: RemoveVoidParameter<(initalValue: I, extraArg: E) => Promise<R[]>>;
   clear: () => void;
+  type: string;
 };
 
 /** Has return value with given type */
@@ -155,6 +159,7 @@ export type AsyncSeriesWaterfallHook<I = void, E = void> = {
   ) => void;
   run: RemoveVoidParameter<(initalValue: I, extraArgs: E) => Promise<I>>;
   clear: () => void;
+  type: string;
 };
 
 export const createSyncHook = <I = void, E = void, R = void>(): SyncHook<
@@ -178,7 +183,8 @@ export const createSyncHook = <I = void, E = void, R = void>(): SyncHook<
   return {
     use,
     run,
-    clear
+    clear,
+    type: 'SyncHook'
   };
 };
 
@@ -208,7 +214,8 @@ export const createSyncBailHook = <I = void, E = void, R = I>(): SyncBailHook<
   return {
     use,
     run,
-    clear
+    clear,
+    type: 'SyncBailHook'
   };
 };
 
@@ -237,7 +244,8 @@ export const createSyncWaterfallHook = <
   return {
     use,
     run,
-    clear
+    clear,
+    type: 'SyncWaterfallHook'
   };
 };
 
@@ -265,7 +273,8 @@ export const createAsyncParallelHook = <
   return {
     use,
     run,
-    clear
+    clear,
+    type: 'AsyncParallelHook'
   };
 };
 
@@ -295,6 +304,7 @@ export const createAsyncSeriesWaterfallHook = <
   return {
     use,
     run,
-    clear
+    clear,
+    type: 'AsyncSeriesWaterfallHook'
   };
 };

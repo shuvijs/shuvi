@@ -12,7 +12,7 @@ import {
 import { createFile, fileUtils, ProjectBuilder, FileOptions } from '../project';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { PUBLIC_PATH } from '../constants';
-import { loadConfig, resolveConfig, mergeConfig } from './config';
+import { resolveConfig } from './config';
 import { getManager, PluginManager, Resources } from './lifecycle';
 import { setupApp } from './setupApp';
 import { getPaths } from './paths';
@@ -27,36 +27,29 @@ interface IApiOPtions {
   cwd: string;
   mode: IShuviMode;
   config?: UserConfig;
-  configFile?: string;
   phase: IPhase;
-}
-
-function getPlatform(platform: string = 'web'): IPlatform {
-  const platformName = `@shuvi/platform-${platform}`;
-  const platformInstance: IPlatform = require(platformName).default;
-  return platformInstance;
+  platform?: IPlatform;
 }
 
 class Api {
   private _cwd: string;
   private _mode: IShuviMode;
   private _phase: IPhase;
-  private _configFile?: string;
   private _userConfig: UserConfig;
   private _config!: Config;
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
-  private _platform!: IPlatform;
+  private _platform?: IPlatform;
   private _pluginContext!: IPluginContext;
   pluginManager: PluginManager;
   serverPlugins: IPlugin[] = [];
 
-  constructor({ cwd, mode, config, phase, configFile }: IApiOPtions) {
+  constructor({ cwd, mode, config, phase, platform }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
     this._phase = phase;
+    this._platform = platform;
     this._userConfig = config || {};
-    this._configFile = configFile;
     this.pluginManager = getManager();
     this.pluginManager.clear();
     this._projectBuilder = new ProjectBuilder({
@@ -93,14 +86,7 @@ class Api {
   }
 
   async init() {
-    const fileConfig = await loadConfig({
-      rootDir: this._cwd,
-      filepath: this._configFile
-    });
-    const userConfig: UserConfig = mergeConfig(fileConfig, this._userConfig);
-    const config = (this._config = resolveConfig({
-      config: userConfig
-    }));
+    const config = (this._config = resolveConfig(this._userConfig));
 
     this._paths = getPaths({
       rootDir: this._cwd,
@@ -159,8 +145,9 @@ class Api {
   }
 
   async initPlatformPlugins() {
+    if (!this.platform) return;
     const platformConfig = this._config.platform;
-    this._platform = getPlatform(platformConfig.name);
+    // this._platform = getPlatform(platformConfig.name, this._cliPath);
     const platformContent = await this.platform(platformConfig);
     const { usePlugin, createPlugin } = this.pluginManager;
     usePlugin(...platformContent.plugins);
@@ -285,7 +272,7 @@ export async function getApi(options: Partial<IApiOPtions>): Promise<Api> {
     mode,
     phase,
     config: options.config,
-    configFile: options.configFile
+    platform: options.platform
   });
 
   await api.init();

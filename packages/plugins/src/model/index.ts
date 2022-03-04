@@ -1,4 +1,4 @@
-import { createPlugin } from '@shuvi/service';
+import { createPlugin, PluginInstance } from '@shuvi/service';
 
 export default createPlugin({
   addRuntimePlugin: () => require.resolve('./runtimePlugin'),
@@ -10,4 +10,4 @@ export default createPlugin({
       filepath: 'model.js'
     }
   ]
-});
+}) as PluginInstance;

@@ -1,7 +1,12 @@
 import { existsSync } from 'fs';
 import path from 'path';
 import { CommanderStatic } from 'commander';
-import { UserConfig } from '@shuvi/service';
+import { UserConfig, IPlatform } from '@shuvi/service';
+import {
+  loadConfig,
+  mergeConfig,
+  getFullUserConfig
+} from '@shuvi/service/lib/core/config';
 //@ts-ignore
 import pkgInfo from '../package.json';
 
@@ -33,12 +38,33 @@ function set(obj: any, path: string, value: any) {
   obj[final] = value;
 }
 
-export function getConfigFromCli(
+export type OptionsKeyMap = Record<
+  string,
+  string | ((config: any, optionValue: any) => void)
+>;
+
+export async function getConfigFromCli(
+  cwd: string,
   cliOptions: Record<string, any>,
-  cliOptionsKeyMap: Record<
-    string,
-    string | ((config: any, optionValue: any) => void)
-  > = {}
+  cliOptionsKeyMap: OptionsKeyMap = {}
+): Promise<Required<UserConfig>> {
+  const configFilePath =
+    cliOptions.config && path.resolve(cwd, cliOptions.config);
+  const configFromFile = await loadConfig({
+    rootDir: cwd,
+    filepath: configFilePath
+  });
+  const configFromCliOtherOptions = getConfigFromCliOtherOptions(
+    cliOptions,
+    cliOptionsKeyMap
+  );
+  const configFromCli = mergeConfig(configFromFile, configFromCliOtherOptions);
+  return getFullUserConfig(configFromCli);
+}
+
+export function getConfigFromCliOtherOptions(
+  cliOptions: Record<string, any>,
+  cliOptionsKeyMap: OptionsKeyMap = {}
 ): UserConfig {
   const config = {};
   Object.keys(cliOptionsKeyMap).forEach(key => {
@@ -62,4 +88,10 @@ export function getConfigFromCli(
     console.error(err);
   }
   return config;
+}
+
+export function getPlatform(platform: string = 'web'): IPlatform {
+  const platformName = `@shuvi/platform-${platform}`;
+  const platformInstance: IPlatform = require(platformName).default;
+  return platformInstance;
 }

@@ -59,8 +59,13 @@ jobs:
         with:
           name: shuvi-swc-binaries
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
+
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      - run: yarn install
+      - run: pnpm install
       - run: node ./packages/toolpack/scripts/publish-native.js $GITHUB_REF
 
   build-in-docker:
@@ -115,6 +120,11 @@ jobs:
       - name: tune mac network
         run: sudo sysctl -w net.link.generic.system.hwcksum_tx=0 && sudo sysctl -w net.link.generic.system.hwcksum_rx=0
         if: ${{ matrix.os == 'macos-latest' }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
 
       - name: Setup node
         uses: actions/setup-node@v2
@@ -186,7 +196,7 @@ jobs:
       # This means recompile if there is no cache hit
       - name: 'Build'
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: yarn build-native --release --target ${{ matrix.target }}
+        run: pnpm -- build-native --release --target ${{ matrix.target }}
         env:
           MACOSX_DEPLOYMENT_TARGET: '10.13'
         working-directory: packages/toolpack
@@ -235,6 +245,11 @@ jobs:
       # to install napi globally
       - run: npm i -g @napi-rs/cli@1.2.1
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -253,7 +268,7 @@ jobs:
       - name: Build
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         shell: bash
-        run: yarn build-native --release --target i686-pc-windows-msvc
+        run: pnpm -- build-native --release --target i686-pc-windows-msvc
         working-directory: packages/toolpack
 
       - name: Upload artifact
@@ -269,6 +284,11 @@ jobs:
     needs:
       - test-unit
     steps:
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
+
       - name: Setup node
         uses: actions/setup-node@v2
         with:
@@ -300,7 +320,7 @@ jobs:
       - name: Build
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         shell: bash
-        run: yarn build-native --release --target aarch64-pc-windows-msvc
+        run: pnpm -- build-native --release --target aarch64-pc-windows-msvc
         working-directory: packages/toolpack
 
       - name: Upload artifact
@@ -350,7 +370,7 @@ jobs:
       - name: 'Build'
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         run: |
-          docker run --rm -v ~/.cargo/git:/root/.cargo/git -v ~/.cargo/registry:/root/.cargo/registry -v $(pwd)/packages/toolpack:/build -w /build builder sh -c "npm i -g @napi-rs/cli@1.2.1 && yarn build-native --release --target x86_64-unknown-linux-musl"
+          docker run --rm -v ~/.cargo/git:/root/.cargo/git -v ~/.cargo/registry:/root/.cargo/registry -v $(pwd)/packages/toolpack:/build -w /build builder sh -c "npm i -g @napi-rs/cli@1.2.1 && pnpm -- build-native --release --target x86_64-unknown-linux-musl"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -366,6 +386,11 @@ jobs:
       - test-unit
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
 
       - name: Setup node
         uses: actions/setup-node@v2
@@ -409,7 +434,7 @@ jobs:
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: yarn build-native --release --target aarch64-unknown-linux-gnu
+        run: pnpm -- build-native --release --target aarch64-unknown-linux-gnu
         working-directory: packages/toolpack
 
       - name: Upload artifact
@@ -425,6 +450,11 @@ jobs:
     needs:
       - test-unit
     steps:
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
+
       - name: Setup node
         uses: actions/setup-node@v2
         with:
@@ -467,7 +497,7 @@ jobs:
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: yarn build-native --release --target aarch64-unknown-linux-musl
+        run: pnpm -- build-native --release --target aarch64-unknown-linux-musl
         working-directory: packages/toolpack
 
       - name: Upload artifact
@@ -484,6 +514,11 @@ jobs:
       - test-unit
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: ^6.31.0
 
       - name: Setup node
         uses: actions/setup-node@v2
@@ -527,7 +562,7 @@ jobs:
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: yarn build-native --release --target armv7-unknown-linux-gnueabihf
+        run: pnpm -- build-native --release --target armv7-unknown-linux-gnueabihf
         working-directory: packages/toolpack
 
       - name: Upload artifact

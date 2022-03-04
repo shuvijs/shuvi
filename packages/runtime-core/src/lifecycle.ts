@@ -2,7 +2,8 @@ import {
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook,
   createHookManager,
-  isPluginInstance
+  isPluginInstance,
+  IPluginInstance
 } from '@shuvi/hook';
 import { IContext } from './application';
 import {
@@ -34,6 +35,8 @@ export const getManager = () => createHookManager(hooksMap, false);
 export const { createPlugin } = getManager();
 
 export type PluginManager = ReturnType<typeof getManager>;
+
+export type PluginInstance = IPluginInstance<typeof hooksMap, void>;
 
 export const initPlugins = async (
   pluginManager: PluginManager,

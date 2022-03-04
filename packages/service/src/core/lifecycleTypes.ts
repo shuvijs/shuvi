@@ -69,3 +69,5 @@ export type AddRuntimeFileUtils = {
   createFile: typeof createFile;
   getAllFiles: typeof fileUtils.getAllFiles;
 };
+
+export interface WebpackChainType extends WebpackChain {}

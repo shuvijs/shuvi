@@ -10,6 +10,7 @@ import { loadDotenvConfig } from './loadDotenvConfig';
 export interface LoadConfigOptions {
   rootDir?: string;
   filepath?: string;
+  loadEnv?: boolean;
 }
 
 export interface ResolveConfigOptions {
@@ -20,7 +21,7 @@ export interface ResolveConfigOptions {
 const DEFAUL_CONFIG_FILE_NAME = 'shuvi.config';
 const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'];
 
-const createDefaultConfig: () => UserConfig = () => ({
+export const createDefaultConfig: () => UserConfig = () => ({
   ssr: true,
   env: {},
   rootDir: process.cwd(),
@@ -52,12 +53,15 @@ export function mergeConfig(...configs: any[]): any {
 
 export async function loadConfig({
   rootDir = '.',
-  filepath = ''
+  filepath = '',
+  loadEnv = true
 }: LoadConfigOptions = {}): Promise<UserConfig> {
   rootDir = path.resolve(rootDir);
 
   // read dotenv so we can get env in shuvi.config.js
-  loadDotenvConfig(rootDir);
+  if (loadEnv) {
+    loadDotenvConfig(rootDir);
+  }
 
   let configFilePath: string;
   if (filepath) {
@@ -84,11 +88,12 @@ export async function loadConfig({
   return fileConfig;
 }
 
-export function resolveConfig({
-  config,
-  overrides
-}: ResolveConfigOptions): Config {
-  const configs = [createDefaultConfig(), config].concat(overrides || []);
+/** resolve a full `UserConfig` to be a `Config` */
+export function resolveConfig(
+  config: UserConfig,
+  overrides: UserConfig[] = []
+): Config {
+  const configs = [{}, config].concat(overrides || []);
   const resolvedConfig: Config = mergeConfig.apply(null, configs);
   const apiRouteConfigPrefix = resolvedConfig.apiConfig.prefix;
   if (apiRouteConfigPrefix) {
@@ -98,4 +103,11 @@ export function resolveConfig({
     resolvedConfig.router.history = resolvedConfig.ssr ? 'browser' : 'hash';
   }
   return resolvedConfig;
+}
+
+/** patch a userConfig to be a full `UserConfig` */
+export function getFullUserConfig(
+  config: UserConfig = {}
+): Required<UserConfig> {
+  return mergeConfig(createDefaultConfig(), config);
 }

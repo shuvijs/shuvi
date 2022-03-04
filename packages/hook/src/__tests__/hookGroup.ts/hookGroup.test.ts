@@ -24,131 +24,140 @@ describe('hookManager', () => {
 
   test('context', async () => {
     const hook = createSyncHook<void>();
-    const hooks = { hook }
+    const hooks = { hook };
     const group = createHookManager<typeof hooks, number>(hooks);
     const { createPlugin, setContext, usePlugin, runner } = group;
-    let number = 1
+    let number = 1;
     const pluginGenerator = (option: number) =>
       createPlugin({
-        hook: (context) => {
-          number = (number + context) * option
+        hook: context => {
+          number = (number + context) * option;
         }
       });
     usePlugin(pluginGenerator(10), pluginGenerator(20));
     expect(() => {
       runner.hook();
-    }).toThrowError('Context not set. Hook hook running failed.')
-    setContext(5)
+    }).toThrowError('Context not set. Hook hook running failed.');
+    setContext(5);
     runner.hook();
-    expect(number).toBe(1300)
+    expect(number).toBe(1300);
   });
 
   test('addHooks', async () => {
-    let hookNumber = 0
-    let extraHookNumber = 1
+    let hookNumber = 0;
+    let extraHookNumber = 1;
     const hook = createSyncHook<void>();
     const extraHook = createSyncHook<void>();
-    const baseHooks = { hook }
-    const extraHooks = { extraHook }
-    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(baseHooks, false);
+    const baseHooks = { hook };
+    const extraHooks = { extraHook };
+    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(
+      baseHooks,
+      false
+    );
     const { createPlugin, usePlugin, runner, addHooks } = group;
     const pluginGenerator = (option: number) =>
       createPlugin({
         hook: () => {
-          hookNumber += option
+          hookNumber += option;
         },
         extraHook: () => {
-          extraHookNumber *= option
-        },
+          extraHookNumber *= option;
+        }
       });
     usePlugin(pluginGenerator(10), pluginGenerator(20));
-    runner.extraHook()
-    expect(extraHookNumber).toBe(1)
-    addHooks({ extraHook })
-    runner.hook()
-    expect(hookNumber).toBe(30)
-    expect(extraHookNumber).toBe(1)
-    runner.extraHook()
-    expect(extraHookNumber).toBe(200)
+    runner.extraHook();
+    expect(extraHookNumber).toBe(1);
+    addHooks({ extraHook });
+    runner.hook();
+    expect(hookNumber).toBe(30);
+    expect(extraHookNumber).toBe(1);
+    runner.extraHook();
+    expect(extraHookNumber).toBe(200);
   });
 
   test('setup should be executed at the very first runner runs', async () => {
     const hook = createSyncHook<void>();
     const group = createHookManager({ hook }, false);
     const { createPlugin, usePlugin, runner } = group;
-    let number = 1
+    let number = 1;
     const pluginGenerator = (option: number) =>
       createPlugin({
         setup: () => {
-          number *= option
+          number *= option;
         },
         hook: () => {
-          number += option
+          number += option;
         }
       });
     usePlugin(pluginGenerator(10), pluginGenerator(20));
     runner.hook();
-    expect(number).toBe(230)
+    expect(number).toBe(230);
   });
 
   test('addHooks shoule be available at setup', async () => {
-    let hookNumber = 0
-    let extraHookNumber = 1
+    let hookNumber = 0;
+    let extraHookNumber = 1;
     const hook = createSyncHook<void>();
     const extraHook = createSyncHook<void>();
-    const baseHooks = { hook }
-    const extraHooks = { extraHook }
-    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(baseHooks, false);
+    const baseHooks = { hook };
+    const extraHooks = { extraHook };
+    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(
+      baseHooks,
+      false
+    );
     const { createPlugin, usePlugin, runner } = group;
     const pluginGenerator = (option: number) =>
       createPlugin({
         setup: ({ addHooks }) => {
-          addHooks({ extraHook })
+          addHooks({ extraHook });
         },
         hook: () => {
-          hookNumber += option
+          hookNumber += option;
         },
         extraHook: () => {
-          extraHookNumber *= option
-        },
+          extraHookNumber *= option;
+        }
       });
     usePlugin(pluginGenerator(10), pluginGenerator(20));
-    expect(extraHookNumber).toBe(1)
-    runner.extraHook()
-    expect(extraHookNumber).toBe(200)
-    runner.hook()
-    expect(hookNumber).toBe(30)
+    expect(extraHookNumber).toBe(1);
+    runner.extraHook();
+    expect(extraHookNumber).toBe(200);
+    runner.hook();
+    expect(hookNumber).toBe(30);
   });
 
   test('addHooks shoule be only available inside setup hook', async () => {
-    let hookNumber = 0
-    let extraHookNumber = 1
+    let hookNumber = 0;
+    let extraHookNumber = 1;
     const hook = createSyncHook<void>();
     const extraHook = createSyncHook<void>();
-    const baseHooks = { hook }
-    const extraHooks = { extraHook }
-    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(baseHooks, false);
+    const baseHooks = { hook };
+    const extraHooks = { extraHook };
+    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(
+      baseHooks,
+      false
+    );
     const { createPlugin, usePlugin, runner } = group;
-    let addHooksMethod: any
+    let addHooksMethod: any;
     const pluginGenerator = (option: number) =>
       createPlugin({
         setup: ({ addHooks }) => {
-          addHooksMethod = addHooks
+          addHooksMethod = addHooks;
         },
         hook: () => {
-          hookNumber += option
+          hookNumber += option;
           // will not work
-          addHooksMethod(extraHooks)
+          addHooksMethod(extraHooks);
         },
         extraHook: () => {
-          extraHookNumber *= option
-        },
+          extraHookNumber *= option;
+        }
       });
     usePlugin(pluginGenerator(10));
-    runner.hook()
-    expect(hookNumber).toBe(10)
-    runner.extraHook()
-    expect(extraHookNumber).toBe(1)
+    runner.hook();
+    expect(hookNumber).toBe(10);
+    runner.extraHook();
+    expect(extraHookNumber).toBe(1);
   });
 
   test('cannot usePlugin after runner runs', async () => {
@@ -191,4 +200,3 @@ describe('hookManager', () => {
     expect(result3).toBe(200);
   });
 });
-

@@ -1,7 +1,6 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
-import { ParsedQuery as IQuery } from 'query-string';
 import { UrlWithParsedQuery } from 'url';
-import { IParams } from '@shuvi/router';
+import { IParams, ParsedQuery as IQuery } from '@shuvi/router';
 
 export interface IIncomingMessage extends IncomingMessage {
   url: string;

@@ -5,7 +5,6 @@ import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import Browser, { Page } from './browser';
 
 export { Browser, Page };
-
 export * from './fixture';
 export * from './findPort';
 export * from './launcher';
@@ -66,7 +65,7 @@ export function createCliTestProject(dir: string, cwd?: string) {
     return new Promise<{ code: number; message: string }>((resolve, reject) => {
       let output = '';
       let err = '';
-      const s = spawn('yarn', ['shuvi', command, dir, ...args], {
+      const s = spawn('pnpm --', ['shuvi', command, dir, ...args], {
         ...options,
         shell: true
       });

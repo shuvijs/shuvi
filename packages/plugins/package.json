@@ -13,6 +13,9 @@
     "esm"
   ],
   "sideEffects": false,
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "dev": "run-p watch:*",
     "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
@@ -26,6 +29,7 @@
     "@rematch/core": "2.2.0",
     "@shuvi/redox": "0.0.1-pre.4",
     "@shuvi/redox-react": "0.0.1-pre.4",
+    "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/runtime-core": "0.0.1-pre.10",
     "@shuvi/service": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",

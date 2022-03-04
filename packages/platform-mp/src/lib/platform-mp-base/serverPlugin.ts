@@ -1,4 +1,4 @@
-import { createServerPlugin } from '@shuvi/service';
+import { createServerPlugin, ServerPluginInstance } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
 
 import { IServerMiddleware } from '@shuvi/service';
@@ -8,7 +8,7 @@ export interface IServerModule {
 
 declare module '@shuvi/service/lib/resources' {
   export const server: {
-    server: IServerModule
+    server: IServerModule;
   };
 }
 
@@ -16,8 +16,7 @@ export default createServerPlugin(
   {
     addMiddleware: () => {
       return server?.server?.middlewares || [];
-    },
+    }
   },
   { order: -100, name: 'serverModule' }
-);
-
+) as ServerPluginInstance;

@@ -23,7 +23,7 @@ import {
   getFisrtModuleExport
 } from '@shuvi/service/lib/project/file-utils';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
-import statePlugin from '@shuvi/plugins/lib/model';
+import { modelPlugin } from '@shuvi/plugins';
 import {
   addHooksPlugin,
   getInternalRuntimeFilesCreator,
@@ -90,6 +90,9 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
   const platformFramework = require(`./targets/${framework}`).default;
   const platformFrameworkContent = await platformFramework();
   let publicRuntimeConfig: IRuntimeConfig;
+  const runtimeConfigPath = require.resolve(
+    '@shuvi/platform-shared/lib/lib/runtimeConfig'
+  );
   const mainPlugin = createPlugin({
     setup: ({ addHooks }) => {
       addHooks({ appRoutes });
@@ -256,7 +259,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       const setRuntimeConfigFile = createFile({
         name: 'setRuntimeConfig.js',
         content: () =>
-          `export { setRuntimeConfig as default } from '@shuvi/platform-shared/lib/lib/runtimeConfig'`
+          `export { setRuntimeConfig as default } from '${runtimeConfigPath}'`
       });
 
       return [
@@ -276,7 +279,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         exported: '* as RuntimeServer'
       },
       {
-        source: '@shuvi/platform-shared/lib/lib/runtimeConfig',
+        source: runtimeConfigPath,
         exported: '{ default as getRuntimeConfig }'
       },
       {
@@ -339,7 +342,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
   return {
     plugins: [
       mainPlugin,
-      statePlugin,
+      modelPlugin,
       addHooksPlugin,
       ...platformFrameworkContent.plugins
     ],
