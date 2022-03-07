@@ -4,6 +4,7 @@ import {
 } from '@shuvi/hook';
 import { createPlugin } from '@shuvi/service';
 import { IPlugin, IRuntimeConfig } from '@shuvi/service/lib/core';
+import path from 'path';
 
 export const addEntryCode = createAsyncParallelHook<
   void,
@@ -24,7 +25,10 @@ const modifyRuntimeConfig = createAsyncSeriesWaterfallHook<
   IRuntimeConfig,
   void
 >();
-export const addHooksPlugin = createPlugin({
+
+const runtimeConfigPath = path.resolve(__dirname, '..', 'lib/runtimeConfig');
+
+export const sharedPlugin = createPlugin({
   setup: ({ addHooks }) => {
     addHooks({
       addEntryCode,
@@ -32,7 +36,11 @@ export const addHooksPlugin = createPlugin({
       addRuntimePlugin,
       modifyRuntimeConfig
     });
-  }
+  },
+  addRuntimeService: () => ({
+    source: runtimeConfigPath,
+    exported: '{ default as getRuntimeConfig }'
+  })
 });
 
 declare module '@shuvi/service' {

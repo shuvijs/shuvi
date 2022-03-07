@@ -1,5 +1,5 @@
 import path from 'path';
-import { IRouteRecord, rankRouteBranches } from '@shuvi/runtime-core';
+import { IRouteRecord, rankRouteBranches } from '@shuvi/router';
 
 export interface IMiddlewareRouteConfig {
   path: string;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { IAppState } from '@shuvi/runtime-core';
+import { IAppState } from '@shuvi/platform-shared/esm/runtime';
 import { DEFAULT_ERROR_MESSAGE } from '@shuvi/shared/lib/constants';
 import error from './ErrorComp';
 // @ts-ignore

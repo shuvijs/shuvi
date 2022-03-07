@@ -1,5 +1,5 @@
 import { IRedirectState, IRouter } from '@shuvi/router';
-import { IApplication, IAppStore } from '@shuvi/runtime-core';
+import { IApplication, IAppStore } from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
 
 export interface IRenderResultRedirect extends IRedirectState {

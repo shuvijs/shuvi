@@ -7,9 +7,9 @@ import {
   IDENTITY_RUNTIME_PUBLICPATH,
   IDENTITY_SSR_RUNTIME_PUBLICPATH
 } from '@shuvi/shared/lib/constants';
-import setRuntimeConfig from '@shuvi/app/files/setRuntimeConfig';
-import runtimeConfig from '@shuvi/app/files/runtimeConfig';
-import { getAppData } from '@shuvi/runtime-core';
+import setRuntimeConfig from '@shuvi/app/core/setRuntimeConfig';
+import runtimeConfig from '@shuvi/app/core/runtimeConfig';
+import { getAppData } from '@shuvi/platform-shared/esm/runtime';
 // === set public path ===
 declare let __webpack_public_path__: string;
 

@@ -1,6 +1,10 @@
 import AppComponent from '@shuvi/app/core/app';
-import { IAppState, IAppRenderFn, getAppStore } from '@shuvi/runtime-core';
-import platform from '@shuvi/runtime-core/lib/platform';
+import {
+  IAppState,
+  IAppRenderFn,
+  getAppStore
+} from '@shuvi/platform-shared/esm/runtime';
+import platform from '@shuvi/platform-shared/esm/runtime/platform';
 import { IRouter } from '@shuvi/router';
 
 export function createApp<

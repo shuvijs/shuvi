@@ -1,4 +1,7 @@
-import { createPlugin, PluginInstance } from '@shuvi/runtime-core';
+import {
+  createPlugin,
+  PluginInstance
+} from '@shuvi/platform-shared/lib/runtime';
 import { init } from '@shuvi/redox';
 
 import { withRedux } from './withRedux';

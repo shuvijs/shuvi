@@ -1,4 +1,4 @@
-import { IAppData } from '@shuvi/runtime-core';
+import { IAppData } from '@shuvi/platform-shared/lib/runtime';
 import { BaseRenderer } from './base';
 
 export class SpaRenderer extends BaseRenderer {

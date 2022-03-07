@@ -1,5 +1,3 @@
-import { IRuntimeModule } from '@shuvi/runtime-core';
-
 export const getAppComponent = App => {
   const newApp = () => (
     <div>
