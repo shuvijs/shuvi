@@ -22,10 +22,9 @@ import {
   getFisrtModuleExport
 } from '@shuvi/service/lib/project/file-utils';
 import {
-  addHooksPlugin,
-  getInternalRuntimeFilesCreator,
-  getPublicRuntimeConfig
-} from '@shuvi/platform-shared';
+  sharedPlugin,
+  getInternalRuntimeFilesCreator
+} from '@shuvi/platform-shared/lib/platform';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
@@ -124,43 +123,8 @@ export default abstract class PlatformMpBase {
       this.getSetupAppPlugin(),
       this.getSetupRoutesPlugin(),
       this.getConfigWebpackPlugin(),
-      this.getRuntimeConfigPlugin(),
-      addHooksPlugin
+      sharedPlugin
     ].filter(Boolean);
-  }
-
-  getRuntimeConfigPlugin(): PluginInstance {
-    const runtimeConfigPath = require.resolve(
-      '@shuvi/platform-shared/lib/lib/runtimeConfig'
-    );
-    return createPlugin({
-      addRuntimeFile: async ({ createFile }, context) => {
-        const { pluginRunner, config } = context;
-        const runtimeConfig = await pluginRunner.modifyRuntimeConfig(
-          config.runtimeConfig || {}
-        );
-        const runtimeConfigFile = createFile({
-          name: 'runtimeConfig.js',
-          content: () => {
-            const runtimeConfigContent = Object.keys(runtimeConfig)
-              ? JSON.stringify(getPublicRuntimeConfig(runtimeConfig))
-              : null;
-            return `export default ${runtimeConfigContent}`;
-          }
-        });
-
-        const setRuntimeConfigFile = createFile({
-          name: 'setRuntimeConfig.js',
-          content: () =>
-            `export { setRuntimeConfig as default } from '${runtimeConfigPath}'`
-        });
-        return [runtimeConfigFile, setRuntimeConfigFile];
-      },
-      addRuntimeService: () => ({
-        source: runtimeConfigPath,
-        exported: '{ default as getRuntimeConfig }'
-      })
-    }) as PluginInstance;
   }
 
   getSetupServerPlugin(): PluginInstance {

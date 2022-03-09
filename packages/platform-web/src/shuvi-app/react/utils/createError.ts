@@ -1,4 +1,4 @@
-import { IErrorHandler, IAppState } from '@shuvi/runtime-core';
+import { IErrorHandler, IAppState } from '@shuvi/platform-shared/esm/runtime';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 
 type IPageError = IAppState['error'];

@@ -3,7 +3,7 @@ import path from 'path';
 import { renameFilepathToComponent } from '@shuvi/service/lib/route';
 import { IUserRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { IRouteRecord } from '@shuvi/runtime-core';
+import { IRouteRecord } from '@shuvi/router';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;

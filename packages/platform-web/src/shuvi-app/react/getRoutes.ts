@@ -1,7 +1,7 @@
 import {
   IAppRouteConfig,
   IAppRouteConfigWithPrivateProps
-} from '@shuvi/runtime-core';
+} from '@shuvi/platform-shared/esm/runtime';
 import { loadRouteComponent } from './loadRouteComponent';
 import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 

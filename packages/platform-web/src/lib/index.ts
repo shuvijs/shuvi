@@ -1,6 +1,5 @@
 import fse from 'fs-extra';
 import path from 'path';
-import { IRuntimeConfig } from '@shuvi/runtime-core';
 import {
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
@@ -25,10 +24,10 @@ import {
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import { modelPlugin } from '@shuvi/plugins';
 import {
-  addHooksPlugin,
+  sharedPlugin,
   getInternalRuntimeFilesCreator,
-  getPublicRuntimeConfig
-} from '@shuvi/platform-shared';
+  getRuntimeConfigFromConfig
+} from '@shuvi/platform-shared/lib/platform';
 import generateResource from './generateResource';
 import {
   getApiRoutesContent,
@@ -89,22 +88,14 @@ async function buildHtml({
 const platform: IPlatform = async ({ framework = 'react' } = {}) => {
   const platformFramework = require(`./targets/${framework}`).default;
   const platformFrameworkContent = await platformFramework();
-  let publicRuntimeConfig: IRuntimeConfig;
-  const runtimeConfigPath = require.resolve(
-    '@shuvi/platform-shared/lib/lib/runtimeConfig'
-  );
   const mainPlugin = createPlugin({
     setup: ({ addHooks }) => {
       addHooks({ appRoutes });
     },
     afterInit: async context => {
-      const { pluginRunner, config } = context;
-      const runtimeConfig = await pluginRunner.modifyRuntimeConfig(
-        config.runtimeConfig || {}
-      );
-      publicRuntimeConfig = runtimeConfig;
-      if (Object.keys(publicRuntimeConfig)) {
-        setRuntimeConfig(context.config.runtimeConfig);
+      const runtimeConfig = await getRuntimeConfigFromConfig(context);
+      if (Object.keys(runtimeConfig)) {
+        setRuntimeConfig(runtimeConfig);
       }
     },
     addRuntimeFile: async ({ createFile, getAllFiles }, context) => {
@@ -243,34 +234,13 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         dependencies: serverCandidates
       });
 
-      const runtimeConfigFile = createFile({
-        name: 'runtimeConfig.js',
-        content: () => {
-          // with none-ssr, we need create runtimeConfig when build
-          // with ssr, we get runtimeConfig from appData
-          const runtimeConfigContent =
-            Object.keys(publicRuntimeConfig) || !context.config.ssr
-              ? JSON.stringify(getPublicRuntimeConfig(publicRuntimeConfig))
-              : null;
-          return `export default ${runtimeConfigContent}`;
-        }
-      });
-
-      const setRuntimeConfigFile = createFile({
-        name: 'setRuntimeConfig.js',
-        content: () =>
-          `export { setRuntimeConfig as default } from '${runtimeConfigPath}'`
-      });
-
       return [
         routerConfigFile,
         routesFile,
         middlewareRoutesFile,
         apiRoutesFile,
         userServerFile,
-        userDocumentFile,
-        runtimeConfigFile,
-        setRuntimeConfigFile
+        userDocumentFile
       ];
     },
     addRuntimeService: () => [
@@ -279,11 +249,9 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         exported: '* as RuntimeServer'
       },
       {
-        source: runtimeConfigPath,
-        exported: '{ default as getRuntimeConfig }'
-      },
-      {
-        source: require.resolve('@shuvi/runtime-core/lib/helper/getPageData'),
+        source: require.resolve(
+          '@shuvi/platform-shared/lib/runtime/helper/getPageData'
+        ),
         exported: '{ getPageData }'
       }
     ],
@@ -343,7 +311,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
     plugins: [
       mainPlugin,
       modelPlugin,
-      addHooksPlugin,
+      sharedPlugin,
       ...platformFrameworkContent.plugins
     ],
     getInternalRuntimeFiles

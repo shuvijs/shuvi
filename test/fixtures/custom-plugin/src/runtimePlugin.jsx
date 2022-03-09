@@ -1,4 +1,4 @@
-const { createPlugin } = require('@shuvi/runtime-core');
+const { createPlugin } = require('@shuvi/platform-shared/lib/runtime');
 
 module.exports = option =>
   createPlugin({

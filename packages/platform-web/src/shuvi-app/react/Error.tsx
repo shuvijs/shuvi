@@ -1,5 +1,5 @@
 import React from 'react';
-import { IAppState } from '@shuvi/runtime-core';
+import { IAppState } from '@shuvi/platform-shared/esm/runtime';
 // @ts-ignore
 import { Head } from './head';
 

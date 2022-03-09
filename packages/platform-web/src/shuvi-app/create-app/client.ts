@@ -9,8 +9,8 @@ import {
   IAppRenderFn,
   IApplicationCreaterClientContext,
   IAppRouteConfig
-} from '@shuvi/runtime-core';
-import platform from '@shuvi/runtime-core/lib/platform';
+} from '@shuvi/platform-shared/esm/runtime';
+import platform from '@shuvi/platform-shared/esm/runtime/platform';
 import {
   createRouter,
   IRouter,
@@ -78,7 +78,7 @@ if (module.hot) {
     [
       '@shuvi/app/user/app',
       '@shuvi/app/entry',
-      '@shuvi/runtime-core/lib/platform',
+      '@shuvi/platform-shared/esm/runtime/platform',
       '@shuvi/app/files/routes',
       '@shuvi/app/user/runtime'
     ],

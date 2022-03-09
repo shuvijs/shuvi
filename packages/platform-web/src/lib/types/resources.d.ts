@@ -1,8 +1,8 @@
-import { ApplicationCreater } from '@shuvi/runtime-core';
+import { ApplicationCreater } from '@shuvi/platform-shared/lib/runtime';
 import {
   IApplicationCreaterServerContext,
   IViewServer
-} from '@shuvi/runtime-core';
+} from '@shuvi/platform-shared/lib/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IApiRoutes, IDocumentModule, IMiddlewareRoutes } from './index';
 import { IServerModule } from '../serverPlugin/hooks';

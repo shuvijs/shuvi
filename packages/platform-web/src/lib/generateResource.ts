@@ -39,7 +39,7 @@ const generateResources = (context: IPluginContext) => {
 
   const customDoc = resolveUserFile('document.ejs');
   let documentPath = require.resolve(
-    '@shuvi/runtime-core/template/document.ejs'
+    '@shuvi/platform-shared/template/document.ejs'
   );
   if (fse.existsSync(customDoc)) {
     documentPath = customDoc;

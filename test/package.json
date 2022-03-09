@@ -14,9 +14,9 @@
   "license": "MIT",
   "devDependencies": {
     "@shuvi/platform-mp": "workspace:*",
+    "@shuvi/platform-shared": "workspace:*",
     "@shuvi/platform-web": "workspace:*",
     "@shuvi/router": "workspace:*",
-    "@shuvi/runtime-core": "workspace:*",
     "@shuvi/service": "workspace:*",
     "@shuvi/shared": "workspace:*",
     "@shuvi/toolpack": "workspace:*",

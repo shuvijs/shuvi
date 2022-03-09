@@ -1,8 +1,20 @@
 import { IPluginContext, normalizePlugin } from '@shuvi/service';
 import { fileUtils } from '@shuvi/service/lib/project';
-import { createProjectContext } from './projectContext';
-import { getFilePresets } from './file-presets';
+import { createProjectContext } from '../project/projectContext';
+import { getFilePresets } from '../project/file-presets';
 
+export const getRuntimeConfigFromConfig = async (
+  pluginContext: IPluginContext
+) => {
+  const { pluginRunner, config } = pluginContext;
+  return await pluginRunner.modifyRuntimeConfig(config.runtimeConfig || {});
+};
+
+/**
+ * A creator for `getInternalRuntimeFiles` which helps platforms to build a bunch of runtime files including
+ * `core/app`, `core/error`, `core/platform`, `core/plugins`, `core/polyfill`, `core/runtimeConfig`, `core/setRuntimeConfig`,
+ * `user/app`, `user/error`, `user/runtime` and `entry`
+ */
 export const getInternalRuntimeFilesCreator =
   (platformModule: string, entry: string, polyfills: string[]) =>
   async (pluginContext: IPluginContext) => {
@@ -23,6 +35,7 @@ export const getInternalRuntimeFilesCreator =
       runtime: getCandidates('runtime', 'noop')
     };
     context.platformModule = platformModule;
+    context.runtimeConfig = await getRuntimeConfigFromConfig(pluginContext);
     const runner = pluginContext.pluginRunner;
     const appPolyfills = (await runner.addPolyfill()).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();

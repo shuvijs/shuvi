@@ -1,4 +1,4 @@
-/// <reference types="@shuvi/runtime-core/src/types/shuvi-app" />
+/// <reference types="@shuvi/platform-shared/src/types/shuvi-app" />
 
 declare module '@shuvi/app/files/middlewareRoutes' {
   import { IMiddlewareRoutes } from '@shuvi/platform-web/lib/types';
@@ -11,7 +11,7 @@ declare module '@shuvi/app/files/routerConfig' {
 }
 
 declare module '@shuvi/app/files/routes' {
-  import { IAppRouteConfigWithPrivateProps } from '@shuvi/runtime-core';
+  import { IAppRouteConfigWithPrivateProps } from '@shuvi/platform-shared/lib/runtime';
   declare const routes: IAppRouteConfigWithPrivateProps[];
   export default routes;
 }
@@ -32,15 +32,4 @@ declare module '@shuvi/app/files/user/server' {
   import { IServerModule } from '@shuvi/platform-web/lib/serverPlugin/hooks';
   declare const server: IServerModule;
   export default server;
-}
-
-declare module '@shuvi/app/files/runtimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/runtime-core';
-  declare const runtimneConfig: IRuntimeConfig | null;
-  export default runtimneConfig;
-}
-
-declare module '@shuvi/app/files/setRuntimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/runtime-core';
-  export default function setRuntimeConfig(config: IRuntimeConfig): void;
 }

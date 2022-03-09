@@ -9,7 +9,7 @@ import {
   IRouteComponent,
   IHtmlTag,
   IAppRouteConfig
-} from '@shuvi/runtime-core';
+} from '@shuvi/platform-shared/esm/runtime';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
