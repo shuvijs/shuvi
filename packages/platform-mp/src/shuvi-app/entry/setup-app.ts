@@ -2,7 +2,7 @@ import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
 // renderer must be imported before application
 // we need to init init renderer before import AppComponent
 import { view } from '@shuvi/app/core/platform';
-import { getAppData } from '@shuvi/runtime-core';
+import { getAppData } from '@shuvi/platform-shared/esm/runtime';
 import { IRouter } from '@shuvi/router/lib/types';
 import { createApp } from '../application';
 

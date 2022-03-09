@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector } from '@shuvi/router';
-import { getErrorHandler, IAppComponent } from '@shuvi/runtime-core';
+import {
+  getErrorHandler,
+  IAppComponent
+} from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';

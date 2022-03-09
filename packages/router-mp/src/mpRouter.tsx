@@ -12,7 +12,10 @@ import { createMpHistory } from './mpHistory';
 import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
 import ErrorPage from './ErrorPage';
-import { getAppStore, getErrorHandler } from '@shuvi/runtime-core';
+import {
+  getAppStore,
+  getErrorHandler
+} from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '@shuvi/platform-web/shuvi-app/react/AppContainer';
 
 export interface IMpRouterProps {

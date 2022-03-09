@@ -1,4 +1,4 @@
-import { IHtmlTag } from '@shuvi/runtime-core';
+import { IHtmlTag } from '@shuvi/platform-shared/esm/runtime';
 
 export type SideEffectProps = {
   reduceComponentsToState: <T>(

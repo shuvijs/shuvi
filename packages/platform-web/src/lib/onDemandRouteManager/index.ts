@@ -1,4 +1,4 @@
-import { matchRoutes } from '@shuvi/runtime-core';
+import { matchRoutes } from '@shuvi/router';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { clientManifest } from '@shuvi/service/lib/resources';
 import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';

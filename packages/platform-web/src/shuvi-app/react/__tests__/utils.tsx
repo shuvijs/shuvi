@@ -1,6 +1,6 @@
 import { renderRoutes } from '../utils/__tests__/utils';
 import { normalizeRoutes, INormalizeRoutesContext } from '../utils/router';
-import { IAppRouteConfig } from '@shuvi/runtime-core';
+import { IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
 
 export const renderWithRoutes = (
   {

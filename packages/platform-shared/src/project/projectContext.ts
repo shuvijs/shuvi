@@ -1,4 +1,4 @@
-import { IPlugin } from '@shuvi/service/lib/core';
+import { IPlugin, IRuntimeConfig } from '@shuvi/service/lib/core';
 
 export interface UserModule {
   runtime: string | string[];
@@ -10,7 +10,7 @@ export interface ProjectContext {
   entryCodes: string[];
   polyfills: string[];
   runtimePlugins: IPlugin[];
-  runtimeConfigContent: string | null;
+  runtimeConfig: IRuntimeConfig;
   platformModule: string;
   userModule: UserModule;
 }
@@ -20,7 +20,7 @@ export const createProjectContext = (): ProjectContext => {
     entryCodes: [],
     polyfills: [],
     runtimePlugins: [],
-    runtimeConfigContent: null,
+    runtimeConfig: {},
     platformModule: '',
     userModule: {
       runtime: '',

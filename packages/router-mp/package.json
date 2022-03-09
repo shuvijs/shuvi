@@ -28,7 +28,7 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/runtime-core": "0.0.1-pre.10",
+    "@shuvi/platform-shared": "0.0.1-pre.10",
     "@shuvi/platform-web": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/router-react": "0.0.1-pre.10",
