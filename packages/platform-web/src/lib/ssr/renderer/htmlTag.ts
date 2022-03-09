@@ -1,4 +1,4 @@
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/runtime-core';
+import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-shared/lib/runtime';
 import { htmlEscapeContent } from '@shuvi/utils/lib/htmlescape';
 
 /**
