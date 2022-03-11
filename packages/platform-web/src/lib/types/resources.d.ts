@@ -5,7 +5,7 @@ import {
 } from '@shuvi/platform-shared/lib/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IApiRoutes, IDocumentModule, IMiddlewareRoutes } from './index';
-import { IServerModule } from '../serverPlugin/hooks';
+import { IServerModule } from '../features/server-side-render/hooks';
 
 declare module '@shuvi/service/lib/resources' {
   export const server: {

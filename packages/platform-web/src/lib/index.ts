@@ -42,6 +42,8 @@ import {
 import { getMiddlewareRoutesContentFromRawRoutes } from './middlewareRoute';
 import { resolveAppFile } from './paths';
 import { appRoutes } from './hooks';
+import FeatureOnDemanCompilePage from './features/on-demand-compile-page';
+import FeatureServerSideRender from './features/server-side-render';
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -269,10 +271,6 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
         chain: serverChain
       };
     },
-    addServerPlugin: () => [
-      require.resolve('./serverPlugin/internalMiddlewares'),
-      require.resolve('./serverPlugin/customServerFile')
-    ],
     configWebpack: chain => {
       chain.merge({
         entry: {
@@ -312,6 +310,8 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       mainPlugin,
       modelPlugin,
       sharedPlugin,
+      FeatureOnDemanCompilePage,
+      FeatureServerSideRender,
       ...platformFrameworkContent.plugins
     ],
     getInternalRuntimeFiles

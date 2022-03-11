@@ -2,9 +2,23 @@ import { matchRoutes } from '@shuvi/router';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { clientManifest } from '@shuvi/service/lib/resources';
 import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
-import { DevMiddleware } from '@shuvi/service/lib/lib/devMiddleware';
+import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { getRoutes } from '../pageRoute';
+import { getRoutes } from '../../pageRoute';
+
+function acceptsHtml(
+  header: string,
+  {
+    htmlAcceptHeaders = ['text/html', '*/*']
+  }: { htmlAcceptHeaders?: string[] } = {}
+) {
+  for (var i = 0; i < htmlAcceptHeaders.length; i++) {
+    if (header.indexOf(htmlAcceptHeaders[i]) !== -1) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export default class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
@@ -44,7 +58,7 @@ export default class OnDemandRouteManager {
   }
 
   ensureRoutesMiddleware(): IRequestHandlerWithNext {
-    return async (req, res, next) => {
+    return async (req, _res, next) => {
       const accept = req.headers['accept'];
       if (req.method !== 'GET') {
         return next();
@@ -91,18 +105,4 @@ export default class OnDemandRouteManager {
       await Promise.all(tasks);
     }
   }
-}
-
-export function acceptsHtml(
-  header: string,
-  {
-    htmlAcceptHeaders = ['text/html', '*/*']
-  }: { htmlAcceptHeaders?: string[] } = {}
-) {
-  for (var i = 0; i < htmlAcceptHeaders.length; i++) {
-    if (header.indexOf(htmlAcceptHeaders[i]) !== -1) {
-      return true;
-    }
-  }
-  return false;
 }

@@ -1,6 +1,6 @@
 import { ShuviServer } from './shuviServer';
 import { IRequestHandlerWithNext } from '../server/http-server';
-import { serveStatic } from '../lib/serveStatic';
+import { serveStatic } from './utils';
 import { BUILD_DEFAULT_DIR, PUBLIC_PATH } from '../constants';
 import { IServerPluginContext } from './plugin';
 

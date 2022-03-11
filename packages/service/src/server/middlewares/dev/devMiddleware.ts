@@ -6,9 +6,9 @@ import {
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
-import { getBundler } from '../bundler';
-import { Server } from '../server';
-import { IServerPluginContext } from '../server/plugin';
+import { getBundler } from '../../../bundler';
+import { Server } from '../../http-server';
+import { IServerPluginContext } from '../../plugin';
 
 export interface DevMiddleware {
   apply(server?: Server): void;
@@ -58,7 +58,9 @@ export async function getDevMiddleware(
   };
 
   const invalidate = () => {
-    return new Promise(resolve => webpackDevMiddleware.invalidate(resolve));
+    return new Promise(resolve => {
+      webpackDevMiddleware.invalidate(resolve);
+    });
   };
 
   const waitUntilValid = (force: boolean = false) => {

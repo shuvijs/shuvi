@@ -7,7 +7,7 @@ import {
 } from '@shuvi/hook';
 import { IPlugin, IPluginContext } from '../core';
 import { IServerMiddleware, IProxy } from './pluginTypes';
-import { DevMiddleware } from '../lib/devMiddleware';
+import { DevMiddleware } from './middlewares/dev/devMiddleware';
 
 export * from './pluginTypes';
 

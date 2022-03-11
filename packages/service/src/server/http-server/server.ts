@@ -2,7 +2,7 @@ import http from 'http';
 import { parse as parseUrl } from 'url';
 import { parseQuery } from '@shuvi/router';
 import detectPort from 'detect-port';
-import { sendHTML } from '../../lib/utils';
+import { sendHTML } from '../utils';
 import { getRouter, Router } from './router';
 import {
   IResponse,
