@@ -1,8 +1,8 @@
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
 import { IRequestHandlerWithNext } from '../server/http-server';
-import { serveStatic } from '../lib/serveStatic';
-import { getDevMiddleware } from '../lib/devMiddleware';
+import { serveStatic } from './utils';
+import { getDevMiddleware } from './middlewares/dev/devMiddleware';
 import { IServerPluginContext } from './plugin';
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
 
@@ -33,13 +33,13 @@ export class ShuviDevServer extends ShuviServer {
     const publicDirMiddleware = getPublicDirMiddleware(context);
     const devMiddleware = await getDevMiddleware(context);
     await devMiddleware.waitUntilValid();
-    const proxy = (await context.serverPluginRunner.addProxy()).flat()
-    let proxyFromConfig = context.config.proxy
+    const proxy = (await context.serverPluginRunner.addProxy()).flat();
+    let proxyFromConfig = context.config.proxy;
     if (proxyFromConfig && typeof proxyFromConfig === 'object') {
       if (Array.isArray(proxyFromConfig)) {
-        proxy.unshift(...proxyFromConfig)
+        proxy.unshift(...proxyFromConfig);
       } else if (Object.keys(proxyFromConfig).length) {
-        proxy.unshift(proxyFromConfig)
+        proxy.unshift(proxyFromConfig);
       }
     }
     if (proxy.length) {

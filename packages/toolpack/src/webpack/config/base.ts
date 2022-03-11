@@ -3,21 +3,13 @@ import TerserPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import webpack from 'webpack';
 import path from 'path';
-import {
-  ROUTE_RESOURCE_QUERYSTRING,
-  PUBLIC_ENV_PREFIX
-} from '@shuvi/shared/lib/constants';
+import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
-import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
-import ModuleReplacePlugin from '../plugins/module-replace-plugin';
 import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
-import RequireCacheHotReloaderPlugin from '../plugins/require-cache-hot-reloader-plugin';
 import { AppSourceRegexs } from '../../constants';
 import crypto from 'crypto';
-
-const dumbRouteComponent = require.resolve('../../utils/emptyComponent');
 
 const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);
@@ -295,23 +287,6 @@ export function baseWebpackChain({
     });
 
     config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
-    config.plugin('private/module-replace-plugin').use(ModuleReplacePlugin, [
-      {
-        modules: [
-          {
-            resourceQuery: RegExp(
-              escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`)
-            ),
-            module: dumbRouteComponent
-          }
-        ]
-      }
-    ]);
-    // Even though require.cache is server only we have to clear assets from both compilations
-    // This is because the client compilation generates the build manifest that's used on the server side
-    config
-      .plugin('private/require-cache-hot-reloader')
-      .use(RequireCacheHotReloaderPlugin);
 
     config.optimization.usedExports(false);
   } else {

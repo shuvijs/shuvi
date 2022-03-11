@@ -115,11 +115,13 @@ class Api {
 
     const { runner, setContext, usePlugin } = this.pluginManager;
     setContext(this._pluginContext);
+
     // init plugins
+    // 1. platform
+    // 2. user
+    await this.initPlatformPlugins();
     const allPlugins = await getPlugins(this._cwd, config);
     usePlugin(...allPlugins);
-
-    await this.initPlatformPlugins();
 
     // must run first so that platform could get serverPlugin
     await this.initRuntimeAndServerPlugin();
