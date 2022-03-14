@@ -22,7 +22,7 @@ import {
 } from '@shuvi/service/lib/resources';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IDocumentProps, ITemplateData } from '../../../../types';
+import { IDocumentProps, ITemplateData } from './types';
 
 import {
   IRendererConstructorOptions,
