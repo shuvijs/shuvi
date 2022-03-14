@@ -128,7 +128,7 @@ export function normalizeMiddlewareRoutes(
   return res;
 }
 
-export function getMiddlewareRoutesContentFromRawRoutes(
+export function getRoutesContentFromRawRoutes(
   rawRoutes: IRouteRecord[],
   pagesDir: string
 ): string {

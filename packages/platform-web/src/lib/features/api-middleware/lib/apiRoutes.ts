@@ -102,7 +102,7 @@ export function normalizeApiRoutes(
   return res;
 }
 
-export const getApiRoutesContent = (
+export const getRoutesContent = (
   apiRoutes: IApiRouteConfig[],
   apisDir: string,
   prefix?: string
@@ -112,14 +112,10 @@ export const getApiRoutesContent = (
   return `export default ${serialized}`;
 };
 
-export const getApiRoutesContentFromRawRoutes = (
+export const getRoutesContentFromRawRoutes = (
   rawRoutes: IRouteRecord[],
   apisDir: string,
   prefix?: string
 ): string => {
-  return getApiRoutesContent(
-    renameFilepathToModule(rawRoutes),
-    apisDir,
-    prefix
-  );
+  return getRoutesContent(renameFilepathToModule(rawRoutes), apisDir, prefix);
 };

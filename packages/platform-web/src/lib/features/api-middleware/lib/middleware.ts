@@ -3,9 +3,7 @@ import { matchPathname } from '@shuvi/router';
 import { server } from '@shuvi/service/lib/resources';
 import { apiRouteHandler } from './apiRouteHandler';
 
-export function getApiRoutesMiddleware(
-  api: IServerPluginContext
-): IRequestHandlerWithNext {
+export function middleware(api: IServerPluginContext): IRequestHandlerWithNext {
   return async function (req, res, next) {
     const { apiRoutes } = server;
     const { prefix, ...otherConfig } = api.config.apiConfig || {};

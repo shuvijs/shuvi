@@ -1,6 +1,7 @@
 import { IRedirectState, IRouter } from '@shuvi/router';
 import { IApplication, IAppStore } from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
+import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-shared/lib/runtime';
 
 export interface IRenderResultRedirect extends IRedirectState {
   $type: 'redirect';
@@ -17,3 +18,16 @@ export type IRenderDocumentOptions = {
   appStore: IAppStore;
   appContext: any;
 };
+
+export interface IDocumentProps {
+  htmlAttrs: IHtmlAttrs;
+  headTags: IHtmlTag<
+    'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
+  >[];
+  mainTags: IHtmlTag[];
+  scriptTags: IHtmlTag<'script'>[];
+}
+
+export interface ITemplateData {
+  [x: string]: any;
+}
