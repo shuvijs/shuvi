@@ -111,7 +111,13 @@ export default abstract class PlatformMpBase {
         platformModule,
         entry,
         polyfills
-      )
+      ),
+      getMiddlewares: context => {
+        const middlewaresFromPlugin = context.serverPluginRunner
+          .addMiddleware()
+          .flat();
+        return middlewaresFromPlugin;
+      }
     };
   }
 

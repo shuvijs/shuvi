@@ -5,7 +5,7 @@ import {
   IServerPluginContext
 } from '@shuvi/service';
 
-import { sendHTML } from '@shuvi/service/lib/lib/utils';
+import { sendHTML } from '@shuvi/service/lib/server/utils';
 
 import { renderToHTML } from './renderToHTML';
 

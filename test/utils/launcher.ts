@@ -51,7 +51,8 @@ export async function launchFixtureAtCurrentProcess(
   await api.buildApp();
   const shuviApp = await createShuviServer({
     context: api.pluginContext,
-    dev: true
+    dev: true,
+    ...api.serverConfigs
   });
   return await createTestContext(shuviApp);
 }
@@ -62,14 +63,14 @@ export async function serveFixtureAtCurrentProcess(
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
   const platform = getPlatform(config.platform.name);
-  const cliContext = await build({
+  const api = await build({
     cwd: resolveFixture(name),
     config,
     platform
   });
   const shuviApp = await createShuviServer({
-    context: cliContext,
-    dev: true
+    context: api.pluginContext,
+    ...api.serverConfigs
   });
   return createTestContext(shuviApp);
 }

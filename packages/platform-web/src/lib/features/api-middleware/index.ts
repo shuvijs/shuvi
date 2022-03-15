@@ -4,8 +4,9 @@ import { getRoutesContent, getRoutesContentFromRawRoutes } from './lib';
 
 export { IApiRequestHandler } from './lib/apiRouteHandler';
 
+export { middleware as getApiMiddleware } from './lib';
+
 export default createPlugin({
-  addServerPlugin: () => [require.resolve('./server')],
   addRuntimeFile: ({ createFile, getAllFiles }, context) => {
     const {
       config: { apiRoutes, apiConfig },

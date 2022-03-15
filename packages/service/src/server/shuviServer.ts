@@ -1,3 +1,4 @@
+import { RequestListener } from 'http';
 import { IPluginContext } from '../core';
 import { normalizeServerMiddleware } from './serverMiddleware';
 import { Server } from './http-server';
@@ -13,11 +14,13 @@ export abstract class ShuviServer implements IShuviServer {
   protected _server: Server;
   protected _pluginManager: PluginManager;
   protected _serverContext: IServerPluginContext;
+  protected _options: ShuviServerOptions;
 
   constructor(cliContext: IPluginContext, options: ShuviServerOptions) {
     this._pluginManager = getManager();
     this._server = new Server();
-    const serverPlugins = cliContext.serverPlugins;
+    this._options = options;
+    const serverPlugins = options.serverPlugins;
     this._serverContext = initServerPlugins(
       this._pluginManager,
       serverPlugins,
@@ -28,19 +31,17 @@ export abstract class ShuviServer implements IShuviServer {
   abstract init(): Promise<void>;
 
   protected async _initMiddlewares() {
-    const {
-      _serverContext: context,
-      _server: server,
-      _pluginManager: pluginManager
-    } = this;
+    const { _serverContext: context, _server: server } = this;
 
     const { rootDir } = context.paths;
-    const serverMiddlewares = (await pluginManager.runner.addMiddleware())
-      .flat()
-      .map(m => normalizeServerMiddleware(m, { rootDir }));
-    serverMiddlewares.forEach(({ path, handler }) => {
-      server.use(path, handler);
-    });
+    if (this._options.getMiddlewares) {
+      const serverMiddlewares = [this._options.getMiddlewares(context)]
+        .flat()
+        .map(m => normalizeServerMiddleware(m, { rootDir }));
+      serverMiddlewares.forEach(({ path, handler }) => {
+        server.use(path, handler);
+      });
+    }
   }
 
   async listen(port: number, hostname?: string) {
@@ -50,5 +51,9 @@ export abstract class ShuviServer implements IShuviServer {
 
   async close() {
     await this._server.close();
+  }
+
+  getRequestHandler(): RequestListener {
+    return this._server.getRequestHandler();
   }
 }
