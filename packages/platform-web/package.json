@@ -36,8 +36,8 @@
   "dependencies": {
     "@next/react-refresh-utils": "10.0.5",
     "@shuvi/hook": "0.0.1-pre.10",
-    "@shuvi/plugins": "0.0.1-pre.10",
     "@shuvi/platform-shared": "0.0.1-pre.10",
+    "@shuvi/plugins": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/router-react": "0.0.1-pre.10",
     "@shuvi/service": "0.0.1-pre.10",
@@ -48,6 +48,7 @@
     "cookie": "^0.4.1",
     "ejs": "3.1.5",
     "fs-extra": "9.0.1",
+    "node-mocks-http": "^1.11.0",
     "raw-body": "^2.4.1",
     "react": "16.14.0",
     "react-app-polyfill": "2.0.0",

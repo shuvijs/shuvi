@@ -1,7 +1,10 @@
-import { createServerPlugin, ServerPluginInstance } from '@shuvi/service';
+import { createSyncHook } from '@shuvi/hook';
+import {
+  createServerPlugin,
+  ServerPluginInstance,
+  IServerMiddleware
+} from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
-
-import { IServerMiddleware } from '@shuvi/service';
 export interface IServerModule {
   middlewares?: IServerMiddleware | IServerMiddleware[];
 }
@@ -12,11 +15,29 @@ declare module '@shuvi/service/lib/resources' {
   };
 }
 
+const addMiddleware = createSyncHook<
+  void,
+  void,
+  IServerMiddleware | IServerMiddleware[]
+>();
+export const extendedHooks = {
+  addMiddleware
+};
+
+declare module '@shuvi/service' {
+  export interface ServerPluginHooks {
+    addMiddleware: typeof addMiddleware;
+  }
+}
+
 export default createServerPlugin(
   {
+    setup: ({ addHooks }) => {
+      addHooks(extendedHooks);
+    },
     addMiddleware: () => {
       return server?.server?.middlewares || [];
     }
   },
-  { order: -100, name: 'serverModule' }
+  { name: 'serverModule' }
 ) as ServerPluginInstance;

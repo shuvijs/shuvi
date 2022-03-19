@@ -1,3 +1,4 @@
+import { RequestListener } from 'http';
 import WebpackChain from 'webpack-chain';
 import webpack, { Configuration } from 'webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
@@ -71,3 +72,7 @@ export type AddRuntimeFileUtils = {
 };
 
 export interface WebpackChainType extends WebpackChain {}
+
+export type AfterBuildOptions = {
+  requestHandler: RequestListener;
+};
