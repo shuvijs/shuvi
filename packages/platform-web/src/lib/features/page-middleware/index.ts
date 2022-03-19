@@ -2,8 +2,9 @@ import { createPlugin } from '@shuvi/service';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import { getRoutesContentFromRawRoutes } from './lib';
 
+export { middleware as getPageMiddleware } from './lib/middleware';
+
 export default createPlugin({
-  addServerPlugin: () => [require.resolve('./server')],
   addRuntimeFile: ({ createFile, getAllFiles }, context) => {
     const {
       config: { routes },

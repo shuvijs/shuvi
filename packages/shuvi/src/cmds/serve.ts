@@ -25,7 +25,8 @@ export default async function main(argv: string[]) {
     platform
   });
   const shuviApp = await createShuviServer({
-    context: api.pluginContext
+    context: api.pluginContext,
+    ...api.serverConfigs
   });
   try {
     await shuviApp.listen(port, host);

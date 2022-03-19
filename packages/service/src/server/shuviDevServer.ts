@@ -47,16 +47,16 @@ export class ShuviDevServer extends ShuviServer {
     }
 
     const { rootDir } = context.paths;
-    const serverMiddlewaresBeforeDevMiddleware = (
-      await context.serverPluginRunner.addMiddlewareBeforeDevMiddleware(
-        devMiddleware
-      )
-    )
-      .flat()
-      .map(m => normalizeServerMiddleware(m, { rootDir }));
-    serverMiddlewaresBeforeDevMiddleware.forEach(({ path, handler }) => {
-      server.use(path, handler);
-    });
+    if (this._options.getMiddlewaresBeforeDevMiddlewares) {
+      const serverMiddlewaresBeforeDevMiddleware = [
+        this._options.getMiddlewaresBeforeDevMiddlewares(devMiddleware, context)
+      ]
+        .flat()
+        .map(m => normalizeServerMiddleware(m, { rootDir }));
+      serverMiddlewaresBeforeDevMiddleware.forEach(({ path, handler }) => {
+        server.use(path, handler);
+      });
+    }
 
     // keep the order
     devMiddleware.apply(server);
