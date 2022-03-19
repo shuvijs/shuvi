@@ -29,6 +29,7 @@ export default createPlugin({
     }
 
     return config;
-  },
-  addServerPlugin: () => [require.resolve('./server')]
+  }
 });
+
+export { default as OnDemandRouteManager } from './onDemandRouteManager';

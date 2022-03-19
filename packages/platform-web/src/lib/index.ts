@@ -1,18 +1,14 @@
-import fse from 'fs-extra';
 import path from 'path';
 import {
-  BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
-  IRequest,
   IPlatform,
   createPlugin,
   IPluginContext
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import { initServerPlugins, getManager } from '@shuvi/service';
 import { setRuntimeConfig } from '@shuvi/platform-shared/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
@@ -25,10 +21,12 @@ import {
 import generateResource from './generateResource';
 import { resolveAppFile } from './paths';
 import { appRoutes } from './hooks';
-import FeatureOnDemanCompilePage from './features/on-demand-compile-page';
-import FeatureAPIMiddleware from './features/api-middleware';
-import FeaturePageMiddleware from './features/page-middleware';
-import FeatureHTMLRender from './features/html-render';
+import {
+  featurePlugins,
+  getMiddlewares,
+  getMiddlewaresBeforeDevMiddlewares,
+  buildHtml
+} from './features';
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -39,40 +37,10 @@ function getServerEntry(context: IPluginContext): IWebpackEntry {
   };
 }
 
-async function buildHtml({
-  context,
-  pathname,
-  filename
-}: {
-  context: IPluginContext;
-  pathname: string;
-  filename: string;
-}) {
-  const serverPlugins = context.serverPlugins;
-  const pluginManger = getManager();
-  const serverPluginContext = initServerPlugins(
-    pluginManger,
-    serverPlugins,
-    context
-  );
-  const renderToHTML = require('./ssr').renderToHTML;
-  const { html } = await renderToHTML({
-    req: {
-      url: pathname,
-      headers: {}
-    } as IRequest,
-    serverPluginContext
-  });
-
-  if (html) {
-    await fse.writeFile(
-      path.resolve(context.paths.buildDir, BUILD_DEFAULT_DIR, filename),
-      html
-    );
-  }
-}
-
-const platform: IPlatform = async ({ framework = 'react' } = {}) => {
+const platform: IPlatform = async (
+  { framework = 'react' } = {},
+  platformContext
+) => {
   const platformFramework = require(`./targets/${framework}`).default;
   const platformFrameworkContent = await platformFramework();
   const mainPlugin = createPlugin({
@@ -87,7 +55,7 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
     },
     addRuntimeService: () => [
       {
-        source: '@shuvi/platform-web/lib/types/runtime-service',
+        source: path.resolve(__dirname, './types/runtime-service'),
         exported: '* as RuntimeServer'
       }
     ],
@@ -116,16 +84,13 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
     },
     addResource: context => generateResource(context),
     afterBuild: async context => {
-      if (
-        context.config.platform.target === 'spa' &&
-        context.mode === 'production'
-      ) {
-        await buildHtml({
-          context,
-          pathname: '/',
-          filename: 'index.html'
-        });
-      }
+      await buildHtml({
+        context,
+        serverPlugins: platformContext.serverPlugins,
+        getMiddlewares,
+        pathname: '/',
+        filename: 'index.html'
+      });
     }
   });
 
@@ -144,14 +109,12 @@ const platform: IPlatform = async ({ framework = 'react' } = {}) => {
       mainPlugin,
       modelPlugin,
       sharedPlugin,
-      // keep the order, it will affect the behaviors
-      FeatureOnDemanCompilePage,
-      FeatureAPIMiddleware,
-      FeaturePageMiddleware,
-      FeatureHTMLRender,
+      ...featurePlugins,
       ...platformFrameworkContent.plugins
     ],
-    getInternalRuntimeFiles
+    getInternalRuntimeFiles,
+    getMiddlewares,
+    getMiddlewaresBeforeDevMiddlewares
   };
 };
 

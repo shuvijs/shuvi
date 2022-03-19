@@ -1,4 +1,9 @@
-import { IRequestHandlerWithNext } from '@shuvi/service';
+import {
+  IRequest,
+  IRequestHandlerWithNext,
+  IServerMiddleware,
+  IServerPluginConstructor
+} from '@shuvi/service';
 import { ApplicationCreater } from '@shuvi/platform-shared/lib/runtime';
 import {
   IApplicationCreaterServerContext,
@@ -26,7 +31,7 @@ interface IServerAppContext {
   [x: string]: any;
 }
 
-export declare type IApiRoutes = {
+export type IApiRoutes = {
   path: string;
   apiModule: IApiModule;
 }[];

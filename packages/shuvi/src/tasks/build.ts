@@ -30,7 +30,7 @@ async function bundle(context: IPluginContext) {
   if (messages.errors.length) {
     // Only keep the first error. Others are often indicative
     // of the same problem, but confuse the reader with noise.
-    throw new Error(messages.errors[0]);
+    throw new Error((messages as any).errors[0]);
   }
 
   // Show warnings if no errors were found.
@@ -90,6 +90,6 @@ export async function build(options: IBuildOptions) {
 
   // transpile the application
   await bundle(pluginContext);
-  pluginContext.pluginRunner.afterBuild();
-  return pluginContext;
+  await pluginContext.pluginRunner.afterBuild();
+  return api;
 }

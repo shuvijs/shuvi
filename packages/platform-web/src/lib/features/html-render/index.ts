@@ -12,16 +12,14 @@ import {
   setRoutes
 } from './lib';
 
-export { IDocumentProps, ITemplateData } from './lib';
+export { IRenderToHTML } from './hooks';
+export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
 
 export default createPlugin({
   setup: ({ addHooks }) => {
     addHooks(extendedHooks);
   },
-  addServerPlugin: () => [
-    require.resolve('./server-plugin-custom-server'),
-    require.resolve('./server-plugin-middleware')
-  ],
+  addServerPlugin: () => [require.resolve('./server-plugin-custom-server')],
   addRuntimeFile: ({ createFile, getAllFiles }, context) => {
     const {
       config: {

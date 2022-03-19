@@ -7,6 +7,7 @@ import {
   IPhase,
   IPlugin,
   IPlatform,
+  IPlatformContent,
   IPluginContext
 } from './apiTypes';
 import { createFile, fileUtils, ProjectBuilder, FileOptions } from '../project';
@@ -31,6 +32,12 @@ interface IApiOPtions {
   platform?: IPlatform;
 }
 
+interface ServerConfigs {
+  serverPlugins: IPlugin[];
+  getMiddlewares: IPlatformContent['getMiddlewares'];
+  getMiddlewaresBeforeDevMiddlewares: IPlatformContent['getMiddlewaresBeforeDevMiddlewares'];
+}
+
 class Api {
   private _cwd: string;
   private _mode: IShuviMode;
@@ -41,8 +48,9 @@ class Api {
   private _projectBuilder!: ProjectBuilder;
   private _platform?: IPlatform;
   private _pluginContext!: IPluginContext;
+  private _serverPlugins: IPlugin[] = [];
   pluginManager: PluginManager;
-  serverPlugins: IPlugin[] = [];
+  serverConfigs!: ServerConfigs;
 
   constructor({ cwd, mode, config, phase, platform }: IApiOPtions) {
     this._cwd = cwd;
@@ -85,6 +93,10 @@ class Api {
     return this._platform;
   }
 
+  get serverPlugins() {
+    return this._serverPlugins;
+  }
+
   async init() {
     const config = (this._config = resolveConfig(this._userConfig));
 
@@ -104,7 +116,6 @@ class Api {
       config: this._config,
       phase: this._phase,
       pluginRunner: this.pluginManager.runner,
-      serverPlugins: this.serverPlugins,
       assetPublicPath: this.assetPublicPath,
       getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
       resolveAppFile: this.resolveAppFile.bind(this),
@@ -149,8 +160,16 @@ class Api {
   async initPlatformPlugins() {
     if (!this.platform) return;
     const platformConfig = this._config.platform;
-    // this._platform = getPlatform(platformConfig.name, this._cliPath);
-    const platformContent = await this.platform(platformConfig);
+    const platformContent = await this.platform(platformConfig, {
+      serverPlugins: this.serverPlugins
+    });
+    const { getMiddlewares, getMiddlewaresBeforeDevMiddlewares } =
+      platformContent;
+    this.serverConfigs = {
+      serverPlugins: this.serverPlugins,
+      getMiddlewares,
+      getMiddlewaresBeforeDevMiddlewares
+    };
     const { usePlugin, createPlugin } = this.pluginManager;
     usePlugin(...platformContent.plugins);
     usePlugin(
@@ -191,7 +210,7 @@ class Api {
     )
       .flat()
       .map(normalizePlugin);
-    this.serverPlugins.push(...serverPlugins);
+    this._serverPlugins.push(...serverPlugins);
   }
 
   removeBuiltFiles() {

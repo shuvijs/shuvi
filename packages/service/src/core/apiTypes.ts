@@ -5,6 +5,8 @@ import {
 } from './lifecycle';
 
 import { FileOptions } from '../project';
+import { IServerMiddleware, IServerPluginContext } from '..';
+import { DevMiddleware } from '../server/middlewares/dev';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -101,10 +103,22 @@ export type IPlatformContent = {
   getInternalRuntimeFiles: (
     context: IPluginContext
   ) => FileOptions[] | Promise<FileOptions[]>;
+  getMiddlewares?: (
+    context: IServerPluginContext
+  ) => IServerMiddleware | IServerMiddleware[];
+  getMiddlewaresBeforeDevMiddlewares?: (
+    devMiddleware: DevMiddleware,
+    context: IServerPluginContext
+  ) => IServerMiddleware | IServerMiddleware[];
+};
+
+export type IPlatformContext = {
+  serverPlugins: IPlugin[];
 };
 
 export type IPlatform = (
-  config?: Omit<IPlatformConfig, 'name'>
+  config: Omit<IPlatformConfig, 'name'>,
+  context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
 export interface IRouterConfig {
@@ -160,7 +174,6 @@ export type IPluginContext = {
   config: Config;
   phase: IPhase;
   pluginRunner: PluginRunner;
-  serverPlugins: IPlugin[];
   assetPublicPath: string;
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;

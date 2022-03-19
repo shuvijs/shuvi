@@ -6,8 +6,7 @@ import {
   IPluginInstance
 } from '@shuvi/hook';
 import { IPlugin, IPluginContext } from '../core';
-import { IServerMiddleware, IProxy } from './pluginTypes';
-import { DevMiddleware } from './middlewares/dev/devMiddleware';
+import { IProxy } from './pluginTypes';
 
 export * from './pluginTypes';
 
@@ -30,25 +29,12 @@ export type IServerPluginInstance = ArrayItem<
 export type IServerPluginConstructor = ArrayItem<
   Parameters<PluginManager['createPlugin']>[0]
 >;
-const addMiddlewareBeforeDevMiddleware = createAsyncParallelHook<
-  void,
-  DevMiddleware,
-  IServerMiddleware | IServerMiddleware[]
->();
-
-const addMiddleware = createAsyncParallelHook<
-  void,
-  void,
-  IServerMiddleware | IServerMiddleware[]
->();
 
 const onListen = createAsyncParallelHook<{ port: number; hostname?: string }>();
 
 const addProxy = createAsyncParallelHook<void, void, IProxy>();
 
 const internalHooks = {
-  addMiddlewareBeforeDevMiddleware,
-  addMiddleware,
   addProxy,
   onListen
 };
