@@ -1,4 +1,4 @@
-import { init, RematchDispatch, RematchRootState } from '@shuvi/redox';
+import { init, RematchRootState } from '@shuvi/redox';
 import { models, RootModel } from './models';
 
 const initialStore = (preloadedState?: IAppState) => {
@@ -15,7 +15,6 @@ const initialStore = (preloadedState?: IAppState) => {
 };
 
 export type IAppStore = ReturnType<typeof initialStore>;
-export type IAppDispatch = RematchDispatch<RootModel>;
 export type IAppState = RematchRootState<RootModel>;
 
 let appStore: IAppStore;
