@@ -134,18 +134,24 @@ importers:
 
   packages/platform-shared:
     specifiers:
+      '@rematch/core': 2.2.0
       '@shuvi/hook': 0.0.1-pre.10
+      '@shuvi/redox': 0.0.1-pre.4
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/shared': 0.0.1-pre.10
       '@shuvi/toolpack': 0.0.1-pre.10
       '@types/webpack-env': ^1.16.2
+      redux: 4.1.2
     dependencies:
+      '@rematch/core': 2.2.0_redux@4.1.2
       '@shuvi/hook': link:../hook
+      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
       '@shuvi/router': link:../router
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
+      redux: 4.1.2
     devDependencies:
       '@types/webpack-env': 1.16.3
 
