@@ -6,7 +6,8 @@ import {
   IAppRenderFn,
   IApplicationCreaterServerContext,
   IAppRouteConfig,
-  getAppStore
+  getAppStore,
+  Application
 } from '@shuvi/platform-shared/esm/runtime';
 import platform from '@shuvi/platform-shared/esm/runtime/platform';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
@@ -22,7 +23,7 @@ export function createApp<
     render: IAppRenderFn<Context, Router, CompType>;
     appState?: AppState;
   }
-) {
+): Application<Context, Router, ReturnType<typeof getAppStore>> {
   const { req } = context;
   const appStore = getAppStore(options.appState);
   const history = createMemoryHistory({

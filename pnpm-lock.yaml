@@ -135,17 +135,21 @@ importers:
   packages/platform-shared:
     specifiers:
       '@shuvi/hook': 0.0.1-pre.10
+      '@shuvi/redox': 0.0.1-pre.4
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/shared': 0.0.1-pre.10
       '@shuvi/toolpack': 0.0.1-pre.10
       '@types/webpack-env': ^1.16.2
+      redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
+      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
       '@shuvi/router': link:../router
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
+      redux: 4.1.2
     devDependencies:
       '@types/webpack-env': 1.16.3
 
@@ -204,7 +208,6 @@ importers:
 
   packages/plugins:
     specifiers:
-      '@rematch/core': 2.2.0
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
       '@shuvi/redox': 0.0.1-pre.4
@@ -214,7 +217,6 @@ importers:
       '@types/react': ^16.9.43
       redux: 4.1.2
     dependencies:
-      '@rematch/core': 2.2.0_redux@4.1.2
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
@@ -4482,15 +4484,6 @@ packages:
 
   /@polka/url/1.0.0-next.11:
     resolution: {integrity: sha512-3NsZsJIA/22P3QUyrEDNA2D133H4j224twJrdipXN38dpnIOzAbUDtOwkcJ5pXmn75w7LSQDjA4tO9dm1XlqlA==}
-    dev: false
-
-  /@rematch/core/2.2.0_redux@4.1.2:
-    resolution: {integrity: sha512-Sj3nC/2X+bOBZeOf4jdJ00nhCcx9wLbVK9SOs6eFR4Y1qKXqRY0hGigbQgfTpCdjRFlwTHHfN3m41MlNvMhDgw==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      redux: '>=4'
-    dependencies:
-      redux: 4.1.2
     dev: false
 
   /@samverschueren/stream-to-observable/0.3.0:

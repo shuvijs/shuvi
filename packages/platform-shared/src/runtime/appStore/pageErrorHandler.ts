@@ -1,6 +1,5 @@
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { IPageError, RESET_ERROR, UPDATE_ERROR } from './pageError/actions';
-import { IAppStore } from './getAppStore';
+import { IAppStore, IAppState } from './getAppStore';
 
 export type IErrorHandler = (
   errorCode?: SHUVI_ERROR_CODE | string,
@@ -15,7 +14,7 @@ export function getErrorHandler(appStore: IAppStore): {
     errorHandler(errorCode?: SHUVI_ERROR_CODE | string, errorDesc?: string) {
       const payload = {
         hasError: true
-      } as IPageError;
+      } as IAppState['error'];
       if (typeof errorCode === 'number') {
         payload.errorCode = errorCode;
         payload.errorDesc = errorDesc;
@@ -23,19 +22,14 @@ export function getErrorHandler(appStore: IAppStore): {
         payload.errorCode = SHUVI_ERROR_CODE.APP_ERROR;
         payload.errorDesc = errorCode;
       }
-      appStore.dispatch({
-        type: UPDATE_ERROR,
-        payload
-      });
+      appStore.dispatch.error.update(payload);
     },
     reset() {
-      const { error } = appStore.getState();
-      if (!error.hasError) {
+      const { hasError } = appStore.getState().error;
+      if (!hasError) {
         return;
       }
-      appStore.dispatch({
-        type: RESET_ERROR
-      });
+      appStore.dispatch.error.reset();
     }
   };
 }

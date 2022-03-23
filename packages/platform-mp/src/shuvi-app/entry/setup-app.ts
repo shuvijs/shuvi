@@ -9,7 +9,7 @@ import { createApp } from '../application';
 const appData = getAppData();
 const { routeProps = {}, appState } = appData;
 
-const app = createApp(
+const app: ReturnType<typeof createApp> = createApp(
   {
     // @ts-ignore
     pageData: appData.pageData || {},
