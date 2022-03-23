@@ -1,32 +1,37 @@
-import { createStore, Store } from '@shuvi/shared/lib/miniRedux';
-import rootReducer from './rootReducer';
-import { IPageError, IPageErrorAction } from './pageError/actions';
+import { init, RematchRootState } from '@shuvi/redox';
+import { models, RootModel } from './models';
 
-export type IAppState = {
-  error: IPageError;
+const initialStore = (preloadedState?: IAppState) => {
+  const tempModels = models;
+  if (preloadedState && preloadedState.error) {
+    tempModels.error.state = {
+      ...tempModels.error.state,
+      ...preloadedState.error
+    };
+  }
+  return init({
+    models: tempModels
+  });
 };
 
-export type IAppStore = Store<IAppState, IPageErrorAction>;
+export type IAppStore = ReturnType<typeof initialStore>;
+export type IAppState = RematchRootState<RootModel>;
 
 let appStore: IAppStore;
-
-const initialStore = (preloadedState: IAppState) => {
-  return createStore(rootReducer, preloadedState as any);
-};
 
 // for client, singleton mode
 // for server, return new store
 const getAppStore = (preloadedState?: IAppState) => {
   // for server
   if (typeof window === 'undefined') {
-    return initialStore(preloadedState as any);
+    return initialStore(preloadedState);
   }
   // for client is singleton, just init once
   if (appStore) {
     return appStore;
   }
 
-  appStore = initialStore(preloadedState as any);
+  appStore = initialStore(preloadedState);
 
   return appStore;
 };

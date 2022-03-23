@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useReducer } from 'react';
+import React, { createContext, useMemo, useReducer, Context } from 'react';
 import { IAppState, IAppStore } from '@shuvi/platform-shared/esm/runtime';
 import { useIsomorphicEffect } from '@shuvi/router-react';
 
@@ -7,7 +7,9 @@ export interface IAppContext {
 }
 
 const AppContext = createContext<IAppContext>(null as any);
-const AppStoreContext = createContext<IAppStore>(null as any);
+const AppStoreContext: Context<IAppStore> = createContext<IAppStore>(
+  null as any
+);
 
 export { AppContext, AppStoreContext };
 
