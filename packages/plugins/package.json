@@ -26,7 +26,6 @@
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
   "dependencies": {
-    "@rematch/core": "2.2.0",
     "@shuvi/redox": "0.0.1-pre.4",
     "@shuvi/redox-react": "0.0.1-pre.4",
     "@shuvi/hook": "0.0.1-pre.10",
