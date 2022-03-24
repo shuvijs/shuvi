@@ -1,3 +1,6 @@
+import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
+import { joinPath } from '@shuvi/utils/lib/string';
+import rimraf from 'rimraf';
 import path from 'path';
 import {
   UserConfig,
@@ -5,21 +8,25 @@ import {
   IPaths,
   IShuviMode,
   IPhase,
-  IPlugin,
   IPlatform,
   IPlatformContent,
-  IPluginContext
+  IPluginContext,
+  RuntimePluginConfig,
+  ResolvedPlugin
 } from './apiTypes';
 import { createFile, fileUtils, ProjectBuilder, FileOptions } from '../project';
-import { joinPath } from '@shuvi/utils/lib/string';
 import { PUBLIC_PATH } from '../constants';
 import { resolveConfig } from './config';
-import { getManager, PluginManager, Resources } from './lifecycle';
+import {
+  getManager,
+  PluginManager,
+  Resources,
+  CorePluginInstance
+} from './lifecycle';
 import { setupApp } from './setupApp';
 import { getPaths } from './paths';
-import rimraf from 'rimraf';
-import { getPlugins } from './getPlugins';
-import { normalizePlugin } from '../server';
+import { getPlugins, resolvePlugin } from './getPlugins';
+import { ServerPluginInstance } from '../server';
 import { _setResourceEnv } from '../resources';
 
 const ServiceModes: IShuviMode[] = ['development', 'production'];
@@ -33,7 +40,7 @@ interface IApiOPtions {
 }
 
 interface ServerConfigs {
-  serverPlugins: IPlugin[];
+  serverPlugins: ServerPluginInstance[];
   getMiddlewares: IPlatformContent['getMiddlewares'];
   getMiddlewaresBeforeDevMiddlewares: IPlatformContent['getMiddlewaresBeforeDevMiddlewares'];
 }
@@ -48,7 +55,9 @@ class Api {
   private _projectBuilder!: ProjectBuilder;
   private _platform?: IPlatform;
   private _pluginContext!: IPluginContext;
-  private _serverPlugins: IPlugin[] = [];
+  private _serverPlugins: ServerPluginInstance[] = [];
+  private _runtimePlugins: RuntimePluginConfig[] = [];
+
   pluginManager: PluginManager;
   serverConfigs!: ServerConfigs;
 
@@ -97,6 +106,10 @@ class Api {
     return this._serverPlugins;
   }
 
+  get runtimePlugins() {
+    return this._runtimePlugins;
+  }
+
   async init() {
     const config = (this._config = resolveConfig(this._userConfig));
 
@@ -124,7 +137,7 @@ class Api {
       resolvePublicFile: this.resolvePublicFile.bind(this)
     };
 
-    const { runner, setContext, usePlugin } = this.pluginManager;
+    const { runner, setContext } = this.pluginManager;
     setContext(this._pluginContext);
 
     // init plugins
@@ -132,12 +145,9 @@ class Api {
     // 2. user
     await this.initPlatformPlugins();
     const allPlugins = await getPlugins(this._cwd, config);
-    usePlugin(...allPlugins);
-
-    // must run first so that platform could get serverPlugin
-    await this.initRuntimeAndServerPlugin();
+    allPlugins.forEach(plugin => this.applyPlugin(plugin));
     await runner.afterInit();
-
+    this.addRuntimePlugin(...this.runtimePlugins);
     const resources = (await runner.addResource()).flat() as Resources[];
     resources.forEach(([key, requireStr]) => {
       this.addResources(key, requireStr);
@@ -157,13 +167,27 @@ class Api {
     return prefix;
   }
 
+  applyPlugin(plugin: ResolvedPlugin): void {
+    const { core, server, runtime } = plugin;
+    const { usePlugin } = this.pluginManager;
+    if (core) {
+      usePlugin(core);
+    }
+    if (server) {
+      this._serverPlugins.push(server);
+    }
+    if (runtime) {
+      this._runtimePlugins.push(runtime);
+    }
+  }
+
   async initPlatformPlugins() {
     if (!this.platform) return;
     const platformConfig = this._config.platform;
     const platformContent = await this.platform(platformConfig, {
       serverPlugins: this.serverPlugins
     });
-    const { getMiddlewares, getMiddlewaresBeforeDevMiddlewares } =
+    const { getMiddlewares, getMiddlewaresBeforeDevMiddlewares, plugins } =
       platformContent;
     this.serverConfigs = {
       serverPlugins: this.serverPlugins,
@@ -171,7 +195,17 @@ class Api {
       getMiddlewaresBeforeDevMiddlewares
     };
     const { usePlugin, createPlugin } = this.pluginManager;
-    usePlugin(...platformContent.plugins);
+    if (plugins) {
+      plugins.forEach(plugin => {
+        if (typeof plugin === 'string') {
+          this.applyPlugin(resolvePlugin(plugin));
+        } else if (isPluginInstance(plugin)) {
+          this.applyPlugin({ core: plugin as CorePluginInstance });
+        } else {
+          this.applyPlugin(plugin as ResolvedPlugin);
+        }
+      });
+    }
     usePlugin(
       createPlugin({
         afterInit: async context => {
@@ -204,14 +238,6 @@ class Api {
       this.addRuntimeService(source, exported, filepath);
     });
   }
-  async initRuntimeAndServerPlugin() {
-    const serverPlugins: IPlugin[] = (
-      await this.pluginManager.runner.addServerPlugin()
-    )
-      .flat()
-      .map(normalizePlugin);
-    this._serverPlugins.push(...serverPlugins);
-  }
 
   removeBuiltFiles() {
     rimraf.sync(this.paths.appDir);
@@ -232,6 +258,10 @@ class Api {
 
   addInternalRuntimeFile(options: FileOptions): void {
     this._projectBuilder.addFile(options);
+  }
+
+  addRuntimePlugin(...plugins: RuntimePluginConfig[]): void {
+    this._projectBuilder.addRuntimePlugin(...plugins);
   }
 
   addRuntimeService(source: string, exported: string, filepath?: string): void {

@@ -1,4 +1,4 @@
 export default {
   ssr: true,
-  plugins: [['./plugins/pluginServerMiddleware.js']]
+  plugins: [['./plugin']]
 };

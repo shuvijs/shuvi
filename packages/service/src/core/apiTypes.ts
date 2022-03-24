@@ -1,11 +1,15 @@
 import {
-  ICliPluginConstructor,
-  ICliPluginInstance,
+  CorePluginConstructor,
+  CorePluginInstance,
   PluginRunner
 } from './lifecycle';
 
 import { FileOptions } from '../project';
-import { IServerMiddleware, IServerPluginContext } from '..';
+import {
+  IServerMiddleware,
+  IServerPluginContext,
+  ServerPluginInstance
+} from '..';
 import { DevMiddleware } from '../server/middlewares/dev';
 
 export interface IUserRouteConfig {
@@ -73,9 +77,9 @@ export interface IPaths {
 
 export type IPluginConfig =
   | string
-  | ICliPluginConstructor
-  | ICliPluginInstance
-  | [string | ((param: any) => ICliPluginInstance), any?];
+  | CorePluginConstructor
+  | CorePluginInstance
+  | [string, any?];
 export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
@@ -86,10 +90,16 @@ export declare type IPhase =
   | 'PHASE_DEVELOPMENT_SERVER'
   | 'PHASE_INSPECT_WEBPACK';
 
-export type IPlugin = {
+export type RuntimePluginConfig = {
   plugin: string;
   options?: any;
 };
+
+export interface ResolvedPlugin {
+  core?: CorePluginInstance; // instance
+  server?: ServerPluginInstance; // instance
+  runtime?: RuntimePluginConfig;
+}
 
 export interface IPlatformConfig {
   name: string;
@@ -99,7 +109,7 @@ export interface IPlatformConfig {
 }
 
 export type IPlatformContent = {
-  plugins: ICliPluginInstance[];
+  plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
   getInternalRuntimeFiles: (
     context: IPluginContext
   ) => FileOptions[] | Promise<FileOptions[]>;
@@ -113,7 +123,7 @@ export type IPlatformContent = {
 };
 
 export type IPlatformContext = {
-  serverPlugins: IPlugin[];
+  serverPlugins: ServerPluginInstance[];
 };
 
 export type IPlatform = (

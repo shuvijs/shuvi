@@ -1,11 +1,10 @@
 import {
   createAsyncParallelHook,
   createHookManager,
-  isPluginInstance,
   HookMap,
   IPluginInstance
 } from '@shuvi/hook';
-import { IPlugin, IPluginContext } from '../core';
+import { IPluginContext } from '../core';
 import { IProxy } from './pluginTypes';
 
 export * from './pluginTypes';
@@ -19,8 +18,6 @@ export type IServerPluginContext = IPluginContext & {
 export type PluginManager = ReturnType<typeof getManager>;
 
 export type PluginRunner = PluginManager['runner'];
-
-export type CreatePlugin = PluginManager['createPlugin'];
 
 export type IServerPluginInstance = ArrayItem<
   Parameters<PluginManager['usePlugin']>
@@ -57,14 +54,9 @@ export type ServerPluginInstance = IPluginInstance<
   IServerPluginContext
 >;
 
-const resolvePlugin = (path: string) => {
-  const resolved = require(path);
-  return resolved.default || resolved;
-};
-
 export const initServerPlugins = (
   manager: PluginManager,
-  serverPlugins: IPlugin[],
+  serverPlugins: ServerPluginInstance[],
   pluginContext: IPluginContext
 ): IServerPluginContext => {
   const serverContext = Object.assign(
@@ -72,31 +64,8 @@ export const initServerPlugins = (
     pluginContext
   );
   manager.setContext(serverContext);
-  serverPlugins.forEach(({ plugin, options }) => {
-    const resolved = resolvePlugin(plugin);
-    let pluginInstance: IServerPluginInstance | undefined;
-    if (isPluginInstance(resolved)) {
-      pluginInstance = resolved;
-    } else if (typeof resolved === 'function') {
-      const pluginByOptions = resolved(options || {});
-      if (isPluginInstance(pluginByOptions)) {
-        pluginInstance = pluginByOptions;
-      }
-    }
-    if (pluginInstance) {
-      manager.usePlugin(pluginInstance);
-    } else {
-      throw new Error(`serverPlugin load failed. path: ${plugin}`);
-    }
+  serverPlugins.forEach(plugin => {
+    manager.usePlugin(plugin);
   });
   return serverContext;
-};
-
-export const normalizePlugin = (x: string | IPlugin): IPlugin => {
-  if (typeof x === 'string') {
-    return {
-      plugin: x
-    };
-  }
-  return x;
 };

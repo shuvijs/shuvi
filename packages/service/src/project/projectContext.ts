@@ -1,4 +1,6 @@
 import { reactive } from './file-manager';
+import { RuntimePluginConfig } from '../core';
+
 export interface ProjectContext {
   /**
    * services:
@@ -10,10 +12,12 @@ export interface ProjectContext {
    */
   runtimeServices: Map<string, Map<string, Set<string>>>;
   resources: Map<string, Map<string, string | undefined>>;
+  runtimePlugins: RuntimePluginConfig[];
 }
 
 export const createProjectContext = () =>
   reactive<ProjectContext>({
     runtimeServices: new Map(),
-    resources: new Map()
+    resources: new Map(),
+    runtimePlugins: []
   });

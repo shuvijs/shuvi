@@ -1,6 +1,8 @@
 import path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
+import { getFilePresets } from './file-presets';
 import { getExportsFromObject, getContentProxyObj } from './file-utils';
+import { RuntimePluginConfig } from '../core';
 import { ProjectContext, createProjectContext } from './projectContext';
 
 interface ProjectBuilderOptions {
@@ -33,6 +35,7 @@ const isTruthy = (value: unknown, recursive = true): boolean => {
 class ProjectBuilder {
   private _projectContext: ProjectContext;
   private _fileManager: FileManager;
+  private _internalFiles: FileOptions[];
 
   constructor(option: ProjectBuilderOptions = {}) {
     this._projectContext = createProjectContext();
@@ -40,6 +43,13 @@ class ProjectBuilder {
       watch: !option.static,
       context: this._projectContext
     });
+    this._internalFiles = getFilePresets();
+    this._internalFiles.forEach((file: FileOptions) => {
+      this._fileManager.addFile(file);
+    });
+  }
+  addRuntimePlugin(...plugins: RuntimePluginConfig[]) {
+    this._projectContext.runtimePlugins.push(...plugins);
   }
   addRuntimeService(
     source: string,
