@@ -142,10 +142,7 @@ export class Application<
       this.AppComponent,
       this._context
     );
-    if (
-      this._getUserAppComponent &&
-      typeof this._getAppComponent === 'function'
-    ) {
+    if (typeof this._getUserAppComponent === 'function') {
       this.AppComponent = this._getUserAppComponent(this.AppComponent);
     }
     this.AppComponent = await this.pluginManager.runner.getAppComponent(
