@@ -7,9 +7,9 @@ import {
   BUILD_DEFAULT_DIR,
   IPlatformContent,
   IPluginContext,
-  IResponse
+  IResponse,
+  ServerPluginInstance
 } from '@shuvi/service';
-import { IPlugin } from '@shuvi/service/lib/core';
 
 export const buildHtml = async ({
   context,
@@ -19,7 +19,7 @@ export const buildHtml = async ({
   filename
 }: {
   context: IPluginContext;
-  serverPlugins: IPlugin[];
+  serverPlugins: ServerPluginInstance[];
   getMiddlewares: IPlatformContent['getMiddlewares'];
   pathname: string;
   filename: string;

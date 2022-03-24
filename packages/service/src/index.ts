@@ -8,7 +8,7 @@ export {
   IPlatform,
   IPlatformContent,
   IUserRouteConfig,
-  ICliPluginConstructor,
+  CorePluginConstructor,
   loadConfig,
   defineConfig
 } from './core';
@@ -16,4 +16,8 @@ export { ProjectBuilder } from './project';
 export { getBundler } from './bundler';
 export * from './constants';
 export * from './server';
-export { createPlugin, PluginHooks, PluginInstance } from './core/lifecycle';
+export {
+  createPlugin,
+  PluginHooks,
+  CorePluginInstance
+} from './core/lifecycle';

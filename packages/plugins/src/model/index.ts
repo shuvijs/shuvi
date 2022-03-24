@@ -1,8 +1,6 @@
-import { createPlugin, PluginInstance } from '@shuvi/service';
+import { createPlugin, CorePluginInstance } from '@shuvi/service';
 
 export default createPlugin({
-  addRuntimePlugin: () => require.resolve('./runtimePlugin'),
-  addServerPlugin: () => require.resolve('./serverPlugin'),
   addRuntimeService: () => [
     {
       source: require.resolve('@shuvi/redox-react'),
@@ -10,4 +8,4 @@ export default createPlugin({
       filepath: 'model.js'
     }
   ]
-}) as PluginInstance;
+}) as CorePluginInstance;
