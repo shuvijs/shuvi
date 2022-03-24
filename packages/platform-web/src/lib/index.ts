@@ -12,7 +12,7 @@ import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { setRuntimeConfig } from '@shuvi/platform-shared/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
-import { modelPlugin } from '@shuvi/plugins';
+
 import {
   sharedPlugin,
   getInternalRuntimeFilesCreator,
@@ -107,7 +107,7 @@ const platform: IPlatform = async (
   return {
     plugins: [
       mainPlugin,
-      modelPlugin,
+      require.resolve('@shuvi/plugins/lib/model'),
       sharedPlugin,
       ...featurePlugins,
       ...platformFrameworkContent.plugins

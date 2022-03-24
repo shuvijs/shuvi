@@ -1,14 +1,21 @@
 import path from 'path';
+import { isPluginInstance, SyncHook } from '@shuvi/hook';
 import {
   createPlugin,
   getManager,
   PluginRunner,
   PluginManager
 } from '../lifecycle';
+import { getManager as getServerPluginManager } from '../../server/plugin';
 import { IPluginConfig, IPresetConfig } from '../apiTypes';
-import { IPluginContext } from '..';
-import { resolvePlugins, resolvePresets, getPlugins } from '../getPlugins';
-import { resolvePreset } from './utils';
+import { resolvePlugin, resolvePresets, getPlugins } from '../getPlugins';
+import { resolvePreset, getManager as getRuntimePluginManger } from './utils';
+
+declare module '../../server/plugin' {
+  interface ServerPluginHooks {
+    test: SyncHook;
+  }
+}
 
 function callPresets(context: any, ...presets: IPresetConfig[]) {
   resolvePresets(presets, {
@@ -16,92 +23,168 @@ function callPresets(context: any, ...presets: IPresetConfig[]) {
   }).forEach(p => p.get()(context));
 }
 
-describe('plugin', () => {
+describe('resolve plugin', () => {
   let manager: PluginManager;
   let runner: PluginRunner;
-
-  function callPlugins(...plugins: IPluginConfig[]) {
-    resolvePlugins(plugins, {
-      dir: path.join(__dirname, 'fixtures/plugins')
-    }).forEach(p => manager.usePlugin(p));
-  }
-
+  let serverPluginManager: ReturnType<typeof getServerPluginManager>;
+  let serverPluginRunner: ReturnType<typeof getServerPluginManager>['runner'];
+  let runtimePluginManger: ReturnType<typeof getRuntimePluginManger>;
+  let runtimePluginRunner: ReturnType<typeof getRuntimePluginManger>['runner'];
   beforeEach(() => {
     manager = getManager();
     runner = manager.runner;
-    manager.setContext({} as IPluginContext);
-  });
-  test('should accept plugin instance object as a plugin', async () => {
-    console.log = jest.fn();
-    callPlugins('./simple-plugin-instance.ts');
-    await runner.afterInit();
-    expect(console.log).toHaveBeenCalledWith('simple-plugin-instance');
+    manager.setContext({} as any);
+    serverPluginManager = getServerPluginManager();
+    serverPluginManager.setContext({} as any);
+    serverPluginRunner = serverPluginManager.runner;
+    runtimePluginManger = getRuntimePluginManger();
+    runtimePluginManger.setContext({} as any);
+    runtimePluginRunner = runtimePluginManger.runner;
   });
 
-  test('should accept plugin instance creater with options as a plugin', async () => {
-    console.log = jest.fn();
-    const options = { name: 'test' };
-    callPlugins(['./simple-plugin-instance-creater-with-options.ts', options]);
-    await runner.afterInit();
-    expect(console.log).toHaveBeenCalledWith(options);
-  });
-  test('should accept inline plugin constructor object as a plugin', async () => {
-    const api: any = {};
-    callPlugins({
-      afterInit: () => {
-        api.__test = true;
-      }
+  const applyPlugin = (pluginConfig: IPluginConfig) => {
+    const plugin = resolvePlugin(pluginConfig, {
+      dir: path.join(__dirname, 'fixtures/plugins')
     });
-    await runner.afterInit();
-    expect(api.__test).toBe(true);
+    const { core, server, runtime } = plugin;
+    if (core) {
+      manager.usePlugin(core);
+    }
+    if (server) {
+      serverPluginManager.usePlugin(server);
+    }
+    if (runtime) {
+      let runtimePlugin = require(runtime.plugin);
+      runtimePlugin = runtimePlugin.default || runtimePlugin;
+      if (isPluginInstance(runtimePlugin)) {
+        runtimePluginManger.usePlugin(runtimePlugin);
+      } else {
+        runtimePluginManger.usePlugin(runtimePlugin(runtime.options));
+      }
+    }
+    return plugin;
+  };
+  describe('plugin is a string', () => {
+    test('should resolve single corePlugin', async () => {
+      console.log = jest.fn();
+      const plugin = applyPlugin('./single-core');
+      expect(isPluginInstance(plugin.core)).toBe(true);
+      await runner.afterInit();
+      expect(console.log).toHaveBeenCalledWith('single-core');
+    });
+
+    test('should resolve single corePlugin with options', async () => {
+      console.log = jest.fn();
+      const options = 'single-core-with-options';
+      const plugin = applyPlugin(['./single-core-with-options', options]);
+      expect(isPluginInstance(plugin.core)).toBe(true);
+      await runner.afterInit();
+      expect(console.log).toHaveBeenCalledWith(options);
+    });
+
+    test('should resolve single corePlugin under directory', async () => {
+      console.log = jest.fn();
+      const plugin = applyPlugin('./single-core');
+      expect(isPluginInstance(plugin.core)).toBe(true);
+      await runner.afterInit();
+      expect(console.log).toHaveBeenCalledWith('single-core');
+    });
+
+    test('should resolve single corePlugin under directory with options', async () => {
+      console.log = jest.fn();
+      const options = 'single-core-with-options';
+      const plugin = applyPlugin(['./single-core-with-options', options]);
+      expect(isPluginInstance(plugin.core)).toBe(true);
+      await runner.afterInit();
+      expect(console.log).toHaveBeenCalledWith(options);
+    });
+
+    test('should resolve all three plugins', async () => {
+      console.log = jest.fn();
+      const plugin = applyPlugin('./all-three-plugins');
+      expect(isPluginInstance(plugin.core)).toBe(true);
+      expect(isPluginInstance(plugin.server)).toBe(true);
+      expect(plugin.runtime).toHaveProperty('plugin');
+      expect(plugin.runtime?.options).toBeUndefined();
+      await runner.afterInit();
+      expect(console.log).toHaveBeenCalledWith('all-three-plugins-core');
+      serverPluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith('all-three-plugins-server');
+      runtimePluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith('all-three-plugins-runtime');
+    });
+
+    test('should resolve all three plugins with options', async () => {
+      console.log = jest.fn();
+      const options = { name: 'all-three-plugins' };
+      const plugin = applyPlugin(['./all-three-plugins-with-options', options]);
+      expect(isPluginInstance(plugin.core)).toBe(true);
+      expect(isPluginInstance(plugin.server)).toBe(true);
+      expect(plugin.runtime).toHaveProperty('plugin');
+      expect(plugin.runtime?.options).toBe(options);
+      await runner.afterInit();
+      expect(console.log).toHaveBeenCalledWith(options.name + 'core');
+      serverPluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith(options.name + 'server');
+      runtimePluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith(options.name + 'runtime');
+    });
+
+    test('should resolve only server and runtime plugins', async () => {
+      console.log = jest.fn();
+      const plugin = applyPlugin('./only-server-and-runtime');
+      expect(plugin.core).toBeUndefined();
+      expect(isPluginInstance(plugin.server)).toBe(true);
+      expect(plugin.runtime).toHaveProperty('plugin');
+      expect(plugin.runtime?.options).toBeUndefined();
+      serverPluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith('all-three-plugins-server');
+      runtimePluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith('all-three-plugins-runtime');
+    });
+
+    test('should resolve only server and runtime plugins with options', async () => {
+      console.log = jest.fn();
+      const options = { name: 'only-server-and-runtime' };
+      const plugin = applyPlugin([
+        './only-server-and-runtime-with-options',
+        options
+      ]);
+      expect(plugin.core).toBeUndefined();
+      expect(isPluginInstance(plugin.server)).toBe(true);
+      expect(plugin.runtime).toHaveProperty('plugin');
+      expect(plugin.runtime?.options).toBe(options);
+      serverPluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith(options.name + 'server');
+      runtimePluginRunner.test();
+      expect(console.log).toHaveBeenCalledWith(options.name + 'runtime');
+    });
   });
 
-  test('should accept inline plugin instance as a plugin', async () => {
-    console.log = jest.fn();
-    callPlugins(
-      createPlugin({
-        afterInit: () => {
-          console.log('simple-plugin-instance');
-        }
-      })
-    );
-    await runner.afterInit();
-    expect(console.log).toHaveBeenCalledWith('simple-plugin-instance');
-  });
-
-  test('should accept inline plugin instance creater with options as a plugin', async () => {
-    console.log = jest.fn();
-    const options = { name: 'test' };
-    callPlugins([
-      (options: any) =>
+  describe('plugin is a object: inline plugin', () => {
+    test('should resolve core plugin instance object', async () => {
+      const api: any = {};
+      applyPlugin(
         createPlugin({
           afterInit: () => {
-            console.log(options);
+            api.__test = true;
           }
-        }),
-      options
-    ]);
-    await runner.afterInit();
-    expect(console.log).toHaveBeenCalledWith(options);
-  });
+        })
+      );
+      await runner.afterInit();
+      expect(api.__test).toBe(true);
+    });
 
-  test('array plugin', async () => {
-    console.log = jest.fn();
-    const options = { name: 'test' };
-    const api: any = {};
-    callPlugins(
-      {
+    test('should resolve core plugin constructor object', async () => {
+      const api: any = {};
+      applyPlugin({
         afterInit: () => {
           api.__test = true;
         }
-      },
-      './simple-plugin-instance.ts',
-      ['./simple-plugin-instance-creater-with-options.ts', options]
-    );
-    await runner.afterInit();
-    expect(api.__test).toBe(true);
-    expect(console.log).toHaveBeenNthCalledWith(1, 'simple-plugin-instance');
-    expect(console.log).toHaveBeenNthCalledWith(2, options);
+      });
+      await runner.afterInit();
+      expect(api.__test).toBe(true);
+    });
   });
 });
 
@@ -111,8 +194,8 @@ describe('preset', () => {
       presets: [resolvePreset('a-b-preset')]
     } as any);
     expect(plugins.length).toBe(2);
-    expect(plugins[0].name).toBe('a');
-    expect(plugins[1].name).toMatch('b');
+    expect(plugins[0].core?.name).toBe('a');
+    expect(plugins[1].core?.name).toMatch('b');
   });
 
   test('should accept function module as a plugin', () => {
@@ -137,8 +220,8 @@ describe('preset', () => {
       presets: [resolvePreset('nest-preset-preset')]
     } as any);
     expect(plugins.length).toBe(3);
-    expect(plugins[0].name).toBe('a');
-    expect(plugins[1].name).toMatch('b');
-    expect(plugins[2].name).toMatch('c');
+    expect(plugins[0].core?.name).toBe('a');
+    expect(plugins[1].core?.name).toMatch('b');
+    expect(plugins[2].core?.name).toMatch('c');
   });
 });

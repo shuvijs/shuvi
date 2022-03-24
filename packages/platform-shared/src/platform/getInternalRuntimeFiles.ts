@@ -1,4 +1,4 @@
-import { IPluginContext, normalizePlugin } from '@shuvi/service';
+import { IPluginContext } from '@shuvi/service';
 import { fileUtils } from '@shuvi/service/lib/project';
 import { createProjectContext } from '../project/projectContext';
 import { getFilePresets } from '../project/file-presets';
@@ -39,12 +39,8 @@ export const getInternalRuntimeFilesCreator =
     const runner = pluginContext.pluginRunner;
     const appPolyfills = (await runner.addPolyfill()).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();
-    const runtimePlugins = (await runner.addRuntimePlugin())
-      .flat()
-      .map(normalizePlugin);
     context.entryCodes.push(entry, ...appEntryCodes);
     context.polyfills.push(...polyfills, ...appPolyfills);
-    context.runtimePlugins.push(...runtimePlugins);
     const files = getFilePresets(context);
     return files;
   };

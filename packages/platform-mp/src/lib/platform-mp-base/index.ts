@@ -4,7 +4,7 @@ import {
   createPlugin,
   IUserRouteConfig,
   IPlatformContent,
-  PluginInstance,
+  CorePluginInstance,
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_FILE_SERVER,
   BUILD_SERVER_DIR
@@ -32,6 +32,7 @@ import {
   UnRecursiveTemplate,
   RecursiveTemplate
 } from '@tarojs/shared/dist/template';
+import setupServerPluginServer from './serverPlugin';
 import generateResource from './generateResource';
 import { PACKAGE_NAME } from '../constants';
 import BuildAssetsPlugin from './plugins/build-assets-plugin';
@@ -47,6 +48,7 @@ import {
   PACKAGE_RESOLVED
 } from '../paths';
 import { AppConfig, AppConfigs, IFileType } from './types';
+import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
 
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
@@ -98,7 +100,7 @@ export default abstract class PlatformMpBase {
     });
   }
 
-  getPlatformContent(): IPlatformContent {
+  getPlatformContent(platformContext: IPlatformContext): IPlatformContent {
     const platformModule = resolveAppFile('index');
     const entry = `import "${this.entryPath || resolveAppFile('entry')}"`;
     const polyfills = [
@@ -133,9 +135,9 @@ export default abstract class PlatformMpBase {
     ].filter(Boolean);
   }
 
-  getSetupServerPlugin(): PluginInstance {
-    return createPlugin({
-      addServerPlugin: () => require.resolve('./serverPlugin'),
+  getSetupServerPlugin(): ResolvedPlugin {
+    const server = setupServerPluginServer;
+    const core = createPlugin({
       addResource: context => generateResource(context),
       addRuntimeFile: async ({ createFile, getAllFiles }, context) => {
         const serverCandidates = getUserCustomFileCandidates(
@@ -172,12 +174,16 @@ export default abstract class PlatformMpBase {
         };
       }
     });
+    return {
+      core,
+      server
+    };
   }
 
   /**
    * setup app files
    */
-  getSetupAppPlugin(): PluginInstance {
+  getSetupAppPlugin(): CorePluginInstance {
     return createPlugin({
       afterInit: context => {
         const appConfigFile = findFirstExistedFile([
@@ -231,12 +237,18 @@ export default abstract class PlatformMpBase {
           source: resolveRouterFile('esm', 'index'),
           exported: '*',
           filepath: 'router-mp.js'
+        },
+        {
+          source: require.resolve(
+            '@shuvi/platform-shared/lib/runtime/helper/getPageData'
+          ),
+          exported: '{ getPageData }'
         }
       ]
     });
   }
 
-  getSetupRoutesPlugin(): PluginInstance {
+  getSetupRoutesPlugin(): CorePluginInstance {
     return createPlugin({
       addRuntimeFile: async ({ createFile }, context) => {
         const getFiles = (routes: IUserRouteConfig[]) => {
@@ -386,7 +398,7 @@ export default abstract class PlatformMpBase {
     });
   }
 
-  getConfigWebpackPlugin(): PluginInstance {
+  getConfigWebpackPlugin(): CorePluginInstance {
     return createPlugin({
       configWebpack: async (config, { name }, context) => {
         if (name === BUNDLER_TARGET_SERVER) return config;

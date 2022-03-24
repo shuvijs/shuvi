@@ -1,4 +1,4 @@
 export default {
   ssr: true,
-  plugins: [require.resolve('./src/plugin')]
+  plugins: [['./src/plugin', { hello: 'hello', world: 'world' }]]
 };

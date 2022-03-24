@@ -4,7 +4,7 @@ module.exports = option =>
   createServerPlugin({
     pageData: () => {
       return {
-        foo: 'bar' + option
+        foo: 'bar' + option.world
       };
     },
     modifyHtml: documentProps => {

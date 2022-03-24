@@ -1,5 +1,6 @@
 import { RequestListener } from 'http';
-import { IPlugin, IPlatformContent } from '../core';
+import { ServerPluginInstance } from '.';
+import { IPlatformContent } from '../core';
 
 export interface IShuviServer {
   init(): Promise<void>;
@@ -9,7 +10,7 @@ export interface IShuviServer {
 }
 
 export interface ShuviServerOptions {
-  serverPlugins: IPlugin[];
+  serverPlugins: ServerPluginInstance[];
   getMiddlewares?: IPlatformContent['getMiddlewares'];
   getMiddlewaresBeforeDevMiddlewares?: IPlatformContent['getMiddlewaresBeforeDevMiddlewares'];
 }

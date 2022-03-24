@@ -1,4 +1,11 @@
+import { createHookManager, createSyncHook } from '@shuvi/hook';
 import path from 'path';
+
+const test = createSyncHook();
+
+export const getManager = () => createHookManager({ test }, false);
+
+export const { createPlugin } = getManager();
 
 export function resolvePlugin(name: string) {
   return path.join(__dirname, 'fixtures', 'plugins', name);

@@ -11,15 +11,14 @@ import {
   getRoutesFromRawRoutes,
   setRoutes
 } from './lib';
-
+import server from './server-plugin-custom-server';
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
 
-export default createPlugin({
+const core = createPlugin({
   setup: ({ addHooks }) => {
     addHooks(extendedHooks);
   },
-  addServerPlugin: () => [require.resolve('./server-plugin-custom-server')],
   addRuntimeFile: ({ createFile, getAllFiles }, context) => {
     const {
       config: {
@@ -110,3 +109,8 @@ export default createPlugin({
     }
   ]
 });
+
+export default {
+  core,
+  server
+};
