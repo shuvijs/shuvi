@@ -140,7 +140,7 @@ describe('Custom Runtime.js', () => {
   test('appComponent and rootAppComponent should work', async () => {
     page = await ctx.browser.page(ctx.url('/'));
     expect(await page.$text('div')).toMatch(
-      /This is getAppComponentThis is getRootAppComponentIndex Page/
+      /This is getAppComponentpathname: \/This is getRootAppComponentIndex Page: index props/
     );
   });
 });
