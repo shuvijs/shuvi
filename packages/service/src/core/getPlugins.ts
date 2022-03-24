@@ -1,65 +1,136 @@
 import invariant from '@shuvi/utils/lib/invariant';
 import resolve from '@shuvi/utils/lib/resolve';
 import { isPluginInstance } from '@shuvi/hook';
-import {
-  createPlugin,
-  ICliPluginInstance,
-  ICliPluginConstructor
-} from './lifecycle';
+import path from 'path';
+import { createPlugin, CorePluginInstance } from './lifecycle';
 import {
   IPreset,
   IPluginConfig,
   IPresetConfig,
   IPresetSpec,
-  IPluginContext
+  IPluginContext,
+  ResolvedPlugin
 } from './apiTypes';
 
 interface ResolvePluginOptions {
   dir: string;
 }
 
-function resolvePlugin(
+export function resolvePlugin(
   pluginConfig: IPluginConfig,
-  resolveOptions: ResolvePluginOptions
-): ICliPluginInstance {
-  let pluginOrPath: string | ((param: any) => ICliPluginInstance);
-  let options: any;
-
+  resolveOptions?: ResolvePluginOptions
+): ResolvedPlugin {
+  const resolved: ResolvedPlugin = {};
+  // pluginPath needed to be an absolute path of plugin directory
+  const basedir = resolveOptions?.dir ? resolveOptions.dir : undefined;
+  let pluginPath: string = '';
+  let pluginOptions: any;
   if (Array.isArray(pluginConfig)) {
-    pluginOrPath = pluginConfig[0];
-    options = pluginConfig[1];
-    if (typeof pluginOrPath === 'function') {
-      return pluginOrPath(options);
-    }
-    if (typeof pluginOrPath === 'object' && isPluginInstance(pluginOrPath)) {
-      return pluginOrPath;
-    }
+    pluginPath = pluginConfig[0] as string;
+    pluginOptions = pluginConfig[1];
   } else if (typeof pluginConfig === 'string') {
-    pluginOrPath = pluginConfig;
-    options = {};
+    pluginPath = pluginConfig;
   } else if (typeof pluginConfig === 'object') {
+    let pluginInstance: CorePluginInstance;
     if (isPluginInstance(pluginConfig)) {
-      return pluginConfig as ICliPluginInstance;
+      pluginInstance = pluginConfig as CorePluginInstance;
+    } else {
+      pluginInstance = createPlugin(pluginConfig);
     }
-    return createPlugin(pluginConfig as ICliPluginConstructor);
-  } else {
-    throw new Error(
-      `Plugin must be one of type [string, array, ICliPluginConstructor, ICliPluginInstance]`
-    );
+    resolved.core = pluginInstance;
   }
+  if (pluginPath) {
+    let pluginDir: string = '';
+    // resolve corePlugin path
+    let corePluginPath: string = '';
+    try {
+      corePluginPath = resolve.sync(pluginPath, { basedir });
+    } catch (e) {
+      // console.error('resolving corePlugin path failed', e);
+    }
 
-  pluginOrPath = resolve.sync(pluginOrPath, { basedir: resolveOptions.dir });
-  let pluginInst: any;
-  let plugin = require(pluginOrPath);
-  plugin = plugin.default || plugin;
-  if (isPluginInstance(plugin)) {
-    pluginInst = plugin;
-  } else if (typeof plugin === 'function') {
-    pluginInst = plugin(options);
-  } else {
-    pluginInst = createPlugin({});
+    try {
+      if (corePluginPath) {
+        let corePluginModule = require(corePluginPath);
+        corePluginModule = corePluginModule.default || corePluginModule;
+        if (isPluginInstance(corePluginModule)) {
+          resolved.core = corePluginModule;
+        } else if (typeof corePluginModule === 'function') {
+          const pluginInstance = corePluginModule(pluginOptions);
+          if (isPluginInstance(pluginInstance)) {
+            resolved.core = pluginInstance;
+          }
+        }
+        pluginDir = path.dirname(corePluginPath);
+      }
+    } catch (e) {
+      console.error('error when resolving corePlugin');
+    }
+
+    // resolve serverPlugin
+    let serverPluginPath: any = '';
+    try {
+      // pluginDir means corePlugin exsits
+      if (pluginDir) {
+        serverPluginPath = resolve.sync(path.join(pluginDir, 'server'), {
+          basedir
+        });
+      } else {
+        const calculatedPath = path.resolve(
+          basedir as string,
+          pluginPath,
+          'server'
+        );
+        serverPluginPath = resolve.sync(calculatedPath, { basedir });
+      }
+    } catch (e) {
+      // console.error('resolving serverPlugin path failed', e);
+    }
+
+    try {
+      if (serverPluginPath) {
+        let serverPluginModule = require(serverPluginPath);
+        serverPluginModule = serverPluginModule.default || serverPluginModule;
+        if (isPluginInstance(serverPluginModule)) {
+          resolved.server = serverPluginModule;
+        } else if (typeof serverPluginModule === 'function') {
+          const pluginInstance = serverPluginModule(pluginOptions);
+          if (isPluginInstance(pluginInstance)) {
+            resolved.server = pluginInstance;
+          }
+        }
+      }
+    } catch (e) {
+      console.error('error when resolving serverPlugin');
+    }
+
+    // resolve runtimePlugin
+    let runtimePluginPath: any = '';
+    try {
+      if (pluginDir) {
+        runtimePluginPath = resolve.sync(path.join(pluginDir, 'runtime'), {
+          basedir
+        });
+      } else {
+        const calculatedPath = path.resolve(
+          basedir as string,
+          pluginPath,
+          'runtime'
+        );
+        runtimePluginPath = resolve.sync(calculatedPath, { basedir });
+      }
+    } catch (e) {
+      // console.error('resolving runtimePlugin path failed', e);
+    }
+
+    if (runtimePluginPath) {
+      resolved.runtime = {
+        plugin: runtimePluginPath,
+        options: pluginOptions
+      };
+    }
   }
-  return pluginInst;
+  return resolved;
 }
 
 function resolvePreset(
@@ -99,12 +170,12 @@ function resolvePreset(
   };
 }
 
-export function resolvePlugins(
+export const resolvePlugins = (
   plugins: IPluginConfig[],
   options: ResolvePluginOptions
-): ICliPluginInstance[] {
+): ResolvedPlugin[] => {
   return plugins.map(plugin => resolvePlugin(plugin, options));
-}
+};
 
 export function resolvePresets(
   presets: IPresetConfig[],
@@ -116,7 +187,7 @@ export function resolvePresets(
 function initPreset(
   rootDir: string,
   preset: IPreset,
-  collection: ICliPluginInstance[]
+  collection: ResolvedPlugin[]
 ) {
   const { id, get: getPreset } = preset;
   const { presets, plugins } = getPreset()({});
@@ -156,8 +227,8 @@ export function getPlugins(
     presets?: IPresetConfig[];
     plugins?: IPluginConfig[];
   }
-): ICliPluginInstance[] {
-  const presetPlugins: ICliPluginInstance[] = [];
+): ResolvedPlugin[] {
+  const presetPlugins: ResolvedPlugin[] = [];
   // init presets
   const presets = resolvePresets(config.presets || [], {
     dir: rootDir
