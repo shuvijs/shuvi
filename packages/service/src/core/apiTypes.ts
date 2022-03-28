@@ -52,10 +52,11 @@ export interface IPaths {
   rootDir: string;
   buildDir: string;
 
+  // dir to store shuvi's artifacts
+  privateDir: string;
+
   // dir to store shuvi generated src files
   appDir: string;
-
-  privateDir: string;
 
   // dir to runtime libraries
   runtimeDir: string;
@@ -110,7 +111,7 @@ export interface IPlatformConfig {
 
 export type IPlatformContent = {
   plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
-  getInternalRuntimeFiles: (
+  getPresetRuntimeFiles: (
     context: IPluginContext
   ) => FileOptions[] | Promise<FileOptions[]>;
   getMiddlewares?: (

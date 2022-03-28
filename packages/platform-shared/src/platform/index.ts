@@ -1,2 +1,2 @@
-export * from './getInternalRuntimeFiles';
+export * from './runtimeFiles';
 export { sharedPlugin } from './plugins';

@@ -23,7 +23,7 @@ import {
   Resources,
   CorePluginInstance
 } from './lifecycle';
-import { setupApp } from './setupApp';
+import { setupTypeScript } from './setupTypeScript';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import { ServerPluginInstance } from '../server';
@@ -54,12 +54,10 @@ class Api {
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
   private _platform?: IPlatform;
-  private _pluginContext!: IPluginContext;
   private _serverPlugins: ServerPluginInstance[] = [];
-  private _runtimePlugins: RuntimePluginConfig[] = [];
-
-  pluginManager: PluginManager;
-  serverConfigs!: ServerConfigs;
+  private _pluginManager: PluginManager;
+  private _pluginContext!: IPluginContext;
+  private _serverConfigs!: ServerConfigs;
 
   constructor({ cwd, mode, config, phase, platform }: IApiOPtions) {
     this._cwd = cwd;
@@ -67,10 +65,10 @@ class Api {
     this._phase = phase;
     this._platform = platform;
     this._userConfig = config || {};
-    this.pluginManager = getManager();
-    this.pluginManager.clear();
+    this._pluginManager = getManager();
+    this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder({
-      static: this.mode === 'production'
+      static: this._mode === 'production'
     });
   }
 
@@ -82,32 +80,16 @@ class Api {
     return this._mode;
   }
 
-  get phase() {
-    return this._phase;
-  }
-
-  get config() {
-    return this._config;
-  }
-
-  get paths() {
-    return this._paths;
+  get pluginManager() {
+    return this._pluginManager;
   }
 
   get pluginContext() {
     return this._pluginContext;
   }
 
-  get platform() {
-    return this._platform;
-  }
-
-  get serverPlugins() {
-    return this._serverPlugins;
-  }
-
-  get runtimePlugins() {
-    return this._runtimePlugins;
+  get serverConfigs() {
+    return this._serverConfigs;
   }
 
   async init() {
@@ -121,14 +103,14 @@ class Api {
     Object.freeze(this._config);
     Object.freeze(this._paths);
 
-    _setResourceEnv(this.mode === 'production', this.paths.resources);
+    _setResourceEnv(this._mode === 'production', this._paths.resources);
 
     this._pluginContext = {
       mode: this._mode,
       paths: this._paths,
       config: this._config,
       phase: this._phase,
-      pluginRunner: this.pluginManager.runner,
+      pluginRunner: this._pluginManager.runner,
       assetPublicPath: this.assetPublicPath,
       getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
       resolveAppFile: this.resolveAppFile.bind(this),
@@ -137,28 +119,42 @@ class Api {
       resolvePublicFile: this.resolvePublicFile.bind(this)
     };
 
-    const { runner, setContext } = this.pluginManager;
+    const { runner, setContext } = this._pluginManager;
     setContext(this._pluginContext);
 
-    // init plugins
+    //## start init plugins
     // 1. platform
-    // 2. user
-    await this.initPlatformPlugins();
-    const allPlugins = await getPlugins(this._cwd, config);
-    allPlugins.forEach(plugin => this.applyPlugin(plugin));
-    await runner.afterInit();
-    this.addRuntimePlugin(...this.runtimePlugins);
+    const { plugins: platformPlugins, getPresetRuntimeFiles } =
+      await this._initPlatform();
+
+    // 2. user plugins
+    const userPlugins = await getPlugins(this._cwd, config);
+    platformPlugins
+      .concat(userPlugins)
+      .forEach(plugin => this._applyPlugin(plugin));
+
+    // 3. resources
     const resources = (await runner.addResource()).flat() as Resources[];
     resources.forEach(([key, requireStr]) => {
       this.addResources(key, requireStr);
+    });
+
+    //## end init plugins
+    await runner.afterInit();
+
+    // getPresetRuntimeFiles might call pluginRunner，so call it after
+    // "afterInit" hook.
+    const platformPresetRuntimeFiles = await getPresetRuntimeFiles();
+    platformPresetRuntimeFiles.forEach(file => {
+      this.addInternalRuntimeFile(file);
     });
   }
 
   get assetPublicPath(): string {
     let prefix =
-      this.mode === 'development'
+      this._mode === 'development'
         ? PUBLIC_PATH
-        : this.config.publicPath || PUBLIC_PATH;
+        : this._config.publicPath || PUBLIC_PATH;
 
     if (!prefix.endsWith('/')) {
       prefix += '/';
@@ -167,87 +163,13 @@ class Api {
     return prefix;
   }
 
-  applyPlugin(plugin: ResolvedPlugin): void {
-    const { core, server, runtime } = plugin;
-    const { usePlugin } = this.pluginManager;
-    if (core) {
-      usePlugin(core);
-    }
-    if (server) {
-      this._serverPlugins.push(server);
-    }
-    if (runtime) {
-      this._runtimePlugins.push(runtime);
-    }
-  }
-
-  async initPlatformPlugins() {
-    if (!this.platform) return;
-    const platformConfig = this._config.platform;
-    const platformContent = await this.platform(platformConfig, {
-      serverPlugins: this.serverPlugins
-    });
-    const { getMiddlewares, getMiddlewaresBeforeDevMiddlewares, plugins } =
-      platformContent;
-    this.serverConfigs = {
-      serverPlugins: this.serverPlugins,
-      getMiddlewares,
-      getMiddlewaresBeforeDevMiddlewares
-    };
-    const { usePlugin, createPlugin } = this.pluginManager;
-    if (plugins) {
-      plugins.forEach(plugin => {
-        if (typeof plugin === 'string') {
-          this.applyPlugin(resolvePlugin(plugin));
-        } else if (isPluginInstance(plugin)) {
-          this.applyPlugin({ core: plugin as CorePluginInstance });
-        } else {
-          this.applyPlugin(plugin as ResolvedPlugin);
-        }
-      });
-    }
-    usePlugin(
-      createPlugin({
-        afterInit: async context => {
-          const internalRuntimeFiles =
-            await platformContent.getInternalRuntimeFiles(context);
-          internalRuntimeFiles.forEach(file => {
-            this.addInternalRuntimeFile(file);
-          });
-        }
-      })
-    );
-  }
-
-  async initProjectBuilderConfigs() {
-    const runner = this.pluginManager.runner;
-    const addRuntimeFileUtils = {
-      createFile,
-      getAllFiles: fileUtils.getAllFiles
-    };
-    const appRuntimeFiles = (
-      await runner.addRuntimeFile(addRuntimeFileUtils)
-    ).flat();
-    const runtimeServices = (await runner.addRuntimeService()).flat();
-
-    appRuntimeFiles.forEach(options => {
-      this.addRuntimeFile(options);
-    });
-
-    runtimeServices.forEach(({ source, exported, filepath }) => {
-      this.addRuntimeService(source, exported, filepath);
-    });
-  }
-
-  removeBuiltFiles() {
-    rimraf.sync(this.paths.appDir);
-    rimraf.sync(this.paths.buildDir);
-  }
-
   async buildApp(): Promise<void> {
-    await setupApp(this);
-    this.removeBuiltFiles();
-    await this._projectBuilder.build(this.paths.privateDir);
+    await Promise.all([
+      setupTypeScript(this._paths),
+      this._removeLastArtifacts(),
+      this._initArtifacts()
+    ]);
+    await this._projectBuilder.build(this._paths.privateDir);
   }
 
   addRuntimeFile(options: FileOptions): void {
@@ -260,8 +182,8 @@ class Api {
     this._projectBuilder.addFile(options);
   }
 
-  addRuntimePlugin(...plugins: RuntimePluginConfig[]): void {
-    this._projectBuilder.addRuntimePlugin(...plugins);
+  addRuntimePlugin(plugin: RuntimePluginConfig): void {
+    this._projectBuilder.addRuntimePlugin(plugin);
   }
 
   addRuntimeService(source: string, exported: string, filepath?: string): void {
@@ -277,24 +199,112 @@ class Api {
   }
 
   resolveAppFile(...paths: string[]): string {
-    return joinPath(this.paths.appDir, ...paths);
+    return joinPath(this._paths.appDir, ...paths);
   }
 
   resolveUserFile(...paths: string[]): string {
-    return joinPath(this.paths.srcDir, ...paths);
+    return joinPath(this._paths.srcDir, ...paths);
   }
 
   resolveBuildFile(...paths: string[]): string {
-    return joinPath(this.paths.buildDir, ...paths);
+    return joinPath(this._paths.buildDir, ...paths);
   }
 
   resolvePublicFile(...paths: string[]): string {
-    return joinPath(this.paths.publicDir, ...paths);
+    return joinPath(this._paths.publicDir, ...paths);
   }
 
   async destory() {
     await this._projectBuilder.stopBuild();
-    await this.pluginManager.runner.afterDestroy();
+    await this._pluginManager.runner.afterDestroy();
+  }
+
+  private _applyPlugin(plugin: ResolvedPlugin): void {
+    const { core, server, runtime } = plugin;
+    const { usePlugin } = this._pluginManager;
+    if (core) {
+      usePlugin(core);
+    }
+    if (server) {
+      this._serverPlugins.push(server);
+    }
+    if (runtime) {
+      this.addRuntimePlugin(runtime);
+    }
+  }
+
+  private async _initPlatform(): Promise<{
+    plugins: ResolvedPlugin[];
+    getPresetRuntimeFiles: () => Promise<FileOptions[]> | FileOptions[];
+  }> {
+    if (!this._platform)
+      return {
+        plugins: [],
+        getPresetRuntimeFiles: () => []
+      };
+
+    const platformConfig = this._config.platform;
+    const platformContent = await this._platform(platformConfig, {
+      serverPlugins: this._serverPlugins
+    });
+    // todo: rename to getMiddlewaresBeforeDevMiddlewares
+    const { getMiddlewares, getMiddlewaresBeforeDevMiddlewares, plugins } =
+      platformContent;
+    this._serverConfigs = {
+      serverPlugins: this._serverPlugins,
+      getMiddlewares,
+      getMiddlewaresBeforeDevMiddlewares
+    };
+    let resolvedPlugins: ResolvedPlugin[] = [];
+    if (plugins) {
+      plugins.forEach(plugin => {
+        if (typeof plugin === 'string') {
+          resolvedPlugins.push(resolvePlugin(plugin));
+        } else if (isPluginInstance(plugin)) {
+          resolvedPlugins.push({ core: plugin as CorePluginInstance });
+        } else {
+          resolvedPlugins.push(plugin as ResolvedPlugin);
+        }
+      });
+    }
+
+    return {
+      plugins: resolvedPlugins,
+      getPresetRuntimeFiles: () =>
+        platformContent.getPresetRuntimeFiles(this._pluginContext)
+    };
+  }
+
+  private async _initArtifacts() {
+    const runner = this._pluginManager.runner;
+    const addRuntimeFileUtils = {
+      createFile,
+      getAllFiles: fileUtils.getAllFiles
+    };
+    const [appRuntimeFiles, runtimeServices] = await Promise.all([
+      (await runner.addRuntimeFile(addRuntimeFileUtils)).flat(),
+      (await runner.addRuntimeService()).flat()
+    ]);
+
+    appRuntimeFiles.forEach(options => {
+      this.addRuntimeFile(options);
+    });
+    runtimeServices.forEach(({ source, exported, filepath }) => {
+      this.addRuntimeService(source, exported, filepath);
+    });
+  }
+
+  private _removeLastArtifacts() {
+    return new Promise<void>(resolve => {
+      let i = 0;
+      const done = () => {
+        if (++i === 2) {
+          resolve();
+        }
+      };
+      rimraf(this._paths.appDir, done);
+      rimraf(this._paths.buildDir, done);
+    });
   }
 }
 

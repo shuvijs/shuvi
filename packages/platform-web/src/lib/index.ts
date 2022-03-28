@@ -15,7 +15,7 @@ import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 
 import {
   sharedPlugin,
-  getInternalRuntimeFilesCreator,
+  getPresetRuntimeFilesCreator,
   getRuntimeConfigFromConfig
 } from '@shuvi/platform-shared/lib/platform';
 import generateResource from './generateResource';
@@ -98,7 +98,7 @@ const platform: IPlatform = async (
   const entry = `import "${resolveAppFile('entry', 'client')}"`;
   const polyfills = platformFrameworkContent.polyfills as string[];
 
-  const getInternalRuntimeFiles = getInternalRuntimeFilesCreator(
+  const getPresetRuntimeFiles = getPresetRuntimeFilesCreator(
     platformModule,
     entry,
     polyfills
@@ -112,7 +112,7 @@ const platform: IPlatform = async (
       ...featurePlugins,
       ...platformFrameworkContent.plugins
     ],
-    getInternalRuntimeFiles,
+    getPresetRuntimeFiles,
     getMiddlewares,
     getMiddlewaresBeforeDevMiddlewares
   };
