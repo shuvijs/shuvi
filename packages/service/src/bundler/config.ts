@@ -19,7 +19,7 @@ export interface IWebpackConfigOptions {
   name: string;
   node: boolean;
   entry: IWebpackEntry;
-  srcDirs?: string[];
+  include?: string[];
   outputDir: string;
   webpackHelpers: IWebpackHelpers;
 }
@@ -33,7 +33,7 @@ export function createWebpackConfig(
 
   const parcelCss = !!config.experimental.parcelCss;
 
-  const srcDirs = [paths.appDir, paths.srcDir, ...(opts.srcDirs || [])];
+  const include = [paths.appDir, paths.srcDir, ...(opts.include || [])];
   if (opts.node) {
     chain = createNodeWebpackChain({
       buildManifestFilename: BUILD_MANIFEST_PATH,
@@ -43,7 +43,7 @@ export function createWebpackConfig(
       mediaFilename: BUILD_MEDIA_PATH,
       name: opts.name,
       projectRoot: paths.rootDir,
-      srcDirs,
+      include,
       publicPath: assetPublicPath,
       webpackHelpers
     });
@@ -58,7 +58,7 @@ export function createWebpackConfig(
       mediaFilename: BUILD_MEDIA_PATH,
       name: opts.name,
       projectRoot: paths.rootDir,
-      srcDirs,
+      include,
       publicPath: assetPublicPath,
       webpackHelpers
     });
