@@ -25,8 +25,10 @@ function match(value: string, tests: Test[]) {
 }
 
 export function nodeExternals({
-  projectRoot
+  projectRoot,
+  include
 }: {
+  include: string[];
   projectRoot: string;
 }): ExternalsFunction {
   const nodeExternal: ExternalsFunction = ({ context, request }, next) => {
@@ -45,6 +47,9 @@ export function nodeExternals({
 
     // make sure we don't externalize anything that is
     // supposed to be transpiled
+    if (match(request, include)) {
+      return transpiled();
+    }
     if (match(request, AppSourceRegexs)) {
       return transpiled();
     }
@@ -57,15 +62,16 @@ export function nodeExternals({
       return external();
     }
 
+    // Relative requires don't need custom resolution, because they
+    // are relative to requests we've already resolved here.
+    // Absolute requires (require('/foo')) are extremely uncommon, but
+    // also have no need for customization as they're already resolved.
+    const start = request.charAt(0);
+    if (start === '.' || request.startsWith('/')) {
+      return transpiled();
+    }
+
     next(null, 'next');
-    // // Relative requires don't need custom resolution, because they
-    // // are relative to requests we've already resolved here.
-    // // Absolute requires (require('/foo')) are extremely uncommon, but
-    // // also have no need for customization as they're already resolved.
-    // const start = request.charAt(0);
-    // if (start === "." || request.startsWith("/")) {
-    //   return transpiled();
-    // }
 
     // let res;
     // try {

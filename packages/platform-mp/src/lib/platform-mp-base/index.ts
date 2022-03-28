@@ -23,7 +23,7 @@ import {
 } from '@shuvi/service/lib/project/file-utils';
 import {
   sharedPlugin,
-  getInternalRuntimeFilesCreator
+  getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/lib/platform';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
@@ -109,7 +109,7 @@ export default abstract class PlatformMpBase {
     ];
     return {
       plugins: this.getPlugins() as any,
-      getInternalRuntimeFiles: getInternalRuntimeFilesCreator(
+      getPresetRuntimeFiles: getPresetRuntimeFilesCreator(
         platformModule,
         entry,
         polyfills

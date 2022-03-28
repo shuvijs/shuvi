@@ -3,10 +3,10 @@ import { matchPathname } from '@shuvi/router';
 import { server } from '@shuvi/service/lib/resources';
 import { apiRouteHandler } from './apiRouteHandler';
 
-export function middleware(api: IServerPluginContext): IRequestHandlerWithNext {
+export function middleware(ctx: IServerPluginContext): IRequestHandlerWithNext {
   return async function (req, res, next) {
     const { apiRoutes } = server;
-    const { prefix, ...otherConfig } = api.config.apiConfig || {};
+    const { prefix, ...otherConfig } = ctx.config.apiConfig || {};
     if (!req.url.startsWith(prefix!)) {
       return next();
     }

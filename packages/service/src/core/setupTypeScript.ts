@@ -1,9 +1,8 @@
 import path from 'path';
 import { verifyTypeScriptSetup } from '@shuvi/toolpack/lib/utils/verifyTypeScriptSetup';
-import { Api } from './api';
+import { IPaths } from './apiTypes';
 
-export async function setupApp(api: Api) {
-  const { paths } = api;
+export async function setupTypeScript(paths: IPaths) {
   await verifyTypeScriptSetup({
     projectDir: paths.rootDir,
     srcDir: paths.srcDir,
@@ -47,6 +46,4 @@ export async function setupApp(api: Api) {
       }
     }
   });
-
-  await api.initProjectBuilderConfigs();
 }

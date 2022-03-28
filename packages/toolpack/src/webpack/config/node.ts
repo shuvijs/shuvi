@@ -40,7 +40,10 @@ export function createNodeWebpackChain({
   chain.optimization.minimize(false);
   webpackHelpers.addExternals(
     chain,
-    nodeExternals({ projectRoot: baseOptions.projectRoot })
+    nodeExternals({
+      projectRoot: baseOptions.projectRoot,
+      include: baseOptions.include
+    })
   );
 
   chain.module

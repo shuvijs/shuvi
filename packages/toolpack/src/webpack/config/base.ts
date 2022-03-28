@@ -19,7 +19,10 @@ export interface BaseOptions {
   parcelCss: boolean;
   name: string;
   projectRoot: string;
-  srcDirs: string[];
+
+  // src files need to be include
+  include: string[];
+
   mediaFilename: string;
   buildManifestFilename: string;
   target?: string;
@@ -55,7 +58,7 @@ export function baseWebpackChain({
   dev,
   parcelCss,
   projectRoot,
-  srcDirs,
+  include,
   mediaFilename,
   name,
   buildManifestFilename,
@@ -150,13 +153,13 @@ export function baseWebpackChain({
   mainRule
     .oneOf('js')
     .test(/\.(tsx|ts|js|mjs|jsx)$/)
-    .include.merge([...srcDirs, ...AppSourceRegexs])
+    .include.merge([...include, ...AppSourceRegexs])
     .end()
     .exclude.add((path: string) => {
       if (AppSourceRegexs.some(r => r.test(path))) {
         return false;
       }
-      if (srcDirs.some(src => path.includes(src))) {
+      if (include.some(src => path.includes(src))) {
         return false;
       }
       return /node_modules/.test(path);

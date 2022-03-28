@@ -48,9 +48,11 @@ class ProjectBuilder {
       this._fileManager.addFile(file);
     });
   }
-  addRuntimePlugin(...plugins: RuntimePluginConfig[]) {
-    this._projectContext.runtimePlugins.push(...plugins);
+
+  addRuntimePlugin(plugin: RuntimePluginConfig) {
+    this._projectContext.runtimePlugins.push(plugin);
   }
+
   addRuntimeService(
     source: string,
     exported: string,
