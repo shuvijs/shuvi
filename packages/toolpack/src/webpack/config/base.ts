@@ -152,7 +152,7 @@ export function baseWebpackChain({
 
   mainRule
     .oneOf('js')
-    .test(/\.(tsx|ts|js|mjs|jsx)$/)
+    .test(/\.(js|mjs|jsx|ts|tsx)$/)
     .include.merge([...include, ...AppSourceRegexs])
     .end()
     .exclude.add((path: string) => {
