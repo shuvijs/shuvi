@@ -21,6 +21,9 @@ packages/*/lib/
 packages/*/shuvi-app/
 packages/*/esm/
 
+test/packages/*/lib/
+test/packages/*/esm/
+
 test/fixtures/**/dist/
 test/fixtures/**/.shuvi/
 examples/**/.shuvi

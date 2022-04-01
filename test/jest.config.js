@@ -37,5 +37,13 @@ module.exports = {
 
   watchPathIgnorePatterns: ['/fixtures'],
 
-  testMatch: ['<rootDir>/**/*.test.[jt]s?(x)']
+  testMatch: ['<rootDir>/**/*.test.[jt]s?(x)'],
+
+  /**
+   * due to jest-resolve cannot handle `exports` in `package.json` https://github.com/facebook/jest/issues/10422
+   */
+  moduleNameMapper: {
+    '^@shuvi/plugins/model$': '@shuvi/plugins/lib/model',
+    '^@shuvi/plugins/model/(.*)': '@shuvi/plugins/lib/model/$1'
+  }
 };

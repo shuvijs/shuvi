@@ -1,6 +1,6 @@
 import invariant from '@shuvi/utils/lib/invariant';
 import resolve from '@shuvi/utils/lib/resolve';
-import { isPluginInstance } from '@shuvi/hook';
+import { isPluginInstance, IPluginInstance } from '@shuvi/hook';
 import path from 'path';
 import { createPlugin, CorePluginInstance } from './lifecycle';
 import {
@@ -16,6 +16,24 @@ interface ResolvePluginOptions {
   dir: string;
 }
 
+function getPluginInstance(
+  pluginPath: string,
+  pluginOptions: any
+): IPluginInstance<any, any> | undefined {
+  let pluginModule = require(pluginPath);
+  pluginModule = pluginModule.default || pluginModule;
+  if (isPluginInstance(pluginModule)) {
+    return pluginModule;
+  }
+  if (typeof pluginModule === 'function') {
+    const pluginInstance = pluginModule(pluginOptions);
+    if (isPluginInstance(pluginInstance)) {
+      return pluginInstance;
+    }
+  }
+  return;
+}
+
 export function resolvePlugin(
   pluginConfig: IPluginConfig,
   resolveOptions?: ResolvePluginOptions
@@ -23,6 +41,7 @@ export function resolvePlugin(
   const resolved: ResolvedPlugin = {};
   // pluginPath needed to be an absolute path of plugin directory
   const basedir = resolveOptions?.dir ? resolveOptions.dir : undefined;
+  const paths = basedir ? [basedir] : undefined;
   let pluginPath: string = '';
   let pluginOptions: any;
   if (Array.isArray(pluginConfig)) {
@@ -40,28 +59,17 @@ export function resolvePlugin(
     resolved.core = pluginInstance;
   }
   if (pluginPath) {
-    let pluginDir: string = '';
-    // resolve corePlugin path
     let corePluginPath: string = '';
     try {
-      corePluginPath = resolve.sync(pluginPath, { basedir });
-    } catch (e) {
-      // console.error('resolving corePlugin path failed', e);
-    }
+      corePluginPath = require.resolve(pluginPath, { paths });
+    } catch {}
 
     try {
       if (corePluginPath) {
-        let corePluginModule = require(corePluginPath);
-        corePluginModule = corePluginModule.default || corePluginModule;
-        if (isPluginInstance(corePluginModule)) {
-          resolved.core = corePluginModule;
-        } else if (typeof corePluginModule === 'function') {
-          const pluginInstance = corePluginModule(pluginOptions);
-          if (isPluginInstance(pluginInstance)) {
-            resolved.core = pluginInstance;
-          }
+        const core = getPluginInstance(corePluginPath, pluginOptions);
+        if (core) {
+          resolved.core = core;
         }
-        pluginDir = path.dirname(corePluginPath);
       }
     } catch (e) {
       console.error('error when resolving corePlugin');
@@ -70,34 +78,16 @@ export function resolvePlugin(
     // resolve serverPlugin
     let serverPluginPath: any = '';
     try {
-      // pluginDir means corePlugin exsits
-      if (pluginDir) {
-        serverPluginPath = resolve.sync(path.join(pluginDir, 'server'), {
-          basedir
-        });
-      } else {
-        const calculatedPath = path.resolve(
-          basedir as string,
-          pluginPath,
-          'server'
-        );
-        serverPluginPath = resolve.sync(calculatedPath, { basedir });
-      }
-    } catch (e) {
-      // console.error('resolving serverPlugin path failed', e);
-    }
+      serverPluginPath = require.resolve(pluginPath + path.sep + 'server', {
+        paths
+      });
+    } catch {}
 
     try {
       if (serverPluginPath) {
-        let serverPluginModule = require(serverPluginPath);
-        serverPluginModule = serverPluginModule.default || serverPluginModule;
-        if (isPluginInstance(serverPluginModule)) {
-          resolved.server = serverPluginModule;
-        } else if (typeof serverPluginModule === 'function') {
-          const pluginInstance = serverPluginModule(pluginOptions);
-          if (isPluginInstance(pluginInstance)) {
-            resolved.server = pluginInstance;
-          }
+        const server = getPluginInstance(serverPluginPath, pluginOptions);
+        if (server) {
+          resolved.server = server;
         }
       }
     } catch (e) {
@@ -107,21 +97,10 @@ export function resolvePlugin(
     // resolve runtimePlugin
     let runtimePluginPath: any = '';
     try {
-      if (pluginDir) {
-        runtimePluginPath = resolve.sync(path.join(pluginDir, 'runtime'), {
-          basedir
-        });
-      } else {
-        const calculatedPath = path.resolve(
-          basedir as string,
-          pluginPath,
-          'runtime'
-        );
-        runtimePluginPath = resolve.sync(calculatedPath, { basedir });
-      }
-    } catch (e) {
-      // console.error('resolving runtimePlugin path failed', e);
-    }
+      runtimePluginPath = require.resolve(pluginPath + path.sep + 'runtime', {
+        paths
+      });
+    } catch {}
 
     if (runtimePluginPath) {
       resolved.runtime = {
