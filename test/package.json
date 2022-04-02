@@ -29,6 +29,8 @@
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "shuvi": "workspace:*",
+    "shuvi-test-plugin-no-exports": "workspace:*",
+    "shuvi-test-plugin-use-exports": "workspace:*",
     "ts-jest": "^25.3.1"
   }
 }
