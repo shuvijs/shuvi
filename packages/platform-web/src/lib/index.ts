@@ -103,11 +103,10 @@ const platform: IPlatform = async (
     entry,
     polyfills
   );
-
   return {
     plugins: [
       mainPlugin,
-      require.resolve('@shuvi/plugins/lib/model'),
+      path.dirname(require.resolve('@shuvi/plugins/model')),
       sharedPlugin,
       ...featurePlugins,
       ...platformFrameworkContent.plugins

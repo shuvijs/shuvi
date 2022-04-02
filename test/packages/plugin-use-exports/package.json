@@ -1,5 +1,6 @@
 {
-  "name": "@shuvi/plugins",
+  "name": "shuvi-test-plugin-use-exports",
+  "private": "true",
   "version": "0.0.1-pre.10",
   "repository": {
     "type": "git",
@@ -16,17 +17,17 @@
   "main": "lib/index.js",
   "module": "esm/index.js",
   "exports": {
-    "./model": {
-      "import": "./esm/model/index.js",
-      "require": "./lib/model/index.js"
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./lib/index.js"
     },
-    "./model/server": {
-      "import": "./esm/model/server.js",
-      "require": "./lib/model/server.js"
+    "./server": {
+      "import": "./esm/server.js",
+      "require": "./lib/server.js"
     },
-    "./model/runtime": {
-      "import": "./esm/model/runtime.js",
-      "require": "./lib/model/runtime.js"
+    "./runtime": {
+      "import": "./esm/runtime.js",
+      "require": "./lib/runtime.js"
     }
   },
   "types": "lib/index.d.ts",
