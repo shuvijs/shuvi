@@ -559,6 +559,8 @@ importers:
       react: 16.14.0
       react-dom: 16.14.0
       shuvi: workspace:*
+      shuvi-test-plugin-no-exports: workspace:*
+      shuvi-test-plugin-use-exports: workspace:*
       ts-jest: ^25.3.1
     devDependencies:
       '@shuvi/platform-mp': link:../packages/platform-mp
@@ -577,7 +579,51 @@ importers:
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
       shuvi: link:../packages/shuvi
+      shuvi-test-plugin-no-exports: link:packages/plugin-no-exports
+      shuvi-test-plugin-use-exports: link:packages/plugin-use-exports
       ts-jest: 25.3.1_jest@25.3.0
+
+  test/packages/plugin-no-exports:
+    specifiers:
+      '@shuvi/hook': 0.0.1-pre.10
+      '@shuvi/platform-shared': 0.0.1-pre.10
+      '@shuvi/redox': 0.0.1-pre.4
+      '@shuvi/redox-react': 0.0.1-pre.4
+      '@shuvi/service': 0.0.1-pre.10
+      '@shuvi/utils': 0.0.1-pre.10
+      '@types/react': ^16.9.43
+      redux: 4.1.2
+    dependencies:
+      '@shuvi/hook': link:../../../packages/hook
+      '@shuvi/platform-shared': link:../../../packages/platform-shared
+      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
+      '@shuvi/redox-react': 0.0.1-pre.4_@shuvi+redox@0.0.1-pre.4
+      '@shuvi/service': link:../../../packages/service
+      '@shuvi/utils': link:../../../packages/utils
+      redux: 4.1.2
+    devDependencies:
+      '@types/react': 16.9.43
+
+  test/packages/plugin-use-exports:
+    specifiers:
+      '@shuvi/hook': 0.0.1-pre.10
+      '@shuvi/platform-shared': 0.0.1-pre.10
+      '@shuvi/redox': 0.0.1-pre.4
+      '@shuvi/redox-react': 0.0.1-pre.4
+      '@shuvi/service': 0.0.1-pre.10
+      '@shuvi/utils': 0.0.1-pre.10
+      '@types/react': ^16.9.43
+      redux: 4.1.2
+    dependencies:
+      '@shuvi/hook': link:../../../packages/hook
+      '@shuvi/platform-shared': link:../../../packages/platform-shared
+      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
+      '@shuvi/redox-react': 0.0.1-pre.4_@shuvi+redox@0.0.1-pre.4
+      '@shuvi/service': link:../../../packages/service
+      '@shuvi/utils': link:../../../packages/utils
+      redux: 4.1.2
+    devDependencies:
+      '@types/react': 16.9.43
 
 packages:
 
