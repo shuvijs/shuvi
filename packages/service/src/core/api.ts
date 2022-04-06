@@ -122,24 +122,24 @@ class Api {
     const { runner, setContext } = this._pluginManager;
     setContext(this._pluginContext);
 
-    //## start init plugins
-    // 1. platform
+    //## start init
+    // 1. init platform
     const { plugins: platformPlugins, getPresetRuntimeFiles } =
       await this._initPlatform();
 
-    // 2. user plugins
+    // 2. init user plugins
     const userPlugins = await getPlugins(this._cwd, config);
     platformPlugins
       .concat(userPlugins)
       .forEach(plugin => this._applyPlugin(plugin));
 
-    // 3. resources
+    // 3. init resources
     const resources = (await runner.addResource()).flat() as Resources[];
     resources.forEach(([key, requireStr]) => {
       this.addResources(key, requireStr);
     });
 
-    //## end init plugins
+    //## end init
     await runner.afterInit();
 
     // getPresetRuntimeFiles might call pluginRunner，so call it after
