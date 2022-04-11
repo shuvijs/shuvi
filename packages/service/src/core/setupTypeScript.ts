@@ -33,6 +33,16 @@ export async function setupTypeScript(paths: IPaths) {
             ),
             paths.runtimeDir
           ) + '/*'
+        ],
+        '@shuvi/app/*': [
+          path.relative(
+            path.resolve(
+              paths.rootDir,
+              appTsConfig.compilerOptions.baseUrl ||
+                parsedCompilerOptions.baseUrl
+            ),
+            paths.appDir
+          ) + '/*'
         ]
       };
 
@@ -42,7 +52,7 @@ export async function setupTypeScript(paths: IPaths) {
       }
 
       if (parsedTsConfig.include == null) {
-        appTsConfig.include = ['src'];
+        appTsConfig.include = ['src', '.shuvi/app/types-plugin-extended.d.ts'];
       }
     }
   });

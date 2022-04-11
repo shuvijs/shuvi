@@ -76,7 +76,7 @@ export function resolvePlugin(
     }
 
     // resolve serverPlugin
-    let serverPluginPath: any = '';
+    let serverPluginPath: string = '';
     try {
       serverPluginPath = require.resolve(pluginPath + path.sep + 'server', {
         paths
@@ -95,7 +95,7 @@ export function resolvePlugin(
     }
 
     // resolve runtimePlugin
-    let runtimePluginPath: any = '';
+    let runtimePluginPath: string = '';
     try {
       runtimePluginPath = require.resolve(pluginPath + path.sep + 'runtime', {
         paths
@@ -107,6 +107,23 @@ export function resolvePlugin(
         plugin: runtimePluginPath,
         options: pluginOptions
       };
+    }
+
+    let typesPath: string = '';
+    try {
+      typesPath = require.resolve(pluginPath + path.sep + 'types', {
+        paths
+      });
+    } catch {
+      try {
+        typesPath = require.resolve(pluginPath + path.sep + 'types.d.ts', {
+          paths
+        });
+      } catch {}
+    }
+    if (typesPath) {
+      const dir = path.dirname(typesPath);
+      resolved.types = dir + path.sep + 'types';
     }
   }
   return resolved;

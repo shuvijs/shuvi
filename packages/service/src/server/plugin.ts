@@ -2,7 +2,8 @@ import {
   createAsyncParallelHook,
   createHookManager,
   HookMap,
-  IPluginInstance
+  IPluginInstance,
+  IPluginHandlers
 } from '@shuvi/hook';
 import { IPluginContext } from '../core';
 import { IProxy } from './pluginTypes';
@@ -23,8 +24,9 @@ export type IServerPluginInstance = ArrayItem<
   Parameters<PluginManager['usePlugin']>
 >;
 
-export type IServerPluginConstructor = ArrayItem<
-  Parameters<PluginManager['createPlugin']>[0]
+export type IServerPluginConstructor = IPluginHandlers<
+  InternalServerPluginHooks & ServerPluginHooks,
+  IServerPluginContext
 >;
 
 const onListen = createAsyncParallelHook<{ port: number; hostname?: string }>();

@@ -27,6 +27,10 @@
     "./model/runtime": {
       "import": "./esm/model/runtime.js",
       "require": "./lib/model/runtime.js"
+    },
+    "./model/types": {
+      "import": "./esm/model/types.d.ts",
+      "require": "./lib/model/types.d.ts"
     }
   },
   "types": "lib/index.d.ts",

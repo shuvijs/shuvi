@@ -17,12 +17,14 @@ export interface ApplicationCreater<
   ): IApplication;
 }
 
-export type IContext = {
+export interface IContext {
   [x: string]: any;
-};
+}
+
+export interface IAppComponent {}
 
 export interface IApplication {
-  AppComponent: any;
+  AppComponent: IAppComponent;
   router?: IRouter;
   pluginManager: PluginManager;
   run(): Promise<{ [k: string]: any }>;

@@ -99,7 +99,7 @@ describe('resolve plugin', () => {
       expect(console.log).toHaveBeenCalledWith(options);
     });
 
-    test('should resolve all three plugins', async () => {
+    test('should resolve all three plugins and types', async () => {
       console.log = jest.fn();
       const plugin = applyPlugin('./all-three-plugins');
       expect(isPluginInstance(plugin.core)).toBe(true);
@@ -112,6 +112,9 @@ describe('resolve plugin', () => {
       expect(console.log).toHaveBeenCalledWith('all-three-plugins-server');
       runtimePluginRunner.test();
       expect(console.log).toHaveBeenCalledWith('all-three-plugins-runtime');
+      expect(plugin.types).toBe(
+        path.join(__dirname, 'fixtures/plugins/all-three-plugins/types')
+      );
     });
 
     test('should resolve all three plugins with options', async () => {
