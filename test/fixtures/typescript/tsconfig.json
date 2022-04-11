@@ -24,9 +24,6 @@
       ],
       "@shuvi/runtime/*": [
         ".shuvi/runtime/*"
-      ],
-      "@shuvi/app/*": [
-        ".shuvi/app/*"
       ]
     }
   },

@@ -33,16 +33,6 @@ export async function setupTypeScript(paths: IPaths) {
             ),
             paths.runtimeDir
           ) + '/*'
-        ],
-        '@shuvi/app/*': [
-          path.relative(
-            path.resolve(
-              paths.rootDir,
-              appTsConfig.compilerOptions.baseUrl ||
-                parsedCompilerOptions.baseUrl
-            ),
-            paths.appDir
-          ) + '/*'
         ]
       };
 
