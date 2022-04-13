@@ -1,19 +1,23 @@
-import React, { createContext, useMemo, useReducer, Context } from 'react';
-import { IAppState, IAppStore } from '@shuvi/platform-shared/esm/runtime';
-import { useIsomorphicEffect } from '@shuvi/router-react';
+import React, { createContext, useMemo, Context } from 'react';
+import {
+  IModelManager,
+  IPageError,
+  errorModel
+} from '@shuvi/platform-shared/esm/runtime';
+import { createContainer } from '@shuvi/redox-react';
+
+const { Provider, useModel } = createContainer();
 
 export interface IAppContext {
   appContext: { [x: string]: any };
 }
 
 const AppContext = createContext<IAppContext>(null as any);
-const AppStoreContext: Context<IAppStore> = createContext<IAppStore>(
+const AppStoreContext: Context<IModelManager> = createContext<IModelManager>(
   null as any
 );
 
 export { AppContext, AppStoreContext };
-
-type IPageError = IAppState['error'];
 
 function checkError(
   errorState: IPageError,
@@ -27,50 +31,38 @@ function checkError(
 
 function AppStore({
   children = null,
-  errorComp,
-  store
+  errorComp
 }: {
   children: React.ReactNode;
   errorComp?: React.ComponentType<IPageError>;
-  store: IAppStore;
 }) {
-  const forceupdate = useReducer(s => s * -1, 1)[1];
-  useIsomorphicEffect(() => {
-    const unsubscribe = store.subscribe(forceupdate);
-    return () => {
-      unsubscribe && unsubscribe();
-    };
-  }, [store]);
-  const appStore = useMemo(() => store, [store]);
-  const { error: errorState } = store.getState();
+  const [errorState] = useModel(errorModel);
 
-  return (
-    <AppStoreContext.Provider value={appStore}>
-      {checkError(errorState, errorComp) || children}
-    </AppStoreContext.Provider>
-  );
+  return <>{checkError(errorState, errorComp) || children}</>;
 }
 
 export default function AppContainer({
   children,
   appContext,
   errorComp,
-  store,
+  modelManager,
   ...appProps
 }: IAppContext & {
   children: React.ReactElement;
   errorComp?: React.ComponentType<IPageError>;
-  store: IAppStore;
+  modelManager: IModelManager;
 }) {
   const appCtx: IAppContext = useMemo(() => ({ appContext }), [appContext]);
   return (
     <AppContext.Provider value={appCtx}>
-      <AppStore store={store} errorComp={errorComp}>
-        {React.cloneElement(children, {
-          ...children.props,
-          ...appProps
-        })}
-      </AppStore>
+      <Provider modelManager={modelManager}>
+        <AppStore errorComp={errorComp}>
+          {React.cloneElement(children, {
+            ...children.props,
+            ...appProps
+          })}
+        </AppStore>
+      </Provider>
     </AppContext.Provider>
   );
 }

@@ -14,7 +14,7 @@ const DEFAULT_ERRORSTATE = {
   hasError: false
 };
 
-export const error = defineModel({
+export const errorModel = defineModel({
   name: 'error',
   state: DEFAULT_ERRORSTATE as IPageError,
   reducers: {

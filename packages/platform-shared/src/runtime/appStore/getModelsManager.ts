@@ -5,23 +5,23 @@ export type IAppState = {
   error?: IPageError;
 };
 
-let modelsManager: IModelManager;
+let modelManager: IModelManager;
 
 // for client, singleton mode
 // for server, return new store
-const getStoreManager = (initialState: IAppState = {}): IModelManager => {
+const getModelManager = (initialState: IAppState = {}): IModelManager => {
   // for server
   if (typeof window === 'undefined') {
     return redox(initialState);
   }
   // for client is singleton, just init once
-  if (modelsManager) {
-    return modelsManager;
+  if (modelManager) {
+    return modelManager;
   }
 
-  modelsManager = redox(initialState);
+  modelManager = redox(initialState);
 
-  return modelsManager;
+  return modelManager;
 };
 
-export { getStoreManager, IModelManager };
+export { getModelManager, IModelManager };

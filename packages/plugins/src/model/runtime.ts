@@ -2,27 +2,40 @@ import {
   createPlugin,
   IRuntimeModule
 } from '@shuvi/platform-shared/lib/runtime';
-import { init } from '@shuvi/redox';
+import { redox, IModelManager } from '@shuvi/redox';
 
-import { withRedux } from './withRedux';
+import { withRedox } from './withRedox';
+
+let modelManager: IModelManager;
+
+// for client, singleton mode
+// for server, return new store
+const getModelManager = (initialState: any = {}): IModelManager => {
+  // for server
+  if (typeof window === 'undefined') {
+    return redox(initialState);
+  }
+  // for client is singleton, just init once
+  if (modelManager) {
+    return modelManager;
+  }
+
+  modelManager = redox(initialState);
+
+  return modelManager;
+};
 
 export default createPlugin({
   getAppComponent: async (App, appContext) => {
-    return withRedux(App, appContext);
+    return withRedox(App, appContext);
   },
   getAppContext: ctx => {
-    if (!ctx.store) {
+    if (!ctx.modelManager) {
       let initialState = {};
-      if (ctx.pageData && ctx.pageData.redux) {
-        initialState = ctx.pageData.redux;
+      if (ctx.pageData && ctx.pageData.redox) {
+        initialState = ctx.pageData.redox;
       }
-      ctx.store = init({
-        name: 'GlobalStore',
-        redux: {
-          initialState
-        },
-        plugins: []
-      });
+      ctx.modelManager = getModelManager(initialState);
     }
     return ctx;
   }

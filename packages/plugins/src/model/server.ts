@@ -2,10 +2,10 @@ import { createServerPlugin, ServerPluginInstance } from '@shuvi/service';
 
 export default createServerPlugin({
   pageData: appContext => {
-    const { store } = appContext;
-    delete appContext.store;
+    const { modelManager } = appContext;
+    delete appContext.modelManager;
     return {
-      redux: store.getState()
+      redox: modelManager.getChangedState()
     };
   }
 }) as ServerPluginInstance;

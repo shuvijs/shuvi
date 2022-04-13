@@ -19,13 +19,13 @@ export async function renderToHTML({
       req
     },
     {
-      async render({ appContext, AppComponent, router, appStore }) {
+      async render({ appContext, AppComponent, router, modelManager }) {
         const result = await renderer.renderDocument({
           router,
           app,
           AppComponent,
           appContext,
-          appStore
+          modelManager
         });
 
         if (isRedirect(result)) {

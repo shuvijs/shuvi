@@ -163,6 +163,7 @@ importers:
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
       '@shuvi/plugins': 0.0.1-pre.10
+      '@shuvi/redox-react': 0.0.1-pre.5
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/router-react': 0.0.1-pre.10
       '@shuvi/runtime': 0.0.1-pre.10
@@ -192,6 +193,7 @@ importers:
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
+      '@shuvi/redox-react': 0.0.1-pre.5_react-dom@16.14.0+react@16.14.0
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
@@ -3721,6 +3723,17 @@ packages:
       react-dom: '>=16.8'
     dependencies:
       '@shuvi/redox': 0.0.1-pre.5_redux@4.1.2
+    dev: false
+
+  /@shuvi/redox-react/0.0.1-pre.5_react-dom@16.14.0+react@16.14.0:
+    resolution: {integrity: sha512-SnWXtiRBJ05U6OdXn/3BF61b2EbxBytKIVJv7vtJ0AsA9x69F+t81P9DYrkd8yYcqllDvTqx7nzqf+Zj28qH5Q==}
+    peerDependencies:
+      '@shuvi/redox': ^0.0.1
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      react: 16.14.0
+      react-dom: 16.14.0_react@16.14.0
     dev: false
 
   /@shuvi/redox/0.0.1-pre.4_redux@4.1.2:
