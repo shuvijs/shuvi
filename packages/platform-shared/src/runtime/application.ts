@@ -1,4 +1,5 @@
 import { IRouter } from '@shuvi/router';
+import { CustomAppContext } from '@shuvi/runtime'
 import { getManager, PluginManager } from './lifecycle';
 import { IAppStore, IAppState } from './appStore';
 
@@ -17,12 +18,14 @@ export interface ApplicationCreater<
   ): IApplication;
 }
 
-export type IContext = {
-  [x: string]: any;
-};
+export interface IContext extends CustomAppContext {
+  [x: string]: unknown;
+}
+
+export interface IAppComponent {}
 
 export interface IApplication {
-  AppComponent: any;
+  AppComponent: IAppComponent;
   router?: IRouter;
   pluginManager: PluginManager;
   run(): Promise<{ [k: string]: any }>;

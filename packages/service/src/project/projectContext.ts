@@ -13,11 +13,13 @@ export interface ProjectContext {
   runtimeServices: Map<string, Map<string, Set<string>>>;
   resources: Map<string, Map<string, string | undefined>>;
   runtimePlugins: RuntimePluginConfig[];
+  typeDeclarationFiles: string[];
 }
 
 export const createProjectContext = () =>
   reactive<ProjectContext>({
     runtimeServices: new Map(),
     resources: new Map(),
-    runtimePlugins: []
+    runtimePlugins: [],
+    typeDeclarationFiles: []
   });

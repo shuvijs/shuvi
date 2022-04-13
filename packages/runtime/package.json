@@ -1,22 +1,21 @@
 {
-  "name": "@shuvi/platform-shared",
+  "name": "@shuvi/runtime",
   "version": "0.0.1-pre.10",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
-    "directory": "packages/core"
+    "directory": "packages/plugins"
   },
   "author": "liximomo",
   "license": "MIT",
+  "files": [
+    "lib",
+    "esm"
+  ],
   "sideEffects": false,
   "main": "lib/index.js",
   "module": "esm/index.js",
   "types": "lib/index.d.ts",
-  "files": [
-    "lib",
-    "esm",
-    "template"
-  ],
   "scripts": {
     "dev": "run-p watch:*",
     "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
@@ -26,20 +25,10 @@
     "build:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm",
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
+  "dependencies": {
+    "@shuvi/hook": "0.0.1-pre.10"
+  },
   "engines": {
     "node": ">= 12.0.0"
-  },
-  "dependencies": {
-    "redux": "4.1.2",
-    "@shuvi/redox": "0.0.1-pre.4",
-    "@shuvi/hook": "0.0.1-pre.10",
-    "@shuvi/service": "0.0.1-pre.10",
-    "@shuvi/toolpack": "0.0.1-pre.10",
-    "@shuvi/router": "0.0.1-pre.10",
-    "@shuvi/runtime": "0.0.1-pre.10",
-    "@shuvi/shared": "0.0.1-pre.10"
-  },
-  "devDependencies": {
-    "@types/webpack-env": "^1.16.2"
   }
 }

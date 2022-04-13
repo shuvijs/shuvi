@@ -5,6 +5,7 @@ import {
   isPluginInstance,
   IPluginInstance
 } from '@shuvi/hook';
+import { CustomRuntimePluginHooks } from '@shuvi/runtime'
 import { IContext } from './application';
 import {
   IRuntimePluginConstructor,
@@ -22,7 +23,7 @@ const getAppComponent = createAsyncSeriesWaterfallHook<any, IContext>();
 const getRootAppComponent = createAsyncSeriesWaterfallHook<any, IContext>();
 const dispose = createAsyncParallelHook<void>();
 
-const hooksMap = {
+const builtinRuntimePluginHooks = {
   init,
   getAppComponent,
   getRootAppComponent,
@@ -30,13 +31,15 @@ const hooksMap = {
   dispose
 };
 
-export const getManager = () => createHookManager(hooksMap, false);
+type BuiltinRuntimePluginHooks = typeof builtinRuntimePluginHooks
+
+export const getManager = () => createHookManager<BuiltinRuntimePluginHooks, void, CustomRuntimePluginHooks>(builtinRuntimePluginHooks, false);
 
 export const { createPlugin } = getManager();
 
 export type PluginManager = ReturnType<typeof getManager>;
 
-export type PluginInstance = IPluginInstance<typeof hooksMap, void>;
+export type PluginInstance = IPluginInstance<BuiltinRuntimePluginHooks & CustomRuntimePluginHooks, void>;
 
 export const initPlugins = async (
   pluginManager: PluginManager,

@@ -27,7 +27,8 @@ export {
   Application,
   ApplicationCreater, // ApplicationCreater export for @shuvi/service
   IApplication,
-  IAppRenderFn
+  IAppRenderFn,
+  IContext
 } from './application';
 
 export {
@@ -154,6 +155,7 @@ export interface IApplicationCreaterServerContext
   req: IncomingMessage & {
     [x: string]: any;
   };
+  statusCode?: number;
 }
 export interface IApplicationCreaterClientContext
   extends IApplicationCreaterBase {

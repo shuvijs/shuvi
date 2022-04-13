@@ -12,6 +12,7 @@ import {
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IDocumentProps, ITemplateData } from '../features/html-render';
 import { IApiRequestHandler } from '../features/api-middleware';
+import '../features/html-render/types';
 
 interface IApiModule {
   default: IApiRequestHandler;
