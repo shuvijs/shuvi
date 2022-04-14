@@ -1,6 +1,5 @@
 import {
   createPlugin,
-  PluginInstance,
   IRuntimeModule
 } from '@shuvi/platform-shared/lib/runtime';
 import { init } from '@shuvi/redox';
@@ -27,7 +26,7 @@ export default createPlugin({
     }
     return ctx;
   }
-}) as PluginInstance;
+});
 
 export const getAppContext: IRuntimeModule['getAppContext'] = context => {
   return context;

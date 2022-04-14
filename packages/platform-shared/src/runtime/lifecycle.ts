@@ -3,24 +3,18 @@ import {
   createAsyncSeriesWaterfallHook,
   createHookManager,
   isPluginInstance,
-  IPluginInstance
+  IPluginInstance,
+  IPluginHandlers
 } from '@shuvi/hook';
 import { CustomRuntimePluginHooks } from '@shuvi/runtime'
 import { IContext } from './application';
-import {
-  IRuntimePluginConstructor,
-  IRuntimePluginInstance,
-  IRuntimePluginWithOptions,
-  IPluginRecord,
-  IRuntimeModule
-} from './lifecycleTypes';
 
-export { IRuntimeModule };
+type AppComponent = unknown
 
 const init = createAsyncParallelHook<void>();
-const getAppContext = createAsyncSeriesWaterfallHook<IContext>();
-const getAppComponent = createAsyncSeriesWaterfallHook<any, IContext>();
-const getRootAppComponent = createAsyncSeriesWaterfallHook<any, IContext>();
+const getAppContext = createAsyncSeriesWaterfallHook<IContext, void>();
+const getAppComponent = createAsyncSeriesWaterfallHook<AppComponent, IContext>();
+const getRootAppComponent = createAsyncSeriesWaterfallHook<AppComponent, IContext>();
 const dispose = createAsyncParallelHook<void>();
 
 const builtinRuntimePluginHooks = {
@@ -39,7 +33,40 @@ export const { createPlugin } = getManager();
 
 export type PluginManager = ReturnType<typeof getManager>;
 
-export type PluginInstance = IPluginInstance<BuiltinRuntimePluginHooks & CustomRuntimePluginHooks, void>;
+export type RuntimePluginInstance = IPluginInstance<BuiltinRuntimePluginHooks & CustomRuntimePluginHooks, void>;
+
+export type IRuntimePluginConstructor = IPluginHandlers<BuiltinRuntimePluginHooks & CustomRuntimePluginHooks, void>
+
+export type IRuntimeModule = {
+  init: IRuntimePluginConstructor['init'];
+  // getContext
+  getAppContext: IRuntimePluginConstructor['getAppContext'];
+  getAppComponent: IRuntimePluginConstructor['getAppComponent'];
+  getRootAppComponent: IRuntimePluginConstructor['getRootAppComponent'];
+  dispose: IRuntimePluginConstructor['dispose'];
+};
+
+type SerializedPluginOptions = string;
+
+export type IRuntimePluginOptions = Record<string, unknown>;
+
+export type IRuntimePluginWithOptions = (
+  ...params: any[]
+) => RuntimePluginInstance;
+
+export type IRuntimePlugin = RuntimePluginInstance | IRuntimePluginWithOptions;
+
+export type IPluginModule = {
+  plugin: IRuntimePlugin;
+  pluginOptions: IRuntimePluginOptions;
+};
+
+export type IPluginRecord = {
+  [name: string]: {
+    plugin: IRuntimePlugin;
+    options: SerializedPluginOptions;
+  };
+};
 
 export const initPlugins = async (
   pluginManager: PluginManager,
@@ -58,7 +85,7 @@ export const initPlugins = async (
       parsedOptions = JSON.parse(options);
     }
     if (isPluginInstance(plugin)) {
-      pluginManager.usePlugin(plugin as IRuntimePluginInstance);
+      pluginManager.usePlugin(plugin as RuntimePluginInstance);
     } else {
       pluginManager.usePlugin(
         (plugin as IRuntimePluginWithOptions)(parsedOptions)
