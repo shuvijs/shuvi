@@ -2,14 +2,14 @@ import {
   createAsyncParallelHook,
   createHookManager,
   HookMap,
-  IPluginInstance
+  IPluginInstance,
+  IPluginHandlers
 } from '@shuvi/hook';
+import { CustomServerPluginHooks } from '@shuvi/runtime'
 import { IPluginContext } from '../core';
 import { IProxy } from './pluginTypes';
 
 export * from './pluginTypes';
-
-type ArrayItem<T> = T extends Array<infer Item> ? Item : T;
 
 export type IServerPluginContext = IPluginContext & {
   serverPluginRunner: PluginManager['runner'];
@@ -18,14 +18,6 @@ export type IServerPluginContext = IPluginContext & {
 export type PluginManager = ReturnType<typeof getManager>;
 
 export type PluginRunner = PluginManager['runner'];
-
-export type IServerPluginInstance = ArrayItem<
-  Parameters<PluginManager['usePlugin']>
->;
-
-export type IServerPluginConstructor = ArrayItem<
-  Parameters<PluginManager['createPlugin']>[0]
->;
 
 const onListen = createAsyncParallelHook<{ port: number; hostname?: string }>();
 
@@ -44,13 +36,18 @@ export const getManager = () =>
   createHookManager<
     InternalServerPluginHooks,
     IServerPluginContext,
-    ServerPluginHooks
+    CustomServerPluginHooks
   >(internalHooks);
 
 export const { createPlugin: createServerPlugin } = getManager();
 
+export type IServerPluginConstructor = IPluginHandlers<
+  InternalServerPluginHooks & CustomServerPluginHooks,
+  IServerPluginContext
+>;
+
 export type ServerPluginInstance = IPluginInstance<
-  InternalServerPluginHooks & ServerPluginHooks,
+  InternalServerPluginHooks & CustomServerPluginHooks,
   IServerPluginContext
 >;
 

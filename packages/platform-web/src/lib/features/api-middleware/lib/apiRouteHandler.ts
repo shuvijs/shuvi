@@ -222,7 +222,7 @@ export function sendData(req: IRequest, res: IResponse, body: any): void {
     if (!contentType) {
       res.setHeader('Content-Type', 'application/octet-stream');
     }
-    body.pipe(res);
+    body.pipe(res as any);
     return;
   }
 

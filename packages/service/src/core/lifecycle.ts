@@ -6,6 +6,8 @@ import {
   IPluginHandlers,
   HookMap
 } from '@shuvi/hook';
+import { CustomCorePluginHooks } from '@shuvi/runtime'
+
 import { FileOptions } from '../project';
 import {
   ExtraTargetAssistant,
@@ -73,16 +75,16 @@ type BuiltinPluginHooks = typeof builtinPluginHooks;
 export interface PluginHooks extends HookMap {}
 
 export type CorePluginInstance = IPluginInstance<
-  BuiltinPluginHooks & PluginHooks,
+  BuiltinPluginHooks & CustomCorePluginHooks,
   IPluginContext
 >;
 
 export type CorePluginConstructor = IPluginHandlers<
-  BuiltinPluginHooks & PluginHooks,
+  BuiltinPluginHooks & CustomCorePluginHooks,
   IPluginContext
 >;
 export const getManager = () =>
-  createHookManager<BuiltinPluginHooks, IPluginContext, PluginHooks>(
+  createHookManager<BuiltinPluginHooks, IPluginContext, CustomCorePluginHooks>(
     builtinPluginHooks
   );
 

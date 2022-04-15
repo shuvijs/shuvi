@@ -100,6 +100,7 @@ export interface ResolvedPlugin {
   core?: CorePluginInstance; // instance
   server?: ServerPluginInstance; // instance
   runtime?: RuntimePluginConfig;
+  types?: string;
 }
 
 export interface IPlatformConfig {

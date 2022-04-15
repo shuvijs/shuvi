@@ -27,6 +27,10 @@
     "./model/runtime": {
       "import": "./esm/model/runtime.js",
       "require": "./lib/model/runtime.js"
+    },
+    "./model/types": {
+      "import": "./esm/model/types.d.ts",
+      "require": "./lib/model/types.d.ts"
     }
   },
   "types": "lib/index.d.ts",
@@ -44,6 +48,7 @@
     "@shuvi/redox-react": "0.0.1-pre.4",
     "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/platform-shared": "0.0.1-pre.10",
+    "@shuvi/runtime": "0.0.1-pre.10",
     "@shuvi/service": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",
     "redux": "4.1.2"

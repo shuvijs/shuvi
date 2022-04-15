@@ -4,6 +4,7 @@ import {
   getUserCustomFileCandidates,
   getFisrtModuleExport
 } from '@shuvi/service/lib/project/file-utils';
+import path from 'path';
 import { extendedHooks } from './hooks';
 import {
   getNormalizedRoutes,
@@ -112,5 +113,6 @@ const core = createPlugin({
 
 export default {
   core,
-  server
+  server,
+  types: path.join(__dirname, 'types')
 };

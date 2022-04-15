@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "lib": ["esnext", "DOM"]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": ["**/__tests__/**"]
+}

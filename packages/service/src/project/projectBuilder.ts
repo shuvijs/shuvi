@@ -53,6 +53,10 @@ class ProjectBuilder {
     this._projectContext.runtimePlugins.push(plugin);
   }
 
+  addTypeDeclarationFile(file: string) {
+    this._projectContext.typeDeclarationFiles.push(file);
+  }
+
   addRuntimeService(
     source: string,
     exported: string,
