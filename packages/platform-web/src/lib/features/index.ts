@@ -1,14 +1,13 @@
-import { IServerPluginContext, IServerMiddleware } from '@shuvi/service';
-import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev/devMiddleware';
+import FeatureOnDemanCompilePage from './on-demand-compile-page';
+import FeatureAPIMiddleware from './api-middleware';
+import FeaturePageMiddleware from './page-middleware';
+import FeatureHTMLRender from './html-render';
 
-import FeatureOnDemanCompilePage, {
-  OnDemandRouteManager
-} from './on-demand-compile-page';
-import FeatureAPIMiddleware, { getApiMiddleware } from './api-middleware';
-import FeaturePageMiddleware, { getPageMiddleware } from './page-middleware';
-import FeatureHTMLRender, { getSSRMiddleware } from './html-render';
+export { buildHtml } from './main/buildHtml';
 
-export { buildHtml } from './buildHtml';
+export { getMiddlewares, getMiddlewaresBeforeDevMiddlewares } from './middlewares'
+
+export { getPlugin as getMainPlugin } from './main'
 
 export const featurePlugins = [
   FeatureOnDemanCompilePage,
@@ -16,29 +15,3 @@ export const featurePlugins = [
   FeaturePageMiddleware,
   FeatureHTMLRender
 ];
-
-let onDemandRouteManager: OnDemandRouteManager;
-
-export const getMiddlewares = (
-  context: IServerPluginContext
-): IServerMiddleware[] => {
-  const middlewaresFromPlugin = context.serverPluginRunner
-    .addMiddleware()
-    .flat();
-  return [
-    ...middlewaresFromPlugin,
-    onDemandRouteManager && onDemandRouteManager.ensureRoutesMiddleware(),
-    getApiMiddleware(context),
-    getPageMiddleware(context),
-    getSSRMiddleware(context)
-  ].filter(Boolean);
-};
-
-export const getMiddlewaresBeforeDevMiddlewares = (
-  devMiddleware: DevMiddleware,
-  context: IServerPluginContext
-): IServerMiddleware => {
-  onDemandRouteManager = new OnDemandRouteManager(context);
-  onDemandRouteManager.devMiddleware = devMiddleware;
-  return onDemandRouteManager.getServerMiddleware();
-};

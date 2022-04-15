@@ -40,6 +40,7 @@
     "@shuvi/plugins": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/router-react": "0.0.1-pre.10",
+    "@shuvi/runtime": "0.0.1-pre.10",
     "@shuvi/service": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10",
     "@shuvi/toolpack": "0.0.1-pre.10",
@@ -59,6 +60,8 @@
   "devDependencies": {
     "@types/content-type": "^1.1.5",
     "@types/cookie": "^0.4.1",
-    "@types/raw-body": "^2.3.0"
+    "@types/ejs": "^3.1.0",
+    "@types/raw-body": "^2.3.0",
+    "@types/webpack-env": "^1.16.2"
   }
 }

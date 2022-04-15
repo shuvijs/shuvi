@@ -20,5 +20,5 @@
     }
   },
   "exclude": ["node_modules"],
-  "include": ["src"]
+  "include": ["src", ".shuvi/app/types-plugin-extended.d.ts"]
 }

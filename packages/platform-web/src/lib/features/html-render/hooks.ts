@@ -4,6 +4,7 @@ import {
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook
 } from '@shuvi/hook';
+import { IContext } from '@shuvi/platform-shared/lib/runtime';
 import { IServerMiddleware } from '@shuvi/service';
 import { IDocumentProps } from './lib';
 
@@ -12,9 +13,13 @@ export type IRenderToHTML = (
   res: ServerResponse
 ) => Promise<string | null>;
 
-const pageData = createAsyncParallelHook<void, any, Record<string, unknown>>();
+const pageData = createAsyncParallelHook<
+  void,
+  IContext,
+  Record<string, unknown>
+>();
 const renderToHTML = createAsyncSeriesWaterfallHook<IRenderToHTML>();
-const modifyHtml = createAsyncSeriesWaterfallHook<IDocumentProps, any>();
+const modifyHtml = createAsyncSeriesWaterfallHook<IDocumentProps, IContext>();
 const addMiddleware = createSyncHook<
   void,
   void,
@@ -26,12 +31,3 @@ export const extendedHooks = {
   modifyHtml,
   addMiddleware
 };
-
-declare module '@shuvi/service' {
-  export interface ServerPluginHooks {
-    pageData: typeof pageData;
-    renderToHTML: typeof renderToHTML;
-    modifyHtml: typeof modifyHtml;
-    addMiddleware: typeof addMiddleware;
-  }
-}

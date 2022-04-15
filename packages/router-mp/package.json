@@ -34,13 +34,15 @@
     "@shuvi/router-react": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",
+    "prop-types": "^15.8.1",
     "query-string": "6.13.8"
   },
   "devDependencies": {
-    "@types/react": "^16.9.43",
     "@tarojs/components": "3.3.3",
     "@tarojs/runtime": "3.3.3",
-    "@tarojs/taro": "3.3.3"
+    "@tarojs/taro": "3.3.3",
+    "@types/prop-types": "^15.7.5",
+    "@types/react": "^16.9.43"
   },
   "peerDependencies": {
     "@tarojs/components": "3.3.3",
