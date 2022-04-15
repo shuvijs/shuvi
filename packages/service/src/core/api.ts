@@ -190,6 +190,10 @@ class Api {
     this._projectBuilder.addRuntimeService(source, exported, filepath);
   }
 
+  addTypeDeclarationFile(file: string): void {
+    this._projectBuilder.addTypeDeclarationFile(file);
+  }
+
   addResources(key: string, requireStr?: string): void {
     this._projectBuilder.addResources(key, requireStr);
   }
@@ -220,7 +224,7 @@ class Api {
   }
 
   private _applyPlugin(plugin: ResolvedPlugin): void {
-    const { core, server, runtime } = plugin;
+    const { core, server, runtime, types } = plugin;
     const { usePlugin } = this._pluginManager;
     if (core) {
       usePlugin(core);
@@ -230,6 +234,9 @@ class Api {
     }
     if (runtime) {
       this.addRuntimePlugin(runtime);
+    }
+    if (types) {
+      this.addTypeDeclarationFile(types);
     }
   }
 

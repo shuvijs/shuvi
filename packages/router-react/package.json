@@ -30,9 +30,11 @@
   "dependencies": {
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/platform-shared": "0.0.1-pre.10",
-    "@shuvi/utils": "0.0.1-pre.10"
+    "@shuvi/utils": "0.0.1-pre.10",
+    "prop-types": "^15.8.1"
   },
   "devDependencies": {
+    "@types/prop-types": "^15.7.5",
     "@types/react": "^16.9.43",
     "@types/react-test-renderer": "^16.9.2",
     "react-test-renderer": "^16.13.1"

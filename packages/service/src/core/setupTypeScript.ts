@@ -42,7 +42,7 @@ export async function setupTypeScript(paths: IPaths) {
       }
 
       if (parsedTsConfig.include == null) {
-        appTsConfig.include = ['src'];
+        appTsConfig.include = ['src', '.shuvi/app/types-plugin-extended.d.ts'];
       }
     }
   });

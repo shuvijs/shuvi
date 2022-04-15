@@ -6,8 +6,6 @@ import {
   IPlatformContent,
   CorePluginInstance,
   BUILD_DEFAULT_DIR,
-  BUILD_SERVER_FILE_SERVER,
-  BUILD_SERVER_DIR
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
@@ -18,26 +16,19 @@ import {
 } from '@shuvi/service/lib/route';
 import { FileOptions } from '@shuvi/service/lib/project';
 import {
-  getUserCustomFileCandidates,
-  getFisrtModuleExport
-} from '@shuvi/service/lib/project/file-utils';
-import {
   sharedPlugin,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/lib/platform';
-import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
   UnRecursiveTemplate,
   RecursiveTemplate
 } from '@tarojs/shared/dist/template';
-import setupServerPluginServer from './serverPlugin';
-import generateResource from './generateResource';
 import { PACKAGE_NAME } from '../constants';
-import BuildAssetsPlugin from './plugins/build-assets-plugin';
-import ModifyChunkPlugin from './plugins/modify-chunk-plugin';
-import DomEnvPlugin from './plugins/dom-env-plugin';
+import BuildAssetsPlugin from './webpack-plugins/build-assets-plugin';
+import ModifyChunkPlugin from './webpack-plugins/modify-chunk-plugin';
+import DomEnvPlugin from './webpack-plugins/dom-env-plugin';
 import modifyStyle from './modify-style';
 import modifySwcLoader from './modify-swc-loader';
 import {
@@ -48,7 +39,7 @@ import {
   PACKAGE_RESOLVED
 } from '../paths';
 import { AppConfig, AppConfigs, IFileType } from './types';
-import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
+import { IPlatformContext } from '@shuvi/service/lib/core';
 
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
@@ -126,58 +117,13 @@ export default abstract class PlatformMpBase {
   getPlugins() {
     return [
       process.env.NODE_ENV === 'development'
-        ? this.getSetupServerPlugin()
+        ? path.join(__dirname, 'plugins', 'setup-server')
         : null,
       this.getSetupAppPlugin(),
       this.getSetupRoutesPlugin(),
       this.getConfigWebpackPlugin(),
       sharedPlugin
     ].filter(Boolean);
-  }
-
-  getSetupServerPlugin(): ResolvedPlugin {
-    const server = setupServerPluginServer;
-    const core = createPlugin({
-      addResource: context => generateResource(context),
-      addRuntimeFile: async ({ createFile, getAllFiles }, context) => {
-        const serverCandidates = getUserCustomFileCandidates(
-          context.paths.rootDir,
-          'server',
-          'noop'
-        );
-        const userServerFile = createFile({
-          name: 'user/server.js',
-          content: () => {
-            return getFisrtModuleExport(
-              getAllFiles(serverCandidates),
-              serverCandidates
-            );
-          },
-          dependencies: serverCandidates
-        });
-        return userServerFile;
-      },
-      addExtraTarget: ({ createConfig }) => {
-        const serverWebpackHelpers = webpackHelpers();
-        const serverChain = createConfig({
-          name: BUNDLER_TARGET_SERVER,
-          node: true,
-          entry: {
-            [BUILD_SERVER_FILE_SERVER]: resolveAppFile('entry', 'server')
-          },
-          outputDir: BUILD_SERVER_DIR,
-          webpackHelpers: serverWebpackHelpers
-        });
-        return {
-          name: BUNDLER_TARGET_SERVER,
-          chain: serverChain
-        };
-      }
-    });
-    return {
-      core,
-      server
-    };
   }
 
   /**

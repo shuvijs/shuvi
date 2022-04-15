@@ -1,2 +1,2 @@
 export * from './runtimeFiles';
-export { sharedPlugin } from './plugins';
+export { sharedPlugin } from './plugin';
