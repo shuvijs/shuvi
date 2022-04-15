@@ -1,16 +1,16 @@
+import path from 'path';
 import { createPlugin, CorePluginInstance } from '@shuvi/service';
 
 export default createPlugin({
   addRuntimeService: () => [
     {
-      source: require.resolve('@shuvi/redox'),
+      source: path.dirname(require.resolve('@shuvi/redox/package.json')),
       exported: '{ defineModel, redox }',
       filepath: 'model.js'
     },
     {
-      source: require.resolve('@shuvi/redox-react'),
+      source: path.dirname(require.resolve('@shuvi/redox-react/package.json')),
       exported: '*',
-      // exported: '{ Provider, useModel, createContainer, useStaticModel, useLocalModel, ISelector }',
       filepath: 'model.js'
     }
   ]
