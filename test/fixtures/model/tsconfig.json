@@ -4,7 +4,11 @@
     "module": "esnext",
     "jsx": "preserve",
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -15,10 +19,19 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "@shuvi/runtime": [".shuvi/runtime"],
-      "@shuvi/runtime/*": [".shuvi/runtime/*"]
-    }
+      "@shuvi/runtime": [
+        ".shuvi/runtime"
+      ],
+      "@shuvi/runtime/*": [
+        ".shuvi/runtime/*"
+      ]
+    },
+    "strictNullChecks": true
   },
-  "exclude": ["node_modules"],
-  "include": ["src"]
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "src"
+  ]
 }

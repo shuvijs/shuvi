@@ -19,9 +19,14 @@
     "jsx": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@shuvi/runtime": [".shuvi/runtime"],
-      "@shuvi/runtime/*": [".shuvi/runtime/*"]
-    }
+      "@shuvi/runtime": [
+        ".shuvi/runtime"
+      ],
+      "@shuvi/runtime/*": [
+        ".shuvi/runtime/*"
+      ]
+    },
+    "strictNullChecks": true
   },
   "exclude": [
     "node_modules"
