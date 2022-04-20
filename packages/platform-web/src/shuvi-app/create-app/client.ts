@@ -1,6 +1,9 @@
-import getUserAppComponent from '@shuvi/app/user/app';
+import UserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/files/routes';
-import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
+import {
+  getRoutes,
+  app as PlatformAppComponent
+} from '@shuvi/app/core/platform';
 import {
   IApplication,
   getAppStore,
@@ -63,12 +66,12 @@ export function createApp<
   appRouter = router;
   appContext = context;
   app = platform({
-    AppComponent,
+    AppComponent: PlatformAppComponent,
     router,
     context,
     appStore,
     render: options.render,
-    getUserAppComponent
+    UserAppComponent
   });
   return app;
 }
@@ -84,10 +87,10 @@ if (module.hot) {
     ],
     async () => {
       const rerender = () => {
-        const getUserAppComponent = require('@shuvi/app/user/app').default;
+        const UserAppComponent = require('@shuvi/app/user/app').default;
         const routes = require('@shuvi/app/files/routes').default;
         appRouter.replaceRoutes(getRoutes(routes, appContext));
-        app.rerender({ AppComponent, getUserAppComponent });
+        app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
       };
       // to solve routing problem, we need to rerender routes
       // wait navigation complete only rerender to ensure getInitialProps is called

@@ -1,7 +1,8 @@
 import { IRouter } from '@shuvi/router';
-import { CustomAppContext } from '@shuvi/runtime'
+import { CustomAppContext } from '@shuvi/runtime';
 import { getManager, PluginManager } from './lifecycle';
 import { IAppStore, IAppState } from './appStore';
+import { setApp } from './appProxy';
 
 export interface ApplicationCreater<
   Context extends IContext,
@@ -57,7 +58,7 @@ export interface IAppRenderFn<Context, Router extends IRouter, CompType = any> {
 
 export type IRerenderConfig = {
   AppComponent?: any;
-  getUserAppComponent?: <T>(appComponent: T) => T;
+  UserAppComponent?: any;
 };
 
 export interface IApplicationOptions<
@@ -70,7 +71,7 @@ export interface IApplicationOptions<
   context: Context;
   appStore: AppStore;
   render: IAppRenderFn<Context, Router>;
-  getUserAppComponent?: <T>(appComponent: T) => T;
+  UserAppComponent?: any;
 }
 
 export class Application<
@@ -85,7 +86,7 @@ export class Application<
   private _context: Context;
   private _appStore: IAppStore;
   private _renderFn: IAppRenderFn<Context, Router>;
-  private _getUserAppComponent?: <T>(appComponent: T) => T;
+  private _UserAppComponent?: any;
 
   constructor(options: IApplicationOptions<Context, Router, AppStore>) {
     this.AppComponent = options.AppComponent;
@@ -93,7 +94,7 @@ export class Application<
     this._context = options.context;
     this._appStore = options.appStore;
     this._renderFn = options.render;
-    this._getUserAppComponent = options.getUserAppComponent;
+    this._UserAppComponent = options.UserAppComponent;
     this.pluginManager = getManager();
   }
 
@@ -106,16 +107,16 @@ export class Application<
     return this._context;
   }
 
-  async rerender({ AppComponent, getUserAppComponent }: IRerenderConfig = {}) {
+  async rerender({ AppComponent, UserAppComponent }: IRerenderConfig = {}) {
     if (AppComponent && AppComponent !== this.AppComponent) {
       this.AppComponent = AppComponent;
     }
-    if (getUserAppComponent) {
-      if (getUserAppComponent !== this._getUserAppComponent) {
-        this._getUserAppComponent = getUserAppComponent;
+    if (UserAppComponent) {
+      if (UserAppComponent !== this._UserAppComponent) {
+        this._UserAppComponent = UserAppComponent;
       }
     } else {
-      this._getUserAppComponent = undefined;
+      this._UserAppComponent = undefined;
     }
 
     await this._getAppComponent();
@@ -145,11 +146,9 @@ export class Application<
       this.AppComponent,
       this._context
     );
-    if (typeof this._getUserAppComponent === 'function') {
-      this.AppComponent = this._getUserAppComponent(this.AppComponent);
-    }
+    setApp(this.AppComponent);
     this.AppComponent = await this.pluginManager.runner.getAppComponent(
-      this.AppComponent,
+      this._UserAppComponent ? this._UserAppComponent : this.AppComponent,
       this._context
     );
   }

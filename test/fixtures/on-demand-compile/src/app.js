@@ -1,13 +1,11 @@
 import routes from '@shuvi/app/files/routes';
 import { getRoutes } from '@shuvi/app/core/platform';
+import { App } from '@shuvi/runtime';
 
-const getApp = App => {
-  const MyApp = () => <App />;
+const MyApp = () => <App />;
 
-  MyApp.getInitialProps = async () => {
-    await Promise.all(getRoutes(routes).map(r => r.component.preload()));
-  };
-  return MyApp;
+MyApp.getInitialProps = async () => {
+  await Promise.all(getRoutes(routes).map(r => r.component.preload()));
 };
 
-export default getApp;
+export default MyApp;

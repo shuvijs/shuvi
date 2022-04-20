@@ -21,6 +21,18 @@ const core = createPlugin({
     {
       source: path.resolve(__dirname, '..', '..', 'runtime'),
       exported: '*'
+    },
+    {
+      source: path.resolve(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'esm',
+        'runtime',
+        'appProxy'
+      ),
+      exported: '{ App }'
     }
   ]
 });
