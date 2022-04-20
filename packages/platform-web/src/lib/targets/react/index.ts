@@ -5,10 +5,6 @@ import { resolveAppFile, resolveDep, resolveLib } from '../../paths';
 const webReactMainPlugin = createPlugin({
   addRuntimeService: () => [
     {
-      source: resolveAppFile('react/App'),
-      exported: '{ default as App }'
-    },
-    {
       source: resolveAppFile('react/head/head'),
       exported: '{ default as Head }'
     },

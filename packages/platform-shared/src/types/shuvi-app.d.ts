@@ -48,8 +48,8 @@ declare module '@shuvi/app/core/setRuntimeConfig' {
 }
 
 declare module '@shuvi/app/user/app' {
-  const getUserAppComponent: <T>(appComponent: T) => T;
-  export default getUserAppComponent;
+  const UserAppComponent: any;
+  export default UserAppComponent;
 }
 
 declare module '@shuvi/app/user/error' {
