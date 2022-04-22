@@ -48,7 +48,6 @@ use swc_ecmascript::{
     visit::Fold,
 };
 
-pub mod amp_attributes;
 mod auto_cjs;
 mod bundle;
 pub mod hook_optimizer;
@@ -90,7 +89,6 @@ pub fn custom_before_pass(name: &FileName, opts: &TransformOptions) -> impl Fold
     chain!(
         auto_css_module::auto_css_module(opts.flag.clone()),
         hook_optimizer::hook_optimizer(),
-        amp_attributes::amp_attributes(),
         shuvi_dynamic::shuvi_dynamic(name.clone(), !opts.disable_shuvi_dynamic.clone())
     )
 }
