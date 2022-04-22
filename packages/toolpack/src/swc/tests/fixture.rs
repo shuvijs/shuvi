@@ -1,5 +1,4 @@
 use shuvi_swc::{
-    amp_attributes::amp_attributes,
     shuvi_dynamic::shuvi_dynamic,
     auto_css_module::auto_css_module
 };
@@ -21,11 +20,6 @@ fn syntax() -> Syntax {
     })
 }
 
-#[fixture("tests/fixture/amp/**/input.js")]
-fn amp_attributes_fixture(input: PathBuf) {
-    let output = input.parent().unwrap().join("output.js");
-    test_fixture(syntax(), &|_tr| amp_attributes(), &input, &output);
-}
 #[fixture("tests/fixture/auto-css-module/no-flag/input.js")]
 fn auto_css_module_default_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
