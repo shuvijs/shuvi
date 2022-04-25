@@ -2,8 +2,6 @@
 // 普通型钩子handler均无返回值（如果有，则是一个数组，但是似乎没啥用，如果对返回值有要求，那么应该用waterfall钩子）
 
 // waterfall 类肯定是顺序执行，参数和返回值必须相同
-// modernjs模型中的workflow看起来比较鸡肋
-
 // 问题 现在any会被当成void
 // 正常变量 extends void 左右 都是 never
 // 所以突破点是区分 void 和 any

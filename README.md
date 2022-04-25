@@ -12,3 +12,7 @@ Meta Framework to create applications quickly.
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on what we're looking for and how to get started.
+
+## Credits
+
+Some implementation of shuvi.js are inspired by existing projects, such as next.js and umi.js. Thanks for them.

@@ -54,9 +54,11 @@ export function applyHttpProxyMiddleware(server: Server, proxy: IProxyConfig) {
   const proxyOptions = normalizeProxyConfig(proxy);
   proxyOptions.forEach(({ context, ...opts }) => {
     if (context) {
-      server.use(createProxyMiddleware(context, opts) as IMiddlewareHandler);
+      server.use(
+        createProxyMiddleware(context, opts) as any as IMiddlewareHandler
+      );
     } else {
-      server.use(createProxyMiddleware(opts) as IMiddlewareHandler);
+      server.use(createProxyMiddleware(opts) as any as IMiddlewareHandler);
     }
   });
 }
