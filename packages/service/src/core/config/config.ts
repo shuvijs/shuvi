@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { bundleRequire } from '@modern-js/node-bundle-require';
+import { bundleRequire } from '@shuvi/toolpack/lib/utils/bundle-require';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { Config, UserConfig } from '../apiTypes';
 import { PUBLIC_PATH } from '../../constants';
