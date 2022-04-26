@@ -26,15 +26,15 @@ export function getErrorHandler(
         payload.errorCode = SHUVI_ERROR_CODE.APP_ERROR;
         payload.errorDesc = errorCode;
       }
-      errorStore.dispatch.update(payload);
+      errorStore.update(payload);
     },
     reset() {
       const errorStore = modelManager.get(errorModel);
-      const { hasError } = errorStore.getState();
+      const { hasError } = errorStore.$state();
       if (!hasError) {
         return;
       }
-      errorStore.dispatch.reset();
+      errorStore.reset();
     }
   };
 }

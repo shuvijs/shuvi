@@ -105,7 +105,7 @@ export class ReactServerView implements IReactServerView {
     }
 
     const errorStore = modelManager.get(errorModel);
-    const errorState = errorStore.getState();
+    const errorState = errorStore.$state();
 
     if (errorState.hasError) {
       appContext.statusCode = errorState.errorCode;

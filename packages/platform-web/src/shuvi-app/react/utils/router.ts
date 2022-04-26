@@ -47,8 +47,7 @@ export function normalizeRoutes(
         const shouldHydrated = routeProps[id] !== undefined && !hydrated[id];
 
         if (shouldHydrated) {
-          console.log(11111);
-          const { hasError } = modelManager.get(errorModel).getState();
+          const { hasError } = modelManager.get(errorModel).$state();
           if (hasError) {
             hydrated[id] = true; // hydrated error page, run Component.getInitialProps by client
             return next();

@@ -70,13 +70,9 @@ const count = defineModel(
       }
     },
     effects: {
-      async addCountAsync(_payload: void, _state, depends) {
-        const {
-          getState,
-          dispatch: { base }
-        } = depends;
-        this.addCount(getState().base.step);
-        await base.addStepAsync();
+      async addCountAsync() {
+        this.addCount(this.$dep.base.$state().step);
+        await this.$dep.base.addStepAsync();
       }
     }
   },
@@ -116,6 +112,6 @@ export default function Index() {
 Index.getInitialProps = async function (ctx: any) {
   const modelManager = ctx.appContext.modelManager;
   const baseStore = modelManager.get(base);
-  await baseStore.dispatch.addStepAsync();
-  console.log(baseStore.getState());
+  await baseStore.addStepAsync();
+  console.log(baseStore.$state());
 };

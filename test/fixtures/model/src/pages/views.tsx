@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import { useModel, defineModel } from '@shuvi/runtime/model';
-
-// todo: test model state should be object
-const error = defineModel({
-  name: 'error',
-  state: {},
-  reducers: {}
-});
+import { useModel, defineModel, ISelectorParams } from '@shuvi/runtime/model';
 
 const other = defineModel({
   name: 'other',
@@ -41,14 +34,13 @@ const dome = defineModel({
 
 const user = defineModel(
   {
-    name: 'user1',
+    name: 'user',
     state: {
       id: 1,
       name: 'haha'
     },
     reducers: {
       add: (state, step) => {
-        // return state;
         return {
           ...state,
           id: state.id + step
@@ -56,18 +48,13 @@ const user = defineModel(
       }
     },
     views: {
-      d (state, rootState) {
-        console.log(state.id);
-        const a = rootState.other;
-        console.log(rootState.dome.number);
-        console.log(a.other[0]);
-        console.log('d computed');
-        return rootState.dome;
+      d(_state, dependState) {
+        return dependState.dome;
       },
-      one (_state, rootState) {
-        return rootState.dome.number;
+      one(_state, dependState) {
+        return dependState.dome.number;
       },
-      double (state, _rootState, args) {
+      double(state, _dependState, args): string {
         // console.log('views', state, rootState, views, args);
         // console.log('this', this)
         // console.log('this', views.one)
@@ -77,16 +64,15 @@ const user = defineModel(
       }
     }
   },
-  { other, dome }
+  [other, dome]
 );
 
-const selector = function (state: any, views: any) {
-  console.log(2222222222); // todo test useMemo
+const selector = function (stateAndViews: ISelectorParams<typeof user>) {
   return {
-    stateData: state.id,
-    one: views.one(),
-    double: views.double(3),
-    d: views.d().number
+    stateData: stateAndViews.id,
+    one: stateAndViews.one(),
+    double: stateAndViews.double(3),
+    d: stateAndViews.d().number
   };
 };
 

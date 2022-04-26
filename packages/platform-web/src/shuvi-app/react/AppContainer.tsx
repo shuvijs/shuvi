@@ -6,7 +6,7 @@ import {
 } from '@shuvi/platform-shared/esm/runtime';
 import { createContainer } from '@shuvi/redox-react';
 
-const { Provider, useModel } = createContainer();
+const { Provider, useSharedModel } = createContainer();
 
 export interface IAppContext {
   appContext: { [x: string]: any };
@@ -36,7 +36,7 @@ function AppStore({
   children: React.ReactNode;
   errorComp?: React.ComponentType<IPageError>;
 }) {
-  const [errorState] = useModel(errorModel);
+  const [errorState] = useSharedModel(errorModel);
 
   return <>{checkError(errorState, errorComp) || children}</>;
 }

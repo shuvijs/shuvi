@@ -45,7 +45,7 @@
     "@shuvi/shared": "0.0.1-pre.10",
     "@shuvi/toolpack": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",
-    "@shuvi/redox-react": "0.0.1-pre.5",
+    "@shuvi/redox-react": "0.0.1-pre.6",
     "content-type": "^1.0.4",
     "cookie": "^0.4.1",
     "ejs": "3.1.5",
