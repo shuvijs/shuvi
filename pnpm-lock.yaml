@@ -137,7 +137,7 @@ importers:
   packages/platform-shared:
     specifiers:
       '@shuvi/hook': 0.0.1-pre.10
-      '@shuvi/redox': 0.0.1-pre.4
+      '@shuvi/redox': 0.0.1-pre.5
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/runtime': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
@@ -147,7 +147,7 @@ importers:
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
-      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
+      '@shuvi/redox': 0.0.1-pre.5_redux@4.1.2
       '@shuvi/router': link:../router
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
@@ -222,8 +222,8 @@ importers:
     specifiers:
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
-      '@shuvi/redox': 0.0.1-pre.4
-      '@shuvi/redox-react': 0.0.1-pre.4
+      '@shuvi/redox': 0.0.1-pre.5
+      '@shuvi/redox-react': 0.0.1-pre.5
       '@shuvi/runtime': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/utils': 0.0.1-pre.10
@@ -232,8 +232,8 @@ importers:
     dependencies:
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
-      '@shuvi/redox-react': 0.0.1-pre.4_@shuvi+redox@0.0.1-pre.4
+      '@shuvi/redox': 0.0.1-pre.5_redux@4.1.2
+      '@shuvi/redox-react': 0.0.1-pre.5_@shuvi+redox@0.0.1-pre.5
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
       '@shuvi/utils': link:../utils
@@ -3713,6 +3713,16 @@ packages:
       '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
     dev: false
 
+  /@shuvi/redox-react/0.0.1-pre.5_@shuvi+redox@0.0.1-pre.5:
+    resolution: {integrity: sha512-SnWXtiRBJ05U6OdXn/3BF61b2EbxBytKIVJv7vtJ0AsA9x69F+t81P9DYrkd8yYcqllDvTqx7nzqf+Zj28qH5Q==}
+    peerDependencies:
+      '@shuvi/redox': ^0.0.1
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@shuvi/redox': 0.0.1-pre.5_redux@4.1.2
+    dev: false
+
   /@shuvi/redox/0.0.1-pre.4_redux@4.1.2:
     resolution: {integrity: sha512-+/lI/s47oBNjKVC0xQ8MLfH8EWpO81gpGqoATs2RbTViDruqA3ILgpXWdA4NGis6XQ6TNKVJOjReG/bNqpBdhg==}
     engines: {node: '>=10'}
@@ -3721,6 +3731,17 @@ packages:
     dependencies:
       '@types/react-redux': 7.1.22
       immer: 8.0.4
+      redux: 4.1.2
+      tiny-invariant: 1.2.0
+    dev: false
+
+  /@shuvi/redox/0.0.1-pre.5_redux@4.1.2:
+    resolution: {integrity: sha512-D0txE4+Dpd6q2NU7rzaP/vwTdqqJocTsWRmhE2Gd57Rl6OLb4l7MMorSGhy9S9Ip3jIXWARPtWXcZ1H6RJDFjQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      redux: '>=4'
+    dependencies:
+      immer: 9.0.12
       redux: 4.1.2
       tiny-invariant: 1.2.0
     dev: false
@@ -8004,6 +8025,10 @@ packages:
 
   /immer/8.0.4:
     resolution: {integrity: sha512-jMfL18P+/6P6epANRvRk6q8t+3gGhqsJ9EuJ25AXE+9bNTYtssvzeYbEd0mXRYWCmmXSIbnlpz6vd6iJlmGGGQ==}
+    dev: false
+
+  /immer/9.0.12:
+    resolution: {integrity: sha512-lk7UNmSbAukB5B6dh9fnh5D0bJTOFKxVg2cyJWTYrWRfhLrLMBquONcUs3aFq507hNoIZEDDh8lb8UtOizSMhA==}
     dev: false
 
   /immutable/4.0.0:

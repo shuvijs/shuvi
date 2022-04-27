@@ -1,2 +1,3 @@
-export { getAppStore, IAppStore, IAppState } from './getAppStore';
+export { getStoreManager, IModelManager, IAppState } from './getModelsManager';
 export { IErrorHandler, getErrorHandler } from './pageErrorHandler';
+export { error, IPageError } from './models';

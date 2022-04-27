@@ -44,8 +44,8 @@
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
   "dependencies": {
-    "@shuvi/redox": "0.0.1-pre.4",
-    "@shuvi/redox-react": "0.0.1-pre.4",
+    "@shuvi/redox": "0.0.1-pre.5",
+    "@shuvi/redox-react": "0.0.1-pre.5",
     "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/platform-shared": "0.0.1-pre.10",
     "@shuvi/runtime": "0.0.1-pre.10",

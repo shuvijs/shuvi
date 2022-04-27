@@ -1,5 +1,4 @@
-import { createModel } from '@shuvi/redox';
-import type { RootModel } from '.';
+import { defineModel } from '@shuvi/redox';
 
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 
@@ -15,10 +14,11 @@ const DEFAULT_ERRORSTATE = {
   hasError: false
 };
 
-export const error = createModel<RootModel>()({
+export const error = defineModel({
+  name: 'error',
   state: DEFAULT_ERRORSTATE as IPageError,
   reducers: {
-    update: (state: IPageError, payload: Partial<IPageError> = {}) => {
+    update: (state, payload: Partial<IPageError> = {}) => {
       return {
         ...state,
         ...payload

@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "redux": "4.1.2",
-    "@shuvi/redox": "0.0.1-pre.4",
+    "@shuvi/redox": "0.0.1-pre.5",
     "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/service": "0.0.1-pre.10",
     "@shuvi/toolpack": "0.0.1-pre.10",
