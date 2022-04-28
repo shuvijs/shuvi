@@ -22,7 +22,7 @@ const core = defineModel({
     }
   },
   effects: {
-    async addStepAsync () {
+    async addStepAsync() {
       await sleep(1000);
       this.addStep();
     }
@@ -45,13 +45,13 @@ const base = defineModel(
       }
     },
     effects: {
-      async addStepAsync () {
+      async addStepAsync() {
         await sleep(1000);
         this.addStep();
       }
     }
   },
-  { core }
+  [core]
 );
 
 const count = defineModel(
@@ -70,14 +70,13 @@ const count = defineModel(
       }
     },
     effects: {
-      async addCountAsync(_payload: void, _state, depends) {
-        const { getState, dispatch: { base } } = depends
-        this.addCount(getState().base.step);
-        await base.addStepAsync();
+      async addCountAsync() {
+        this.addCount(this.$dep.base.$state().step);
+        await this.$dep.base.addStepAsync();
       }
     }
   },
-  { base }
+  [base]
 );
 
 export default function Index() {
@@ -109,3 +108,10 @@ export default function Index() {
     </div>
   );
 }
+
+Index.getInitialProps = async function (ctx: any) {
+  const modelManager = ctx.appContext.modelManager;
+  const baseStore = modelManager.get(base);
+  await baseStore.addStepAsync();
+  console.log(baseStore.$state());
+};

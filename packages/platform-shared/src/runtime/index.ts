@@ -32,14 +32,20 @@ export {
 } from './application';
 
 export {
-  getAppStore,
+  getModelManager,
   getErrorHandler,
   IAppState,
-  IAppStore,
-  IErrorHandler
+  IModelManager,
+  IErrorHandler,
+  IPageError,
+  errorModel
 } from './appStore';
 
-export { IRuntimeModule, createPlugin, RuntimePluginInstance } from './lifecycle';
+export {
+  IRuntimeModule,
+  createPlugin,
+  RuntimePluginInstance
+} from './lifecycle';
 
 export type IQuery = ParsedQuery;
 
