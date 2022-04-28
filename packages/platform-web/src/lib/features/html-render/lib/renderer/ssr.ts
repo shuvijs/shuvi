@@ -15,7 +15,7 @@ export class SsrRenderer extends BaseRenderer {
     app,
     AppComponent,
     router,
-    appStore,
+    modelManager,
     appContext
   }: IRenderDocumentOptions) {
     const serverPluginContext = this._serverPluginContext;
@@ -27,7 +27,7 @@ export class SsrRenderer extends BaseRenderer {
     const result = await view.renderApp({
       AppComponent,
       router: router as IRouter,
-      appStore,
+      modelManager,
       appContext,
       manifest: clientManifest,
       getAssetPublicUrl

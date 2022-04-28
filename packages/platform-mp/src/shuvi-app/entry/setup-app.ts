@@ -16,16 +16,15 @@ const app: ReturnType<typeof createApp> = createApp(
     routeProps
   },
   {
-    async render({ appContext, AppComponent, router, appStore }) {
+    async render({ appContext, AppComponent, router, modelManager }) {
       const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
       view.renderApp({
         AppComponent: AppComponent,
         router: router as any as IRouter,
         appData,
         appContainer,
-        // @ts-ignore
         appContext,
-        appStore
+        modelManager
       });
     },
     appState

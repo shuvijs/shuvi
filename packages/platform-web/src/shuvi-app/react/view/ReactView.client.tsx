@@ -25,7 +25,7 @@ export class ReactClientView implements IReactClientView {
     appData,
     router,
     appContext,
-    appStore
+    modelManager
   }) => {
     const { _isInitialRender: isInitialRender } = this;
     let { ssr, appProps, dynamicIds } = appData;
@@ -38,7 +38,7 @@ export class ReactClientView implements IReactClientView {
 
     const redirector = createRedirector();
 
-    const error = getErrorHandler(appStore);
+    const error = getErrorHandler(modelManager);
 
     const TypedAppComponent =
       AppComponent as IAppComponent<React.ComponentType>;
@@ -79,7 +79,7 @@ export class ReactClientView implements IReactClientView {
           <Router router={router}>
             <AppContainer
               appContext={appContext}
-              store={appStore}
+              modelManager={modelManager}
               errorComp={ErrorPage}
             >
               <TypedAppComponent {...appProps} />

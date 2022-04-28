@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from '@tarojs/components';
-import { IAppState } from '@shuvi/platform-shared/esm/runtime';
+import { IPageError } from '@shuvi/platform-shared/esm/runtime';
 
 const style = {
   container: {
@@ -28,7 +28,7 @@ const style = {
   }
 } as const;
 
-export default function error({ errorCode, errorDesc }: IAppState['error']) {
+export default function error({ errorCode, errorDesc }: IPageError) {
   return (
     <View style={style.container}>
       <View style={style.error}>

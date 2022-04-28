@@ -19,7 +19,7 @@ const app = createApp(
     routeProps
   },
   {
-    async render({ appContext, AppComponent, router = [], appStore }) {
+    async render({ appContext, AppComponent, router = [], modelManager }) {
       const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
       view.renderApp({
         AppComponent,
@@ -27,7 +27,7 @@ const app = createApp(
         appData,
         appContainer,
         appContext,
-        appStore
+        modelManager
       });
     },
     appState

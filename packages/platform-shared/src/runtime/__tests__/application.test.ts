@@ -1,5 +1,5 @@
 import { Application, IContext } from '../application';
-import { getAppStore } from '../appStore';
+import { getModelManager } from '../appStore';
 import { createRouter, createMemoryHistory } from '@shuvi/router';
 
 function getApp({ render }: any = {}) {
@@ -18,7 +18,7 @@ function getApp({ render }: any = {}) {
         }
       ]
     }),
-    appStore: getAppStore(),
+    modelManager: getModelManager(),
     async render(options) {
       return render && render(options);
     }

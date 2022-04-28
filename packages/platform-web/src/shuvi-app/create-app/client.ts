@@ -6,7 +6,7 @@ import {
 } from '@shuvi/app/core/platform';
 import {
   IApplication,
-  getAppStore,
+  getModelManager,
   getErrorHandler,
   IAppState,
   IAppRenderFn,
@@ -45,7 +45,7 @@ export function createApp<
   if (app) {
     return app;
   }
-  const appStore = getAppStore(options.appState);
+  const modelManager = getModelManager(options.appState);
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory();
@@ -58,7 +58,7 @@ export function createApp<
   }) as Router;
   router.afterEach(_current => {
     if (!_current.matches) {
-      getErrorHandler(getAppStore()).errorHandler(
+      getErrorHandler(getModelManager()).errorHandler(
         SHUVI_ERROR_CODE.PAGE_NOT_FOUND
       );
     }
@@ -69,7 +69,7 @@ export function createApp<
     AppComponent: PlatformAppComponent,
     router,
     context,
-    appStore,
+    modelManager,
     render: options.render,
     UserAppComponent
   });

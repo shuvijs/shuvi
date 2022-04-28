@@ -1,5 +1,8 @@
 import { IRedirectState, IRouter } from '@shuvi/router';
-import { IApplication, IAppStore } from '@shuvi/platform-shared/lib/runtime';
+import {
+  IApplication,
+  IModelManager
+} from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
 import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-shared/lib/runtime';
 
@@ -15,7 +18,7 @@ export type IRenderDocumentOptions = {
   app: IApplication;
   AppComponent: any;
   router?: IRouter;
-  appStore: IAppStore;
+  modelManager: IModelManager;
   appContext: any;
 };
 

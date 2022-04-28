@@ -84,14 +84,14 @@ export abstract class BaseRenderer {
     app,
     AppComponent,
     router,
-    appStore,
+    modelManager,
     appContext
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
     let docProps = await this.getDocumentProps({
       app,
       AppComponent,
       router,
-      appStore,
+      modelManager,
       appContext
     });
 

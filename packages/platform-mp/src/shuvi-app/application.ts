@@ -2,7 +2,7 @@ import AppComponent from '@shuvi/app/core/app';
 import {
   IAppState,
   IAppRenderFn,
-  getAppStore,
+  getModelManager,
   Application
 } from '@shuvi/platform-shared/esm/runtime';
 import platform from '@shuvi/platform-shared/esm/runtime/platform';
@@ -19,14 +19,14 @@ export function createApp<
     render: IAppRenderFn<Context, never, CompType>;
     appState?: AppState;
   }
-): Application<Context, Router, ReturnType<typeof getAppStore>> {
-  const appStore = getAppStore(options.appState);
+): Application<Context, Router, ReturnType<typeof getModelManager>> {
+  const modelManager = getModelManager(options.appState);
   const router = undefined;
   return platform({
     AppComponent,
     context,
     router: router as never,
-    appStore,
+    modelManager,
     render: options.render
   });
 }
