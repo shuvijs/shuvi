@@ -1,5 +1,5 @@
 import { Application, IApplicationOptions } from './application';
-import { IAppStore } from './appStore';
+import { IModelManager } from './appStore';
 import { initPlugins } from './lifecycle';
 import * as customRuntime from '@shuvi/app/user/runtime';
 import { pluginRecord } from '@shuvi/app/core/plugins';
@@ -9,9 +9,9 @@ import { IApplicationCreaterContext } from './index';
 export default function platform<
   Context extends IApplicationCreaterContext,
   Router extends IRouter = IRouter,
-  AppStore extends IAppStore = IAppStore
+  modelManager extends IModelManager = IModelManager
 >(
-  options: IApplicationOptions<Context, Router, AppStore>,
+  options: IApplicationOptions<Context, Router, modelManager>,
   isRunPlugins: boolean = true
 ) {
   const application = new Application(options);

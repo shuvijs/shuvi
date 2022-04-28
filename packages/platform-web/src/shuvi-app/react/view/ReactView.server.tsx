@@ -8,7 +8,8 @@ import {
   IAppComponent,
   IRouteComponent,
   IHtmlTag,
-  IAppRouteConfig
+  IAppRouteConfig,
+  errorModel
 } from '@shuvi/platform-shared/esm/runtime';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
@@ -22,7 +23,7 @@ export class ReactServerView implements IReactServerView {
     AppComponent,
     router,
     appContext,
-    appStore,
+    modelManager,
     manifest,
     getAssetPublicUrl
   }) => {
@@ -30,7 +31,7 @@ export class ReactServerView implements IReactServerView {
 
     const redirector = createRedirector();
 
-    const error = getErrorHandler(appStore);
+    const error = getErrorHandler(modelManager);
 
     await router.ready;
 
@@ -103,10 +104,11 @@ export class ReactServerView implements IReactServerView {
       };
     }
 
-    const appState = appStore.getState();
+    const errorStore = modelManager.get(errorModel);
+    const errorState = errorStore.$state();
 
-    if (appState.error.errorCode !== undefined) {
-      appContext.statusCode = appState.error.errorCode;
+    if (errorState.hasError) {
+      appContext.statusCode = errorState.errorCode;
     }
 
     const loadableModules: string[] = [];
@@ -122,7 +124,7 @@ export class ReactServerView implements IReactServerView {
             >
               <AppContainer
                 appContext={appContext}
-                store={appStore}
+                modelManager={modelManager}
                 errorComp={ErrorPage}
               >
                 <AppComponent {...appInitialProps} />
@@ -183,7 +185,7 @@ export class ReactServerView implements IReactServerView {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
 
-    appData.appState = appState;
+    appData.appState = modelManager.getChangedState();
 
     return {
       appData,

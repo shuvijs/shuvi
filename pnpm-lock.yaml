@@ -141,7 +141,7 @@ importers:
   packages/platform-shared:
     specifiers:
       '@shuvi/hook': 0.0.1-pre.10
-      '@shuvi/redox': 0.0.1-pre.4
+      '@shuvi/redox': 0.0.1-pre.6
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/runtime': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
@@ -151,7 +151,7 @@ importers:
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
-      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
+      '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
       '@shuvi/router': link:../router
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
@@ -167,6 +167,7 @@ importers:
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
       '@shuvi/plugins': 0.0.1-pre.10
+      '@shuvi/redox-react': 0.0.1-pre.6
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/router-react': 0.0.1-pre.10
       '@shuvi/runtime': 0.0.1-pre.10
@@ -197,6 +198,7 @@ importers:
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
+      '@shuvi/redox-react': 0.0.1-pre.6_react-dom@16.14.0+react@16.14.0
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
@@ -228,8 +230,8 @@ importers:
     specifiers:
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
-      '@shuvi/redox': 0.0.1-pre.4
-      '@shuvi/redox-react': 0.0.1-pre.4
+      '@shuvi/redox': 0.0.1-pre.6
+      '@shuvi/redox-react': 0.0.1-pre.6
       '@shuvi/runtime': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/utils': 0.0.1-pre.10
@@ -240,8 +242,8 @@ importers:
     dependencies:
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
-      '@shuvi/redox-react': 0.0.1-pre.4_cedc4e4e2799f5a2ee00102576204647
+      '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
+      '@shuvi/redox-react': 0.0.1-pre.6_@shuvi+redox@0.0.1-pre.6
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
       '@shuvi/utils': link:../utils
@@ -3728,6 +3730,27 @@ packages:
       react-dom: 16.14.0_react@16.14.0
     dev: false
 
+  /@shuvi/redox-react/0.0.1-pre.6_@shuvi+redox@0.0.1-pre.6:
+    resolution: {integrity: sha512-LGh4JBLiJ7c9BnQy818S8cZ76FDC7tudcYaG+sxNmk4dwRZzGXQPM5oracHH5jcNbnGMIQEgpioMzzMQuhTWiw==}
+    peerDependencies:
+      '@shuvi/redox': 0.0.1-pre.6
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
+    dev: false
+
+  /@shuvi/redox-react/0.0.1-pre.6_react-dom@16.14.0+react@16.14.0:
+    resolution: {integrity: sha512-LGh4JBLiJ7c9BnQy818S8cZ76FDC7tudcYaG+sxNmk4dwRZzGXQPM5oracHH5jcNbnGMIQEgpioMzzMQuhTWiw==}
+    peerDependencies:
+      '@shuvi/redox': 0.0.1-pre.6
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      react: 16.14.0
+      react-dom: 16.14.0_react@16.14.0
+    dev: false
+
   /@shuvi/redox/0.0.1-pre.4_redux@4.1.2:
     resolution: {integrity: sha512-+/lI/s47oBNjKVC0xQ8MLfH8EWpO81gpGqoATs2RbTViDruqA3ILgpXWdA4NGis6XQ6TNKVJOjReG/bNqpBdhg==}
     engines: {node: '>=10'}
@@ -3736,6 +3759,17 @@ packages:
     dependencies:
       '@types/react-redux': 7.1.22
       immer: 8.0.4
+      redux: 4.1.2
+      tiny-invariant: 1.2.0
+    dev: false
+
+  /@shuvi/redox/0.0.1-pre.6_redux@4.1.2:
+    resolution: {integrity: sha512-FWWrRHXVpYZWSlGLKpUCdi2Ctb/52nDeC0NpNjhKihKpqkHOUMBkSLrfJUZIqXFzSdgjn3Ymd3s5lsLfHzCJkQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      redux: '>=4'
+    dependencies:
+      immer: 9.0.6
       redux: 4.1.2
       tiny-invariant: 1.2.0
     dev: false
@@ -8031,6 +8065,10 @@ packages:
 
   /immer/8.0.4:
     resolution: {integrity: sha512-jMfL18P+/6P6epANRvRk6q8t+3gGhqsJ9EuJ25AXE+9bNTYtssvzeYbEd0mXRYWCmmXSIbnlpz6vd6iJlmGGGQ==}
+    dev: false
+
+  /immer/9.0.6:
+    resolution: {integrity: sha512-G95ivKpy+EvVAnAab4fVa4YGYn24J1SpEktnJX7JJ45Bd7xqME/SCplFzYFmTbrkwZbQ4xJK1xMTUYBkN6pWsQ==}
     dev: false
 
   /immutable/4.0.0:

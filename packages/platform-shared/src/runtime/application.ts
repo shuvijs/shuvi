@@ -1,8 +1,8 @@
 import { IRouter } from '@shuvi/router';
 import { CustomAppContext } from '@shuvi/runtime';
 import { getManager, PluginManager } from './lifecycle';
-import { IAppStore, IAppState } from './appStore';
 import { setApp } from './appProxy';
+import { IModelManager, IAppState } from './appStore';
 
 export interface ApplicationCreater<
   Context extends IContext,
@@ -42,7 +42,7 @@ export interface IRenderOptions<
   AppComponent: CompType;
   router?: Router;
   appContext: Context;
-  appStore: IAppStore;
+  modelManager: IModelManager;
 }
 
 export interface IView<
@@ -64,12 +64,12 @@ export type IRerenderConfig = {
 export interface IApplicationOptions<
   Context extends IContext,
   Router extends IRouter,
-  AppStore extends IAppStore
+  ModelManager extends IModelManager
 > {
   AppComponent: any;
   router: Router;
   context: Context;
-  appStore: AppStore;
+  modelManager: ModelManager;
   render: IAppRenderFn<Context, Router>;
   UserAppComponent?: any;
 }
@@ -77,22 +77,22 @@ export interface IApplicationOptions<
 export class Application<
   Context extends IContext,
   Router extends IRouter = IRouter,
-  AppStore extends IAppStore = IAppStore
+  ModelManager extends IModelManager = IModelManager
 > implements IApplication
 {
   AppComponent: any;
   router: Router;
   pluginManager: PluginManager;
   private _context: Context;
-  private _appStore: IAppStore;
+  private _modelManager: IModelManager;
   private _renderFn: IAppRenderFn<Context, Router>;
   private _UserAppComponent?: any;
 
-  constructor(options: IApplicationOptions<Context, Router, AppStore>) {
+  constructor(options: IApplicationOptions<Context, Router, ModelManager>) {
     this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;
-    this._appStore = options.appStore;
+    this._modelManager = options.modelManager;
     this._renderFn = options.render;
     this._UserAppComponent = options.UserAppComponent;
     this.pluginManager = getManager();
@@ -156,7 +156,7 @@ export class Application<
   private async _render() {
     await this._renderFn({
       appContext: this._context,
-      appStore: this._appStore,
+      modelManager: this._modelManager,
       AppComponent: this.AppComponent,
       router: this.router
     });
