@@ -5,7 +5,7 @@ export default createServerPlugin({
     const { modelManager } = appContext;
     delete appContext.modelManager;
     return {
-      redox: modelManager.getChangedState()
+      redox: modelManager?.getChangedState()
     };
   }
 }) as ServerPluginInstance;

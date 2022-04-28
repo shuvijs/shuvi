@@ -27,7 +27,7 @@ const getModelManager = (initialState: any = {}): IModelManager => {
 
 export default createPlugin({
   getAppComponent: async (App, appContext) => {
-    return withRedox(App, appContext);
+    return withRedox(App, appContext as { modelManager: IModelManager });
   },
   getAppContext: ctx => {
     if (!ctx.modelManager) {
