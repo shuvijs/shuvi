@@ -45,6 +45,7 @@
     "@shuvi/shared": "0.0.1-pre.10",
     "@shuvi/toolpack": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10",
+    "@shuvi/redox": "0.0.1-pre.6",
     "@shuvi/redox-react": "0.0.1-pre.6",
     "content-type": "^1.0.4",
     "cookie": "^0.4.1",
@@ -56,6 +57,7 @@
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-refresh": "0.8.3",
+    "redux": "4.1.2",
     "use-subscription": "1.4.1"
   },
   "devDependencies": {
