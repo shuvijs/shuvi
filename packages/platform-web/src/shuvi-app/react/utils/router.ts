@@ -1,7 +1,8 @@
 import { createRedirector } from '@shuvi/router';
 import {
   getErrorHandler,
-  getAppStore,
+  getModelManager,
+  errorModel,
   IRouteComponentContext,
   IAppRouteConfig,
   IApplicationCreaterBase
@@ -41,13 +42,13 @@ export function normalizeRoutes(
           return next();
         }
 
-        const appStore = getAppStore();
+        const modelManager = getModelManager();
 
         const shouldHydrated = routeProps[id] !== undefined && !hydrated[id];
 
         if (shouldHydrated) {
-          const { error } = appStore.getState();
-          if (error.errorCode !== undefined) {
+          const { hasError } = modelManager.get(errorModel).$state();
+          if (hasError) {
             hydrated[id] = true; // hydrated error page, run Component.getInitialProps by client
             return next();
           }
@@ -100,7 +101,7 @@ export function normalizeRoutes(
         // reset() make errorPage hide error and show /a page (splash screen)
         // the splash time is lazy load /b
         // route /b and component load show page /b
-        const error = getErrorHandler(appStore);
+        const error = getErrorHandler(modelManager);
         if (errorComp.errorCode !== undefined) {
           error.errorHandler(errorComp.errorCode, errorComp.errorDesc);
         } else {
