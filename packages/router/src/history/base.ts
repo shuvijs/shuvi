@@ -71,8 +71,25 @@ export default abstract class BaseHistory {
   abstract setup(): void;
 
   // history interface
+  /**
+   * Jump to the specified route
+   * ```ts
+   * router.push("/list");
+   * router.push("/list?a=b");
+   * router.push({
+   *   pathname: "/list",
+   *   search: "?a=b"
+   * })
+   * ```
+   */
   abstract push(to: PathRecord, options: PushOptions): void;
+  /**
+   *  Jump to the specified route and replace the current history record
+   */
   abstract replace(to: PathRecord, options?: PushOptions): void;
+  /**
+   * Jump to the specified route by number
+   */
   abstract go(delta: number): void;
   abstract block(blocker: Blocker<State>): () => void;
 
