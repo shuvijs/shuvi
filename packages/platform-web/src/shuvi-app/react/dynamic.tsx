@@ -57,6 +57,14 @@ export function noSSR<P = {}>(
   );
 }
 
+/**
+ *  ES2020 [dynamic import()](https://github.com/tc39/proposal-dynamic-import) for JavaScript
+ *
+ * @param dynamicOptions {@link DynamicOptions} | {@link Loader}
+ * @param options {@link DynamicOptions}
+ * @returns React.ComponentType
+ */
+
 export default function dynamic<P = {}>(
   dynamicOptions: DynamicOptions<P> | Loader<P>,
   options?: DynamicOptions<P>

@@ -17,6 +17,10 @@ import { RouterContext, RouteContext, MatchedRouteContext } from './contexts';
 import { warning } from './utils';
 import { INavigateFunction } from './types';
 
+/**
+ *  is just point `router.current` object
+ */
+
 export function useCurrentRoute() {
   return useContext(RouteContext);
 }
@@ -159,6 +163,7 @@ export function useResolvedPath(to: PathRecord): Path {
 
 /**
  * Returns the current router object
+ * two parts, one is router behavior(browser history mode, hash history mode), another is router content
  */
 export function useRouter(): IRouter {
   invariant(

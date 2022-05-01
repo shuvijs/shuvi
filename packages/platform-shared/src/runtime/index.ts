@@ -89,16 +89,63 @@ export interface IViewClient<
   Router extends IRouter = IRouter
 > extends IView<IClientRendererOptions<CompType, Data, Router>> {}
 
+/**
+ * route component getInitialProps params `context`
+ */
 export interface IRouteComponentContext {
+  /**
+   * is running on server, if server is true, client will be false
+   */
   isServer: boolean;
+  /**
+   * current url path
+   */
   pathname: string;
+  /**
+   * the query string of current url
+   *
+   * eg. url /x?name=xx
+   * ```ts
+   * {name:xx}
+   * ```
+   */
   query: IQuery;
+  /**
+   * the params of current url
+   *
+   * eg. url /x?name=xx path /:lng
+   * ```ts
+   * {lng:x}
+   * ```
+   */
   params: IParams;
+  /**
+   * redirect function
+   *
+   * ```ts
+   * redirect('/target')
+   * redirect(301, '/target')
+   * ```
+   */
   redirect: IRedirectFn;
+  /**
+   * throw error if necessary
+   * ```ts
+   * error(502, 'custom error describe')
+   * ```
+   */
   error: IErrorHandler;
+  /**
+   * Application context object, which accompanies the entire application life cycle
+   * {@link IApplicationCreaterClientContext} for client
+   * {@link IApplicationCreaterServerContext} for server
+   */
   appContext: IApplicationCreaterContext;
 }
 
+/**
+ * app component getInitialProps params `context`
+ */
 export interface IAppComponentContext extends IRouteComponentContext {
   fetchInitialProps(): Promise<void>;
 }

@@ -10,7 +10,29 @@ function isModifiedEvent(event: React.MouseEvent) {
 }
 
 /**
- * The public API for rendering a history-aware <a>.
+ * The public API for rendering a history-aware `<a>`.
+ * ```ts
+ * // jump to `/about`
+ * <Link to="/about">About</Link>
+ * // jump with query
+ * <Link to="/about?sort=name">About</Link>
+ * // with some state
+ * <Link to="/about" state={{fromDashboard: true}}>About</Link>
+ * // props `to` could be a object
+ * <Link to={{
+ *   pathname: "/about",
+ *   search: "?sort=name",
+ *   hash: "#the-hash",
+ * }}>About</Link>
+ * // props target '_self' | '_blank', default is '_self'
+ * <Link to="/about" target="_self">About</Link>
+ * // overrides default redirect mode by `replace`
+ * <Link to="/about" replace>About</Link>
+ * // if `onClick` function, run it first
+ * <Link to="/about" onClick={fn}>About</Link>
+ * // other props will be delivered to `<a>`
+ * <Link to="/about" a='a' b='b'>About</Link> => <{...rest} a>
+ * ```
  */
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   function LinkWithRef(

@@ -6,7 +6,7 @@ import { __DEV__ } from './constants';
 import { IMemoryRouterProps } from './types';
 
 /**
- * A <Router> that stores all entries in memory.
+ * a <Router> that stores all entries in memory.
  */
 export function MemoryRouter({
   basename,
