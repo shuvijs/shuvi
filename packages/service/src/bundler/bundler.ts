@@ -154,7 +154,7 @@ class WebpackBundler {
         });
       });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler as any).issues.tap(
+      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
         'afterTypeScriptCheck',
         (issues: Issue[]) => {
           const format = (message: any) => {

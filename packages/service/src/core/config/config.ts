@@ -80,7 +80,6 @@ export async function loadConfig({
       return {};
     }
   }
-  console.log('rootDir', rootDir)
   let fileConfig: UserConfig = {};
 
   const getOutputFile = (filepath: string) =>

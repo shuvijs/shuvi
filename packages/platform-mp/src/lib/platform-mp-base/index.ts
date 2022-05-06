@@ -356,7 +356,6 @@ export default abstract class PlatformMpBase {
         pageFiles.forEach(page => {
           entry['pages/' + page.name] = [page.filepath];
         });
-        // config.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
         config.entryPoints.clear();
         config.optimization.clear();
         modifyStyle(config, this.fileType.style);
