@@ -10,7 +10,7 @@ import {
   Plugin as EsbuildPlugin
 } from 'esbuild';
 
-const PATH_SEG_RE = /\/|\\/g;
+export const PATH_SEG_RE = /\/|\\/g;
 
 const CACHE_DIR = path.join(process.cwd(), './node_modules/.bundle-require');
 
