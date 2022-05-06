@@ -101,9 +101,9 @@ importers:
       mini-css-extract-plugin: 1.3.9
       postcss: 8.2.3
       postcss-url: ^10.1.3
-      react: 17.0.1
+      react: 16.14.0
       react-app-polyfill: 2.0.0
-      react-dom: 17.0.1
+      react-dom: 16.14.0
       regenerator-runtime: ^0.13.9
       webpack: 5.36.0
     dependencies:
@@ -123,7 +123,7 @@ importers:
       '@tarojs/api': 3.3.3
       '@tarojs/components': 3.3.3
       '@tarojs/helper': 3.3.3
-      '@tarojs/react': 3.3.3_react@17.0.1
+      '@tarojs/react': 3.3.3_react@16.14.0
       '@tarojs/runtime': 3.3.3
       '@tarojs/shared': 3.3.3
       '@tarojs/taro': 3.3.3
@@ -132,9 +132,9 @@ importers:
       mini-css-extract-plugin: 1.3.9_webpack@5.36.0
       postcss: 8.2.3
       postcss-url: 10.1.3_postcss@8.2.3
-      react: 17.0.1
+      react: 16.14.0
       react-app-polyfill: 2.0.0
-      react-dom: 17.0.1_react@17.0.1
+      react-dom: 16.14.0_react@16.14.0
       regenerator-runtime: 0.13.9
       webpack: 5.36.0
 
@@ -192,7 +192,6 @@ importers:
       react-app-polyfill: 2.0.0
       react-dom: 16.14.0
       react-refresh: 0.8.3
-      redux: 4.1.2
       use-subscription: 1.4.1
       webpack: 5.36.0
     dependencies:
@@ -200,7 +199,7 @@ importers:
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
-      '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
+      '@shuvi/redox': 0.0.1-pre.6
       '@shuvi/redox-react': 0.0.1-pre.6_634f7811b186140762953c3b29c41cc2
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
@@ -219,7 +218,6 @@ importers:
       react-app-polyfill: 2.0.0
       react-dom: 16.14.0_react@16.14.0
       react-refresh: 0.8.3
-      redux: 4.1.2
       use-subscription: 1.4.1_react@16.14.0
     devDependencies:
       '@testing-library/react': 10.0.2_react-dom@16.14.0+react@16.14.0
@@ -3748,6 +3746,16 @@ packages:
       tiny-invariant: 1.2.0
     dev: false
 
+  /@shuvi/redox/0.0.1-pre.6:
+    resolution: {integrity: sha512-FWWrRHXVpYZWSlGLKpUCdi2Ctb/52nDeC0NpNjhKihKpqkHOUMBkSLrfJUZIqXFzSdgjn3Ymd3s5lsLfHzCJkQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      redux: '>=4'
+    dependencies:
+      immer: 9.0.6
+      tiny-invariant: 1.2.0
+    dev: false
+
   /@shuvi/redox/0.0.1-pre.6_redux@4.1.2:
     resolution: {integrity: sha512-FWWrRHXVpYZWSlGLKpUCdi2Ctb/52nDeC0NpNjhKihKpqkHOUMBkSLrfJUZIqXFzSdgjn3Ymd3s5lsLfHzCJkQ==}
     engines: {node: '>=10'}
@@ -3949,12 +3957,12 @@ packages:
       - supports-color
     dev: false
 
-  /@tarojs/react/3.3.3_react@17.0.1:
+  /@tarojs/react/3.3.3_react@16.14.0:
     resolution: {integrity: sha512-t1tIC7JQCbZRojEj7NDb2uBGHxBXeVCRObFPbt8cCHE80nQJAWHYvy18DEAAdVUhAW8LJRZgdJ7dfb9a8JLBnA==}
     dependencies:
       '@tarojs/runtime': 3.3.3
       '@tarojs/shared': 3.3.3
-      react-reconciler: 0.26.1_react@17.0.1
+      react-reconciler: 0.26.1_react@16.14.0
       scheduler: 0.20.2
     transitivePeerDependencies:
       - react
@@ -5876,6 +5884,10 @@ packages:
     resolution: {integrity: sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==}
     dev: false
 
+  /colorette/1.4.0:
+    resolution: {integrity: sha512-Y2oEozpomLn7Q3HFP7dpww7AtMJplbM9lGZP6RDfHqmbeRjiwRg4n6VM6j4KLmRke85uWEI7JqF17f3pqdRA0g==}
+    dev: false
+
   /combined-stream/1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
     engines: {node: '>= 0.8'}
@@ -7537,6 +7549,10 @@ packages:
 
   /fs-monkey/1.0.1:
     resolution: {integrity: sha512-fcSa+wyTqZa46iWweI7/ZiUfegOZl0SG8+dltIwFXo7+zYU9J9kpS3NB6pZcSlJdhvIwp81Adx2XhZorncxiaA==}
+
+  /fs-monkey/1.0.3:
+    resolution: {integrity: sha512-cybjIfiiE+pTWicSCLFHSrXZ6EilF30oh91FDP9S2B051prEa7QWfrVTQm10/dDpswBDXZugPa1Ogu8Yh+HV0Q==}
+    dev: false
 
   /fs.realpath/1.0.0:
     resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=}
@@ -9982,8 +9998,8 @@ packages:
     resolution: {integrity: sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=}
     engines: {node: '>= 0.6'}
 
-  /mem/8.0.0:
-    resolution: {integrity: sha512-qrcJOe6uD+EW8Wrci1Vdiua/15Xw3n/QnaNXE7varnB6InxSk7nu3/i5jfy3S6kWxr8WYJ6R1o0afMUtvorTsA==}
+  /mem/8.1.1:
+    resolution: {integrity: sha512-qFCFUDs7U3b8mBDPyz5EToEKoAkgCzqquIgi9nkkR9bixxOVOre+09lbuH7+9Kn2NFpm56M3GUWVbU2hQgdACA==}
     engines: {node: '>=10'}
     dependencies:
       map-age-cleaner: 0.1.3
@@ -9995,6 +10011,13 @@ packages:
     engines: {node: '>= 4.0.0'}
     dependencies:
       fs-monkey: 1.0.1
+
+  /memfs/3.4.1:
+    resolution: {integrity: sha512-1c9VPVvW5P7I85c35zAdEr1TD5+F11IToIHIlrVIcflfnzPkJa0ZoYEoEdYDP8KgPFoSZ/opDrUsAoZWym3mtw==}
+    engines: {node: '>= 4.0.0'}
+    dependencies:
+      fs-monkey: 1.0.3
+    dev: false
 
   /memorystream/0.3.1:
     resolution: {integrity: sha1-htcJCzDORV1j+64S3aUaR93K+bI=}
@@ -11761,17 +11784,6 @@ packages:
       react: 16.14.0
       scheduler: 0.19.1
 
-  /react-dom/17.0.1_react@17.0.1:
-    resolution: {integrity: sha512-6eV150oJZ9U2t9svnsspTMrWNyHc6chX0KzDeAOXftRa8bNeOKTTfCJ7KorIwenkHd2xqVTBTCZd79yk/lx/Ug==}
-    peerDependencies:
-      react: 17.0.1
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-      react: 17.0.1
-      scheduler: 0.20.2
-    dev: false
-
   /react-error-overlay/6.0.8:
     resolution: {integrity: sha512-HvPuUQnLp5H7TouGq3kzBeioJmXms1wHy9EGjz2OURWBp4qZO6AfGEcnxts1D/CbwPLRAgTMPCEgYhA3sEM4vw==}
     dev: false
@@ -11786,7 +11798,7 @@ packages:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
     dev: true
 
-  /react-reconciler/0.26.1_react@17.0.1:
+  /react-reconciler/0.26.1_react@16.14.0:
     resolution: {integrity: sha512-6E/CvH9zcDmHjhiNJlP0qJ8+3ufnY2b5RWs774Uy8XKWN0l6qfnlkz0XnDacxqj2rbJdq76w9dlFXjPPOQrmqA==}
     engines: {node: '>=0.10.0'}
     peerDependencies:
@@ -11794,7 +11806,7 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-      react: 17.0.1
+      react: 16.14.0
       scheduler: 0.20.2
     dev: false
 
@@ -11822,14 +11834,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       prop-types: 15.8.1
-
-  /react/17.0.1:
-    resolution: {integrity: sha512-lG9c9UuMHdcAexXtigOZLX8exLWkW0Ku29qPRU8uhF2R9BN96dLCt0psvzPLlHc5OWkgymP3qwTRgbnw5BKx3w==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-    dev: false
 
   /read-pkg-up/7.0.1:
     resolution: {integrity: sha512-zK0TB7Xd6JpCLmlLmufqykGE+/TlOePD6qKClNW7hHDKFh/J7/7gCWGR7joEQEW1bKq3a3yUZSObOoWLFQ4ohg==}
@@ -13661,9 +13665,9 @@ packages:
     peerDependencies:
       webpack: ^4.0.0 || ^5.0.0
     dependencies:
-      colorette: 1.2.1
-      mem: 8.0.0
-      memfs: 3.2.0
+      colorette: 1.4.0
+      mem: 8.1.1
+      memfs: 3.4.1
       mime-types: 2.1.34
       range-parser: 1.2.1
       schema-utils: 3.1.1
