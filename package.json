@@ -9,8 +9,8 @@
     "url": "git+https://github.com/shuvijs/shuvi.git"
   },
   "scripts": {
-    "dev": "pnpm -r --stream --parallel --filter ./packages run dev ",
-    "build": "pnpm -r --filter ./packages run build",
+    "dev": "pnpm -r --stream --parallel run dev",
+    "build": "pnpm -r run build",
     "clean": "pnpm -r --parallel exec rm -rf node_modules lib esm shuvi-app && pnpm exec rm -rf node_modules",
     "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",

@@ -159,10 +159,6 @@ export default abstract class PlatformMpBase {
       },
       addRuntimeService: () => [
         {
-          source: resolveAppFile('App'),
-          exported: '{ default as App }'
-        },
-        {
           source: resolveAppFile('Head'),
           exported: '{default as Head}'
         },

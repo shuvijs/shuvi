@@ -1,6 +1,6 @@
-import { Compiler, Stats, MultiCompiler } from 'webpack';
+import { Compiler, Stats, MultiCompiler } from '@shuvi/toolpack/lib/webpack';
 
-import type webpack from 'webpack';
+import type webpack from '@shuvi/toolpack/lib/webpack';
 
 export type BundlerResult = {
   errors: webpack.StatsError[];

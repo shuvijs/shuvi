@@ -1,6 +1,12 @@
-const { createPlugin } = require('@shuvi/platform-shared/lib/runtime/lifecycle');
+import { createPlugin } from '@shuvi/platform-shared/lib/runtime/lifecycle';
+import { dynamic } from "@shuvi/runtime";
 
-module.exports = option =>
+const Hello = dynamic(() => import("./hello.jsx"), {
+  ssr: false,
+  loading: () => <p>LOADING</p>
+});
+
+export default option =>
   createPlugin({
     getAppComponent: App => {
       const newApp = () => (
@@ -16,6 +22,7 @@ module.exports = option =>
         <div>
           <div>This is getRootAppComponent</div>
           <App />
+          <Hello />
         </div>
       );
       return newApp;

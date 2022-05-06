@@ -9,7 +9,7 @@ import { inspect } from 'util';
 import webpack, {
   MultiCompiler as WebapckMultiCompiler,
   Compiler as WebapckCompiler
-} from 'webpack';
+} from '@shuvi/toolpack/lib/webpack';
 import { IPluginContext } from '../core';
 import { Target, TargetChain } from '../core/lifecycle';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
