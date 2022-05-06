@@ -1,8 +1,6 @@
-type resData = {
-  data: string;
-};
+import type { RuntimeServer } from '@shuvi/runtime'
 
-export default (req: any, res: any) => {
-  const data: resData = { data: 'apis index success' };
-  return res.send(data);
-};
+const apiHandler: RuntimeServer.IApiRequestHandler = function handler(req, res) {
+  res.status(200).json({ data: 'apis index success' })
+}
+export default apiHandler

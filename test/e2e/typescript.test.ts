@@ -30,4 +30,10 @@ describe('TypesSript Suppport', () => {
     res = await got.get(ctx.url('/api'));
     expect(JSON.parse(res.body)).toStrictEqual({ data: 'apis index success' });
   });
+
+  test('middleware should work', async () => {
+    let res;
+    res = await got.get(ctx.url('/middleware'));
+    expect(JSON.parse(res.body)).toStrictEqual('middleware success');
+  });
 });
