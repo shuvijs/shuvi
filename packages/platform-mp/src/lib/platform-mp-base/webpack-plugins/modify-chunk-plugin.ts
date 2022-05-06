@@ -1,4 +1,4 @@
-import webpack, { sources } from 'webpack';
+import webpack, { sources } from '@shuvi/toolpack/lib/webpack';
 import path from 'path';
 import { urlToRequest } from 'loader-utils';
 import { IFileType } from '../types';

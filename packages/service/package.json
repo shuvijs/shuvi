@@ -61,10 +61,5 @@
     "@types/dotenv": "8.2.0",
     "@types/ejs": "3.0.4",
     "@types/webpack-dev-middleware": "5.0.2"
-  },
-  "dependenciesMeta": {
-    "@shuvi/toolpack": {
-      "injected": true
-    }
   }
 }

@@ -41,6 +41,7 @@ export function createBrowserWebpackChain({
 
   if (dev) {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
+    // chain.plugin('private/hmr-plugin-sdsd').use(webpack.HotModuleReplacementPlugin);
   } else {
     chain.optimization.splitChunks({
       chunks: 'all',

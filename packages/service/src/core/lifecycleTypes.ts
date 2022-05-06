@@ -1,6 +1,6 @@
 import { RequestListener } from 'http';
 import WebpackChain from 'webpack-chain';
-import webpack, { Configuration } from 'webpack';
+import webpack, { Configuration } from '@shuvi/toolpack/lib/webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import { createFile, fileUtils } from '../project';
 import { IWebpackConfigOptions } from '../bundler/config';
