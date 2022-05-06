@@ -47,7 +47,6 @@
     "launch-editor": "2.2.1",
     "rimraf": "^3.0.2",
     "send": "0.17.1",
-    "webpack": "5.36.0",
     "webpack-chain": "6.5.1",
     "webpack-dev-middleware": "4.1.0"
   },
@@ -61,10 +60,5 @@
     "@types/dotenv": "8.2.0",
     "@types/ejs": "3.0.4",
     "@types/webpack-dev-middleware": "5.0.2"
-  },
-  "dependenciesMeta": {
-    "@shuvi/toolpack": {
-      "injected": true
-    }
   }
 }

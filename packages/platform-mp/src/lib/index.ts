@@ -1,4 +1,3 @@
-// import React from 'react';
 import { IPlatform } from '@shuvi/service';
 
 const platform: IPlatform = ({ target = 'bmp' } = {}, platformContext) => {

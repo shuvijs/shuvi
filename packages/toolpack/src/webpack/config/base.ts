@@ -155,16 +155,6 @@ export function baseWebpackChain({
     .test(/\.(js|mjs|jsx|ts|tsx)$/)
     .include.merge([...include, ...AppSourceRegexs])
     .end()
-    .exclude.add((path: string) => {
-      if (AppSourceRegexs.some(r => r.test(path))) {
-        return false;
-      }
-      if (include.some(src => path.includes(src))) {
-        return false;
-      }
-      return /node_modules/.test(path);
-    })
-    .end()
     .use('shuvi-swc-loader')
     .loader('@shuvi/shuvi-swc-loader')
     .options({

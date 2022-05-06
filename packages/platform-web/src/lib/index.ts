@@ -1,5 +1,4 @@
-import path from 'path';
-import { IPlatform } from '@shuvi/service';
+import { IPlatform, resolvePlugin } from '@shuvi/service';
 
 import {
   sharedPlugin,
@@ -18,7 +17,7 @@ const platform: IPlatform = async (
   { framework = 'react' } = {},
   platformContext
 ) => {
-  const mainPlugin = getMainPlugin(platformContext)
+  const mainPlugin = getMainPlugin(platformContext);
 
   const platformFramework = require(`./targets/${framework}`).default;
   const platformFrameworkContent = await platformFramework();
@@ -32,10 +31,11 @@ const platform: IPlatform = async (
     entry,
     polyfills
   );
+  const modelPlugin = resolvePlugin('@shuvi/plugins/model', { dir: __dirname });
   return {
     plugins: [
       mainPlugin,
-      path.dirname(require.resolve('@shuvi/plugins/model')),
+      modelPlugin,
       sharedPlugin,
       ...featurePlugins,
       ...platformFrameworkContent.plugins

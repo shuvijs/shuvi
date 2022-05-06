@@ -16,22 +16,10 @@
   "main": "lib/index.js",
   "module": "esm/index.js",
   "exports": {
-    "./model": {
-      "import": "./esm/model/index.js",
-      "require": "./lib/model/index.js"
-    },
-    "./model/server": {
-      "import": "./esm/model/server.js",
-      "require": "./lib/model/server.js"
-    },
-    "./model/runtime": {
-      "import": "./esm/model/runtime.js",
-      "require": "./lib/model/runtime.js"
-    },
-    "./model/types": {
-      "import": "./esm/model/types.d.ts",
-      "require": "./lib/model/types.d.ts"
-    }
+    "./model": "./lib/model/index.js",
+    "./model/server": "./lib/model/server.js",
+    "./model/runtime": "./esm/model/runtime.js",
+    "./model/types": "./esm/model/types.d.ts"
   },
   "types": "lib/index.d.ts",
   "scripts": {

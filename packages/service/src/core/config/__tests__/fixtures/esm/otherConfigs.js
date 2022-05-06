@@ -1,4 +1,4 @@
-import webpack from 'webpack';
+import webpack from '@shuvi/toolpack/lib/webpack';
 export default {
   webpack
 };

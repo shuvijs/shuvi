@@ -1,4 +1,4 @@
-import { Compiler } from 'webpack';
+import { Compiler } from '@shuvi/toolpack/lib/webpack';
 // @ts-ignore
 import ConstDependency from 'webpack/lib/dependencies/ConstDependency';
 // @ts-ignore

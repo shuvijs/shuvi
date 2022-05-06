@@ -59,6 +59,9 @@ class Api {
   private _pluginContext!: IPluginContext;
   private _serverConfigs!: ServerConfigs;
 
+  /** will be included by @shuvi/swc-loader */
+  private _runtimePluginDirs: string[] = [];
+
   constructor({ cwd, mode, config, phase, platform }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
@@ -119,7 +122,7 @@ class Api {
       resolvePublicFile: this.resolvePublicFile.bind(this)
     };
 
-    const { runner, setContext } = this._pluginManager;
+    const { runner, setContext, createPlugin, usePlugin } = this._pluginManager;
     setContext(this._pluginContext);
 
     //## start init
@@ -132,6 +135,18 @@ class Api {
     platformPlugins
       .concat(userPlugins)
       .forEach(plugin => this._applyPlugin(plugin));
+
+    // include runtimePlugin directories at @shuvi/swc-loader
+    const addIncludeToSwcLoader = createPlugin({
+      configWebpack: config => {
+        config.module
+          .rule('main')
+          .oneOf('js')
+          .include.merge(this._runtimePluginDirs);
+        return config;
+      }
+    });
+    usePlugin(addIncludeToSwcLoader);
 
     // 3. init resources
     const resources = (await runner.addResource()).flat() as Resources[];
@@ -234,6 +249,7 @@ class Api {
     }
     if (runtime) {
       this.addRuntimePlugin(runtime);
+      this._runtimePluginDirs.push(path.dirname(runtime.plugin));
     }
     if (types) {
       this.addTypeDeclarationFile(types);

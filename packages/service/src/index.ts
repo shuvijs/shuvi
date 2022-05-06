@@ -10,7 +10,8 @@ export {
   IUserRouteConfig,
   CorePluginConstructor,
   loadConfig,
-  defineConfig
+  defineConfig,
+  resolvePlugin
 } from './core';
 export { ProjectBuilder } from './project';
 export { getBundler } from './bundler';

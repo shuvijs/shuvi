@@ -35,6 +35,18 @@ describe('Plugin', () => {
         /This is getAppComponent helloThis is getRootAppComponentIndex Page/
       );
     });
+
+    test('runtime plugin should be compiled by @shuvi/swc-loader', async () => {
+      page = await ctx.browser.page(ctx.url('/'), {
+        disableJavaScript: true
+      });
+      expect(await page.$text('p')).toBe('LOADING');
+      await page.close();
+
+      page = await ctx.browser.page(ctx.url('/'));
+      await page.waitForSelector('p');
+      expect(await page.$text('p')).toBe('Dynamic');
+    });
   });
 
   describe('server plugin', () => {
