@@ -3,7 +3,6 @@ import { IContext } from '@shuvi/platform-shared/lib/runtime';
 import type { IModelManager } from '@shuvi/redox';
 
 declare module '@shuvi/runtime' {
-
   export interface CustomAppContext {
     modelManager?: IModelManager;
     pageData?: any;
