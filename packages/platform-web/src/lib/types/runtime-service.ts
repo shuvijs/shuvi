@@ -8,4 +8,4 @@ export {
 
 export { IApiRoutes, IMiddlewareRoutes, IDocumentModule } from './resources';
 
-export { IApiRequestHandler } from '../features/api-middleware/index'
+export { IApiRequestHandler } from '../features/api-middleware/index';

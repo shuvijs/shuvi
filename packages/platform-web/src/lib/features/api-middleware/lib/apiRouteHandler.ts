@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage } from 'http';
 import { Stream } from 'stream';
 import querystring from 'querystring';
 import cookie from 'cookie';
@@ -22,12 +22,12 @@ type Send<T> = (body: T) => void;
 type IApiRes<T = any> = {
   send: Send<T>;
   json: Send<T>;
-  status: (statusCode: number) => IResponse;
-  redirect(url: string): IResponse;
-  redirect(status: number, url: string): IResponse;
+  status: (statusCode: number) => IApiRes<T>;
+  redirect(url: string): IApiRes<T>;
+  redirect(status: number, url: string): IApiRes<T>;
 };
 
-export type IApiResponse<T = any> = ServerResponse & IApiRes<T>;
+export type IApiResponse<T = any> = IResponse & IApiRes<T>;
 
 export type IApiRequestHandler<T = any> = (
   req: IApiRequest,
@@ -62,11 +62,11 @@ export async function apiRouteHandler(
     }
 
     const apiRes: IApiRes = {
-      status: (statusCode: number) => sendStatusCode(res, statusCode),
+      status: (statusCode: number) => sendStatusCode<IApiResponse>(res, statusCode),
       send: (data: any) => sendData(req, res, data),
       json: (data: any) => sendJson(req, res, data),
       redirect: (statusOrUrl: number | string, url?: string) =>
-        redirect(res, statusOrUrl, url)
+        redirect<IApiResponse>(res, statusOrUrl, url)
     };
 
     let wasPiped = false;
@@ -170,12 +170,12 @@ export function getCookieParser(req: IncomingMessage): {
 
 /**
  *
- * @param res response object
+ * @param res ServerResponse object
  * @param statusCode `HTTP` status code of response
  */
-export function sendStatusCode(res: IResponse, statusCode: number): IResponse {
+export function sendStatusCode<IRes extends IApiResponse>(res: IResponse, statusCode: number): IRes {
   res.statusCode = statusCode;
-  return res;
+  return res as IRes;
 }
 
 /**
@@ -184,11 +184,11 @@ export function sendStatusCode(res: IResponse, statusCode: number): IResponse {
  * @param [statusOrUrl] `HTTP` status code of redirect
  * @param url URL of redirect
  */
-export function redirect(
+export function redirect<IRes extends IApiResponse>(
   res: IResponse,
   statusOrUrl: string | number,
   url?: string
-): IResponse {
+): IRes {
   if (typeof statusOrUrl === 'string') {
     url = statusOrUrl;
     statusOrUrl = 307;
@@ -201,7 +201,7 @@ export function redirect(
   res.writeHead(statusOrUrl, { Location: url });
   res.write('');
   res.end();
-  return res;
+  return res as IRes;
 }
 
 /**

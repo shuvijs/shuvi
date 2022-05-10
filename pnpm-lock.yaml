@@ -1,4 +1,4 @@
-lockfileVersion: 5.4
+lockfileVersion: 5.3
 
 overrides:
   '@babel/types': 7.12.11
@@ -65,7 +65,7 @@ importers:
       puppeteer-core: 4.0.1
       rimraf: 3.0.2
       sass: 1.50.1
-      ts-jest: 26.5.6_rwkkzd5lxwnv7vf4yl4asmvzly
+      ts-jest: 26.5.6_jest@26.6.3+typescript@4.6.3
       typedoc: 0.22.15_typescript@4.6.3
       typedoc-plugin-markdown: 3.12.1_typedoc@0.22.15
       typedoc-plugin-missing-exports: 0.22.6_typedoc@0.22.15
@@ -195,12 +195,12 @@ importers:
       use-subscription: 1.4.1
       webpack: 5.36.0
     dependencies:
-      '@next/react-refresh-utils': 10.0.5_z4vniv6pxebdziyo6hatdmmhe4
+      '@next/react-refresh-utils': 10.0.5_cf2ad457cfb9023ca30ef1c131b18727
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
       '@shuvi/redox': 0.0.1-pre.6
-      '@shuvi/redox-react': 0.0.1-pre.6_mnhxqenrqykaoyuvhq5stra4yi
+      '@shuvi/redox-react': 0.0.1-pre.6_634f7811b186140762953c3b29c41cc2
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
@@ -220,7 +220,7 @@ importers:
       react-refresh: 0.8.3
       use-subscription: 1.4.1_react@16.14.0
     devDependencies:
-      '@testing-library/react': 10.0.2_wcqkhtmu7mswc6yz4uyexck3ty
+      '@testing-library/react': 10.0.2_react-dom@16.14.0+react@16.14.0
       '@types/content-type': 1.1.5
       '@types/cookie': 0.4.1
       '@types/ejs': 3.1.0
@@ -245,7 +245,7 @@ importers:
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
-      '@shuvi/redox-react': 0.0.1-pre.6_mnhxqenrqykaoyuvhq5stra4yi
+      '@shuvi/redox-react': 0.0.1-pre.6_634f7811b186140762953c3b29c41cc2
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
       '@shuvi/utils': link:../utils
@@ -523,7 +523,7 @@ importers:
       '@parcel/css': 1.2.0
       '@shuvi/shared': link:../shared
       '@shuvi/utils': link:../utils
-      babel-loader: 8.2.2_zqz2msvo5kxaf3hscwrdsdd2aq
+      babel-loader: 8.2.2_cc33a64aaeeaae02ecf215a2390c7a04
       babel-plugin-syntax-jsx: 6.18.0
       babel-plugin-transform-define: 2.0.0
       babel-plugin-transform-react-remove-prop-types: 0.4.24
@@ -532,7 +532,7 @@ importers:
       cross-spawn: 7.0.3
       crypto-browserify: 3.12.0
       css-loader: 5.0.1_webpack@5.36.0
-      css-minimizer-webpack-plugin: 3.4.1_t7jal76xkxameesuzk5nifl4ge
+      css-minimizer-webpack-plugin: 3.4.1_9fd205ffd755c0c21254cabad4157c31
       esbuild: 0.14.38
       file-loader: 6.2.0_webpack@5.36.0
       fork-ts-checker-webpack-plugin: 6.0.8
@@ -542,16 +542,16 @@ importers:
       path-browserify: 1.0.1
       postcss: 8.2.3
       postcss-flexbugs-fixes: 5.0.2_postcss@8.2.3
-      postcss-loader: 4.1.0_pfvees2iozncdyacwzxlezoztu
+      postcss-loader: 4.1.0_postcss@8.2.3+webpack@5.36.0
       postcss-preset-env: 6.7.0
       process: 0.11.10
       react-error-overlay: 6.0.8
       regenerator-runtime: 0.13.9
-      sass-loader: 10.1.0_webpack@5.36.0
+      sass-loader: 10.1.0_sass@1.50.1+webpack@5.36.0
       stream-browserify: 3.0.0
       strip-ansi: 6.0.0
       style-loader: 2.0.0_webpack@5.36.0
-      terser-webpack-plugin: 5.2.5_nmwexrfnsskqqi6uk4n6fbs4am
+      terser-webpack-plugin: 5.2.5_esbuild@0.14.38+webpack@5.36.0
       vm-browserify: 1.1.2
       webpack: 5.36.0_esbuild@0.14.38
       webpack-bundle-analyzer: 4.3.0
@@ -661,7 +661,7 @@ importers:
       '@shuvi/hook': link:../../../packages/hook
       '@shuvi/platform-shared': link:../../../packages/platform-shared
       '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
-      '@shuvi/redox-react': 0.0.1-pre.4_z3oe4trhth22f3qacasxmicgi4
+      '@shuvi/redox-react': 0.0.1-pre.4_cedc4e4e2799f5a2ee00102576204647
       '@shuvi/service': link:../../../packages/service
       '@shuvi/utils': link:../../../packages/utils
       redux: 4.1.2
@@ -686,7 +686,7 @@ importers:
       '@shuvi/hook': link:../../../packages/hook
       '@shuvi/platform-shared': link:../../../packages/platform-shared
       '@shuvi/redox': 0.0.1-pre.4_redux@4.1.2
-      '@shuvi/redox-react': 0.0.1-pre.4_z3oe4trhth22f3qacasxmicgi4
+      '@shuvi/redox-react': 0.0.1-pre.4_cedc4e4e2799f5a2ee00102576204647
       '@shuvi/service': link:../../../packages/service
       '@shuvi/utils': link:../../../packages/utils
       redux: 4.1.2
@@ -3575,7 +3575,7 @@ packages:
     resolution: {integrity: sha512-jDJTpta+P4p1NZTFVLHJ/TLFVYVcOqv6l8xwOeBKNPMgY/zDYH/YH7SJbvrr/h1RcS9GzbPcLKGzpuK9cV56UA==}
     dev: false
 
-  /@next/react-refresh-utils/10.0.5_z4vniv6pxebdziyo6hatdmmhe4:
+  /@next/react-refresh-utils/10.0.5_cf2ad457cfb9023ca30ef1c131b18727:
     resolution: {integrity: sha512-Eo+nvW1ZhdkuxBWSsKHGDLNspUaJJQClld9R+H+EtiIuAQtTa8f2rhcQeyUOtvUNQoPyq7Em2PwUqOQD6LOOMA==}
     peerDependencies:
       react-refresh: 0.8.3
@@ -3705,7 +3705,7 @@ packages:
       any-observable: 0.3.0
     dev: true
 
-  /@shuvi/redox-react/0.0.1-pre.4_z3oe4trhth22f3qacasxmicgi4:
+  /@shuvi/redox-react/0.0.1-pre.4_cedc4e4e2799f5a2ee00102576204647:
     resolution: {integrity: sha512-T+h4W1/mLLI8L0P9vHnaewvft9SMF5UD6nBKdXgIF3Fwgpqzl0DIYjOHIurL8QAOty6pdp0AB9aOnzaB8DGt2A==}
     peerDependencies:
       '@shuvi/redox': ^0.0.1
@@ -3717,7 +3717,7 @@ packages:
       react-dom: 16.14.0_react@16.14.0
     dev: false
 
-  /@shuvi/redox-react/0.0.1-pre.6_mnhxqenrqykaoyuvhq5stra4yi:
+  /@shuvi/redox-react/0.0.1-pre.6_634f7811b186140762953c3b29c41cc2:
     resolution: {integrity: sha512-LGh4JBLiJ7c9BnQy818S8cZ76FDC7tudcYaG+sxNmk4dwRZzGXQPM5oracHH5jcNbnGMIQEgpioMzzMQuhTWiw==}
     peerDependencies:
       '@shuvi/redox': 0.0.1-pre.6
@@ -3993,7 +3993,7 @@ packages:
       pretty-format: 25.3.0
     dev: true
 
-  /@testing-library/react/10.0.2_wcqkhtmu7mswc6yz4uyexck3ty:
+  /@testing-library/react/10.0.2_react-dom@16.14.0+react@16.14.0:
     resolution: {integrity: sha512-YT6Mw0oJz7R6vlEkmo1FlUD+K15FeXApOB5Ffm9zooFVnrwkt00w18dUJFMOh1yRp9wTdVRonbor7o4PIpFCmA==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -4158,7 +4158,6 @@ packages:
 
   /@types/estree/0.0.47:
     resolution: {integrity: sha512-c5ciR06jK8u9BstrmJyO97m+klJrrhCf9u3rLu3DEAJBirxRqSCvDQoYKmxuYwQI5SZChAWu+tq9oVlGRuzPAg==}
-    dev: false
 
   /@types/estree/0.0.51:
     resolution: {integrity: sha512-CuPgU6f3eT/XgKKPqKd/gLZV1Xmvf1a2R5POBOGQa6uv82xpls89HU5zKeVoyR8XzHd1RGNOlQlvUe3CFkjWNQ==}
@@ -4513,7 +4512,6 @@ packages:
     dependencies:
       '@webassemblyjs/helper-numbers': 1.11.0
       '@webassemblyjs/helper-wasm-bytecode': 1.11.0
-    dev: false
 
   /@webassemblyjs/ast/1.11.1:
     resolution: {integrity: sha512-ukBh14qFLjxTQNTXocdyksN5QdM28S1CxHt2rdskFyL+xFV7VremuBLVbmCePj+URalXBENx/9Lm7lnhihtCSw==}
@@ -4524,7 +4522,6 @@ packages:
 
   /@webassemblyjs/floating-point-hex-parser/1.11.0:
     resolution: {integrity: sha512-Q/aVYs/VnPDVYvsCBL/gSgwmfjeCb4LW8+TMrO3cSzJImgv8lxxEPM2JA5jMrivE7LSz3V+PFqtMbls3m1exDA==}
-    dev: false
 
   /@webassemblyjs/floating-point-hex-parser/1.11.1:
     resolution: {integrity: sha512-iGRfyc5Bq+NnNuX8b5hwBrRjzf0ocrJPI6GWFodBFzmFnyvrQ83SHKhmilCU/8Jv67i4GJZBMhEzltxzcNagtQ==}
@@ -4532,7 +4529,6 @@ packages:
 
   /@webassemblyjs/helper-api-error/1.11.0:
     resolution: {integrity: sha512-baT/va95eXiXb2QflSx95QGT5ClzWpGaa8L7JnJbgzoYeaA27FCvuBXU758l+KXWRndEmUXjP0Q5fibhavIn8w==}
-    dev: false
 
   /@webassemblyjs/helper-api-error/1.11.1:
     resolution: {integrity: sha512-RlhS8CBCXfRUR/cwo2ho9bkheSXG0+NwooXcc3PAILALf2QLdFyj7KGsKRbVc95hZnhnERon4kW/D3SZpp6Tcg==}
@@ -4540,7 +4536,6 @@ packages:
 
   /@webassemblyjs/helper-buffer/1.11.0:
     resolution: {integrity: sha512-u9HPBEl4DS+vA8qLQdEQ6N/eJQ7gT7aNvMIo8AAWvAl/xMrcOSiI2M0MAnMCy3jIFke7bEee/JwdX1nUpCtdyA==}
-    dev: false
 
   /@webassemblyjs/helper-buffer/1.11.1:
     resolution: {integrity: sha512-gwikF65aDNeeXa8JxXa2BAk+REjSyhrNC9ZwdT0f8jc4dQQeDQ7G4m0f2QCLPJiMTTO6wfDmRmj/pW0PsUvIcA==}
@@ -4552,7 +4547,6 @@ packages:
       '@webassemblyjs/floating-point-hex-parser': 1.11.0
       '@webassemblyjs/helper-api-error': 1.11.0
       '@xtuc/long': 4.2.2
-    dev: false
 
   /@webassemblyjs/helper-numbers/1.11.1:
     resolution: {integrity: sha512-vDkbxiB8zfnPdNK9Rajcey5C0w+QJugEglN0of+kmO8l7lDb77AnlKYQF7aarZuCrv+l0UvqL+68gSDr3k9LPQ==}
@@ -4564,7 +4558,6 @@ packages:
 
   /@webassemblyjs/helper-wasm-bytecode/1.11.0:
     resolution: {integrity: sha512-MbmhvxXExm542tWREgSFnOVo07fDpsBJg3sIl6fSp9xuu75eGz5lz31q7wTLffwL3Za7XNRCMZy210+tnsUSEA==}
-    dev: false
 
   /@webassemblyjs/helper-wasm-bytecode/1.11.1:
     resolution: {integrity: sha512-PvpoOGiJwXeTrSf/qfudJhwlvDQxFgelbMqtq52WWiXC6Xgg1IREdngmPN3bs4RoO83PnL/nFrxucXj1+BX62Q==}
@@ -4577,7 +4570,6 @@ packages:
       '@webassemblyjs/helper-buffer': 1.11.0
       '@webassemblyjs/helper-wasm-bytecode': 1.11.0
       '@webassemblyjs/wasm-gen': 1.11.0
-    dev: false
 
   /@webassemblyjs/helper-wasm-section/1.11.1:
     resolution: {integrity: sha512-10P9No29rYX1j7F3EVPX3JvGPQPae+AomuSTPiF9eBQeChHI6iqjMIwR9JmOJXwpnn/oVGDk7I5IlskuMwU/pg==}
@@ -4592,7 +4584,6 @@ packages:
     resolution: {integrity: sha512-KXzOqpcYQwAfeQ6WbF6HXo+0udBNmw0iXDmEK5sFlmQdmND+tr773Ti8/5T/M6Tl/413ArSJErATd8In3B+WBA==}
     dependencies:
       '@xtuc/ieee754': 1.2.0
-    dev: false
 
   /@webassemblyjs/ieee754/1.11.1:
     resolution: {integrity: sha512-hJ87QIPtAMKbFq6CGTkZYJivEwZDbQUgYd3qKSadTNOhVY7p+gfP6Sr0lLRVTaG1JjFj+r3YchoqRYxNH3M0GQ==}
@@ -4604,7 +4595,6 @@ packages:
     resolution: {integrity: sha512-aqbsHa1mSQAbeeNcl38un6qVY++hh8OpCOzxhixSYgbRfNWcxJNJQwe2rezK9XEcssJbbWIkblaJRwGMS9zp+g==}
     dependencies:
       '@xtuc/long': 4.2.2
-    dev: false
 
   /@webassemblyjs/leb128/1.11.1:
     resolution: {integrity: sha512-BJ2P0hNZ0u+Th1YZXJpzW6miwqQUGcIHT1G/sf72gLVD9DZ5AdYTqPNbHZh6K1M5VmKvFXwGSWZADz+qBWxeRw==}
@@ -4614,7 +4604,6 @@ packages:
 
   /@webassemblyjs/utf8/1.11.0:
     resolution: {integrity: sha512-A/lclGxH6SpSLSyFowMzO/+aDEPU4hvEiooCMXQPcQFPPJaYcPQNKGOCLUySJsYJ4trbpr+Fs08n4jelkVTGVw==}
-    dev: false
 
   /@webassemblyjs/utf8/1.11.1:
     resolution: {integrity: sha512-9kqcxAEdMhiwQkHpkNiorZzqpGrodQQ2IGrHHxCy+Ozng0ofyMA0lTqiLkVs1uzTRejX+/O0EOT7KxqVPuXosQ==}
@@ -4631,7 +4620,6 @@ packages:
       '@webassemblyjs/wasm-opt': 1.11.0
       '@webassemblyjs/wasm-parser': 1.11.0
       '@webassemblyjs/wast-printer': 1.11.0
-    dev: false
 
   /@webassemblyjs/wasm-edit/1.11.1:
     resolution: {integrity: sha512-g+RsupUC1aTHfR8CDgnsVRVZFJqdkFHpsHMfJuWQzWU3tvnLC07UqHICfP+4XyL2tnr1amvl1Sdp06TnYCmVkA==}
@@ -4654,7 +4642,6 @@ packages:
       '@webassemblyjs/ieee754': 1.11.0
       '@webassemblyjs/leb128': 1.11.0
       '@webassemblyjs/utf8': 1.11.0
-    dev: false
 
   /@webassemblyjs/wasm-gen/1.11.1:
     resolution: {integrity: sha512-F7QqKXwwNlMmsulj6+O7r4mmtAlCWfO/0HdgOxSklZfQcDu0TpLiD1mRt/zF25Bk59FIjEuGAIyn5ei4yMfLhA==}
@@ -4673,7 +4660,6 @@ packages:
       '@webassemblyjs/helper-buffer': 1.11.0
       '@webassemblyjs/wasm-gen': 1.11.0
       '@webassemblyjs/wasm-parser': 1.11.0
-    dev: false
 
   /@webassemblyjs/wasm-opt/1.11.1:
     resolution: {integrity: sha512-VqnkNqnZlU5EB64pp1l7hdm3hmQw7Vgqa0KF/KCNO9sIpI6Fk6brDEiX+iCOYrvMuBWDws0NkTOxYEb85XQHHw==}
@@ -4693,7 +4679,6 @@ packages:
       '@webassemblyjs/ieee754': 1.11.0
       '@webassemblyjs/leb128': 1.11.0
       '@webassemblyjs/utf8': 1.11.0
-    dev: false
 
   /@webassemblyjs/wasm-parser/1.11.1:
     resolution: {integrity: sha512-rrBujw+dJu32gYB7/Lup6UhdkPx9S9SnobZzRVL7VcBH9Bt9bCBLEuX/YXOOtBsOZ4NQrRykKhffRWHvigQvOA==}
@@ -4711,7 +4696,6 @@ packages:
     dependencies:
       '@webassemblyjs/ast': 1.11.0
       '@xtuc/long': 4.2.2
-    dev: false
 
   /@webassemblyjs/wast-printer/1.11.1:
     resolution: {integrity: sha512-IQboUWM4eKzWW+N/jij2sRatKMh99QEelo3Eb2q0qXkvPRISAj8Qxtmw5itwqK+TTkBuUIE45AxYPToqPtL5gg==}
@@ -5155,7 +5139,7 @@ packages:
       - supports-color
     dev: true
 
-  /babel-loader/8.2.2_zqz2msvo5kxaf3hscwrdsdd2aq:
+  /babel-loader/8.2.2_cc33a64aaeeaae02ecf215a2390c7a04:
     resolution: {integrity: sha512-JvTd0/D889PQBtUXJ2PXaKU/pjZDMtHA9V2ecm+eNRmmBCMR09a+fmpGTNwnJtFmFl5Ei7Vy47LjBb+L0wQ99g==}
     engines: {node: '>= 8.9'}
     peerDependencies:
@@ -6148,7 +6132,7 @@ packages:
       webpack: 5.36.0_esbuild@0.14.38
     dev: false
 
-  /css-minimizer-webpack-plugin/3.4.1_t7jal76xkxameesuzk5nifl4ge:
+  /css-minimizer-webpack-plugin/3.4.1_9fd205ffd755c0c21254cabad4157c31:
     resolution: {integrity: sha512-1u6D71zeIfgngN2XNRJefc/hY7Ybsxd74Jm4qngIXyUEk7fss3VUzuHxLAq/R8NAba4QU9OUSaMZlbpRc7bM4Q==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
@@ -6748,7 +6732,6 @@ packages:
 
   /es-module-lexer/0.4.1:
     resolution: {integrity: sha512-ooYciCUtfw6/d2w56UVeqHPcoCFAiJdz5XOkYpv/Txl1HMUozpXjz/2RIQgqwKdXNDPSF1W7mJCFse3G+HDyAA==}
-    dev: false
 
   /es-module-lexer/0.9.3:
     resolution: {integrity: sha512-1HQ2M2sPtxwnvOvT1ZClHyQDiggdNjURWpY2we6aMKCQiUVxTmVs2UYPLIrD84sS+kMdUwfBSylbJPwNnBrnHQ==}
@@ -11049,7 +11032,7 @@ packages:
       postcss-values-parser: 2.0.1
     dev: false
 
-  /postcss-loader/4.1.0_pfvees2iozncdyacwzxlezoztu:
+  /postcss-loader/4.1.0_postcss@8.2.3+webpack@5.36.0:
     resolution: {integrity: sha512-vbCkP70F3Q9PIk6d47aBwjqAMI4LfkXCoyxj+7NPNuVIwfTGdzv2KVQes59/RuxMniIgsYQCFSY42P3+ykJfaw==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -12182,7 +12165,7 @@ packages:
       walker: 1.0.8
     dev: true
 
-  /sass-loader/10.1.0_webpack@5.36.0:
+  /sass-loader/10.1.0_sass@1.50.1+webpack@5.36.0:
     resolution: {integrity: sha512-ZCKAlczLBbFd3aGAhowpYEy69Te3Z68cg8bnHHl6WnSCvnKpbM6pQrz957HWMa8LKVuhnD9uMplmMAHwGQtHeg==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -12201,6 +12184,7 @@ packages:
       klona: 2.0.4
       loader-utils: 2.0.0
       neo-async: 2.6.2
+      sass: 1.50.1
       schema-utils: 3.0.0
       semver: 7.3.2
       webpack: 5.36.0_esbuild@0.14.38
@@ -12499,7 +12483,6 @@ packages:
 
   /source-list-map/2.0.1:
     resolution: {integrity: sha512-qnQ7gVMxGNxsiL4lEuJwe/To8UnK7fAnmbGEEH8RpLouuKbeEm0lhbQVFIrNSuB+G7tVrAlVsZgETT5nljf+Iw==}
-    dev: false
 
   /source-map-js/1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
@@ -12955,7 +12938,7 @@ packages:
       supports-hyperlinks: 2.2.0
     dev: true
 
-  /terser-webpack-plugin/5.2.5_nmwexrfnsskqqi6uk4n6fbs4am:
+  /terser-webpack-plugin/5.2.5_esbuild@0.14.38+webpack@5.36.0:
     resolution: {integrity: sha512-3luOVHku5l0QBeYS8r4CdHYWEGMmIj3H1U64jgkdZzECcSOJAyJ9TjuqcQZvw1Y+4AOBN9SeYJPJmFn2cM4/2g==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -13216,7 +13199,7 @@ packages:
       yargs-parser: 18.1.3
     dev: true
 
-  /ts-jest/26.5.6_rwkkzd5lxwnv7vf4yl4asmvzly:
+  /ts-jest/26.5.6_jest@26.6.3+typescript@4.6.3:
     resolution: {integrity: sha512-rua+rCP8DxpA8b4DQD/6X2HQS8Zy/xzViVYfEs2OQu68tkCuKLV0Md8pmX55+W24uRIyAsf/BajRfxOs+R2MKA==}
     engines: {node: '>= 10'}
     hasBin: true
@@ -13679,7 +13662,6 @@ packages:
     dependencies:
       source-list-map: 2.0.1
       source-map: 0.6.1
-    dev: false
 
   /webpack-sources/3.2.3:
     resolution: {integrity: sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==}
@@ -13754,7 +13736,7 @@ packages:
       neo-async: 2.6.2
       schema-utils: 3.1.1
       tapable: 2.2.0
-      terser-webpack-plugin: 5.2.5_nmwexrfnsskqqi6uk4n6fbs4am
+      terser-webpack-plugin: 5.2.5_esbuild@0.14.38+webpack@5.36.0
       watchpack: 2.3.1
       webpack-sources: 2.2.0
     transitivePeerDependencies:
