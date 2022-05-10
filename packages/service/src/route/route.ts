@@ -13,7 +13,7 @@ const RouteFileRegExp = new RegExp(`\\.(?:${jsExtensions.join('|')})$`);
 const MIDDLEWAREJS = '_middleware.js';
 const MIDDLEWARETS = '_middleware.ts';
 
-function hasMiddlewareFile(fileToTransform: IFilesObject) {
+function getMiddlewareFile(fileToTransform: IFilesObject) {
   if (fileToTransform[MIDDLEWAREJS]) {
     return MIDDLEWAREJS;
   }
@@ -111,10 +111,10 @@ export const generateRoute = (
   middlewareArr: string[]
 ) => {
   const routes: IRouteRecord[] = [];
-  const hasMiddleware = hasMiddlewareFile(fileToTransform);
-  if (hasMiddleware) {
-    delete fileToTransform[hasMiddleware];
-    const middlewarePath = join(pageDirectory, hasMiddleware);
+  const middlewareFile = getMiddlewareFile(fileToTransform);
+  if (middlewareFile) {
+    delete fileToTransform[middlewareFile];
+    const middlewarePath = join(pageDirectory, middlewareFile);
     middlewareArr.push(middlewarePath);
   }
   Object.entries(fileToTransform).forEach(([fileName, nestedRoute], _, arr) => {
