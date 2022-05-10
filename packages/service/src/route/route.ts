@@ -20,7 +20,7 @@ function hasMiddlewareFile(fileToTransform: IFilesObject) {
   if (fileToTransform[MIDDLEWARETS]) {
     return MIDDLEWARETS;
   }
-  return '';
+  return null;
 }
 
 function isLayout(filepath: string) {
