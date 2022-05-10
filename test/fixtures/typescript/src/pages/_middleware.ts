@@ -1,8 +1,12 @@
-import type { RuntimeServer } from '@shuvi/runtime'
+import type { RuntimeServer } from '@shuvi/runtime';
 
-export const middleware: RuntimeServer.IRequestHandlerWithNext = function (req, res, next) {
-  if(req.pathname === '/middleware'){
+export const middleware: RuntimeServer.IRequestHandlerWithNext = function (
+  req,
+  res,
+  next
+) {
+  if (req.query.middleware) {
     return res.end('middleware success');
   }
   next();
-}
+};

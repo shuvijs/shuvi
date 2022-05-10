@@ -2,11 +2,10 @@ import { resolveFixture, sortByPath } from './utils';
 import { getRoutesFromFiles } from '../route';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 
-
 const getRoutes = (dir: string, ignoreLayout?: boolean) => {
-  const files = recursiveReadDirSync(dir, { rootDir: '' })
-  return getRoutesFromFiles(files, dir, ignoreLayout)
-}
+  const files = recursiveReadDirSync(dir, { rootDir: '' });
+  return getRoutesFromFiles(files, dir, ignoreLayout);
+};
 
 describe('route', () => {
   test('should work', async () => {
@@ -125,6 +124,40 @@ describe('route', () => {
           {
             path: '/',
             filepath: resolveFixture('layout/b/index.js')
+          }
+        ]
+      }
+    ]);
+  });
+
+  test('should generate middleware route', async () => {
+    const routes = sortByPath(getRoutes(resolveFixture('middleware')));
+
+    expect(routes).toMatchObject([
+      {
+        path: '/',
+        filepath: resolveFixture('middleware/index.js'),
+        middlewares: [resolveFixture('middleware/_middleware.js')]
+      },
+      {
+        path: '/b',
+        children: [
+          {
+            path: '/c',
+            children: [
+              {
+                path: '/',
+                filepath: resolveFixture('middleware/b/c/index.js')
+              }
+            ]
+          },
+          {
+            path: '/',
+            filepath: resolveFixture('middleware/b/index.js'),
+            middlewares: [
+              resolveFixture('middleware/_middleware.js'),
+              resolveFixture('middleware/b/_middleware.ts')
+            ]
           }
         ]
       }

@@ -33,7 +33,7 @@ describe('TypesSript Suppport', () => {
 
   test('middleware should work', async () => {
     let res;
-    res = await got.get(ctx.url('/middleware'));
-    expect(JSON.parse(res.body)).toStrictEqual('middleware success');
+    res = await got.get(ctx.url('/hello?middleware=true'));
+    expect(res.body).toStrictEqual('middleware success');
   });
 });
