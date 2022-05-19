@@ -1,4 +1,4 @@
-import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
+import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import { PUBLIC_PATH } from '@shuvi/service/lib/constants';
 import { AppCtx, Page, launchFixture } from '../utils';
 
@@ -23,7 +23,7 @@ describe('public path', () => {
     page = await ctx.browser.page(ctx.url('/'));
     const pubicPath = await page.evaluate(
       name => window[name],
-      IDENTITY_SSR_RUNTIME_PUBLICPATH
+      IDENTITY_RUNTIME_PUBLICPATH
     );
     expect(pubicPath).toBe(PUBLIC_PATH);
   });
