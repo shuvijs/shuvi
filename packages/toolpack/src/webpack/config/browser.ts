@@ -4,6 +4,7 @@ import WebpackChain from 'webpack-chain';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
+import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
 import { baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
 import { IWebpackHelpers } from '../types';
@@ -155,6 +156,7 @@ export function createBrowserWebpackChain({
       'process.env': JSON.stringify('{}')
     }
   ]);
+  chain.plugin('dynamic-public-path-plugin').use(DynamicPublicPathPlugin);
   chain.plugin('private/build-manifest').tap(([options]) => [
     {
       ...options,

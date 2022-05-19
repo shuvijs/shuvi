@@ -1,6 +1,6 @@
 import { IAppData, IData } from '@shuvi/platform-shared/lib/runtime';
 import { IRouter } from '@shuvi/router';
-import { IDENTITY_SSR_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
+import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import {
   getPublicRuntimeConfig,
   getRuntimeConfig
@@ -71,7 +71,7 @@ export class SsrRenderer extends BaseRenderer {
         tag(
           'script',
           {},
-          `${IDENTITY_SSR_RUNTIME_PUBLICPATH} = "${serverPluginContext.assetPublicPath}"`
+          `${IDENTITY_RUNTIME_PUBLICPATH} = "${serverPluginContext.assetPublicPath}"`
         ),
         ...(result.scriptBeginTags || []),
         ...mainAssetsTags.scripts,
