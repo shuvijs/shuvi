@@ -22,9 +22,7 @@ export const DEV_HOT_MIDDLEWARE_PATH = `${PATH_PREFIX}/webpack-hmr`;
 
 export const DEV_HOT_LAUNCH_EDITOR_ENDPOINT = `${PATH_PREFIX}/development/open-stack-frame-in-editor`;
 
-export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_public_path__`;
-
-export const IDENTITY_SSR_RUNTIME_PUBLICPATH = `__${NAME}_ssr_public_path__`;
+export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;
 
 export const ROUTE_NOT_FOUND_NAME = `404`;
 
