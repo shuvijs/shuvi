@@ -1,10 +1,10 @@
-import SetPublicPathPlugin from '../set-public-path-plugin';
+import DynamicPublicPathPlugin from '../dynamic-public-path-plugin';
 import { createCompiler } from './helpers/webpack';
 import { resolveFixture } from './utils';
 
 const basicEntry = resolveFixture('basic');
 
-describe('set-public-path-plugin', () => {
+describe('dynamic-public-path-plugin', () => {
   test('default', done => {
     const compiler = createCompiler({
       entry: basicEntry,
@@ -16,7 +16,7 @@ describe('set-public-path-plugin', () => {
           name: 'runtime'
         }
       },
-      plugins: [new SetPublicPathPlugin()]
+      plugins: [new DynamicPublicPathPlugin()]
     });
 
     compiler.hooks.emit.tap('test', compilation => {

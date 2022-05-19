@@ -17,27 +17,30 @@ const GLOBALTHIS = 'globalThis';
  * expect: when load async chunk, __webpack_require__.p is can be redefine by user
  *
  */
-export default class SetPublicPathPlugin implements Plugin {
+
+const PLUGINNAME = 'DynamicPublicPath';
+
+export default class DynamicPublicPathPlugin implements Plugin {
   /**
    * Apply the plugin
    * @param {Compiler} compiler the compiler instance
    * @returns {void}
    */
   apply(compiler: Compiler) {
-    compiler.hooks.compilation.tap('SetPublicPath', compilation => {
+    compiler.hooks.compilation.tap(PLUGINNAME, compilation => {
       compilation.hooks.runtimeRequirementInTree
         .for(RuntimeGlobals.publicPath)
-        .tap('SetPublicPath', chunk => {
+        .tap(PLUGINNAME, chunk => {
           compilation.addRuntimeModule(
             chunk,
-            new SetPublicPath('SetPublicPath')
+            new DynamicPublicPath(PLUGINNAME)
           );
         });
     });
   }
 }
 
-class SetPublicPath extends RuntimeModule {
+class DynamicPublicPath extends RuntimeModule {
   constructor(name: string) {
     super(name, RuntimeModule.STAGE_ATTACH);
   }
