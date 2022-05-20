@@ -12,6 +12,7 @@ export type IAppData<Data = {}, appState = any> = {
     [key: string]: any;
   };
   routeProps?: { [x: string]: any };
+  loadersData?: { [x: string]: any };
   appState?: appState;
 } & {
   [K in keyof Data]: Data[K];
@@ -28,7 +29,8 @@ export function getAppData(): IAppData {
   if (!el || !el.textContent) {
     return {
       ssr: false,
-      pageData: {}
+      pageData: {},
+      loadersData: {}
     };
   }
 

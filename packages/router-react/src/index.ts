@@ -6,4 +6,5 @@ export { Link } from './Link';
 export { withRouter } from './withRouter';
 
 export * from './hooks';
+export * from './contexts';
 export * from './types';

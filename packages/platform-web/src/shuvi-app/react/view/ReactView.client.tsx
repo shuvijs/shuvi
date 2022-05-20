@@ -13,6 +13,7 @@ import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
+import { LoaderContext } from '../loader';
 
 const headManager = new HeadManager();
 
@@ -28,7 +29,7 @@ export class ReactClientView implements IReactClientView {
     modelManager
   }) => {
     const { _isInitialRender: isInitialRender } = this;
-    let { ssr, appProps, dynamicIds } = appData;
+    let { ssr, appProps, dynamicIds, loadersData } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
       (window as any).__SHUVI.router = router;
@@ -73,24 +74,33 @@ export class ReactClientView implements IReactClientView {
       router.replace(redirector.state!.path);
     }
 
+    const loaderContext = {
+      loadersData,
+      willHydrate: true
+    };
+
     const root = (
       <ErrorBoundary>
         <HeadManagerContext.Provider value={headManager.updateHead}>
           <Router router={router}>
-            <AppContainer
-              appContext={appContext}
-              modelManager={modelManager}
-              errorComp={ErrorPage}
-            >
-              <TypedAppComponent {...appProps} />
-            </AppContainer>
+            <LoaderContext.Provider value={loaderContext}>
+              <AppContainer
+                appContext={appContext}
+                modelManager={modelManager}
+                errorComp={ErrorPage}
+              >
+                <TypedAppComponent {...appProps} />
+              </AppContainer>
+            </LoaderContext.Provider>
           </Router>
         </HeadManagerContext.Provider>
       </ErrorBoundary>
     );
 
     if (ssr && isInitialRender) {
-      ReactDOM.hydrate(root, appContainer);
+      ReactDOM.hydrate(root, appContainer, () => {
+        loaderContext.willHydrate = false;
+      });
       this._isInitialRender = false;
     } else {
       ReactDOM.render(root, appContainer);

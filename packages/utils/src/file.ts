@@ -1,4 +1,5 @@
-import fs from 'fs'
+import fs from 'fs';
+import path from 'path';
 
 export function withExts(file: string, extensions: string[]): string[] {
   return extensions.map(ext => `${file}${ext}`);
@@ -12,4 +13,18 @@ export const findFirstExistedFile = (files: string[]): string | null => {
     }
   }
   return null;
+};
+
+export const resolveFile = (fileName: string): string => {
+  if (path.extname(fileName)) return fileName;
+  const moduleFileExtensions = ['.tsx', '.ts', '.js', '.jsx'];
+  const files = withExts(fileName, moduleFileExtensions);
+  const file = findFirstExistedFile(files);
+  if (file) {
+    return file;
+  }
+  if (fs.existsSync(fileName) && fs.statSync(fileName).isDirectory()) {
+    return resolveFile(path.join(fileName, 'index'));
+  }
+  throw new Error(`cannot resolve actual file of module: ${fileName}`);
 };
