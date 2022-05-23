@@ -19,7 +19,7 @@ export interface IUserRouteConfig {
   middlewares?: string[];
   redirect?: string;
   path: string;
-  id?: string;
+  fullPath?: string;
 }
 
 export interface IApiRouteConfig {
