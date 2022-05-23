@@ -19,6 +19,7 @@ import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
 import { LoaderContext } from '../loader';
+import { getInitialPropsDeprecatingMessage } from '../utils/errorMessage';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -108,6 +109,9 @@ export class ReactServerView implements IReactServerView {
     }
     await Promise.all(pendingLoaders.map(fn => fn()));
     const fetchInitialProps = async () => {
+      if (pendingDataFetchs.length) {
+        console.error(getInitialPropsDeprecatingMessage);
+      }
       await Promise.all(pendingDataFetchs.map(fn => fn()));
     };
     let appInitialProps: { [x: string]: any } | undefined;
