@@ -5,13 +5,13 @@ import {
   errorModel,
   IRouteComponentContext,
   IAppRouteConfig,
-  IApplicationCreaterBase
+  IApplicationCreaterClientContext
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
 
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = IApplicationCreaterBase;
+export type INormalizeRoutesContext = IApplicationCreaterClientContext;
 
 type IAppRouteWithElement = IAppRouteConfig & { element?: any };
 
@@ -25,7 +25,7 @@ export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
   appContext: INormalizeRoutesContext = {}
 ): IAppRouteWithElement[] {
-  const { routeProps = {} } = appContext;
+  const { routeProps = {}, loadersData = {} } = appContext;
   if (!routes) {
     return [] as IAppRouteWithElement[];
   }
@@ -35,7 +35,7 @@ export function normalizeRoutes(
       ...route
     };
 
-    const { id, component } = res;
+    const { id, fullPath, component } = res;
     if (component) {
       res.resolve = async (to, from, next, context) => {
         if (isServer) {
@@ -43,9 +43,10 @@ export function normalizeRoutes(
         }
 
         const modelManager = getModelManager();
-
-        const shouldHydrated = routeProps[id] !== undefined && !hydrated[id];
-
+        // support both getInitialProps and loader
+        const shouldHydrated =
+          (routeProps[id] !== undefined || loadersData[fullPath as string]) &&
+          !hydrated[id];
         if (shouldHydrated) {
           const { hasError } = modelManager.get(errorModel).$state();
           if (hasError) {

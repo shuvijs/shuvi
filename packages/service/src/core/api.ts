@@ -185,6 +185,7 @@ class Api {
       this._initArtifacts()
     ]);
     await this._projectBuilder.build(this._paths.privateDir);
+    await this.pluginManager.runner.afterShuviAppBuild();
   }
 
   addRuntimeFile(options: FileOptions): void {

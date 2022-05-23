@@ -45,7 +45,7 @@ describe('GetInitialProps', () => {
       expect(initialPropsCtx.params.foo).toBe('test');
     });
 
-    test('AppComponent should receive contenxt object', async () => {
+    test('AppComponent should receive context object', async () => {
       page = await ctx.browser.page(ctx.url('/test?a=2'));
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="app"]')
@@ -127,7 +127,7 @@ describe('GetInitialProps', () => {
       expect(initialPropsCtx.params.foo).toBe('test');
     });
 
-    test('AppComponent should receive contenxt object', async () => {
+    test('AppComponent should receive context object', async () => {
       page = await ctx.browser.page(ctx.url('/test?a=2'));
       await page.waitFor('[data-test-id="app"]');
       const initialPropsCtx = JSON.parse(

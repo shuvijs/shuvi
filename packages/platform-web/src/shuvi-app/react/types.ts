@@ -17,6 +17,7 @@ export type IReactAppData = {
   dynamicIds?: Array<string | number>;
   appState?: IAppState;
   routeProps: IRouteProps;
+  loadersData: any;
 };
 
 export interface IAppContainerProps {

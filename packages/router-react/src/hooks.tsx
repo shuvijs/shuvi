@@ -15,7 +15,7 @@ import invariant from '@shuvi/utils/lib/invariant';
 import { __DEV__ } from './constants';
 import { RouterContext, RouteContext, MatchedRouteContext } from './contexts';
 import { warning } from './utils';
-import { INavigateFunction } from './types';
+import { INavigateFunction, IRouteContextObject } from './types';
 
 /**
  *  is just point `router.current` object
@@ -172,4 +172,8 @@ export function useRouter(): IRouter {
   );
 
   return useContext(RouterContext).router;
+}
+
+export function useMatchedRoute(): IRouteContextObject {
+  return useContext(MatchedRouteContext);
 }

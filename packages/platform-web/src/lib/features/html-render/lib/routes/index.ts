@@ -1,9 +1,12 @@
 import { createHash } from 'crypto';
+import fs from 'fs';
 import path from 'path';
 import { renameFilepathToComponent } from '@shuvi/service/lib/route';
 import { IUserRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { IRouteRecord } from '@shuvi/router';
+import { getExports } from '@shuvi/service/lib/project/file-utils';
+import { resolveFile } from '@shuvi/utils/lib/file';
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
@@ -81,13 +84,29 @@ export function normalizeRoutes(
   return res;
 }
 
+export const ifComponentHasLoader = (component: string) => {
+  const file = resolveFile(component);
+  if (file) {
+    const content = fs.readFileSync(file, 'utf-8');
+    try {
+      const exports = getExports(content);
+      return exports.includes('loader');
+    } catch {}
+  }
+  return false;
+};
+
 export const getNormalizedRoutes = (
   routes: IUserRouteConfig[],
-  componentDir: string
+  componentDir: string,
+  parentPath: string = ''
 ) => {
   const res: IUserRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] };
+    const pathWithSlash = /^\//.test(route.path) ? route.path : route.path;
+    const fullpath = pathWithSlash ? parentPath + pathWithSlash : parentPath;
+    route.fullPath = fullpath;
     if (route.component) {
       const absPath = path.isAbsolute(route.component)
         ? route.component
@@ -97,7 +116,11 @@ export const getNormalizedRoutes = (
     }
 
     if (route.children && route.children.length > 0) {
-      route.children = getNormalizedRoutes(route.children, componentDir);
+      route.children = getNormalizedRoutes(
+        route.children,
+        componentDir,
+        fullpath
+      );
     }
     res.push(route);
   }
@@ -109,7 +132,7 @@ export const getRoutesContent = (
   componentDir: string
 ): string => {
   const serialized = serializeRoutes(routes);
-  const routesContent = `export default ${serialized}`;
+  const routesContent = `import loaders from './loaders';\nexport default ${serialized}`;
   return routesContent;
 };
 

@@ -11,12 +11,14 @@ import {
   IAppRouteConfig,
   errorModel
 } from '@shuvi/platform-shared/esm/runtime';
+import loaders from '@shuvi/app/files/loaders-build';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
+import { LoaderContext } from '../loader';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -52,6 +54,30 @@ export class ReactServerView implements IReactServerView {
 
     const routeProps: { [x: string]: any } = {};
     const pendingDataFetchs: Array<() => Promise<void>> = [];
+    const pendingLoaders: Array<() => Promise<void>> = [];
+    const loadersData: Record<string, any> = {};
+
+    const getLoaderFunction =
+      (fullPath: string, params: IParams) => async () => {
+        const loaderFn = loaders[fullPath];
+        const loaderData: any = {};
+        try {
+          loaderData.data = await loaderFn({
+            isServer: true,
+            pathname,
+            query,
+            params,
+            appContext,
+            redirect: redirector.handler,
+            error: error.errorHandler
+          });
+        } catch (e) {
+          loaderData.error = (e as any)?.message;
+        }
+        loaderData.loading = false;
+        loadersData[fullPath] = loaderData;
+      };
+
     const params: IParams = {};
     for (let index = 0; index < matches.length; index++) {
       const matchedRoute = matches[index];
@@ -75,7 +101,12 @@ export class ReactServerView implements IReactServerView {
           matchedRoute.route.props = props;
         });
       }
+      const fullPath = appRoute.fullPath as string;
+      if (loaders[fullPath]) {
+        pendingLoaders.push(getLoaderFunction(fullPath, matchedRoute.params));
+      }
     }
+    await Promise.all(pendingLoaders.map(fn => fn()));
     const fetchInitialProps = async () => {
       await Promise.all(pendingDataFetchs.map(fn => fn()));
     };
@@ -115,13 +146,18 @@ export class ReactServerView implements IReactServerView {
     let htmlContent: string;
     let head: IHtmlTag[];
 
-    try {
-      htmlContent = renderToString(
-        <ErrorBoundary>
-          <Router static router={router}>
-            <LoadableContext.Provider
-              value={moduleName => loadableModules.push(moduleName)}
-            >
+    const loaderContext = {
+      loadersData,
+      willHydrate: true
+    };
+
+    const RootApp = (
+      <ErrorBoundary>
+        <Router static router={router}>
+          <LoadableContext.Provider
+            value={moduleName => loadableModules.push(moduleName)}
+          >
+            <LoaderContext.Provider value={loaderContext}>
               <AppContainer
                 appContext={appContext}
                 modelManager={modelManager}
@@ -129,10 +165,14 @@ export class ReactServerView implements IReactServerView {
               >
                 <AppComponent {...appInitialProps} />
               </AppContainer>
-            </LoadableContext.Provider>
-          </Router>
-        </ErrorBoundary>
-      );
+            </LoaderContext.Provider>
+          </LoadableContext.Provider>
+        </Router>
+      </ErrorBoundary>
+    );
+
+    try {
+      htmlContent = renderToString(RootApp);
     } finally {
       head = Head.rewind() || [];
     }
@@ -176,7 +216,8 @@ export class ReactServerView implements IReactServerView {
     }
     const appData: IReactAppData = {
       routeProps,
-      dynamicIds: [...dynamicImportIdSet]
+      dynamicIds: [...dynamicImportIdSet],
+      loadersData
     };
     if (appInitialProps) {
       appData.appProps = appInitialProps;

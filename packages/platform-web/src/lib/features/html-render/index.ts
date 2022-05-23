@@ -4,15 +4,18 @@ import {
   getUserCustomFileCandidates,
   getFisrtModuleExport
 } from '@shuvi/service/lib/project/file-utils';
+import { build } from '@shuvi/toolpack/lib/utils/build-loaders';
 import path from 'path';
 import { extendedHooks } from './hooks';
 import {
   getNormalizedRoutes,
   getRoutesContent,
   getRoutesFromRawRoutes,
-  setRoutes
+  setRoutes,
+  getRoutes
 } from './lib';
 import server from './server-plugin-custom-server';
+import { ifComponentHasLoader } from './lib';
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
 
@@ -69,6 +72,38 @@ const core = createPlugin({
           },
           dependencies: paths.pagesDir
         });
+
+    const loadersFiles = createFile({
+      name: 'loaders.js',
+      content: () => {
+        const routes = getRoutes();
+        const loaders: Record<string, string> = {};
+        const traverseRoutes = (routes: IUserRouteConfig[]) => {
+          routes.forEach(r => {
+            const { component, fullPath, children } = r;
+            if (component && fullPath) {
+              const hasLoader = ifComponentHasLoader(component);
+              if (hasLoader) {
+                loaders[fullPath] = component;
+              }
+            }
+            if (children) {
+              traverseRoutes(children);
+            }
+          });
+        };
+        traverseRoutes(routes);
+        let imports = '';
+        let exports = '';
+        Object.entries(loaders).forEach((loader, index) => {
+          const [fullPath, component] = loader;
+          imports += `import { loader as loader_${index} } from '${component}'\n`;
+          exports += `'${fullPath}': loader_${index},\n`;
+        });
+        const content = `${imports}  export default {\n  ${exports}\n}`;
+        return content;
+      }
+    });
     const documentCandidates = getUserCustomFileCandidates(
       paths.rootDir,
       'document',
@@ -99,7 +134,16 @@ const core = createPlugin({
       },
       dependencies: serverCandidates
     });
-    return [routerConfigFile, routesFile, userServerFile, userDocumentFile];
+    return [
+      routerConfigFile,
+      routesFile,
+      userServerFile,
+      userDocumentFile,
+      loadersFiles
+    ];
+  },
+  afterShuviAppBuild: async context => {
+    await build(path.join(context.paths.appDir, 'files'), context.mode);
   },
   addRuntimeService: () => [
     {

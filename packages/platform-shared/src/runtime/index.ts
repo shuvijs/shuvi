@@ -54,6 +54,7 @@ export interface IAppRouteConfig extends IRouteRecord {
   component?: any;
   children?: IAppRouteConfig[];
   path: string;
+  fullPath: string;
   __componentSource__?: never;
   __componentSourceWithAffix__?: never;
   __import__?: never;
@@ -66,6 +67,7 @@ export interface IAppRouteConfigWithPrivateProps extends IRouteRecord {
   component?: any;
   children?: IAppRouteConfigWithPrivateProps[];
   path: string;
+  fullPath: string;
   __componentSource__: string;
   __componentSourceWithAffix__: string;
   __import__: () => Promise<any>;
@@ -212,8 +214,9 @@ export interface IApplicationCreaterServerContext
 }
 export interface IApplicationCreaterClientContext
   extends IApplicationCreaterBase {
-  pageData: any;
-  routeProps: { [x: string]: any };
+  pageData?: any;
+  routeProps?: { [x: string]: any };
+  loadersData?: { [x: string]: any };
 }
 
 export type IApplicationCreaterContext =

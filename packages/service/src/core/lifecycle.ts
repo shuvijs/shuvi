@@ -6,7 +6,7 @@ import {
   IPluginHandlers,
   HookMap
 } from '@shuvi/hook';
-import { CustomCorePluginHooks } from '@shuvi/runtime'
+import { CustomCorePluginHooks } from '@shuvi/runtime';
 
 import { FileOptions } from '../project';
 import {
@@ -23,6 +23,7 @@ import {
 import { IPluginContext } from './apiTypes';
 
 const afterInit = createAsyncParallelHook<void>();
+const afterShuviAppBuild = createAsyncParallelHook<void>();
 const afterBuild = createAsyncParallelHook<void>();
 const afterDestroy = createAsyncParallelHook<void>();
 const afterBundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
@@ -57,6 +58,7 @@ const addRuntimeService = createAsyncParallelHook<
 
 const builtinPluginHooks = {
   afterInit,
+  afterShuviAppBuild,
   afterBuild,
   afterDestroy,
   afterBundlerDone,
