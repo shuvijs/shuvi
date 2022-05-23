@@ -10,13 +10,13 @@ import {
 import { createApp } from '../../create-app/client';
 
 const appData = getAppData();
-const { routeProps = {} } = appData;
-const { appState } = appData;
+const { routeProps = {}, appState, loadersData = {} } = appData;
 
 const app = createApp(
   {
     pageData: appData.pageData || {},
-    routeProps
+    routeProps,
+    loadersData
   },
   {
     async render({ appContext, AppComponent, router = [], modelManager }) {

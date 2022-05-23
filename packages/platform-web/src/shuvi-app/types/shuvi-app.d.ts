@@ -33,3 +33,11 @@ declare module '@shuvi/app/files/user/server' {
   declare const server: IServerModule;
   export default server;
 }
+
+declare module '@shuvi/app/files/loaders-build' {
+  import { IRouteComponentContext } from '@shuvi/platform-shared/lib/runtime';
+  import { LoaderFunction } from '@shuvi/platform-web/shuvi-app/react/loader/types';
+  // type LoaderFunction = (IRouteComponentContext) => Promise<any>
+  const loaders: Record<string, LoaderFunction>;
+  export default loaders;
+}
