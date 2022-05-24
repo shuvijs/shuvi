@@ -76,7 +76,7 @@ export class ReactClientView implements IReactClientView {
 
     const loaderContext = {
       loadersData,
-      willHydrate: true
+      willHydrate: this._isInitialRender
     };
 
     const root = (
@@ -99,9 +99,9 @@ export class ReactClientView implements IReactClientView {
 
     if (ssr && isInitialRender) {
       ReactDOM.hydrate(root, appContainer, () => {
+        this._isInitialRender = false;
         loaderContext.willHydrate = false;
       });
-      this._isInitialRender = false;
     } else {
       ReactDOM.render(root, appContainer);
     }

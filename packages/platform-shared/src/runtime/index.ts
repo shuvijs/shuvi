@@ -54,7 +54,7 @@ export interface IAppRouteConfig extends IRouteRecord {
   component?: any;
   children?: IAppRouteConfig[];
   path: string;
-  fullPath: string;
+  fullPath?: string;
   __componentSource__?: never;
   __componentSourceWithAffix__?: never;
   __import__?: never;
