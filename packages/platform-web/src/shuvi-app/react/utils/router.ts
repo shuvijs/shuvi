@@ -8,6 +8,7 @@ import {
   IApplicationCreaterClientContext
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
+import { getInitialPropsDeprecatingMessage } from './errorMessage';
 
 const isServer = typeof window === 'undefined';
 
@@ -73,6 +74,7 @@ export function normalizeRoutes(
           Component = component;
         }
         if (Component.getInitialProps) {
+          console.error(getInitialPropsDeprecatingMessage);
           if (shouldHydrated) {
             // only hydrated once, use server state
             hydrated[id] = true;

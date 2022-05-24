@@ -18,11 +18,17 @@ export const useLoaderData = <T>(): T | null => {
   const error = getErrorHandler(modelManager);
   const redirector = createRedirector();
   const fullPath = (currentMatch?.route as any)?.fullPath as string;
-  const loaderItem = loadersData[fullPath];
+  // use server loader data only when hydrating
+  const loaderItem = willHydrate ? loadersData[fullPath] : null;
   const [item, setItem] = useState(loaderItem);
   useEffect(() => {
+    let mounted = true;
     const loader = loaders[fullPath] as any;
-    if (loader && (!loaderItem || !willHydrate || loaderItem?.error)) {
+    // must has loader and with the following conditions
+    // ----------------
+    // no loaderItem or
+    // loaderItem got error
+    if (loader && (!loaderItem || loaderItem?.error)) {
       const { query, pathname } = currentRoute;
       const { params } = currentMatch;
       Promise.resolve(
@@ -37,19 +43,26 @@ export const useLoaderData = <T>(): T | null => {
         })
       )
         .then(res => {
-          setItem({
-            data: res,
-            loading: false
-          });
+          if (mounted) {
+            setItem({
+              data: res,
+              loading: false
+            });
+          }
         })
         .catch(e => {
-          setItem({
-            data: null,
-            error: e.message,
-            loading: false
-          });
+          if (mounted) {
+            setItem({
+              data: null,
+              error: e.message,
+              loading: false
+            });
+          }
         });
     }
+    return () => {
+      mounted = false;
+    };
   }, [currentRoute]);
   return item?.data;
 };

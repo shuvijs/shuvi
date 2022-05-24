@@ -1,6 +1,6 @@
 import { IRouteComponentContext } from '@shuvi/platform-shared/lib/runtime';
 
-export type Loader<T> = (
+export type Loader<T = any> = (
   loaderContenxt: IRouteComponentContext
 ) => Promise<T | null>;
 

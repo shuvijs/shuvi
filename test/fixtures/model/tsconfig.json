@@ -32,6 +32,7 @@
     "node_modules"
   ],
   "include": [
-    "src"
+    "src",
+    ".shuvi/app/types-plugin-extended.d.ts"
   ]
 }
