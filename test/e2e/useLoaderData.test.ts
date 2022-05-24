@@ -80,19 +80,15 @@ describe('useLoaderData', () => {
     test('should be called after a client naviagation', async () => {
       page = await ctx.browser.page(ctx.url('/one'));
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
-      expect(await page.$text('[data-test-id="time"]')).toBe('0');
+      expect(await page.$text('[data-test-id="time"]')).toBe('1');
 
       await page.shuvi.navigate('/two');
-      await page.waitFor('[data-test-id="two"]');
-      await page.waitFor('[data-test-id="time"]');
       await page.waitFor(1000);
-      expect(await page.$text('[data-test-id="time"]')).toBe('1');
+      expect(await page.$text('[data-test-id="time"]')).toBe('2');
 
-      await page.shuvi.navigate('/one');
-      await page.waitFor('[data-test-id="one"]');
-      await page.waitFor('[data-test-id="time"]');
+      await page.shuvi.navigate('/one', { test: 123 });
       await page.waitFor(1000);
-      expect(await page.$text('[data-test-id="time"]')).toBe('1');
+      expect(await page.$text('[data-test-id="test"]')).toBe('123');
     });
   });
 
@@ -130,6 +126,21 @@ describe('useLoaderData', () => {
       expect(loaderContext.isServer).toBe(false);
       expect(loaderContext.query.a).toBe('2');
       expect(loaderContext.params.foo).toBe('test');
+    });
+
+    test('should be called after naviagations', async () => {
+      page = await ctx.browser.page(ctx.url('/one'));
+      await page.waitFor(1000);
+      expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
+      expect(await page.$text('[data-test-id="time"]')).toBe('1');
+
+      await page.shuvi.navigate('/two');
+      await page.waitFor(1000);
+      expect(await page.$text('[data-test-id="time"]')).toBe('2');
+
+      await page.shuvi.navigate('/one', { test: 123 });
+      await page.waitFor(1000);
+      expect(await page.$text('[data-test-id="test"]')).toBe('123');
     });
   });
 });
