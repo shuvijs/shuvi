@@ -8,6 +8,10 @@
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git"
   },
+  "engines": {
+    "node": ">=16",
+    "pnpm": "=7"
+  },
   "scripts": {
     "dev": "pnpm -r --stream --parallel run dev",
     "build": "pnpm -r run build",
