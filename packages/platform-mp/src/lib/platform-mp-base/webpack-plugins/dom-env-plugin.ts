@@ -1,10 +1,5 @@
 import { Compiler } from '@shuvi/toolpack/lib/webpack';
-// @ts-ignore
-import ConstDependency from 'webpack/lib/dependencies/ConstDependency';
-// @ts-ignore
-import ProvidedDependency from 'webpack/lib/dependencies/ProvidedDependency';
-// @ts-ignore
-import { approve } from 'webpack/lib/javascript/JavascriptParserHelpers';
+import type { ConfigWebpackAssistant } from '@shuvi/service/lib/core/lifecycleTypes';
 
 const EnvProvider = '@tarojs/runtime';
 
@@ -23,23 +18,41 @@ function shouldSkip(file: string) {
   return normalizedPath.indexOf(`node_modules/${EnvProvider}`) !== -1;
 }
 
+type DomEnvPluginOPtion = {
+  resolveWebpackModule: ConfigWebpackAssistant['resolveWebpackModule'];
+};
+
 export default class DomEnvPlugin {
+  ConstDependency: any;
+  ProvidedDependency: any;
+  approve: any;
+  constructor({ resolveWebpackModule }: DomEnvPluginOPtion) {
+    this.ConstDependency = resolveWebpackModule(
+      `webpack/lib/dependencies/ConstDependency`
+    );
+    this.ProvidedDependency = resolveWebpackModule(
+      `webpack/lib/dependencies/ProvidedDependency`
+    );
+    this.approve = resolveWebpackModule(
+      `webpack/lib/javascript/JavascriptParserHelpers`
+    );
+  }
   apply(compiler: Compiler) {
     const definitions = Definitions;
     compiler.hooks.compilation.tap(
       'DomEnvPlugin',
       (compilation, { normalModuleFactory }) => {
         compilation.dependencyTemplates.set(
-          ConstDependency,
-          new ConstDependency.Template()
+          this.ConstDependency,
+          new this.ConstDependency.Template()
         );
         compilation.dependencyFactories.set(
-          ProvidedDependency,
+          this.ProvidedDependency,
           normalModuleFactory
         );
         compilation.dependencyTemplates.set(
-          ProvidedDependency,
-          new ProvidedDependency.Template()
+          this.ProvidedDependency,
+          new this.ProvidedDependency.Template()
         );
         const handler = (parser: any, parserOptions: any) => {
           Object.keys(definitions).forEach(name => {
@@ -48,7 +61,9 @@ export default class DomEnvPlugin {
             if (splittedName.length > 0) {
               splittedName.slice(1).forEach((_, i) => {
                 const name = splittedName.slice(0, i + 1).join('.');
-                parser.hooks.canRename.for(name).tap('DomEnvPlugin', approve);
+                parser.hooks.canRename
+                  .for(name)
+                  .tap('DomEnvPlugin', this.approve);
               });
             }
 
@@ -62,7 +77,7 @@ export default class DomEnvPlugin {
                 const nameIdentifier = name.includes('.')
                   ? `__webpack_provided_${name.replace(/\./g, '_dot_')}`
                   : name;
-                const dep = new ProvidedDependency(
+                const dep = new this.ProvidedDependency(
                   request[0],
                   nameIdentifier,
                   request.slice(1),
@@ -81,7 +96,7 @@ export default class DomEnvPlugin {
               const nameIdentifier = name.includes('.')
                 ? `__webpack_provided_${name.replace(/\./g, '_dot_')}`
                 : name;
-              const dep = new ProvidedDependency(
+              const dep = new this.ProvidedDependency(
                 request[0],
                 nameIdentifier,
                 request.slice(1),
