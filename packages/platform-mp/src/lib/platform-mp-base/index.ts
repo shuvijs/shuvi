@@ -342,7 +342,7 @@ export default abstract class PlatformMpBase {
 
   getConfigWebpackPlugin(): CorePluginInstance {
     return createPlugin({
-      configWebpack: async (config, { name }, context) => {
+      configWebpack: async (config, { name, resolveWebpackModule }, context) => {
         if (name === BUNDLER_TARGET_SERVER) return config;
         await this.promiseRoutes;
         const pageFiles = getAllFiles(context.resolveAppFile('files', 'pages'));
@@ -385,8 +385,9 @@ export default abstract class PlatformMpBase {
             }
           ];
         });
-
-        config.plugin('DomEnvPlugin').use(DomEnvPlugin);
+        config.plugin('DomEnvPlugin').use(DomEnvPlugin, [{
+          resolveWebpackModule
+        }]);
         config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
           {
             appConfigs: this.appConfigs,

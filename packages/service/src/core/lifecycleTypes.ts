@@ -16,6 +16,13 @@ export type ConfigWebpackAssistant = {
   name: string;
   mode: IShuviMode;
   webpack: typeof webpack;
+  /**
+   * require webpack interal module
+   * eg. resolveWebpackModule('webpack/lib/dependencies/ConstDependency')
+   */
+  resolveWebpackModule: <Path extends string>(
+    path: Path
+  ) => Path extends `webpack/${infer _other}` ? any : never;
   helpers: IWebpackHelpers;
 };
 
