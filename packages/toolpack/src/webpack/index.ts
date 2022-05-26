@@ -1,4 +1,8 @@
+import { join, dirname } from 'path';
 export { default } from 'webpack';
+/**
+ * re-export for shuvi plugin
+ */
 export {
   webpack,
   validate,
@@ -118,5 +122,14 @@ export {
   StatsModuleReason,
   StatsModuleTraceDependency,
   StatsModuleTraceItem,
-  StatsProfile,
-} from 'webpack'
+  StatsProfile
+} from 'webpack';
+
+/**
+ * resolve webpack module for not shuvi plugin
+ */
+const webpackPath = join(
+  dirname(require.resolve('webpack/package.json')),
+  '../'
+);
+export { webpackPath };
