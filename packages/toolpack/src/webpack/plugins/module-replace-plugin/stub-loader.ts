@@ -39,7 +39,6 @@ module.exports.pitch = function (this: loader.LoaderContext) {
 
   return `
 import mod from ${request}; 
-export * from ${request}
 export default mod;
 `.trim();
 };
