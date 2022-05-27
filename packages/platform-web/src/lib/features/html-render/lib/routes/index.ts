@@ -39,10 +39,14 @@ export function serializeRoutes(
         const { component } = route;
         const componentSource = component;
         const componentSourceWithAffix = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
+        // `webpackExports` works with production and optimization.minimize, check compiled dist
         strRoute +=
           `__componentSourceWithAffix__: "${componentSourceWithAffix}",
 __componentSource__: "${componentSource}",
-__import__: () => import(/* webpackChunkName: "page-${id}" */"${componentSourceWithAffix}"),
+__import__: () => import(
+  /* webpackChunkName: "page-${id}" */
+  /* webpackExports: "default" */
+  "${componentSourceWithAffix}"),
 __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.trim();
       } else {
         strRoute += `${key}: ${JSON.stringify(route[key])}`;
