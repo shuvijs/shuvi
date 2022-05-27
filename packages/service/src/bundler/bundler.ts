@@ -8,7 +8,8 @@ import Logger from '@shuvi/utils/lib/logger';
 import { inspect } from 'util';
 import webpack, {
   MultiCompiler as WebapckMultiCompiler,
-  Compiler as WebapckCompiler
+  Compiler as WebapckCompiler,
+  webpackPath
 } from '@shuvi/toolpack/lib/webpack';
 import { IPluginContext } from '../core';
 import { Target, TargetChain } from '../core/lifecycle';
@@ -294,7 +295,13 @@ class WebpackBundler {
         name,
         mode: this._cliContext.mode,
         helpers: defaultWebpackHelpers,
-        webpack
+        webpack,
+        resolveWebpackModule(path: string){
+          if(!path.startsWith('webpack/')){
+            console.error('path need startWith "webpack/" to resolve webpack module');
+          }
+          return require(`${webpackPath}${path}`)
+        }
       });
       if (hasEntry(chain)) {
         const chainConfig = chain.toConfig();

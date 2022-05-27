@@ -2,7 +2,7 @@ import { RequestListener } from 'http';
 import WebpackChain from 'webpack-chain';
 import webpack, { Configuration } from '@shuvi/toolpack/lib/webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
-import { createFile, fileUtils } from '../project';
+import { createFile } from '../project';
 import { IWebpackConfigOptions } from '../bundler/config';
 import { IShuviMode } from './apiTypes';
 
@@ -16,6 +16,13 @@ export type ConfigWebpackAssistant = {
   name: string;
   mode: IShuviMode;
   webpack: typeof webpack;
+  /**
+   * require webpack interal module
+   * eg. resolveWebpackModule('webpack/lib/dependencies/ConstDependency')
+   */
+  resolveWebpackModule: <Path extends string>(
+    path: Path
+  ) => Path extends `webpack/${infer _other}` ? any : never;
   helpers: IWebpackHelpers;
 };
 
@@ -50,7 +57,6 @@ export type Resources = [string, string | undefined];
 
 export type AddRuntimeFileUtils = {
   createFile: typeof createFile;
-  getAllFiles: typeof fileUtils.getAllFiles;
 };
 
 export interface WebpackChainType extends WebpackChain {}
