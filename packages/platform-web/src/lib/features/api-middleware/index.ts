@@ -1,5 +1,6 @@
 import { createPlugin } from '@shuvi/service';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
+import { getAllFiles } from '@shuvi/service/lib/project/file-utils';
 import { getRoutesContent, getRoutesContentFromRawRoutes } from './lib';
 
 export { IApiRequestHandler } from './lib/apiRouteHandler';
@@ -7,7 +8,7 @@ export { IApiRequestHandler } from './lib/apiRouteHandler';
 export { middleware as getApiMiddleware } from './lib';
 
 export default createPlugin({
-  addRuntimeFile: ({ createFile, getAllFiles }, context) => {
+  addRuntimeFile: ({ createFile }, context) => {
     const {
       config: { apiRoutes, apiConfig },
       paths

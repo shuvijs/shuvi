@@ -1,7 +1,7 @@
 import { createFileWithoutName, fileUtils } from '@shuvi/service/lib/project';
 import { ProjectContext } from '../../../../projectContext';
 
-const { getAllFiles, getFisrtModuleExport } = fileUtils;
+const { getAllFiles, getFirstModuleExport } = fileUtils;
 
 export default (context: ProjectContext) =>
   createFileWithoutName(() => {
@@ -10,7 +10,7 @@ export default (context: ProjectContext) =>
     return {
       dependencies: candidates,
       content: () => {
-        return getFisrtModuleExport(getAllFiles(candidates), candidates, true);
+        return getFirstModuleExport(getAllFiles(candidates), candidates, true);
       }
     };
   });

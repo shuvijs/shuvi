@@ -1,11 +1,12 @@
 import { createPlugin } from '@shuvi/service';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
+import { getAllFiles } from '@shuvi/service/lib/project/file-utils';
 import { getRoutesContentFromRawRoutes } from './lib';
 
 export { middleware as getPageMiddleware } from './lib/middleware';
 
 export default createPlugin({
-  addRuntimeFile: ({ createFile, getAllFiles }, context) => {
+  addRuntimeFile: ({ createFile }, context) => {
     const {
       config: { routes },
       paths
