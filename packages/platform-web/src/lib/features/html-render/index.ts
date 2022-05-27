@@ -2,7 +2,8 @@ import { createPlugin, IUserRouteConfig } from '@shuvi/service';
 import { getRoutesFromFiles } from '@shuvi/service/lib/route';
 import {
   getUserCustomFileCandidates,
-  getFisrtModuleExport
+  getFirstModuleExport,
+  getAllFiles
 } from '@shuvi/service/lib/project/file-utils';
 import { build } from '@shuvi/toolpack/lib/utils/build-loaders';
 import path from 'path';
@@ -23,7 +24,7 @@ const core = createPlugin({
   setup: ({ addHooks }) => {
     addHooks(extendedHooks);
   },
-  addRuntimeFile: ({ createFile, getAllFiles }, context) => {
+  addRuntimeFile: ({ createFile }, context) => {
     const {
       config: {
         routes,
@@ -117,7 +118,7 @@ const core = createPlugin({
     const userDocumentFile = createFile({
       name: 'user/document.js',
       content: () => {
-        return getFisrtModuleExport(
+        return getFirstModuleExport(
           getAllFiles(documentCandidates),
           documentCandidates
         );
@@ -127,7 +128,7 @@ const core = createPlugin({
     const userServerFile = createFile({
       name: 'user/server.js',
       content: () => {
-        return getFisrtModuleExport(
+        return getFirstModuleExport(
           getAllFiles(serverCandidates),
           serverCandidates
         );

@@ -30,7 +30,7 @@ export const getModuleExport = (module: string, defaultExport?: boolean) => {
   return defaultExport ? `export default null` : `export default {}`;
 };
 
-export const getFisrtModuleExport = (
+export const getFirstModuleExport = (
   allFiles: string[],
   candidates: string[],
   defaultExport?: boolean
