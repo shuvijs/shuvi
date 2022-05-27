@@ -10,6 +10,15 @@ export const getRuntimeConfigFromConfig = async (
   return await pluginRunner.modifyRuntimeConfig(config.runtimeConfig || {});
 };
 
+export const getPublicRuntimeConfigFromConfig = async (
+  pluginContext: IPluginContext
+) => {
+  const { pluginRunner, config } = pluginContext;
+  return await pluginRunner.modifyRuntimeConfig(
+    config.publicRuntimeConfig || {}
+  );
+};
+
 /**
  * A creator for `getPresetRuntimeFiles` which helps platforms to build a bunch of runtime files including
  * `core/app`, `core/error`, `core/platform`, `core/plugins`, `core/polyfill`, `core/runtimeConfig`, `core/setRuntimeConfig`,
@@ -35,7 +44,14 @@ export const getPresetRuntimeFilesCreator =
       runtime: getCandidates('runtime', 'noop')
     };
     context.platformModule = platformModule;
-    context.runtimeConfig = await getRuntimeConfigFromConfig(pluginContext);
+    const runtimeConfig = await getRuntimeConfigFromConfig(pluginContext);
+    const publicRuntimeConfig = await getPublicRuntimeConfigFromConfig(
+      pluginContext
+    );
+    context.runtimeConfig = {
+      ...runtimeConfig,
+      ...publicRuntimeConfig
+    };
     const runner = pluginContext.pluginRunner;
     const appPolyfills = (await runner.addPolyfill()).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();
