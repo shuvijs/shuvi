@@ -21,7 +21,7 @@ export const getAllFiles = (dependencies: string | string[]) => {
   return allFiles;
 };
 
-export const getFisrtModuleExport = (
+export const getFirstModuleExport = (
   allFiles: string[],
   candidates: string[],
   defaultExport?: boolean

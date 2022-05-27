@@ -5,7 +5,8 @@ import {
 } from '@shuvi/service';
 import {
   getUserCustomFileCandidates,
-  getFisrtModuleExport
+  getFirstModuleExport,
+  getAllFiles
 } from '@shuvi/service/lib/project/file-utils';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 
@@ -16,7 +17,7 @@ import { resolveAppFile } from '../../../paths';
 
 export default createPlugin({
   addResource: context => generateResource(context),
-  addRuntimeFile: async ({ createFile, getAllFiles }, context) => {
+  addRuntimeFile: async ({ createFile }, context) => {
     const serverCandidates = getUserCustomFileCandidates(
       context.paths.rootDir,
       'server',
@@ -25,7 +26,7 @@ export default createPlugin({
     const userServerFile = createFile({
       name: 'user/server.js',
       content: () => {
-        return getFisrtModuleExport(
+        return getFirstModuleExport(
           getAllFiles(serverCandidates),
           serverCandidates
         );
