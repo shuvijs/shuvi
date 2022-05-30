@@ -1,10 +1,7 @@
 import { IAppData, IData } from '@shuvi/platform-shared/lib/runtime';
 import { IRouter } from '@shuvi/router';
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
-import {
-  getPublicRuntimeConfig,
-  getRuntimeConfig
-} from '@shuvi/platform-shared/lib/lib';
+import { getPublicRuntimeConfig } from '@shuvi/platform-shared/lib/lib';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
@@ -52,7 +49,7 @@ export class SsrRenderer extends BaseRenderer {
       pageData,
       ssr: serverPluginContext.config.ssr
     };
-    appData.runtimeConfig = getPublicRuntimeConfig(getRuntimeConfig());
+    appData.runtimeConfig = getPublicRuntimeConfig() || {};
 
     const documentProps = {
       htmlAttrs: { ...result.htmlAttrs },

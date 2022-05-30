@@ -1,2 +1,6 @@
-export { getPublicRuntimeConfig } from './getPublicRuntimeConfig';
-export { default as getRuntimeConfig, setRuntimeConfig } from './runtimeConfig';
+export {
+  default as getRuntimeConfig,
+  getPublicRuntimeConfig,
+  setRuntimeConfig,
+  setPublicRuntimeConfig
+} from './runtimeConfig';
