@@ -303,7 +303,7 @@ importers:
       '@types/react': ^16.9.43
       '@types/react-test-renderer': ^16.9.2
       prop-types: ^15.8.1
-      react: 16.14.0
+      react: ^18.1.0
       react-test-renderer: ^16.13.1
     dependencies:
       '@shuvi/platform-shared': link:../platform-shared
@@ -314,8 +314,8 @@ importers:
       '@types/prop-types': 15.7.5
       '@types/react': 16.9.43
       '@types/react-test-renderer': 16.9.2
-      react: 16.14.0
-      react-test-renderer: 16.13.1_react@16.14.0
+      react: 18.1.0
+      react-test-renderer: 16.13.1_react@18.1.0
 
   packages/runtime:
     specifiers:
@@ -11901,14 +11901,14 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /react-test-renderer/16.13.1_react@16.14.0:
+  /react-test-renderer/16.13.1_react@18.1.0:
     resolution: {integrity: sha512-Sn2VRyOK2YJJldOqoh8Tn/lWQ+ZiKhyZTPtaO0Q6yNj+QDbmRkVFap6pZPy3YQk8DScRDfyqm/KxKYP9gCMRiQ==}
     peerDependencies:
       react: ^16.13.1
     dependencies:
       object-assign: 4.1.1
       prop-types: 15.8.1
-      react: 16.14.0
+      react: 18.1.0
       react-is: 16.13.0
       scheduler: 0.19.1
     dev: true
