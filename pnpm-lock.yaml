@@ -239,7 +239,7 @@ importers:
       '@shuvi/utils': 0.0.1-pre.10
       '@types/react': ^16.9.43
       react: ^18.1.0
-      react-dom: 18.1.0
+      react-dom: ^18.1.0
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
