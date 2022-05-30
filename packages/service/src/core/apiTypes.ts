@@ -160,6 +160,7 @@ export interface UserConfig {
   apiRoutes?: IApiRouteConfig[]; // generate by files what under src/apis or user defined
   apiConfig?: IApiConfig;
   runtimeConfig?: IRuntimeConfig;
+  publicRuntimeConfig?: IRuntimeConfig;
   /**
    * specifically target for `platform-web`
    */

@@ -1,5 +1,5 @@
 /**
- * Following codes should be run beforen any other codes.
+ * Following codes should be run before any other codes.
  * Do not try to import any module from `@shuvi/app`.
  */
 

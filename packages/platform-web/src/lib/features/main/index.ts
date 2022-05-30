@@ -10,18 +10,19 @@ import {
 import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
 
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import { setRuntimeConfig } from '@shuvi/platform-shared/lib/lib/runtimeConfig';
+import {
+  setRuntimeConfig,
+  setPublicRuntimeConfig
+} from '@shuvi/platform-shared/lib/lib/runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 
-import {
-  getRuntimeConfigFromConfig
-} from '@shuvi/platform-shared/lib/platform';
+import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/lib/platform';
 import generateResource from './generateResource';
 import { resolveAppFile } from '../../paths';
-import { appRoutes } from './hooks'
-import { buildHtml } from './buildHtml'
-import { getMiddlewares } from '../middlewares'
+import { appRoutes } from './hooks';
+import { buildHtml } from './buildHtml';
+import { getMiddlewares } from '../middlewares';
 
 function getServerEntry(context: IPluginContext): IWebpackEntry {
   const { ssr } = context.config;
@@ -33,15 +34,35 @@ function getServerEntry(context: IPluginContext): IWebpackEntry {
 }
 
 /** This main plugin uses `platformContext` so that it is set to a plugin getter */
-export const getPlugin = (platformContext: IPlatformContext): ResolvedPlugin => {
+export const getPlugin = (
+  platformContext: IPlatformContext
+): ResolvedPlugin => {
   const core = createPlugin({
     setup: ({ addHooks }) => {
       addHooks({ appRoutes });
     },
     afterInit: async context => {
-      const runtimeConfig = await getRuntimeConfigFromConfig(context);
-      if (Object.keys(runtimeConfig)) {
-        setRuntimeConfig(runtimeConfig);
+      const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
+        await getRuntimeConfigFromConfig(context);
+
+      const serverKeys = Object.keys(serverRuntimeConfig);
+      const publicKeys = Object.keys(publicRuntimeConfig);
+      for (let index = 0; index < serverKeys.length; index++) {
+        const key = serverKeys[index];
+        const hasSameKey = publicKeys.includes(key);
+        if (hasSameKey) {
+          console.warn(
+            `Warning: key "${key}" exist in both "runtimeConfig" and "publicRuntimeConfig". Please rename the key, or the value from "publicRuntimeConfig" will be applied.\n`
+          );
+          break;
+        }
+      }
+
+      if (serverKeys) {
+        setRuntimeConfig(serverRuntimeConfig);
+      }
+      if (publicKeys) {
+        setPublicRuntimeConfig(publicRuntimeConfig);
       }
     },
     addRuntimeService: () => [
@@ -87,5 +108,5 @@ export const getPlugin = (platformContext: IPlatformContext): ResolvedPlugin => 
   return {
     core,
     types: path.join(__dirname, 'types')
-  }
-}
+  };
+};
