@@ -47,6 +47,11 @@ declare module '@shuvi/app/core/setRuntimeConfig' {
   export default function setRuntimeConfig(config: IRuntimeConfig): void;
 }
 
+declare module '@shuvi/app/core/setPublicRuntimeConfig' {
+  import { IRuntimeConfig } from '@shuvi/platform-shared/src/runtime';
+  export default function setPublicRuntimeConfig(config: IRuntimeConfig): void;
+}
+
 declare module '@shuvi/app/user/app' {
   const UserAppComponent: any;
   export default UserAppComponent;
