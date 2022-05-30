@@ -48,7 +48,7 @@ export default () => {
       emitChange(this);
     }
 
-    render() {
+    render(): React.ReactNode {
       return null;
     }
   };

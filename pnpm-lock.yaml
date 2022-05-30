@@ -101,9 +101,9 @@ importers:
       mini-css-extract-plugin: 1.3.9
       postcss: 8.2.3
       postcss-url: ^10.1.3
-      react: 16.14.0
+      react: ^18.1.0
       react-app-polyfill: 2.0.0
-      react-dom: 16.14.0
+      react-dom: 18.1.0
       regenerator-runtime: ^0.13.9
       webpack: 5.36.0
     dependencies:
@@ -123,7 +123,7 @@ importers:
       '@tarojs/api': 3.3.3
       '@tarojs/components': 3.3.3
       '@tarojs/helper': 3.3.3
-      '@tarojs/react': 3.3.3_react@16.14.0
+      '@tarojs/react': 3.3.3_react@18.1.0
       '@tarojs/runtime': 3.3.3
       '@tarojs/shared': 3.3.3
       '@tarojs/taro': 3.3.3
@@ -132,9 +132,9 @@ importers:
       mini-css-extract-plugin: 1.3.9_webpack@5.36.0
       postcss: 8.2.3
       postcss-url: 10.1.3_postcss@8.2.3
-      react: 16.14.0
+      react: 18.1.0
       react-app-polyfill: 2.0.0
-      react-dom: 16.14.0_react@16.14.0
+      react-dom: 18.1.0_react@18.1.0
       regenerator-runtime: 0.13.9
       webpack: 5.36.0
 
@@ -188,9 +188,9 @@ importers:
       fs-extra: 9.0.1
       node-mocks-http: ^1.11.0
       raw-body: ^2.4.1
-      react: 16.14.0
+      react: ^18.1.0
       react-app-polyfill: 2.0.0
-      react-dom: 16.14.0
+      react-dom: ^18.1.0
       react-refresh: 0.8.3
       use-subscription: 1.4.1
       webpack: 5.36.0
@@ -200,7 +200,7 @@ importers:
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
       '@shuvi/redox': 0.0.1-pre.6
-      '@shuvi/redox-react': 0.0.1-pre.6_mnhxqenrqykaoyuvhq5stra4yi
+      '@shuvi/redox-react': 0.0.1-pre.6_gug7xcu4ipcswrgwaznomd7nyu
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
@@ -214,13 +214,13 @@ importers:
       fs-extra: 9.0.1
       node-mocks-http: 1.11.0
       raw-body: 2.5.1
-      react: 16.14.0
+      react: 18.1.0
       react-app-polyfill: 2.0.0
-      react-dom: 16.14.0_react@16.14.0
+      react-dom: 18.1.0_react@18.1.0
       react-refresh: 0.8.3
-      use-subscription: 1.4.1_react@16.14.0
+      use-subscription: 1.4.1_react@18.1.0
     devDependencies:
-      '@testing-library/react': 10.0.2_wcqkhtmu7mswc6yz4uyexck3ty
+      '@testing-library/react': 10.0.2_ef5jwxihqo6n7gxfmzogljlgcm
       '@types/content-type': 1.1.5
       '@types/cookie': 0.4.1
       '@types/ejs': 3.1.0
@@ -303,10 +303,10 @@ importers:
       '@shuvi/utils': 0.0.1-pre.10
       '@types/prop-types': ^15.7.5
       '@types/react': ^18.0.9
-      '@types/react-test-renderer': ^16.9.2
+      '@types/react-test-renderer': ^18.0.0
       prop-types: ^15.8.1
       react: ^18.1.0
-      react-test-renderer: ^16.13.1
+      react-test-renderer: ^18.1.0
     dependencies:
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/router': link:../router
@@ -315,9 +315,9 @@ importers:
     devDependencies:
       '@types/prop-types': 15.7.5
       '@types/react': 18.0.9
-      '@types/react-test-renderer': 16.9.2
+      '@types/react-test-renderer': 18.0.0
       react: 18.1.0
-      react-test-renderer: 16.13.1_react@18.1.0
+      react-test-renderer: 18.1.0_react@18.1.0
 
   packages/runtime:
     specifiers:
@@ -3746,18 +3746,6 @@ packages:
       react-dom: 18.1.0_react@18.1.0
     dev: false
 
-  /@shuvi/redox-react/0.0.1-pre.6_mnhxqenrqykaoyuvhq5stra4yi:
-    resolution: {integrity: sha512-LGh4JBLiJ7c9BnQy818S8cZ76FDC7tudcYaG+sxNmk4dwRZzGXQPM5oracHH5jcNbnGMIQEgpioMzzMQuhTWiw==}
-    peerDependencies:
-      '@shuvi/redox': 0.0.1-pre.6
-      react: '>=16.8'
-      react-dom: '>=16.8'
-    dependencies:
-      '@shuvi/redox': 0.0.1-pre.6
-      react: 16.14.0
-      react-dom: 16.14.0_react@16.14.0
-    dev: false
-
   /@shuvi/redox/0.0.1-pre.4_redux@4.1.2:
     resolution: {integrity: sha512-+/lI/s47oBNjKVC0xQ8MLfH8EWpO81gpGqoATs2RbTViDruqA3ILgpXWdA4NGis6XQ6TNKVJOjReG/bNqpBdhg==}
     engines: {node: '>=10'}
@@ -3961,12 +3949,12 @@ packages:
       - supports-color
     dev: false
 
-  /@tarojs/react/3.3.3_react@16.14.0:
+  /@tarojs/react/3.3.3_react@18.1.0:
     resolution: {integrity: sha512-t1tIC7JQCbZRojEj7NDb2uBGHxBXeVCRObFPbt8cCHE80nQJAWHYvy18DEAAdVUhAW8LJRZgdJ7dfb9a8JLBnA==}
     dependencies:
       '@tarojs/runtime': 3.3.3
       '@tarojs/shared': 3.3.3
-      react-reconciler: 0.26.1_react@16.14.0
+      react-reconciler: 0.26.1_react@18.1.0
       scheduler: 0.20.2
     transitivePeerDependencies:
       - react
@@ -4022,7 +4010,7 @@ packages:
       pretty-format: 25.3.0
     dev: true
 
-  /@testing-library/react/10.0.2_wcqkhtmu7mswc6yz4uyexck3ty:
+  /@testing-library/react/10.0.2_ef5jwxihqo6n7gxfmzogljlgcm:
     resolution: {integrity: sha512-YT6Mw0oJz7R6vlEkmo1FlUD+K15FeXApOB5Ffm9zooFVnrwkt00w18dUJFMOh1yRp9wTdVRonbor7o4PIpFCmA==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -4032,8 +4020,8 @@ packages:
       '@babel/runtime': 7.12.5
       '@testing-library/dom': 7.2.1
       '@types/testing-library__react': 10.0.1
-      react: 16.14.0
-      react-dom: 16.14.0_react@16.14.0
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
     dev: true
 
   /@tootallnate/once/1.1.2:
@@ -4380,6 +4368,12 @@ packages:
 
   /@types/react-test-renderer/16.9.2:
     resolution: {integrity: sha512-4eJr1JFLIAlWhzDkBCkhrOIWOvOxcCAfQh+jiKg7l/nNZcCIL2MHl2dZhogIFKyHzedVWHaVP1Yydq/Ruu4agw==}
+    dependencies:
+      '@types/react': 18.0.9
+    dev: true
+
+  /@types/react-test-renderer/18.0.0:
+    resolution: {integrity: sha512-C7/5FBJ3g3sqUahguGi03O79b8afNeSD6T8/GU50oQrJCU0bVCCGQHaGKUbg2Ce8VQEEqTw8/HiS6lXHHdgkdQ==}
     dependencies:
       '@types/react': 18.0.9
     dev: true
@@ -11902,7 +11896,11 @@ packages:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
     dev: true
 
-  /react-reconciler/0.26.1_react@16.14.0:
+  /react-is/18.1.0:
+    resolution: {integrity: sha512-Fl7FuabXsJnV5Q1qIOQwx/sagGF18kogb4gpfcG4gjLBWO0WDiiz1ko/ExayuxE7InyQkBLkxRFG5oxY6Uu3Kg==}
+    dev: true
+
+  /react-reconciler/0.26.1_react@18.1.0:
     resolution: {integrity: sha512-6E/CvH9zcDmHjhiNJlP0qJ8+3ufnY2b5RWs774Uy8XKWN0l6qfnlkz0XnDacxqj2rbJdq76w9dlFXjPPOQrmqA==}
     engines: {node: '>=0.10.0'}
     peerDependencies:
@@ -11910,7 +11908,7 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-      react: 16.14.0
+      react: 18.1.0
       scheduler: 0.20.2
     dev: false
 
@@ -11919,16 +11917,25 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /react-test-renderer/16.13.1_react@18.1.0:
-    resolution: {integrity: sha512-Sn2VRyOK2YJJldOqoh8Tn/lWQ+ZiKhyZTPtaO0Q6yNj+QDbmRkVFap6pZPy3YQk8DScRDfyqm/KxKYP9gCMRiQ==}
+  /react-shallow-renderer/16.15.0_react@18.1.0:
+    resolution: {integrity: sha512-oScf2FqQ9LFVQgA73vr86xl2NaOIX73rh+YFqcOp68CWj56tSfgtGKrEbyhCj0rSijyG9M1CYprTh39fBi5hzA==}
     peerDependencies:
-      react: ^16.13.1
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
       object-assign: 4.1.1
-      prop-types: 15.8.1
       react: 18.1.0
-      react-is: 16.13.0
-      scheduler: 0.19.1
+      react-is: 18.1.0
+    dev: true
+
+  /react-test-renderer/18.1.0_react@18.1.0:
+    resolution: {integrity: sha512-OfuueprJFW7h69GN+kr4Ywin7stcuqaYAt1g7airM5cUgP0BoF5G5CXsPGmXeDeEkncb2fqYNECO4y18sSqphg==}
+    peerDependencies:
+      react: ^18.1.0
+    dependencies:
+      react: 18.1.0
+      react-is: 18.1.0
+      react-shallow-renderer: 16.15.0_react@18.1.0
+      scheduler: 0.22.0
     dev: true
 
   /react/16.14.0:
@@ -13596,13 +13603,13 @@ packages:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
-  /use-subscription/1.4.1_react@16.14.0:
+  /use-subscription/1.4.1_react@18.1.0:
     resolution: {integrity: sha512-7+IIwDG/4JICrWHL/Q/ZPK5yozEnvRm6vHImu0LKwQlmWGKeiF7mbAenLlK/cTNXrTtXHU/SFASQHzB6+oSJMQ==}
     peerDependencies:
       react: ^16.8.0
     dependencies:
       object-assign: 4.1.1
-      react: 16.14.0
+      react: 18.1.0
     dev: false
 
   /use/3.1.1:

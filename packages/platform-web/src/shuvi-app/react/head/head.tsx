@@ -208,6 +208,7 @@ function Head({ children }: { children?: React.ReactNode }) {
   return (
     <HeadManagerContext.Consumer>
       {updateHead => (
+        // @ts-ignore
         <Effect
           reduceComponentsToState={reduceComponents}
           handleStateChange={updateHead}
