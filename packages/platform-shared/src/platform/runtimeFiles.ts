@@ -7,7 +7,10 @@ export const getRuntimeConfigFromConfig = async (
   pluginContext: IPluginContext
 ) => {
   const { pluginRunner, config } = pluginContext;
-  return await pluginRunner.modifyRuntimeConfig(config.runtimeConfig || {});
+  return await pluginRunner.modifyRuntimeConfig({
+    public: config.publicRuntimeConfig || {},
+    server: config.runtimeConfig || {}
+  });
 };
 
 /**
@@ -35,7 +38,12 @@ export const getPresetRuntimeFilesCreator =
       runtime: getCandidates('runtime', 'noop')
     };
     context.platformModule = platformModule;
-    context.runtimeConfig = await getRuntimeConfigFromConfig(pluginContext);
+    const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
+      await getRuntimeConfigFromConfig(pluginContext);
+    context.runtimeConfig = {
+      ...serverRuntimeConfig,
+      ...publicRuntimeConfig
+    };
     const runner = pluginContext.pluginRunner;
     const appPolyfills = (await runner.addPolyfill()).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();
