@@ -17,10 +17,7 @@ import {
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 
-import {
-  getRuntimeConfigFromConfig,
-  getPublicRuntimeConfigFromConfig
-} from '@shuvi/platform-shared/lib/platform';
+import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/lib/platform';
 import generateResource from './generateResource';
 import { resolveAppFile } from '../../paths';
 import { appRoutes } from './hooks';
@@ -45,15 +42,14 @@ export const getPlugin = (
       addHooks({ appRoutes });
     },
     afterInit: async context => {
-      const runtimeConfig = await getRuntimeConfigFromConfig(context);
-      const publicRuntimeConfig = await getPublicRuntimeConfigFromConfig(
-        context
-      );
+      const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
+        await getRuntimeConfigFromConfig(context);
 
-      const keys = Object.keys(runtimeConfig);
-      for (let index = 0; index < keys.length; index++) {
-        const key = keys[index];
-        const hasSameKey = Object.keys(publicRuntimeConfig).includes(key);
+      const serverKeys = Object.keys(serverRuntimeConfig);
+      const publicKeys = Object.keys(publicRuntimeConfig);
+      for (let index = 0; index < serverKeys.length; index++) {
+        const key = serverKeys[index];
+        const hasSameKey = publicKeys.includes(key);
         if (hasSameKey) {
           console.warn(
             `Warning: key "${key}" exist in both "runtimeConfig" and "publicRuntimeConfig". Please rename the key, or the value from "publicRuntimeConfig" will be applied.\n`
@@ -62,10 +58,10 @@ export const getPlugin = (
         }
       }
 
-      if (Object.keys(runtimeConfig)) {
-        setRuntimeConfig(runtimeConfig);
+      if (serverKeys) {
+        setRuntimeConfig(serverRuntimeConfig);
       }
-      if (Object.keys(publicRuntimeConfig)) {
+      if (publicKeys) {
         setPublicRuntimeConfig(publicRuntimeConfig);
       }
     },
