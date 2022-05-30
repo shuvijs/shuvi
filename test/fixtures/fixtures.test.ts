@@ -23,7 +23,7 @@ describe('fixtures', () => {
     test(
       `build ${fixture}`,
       async () => {
-        expect.hasAssertions();
+        //expect.hasAssertions();
         await buildFixture(fixture);
         expect(true).toBe(true);
       },
