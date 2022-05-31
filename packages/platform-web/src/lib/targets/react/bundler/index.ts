@@ -5,6 +5,7 @@ import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../../../paths';
 import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
 import serverPlugin from './insertReactRefreshEntryFile';
+import { DefinePlugin } from 'webpack';
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
@@ -17,6 +18,20 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
   };
   const resolveUser = (m: string) =>
     path.join(context.paths.rootDir, 'node_modules', m);
+
+  const isReactVersionAfter18 = () => {
+    let version: string = '';
+    try {
+      version = require(resolveUser('react-dom')).version;
+    } catch (e) {
+      version = require(resolveLocal('react-dom')).version;
+    } finally {
+    }
+    const majorVersion = parseInt(version.split('.')[0] || '', 10);
+
+    return majorVersion >= 18;
+  };
+
   config.resolve.alias.set('@shuvi/platform-web', PACKAGE_DIR);
   config.resolve.alias.set('@shuvi/service', resolveLocal('@shuvi/service'));
   config.resolve.alias.set(
@@ -34,6 +49,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     resolveUser('react-dom'),
     resolveLocal('react-dom')
   ]);
+
   if (name === BUNDLER_DEFAULT_TARGET && context.mode === 'development') {
     config.module
       .rule('main')
@@ -43,7 +59,11 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
       .before('shuvi-swc-loader');
 
     config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);
-
+    config.plugin('version-env-plugin').use(DefinePlugin, [
+      {
+        'process.env.REACT_18_AFTER': JSON.stringify(isReactVersionAfter18())
+      }
+    ]);
     config.merge({
       entry: {
         [BUILD_CLIENT_RUNTIME_REACT_REFRESH]: [
