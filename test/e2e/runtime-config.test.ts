@@ -7,13 +7,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('SSR: Runtime Config', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('runtime-config', {
-      runtimeConfig: {
-        a: 'a',
-        b: 'b',
-        $serverOnly: 'server-only'
-      }
-    });
+    ctx = await launchFixture('runtime-config');
   });
 
   beforeEach(() => {
@@ -65,11 +59,6 @@ describe('CSR: Runtime Config', () => {
       ssr: false,
       router: {
         history: 'browser'
-      },
-      runtimeConfig: {
-        a: 'a',
-        b: 'b',
-        $private: 'server-only'
       }
     });
   });
