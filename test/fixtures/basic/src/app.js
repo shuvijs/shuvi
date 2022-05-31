@@ -5,11 +5,13 @@ const MyApp = () => {
   const router = useRouter();
 
   React.useEffect(() => {
+    let routerListener;
     if (typeof window !== 'undefined') {
-      router.listen(() => {
+      routerListener = router.listen(() => {
         console.log('history change');
       });
     }
+    return () => routerListener();
   }, []);
 
   return <App />;
