@@ -10,7 +10,7 @@ type RenderActionParam = {
 
 let renderAction: (options: RenderActionParam) => void;
 
-if (process.env.REACT_18_AFTER) {
+if (process.env.__AFTER_REACT_18__) {
   const { createRoot, hydrateRoot } = require('react-dom/client');
   renderAction = ({ ssr, isInitialRender, root, callback, appContainer }) => {
     if (ssr && isInitialRender) {

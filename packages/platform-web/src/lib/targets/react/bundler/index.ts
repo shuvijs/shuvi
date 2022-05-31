@@ -61,7 +61,9 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);
     config.plugin('version-env-plugin').use(DefinePlugin, [
       {
-        'process.env.REACT_18_AFTER': JSON.stringify(isReactVersionAfter18())
+        'process.env.__AFTER_REACT_18__': JSON.stringify(
+          isReactVersionAfter18()
+        )
       }
     ]);
     config.merge({
