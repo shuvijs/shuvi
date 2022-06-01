@@ -1,6 +1,6 @@
 import { ShuviServer } from './shuviServer';
 import { IRequestHandlerWithNext } from '../server/http-server';
-import { serveStatic } from './utils';
+import { isStaticFileExist, serveStatic } from './utils';
 import { BUILD_DEFAULT_DIR, PUBLIC_PATH } from '../constants';
 import { IServerPluginContext } from './plugin';
 
@@ -8,9 +8,11 @@ const getAssetMiddleware = (
   cliContext: IServerPluginContext
 ): IRequestHandlerWithNext => {
   return async (req, res, next) => {
-    let { path = '' } = req.params || {};
-    if (Array.isArray(path)) path = path.join('/');
+    const path = req.pathname;
     const assetAbsPath = cliContext.resolveBuildFile(BUILD_DEFAULT_DIR, path);
+
+    if (!isStaticFileExist(assetAbsPath)) next();
+
     let err = null;
     try {
       await serveStatic(req, res, assetAbsPath);
