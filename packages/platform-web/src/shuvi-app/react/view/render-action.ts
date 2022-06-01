@@ -17,7 +17,7 @@ if (process.env.__SHUVI__AFTER__REACT__18__) {
       hydrateRoot(appContainer, root);
       callback?.();
     } else {
-      createRoot(root).render(appContainer);
+      createRoot(appContainer).render(root);
     }
   };
 } else {
