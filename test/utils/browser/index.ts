@@ -1,10 +1,7 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
 // @ts-ignore
-import puppeteer, {
-  DirectNavigationOptions,
-  ConsoleMessage
-} from 'puppeteer-core';
+import puppeteer, { ConsoleMessage, WaitForOptions } from 'puppeteer-core';
 import qs from 'querystring';
 import ChromeDetector from './chrome';
 
@@ -23,7 +20,7 @@ export interface Page extends puppeteer.Page {
   };
 }
 
-export interface PageOptions extends DirectNavigationOptions {
+export interface PageOptions extends WaitForOptions {
   disableJavaScript?: boolean;
 }
 
@@ -121,7 +118,7 @@ export default class Browser {
       page.$eval(
         selector,
         (el, attr) => {
-          const val = el.getAttribute(attr);
+          const val = el.getAttribute(attr as string);
           if (val === null) {
             throw Error(`"${el.tagName}" no attr "${attr}"`);
           }
@@ -132,7 +129,7 @@ export default class Browser {
     page.$$attr = (selector: string, attr: string) =>
       page.$$eval(
         selector,
-        (els, attr) => els.map(el => el.getAttribute(attr)),
+        (els, attr) => els.map(el => el.getAttribute(attr as string)),
         attr
       );
 
