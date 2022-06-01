@@ -1,16 +1,28 @@
 import { IRuntimeConfig } from '@shuvi/service/lib/core';
 
 let runtimeConfig: IRuntimeConfig | null;
+let publicRuntimeConfig: IRuntimeConfig | null;
 
 /**
  * getRuntimeConfig function
  *
  * @returns runtimeConfig
-*/
+ */
 export default () => {
-  return runtimeConfig || {};
+  return {
+    ...(runtimeConfig || {}),
+    ...(publicRuntimeConfig || {})
+  };
 };
+
+export function getPublicRuntimeConfig(): IRuntimeConfig | null {
+  return publicRuntimeConfig;
+}
 
 export function setRuntimeConfig(config: IRuntimeConfig) {
   runtimeConfig = config;
+}
+
+export function setPublicRuntimeConfig(config: IRuntimeConfig) {
+  publicRuntimeConfig = config;
 }
