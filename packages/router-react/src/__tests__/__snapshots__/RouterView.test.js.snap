@@ -1,6 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`useOutlet when there is a child route returns an element 1`] = `
+exports[`RouterView does not render a 2nd route that also matches the URL 1`] = `
+<h1>
+  Home
+</h1>
+`;
+
+exports[`RouterView renders the first route that matches the URL 1`] = `
+<h1>
+  Home
+</h1>
+`;
+
+exports[`RouterView renders with nested routes 1`] = `
+Array [
+  <h1>
+    Admin
+  </h1>,
+  <h1>
+    User
+  </h1>,
+]
+`;
+
+exports[`RouterView when there is a child route returns an element 1`] = `
 <p>
   Profile
 </p>

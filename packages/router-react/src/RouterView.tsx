@@ -36,9 +36,13 @@ export function RouterView(): React.ReactElement | null {
   }
 
   const { route, params, pathname } = matched;
-  const element = route.component
-    ? React.createElement(route.component, route.props)
-    : defaultElement;
+  const element = React.useMemo(
+    () =>
+      route.component
+        ? React.createElement(route.component, route.props)
+        : defaultElement,
+    [route.component, route.props, defaultElement]
+  );
 
   return (
     <MatchedRouteContext.Provider
