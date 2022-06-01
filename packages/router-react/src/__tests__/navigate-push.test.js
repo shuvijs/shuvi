@@ -6,17 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { Router, useNavigate, RouterView } from '..';
-import { createRouter, MemoryHistory } from '@shuvi/router';
-
-function createMockRouter(routes, initialLocation) {
-  return createRouter({
-    routes,
-    history: new MemoryHistory({
-      initialEntries: [initialLocation],
-      initialIndex: 0
-    })
-  });
-}
+import { createMockRouter } from './utils';
 
 describe('navigate', () => {
   let node;
