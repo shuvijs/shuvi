@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { View } from '@tarojs/components';
 import { IPageError } from '@shuvi/platform-shared/esm/runtime';
+import { ViewProps } from '@tarojs/components/types/View';
+
+type ViewType = React.FC<PropsWithChildren<ViewProps>>;
+const TypedView: ViewType = View as ViewType;
 
 const style = {
   container: {
@@ -30,11 +34,13 @@ const style = {
 
 export default function error({ errorCode, errorDesc }: IPageError) {
   return (
-    <View style={style.container}>
-      <View style={style.error}>
-        <View style={style.errorCode}>{errorCode}</View>
-        {errorDesc && <View style={style.errorDesc}>{errorDesc}</View>}
-      </View>
-    </View>
+    <TypedView style={style.container}>
+      <TypedView style={style.error}>
+        <TypedView style={style.errorCode}>{errorCode}</TypedView>
+        {errorDesc && (
+          <TypedView style={style.errorDesc}>{errorDesc}</TypedView>
+        )}
+      </TypedView>
+    </TypedView>
   );
 }

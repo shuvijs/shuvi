@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Component } from 'react';
+import { Component, PropsWithChildren } from 'react';
 
-class App extends Component {
+class App extends Component<PropsWithChildren<{}>> {
   componentDidMount() {}
 
   componentDidShow() {}
