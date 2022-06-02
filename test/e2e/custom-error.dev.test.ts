@@ -115,6 +115,11 @@ describe('Custom throw error in development spa', () => {
     await ctx.close();
   });
   test('should render error page with status in dev', async () => {
+    // 该case很诡异
+    // 走第三次navigate时会导致useHref 读不到RouterContext
+    // 也可能会读不到hot update json
+    // 异常只能通过开启 puppeteer ui 获取
+    // 从Jest中抛出的异常只能是
     result = await page.goto(ctx.url('/ctx-error?a=1'));
 
     if (!result) {

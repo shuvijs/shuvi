@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Root } from 'react-dom/client';
 
 type RenderActionParam = {
   ssr?: boolean;
@@ -12,12 +13,16 @@ let renderAction: (options: RenderActionParam) => void;
 
 if (process.env.__SHUVI__AFTER__REACT__18__) {
   const { createRoot, hydrateRoot } = require('react-dom/client');
+  let renderRoot: Root;
   renderAction = ({ ssr, isInitialRender, root, callback, appContainer }) => {
     if (ssr && isInitialRender) {
-      hydrateRoot(appContainer, root);
+      renderRoot = hydrateRoot(appContainer, root);
       callback?.();
     } else {
-      createRoot(appContainer).render(root);
+      if (!renderRoot) {
+        renderRoot = createRoot(appContainer);
+      }
+      renderRoot.render(root);
     }
   };
 } else {
