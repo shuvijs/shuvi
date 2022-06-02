@@ -10,7 +10,8 @@ const getPublicDirMiddleware = (
   cliContext: IServerPluginContext
 ): IRequestHandlerWithNext => {
   return async (req, res, next) => {
-    const path = req.pathname;
+    let { path = '' } = req.params || {};
+    if (Array.isArray(path)) path = path.join('/');
     const assetAbsPath = cliContext.resolvePublicFile(path);
 
     if (!isStaticFileExist(assetAbsPath)) return next();
@@ -62,7 +63,7 @@ export class ShuviDevServer extends ShuviServer {
 
     // keep the order
     devMiddleware.apply(server);
-    server.use(`${context.assetPublicPath}:path(.*)`, publicDirMiddleware);
+    server.use(':path(.*)', publicDirMiddleware);
 
     await this._initMiddlewares();
   }

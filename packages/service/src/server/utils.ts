@@ -1,10 +1,10 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import fs from 'fs';
+import { existsSync, statSync } from 'fs';
 import send from 'send';
 
 export function isStaticFileExist(path: string): Boolean {
-  if (fs.existsSync(path)) {
-    return !fs.statSync(path).isDirectory() && fs.statSync(path).isFile();
+  if (existsSync(path)) {
+    return !statSync(path).isDirectory() && statSync(path).isFile();
   }
   return false;
 }
