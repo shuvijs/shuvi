@@ -37,6 +37,7 @@ export default class Browser {
     const _opts = {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      //headless: false,
       ...options
     };
 
