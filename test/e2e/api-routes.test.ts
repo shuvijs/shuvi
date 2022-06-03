@@ -2,7 +2,6 @@
 import { AppCtx, launchFixture, resolveFixture } from '../utils';
 import { writeFileSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
-import axios from 'axios';
 import { waitForResponseChange } from 'shuvi-test-utils/wait-for-response-change';
 
 let ctx: AppCtx;
@@ -520,7 +519,7 @@ describe('apiRoutes development', () => {
         });
         // fetch response
         const getContent = () => {
-          return axios.get(href).then(res => res.data);
+          return got.get(href).then(res => res.body);
         };
         // edit file
         const editedContent = originalContent.replace(

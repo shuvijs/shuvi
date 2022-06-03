@@ -32,7 +32,7 @@ class ErrorBoundary extends React.PureComponent<
       // The component has to be unmounted or else it would continue to error
       <ErrorPage errorCode={SHUVI_ERROR_CODE.APP_ERROR} />
     ) : (
-      (this.props?.children as unknown as React.ReactNode)
+      (this.props.children as unknown as React.ReactNode)
     );
   }
 }
