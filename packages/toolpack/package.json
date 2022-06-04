@@ -71,7 +71,7 @@
     "style-loader": "2.0.0",
     "terser-webpack-plugin": "5.2.5",
     "vm-browserify": "1.1.2",
-    "webpack": "5.36.0",
+    "webpack": "5.73.0",
     "webpack-bundle-analyzer": "4.3.0",
     "webpack-chain": "6.5.1",
     "webpack-sources": "2.2.0"
