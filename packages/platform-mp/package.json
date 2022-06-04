@@ -61,6 +61,6 @@
     "react-app-polyfill": "2.0.0",
     "react-dom": "16.14.0",
     "regenerator-runtime": "^0.13.9",
-    "webpack": "5.36.0"
+    "webpack": "5.73.0"
   }
 }
