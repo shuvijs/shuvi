@@ -79,7 +79,7 @@ interface IClientRendererOptions<
   CompType = any,
   Data = {},
   Router extends IRouter<any> = IRouter<any>
-> extends IRenderOptions<IApplicationCreaterClientContext, Router, CompType> {
+> extends IRenderOptions<IClientContext, Router, CompType> {
   router: Router;
   appContainer: HTMLElement;
   appData: IAppData<Data>;
@@ -139,8 +139,8 @@ export interface IRouteComponentContext {
   error: IErrorHandler;
   /**
    * Application context object, which accompanies the entire application life cycle
-   * {@link IApplicationCreaterClientContext} for client
-   * {@link IApplicationCreaterServerContext} for server
+   * {@link IClientContext} for client
+   * {@link IServerContext} for server
    */
   appContext: IApplicationCreaterContext;
 }
@@ -186,7 +186,7 @@ export type IRenderAppResult<Data = {}> = {
 export interface IServerRendererOptions<
   CompType = any,
   Router extends IRouter = IRouter
-> extends IRenderOptions<IApplicationCreaterServerContext, Router, CompType> {
+> extends IRenderOptions<IServerContext, Router, CompType> {
   router: Router;
   manifest: IManifest;
   getAssetPublicUrl(path: string): string;
@@ -201,26 +201,17 @@ export interface IViewServer<
     Promise<IRenderAppResult<Data>>
   > {}
 
-export interface IApplicationCreaterBase extends IContext {
-  routeProps?: { [x: string]: any };
-}
+export interface IApplicationCreaterBase extends IContext {}
 
-export interface IApplicationCreaterServerContext
-  extends IApplicationCreaterBase {
+export interface IServerContext extends IContext {
   req: IncomingMessage & {
     [x: string]: any;
   };
   statusCode?: number;
 }
-export interface IApplicationCreaterClientContext
-  extends IApplicationCreaterBase {
-  pageData?: any;
-  routeProps?: { [x: string]: any };
-  loadersData?: { [x: string]: any };
-}
 
-export type IApplicationCreaterContext =
-  | IApplicationCreaterClientContext
-  | IApplicationCreaterServerContext;
+export interface IClientContext extends IContext {}
+
+export type IApplicationCreaterContext = IServerContext | IClientContext;
 
 export type IRuntimeConfig = Record<string, string>;

@@ -2,20 +2,18 @@ import { IRouter } from '@shuvi/router';
 import { CustomAppContext } from '@shuvi/runtime';
 import { getManager, PluginManager } from './lifecycle';
 import { setApp } from './appProxy';
-import { IModelManager, IAppState } from './appStore';
+import { IModelManager } from './appStore';
 
 export interface ApplicationCreater<
   Context extends IContext,
+  ExtendedOptions extends {} = Context,
   Router extends IRouter = IRouter,
-  CompType = any,
-  AppState extends IAppState = any
+  CompType = any
 > {
   (
-    context: Context,
     options: {
       render: IAppRenderFn<Context, Router, CompType>;
-      appState?: AppState;
-    }
+    } & ExtendedOptions
   ): IApplication;
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLoaderData, Loader } from '@shuvi/runtime';
+import { useLoaderData, Loader, Link } from '@shuvi/runtime';
 import { sleep } from '../utils';
 
 const Index = () => {
@@ -7,6 +7,9 @@ const Index = () => {
   return (
     <div>
       <p>{data?.hello}</p>
+      <div>
+        <Link to={`/loader/child?sssss=111`}>Go /loader/child with query</Link>
+      </div>
     </div>
   );
 };

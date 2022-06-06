@@ -13,8 +13,7 @@ function App() {
 }
 
 export const loader = async ctx => {
-  // await sleep(300);
-  ctx.error(404);
+  await sleep(2000);
   console.log('loader parent fetched', ctx);
   return {
     hello: 'loader parent'

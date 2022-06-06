@@ -15,13 +15,15 @@ declare module '@shuvi/app/core/platform' {
     IAppRouteConfigWithPrivateProps,
     IViewClient,
     IAppComponent,
-    IRouteComponent
+    IRouteComponent,
+    IAppData
   } from '@shuvi/platform-shared/src/runtime';
 
   export interface IGetRoutes {
     (
       routes: IAppRouteConfigWithPrivateProps[],
-      context: IApplicationCreaterBase
+      context: IApplicationCreaterBase,
+      appData?: IAppData
     ): IAppRouteConfig[];
   }
 

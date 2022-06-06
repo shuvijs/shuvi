@@ -9,6 +9,8 @@ import DetailPage from './fixtures/loadRouteComponent/detailPage';
 import { renderWithRoutes } from './utils';
 import { wait } from 'shuvi-test-utils';
 
+jest.mock('@shuvi/app/files/loaders-build', () => ({}), { virtual: true });
+
 describe('loadRouteComponent [web]', () => {
   it('basic', async () => {
     const routeProps = {
