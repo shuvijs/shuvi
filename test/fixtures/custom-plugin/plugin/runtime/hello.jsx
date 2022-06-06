@@ -1,1 +1,1 @@
-export default () => <p>Dynamic</p>
+export default () => <p class="dynamic-component">Dynamic</p>
