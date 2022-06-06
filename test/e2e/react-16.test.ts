@@ -2,15 +2,14 @@ import { launchFixture } from "shuvi-test-utils";
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('react-18 test ', function () {
+describe('react-16 test ', function () {
   const targetElementSelector = "#index"
   const expectResult = "Index Page";
-
   const getFixtureResult = async (ssr:boolean = true) => {
 
     let text:string;
 
-    const ctx = await launchFixture('react-18', { ssr });
+    const ctx = await launchFixture('react-16', { ssr });
 
     const page = await ctx.browser.page(ctx.url("/"))
 
@@ -18,8 +17,8 @@ describe('react-18 test ', function () {
 
     text =  await page.$text(targetElementSelector)
 
-    await page.close();
-    await ctx.close();
+    // await page.close();
+    // await ctx.close();
 
     return text
 
