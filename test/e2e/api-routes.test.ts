@@ -2,7 +2,7 @@
 import { AppCtx, launchFixture, resolveFixture } from '../utils';
 import { writeFileSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
-import { waitForResponseChange } from 'shuvi-test-utils/wait-for-response-change';
+import { waitForResponseChange } from '../utils/wait-for-response-change';
 
 let ctx: AppCtx;
 let stderr = '';
