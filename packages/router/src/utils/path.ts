@@ -1,4 +1,4 @@
-import { parse, stringify } from 'query-string';
+import qs from 'query-string';
 import { inBrowser } from './dom';
 import { PathRecord, PartialPath, Path } from '../types';
 
@@ -31,7 +31,7 @@ export function normalizeBase(base: string): string {
 }
 
 export function parseQuery(queryStr: string) {
-  return parse(queryStr);
+  return qs.parse(queryStr);
 }
 
 export function pathToString({
@@ -41,7 +41,7 @@ export function pathToString({
   query = {}
 }: PartialPath): string {
   if (!search) {
-    const queryString = stringify(query);
+    const queryString = qs.stringify(query);
     search = queryString ? `?${queryString}` : '';
   }
   return pathname + search + hash;
@@ -105,7 +105,7 @@ export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
     if (parsedPath.search) {
       parsedPath.query = parseQuery(parsedPath.search);
     } else {
-      parsedPath.search = stringify(parsedPath.query);
+      parsedPath.search = qs.stringify(parsedPath.query);
     }
   }
 

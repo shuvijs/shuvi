@@ -19,7 +19,6 @@
     "downlevelIteration": true,
     "noUnusedLocals": true,
     "declaration": true,
-    "allowSyntheticDefaultImports": false,
     "outDir": "dist"
   },
   "exclude": ["**/node_modules", "**/__tests__", "**/*.test.ts?(x)"]

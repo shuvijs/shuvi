@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 type LoaderComponent<P = {}> = Promise<
   React.ComponentType<P> | { default: React.ComponentType<P> }

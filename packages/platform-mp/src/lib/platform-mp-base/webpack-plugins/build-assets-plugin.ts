@@ -1,12 +1,8 @@
 import { AppConfigs, IFileType } from '../types';
 import { IPaths } from '@shuvi/service';
-import webpack, {
-  Compiler,
-  Compilation,
-  sources
-} from '@shuvi/toolpack/lib/webpack';
-import * as path from 'path';
-import * as fs from 'fs';
+import webpack, { Compiler, Compilation, sources } from '@shuvi/toolpack/lib/webpack';
+import path from 'path';
+import fs from 'fs';
 import { promoteRelativePath } from '@tarojs/helper';
 import {
   UnRecursiveTemplate,
