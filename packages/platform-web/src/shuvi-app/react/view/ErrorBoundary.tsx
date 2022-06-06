@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import ErrorPage from '../ErrorPage';
 
@@ -6,7 +6,7 @@ type ErrorBoundaryState = { error: Error | null };
 type ErrorInfo = { componentStack?: string | null };
 
 class ErrorBoundary extends React.PureComponent<
-  React.ReactNode,
+  PropsWithChildren<{}>,
   ErrorBoundaryState
 > {
   state = { error: null };
@@ -32,7 +32,7 @@ class ErrorBoundary extends React.PureComponent<
       // The component has to be unmounted or else it would continue to error
       <ErrorPage errorCode={SHUVI_ERROR_CODE.APP_ERROR} />
     ) : (
-      this.props.children
+      (this.props.children as unknown as React.ReactNode)
     );
   }
 }
