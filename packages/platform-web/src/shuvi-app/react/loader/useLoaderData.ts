@@ -1,14 +1,12 @@
 import { useMatchedRoute } from '@shuvi/router-react';
 import { IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
-import { useState, useContext, useEffect } from 'react';
-import { LoaderManager, LoaderResult, LoaderStatus } from './loaderManager';
-import { AppContext } from '../AppContainer';
+import { useState, useEffect } from 'react';
+import { getLoaderManager, LoaderResult, LoaderStatus } from './loaderManager';
 import { noLoaderMessage } from '../utils/errorMessage';
 
 export const useLoaderData = <T>(): T | null => {
   const currentMatch = useMatchedRoute<IAppRouteConfig>();
-  const { appContext } = useContext(AppContext);
-  const loaderManager: LoaderManager = appContext.loaderManager;
+  const loaderManager = getLoaderManager();
   const id = currentMatch.route?.id as string;
   const loader = loaderManager.get(id);
   if (!loader) {

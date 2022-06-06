@@ -10,7 +10,7 @@ import {
 import { createError } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
 import loadersBuild from '@shuvi/app/files/loaders-build';
-import { LoaderManager } from '../loader/loaderManager';
+import { getLoaderManager } from '../loader/loaderManager';
 const isServer = typeof window === 'undefined';
 
 export type INormalizeRoutesContext = IApplicationCreaterClientContext;
@@ -29,7 +29,7 @@ export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
   appContext: INormalizeRoutesContext = {}
 ): IAppRouteWithElement[] {
-  const { routeProps = {}, loadersData = {} } = appContext;
+  const { routeProps = {} } = appContext;
   if (!routes) {
     return [] as IAppRouteWithElement[];
   }
@@ -45,10 +45,15 @@ export function normalizeRoutes(
         if (isServer) {
           return next();
         }
+
         const modelManager = getModelManager();
+        const loaderManager = getLoaderManager();
+        const { initialLoadersData } = loaderManager;
+
         // support both getInitialProps and loader
         const shouldHydrated =
-          (routeProps[id] !== undefined || loadersData[id]) && !hydrated[id];
+          (routeProps[id] !== undefined || initialLoadersData[id]) &&
+          !hydrated[id];
         if (shouldHydrated) {
           const { hasError } = modelManager.get(errorModel).$state();
           if (hasError) {
@@ -66,22 +71,24 @@ export function normalizeRoutes(
         const loaderGenerator =
           (routeId: string, to: IRoute<any>) => async () => {
             const loaderFn = loaders[routeId];
-            return await loaderFn({
-              isServer: false,
-              pathname: to.pathname,
-              query: to.query,
-              params: to.params,
-              appContext,
-              redirect: redirector.handler,
-              error: errorComp.handler
-            });
+            if (typeof loaderFn === 'function') {
+              return await loaderFn({
+                isServer: false,
+                pathname: to.pathname,
+                query: to.query,
+                params: to.params,
+                appContext,
+                redirect: redirector.handler,
+                error: errorComp.handler
+              });
+            }
           };
         if (loaders[id]) {
-          const loaderManager: LoaderManager = appContext.loaderManager;
+          const loaderManager = getLoaderManager();
           const loader = loaderManager.add(loaderGenerator(id, to), id);
           if (shouldHydrated) {
             hydrated[id] = true;
-            if (loadersData[id].error && !loadersData[id].data) {
+            if (initialLoadersData[id].error) {
               loader.load();
             }
           } else {
@@ -149,7 +156,6 @@ export function normalizeRoutes(
 
 if (module.hot) {
   module.hot.accept('@shuvi/app/files/loaders-build', () => {
-    console.log('updated');
     loaders = require('@shuvi/app/files/loaders-build').default;
   });
 }

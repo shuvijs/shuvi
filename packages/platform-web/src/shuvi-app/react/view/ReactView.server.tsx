@@ -19,7 +19,7 @@ import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
 import { getInitialPropsDeprecatingMessage } from '../utils/errorMessage';
-import { createLoaderManager } from '../loader/loaderManager';
+import { getLoaderManager } from '../loader/loaderManager';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -55,8 +55,7 @@ export class ReactServerView implements IReactServerView {
 
     const routeProps: { [x: string]: any } = {};
     const pendingDataFetchs: Array<() => Promise<void>> = [];
-    const loaderManager = createLoaderManager({});
-
+    const loaderManager = getLoaderManager();
     const loaderGenerator = (routeId: string, params: IParams) => async () => {
       const loaderFn = loaders[routeId];
       return await loaderFn({
@@ -99,7 +98,6 @@ export class ReactServerView implements IReactServerView {
       }
     }
     const loadersData = await loaderManager.awaitLoaders();
-    appContext.loaderManager = loaderManager;
     const fetchInitialProps = async () => {
       if (pendingDataFetchs.length) {
         console.error(getInitialPropsDeprecatingMessage);

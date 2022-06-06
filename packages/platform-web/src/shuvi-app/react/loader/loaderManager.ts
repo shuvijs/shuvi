@@ -117,7 +117,7 @@ const createLoader = (
  * @param initialDataMap used to initialing loader data
  */
 export const createLoaderManager = (
-  initialDataMap: Record<string, LoaderResult>
+  initialDataMap: Record<string, LoaderResult> = {}
 ) => {
   const loadersMap = new Map<string, Loader>();
   const add = (loaderFn: () => Promise<any>, id: string) => {
@@ -176,8 +176,21 @@ export const createLoaderManager = (
     hasPendingLoaders,
     awaitLoaders,
     add,
-    get
+    get,
+    initialLoadersData: { ...initialDataMap }
   };
+};
+
+let loaderManager: LoaderManager;
+
+export const getLoaderManager = (
+  initialDataMap: Record<string, LoaderResult> = {}
+) => {
+  if (loaderManager) {
+    return loaderManager;
+  }
+  loaderManager = createLoaderManager(initialDataMap);
+  return loaderManager;
 };
 
 export type Loader = ReturnType<typeof createLoader>;

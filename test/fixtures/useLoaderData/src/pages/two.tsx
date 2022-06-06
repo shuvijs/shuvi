@@ -8,7 +8,7 @@ const Two = () => {
     <div data-test-id="two">
       <div data-test-id="name">Page Two</div>
       <div data-test-id="time">{data?.time}</div>
-      <Link to="/one?test=555">Goto Page One</Link>
+      <Link to="/one?test=123">Go to Page One</Link>
     </div>
   );
 };
@@ -17,12 +17,10 @@ type LoaderData = {
   time: number;
 };
 
-export const loader: Loader<LoaderData> = async ({ query }) => {
+export const loader: Loader<LoaderData> = async () => {
   await sleep(300);
-  console.log('loader two done');
   return {
-    time: 2,
-    query
+    time: 2
   };
 };
 
