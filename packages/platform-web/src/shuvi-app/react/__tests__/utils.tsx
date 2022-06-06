@@ -1,18 +1,18 @@
 import { renderRoutes } from '../utils/__tests__/utils';
-import { normalizeRoutes, INormalizeRoutesContext } from '../utils/router';
-import { IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
+import { normalizeRoutes } from '../utils/router';
+import { IAppData, IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
 
 export const renderWithRoutes = (
   {
     routes = [],
-    appContext = {}
+    appData = {}
   }: {
     routes?: IAppRouteConfig[];
-    appContext?: INormalizeRoutesContext;
+    appData?: Partial<IAppData>;
   } = {},
   { route = '/' }: { route?: string } = {}
 ) => {
-  return renderRoutes(normalizeRoutes(routes, appContext), {
+  return renderRoutes(normalizeRoutes(routes, {}, appData), {
     route
   });
 };

@@ -9,7 +9,7 @@ import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 export default function getRoutes(
   routes: IAppRouteConfigWithPrivateProps[],
   appContext: INormalizeRoutesContext = {},
-  appData?: IAppData
+  appData?: Partial<IAppData>
 ): IAppRouteConfig[] {
   const getRoutesWithRequire = (
     routes: IAppRouteConfigWithPrivateProps[]

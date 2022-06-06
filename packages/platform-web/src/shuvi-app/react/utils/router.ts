@@ -29,7 +29,7 @@ let loaders = loadersBuild;
 export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
   appContext: INormalizeRoutesContext = {},
-  appData?: IAppData
+  appData?: Partial<IAppData>
 ): IAppRouteWithElement[] {
   const routeProps = appData?.routeProps || {};
   if (!routes) {

@@ -23,7 +23,7 @@ declare module '@shuvi/app/core/platform' {
     (
       routes: IAppRouteConfigWithPrivateProps[],
       context: IApplicationCreaterBase,
-      appData?: IAppData
+      appData?: Partial<IAppData>
     ): IAppRouteConfig[];
   }
 
