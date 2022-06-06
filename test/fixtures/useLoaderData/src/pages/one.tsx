@@ -10,6 +10,8 @@ const One = () => {
       <div data-test-id="time">{data?.time}</div>
       <div data-test-id="test">{data?.query.test}</div>
       <Link to="/two">Goto Page Two</Link>
+      <br />
+      <Link to="/one?test=456">Goto Page One With Query</Link>
     </div>
   );
 };

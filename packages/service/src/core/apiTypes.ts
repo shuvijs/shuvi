@@ -22,6 +22,11 @@ export interface IUserRouteConfig {
   fullPath?: string;
 }
 
+export interface IRouteConfig extends IUserRouteConfig {
+  id: string;
+  children?: IRouteConfig[];
+}
+
 export interface IApiRouteConfig {
   path: string;
   apiModule: string;

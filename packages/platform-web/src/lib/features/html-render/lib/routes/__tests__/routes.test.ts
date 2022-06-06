@@ -4,23 +4,25 @@ describe('serializeRoutes', () => {
   const routes = [
     {
       path: '/',
-      component: 'Foo'
+      component: 'Foo',
+      id: '0042'
     },
     {
       path: '/nested',
       component: 'Foo',
+      id: '0c46',
       children: [
         {
           path: '/a',
-          component: 'Bar'
+          component: 'Bar',
+          id: 'f571'
         }
       ]
     }
   ];
   test('should work', () => {
     expect(serializeRoutes(routes)).toMatchInlineSnapshot(`
-      "[{id: \\"0042\\",
-      path: \\"/\\",
+      "[{path: \\"/\\",
       __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
@@ -28,9 +30,9 @@ describe('serializeRoutes', () => {
         /* webpackExports: \\"default\\" */
         \\"Foo?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
+      id: \\"0042\\",
       },
-      {id: \\"0c46\\",
-      path: \\"/nested\\",
+      {path: \\"/nested\\",
       __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
@@ -38,8 +40,8 @@ describe('serializeRoutes', () => {
         /* webpackExports: \\"default\\" */
         \\"Foo?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
-      children: [{id: \\"f571\\",
-      path: \\"/a\\",
+      id: \\"0c46\\",
+      children: [{path: \\"/a\\",
       __componentSourceWithAffix__: \\"Bar?shuvi-route\\",
       __componentSource__: \\"Bar\\",
       __import__: () => import(
@@ -47,6 +49,7 @@ describe('serializeRoutes', () => {
         /* webpackExports: \\"default\\" */
         \\"Bar?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Bar?shuvi-route\\")],
+      id: \\"f571\\",
       },
       ],
       },

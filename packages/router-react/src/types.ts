@@ -8,7 +8,7 @@ import {
   IRouter
 } from '@shuvi/router';
 
-export type IRouteRecord = IOriginRouteRecord<React.ReactNode>;
+export type IRouteRecord<T = {}> = IOriginRouteRecord<React.ReactNode, T>;
 
 export type IPartialRouteRecord = IOriginalRouteRecord;
 
@@ -17,11 +17,11 @@ export interface IRouterContextObject {
   router: IRouter;
 }
 
-export interface IRouteContextObject {
+export interface IRouteContextObject<ExtendedTypes = {}> {
   depth: number;
   params: IParams;
   pathname: string;
-  route: IRouteRecord | null;
+  route: IRouteRecord<ExtendedTypes> | null;
 }
 
 export interface IMemoryRouterProps {
