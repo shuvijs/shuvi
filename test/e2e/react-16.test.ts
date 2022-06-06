@@ -17,8 +17,8 @@ describe('react-16 test ', function () {
 
     text =  await page.$text(targetElementSelector)
 
-    // await page.close();
-    // await ctx.close();
+    await page.close();
+    await ctx.close();
 
     return text
 
