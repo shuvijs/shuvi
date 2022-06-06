@@ -8,34 +8,23 @@ import {
   IAppRouteConfig
 } from '@shuvi/platform-shared/esm/runtime';
 import { createApp } from '../../create-app/client';
-import { getLoaderManager } from '../../react/loader/loaderManager';
 
 const appData = getAppData();
-const { routeProps = {}, appState, loadersData = {} } = appData;
 
-// loaderManager is created here and will be cached.
-getLoaderManager(loadersData);
-
-const app = createApp(
-  {
-    pageData: appData.pageData || {},
-    routeProps
+const app = createApp({
+  async render({ appContext, AppComponent, router = [], modelManager }) {
+    const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
+    view.renderApp({
+      AppComponent,
+      router: router as IRouter<IAppRouteConfig>,
+      appData,
+      appContainer,
+      appContext,
+      modelManager
+    });
   },
-  {
-    async render({ appContext, AppComponent, router = [], modelManager }) {
-      const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
-      view.renderApp({
-        AppComponent,
-        router: router as IRouter<IAppRouteConfig>,
-        appData,
-        appContainer,
-        appContext,
-        modelManager
-      });
-    },
-    appState
-  }
-);
+  appData
+});
 
 const rerender = () => {
   app.rerender();

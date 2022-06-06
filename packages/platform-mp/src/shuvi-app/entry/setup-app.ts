@@ -7,29 +7,21 @@ import { IRouter } from '@shuvi/router/lib/types';
 import { createApp } from '../application';
 
 const appData = getAppData();
-const { routeProps = {}, appState } = appData;
 
-const app: ReturnType<typeof createApp> = createApp(
-  {
-    // @ts-ignore
-    pageData: appData.pageData || {},
-    routeProps
+const app: ReturnType<typeof createApp> = createApp({
+  async render({ appContext, AppComponent, router, modelManager }) {
+    const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
+    view.renderApp({
+      AppComponent: AppComponent,
+      router: router as any as IRouter,
+      appData,
+      appContainer,
+      appContext,
+      modelManager
+    });
   },
-  {
-    async render({ appContext, AppComponent, router, modelManager }) {
-      const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
-      view.renderApp({
-        AppComponent: AppComponent,
-        router: router as any as IRouter,
-        appData,
-        appContainer,
-        appContext,
-        modelManager
-      });
-    },
-    appState
-  }
-);
+  appData
+});
 
 const rerender = () => {
   app.rerender();

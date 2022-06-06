@@ -5,7 +5,8 @@ import {
   errorModel,
   IRouteComponentContext,
   IAppRouteConfig,
-  IApplicationCreaterClientContext
+  IClientContext,
+  IAppData
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
@@ -13,7 +14,7 @@ import loadersBuild from '@shuvi/app/files/loaders-build';
 import { getLoaderManager } from '../loader/loaderManager';
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = IApplicationCreaterClientContext;
+export type INormalizeRoutesContext = IClientContext;
 
 type IAppRouteWithElement = IAppRouteConfig & { element?: any };
 
@@ -27,9 +28,10 @@ let loaders = loadersBuild;
 
 export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
-  appContext: INormalizeRoutesContext = {}
+  appContext: INormalizeRoutesContext = {},
+  appData?: IAppData
 ): IAppRouteWithElement[] {
-  const { routeProps = {} } = appContext;
+  const routeProps = appData?.routeProps || {};
   if (!routes) {
     return [] as IAppRouteWithElement[];
   }
@@ -67,7 +69,6 @@ export function normalizeRoutes(
         const errorComp = createError();
 
         const redirector = createRedirector();
-
         const loaderGenerator =
           (routeId: string, to: IRoute<any>) => async () => {
             const loaderFn = loaders[routeId];
@@ -149,7 +150,7 @@ export function normalizeRoutes(
         next();
       };
     }
-    res.children = normalizeRoutes(res.children, appContext);
+    res.children = normalizeRoutes(res.children, appContext, appData);
     return res;
   });
 }
