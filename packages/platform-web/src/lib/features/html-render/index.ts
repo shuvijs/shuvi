@@ -19,6 +19,8 @@ import {
 } from './lib';
 import server from './server-plugin-custom-server';
 import { ifComponentHasLoader } from './lib';
+import { FileOptions } from '@shuvi/service/lib/project';
+
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
 
@@ -45,39 +47,41 @@ const core = createPlugin({
       pluginRunner.appRoutes(routes);
     // if config.routes is defined, use config
     const hasConfigRoutes = Array.isArray(routes);
-    const routesFile = hasConfigRoutes
-      ? createFile({
-          name: 'routes.js',
-          content: () => {
-            const modifiedRoutes = getRoutesAfterPlugin(routes);
-            const normalizedRoutes = getNormalizedRoutes(
-              modifiedRoutes,
-              paths.pagesDir
-            );
-            setRoutes(normalizedRoutes);
-            return getRoutesContent(normalizedRoutes, paths.pagesDir);
-          }
-        })
-      : createFile({
-          name: 'routes.js',
-          content: () => {
-            const rawRoutes = getRoutesFromFiles(
-              getAllFiles(paths.pagesDir),
-              paths.pagesDir
-            );
-            const renamedRoutes = renameFilepathToComponent(rawRoutes);
-            const modifiedRoutes = getRoutesAfterPlugin(renamedRoutes);
-            const normalizedRoutes = getNormalizedRoutes(
-              modifiedRoutes,
-              paths.pagesDir
-            );
-            setRoutes(normalizedRoutes);
-            return getRoutesContent(normalizedRoutes, paths.pagesDir);
-          },
-          dependencies: paths.pagesDir
-        });
-
-    const loadersFiles = createFile({
+    let routesFile: FileOptions;
+    if (hasConfigRoutes) {
+      const modifiedRoutes = getRoutesAfterPlugin(routes);
+      const normalizedRoutes = getNormalizedRoutes(
+        modifiedRoutes,
+        paths.pagesDir
+      );
+      setRoutes(normalizedRoutes);
+      routesFile = createFile({
+        name: 'routes.js',
+        content: () => {
+          return getRoutesContent(normalizedRoutes, paths.pagesDir);
+        }
+      });
+    } else {
+      routesFile = createFile({
+        name: 'routes.js',
+        content: () => {
+          const rawRoutes = getRoutesFromFiles(
+            getAllFiles(paths.pagesDir),
+            paths.pagesDir
+          );
+          const renamedRoutes = renameFilepathToComponent(rawRoutes);
+          const modifiedRoutes = getRoutesAfterPlugin(renamedRoutes);
+          const normalizedRoutes = getNormalizedRoutes(
+            modifiedRoutes,
+            paths.pagesDir
+          );
+          setRoutes(normalizedRoutes);
+          return getRoutesContent(normalizedRoutes, paths.pagesDir);
+        },
+        dependencies: paths.pagesDir
+      });
+    }
+    const loadersFile = createFile({
       name: 'loaders.js',
       content: () => {
         const routes = getRoutes();
@@ -106,7 +110,11 @@ const core = createPlugin({
         });
         const content = `${imports}  export default {\n  ${exports}\n}`;
         return content;
-      }
+      },
+      dependencies: [
+        paths.pagesDir,
+        path.join(paths.appDir, 'files', 'routes.js')
+      ]
     });
     const documentCandidates = getUserCustomFileCandidates(
       paths.rootDir,
@@ -143,7 +151,7 @@ const core = createPlugin({
       routesFile,
       userServerFile,
       userDocumentFile,
-      loadersFiles
+      loadersFile
     ];
   },
   afterShuviAppBuild: async context => {

@@ -134,7 +134,7 @@ export const getRoutesContent = (
   componentDir: string
 ): string => {
   const serialized = serializeRoutes(routes);
-  const routesContent = `import loaders from './loaders';\nexport default ${serialized}`;
+  const routesContent = `export default ${serialized}`;
   return routesContent;
 };
 
