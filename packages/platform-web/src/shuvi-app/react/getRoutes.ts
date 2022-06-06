@@ -1,5 +1,5 @@
 import {
-  IAppData,
+  IRouteData,
   IAppRouteConfig,
   IAppRouteConfigWithPrivateProps
 } from '@shuvi/platform-shared/esm/runtime';
@@ -9,7 +9,7 @@ import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 export default function getRoutes(
   routes: IAppRouteConfigWithPrivateProps[],
   appContext: INormalizeRoutesContext = {},
-  appData?: Partial<IAppData>
+  routeData?: IRouteData
 ): IAppRouteConfig[] {
   const getRoutesWithRequire = (
     routes: IAppRouteConfigWithPrivateProps[]
@@ -37,5 +37,5 @@ export default function getRoutes(
       return route;
     });
   const routesWithRequire = getRoutesWithRequire(routes || []);
-  return normalizeRoutes(routesWithRequire, appContext, appData);
+  return normalizeRoutes(routesWithRequire, appContext, routeData);
 }

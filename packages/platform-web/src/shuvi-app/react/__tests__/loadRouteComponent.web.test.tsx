@@ -30,7 +30,7 @@ describe('loadRouteComponent [web]', () => {
             path: '/first'
           }
         ],
-        appData: { routeProps }
+        routeData: { routeProps }
       },
       { route: '/first' }
     );
