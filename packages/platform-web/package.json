@@ -54,8 +54,8 @@
     "node-mocks-http": "^1.11.0",
     "raw-body": "^2.4.1",
     "react-app-polyfill": "2.0.0",
-    "react": "16.14.0",
-    "react-dom": "16.14.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "react-refresh": "0.8.3",
     "use-subscription": "1.4.1"
   },

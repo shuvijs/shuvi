@@ -1,6 +1,8 @@
-import got from 'got';
+﻿import got from 'got';
 import { AppCtx, launchFixture, resolveFixture } from '../utils';
-import { readFileSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
+import { readFile, writeFile } from 'fs/promises';
+import { waitForResponseChange } from '../utils/wait-for-response-change';
 
 let ctx: AppCtx;
 let stderr = '';
@@ -504,29 +506,42 @@ describe('apiRoutes development', () => {
       let done = false;
       let page;
 
-      try {
-        page = await ctx.browser.page(ctx.url('/api/hmr-test'));
-        expect(await page.$text('body')).toBe('body_content');
+      const initialContent = 'test-1';
+      const changedContent = 'test-2';
 
-        originalContent = readFileSync(filePath, 'utf8');
+      try {
+        originalContent = await readFile(filePath, 'utf8');
+
+        page = await ctx.browser.page(ctx.url('/api/hmr-test'));
+        // get url
+        const href = await page.evaluate(() => {
+          return location.href;
+        });
+        // fetch response
+        const getContent = () => {
+          return got.get(href).then(res => res.body);
+        };
+        // edit file
         const editedContent = originalContent.replace(
-          'body_content',
-          'change_body_content'
+          initialContent,
+          changedContent
+        );
+        // add the edited content
+        await writeFile(filePath, editedContent, 'utf8');
+
+        let responseContent = await waitForResponseChange(
+          getContent,
+          initialContent
         );
 
-        // change the content
-        writeFileSync(filePath, editedContent, 'utf8');
+        expect(responseContent).toBe(changedContent);
+        await writeFile(filePath, originalContent, 'utf-8');
+        responseContent = await waitForResponseChange(
+          getContent,
+          changedContent
+        );
 
-        page = await ctx.browser.page(ctx.url('/api/hmr-test'));
-
-        expect(await page.$text('body')).toBe('change_body_content');
-
-        // add the original content
-        writeFileSync(filePath, originalContent, 'utf8');
-
-        page = await ctx.browser.page(ctx.url('/api/hmr-test'));
-
-        expect(await page.$text('body')).toBe('body_content');
+        expect(responseContent).toBe(initialContent);
 
         done = true;
       } finally {
