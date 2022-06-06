@@ -1,11 +1,11 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   createPlugin,
   IUserRouteConfig,
   IPlatformContent,
   CorePluginInstance,
-  BUILD_DEFAULT_DIR,
+  BUILD_DEFAULT_DIR
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
@@ -342,7 +342,11 @@ export default abstract class PlatformMpBase {
 
   getConfigWebpackPlugin(): CorePluginInstance {
     return createPlugin({
-      configWebpack: async (config, { name, resolveWebpackModule }, context) => {
+      configWebpack: async (
+        config,
+        { name, resolveWebpackModule },
+        context
+      ) => {
         if (name === BUNDLER_TARGET_SERVER) return config;
         await this.promiseRoutes;
         const pageFiles = getAllFiles(context.resolveAppFile('files', 'pages'));
@@ -370,7 +374,7 @@ export default abstract class PlatformMpBase {
         }
         config.plugins.delete('private/module-replace-plugin');
         config.output.publicPath('');
-        config.plugins.get('define').tap(args => {
+        config.plugins.get('define').tap((args: any[]) => {
           return [
             {
               ...(args[0] || {}),
@@ -385,9 +389,11 @@ export default abstract class PlatformMpBase {
             }
           ];
         });
-        config.plugin('DomEnvPlugin').use(DomEnvPlugin, [{
-          resolveWebpackModule
-        }]);
+        config.plugin('DomEnvPlugin').use(DomEnvPlugin, [
+          {
+            resolveWebpackModule
+          }
+        ]);
         config.plugin('BuildAssetsPlugin').use(BuildAssetsPlugin, [
           {
             appConfigs: this.appConfigs,
