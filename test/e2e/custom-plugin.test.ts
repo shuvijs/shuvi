@@ -40,12 +40,12 @@ describe('Plugin', () => {
       page = await ctx.browser.page(ctx.url('/'), {
         disableJavaScript: true
       });
-      expect(await page.$text('p')).toBe('LOADING');
+      expect(await page.$text('.dynamic-loader')).toBe('LOADING');
       await page.close();
 
       page = await ctx.browser.page(ctx.url('/'));
-      await page.waitForSelector('p');
-      expect(await page.$text('p')).toBe('Dynamic');
+      await page.waitForSelector('.dynamic-component');
+      expect(await page.$text('.dynamic-component')).toBe('Dynamic');
     });
   });
 
