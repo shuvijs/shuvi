@@ -647,6 +647,14 @@ importers:
       shuvi-test-plugin-use-exports: link:packages/plugin-use-exports
       ts-jest: 25.3.1_jest@25.3.0
 
+  test/fixtures/react-16:
+    specifiers:
+      react: 16.14.0
+      react-dom: 16.14.0
+    dependencies:
+      react: 16.14.0
+      react-dom: 16.14.0_react@16.14.0
+
   test/packages/plugin-no-exports:
     specifiers:
       '@shuvi/hook': 0.0.1-pre.10

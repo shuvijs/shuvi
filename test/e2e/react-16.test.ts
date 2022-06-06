@@ -1,28 +1,60 @@
-import { launchFixture } from "shuvi-test-utils";
+import { AppCtx, launchFixture, Page } from "shuvi-test-utils";
 
 jest.setTimeout(5 * 60 * 1000);
 
 describe('react-16 test ', function () {
-  const targetElementSelector = "#index"
+  const targetElementSelector = "#index";
   const expectResult = "Index Page";
-  const getFixtureResult = async (ssr:boolean = true) => {
+  let page: Page;
+  let ctx: AppCtx;
 
-    let text:string;
+  const getFixtureResult = async (ssr: boolean = true) => {
 
-    const ctx = await launchFixture('react-16', { ssr });
+    let text: string;
 
-    const page = await ctx.browser.page(ctx.url("/"))
+    ctx = await launchFixture('react-16', { ssr });
 
-    await page.waitForSelector(targetElementSelector)
+    page = await ctx.browser.page(ctx.url("/"));
 
-    text =  await page.$text(targetElementSelector)
+    await page.waitForSelector(targetElementSelector);
 
+    text = await page.$text(targetElementSelector);
+
+    return text;
+  };
+
+  const getVersionFixtureResult = async () => {
+    let reactVersion:string;
+    let domVersion:string;
+
+    ctx = await launchFixture('react-16');
+    page = await ctx.browser.page(ctx.url("/version"));
+
+    await page.waitForSelector("#version")
+
+    reactVersion = await page.$text("#reactVersion");
+    domVersion = await page.$text("#domVersion");
+
+    return {
+      reactVersion,
+      domVersion
+    }
+  }
+
+  afterEach(async () => {
     await page.close();
     await ctx.close();
+  })
 
-    return text
+  test("should version is 16.14.0",async () => {
+    const result = await getVersionFixtureResult()
 
-  }
+    expect(result).toEqual({
+      reactVersion:"16.14.0",
+      domVersion:"16.14.0"
+    });
+
+  })
 
 
   test("should ssr render", async () => {
@@ -34,5 +66,7 @@ describe('react-16 test ', function () {
     const text = await getFixtureResult(false);
     expect(text).toBe(expectResult);
   });
+
+
 
 });
