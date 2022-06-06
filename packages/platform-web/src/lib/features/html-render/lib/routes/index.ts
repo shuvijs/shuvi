@@ -1,10 +1,8 @@
 import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { renameFilepathToComponent } from '@shuvi/service/lib/route';
-import { IUserRouteConfig } from '@shuvi/service';
+import { IUserRouteConfig, IRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { IRouteRecord } from '@shuvi/router';
 import { getExports } from '@shuvi/service/lib/project/file-utils';
 import { resolveFile } from '@shuvi/utils/lib/file';
 
@@ -21,16 +19,12 @@ function genRouteId(filepath: string) {
 /**
  * returns JSON string of IAppRouteConfigWithPrivateProps
  */
-export function serializeRoutes(
-  routes: IUserRouteConfig[],
-  parentPath: string = ''
-): string {
+export function serializeRoutes(routes: IRouteConfig[]): string {
   let res = '';
   for (let index = 0; index < routes.length; index++) {
     const { children: childRoutes, ...route } = routes[index];
-    const fullpath = route.path ? parentPath + '/' + route.path : parentPath;
-    const id = genRouteId(fullpath);
-    let strRoute = `id: ${JSON.stringify(id)},\n`;
+    const id = route.id;
+    let strRoute = '';
     const keys = Object.keys(route);
     for (let index = 0; index < keys.length; index++) {
       const key = keys[index] as RouteKeysWithoutChildren;
@@ -55,7 +49,7 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializeRoutes(childRoutes, fullpath)},\n`;
+      strRoute += `children: ${serializeRoutes(childRoutes)},\n`;
     }
 
     res += `{${strRoute}},\n`;
@@ -101,16 +95,16 @@ export const ifComponentHasLoader = (component: string) => {
 };
 
 export const getNormalizedRoutes = (
-  routes: IUserRouteConfig[],
+  routes: (IUserRouteConfig | IRouteConfig)[],
   componentDir: string,
   parentPath: string = ''
-) => {
-  const res: IUserRouteConfig[] = [];
+): IRouteConfig[] => {
+  const res: IRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
-    const route = { ...routes[index] };
+    const route = { ...routes[index] } as IRouteConfig;
     const pathWithSlash = /^\//.test(route.path) ? route.path : route.path;
     const fullpath = pathWithSlash ? parentPath + pathWithSlash : parentPath;
-    route.fullPath = fullpath;
+    route.id = genRouteId(fullpath);
     if (route.component) {
       const absPath = path.isAbsolute(route.component)
         ? route.component
@@ -132,22 +126,12 @@ export const getNormalizedRoutes = (
 };
 
 export const getRoutesContent = (
-  routes: IUserRouteConfig[],
+  routes: IRouteConfig[],
   componentDir: string
 ): string => {
   const serialized = serializeRoutes(routes);
-  const routesContent = `import loaders from './loaders';\nexport default ${serialized}`;
+  const routesContent = `export default ${serialized}`;
   return routesContent;
-};
-
-export const getRoutesFromRawRoutes = (
-  rawRoutes: IRouteRecord[],
-  componentDir: string
-): IUserRouteConfig[] => {
-  return getNormalizedRoutes(
-    renameFilepathToComponent(rawRoutes),
-    componentDir
-  );
 };
 
 export * from './store';

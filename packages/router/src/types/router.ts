@@ -11,16 +11,16 @@ export type IParams = Record<string, string[] | string>;
 
 export type IRouteComponentProps = Record<string, string>;
 
-export interface IRouteRecord<Element = any> {
+export type IRouteRecord<Element = any, ExtendedTypes = {}> = {
   caseSensitive?: boolean;
-  children?: IRouteRecord<Element>[];
+  children?: IRouteRecord<Element, ExtendedTypes>[];
   component?: Element; // For react will be React.Element
   redirect?: string;
   resolve?: NavigationGuardHookWithContext;
   props?: IRouteComponentProps;
   path: string;
   filepath?: string;
-}
+} & ExtendedTypes;
 
 export interface NavigationGuardHook<R extends IRouteRecord = any> {
   (

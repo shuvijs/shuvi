@@ -14,29 +14,24 @@ export async function renderToHTML({
   let html: null | string = null;
   const renderer = new Renderer({ serverPluginContext });
   const { application } = server;
-  const app = application.createApp(
-    {
-      req
-    },
-    {
-      async render({ appContext, AppComponent, router, modelManager }) {
-        const result = await renderer.renderDocument({
-          router,
-          app,
-          AppComponent,
-          appContext,
-          modelManager
-        });
+  const app = application.createApp({
+    async render({ appContext, AppComponent, router, modelManager }) {
+      const result = await renderer.renderDocument({
+        router,
+        app,
+        AppComponent,
+        appContext,
+        modelManager
+      });
 
-        if (isRedirect(result)) {
-          onRedirect && onRedirect(result);
-        } else {
-          html = result;
-        }
-      },
-      appState: undefined
-    }
-  );
+      if (isRedirect(result)) {
+        onRedirect && onRedirect(result);
+      } else {
+        html = result;
+      }
+    },
+    req
+  });
 
   let appContext: any;
   try {

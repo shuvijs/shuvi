@@ -10,8 +10,9 @@ import {
   getErrorHandler,
   IAppState,
   IAppRenderFn,
-  IApplicationCreaterClientContext,
-  IAppRouteConfig
+  IClientContext,
+  IAppRouteConfig,
+  IAppData
 } from '@shuvi/platform-shared/esm/runtime';
 import platform from '@shuvi/platform-shared/esm/runtime/platform';
 import {
@@ -23,38 +24,46 @@ import {
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { History } from '@shuvi/router/lib/types';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { getLoaderManager } from '../react/loader/loaderManager';
 
 declare let __SHUVI: any;
 let app: IApplication;
-let appContext: IApplicationCreaterClientContext;
-let appRouter: IRouter<IAppRouteConfig>;
+let currentAppContext: IClientContext;
+let currentAppRouter: IRouter<IAppRouteConfig>;
+let currentAppData: IAppData;
 
 export function createApp<
-  Context extends IApplicationCreaterClientContext,
   Router extends IRouter<IAppRouteConfig>,
   CompType,
   AppState extends IAppState
->(
-  context: Context,
-  options: {
-    render: IAppRenderFn<Context, Router, CompType>;
-    appState?: AppState;
-  }
-) {
+>(options: {
+  render: IAppRenderFn<IClientContext, Router, CompType>;
+  appData: IAppData<any, AppState>;
+}) {
   // app is a singleton in client side
   if (app) {
     return app;
   }
-  const modelManager = getModelManager(options.appState);
+  const { appData } = options;
+  currentAppData = appData;
+  const { loadersData = {}, appState } = appData;
+  const modelManager = getModelManager(appState);
+
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory();
   } else {
     history = createBrowserHistory();
   }
+
+  const context: IClientContext = {};
+
+  // loaderManager is created here and will be cached.
+  getLoaderManager(loadersData);
+
   const router = createRouter({
     history,
-    routes: getRoutes(routes, context)
+    routes: getRoutes(routes, context, appData)
   }) as Router;
   router.afterEach(_current => {
     if (!_current.matches) {
@@ -63,8 +72,9 @@ export function createApp<
       );
     }
   });
-  appRouter = router;
-  appContext = context;
+  currentAppRouter = router;
+  currentAppContext = context;
+
   app = platform({
     AppComponent: PlatformAppComponent,
     router,
@@ -90,7 +100,7 @@ if (module.hot) {
       const rerender = () => {
         const UserAppComponent = require('@shuvi/app/user/app').default;
         const routes = require('@shuvi/app/files/routes').default;
-        appRouter.replaceRoutes(getRoutes(routes, appContext));
+        currentAppRouter.replaceRoutes(getRoutes(routes, currentAppContext, currentAppData));
         app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
       };
       // to solve routing problem, we need to rerender routes

@@ -4,9 +4,9 @@ import {
   IServerMiddleware,
   IServerPluginConstructor
 } from '@shuvi/service';
-import { ApplicationCreater } from '@shuvi/platform-shared/lib/runtime';
 import {
-  IApplicationCreaterServerContext,
+  ApplicationCreater,
+  IServerContext,
   IViewServer
 } from '@shuvi/platform-shared/lib/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
@@ -65,7 +65,7 @@ declare module '@shuvi/service/lib/resources' {
     apiRoutes: IApiRoutes;
     middlewareRoutes: IMiddlewareRoutes;
     application: {
-      createApp: ApplicationCreater<IApplicationCreaterServerContext>;
+      createApp: ApplicationCreater<IServerContext>;
     };
     document: Partial<IDocumentModule>;
     view: IViewServer;

@@ -10,29 +10,21 @@ import {
 import { createApp } from '../../create-app/client';
 
 const appData = getAppData();
-const { routeProps = {}, appState, loadersData = {} } = appData;
 
-const app = createApp(
-  {
-    pageData: appData.pageData || {},
-    routeProps,
-    loadersData
+const app = createApp({
+  async render({ appContext, AppComponent, router = [], modelManager }) {
+    const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
+    view.renderApp({
+      AppComponent,
+      router: router as IRouter<IAppRouteConfig>,
+      appData,
+      appContainer,
+      appContext,
+      modelManager
+    });
   },
-  {
-    async render({ appContext, AppComponent, router = [], modelManager }) {
-      const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
-      view.renderApp({
-        AppComponent,
-        router: router as IRouter<IAppRouteConfig>,
-        appData,
-        appContainer,
-        appContext,
-        modelManager
-      });
-    },
-    appState
-  }
-);
+  appData
+});
 
 const rerender = () => {
   app.rerender();

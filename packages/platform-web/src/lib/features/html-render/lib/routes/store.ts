@@ -1,8 +1,8 @@
-import { IUserRouteConfig } from '@shuvi/service';
+import { IRouteConfig } from '@shuvi/service';
 
-let routes: IUserRouteConfig[] = [];
+let routes: IRouteConfig[] = [];
 
-export const setRoutes = (newRoutes: IUserRouteConfig[]) => {
+export const setRoutes = (newRoutes: IRouteConfig[]) => {
   routes = newRoutes;
 };
 

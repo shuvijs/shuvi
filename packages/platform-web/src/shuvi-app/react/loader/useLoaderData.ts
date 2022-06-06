@@ -1,68 +1,30 @@
-import { useMatchedRoute, useCurrentRoute } from '@shuvi/router-react';
-import { createRedirector } from '@shuvi/router';
-import {
-  getErrorHandler,
-  IModelManager
-} from '@shuvi/platform-shared/esm/runtime';
-import loaders from '@shuvi/app/files/loaders-build';
-import { useState, useContext, useEffect } from 'react';
-import { LoaderContext } from './context';
-import { AppContext } from '../AppContainer';
+import { useMatchedRoute } from '@shuvi/router-react';
+import { IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
+import { useState, useEffect } from 'react';
+import { getLoaderManager, LoaderResult, LoaderStatus } from './loaderManager';
+import { noLoaderMessage } from '../utils/errorMessage';
 
 export const useLoaderData = <T>(): T | null => {
-  const currentMatch = useMatchedRoute();
-  const currentRoute = useCurrentRoute();
-  const { loadersData, willHydrate } = useContext(LoaderContext);
-  const { appContext } = useContext(AppContext);
-  const modelManager: IModelManager = appContext.modelManager;
-  const error = getErrorHandler(modelManager);
-  const redirector = createRedirector();
-  const fullPath = (currentMatch?.route as any)?.fullPath as string;
+  const currentMatch = useMatchedRoute<IAppRouteConfig>();
+  const loaderManager = getLoaderManager();
+  const id = currentMatch.route?.id as string;
+  const loader = loaderManager.get(id);
+  if (!loader) {
+    console.error(noLoaderMessage);
+  }
   // use server loader data only when hydrating
-  const loaderItem = willHydrate ? loadersData[fullPath] : null;
-  const [item, setItem] = useState(loaderItem);
+  const [result, setResult] = useState<LoaderResult>(
+    loader?.result as LoaderResult
+  );
   useEffect(() => {
-    let mounted = true;
-    const loader = loaders[fullPath] as any;
-    // must has loader and with the following conditions
-    // ----------------
-    // no loaderItem or
-    // loaderItem got error
-    if (loader && (!loaderItem || loaderItem?.error)) {
-      const { query, pathname } = currentRoute;
-      const { params } = currentMatch;
-      Promise.resolve(
-        loader({
-          isServer: false,
-          query,
-          pathname,
-          params,
-          appContext,
-          error: error.errorHandler,
-          redirect: redirector.handler
-        })
-      )
-        .then(res => {
-          if (mounted) {
-            setItem({
-              data: res,
-              loading: false
-            });
-          }
-        })
-        .catch(e => {
-          if (mounted) {
-            setItem({
-              data: null,
-              error: e.message,
-              loading: false
-            });
-          }
-        });
-    }
+    const cancel = loader?.onChange((status, loaderResult) => {
+      if (status === LoaderStatus.fulfilled) {
+        setResult(loaderResult);
+      }
+    });
     return () => {
-      mounted = false;
+      cancel?.();
     };
-  }, [currentRoute]);
-  return item?.data;
+  }, []);
+  return result?.data;
 };

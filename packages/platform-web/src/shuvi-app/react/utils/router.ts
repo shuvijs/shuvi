@@ -1,18 +1,20 @@
-import { createRedirector } from '@shuvi/router';
+import { createRedirector, IRoute } from '@shuvi/router';
 import {
   getErrorHandler,
   getModelManager,
   errorModel,
   IRouteComponentContext,
   IAppRouteConfig,
-  IApplicationCreaterClientContext
+  IClientContext,
+  IAppData
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
-
+import loadersBuild from '@shuvi/app/files/loaders-build';
+import { getLoaderManager } from '../loader/loaderManager';
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = IApplicationCreaterClientContext;
+export type INormalizeRoutesContext = IClientContext;
 
 type IAppRouteWithElement = IAppRouteConfig & { element?: any };
 
@@ -22,11 +24,14 @@ export function resetHydratedState() {
   hydrated = {};
 }
 
+let loaders = loadersBuild;
+
 export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
-  appContext: INormalizeRoutesContext = {}
+  appContext: INormalizeRoutesContext = {},
+  appData?: IAppData
 ): IAppRouteWithElement[] {
-  const { routeProps = {}, loadersData = {} } = appContext;
+  const routeProps = appData?.routeProps || {};
   if (!routes) {
     return [] as IAppRouteWithElement[];
   }
@@ -36,7 +41,7 @@ export function normalizeRoutes(
       ...route
     };
 
-    const { id, fullPath, component } = res;
+    const { id, component } = res;
     if (component) {
       res.resolve = async (to, from, next, context) => {
         if (isServer) {
@@ -44,9 +49,12 @@ export function normalizeRoutes(
         }
 
         const modelManager = getModelManager();
+        const loaderManager = getLoaderManager();
+        const { initialLoadersData } = loaderManager;
+
         // support both getInitialProps and loader
         const shouldHydrated =
-          (routeProps[id] !== undefined || loadersData[fullPath as string]) &&
+          (routeProps[id] !== undefined || initialLoadersData[id]) &&
           !hydrated[id];
         if (shouldHydrated) {
           const { hasError } = modelManager.get(errorModel).$state();
@@ -59,6 +67,35 @@ export function normalizeRoutes(
         let Component: any;
         const preload = component.preload;
         const errorComp = createError();
+
+        const redirector = createRedirector();
+        const loaderGenerator =
+          (routeId: string, to: IRoute<any>) => async () => {
+            const loaderFn = loaders[routeId];
+            if (typeof loaderFn === 'function') {
+              return await loaderFn({
+                isServer: false,
+                pathname: to.pathname,
+                query: to.query,
+                params: to.params,
+                appContext,
+                redirect: redirector.handler,
+                error: errorComp.handler
+              });
+            }
+          };
+        if (loaders[id]) {
+          const loaderManager = getLoaderManager();
+          const loader = loaderManager.add(loaderGenerator(id, to), id);
+          if (shouldHydrated) {
+            hydrated[id] = true;
+            if (initialLoadersData[id].error) {
+              loader.load();
+            }
+          } else {
+            loader.load();
+          }
+        }
         if (preload) {
           try {
             const preloadComponent = await preload();
@@ -81,7 +118,6 @@ export function normalizeRoutes(
             context.props = routeProps[id];
             return next();
           } else {
-            const redirector = createRedirector();
             context.props = await Component.getInitialProps({
               isServer: false,
               query: to.query,
@@ -114,7 +150,13 @@ export function normalizeRoutes(
         next();
       };
     }
-    res.children = normalizeRoutes(res.children, appContext);
+    res.children = normalizeRoutes(res.children, appContext, appData);
     return res;
+  });
+}
+
+if (module.hot) {
+  module.hot.accept('@shuvi/app/files/loaders-build', () => {
+    loaders = require('@shuvi/app/files/loaders-build').default;
   });
 }
