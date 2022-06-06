@@ -1,4 +1,4 @@
-import { AppCtx, launchFixture, Page } from "shuvi-test-utils";
+import { AppCtx, launchFixture, Page } from "../utils";
 
 jest.setTimeout(5 * 60 * 1000);
 
