@@ -28,9 +28,9 @@ import { getLoaderManager } from '../react/loader/loaderManager';
 
 declare let __SHUVI: any;
 let app: IApplication;
-let appContext: IClientContext = {};
-let appRouter: IRouter<IAppRouteConfig>;
-let currentAppData: IAppData | undefined;
+let currentAppContext: IClientContext;
+let currentAppRouter: IRouter<IAppRouteConfig>;
+let currentAppData: IAppData;
 
 export function createApp<
   Router extends IRouter<IAppRouteConfig>,
@@ -72,8 +72,8 @@ export function createApp<
       );
     }
   });
-  appRouter = router;
-  appContext = context;
+  currentAppRouter = router;
+  currentAppContext = context;
 
   app = platform({
     AppComponent: PlatformAppComponent,
@@ -100,7 +100,7 @@ if (module.hot) {
       const rerender = () => {
         const UserAppComponent = require('@shuvi/app/user/app').default;
         const routes = require('@shuvi/app/files/routes').default;
-        appRouter.replaceRoutes(getRoutes(routes, appContext, currentAppData));
+        currentAppRouter.replaceRoutes(getRoutes(routes, currentAppContext, currentAppData));
         app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
       };
       // to solve routing problem, we need to rerender routes
