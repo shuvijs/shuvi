@@ -2,3 +2,4 @@ packages:
   - 'packages/*'
   - 'test'
   - 'test/packages/*'
+  - 'test/fixtures/react-16'

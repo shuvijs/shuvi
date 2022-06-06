@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector } from '@shuvi/router';
@@ -14,6 +13,7 @@ import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { LoaderContext } from '../loader';
+import { renderAction } from './render-action';
 
 const headManager = new HeadManager();
 
@@ -97,13 +97,17 @@ export class ReactClientView implements IReactClientView {
       </ErrorBoundary>
     );
 
-    if (ssr && isInitialRender) {
-      ReactDOM.hydrate(root, appContainer, () => {
-        this._isInitialRender = false;
-        loaderContext.willHydrate = false;
-      });
-    } else {
-      ReactDOM.render(root, appContainer);
-    }
+    const ssrCallback = () => {
+      this._isInitialRender = false;
+      loaderContext.willHydrate = false;
+    };
+
+    renderAction({
+      ssr,
+      isInitialRender,
+      root,
+      callback: ssrCallback,
+      appContainer
+    });
   };
 }
