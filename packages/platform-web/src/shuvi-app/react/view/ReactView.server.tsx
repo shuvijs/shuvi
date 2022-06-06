@@ -55,7 +55,6 @@ export class ReactServerView implements IReactServerView {
 
     const routeProps: { [x: string]: any } = {};
     const pendingDataFetchs: Array<() => Promise<void>> = [];
-    const pendingLoaders: Array<() => Promise<void>> = [];
     const loaderManager = createLoaderManager({});
 
     const loaderGenerator = (routeId: string, params: IParams) => async () => {
@@ -99,8 +98,6 @@ export class ReactServerView implements IReactServerView {
         loaderManager.add(loaderGenerator(id, matchedRoute.params), id);
       }
     }
-    await Promise.all(pendingLoaders.map(fn => fn()));
-
     const loadersData = await loaderManager.awaitLoaders();
     appContext.loaderManager = loaderManager;
     const fetchInitialProps = async () => {
