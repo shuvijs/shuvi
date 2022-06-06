@@ -7,6 +7,8 @@ import { act } from 'shuvi-test-utils/reactTestRender';
 import FirstPage from './fixtures/loadRouteComponent/firstPage';
 import { renderWithRoutes } from './utils';
 
+jest.mock('@shuvi/app/files/loaders-build', () => ({}), { virtual: true });
+
 const firstPageComponent = loadRouteComponent(() => {
   return import('./fixtures/loadRouteComponent/firstPage');
 });

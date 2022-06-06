@@ -19,16 +19,12 @@ function genRouteId(filepath: string) {
 /**
  * returns JSON string of IAppRouteConfigWithPrivateProps
  */
-export function serializeRoutes(
-  routes: IRouteConfig[],
-  parentPath: string = ''
-): string {
+export function serializeRoutes(routes: IRouteConfig[]): string {
   let res = '';
   for (let index = 0; index < routes.length; index++) {
     const { children: childRoutes, ...route } = routes[index];
-    const fullpath = route.path ? parentPath + '/' + route.path : parentPath;
     const id = route.id;
-    let strRoute = `id: ${JSON.stringify(id)},\n`;
+    let strRoute = '';
     const keys = Object.keys(route);
     for (let index = 0; index < keys.length; index++) {
       const key = keys[index] as RouteKeysWithoutChildren;
@@ -53,7 +49,7 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializeRoutes(childRoutes, fullpath)},\n`;
+      strRoute += `children: ${serializeRoutes(childRoutes)},\n`;
     }
 
     res += `{${strRoute}},\n`;
