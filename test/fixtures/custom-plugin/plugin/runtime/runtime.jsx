@@ -3,7 +3,7 @@ import { dynamic } from "@shuvi/runtime";
 
 const Hello = dynamic(() => import("./hello.jsx"), {
   ssr: false,
-  loading: () => <p>LOADING</p>
+  loading: () => <p class="dynamic-loader">LOADING</p>
 });
 
 export default option =>
