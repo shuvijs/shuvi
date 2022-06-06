@@ -174,6 +174,12 @@ export function useRouter(): IRouter {
   return useContext(RouterContext).router;
 }
 
-export function useMatchedRoute(): IRouteContextObject {
-  return useContext(MatchedRouteContext);
+export function useMatchedRoute<
+  ExtendedTypes = {}
+>(): IRouteContextObject<ExtendedTypes> {
+  return useContext(
+    MatchedRouteContext as any as React.Context<
+      IRouteContextObject<ExtendedTypes>
+    >
+  );
 }

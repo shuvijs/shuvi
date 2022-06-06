@@ -8,15 +8,18 @@ import {
   IAppRouteConfig
 } from '@shuvi/platform-shared/esm/runtime';
 import { createApp } from '../../create-app/client';
+import { createLoaderManager } from '../../react/loader/loaderManager';
 
 const appData = getAppData();
 const { routeProps = {}, appState, loadersData = {} } = appData;
+const loaderManager = createLoaderManager(loadersData);
 
 const app = createApp(
   {
     pageData: appData.pageData || {},
     routeProps,
-    loadersData
+    loadersData,
+    loaderManager
   },
   {
     async render({ appContext, AppComponent, router = [], modelManager }) {

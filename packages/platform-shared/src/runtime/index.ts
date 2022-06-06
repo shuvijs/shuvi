@@ -217,6 +217,7 @@ export interface IApplicationCreaterClientContext
   pageData?: any;
   routeProps?: { [x: string]: any };
   loadersData?: { [x: string]: any };
+  loaderManager?: any;
 }
 
 export type IApplicationCreaterContext =

@@ -10,6 +10,8 @@ const One = () => {
       <div data-test-id="time">{data?.time}</div>
       <div data-test-id="test">{data?.query.test}</div>
       <Link to="/two">Goto Page Two</Link>
+      <br />
+      <Link to="/one?test=123">Goto Page One With Query</Link>
     </div>
   );
 };
@@ -21,6 +23,7 @@ type LoaderData = {
 
 export const loader: Loader<LoaderData> = async ({ query }) => {
   await sleep(300);
+  console.log('loader one done');
   return {
     query,
     time: 1

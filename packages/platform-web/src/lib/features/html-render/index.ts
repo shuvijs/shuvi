@@ -1,5 +1,8 @@
-import { createPlugin, IUserRouteConfig } from '@shuvi/service';
-import { getRoutesFromFiles } from '@shuvi/service/lib/route';
+import { createPlugin, IUserRouteConfig, IRouteConfig } from '@shuvi/service';
+import {
+  getRoutesFromFiles,
+  renameFilepathToComponent
+} from '@shuvi/service/lib/route';
 import {
   getUserCustomFileCandidates,
   getFirstModuleExport,
@@ -11,7 +14,6 @@ import { extendedHooks } from './hooks';
 import {
   getNormalizedRoutes,
   getRoutesContent,
-  getRoutesFromRawRoutes,
   setRoutes,
   getRoutes
 } from './lib';
@@ -39,7 +41,7 @@ const core = createPlugin({
         return `export const historyMode = "${history}";`;
       }
     });
-    const getFinalRoutes = (routes: IUserRouteConfig[]) =>
+    const getRoutesAfterPlugin = (routes: IUserRouteConfig[]) =>
       pluginRunner.appRoutes(routes);
     // if config.routes is defined, use config
     const hasConfigRoutes = Array.isArray(routes);
@@ -47,13 +49,13 @@ const core = createPlugin({
       ? createFile({
           name: 'routes.js',
           content: () => {
+            const modifiedRoutes = getRoutesAfterPlugin(routes);
             const normalizedRoutes = getNormalizedRoutes(
-              routes,
+              modifiedRoutes,
               paths.pagesDir
             );
-            const finalRoutes = getFinalRoutes(normalizedRoutes);
-            setRoutes(finalRoutes);
-            return getRoutesContent(finalRoutes, paths.pagesDir);
+            setRoutes(normalizedRoutes);
+            return getRoutesContent(normalizedRoutes, paths.pagesDir);
           }
         })
       : createFile({
@@ -63,13 +65,14 @@ const core = createPlugin({
               getAllFiles(paths.pagesDir),
               paths.pagesDir
             );
-            const normalizedRoutes = getRoutesFromRawRoutes(
-              rawRoutes,
+            const renamedRoutes = renameFilepathToComponent(rawRoutes);
+            const modifiedRoutes = getRoutesAfterPlugin(renamedRoutes);
+            const normalizedRoutes = getNormalizedRoutes(
+              modifiedRoutes,
               paths.pagesDir
             );
-            const finalRoutes = getFinalRoutes(normalizedRoutes);
-            setRoutes(finalRoutes);
-            return getRoutesContent(finalRoutes, paths.pagesDir);
+            setRoutes(normalizedRoutes);
+            return getRoutesContent(normalizedRoutes, paths.pagesDir);
           },
           dependencies: paths.pagesDir
         });
@@ -79,13 +82,13 @@ const core = createPlugin({
       content: () => {
         const routes = getRoutes();
         const loaders: Record<string, string> = {};
-        const traverseRoutes = (routes: IUserRouteConfig[]) => {
+        const traverseRoutes = (routes: IRouteConfig[]) => {
           routes.forEach(r => {
-            const { component, fullPath, children } = r;
-            if (component && fullPath) {
+            const { component, id, children } = r;
+            if (component && id) {
               const hasLoader = ifComponentHasLoader(component);
               if (hasLoader) {
-                loaders[fullPath] = component;
+                loaders[id] = component;
               }
             }
             if (children) {
@@ -97,9 +100,9 @@ const core = createPlugin({
         let imports = '';
         let exports = '';
         Object.entries(loaders).forEach((loader, index) => {
-          const [fullPath, component] = loader;
+          const [id, component] = loader;
           imports += `import { loader as loader_${index} } from '${component}'\n`;
-          exports += `'${fullPath}': loader_${index},\n`;
+          exports += `'${id}': loader_${index},\n`;
         });
         const content = `${imports}  export default {\n  ${exports}\n}`;
         return content;

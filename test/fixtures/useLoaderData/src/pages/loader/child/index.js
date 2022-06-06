@@ -7,7 +7,7 @@ function App() {
     <div>
       This is {data?.hello}
       <div>
-        <Link to={`/loader/child?sssss=${Date.now()}`}>Go query</Link>
+        <Link to={`/loader/child?sssss=2222`}>Go query</Link>
         <Link to={`/loader`}>Go To /loader</Link>
       </div>
     </div>
@@ -15,7 +15,7 @@ function App() {
 }
 
 export const loader = async () => {
-  await sleep(300);
+  await sleep(2000);
   console.log('loader child fetched');
   return {
     hello: 'loader child'

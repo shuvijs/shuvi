@@ -18,8 +18,8 @@ import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
-import { LoaderContext } from '../loader';
 import { getInitialPropsDeprecatingMessage } from '../utils/errorMessage';
+import { createLoaderManager } from '../loader/loaderManager';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -56,28 +56,20 @@ export class ReactServerView implements IReactServerView {
     const routeProps: { [x: string]: any } = {};
     const pendingDataFetchs: Array<() => Promise<void>> = [];
     const pendingLoaders: Array<() => Promise<void>> = [];
-    const loadersData: Record<string, any> = {};
+    const loaderManager = createLoaderManager({});
 
-    const getLoaderFunction =
-      (fullPath: string, params: IParams) => async () => {
-        const loaderFn = loaders[fullPath];
-        const loaderData: any = {};
-        try {
-          loaderData.data = await loaderFn({
-            isServer: true,
-            pathname,
-            query,
-            params,
-            appContext,
-            redirect: redirector.handler,
-            error: error.errorHandler
-          });
-        } catch (e) {
-          loaderData.error = (e as any)?.message;
-        }
-        loaderData.loading = false;
-        loadersData[fullPath] = loaderData;
-      };
+    const loaderGenerator = (routeId: string, params: IParams) => async () => {
+      const loaderFn = loaders[routeId];
+      return await loaderFn({
+        isServer: true,
+        pathname,
+        query,
+        params,
+        appContext,
+        redirect: redirector.handler,
+        error: error.errorHandler
+      });
+    };
 
     const params: IParams = {};
     for (let index = 0; index < matches.length; index++) {
@@ -102,12 +94,15 @@ export class ReactServerView implements IReactServerView {
           matchedRoute.route.props = props;
         });
       }
-      const fullPath = appRoute.fullPath as string;
-      if (loaders[fullPath]) {
-        pendingLoaders.push(getLoaderFunction(fullPath, matchedRoute.params));
+      const { id } = appRoute;
+      if (loaders[id]) {
+        loaderManager.add(loaderGenerator(id, matchedRoute.params), id);
       }
     }
     await Promise.all(pendingLoaders.map(fn => fn()));
+
+    const loadersData = await loaderManager.awaitLoaders();
+    appContext.loaderManager = loaderManager;
     const fetchInitialProps = async () => {
       if (pendingDataFetchs.length) {
         console.error(getInitialPropsDeprecatingMessage);
@@ -150,26 +145,19 @@ export class ReactServerView implements IReactServerView {
     let htmlContent: string;
     let head: IHtmlTag[];
 
-    const loaderContext = {
-      loadersData,
-      willHydrate: true
-    };
-
     const RootApp = (
       <ErrorBoundary>
         <Router static router={router}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >
-            <LoaderContext.Provider value={loaderContext}>
-              <AppContainer
-                appContext={appContext}
-                modelManager={modelManager}
-                errorComp={ErrorPage}
-              >
-                <AppComponent {...appInitialProps} />
-              </AppContainer>
-            </LoaderContext.Provider>
+            <AppContainer
+              appContext={appContext}
+              modelManager={modelManager}
+              errorComp={ErrorPage}
+            >
+              <AppComponent {...appInitialProps} />
+            </AppContainer>
           </LoadableContext.Provider>
         </Router>
       </ErrorBoundary>
