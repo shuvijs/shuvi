@@ -1,4 +1,5 @@
-import React, { createContext, useMemo, Context } from 'react';
+import * as React from 'react';
+import { createContext, useMemo, Context } from 'react';
 import {
   IModelManager,
   IPageError,

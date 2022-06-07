@@ -1,5 +1,6 @@
-import ejs, { TemplateFunction } from 'ejs';
-import fs from 'fs';
+import * as ejs from 'ejs';
+import { TemplateFunction } from 'ejs';
+import * as fs from 'fs';
 
 export { TemplateFunction };
 

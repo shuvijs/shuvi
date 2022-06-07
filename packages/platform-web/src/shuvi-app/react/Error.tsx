@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { IPageError } from '@shuvi/platform-shared/esm/runtime';
 // @ts-ignore
 import { Head } from './head';
