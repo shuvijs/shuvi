@@ -1,4 +1,4 @@
-import program from 'commander';
+import * as program from 'commander';
 import { build } from '../tasks/build';
 import { getPackageInfo } from '../utils';
 import {

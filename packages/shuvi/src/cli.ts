@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import program from 'commander';
-import spawn from 'cross-spawn';
+import * as program from 'commander';
+import * as spawn from 'cross-spawn';
 import { getPackageInfo } from './utils';
 
 const Commands = ['dev', 'build', 'serve', 'inspect'] as const;

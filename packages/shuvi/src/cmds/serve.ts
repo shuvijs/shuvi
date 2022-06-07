@@ -1,4 +1,4 @@
-import program from 'commander';
+import * as program from 'commander';
 import { getApi, createShuviServer } from '@shuvi/service';
 import { getPackageInfo } from '../utils';
 import { getProjectDir, getConfigFromCli, getPlatform } from '../utils';
