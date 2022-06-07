@@ -5,7 +5,7 @@
     "outDir": "lib",
     "strict": false,
     "strictFunctionTypes": false,
-
+    "allowSyntheticDefaultImports": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
     "lib": ["esnext", "DOM"]
