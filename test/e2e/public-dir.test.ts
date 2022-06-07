@@ -1,5 +1,6 @@
 import got from 'got';
 import { AppCtx, launchFixture, serveFixture } from '../utils';
+import { ASSET_PUBLIC_PATH } from '@shuvi/service/lib/constants';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -17,14 +18,14 @@ describe('Public Dir', () => {
     ctx = await launchFixture('public-dir');
 
     // file
-    res = await got.get(ctx.url('/_shuvi/user.json'), {
+    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('name', 'foo');
 
     // nest
-    res = await got.get(ctx.url('/_shuvi/nest/user.json'), {
+    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
@@ -32,7 +33,9 @@ describe('Public Dir', () => {
 
     // folder
     try {
-      await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
+      await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest`), {
+        responseType: 'json'
+      });
     } catch (error: any) {
       expect(error.response.statusCode).toBe(404);
     }
@@ -46,14 +49,14 @@ describe('Public Dir', () => {
     ctx = await serveFixture('public-dir');
 
     // file
-    res = await got.get(ctx.url('/_shuvi/user.json'), {
+    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('name', 'foo');
 
     // nest
-    res = await got.get(ctx.url('/_shuvi/nest/user.json'), {
+    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
@@ -61,7 +64,9 @@ describe('Public Dir', () => {
 
     // folder
     try {
-      await got.get(ctx.url('/_shuvi/nest'), { responseType: 'json' });
+      await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest`), {
+        responseType: 'json'
+      });
     } catch (error: any) {
       expect(error.response.statusCode).toBe(404);
     }

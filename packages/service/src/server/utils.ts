@@ -1,5 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import { existsSync, statSync } from 'fs';
 import send from 'send';
+
+export function isStaticFileExist(path: string): Boolean {
+  if (existsSync(path)) {
+    return !statSync(path).isDirectory() && statSync(path).isFile();
+  }
+  return false;
+}
 
 export function serveStatic(
   req: IncomingMessage,

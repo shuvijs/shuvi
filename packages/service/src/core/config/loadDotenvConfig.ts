@@ -54,6 +54,5 @@ export const loadDotenvConfig = (dir: string) => {
       }
     }
   }
-
   Object.assign(process.env, envsFromDotEnv);
 };
