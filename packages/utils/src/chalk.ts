@@ -1,3 +1,3 @@
-import chalk from 'chalk';
+import chalk = require('chalk');
 
 export default chalk;

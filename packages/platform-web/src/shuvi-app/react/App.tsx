@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { RouterView } from '@shuvi/router-react';
 
 function App() {

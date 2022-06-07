@@ -1,4 +1,4 @@
-import program from 'commander';
+import program = require('commander');
 import { getApi, createShuviServer } from '@shuvi/service';
 import { getPackageInfo } from '../utils';
 import { getProjectDir, getConfigFromCli, getPlatform } from '../utils';

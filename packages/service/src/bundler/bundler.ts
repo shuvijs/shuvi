@@ -1,4 +1,4 @@
-import WebpackChain from 'webpack-chain';
+import WebpackChain = require('webpack-chain');
 import ForkTsCheckerWebpackPlugin, {
   Issue,
   createCodeFrameFormatter
@@ -296,11 +296,13 @@ class WebpackBundler {
         mode: this._cliContext.mode,
         helpers: defaultWebpackHelpers,
         webpack,
-        resolveWebpackModule(path: string){
-          if(!path.startsWith('webpack/')){
-            console.error('path need startWith "webpack/" to resolve webpack module');
+        resolveWebpackModule(path: string) {
+          if (!path.startsWith('webpack/')) {
+            console.error(
+              'path need startWith "webpack/" to resolve webpack module'
+            );
           }
-          return require(`${webpackPath}${path}`)
+          return require(`${webpackPath}${path}`);
         }
       });
       if (hasEntry(chain)) {

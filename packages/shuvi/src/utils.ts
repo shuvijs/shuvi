@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import path from 'path';
+import * as path from 'path';
 import { CommanderStatic } from 'commander';
 import { UserConfig, IPlatform } from '@shuvi/service';
 import {

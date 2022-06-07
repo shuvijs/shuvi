@@ -1,7 +1,7 @@
 // modified from https://github.com/egoist/bundle-require/blob/dd96549a9b995d6a827baee022eb324fd2fac2ef/src/index.ts
 
 import { promises as fs } from 'fs';
-import path from 'path';
+import * as path from 'path';
 import {
   build,
   Loader,

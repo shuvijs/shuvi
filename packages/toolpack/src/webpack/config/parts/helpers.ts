@@ -1,4 +1,4 @@
-import WebpackChain from 'webpack-chain';
+import WebpackChain = require('webpack-chain');
 import { ExternalsFunction, IWebpackHelpers } from '../../types';
 
 export const webpackHelpers = (): IWebpackHelpers => {

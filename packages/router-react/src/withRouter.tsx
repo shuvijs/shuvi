@@ -1,6 +1,6 @@
 import { IRouter } from '@shuvi/router';
 import { IRouteComponent } from '@shuvi/platform-shared/esm/runtime';
-import React from 'react';
+import * as React from 'react';
 import { useRouter } from './hooks';
 
 export type WithRouterProps = {

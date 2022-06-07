@@ -2,8 +2,8 @@ import { createReactApp, window } from '@tarojs/runtime';
 // @ts-ignore
 import appConfig from '@shuvi/user/app.config';
 import { initPxTransform } from '@tarojs/taro';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 export default {
   // @ts-ignore
   renderApp({ AppComponent }) {

@@ -1,5 +1,5 @@
-import path from 'path';
-import fse from 'fs-extra';
+import * as path from 'path';
+import * as fse from 'fs-extra';
 import {
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,

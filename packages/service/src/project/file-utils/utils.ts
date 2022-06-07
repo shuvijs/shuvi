@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { withExts } from '@shuvi/utils/lib/file';

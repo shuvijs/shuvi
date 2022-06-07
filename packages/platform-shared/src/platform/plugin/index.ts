@@ -1,5 +1,5 @@
 import { createPlugin } from '@shuvi/service';
-import path from 'path';
+import * as path from 'path';
 import { extendedHooks } from './hooks';
 
 const runtimeConfigPath = path.resolve(

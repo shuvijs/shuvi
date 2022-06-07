@@ -1,5 +1,5 @@
-import path from 'path';
-import browserslist from 'browserslist';
+import * as path from 'path';
+import browserslist = require('browserslist');
 import { transform, browserslistToTargets } from '@parcel/css';
 import type { ImportDependency, UrlDependency } from '@parcel/css';
 import type { loader } from 'webpack';

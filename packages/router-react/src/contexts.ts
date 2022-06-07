@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { IParams, IRoute } from '@shuvi/router';
 import { readOnly } from './utils';
 import { __DEV__ } from './constants';
