@@ -59,7 +59,7 @@
     "raw-body": "^2.4.1",
     "rimraf": "^3.0.2",
     "send": "0.17.1",
-    "webpack": "5.36.0",
+    "webpack": "5.73.0",
     "webpack-dev-middleware": "4.1.0"
   },
   "devDependencies": {

@@ -28,7 +28,7 @@ export function runCompiler(
   compiler: Compiler | MultiCompiler
 ): Promise<BundlerResult> {
   return new Promise(async (resolve, reject) => {
-    compiler.run((err: Error | undefined, statsOrMultiStats: any) => {
+    compiler.run((err: Error | undefined | null, statsOrMultiStats: any) => {
       compiler.close(() => {
         if (err) {
           return reject(err);
