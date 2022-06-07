@@ -6,7 +6,7 @@ import {
   IRouteComponentContext,
   IAppRouteConfig,
   IClientContext,
-  IAppData
+  IRouteData
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
@@ -29,9 +29,9 @@ let loaders = loadersBuild;
 export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
   appContext: INormalizeRoutesContext = {},
-  appData?: IAppData
+  routeData?: IRouteData
 ): IAppRouteWithElement[] {
-  const routeProps = appData?.routeProps || {};
+  const routeProps = routeData?.routeProps || {};
   if (!routes) {
     return [] as IAppRouteWithElement[];
   }
@@ -150,7 +150,7 @@ export function normalizeRoutes(
         next();
       };
     }
-    res.children = normalizeRoutes(res.children, appContext, appData);
+    res.children = normalizeRoutes(res.children, appContext, routeData);
     return res;
   });
 }

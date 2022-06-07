@@ -215,3 +215,7 @@ export interface IClientContext extends IContext {}
 export type IApplicationCreaterContext = IServerContext | IClientContext;
 
 export type IRuntimeConfig = Record<string, string>;
+
+export type IRouteData = {
+  routeProps?: { [x: string]: any };
+};

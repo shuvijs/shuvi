@@ -46,7 +46,7 @@ export function createApp<
   }
   const { appData } = options;
   currentAppData = appData;
-  const { loadersData = {}, appState } = appData;
+  const { loadersData = {}, appState, routeProps } = appData;
   const modelManager = getModelManager(appState);
 
   let history: History;
@@ -63,7 +63,7 @@ export function createApp<
 
   const router = createRouter({
     history,
-    routes: getRoutes(routes, context, appData)
+    routes: getRoutes(routes, context, { routeProps })
   }) as Router;
   router.afterEach(_current => {
     if (!_current.matches) {
@@ -100,7 +100,9 @@ if (module.hot) {
       const rerender = () => {
         const UserAppComponent = require('@shuvi/app/user/app').default;
         const routes = require('@shuvi/app/files/routes').default;
-        currentAppRouter.replaceRoutes(getRoutes(routes, currentAppContext, currentAppData));
+        currentAppRouter.replaceRoutes(
+          getRoutes(routes, currentAppContext, currentAppData)
+        );
         app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
       };
       // to solve routing problem, we need to rerender routes
