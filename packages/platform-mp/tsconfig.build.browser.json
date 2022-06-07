@@ -3,8 +3,7 @@
   "compilerOptions": {
     "module": "esnext",
     "jsx": "preserve",
-    "outDir": "shuvi-app",
-    "allowSyntheticDefaultImports": false,
+    "outDir": "shuvi-app"
   },
   "include": [
     "src/shuvi-app"

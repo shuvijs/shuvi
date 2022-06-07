@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "lib": ["esnext", "DOM"],
-    "allowSyntheticDefaultImports": false
+    "lib": ["esnext", "DOM"]
   },
   "include": [
     "src"

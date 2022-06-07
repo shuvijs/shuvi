@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "lib",
-    "allowSyntheticDefaultImports": false,
+    "outDir": "lib"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
