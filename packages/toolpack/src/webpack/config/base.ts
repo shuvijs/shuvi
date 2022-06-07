@@ -4,7 +4,6 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import webpack from 'webpack';
 import path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
-import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
@@ -65,8 +64,6 @@ export function baseWebpackChain({
   publicPath = '/',
   env = {}
 }: BaseOptions): WebpackChain {
-  const { typeScriptPath, tsConfigPath, useTypeScript } =
-    getTypeScriptInfo(projectRoot);
   const config = new WebpackChain();
 
   config.mode(dev ? 'development' : 'production');
@@ -212,29 +209,6 @@ export function baseWebpackChain({
     .use(BuildManifestPlugin, [
       { filename: buildManifestFilename, chunkRequest: dev }
     ]);
-
-  if (useTypeScript) {
-    config
-      .plugin('private/fork-ts-checker-webpack-plugin')
-      .use(require.resolve('fork-ts-checker-webpack-plugin'), [
-        {
-          typescript: {
-            configFile: tsConfigPath,
-            typeScriptPath,
-            diagnosticOptions: {
-              syntactic: true
-            }
-          },
-          async: dev,
-          logger: {
-            infrastructure: 'silent',
-            issues: 'silent',
-            devServer: false
-          },
-          formatter: 'codeframe'
-        }
-      ]);
-  }
 
   const getCacheConfig = () => {
     const projectHash = crypto
