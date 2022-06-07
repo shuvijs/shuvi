@@ -1,5 +1,6 @@
 import { IModuleItem, IManifest } from '../types';
-import webpack, { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
+import * as webpack from 'webpack';
+import { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
 import Entrypoint from 'webpack/lib/Entrypoint';
 
 const { RawSource } = webpack.sources;

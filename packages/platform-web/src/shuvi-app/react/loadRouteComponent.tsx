@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import React from 'react';
+import * as React from 'react';
 import { IRouteComponent } from '@shuvi/platform-shared/esm/runtime';
 import dynamic, { DynamicOptions } from './dynamic';
 

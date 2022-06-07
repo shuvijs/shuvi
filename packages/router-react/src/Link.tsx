@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import * as PropTypes from 'prop-types';
 import { useHref, useNavigate, useResolvedPath } from '.';
 import { pathToString, State, PathRecord } from '@shuvi/router';
 import { __DEV__ } from './constants';
@@ -57,7 +57,8 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         // If the URL hasn't changed, a regular <a> will do a replace instead of
         // a push, so do the same here.
         let replace =
-          !!replaceProp || (location && pathToString(location)) === pathToString(path);
+          !!replaceProp ||
+          (location && pathToString(location)) === pathToString(path);
 
         navigate(to, { replace, state });
       }

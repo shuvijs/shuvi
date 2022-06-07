@@ -1,14 +1,14 @@
-import WebpackChain from 'webpack-chain';
-import TerserPlugin from 'terser-webpack-plugin';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import webpack from 'webpack';
-import path from 'path';
+import WebpackChain = require('webpack-chain');
+import TerserPlugin = require('terser-webpack-plugin');
+import CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+import * as webpack from 'webpack';
+import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import { AppSourceRegexs } from '../../constants';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 
 const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);

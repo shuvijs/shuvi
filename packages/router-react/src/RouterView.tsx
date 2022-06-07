@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { IParams } from '@shuvi/router';
 import { joinPaths } from '@shuvi/router/lib/utils';
 import { useCurrentRoute } from './hooks';

@@ -1,6 +1,6 @@
 import { resolveFile } from '@shuvi/utils/lib/file';
-import esbuild from 'esbuild';
-import path from 'path';
+import * as esbuild from 'esbuild';
+import * as path from 'path';
 
 const loader: { [ext: string]: esbuild.Loader } = {
   '.js': 'jsx',

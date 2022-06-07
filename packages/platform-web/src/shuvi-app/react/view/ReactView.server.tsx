@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';

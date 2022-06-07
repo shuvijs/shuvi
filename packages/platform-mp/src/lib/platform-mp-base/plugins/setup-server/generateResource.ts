@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import {
   BUILD_SERVER_DIR,
   BUILD_MANIFEST_PATH,
@@ -14,8 +14,9 @@ const generateResources = (context: IPluginContext) => {
     BUILD_MANIFEST_PATH
   );
 
-  const result: [string, string | undefined][] = [[
-    `server = function() {
+  const result: [string, string | undefined][] = [
+    [
+      `server = function() {
     var path = require('path');
     return require(path.join(
       '${buildDir}',
@@ -23,8 +24,9 @@ const generateResources = (context: IPluginContext) => {
       require('${serverManifestPath}')['bundles']['${BUILD_SERVER_FILE_SERVER}']
     ))
   }`,
-    undefined
-  ]];
+      undefined
+    ]
+  ];
 
   return result;
 };

@@ -1,4 +1,5 @@
-import React, { PropsWithChildren } from 'react';
+import * as React from 'react';
+import { PropsWithChildren } from 'react';
 import { View } from '@tarojs/components';
 import { IPageError } from '@shuvi/platform-shared/esm/runtime';
 import { ViewProps } from '@tarojs/components/types/View';

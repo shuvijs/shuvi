@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { createPlugin, CorePluginInstance } from '@shuvi/service';
 
 export default createPlugin({

@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { IRouteRecord, rankRouteBranches } from '@shuvi/router';
 
 export interface IMiddlewareRouteConfig {

@@ -1,9 +1,9 @@
 import chalk from '@shuvi/utils/lib/chalk';
 import resolve from '@shuvi/utils/lib/resolve';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { promisify } from 'util';
 
 const fileExists = promisify(fs.exists);

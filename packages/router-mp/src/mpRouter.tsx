@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import qs from 'query-string';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import * as qs from 'query-string';
+import * as PropTypes from 'prop-types';
 import { Current as TaroCurrent } from '@tarojs/runtime';
 import {
   InitialEntry,

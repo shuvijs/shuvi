@@ -1,4 +1,4 @@
-import qs from 'query-string';
+import * as qs from 'query-string';
 import { inBrowser } from './dom';
 import { PathRecord, PartialPath, Path } from '../types';
 

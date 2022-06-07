@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import {
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,

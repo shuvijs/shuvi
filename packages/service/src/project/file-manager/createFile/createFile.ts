@@ -1,4 +1,4 @@
-import fs from 'fs';
+import * as fs from 'fs';
 import { reactive } from '@vue/reactivity';
 import { watch } from '@shuvi/utils/lib/fileWatcher';
 

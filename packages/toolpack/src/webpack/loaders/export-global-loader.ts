@@ -1,5 +1,5 @@
 import { loader } from 'webpack';
-import loaderUtils from 'loader-utils';
+import * as loaderUtils from 'loader-utils';
 
 export type ClientPagesLoaderOptions = {
   absolutePagePath: string;

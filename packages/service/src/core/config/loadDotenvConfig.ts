@@ -1,7 +1,8 @@
-import dotenv, { DotenvConfigOutput } from 'dotenv';
-import dotenvExpand from 'dotenv-expand';
-import fs from 'fs';
-import path from 'path';
+import * as dotenv from 'dotenv';
+import { DotenvConfigOutput } from 'dotenv';
+import dotenvExpand = require('dotenv-expand');
+import * as fs from 'fs';
+import * as path from 'path';
 
 export const loadDotenvConfig = (dir: string) => {
   const mode = process.env.NODE_ENV!;

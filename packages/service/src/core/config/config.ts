@@ -1,7 +1,11 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { bundleRequire, PATH_SEG_RE, JS_EXT_RE } from '@shuvi/toolpack/lib/utils/bundle-require';
+import {
+  bundleRequire,
+  PATH_SEG_RE,
+  JS_EXT_RE
+} from '@shuvi/toolpack/lib/utils/bundle-require';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { Config, UserConfig } from '../apiTypes';
 import { PUBLIC_PATH } from '../../constants';
@@ -83,14 +87,14 @@ export async function loadConfig({
   let fileConfig: UserConfig = {};
 
   const getOutputFile = (filepath: string) =>
-  path.join(
-    rootDir,
-    '.shuvi',
-    'temp',
-    filepath
-      .replace(PATH_SEG_RE, '_')
-      .replace(JS_EXT_RE, `.bundled_${Date.now()}.cjs`)
-  );
+    path.join(
+      rootDir,
+      '.shuvi',
+      'temp',
+      filepath
+        .replace(PATH_SEG_RE, '_')
+        .replace(JS_EXT_RE, `.bundled_${Date.now()}.cjs`)
+    );
   fileConfig = await bundleRequire(configFilePath, { getOutputFile });
   fileConfig = (fileConfig as any).default || fileConfig;
 

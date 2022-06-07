@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
-import fse from 'fs-extra';
+import * as fse from 'fs-extra';
 import { createRequest, createResponse } from 'node-mocks-http';
-import path from 'path';
+import * as path from 'path';
 import {
   createShuviServer,
   BUILD_DEFAULT_DIR,

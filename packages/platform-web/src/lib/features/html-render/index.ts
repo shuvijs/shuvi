@@ -9,7 +9,7 @@ import {
   getAllFiles
 } from '@shuvi/service/lib/project/file-utils';
 import { build } from '@shuvi/toolpack/lib/utils/build-loaders';
-import path from 'path';
+import * as path from 'path';
 import { extendedHooks } from './hooks';
 import {
   getNormalizedRoutes,

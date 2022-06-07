@@ -1,4 +1,5 @@
-import React, { PropsWithChildren } from 'react';
+import * as React from 'react';
+import { PropsWithChildren } from 'react';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import ErrorPage from '../ErrorPage';
 
