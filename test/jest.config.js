@@ -18,7 +18,8 @@ module.exports = {
         moduleResolution: 'node',
         skipLibCheck: true,
         esModuleInterop: true,
-        noUnusedLocals: false
+        noUnusedLocals: false,
+        allowSyntheticDefaultImports: true
       }
     }
   },

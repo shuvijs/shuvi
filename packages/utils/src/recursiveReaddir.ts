@@ -1,6 +1,6 @@
-import fs from "fs";
-import path from "path";
-import { promisify } from "util";
+import * as fs from 'fs';
+import * as path from 'path';
+import { promisify } from 'util';
 
 const fsReaddir = promisify(fs.readdir);
 const fsStat = promisify(fs.stat);
@@ -8,7 +8,7 @@ const fsStat = promisify(fs.stat);
 type Test = RegExp | ((v: string) => boolean);
 
 function runTest(test: Test, v: string) {
-  if (typeof test === "function") {
+  if (typeof test === 'function') {
     return test(v);
   }
 
@@ -44,7 +44,7 @@ export async function recursiveReadDir(
   await Promise.all(
     result.map(async (part: string) => {
       const absolutePath = path.join(dir, part);
-      const pp = absolutePath.replace(rootDir, "");
+      const pp = absolutePath.replace(rootDir, '');
       if (ignore && ignore.test(pp)) {
         return;
       }
@@ -106,7 +106,7 @@ export function recursiveReadDirSync(
       return;
     }
 
-    arr.push(absolutePath.replace(rootDir, ""));
+    arr.push(absolutePath.replace(rootDir, ''));
   });
 
   return arr.sort();

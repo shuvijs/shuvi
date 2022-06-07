@@ -1,9 +1,9 @@
 import { IncomingMessage } from 'http';
 import { Stream } from 'stream';
-import querystring from 'querystring';
-import cookie from 'cookie';
-import getRawBody from 'raw-body';
-import contentType from 'content-type';
+import * as querystring from 'querystring';
+import * as cookie from 'cookie';
+const getRawBody = require('raw-body');
+import * as contentType from 'content-type';
 import { IParams, ParsedQuery } from '@shuvi/router';
 import { IResponse, IRequest } from '@shuvi/service';
 
@@ -62,7 +62,8 @@ export async function apiRouteHandler(
     }
 
     const apiRes: IApiRes = {
-      status: (statusCode: number) => sendStatusCode<IApiResponse>(res, statusCode),
+      status: (statusCode: number) =>
+        sendStatusCode<IApiResponse>(res, statusCode),
       send: (data: any) => sendData(req, res, data),
       json: (data: any) => sendJson(req, res, data),
       redirect: (statusOrUrl: number | string, url?: string) =>
@@ -173,7 +174,10 @@ export function getCookieParser(req: IncomingMessage): {
  * @param res ServerResponse object
  * @param statusCode `HTTP` status code of response
  */
-export function sendStatusCode<IRes extends IApiResponse>(res: IResponse, statusCode: number): IRes {
+export function sendStatusCode<IRes extends IApiResponse>(
+  res: IResponse,
+  statusCode: number
+): IRes {
   res.statusCode = statusCode;
   return res as IRes;
 }

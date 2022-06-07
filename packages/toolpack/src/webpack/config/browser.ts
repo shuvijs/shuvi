@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import webpack from 'webpack';
-import WebpackChain from 'webpack-chain';
+import * as crypto from 'crypto';
+import * as webpack from 'webpack';
+import WebpackChain = require('webpack-chain');
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';

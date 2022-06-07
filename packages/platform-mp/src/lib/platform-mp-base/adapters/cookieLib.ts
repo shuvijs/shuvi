@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro';
+import * as Taro from '@tarojs/taro';
 
 // TODO: isExpired
 function isExpired(_expires: any) {

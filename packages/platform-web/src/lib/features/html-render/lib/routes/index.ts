@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { IUserRouteConfig, IRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { getExports } from '@shuvi/service/lib/project/file-utils';

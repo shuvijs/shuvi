@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { rankRouteBranches, IRouteRecord } from '@shuvi/router';
 export interface IApiRouteConfig {
   path: string;

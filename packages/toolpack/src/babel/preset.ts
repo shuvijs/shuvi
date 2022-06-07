@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { PluginItem } from '@babel/core';
 
 const env = process.env.NODE_ENV;

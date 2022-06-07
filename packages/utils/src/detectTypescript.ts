@@ -1,6 +1,6 @@
-import resolve from 'resolve';
-import path from 'path';
-import fs from 'fs';
+import * as resolve from 'resolve';
+import * as path from 'path';
+import * as fs from 'fs';
 
 interface TypeScriptInfo {
   useTypeScript: boolean;
@@ -16,7 +16,7 @@ export function getTypeScriptInfo(projectRoot: string): TypeScriptInfo {
     let typeScriptPath;
     try {
       typeScriptPath = resolve.sync('typescript', {
-        basedir: projectRoot,
+        basedir: projectRoot
       });
     } catch (_) {}
     const tsConfigPath = path.join(projectRoot, 'tsconfig.json');
@@ -25,7 +25,7 @@ export function getTypeScriptInfo(projectRoot: string): TypeScriptInfo {
     );
     info = {
       useTypeScript,
-      ...(useTypeScript === true && { typeScriptPath, tsConfigPath }),
+      ...(useTypeScript === true && { typeScriptPath, tsConfigPath })
     };
   }
 
