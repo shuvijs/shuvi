@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "lib": ["esnext", "DOM"]
+    "lib": ["esnext", "DOM"],
+    "allowSyntheticDefaultImports": false,
   },
   "include": [
     "src"
