@@ -1,8 +1,8 @@
 import { PATH_PREFIX } from '@shuvi/shared/lib/constants';
-
+// URL for static files under the 'dist' directory, e.g. localhost:xxx/_shuvi/static/runtime/react-refresh.js resolve the path to dist/client/runtime/react-refresh.js
 export const PUBLIC_PATH = `${PATH_PREFIX}/`;
-
-export const PUBLIC_ASSET_DIR = '/';
+// URL for static files under the 'public' directory
+export const ASSET_PUBLIC_PATH = '/';
 
 export const BUILD_MANIFEST_PATH = 'build-manifest.json';
 

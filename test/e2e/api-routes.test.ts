@@ -3,7 +3,7 @@ import { AppCtx, launchFixture, resolveFixture } from '../utils';
 import { writeFileSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
 import { waitForResponseChange } from '../utils/wait-for-response-change';
-import { PUBLIC_ASSET_DIR } from '@shuvi/service/lib/constants';
+import { ASSET_PUBLIC_PATH } from '@shuvi/service/lib/constants';
 
 let ctx: AppCtx;
 let stderr = '';
@@ -457,7 +457,7 @@ describe('apiRoutes development', () => {
   });
 
   test('should not match assetPublicPath for static files', async () => {
-    const res = await got.get(ctx.url(`${PUBLIC_ASSET_DIR}/user.json`), {
+    const res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
