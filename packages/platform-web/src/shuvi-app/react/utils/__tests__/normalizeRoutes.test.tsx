@@ -72,10 +72,13 @@ describe('normalizeRoutes', () => {
       }
     ];
 
-    const routes = normalizeRoutes(sampleRoutes, {
-      routeProps: initialPropsHash,
-      appContext: {}
-    })!;
+    const routes = normalizeRoutes(
+      sampleRoutes,
+      {},
+      {
+        routeProps: initialPropsHash
+      }
+    )!;
     let json, app;
 
     // render / page
@@ -141,10 +144,13 @@ describe('normalizeRoutes', () => {
     let app, json;
 
     app = renderRoutes(
-      normalizeRoutes(sampleRoutes, {
-        routeProps: initialPropsHash,
-        appContext: {}
-      }),
+      normalizeRoutes(
+        sampleRoutes,
+        {},
+        {
+          routeProps: initialPropsHash
+        }
+      ),
       {
         route: '/about'
       }
@@ -167,10 +173,13 @@ describe('normalizeRoutes', () => {
     `);
 
     app = renderRoutes(
-      normalizeRoutes(sampleRoutes, {
-        routeProps: initialPropsHash,
-        appContext: {}
-      }),
+      normalizeRoutes(
+        sampleRoutes,
+        {},
+        {
+          routeProps: initialPropsHash
+        }
+      ),
       {
         route: '/about/hi'
       }
@@ -201,10 +210,13 @@ describe('normalizeRoutes', () => {
     `);
 
     app = renderRoutes(
-      normalizeRoutes(sampleRoutes, {
-        routeProps: initialPropsHash,
-        appContext: {}
-      }),
+      normalizeRoutes(
+        sampleRoutes,
+        {},
+        {
+          routeProps: initialPropsHash
+        }
+      ),
       {
         route: '/about/test'
       }
@@ -234,10 +246,13 @@ describe('normalizeRoutes', () => {
 
     // fake route
     json = renderRoutes(
-      normalizeRoutes(sampleRoutes, {
-        routeProps: initialPropsHash,
-        appContext: {}
-      }),
+      normalizeRoutes(
+        sampleRoutes,
+        {},
+        {
+          routeProps: initialPropsHash
+        }
+      ),
       {
         route: '/fake'
       }
@@ -284,10 +299,13 @@ describe('normalizeRoutes', () => {
     let app, json;
 
     app = renderRoutes(
-      normalizeRoutes(sampleRoutes, {
-        routeProps: initialPropsHash,
-        appContext: {}
-      }),
+      normalizeRoutes(
+        sampleRoutes,
+        {},
+        {
+          routeProps: initialPropsHash
+        }
+      ),
       {
         route: '/about/hi/cool/shuvi'
       }
