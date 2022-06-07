@@ -22,7 +22,9 @@ export function createBrowserWebpackChain({
 }: BrowserOptions): WebpackChain {
   const { dev, publicPath, analyze } = baseOptions;
   const chain = baseWebpackChain(baseOptions);
-  const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
+  const { useTypeScript, typeScriptPath, tsConfigPath } = getTypeScriptInfo(
+    baseOptions.projectRoot
+  );
 
   chain.target('web');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
@@ -34,6 +36,29 @@ export function createBrowserWebpackChain({
     '.json',
     '.wasm'
   ]);
+
+  if (useTypeScript) {
+    chain
+      .plugin('private/fork-ts-checker-webpack-plugin')
+      .use(require.resolve('fork-ts-checker-webpack-plugin'), [
+        {
+          typescript: {
+            configFile: tsConfigPath,
+            typeScriptPath,
+            diagnosticOptions: {
+              syntactic: true
+            }
+          },
+          async: dev,
+          logger: {
+            infrastructure: 'silent',
+            issues: 'silent',
+            devServer: false
+          },
+          formatter: 'codeframe'
+        }
+      ]);
+  }
   // if (baseOptions.target) {
   //   chain.resolve
   //     .plugin('private/prefer-resolver-plugin')
