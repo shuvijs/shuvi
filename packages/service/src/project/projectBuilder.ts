@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { getFileManager, FileManager, FileOptions } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { getExportsFromObject, getContentProxyObj } from './file-utils';

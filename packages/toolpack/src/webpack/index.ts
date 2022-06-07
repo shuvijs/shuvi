@@ -1,5 +1,5 @@
 import { join, dirname } from 'path';
-import * as webpack from 'webpack';
+import webpack = require('webpack');
 export { webpack as default };
 /**
  * re-export for shuvi plugin

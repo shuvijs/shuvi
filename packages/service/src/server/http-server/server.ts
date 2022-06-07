@@ -1,7 +1,7 @@
-import http from 'http';
+import * as http from 'http';
 import { parse as parseUrl } from 'url';
 import { parseQuery } from '@shuvi/router';
-import detectPort from 'detect-port';
+import detectPort = require('detect-port');
 import { sendHTML } from '../utils';
 import { getRouter, Router } from './router';
 import {

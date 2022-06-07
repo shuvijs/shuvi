@@ -4,7 +4,8 @@
     "rootDir": "./src",
     "module": "commonjs",
     "outDir": "lib",
-    "lib": ["esnext", "DOM"]
+    "lib": ["esnext", "DOM"],
+    "allowSyntheticDefaultImports": false
   },
   "include": [
     "src"

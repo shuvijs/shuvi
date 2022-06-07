@@ -4,7 +4,7 @@ import {
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
-import WebpackDevMiddleware from 'webpack-dev-middleware';
+import WebpackDevMiddleware = require('webpack-dev-middleware');
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../../../bundler';
 import { Server } from '../../http-server';

@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { FileOptions, FileInternalInstance } from './file';
 import { mount as mountFile } from './mount';
 import { queueJob } from './scheduler';
