@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Provider } from '@shuvi/redox-react';
 import type { IModelManager } from '@shuvi/redox';
 
