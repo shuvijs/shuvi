@@ -1,5 +1,5 @@
 import { createFileWithoutName } from '@shuvi/service/lib/project';
-import path from 'path';
+import * as path from 'path';
 
 const runtimeConfigPath = path.resolve(
   __dirname,

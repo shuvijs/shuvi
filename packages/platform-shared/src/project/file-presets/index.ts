@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { FileOptions } from '@shuvi/service/lib/project';
 import { ProjectContext } from '../projectContext';
 
