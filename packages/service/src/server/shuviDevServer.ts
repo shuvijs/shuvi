@@ -1,10 +1,11 @@
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
 import { IRequestHandlerWithNext } from '../server/http-server';
-import { serveStatic } from './utils';
+import { isStaticFileExist, serveStatic } from './utils';
 import { getDevMiddleware } from './middlewares/dev/devMiddleware';
 import { IServerPluginContext } from './plugin';
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
+import { ASSET_PUBLIC_PATH } from '../constants';
 
 const getPublicDirMiddleware = (
   cliContext: IServerPluginContext
@@ -13,6 +14,8 @@ const getPublicDirMiddleware = (
     let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
     const assetAbsPath = cliContext.resolvePublicFile(path);
+    if (!isStaticFileExist(assetAbsPath)) return next();
+
     let err = null;
     try {
       await serveStatic(req, res, assetAbsPath);
@@ -60,7 +63,7 @@ export class ShuviDevServer extends ShuviServer {
 
     // keep the order
     devMiddleware.apply(server);
-    server.use(`${context.assetPublicPath}:path(.*)`, publicDirMiddleware);
+    server.use(`${ASSET_PUBLIC_PATH}:path(.*)`, publicDirMiddleware);
 
     await this._initMiddlewares();
   }
