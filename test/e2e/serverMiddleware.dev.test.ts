@@ -1,5 +1,6 @@
 import got from 'got';
 import { AppCtx, launchFixture } from '../utils';
+import { ASSET_PUBLIC_PATH } from '@shuvi/service/lib/constants';
 
 let ctx: AppCtx;
 
@@ -108,7 +109,7 @@ describe('serverMiddleware development', () => {
   });
 
   test('should not match assetPublicPath for static files', async () => {
-    const res = await got.get(ctx.url('/_shuvi/user.json'), {
+    const res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
