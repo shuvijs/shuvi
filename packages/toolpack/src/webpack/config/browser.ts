@@ -44,6 +44,7 @@ export function createBrowserWebpackChain({
         {
           typescript: {
             configFile: tsConfigPath,
+            mode: 'write-references',
             typeScriptPath,
             diagnosticOptions: {
               syntactic: true
