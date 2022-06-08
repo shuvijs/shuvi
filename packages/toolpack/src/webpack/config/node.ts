@@ -22,6 +22,7 @@ export function createNodeWebpackChain({
   const extensions = [
     ...(useTypeScript ? ['.tsx', '.ts'] : []),
     '.js',
+    '.cjs',
     '.mjs',
     '.jsx',
     '.json',

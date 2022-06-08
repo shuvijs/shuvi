@@ -423,7 +423,7 @@ export default abstract class PlatformMpBase {
         config.merge({
           entry,
           resolve: {
-            extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.vue'],
+            extensions: ['.js', '.jsx', '.ts', '.tsx', 'cjs', '.mjs'],
             mainFields: ['jsnext:main', 'browser', 'module', 'main'],
             symlinks: true,
             alias: {
