@@ -26,7 +26,9 @@
         ".shuvi/runtime/*"
       ]
     },
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".shuvi/catch/tsconfig.tsbuildinfo"
   },
   "exclude": [
     "node_modules"

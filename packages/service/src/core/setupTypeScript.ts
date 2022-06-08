@@ -36,6 +36,15 @@ export async function setupTypeScript(paths: IPaths) {
         ]
       };
 
+      appTsConfig.compilerOptions.tsBuildInfoFile =
+        path.relative(
+          path.resolve(
+            paths.rootDir,
+            appTsConfig.compilerOptions.baseUrl || parsedCompilerOptions.baseUrl
+          ),
+          paths.catchDir
+        ) + '/tsconfig.tsbuildinfo';
+
       // tsconfig will have the merged "include" and "exclude" by this point
       if (parsedTsConfig.exclude == null) {
         appTsConfig.exclude = ['node_modules'];
