@@ -49,7 +49,7 @@ afterEach(async () => {
 
 describe('createFile', () => {
   describe('should work with watching files', () => {
-    describe('should work without using context', () => {
+    describe('should work without using context, and sync content', () => {
       test('should update when single dependency file update', async () => {
         const fileManager = getFileManager({ watch: true });
         fileManager.addFile(
@@ -135,6 +135,104 @@ describe('createFile', () => {
         fs.writeFileSync(daa, 'daaa\n', 'utf8');
         fs.writeFileSync(dba, 'dba\n', 'utf8');
         await wait(500);
+        expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe(
+          'aa\nbb\ncc\ndaaa\ndab\ndba\n'
+        );
+        await fileManager.unmount();
+        await safeDelete(unexistedFileC);
+        await safeDelete(dba);
+        fs.writeFileSync(daa, 'daa\n', 'utf8');
+      });
+    });
+
+    describe('should work without using context, and async content', () => {
+      test('should update when single dependency file update', async () => {
+        const fileManager = getFileManager({ watch: true });
+        fileManager.addFile(
+          createFile({
+            name: FILE_RESULT,
+            content() {
+              return fs.readFileSync(fileA, 'utf8') as string;
+            },
+            dependencies: fileA
+          })
+        );
+        await fileManager.mount(resolveFixture('createFile'));
+        expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('a\n');
+        fs.writeFileSync(fileA, 'aa\n', 'utf8');
+        await wait(500);
+        expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('aa\n');
+        await fileManager.unmount();
+      });
+
+      test('should update when multiple dependency files update', async () => {
+        const fileManager = getFileManager({ watch: true });
+        const dependencies = [fileA, fileB, unexistedFileC];
+        fileManager.addFile(
+          createFile({
+            name: FILE_RESULT,
+            async content() {
+              await wait(1000);
+              let content = '';
+              dependencies.forEach(file => {
+                if (fs.existsSync(file)) {
+                  content += fs.readFileSync(file, 'utf8');
+                }
+              });
+              return content;
+            },
+            dependencies
+          })
+        );
+        await fileManager.mount(resolveFixture('createFile'));
+        expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('a\nb\n');
+        fs.writeFileSync(fileA, 'aa\n', 'utf8');
+        fs.writeFileSync(fileB, 'bb\n', 'utf8');
+        await wait(1200);
+        expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('aa\nbb\n');
+        fs.writeFileSync(unexistedFileC, 'cc\n', 'utf8');
+        await wait(1200);
+        expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('aa\nbb\ncc\n');
+        await fileManager.unmount();
+        await safeDelete(unexistedFileC);
+      });
+
+      test('should update when dependency files and directories update', async () => {
+        const fileManager = getFileManager({ watch: true });
+        const dependencies = [
+          fileA,
+          fileB,
+          unexistedFileC,
+          directoryA,
+          directoryB
+        ];
+        fileManager.addFile(
+          createFile({
+            name: FILE_RESULT,
+            async content() {
+              await wait(1000);
+              let content = '';
+              const allFiles = getAllFiles(dependencies);
+              allFiles.forEach(file => {
+                if (fs.existsSync(file)) {
+                  content += fs.readFileSync(file, 'utf8');
+                }
+              });
+              return content;
+            },
+            dependencies
+          })
+        );
+        await fileManager.mount(resolveFixture('createFile'));
+        expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe(
+          'a\nb\ndaa\ndab\n'
+        );
+        fs.writeFileSync(fileA, 'aa\n', 'utf8');
+        fs.writeFileSync(fileB, 'bb\n', 'utf8');
+        fs.writeFileSync(unexistedFileC, 'cc\n', 'utf8');
+        fs.writeFileSync(daa, 'daaa\n', 'utf8');
+        fs.writeFileSync(dba, 'dba\n', 'utf8');
+        await wait(1200);
         expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe(
           'aa\nbb\ncc\ndaaa\ndab\ndba\n'
         );

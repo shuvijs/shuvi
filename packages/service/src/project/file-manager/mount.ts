@@ -18,12 +18,12 @@ export function mount(
   const { content, name: fsPath, setupState } = instance;
   const dir = path.dirname(fsPath);
   let fd: any;
-  const componentEffect = () => {
+  const componentEffect = async () => {
     // mount
     if (!instance.isMounted) {
       fse.ensureDirSync(dir);
       fd = fse.openSync(fsPath, 'w+');
-      const fileContent = content(context, setupState);
+      const fileContent = await content(context, setupState);
       if (fileContent != undefined) {
         fse.writeSync(fd, fileContent, 0);
       }
@@ -37,14 +37,17 @@ export function mount(
       defer.resolve(instance);
       return;
     }
-    const fileContent = content(context, setupState);
+    const fileContent = await content(context, setupState);
     fse.ftruncateSync(fd, 0);
     fse.writeSync(fd, fileContent, 0);
   };
   if (watch) {
     instance.update = effect(componentEffect, {
       scheduler: queueJob,
-      allowRecurse: true
+      allowRecurse: true,
+      onStop: () => {
+        console.log('stopped');
+      }
       // lazy: true,
     });
   } else {

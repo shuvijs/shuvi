@@ -18,7 +18,7 @@ export interface FileOptionsBase<Data, Method extends MethodOptions>
   content: (
     this: CreateFilePublicInstance<Data, Method>,
     ctx: any
-  ) => string | null | undefined;
+  ) => Promise<string> | string | null | undefined;
 
   // state
   // Limitation: we cannot expose RawBindings on the `this` context for data
