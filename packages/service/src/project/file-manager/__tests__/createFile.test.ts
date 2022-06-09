@@ -172,7 +172,7 @@ describe('createFile', () => {
           createFile({
             name: FILE_RESULT,
             async content() {
-              await wait(1000);
+              await wait(100);
               let content = '';
               dependencies.forEach(file => {
                 if (fs.existsSync(file)) {
@@ -188,10 +188,10 @@ describe('createFile', () => {
         expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('a\nb\n');
         fs.writeFileSync(fileA, 'aa\n', 'utf8');
         fs.writeFileSync(fileB, 'bb\n', 'utf8');
-        await wait(1200);
+        await wait(800);
         expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('aa\nbb\n');
         fs.writeFileSync(unexistedFileC, 'cc\n', 'utf8');
-        await wait(1200);
+        await wait(800);
         expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe('aa\nbb\ncc\n');
         await fileManager.unmount();
         await safeDelete(unexistedFileC);
@@ -210,7 +210,7 @@ describe('createFile', () => {
           createFile({
             name: FILE_RESULT,
             async content() {
-              await wait(1000);
+              await wait(100);
               let content = '';
               const allFiles = getAllFiles(dependencies);
               allFiles.forEach(file => {
@@ -232,7 +232,7 @@ describe('createFile', () => {
         fs.writeFileSync(unexistedFileC, 'cc\n', 'utf8');
         fs.writeFileSync(daa, 'daaa\n', 'utf8');
         fs.writeFileSync(dba, 'dba\n', 'utf8');
-        await wait(1200);
+        await wait(800);
         expect(fs.readFileSync(file(FILE_RESULT), 'utf8')).toBe(
           'aa\nbb\ncc\ndaaa\ndab\ndba\n'
         );
