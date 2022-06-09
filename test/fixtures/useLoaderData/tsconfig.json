@@ -4,11 +4,7 @@
     "module": "esnext",
     "jsx": "preserve",
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,22 +15,13 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "@shuvi/runtime": [
-        ".shuvi/runtime"
-      ],
-      "@shuvi/runtime/*": [
-        ".shuvi/runtime/*"
-      ]
+      "@shuvi/runtime": [".shuvi/runtime"],
+      "@shuvi/runtime/*": [".shuvi/runtime/*"]
     },
     "strictNullChecks": true,
     "incremental": true,
-    "tsBuildInfoFile": ".shuvi/catch/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": ".shuvi/cache/tsconfig.tsbuildinfo"
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "src",
-    ".shuvi/app/types-plugin-extended.d.ts"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["src", ".shuvi/app/types-plugin-extended.d.ts"]
 }
