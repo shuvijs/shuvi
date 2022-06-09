@@ -45,9 +45,6 @@ export function mount(
     instance.update = effect(componentEffect, {
       scheduler: queueJob,
       allowRecurse: true,
-      onStop: () => {
-        console.log('stopped');
-      }
       // lazy: true,
     });
   } else {
