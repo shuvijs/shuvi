@@ -207,7 +207,7 @@ export interface IServerContext extends IContext {
   req: IncomingMessage & {
     [x: string]: any;
   };
-  statusCode?: number;
+  //statusCode?: number;
 }
 
 export interface IClientContext extends IContext {}
