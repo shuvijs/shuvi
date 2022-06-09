@@ -79,9 +79,6 @@ export interface IPaths {
   apisDir: string;
 
   publicDir: string;
-
-  // cache dir
-  cacheDir: string;
 }
 
 export type IPluginConfig =
