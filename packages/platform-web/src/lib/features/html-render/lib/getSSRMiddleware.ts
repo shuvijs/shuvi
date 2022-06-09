@@ -8,24 +8,21 @@ import {
 import { sendHTML } from '@shuvi/service/lib/server/utils';
 
 import { renderToHTML } from './renderToHTML';
-import { IRenderResultRedirect, isRedirect } from './renderer';
+import { isRedirect } from './renderer';
 
 function initServerRender(serverPluginContext: IServerPluginContext) {
   return async function (
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<string | null> {
-    const onRedirect = (redirect: IRenderResultRedirect) => {
-      res.writeHead(redirect.status ?? 302, { Location: redirect.path });
-      res.end();
-    };
     const { result, error } = await renderToHTML({
       req: req as IRequest,
       serverPluginContext
     });
 
     if (isRedirect(result)) {
-      onRedirect(result);
+      res.writeHead(result.status ?? 302, { Location: result.path });
+      res.end();
       return null;
     }
 
