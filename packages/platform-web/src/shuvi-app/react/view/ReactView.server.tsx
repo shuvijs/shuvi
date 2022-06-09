@@ -9,7 +9,6 @@ import {
   IRouteComponent,
   IHtmlTag,
   IAppRouteConfig,
-  errorModel
 } from '@shuvi/platform-shared/esm/runtime';
 import loaders from '@shuvi/app/files/loaders-build';
 import Loadable, { LoadableContext } from '../loadable';
@@ -127,13 +126,6 @@ export class ReactServerView implements IReactServerView {
       return {
         redirect: redirector.state
       };
-    }
-
-    const errorStore = modelManager.get(errorModel);
-    const errorState = errorStore.$state();
-
-    if (errorState.hasError) {
-      appContext.statusCode = errorState.errorCode;
     }
 
     const loadableModules: string[] = [];

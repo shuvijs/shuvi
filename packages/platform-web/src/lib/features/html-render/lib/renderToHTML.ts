@@ -1,6 +1,8 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
 import { Renderer, isRedirect, IRenderResultRedirect } from './renderer';
+import { errorModel, IPageError } from "@shuvi/platform-shared/lib/runtime";
+
 
 export async function renderToHTML({
   req,
@@ -10,8 +12,9 @@ export async function renderToHTML({
   req: IRequest;
   serverPluginContext: IServerPluginContext;
   onRedirect?(redirect: IRenderResultRedirect): void;
-}): Promise<{ html: string | null; appContext: any }> {
+}): Promise<{ html: string | null; appContext: any;error?:IPageError }> {
   let html: null | string = null;
+  let error:IPageError | undefined;
   const renderer = new Renderer({ serverPluginContext });
   const { application } = server;
   const app = application.createApp({
@@ -23,6 +26,8 @@ export async function renderToHTML({
         appContext,
         modelManager
       });
+      const errorStore = modelManager.get(errorModel);
+      error = errorStore.$state();
 
       if (isRedirect(result)) {
         onRedirect && onRedirect(result);
@@ -42,5 +47,5 @@ export async function renderToHTML({
     await app.dispose();
   }
 
-  return { appContext, html };
+  return { appContext, html, error };
 }

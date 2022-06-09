@@ -14,7 +14,7 @@ function initServerRender(serverPluginContext: IServerPluginContext) {
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<string | null> {
-    const { html, appContext } = await renderToHTML({
+    const { html,error } = await renderToHTML({
       req: req as IRequest,
       serverPluginContext,
       onRedirect(redirect) {
@@ -23,10 +23,9 @@ function initServerRender(serverPluginContext: IServerPluginContext) {
       }
     });
 
-    // set 404 statusCode
-    if (appContext.statusCode) {
-      res.statusCode = appContext.statusCode;
-    } else {
+    if(error?.hasError && typeof error.errorCode === 'number') {
+      res.statusCode = error.errorCode;
+    }else {
       res.statusCode = 200;
     }
 
