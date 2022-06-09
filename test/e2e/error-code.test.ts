@@ -13,6 +13,12 @@ describe('error code test', function () {
     await page.waitForSelector("#__APP")
   })
 
+
+  afterAll(async () => {
+    await page.close();
+    await ctx.close();
+  })
+
   it('http status code is 404', function () {
     expect(page.statusCode).toBe(404);
   });
@@ -27,6 +33,5 @@ describe('error code test', function () {
     expect(text).toBe("page not found");
 
   })
-
 
 });
