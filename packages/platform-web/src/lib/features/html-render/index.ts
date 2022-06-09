@@ -152,8 +152,8 @@ const core = createPlugin({
       'files',
       'loaders.js'
     );
-    const loadersBuildFile = createFile({
-      name: 'loaders-build.js',
+    const pageLoadersFile = createFile({
+      name: 'page-loaders.js',
       content: async () => {
         if (fs.existsSync(loadersFileName)) {
           return await buildToString(loadersFileName);
@@ -168,7 +168,7 @@ const core = createPlugin({
       routesFile,
       userServerFile,
       loadersFile,
-      loadersBuildFile
+      pageLoadersFile
     ];
   },
   addRuntimeService: () => [

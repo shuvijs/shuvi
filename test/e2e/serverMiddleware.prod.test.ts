@@ -104,7 +104,7 @@ describe('serverMiddleware production', () => {
   });
 
   test('should not match assetPublicPath for static files', async () => {
-    const res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}/user.json`), {
+    const res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);

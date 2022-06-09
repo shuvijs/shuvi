@@ -1,5 +1,6 @@
 import got from 'got';
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, launchFixture, resolveFixture } from '../utils';
+import * as fse from 'fs-extra';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -14,6 +15,14 @@ describe('TypesSript Suppport', () => {
   afterAll(async () => {
     await page.close();
     await ctx.close();
+  });
+
+  test('tsconfig.tsbuildinfo should be created', async () => {
+    expect(async () => {
+      await fse.readFile(
+        resolveFixture('typescript/.shuvi/cache/tsconfig.tsbuildinfo')
+      );
+    }).not.toThrow();
   });
 
   test('Page /', async () => {

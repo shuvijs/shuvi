@@ -3,13 +3,9 @@ const { shuvi } = require('shuvi');
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
-const config = process.env.CONFIGOVERRIDES
-  ? JSON.parse(process.env.CONFIGOVERRIDES)
-  : {};
 const app = shuvi({
   dev,
-  cwd: __dirname,
-  config
+  cwd: __dirname
 });
 
 app.prepare().then(() => {

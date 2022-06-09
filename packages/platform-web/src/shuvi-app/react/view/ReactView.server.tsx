@@ -10,7 +10,7 @@ import {
   IHtmlTag,
   IAppRouteConfig,
 } from '@shuvi/platform-shared/esm/runtime';
-import loaders from '@shuvi/app/files/loaders-build';
+import loaders from '@shuvi/app/files/page-loaders';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
