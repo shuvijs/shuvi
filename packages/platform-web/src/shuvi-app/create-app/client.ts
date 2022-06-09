@@ -93,7 +93,7 @@ if (module.hot) {
       '@shuvi/app/entry',
       '@shuvi/platform-shared/esm/runtime/platform',
       '@shuvi/app/files/routes',
-      '@shuvi/app/files/loaders-build',
+      '@shuvi/app/files/page-loaders',
       '@shuvi/app/user/runtime'
     ],
     async () => {

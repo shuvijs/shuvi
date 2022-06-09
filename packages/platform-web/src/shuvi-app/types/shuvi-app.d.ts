@@ -34,7 +34,7 @@ declare module '@shuvi/app/files/user/server' {
   export default server;
 }
 
-declare module '@shuvi/app/files/loaders-build' {
+declare module '@shuvi/app/files/page-loaders' {
   import { IRouteComponentContext } from '@shuvi/platform-shared/lib/runtime';
   import { LoaderFunction } from '@shuvi/platform-web/shuvi-app/react/loader/types';
   // type LoaderFunction = (IRouteComponentContext) => Promise<any>

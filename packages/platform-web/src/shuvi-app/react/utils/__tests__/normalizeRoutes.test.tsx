@@ -11,7 +11,7 @@ import { normalizeRoutes } from '../router';
 
 import { wait } from 'shuvi-test-utils';
 
-jest.mock('@shuvi/app/files/loaders-build', () => ({}), { virtual: true });
+jest.mock('@shuvi/app/files/page-loaders', () => ({}), { virtual: true });
 
 const createDummyComponent = (text: string): React.FC => {
   const Comp = (props: any) => {
