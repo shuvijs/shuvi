@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import puppeteer, { ConsoleMessage, WaitForOptions } from 'puppeteer-core';
-import qs from 'querystring';
+import * as qs from 'querystring';
 import ChromeDetector from './chrome';
 
 export interface Page extends puppeteer.Page {

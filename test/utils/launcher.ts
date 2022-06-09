@@ -1,15 +1,15 @@
-import qs from 'querystring';
+import * as qs from 'querystring';
 import { UserConfig } from '@shuvi/service';
 import { getApi, createShuviServer, IShuviServer } from '@shuvi/service';
 import { getPlatform } from 'shuvi/lib/utils';
 import { loadFixture, resolveFixture } from './fixture';
-import { build } from './build';
+import { shuviSync, shuvi, build } from './shuvi';
 import { findPort } from './findPort';
 import Browser from './browser';
-import { spawn, sync } from 'cross-spawn';
+import { spawn } from 'cross-spawn';
 import { SpawnOptions, ChildProcess } from 'child_process';
-import rimraf from 'rimraf';
-import Path from 'path';
+import * as rimraf from 'rimraf';
+import * as path from 'path';
 
 export interface AppCtx {
   browser: Browser;
@@ -24,11 +24,11 @@ async function createTestContext(app: IShuviServer): Promise<AppCtx> {
   await browser.start();
 
   const url = (route: string, query?: Record<string, any>) => {
-    const path = 'http://localhost:' + port + route;
+    const urlPath = 'http://localhost:' + port + route;
     if (query) {
-      return path + '?' + qs.stringify(query);
+      return urlPath + '?' + qs.stringify(query);
     } else {
-      return path;
+      return urlPath;
     }
   };
 
@@ -39,6 +39,22 @@ async function createTestContext(app: IShuviServer): Promise<AppCtx> {
       await Promise.all([app.close(), browser.close()]);
     }
   };
+}
+
+export function buildFixture(
+  fixture: string,
+  configOverrides: UserConfig = {},
+  spawnOptions: SpawnOptions = {}
+) {
+  return shuviSync(
+    'build',
+    [
+      path.isAbsolute(fixture) ? fixture : resolveFixture(fixture),
+      '--config-overrides',
+      JSON.stringify(configOverrides)
+    ],
+    spawnOptions
+  );
 }
 
 export async function launchFixtureAtCurrentProcess(
@@ -81,7 +97,7 @@ interface IHandleStdoutStderr {
 }
 
 async function launchShuvi(
-  path: string,
+  projectPath: string,
   port: number,
   isDev: boolean,
   configOverrides: UserConfig,
@@ -92,50 +108,38 @@ async function launchShuvi(
     // dynamic NODE_SERVER like EXPRESS, KOA default SHUVI
     const NODE_SERVER = process.env.NODE_SERVER;
     const spawnOptions: SpawnOptions = {
-      env: {
-        NODE_ENV: isDev ? 'development' : 'production',
-        PATH: process.env.PATH
-      }
+      env: {} as any
     };
     if (envOverrides) {
       Object.assign(spawnOptions.env, envOverrides);
     }
-    const cliAgent = require.resolve('shuvi/lib/agent');
-    const getCliCommand = (command: string) =>
-      require.resolve('shuvi/lib/cmds/' + command);
     // At first, build when production mode
     if (!isDev) {
-      sync('node', [cliAgent, getCliCommand('build'), path], spawnOptions);
+      buildFixture(projectPath, configOverrides, spawnOptions);
     }
     let shuviProcess: ChildProcess;
     if (NODE_SERVER) {
       let NODE_SERVER_SOURCE;
       try {
-        NODE_SERVER_SOURCE = Path.resolve(
-          path,
+        NODE_SERVER_SOURCE = path.resolve(
+          projectPath,
           NODE_SERVER.toLocaleLowerCase()
         );
       } catch (error) {
         throw error;
-        console.error(
-          'can not find custom server js file on fixture test path'
-        );
       }
 
       shuviProcess = spawn('node', [NODE_SERVER_SOURCE], {
         env: {
           ...spawnOptions.env,
-          PORT: String(port),
-          CONFIGOVERRIDES: JSON.stringify(configOverrides)
+          PORT: String(port)
         }
       } as SpawnOptions);
     } else {
-      shuviProcess = spawn(
-        'node',
+      shuviProcess = shuvi(
+        isDev ? 'dev' : 'serve',
         [
-          cliAgent,
-          getCliCommand(isDev ? 'dev' : 'serve'),
-          path,
+          projectPath,
           '--port',
           String(port),
           '--config-overrides',
@@ -176,13 +180,13 @@ export async function launchFixture(
   isDev: boolean = true,
   handleStdoutStderr: IHandleStdoutStderr = {}
 ) {
-  const path = resolveFixture(name);
+  const projectPath = resolveFixture(name);
   // remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect
   rimraf.sync(resolveFixture(name, '.shuvi'));
   rimraf.sync(resolveFixture(name, 'dist'));
   const port = await findPort();
   const shuviProcess = await launchShuvi(
-    path,
+    projectPath,
     port,
     isDev,
     configOverrides,
@@ -192,11 +196,11 @@ export async function launchFixture(
   const browser = new Browser();
   await browser.start();
   const url = (route: string, query?: Record<string, any>) => {
-    const path = 'http://localhost:' + port + route;
+    const urlPath = 'http://localhost:' + port + route;
     if (query) {
-      return path + '?' + qs.stringify(query);
+      return urlPath + '?' + qs.stringify(query);
     } else {
-      return path;
+      return urlPath;
     }
   };
   return {
