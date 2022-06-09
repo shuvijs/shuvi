@@ -1,6 +1,6 @@
-import path from 'path';
-import fs from 'fs';
-import fse from 'fs-extra';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as fse from 'fs-extra';
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import Browser, { Page } from './browser';
 
@@ -8,7 +8,7 @@ export { Browser, Page };
 export * from './fixture';
 export * from './findPort';
 export * from './launcher';
-export * from './build';
+export * from './shuvi';
 
 export function wait(timeout: number) {
   return new Promise(resolve => setTimeout(resolve, timeout));

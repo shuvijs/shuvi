@@ -6,10 +6,6 @@
     "url": "git+https://github.com/shuvijs/shuvi.git",
     "directory": "test"
   },
-  "scripts": {
-    "jest": "jest",
-    "test": "NODE_OPTIONS=--max_old_space_size=4096 jest test/e2e --runInBand"
-  },
   "author": "liximomo",
   "license": "MIT",
   "devDependencies": {
