@@ -20,7 +20,7 @@ describe('TypesSript Suppport', () => {
   test('tsconfig.tsbuildinfo should be created', async () => {
     expect(async () => {
       await fse.readFile(
-        resolveFixture('typescript/.shuvi/catch/tsconfig.tsbuildinfo')
+        resolveFixture('typescript/.shuvi/cache/tsconfig.tsbuildinfo')
       );
     }).not.toThrow();
   });

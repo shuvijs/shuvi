@@ -42,7 +42,7 @@ export async function setupTypeScript(paths: IPaths) {
             paths.rootDir,
             appTsConfig.compilerOptions.baseUrl || parsedCompilerOptions.baseUrl
           ),
-          paths.catchDir
+          paths.cacheDir
         ) + '/tsconfig.tsbuildinfo';
 
       // tsconfig will have the merged "include" and "exclude" by this point

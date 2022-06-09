@@ -25,6 +25,6 @@ export function getPaths(opts: IPathsOpts): IPaths {
     resources: toAbsolute(`.${NAME}/resources/index.js`),
     buildDir: toAbsolute(outputPath),
     publicDir: toAbsolute(publicDir),
-    catchDir: toAbsolute(`.${NAME}/catch`)
+    cacheDir: toAbsolute(`.${NAME}/cache`)
   };
 }

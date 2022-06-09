@@ -80,8 +80,8 @@ export interface IPaths {
 
   publicDir: string;
 
-  // catch dir
-  catchDir: string;
+  // cache dir
+  cacheDir: string;
 }
 
 export type IPluginConfig =

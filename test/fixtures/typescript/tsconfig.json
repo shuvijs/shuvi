@@ -18,9 +18,7 @@
       "@shuvi/runtime": [".shuvi/runtime"],
       "@shuvi/runtime/*": [".shuvi/runtime/*"]
     },
-    "strictNullChecks": true,
-    "incremental": true,
-    "tsBuildInfoFile": ".shuvi/catch/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": ".shuvi/cache/tsconfig.tsbuildinfo"
   },
   "exclude": ["node_modules"],
   "include": ["src", ".shuvi/app/types-plugin-extended.d.ts"]
