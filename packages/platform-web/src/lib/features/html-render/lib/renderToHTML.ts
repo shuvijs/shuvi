@@ -25,8 +25,10 @@ export async function renderToHTML({
         appContext,
         modelManager
       });
-      const errorStore = modelManager.get(errorModel);
-      error = errorStore.$state();
+      const errorState = modelManager.get(errorModel).$state();
+      if (typeof errorState.errorCode === 'number') {
+        error = errorState;
+      }
     },
     req
   });
