@@ -8,7 +8,8 @@ import {
   getFirstModuleExport,
   getAllFiles
 } from '@shuvi/service/lib/project/file-utils';
-import { build } from '@shuvi/toolpack/lib/utils/build-loaders';
+import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
+import * as fs from 'fs';
 import * as path from 'path';
 import { extendedHooks } from './hooks';
 import {
@@ -146,16 +147,29 @@ const core = createPlugin({
       },
       dependencies: serverCandidates
     });
+    const loadersFileName = path.join(
+      context.paths.appDir,
+      'files',
+      'loaders.js'
+    );
+    const loadersBuildFile = createFile({
+      name: 'loaders-build.js',
+      content: async () => {
+        if (fs.existsSync(loadersFileName)) {
+          return await buildToString(loadersFileName);
+        }
+        return '';
+      },
+      dependencies: [paths.pagesDir, loadersFileName]
+    });
     return [
+      userDocumentFile,
       routerConfigFile,
       routesFile,
       userServerFile,
-      userDocumentFile,
-      loadersFile
+      loadersFile,
+      loadersBuildFile
     ];
-  },
-  afterShuviAppBuild: async context => {
-    await build(path.join(context.paths.appDir, 'files'), context.mode);
   },
   addRuntimeService: () => [
     {
