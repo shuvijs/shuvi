@@ -1855,10 +1855,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@binance/mp-components@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@binance/mp-components/-/mp-components-1.0.1.tgz#d0a2322ffb3ffaeb2c482dc88e0a9817fa9fdb6b"
-  integrity sha512-lAO4a0v7/1Do97+PnXnSX++HyGPOAJKd8zqFz5VoQMwqoNDWkfP2N9FqPE2hEq8Gd5J3ZiPhfabSff+yx6Et9Q==
+"@binance/mp-components@^2.0.5":
+  version "2.0.10"
+  resolved "https://npm-registry.toolsfdg.net/@binance%2fmp-components/-/mp-components-2.0.10.tgz#358843612da8f0184a88087dca30301f834ac390"
+  integrity sha512-u1JjJIJYw/OtIYr2baAkAb4iEKtSbIvi7jzYvu3UbonXjizcLYH/wV/6V81j84UPNouFS23U9CxfRghcWyiHAQ==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"

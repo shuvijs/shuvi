@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@binance/mp-components": "^1.0.1",
+    "@binance/mp-components": "^2.0.5",
     "@shuvi/app": "0.0.1-pre.10",
     "@shuvi/platform-core": "0.0.1-pre.10",
     "@shuvi/router": "0.0.1-pre.10",
