@@ -1,8 +1,10 @@
 import * as crypto from 'crypto';
 import * as webpack from 'webpack';
+import * as path from 'path';
 import WebpackChain = require('webpack-chain');
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
+import { NAME } from '@shuvi/shared/lib/constants';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
 import { baseWebpackChain, BaseOptions } from './base';
@@ -44,9 +46,20 @@ export function createBrowserWebpackChain({
         {
           typescript: {
             configFile: tsConfigPath,
+            mode: 'write-references',
             typeScriptPath,
             diagnosticOptions: {
               syntactic: true
+            },
+            configOverwrite: {
+              compilerOptions: {
+                incremental: true,
+                tsBuildInfoFile: path.resolve(
+                  baseOptions.projectRoot,
+                  `.${NAME}/cache`,
+                  'tsconfig.tsbuildinfo'
+                )
+              }
             }
           },
           async: dev,
