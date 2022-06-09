@@ -5,7 +5,6 @@ import WebpackChain = require('webpack-chain');
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { NAME } from '@shuvi/shared/lib/constants';
-// import { getPaths } from '@shuvi/service/lib/core/paths';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
 import { baseWebpackChain, BaseOptions } from './base';
