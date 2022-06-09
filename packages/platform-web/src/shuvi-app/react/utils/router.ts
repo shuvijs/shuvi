@@ -10,7 +10,7 @@ import {
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
-import loadersBuild from '@shuvi/app/files/loaders-build';
+import pageLoaders from '@shuvi/app/files/page-loaders';
 import { getLoaderManager } from '../loader/loaderManager';
 const isServer = typeof window === 'undefined';
 
@@ -24,7 +24,7 @@ export function resetHydratedState() {
   hydrated = {};
 }
 
-let loaders = loadersBuild;
+let loaders = pageLoaders;
 
 export function normalizeRoutes(
   routes: IAppRouteConfig[] | undefined,
@@ -156,7 +156,7 @@ export function normalizeRoutes(
 }
 
 if (module.hot) {
-  module.hot.accept('@shuvi/app/files/loaders-build', () => {
-    loaders = require('@shuvi/app/files/loaders-build').default;
+  module.hot.accept('@shuvi/app/files/page-loaders', () => {
+    loaders = require('@shuvi/app/files/page-loaders').default;
   });
 }

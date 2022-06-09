@@ -23,7 +23,7 @@ export async function build(dir: string, mode: string) {
     external: ['react', '@shuvi/*'],
     pure: ['loader'],
     treeShaking: true,
-    outfile: path.join(dir, 'loaders-build.js'),
+    outfile: path.join(dir, 'page-loaders.js'),
     plugins: [
       {
         name: 'imports',
