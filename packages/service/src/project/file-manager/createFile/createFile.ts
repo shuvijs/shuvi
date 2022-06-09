@@ -63,12 +63,13 @@ export function createFile<C = any>(options: any, name?: string): any {
   let initiated = false;
   let watcher: () => void;
   let getWatcher: () => () => void;
-  let instanceThis: any;
+  let currentInstance: any;
   const mounted = function (this: any) {
     watcher = getWatcher();
-    instanceThis = this._;
+    currentInstance = this._;
   };
   const unmounted = () => {
+    currentInstance = null;
     watcher();
   };
   if (typeof options === 'function') {
@@ -144,11 +145,12 @@ export function createFile<C = any>(options: any, name?: string): any {
   let isPromise = false;
   getWatcher = () => {
     return watch({ files, directories, missing }, async () => {
+      if (!currentInstance) return
       if (isPromise) {
-        fileContent = await content(instanceThis?.ctx);
-        instanceThis?.update();
+        fileContent = await content(currentInstance?.ctx);
+        currentInstance?.update();
       } else {
-        fileState.content = content(instanceThis?.ctx) as string;
+        fileState.content = content(currentInstance?.ctx) as string;
       }
     });
   };
