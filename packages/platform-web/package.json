@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-web",
-  "version": "0.0.1-pre.10",
+  "version": "0.0.1-pre.11",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -34,12 +34,12 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/app": "0.0.1-pre.10",
-    "@shuvi/platform-core": "0.0.1-pre.10",
-    "@shuvi/platform-web-react": "0.0.1-pre.10",
-    "@shuvi/router": "0.0.1-pre.10",
-    "@shuvi/service": "0.0.1-pre.10",
-    "@shuvi/shared": "0.0.1-pre.10",
-    "@shuvi/toolpack": "0.0.1-pre.10"
+    "@shuvi/app": "0.0.1-pre.11",
+    "@shuvi/platform-core": "0.0.1-pre.11",
+    "@shuvi/platform-web-react": "0.0.1-pre.11",
+    "@shuvi/router": "0.0.1-pre.11",
+    "@shuvi/service": "0.0.1-pre.11",
+    "@shuvi/shared": "0.0.1-pre.11",
+    "@shuvi/toolpack": "0.0.1-pre.11"
   }
 }

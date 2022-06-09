@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/app",
-  "version": "0.0.1-pre.10",
+  "version": "0.0.1-pre.11",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -12,8 +12,8 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/router": "0.0.1-pre.10",
-    "@shuvi/runtime-core": "0.0.1-pre.10",
-    "@shuvi/service": "0.0.1-pre.10"
+    "@shuvi/router": "0.0.1-pre.11",
+    "@shuvi/runtime-core": "0.0.1-pre.11",
+    "@shuvi/service": "0.0.1-pre.11"
   }
 }
