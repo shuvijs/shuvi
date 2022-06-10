@@ -1,0 +1,1 @@
+export { getRoutesWithLayoutFromDir } from './route';
