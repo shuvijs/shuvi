@@ -6,15 +6,21 @@ import {
   IPluginInstance,
   IPluginHandlers
 } from '@shuvi/hook';
-import { CustomRuntimePluginHooks } from '@shuvi/runtime'
-import { IContext } from './application';
+import { CustomRuntimePluginHooks } from '@shuvi/runtime';
+import { IAppContext } from './applicationTypes';
 
-type AppComponent = unknown
+type AppComponent = unknown;
 
 const init = createAsyncParallelHook<void>();
-const getAppContext = createAsyncSeriesWaterfallHook<IContext, void>();
-const getAppComponent = createAsyncSeriesWaterfallHook<AppComponent, IContext>();
-const getRootAppComponent = createAsyncSeriesWaterfallHook<AppComponent, IContext>();
+const getAppContext = createAsyncSeriesWaterfallHook<IAppContext, void>();
+const getAppComponent = createAsyncSeriesWaterfallHook<
+  AppComponent,
+  IAppContext
+>();
+const getRootAppComponent = createAsyncSeriesWaterfallHook<
+  AppComponent,
+  IAppContext
+>();
 const dispose = createAsyncParallelHook<void>();
 
 const builtinRuntimePluginHooks = {
@@ -25,17 +31,27 @@ const builtinRuntimePluginHooks = {
   dispose
 };
 
-type BuiltinRuntimePluginHooks = typeof builtinRuntimePluginHooks
+type BuiltinRuntimePluginHooks = typeof builtinRuntimePluginHooks;
 
-export const getManager = () => createHookManager<BuiltinRuntimePluginHooks, void, CustomRuntimePluginHooks>(builtinRuntimePluginHooks, false);
+export const getManager = () =>
+  createHookManager<BuiltinRuntimePluginHooks, void, CustomRuntimePluginHooks>(
+    builtinRuntimePluginHooks,
+    false
+  );
 
 export const { createPlugin } = getManager();
 
 export type PluginManager = ReturnType<typeof getManager>;
 
-export type RuntimePluginInstance = IPluginInstance<BuiltinRuntimePluginHooks & CustomRuntimePluginHooks, void>;
+export type RuntimePluginInstance = IPluginInstance<
+  BuiltinRuntimePluginHooks & CustomRuntimePluginHooks,
+  void
+>;
 
-export type IRuntimePluginConstructor = IPluginHandlers<BuiltinRuntimePluginHooks & CustomRuntimePluginHooks, void>
+export type IRuntimePluginConstructor = IPluginHandlers<
+  BuiltinRuntimePluginHooks & CustomRuntimePluginHooks,
+  void
+>;
 
 export type IRuntimeModule = {
   init: IRuntimePluginConstructor['init'];

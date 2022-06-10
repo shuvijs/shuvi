@@ -3,9 +3,9 @@ import {
   getErrorHandler,
   getModelManager,
   errorModel,
-  IRouteComponentContext,
+  IRouteLoaderContext,
   IAppRouteConfig,
-  IClientContext,
+  IClientUserContext,
   IRouteData
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
@@ -14,7 +14,7 @@ import pageLoaders from '@shuvi/app/files/page-loaders';
 import { getLoaderManager } from '../loader/loaderManager';
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = IClientContext;
+export type INormalizeRoutesContext = IClientUserContext;
 
 type IAppRouteWithElement = IAppRouteConfig & { element?: any };
 
@@ -126,7 +126,7 @@ export function normalizeRoutes(
               redirect: redirector.handler,
               error: errorComp.handler,
               appContext
-            } as IRouteComponentContext);
+            } as IRouteLoaderContext);
 
             if (redirector.redirected) {
               next(redirector.state!.path);
