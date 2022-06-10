@@ -1,7 +1,7 @@
-import { IRouteComponentContext } from '@shuvi/platform-shared/lib/runtime';
+import { IRouteLoaderContext } from '@shuvi/platform-shared/lib/runtime';
 
 export type Loader<T = any> = (
-  loaderContenxt: IRouteComponentContext
+  loaderContenxt: IRouteLoaderContext
 ) => Promise<T | null>;
 
 export type LoaderData<T = any> = {

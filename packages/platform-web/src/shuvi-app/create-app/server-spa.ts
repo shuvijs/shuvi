@@ -1,17 +1,16 @@
 import {
   IAppRenderFn,
   getModelManager,
-  Application
+  IApplication
 } from '@shuvi/platform-shared/esm/runtime';
 import platform from '@shuvi/platform-shared/esm/runtime/platform';
-import { IServerContext } from '@shuvi/platform-shared/lib/runtime';
-import { IRouter } from '@shuvi/router';
+import { IServerUserContext } from '@shuvi/platform-shared/lib/runtime';
 import { IRequest } from '@shuvi/service/lib/server';
 
-export function createApp<Router extends IRouter>(options: {
-  render: IAppRenderFn<IServerContext, never>;
+export function createApp(options: {
+  render: IAppRenderFn<IServerUserContext>;
   req: IRequest;
-}): Application<IServerContext, Router, ReturnType<typeof getModelManager>> {
+}): IApplication {
   const { render, req } = options;
   const context = { req };
   const modelManager = getModelManager();

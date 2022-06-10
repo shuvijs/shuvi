@@ -1,92 +1,25 @@
-import { IRouter } from '@shuvi/router';
-import { CustomAppContext } from '@shuvi/runtime';
 import { getManager, PluginManager } from './lifecycle';
 import { setApp } from './appProxy';
 import { IModelManager } from './appStore';
+import {
+  IApplication,
+  IAppContext,
+  IRouter,
+  IAppRenderFn,
+  IApplicationOptions,
+  IRerenderConfig
+} from './applicationTypes';
 
-export interface ApplicationCreater<
-  Context extends IContext,
-  ExtendedOptions extends {} = Context,
-  Router extends IRouter = IRouter,
-  CompType = any
-> {
-  (
-    options: {
-      render: IAppRenderFn<Context, Router, CompType>;
-    } & ExtendedOptions
-  ): IApplication;
-}
-
-export interface IContext extends CustomAppContext {
-  [x: string]: unknown;
-}
-
-export interface IAppComponent {}
-
-export interface IApplication {
-  AppComponent: IAppComponent;
-  router?: IRouter;
-  pluginManager: PluginManager;
-  run(): Promise<{ [k: string]: any }>;
-  rerender(config?: IRerenderConfig): Promise<void>;
-  dispose(): Promise<void>;
-}
-
-export interface IRenderOptions<
-  Context,
-  Router extends IRouter,
-  CompType = any
-> {
-  AppComponent: CompType;
-  router?: Router;
-  appContext: Context;
-  modelManager: IModelManager;
-}
-
-export interface IView<
-  RenderOption extends IRenderOptions<IContext, IRouter> = any,
-  RenderResult = void
-> {
-  renderApp(options: RenderOption): RenderResult;
-}
-
-export interface IAppRenderFn<Context, Router extends IRouter, CompType = any> {
-  (options: IRenderOptions<Context, Router, CompType>): Promise<any>;
-}
-
-export type IRerenderConfig = {
-  AppComponent?: any;
-  UserAppComponent?: any;
-};
-
-export interface IApplicationOptions<
-  Context extends IContext,
-  Router extends IRouter,
-  ModelManager extends IModelManager
-> {
+export class Application<Context extends IAppContext> implements IApplication {
   AppComponent: any;
-  router: Router;
-  context: Context;
-  modelManager: ModelManager;
-  render: IAppRenderFn<Context, Router>;
-  UserAppComponent?: any;
-}
-
-export class Application<
-  Context extends IContext,
-  Router extends IRouter = IRouter,
-  ModelManager extends IModelManager = IModelManager
-> implements IApplication
-{
-  AppComponent: any;
-  router: Router;
+  router: IRouter;
   pluginManager: PluginManager;
   private _context: Context;
   private _modelManager: IModelManager;
-  private _renderFn: IAppRenderFn<Context, Router>;
+  private _renderFn: IAppRenderFn<Context>;
   private _UserAppComponent?: any;
 
-  constructor(options: IApplicationOptions<Context, Router, ModelManager>) {
+  constructor(options: IApplicationOptions<Context>) {
     this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;
@@ -136,7 +69,7 @@ export class Application<
   private async _createApplicationContext() {
     this._context = (await this.pluginManager.runner.getAppContext(
       this._context
-    )) as IContext & Context;
+    )) as IAppContext & Context;
   }
 
   private async _getAppComponent() {

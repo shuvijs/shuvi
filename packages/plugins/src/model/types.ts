@@ -1,5 +1,5 @@
 import { AsyncParallelHook } from '@shuvi/hook';
-import { IContext } from '@shuvi/platform-shared/lib/runtime';
+import { IAppContext } from '@shuvi/platform-shared/lib/runtime';
 import type { IModelManager } from '@shuvi/redox';
 
 declare module '@shuvi/runtime' {
@@ -9,6 +9,6 @@ declare module '@shuvi/runtime' {
   }
 
   export interface CustomServerPluginHooks {
-    pageData: AsyncParallelHook<void, IContext, Record<string, unknown>>;
+    pageData: AsyncParallelHook<void, IAppContext, Record<string, unknown>>;
   }
 }
