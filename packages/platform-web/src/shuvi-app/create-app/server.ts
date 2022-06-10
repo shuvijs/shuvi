@@ -6,10 +6,10 @@ import {
 } from '@shuvi/app/core/platform';
 import {
   IAppRenderFn,
-  IServerContext,
+  IServerUserContext,
   IAppRouteConfig,
   getModelManager,
-  Application
+  IApplication
 } from '@shuvi/platform-shared/esm/runtime';
 import platform from '@shuvi/platform-shared/esm/runtime/platform';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
@@ -19,9 +19,9 @@ export function createApp<
   Router extends IRouter<IAppRouteConfig>,
   CompType
 >(options: {
-  render: IAppRenderFn<IServerContext, Router, CompType>;
+  render: IAppRenderFn<IServerUserContext, CompType>;
   req: IRequest;
-}): Application<IServerContext, Router, ReturnType<typeof getModelManager>> {
+}): IApplication {
   const { req } = options;
   const modelManager = getModelManager();
   const history = createMemoryHistory({

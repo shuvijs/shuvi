@@ -10,7 +10,7 @@ import {
   getErrorHandler,
   IAppState,
   IAppRenderFn,
-  IClientContext,
+  IClientUserContext,
   IAppRouteConfig,
   IAppData
 } from '@shuvi/platform-shared/esm/runtime';
@@ -28,16 +28,12 @@ import { getLoaderManager } from '../react/loader/loaderManager';
 
 declare let __SHUVI: any;
 let app: IApplication;
-let currentAppContext: IClientContext;
+let currentAppContext: IClientUserContext;
 let currentAppRouter: IRouter<IAppRouteConfig>;
 let currentAppData: IAppData;
 
-export function createApp<
-  Router extends IRouter<IAppRouteConfig>,
-  CompType,
-  AppState extends IAppState
->(options: {
-  render: IAppRenderFn<IClientContext, Router, CompType>;
+export function createApp<CompType, AppState extends IAppState>(options: {
+  render: IAppRenderFn<IClientUserContext, CompType>;
   appData: IAppData<any, AppState>;
 }) {
   // app is a singleton in client side
@@ -56,7 +52,7 @@ export function createApp<
     history = createBrowserHistory();
   }
 
-  const context: IClientContext = {};
+  const context: IClientUserContext = {};
 
   // loaderManager is created here and will be cached.
   getLoaderManager(loadersData);
@@ -64,7 +60,7 @@ export function createApp<
   const router = createRouter({
     history,
     routes: getRoutes(routes, context, { routeProps })
-  }) as Router;
+  });
   router.afterEach(_current => {
     if (!_current.matches) {
       getErrorHandler(getModelManager()).errorHandler(
