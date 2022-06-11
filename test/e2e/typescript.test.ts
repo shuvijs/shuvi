@@ -17,14 +17,6 @@ describe('TypesSript Suppport', () => {
     await ctx.close();
   });
 
-  test('tsconfig.tsbuildinfo should be created', async () => {
-    expect(async () => {
-      await fse.readFile(
-        resolveFixture('typescript/.shuvi/cache/tsconfig.tsbuildinfo')
-      );
-    }).not.toThrow();
-  });
-
   test('Page /', async () => {
     page = await ctx.browser.page(ctx.url('/hello'));
 
@@ -44,5 +36,13 @@ describe('TypesSript Suppport', () => {
     let res;
     res = await got.get(ctx.url('/hello?middleware=true'));
     expect(res.body).toStrictEqual('middleware success');
+  });
+
+  test('should enable incremental mode', async () => {
+    expect(async () => {
+      await fse.readFile(
+        resolveFixture('typescript/.shuvi/cache/tsconfig.tsbuildinfo')
+      );
+    }).not.toThrow();
   });
 });

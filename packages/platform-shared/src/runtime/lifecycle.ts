@@ -55,7 +55,6 @@ export type IRuntimePluginConstructor = IPluginHandlers<
 
 export type IRuntimeModule = {
   init: IRuntimePluginConstructor['init'];
-  // getContext
   getAppContext: IRuntimePluginConstructor['getAppContext'];
   getAppComponent: IRuntimePluginConstructor['getAppComponent'];
   getRootAppComponent: IRuntimePluginConstructor['getRootAppComponent'];

@@ -11,8 +11,8 @@ declare module '@shuvi/app/files/routerConfig' {
 }
 
 declare module '@shuvi/app/files/routes' {
-  import { IAppRouteConfigWithPrivateProps } from '@shuvi/platform-shared/lib/runtime';
-  declare const routes: IAppRouteConfigWithPrivateProps[];
+  import { IRawPageRouteRecord } from '@shuvi/platform-shared/lib/runtime';
+  declare const routes: IRawPageRouteRecord[];
   export default routes;
 }
 

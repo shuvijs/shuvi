@@ -4,13 +4,13 @@ import * as querystring from 'querystring';
 import * as cookie from 'cookie';
 const getRawBody = require('raw-body');
 import * as contentType from 'content-type';
-import { IParams, ParsedQuery } from '@shuvi/router';
+import { IURLParams, IURLQuery } from '@shuvi/platform-shared/esm/runtime';
 import { IResponse, IRequest } from '@shuvi/service';
 
 export interface IApiReq {
   pathname: string;
-  query: ParsedQuery;
-  params: IParams;
+  query: IURLQuery;
+  params: IURLParams;
   cookies: { [key: string]: string };
   body?: { [key: string]: any };
 }

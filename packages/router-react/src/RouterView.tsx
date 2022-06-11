@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IParams } from '@shuvi/router';
+import { IParams, IRouteMatch } from '@shuvi/router';
 import { joinPaths } from '@shuvi/router/lib/utils';
 import { useCurrentRoute } from './hooks';
 import { __DEV__ } from './constants';
@@ -7,6 +7,39 @@ import { MatchedRouteContext } from './contexts';
 import { warningOnce, readOnly } from './utils';
 
 const defaultElement = <RouterView />;
+
+function MatchedRoute({
+  match,
+  depth,
+  parentPathname,
+  parentParams
+}: {
+  match: IRouteMatch;
+  depth: number;
+  parentPathname: string;
+  parentParams: IParams;
+}) {
+  const { route, params, pathname } = match;
+  const element = React.useMemo(
+    () =>
+      route.component
+        ? React.createElement(route.component, route.props)
+        : defaultElement,
+    [route.component, route.props, defaultElement]
+  );
+
+  return (
+    <MatchedRouteContext.Provider
+      children={element}
+      value={{
+        depth: depth + 1,
+        params: readOnly<IParams>({ ...parentParams, ...params }),
+        pathname: joinPaths([parentPathname, pathname]),
+        route
+      }}
+    />
+  );
+}
 
 export function RouterView(): React.ReactElement | null {
   let {
@@ -35,24 +68,12 @@ export function RouterView(): React.ReactElement | null {
     return null;
   }
 
-  const { route, params, pathname } = matched;
-  const element = React.useMemo(
-    () =>
-      route.component
-        ? React.createElement(route.component, route.props)
-        : defaultElement,
-    [route.component, route.props, defaultElement]
-  );
-
   return (
-    <MatchedRouteContext.Provider
-      children={element}
-      value={{
-        depth: depth + 1,
-        params: readOnly<IParams>({ ...parentParams, ...params }),
-        pathname: joinPaths([parentPathname, pathname]),
-        route
-      }}
+    <MatchedRoute
+      match={matched}
+      depth={depth}
+      parentPathname={parentPathname}
+      parentParams={parentParams}
     />
   );
 }

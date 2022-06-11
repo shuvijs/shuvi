@@ -1,12 +1,11 @@
 import {
-  IRequest,
   IRequestHandlerWithNext,
   IServerMiddleware,
   IServerPluginConstructor
 } from '@shuvi/service';
 import {
   ApplicationCreater,
-  IServerUserContext,
+  IServerAppContext,
   IViewServer
 } from '@shuvi/platform-shared/lib/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
@@ -25,11 +24,6 @@ interface IApiModule {
         | boolean;
     };
   };
-}
-
-interface IServerAppContext {
-  req: IRequest;
-  [x: string]: any;
 }
 
 export type IApiRoutes = {
@@ -65,7 +59,7 @@ declare module '@shuvi/service/lib/resources' {
     apiRoutes: IApiRoutes;
     middlewareRoutes: IMiddlewareRoutes;
     application: {
-      createApp: ApplicationCreater<IServerUserContext>;
+      createApp: ApplicationCreater<IServerAppContext>;
     };
     document: Partial<IDocumentModule>;
     view: IViewServer;

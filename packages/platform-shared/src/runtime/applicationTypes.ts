@@ -1,23 +1,18 @@
-import { IncomingMessage } from 'http';
-import {
-  ParsedQuery,
-  IRedirectState,
-  IRouter,
-  IRouteRecord
-} from '@shuvi/router';
+import type { IncomingMessage } from 'http';
+import { IRedirectState, IRouter } from './routerTypes';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IAppData } from './helper';
 import { PluginManager } from './lifecycle';
-import { IModelManager } from './appStore';
+import { IModelManager } from './store';
 import {
   IAppGetInitoalPropsContext,
   IRouteLoaderContext
 } from './context/routeLoaderContext';
 
-export { IRouter };
-
-export type IURLQuery = ParsedQuery;
+export type IRequest = IncomingMessage & {
+  [x: string]: any;
+};
 
 export interface IAppContext extends CustomAppContext {
   [x: string]: unknown;
@@ -37,8 +32,8 @@ export type IRerenderConfig = {
 };
 
 export interface IApplication {
-  AppComponent: IAppComponent<any>;
   router?: IRouter;
+  AppComponent: IAppComponent<any>;
   pluginManager: PluginManager;
   run(): Promise<{ [k: string]: any }>;
   rerender(config?: IRerenderConfig): Promise<void>;
@@ -52,12 +47,10 @@ export interface IRenderOptions<Context, CompType = any> {
   modelManager: IModelManager;
 }
 
-export interface IClientUserContext extends IAppContext {}
+export interface IClientAppContext extends IAppContext {}
 
-export interface IServerUserContext extends IAppContext {
-  req: IncomingMessage & {
-    [x: string]: any;
-  };
+export interface IServerAppContext extends IAppContext {
+  req: IRequest;
 }
 
 export type IHtmlAttrs = { textContent?: string } & {
@@ -84,14 +77,14 @@ export type IRenderAppResult<Data = {}> = {
 };
 
 export interface IClientRendererOptions<CompType = any, ExtraAppData = {}>
-  extends IRenderOptions<IClientUserContext, CompType> {
+  extends IRenderOptions<IClientAppContext, CompType> {
   router: IRouter;
   appContainer: HTMLElement;
   appData: IAppData<ExtraAppData>;
 }
 
 export interface IServerRendererOptions<CompType = any>
-  extends IRenderOptions<IServerUserContext, CompType> {
+  extends IRenderOptions<IServerAppContext, CompType> {
   router: IRouter;
   manifest: IManifest;
   getAssetPublicUrl(path: string): string;
@@ -118,12 +111,14 @@ export interface IAppRenderFn<Context, CompType = any> {
 }
 
 export interface IApplicationOptions<AppContext extends IAppContext> {
-  router: IRouter;
   context: AppContext;
+  router: IRouter;
   modelManager: IModelManager;
   AppComponent: any;
   UserAppComponent?: any;
   render: IAppRenderFn<AppContext>;
+  // server only
+  req?: IRequest;
 }
 
 export interface ApplicationCreater<
@@ -135,40 +130,8 @@ export interface ApplicationCreater<
     render: IAppRenderFn<Context, CompType>;
 
     // server only
-    req?: IncomingMessage & {
-      [x: string]: any;
-    };
+    req?: IRequest;
   }): IApplication;
 }
 
 export type IRuntimeConfig = Record<string, string>;
-
-export type IRouteData = {
-  routeProps?: { [x: string]: any };
-};
-
-export interface IAppRouteConfig extends IRouteRecord {
-  id: string;
-  component?: any;
-  children?: IAppRouteConfig[];
-  path: string;
-  fullPath?: string;
-  __componentSource__?: never;
-  __componentSourceWithAffix__?: never;
-  __import__?: never;
-  __resolveWeak__?: never;
-  [x: string]: any;
-}
-
-export interface IAppRouteConfigWithPrivateProps extends IRouteRecord {
-  id: string;
-  component?: any;
-  children?: IAppRouteConfigWithPrivateProps[];
-  path: string;
-  fullPath: string;
-  __componentSource__: string;
-  __componentSourceWithAffix__: string;
-  __import__: () => Promise<any>;
-  __resolveWeak__: () => any;
-  [x: string]: any;
-}

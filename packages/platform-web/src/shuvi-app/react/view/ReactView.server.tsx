@@ -8,7 +8,7 @@ import {
   IAppComponent,
   IRouteComponent,
   IHtmlTag,
-  IAppRouteConfig,
+  IPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import loaders from '@shuvi/app/files/page-loaders';
 import Loadable, { LoadableContext } from '../loadable';
@@ -71,7 +71,7 @@ export class ReactServerView implements IReactServerView {
     const params: IParams = {};
     for (let index = 0; index < matches.length; index++) {
       const matchedRoute = matches[index];
-      const appRoute = matchedRoute.route as IAppRouteConfig;
+      const appRoute = matchedRoute.route as IPageRouteRecord;
       const comp = appRoute.component as
         | IRouteComponent<React.Component, any>
         | undefined;

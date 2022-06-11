@@ -4,8 +4,8 @@ import {
   getModelManager,
   errorModel,
   IRouteLoaderContext,
-  IAppRouteConfig,
-  IClientUserContext,
+  IPageRouteRecord,
+  IClientAppContext,
   IRouteData
 } from '@shuvi/platform-shared/esm/runtime';
 import { createError } from './createError';
@@ -14,9 +14,9 @@ import pageLoaders from '@shuvi/app/files/page-loaders';
 import { getLoaderManager } from '../loader/loaderManager';
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = IClientUserContext;
+export type INormalizeRoutesContext = IClientAppContext;
 
-type IAppRouteWithElement = IAppRouteConfig & { element?: any };
+type IPageRouteWithElement = IPageRouteRecord & { element?: any };
 
 let hydrated: { [x: string]: boolean } = {};
 
@@ -27,17 +27,17 @@ export function resetHydratedState() {
 let loaders = pageLoaders;
 
 export function normalizeRoutes(
-  routes: IAppRouteConfig[] | undefined,
+  routes: IPageRouteRecord[] | undefined,
   appContext: INormalizeRoutesContext = {},
   routeData?: IRouteData
-): IAppRouteWithElement[] {
+): IPageRouteWithElement[] {
   const routeProps = routeData?.routeProps || {};
   if (!routes) {
-    return [] as IAppRouteWithElement[];
+    return [] as IPageRouteWithElement[];
   }
 
-  return routes.map((route: IAppRouteConfig) => {
-    const res: IAppRouteWithElement = {
+  return routes.map((route: IPageRouteRecord) => {
+    const res: IPageRouteWithElement = {
       ...route
     };
 

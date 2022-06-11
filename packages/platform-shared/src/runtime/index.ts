@@ -1,29 +1,25 @@
-export {
-  matchRoutes,
-  matchPathname,
-  IRouteRecord,
-  rankRouteBranches,
-  parseQuery,
-  IParams
-} from '@shuvi/router';
-
 export { getAppData, getPageData, IAppData, IData } from './helper';
 
-export type { IRouteLoaderContext } from './context/routeLoaderContext';
-export * from './applicationTypes';
+export * from './routerTypes';
+export * from './router';
 
 export {
+  // todo: remove
   getModelManager,
+  // todo: remove
   getErrorHandler,
   IAppState,
   IModelManager,
   IErrorHandler,
   IPageError,
   errorModel
-} from './appStore';
+} from './store';
 
 export {
   IRuntimeModule,
   createPlugin,
   RuntimePluginInstance
 } from './lifecycle';
+
+export type { IRouteLoaderContext } from './context/routeLoaderContext';
+export * from './applicationTypes';

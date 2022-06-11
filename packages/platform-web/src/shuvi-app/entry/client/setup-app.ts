@@ -5,7 +5,7 @@ import { view } from '@shuvi/app/core/platform';
 import { IRouter } from '@shuvi/router';
 import {
   getAppData,
-  IAppRouteConfig
+  IPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import { createApp } from '../../create-app/client';
 
@@ -16,7 +16,7 @@ const app = createApp({
     const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
     view.renderApp({
       AppComponent,
-      router: router as IRouter<IAppRouteConfig>,
+      router: router as IRouter<IPageRouteRecord>,
       appData,
       appContainer,
       appContext,

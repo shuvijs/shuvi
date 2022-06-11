@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-import React from 'react';
-import { IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
+import * as React from 'react';
+import { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
 import { RouterView } from '@shuvi/router-react';
 import { renderRoutes } from './utils';
 import { ReactTestRenderer, act } from 'react-test-renderer';
@@ -59,7 +59,7 @@ const initialPropsHash = {
 
 describe('normalizeRoutes', () => {
   it('basic', () => {
-    const sampleRoutes: IAppRouteConfig[] = [
+    const sampleRoutes: IPageRouteRecord[] = [
       {
         id: '0001',
         component: HOME_COMPONENT,
@@ -116,7 +116,7 @@ describe('normalizeRoutes', () => {
   });
 
   it('nested', async () => {
-    const sampleRoutes: IAppRouteConfig[] = [
+    const sampleRoutes: IPageRouteRecord[] = [
       {
         id: '0001',
         component: HOME_COMPONENT,
@@ -262,7 +262,7 @@ describe('normalizeRoutes', () => {
   });
 
   it('deep nested', () => {
-    const sampleRoutes: IAppRouteConfig[] = [
+    const sampleRoutes: IPageRouteRecord[] = [
       {
         id: '0001',
         component: HOME_COMPONENT,

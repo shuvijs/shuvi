@@ -10,11 +10,11 @@ import {
   getErrorHandler,
   IAppState,
   IAppRenderFn,
-  IClientUserContext,
-  IAppRouteConfig,
+  IClientAppContext,
+  IPageRouteRecord,
   IAppData
 } from '@shuvi/platform-shared/esm/runtime';
-import platform from '@shuvi/platform-shared/esm/runtime/platform';
+import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import {
   createRouter,
   IRouter,
@@ -28,12 +28,12 @@ import { getLoaderManager } from '../react/loader/loaderManager';
 
 declare let __SHUVI: any;
 let app: IApplication;
-let currentAppContext: IClientUserContext;
-let currentAppRouter: IRouter<IAppRouteConfig>;
+let currentAppContext: IClientAppContext;
+let currentAppRouter: IRouter<IPageRouteRecord>;
 let currentAppData: IAppData;
 
 export function createApp<CompType, AppState extends IAppState>(options: {
-  render: IAppRenderFn<IClientUserContext, CompType>;
+  render: IAppRenderFn<IClientAppContext, CompType>;
   appData: IAppData<any, AppState>;
 }) {
   // app is a singleton in client side
@@ -44,7 +44,6 @@ export function createApp<CompType, AppState extends IAppState>(options: {
   currentAppData = appData;
   const { loadersData = {}, appState, routeProps } = appData;
   const modelManager = getModelManager(appState);
-
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory();
@@ -52,7 +51,7 @@ export function createApp<CompType, AppState extends IAppState>(options: {
     history = createBrowserHistory();
   }
 
-  const context: IClientUserContext = {};
+  const context: IClientAppContext = {};
 
   // loaderManager is created here and will be cached.
   getLoaderManager(loadersData);
@@ -63,7 +62,7 @@ export function createApp<CompType, AppState extends IAppState>(options: {
   });
   router.afterEach(_current => {
     if (!_current.matches) {
-      getErrorHandler(getModelManager()).errorHandler(
+      getErrorHandler(modelManager).errorHandler(
         SHUVI_ERROR_CODE.PAGE_NOT_FOUND
       );
     }
@@ -71,7 +70,7 @@ export function createApp<CompType, AppState extends IAppState>(options: {
   currentAppRouter = router;
   currentAppContext = context;
 
-  app = platform({
+  app = application({
     AppComponent: PlatformAppComponent,
     router,
     context,
@@ -87,7 +86,6 @@ if (module.hot) {
     [
       '@shuvi/app/user/app',
       '@shuvi/app/entry',
-      '@shuvi/platform-shared/esm/runtime/platform',
       '@shuvi/app/files/routes',
       '@shuvi/app/files/page-loaders',
       '@shuvi/app/user/runtime'

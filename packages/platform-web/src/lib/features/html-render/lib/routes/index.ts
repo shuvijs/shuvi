@@ -17,7 +17,7 @@ function genRouteId(filepath: string) {
 }
 
 /**
- * returns JSON string of IAppRouteConfigWithPrivateProps
+ * returns JSON string of IRawPageRouteRecord
  */
 export function serializeRoutes(routes: IRouteConfig[]): string {
   let res = '';

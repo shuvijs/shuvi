@@ -6,24 +6,23 @@ import {
 } from '@shuvi/app/core/platform';
 import {
   IAppRenderFn,
-  IServerUserContext,
-  IAppRouteConfig,
-  getModelManager,
-  IApplication
+  IServerAppContext,
+  IPageRouteRecord,
+  IApplication,
+  getModelManager
 } from '@shuvi/platform-shared/esm/runtime';
-import platform from '@shuvi/platform-shared/esm/runtime/platform';
+import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 import { IRequest } from '@shuvi/service/lib/server';
 
 export function createApp<
-  Router extends IRouter<IAppRouteConfig>,
+  Router extends IRouter<IPageRouteRecord>,
   CompType
 >(options: {
-  render: IAppRenderFn<IServerUserContext, CompType>;
+  render: IAppRenderFn<IServerAppContext, CompType>;
   req: IRequest;
 }): IApplication {
   const { req } = options;
-  const modelManager = getModelManager();
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
@@ -34,11 +33,11 @@ export function createApp<
     routes: getRoutes(routes, context)
   }) as Router;
 
-  return platform({
+  return application({
     AppComponent: PlatformAppComponent,
     router,
     context,
-    modelManager,
+    modelManager: getModelManager(),
     render: options.render,
     UserAppComponent
   });

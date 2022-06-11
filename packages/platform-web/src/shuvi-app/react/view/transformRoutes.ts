@@ -1,5 +1,5 @@
-import { IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
+import { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
 
-export const transformRoutes = (routes: IAppRouteConfig[]) => {
+export const transformRoutes = (routes: IPageRouteRecord[]) => {
   return routes;
 };
