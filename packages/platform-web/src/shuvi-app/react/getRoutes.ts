@@ -1,21 +1,21 @@
 import {
   IRouteData,
-  IAppRouteConfig,
-  IAppRouteConfigWithPrivateProps
+  IPageRouteRecord,
+  IRawPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import { loadRouteComponent } from './loadRouteComponent';
 import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 
 export default function getRoutes(
-  routes: IAppRouteConfigWithPrivateProps[],
+  routes: IRawPageRouteRecord[],
   appContext: INormalizeRoutesContext = {},
   routeData?: IRouteData
-): IAppRouteConfig[] {
+): IPageRouteRecord[] {
   const getRoutesWithRequire = (
-    routes: IAppRouteConfigWithPrivateProps[]
-  ): IAppRouteConfig[] =>
+    routes: IRawPageRouteRecord[]
+  ): IPageRouteRecord[] =>
     routes.map(x => {
-      const originalRoute: IAppRouteConfigWithPrivateProps = { ...x };
+      const originalRoute: IRawPageRouteRecord = { ...x };
       const {
         __componentSource__,
         __componentSourceWithAffix__,

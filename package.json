@@ -25,12 +25,8 @@
     "test:e2e:koa": "NODE_SERVER=KOA jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=KOA jest test/e2e/basic --runInBand",
     "postinstall": "node scripts/install-native.js",
     "docs": "node scripts/typedoc-to-markdown.js",
-    "release": "pnpm clean && pnpm i && pnpm build && pnpm test && pnpm changeset publish"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "release": "pnpm clean && pnpm i && pnpm build && pnpm test && pnpm changeset publish",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.js": [
@@ -55,7 +51,7 @@
     "express": "^4.17.1",
     "get-port": "^5.1.1",
     "got": "^10.7.0",
-    "husky": "^4.2.3",
+    "husky": "^8.0.1",
     "is-wsl": "^2.1.1",
     "jest": "26.6.3",
     "koa": "^2.13.1",

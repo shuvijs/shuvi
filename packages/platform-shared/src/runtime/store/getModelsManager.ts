@@ -6,7 +6,6 @@ export type IAppState = {
 };
 
 let modelManager: IModelManager;
-
 // for client, singleton mode
 // for server, return new store
 const getModelManager = (initialState: IAppState = {}): IModelManager => {
@@ -14,6 +13,7 @@ const getModelManager = (initialState: IAppState = {}): IModelManager => {
   if (typeof window === 'undefined') {
     return redox(initialState);
   }
+
   // for client is singleton, just init once
   if (modelManager) {
     return modelManager;

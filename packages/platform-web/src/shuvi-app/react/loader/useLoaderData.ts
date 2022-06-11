@@ -1,11 +1,11 @@
 import { useMatchedRoute } from '@shuvi/router-react';
-import { IAppRouteConfig } from '@shuvi/platform-shared/esm/runtime';
+import { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
 import { useState, useEffect } from 'react';
 import { getLoaderManager, LoaderResult, LoaderStatus } from './loaderManager';
 import { noLoaderMessage } from '../utils/errorMessage';
 
 export const useLoaderData = <T>(): T | null => {
-  const currentMatch = useMatchedRoute<IAppRouteConfig>();
+  const currentMatch = useMatchedRoute<IPageRouteRecord>();
   const loaderManager = getLoaderManager();
   const id = currentMatch.route?.id as string;
   const loader = loaderManager.get(id);

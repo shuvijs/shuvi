@@ -22,9 +22,6 @@ function deleteFile() {
   }
 }
 
-Object.assign(process.env, {
-  NODE_ENV: 'production'
-});
 describe('Custom throw error in production ssr', () => {
   let ctx: AppCtx;
   let page: Page;

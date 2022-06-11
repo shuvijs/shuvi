@@ -1,13 +1,14 @@
-import { Application } from '../application';
+import application from '../application';
 import { IAppContext } from '../applicationTypes';
-import { getModelManager } from '../appStore';
-import { createRouter, createMemoryHistory } from '@shuvi/router';
+import { createRouter, createMemoryHistory } from '../router';
+import { getModelManager } from '../store';
 
 function getApp({ render }: any = {}) {
-  const app = new Application({
+  const app = application({
     context: {
       test: true
     } as unknown as IAppContext,
+    modelManager: getModelManager(),
     AppComponent: {},
     router: createRouter({
       history: createMemoryHistory(),
@@ -19,7 +20,6 @@ function getApp({ render }: any = {}) {
         }
       ]
     }),
-    modelManager: getModelManager(),
     async render(options) {
       return render && render(options);
     }

@@ -1,7 +1,10 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
 import { Renderer, IRenderResultRedirect } from './renderer';
-import { errorModel, IPageError } from '@shuvi/platform-shared/lib/runtime';
+import {
+  errorModel,
+  IPageError
+} from '@shuvi/platform-shared/lib/runtime/store';
 
 type RenderResult = null | string | IRenderResultRedirect;
 

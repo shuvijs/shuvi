@@ -10,9 +10,9 @@ declare module '@shuvi/app/core/error' {
 declare module '@shuvi/app/core/platform' {
   import React from 'react';
   import {
-    IApplicationCreaterBase,
-    IAppRouteConfig,
-    IAppRouteConfigWithPrivateProps,
+    IAppContext,
+    IPageRouteRecord,
+    IRawPageRouteRecord,
     IViewClient,
     IAppComponent,
     IRouteComponent,
@@ -21,10 +21,10 @@ declare module '@shuvi/app/core/platform' {
 
   export interface IGetRoutes {
     (
-      routes: IAppRouteConfigWithPrivateProps[],
-      context: IApplicationCreaterBase,
+      routes: IRawPageRouteRecord[],
+      context: IAppContext,
       routeData?: IRouteData
-    ): IAppRouteConfig[];
+    ): IPageRouteRecord[];
   }
 
   export const getRoutes: IGetRoutes;
@@ -65,11 +65,11 @@ declare module '@shuvi/app/user/error' {
 }
 
 declare module '@shuvi/app/user/runtime' {
-  import { IRuntimeModule } from '@shuvi/platform-shared/src/runtime/runtimeHooks';
+  import { IRuntimeModule } from '@shuvi/platform-shared/src/runtime/lifecycle';
   export const onInit: IRuntimeModule['onInit'];
   export const getAppComponent: IRuntimeModule['getAppComponent'];
   export const getRootAppComponent: IRuntimeModule['getRootAppComponent'];
-  export const getContext: IRuntimeModule['getContext'];
+  export const getAppContext: IRuntimeModule['getAppContext'];
   export const onRenderDone: IRuntimeModule['onRenderDone'];
   export const onDispose: IRuntimeModule['onDispose'];
 }

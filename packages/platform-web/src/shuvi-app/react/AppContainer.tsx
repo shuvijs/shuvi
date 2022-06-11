@@ -38,7 +38,6 @@ function AppStore({
   errorComp?: React.ComponentType<IPageError>;
 }) {
   const [errorState] = useSharedModel(errorModel);
-
   return <>{checkError(errorState, errorComp) || children}</>;
 }
 

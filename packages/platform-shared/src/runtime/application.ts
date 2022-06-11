@@ -1,41 +1,65 @@
 import { getManager, PluginManager } from './lifecycle';
 import { setApp } from './appProxy';
-import { IModelManager } from './appStore';
+import { initPlugins, IPluginRecord, IRuntimeModule } from './lifecycle';
+import { IModelManager } from './store';
+import { IRouter, IRoute } from './routerTypes';
 import {
   IApplication,
   IAppContext,
-  IRouter,
   IAppRenderFn,
   IApplicationOptions,
-  IRerenderConfig
+  IRerenderConfig,
+  IRequest
 } from './applicationTypes';
 
-export class Application<Context extends IAppContext> implements IApplication {
-  AppComponent: any;
+class Application<Context extends IAppContext> implements IApplication {
   router: IRouter;
   pluginManager: PluginManager;
+  AppComponent: any;
   private _context: Context;
   private _modelManager: IModelManager;
+  private _req?: IRequest;
   private _renderFn: IAppRenderFn<Context>;
   private _UserAppComponent?: any;
 
   constructor(options: IApplicationOptions<Context>) {
-    this.AppComponent = options.AppComponent;
     this.router = options.router;
     this._context = options.context;
     this._modelManager = options.modelManager;
-    this._renderFn = options.render;
+    this.AppComponent = options.AppComponent;
     this._UserAppComponent = options.UserAppComponent;
+    this._renderFn = options.render;
+    this._req = options.req;
     this.pluginManager = getManager();
   }
 
   async run() {
-    await this._init();
-    await this._createApplicationContext();
-    await this._getAppComponent();
+    await this._initPlugin();
+    await this._initAppContext();
+    await this._initAppComponent();
     await this._render();
 
     return this._context;
+  }
+
+  getContext() {
+    return this._context;
+  }
+
+  getRouteLoaderContext(to: IRoute): any {
+    // todo
+    return {
+      isServer: typeof window === 'undefined',
+      pathname: to.pathname,
+      query: to.query,
+      params: to.params,
+      appContext: this.getContext(),
+      // redirect: redirector.handler,
+      // error: error.handler,
+
+      // server only
+      req: this._req
+    };
   }
 
   async rerender({ AppComponent, UserAppComponent }: IRerenderConfig = {}) {
@@ -50,7 +74,7 @@ export class Application<Context extends IAppContext> implements IApplication {
       this._UserAppComponent = undefined;
     }
 
-    await this._getAppComponent();
+    await this._initAppComponent();
     await this._render();
   }
 
@@ -58,21 +82,17 @@ export class Application<Context extends IAppContext> implements IApplication {
     await this.pluginManager.runner.dispose();
   }
 
-  getContext() {
-    return this._context;
-  }
-
-  private async _init() {
+  private async _initPlugin() {
     await this.pluginManager.runner.init();
   }
 
-  private async _createApplicationContext() {
+  private async _initAppContext() {
     this._context = (await this.pluginManager.runner.getAppContext(
       this._context
     )) as IAppContext & Context;
   }
 
-  private async _getAppComponent() {
+  private async _initAppComponent() {
     this.AppComponent = await this.pluginManager.runner.getRootAppComponent(
       this.AppComponent,
       this._context
@@ -92,4 +112,17 @@ export class Application<Context extends IAppContext> implements IApplication {
       router: this.router
     });
   }
+}
+
+export default function application<Context extends IAppContext>({
+  inlinePlugin,
+  plugins,
+  ...appOptions
+}: IApplicationOptions<Context> & {
+  inlinePlugin?: Partial<IRuntimeModule>;
+  plugins?: IPluginRecord;
+}) {
+  const application = new Application(appOptions);
+  initPlugins(application.pluginManager, inlinePlugin || {}, plugins || {});
+  return application;
 }
