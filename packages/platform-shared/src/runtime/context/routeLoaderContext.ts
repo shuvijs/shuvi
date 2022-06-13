@@ -1,13 +1,16 @@
 import {
   IRedirectState,
   IRedirectFn,
-  IURLQuery,
-  IURLParams
-} from '../routerTypes';
+  IParams,
+  ParsedQuery
+} from '@shuvi/router';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { getModelManager } from '../store/getModelsManager';
 import { errorModel, IPageError } from '../store/models';
 import { IAppContext } from '../applicationTypes';
+
+export type IURLQuery = ParsedQuery;
+export type IURLParams = IParams;
 
 export interface IRedirector {
   redirected: boolean;
@@ -19,10 +22,6 @@ export type IErrorHandler = (
   errorCode?: SHUVI_ERROR_CODE | string,
   errorDesc?: string
 ) => void;
-
-export interface IPageErrorHandler extends IPageError {
-  handler: IErrorHandler;
-}
 
 /**
  * route component getInitialProps params `context`
@@ -72,8 +71,8 @@ export interface IRouteLoaderContext<UserAppContext extends IAppContext = {}> {
   error: IErrorHandler;
   /**
    * Application context object, which accompanies the entire application life cycle
-   * {@link IClientAppContext} for client
-   * {@link IServerAppContext} for server
+   * {@link IClientUserContext} for client
+   * {@link IServerUserContext} for server
    */
   appContext: UserAppContext;
 }
@@ -120,32 +119,6 @@ export function createRedirector(): IRedirector {
   return redirector;
 }
 
-export function createError(): IPageErrorHandler {
-  const pageError = {
-    errorCode: undefined,
-    errorDesc: undefined
-  } as unknown as IPageErrorHandler;
-
-  pageError.handler = (
-    errorCode?: SHUVI_ERROR_CODE | string,
-    errorDesc?: string
-  ) => {
-    if (pageError.errorCode !== undefined) {
-      return pageError;
-    }
-    if (typeof errorCode === 'number') {
-      pageError.errorCode = errorCode;
-      pageError.errorDesc = errorDesc;
-    } else {
-      pageError.errorCode = SHUVI_ERROR_CODE.APP_ERROR;
-      pageError.errorDesc = errorCode;
-    }
-    return pageError;
-  };
-
-  return pageError;
-}
-
 export function getErrorHandler(
   modelManager: ReturnType<typeof getModelManager>
 ): {
@@ -177,3 +150,6 @@ export function getErrorHandler(
     }
   };
 }
+
+// todo: implementation
+export function createRouteLoaderContext() {}

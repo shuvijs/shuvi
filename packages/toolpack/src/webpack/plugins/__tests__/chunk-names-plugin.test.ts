@@ -5,7 +5,7 @@ import { resolveFixture } from './utils';
 const basicEntry = resolveFixture('basic');
 
 describe('chunk-names-plugin', () => {
-  test('without plugin, splitChunks are not named as chunk', async done => {
+  test('without plugin, splitChunks are not named as chunk', done => {
     const compiler = createCompiler({
       entry: basicEntry,
       optimization: {
@@ -45,7 +45,7 @@ describe('chunk-names-plugin', () => {
     });
   });
 
-  test('with plugin, splitChunks are named as chunk', async done => {
+  test('with plugin, splitChunks are named as chunk', done => {
     const compiler = createCompiler({
       entry: basicEntry,
       optimization: {

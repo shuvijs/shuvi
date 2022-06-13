@@ -1,5 +1,5 @@
 import { createFileWithoutName } from '@shuvi/service/lib/project';
-import { getPublicRuntimeConfig } from '../../../../../lib';
+import { getPublicRuntimeConfig } from '../../../../../../runtime/runtimeConfig';
 import { ProjectContext } from '../../../../projectContext';
 
 export default (context: ProjectContext) =>

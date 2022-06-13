@@ -2,6 +2,7 @@ export { getAppData, getPageData, IAppData, IData } from './helper';
 
 export * from './routerTypes';
 export * from './router';
+export * from './runtimeConfig';
 
 export {
   // todo: remove

@@ -153,7 +153,7 @@ describe('loadRouteComponent [web]', () => {
 
     // wait for route resolve(getInitialProps)
     await act(async () => {
-      await wait(1100);
+      await wait(2000);
     });
 
     expect(toJSON()).toMatchInlineSnapshot(`
