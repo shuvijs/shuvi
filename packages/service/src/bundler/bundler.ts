@@ -55,6 +55,22 @@ class WebpackBundler {
       this._compiler = webpack(this._targets.map(t => t.config));
 
       let isFirstSuccessfulCompile = true;
+
+      const userConfig = this._cliContext.config;
+      const ignoreTypeScriptErrors = Boolean(
+        userConfig.typescript.ignoreBuildErrors
+      );
+
+      if (ignoreTypeScriptErrors) {
+        console.log('Skipping validation of types');
+        this._compiler.compilers.forEach(compiler => {
+          ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
+            'afterTypeScriptCheck',
+            (issues: Issue[]) => issues.filter(msg => msg.severity !== 'error')
+          );
+        });
+      }
+
       this._compiler.hooks.done.tap('done', async stats => {
         const warnings: webpack.StatsError[] = [];
         const errors: webpack.StatsError[] = [];

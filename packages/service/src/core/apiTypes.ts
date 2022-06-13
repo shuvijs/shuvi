@@ -166,6 +166,7 @@ export interface UserConfig {
   apiConfig?: IApiConfig;
   runtimeConfig?: IRuntimeConfig;
   publicRuntimeConfig?: IRuntimeConfig;
+  typescript?: { ignoreBuildErrors?: boolean };
   /**
    * specifically target for `platform-web`
    */
