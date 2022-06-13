@@ -162,7 +162,7 @@ importers:
 
   packages/platform-web:
     specifiers:
-      '@next/react-refresh-utils': 10.0.5
+      '@next/react-refresh-utils': 12.1.6
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
       '@shuvi/plugins': 0.0.1-pre.10
@@ -194,7 +194,7 @@ importers:
       use-sync-external-store: 1.1.0
       webpack: 5.73.0
     dependencies:
-      '@next/react-refresh-utils': 10.0.5_gblaixfkdd3xq4bohfx2wdinkq
+      '@next/react-refresh-utils': 12.1.6_gblaixfkdd3xq4bohfx2wdinkq
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
@@ -3599,11 +3599,14 @@ packages:
     resolution: {integrity: sha512-jDJTpta+P4p1NZTFVLHJ/TLFVYVcOqv6l8xwOeBKNPMgY/zDYH/YH7SJbvrr/h1RcS9GzbPcLKGzpuK9cV56UA==}
     dev: false
 
-  /@next/react-refresh-utils/10.0.5_gblaixfkdd3xq4bohfx2wdinkq:
-    resolution: {integrity: sha512-Eo+nvW1ZhdkuxBWSsKHGDLNspUaJJQClld9R+H+EtiIuAQtTa8f2rhcQeyUOtvUNQoPyq7Em2PwUqOQD6LOOMA==}
+  /@next/react-refresh-utils/12.1.6_gblaixfkdd3xq4bohfx2wdinkq:
+    resolution: {integrity: sha512-O3ZxwLbjMnAfzAQkb0IEVxPCdhbHQiRm21cfIpgxOy95XZYg/6QBJlLvKDQf1V0wsDKkaI5SacDq2ULnEHyiag==}
     peerDependencies:
-      react-refresh: 0.8.3
+      react-refresh: 0.12.0
       webpack: ^4 || ^5
+    peerDependenciesMeta:
+      webpack:
+        optional: true
     dependencies:
       react-refresh: 0.8.3
       webpack: 5.73.0

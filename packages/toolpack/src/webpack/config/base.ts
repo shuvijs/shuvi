@@ -149,7 +149,7 @@ export function baseWebpackChain({
 
   mainRule
     .oneOf('js')
-    .test(/\.(js|mjs|jsx|ts|tsx)$/)
+    .test(/\.(tsx|ts|js|cjs|mjs|jsx)$/)
     .include.merge([...include, ...AppSourceRegexs])
     .end()
     .use('shuvi-swc-loader')
@@ -160,7 +160,7 @@ export function baseWebpackChain({
 
   mainRule
     .oneOf('media')
-    .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
+    .exclude.merge([/\.(tsx|ts|js|cjs|mjs|jsx)$/, /\.html$/, /\.json$/])
     .end()
     .use('file-loader')
     .loader(require.resolve('file-loader'))

@@ -3,12 +3,10 @@ use shuvi_swc::{
     auto_css_module::auto_css_module
 };
 use std::path::PathBuf;
-use swc_common::{chain, comments::SingleThreadedComments, FileName, Mark, Span, DUMMY_SP};
+use swc_common::{Span, DUMMY_SP};
 use swc_ecma_transforms_testing::{test, test_fixture};
 use swc_ecmascript::{
     parser::{EsConfig, Syntax},
-    transforms::{react::jsx, resolver},
-    visit::as_folder,
 };
 use testing::fixture;
 
@@ -53,7 +51,6 @@ fn shuvi_dynamic_fixture(input: PathBuf) {
         syntax(),
         &|_tr| {
             shuvi_dynamic(
-                FileName::Real(PathBuf::from("/some-project/src/some-file.js")),
                 true
             )
         },
@@ -70,7 +67,6 @@ fn shuvi_dynamic_disabled_fixture(input: PathBuf) {
         syntax(),
         &|_tr| {
             shuvi_dynamic(
-                FileName::Real(PathBuf::from("/some-project/src/some-file.js")),
                 false
             )
         },
