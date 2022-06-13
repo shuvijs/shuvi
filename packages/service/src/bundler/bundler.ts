@@ -11,7 +11,7 @@ import webpack, {
   Compiler as WebapckCompiler,
   webpackPath
 } from '@shuvi/toolpack/lib/webpack';
-import { IPluginContext, loadConfig } from '../core';
+import { IPluginContext } from '../core';
 import { Target, TargetChain } from '../core/lifecycle';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
@@ -53,13 +53,12 @@ class WebpackBundler {
     if (!this._compiler) {
       this._targets = await this._getTargets();
       this._compiler = webpack(this._targets.map(t => t.config));
-      const userConfig = await loadConfig({
-        rootDir: this._compiler.compilers[0].context
-      });
 
       let isFirstSuccessfulCompile = true;
+
+      const userConfig = this._cliContext.config;
       const ignoreTypeScriptErrors = Boolean(
-        userConfig?.typescript?.ignoreBuildErrors
+        userConfig.typescript.ignoreBuildErrors
       );
 
       if (ignoreTypeScriptErrors) {
