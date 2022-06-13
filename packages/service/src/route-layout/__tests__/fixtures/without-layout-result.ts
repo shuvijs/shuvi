@@ -5,7 +5,7 @@ const getPath = (filename: string) => {
   return getFixturePath(`has-not-layout/${filename}/page.js`);
 };
 
-export const hasNotLayoutResult: IRouteRecord[] = [
+export const withoutLayoutResult: IRouteRecord[] = [
   {
     path: '/',
     filepath: getPath('')

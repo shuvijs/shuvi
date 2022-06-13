@@ -1,9 +1,9 @@
 import { getRoutesWithLayoutFromDir } from '../';
 import { getFixturePath } from './utils';
-import { hasNotLayoutResult } from './fixtures/has-not-layout-result';
-import { hasLayoutResult } from './fixtures/has-layout-result';
-import { hasDynamicPathResult } from './fixtures/has-dynamic-path-result';
-import { hasNotFileHarmonyResult } from './fixtures/has-not-file-harmony-result';
+import { withoutLayoutResult } from './fixtures/without-layout-result';
+import { layoutResult } from './fixtures/layout-result';
+import { dynamicPathResult } from './fixtures/dynamic-path-result';
+import { emptyHarmonyResult } from './fixtures/empty-harmony-result';
 
 const getRoutes = (pathname: string) => {
   return getRoutesWithLayoutFromDir(getFixturePath(pathname));
@@ -12,22 +12,22 @@ const getRoutes = (pathname: string) => {
 describe('route test', function () {
   test('has not layout', () => {
     const routes = getRoutes('has-not-layout');
-    expect(routes).toMatchObject(hasNotLayoutResult);
+    expect(routes).toMatchObject(withoutLayoutResult);
   });
 
   test('has layout', () => {
     const routes = getRoutes('has-layout');
-    expect(routes).toMatchObject(hasLayoutResult);
+    expect(routes).toMatchObject(layoutResult);
   });
 
   test('has dynamic path', () => {
     const routes = getRoutes('has-dynamic-path');
-    expect(routes).toMatchObject(hasDynamicPathResult);
+    expect(routes).toMatchObject(dynamicPathResult);
   });
 
   test('has not file harmony', () => {
     const routes = getRoutes('has-not-file-harmony');
-    expect(routes).toMatchObject(hasNotFileHarmonyResult);
+    expect(routes).toMatchObject(emptyHarmonyResult);
   });
 
   test('has not file exception', () => {

@@ -4,7 +4,7 @@ import { getFixturePath } from '../utils';
 const getPath = (filename: string) =>
   getFixturePath(`has-dynamic-path/${filename}`);
 
-export const hasDynamicPathResult: IRouteRecord[] = [
+export const dynamicPathResult: IRouteRecord[] = [
   {
     path: '/',
     filepath: getPath('layout.js')

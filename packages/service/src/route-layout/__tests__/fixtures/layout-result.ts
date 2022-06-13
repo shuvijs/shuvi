@@ -3,7 +3,7 @@ import { getFixturePath } from '../utils';
 
 const getPath = (filename: string) => getFixturePath(`has-layout/${filename}`);
 
-export const hasLayoutResult: IRouteRecord[] = [
+export const layoutResult: IRouteRecord[] = [
   {
     path: '/',
     filepath: getPath('layout.js'),
