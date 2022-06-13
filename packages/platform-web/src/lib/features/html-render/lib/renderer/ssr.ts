@@ -1,7 +1,10 @@
-import { IAppData, IData } from '@shuvi/platform-shared/lib/runtime';
+import {
+  IAppData,
+  IData,
+  getPublicRuntimeConfig
+} from '@shuvi/platform-shared/lib/runtime';
 import { IRouter } from '@shuvi/router';
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
-import { getPublicRuntimeConfig } from '@shuvi/platform-shared/lib/lib';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';

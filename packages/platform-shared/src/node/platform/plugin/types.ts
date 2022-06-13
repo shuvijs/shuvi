@@ -1,5 +1,5 @@
 import { extendedHooks } from './hooks';
-import '../../types/shuvi-app'
+import '../../types/shuvi-app';
 declare module '@shuvi/runtime' {
   export interface CustomCorePluginHooks {
     addEntryCode: typeof extendedHooks.addEntryCode;

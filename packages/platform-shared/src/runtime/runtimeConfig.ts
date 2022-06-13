@@ -8,12 +8,12 @@ let publicRuntimeConfig: IRuntimeConfig | null;
  *
  * @returns runtimeConfig
  */
-export default () => {
+export function getRuntimeConfig() {
   return {
     ...(runtimeConfig || {}),
     ...(publicRuntimeConfig || {})
   };
-};
+}
 
 export function getPublicRuntimeConfig(): IRuntimeConfig | null {
   return publicRuntimeConfig;
