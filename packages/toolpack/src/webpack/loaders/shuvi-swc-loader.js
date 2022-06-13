@@ -81,10 +81,6 @@ function getSWCOptions({
   if (isNode) {
     return {
       jsc,
-      module: {
-        type: 'commonjs',
-        ignoreDynamic: true
-      },
       disableShuviDynamic,
       isDevelopment: development,
       isPageFile,
@@ -99,11 +95,6 @@ function getSWCOptions({
     // Matches default @babel/preset-env behavior
     jsc.target = 'es5';
     return {
-      // Ensure Next.js internals are output as commonjs modules
-      module: {
-        type: 'commonjs',
-        ignoreDynamic: true
-      },
       disableShuviDynamic,
       isDevelopment: development,
       isPageFile,

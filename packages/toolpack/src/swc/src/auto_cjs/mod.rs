@@ -25,7 +25,7 @@ impl Visit for CjsFinder {
                 ExprOrSuper::Expr(obj) => match &**obj {
                     Expr::Ident(obj) => match &*e.prop {
                         Expr::Ident(prop) => {
-                            if &*obj.sym == "module" && &*prop.sym == "exports" {
+                            if &*obj.sym == "exports" || ( &*obj.sym == "module" && &*prop.sym == "exports" ) {
                                 self.found = true;
                                 return;
                             }

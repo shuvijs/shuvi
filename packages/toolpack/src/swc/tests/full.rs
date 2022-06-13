@@ -60,7 +60,7 @@ fn test(input: &Path, minify: bool) {
                 fm.clone(),
                 &handler,
                 &options.swc,
-                custom_before_pass(&fm.name, &assert_json(&"{}")),
+                custom_before_pass(&assert_json(&"{}")),
                 noop(),
             ) {
                 Ok(v) => {

@@ -1,5 +1,5 @@
 use swc_atoms::js_word;
-use swc_common::{FileName, DUMMY_SP};
+use swc_common::{DUMMY_SP};
 use swc_ecmascript::ast::{
   ArrayLit, ArrowExpr, BlockStmtOrExpr, CallExpr, Expr, ExprOrSpread,
   ExprOrSuper, Ident, ImportDecl, ImportSpecifier, KeyValueProp, Lit, MemberExpr, ObjectLit, Prop,
@@ -11,9 +11,8 @@ use swc_ecmascript::utils::{
 };
 use swc_ecmascript::visit::{Fold, FoldWith};
 
-pub fn shuvi_dynamic(filename: FileName, dynamic: bool) -> impl Fold {
+pub fn shuvi_dynamic(dynamic: bool) -> impl Fold {
   NextDynamicPatcher {
-    filename,
     dynamic,
     dynamic_bindings: vec![],
     is_next_dynamic_first_arg: false,
@@ -23,7 +22,6 @@ pub fn shuvi_dynamic(filename: FileName, dynamic: bool) -> impl Fold {
 
 #[derive(Debug)]
 struct NextDynamicPatcher {
-  filename: FileName,
   dynamic: bool,
   dynamic_bindings: Vec<Id>,
   is_next_dynamic_first_arg: bool,

@@ -41,7 +41,7 @@ use serde::Deserialize;
 use std::{env, panic::set_hook, sync::Arc};
 use swc::{config::ModuleConfig, Compiler, TransformOutput};
 use swc_common::SourceFile;
-use swc_common::{self, chain, sync::Lazy, FileName, FilePathMapping, SourceMap};
+use swc_common::{self, chain, sync::Lazy, FilePathMapping, SourceMap};
 use swc_ecmascript::ast::EsVersion;
 use swc_ecmascript::{
     parser::{lexer::Lexer, Parser, StringInput},
@@ -85,11 +85,11 @@ pub struct TransformOptions {
     pub is_development: bool,
 }
 
-pub fn custom_before_pass(name: &FileName, opts: &TransformOptions) -> impl Fold {
+pub fn custom_before_pass(opts: &TransformOptions) -> impl Fold {
     chain!(
         auto_css_module::auto_css_module(opts.flag.clone()),
         hook_optimizer::hook_optimizer(),
-        shuvi_dynamic::shuvi_dynamic(name.clone(), !opts.disable_shuvi_dynamic.clone())
+        shuvi_dynamic::shuvi_dynamic(!opts.disable_shuvi_dynamic.clone())
     )
 }
 
@@ -135,7 +135,7 @@ impl TransformOptions {
         self.swc.swcrc = false;
 
         let should_enable_commonjs =
-            self.swc.config.module.is_none() && fm.src.contains("module.exports") && {
+            self.swc.config.module.is_none() && fm.src.contains("exports") && {
                 let syntax = self.swc.config.jsc.syntax.unwrap_or_default();
                 let target = self.swc.config.jsc.target.unwrap_or(EsVersion::latest());
                 let lexer = Lexer::new(syntax, target, StringInput::from(&*fm), None);
