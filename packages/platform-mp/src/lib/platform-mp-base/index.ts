@@ -18,7 +18,7 @@ import { FileOptions } from '@shuvi/service/lib/project';
 import {
   sharedPlugin,
   getPresetRuntimeFilesCreator
-} from '@shuvi/platform-shared/lib/platform';
+} from '@shuvi/platform-shared/lib/node';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
