@@ -144,12 +144,12 @@ export function baseWebpackChain({
   // x-ref: https://github.com/webpack/webpack/issues/11467
   config.module
     .rule('webpackPatch')
-    .test(/\.m?js/)
+    .test(/\.(c|m)?js/)
     .resolve.set('fullySpecified', false);
 
   mainRule
     .oneOf('js')
-    .test(/\.(js|mjs|jsx|ts|tsx)$/)
+    .test(/\.(js|jsx|ts|tsx|cjs|mjs)$/)
     .include.merge([...include, ...AppSourceRegexs])
     .end()
     .use('shuvi-swc-loader')
@@ -160,7 +160,7 @@ export function baseWebpackChain({
 
   mainRule
     .oneOf('media')
-    .exclude.merge([/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/])
+    .exclude.merge([/\.(js|jsx|ts|tsx|cjs|mjs)$/, /\.html$/, /\.json$/])
     .end()
     .use('file-loader')
     .loader(require.resolve('file-loader'))
