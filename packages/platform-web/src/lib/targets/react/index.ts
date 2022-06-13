@@ -14,7 +14,7 @@ const webReactMainPlugin = createPlugin({
     },
     {
       source: resolveAppFile('react/loader'),
-      exported: '{ useLoaderData, Loader }'
+      exported: '{ useLoaderData }'
     },
     {
       source: resolveLib('@shuvi/router-react'),
@@ -23,7 +23,6 @@ const webReactMainPlugin = createPlugin({
     }
   ]
 });
-
 const platformWebReact = () => {
   return {
     plugins: [webReactMainPlugin, bundlerPlugin],
