@@ -46,6 +46,9 @@ export const createDefaultConfig: () => UserConfig = () => ({
   },
   experimental: {
     parcelCss: false
+  },
+  typescript: {
+    ignoreBuildErrors: false
   }
 });
 
