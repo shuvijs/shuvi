@@ -20,10 +20,10 @@ export function createNodeWebpackChain({
   chain.target('node');
   chain.devtool(false);
   const extensions = [
-    ...(useTypeScript ? ['.tsx', '.ts'] : []),
     '.js',
     '.cjs',
     '.mjs',
+    ...(useTypeScript ? ['.tsx', '.ts'] : []),
     '.jsx',
     '.json',
     '.wasm'

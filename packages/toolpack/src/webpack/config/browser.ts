@@ -29,10 +29,10 @@ export function createBrowserWebpackChain({
   chain.target('web');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
   chain.resolve.extensions.merge([
-    ...(useTypeScript ? ['.tsx', '.ts'] : []),
-    '.cjs',
     '.mjs',
     '.js',
+    '.cjs',
+    ...(useTypeScript ? ['.tsx', '.ts'] : []),
     '.jsx',
     '.json',
     '.wasm'

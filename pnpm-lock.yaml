@@ -162,7 +162,7 @@ importers:
 
   packages/platform-web:
     specifiers:
-      '@next/react-refresh-utils': 10.0.5
+      '@next/react-refresh-utils': 12.1.6
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
       '@shuvi/plugins': 0.0.1-pre.10
@@ -194,7 +194,7 @@ importers:
       use-sync-external-store: 1.1.0
       webpack: 5.73.0
     dependencies:
-      '@next/react-refresh-utils': 10.0.5_gblaixfkdd3xq4bohfx2wdinkq
+      '@next/react-refresh-utils': 12.1.6_gblaixfkdd3xq4bohfx2wdinkq
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
@@ -538,7 +538,7 @@ importers:
       css-minimizer-webpack-plugin: 3.4.1_gudac54vzylpo4ttyx5byerc7e
       esbuild: 0.14.38
       file-loader: 6.2.0_webpack@5.73.0
-      fork-ts-checker-webpack-plugin: 6.0.8
+      fork-ts-checker-webpack-plugin: 6.0.8_webpack@5.73.0
       ignore-loader: 0.1.2
       loader-utils: 2.0.0
       mini-css-extract-plugin: 1.3.9_webpack@5.73.0
@@ -3599,11 +3599,14 @@ packages:
     resolution: {integrity: sha512-jDJTpta+P4p1NZTFVLHJ/TLFVYVcOqv6l8xwOeBKNPMgY/zDYH/YH7SJbvrr/h1RcS9GzbPcLKGzpuK9cV56UA==}
     dev: false
 
-  /@next/react-refresh-utils/10.0.5_gblaixfkdd3xq4bohfx2wdinkq:
-    resolution: {integrity: sha512-Eo+nvW1ZhdkuxBWSsKHGDLNspUaJJQClld9R+H+EtiIuAQtTa8f2rhcQeyUOtvUNQoPyq7Em2PwUqOQD6LOOMA==}
+  /@next/react-refresh-utils/12.1.6_gblaixfkdd3xq4bohfx2wdinkq:
+    resolution: {integrity: sha512-O3ZxwLbjMnAfzAQkb0IEVxPCdhbHQiRm21cfIpgxOy95XZYg/6QBJlLvKDQf1V0wsDKkaI5SacDq2ULnEHyiag==}
     peerDependencies:
-      react-refresh: 0.8.3
+      react-refresh: 0.12.0
       webpack: ^4 || ^5
+    peerDependenciesMeta:
+      webpack:
+        optional: true
     dependencies:
       react-refresh: 0.8.3
       webpack: 5.73.0
@@ -3722,11 +3725,20 @@ packages:
     resolution: {integrity: sha512-3NsZsJIA/22P3QUyrEDNA2D133H4j224twJrdipXN38dpnIOzAbUDtOwkcJ5pXmn75w7LSQDjA4tO9dm1XlqlA==}
     dev: false
 
-  /@samverschueren/stream-to-observable/0.3.0:
+  /@samverschueren/stream-to-observable/0.3.0_rxjs@6.5.5:
     resolution: {integrity: sha512-MI4Xx6LHs4Webyvi6EbspgyAb4D2Q2VtnCQ1blOJcoLS6mVa8lNN2rkIy1CVxfTUpoyIbCTkXES1rLXztFD1lg==}
     engines: {node: '>=6'}
+    peerDependencies:
+      rxjs: '*'
+      zenObservable: '*'
+    peerDependenciesMeta:
+      rxjs:
+        optional: true
+      zenObservable:
+        optional: true
     dependencies:
-      any-observable: 0.3.0
+      any-observable: 0.3.0_rxjs@6.5.5
+      rxjs: 6.5.5
     dev: true
 
   /@shuvi/redox-react/0.0.1-pre.4_4vuqpopq4lzjzk6ywh7fybezpa:
@@ -4855,9 +4867,19 @@ packages:
     dependencies:
       color-convert: 2.0.1
 
-  /any-observable/0.3.0:
+  /any-observable/0.3.0_rxjs@6.5.5:
     resolution: {integrity: sha512-/FQM1EDkTsf63Ub2C6O7GuYFDsSXUwsaZDurV0np41ocwq0jthUAYCmhBX9f+KwlaCgIuWyr/4WlUQUBfKfZog==}
     engines: {node: '>=6'}
+    peerDependencies:
+      rxjs: '*'
+      zenObservable: '*'
+    peerDependenciesMeta:
+      rxjs:
+        optional: true
+      zenObservable:
+        optional: true
+    dependencies:
+      rxjs: 6.5.5
     dev: true
 
   /any-promise/1.3.0:
@@ -6295,6 +6317,11 @@ packages:
   /debug/4.1.1:
     resolution: {integrity: sha512-pYAIzeRo8J6KPEaJ0VWOh5Pzkbw/RetuzehGM7QRRX5he4fPHx2rdKMB256ehJCkX+XRQm16eZLqLNS8RSZXZw==}
     deprecated: Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
     dependencies:
       ms: 2.1.3
     dev: false
@@ -7386,13 +7413,20 @@ packages:
     resolution: {integrity: sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=}
     dev: true
 
-  /fork-ts-checker-webpack-plugin/6.0.8:
+  /fork-ts-checker-webpack-plugin/6.0.8_webpack@5.73.0:
     resolution: {integrity: sha512-2K6Ozamm6TSL5heFIwPhX5+VsOBiiKf9PzaPFS7kwzrILKX+jlN3DBQc5v/6YYZ2oKJyImg3bY0/uZc7cDbDYQ==}
     engines: {node: '>=10', yarn: '>=1.0.0'}
     peerDependencies:
-      typescript: '*'
+      eslint: '>= 6'
+      typescript: '>= 2.7'
+      vue-template-compiler: '*'
+      webpack: '>= 4'
     peerDependenciesMeta:
+      eslint:
+        optional: true
       typescript:
+        optional: true
+      vue-template-compiler:
         optional: true
     dependencies:
       '@babel/code-frame': 7.12.11
@@ -7407,6 +7441,7 @@ packages:
       schema-utils: 2.7.0
       semver: 7.3.2
       tapable: 1.1.3
+      webpack: 5.73.0_esbuild@0.14.38
     dev: false
 
   /form-data/2.3.3:
@@ -9613,6 +9648,7 @@ packages:
       stringify-object: 3.3.0
     transitivePeerDependencies:
       - supports-color
+      - zenObservable
     dev: true
 
   /listr-silent-renderer/1.1.1:
@@ -9651,7 +9687,7 @@ packages:
     resolution: {integrity: sha512-RmAl7su35BFd/xoMamRjpIE4j3v+L28o8CT5YhAXQJm1fD+1l9ngXY8JAQRJ+tFK2i5njvi0iRUKV09vPwA0iA==}
     engines: {node: '>=6'}
     dependencies:
-      '@samverschueren/stream-to-observable': 0.3.0
+      '@samverschueren/stream-to-observable': 0.3.0_rxjs@6.5.5
       is-observable: 1.1.0
       is-promise: 2.1.0
       is-stream: 1.1.0
@@ -9660,6 +9696,8 @@ packages:
       listr-verbose-renderer: 0.5.0
       p-map: 2.1.0
       rxjs: 6.5.5
+    transitivePeerDependencies:
+      - zenObservable
     dev: true
 
   /load-json-file/4.0.0:
@@ -11736,7 +11774,6 @@ packages:
       prop-types: 15.8.1
       react: 16.8.0
       scheduler: 0.13.6
-    dev: true
 
   /react-dom/18.1.0_react@18.1.0:
     resolution: {integrity: sha512-fU1Txz7Budmvamp7bshe4Zi32d0ll7ect+ccxNu9FlObT605GOEB8BfO4tmRJ39R5Zj831VCpvQ05QPBW5yb+w==}
@@ -11820,7 +11857,6 @@ packages:
       object-assign: 4.1.1
       prop-types: 15.8.1
       scheduler: 0.13.6
-    dev: true
 
   /react/18.1.0:
     resolution: {integrity: sha512-4oL8ivCz5ZEPyclFQXaNksK3adutVS8l2xzZU0cqEFrE9Sb7fC0EFK5uEk74wIreL1DERyjvsU915j1pcT2uEQ==}
@@ -12237,7 +12273,6 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-    dev: true
 
   /scheduler/0.19.1:
     resolution: {integrity: sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==}
