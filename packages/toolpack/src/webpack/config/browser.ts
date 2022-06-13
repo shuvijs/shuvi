@@ -33,7 +33,6 @@ export function createBrowserWebpackChain({
   chain.resolve.extensions.merge([
     '.mjs',
     '.js',
-    '.cjs',
     ...(useTypeScript ? ['.tsx', '.ts'] : []),
     '.jsx',
     '.json',

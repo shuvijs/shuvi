@@ -144,7 +144,7 @@ export function baseWebpackChain({
   // x-ref: https://github.com/webpack/webpack/issues/11467
   config.module
     .rule('webpackPatch')
-    .test(/\.(c|m)?js$/)
+    .test(/\.m?js/)
     .resolve.set('fullySpecified', false);
 
   mainRule
