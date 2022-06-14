@@ -73,7 +73,7 @@ const transformFilesObject = (
   }, {} as IFilesObject);
 };
 
-function normalizeFilePath(filepath: string) {
+export function normalizeFilePath(filepath: string) {
   const res = filepath
     // Remove the file extension from the end
     .replace(/\.\w+$/, '')
@@ -83,7 +83,7 @@ function normalizeFilePath(filepath: string) {
   return res.charAt(0) !== '/' ? '/' + res : res;
 }
 
-function normalizeRoutePath(rawPath: string) {
+export function normalizeRoutePath(rawPath: string) {
   // /xxxx/index -> /xxxx/
   let routePath = rawPath.replace(/\/index$/, '/');
 
