@@ -89,7 +89,7 @@ export default class Browser {
     page.$text = (selector: string, trim: boolean) =>
       page.$eval(
         selector,
-        (el, trim) => {
+        (el: { textContent: string | null }, trim: any) => {
           if (el.textContent === null) {
             throw Error('no matching element');
           }
@@ -103,8 +103,8 @@ export default class Browser {
     page.$$text = (selector: string, trim: boolean) =>
       page.$$eval(
         selector,
-        (els, trim) =>
-          els.map(el => {
+        (els: any[], trim: any) =>
+          els.map((el: { textContent: string | null }) => {
             if (el.textContent === null) {
               return null;
             }
@@ -118,7 +118,10 @@ export default class Browser {
     page.$attr = (selector: string, attr: string) =>
       page.$eval(
         selector,
-        (el, attr) => {
+        (
+          el: { getAttribute: (arg0: string) => any; tagName: any },
+          attr: string
+        ) => {
           const val = el.getAttribute(attr as string);
           if (val === null) {
             throw Error(`"${el.tagName}" no attr "${attr}"`);
@@ -130,7 +133,10 @@ export default class Browser {
     page.$$attr = (selector: string, attr: string) =>
       page.$$eval(
         selector,
-        (els, attr) => els.map(el => el.getAttribute(attr as string)),
+        (els: any[], attr: string) =>
+          els.map((el: { getAttribute: (arg0: string) => any }) =>
+            el.getAttribute(attr as string)
+          ),
         attr
       );
 
@@ -142,7 +148,8 @@ export default class Browser {
           path = path + '?' + qs.stringify(query);
         }
         return page.evaluate(
-          ($shuvi, path: string) => $shuvi.router.push(path),
+          ($shuvi: { router: string[] }, path: string) =>
+            $shuvi.router.push(path),
           $shuvi,
           path
         );

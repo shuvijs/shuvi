@@ -181,7 +181,7 @@ describe('Custom Server.js', () => {
       (
         await page.$$eval(
           'head > meta[name="testDocumentProps"]',
-          element => element
+          (element: Element) => element
         )
       ).length
     ).toBe(1);
