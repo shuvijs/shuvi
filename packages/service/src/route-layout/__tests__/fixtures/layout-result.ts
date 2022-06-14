@@ -1,7 +1,7 @@
 import { IRouteRecord } from '@shuvi/router';
 import { getFixturePath } from '../utils';
 
-const getPath = (filename: string) => getFixturePath(`has-layout/${filename}`);
+const getPath = (filename: string) => getFixturePath(`layout/${filename}`);
 
 export const layoutResult: IRouteRecord[] = [
   {

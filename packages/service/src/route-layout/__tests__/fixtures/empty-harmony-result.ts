@@ -4,6 +4,6 @@ import { getFixturePath } from '../utils';
 export const emptyHarmonyResult: IRouteRecord[] = [
   {
     path: '/',
-    filepath: getFixturePath('has-not-file-harmony/page.js')
+    filepath: getFixturePath('empty-harmony/page.js')
   }
 ];
