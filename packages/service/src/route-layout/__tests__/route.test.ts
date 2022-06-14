@@ -30,7 +30,8 @@ describe('route test', () => {
     expect(routes).toMatchObject(emptyHarmonyResult);
   });
 
-  test('empty exception', () => {
-    expect(getRoutes('empty-exception')).rejects.toBeTruthy();
-  });
+  test('empty exception', () =>
+    expect(getRoutes('empty-exception')).rejects.toThrow(
+      'has not page file or layout file!'
+    ));
 });
