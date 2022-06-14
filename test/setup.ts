@@ -1,5 +1,3 @@
-import 'jest-extended/all';
-
 const OLD_ENVS = { ...process.env };
 
 beforeEach(() => {
