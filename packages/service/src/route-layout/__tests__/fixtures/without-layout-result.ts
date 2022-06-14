@@ -1,21 +1,16 @@
 import { IRouteRecord } from '@shuvi/router';
-import { getFixturePath } from '../utils';
-
-const getPath = (filename: string) => {
-  return getFixturePath(`without-layout/${filename}/page.js`);
-};
 
 export const withoutLayoutResult: IRouteRecord[] = [
   {
-    path: 'a',
-    filepath: getPath('a')
+    path: '/a',
+    filepath: 'a/page.js'
   },
   {
-    path: 'b',
-    filepath: getPath('b')
+    path: '/b',
+    filepath: 'b/page.js'
   },
   {
     path: '/',
-    filepath: getPath('')
+    filepath: 'page.js'
   }
 ];
