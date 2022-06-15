@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { AppCtx, Page, serveFixture, resolveFixture } from '../utils';
+import * as fs from 'fs';
+import * as path from 'path';
+import { AppCtx, serveFixture, resolveFixture } from '../utils';
 
 const depa = 'depa';
 const depb = 'depb';
