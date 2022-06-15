@@ -67,4 +67,15 @@ describe('filesystem routes', () => {
     ]);
     // todo: check warnings
   });
+
+  it('should ignore useless layout.js and has warnings', async () => {
+    const routes = await getRoutes('warning-useless-layoutjs');
+    expect(routes).toMatchObject([
+      {
+        path: '/a',
+        filepath: 'a/page.js'
+      }
+    ]);
+    // todo: check warnings
+  });
 });
