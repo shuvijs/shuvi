@@ -1,16 +1,12 @@
-import { IRouteRecord } from '@shuvi/router';
+import { ConventionRouteRecord } from '../../../../src/route-layout/route-record';
 
-export const withoutLayoutResult: IRouteRecord[] = [
+export const withoutLayoutResult: ConventionRouteRecord[] = [
   {
     path: '/a',
-    filepath: 'a/page.js'
+    pagePath: 'a/page.js'
   },
   {
     path: '/b',
-    filepath: 'b/page.js'
-  },
-  {
-    path: '/',
-    filepath: 'page.js'
+    pagePath: 'b/page.js'
   }
 ];

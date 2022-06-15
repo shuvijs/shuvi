@@ -1,48 +1,48 @@
-import { IRouteRecord } from '@shuvi/router';
+import { ConventionRouteRecord } from '../../../../src/route-layout/route-record';
 
-export const dynamicPathResult: IRouteRecord[] = [
+export const dynamicPathResult: ConventionRouteRecord[] = [
   {
     path: '/',
-    filepath: 'layout.js',
+    pagePath: 'layout.js',
     children: [
       {
         path: 'a/:id',
-        filepath: 'a/[id]/page.js'
+        pagePath: 'a/[id]/page.js'
       },
       {
         path: 'b/:id?',
-        filepath: 'b/[[id]]/page.js'
+        pagePath: 'b/[[id]]/page.js'
       },
       {
         path: 'c/:id+',
-        filepath: 'c/[...id]/page.js'
+        pagePath: 'c/[...id]/page.js'
       },
       {
         path: 'd/:id*',
-        filepath: 'd/[[...id]]/page.js'
+        pagePath: 'd/[[...id]]/page.js'
       },
-      { path: 'd', filepath: 'd/page.js' },
+      { path: 'd', pagePath: 'd/page.js' },
       {
         path: 'e',
-        filepath: 'e/layout.js',
+        pagePath: 'e/layout.js',
         children: [
           {
             path: ':id',
-            filepath: 'e/[id]/page.js'
+            pagePath: 'e/[id]/page.js'
           }
         ]
       },
       {
         path: 'f/:pid/:id',
-        filepath: 'f/[pid]/[id]/page.js'
+        pagePath: 'f/[pid]/[id]/page.js'
       },
       {
         path: 'g/:pid/:id',
-        filepath: 'g/[pid]/[id]/page.js'
+        pagePath: 'g/[pid]/[id]/page.js'
       },
       {
         path: 'g/:pid',
-        filepath: 'g/[pid]/page.js'
+        pagePath: 'g/[pid]/page.js'
       }
     ]
   }

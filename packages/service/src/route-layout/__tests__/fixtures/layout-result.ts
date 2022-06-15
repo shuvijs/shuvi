@@ -1,29 +1,29 @@
-import { IRouteRecord } from '@shuvi/router';
+import { ConventionRouteRecord } from '../../../../src/route-layout/route-record';
 
-export const layoutResult: IRouteRecord[] = [
+export const layoutResult: ConventionRouteRecord[] = [
   {
     path: '/',
-    filepath: 'layout.js',
+    pagePath: 'layout.js',
     children: [
       {
         path: 'a',
-        filepath: 'a/layout.js',
+        pagePath: 'a/layout.js',
         children: [
           {
             path: 'b',
-            filepath: 'a/b/page.js'
+            pagePath: 'a/b/page.js'
           },
           {
             path: 'c',
-            filepath: 'a/c/page.js'
+            pagePath: 'a/c/page.js'
           },
           {
             path: 'd',
-            filepath: 'a/d/layout.js',
+            pagePath: 'a/d/layout.js',
             children: [
               {
                 path: 'e',
-                filepath: 'a/d/e/page.js'
+                pagePath: 'a/d/e/page.js'
               }
             ]
           }
