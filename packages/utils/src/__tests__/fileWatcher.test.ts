@@ -1,5 +1,5 @@
 import { watch } from '../fileWatcher';
-import fs from 'fs';
+import * as fs from 'fs';
 import { resolveFixture, copyDirectory, deleteDirectory } from './utils';
 import { wait } from 'shuvi-test-utils';
 
@@ -23,12 +23,12 @@ describe('fileWatcher', () => {
   });
 
   describe('watch file', () => {
-    test('change a file', (done) => {
+    test('change a file', done => {
       const fileTarget = resolveFixture('watchers/watcher/watcher.js');
 
       let close = watch(
         {
-          files: [fileTarget],
+          files: [fileTarget]
         },
         ({ getAllFiles, changes, removals }) => {
           expect(changes.length).toBe(1);
@@ -43,12 +43,12 @@ describe('fileWatcher', () => {
       fs.writeFileSync(fileTarget, `Trigger watcher`, 'utf-8');
     });
 
-    test('add a file', (done) => {
+    test('add a file', done => {
       const fileTarget = resolveFixture('watchers/watcher-add/add.js');
 
       let close = watch(
         {
-          files: [fileTarget],
+          files: [fileTarget]
         },
         ({ getAllFiles, changes, removals }) => {
           expect(changes.length).toBe(1);
@@ -62,12 +62,12 @@ describe('fileWatcher', () => {
       fs.writeFileSync(fileTarget, '');
     });
 
-    test('delete a file', async (done) => {
+    test('delete a file', async done => {
       const fileTarget = resolveFixture('watchers/watcher-delete/delete.js');
 
       let close = watch(
         {
-          files: [fileTarget],
+          files: [fileTarget]
         },
         ({ getAllFiles, changes, removals }) => {
           expect(changes.length).toBe(0);
@@ -95,7 +95,7 @@ describe('fileWatcher', () => {
       const mock = jest.fn();
       let close = watch(
         {
-          files: [fileToWatch],
+          files: [fileToWatch]
         },
         mock
       );
@@ -108,13 +108,13 @@ describe('fileWatcher', () => {
   });
 
   describe('watch directory', () => {
-    test('change a file', (done) => {
+    test('change a file', done => {
       const directoryTarget = resolveFixture('watchers/watcher-directory');
       const fileTarget = resolveFixture('watchers/watcher-directory/file1.js');
 
       let close = watch(
         {
-          directories: [directoryTarget],
+          directories: [directoryTarget]
         },
         ({ getAllFiles, changes, removals }) => {
           expect(changes.length).toBe(1);
@@ -129,7 +129,7 @@ describe('fileWatcher', () => {
       fs.writeFileSync(fileTarget, `Trigger watcher`, 'utf-8');
     });
 
-    test('add a file', (done) => {
+    test('add a file', done => {
       const directoryTarget = resolveFixture('watchers/watcher-directory-add');
       const fileTarget = resolveFixture(
         'watchers/watcher-directory-add/add.js'
@@ -137,7 +137,7 @@ describe('fileWatcher', () => {
 
       let close = watch(
         {
-          directories: [directoryTarget],
+          directories: [directoryTarget]
         },
         ({ getAllFiles, changes, removals }) => {
           expect(changes.length).toBe(1);
@@ -155,7 +155,7 @@ describe('fileWatcher', () => {
       Deleting a file in directory will not add to `removals` but only `changes`
       https://github.com/webpack/watchpack/blob/master/test/Watchpack.js#L245
     */
-    test('delete a file', async (done) => {
+    test('delete a file', async done => {
       const directoryTarget = resolveFixture(
         'watchers/watcher-directory-remove'
       );
@@ -165,7 +165,7 @@ describe('fileWatcher', () => {
 
       let close = watch(
         {
-          directories: [directoryTarget],
+          directories: [directoryTarget]
         },
         ({ getAllFiles, changes, removals }) => {
           expect(changes.length).toBe(1);

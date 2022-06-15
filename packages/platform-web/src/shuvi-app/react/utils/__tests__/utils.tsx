@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { IRouteRecord, MemoryRouter, RouterView } from '@shuvi/router-react';
 import { render, ReactTestRenderer } from 'shuvi-test-utils/reactTestRender';
 import { resetHydratedState } from '../router';

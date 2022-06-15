@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
-import fse from 'fs-extra';
-import path from 'path';
+import * as fse from 'fs-extra';
+import * as path from 'path';
 
 export function resetFs() {
   vol.reset();

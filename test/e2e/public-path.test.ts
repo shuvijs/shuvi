@@ -22,7 +22,7 @@ describe('public path', () => {
   test('should pass public path to client', async () => {
     page = await ctx.browser.page(ctx.url('/'));
     const pubicPath = await page.evaluate(
-      name => window[name],
+      (name: any) => window[name],
       IDENTITY_RUNTIME_PUBLICPATH
     );
     expect(pubicPath).toBe(PUBLIC_PATH);

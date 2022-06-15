@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { isPluginInstance, SyncHook } from '@shuvi/hook';
 import {
   createPlugin,

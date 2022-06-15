@@ -32,10 +32,16 @@ jest.setTimeout(5 * 60 * 1000);
       // wait for style inserting
       await page.waitFor(1000);
       expect(
-        await page.$eval('#css', el => window.getComputedStyle(el).fontSize)
+        await page.$eval(
+          '#css',
+          (el: Element) => window.getComputedStyle(el).fontSize
+        )
       ).toBe('16px');
       expect(
-        await page.$eval('#css', el => window.getComputedStyle(el).opacity)
+        await page.$eval(
+          '#css',
+          (el: Element) => window.getComputedStyle(el).opacity
+        )
       ).toBe('0.5');
     });
 
@@ -44,10 +50,16 @@ jest.setTimeout(5 * 60 * 1000);
       // wait for style inserting
       await page.waitFor(1000);
       expect(
-        await page.$eval('#css', el => window.getComputedStyle(el).fontSize)
+        await page.$eval(
+          '#css',
+          (el: Element) => window.getComputedStyle(el).fontSize
+        )
       ).toBe('16px');
       expect(
-        await page.$eval('#css', el => window.getComputedStyle(el).opacity)
+        await page.$eval(
+          '#css',
+          (el: Element) => window.getComputedStyle(el).opacity
+        )
       ).toBe('0.5');
     });
 
@@ -56,10 +68,16 @@ jest.setTimeout(5 * 60 * 1000);
       // wait for style inserting
       await page.waitFor(1000);
       expect(
-        await page.$eval('#css', el => window.getComputedStyle(el).fontSize)
+        await page.$eval(
+          '#css',
+          (el: Element) => window.getComputedStyle(el).fontSize
+        )
       ).toBe('16px');
       expect(
-        await page.$eval('#css', el => window.getComputedStyle(el).opacity)
+        await page.$eval(
+          '#css',
+          (el: Element) => window.getComputedStyle(el).opacity
+        )
       ).toBe('0.5');
     });
 
@@ -78,20 +96,23 @@ jest.setTimeout(5 * 60 * 1000);
       expect(
         await page.$eval(
           '#css-modules',
-          el => window.getComputedStyle(el).opacity
+          (el: Element) => window.getComputedStyle(el).opacity
         )
       ).toBe('0.5');
-      const nextButtonStyle = await page.$eval('#next-button', el => {
-        const { padding, border, cursor, backgroundColor, color } =
-          window.getComputedStyle(el);
-        return {
-          padding,
-          border,
-          cursor,
-          backgroundColor,
-          color
-        };
-      });
+      const nextButtonStyle = await page.$eval(
+        '#next-button',
+        (el: Element) => {
+          const { padding, border, cursor, backgroundColor, color } =
+            window.getComputedStyle(el);
+          return {
+            padding,
+            border,
+            cursor,
+            backgroundColor,
+            color
+          };
+        }
+      );
       expect(nextButtonStyle).toStrictEqual({
         padding: '7px 15px',
         border: '0px none rgb(255, 255, 255)',
@@ -123,7 +144,10 @@ jest.setTimeout(5 * 60 * 1000);
         `document.querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`
       );
       expect(
-        await page.$eval('body', el => window.getComputedStyle(el).display)
+        await page.$eval(
+          'body',
+          (el: Element) => window.getComputedStyle(el).display
+        )
       ).not.toBe('none');
     });
   });

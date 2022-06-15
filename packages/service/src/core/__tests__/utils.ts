@@ -1,5 +1,5 @@
 import { createHookManager, createSyncHook } from '@shuvi/hook';
-import path from 'path';
+import * as path from 'path';
 
 const test = createSyncHook();
 

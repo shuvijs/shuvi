@@ -28,8 +28,10 @@ describe('useLoaderData', () => {
       page = await ctx.browser.page(ctx.url('/'));
       const logs = [];
       const errors = [];
-      page.on('console', msg => logs.push(msg.text));
-      page.on('pageerror', error => errors.push(error.message));
+      page.on('console', (msg: { text: string }) => logs.push(msg.text));
+      page.on('pageerror', (error: { message: string }) =>
+        errors.push(error.message)
+      );
       expect(await page.$text('p')).toBe('world');
       expect(logs.length).toBe(0);
       expect(errors.length).toBe(0);
@@ -44,8 +46,10 @@ describe('useLoaderData', () => {
       page = await ctx.browser.page(ctx.url('/'));
       const logs = [];
       const errors = [];
-      page.on('console', msg => logs.push(msg.text));
-      page.on('pageerror', error => errors.push(error.message));
+      page.on('console', (msg: { text: string }) => logs.push(msg.text));
+      page.on('pageerror', (error: { message: string }) =>
+        errors.push(error.message)
+      );
       expect(await page.$text('p')).toBe('world');
       expect(logs.length).toBe(0);
       expect(errors.length).toBe(0);
