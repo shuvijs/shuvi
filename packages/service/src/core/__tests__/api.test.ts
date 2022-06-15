@@ -1,7 +1,7 @@
 import { getApi } from '../api';
 import { UserConfig, getFullUserConfig } from '..';
-import path from 'path';
-import rimraf from 'rimraf';
+import * as path from 'path';
+import rimraf = require('rimraf');
 import { readFileSync } from 'fs';
 
 test('should has "production" be default mode', async () => {

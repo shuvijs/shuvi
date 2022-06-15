@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 
 export function resolveFixture(name: string) {
   return path.join(__dirname, 'fixtures', name);

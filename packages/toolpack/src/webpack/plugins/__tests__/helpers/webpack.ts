@@ -5,7 +5,7 @@ import type {
   Configuration,
   NormalModule
 } from 'webpack';
-import webpack from 'webpack';
+import webpack = require('webpack');
 import { resolveFixture } from '../utils';
 
 export interface WatchChainer {

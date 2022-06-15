@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import * as webpack from 'webpack';
+import webpack = require('webpack');
 import * as path from 'path';
 import WebpackChain = require('webpack-chain');
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
