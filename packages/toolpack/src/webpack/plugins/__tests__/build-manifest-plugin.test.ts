@@ -37,7 +37,8 @@ describe('build-manifest-plugin', () => {
           runtime: 'runtime.js'
         },
         chunkRequest: {},
-        loadble: {}
+        loadble: {},
+        manifestPath: 'static/manifest/loadManifest.js'
       });
     });
 
@@ -102,7 +103,8 @@ describe('build-manifest-plugin', () => {
             ],
             files: ['static/chunks/helperTwo.js']
           }
-        }
+        },
+        manifestPath: 'static/manifest/loadManifest.js'
       });
     });
 

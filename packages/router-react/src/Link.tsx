@@ -4,6 +4,7 @@ import { useHref, useNavigate, useResolvedPath } from '.';
 import { pathToString, State, PathRecord } from '@shuvi/router';
 import { __DEV__ } from './constants';
 import { useCurrentRoute } from './hooks';
+import prefetchFn from './prefetch';
 
 function isModifiedEvent(event: React.MouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
@@ -36,13 +37,28 @@ function isModifiedEvent(event: React.MouseEvent) {
  */
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   function LinkWithRef(
-    { onClick, replace: replaceProp = false, state, target, to, ...rest },
+    {
+      onClick,
+      replace: replaceProp = false,
+      state,
+      target,
+      to,
+      prefetch,
+      ...rest
+    },
     ref
   ) {
     let href = useHref(to);
     let navigate = useNavigate();
     const location = useCurrentRoute();
     let path = useResolvedPath(to);
+    let shouldPrefetch = prefetch !== false; //default true
+
+    React.useEffect(() => {
+      if (shouldPrefetch) {
+        prefetchFn(href);
+      }
+    }, [href, shouldPrefetch]);
 
     function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
       if (onClick) onClick(event);
@@ -81,6 +97,7 @@ export interface LinkProps
   replace?: boolean;
   state?: State;
   to: PathRecord;
+  prefetch?: boolean;
 }
 
 if (__DEV__) {
@@ -90,6 +107,7 @@ if (__DEV__) {
     replace: PropTypes.bool,
     state: PropTypes.object,
     target: PropTypes.string,
+    prefetch: PropTypes.bool,
     // @ts-ignore proptypes's bug?
     to: PropTypes.oneOfType([
       PropTypes.string,

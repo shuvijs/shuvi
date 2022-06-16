@@ -58,3 +58,9 @@ export interface INavigateFunction {
   (to: PathRecord, options?: { replace?: boolean; state?: State }): void;
   (delta: number): void;
 }
+
+declare global {
+  interface Window {
+    __SHUVI_MANIFEST?: Record<string, string[]>;
+  }
+}

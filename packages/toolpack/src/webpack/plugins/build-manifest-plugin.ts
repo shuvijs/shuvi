@@ -42,6 +42,20 @@ function getFileExt(filepath: string): string {
 //   return entrypoints;
 // }
 
+function generateClientManifest(assetMap: IManifest): string | undefined {
+  const clientManifest: Record<string, string[]> = {};
+  const loadable = assetMap.loadble;
+  for (const path_full in loadable) {
+    let path_short = path_full
+      .replace(/^.*\/pages\//, '/')
+      .replace(/\.js.*|\?.*$/, '');
+    if (path_short === '/index') path_short = '/';
+
+    clientManifest[path_short] = assetMap.loadble[path_full].files;
+  }
+  return JSON.stringify(clientManifest);
+}
+
 // This plugin creates a build-manifest.json for all assets that are being output
 // It has a mapping of "entry" filename to real filename. Because the real filename can be hashed in production
 export default class BuildManifestPlugin implements Plugin {
@@ -55,12 +69,13 @@ export default class BuildManifestPlugin implements Plugin {
     };
   }
 
-  createAssets(compiler: Compiler, compilation: Compilation) {
+  createAssets(compiler: Compiler, compilation: Compilation, assets: any) {
     const assetMap = (this._manifest = {
       entries: {},
       bundles: {},
       chunkRequest: {},
-      loadble: {}
+      loadble: {},
+      manifestPath: ''
     });
 
     const chunkRootModulesMap = new Map<ModuleId, Boolean>();
@@ -89,6 +104,11 @@ export default class BuildManifestPlugin implements Plugin {
       // eslint-disable-next-line no-sequences
       .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
 
+    assetMap.manifestPath = 'static/manifest/loadManifest.js';
+    assets['static/manifest/loadManifest.js'] = new RawSource(
+      `self.__SHUVI_MANIFEST = ${generateClientManifest(assetMap)}`
+    );
+
     return assetMap;
   }
 
@@ -101,7 +121,11 @@ export default class BuildManifestPlugin implements Plugin {
         },
         assets => {
           assets[this._options.filename] = new RawSource(
-            JSON.stringify(this.createAssets(compiler, compilation), null, 2),
+            JSON.stringify(
+              this.createAssets(compiler, compilation, assets),
+              null,
+              2
+            ),
             true
           );
         }
