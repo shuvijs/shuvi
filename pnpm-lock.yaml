@@ -190,11 +190,11 @@ importers:
       react: 18.1.0
       react-app-polyfill: 2.0.0
       react-dom: 18.1.0
-      react-refresh: 0.8.3
+      react-refresh: 0.12.0
       use-sync-external-store: 1.1.0
       webpack: 5.73.0
     dependencies:
-      '@next/react-refresh-utils': 12.1.6_gblaixfkdd3xq4bohfx2wdinkq
+      '@next/react-refresh-utils': 12.1.6_mrng46iweft73kaoehgasn3du4
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/plugins': link:../plugins
@@ -216,7 +216,7 @@ importers:
       react: 18.1.0
       react-app-polyfill: 2.0.0
       react-dom: 18.1.0_react@18.1.0
-      react-refresh: 0.8.3
+      react-refresh: 0.12.0
       use-sync-external-store: 1.1.0_react@18.1.0
     devDependencies:
       '@testing-library/react': 10.0.2_ef5jwxihqo6n7gxfmzogljlgcm
@@ -3599,7 +3599,7 @@ packages:
     resolution: {integrity: sha512-jDJTpta+P4p1NZTFVLHJ/TLFVYVcOqv6l8xwOeBKNPMgY/zDYH/YH7SJbvrr/h1RcS9GzbPcLKGzpuK9cV56UA==}
     dev: false
 
-  /@next/react-refresh-utils/12.1.6_gblaixfkdd3xq4bohfx2wdinkq:
+  /@next/react-refresh-utils/12.1.6_mrng46iweft73kaoehgasn3du4:
     resolution: {integrity: sha512-O3ZxwLbjMnAfzAQkb0IEVxPCdhbHQiRm21cfIpgxOy95XZYg/6QBJlLvKDQf1V0wsDKkaI5SacDq2ULnEHyiag==}
     peerDependencies:
       react-refresh: 0.12.0
@@ -3608,7 +3608,7 @@ packages:
       webpack:
         optional: true
     dependencies:
-      react-refresh: 0.8.3
+      react-refresh: 0.12.0
       webpack: 5.73.0
     dev: false
 
@@ -6510,6 +6510,8 @@ packages:
     dependencies:
       address: 1.1.2
       debug: 2.6.9
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /devtools-protocol/0.0.982423:
@@ -8750,6 +8752,8 @@ packages:
       which: 2.0.2
     optionalDependencies:
       fsevents: 2.3.2
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /jest-haste-map/26.6.2:
@@ -11815,8 +11819,8 @@ packages:
       scheduler: 0.20.2
     dev: false
 
-  /react-refresh/0.8.3:
-    resolution: {integrity: sha512-X8jZHc7nCMjaCqoU+V2I0cOhNW+QMBwSUkeXnTi8IPe6zaRWfn60ZzvFDZqWPfmSJfjub7dDW1SP0jaHWLu/hg==}
+  /react-refresh/0.12.0:
+    resolution: {integrity: sha512-suLIhrU2IHKL5JEKR/fAwJv7bbeq4kJ+pJopf77jHwuR+HmJS/HbrPIGsTBUVfw7tXPOmYv7UJ7PCaN49e8x4A==}
     engines: {node: '>=0.10.0'}
     dev: false
 
@@ -12380,6 +12384,8 @@ packages:
       on-finished: 2.3.0
       range-parser: 1.2.1
       statuses: 1.5.0
+    transitivePeerDependencies:
+      - supports-color
 
   /serialize-javascript/6.0.0:
     resolution: {integrity: sha512-Qr3TosvguFt8ePWqsvRfrKyQXIiW+nGbYpy8XK24NQHE83caxWt+mIymTT19DGFbNWNLfEwsrkSmN64lVWB9ag==}

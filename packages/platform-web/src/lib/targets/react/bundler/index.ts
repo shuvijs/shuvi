@@ -9,7 +9,7 @@ import { DefinePlugin } from 'webpack';
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
-  { name },
+  { name, webpack },
   context
 ) => {
   const resolveLocal = (m: string, sub?: string) => {
@@ -58,7 +58,9 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
       .loader(require.resolve('@next/react-refresh-utils/loader'))
       .before('shuvi-swc-loader');
 
-    config.plugin('react-refresh-plugin').use(ReactRefreshWebpackPlugin);
+    config
+      .plugin('react-refresh-plugin')
+      .use(ReactRefreshWebpackPlugin, [webpack]);
     config.plugin('version-env-plugin').use(DefinePlugin, [
       {
         'process.env.__SHUVI__AFTER__REACT__18__': JSON.stringify(
