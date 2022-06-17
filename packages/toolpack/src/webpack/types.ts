@@ -1,4 +1,4 @@
-import WebpackChain = require('webpack-chain');
+import WebpackChain from 'webpack-chain';
 export interface IModuleItem {
   id: string;
   name: string;

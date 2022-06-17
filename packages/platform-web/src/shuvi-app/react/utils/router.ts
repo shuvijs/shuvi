@@ -111,7 +111,7 @@ export function normalizeRoutes(
           Component = component;
         }
         if (Component.getInitialProps) {
-          console.error(getInitialPropsDeprecatingMessage);
+          console.warn(getInitialPropsDeprecatingMessage);
           if (shouldHydrated) {
             // only hydrated once, use server state
             hydrated[id] = true;

@@ -1,4 +1,4 @@
-// jest.config.js
+/** @type {import('ts-jest').InitialOptionsTsJest} */
 module.exports = {
   verbose: true,
 

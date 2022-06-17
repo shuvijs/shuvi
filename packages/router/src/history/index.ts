@@ -2,6 +2,8 @@ import MemoryHistory, { MemoryHistoryOptions, InitialEntry } from './memory';
 import BrowserHistory from './browser';
 import HashHistory from './hash';
 
+export * from './base';
+
 export { MemoryHistory, MemoryHistoryOptions, InitialEntry };
 
 export function createBrowserHistory(): BrowserHistory {

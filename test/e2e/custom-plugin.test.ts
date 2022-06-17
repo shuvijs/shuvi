@@ -75,7 +75,7 @@ describe('Plugin', () => {
         (
           await page.$$eval(
             'head > meta[name="testDocumentProps"]',
-            (element: Element) => element
+            element => element
           )
         ).length
       ).toBe(1);

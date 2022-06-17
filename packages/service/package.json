@@ -17,9 +17,9 @@
     "types"
   ],
   "scripts": {
-    "dev": "tsc -p tsconfig.build.json -w",
+    "dev": "tsc -p tsconfig.build.json -m commonjs -w",
     "prebuild": "rimraf lib",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json -m commonjs"
   },
   "engines": {
     "node": ">= 12.0.0"

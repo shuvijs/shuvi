@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import program = require('commander');
+import program from 'commander';
 import { highlight } from 'cli-highlight';
 import chalk from '@shuvi/utils/lib/chalk';
 import { getApi } from '@shuvi/service';
