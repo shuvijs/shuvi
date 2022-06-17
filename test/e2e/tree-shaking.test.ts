@@ -41,9 +41,8 @@ describe('Tree Shaking', () => {
       'tree-shaking/dist/client/build-manifest.json'
     ));
   });
-  afterAll(async done => {
+  afterAll(async () => {
     await ctx.close();
-    done();
   });
 
   test('just import xx, but no use. xx and what it depends will be remove', async () => {

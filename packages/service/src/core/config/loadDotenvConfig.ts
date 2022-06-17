@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { DotenvConfigOutput } from 'dotenv';
-import dotenvExpand = require('dotenv-expand');
+import dotenvExpand from 'dotenv-expand';
 import * as fs from 'fs';
 import * as path from 'path';
 

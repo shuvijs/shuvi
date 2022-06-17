@@ -1,6 +1,5 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
-// @ts-ignore
 import puppeteer, { ConsoleMessage, WaitForOptions } from 'puppeteer-core';
 import * as qs from 'querystring';
 import ChromeDetector from './chrome';
@@ -118,10 +117,7 @@ export default class Browser {
     page.$attr = (selector: string, attr: string) =>
       page.$eval(
         selector,
-        (
-          el: { getAttribute: (arg0: string) => any; tagName: any },
-          attr: string
-        ) => {
+        (el, attr) => {
           const val = el.getAttribute(attr as string);
           if (val === null) {
             throw Error(`"${el.tagName}" no attr "${attr}"`);
@@ -133,7 +129,7 @@ export default class Browser {
     page.$$attr = (selector: string, attr: string) =>
       page.$$eval(
         selector,
-        (els: any[], attr: string) =>
+        (els, attr) =>
           els.map((el: { getAttribute: (arg0: string) => any }) =>
             el.getAttribute(attr as string)
           ),

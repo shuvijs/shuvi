@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { IParams, IRouteMatch } from '@shuvi/router';
-import { joinPaths } from '@shuvi/router/lib/utils';
+import { IParams, IRouteMatch, joinPaths } from '@shuvi/router';
 import { useCurrentRoute } from './hooks';
 import { __DEV__ } from './constants';
 import { MatchedRouteContext } from './contexts';

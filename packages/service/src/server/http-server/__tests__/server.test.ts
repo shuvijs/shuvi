@@ -131,18 +131,21 @@ describe('server', () => {
     });
   });
 
-  test('should detect if port is being used', async done => {
+  test('should detect if port is being used', async () => {
     server = new Server();
     const anotherServer = new Server();
     const port = await findPort();
     await server.listen(port);
 
+    let error: any;
     try {
       await anotherServer.listen(port);
     } catch (e: any) {
-      expect(e.code).toBe('EADDRINUSE');
-      expect(e.message).toMatch(/is being used./);
-      done();
+      error = e;
     }
+
+    expect(error).toBeDefined();
+    expect(error.code).toBe('EADDRINUSE');
+    expect(error.message).toMatch(/is being used./);
   });
 });

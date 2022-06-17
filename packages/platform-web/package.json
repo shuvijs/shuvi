@@ -65,7 +65,6 @@
     "@types/cookie": "^0.4.1",
     "@types/ejs": "^3.1.0",
     "@types/raw-body": "^2.3.0",
-    "@types/webpack-env": "^1.16.2",
     "webpack": "5.73.0"
   }
 }

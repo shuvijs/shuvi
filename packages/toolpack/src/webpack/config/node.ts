@@ -1,4 +1,4 @@
-import WebpackChain = require('webpack-chain');
+import WebpackChain from 'webpack-chain';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';

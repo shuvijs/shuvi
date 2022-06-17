@@ -28,7 +28,7 @@ describe('useLoaderData', () => {
       page = await ctx.browser.page(ctx.url('/'));
       const logs = [];
       const errors = [];
-      page.on('console', (msg: { text: string }) => logs.push(msg.text));
+      page.on('console', msg => logs.push(msg.text));
       page.on('pageerror', (error: { message: string }) =>
         errors.push(error.message)
       );
@@ -46,7 +46,7 @@ describe('useLoaderData', () => {
       page = await ctx.browser.page(ctx.url('/'));
       const logs = [];
       const errors = [];
-      page.on('console', (msg: { text: string }) => logs.push(msg.text));
+      page.on('console', msg => logs.push(msg.text));
       page.on('pageerror', (error: { message: string }) =>
         errors.push(error.message)
       );

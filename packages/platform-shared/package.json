@@ -38,8 +38,5 @@
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/runtime": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10"
-  },
-  "devDependencies": {
-    "@types/webpack-env": "^1.16.2"
   }
 }
