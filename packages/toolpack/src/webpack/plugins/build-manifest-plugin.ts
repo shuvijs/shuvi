@@ -2,6 +2,7 @@ import { IModuleItem, IManifest } from '../types';
 import webpack from 'webpack';
 import { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
 import Entrypoint from 'webpack/lib/Entrypoint';
+import { LOAD_MANIFEST_PATH } from '@shuvi/shared/lib/constants';
 
 const { RawSource } = webpack.sources;
 
@@ -10,13 +11,15 @@ type ModuleId = string | number;
 const defaultOptions = {
   filename: 'build-manifest.json',
   modules: false,
-  chunkRequest: false
+  chunkRequest: false,
+  publicPath: '/'
 };
 
 interface Options {
   filename: string;
   modules: boolean;
   chunkRequest: boolean;
+  publicPath: string;
 }
 
 function getFileExt(filepath: string): string {
@@ -42,16 +45,20 @@ function getFileExt(filepath: string): string {
 //   return entrypoints;
 // }
 
-function generateClientManifest(assetMap: IManifest): string | undefined {
+function generateClientManifest(
+  assetMap: IManifest,
+  publicPath: string
+): string | undefined {
   const clientManifest: Record<string, string[]> = {};
   const loadable = assetMap.loadble;
   for (const path_full in loadable) {
     let path_short = path_full
       .replace(/^.*\/pages\//, '/')
-      .replace(/\.js.*|\?.*$/, '');
+      .replace(/\.js.*|\.ts.*|\?.*$/, '');
     if (path_short === '/index') path_short = '/';
-
-    clientManifest[path_short] = assetMap.loadble[path_full].files;
+    clientManifest[path_short] = assetMap.loadble[path_full].files.map(
+      file => publicPath + file
+    );
   }
   return JSON.stringify(clientManifest);
 }
@@ -104,9 +111,12 @@ export default class BuildManifestPlugin implements Plugin {
       // eslint-disable-next-line no-sequences
       .reduce((a, c) => ((a[c] = this._manifest.loadble[c]), a), {} as any);
 
-    assetMap.manifestPath = 'static/manifest/loadManifest.js';
-    assets['static/manifest/loadManifest.js'] = new RawSource(
-      `self.__SHUVI_MANIFEST = ${generateClientManifest(assetMap)}`
+    assetMap.manifestPath = LOAD_MANIFEST_PATH;
+    assets[LOAD_MANIFEST_PATH] = new RawSource(
+      `self.__SHUVI_MANIFEST = ${generateClientManifest(
+        assetMap,
+        this._options.publicPath
+      )}`
     );
 
     return assetMap;

@@ -41,9 +41,7 @@ function getFilesForRoute(route: string): Promise<any> {
       throw new Error(`Failed to lookup route: ${route}`);
     }
 
-    const allFiles = manifest[route].map(
-      entry => '/_shuvi/' + encodeURI(entry)
-    );
+    const allFiles = manifest[route].map(entry => encodeURI(entry));
 
     return {
       scripts: allFiles.filter(v => v.endsWith('.js')),

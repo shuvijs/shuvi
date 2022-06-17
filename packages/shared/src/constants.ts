@@ -48,3 +48,5 @@ export const BUNDLER_DEFAULT_TARGET = `${NAME}/client`;
 export const BUNDLER_TARGET_CLIENT = BUNDLER_DEFAULT_TARGET;
 
 export const BUNDLER_TARGET_SERVER = `${NAME}/server`;
+
+export const LOAD_MANIFEST_PATH = `static/manifest/loadManifest.js`;
