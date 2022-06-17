@@ -194,6 +194,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     };
 
     const abort = () => {
+      this._cancleHandler = null;
+
       onAbort && onAbort();
 
       // fire ready cbs once
@@ -251,11 +253,12 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
         return abort();
       }
       this._pending = null;
+      this._cancleHandler = null;
 
       onComplete();
+
       const pre = this._current;
       this._current = this._getCurrent(routeContext);
-      this._afterEachs.call(this._current, pre);
 
       // fire ready cbs once
       if (!this._ready) {
@@ -263,6 +266,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
         this._readyDefer.resolve();
       }
 
+      this._afterEachs.call(this._current, pre);
       this._listeners.call({
         action: this._history.action,
         location: this._history.location

@@ -87,7 +87,6 @@ if (module.hot) {
       currentAppRouter.replaceRoutes(
         getRoutes(routes, currentAppContext, currentAppData)
       );
-      await currentAppRouter.ready;
       app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
     };
 
