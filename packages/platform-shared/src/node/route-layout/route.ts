@@ -3,14 +3,11 @@ import {
   exceptionGenerator,
   fileTypeChecker,
   getAllowFilesAndDirs,
-  getDirs,
   hasAllowFiles,
-  hasRouteChildren,
   isDirectory,
   normalize,
   readDir,
   routeTypeChecker,
-  routeFilter,
   getRelativeAtRoot
 } from './helpers';
 
@@ -45,7 +42,9 @@ const transformFilesToRoutes = async (params: TransformParams) => {
     exceptionHandle,
     files
   } = params;
+
   let allowFilesAndDirs = await getAllowFilesAndDirs(files, parentPath);
+
   if (!allowFilesAndDirs.length) {
     const warningDirName = getRelativeAtRoot(parentPath);
     exceptionHandle.addWarning(`${warningDirName} is empty dir!`);
@@ -57,7 +56,6 @@ const transformFilesToRoutes = async (params: TransformParams) => {
   if (dontNeedPushRoute) {
     for (const file of allowFilesAndDirs) {
       const fullPath = join(parentPath, file);
-
       if (await isDirectory(fullPath)) {
         const files = await readDir(fullPath);
         await transformFilesToRoutes({
@@ -75,38 +73,9 @@ const transformFilesToRoutes = async (params: TransformParams) => {
   const route: ConventionRouteRecord = {} as ConventionRouteRecord;
 
   const isLayoutRouteRecord = routeTypeChecker.hasLayout(allowFilesAndDirs);
-  const isPageRouteRecord = routeTypeChecker.hasPage(allowFilesAndDirs);
-  const pageLayoutConflicted = isPageRouteRecord && isLayoutRouteRecord;
 
-  if (pageLayoutConflicted) {
-    const pageFileFullName = allowFilesAndDirs.find(item =>
-      item.startsWith('page.')
-    );
-    const layoutFileFullName = allowFilesAndDirs.find(item =>
-      item.startsWith('layout.')
-    );
-    // layout and page conflicted
-    const dirs = await getDirs(allowFilesAndDirs, parentPath);
-    const ignorePage = await hasRouteChildren(dirs, parentPath);
-    let validFilename = layoutFileFullName;
-    if (ignorePage) {
-      // ignore page
-      allowFilesAndDirs = routeFilter.removePage(allowFilesAndDirs);
-    } else {
-      // ignore layout
-      allowFilesAndDirs = routeFilter.removeLayout(allowFilesAndDirs);
-      validFilename = pageFileFullName;
-    }
-    const dir = getRelativeAtRoot(parentPath);
-    // a
-    // tsx ts jsx js
-    //  page.ts
-    //  layout.js
-    //  layout.js
-    //  page.js
-    exceptionHandle.addWarning(
-      `Find both ${pageFileFullName} and ${layoutFileFullName} in "${dir}"!only "${validFilename}" is used.`
-    );
+  if (isLayoutRouteRecord) {
+    (route as LayoutRouteRecord).children = [];
   }
 
   for (const filename of allowFilesAndDirs) {
@@ -122,33 +91,35 @@ const transformFilesToRoutes = async (params: TransformParams) => {
       continue;
     }
 
+    if (isPageFile && isLayoutRouteRecord) {
+      (route as LayoutRouteRecord).children.push({
+        path: '',
+        pagePath: fullPath
+      });
+      continue;
+    }
+
     if (isPageFile || isLayoutFile) {
       route.path = normalize(prefix);
       (route as PageRouteRecord).pagePath = fullPath;
       routes.push(route);
+
       continue;
     }
 
     if (await isDirectory(fullPath)) {
       const files = await readDir(fullPath);
+      let workRoutes = routes;
+      let workPrefix = join(prefix, filename);
       if (isLayoutRouteRecord) {
-        (route as LayoutRouteRecord).children =
-          (route as LayoutRouteRecord).children || [];
-        await transformFilesToRoutes({
-          parentPath: fullPath,
-          files,
-          routes: (route as LayoutRouteRecord).children,
-          prefix: filename,
-          exceptionHandle
-        });
-        continue;
+        workRoutes = (route as LayoutRouteRecord).children;
+        workPrefix = filename;
       }
-
       await transformFilesToRoutes({
         parentPath: fullPath,
         files,
-        routes,
-        prefix: join(prefix, filename),
+        routes: workRoutes,
+        prefix: workPrefix,
         exceptionHandle
       });
     }
@@ -175,15 +146,6 @@ export const getRoutesWithLayoutFromDir = async (
   const exceptionHandle = exceptionGenerator();
   const { getWarnings, getErrors } = exceptionHandle;
 
-  const hasFirstLevelPage = routeTypeChecker.hasPage(files);
-
-  if (hasFirstLevelPage) {
-    files = routeFilter.removePage(files);
-    exceptionHandle.addWarning(
-      `first level page file will be ignore,in ${getRelativeAtRoot(dirname)}!`
-    );
-  }
-
   await transformFilesToRoutes({
     parentPath: dirname,
     files,
@@ -192,7 +154,6 @@ export const getRoutesWithLayoutFromDir = async (
     exceptionHandle
   });
 
-  // first level route add /
   routes = addSalah(routes);
 
   return {

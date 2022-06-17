@@ -1,8 +1,13 @@
 import { createPlugin, IUserRouteConfig, IRouteConfig } from '@shuvi/service';
 import {
   getRoutesFromFiles,
-  renameFilepathToComponent
-} from '@shuvi/service/lib/route';
+  getRoutesWithLayoutFromDir,
+  renameFilepathToComponent,
+  isDirectory,
+  ConventionRouteRecord,
+  PageRouteRecord,
+  LayoutRouteRecord
+} from '@shuvi/platform-shared/lib/node';
 import {
   getUserCustomFileCandidates,
   getFirstModuleExport,
@@ -21,9 +26,33 @@ import {
 import server from './server-plugin-custom-server';
 import { ifComponentHasLoader } from './lib';
 import { FileOptions } from '@shuvi/service/lib/project';
+import { IRouteRecord } from '@shuvi/router-react';
 
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
+
+const transformConventionRouteRecordToIRouteRecord = (
+  routeRecords: ConventionRouteRecord[]
+): IRouteRecord[] => {
+  const pageRoutes = routeRecords.filter(record => 'pagePath' in record) as (
+    | LayoutRouteRecord
+    | PageRouteRecord
+  )[];
+  return pageRoutes.map(record => {
+    const iRouteRecord: IRouteRecord = {
+      path: record.path,
+      filepath: record.pagePath
+    };
+
+    if ('children' in record && Array.isArray(record.children)) {
+      iRouteRecord.children = transformConventionRouteRecordToIRouteRecord(
+        record.children
+      );
+    }
+
+    return iRouteRecord;
+  });
+};
 
 const core = createPlugin({
   setup: ({ addHooks }) => {
@@ -65,11 +94,33 @@ const core = createPlugin({
     } else {
       routesFile = createFile({
         name: 'routes.js',
-        content: () => {
-          const rawRoutes = getRoutesFromFiles(
-            getAllFiles(paths.pagesDir),
-            paths.pagesDir
-          );
+        content: async () => {
+          // read src routes
+          let rawRoutes: IRouteRecord[] = [];
+
+          let hasRoutesDir: boolean = false;
+
+          try {
+            hasRoutesDir = await isDirectory(paths.routesDir);
+          } catch (e) {}
+
+          if (hasRoutesDir) {
+            const { routes, warnings } = await getRoutesWithLayoutFromDir(
+              paths.routesDir
+            );
+            if (Array.isArray(warnings) && warnings.length) {
+              warnings.forEach(warning => {
+                console.warn(warning);
+              });
+            }
+            rawRoutes = transformConventionRouteRecordToIRouteRecord(routes);
+          } else {
+            rawRoutes = getRoutesFromFiles(
+              getAllFiles(paths.pagesDir),
+              paths.pagesDir
+            );
+          }
+
           const renamedRoutes = renameFilepathToComponent(rawRoutes);
           const modifiedRoutes = getRoutesAfterPlugin(renamedRoutes);
           const normalizedRoutes = getNormalizedRoutes(

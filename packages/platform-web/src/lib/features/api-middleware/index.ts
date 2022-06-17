@@ -1,5 +1,5 @@
 import { createPlugin } from '@shuvi/service';
-import { getRoutesFromFiles } from '@shuvi/service/lib/route';
+import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
 import { getAllFiles } from '@shuvi/service/lib/project/file-utils';
 import { getRoutesContent, getRoutesContentFromRawRoutes } from './lib';
 

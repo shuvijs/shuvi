@@ -1,5 +1,5 @@
 import { join, relative } from 'path';
-import { IUserRouteConfig } from '../core';
+import { IUserRouteConfig } from '@shuvi/service';
 import { IRouteRecord } from '@shuvi/router';
 
 import parseDynamicPath from './parseDynamicPath';

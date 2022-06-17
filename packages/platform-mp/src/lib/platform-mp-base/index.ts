@@ -13,7 +13,7 @@ import { rankRouteBranches } from '@shuvi/router';
 import {
   getRoutesFromFiles,
   renameFilepathToComponent
-} from '@shuvi/service/lib/route';
+} from '@shuvi/platform-shared/lib/node';
 import { FileOptions } from '@shuvi/service/lib/project';
 import {
   sharedPlugin,

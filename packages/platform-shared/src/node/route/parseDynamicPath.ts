@@ -17,18 +17,18 @@ export default function parseDynamicPath(normalizedRoute: string): string {
     .split('/')
     .map(segment => {
       let result = '';
-      result = segment.replace(dynamicMatchAllRegex, function (
-        matchString,
-        ...matchArr
-      ) {
-        return parseMatchRepeat(matchArr[0], true);
-      });
-      result = result.replace(dynamicMatchPartRegex, function (
-        matchString,
-        ...matchArr
-      ) {
-        return parseMatchRepeat(matchArr[0], false);
-      });
+      result = segment.replace(
+        dynamicMatchAllRegex,
+        function (matchString, ...matchArr) {
+          return parseMatchRepeat(matchArr[0], true);
+        }
+      );
+      result = result.replace(
+        dynamicMatchPartRegex,
+        function (matchString, ...matchArr) {
+          return parseMatchRepeat(matchArr[0], false);
+        }
+      );
       return `/${result}`;
     })
     .join('');

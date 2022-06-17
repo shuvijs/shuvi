@@ -56,7 +56,6 @@ export const getAllowFilesAndDirs = async (
       const fileHistory = (resultHistory[pureFilename] =
         resultHistory[pureFilename] || {});
       const { type } = fileHistory;
-      // process priority
       switch (extWithoutDot) {
         case 'js':
           if (type) {
@@ -101,27 +100,20 @@ export const getAllowFilesAndDirs = async (
   return result;
 };
 
-export const getDirs = async (files: string[], parentPath: string) => {
-  const dirs: string[] = [];
-
-  for (const file of files) {
-    const fullPath = join(parentPath, file);
-
-    if (await isDirectory(fullPath)) {
-      dirs.push(file);
-    }
-  }
-
-  return dirs;
-};
-
 export const hasAllowFiles = (files: string[]): boolean =>
   files.some(file => isRouteFile(file));
 
-export const isDirectory = (dirname: string) => {
-  return fs.lstat(dirname).then(stats => {
+export const isDirectory = async (dirname: string) => {
+  // .then(stats => {
+  //   return stats.isDirectory();
+  // })
+
+  try {
+    const stats = await fs.lstat(dirname);
     return stats.isDirectory();
-  });
+  } catch (e) {
+    return false;
+  }
 };
 
 export const readDir = (fullPath: string) => {

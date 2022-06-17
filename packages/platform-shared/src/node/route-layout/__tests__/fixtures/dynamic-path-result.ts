@@ -1,4 +1,4 @@
-import { ConventionRouteRecord } from '../../../../src/route-layout/route-record';
+import { ConventionRouteRecord } from '../../../route-layout/route-record';
 
 export const dynamicPathResult: ConventionRouteRecord[] = [
   {

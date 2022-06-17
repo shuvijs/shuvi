@@ -52,6 +52,7 @@ describe('filesystem routes', () => {
 
   it('should handle layout', async () => {
     const result = await getRoutes('layout');
+    console.log(result.routes);
     expect(result).toMatchObject({
       routes: layoutResult,
       errors: [],
@@ -74,7 +75,7 @@ describe('filesystem routes', () => {
       errors: [],
       routes: [],
       warnings: [
-        'packages/service/src/route-layout/__tests__/fixtures/warning-empty-page-segments/a ' +
+        'packages/platform-shared/src/node/route-layout/__tests__/fixtures/warning-empty-page-segments/a ' +
           'is empty dir!'
       ]
     });
@@ -91,25 +92,26 @@ describe('filesystem routes', () => {
       ],
       errors: [],
       warnings: [
-        'packages/service/src/route-layout/__tests__/fixtures/warning-empty-page-segment/b ' +
-          'is empty dir!'
+        'packages/platform-shared/src/node/route-layout/__tests__/fixtures/warning-empty-page-segment/b is empty dir!'
       ]
     });
   });
 
   it('should ignore useless page.js and has warnings', async () => {
-    const result = await getRoutes('warning-useless-page.js');
+    const result = await getRoutes('two-level-page');
+    console.log(result);
     expect(result).toMatchObject({
       routes: [
         {
           path: '/a',
           pagePath: 'a/page.js'
+        },
+        {
+          path: '/',
+          pagePath: 'page.js'
         }
       ],
-      warnings: [
-        'first level page file will be ignore,' +
-          'in packages/service/src/route-layout/__tests__/fixtures/warning-useless-page.js!'
-      ]
+      warnings: []
     });
   });
 
@@ -126,20 +128,29 @@ describe('filesystem routes', () => {
     });
   });
 
-  it('should ignore useless layout.js and has warnings', async () => {
-    const result = await getRoutes('warning-useless-layout.js');
+  it('should get correct result with mixed page and layout', async () => {
+    const result = await getRoutes('mixed-layout-page');
+
+    console.log(JSON.stringify(result));
     expect(result).toMatchObject({
       routes: [
         {
-          pagePath: 'a/page.js',
-          path: '/a'
+          path: '/a',
+          pagePath: 'a/layout.js',
+          children: [
+            {
+              path: '',
+              pagePath: 'a/page.js'
+            }
+          ]
+        },
+        {
+          path: '/',
+          pagePath: 'page.js'
         }
       ],
       errors: [],
-      warnings: [
-        'first level page file will be ignore,in packages/service/src/route-layout/__tests__/fixtures/warning-useless-layout.js!',
-        'Find both page.js and layout.js in "packages/service/src/route-layout/__tests__/fixtures/warning-useless-layout.js/a"!only "page.js" is used.'
-      ]
+      warnings: []
     });
   });
 });

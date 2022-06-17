@@ -146,6 +146,7 @@ importers:
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/shared': 0.0.1-pre.10
       '@shuvi/toolpack': 0.0.1-pre.10
+      '@shuvi/utils': 0.0.1-pre.10
       '@types/webpack-env': ^1.16.2
       redux: 4.1.2
     dependencies:
@@ -156,6 +157,7 @@ importers:
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
+      '@shuvi/utils': link:../utils
       redux: 4.1.2
     devDependencies:
       '@types/webpack-env': 1.16.3
@@ -6317,6 +6319,11 @@ packages:
 
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
     dependencies:
       ms: 2.1.3
     dev: false
@@ -6510,6 +6517,8 @@ packages:
     dependencies:
       address: 1.1.2
       debug: 2.6.9
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /devtools-protocol/0.0.982423:
@@ -7410,6 +7419,8 @@ packages:
     engines: {node: '>=4.0'}
     dependencies:
       debug: 3.2.7
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /for-in/1.0.2:
@@ -7933,6 +7944,8 @@ packages:
       is-glob: 4.0.3
       lodash: 4.17.21
       micromatch: 4.0.4
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /http-proxy/1.18.1:
@@ -7942,6 +7955,8 @@ packages:
       eventemitter3: 4.0.0
       follow-redirects: 1.11.0
       requires-port: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /http-signature/1.2.0:
@@ -8750,6 +8765,8 @@ packages:
       which: 2.0.2
     optionalDependencies:
       fsevents: 2.3.2
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /jest-haste-map/26.6.2:
@@ -12380,6 +12397,8 @@ packages:
       on-finished: 2.3.0
       range-parser: 1.2.1
       statuses: 1.5.0
+    transitivePeerDependencies:
+      - supports-color
 
   /serialize-javascript/6.0.0:
     resolution: {integrity: sha512-Qr3TosvguFt8ePWqsvRfrKyQXIiW+nGbYpy8XK24NQHE83caxWt+mIymTT19DGFbNWNLfEwsrkSmN64lVWB9ag==}
@@ -12394,6 +12413,8 @@ packages:
       escape-html: 1.0.3
       parseurl: 1.3.3
       send: 0.17.1
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /set-blocking/2.0.0:
