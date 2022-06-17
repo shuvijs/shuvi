@@ -282,6 +282,26 @@ function canApplyUpdates() {
   return module.hot.status() === 'idle';
 }
 
+function waitForReady() {
+  return new Promise((resolve, reject) => {
+    if (module.hot.status() !== 'prepare') {
+      reject();
+    }
+
+    const handler = status => {
+      module.hot.removeStatusHandler(handler);
+      if (status === 'ready') {
+        resolve();
+      }
+
+      if (status === 'abort' || status === 'fail') {
+        reject();
+      }
+    };
+    module.hot.addStatusHandler(handler);
+  });
+}
+
 // Attempt to update code on the fly, fall back to a hard reload.
 async function tryApplyUpdates(onHotUpdateSuccess) {
   if (!module.hot) {
@@ -344,6 +364,10 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
     }
 
     if (updatedModules) {
+      if (module.hot.status() !== 'ready') {
+        await waitForReady();
+      }
+
       updatedModules = await module.hot.apply();
     }
 
