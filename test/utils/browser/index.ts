@@ -1,6 +1,5 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
-// @ts-ignore
 import puppeteer, { ConsoleMessage, WaitForOptions } from 'puppeteer-core';
 import * as qs from 'querystring';
 import ChromeDetector from './chrome';
@@ -89,7 +88,7 @@ export default class Browser {
     page.$text = (selector: string, trim: boolean) =>
       page.$eval(
         selector,
-        (el, trim) => {
+        (el: { textContent: string | null }, trim: any) => {
           if (el.textContent === null) {
             throw Error('no matching element');
           }
@@ -103,8 +102,8 @@ export default class Browser {
     page.$$text = (selector: string, trim: boolean) =>
       page.$$eval(
         selector,
-        (els, trim) =>
-          els.map(el => {
+        (els: any[], trim: any) =>
+          els.map((el: { textContent: string | null }) => {
             if (el.textContent === null) {
               return null;
             }
@@ -130,7 +129,10 @@ export default class Browser {
     page.$$attr = (selector: string, attr: string) =>
       page.$$eval(
         selector,
-        (els, attr) => els.map(el => el.getAttribute(attr as string)),
+        (els, attr) =>
+          els.map((el: { getAttribute: (arg0: string) => any }) =>
+            el.getAttribute(attr as string)
+          ),
         attr
       );
 
@@ -142,7 +144,8 @@ export default class Browser {
           path = path + '?' + qs.stringify(query);
         }
         return page.evaluate(
-          ($shuvi, path: string) => $shuvi.router.push(path),
+          ($shuvi: { router: string[] }, path: string) =>
+            $shuvi.router.push(path),
           $shuvi,
           path
         );

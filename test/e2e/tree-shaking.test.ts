@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { AppCtx, Page, serveFixture, resolveFixture } from '../utils';
+import * as fs from 'fs';
+import * as path from 'path';
+import { AppCtx, serveFixture, resolveFixture } from '../utils';
 
 const depa = 'depa';
 const depb = 'depb';
@@ -41,9 +41,8 @@ describe('Tree Shaking', () => {
       'tree-shaking/dist/client/build-manifest.json'
     ));
   });
-  afterAll(async done => {
+  afterAll(async () => {
     await ctx.close();
-    done();
   });
 
   test('just import xx, but no use. xx and what it depends will be remove', async () => {

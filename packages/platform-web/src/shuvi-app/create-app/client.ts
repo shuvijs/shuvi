@@ -18,11 +18,11 @@ import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import {
   createRouter,
   IRouter,
+  History,
   createBrowserHistory,
   createHashHistory
 } from '@shuvi/router';
 import { historyMode } from '@shuvi/app/files/routerConfig';
-import { History } from '@shuvi/router/lib/types';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { getLoaderManager } from '../react/loader/loaderManager';
 
@@ -82,33 +82,27 @@ export function createApp<CompType, AppState extends IAppState>(options: {
 }
 
 if (module.hot) {
-  module.hot.accept(
-    [
-      '@shuvi/app/user/app',
-      '@shuvi/app/entry',
-      '@shuvi/app/files/routes',
-      '@shuvi/app/files/page-loaders',
-      '@shuvi/app/user/runtime'
-    ],
-    async () => {
-      const rerender = () => {
-        const UserAppComponent = require('@shuvi/app/user/app').default;
-        const routes = require('@shuvi/app/files/routes').default;
-        currentAppRouter.replaceRoutes(
-          getRoutes(routes, currentAppContext, currentAppData)
-        );
-        app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
-      };
-      // to solve routing problem, we need to rerender routes
-      // wait navigation complete only rerender to ensure getInitialProps is called
-      if (__SHUVI.router._pending) {
-        const removelistener = __SHUVI.router.afterEach(() => {
-          rerender();
-          removelistener();
-        });
-      } else {
+  const handleHotUpdate = async () => {
+    const rerender = async () => {
+      currentAppRouter.replaceRoutes(
+        getRoutes(routes, currentAppContext, currentAppData)
+      );
+      app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
+    };
+
+    // if we are in the midsf of route transition, don't render unit it's done
+    if (__SHUVI.router._pending) {
+      const removelistener = __SHUVI.router.afterEach(() => {
+        removelistener();
         rerender();
-      }
+      });
+    } else {
+      rerender();
     }
+  };
+
+  module.hot.accept(
+    ['@shuvi/app/user/app', '@shuvi/app/files/routes'],
+    handleHotUpdate
   );
 }

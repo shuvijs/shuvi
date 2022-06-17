@@ -1,6 +1,6 @@
 import { getApi } from '../api';
 import { UserConfig, getFullUserConfig } from '..';
-import path from 'path';
+import * as path from 'path';
 import rimraf from 'rimraf';
 import { readFileSync } from 'fs';
 

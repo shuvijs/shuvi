@@ -45,6 +45,7 @@ import { getEventSourceWrapper } from './eventsource';
 
 let hadRuntimeError = false;
 let customHmrEventHandler;
+
 export default function connect(options) {
   // Open stack traces in an editor.
   ErrorOverlay.setEditorHandler(function editorHandler({
@@ -116,11 +117,11 @@ var hasCompileErrors = false;
 
 function clearOutdatedErrors() {
   // Clean up outdated compile errors, if any.
-  if (typeof console !== 'undefined' && typeof console.clear === 'function') {
-    if (hasCompileErrors) {
-      console.clear();
-    }
-  }
+  // if (typeof console !== 'undefined' && typeof console.clear === 'function') {
+  //   if (hasCompileErrors) {
+  //     console.clear();
+  //   }
+  // }
 }
 
 function afterApplyUpdate() {
@@ -179,6 +180,7 @@ function handleWarnings(warnings) {
       // Only dismiss it when we're sure it's a hot update.
       // Otherwise it would flicker right before the reload.
       tryDismissErrorOverlay();
+      afterApplyUpdate();
     });
   }
 }
@@ -280,6 +282,26 @@ function canApplyUpdates() {
   return module.hot.status() === 'idle';
 }
 
+function waitForReady() {
+  return new Promise((resolve, reject) => {
+    if (module.hot.status() !== 'prepare') {
+      reject();
+    }
+
+    const handler = status => {
+      module.hot.removeStatusHandler(handler);
+      if (status === 'ready') {
+        resolve();
+      }
+
+      if (status === 'abort' || status === 'fail') {
+        reject();
+      }
+    };
+    module.hot.addStatusHandler(handler);
+  });
+}
+
 // Attempt to update code on the fly, fall back to a hard reload.
 async function tryApplyUpdates(onHotUpdateSuccess) {
   if (!module.hot) {
@@ -287,28 +309,30 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
     console.error(
       'HotModuleReplacementPlugin is not in Webpack configuration.'
     );
-    // window.location.reload();
+    window.location.reload();
     return;
   }
 
   if (!isUpdateAvailable() || !canApplyUpdates()) {
     ErrorOverlay.dismissBuildError();
     // HMR failed, need to refresh
-    if (module.hot.status() === 'fail') {
+    const hmrStatus = module.hot.status();
+    if (hmrStatus === 'abort' || hmrStatus === 'fail') {
       window.location.reload();
     }
     return;
   }
 
   function handleApplyUpdates(err, updatedModules) {
-    const needForcedReload = err || !updatedModules || hadRuntimeError;
+    const needForcedReload = err || hadRuntimeError;
     if (needForcedReload) {
-      ErrorOverlay.reportRuntimeError(err);
       if (hadRuntimeError) {
         hadRuntimeError = false;
         window.location.reload();
+      } else {
+        ErrorOverlay.reportRuntimeError(err);
+        hadRuntimeError = true;
       }
-      hadRuntimeError = true;
     }
 
     if (typeof onHotUpdateSuccess === 'function') {
@@ -318,13 +342,35 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
 
     if (isUpdateAvailable()) {
       // While we were updating, there was a new update! Do it again.
-      tryApplyUpdates();
+      tryApplyUpdates(onHotUpdateSuccess);
     }
   }
 
-  // https://webpack.js.org/api/hot-module-replacement/#check
   try {
-    const updatedModules = await module.hot.check(/* autoApply */ true);
+    // https://webpack.js.org/api/hot-module-replacement/#check
+    let updatedModules = await module.hot.check(/* autoApply */ false);
+
+    // if there is another updating, delay the update
+    // multiple hotupdate occurs during import() will cause hmr error
+    // so we delay the adjacent hotupdates
+    // import() == loade module script ----> require(module)
+    //                                  |
+    //                                  |
+    //     if applyUpdate happens here, require will cause a error
+    if (isUpdateAvailable()) {
+      await new Promise(resolve => {
+        setTimeout(resolve, 50);
+      });
+    }
+
+    if (updatedModules) {
+      if (module.hot.status() !== 'ready') {
+        await waitForReady();
+      }
+
+      updatedModules = await module.hot.apply();
+    }
+
     handleApplyUpdates(null, updatedModules);
   } catch (err) {
     handleApplyUpdates(err, null);

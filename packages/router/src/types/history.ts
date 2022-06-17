@@ -1,5 +1,5 @@
 import { ParsedQuery } from 'query-string';
-import type History from '../history/base';
+import History from '../history/base';
 
 export { History, ParsedQuery };
 

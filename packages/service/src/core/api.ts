@@ -1,6 +1,6 @@
 import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
 import { joinPath } from '@shuvi/utils/lib/string';
-import rimraf = require('rimraf');
+import rimraf from 'rimraf';
 import * as path from 'path';
 import {
   UserConfig,

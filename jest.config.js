@@ -1,4 +1,4 @@
-// jest.config.js
+/** @type {import('ts-jest').InitialOptionsTsJest} */
 module.exports = {
   verbose: true,
 
@@ -17,8 +17,7 @@ module.exports = {
         moduleResolution: 'node',
         skipLibCheck: true,
         esModuleInterop: true,
-        noUnusedLocals: false,
-        allowSyntheticDefaultImports: true
+        noUnusedLocals: false
       }
     }
   },

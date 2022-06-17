@@ -2,6 +2,8 @@ import ModuleReplacePlugin from '../module-replace-plugin';
 import { resolveFixture } from './utils';
 import { watchCompiler, getModuleSource } from './helpers/webpack';
 
+jest.setTimeout(5 * 60 * 1000);
+
 describe('module-replace-plugin', () => {
   test('basic', done => {
     const compiler = watchCompiler({

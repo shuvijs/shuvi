@@ -1,7 +1,7 @@
-import WebpackChain = require('webpack-chain');
-import TerserPlugin = require('terser-webpack-plugin');
-import CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-import * as webpack from 'webpack';
+import WebpackChain from 'webpack-chain';
+import TerserPlugin from 'terser-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import webpack from 'webpack';
 import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';

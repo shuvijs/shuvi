@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { execSync } from 'child_process';
 
 export function resolveFixture(name: string) {
