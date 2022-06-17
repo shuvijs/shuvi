@@ -10,13 +10,14 @@ import {
 } from '@shuvi/router';
 import invariant from '@shuvi/utils/lib/invariant';
 import { navigateTo, redirectTo, navigateBack } from './navigateApis';
-import BaseHistory, {
+import {
+  History,
   PushOptions,
   ACTION_PUSH,
   TransitionOptions
-} from '@shuvi/router/lib/history/base';
+} from '@shuvi/router';
 
-export class MpHistory extends BaseHistory {
+export class MpHistory extends History {
   private _entries: Location[] = [];
 
   constructor({
@@ -124,6 +125,6 @@ export class MpHistory extends BaseHistory {
   }
 }
 
-export function createMpHistory(options: MemoryHistoryOptions = {}): MpHistory {
+export function createMpHistory(options: MemoryHistoryOptions = {}): History {
   return new MpHistory(options);
 }

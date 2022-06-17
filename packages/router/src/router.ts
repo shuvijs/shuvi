@@ -51,6 +51,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _routes: RouteRecord[];
   private _current: IRoute<RouteRecord>;
   private _pending: PathRecord | null = null;
+  private _cancleHandler: (() => void) | null = null;
   private _ready: boolean = false;
   private _readyDefer: Defer = Defer<void>();
 
@@ -85,9 +86,20 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   }
 
   replaceRoutes(routes: RouteRecord[]) {
-    this._pending = null;
-    this._ready = false;
-    this._readyDefer = Defer<void>();
+    if (this._ready) {
+      this._ready = false;
+      this._readyDefer = Defer<void>();
+    } else {
+      // do nothing
+      // keep _readyDefer as it is, cause user might called router.ready()
+    }
+
+    if (this._cancleHandler) {
+      // cancel current transition
+      this._cancleHandler();
+      this._cancleHandler = null;
+    }
+
     this._routes = createRoutesFromArray(routes);
     this._current = START;
 
@@ -174,6 +186,13 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       extractHooks(nextMatches, 'resolve', routeContext)
     );
 
+    let cancel: boolean = false;
+
+    this._cancleHandler = () => {
+      cancel = true;
+      this._pending = null;
+    };
+
     const abort = () => {
       onAbort && onAbort();
 
@@ -185,6 +204,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     };
     this._pending = to;
     const iterator = (hook: NavigationGuardHook, next: Function) => {
+      if (cancel) {
+        return;
+      }
+
       if (this._pending !== to) {
         return abort();
       }
@@ -220,6 +243,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     };
 
     runQueue(queue, iterator, () => {
+      if (cancel) {
+        return;
+      }
+
       if (this._pending !== to) {
         return abort();
       }

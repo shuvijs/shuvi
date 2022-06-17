@@ -1,5 +1,5 @@
 import { IModuleItem, IManifest } from '../types';
-import webpack = require('webpack');
+import webpack from 'webpack';
 import { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
 import Entrypoint from 'webpack/lib/Entrypoint';
 

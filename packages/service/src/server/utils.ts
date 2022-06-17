@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { existsSync, statSync } from 'fs';
-import send = require('send');
+import send from 'send';
 
 export function isStaticFileExist(path: string): Boolean {
   if (existsSync(path)) {

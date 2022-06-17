@@ -10,6 +10,7 @@ export {
   pathToString,
   parseQuery,
   resolvePath,
+  joinPaths,
   createLocation,
   createRedirector
 } from './utils';

@@ -27,8 +27,8 @@
       "@shuvi/shared/lib/*": [
         "packages/shared/src/*"
       ],
-      "@shuvi/router/lib/*": [
-        "packages/router/src/*"
+      "@shuvi/router": [
+        "packages/router/src/index"
       ],
       "@shuvi/router-react/lib/*": [
         "packages/router-react/src/*"

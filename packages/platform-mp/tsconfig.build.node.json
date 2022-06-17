@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "module": "commonjs",
     "outDir": "lib",
     "strict": false,
     "strictFunctionTypes": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
+    "module": "commonjs",
+    "esModuleInterop": true,
     "lib": ["esnext", "DOM"]
   },
   "include": [

@@ -1,5 +1,5 @@
 import { webpackHelpers } from '../helpers';
-import webpackChain = require('webpack-chain');
+import webpackChain from 'webpack-chain';
 
 const setupTest = () => {
   const helpers = webpackHelpers();

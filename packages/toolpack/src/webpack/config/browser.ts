@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
-import webpack = require('webpack');
+import webpack from 'webpack';
 import * as path from 'path';
-import WebpackChain = require('webpack-chain');
+import WebpackChain from 'webpack-chain';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { NAME } from '@shuvi/shared/lib/constants';

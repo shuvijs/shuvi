@@ -62,7 +62,7 @@ describe('fileWatcher', () => {
       fs.writeFileSync(fileTarget, '');
     });
 
-    test('delete a file', async done => {
+    test('delete a file', done => {
       const fileTarget = resolveFixture('watchers/watcher-delete/delete.js');
 
       let close = watch(
@@ -78,10 +78,9 @@ describe('fileWatcher', () => {
         }
       );
 
-      // Prevent race-condition
-      await wait(500);
-
-      fs.unlinkSync(fileTarget);
+      wait(500).then(() => {
+        fs.unlinkSync(fileTarget);
+      });
     });
 
     test('changing other file', async () => {
@@ -155,7 +154,7 @@ describe('fileWatcher', () => {
       Deleting a file in directory will not add to `removals` but only `changes`
       https://github.com/webpack/watchpack/blob/master/test/Watchpack.js#L245
     */
-    test('delete a file', async done => {
+    test('delete a file', done => {
       const directoryTarget = resolveFixture(
         'watchers/watcher-directory-remove'
       );
@@ -178,8 +177,10 @@ describe('fileWatcher', () => {
           done();
         }
       );
-      await wait(500);
-      fs.unlinkSync(fileTarget);
+
+      wait(500).then(() => {
+        fs.unlinkSync(fileTarget);
+      });
     });
   });
 });

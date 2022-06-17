@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import program = require('commander');
+import program from 'commander';
 import * as spawn from 'cross-spawn';
 import { getPackageInfo } from './utils';
 

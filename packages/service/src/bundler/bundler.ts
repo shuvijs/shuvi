@@ -1,4 +1,4 @@
-import WebpackChain = require('webpack-chain');
+import WebpackChain from 'webpack-chain';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
   createCodeFrameFormatter

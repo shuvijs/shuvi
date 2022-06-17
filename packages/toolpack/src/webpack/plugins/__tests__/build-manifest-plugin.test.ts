@@ -44,7 +44,7 @@ describe('build-manifest-plugin', () => {
     compiler.run(done);
   });
 
-  test('enable all', async done => {
+  test('enable all', done => {
     expect.assertions(1);
     const compiler = createCompiler({
       entry: basicEntry,
@@ -87,10 +87,8 @@ describe('build-manifest-plugin', () => {
           '../shared/one': {
             children: [
               {
-                id:
-                  './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js',
-                name:
-                  './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js'
+                id: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js',
+                name: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js'
               }
             ],
             files: ['static/chunks/helperOne.js']
@@ -98,10 +96,8 @@ describe('build-manifest-plugin', () => {
           '../shared/two': {
             children: [
               {
-                id:
-                  './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js',
-                name:
-                  './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js'
+                id: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js',
+                name: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js'
               }
             ],
             files: ['static/chunks/helperTwo.js']

@@ -13,22 +13,25 @@ const fixtures = fs.readdirSync(__dirname).filter(name => {
   return stat.isDirectory();
 });
 
-describe.skip('fixtures', () => {
+describe('fixtures', () => {
   fixtures.forEach(fixture => {
     test(
       `build ${fixture}`,
       () => {
-        expect.hasAssertions();
+        let success;
         let res: SpawnSyncReturns<string>;
         res = utils.buildFixture(fixture);
         if (res.status !== 0) {
           console.log(`fail to build fixture ${fixture}`);
           console.error(res.output);
+          success = false;
         } else {
-          expect(true).toBe(true);
+          success = true;
         }
+
+        expect(success).toBe(true);
       },
-      5 * 60 * 1000
+      10 * 60 * 1000
     );
   });
 });

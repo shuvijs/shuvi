@@ -1,4 +1,4 @@
-import program = require('commander');
+import program from 'commander';
 import { build } from '../tasks/build';
 import { getPackageInfo } from '../utils';
 import {
