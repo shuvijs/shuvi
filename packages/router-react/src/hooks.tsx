@@ -184,3 +184,5 @@ export function useMatchedRoute<
     >
   );
 }
+
+export { useIntersection } from './useIntersection';

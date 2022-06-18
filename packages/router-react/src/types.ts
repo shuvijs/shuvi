@@ -64,3 +64,22 @@ declare global {
     __SHUVI_MANIFEST?: Record<string, string[]>;
   }
 }
+
+export type UseIntersection = {
+  rootRef?: React.RefObject<HTMLElement>;
+  rootMargin?: string;
+  disabled?: boolean;
+};
+
+export type ObserveCallback = (isVisible: boolean) => void;
+
+export type Identifier = {
+  root: Element | Document | null;
+  margin: string;
+};
+
+export type Observer = {
+  id: Identifier;
+  observer: IntersectionObserver;
+  elements: Map<Element, ObserveCallback>;
+};

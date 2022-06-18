@@ -4,7 +4,7 @@ import { Link } from '@shuvi/runtime';
 const Index = () => {
   return (
     <div>
-      <div>
+      <div style={{ marginTop: '150vh' }}>
         <Link id="with-prefetch" to="/foo">
           with prefetch
         </Link>
