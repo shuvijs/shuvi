@@ -17,7 +17,7 @@ describe('Prefetch Support', () => {
     });
     ctx = await serveFixture(FIXTURE);
     page = await ctx.browser.page(ctx.url('/'));
-    manifest = await page.evaluate(() => window.__SHUVI_MANIFEST);
+    manifest = await page.evaluate(() => (window as any).__SHUVI_MANIFEST);
   });
 
   afterAll(async () => {
