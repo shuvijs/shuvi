@@ -1,17 +1,16 @@
-import { createPlugin, IUserRouteConfig, IRouteConfig } from '@shuvi/service';
+import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
 import {
+  ConventionRouteRecord,
   getRoutesFromFiles,
   getRoutesWithLayoutFromDir,
-  renameFilepathToComponent,
   isDirectory,
-  ConventionRouteRecord,
-  PageRouteRecord,
-  LayoutRouteRecord
+  LayoutRouteRecord,
+  renameFilepathToComponent
 } from '@shuvi/platform-shared/lib/node';
 import {
-  getUserCustomFileCandidates,
+  getAllFiles,
   getFirstModuleExport,
-  getAllFiles
+  getUserCustomFileCandidates
 } from '@shuvi/service/lib/project/file-utils';
 import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 import * as fs from 'fs';
@@ -19,12 +18,12 @@ import * as path from 'path';
 import { extendedHooks } from './hooks';
 import {
   getNormalizedRoutes,
+  getRoutes,
   getRoutesContent,
-  setRoutes,
-  getRoutes
+  ifComponentHasLoader,
+  setRoutes
 } from './lib';
 import server from './server-plugin-custom-server';
-import { ifComponentHasLoader } from './lib';
 import { FileOptions } from '@shuvi/service/lib/project';
 import { IRouteRecord } from '@shuvi/router-react';
 
@@ -32,19 +31,18 @@ export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
 
 const transformConventionRouteRecordToIRouteRecord = (
-  routeRecords: ConventionRouteRecord[]
+  routeRecords: Array<ConventionRouteRecord>
 ): IRouteRecord[] => {
-  const pageRoutes = routeRecords.filter(record => 'pagePath' in record) as (
-    | LayoutRouteRecord
-    | PageRouteRecord
-  )[];
+  const pageRoutes = routeRecords.filter(
+    record => typeof (record as LayoutRouteRecord).pagePath === 'string'
+  ) as LayoutRouteRecord[];
   return pageRoutes.map(record => {
     const iRouteRecord: IRouteRecord = {
       path: record.path,
       filepath: record.pagePath
     };
 
-    if ('children' in record && Array.isArray(record.children)) {
+    if (Array.isArray(record.children)) {
       iRouteRecord.children = transformConventionRouteRecordToIRouteRecord(
         record.children
       );
@@ -96,7 +94,7 @@ const core = createPlugin({
         name: 'routes.js',
         content: async () => {
           // read src routes
-          let rawRoutes: IRouteRecord[] = [];
+          let rawRoutes: IRouteRecord[];
 
           let hasRoutesDir: boolean = false;
 
@@ -108,11 +106,9 @@ const core = createPlugin({
             const { routes, warnings } = await getRoutesWithLayoutFromDir(
               paths.routesDir
             );
-            if (Array.isArray(warnings) && warnings.length) {
-              warnings.forEach(warning => {
-                console.warn(warning);
-              });
-            }
+            warnings.forEach(warning => {
+              console.warn(warning);
+            });
             rawRoutes = transformConventionRouteRecordToIRouteRecord(routes);
           } else {
             rawRoutes = getRoutesFromFiles(
@@ -160,8 +156,7 @@ const core = createPlugin({
           imports += `import { loader as loader_${index} } from '${component}'\n`;
           exports += `'${id}': loader_${index},\n`;
         });
-        const content = `${imports}  export default {\n  ${exports}\n}`;
-        return content;
+        return `${imports}  export default {\n  ${exports}\n}`;
       },
       dependencies: [
         paths.pagesDir,

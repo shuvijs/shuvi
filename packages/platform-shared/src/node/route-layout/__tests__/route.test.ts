@@ -99,7 +99,6 @@ describe('filesystem routes', () => {
 
   it('should ignore useless page.js and has warnings', async () => {
     const result = await getRoutes('two-level-page');
-    console.log(result);
     expect(result).toMatchObject({
       routes: [
         {
@@ -131,7 +130,6 @@ describe('filesystem routes', () => {
   it('should get correct result with mixed page and layout', async () => {
     const result = await getRoutes('mixed-layout-page');
 
-    console.log(JSON.stringify(result));
     expect(result).toMatchObject({
       routes: [
         {
