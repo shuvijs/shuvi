@@ -30,7 +30,7 @@ jest.setTimeout(5 * 60 * 1000);
     test('should import .css files', async () => {
       page = await ctx.browser.page(ctx.url('/css'));
       // wait for style inserting
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
       expect(
         await page.$eval(
           '#css',
@@ -48,7 +48,7 @@ jest.setTimeout(5 * 60 * 1000);
     test('should import .sass files', async () => {
       page = await ctx.browser.page(ctx.url('/sass'));
       // wait for style inserting
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
       expect(
         await page.$eval(
           '#css',
@@ -66,7 +66,7 @@ jest.setTimeout(5 * 60 * 1000);
     test('should import .scss files', async () => {
       page = await ctx.browser.page(ctx.url('/scss'));
       // wait for style inserting
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
       expect(
         await page.$eval(
           '#css',
@@ -88,7 +88,7 @@ jest.setTimeout(5 * 60 * 1000);
     .querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`);
 
       // wait for render
-      page.waitFor(1000);
+      page.waitForTimeout(1000);
 
       expect(await page.$attr('#css-modules', 'class')).toMatch(
         /(style_)?test_.*/

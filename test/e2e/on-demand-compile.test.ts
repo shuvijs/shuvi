@@ -43,6 +43,6 @@ describe('On Demand Compile', () => {
   test('should compile while client navigate', async () => {
     expect(isPageCompiled('a')).toBe(false);
     await page.shuvi.navigate('/a');
-    await page.waitFor('#a');
+    await page.waitForSelector('#a');
   });
 });

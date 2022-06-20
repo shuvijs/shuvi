@@ -170,7 +170,7 @@ describe('Custom Server.js', () => {
 
   test('should get pageData in client and custom documentProps', async () => {
     page = await ctx.browser.page(ctx.url('/page-data'));
-    await page.waitFor('[data-test-id="page-data"]');
+    await page.waitForSelector('[data-test-id="page-data"]');
     expect(await page.$text('[data-test-id="page-data"]')).toBe('bar');
   });
 
