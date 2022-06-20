@@ -29,7 +29,7 @@ describe('SSR: Runtime Config', () => {
 
     expect(await page.$text('#server-a')).toBe('a');
     expect(await page.$text('#server-b')).toBe('b');
-    await page.waitFor('#client-a');
+    await page.waitForSelector('#client-a');
     expect(await page.$text('#client-a')).toBe('a');
   });
 
@@ -73,7 +73,7 @@ describe('CSR: Runtime Config', () => {
   test('should works', async () => {
     page = await ctx.browser.page(ctx.url('/ssr-false'));
 
-    await page.waitFor('#a');
+    await page.waitForSelector('#a');
     expect(await page.$text('#a')).toBe('a');
     expect(await page.$text('#b')).toBe('b');
   });

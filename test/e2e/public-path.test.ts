@@ -43,7 +43,7 @@ describe('runtime public path', () => {
 
   test('should overwrite publicPath in client', async () => {
     page = await ctx.browser.page(ctx.url('/'));
-    await page.waitFor('#public-path');
+    await page.waitForSelector('#public-path');
     expect(await page.$text('#public-path')).toBe('/client-overwrite/');
   });
 });
