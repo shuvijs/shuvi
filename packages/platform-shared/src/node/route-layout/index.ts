@@ -1,1 +1,6 @@
-export { getRoutesWithLayoutFromDir, getLayoutPageRoutes } from './route';
+export {
+  getRoutesWithLayoutFromDir,
+  getLayoutPageRoutes,
+  getApiRoutes,
+  getMiddlewareRoutes
+} from './route';

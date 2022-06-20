@@ -1,8 +1,7 @@
 import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
 import {
   getLayoutPageRoutes,
-  getRoutesFromFiles,
-  renameFilepathToComponent
+  getRoutesFromFiles
 } from '@shuvi/platform-shared/lib/node';
 import {
   getAllFiles,
@@ -22,7 +21,6 @@ import {
 } from './lib';
 import server from './server-plugin-custom-server';
 import { FileOptions } from '@shuvi/service/lib/project';
-import { IRouteRecord } from '@shuvi/router-react';
 import { isDirectory } from '@shuvi/utils/lib/file';
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
@@ -69,7 +67,7 @@ const core = createPlugin({
         name: 'routes.js',
         content: async () => {
           // read src routes
-          let rawRoutes: IRouteRecord[];
+          let rawRoutes: IUserRouteConfig[];
 
           let hasRoutesDir: boolean = await isDirectory(paths.routesDir);
 
@@ -82,8 +80,7 @@ const core = createPlugin({
             );
           }
 
-          const renamedRoutes = renameFilepathToComponent(rawRoutes);
-          const modifiedRoutes = getRoutesAfterPlugin(renamedRoutes);
+          const modifiedRoutes = getRoutesAfterPlugin(rawRoutes);
           const normalizedRoutes = getNormalizedRoutes(
             modifiedRoutes,
             paths.pagesDir

@@ -52,7 +52,6 @@ describe('filesystem routes', () => {
 
   it('should handle layout', async () => {
     const result = await getRoutes('layout');
-    console.log(result.routes);
     expect(result).toMatchObject({
       routes: layoutResult,
       errors: [],

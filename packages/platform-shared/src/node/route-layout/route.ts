@@ -18,6 +18,7 @@ import {
 } from './route-record';
 import type { IRouteRecord } from '@shuvi/router';
 import { isDirectory } from '@shuvi/utils/lib/file';
+import { renameFilepathToComponent } from '../route/route';
 
 interface TransformRouteResult {
   routes: ConventionRouteRecord[];
@@ -164,21 +165,25 @@ export const getRoutesWithLayoutFromDir = async (
   };
 };
 
+type AllowKeys = keyof ConventionRouteRecord;
+
 const transformConventionRouteRecordToIRouteRecord = (
-  routeRecords: Array<ConventionRouteRecord>
+  routeRecords: Array<ConventionRouteRecord>,
+  key: string
 ): IRouteRecord[] => {
   const pageRoutes = routeRecords.filter(
-    record => typeof (record as LayoutRouteRecord).pagePath === 'string'
-  ) as LayoutRouteRecord[];
+    record => typeof record[key as AllowKeys] === 'string'
+  );
   return pageRoutes.map(record => {
     const iRouteRecord: IRouteRecord = {
       path: record.path,
-      filepath: record.pagePath
+      filepath: record[key as AllowKeys] as string
     };
 
-    if (Array.isArray(record.children)) {
+    if (Array.isArray((record as LayoutRouteRecord).children)) {
       iRouteRecord.children = transformConventionRouteRecordToIRouteRecord(
-        record.children
+        (record as LayoutRouteRecord).children,
+        key
       );
     }
 
@@ -186,14 +191,24 @@ const transformConventionRouteRecordToIRouteRecord = (
   });
 };
 
-export const getLayoutPageRoutes = async (
-  routesDir: string
+const getRoutes = async (
+  routesDir: string,
+  key: string
 ): Promise<IRouteRecord[]> => {
   const { routes, warnings } = await getRoutesWithLayoutFromDir(routesDir);
-
   warnings.forEach(warning => {
     console.warn(warning);
   });
-
-  return transformConventionRouteRecordToIRouteRecord(routes);
+  return transformConventionRouteRecordToIRouteRecord(routes, key);
 };
+
+export const getLayoutPageRoutes = async (routesDir: string) => {
+  const routes = await getRoutes(routesDir, 'pagePath');
+  return renameFilepathToComponent(routes);
+};
+
+export const getMiddlewareRoutes = (routesDir: string) =>
+  getRoutes(routesDir, 'middlewarePath');
+
+export const getApiRoutes = (routesDir: string) =>
+  getRoutes(routesDir, 'apiPath');

@@ -161,7 +161,9 @@ export const getRoutesFromFiles = (
     .map(file => relative(filesDir, file))
     .filter(filterRouteFile);
   const transformedFiles = transformFilesObject(filteredFiles, ignoreLayout);
-  return generateRoute(transformedFiles, filesDir, ignoreLayout, []);
+  return renameFilepathToComponent(
+    generateRoute(transformedFiles, filesDir, ignoreLayout, [])
+  );
 };
 
 export function renameFilepathToComponent(
