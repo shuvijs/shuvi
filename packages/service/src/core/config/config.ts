@@ -38,7 +38,11 @@ export const createDefaultConfig: () => UserConfig = () => ({
   publicDir: 'public',
   publicPath: PUBLIC_PATH,
   router: {
-    history: 'auto'
+    history: 'auto',
+    loader: {
+      sequential: true,
+      blockingNavigation: true
+    }
   },
   apiConfig: {
     prefix: '/api',

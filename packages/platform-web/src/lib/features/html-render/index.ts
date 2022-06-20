@@ -33,7 +33,7 @@ const core = createPlugin({
     const {
       config: {
         routes,
-        router: { history }
+        router: { history, loader }
       },
       paths,
       pluginRunner
@@ -41,7 +41,8 @@ const core = createPlugin({
     const routerConfigFile = createFile({
       name: 'routerConfig.js',
       content: () => {
-        return `export const historyMode = "${history}";`;
+        return `export const historyMode = "${history}";
+        export const loaderOptions = ${JSON.stringify(loader)}`;
       }
     });
     const getRoutesAfterPlugin = (routes: IUserRouteConfig[]) =>

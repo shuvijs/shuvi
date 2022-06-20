@@ -40,7 +40,7 @@ describe('router', () => {
           initialEntries: ['/about/redirect'],
           initialIndex: 0
         })
-      });
+      }).init();
 
       let current = router.current;
       expect(current.redirected).toBe(true);
@@ -86,7 +86,7 @@ describe('router', () => {
           initialEntries: ['/', '/about'],
           initialIndex: 0
         })
-      });
+      }).init();
     });
 
     it('should run the navigation flow in sequence', () => {

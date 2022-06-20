@@ -311,6 +311,10 @@ class Api {
     });
     runtimeServices.forEach(({ source, exported, filepath }) => {
       this.addRuntimeService(source, exported, filepath);
+      // set same content of 'index.js' to 'index.d.ts'
+      if (!filepath) {
+        this.addRuntimeService(source, exported, 'index.d.ts');
+      }
     });
   }
 

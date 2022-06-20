@@ -138,8 +138,14 @@ export type IPlatform = (
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
+export type ILoaderOptions = {
+  sequential?: boolean;
+  blockingNavigation?: boolean;
+};
+
 export interface IRouterConfig {
   history?: IRouterHistoryMode;
+  loader?: ILoaderOptions;
 }
 
 export interface IApiConfig {

@@ -49,7 +49,7 @@ export function MpRouter({
       basename,
       routes: routes || [],
       history: createMpHistory({ initialEntries, initialIndex: 0 })
-    });
+    }).init();
 
     // mp params storage at query property __params
     // @ts-ignore

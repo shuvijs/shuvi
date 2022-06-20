@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, launchFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -81,7 +81,7 @@ describe('useLoaderData', () => {
       expect(loaderData.params.foo).toBe('test');
     });
 
-    test('should be called after a client naviagation', async () => {
+    test('should be called after a client navigation', async () => {
       page = await ctx.browser.page(ctx.url('/one'));
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
       expect(await page.$text('[data-test-id="time"]')).toBe('1');
@@ -98,7 +98,7 @@ describe('useLoaderData', () => {
 
   describe('ssr = false', () => {
     beforeAll(async () => {
-      ctx = await launchFixture('useLoaderData', {
+      ctx = await serveFixture('useLoaderData', {
         ssr: false,
         router: { history: 'browser' }
       });
@@ -132,7 +132,7 @@ describe('useLoaderData', () => {
       expect(loaderContext.params.foo).toBe('test');
     });
 
-    test('should be called after naviagations', async () => {
+    test('should be called after navigations', async () => {
       page = await ctx.browser.page(ctx.url('/one'));
       await page.waitForTimeout(1000);
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
@@ -143,8 +143,106 @@ describe('useLoaderData', () => {
       expect(await page.$text('[data-test-id="time"]')).toBe('2');
 
       await page.shuvi.navigate('/one', { test: 123 });
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2500);
+      expect(await page.$text('body')).toMatch(/123/);
+      // this may fail, but I don't know why
       expect(await page.$text('[data-test-id="test"]')).toBe('123');
+    });
+  });
+
+  describe('sequential = true; blockingNavigation = true', () => {
+    test('loaders should be called in sequence by nested order and block navigation', async () => {
+      const ctx = await serveFixture('useLoaderData', {
+        router: { loader: { sequential: true, blockingNavigation: true } }
+      });
+      const page = await ctx.browser.page(ctx.url('/parent'));
+      const { texts, dispose } = page.collectBrowserLog();
+      await page.shuvi.navigate('/parent/foo/a');
+      await page.waitFor(1000);
+      expect(texts.join('')).toMatch(
+        [
+          'loader foo start',
+          'loader foo end',
+          'loader foo a start',
+          'loader foo a end',
+          'afterEach called'
+        ].join('')
+      );
+      dispose();
+      await page.close();
+      await ctx.close();
+    });
+  });
+
+  describe('sequential = false; blockingNavigation = true', () => {
+    test('loaders should be called in parallel and block navigation', async () => {
+      const ctx = await serveFixture('useLoaderData', {
+        router: { loader: { sequential: false, blockingNavigation: true } }
+      });
+      const page = await ctx.browser.page(ctx.url('/parent'));
+      const { texts, dispose } = page.collectBrowserLog();
+      await page.shuvi.navigate('/parent/foo/a');
+      await page.waitFor(1000);
+      expect(texts.join('')).toMatch(
+        [
+          'loader foo start',
+          'loader foo a start',
+          'loader foo a end',
+          'loader foo end',
+          'afterEach called'
+        ].join('')
+      );
+      dispose();
+      await page.close();
+      await ctx.close();
+    });
+  });
+
+  describe('sequential = false; blockingNavigation = true', () => {
+    test('loaders should be called in sequence by nested order and not block navigation', async () => {
+      const ctx = await serveFixture('useLoaderData', {
+        router: { loader: { sequential: true, blockingNavigation: false } }
+      });
+      const page = await ctx.browser.page(ctx.url('/parent'));
+      const { texts, dispose } = page.collectBrowserLog();
+      await page.shuvi.navigate('/parent/foo/a');
+      await page.waitFor(1000);
+      expect(texts.join('')).toMatch(
+        [
+          'loader foo start',
+          'afterEach called',
+          'loader foo end',
+          'loader foo a start',
+          'loader foo a end'
+        ].join('')
+      );
+      dispose();
+      await page.close();
+      await ctx.close();
+    });
+  });
+
+  describe('sequential = true; blockingNavigation = false', () => {
+    test('loaders should be called in parallel and not block navigation', async () => {
+      const ctx = await serveFixture('useLoaderData', {
+        router: { loader: { sequential: false, blockingNavigation: false } }
+      });
+      const page = await ctx.browser.page(ctx.url('/parent'));
+      const { texts, dispose } = page.collectBrowserLog();
+      await page.shuvi.navigate('/parent/foo/a');
+      await page.waitFor(1000);
+      expect(texts.join('')).toMatch(
+        [
+          'loader foo start',
+          'loader foo a start',
+          'afterEach called',
+          'loader foo a end',
+          'loader foo end'
+        ].join('')
+      );
+      dispose();
+      await page.close();
+      await ctx.close();
     });
   });
 });

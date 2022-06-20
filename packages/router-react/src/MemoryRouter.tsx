@@ -21,7 +21,7 @@ export function MemoryRouter({
       basename,
       routes: routes || [],
       history: createMemoryHistory({ initialEntries, initialIndex })
-    });
+    }).init();
   }
 
   return <Router children={children} router={routerRef.current} />;

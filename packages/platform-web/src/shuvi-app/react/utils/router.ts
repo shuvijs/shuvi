@@ -1,4 +1,9 @@
-import { createRedirector, IRoute } from '@shuvi/router';
+import {
+  createRedirector,
+  IRoute,
+  IRouteMatch,
+  NavigationGuardHook
+} from '@shuvi/router';
 import {
   getErrorHandler,
   getModelManager,
@@ -11,7 +16,8 @@ import {
 import { createError } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
 import pageLoaders from '@shuvi/app/files/page-loaders';
-import { getLoaderManager } from '../loader/loaderManager';
+import { getLoaderManager, Loader } from '../loader/loaderManager';
+import { ILoaderOptions } from '@shuvi/service/lib/core';
 const isServer = typeof window === 'undefined';
 
 export type INormalizeRoutesContext = IClientAppContext;
@@ -25,6 +31,99 @@ export function resetHydratedState() {
 }
 
 let loaders = pageLoaders;
+
+export const getLoadersHook =
+  (
+    appContext: IClientAppContext,
+    loaderOptions: ILoaderOptions
+  ): NavigationGuardHook =>
+  async (to, from, next) => {
+    const toMatches = to.matches || [];
+    const fromMatches = from.matches || [];
+    let changedMatches: IRouteMatch<any>[] = [];
+    toMatches.forEach((match, index) => {
+      if (match.route !== fromMatches[index]?.route) {
+        changedMatches.push(match);
+      }
+    });
+    changedMatches = toMatches;
+
+    const modelManager = getModelManager();
+    const loaderManager = getLoaderManager();
+    const { shouldHydrated } = loaderManager;
+    if (shouldHydrated) {
+      const { hasError } = modelManager.get(errorModel).$state();
+      if (hasError) {
+        // hydrated error page, run Component.getInitialProps by client
+        return next();
+      }
+    }
+    const errorComp = createError();
+
+    const redirector = createRedirector();
+    const loaderGenerator = (routeId: string, to: IRoute<any>) => async () => {
+      const loaderFn = loaders[routeId];
+      if (typeof loaderFn === 'function') {
+        return await loaderFn({
+          isServer,
+          pathname: to.pathname,
+          query: to.query,
+          params: to.params,
+          appContext,
+          redirect: redirector.handler,
+          error: errorComp.handler
+        });
+      }
+    };
+
+    const targetIds: string[] = [];
+    const targetLoaders: Loader[] = [];
+    changedMatches.forEach(match => {
+      const id: string = match.route.id;
+      if (loaders[id]) {
+        targetIds.push(id);
+        targetLoaders.push(loaderManager.add(loaderGenerator(id, to), id));
+      }
+    });
+    const { sequential, blockingNavigation } = loaderOptions;
+    const executeLoaders = async () => {
+      // call loaders in sequence
+      if (sequential) {
+        for (const loader of targetLoaders) {
+          // initialData must not null if hydrating
+          if (shouldHydrated) {
+            if (loader?.result.error) {
+              await loader.load(true);
+            }
+          } else {
+            await loader?.load(true);
+          }
+        }
+      } else {
+        // call loaders in parallel
+        await Promise.all(
+          targetLoaders
+            .filter(loader => {
+              // skip when hydrating and no error
+              if (shouldHydrated && !loader?.result.error) {
+                return false;
+              }
+              return true;
+            })
+            .map(loader => loader?.load(true))
+        );
+      }
+    };
+    if (blockingNavigation) {
+      await executeLoaders();
+      loaderManager.notifyLoaders(targetIds);
+    } else {
+      executeLoaders().then(() => {
+        loaderManager.notifyLoaders(targetIds);
+      });
+    }
+    next();
+  };
 
 export function normalizeRoutes(
   routes: IPageRouteRecord[] | undefined,
@@ -43,19 +142,15 @@ export function normalizeRoutes(
 
     const { id, component } = res;
     if (component) {
-      res.resolve = async (to, from, next, context) => {
+      res.resolve = async (to, _from, next, context) => {
         if (isServer) {
           return next();
         }
 
         const modelManager = getModelManager();
-        const loaderManager = getLoaderManager();
-        const { initialLoadersData } = loaderManager;
 
         // support both getInitialProps and loader
-        const shouldHydrated =
-          (routeProps[id] !== undefined || initialLoadersData[id]) &&
-          !hydrated[id];
+        const shouldHydrated = routeProps[id] !== undefined && !hydrated[id];
         if (shouldHydrated) {
           const { hasError } = modelManager.get(errorModel).$state();
           if (hasError) {
@@ -69,33 +164,6 @@ export function normalizeRoutes(
         const errorComp = createError();
 
         const redirector = createRedirector();
-        const loaderGenerator =
-          (routeId: string, to: IRoute<any>) => async () => {
-            const loaderFn = loaders[routeId];
-            if (typeof loaderFn === 'function') {
-              return await loaderFn({
-                isServer: false,
-                pathname: to.pathname,
-                query: to.query,
-                params: to.params,
-                appContext,
-                redirect: redirector.handler,
-                error: errorComp.handler
-              });
-            }
-          };
-        if (loaders[id]) {
-          const loaderManager = getLoaderManager();
-          const loader = loaderManager.add(loaderGenerator(id, to), id);
-          if (shouldHydrated) {
-            hydrated[id] = true;
-            if (initialLoadersData[id].error) {
-              loader.load();
-            }
-          } else {
-            loader.load();
-          }
-        }
         if (preload) {
           try {
             const preloadComponent = await preload();
@@ -146,7 +214,6 @@ export function normalizeRoutes(
         } else {
           error.reset();
         }
-
         next();
       };
     }
