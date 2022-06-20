@@ -68,23 +68,7 @@ export function createApp<CompType, AppState extends IAppState>(options: {
       );
     }
   });
-
-  function wait(timeout: number) {
-    return new Promise(resolve => setTimeout(resolve, timeout));
-  }
-  router.beforeEach(async (_, __, next) => {
-    console.log('beforeEach start');
-    await wait(1000);
-    console.log('beforeEach done');
-    next();
-  });
-  router.beforeResolve(async (_, __, next) => {
-    console.log('beforeResolve start');
-    await wait(1000);
-    console.log('beforeResolve done');
-    next();
-  });
-  // router.beforeResolve(getLoadersHook(context, loaderOptions));
+  router.beforeResolve(getLoadersHook(context, loaderOptions));
   router.init();
   currentAppRouter = router;
   currentAppContext = context;
@@ -113,7 +97,9 @@ if (module.hot) {
     if (__SHUVI.router._pending) {
       const removelistener = __SHUVI.router.afterEach(() => {
         removelistener();
-        rerender();
+        setTimeout(() => {
+          rerender();
+        }, 0)
       });
     } else {
       rerender();
