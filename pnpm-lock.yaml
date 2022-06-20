@@ -155,13 +155,14 @@ importers:
       '@shuvi/hook': link:../hook
       '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
       '@shuvi/router': link:../router
-      '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
       redux: 4.1.2
+    devDependencies:
+      '@shuvi/router-react': link:../router-react
 
   packages/platform-web:
     specifiers:
