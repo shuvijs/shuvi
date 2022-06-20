@@ -1,10 +1,8 @@
 import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
 import {
-  ConventionRouteRecord,
+  getLayoutPageRoutes,
   getRoutesFromFiles,
-  getRoutesWithLayoutFromDir,
   isDirectory,
-  LayoutRouteRecord,
   renameFilepathToComponent
 } from '@shuvi/platform-shared/lib/node';
 import {
@@ -29,28 +27,6 @@ import { IRouteRecord } from '@shuvi/router-react';
 
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
-
-const transformConventionRouteRecordToIRouteRecord = (
-  routeRecords: Array<ConventionRouteRecord>
-): IRouteRecord[] => {
-  const pageRoutes = routeRecords.filter(
-    record => typeof (record as LayoutRouteRecord).pagePath === 'string'
-  ) as LayoutRouteRecord[];
-  return pageRoutes.map(record => {
-    const iRouteRecord: IRouteRecord = {
-      path: record.path,
-      filepath: record.pagePath
-    };
-
-    if (Array.isArray(record.children)) {
-      iRouteRecord.children = transformConventionRouteRecordToIRouteRecord(
-        record.children
-      );
-    }
-
-    return iRouteRecord;
-  });
-};
 
 const core = createPlugin({
   setup: ({ addHooks }) => {
@@ -103,13 +79,7 @@ const core = createPlugin({
           } catch (e) {}
 
           if (hasRoutesDir) {
-            const { routes, warnings } = await getRoutesWithLayoutFromDir(
-              paths.routesDir
-            );
-            warnings.forEach(warning => {
-              console.warn(warning);
-            });
-            rawRoutes = transformConventionRouteRecordToIRouteRecord(routes);
+            rawRoutes = await getLayoutPageRoutes(paths.routesDir);
           } else {
             rawRoutes = getRoutesFromFiles(
               getAllFiles(paths.pagesDir),

@@ -17,6 +17,7 @@ import {
   MiddlewareRouteRecord,
   PageRouteRecord
 } from './route-record';
+import type { IRouteRecord } from '@shuvi/router-react/lib/types';
 
 interface TransformRouteResult {
   routes: ConventionRouteRecord[];
@@ -161,4 +162,38 @@ export const getRoutesWithLayoutFromDir = async (
     errors: getErrors(),
     warnings: getWarnings()
   };
+};
+
+const transformConventionRouteRecordToIRouteRecord = (
+  routeRecords: Array<ConventionRouteRecord>
+): IRouteRecord[] => {
+  const pageRoutes = routeRecords.filter(
+    record => typeof (record as LayoutRouteRecord).pagePath === 'string'
+  ) as LayoutRouteRecord[];
+  return pageRoutes.map(record => {
+    const iRouteRecord: IRouteRecord = {
+      path: record.path,
+      filepath: record.pagePath
+    };
+
+    if (Array.isArray(record.children)) {
+      iRouteRecord.children = transformConventionRouteRecordToIRouteRecord(
+        record.children
+      );
+    }
+
+    return iRouteRecord;
+  });
+};
+
+export const getLayoutPageRoutes = async (
+  routesDir: string
+): Promise<IRouteRecord[]> => {
+  const { routes, warnings } = await getRoutesWithLayoutFromDir(routesDir);
+
+  warnings.forEach(warning => {
+    console.warn(warning);
+  });
+
+  return transformConventionRouteRecordToIRouteRecord(routes);
 };

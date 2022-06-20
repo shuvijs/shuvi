@@ -41,6 +41,6 @@
     "@shuvi/utils": "0.0.1-pre.10"
   },
   "devDependencies": {
-    "@types/webpack-env": "^1.16.2"
+    "@shuvi/router-react": "0.0.1-pre.10"
   }
 }
