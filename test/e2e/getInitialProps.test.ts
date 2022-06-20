@@ -80,13 +80,13 @@ describe('GetInitialProps', () => {
       expect(await page.$text('[data-test-id="time"]')).toBe('0');
 
       await page.shuvi.navigate('/two');
-      await page.waitFor('[data-test-id="two"]');
-      await page.waitFor('[data-test-id="time"]');
+      await page.waitForSelector('[data-test-id="two"]');
+      await page.waitForSelector('[data-test-id="time"]');
       expect(await page.$text('[data-test-id="time"]')).toBe('1');
 
       await page.shuvi.navigate('/one');
-      await page.waitFor('[data-test-id="one"]');
-      await page.waitFor('[data-test-id="time"]');
+      await page.waitForSelector('[data-test-id="one"]');
+      await page.waitForSelector('[data-test-id="time"]');
       expect(await page.$text('[data-test-id="time"]')).toBe('1');
     });
   });
@@ -107,7 +107,7 @@ describe('GetInitialProps', () => {
 
     test('PageComponent should receive context object', async () => {
       page = await ctx.browser.page(ctx.url('/test?a=2'));
-      await page.waitFor('[data-test-id="getInitialProps"]');
+      await page.waitForSelector('[data-test-id="getInitialProps"]');
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="getInitialProps"]')
       );
@@ -129,7 +129,7 @@ describe('GetInitialProps', () => {
 
     test('AppComponent should receive context object', async () => {
       page = await ctx.browser.page(ctx.url('/test?a=2'));
-      await page.waitFor('[data-test-id="app"]');
+      await page.waitForSelector('[data-test-id="app"]');
       const initialPropsCtx = JSON.parse(
         await page.$text('[data-test-id="app"]')
       );
