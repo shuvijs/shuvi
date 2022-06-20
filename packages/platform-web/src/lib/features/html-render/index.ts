@@ -2,7 +2,6 @@ import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
 import {
   getLayoutPageRoutes,
   getRoutesFromFiles,
-  isDirectory,
   renameFilepathToComponent
 } from '@shuvi/platform-shared/lib/node';
 import {
@@ -24,7 +23,7 @@ import {
 import server from './server-plugin-custom-server';
 import { FileOptions } from '@shuvi/service/lib/project';
 import { IRouteRecord } from '@shuvi/router-react';
-
+import { isDirectory } from '@shuvi/utils/lib/file';
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
 
@@ -72,11 +71,7 @@ const core = createPlugin({
           // read src routes
           let rawRoutes: IRouteRecord[];
 
-          let hasRoutesDir: boolean = false;
-
-          try {
-            hasRoutesDir = await isDirectory(paths.routesDir);
-          } catch (e) {}
+          let hasRoutesDir: boolean = await isDirectory(paths.routesDir);
 
           if (hasRoutesDir) {
             rawRoutes = await getLayoutPageRoutes(paths.routesDir);

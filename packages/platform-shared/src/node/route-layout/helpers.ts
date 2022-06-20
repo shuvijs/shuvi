@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import { join, relative, extname, basename } from 'path';
 import { normalizeFilePath, normalizeRoutePath } from '../route/route';
+import { isDirectory } from '@shuvi/utils/lib/file';
 
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
 const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
@@ -102,19 +103,6 @@ export const getAllowFilesAndDirs = async (
 
 export const hasAllowFiles = (files: string[]): boolean =>
   files.some(file => isRouteFile(file));
-
-export const isDirectory = async (dirname: string) => {
-  // .then(stats => {
-  //   return stats.isDirectory();
-  // })
-
-  try {
-    const stats = await fs.lstat(dirname);
-    return stats.isDirectory();
-  } catch (e) {
-    return false;
-  }
-};
 
 export const readDir = (fullPath: string) => {
   return fs.readdir(fullPath, { encoding: 'utf-8' });

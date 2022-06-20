@@ -39,8 +39,5 @@
     "@shuvi/runtime": "0.0.1-pre.10",
     "@shuvi/shared": "0.0.1-pre.10",
     "@shuvi/utils": "0.0.1-pre.10"
-  },
-  "devDependencies": {
-    "@shuvi/router-react": "0.0.1-pre.10"
   }
 }

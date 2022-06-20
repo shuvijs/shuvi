@@ -4,7 +4,6 @@ import {
   fileTypeChecker,
   getAllowFilesAndDirs,
   hasAllowFiles,
-  isDirectory,
   normalize,
   readDir,
   routeTypeChecker,
@@ -17,7 +16,8 @@ import {
   MiddlewareRouteRecord,
   PageRouteRecord
 } from './route-record';
-import type { IRouteRecord } from '@shuvi/router-react/lib/types';
+import type { IRouteRecord } from '@shuvi/router';
+import { isDirectory } from '@shuvi/utils/lib/file';
 
 interface TransformRouteResult {
   routes: ConventionRouteRecord[];
