@@ -16,6 +16,7 @@ const webReactMainPlugin = createPlugin({
       source: resolveAppFile('react/loader'),
       exported: '{ useLoaderData }'
     },
+    // typescript type cannot be exported at js file so put it at `index.d.ts`
     {
       source: resolveAppFile('react/loader'),
       exported: '{ Loader }',
