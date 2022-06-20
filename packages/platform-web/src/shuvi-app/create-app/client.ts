@@ -97,16 +97,7 @@ if (module.hot) {
     if (__SHUVI.router._pending) {
       const removelistener = __SHUVI.router.afterEach(() => {
         removelistener();
-        // ReactView.Client needs to await router.ready to make sure all hooks invoked.
-        // When navigating to a uncompiled route, these codes as `afterEach` handler will be invoked.
-        // Notice that replaceRoutes will cause a new route transition and
-        // router ready is resolved after afterEach hook which means that
-        // after this `afterEach` handler is invoked, router ready will soon be resolved.
-        // and the router resolve of `replaceRoutes` is untouchable which will cause a 404.
-        // In this way, we wrap it into `setTimeout` to ensure router lifecycle runs properly.
-        setTimeout(() => {
-          rerender();
-        }, 0)
+        rerender();
       });
     } else {
       rerender();
