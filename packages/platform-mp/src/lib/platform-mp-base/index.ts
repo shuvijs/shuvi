@@ -10,10 +10,7 @@ import {
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
-import {
-  getRoutesFromFiles,
-  renameFilepathToComponent
-} from '@shuvi/platform-shared/lib/node';
+import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
 import { FileOptions } from '@shuvi/service/lib/project';
 import {
   sharedPlugin,
@@ -331,9 +328,7 @@ export default abstract class PlatformMpBase {
           const allFiles = recursiveReadDirSync(context.paths.pagesDir, {
             rootDir: ''
           });
-          routes = renameFilepathToComponent(
-            getRoutesFromFiles(allFiles, context.paths.pagesDir)
-          );
+          routes = getRoutesFromFiles(allFiles, context.paths.pagesDir);
         }
         return getFiles(routes);
       }

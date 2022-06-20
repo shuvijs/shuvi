@@ -77,12 +77,16 @@ export function pickMiddlewareAndPath(
 ): IMiddlewareRouteConfig[] {
   const res: IMiddlewareRouteConfig[] = [];
   for (let index = 0; index < middlewareRoutes.length; index++) {
-    const { path, middlewares, children } = middlewareRoutes[
+    const { path, middlewares, children, filepath } = middlewareRoutes[
       index
     ] as IRouteRecord & { middlewares: any };
     const route = {
       path
     } as IMiddlewareRouteConfig;
+
+    if (filepath) {
+      route.middlewares = [filepath];
+    }
 
     if (middlewares) {
       route.middlewares = middlewares;

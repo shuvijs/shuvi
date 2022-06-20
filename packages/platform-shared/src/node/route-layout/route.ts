@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join, relative } from 'path';
 import {
   exceptionGenerator,
   fileTypeChecker,
@@ -13,11 +13,12 @@ import {
 import {
   ConventionRouteRecord,
   LayoutRouteRecord,
-  MiddlewareRouteRecord,
   PageRouteRecord
 } from './route-record';
+
 import type { IRouteRecord } from '@shuvi/router';
 import { isDirectory } from '@shuvi/utils/lib/file';
+
 import { renameFilepathToComponent } from '../route/route';
 
 interface TransformRouteResult {
@@ -75,21 +76,21 @@ const transformFilesToRoutes = async (params: TransformParams) => {
   const route: ConventionRouteRecord = {} as ConventionRouteRecord;
 
   const isLayoutRouteRecord = routeTypeChecker.hasLayout(allowFilesAndDirs);
-
+  const isPageRouteRecord = routeTypeChecker.hasPage(allowFilesAndDirs);
   if (isLayoutRouteRecord) {
     (route as LayoutRouteRecord).children = [];
   }
-
   for (const filename of allowFilesAndDirs) {
     const fullPath = join(parentPath, filename);
     const isPageFile = fileTypeChecker.isPage(filename);
     const isLayoutFile = fileTypeChecker.isLayout(filename);
     const isMiddlewareFile = fileTypeChecker.isMiddleware(filename);
-
+    const isApiFile = fileTypeChecker.isApi(filename);
     if (isMiddlewareFile) {
-      route.path = normalize(prefix);
-      (route as MiddlewareRouteRecord).middlewarePath = fullPath;
-      routes.push(route);
+      routes.push({
+        path: normalize(prefix),
+        middlewarePath: fullPath
+      });
       continue;
     }
 
@@ -106,6 +107,28 @@ const transformFilesToRoutes = async (params: TransformParams) => {
       (route as PageRouteRecord).pagePath = fullPath;
       routes.push(route);
 
+      continue;
+    }
+
+    if (isApiFile) {
+      if (isPageRouteRecord) {
+        const pageName = allowFilesAndDirs.find(file =>
+          file.startsWith('page')
+        );
+        exceptionHandle.addWarning(
+          `Find both ${filename} and ${pageName} in "${relative(
+            process.cwd(),
+            parentPath
+          )}"!, only "${filename}" is used.`
+        );
+        continue;
+      }
+
+      route.path = normalize(prefix);
+      routes.push({
+        path: normalize(prefix),
+        apiPath: fullPath
+      });
       continue;
     }
 
@@ -172,12 +195,16 @@ const transformConventionRouteRecordToIRouteRecord = (
   key: string
 ): IRouteRecord[] => {
   const pageRoutes = routeRecords.filter(
-    record => typeof record[key as AllowKeys] === 'string'
+    record =>
+      typeof record[key as AllowKeys] === 'string' ||
+      Array.isArray((record as LayoutRouteRecord).children)
   );
   return pageRoutes.map(record => {
     const iRouteRecord: IRouteRecord = {
       path: record.path,
-      filepath: record[key as AllowKeys] as string
+      filepath:
+        (record[key as AllowKeys] as string) ||
+        (record as LayoutRouteRecord).pagePath
     };
 
     if (Array.isArray((record as LayoutRouteRecord).children)) {

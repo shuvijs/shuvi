@@ -1,37 +1,50 @@
 import { createPlugin } from '@shuvi/service';
-import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
-import { getAllFiles } from '@shuvi/service/lib/project/file-utils';
+import { getMiddlewareRoutes } from '@shuvi/platform-shared/lib/node';
 import { getRoutesContentFromRawRoutes } from './lib';
+import { isDirectory } from '@shuvi/utils/lib/file';
 
 export { middleware as getPageMiddleware } from './lib/middleware';
 
 export default createPlugin({
-  addRuntimeFile: ({ createFile }, context) => {
+  addRuntimeFile: async ({ createFile }, context) => {
+    const name = 'middlewareRoutes.js';
     const {
       config: { routes },
       paths
     } = context;
-    // if config.routes is defined, use config
+
     const hasConfigRoutes = Array.isArray(routes);
-    const middlewareRoutesFile = hasConfigRoutes
-      ? createFile({
-          name: 'middlewareRoutes.js',
+
+    if (hasConfigRoutes) {
+      return [
+        createFile({
+          name,
           content: () => {
             return getRoutesContentFromRawRoutes(routes, paths.pagesDir);
           }
         })
-      : createFile({
-          name: 'middlewareRoutes.js',
-          content: () => {
-            const rawRoutes = getRoutesFromFiles(
-              getAllFiles(paths.pagesDir),
-              paths.pagesDir
-            );
-            return getRoutesContentFromRawRoutes(rawRoutes, paths.pagesDir);
-          },
-          dependencies: paths.pagesDir
-        });
+      ];
+    }
 
-    return [middlewareRoutesFile];
+    const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+
+    if (hasRoutesDir) {
+      return [
+        createFile({
+          name,
+          content: async () => {
+            const rawRoutes = await getMiddlewareRoutes(paths.routesDir);
+            console.log(
+              rawRoutes,
+              getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir)
+            );
+            return getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir);
+          },
+          dependencies: paths.routesDir
+        })
+      ];
+    }
+
+    return [];
   }
 });

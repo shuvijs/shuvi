@@ -1,4 +1,4 @@
-import { getRoutesWithLayoutFromDir } from '../';
+import { getApiRoutes, getRoutesWithLayoutFromDir } from '../';
 import { getFixturePath } from './utils';
 import { withoutLayoutResult } from './fixtures/without-layout-result';
 import { layoutResult } from './fixtures/layout-result';
@@ -7,7 +7,7 @@ import { ConventionRouteRecord, LayoutRouteRecord } from '../route-record';
 
 const normalizePath = (basePath: string, routes: ConventionRouteRecord[]) => {
   return routes.map(route => {
-    const keys = ['pagePath', 'middlewarePath', 'apiPath'] as const;
+    const keys = ['pagePath', 'middlewarePath', 'apiPath', 'filepath'] as const;
     const transformRoute: ConventionRouteRecord = {
       ...route
     };
@@ -38,6 +38,12 @@ const getRoutes = async (pathname: string) => {
     errors,
     warnings
   };
+};
+
+const getApiRoutesForTest = async (pathname: string) => {
+  const dir = getFixturePath(pathname);
+  const apiRoutes = await getApiRoutes(dir);
+  return normalizePath(dir, apiRoutes as ConventionRouteRecord[]);
 };
 
 describe('filesystem routes', () => {
@@ -124,6 +130,50 @@ describe('filesystem routes', () => {
       errors: [],
       warnings: []
     });
+  });
+
+  it('should get correct result with page and middleware', async () => {
+    const result = await getRoutes('middlewares');
+    expect(result).toMatchObject({
+      routes: [
+        { path: '/a', middlewarePath: 'a/middleware.js' },
+        { path: '/a', pagePath: 'a/page.js' },
+        { path: '/', middlewarePath: 'middleware.js' },
+        { path: '/', pagePath: 'page.js' }
+      ],
+      errors: [],
+      warnings: []
+    });
+  });
+
+  it('should ignore api when has api and page', async () => {
+    const result = await getRoutes('ignore-api');
+    expect(result).toMatchObject({
+      routes: [
+        { path: '/a', pagePath: 'a/page.js' },
+        { path: '/', pagePath: 'page.js' }
+      ],
+      errors: [],
+      warnings: [
+        'Find both api.js and page.js in "packages/platform-shared/src/node/route-layout/__tests__/fixtures/ignore-api/a"!, only "api.js" is used.',
+        'Find both api.js and page.js in "packages/platform-shared/src/node/route-layout/__tests__/fixtures/ignore-api"!, only "api.js" is used.'
+      ]
+    });
+  });
+
+  it('should get correct api result', async () => {
+    const result = await getApiRoutesForTest('api');
+
+    expect(result).toMatchObject([
+      {
+        path: '/',
+        filepath: 'layout.js',
+        children: [
+          { path: 'api', filepath: 'api/api.js' },
+          { path: 'api/users', filepath: 'api/users/api.js' }
+        ]
+      }
+    ]);
   });
 
   it('should get correct result with mixed page and layout', async () => {

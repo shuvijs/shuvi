@@ -1,41 +1,46 @@
 import { createPlugin } from '@shuvi/service';
-import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
-import { getAllFiles } from '@shuvi/service/lib/project/file-utils';
+import { getApiRoutes } from '@shuvi/platform-shared/lib/node';
 import { getRoutesContent, getRoutesContentFromRawRoutes } from './lib';
+import { isDirectory } from '@shuvi/utils/lib/file';
 
 export { IApiRequestHandler } from './lib/apiRouteHandler';
 
 export { middleware as getApiMiddleware } from './lib';
 
 export default createPlugin({
-  addRuntimeFile: ({ createFile }, context) => {
+  addRuntimeFile: async ({ createFile }, context) => {
+    const name = 'apiRoutes.js';
+
     const {
       config: { apiRoutes, apiConfig },
       paths
     } = context;
     const { prefix } = apiConfig;
-    const apiRoutesFile =
-      Array.isArray(apiRoutes) && apiRoutes.length
-        ? createFile({
-            name: 'apiRoutes.js',
-            content: () => getRoutesContent(apiRoutes, paths.apisDir, prefix)
-          })
-        : createFile({
-            name: 'apiRoutes.js',
-            content: () => {
-              const rawRoutes = getRoutesFromFiles(
-                getAllFiles(paths.apisDir),
-                paths.apisDir,
-                true
-              );
-              return getRoutesContentFromRawRoutes(
-                rawRoutes,
-                paths.apisDir,
-                prefix
-              );
-            },
-            dependencies: paths.apisDir
-          });
-    return [apiRoutesFile];
+
+    const hasConfigRoutes = Array.isArray(apiRoutes);
+
+    if (hasConfigRoutes) {
+      return [
+        createFile({
+          name,
+          content: () => getRoutesContent(apiRoutes, paths.apisDir, prefix)
+        })
+      ];
+    }
+
+    const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+
+    if (hasRoutesDir) {
+      return createFile({
+        name,
+        content: async () => {
+          const rawRoutes = await getApiRoutes(paths.routesDir);
+          return getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir);
+        },
+        dependencies: paths.routesDir
+      });
+    }
+
+    return [];
   }
 });

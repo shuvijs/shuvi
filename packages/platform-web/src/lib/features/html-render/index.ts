@@ -69,7 +69,7 @@ const core = createPlugin({
           // read src routes
           let rawRoutes: IUserRouteConfig[];
 
-          let hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+          const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
 
           if (hasRoutesDir) {
             rawRoutes = await getLayoutPageRoutes(paths.routesDir);

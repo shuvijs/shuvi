@@ -4,6 +4,7 @@ import { writeFileSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
 import { waitForResponseChange } from '../utils/wait-for-response-change';
 import { ASSET_PUBLIC_PATH } from '@shuvi/service/lib/constants';
+import { isDirectory } from '@shuvi/utils/lib/file';
 
 let ctx: AppCtx;
 let stderr = '';
@@ -502,7 +503,12 @@ describe('apiRoutes development', () => {
 
   describe('apiRoutes hmr', () => {
     test('should detect the changes and display it', async () => {
-      const filePath = resolveFixture('api-routes/src/apis/hmr-test.js');
+      const hasRoutesDir = await isDirectory(
+        resolveFixture('api-routes/src/routes/')
+      );
+      const filePath = hasRoutesDir
+        ? resolveFixture('api-routes/src/routes/api/hmr-test/api.js')
+        : resolveFixture('api-routes/src/apis/hmr-test.js');
       let originalContent: string | undefined;
       let done = false;
       let page;
