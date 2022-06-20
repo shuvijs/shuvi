@@ -153,7 +153,7 @@ describe('useLoaderData', () => {
   describe('sequential = true; blockingNavigation = true', () => {
     test('loaders should be called in sequence by nested order and block navigation', async () => {
       const ctx = await serveFixture('useLoaderData', {
-        router: { loader: { sequential: true, blockingNavigation: true } }
+        experimental: { loader: { sequential: true, blockingNavigation: true } }
       });
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
@@ -177,7 +177,9 @@ describe('useLoaderData', () => {
   describe('sequential = false; blockingNavigation = true', () => {
     test('loaders should be called in parallel and block navigation', async () => {
       const ctx = await serveFixture('useLoaderData', {
-        router: { loader: { sequential: false, blockingNavigation: true } }
+        experimental: {
+          loader: { sequential: false, blockingNavigation: true }
+        }
       });
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
@@ -201,7 +203,9 @@ describe('useLoaderData', () => {
   describe('sequential = false; blockingNavigation = true', () => {
     test('loaders should be called in sequence by nested order and not block navigation', async () => {
       const ctx = await serveFixture('useLoaderData', {
-        router: { loader: { sequential: true, blockingNavigation: false } }
+        experimental: {
+          loader: { sequential: true, blockingNavigation: false }
+        }
       });
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
@@ -225,7 +229,9 @@ describe('useLoaderData', () => {
   describe('sequential = true; blockingNavigation = false', () => {
     test('loaders should be called in parallel and not block navigation', async () => {
       const ctx = await serveFixture('useLoaderData', {
-        router: { loader: { sequential: false, blockingNavigation: false } }
+        experimental: {
+          loader: { sequential: false, blockingNavigation: false }
+        }
       });
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();

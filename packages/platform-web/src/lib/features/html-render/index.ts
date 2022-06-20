@@ -33,7 +33,8 @@ const core = createPlugin({
     const {
       config: {
         routes,
-        router: { history, loader }
+        router: { history },
+        experimental: { loader }
       },
       paths,
       pluginRunner

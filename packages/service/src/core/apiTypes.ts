@@ -145,7 +145,6 @@ export type ILoaderOptions = {
 
 export interface IRouterConfig {
   history?: IRouterHistoryMode;
-  loader?: ILoaderOptions;
 }
 
 export interface IApiConfig {
@@ -184,13 +183,18 @@ export interface UserConfig {
   analyze?: boolean;
   experimental?: {
     parcelCss?: boolean;
+    loader?: ILoaderOptions;
   };
 }
 
 export interface Config
-  extends Omit<Required<UserConfig>, 'router' | 'apiConfig'> {
+  extends Omit<Required<UserConfig>, 'router' | 'apiConfig' | 'experimental'> {
   router: Required<IRouterConfig>;
   apiConfig: Required<IApiConfig>;
+  experimental: {
+    parcelCss: boolean;
+    loader: ILoaderOptions;
+  };
 }
 
 export type IPluginContext = {

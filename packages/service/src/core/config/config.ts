@@ -38,18 +38,18 @@ export const createDefaultConfig: () => UserConfig = () => ({
   publicDir: 'public',
   publicPath: PUBLIC_PATH,
   router: {
-    history: 'auto',
-    loader: {
-      sequential: true,
-      blockingNavigation: true
-    }
+    history: 'auto'
   },
   apiConfig: {
     prefix: '/api',
     bodyParser: true
   },
   experimental: {
-    parcelCss: false
+    parcelCss: false,
+    loader: {
+      sequential: true,
+      blockingNavigation: true
+    }
   },
   typescript: {
     ignoreBuildErrors: false
