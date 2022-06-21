@@ -45,7 +45,11 @@ export const createDefaultConfig: () => UserConfig = () => ({
     bodyParser: true
   },
   experimental: {
-    parcelCss: false
+    parcelCss: false,
+    loader: {
+      sequential: true,
+      blockingNavigation: true
+    }
   },
   typescript: {
     ignoreBuildErrors: false

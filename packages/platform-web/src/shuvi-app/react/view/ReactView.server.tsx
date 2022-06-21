@@ -10,7 +10,6 @@ import {
   IHtmlTag,
   IPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
-import loaders from '@shuvi/app/files/page-loaders';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
@@ -54,19 +53,6 @@ export class ReactServerView implements IReactServerView {
 
     const routeProps: { [x: string]: any } = {};
     const pendingDataFetchs: Array<() => Promise<void>> = [];
-    const loaderManager = getLoaderManager();
-    const loaderGenerator = (routeId: string, params: IParams) => async () => {
-      const loaderFn = loaders[routeId];
-      return await loaderFn({
-        isServer: true,
-        pathname,
-        query,
-        params,
-        appContext,
-        redirect: redirector.handler,
-        error: error.errorHandler
-      });
-    };
 
     const params: IParams = {};
     for (let index = 0; index < matches.length; index++) {
@@ -91,12 +77,9 @@ export class ReactServerView implements IReactServerView {
           matchedRoute.route.props = props;
         });
       }
-      const { id } = appRoute;
-      if (loaders[id]) {
-        loaderManager.add(loaderGenerator(id, matchedRoute.params), id);
-      }
     }
-    const loadersData = await loaderManager.awaitLoaders();
+    const loaderManager = getLoaderManager();
+    const loadersData = await loaderManager.getLoadersData();
     const fetchInitialProps = async () => {
       if (pendingDataFetchs.length) {
         console.error(getInitialPropsDeprecatingMessage);
