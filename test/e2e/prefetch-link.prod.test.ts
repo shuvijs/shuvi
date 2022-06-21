@@ -1,3 +1,4 @@
+import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 import { AppCtx, Page, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
@@ -17,7 +18,8 @@ describe('Prefetch Support', () => {
     });
     ctx = await serveFixture(FIXTURE);
     page = await ctx.browser.page(ctx.url('/'));
-    manifest = await page.evaluate(() => (window as any).__SHUVI_MANIFEST);
+    const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
+    manifest = appData.clientManifestPath;
   });
 
   afterAll(async () => {
