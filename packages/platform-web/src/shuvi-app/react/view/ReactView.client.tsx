@@ -13,6 +13,7 @@ import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { renderAction } from './render-action';
+import { getLoaderManager } from '../loader/loaderManager';
 
 const headManager = new HeadManager();
 
@@ -42,8 +43,10 @@ export class ReactClientView implements IReactClientView {
 
     const TypedAppComponent =
       AppComponent as IAppComponent<React.ComponentType>;
+
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
+      await router.ready;
     } else {
       await router.ready;
       const { pathname, query, params } = router.current;
@@ -89,8 +92,11 @@ export class ReactClientView implements IReactClientView {
       </ErrorBoundary>
     );
 
+    const loaderManager = getLoaderManager();
+
     const ssrCallback = () => {
       this._isInitialRender = false;
+      loaderManager.shouldHydrated = false;
     };
 
     renderAction({

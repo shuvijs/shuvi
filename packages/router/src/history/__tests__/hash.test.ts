@@ -30,7 +30,7 @@ describe('a hash history', () => {
     router = createRouter({
       routes: [] as IRouteRecord[],
       history
-    });
+    }).init();
   });
 
   it('knows how to create hrefs from location objects', () => {

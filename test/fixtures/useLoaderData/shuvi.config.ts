@@ -23,12 +23,34 @@ export default defineConfig({
       component: 'foo'
     },
     {
-      path: '/loader',
-      component: 'loader',
+      path: '/parent',
+      component: 'parent',
       children: [
         {
-          path: '/child',
-          component: 'loader/child'
+          path: '/:foo',
+          component: 'parent/foo',
+          children: [
+            {
+              path: '/a',
+              component: 'parent/foo/a'
+            }
+          ]
+        }
+      ]
+    },
+    {
+      path: '/loader-run',
+      component: 'loader-run',
+      children: [
+        {
+          path: '/:foo',
+          component: 'loader-run/foo',
+          children: [
+            {
+              path: '/a',
+              component: 'loader-run/foo/a'
+            }
+          ]
         }
       ]
     }
