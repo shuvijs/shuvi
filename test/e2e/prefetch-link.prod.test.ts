@@ -39,6 +39,9 @@ describe('Prefetch Support', () => {
       e.scrollIntoView();
     });
 
+    //Make sure the link has been created
+    await page.waitForTimeout(1000);
+
     const prefetchHrefArray = await page.$$attr(
       'head [rel="prefetch"]',
       'href'
