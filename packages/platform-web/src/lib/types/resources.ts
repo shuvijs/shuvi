@@ -59,7 +59,7 @@ declare module '@shuvi/service/lib/resources' {
     apiRoutes: IApiRoutes;
     middlewareRoutes: IMiddlewareRoutes;
     application: {
-      createApp: ApplicationCreater<IServerAppContext>;
+      createServerApp: ApplicationCreater<IServerAppContext>;
     };
     document: Partial<IDocumentModule>;
     view: IViewServer;

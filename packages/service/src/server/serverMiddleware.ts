@@ -1,4 +1,4 @@
-import resolve from '@shuvi/utils/lib/resolve';
+import { resolveSync } from '@shuvi/utils/lib/resolve';
 import { IMiddlewareHandler } from './http-server';
 
 interface Options {
@@ -22,7 +22,7 @@ interface InternalServerMiddlewareOptions extends IMiddlewareOptions {
 function resolveHandler(handler: string, options: Options) {
   try {
     // Note: check if it is a npm module
-    resolve.sync(handler, { basedir: options.rootDir });
+    resolveSync(handler, { basedir: options.rootDir });
     return handler;
   } catch (error) {
     throw new Error(`"${handler}" handler do not exist.`);

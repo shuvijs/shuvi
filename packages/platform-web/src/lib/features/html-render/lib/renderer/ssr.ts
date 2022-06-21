@@ -1,10 +1,18 @@
 import {
   IAppData,
   IData,
-  getPublicRuntimeConfig
+  getPublicRuntimeConfig,
+  isRedirect,
+  Response,
+  redirect,
+  isError,
+  getErrorModel
 } from '@shuvi/platform-shared/lib/runtime';
 import { IRouter } from '@shuvi/router';
-import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
+import {
+  IDENTITY_RUNTIME_PUBLICPATH,
+  SHUVI_ERROR_CODE
+} from '@shuvi/shared/lib/constants';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer } from './base';
 import { tag } from './htmlTag';
@@ -24,6 +32,34 @@ export class SsrRenderer extends BaseRenderer {
     if (!router) {
       throw new Error('router is null');
     }
+
+    let errorModel = getErrorModel(modelManager);
+    let resp: Response | undefined;
+    // init -> beforeResolve -> ready
+    router.beforeResolve(async (to, from, next) => {
+      resp = await app.runLoaders(to, from);
+      next();
+    });
+    router.init();
+    await router.ready;
+
+    let { pathname, matches, redirected } = router.current;
+    if (redirected) {
+      return redirect(pathname);
+    }
+    if (!matches) {
+      errorModel.error(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+    }
+
+    if (resp) {
+      if (isRedirect(resp)) {
+        return resp;
+      }
+      if (isError(resp)) {
+        errorModel.error(resp.status, resp.statusText);
+      }
+    }
+
     const result = await view.renderApp({
       AppComponent,
       router: router as IRouter,
@@ -32,12 +68,6 @@ export class SsrRenderer extends BaseRenderer {
       manifest: clientManifest,
       getAssetPublicUrl
     });
-    if (result.redirect) {
-      return {
-        $type: 'redirect',
-        ...result.redirect
-      } as const;
-    }
 
     const mainAssetsTags = this._getMainAssetTags();
     const pageDataList = await serverPluginContext.serverPluginRunner.pageData(
@@ -53,6 +83,12 @@ export class SsrRenderer extends BaseRenderer {
       ssr: serverPluginContext.config.ssr
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
+    const state = modelManager.getChangedState();
+    // clear unnecessary datas
+    if (state.loader) {
+      delete state.loader.status;
+    }
+    appData.appState = state;
 
     const documentProps = {
       htmlAttrs: { ...result.htmlAttrs },
@@ -79,7 +115,6 @@ export class SsrRenderer extends BaseRenderer {
       ]
     };
 
-    documentProps.mainTags.push();
     return documentProps;
   }
 }

@@ -1,13 +1,11 @@
 import application from '../application';
-import { IAppContext } from '../applicationTypes';
 import { createRouter, createMemoryHistory } from '../router';
 import { getModelManager } from '../store';
 
 function getApp({ render }: any = {}) {
   const app = application({
-    context: {
-      test: true
-    } as unknown as IAppContext,
+    loaders: {},
+    loaderOptions: {},
     modelManager: getModelManager(),
     AppComponent: {},
     router: createRouter({
@@ -59,7 +57,6 @@ describe('application', () => {
       hooks: { getAppComponent }
     } = app.pluginManager;
     getAppComponent.use((AppComponent: any, context: any) => {
-      expect(context.test).toBe(true);
       const WrapApp = () => AppComponent;
       WrapApp.test = 'test';
       return WrapApp;

@@ -1,5 +1,5 @@
 import invariant from '@shuvi/utils/lib/invariant';
-import resolve from '@shuvi/utils/lib/resolve';
+import { resolveSync } from '@shuvi/utils/lib/resolve';
 import { isPluginInstance, IPluginInstance } from '@shuvi/hook';
 import * as path from 'path';
 import { createPlugin, CorePluginInstance } from './lifecycle';
@@ -151,7 +151,7 @@ function resolvePreset(
     throw new Error(`Plugin must be one of type [string, array, function]`);
   }
 
-  presetPath = resolve.sync(presetPath, { basedir: resolveOptions.dir });
+  presetPath = resolveSync(presetPath, { basedir: resolveOptions.dir });
 
   const id = presetPath;
   let preset = require(presetPath);

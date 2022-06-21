@@ -1,22 +1,16 @@
 import { getRuntimeConfig } from '@shuvi/runtime';
 import NoSSR from '../components/no-ssr';
 
-function App(props) {
+function App() {
+  const runtimeConfig = getRuntimeConfig();
+
   return (
     <div>
-      <div id="server-a">{props.a}</div>
-      <div id="server-b">{props.b}</div>
+      <div id="server-a">{runtimeConfig.a}</div>
+      <div id="server-b">{runtimeConfig.b}</div>
       <NoSSR />
     </div>
   );
 }
-
-App.getInitialProps = () => {
-  const runtimeConfig = getRuntimeConfig();
-  return {
-    a: runtimeConfig.a,
-    b: runtimeConfig.b
-  };
-};
 
 export default App;

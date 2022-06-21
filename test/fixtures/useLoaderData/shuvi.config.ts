@@ -53,6 +53,10 @@ export default defineConfig({
           ]
         }
       ]
+    },
+    {
+      path: '/runtime-config/basic',
+      component: 'runtime-config/basic'
     }
   ]
 });

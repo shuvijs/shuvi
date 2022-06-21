@@ -2,11 +2,11 @@ import { AppCtx, Page, launchFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('useLoaderData', () => {
+describe('loader', () => {
   let ctx: AppCtx;
   let page: Page;
 
-  describe('ssr = true', () => {
+  describe.only('ssr = true', () => {
     beforeAll(async () => {
       ctx = await launchFixture('useLoaderData');
     });
@@ -15,6 +15,32 @@ describe('useLoaderData', () => {
     });
     afterAll(async () => {
       await ctx.close();
+    });
+
+    test.only('PageComponent should receive context object', async () => {
+      page = await ctx.browser.page(ctx.url('/test?a=2'));
+      const loaderData = JSON.parse(await page.$text('[data-test-id="foo"]'));
+      [
+        'isServer',
+        'pathname',
+        'query',
+        'params',
+        'redirect',
+        'appContext'
+      ].forEach(key => {
+        expect(loaderData[key]).toBeDefined();
+      });
+
+      const appContext = loaderData.appContext;
+
+      const req = appContext.req;
+      expect(typeof req.headers).toBe('object');
+      expect(req.url).toBe('/test?a=2');
+      expect(req.query).toEqual({ a: '2' });
+
+      expect(loaderData.isServer).toBe(true);
+      expect(loaderData.query.a).toBe('2');
+      expect(loaderData.params.foo).toBe('test');
     });
 
     test('should get loader data at server side', async () => {
@@ -53,32 +79,6 @@ describe('useLoaderData', () => {
       expect(await page.$text('p')).toBe('world');
       expect(logs.length).toBe(0);
       expect(errors.length).toBe(0);
-    });
-
-    test('PageComponent should receive context object', async () => {
-      page = await ctx.browser.page(ctx.url('/test?a=2'));
-      const loaderData = JSON.parse(await page.$text('[data-test-id="foo"]'));
-      [
-        'isServer',
-        'pathname',
-        'query',
-        'params',
-        'redirect',
-        'appContext'
-      ].forEach(key => {
-        expect(loaderData[key]).toBeDefined();
-      });
-
-      const appContext = loaderData.appContext;
-
-      const req = appContext.req;
-      expect(typeof req.headers).toBe('object');
-      expect(req.url).toBe('/test?a=2');
-      expect(req.query).toEqual({ a: '2' });
-
-      expect(loaderData.isServer).toBe(true);
-      expect(loaderData.query.a).toBe('2');
-      expect(loaderData.params.foo).toBe('test');
     });
 
     test('should be called after a client navigation', async () => {
@@ -150,10 +150,10 @@ describe('useLoaderData', () => {
     });
   });
 
-  describe('sequential = true; blockingNavigation = true', () => {
+  describe('sequential = true', () => {
     test('loaders should be called in sequence by nested order and block navigation', async () => {
       const ctx = await serveFixture('useLoaderData', {
-        experimental: { loader: { sequential: true, blockingNavigation: true } }
+        experimental: { loader: { sequential: true } }
       });
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
@@ -174,11 +174,11 @@ describe('useLoaderData', () => {
     });
   });
 
-  describe('sequential = false; blockingNavigation = true', () => {
+  describe('sequential = false;', () => {
     test('loaders should be called in parallel and block navigation', async () => {
       const ctx = await serveFixture('useLoaderData', {
         experimental: {
-          loader: { sequential: false, blockingNavigation: true }
+          loader: { sequential: false }
         }
       });
       const page = await ctx.browser.page(ctx.url('/parent'));
@@ -192,58 +192,6 @@ describe('useLoaderData', () => {
           'loader foo a end',
           'loader foo end',
           'afterEach called'
-        ].join('')
-      );
-      dispose();
-      await page.close();
-      await ctx.close();
-    });
-  });
-
-  describe('sequential = false; blockingNavigation = true', () => {
-    test('loaders should be called in sequence by nested order and not block navigation', async () => {
-      const ctx = await serveFixture('useLoaderData', {
-        experimental: {
-          loader: { sequential: true, blockingNavigation: false }
-        }
-      });
-      const page = await ctx.browser.page(ctx.url('/parent'));
-      const { texts, dispose } = page.collectBrowserLog();
-      await page.shuvi.navigate('/parent/foo/a');
-      await page.waitForTimeout(1000);
-      expect(texts.join('')).toMatch(
-        [
-          'loader foo start',
-          'afterEach called',
-          'loader foo end',
-          'loader foo a start',
-          'loader foo a end'
-        ].join('')
-      );
-      dispose();
-      await page.close();
-      await ctx.close();
-    });
-  });
-
-  describe('sequential = true; blockingNavigation = false', () => {
-    test('loaders should be called in parallel and not block navigation', async () => {
-      const ctx = await serveFixture('useLoaderData', {
-        experimental: {
-          loader: { sequential: false, blockingNavigation: false }
-        }
-      });
-      const page = await ctx.browser.page(ctx.url('/parent'));
-      const { texts, dispose } = page.collectBrowserLog();
-      await page.shuvi.navigate('/parent/foo/a');
-      await page.waitForTimeout(1000);
-      expect(texts.join('')).toMatch(
-        [
-          'loader foo start',
-          'loader foo a start',
-          'afterEach called',
-          'loader foo a end',
-          'loader foo end'
         ].join('')
       );
       dispose();
@@ -315,6 +263,29 @@ describe('useLoaderData', () => {
       expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('1');
       expect(texts.join('')).toMatch(['loader-run foo a'].join(''));
       dispose();
+    });
+  });
+
+  describe('redirect', () => {});
+
+  describe('error', () => {});
+
+  describe('getRuntimeConfig', () => {
+    beforeAll(async () => {
+      ctx = await launchFixture('useLoaderData');
+    });
+    afterEach(async () => {
+      await page.close();
+    });
+    afterAll(async () => {
+      await ctx.close();
+    });
+
+    it('should work', async () => {
+      page = await ctx.browser.page(ctx.url('/runtime-config/basic'));
+
+      expect(await page.$text('#a')).toBe('a');
+      expect(await page.$text('#b')).toBe('b');
     });
   });
 });

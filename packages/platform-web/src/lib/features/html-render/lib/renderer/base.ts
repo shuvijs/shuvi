@@ -1,4 +1,13 @@
-import { IAppData, IHtmlTag } from '@shuvi/platform-shared/lib/runtime';
+import {
+  IAppData,
+  IHtmlTag,
+  isResponse,
+  isRedirect,
+  isError,
+  Response,
+  getErrorModel,
+  text
+} from '@shuvi/platform-shared/lib/runtime';
 
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
@@ -22,13 +31,9 @@ import {
 } from '@shuvi/service/lib/resources';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IDocumentProps, ITemplateData } from './types';
+import { IDocumentProps, ITemplateData, IRenderResult } from './types';
 
-import {
-  IRendererConstructorOptions,
-  IRenderDocumentOptions,
-  IRenderResultRedirect
-} from './types';
+import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
 
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;
@@ -67,10 +72,6 @@ function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   return documentProps;
 }
 
-export function isRedirect(obj: any): obj is IRenderResultRedirect {
-  return obj && (obj as IRenderResultRedirect).$type === 'redirect';
-}
-
 export abstract class BaseRenderer {
   protected _serverPluginContext: IServerPluginContext;
   protected _documentTemplate: ReturnType<typeof parseTemplateFile>;
@@ -86,8 +87,9 @@ export abstract class BaseRenderer {
     router,
     modelManager,
     appContext
-  }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
-    let docProps = await this.getDocumentProps({
+  }: IRenderDocumentOptions): Promise<IRenderResult> {
+    let errorModel = getErrorModel(modelManager);
+    let resp = await this.getDocumentProps({
       app,
       AppComponent,
       router,
@@ -95,10 +97,17 @@ export abstract class BaseRenderer {
       appContext
     });
 
-    if (isRedirect(docProps)) {
-      return docProps;
+    if (isResponse(resp)) {
+      if (isRedirect(resp)) {
+        return resp;
+      }
+
+      if (isError(resp)) {
+        errorModel.error(resp.status, resp.statusText);
+      }
     }
 
+    let docProps = resp as IDocumentProps;
     const { document } = server;
 
     if (document.onDocumentProps) {
@@ -110,22 +119,24 @@ export abstract class BaseRenderer {
     }
 
     docProps = await this._serverPluginContext.serverPluginRunner.modifyHtml(
-      docProps as IDocumentProps,
+      docProps,
       appContext
     );
 
-    return this._renderDocument(
+    const htmlString = this._renderDocument(
       addDefaultHtmlTags(docProps),
       document.getTemplateData ? document.getTemplateData(appContext) : {}
     );
+
+    let errorCode = errorModel.$state().errorCode;
+    return text(htmlString, {
+      status: errorCode
+    });
   }
 
   protected abstract getDocumentProps(
     options: IRenderDocumentOptions
-  ):
-    | Promise<IDocumentProps | IRenderResultRedirect>
-    | IDocumentProps
-    | IRenderResultRedirect;
+  ): Promise<IDocumentProps | Response> | IDocumentProps | Response;
 
   protected _getMainAssetTags(): {
     styles: IHtmlTag<any>[];

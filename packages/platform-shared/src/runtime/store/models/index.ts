@@ -1,3 +1,2 @@
-import { errorModel, IPageError } from './errorModel';
-
-export { errorModel, IPageError };
+export { errorModel, IPageError } from './error';
+export { loaderModel } from './loader';

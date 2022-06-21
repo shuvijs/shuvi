@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import { isRedirect, isError } from '@shuvi/platform-shared/lib/runtime';
 import {
   IRequest,
   IRequestHandlerWithNext,
@@ -6,31 +7,31 @@ import {
 } from '@shuvi/service';
 
 import { sendHTML } from '@shuvi/service/lib/server/utils';
-
 import { renderToHTML } from './renderToHTML';
-import { isRedirect } from './renderer';
 
 function initServerRender(serverPluginContext: IServerPluginContext) {
   return async function (
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<string | null> {
-    const { result, error } = await renderToHTML({
+    const result = await renderToHTML({
       req: req as IRequest,
       serverPluginContext
     });
 
     if (isRedirect(result)) {
-      res.writeHead(result.status ?? 302, { Location: result.path });
+      res.writeHead(result.status, {
+        Location: result.headers.get('Location')!
+      });
       res.end();
       return null;
     }
 
-    if (error) {
-      res.statusCode = error.errorCode!;
+    if (isError(result)) {
+      res.statusCode = result.status;
     }
 
-    return result;
+    return result.body;
   };
 }
 

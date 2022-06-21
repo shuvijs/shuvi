@@ -6,8 +6,10 @@ import { createFile } from '../project';
 import { IWebpackConfigOptions } from '../bundler/config';
 import { IShuviMode } from './apiTypes';
 
+export interface WebpackChainType extends WebpackChain {}
+
 export type ExtraTargetAssistant = {
-  createConfig(options: IWebpackConfigOptions): WebpackChain;
+  createConfig(options: IWebpackConfigOptions): WebpackChainType;
   mode: IShuviMode;
   webpack: typeof webpack;
 };
@@ -28,7 +30,7 @@ export type ConfigWebpackAssistant = {
 
 export interface TargetChain {
   name: string;
-  chain: WebpackChain;
+  chain: WebpackChainType;
 }
 
 export interface Target {
@@ -58,8 +60,6 @@ export type Resources = [string, string | undefined];
 export type AddRuntimeFileUtils = {
   createFile: typeof createFile;
 };
-
-export interface WebpackChainType extends WebpackChain {}
 
 export type AfterBuildOptions = {
   requestHandler: RequestListener;

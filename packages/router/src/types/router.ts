@@ -104,12 +104,3 @@ export interface IRouter<RouteRecord extends { path: string } = any> {
 
   replaceRoutes: (routes: RouteRecord[]) => void;
 }
-
-export interface IRedirectFn {
-  (status: number, path: string): void;
-  (path: string): void;
-}
-export interface IRedirectState {
-  status?: number;
-  path: string;
-}

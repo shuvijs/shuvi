@@ -5,7 +5,7 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('Custom app.js', () => {
+describe('Custom app.js SSR', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-app');
   });
@@ -19,19 +19,11 @@ describe('Custom app.js', () => {
   test('should render the custom app', async () => {
     page = await ctx.browser.page(ctx.url('/'));
 
-    expect(await page.$text('#pathname')).toBe('/');
-  });
-
-  test('App.getInitalProps should work', async () => {
-    page = await ctx.browser.page(ctx.url('/'), {
-      disableJavaScript: true
-    });
-
-    expect(await page.$text('#pathname')).toBe('/');
+    expect(await page.$text('#app')).toBe('custom app');
   });
 });
 
-describe('[SPA] Custom app', () => {
+describe('Custom app.js SPA', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-app', {
       ssr: false
@@ -89,32 +81,6 @@ describe('Custom document.js', () => {
   });
 });
 
-describe('Custom 404 page', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-404');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-  });
-
-  test('should work', async () => {
-    page = await ctx.browser.page(ctx.url('/none-exist-page'));
-
-    expect(await page.$text('#custom-404')).toBe('404');
-
-    await page.shuvi.navigate('/');
-    await page.waitForSelector('#index');
-    expect(await page.$text('#index')).toBe('Index Page');
-
-    await page.shuvi.navigate('/none-exist-page');
-    await page.waitForSelector('#custom-404');
-    expect(await page.$text('#custom-404')).toBe('404');
-  });
-});
-
 describe('Custom Runtime.js', () => {
   beforeAll(async () => {
     ctx = await launchFixture('custom-runtime');
@@ -139,9 +105,9 @@ describe('Custom Runtime.js', () => {
 
   test('appComponent and rootAppComponent should work', async () => {
     page = await ctx.browser.page(ctx.url('/'));
-    expect(await page.$text('div')).toMatch(
-      /This is getAppComponentpathname: \/This is getRootAppComponentIndex Page: index props/
-    );
+    expect(await page.$text('#custom-app')).toBe('custom app');
+    expect(await page.$text('#root-app')).toBe('This is getRootAppComponent');
+    expect(await page.$text('#user-app')).toBe('This is getAppComponent');
   });
 });
 

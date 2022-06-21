@@ -1,3 +1,8 @@
-export { getModelManager, IModelManager, IAppState } from './getModelsManager';
-export { IErrorHandler, getErrorHandler } from './pageErrorHandler';
-export { errorModel, IPageError } from './models';
+export {
+  getModelManager,
+  getLoaderModel,
+  IModelManager,
+  IAppState,
+  getErrorModel
+} from './helpers';
+export { errorModel, IPageError, loaderModel } from './models';

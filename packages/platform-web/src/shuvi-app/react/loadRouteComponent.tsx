@@ -12,16 +12,10 @@ export function loadRouteComponent(
     () =>
       loader().then(mod => {
         const comp = mod.default || mod;
-        if (comp.getInitialProps) {
-          (
-            DynamicComp as IRouteComponent<React.ComponentType>
-          ).getInitialProps = comp.getInitialProps;
-        }
-
         return comp;
       }),
     options
-  );
+  ) as IRouteComponent<React.ComponentType>;
 
   return DynamicComp;
 }

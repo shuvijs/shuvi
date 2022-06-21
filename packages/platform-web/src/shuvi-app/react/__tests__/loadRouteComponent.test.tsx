@@ -17,7 +17,7 @@ const secondPageComponent = loadRouteComponent(() => {
   return import('./fixtures/loadRouteComponent/secondPage');
 });
 
-describe('loadRouteComponent [node]', () => {
+describe('loadRouteComponent', () => {
   it('basic', async () => {
     const routes = [
       {

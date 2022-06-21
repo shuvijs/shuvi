@@ -109,7 +109,7 @@ export default function Index() {
   );
 }
 
-Index.getInitialProps = async function (ctx: any) {
+export const loader = async function (ctx: any) {
   const modelManager = ctx.appContext.modelManager;
   const baseStore = modelManager.get(base);
   await baseStore.addStepAsync();

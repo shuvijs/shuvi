@@ -7,43 +7,36 @@ import {
 import {
   IApplication,
   getModelManager,
-  getErrorHandler,
-  IAppState,
+  getErrorModel,
   IAppRenderFn,
   IClientAppContext,
-  IPageRouteRecord,
-  IAppData
+  IAppData,
+  isRedirect,
+  isError
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import {
   createRouter,
-  IRouter,
   History,
   createBrowserHistory,
   createHashHistory
 } from '@shuvi/router';
-import { historyMode, loaderOptions } from '@shuvi/app/files/routerConfig';
+import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { getLoaderManager } from '../react/loader/loaderManager';
-import { getLoadersHook } from '../react/utils/router';
 
-declare let __SHUVI: any;
 let app: IApplication;
-let currentAppContext: IClientAppContext;
-let currentAppRouter: IRouter<IPageRouteRecord>;
-let currentAppData: IAppData;
 
-export function createApp<CompType, AppState extends IAppState>(options: {
+export function createClientApp<CompType>(options: {
   render: IAppRenderFn<IClientAppContext, CompType>;
-  appData: IAppData<any, AppState>;
+  appData: IAppData<any>;
 }) {
   // app is a singleton in client side
   if (app) {
     return app;
   }
+
   const { appData } = options;
-  currentAppData = appData;
-  const { loadersData = {}, appState, routeProps } = appData;
+  const { appState } = appData;
   const modelManager = getModelManager(appState);
   let history: History;
   if (historyMode === 'hash') {
@@ -52,60 +45,45 @@ export function createApp<CompType, AppState extends IAppState>(options: {
     history = createBrowserHistory();
   }
 
-  const context: IClientAppContext = {};
-
-  // loaderManager is created here and will be cached.
-  getLoaderManager(loadersData, appData.ssr);
-
+  const errorModel = getErrorModel(modelManager);
   const router = createRouter({
     history,
-    routes: getRoutes(routes, context, { routeProps })
+    routes: getRoutes(routes)
   });
-  router.afterEach(_current => {
-    if (!_current.matches) {
-      getErrorHandler(modelManager).errorHandler(
-        SHUVI_ERROR_CODE.PAGE_NOT_FOUND
-      );
-    }
-  });
-  router.beforeResolve(getLoadersHook(context, loaderOptions));
-  router.init();
-  currentAppRouter = router;
-  currentAppContext = context;
-
   app = application({
     AppComponent: PlatformAppComponent,
     router,
-    context,
     modelManager,
     render: options.render,
     UserAppComponent
   });
-  return app;
-}
 
-if (module.hot) {
-  const handleHotUpdate = async () => {
-    const rerender = async () => {
-      currentAppRouter.replaceRoutes(
-        getRoutes(routes, currentAppContext, currentAppData)
-      );
-      app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
-    };
-
-    // if we are in the midsf of route transition, don't render unit it's done
-    if (__SHUVI.router._pending) {
-      const removelistener = __SHUVI.router.afterEach(() => {
-        removelistener();
-        rerender();
-      });
-    } else {
-      rerender();
+  router.afterEach(_current => {
+    if (!_current.matches) {
+      getErrorModel(modelManager).error(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
     }
-  };
+  });
+  router.beforeResolve(async (to, from, next) => {
+    const resp = await app.runLoaders(to, from);
 
-  module.hot.accept(
-    ['@shuvi/app/user/app', '@shuvi/app/files/routes'],
-    handleHotUpdate
-  );
+    if (resp) {
+      if (isRedirect(resp)) {
+        const href = resp.headers.get('Location')!;
+        app.router.push(href);
+        return;
+      }
+
+      if (isError(resp)) {
+        errorModel.error(resp.status, resp.body);
+        next();
+        return;
+      }
+    }
+
+    errorModel.reset();
+    next();
+  });
+  router.init();
+
+  return app;
 }

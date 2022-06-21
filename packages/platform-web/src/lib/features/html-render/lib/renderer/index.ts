@@ -1,13 +1,11 @@
 import { IServerPluginContext } from '@shuvi/service';
 
 import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
-import { BaseRenderer, isRedirect } from './base';
+import { BaseRenderer } from './base';
 import { SpaRenderer } from './spa';
 import { SsrRenderer } from './ssr';
 
 export * from './types';
-
-export { isRedirect };
 
 export class Renderer {
   private _serverPluginContext: IServerPluginContext;

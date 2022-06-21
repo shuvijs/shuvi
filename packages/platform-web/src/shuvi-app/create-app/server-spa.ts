@@ -8,18 +8,17 @@ import { IServerAppContext } from '@shuvi/platform-shared/lib/runtime';
 import { IRequest } from '@shuvi/service/lib/server';
 
 // todo: remove this, no need a particular createApp for spa
-export function createApp(options: {
+export function createServerApp(options: {
   render: IAppRenderFn<IServerAppContext>;
   req: IRequest;
 }): IApplication {
   const { render, req } = options;
-  const context = { req };
   const router = undefined;
   return application({
     AppComponent: null,
-    context,
     router: router as never,
     modelManager: getModelManager(),
-    render
+    render,
+    req
   });
 }

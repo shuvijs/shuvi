@@ -24,7 +24,7 @@ function checkError(
   errorState: IPageError,
   ErrorComp?: React.ComponentType<IPageError>
 ) {
-  if (errorState.errorCode !== undefined) {
+  if (errorState.errorCode != undefined) {
     return ErrorComp && <ErrorComp {...errorState} />;
   }
   return null;

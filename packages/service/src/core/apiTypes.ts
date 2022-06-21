@@ -138,9 +138,9 @@ export type IPlatform = (
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
+// TODO: remove this, should be extend by platform
 export type ILoaderOptions = {
   sequential?: boolean;
-  blockingNavigation?: boolean;
 };
 
 export interface IRouterConfig {

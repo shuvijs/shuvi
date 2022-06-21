@@ -148,6 +148,7 @@ importers:
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/shared': 0.0.1-pre.10
       '@shuvi/toolpack': 0.0.1-pre.10
+      '@shuvi/utils': 0.0.1-pre.10
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
@@ -157,6 +158,7 @@ importers:
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
+      '@shuvi/utils': link:../utils
       redux: 4.1.2
 
   packages/platform-web:
@@ -294,7 +296,6 @@ importers:
 
   packages/router-react:
     specifiers:
-      '@shuvi/platform-shared': 0.0.1-pre.10
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/utils': 0.0.1-pre.10
       '@types/prop-types': ^15.7.5
@@ -305,7 +306,6 @@ importers:
       react-dom: 18.1.0
       react-test-renderer: ^18.1.0
     dependencies:
-      '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/router': link:../router
       '@shuvi/utils': link:../utils
       prop-types: 15.8.1

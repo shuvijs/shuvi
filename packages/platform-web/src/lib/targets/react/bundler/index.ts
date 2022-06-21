@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { resolveLocal as _resolveLocal } from '@shuvi/utils/lib/resolve';
 import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
@@ -12,10 +13,8 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
   { name, webpack },
   context
 ) => {
-  const resolveLocal = (m: string, sub?: string) => {
-    const pck = path.dirname(require.resolve(`${m}/package.json`));
-    return sub ? `${pck}/${sub}` : pck;
-  };
+  const resolveLocal = (id: string) =>
+    _resolveLocal(id, { basedir: __dirname });
   const resolveUser = (m: string) =>
     path.join(context.paths.rootDir, 'node_modules', m);
 
@@ -38,7 +37,10 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     '@shuvi/router-react$',
     resolveLocal('@shuvi/router-react')
   );
-  config.resolve.alias.set('@shuvi/router$', resolveLocal('@shuvi/router'));
+  config.resolve.alias.set(
+    '@shuvi/redox-react$',
+    resolveLocal('@shuvi/redox-react')
+  );
   // @ts-ignore
   config.resolve.alias.set('react$', [
     resolveUser('react'),

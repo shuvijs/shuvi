@@ -1,9 +1,9 @@
 // renderer must be imported before application
 // we need to init init renderer before import AppComponent
 import { view } from '@shuvi/app/core/platform';
-import { createApp } from '../application';
+import { createClientApp } from '../application';
 
-const app: ReturnType<typeof createApp> = createApp({
+const app: ReturnType<typeof createClientApp> = createClientApp({
   async render({ AppComponent }) {
     view.renderApp({
       AppComponent: AppComponent

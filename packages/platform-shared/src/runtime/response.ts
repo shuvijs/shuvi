@@ -1,3 +1,5 @@
+import { DEFAULT_ERROR_MESSAGE } from '@shuvi/shared/lib/constants';
+
 type HeaderRecord = Record<string, string>;
 type HeaderArray = [string, string][];
 
@@ -74,7 +76,7 @@ class Headers {
     delete this._map[normalizeName(name)];
   }
 
-  getfunction(name: string) {
+  get(name: string) {
     name = normalizeName(name);
     return this.has(name) ? this._map[name] : null;
   }
@@ -119,22 +121,60 @@ if (supportIterator) {
   (Headers.prototype as any)[Symbol.iterator] = Headers.prototype.entries;
 }
 
-class Response {
-  public body: string;
+export interface Response {
+  readonly $$type: 'Response';
+  readonly body: any;
+  readonly status: number;
+  readonly statusText: string;
+  readonly headers: Headers;
+}
+
+class ResponseImpl implements Response {
+  public $$type = 'Response' as const;
+  public body: string | Record<string, any>;
   public status: number;
   public statusText: string;
   public headers: Headers;
 
-  constructor(body: string, options: ResponseOptions = {}) {
-    this.body = body;
+  constructor(data: string, options: ResponseOptions = {}) {
+    this.body = data;
     this.status = options.status || 200;
     this.statusText = options.statusText || '';
     this.headers = new Headers(options.headers);
   }
 }
 
+export function isResponse(resp: any): resp is Response {
+  return resp && resp.$$type === 'Response';
+}
+
+export function isRedirect(resp: Response): boolean {
+  return resp.status >= 300 && resp.status < 400;
+}
+
+export function isError(resp: Response): boolean {
+  return resp.status !== 200;
+}
+
+export function json(data: any): Response {
+  return new ResponseImpl(data, {
+    status: 200,
+    statusText: 'OK'
+  });
+}
+
+export function text(
+  body: string,
+  { status = 200 }: { status?: number } = {}
+): Response {
+  return new ResponseImpl(body, {
+    status,
+    statusText: 'OK'
+  });
+}
+
 export function redirect(to: string, status: number = 302): Response {
-  return new Response('', {
+  return new ResponseImpl('', {
     status,
     headers: {
       Location: to
@@ -142,8 +182,21 @@ export function redirect(to: string, status: number = 302): Response {
   });
 }
 
-export function error(body: string, status: number = 500): Response {
-  return new Response(body, {
-    status
+export function error({
+  statusCode = 500,
+  message
+}: {
+  statusCode?: number;
+  message?: string;
+}): Response {
+  // todo: status should not equals to 200
+
+  let msg =
+    message !== undefined
+      ? message
+      : (DEFAULT_ERROR_MESSAGE as any)[statusCode];
+
+  return new ResponseImpl(msg || '', {
+    status: statusCode
   });
 }

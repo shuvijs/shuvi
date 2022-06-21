@@ -3,16 +3,11 @@ import { defineModel } from '@shuvi/redox';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 
 export interface IPageError {
-  errorCode: SHUVI_ERROR_CODE | undefined;
+  errorCode?: SHUVI_ERROR_CODE;
   errorDesc?: string;
-  hasError: boolean;
 }
 
-const DEFAULT_ERRORSTATE = {
-  errorCode: undefined,
-  errorDesc: undefined,
-  hasError: false
-};
+const DEFAULT_ERRORSTATE = {};
 
 export const errorModel = defineModel({
   name: 'error',
@@ -26,6 +21,19 @@ export const errorModel = defineModel({
     },
     reset() {
       return DEFAULT_ERRORSTATE;
+    }
+  },
+  effects: {
+    error(errorCode?: SHUVI_ERROR_CODE | string, errorDesc?: string) {
+      const payload = {} as IPageError;
+      if (typeof errorCode === 'number') {
+        payload.errorCode = errorCode;
+        payload.errorDesc = errorDesc;
+      } else {
+        payload.errorCode = SHUVI_ERROR_CODE.APP_ERROR;
+        payload.errorDesc = errorCode;
+      }
+      this.update(payload);
     }
   }
 });

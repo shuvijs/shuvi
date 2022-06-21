@@ -3,6 +3,7 @@ import { normalizeContextForSerialize } from '../utils';
 
 function App() {
   const data = useLoaderData();
+  console.log('data', data);
   return <div data-test-id="foo">{JSON.stringify(data)}</div>;
 }
 

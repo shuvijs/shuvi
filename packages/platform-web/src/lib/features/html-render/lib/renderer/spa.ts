@@ -6,9 +6,8 @@ export class SpaRenderer extends BaseRenderer {
     const assets = this._getMainAssetTags();
     const serverPluginContext = this._serverPluginContext;
     const appData: IAppData = {
-      pageData: {},
       ssr: serverPluginContext.config.ssr,
-      loadersData: {}
+      pageData: {}
     };
     return {
       htmlAttrs: {},

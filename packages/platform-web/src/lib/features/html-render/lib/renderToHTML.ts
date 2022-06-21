@@ -1,12 +1,6 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
-import { Renderer, IRenderResultRedirect } from './renderer';
-import {
-  errorModel,
-  IPageError
-} from '@shuvi/platform-shared/lib/runtime/store';
-
-type RenderResult = null | string | IRenderResultRedirect;
+import { Renderer, IRenderResult } from './renderer';
 
 export async function renderToHTML({
   req,
@@ -14,12 +8,11 @@ export async function renderToHTML({
 }: {
   req: IRequest;
   serverPluginContext: IServerPluginContext;
-}): Promise<{ result: RenderResult; appContext: any; error?: IPageError }> {
-  let result: RenderResult = null;
-  let error: IPageError | undefined;
+}): Promise<IRenderResult> {
+  let result: IRenderResult | undefined;
   const renderer = new Renderer({ serverPluginContext });
   const { application } = server;
-  const app = application.createApp({
+  const app = application.createServerApp({
     async render({ appContext, AppComponent, router, modelManager }) {
       result = await renderer.renderDocument({
         router,
@@ -28,22 +21,21 @@ export async function renderToHTML({
         appContext,
         modelManager
       });
-      const errorState = modelManager.get(errorModel).$state();
-      if (typeof errorState.errorCode === 'number') {
-        error = errorState;
-      }
     },
     req
   });
 
-  let appContext: any;
   try {
-    appContext = await app.run();
+    await app.run();
   } catch (error) {
     throw error;
   } finally {
     await app.dispose();
   }
 
-  return { appContext, result, error };
+  if (!result) {
+    throw new Error('Unpected Error');
+  }
+
+  return result;
 }

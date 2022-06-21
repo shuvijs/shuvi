@@ -1,19 +1,19 @@
 /// <reference lib="dom" />
 import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
+import { IAppState } from '../store';
 
 export type IData = {
   [k: string]: string | number | boolean | undefined | null;
 };
 
-export type IAppData<Data = {}, appState = any> = {
+export type IAppData<Data = {}> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
+  loadersData?: { [x: string]: any };
+  appState?: IAppState;
   pageData?: {
     [key: string]: any;
   };
-  routeProps?: { [x: string]: any };
-  loadersData?: { [x: string]: any };
-  appState?: appState;
 } & {
   [K in keyof Data]: Data[K];
 };

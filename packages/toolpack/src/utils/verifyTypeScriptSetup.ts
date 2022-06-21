@@ -1,5 +1,5 @@
 import chalk from '@shuvi/utils/lib/chalk';
-import resolve from '@shuvi/utils/lib/resolve';
+import { resolveSync } from '@shuvi/utils/lib/resolve';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -43,7 +43,7 @@ async function checkDependencies({
 
   const missingPackages = requiredPackages.filter(p => {
     try {
-      resolutions.set(p.pkg, resolve.sync(p.file, { basedir: `${dir}/` }));
+      resolutions.set(p.pkg, resolveSync(p.file, { basedir: `${dir}/` }));
       return false;
     } catch (_) {
       return true;

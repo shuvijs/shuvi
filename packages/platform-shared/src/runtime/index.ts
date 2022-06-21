@@ -5,14 +5,13 @@ export * from './router';
 export * from './runtimeConfig';
 
 export {
-  // todo: remove
   getModelManager,
-  // todo: remove
-  getErrorHandler,
+  getErrorModel,
+  getLoaderModel,
   IAppState,
   IModelManager,
-  IErrorHandler,
   IPageError,
+  loaderModel,
   errorModel
 } from './store';
 
@@ -22,5 +21,6 @@ export {
   RuntimePluginInstance
 } from './lifecycle';
 
-export type { IRouteLoaderContext } from './context/routeLoaderContext';
+export type { IRouteLoaderContext } from './loader';
 export * from './applicationTypes';
+export * from './response';

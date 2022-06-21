@@ -1,7 +1,5 @@
 import UserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/files/routes';
-import { loaderOptions } from '@shuvi/app/files/routerConfig';
-
 import {
   getRoutes,
   app as PlatformAppComponent
@@ -16,8 +14,8 @@ import {
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 import { IRequest } from '@shuvi/service/lib/server';
-import { getLoadersHook } from '../react/utils/router';
-export function createApp<
+
+export function createServerApp<
   Router extends IRouter<IPageRouteRecord>,
   CompType
 >(options: {
@@ -29,19 +27,16 @@ export function createApp<
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
   });
-  const context = { req };
   const router = createRouter({
     history,
-    routes: getRoutes(routes, context)
+    routes: getRoutes(routes)
   }) as Router;
-  router.beforeResolve(getLoadersHook(context, loaderOptions));
-  router.init();
   return application({
     AppComponent: PlatformAppComponent,
     router,
-    context,
     modelManager: getModelManager(),
     render: options.render,
-    UserAppComponent
+    UserAppComponent,
+    req
   });
 }

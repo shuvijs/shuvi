@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import { createRedirector } from '@shuvi/router';
 import {
-  getErrorHandler,
+  getErrorModel,
   IAppComponent
 } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '../AppContainer';
@@ -13,7 +12,6 @@ import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { renderAction } from './render-action';
-import { getLoaderManager } from '../loader/loaderManager';
 
 const headManager = new HeadManager();
 
@@ -29,7 +27,7 @@ export class ReactClientView implements IReactClientView {
     modelManager
   }) => {
     const { _isInitialRender: isInitialRender } = this;
-    let { ssr, appProps, dynamicIds } = appData;
+    let { ssr, dynamicIds } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
       (window as any).__SHUVI.router = router;
@@ -37,9 +35,7 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    const redirector = createRedirector();
-
-    const error = getErrorHandler(modelManager);
+    const error = getErrorModel(modelManager);
 
     const TypedAppComponent =
       AppComponent as IAppComponent<React.ComponentType>;
@@ -49,31 +45,10 @@ export class ReactClientView implements IReactClientView {
       await router.ready;
     } else {
       await router.ready;
-      const { pathname, query, params } = router.current;
-
       if (!router.current.matches) {
         // no handler no matches
-        error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+        error.error(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
       }
-
-      if (TypedAppComponent.getInitialProps) {
-        appProps = await TypedAppComponent.getInitialProps({
-          isServer: false,
-          pathname,
-          query,
-          params,
-          redirect: redirector.handler,
-          error: error.errorHandler,
-          appContext,
-          async fetchInitialProps() {
-            // do nothing
-          }
-        });
-      }
-    }
-
-    if (redirector.redirected) {
-      router.replace(redirector.state!.path);
     }
 
     const root = (
@@ -85,25 +60,22 @@ export class ReactClientView implements IReactClientView {
               modelManager={modelManager}
               errorComp={ErrorPage}
             >
-              <TypedAppComponent {...appProps} />
+              <TypedAppComponent />
             </AppContainer>
           </Router>
         </HeadManagerContext.Provider>
       </ErrorBoundary>
     );
 
-    const loaderManager = getLoaderManager();
-
-    const ssrCallback = () => {
+    const afterRender = () => {
       this._isInitialRender = false;
-      loaderManager.shouldHydrated = false;
     };
 
     renderAction({
       ssr,
       isInitialRender,
       root,
-      callback: ssrCallback,
+      callback: afterRender,
       appContainer
     });
   };

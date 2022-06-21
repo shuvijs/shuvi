@@ -24,8 +24,6 @@ export const DEV_HOT_LAUNCH_EDITOR_ENDPOINT = `${PATH_PREFIX}/development/open-s
 
 export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;
 
-export const ROUTE_NOT_FOUND_NAME = `404`;
-
 export enum SHUVI_ERROR_CODE {
   APP_ERROR = 500, //  对应 server 端的 500
   PAGE_NOT_FOUND = 404 //  对应 server 端的 404

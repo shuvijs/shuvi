@@ -1,8 +1,3 @@
-const Index = props => <div>{props.content}</div>;
+const Index = () => <div>Index Page</div>;
 
-Index.getInitialProps = async () => {
-  return {
-    content: 'Index Page'
-  };
-};
 export default Index;
