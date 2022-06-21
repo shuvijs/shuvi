@@ -207,7 +207,7 @@ export function baseWebpackChain({
   config
     .plugin('private/build-manifest')
     .use(BuildManifestPlugin, [
-      { filename: buildManifestFilename, chunkRequest: dev, publicPath }
+      { filename: buildManifestFilename, chunkRequest: dev }
     ]);
 
   const getCacheConfig = () => {

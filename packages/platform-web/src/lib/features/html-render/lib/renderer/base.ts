@@ -21,6 +21,7 @@ import {
   documentPath
 } from '@shuvi/service/lib/resources';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
+import generateClientManifestPath from '../generateClientManifestPath';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
 import { IDocumentProps, ITemplateData } from './types';
 
@@ -135,16 +136,10 @@ export abstract class BaseRenderer {
     const scripts: IHtmlTag<'script'>[] = [];
     const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
     const polyfill = clientManifest.bundles[BUILD_CLIENT_RUNTIME_POLYFILL];
-    const loadManifest = clientManifest.manifestPath;
 
     scripts.push(
       tag('script', {
         src: this._serverPluginContext.getAssetPublicUrl(polyfill)
-      })
-    );
-    scripts.push(
-      tag('script', {
-        src: this._serverPluginContext.getAssetPublicUrl(loadManifest)
       })
     );
     entrypoints.js.forEach((asset: string) => {
@@ -202,6 +197,10 @@ export abstract class BaseRenderer {
   }
 
   protected _getInlineAppData(appData: IAppData): IHtmlTag {
+    appData.clientManifestPath = generateClientManifestPath(
+      clientManifest,
+      this._serverPluginContext.getAssetPublicUrl
+    );
     const data = JSON.stringify(appData);
     return tag(
       'script',

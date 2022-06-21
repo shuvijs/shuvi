@@ -14,6 +14,7 @@ export type IAppData<Data = {}, appState = any> = {
   routeProps?: { [x: string]: any };
   loadersData?: { [x: string]: any };
   appState?: appState;
+  clientManifestPath?: Record<string, string[]>;
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -30,7 +31,8 @@ export function getAppData(): IAppData {
     return {
       ssr: false,
       pageData: {},
-      loadersData: {}
+      loadersData: {},
+      clientManifestPath: {}
     };
   }
 

@@ -34,7 +34,6 @@ export interface IManifest {
   loadble: {
     [s: string]: IModule;
   };
-  manifestPath: string;
 }
 
 export type ExternalsFunction = (
