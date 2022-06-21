@@ -37,6 +37,22 @@ export default defineConfig({
           ]
         }
       ]
+    },
+    {
+      path: '/loader-run',
+      component: 'loader-run',
+      children: [
+        {
+          path: '/:foo',
+          component: 'loader-run/foo',
+          children: [
+            {
+              path: '/a',
+              component: 'loader-run/foo/a'
+            }
+          ]
+        }
+      ]
     }
   ]
 });

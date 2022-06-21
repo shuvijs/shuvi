@@ -158,7 +158,7 @@ describe('useLoaderData', () => {
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
       await page.shuvi.navigate('/parent/foo/a');
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
       expect(texts.join('')).toMatch(
         [
           'loader foo start',
@@ -184,7 +184,7 @@ describe('useLoaderData', () => {
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
       await page.shuvi.navigate('/parent/foo/a');
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
       expect(texts.join('')).toMatch(
         [
           'loader foo start',
@@ -210,7 +210,7 @@ describe('useLoaderData', () => {
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
       await page.shuvi.navigate('/parent/foo/a');
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
       expect(texts.join('')).toMatch(
         [
           'loader foo start',
@@ -236,7 +236,7 @@ describe('useLoaderData', () => {
       const page = await ctx.browser.page(ctx.url('/parent'));
       const { texts, dispose } = page.collectBrowserLog();
       await page.shuvi.navigate('/parent/foo/a');
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
       expect(texts.join('')).toMatch(
         [
           'loader foo start',
@@ -249,6 +249,72 @@ describe('useLoaderData', () => {
       dispose();
       await page.close();
       await ctx.close();
+    });
+  });
+
+  describe('loaders should run properly when navigation is triggered', () => {
+    beforeAll(async () => {
+      ctx = await serveFixture('useLoaderData', {
+        ssr: false,
+        router: {
+          history: 'browser'
+        }
+      });
+    });
+    afterEach(async () => {
+      await page.close();
+    });
+    afterAll(async () => {
+      await ctx.close();
+    });
+    test(' when initial rendering, all loaders should run', async () => {
+      page = await ctx.browser.page(ctx.url('/loader-run/foo/a'));
+      expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
+      expect(await page.$text('[data-test-id="time-foo"]')).toBe('0');
+      expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('0');
+    });
+
+    test('when matching a new route, its loader and all its children loaders should run', async () => {
+      page = await ctx.browser.page(ctx.url('/loader-run/'));
+      expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
+      const { texts, dispose } = page.collectBrowserLog();
+      await page.shuvi.navigate('/loader-run/foo/a');
+      await page.waitForTimeout(100);
+      expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
+      expect(await page.$text('[data-test-id="time-foo"]')).toBe('0');
+      expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('0');
+      expect(texts.join('')).toMatch(
+        ['loader-run foo', 'loader-run foo a'].join('')
+      );
+      dispose();
+    });
+
+    test('when matching a same dynamic route but different params, its loader and all its children loaders should run', async () => {
+      page = await ctx.browser.page(ctx.url('/loader-run/foo/a'));
+      expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
+      expect(await page.$text('[data-test-id="time-foo"]')).toBe('0');
+      expect(await page.$text('[data-test-id="param"]')).toBe('foo');
+      expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('0');
+      const { texts, dispose } = page.collectBrowserLog();
+      await page.shuvi.navigate('/loader-run/bar/a');
+      expect(await page.$text('[data-test-id="time-foo"]')).toBe('1');
+      expect(await page.$text('[data-test-id="param"]')).toBe('bar');
+      expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('1');
+
+      expect(texts.join('')).toMatch(
+        ['loader-run foo', 'loader-run foo a'].join('')
+      );
+      dispose();
+    });
+
+    test('the loader of last nested route should always run', async () => {
+      page = await ctx.browser.page(ctx.url('/loader-run/foo/a'));
+      expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('0');
+      const { texts, dispose } = page.collectBrowserLog();
+      await page.shuvi.navigate('/loader-run/foo/a', { sss: 123 });
+      expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('1');
+      expect(texts.join('')).toMatch(['loader-run foo a'].join(''));
+      dispose();
     });
   });
 });
