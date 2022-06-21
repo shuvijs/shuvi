@@ -15,5 +15,5 @@ export function createMockRouter(
       initialEntries: [initialLocation],
       initialIndex: 0
     })
-  });
+  }).init();
 }

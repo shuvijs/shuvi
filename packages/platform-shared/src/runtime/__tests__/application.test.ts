@@ -19,7 +19,7 @@ function getApp({ render }: any = {}) {
           component: ''
         }
       ]
-    }),
+    }).init(),
     async render(options) {
       return render && render(options);
     }

@@ -138,6 +138,11 @@ export type IPlatform = (
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
+export type ILoaderOptions = {
+  sequential?: boolean;
+  blockingNavigation?: boolean;
+};
+
 export interface IRouterConfig {
   history?: IRouterHistoryMode;
 }
@@ -178,13 +183,18 @@ export interface UserConfig {
   analyze?: boolean;
   experimental?: {
     parcelCss?: boolean;
+    loader?: ILoaderOptions;
   };
 }
 
 export interface Config
-  extends Omit<Required<UserConfig>, 'router' | 'apiConfig'> {
+  extends Omit<Required<UserConfig>, 'router' | 'apiConfig' | 'experimental'> {
   router: Required<IRouterConfig>;
   apiConfig: Required<IApiConfig>;
+  experimental: {
+    parcelCss: boolean;
+    loader: ILoaderOptions;
+  };
 }
 
 export type IPluginContext = {

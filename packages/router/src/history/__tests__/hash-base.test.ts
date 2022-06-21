@@ -22,7 +22,7 @@ describe('a hash history on a page with a <base> tag', () => {
     router = createRouter({
       routes: [] as IRouteRecord[],
       history
-    });
+    }).init();
   });
 
   afterEach(() => {

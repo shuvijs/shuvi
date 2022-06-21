@@ -33,7 +33,7 @@ const createLoader = (
     (status: LoaderStatus, result: LoaderResult) => void
   >();
 
-  const load = async () => {
+  const load = async (doNotNotify: boolean = false) => {
     if (skip) {
       return promise;
     }
@@ -51,14 +51,14 @@ const createLoader = (
           data = value;
           error = null;
           status = LoaderStatus.fulfilled;
-          notify();
+          !doNotNotify && notify();
           resolve(value);
         })
         .catch(e => {
           error = e;
           data = null;
           status = LoaderStatus.rejected;
-          notify();
+          !doNotNotify && notify();
           resolve(e);
         })
         .finally(() => {
@@ -106,6 +106,10 @@ const createLoader = (
     get promise() {
       return promise;
     },
+    get status() {
+      return status;
+    },
+    notify,
     onChange,
     load,
     setLoaderFn
@@ -115,10 +119,17 @@ const createLoader = (
 /**
  * Create loaders manager. It's returned instance will add to context
  * @param initialDataMap used to initialing loader data
+ * @param initialShouldHydrate should be true when ssr and at client side
  */
 export const createLoaderManager = (
-  initialDataMap: Record<string, LoaderResult> = {}
+  initialDataMap?: Record<string, LoaderResult>,
+  initialShouldHydrate?: boolean
 ) => {
+  /** `initialDataMap` and `shouldHydrated` are only used at client side
+   * At client side, `initialDataMap` should be non-null and `shouldHydrated` should be true when initializing.
+   */
+  let shouldHydrated = initialShouldHydrate || false;
+  const initialLoadersData = initialDataMap || {};
   const loadersMap = new Map<string, Loader>();
   const add = (loaderFn: () => Promise<any>, id: string) => {
     let loader = loadersMap.get(id);
@@ -127,7 +138,9 @@ export const createLoaderManager = (
     }
     if (!loader) {
       loader = createLoader(
-        typeof initialDataMap[id] !== 'undefined' ? initialDataMap[id] : {},
+        typeof initialLoadersData[id] !== 'undefined'
+          ? initialLoadersData[id]
+          : {},
         loaderFn
       );
       loadersMap.set(id, loader);
@@ -137,59 +150,50 @@ export const createLoaderManager = (
 
   const get = (id: string) => loadersMap.get(id);
 
-  // check if there has pending loaders
-  const hasPendingLoaders = () => {
-    for (const loader of loadersMap.values()) {
-      const { promise } = loader;
-
-      if (promise instanceof Promise) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  const awaitLoaders = async () => {
+  /** get all loaders data at server side */
+  const getLoadersData = async () => {
+    // await pending loaders
     const pendingLoaders = [];
-
     for (const [id, loader] of loadersMap) {
-      const { load } = loader;
-      load();
       if (loader.promise instanceof Promise) {
         pendingLoaders.push([id, loader] as [string, Loader]);
       }
     }
     await Promise.all(pendingLoaders.map(item => item[1].promise));
+    const loaders = Array.from(loadersMap.entries());
+    return loaders.reduce<Record<string, LoaderResult>>((res, [id, loader]) => {
+      res[id] = loader.result;
 
-    return pendingLoaders.reduce<Record<string, LoaderResult>>(
-      (res, [id, loader]) => {
-        res[id] = loader.result;
+      return res;
+    }, {});
+  };
 
-        return res;
-      },
-      {}
-    );
+  const notifyLoaders = (ids: string[]) => {
+    ids.forEach(id => {
+      get(id)?.notify();
+    });
   };
 
   return {
-    hasPendingLoaders,
-    awaitLoaders,
+    getLoadersData,
+    notifyLoaders,
     add,
     get,
-    initialLoadersData: { ...initialDataMap }
+    initialLoadersData,
+    shouldHydrated
   };
 };
 
 let loaderManager: LoaderManager;
 
 export const getLoaderManager = (
-  initialDataMap: Record<string, LoaderResult> = {}
+  initialDataMap?: Record<string, LoaderResult>,
+  initialShouldHydrate?: boolean
 ) => {
   if (loaderManager) {
     return loaderManager;
   }
-  loaderManager = createLoaderManager(initialDataMap);
+  loaderManager = createLoaderManager(initialDataMap, initialShouldHydrate);
   return loaderManager;
 };
 

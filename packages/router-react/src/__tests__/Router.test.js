@@ -17,7 +17,7 @@ describe('A <Router>', () => {
     let router = createRouter({
       routes: [],
       history: createMemoryHistory()
-    });
+    }).init();
 
     expect(() => {
       createTestRenderer(

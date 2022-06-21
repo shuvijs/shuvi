@@ -24,7 +24,7 @@ describe('a memory history', () => {
     router = createRouter({
       routes: [] as IRouteRecord[],
       history
-    });
+    }).init();
   });
 
   it('knows how to create hrefs', () => {

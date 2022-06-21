@@ -57,6 +57,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
   private _listeners: Events<Listener> = createEvents();
   private _beforeEachs: Events<NavigationGuardHook> = createEvents();
+  private _beforeResolves: Events<NavigationGuardHook> = createEvents();
   private _afterEachs: Events<NavigationResolvedHook> = createEvents();
 
   constructor({ basename = '', history, routes }: IRouterOptions<RouteRecord>) {
@@ -65,12 +66,6 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     this._routes = createRoutesFromArray(routes);
     this._current = START;
     this._history.doTransition = this._doTransition.bind(this);
-
-    const setup = () => this._history.setup();
-    this._history.transitionTo(this._getCurrent(), {
-      onTransition: setup,
-      onAbort: setup
-    });
   }
 
   get ready() {
@@ -110,6 +105,15 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     });
   }
 
+  init() {
+    const setup = () => this._history.setup();
+    this._history.transitionTo(this._getCurrent(), {
+      onTransition: setup,
+      onAbort: setup
+    });
+    return this;
+  }
+
   push(to: any, state?: any) {
     return this._history.push(to, { state });
   }
@@ -140,6 +144,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
   beforeEach(listener: NavigationGuardHook) {
     return this._beforeEachs.push(listener);
+  }
+
+  beforeResolve(listener: NavigationGuardHook) {
+    return this._beforeResolves.push(listener);
   }
 
   afterEach(listener: NavigationResolvedHook) {
@@ -183,7 +191,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const routeContext = new Map<RouteRecord, NavigationHookContext>();
     const queue = ([] as Array<NavigationGuardHook>).concat(
       this._beforeEachs.toArray(),
-      extractHooks(nextMatches, 'resolve', routeContext)
+      extractHooks(nextMatches, 'resolve', routeContext),
+      this._beforeResolves.toArray()
     );
 
     let cancel: boolean = false;

@@ -8,7 +8,7 @@ const Index = () => {
     <div>
       <p>{data?.hello}</p>
       <div>
-        <Link to={`/loader/child?sssss=111`}>Go /loader/child with query</Link>
+        <Link to={`/parent/foo/a`}>Go /foo/a</Link>
       </div>
     </div>
   );
@@ -19,7 +19,7 @@ type LoaderData = {
 };
 
 export const loader: Loader<LoaderData> = async ctx => {
-  await sleep(300);
+  await sleep(100);
   return {
     hello: 'world'
   };

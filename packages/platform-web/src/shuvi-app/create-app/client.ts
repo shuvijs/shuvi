@@ -22,9 +22,10 @@ import {
   createBrowserHistory,
   createHashHistory
 } from '@shuvi/router';
-import { historyMode } from '@shuvi/app/files/routerConfig';
+import { historyMode, loaderOptions } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { getLoaderManager } from '../react/loader/loaderManager';
+import { getLoadersHook } from '../react/utils/router';
 
 declare let __SHUVI: any;
 let app: IApplication;
@@ -54,7 +55,7 @@ export function createApp<CompType, AppState extends IAppState>(options: {
   const context: IClientAppContext = {};
 
   // loaderManager is created here and will be cached.
-  getLoaderManager(loadersData);
+  getLoaderManager(loadersData, appData.ssr);
 
   const router = createRouter({
     history,
@@ -67,6 +68,8 @@ export function createApp<CompType, AppState extends IAppState>(options: {
       );
     }
   });
+  router.beforeResolve(getLoadersHook(context, loaderOptions));
+  router.init();
   currentAppRouter = router;
   currentAppContext = context;
 

@@ -74,7 +74,7 @@ describe('GetInitialProps', () => {
       expect(initialPropsCtx.params.foo).toBe('test');
     });
 
-    test('should be called after a client naviagation', async () => {
+    test('should be called after a client navigation', async () => {
       page = await ctx.browser.page(ctx.url('/one'));
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
       expect(await page.$text('[data-test-id="time"]')).toBe('0');
