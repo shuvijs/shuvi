@@ -129,38 +129,4 @@ describe('route', () => {
       }
     ]);
   });
-  // rename之后已经不是正确的case了
-  // test('should generate middleware route', async () => {
-  //   const routes = sortByPath(getRoutes(resolveFixture('middleware')));
-  //   console.log(routes);
-  //   expect(routes).toMatchObject([
-  //     {
-  //       path: '/',
-  //       component: resolveFixture('middleware/index.js'),
-  //       middlewares: [resolveFixture('middleware/_middleware.js')]
-  //     },
-  //     {
-  //       path: '/b',
-  //       children: [
-  //         {
-  //           path: '/c',
-  //           children: [
-  //             {
-  //               path: '/',
-  //               component: resolveFixture('middleware/b/c/index.js')
-  //             }
-  //           ]
-  //         },
-  //         {
-  //           path: '/',
-  //           component: resolveFixture('middleware/b/index.js'),
-  //           middlewares: [
-  //             resolveFixture('middleware/_middleware.js'),
-  //             resolveFixture('middleware/b/_middleware.ts')
-  //           ]
-  //         }
-  //       ]
-  //     }
-  //   ]);
-  // });
 });

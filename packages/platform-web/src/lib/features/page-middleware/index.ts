@@ -43,7 +43,6 @@ export default createPlugin({
             });
             rawRoutes = routes;
           }
-          console.log(rawRoutes);
 
           return getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir);
         },
