@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@components": [
+        "src/components"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@shuvi/runtime": [
+        ".shuvi/runtime"
+      ],
+      "@shuvi/runtime/*": [
+        ".shuvi/runtime/*"
+      ]
+    }
+  },
+  "target": "es5",
+  "module": "esnext",
+  "moduleResolution": "node",
+  "allowSyntheticDefaultImports": false,
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "src"
+  ]
+}

@@ -95,10 +95,14 @@ async function checkDependencies({
   process.exit(1);
 }
 
+export let paths: Record<string, string | string[]>;
+export let baseUrl: string;
+
 export async function verifyTypeScriptSetup({
   projectDir,
   srcDir,
-  onTsConfig
+  onTsConfig,
+  onJsConfig
 }: {
   projectDir: string;
   srcDir: string;
@@ -107,6 +111,7 @@ export async function verifyTypeScriptSetup({
     parsedConfig: any,
     parsedCompilerOptions: any
   ) => void;
+  onJsConfig?: (config: any) => void;
 }): Promise<void> {
   const tsConfigPath = path.join(projectDir, 'tsconfig.json');
   const yarnLockFile = path.join(projectDir, 'yarn.lock');
@@ -125,6 +130,41 @@ export async function verifyTypeScriptSetup({
     if (hasTypeScriptFiles) {
       firstTimeSetup = true;
     } else {
+      // load jsconfig.json
+      let jsConfig: any;
+      const jsConfigPath = path.join(projectDir, 'jsconfig.json');
+      const hasJsConfig = await fileExists(jsConfigPath);
+      if (hasJsConfig) {
+        jsConfig = await readFile(jsConfigPath, 'utf8').then(val => val.trim());
+      }
+
+      try {
+        jsConfig = JSON.parse(jsConfig || '{}');
+      } catch (err) {}
+
+      const jsCompilerOptions: any = {
+        target: 'es5',
+        module: 'esnext',
+        moduleResolution: 'node',
+        allowSyntheticDefaultImports: false
+      };
+
+      for (let option of Object.keys(jsCompilerOptions)) {
+        if (!jsConfig[option]) {
+          jsConfig[option] = jsCompilerOptions[option];
+        }
+      }
+
+      if (onJsConfig) {
+        onJsConfig(jsConfig);
+      }
+
+      paths = {
+        ...jsConfig?.compilerOptions?.paths
+      };
+      baseUrl = projectDir;
+
+      await writeJson(jsConfigPath, jsConfig);
       return;
     }
   }
@@ -281,6 +321,11 @@ export async function verifyTypeScriptSetup({
   if (onTsConfig) {
     onTsConfig(appTsConfig, parsedTsConfig, parsedCompilerOptions);
   }
+
+  paths = {
+    ...appTsConfig?.compilerOptions?.paths
+  };
+  baseUrl = projectDir;
 
   if (messages.length > 0) {
     if (firstTimeSetup) {
