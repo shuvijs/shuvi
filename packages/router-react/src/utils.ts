@@ -43,6 +43,3 @@ export function warningOnce(key: string, cond: boolean, message: string) {
 export function generatePath(path: string, params: IParams = {}): string {
   return matchStringify(path, params);
 }
-
-const ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z\d+\-.]*?:/;
-export const isAbsoluteUrl = (url: string) => ABSOLUTE_URL_REGEX.test(url);

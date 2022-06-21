@@ -35,8 +35,11 @@ function prefetchViaDom(
   });
 }
 
-function getFilesForRoute(route: string): Promise<any> {
-  return Promise.resolve(self.__SHUVI_MANIFEST).then(manifest => {
+function getFilesForRoute(
+  route: string,
+  clientManifestPath: Record<string, string[]>
+): Promise<any> {
+  return Promise.resolve(clientManifestPath).then(manifest => {
     if (!manifest || !(route in manifest)) {
       throw new Error(`Failed to lookup route: ${route}`);
     }
@@ -50,12 +53,13 @@ function getFilesForRoute(route: string): Promise<any> {
   });
 }
 
-export default async function prefetchFn(
-  route: string
+export async function prefetchFn(
+  route: string,
+  clientManifestPath: Record<string, string[]>
 ): Promise<Promise<void> | void> {
   if (process.env.NODE_ENV !== 'production') return;
   if (typeof window === 'undefined' || !route) return;
-  const output = await getFilesForRoute(route);
+  const output = await getFilesForRoute(route, clientManifestPath);
   const canPrefetch: boolean = hasSupportPrefetch();
   await Promise.all(
     canPrefetch
@@ -65,3 +69,8 @@ export default async function prefetchFn(
       : []
   );
 }
+
+export const isAbsoluteUrl = (url: string) => {
+  const ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z\d+\-.]*?:/;
+  return ABSOLUTE_URL_REGEX.test(url);
+};

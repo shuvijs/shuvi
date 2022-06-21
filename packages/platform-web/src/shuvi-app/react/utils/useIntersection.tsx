@@ -1,15 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { requestIdleCallback, cancelIdleCallback } from './requestIdleCallback';
-import {
-  UseIntersection,
-  ObserveCallback,
-  Identifier,
-  Observer
-} from './types';
+
+type UseIntersection = {
+  rootRef?: React.RefObject<HTMLElement>;
+  rootMargin?: string;
+  disabled?: boolean;
+};
+
+type ObserveCallback = (isVisible: boolean) => void;
+
+type Identifier = {
+  root: Element | Document | null;
+  margin: string;
+};
+
+type Observer = {
+  id: Identifier;
+  observer: IntersectionObserver;
+  elements: Map<Element, ObserveCallback>;
+};
 
 const hasIntersectionObserver = typeof IntersectionObserver !== 'undefined';
 
-export function useIntersection<T extends Element>({
+export default function useIntersection<T extends Element>({
   rootRef,
   rootMargin = '0px',
   disabled

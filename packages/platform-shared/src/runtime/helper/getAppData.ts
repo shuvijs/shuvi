@@ -14,7 +14,7 @@ export type IAppData<Data = {}, appState = any> = {
   routeProps?: { [x: string]: any };
   loadersData?: { [x: string]: any };
   appState?: appState;
-  clientManifestPath?: Record<string, string[]>;
+  clientManifestPath: Record<string, string[]>;
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -24,6 +24,13 @@ let appData: IAppData | null = null;
 export function getAppData(): IAppData {
   if (appData) {
     return appData;
+  }
+
+  if (typeof window === 'undefined') {
+    return {
+      ssr: false,
+      clientManifestPath: {}
+    };
   }
 
   const el = document.getElementById(CLIENT_APPDATA_ID);

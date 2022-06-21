@@ -3,9 +3,7 @@ import * as PropTypes from 'prop-types';
 import { useHref, useNavigate, useResolvedPath } from '.';
 import { pathToString, State, PathRecord } from '@shuvi/router';
 import { __DEV__ } from './constants';
-import { useCurrentRoute, useIntersection } from './hooks';
-import prefetchFn from './prefetch';
-import { isAbsoluteUrl } from './utils';
+import { useCurrentRoute } from './hooks';
 
 function isModifiedEvent(event: React.MouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
@@ -38,70 +36,13 @@ function isModifiedEvent(event: React.MouseEvent) {
  */
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   function LinkWithRef(
-    {
-      onClick,
-      replace: replaceProp = false,
-      state,
-      target,
-      to,
-      prefetch,
-      onMouseEnter,
-      ...rest
-    },
-    ref: any
+    { onClick, replace: replaceProp = false, state, target, to, ...rest },
+    ref
   ) {
     let href = useHref(to);
     let navigate = useNavigate();
     const location = useCurrentRoute();
     let path = useResolvedPath(to);
-    const previousHref = React.useRef<string>(href);
-
-    const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
-
-    const setRef = React.useCallback(
-      (el: Element) => {
-        // Before the link getting observed, check if visible state need to be reset
-        if (previousHref.current !== href) {
-          resetVisible();
-          previousHref.current = href;
-        }
-
-        if (prefetch !== false) setIntersectionRef(el);
-
-        if (ref) {
-          if (typeof ref === 'function') ref(el);
-          else if (typeof ref === 'object') {
-            ref.current = el;
-          }
-        }
-      },
-      [href, resetVisible, setIntersectionRef, ref]
-    );
-
-    React.useEffect(() => {
-      const shouldPrefetch =
-        prefetch !== false && isVisible && !isAbsoluteUrl(href);
-
-      if (shouldPrefetch) {
-        prefetchFn(href);
-      }
-    }, [href, prefetch, isVisible]);
-
-    const childProps: {
-      ref?: any;
-      onMouseEnter: React.MouseEventHandler;
-    } = {
-      ref: setRef,
-      onMouseEnter: (e: React.MouseEvent) => {
-        if (typeof onMouseEnter === 'function') {
-          onMouseEnter(e);
-        }
-        if (!isAbsoluteUrl(href)) {
-          prefetchFn(href);
-        }
-      }
-    };
-
     function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
       if (onClick) onClick(event);
       if (
@@ -127,8 +68,8 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         {...rest}
         href={href}
         onClick={handleClick}
+        ref={ref}
         target={target}
-        {...childProps}
       />
     );
   }

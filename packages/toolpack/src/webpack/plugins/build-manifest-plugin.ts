@@ -10,15 +10,13 @@ type ModuleId = string | number;
 const defaultOptions = {
   filename: 'build-manifest.json',
   modules: false,
-  chunkRequest: false,
-  publicPath: '/'
+  chunkRequest: false
 };
 
 interface Options {
   filename: string;
   modules: boolean;
   chunkRequest: boolean;
-  publicPath: string;
 }
 
 function getFileExt(filepath: string): string {

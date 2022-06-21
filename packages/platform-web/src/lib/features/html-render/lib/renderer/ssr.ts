@@ -50,7 +50,8 @@ export class SsrRenderer extends BaseRenderer {
     const appData: IAppData = {
       ...result.appData,
       pageData,
-      ssr: serverPluginContext.config.ssr
+      ssr: serverPluginContext.config.ssr,
+      clientManifestPath: {}
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 
