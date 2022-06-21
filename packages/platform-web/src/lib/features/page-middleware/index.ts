@@ -2,6 +2,7 @@ import { createPlugin } from '@shuvi/service';
 import { getMiddlewareRoutes } from '@shuvi/platform-shared/lib/node';
 import { getRoutesContentFromRawRoutes } from './lib';
 import { isDirectory } from '@shuvi/utils/lib/file';
+import { IRouteRecord } from '@shuvi/router';
 
 export { middleware as getPageMiddleware } from './lib/middleware';
 
@@ -26,25 +27,28 @@ export default createPlugin({
       ];
     }
 
-    const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+    return [
+      createFile({
+        name,
+        content: async () => {
+          const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+          let rawRoutes: IRouteRecord[] = [];
 
-    if (hasRoutesDir) {
-      return [
-        createFile({
-          name,
-          content: async () => {
-            const rawRoutes = await getMiddlewareRoutes(paths.routesDir);
-            console.log(
-              rawRoutes,
-              getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir)
+          if (hasRoutesDir) {
+            const { routes, warnings } = await getMiddlewareRoutes(
+              paths.routesDir
             );
-            return getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir);
-          },
-          dependencies: paths.routesDir
-        })
-      ];
-    }
+            warnings.forEach(warning => {
+              console.warn(warning);
+            });
+            rawRoutes = routes;
+          }
+          console.log(rawRoutes);
 
-    return [];
+          return getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir);
+        },
+        dependencies: paths.routesDir
+      })
+    ];
   }
 });

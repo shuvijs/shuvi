@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { join, relative, extname, basename } from 'path';
+import { join, extname, basename } from 'path';
 import { normalizeFilePath, normalizeRoutePath } from '../route/route';
 import { isDirectory } from '@shuvi/utils/lib/file';
 
@@ -10,16 +10,10 @@ type GetArrayElementType<T extends readonly any[]> = T extends readonly any[]
   ? T[number]
   : never;
 
-type CapName = Capitalize<GetArrayElementType<typeof supportFileTypes>>;
-type FileTypeChecker = Record<`is${CapName}`, (filename: string) => boolean>;
-type RouteTypeChecker = Record<
-  `has${Capitalize<CapName>}`,
-  (files: string[]) => boolean
->;
-type RouteUtil = Record<`remove${CapName}`, (files: string[]) => string[]>;
+export type SupportFileType = GetArrayElementType<typeof supportFileTypes>;
 
-export const getRelativeAtRoot = (path: string) =>
-  relative(process.cwd(), path);
+type CapName = Capitalize<SupportFileType>;
+type FileTypeChecker = Record<`is${CapName}`, (filename: string) => boolean>;
 
 export const normalize = (path: string) => {
   const result = normalizeRoutePath(normalizeFilePath(path));
@@ -37,15 +31,12 @@ export const isRouteFile = (file: string): boolean => {
   });
 };
 
-export const getAllowFilesAndDirs = async (
-  files: string[],
-  parentPath: string
-) => {
+export const getAllowFilesAndDirs = async (dirname: string) => {
   const result: string[] = [];
   const resultHistory: Record<string, { type: string; index: number }> = {};
-
+  const files = await readDir(dirname);
   for (const file of files) {
-    const isDir = await isDirectory(join(parentPath, file));
+    const isDir = await isDirectory(join(dirname, file));
     if (isDir) {
       result.push(file);
       continue;
@@ -108,30 +99,6 @@ export const readDir = (fullPath: string) => {
   return fs.readdir(fullPath, { encoding: 'utf-8' });
 };
 
-export const exceptionGenerator = () => {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const getErrors = () => {
-    return [...errors];
-  };
-
-  const getWarnings = () => {
-    return [...warnings];
-  };
-
-  return {
-    getErrors,
-    getWarnings,
-    addError(error: string) {
-      errors.push(error);
-    },
-    addWarning(warning: string) {
-      warnings.push(warning);
-    }
-  };
-};
-
 export const hasRouteChildren = async (
   files: string[],
   parentPath: string
@@ -152,8 +119,6 @@ export const hasRouteChildren = async (
 };
 
 const fileTypeChecker = {} as FileTypeChecker;
-const routeTypeChecker = {} as RouteTypeChecker;
-const routeFilter = {} as RouteUtil;
 
 supportFileTypes.forEach(fileType => {
   const allowNames = allowReadFilExtList.map(ext => `${fileType}.${ext}`);
@@ -162,17 +127,6 @@ supportFileTypes.forEach(fileType => {
   fileTypeChecker[`is${capName}`] = (filename: string) => {
     return allowNames.includes(filename);
   };
-
-  routeTypeChecker[`has${capName}`] = files => {
-    return files.some(file => fileTypeChecker[`is${capName}`](file));
-  };
-
-  routeFilter[`remove${capName}`] = files => {
-    return files.filter(file => {
-      const pageNames = allowReadFilExtList.map(ext => `${fileType}.${ext}`);
-      return !pageNames.includes(file);
-    });
-  };
 });
 
-export { fileTypeChecker, routeTypeChecker, routeFilter };
+export { fileTypeChecker };

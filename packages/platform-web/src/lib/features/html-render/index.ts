@@ -1,8 +1,5 @@
 import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
-import {
-  getLayoutPageRoutes,
-  getRoutesFromFiles
-} from '@shuvi/platform-shared/lib/node';
+import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
 import {
   getAllFiles,
   getFirstModuleExport,
@@ -22,6 +19,7 @@ import {
 import server from './server-plugin-custom-server';
 import { FileOptions } from '@shuvi/service/lib/project';
 import { isDirectory } from '@shuvi/utils/lib/file';
+import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node/route-layout/route';
 export { IRenderToHTML } from './hooks';
 export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
 
@@ -72,7 +70,15 @@ const core = createPlugin({
           const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
 
           if (hasRoutesDir) {
-            rawRoutes = await getLayoutPageRoutes(paths.routesDir);
+            const { routes, warnings } = await getPageAndLayoutRoutes(
+              paths.routesDir
+            );
+
+            warnings.forEach(warning => {
+              console.warn(warning.msg);
+            });
+
+            rawRoutes = routes;
           } else {
             rawRoutes = getRoutesFromFiles(
               getAllFiles(paths.pagesDir),

@@ -2,6 +2,7 @@ import { createPlugin } from '@shuvi/service';
 import { getApiRoutes } from '@shuvi/platform-shared/lib/node';
 import { getRoutesContent, getRoutesContentFromRawRoutes } from './lib';
 import { isDirectory } from '@shuvi/utils/lib/file';
+import { IRouteRecord } from '@shuvi/router';
 
 export { IApiRequestHandler } from './lib/apiRouteHandler';
 
@@ -28,19 +29,27 @@ export default createPlugin({
       ];
     }
 
-    const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
-
-    if (hasRoutesDir) {
-      return createFile({
+    return [
+      createFile({
         name,
         content: async () => {
-          const rawRoutes = await getApiRoutes(paths.routesDir);
+          const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+
+          let rawRoutes: IRouteRecord[] = [];
+
+          if (hasRoutesDir) {
+            const { routes, warnings } = await getApiRoutes(paths.routesDir);
+
+            warnings.forEach(warning => {
+              console.warn(warning);
+            });
+            rawRoutes = routes;
+          }
+
           return getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir);
         },
         dependencies: paths.routesDir
-      });
-    }
-
-    return [];
+      })
+    ];
   }
 });
