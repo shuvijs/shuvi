@@ -44,38 +44,6 @@ export async function setupTypeScript(paths: IPaths) {
       if (parsedTsConfig.include == null) {
         appTsConfig.include = ['src', '.shuvi/app/types-plugin-extended.d.ts'];
       }
-    },
-    onJsConfig(jsConfig) {
-      // resolve @shuvi/runtime to the real file
-      jsConfig.compilerOptions.paths = {
-        ...jsConfig.compilerOptions.paths,
-        '@shuvi/runtime': [
-          path.relative(
-            path.resolve(
-              paths.rootDir,
-              jsConfig.compilerOptions.baseUrl || './'
-            ),
-            paths.runtimeDir
-          )
-        ],
-        '@shuvi/runtime/*': [
-          path.relative(
-            path.resolve(
-              paths.rootDir,
-              jsConfig.compilerOptions.baseUrl || './'
-            ),
-            paths.runtimeDir
-          ) + '/*'
-        ]
-      };
-
-      if (jsConfig.exclude == null) {
-        jsConfig.exclude = ['node_modules'];
-      }
-
-      if (jsConfig.include == null) {
-        jsConfig.include = ['src'];
-      }
     }
   });
 }
