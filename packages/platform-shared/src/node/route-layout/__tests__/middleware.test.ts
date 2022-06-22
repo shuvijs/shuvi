@@ -29,6 +29,7 @@ const getFixtureMiddlewareRoutes = async (dirname: string) => {
 
 describe('middleware routes test', () => {
   it('should ', async () => {
-    await getFixtureMiddlewareRoutes('middlewares');
+    const result = await getFixtureMiddlewareRoutes('middlewares');
+    console.log(result);
   });
 });

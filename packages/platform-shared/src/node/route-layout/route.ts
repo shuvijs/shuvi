@@ -145,8 +145,14 @@ export const getApiRoutes = async (dir: string) => {
           });
           continue;
         }
+
+        let path = prefix + '/' + rawRoute.segment;
+        if (path === '//') {
+          path = '/';
+        }
+
         routes.push({
-          path: prefix + '/' + rawRoute.segment,
+          path,
           filepath: rawRoute.filepath
         });
       }
@@ -237,8 +243,8 @@ export const getPageAndLayoutRoutes = async (dirname: string) => {
   };
 };
 
-type MiddlewareRecord = {
-  middlewares?: string[];
+export type MiddlewareRecord = {
+  middlewares: string[];
   path: string;
   children?: MiddlewareRecord[];
 };
@@ -246,8 +252,6 @@ type MiddlewareRecord = {
 export const getMiddlewareRoutes = async (dirname: string) => {
   const { rawRoutes, warnings, errors } = await getRawRoutesFromDir(dirname);
   const allowTypes = ['dir', 'page', 'layout'];
-  //const rootMiddleware = rawRoutes.find(route => route.type === 'middleware');
-  //const middlewares = rootMiddleware ? [rootMiddleware.filepath] : [];
 
   const _getMiddlewareRoutes = async (
     rawRoutes: RawRoute[],
@@ -255,6 +259,8 @@ export const getMiddlewareRoutes = async (dirname: string) => {
     segment: string,
     parentMiddlewares: string[]
   ) => {
+    segment = segment === '/' ? '' : segment;
+
     const currentLevelMiddleware = rawRoutes.find(
       route => route.type === 'middleware'
     );
@@ -262,48 +268,42 @@ export const getMiddlewareRoutes = async (dirname: string) => {
     const middlewares = currentLevelMiddleware
       ? [...parentMiddlewares, currentLevelMiddleware.filepath]
       : parentMiddlewares;
+
+    //
+    //
+    //
+    //
+
     const allowedRawRoutes = rawRoutes.filter(route =>
       allowTypes.includes(route.type)
     );
+
     const hasLayout = allowedRawRoutes.some(route => route.type === 'layout');
 
-    const route = {} as MiddlewareRecord;
-
-    if (hasLayout) {
-      route.children = [];
-    }
-
     for (const rawRoute of allowedRawRoutes) {
-      if (rawRoute.type === 'page' && hasLayout) {
-        route.children!.push({
-          path: '',
-          middlewares
-        });
-        continue;
-      }
-
-      if (rawRoute.type === 'layout' || rawRoute.type === 'page') {
-        let prefix = segment;
-        let suffix = rawRoute.segment;
-        route.path = `${prefix}${suffix}`;
-        routes.push({
-          ...route,
-          middlewares
-        });
-        continue;
-      }
-
       if (rawRoute.type === 'dir') {
-        const workRoutes = hasLayout ? route.children! : routes;
-        const preSegment = hasLayout
-          ? ''
-          : `${segment}${rawRoute.parentSegment}/`;
         await _getMiddlewareRoutes(
           rawRoute.children,
-          workRoutes,
-          preSegment,
+          routes,
+          //segment + '/' + (rawRoute.parentSegment || rawRoute.segment),
+          segment + '/' + rawRoute.parentSegment,
           middlewares
         );
+        continue;
+      }
+
+      const onlyHasPage = rawRoute.type === 'page' && !hasLayout;
+
+      if (rawRoute.type === 'layout' || onlyHasPage) {
+        let path = segment + '/' + rawRoute.segment;
+        if (path === '//') {
+          path = '/';
+        }
+
+        routes.push({
+          path,
+          middlewares
+        });
       }
     }
 
@@ -311,16 +311,13 @@ export const getMiddlewareRoutes = async (dirname: string) => {
   };
 
   const routes = await _getMiddlewareRoutes(rawRoutes, [], '', []);
-
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
     }
   });
 
-  const exceptionFilter = (e: RouteException) => {
-    return e.type === 'middleware';
-  };
+  const exceptionFilter = (e: RouteException) => e.type === 'middleware';
 
   return {
     routes,
@@ -328,242 +325,3 @@ export const getMiddlewareRoutes = async (dirname: string) => {
     errors: errors.filter(exceptionFilter)
   };
 };
-
-// export const getMiddlewareRoutes = async (dir: string) => {
-//   type MiddlewareRecord = {
-//     middlewares?: string[];
-//     path: string;
-//     children?: MiddlewareRecord[];
-//   };
-//   const allowTypes = ['dir', 'page', 'layout','middleware'];
-//   const { rawRoutes, errors, warnings } = await getRawRoutesFromDir(dir);
-//   const rootMiddleware = rawRoutes.find(route => route.type === 'middleware');
-//   const middlewares = rootMiddleware ? [rootMiddleware.filepath] : [];
-//   const _getMiddlewareRoutes = (
-//     rawRoutes: RawRoute[],
-//     routes: MiddlewareRecord[],
-//     parentMiddlewares: string[]
-//   ) => {
-//     const currentLevelMiddleware = rawRoutes.find(
-//       route => route.type === 'middleware'
-//     );
-//     const allowedRawRoutes = rawRoutes.filter(route => allowTypes.includes(route.type));
-//     const middlewares = currentLevelMiddleware
-//       ? [...parentMiddlewares, currentLevelMiddleware.filepath]
-//       : parentMiddlewares;
-//     const hasLayout = allowedRawRoutes.some(route => route.type === 'layout');
-//
-//     const route = {} as IRouteRecord;
-//
-//     if (hasLayout) {
-//       route.children = [];
-//     }
-//
-//     for (const rawRoute of allowedRawRoutes) {
-//
-//     }
-//
-//     return routes;
-//   };
-//
-//   const routes = _getMiddlewareRoutes(rawRoutes, [], middlewares);
-//   const filterException = (e: RouteException) => e.type === 'middleware';
-//
-//   return {
-//     routes,
-//     errors: errors.filter(filterException),
-//     warnings: warnings.filter(filterException)
-//   };
-// };
-
-// const routes = [
-//   {
-//     path: '/about',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/about.js'
-//   },
-//   {
-//     path: '/default-head',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/default-head.js'
-//   },
-//   {
-//     path: '/head',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/head.js'
-//   },
-//   {
-//     path: '/hmr',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     children: [
-//       {
-//         path: '/one',
-//         middlewares: [
-//           '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//         ],
-//         filepath:
-//           '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/hmr/one.js'
-//       },
-//       {
-//         path: '/two',
-//         middlewares: [
-//           '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//         ],
-//         filepath:
-//           '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/hmr/two.js'
-//       }
-//     ]
-//   },
-//   {
-//     path: '/',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/index.js'
-//   },
-//   {
-//     path: '/lazy-compile',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/lazy-compile.js'
-//   },
-//   {
-//     path: '/middleware',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     children: [
-//       {
-//         path: '/:local',
-//         middlewares: [
-//           '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//         ],
-//         children: [
-//           {
-//             path: '/:name',
-//             middlewares: [
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js'
-//             ],
-//             children: [
-//               {
-//                 path: '/',
-//                 middlewares: [
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js',
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/[name]/_middleware.js'
-//                 ],
-//                 filepath:
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/[name]/index.js'
-//               },
-//               {
-//                 path: '/name',
-//                 middlewares: [
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js',
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/[name]/_middleware.js'
-//                 ],
-//                 filepath:
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/[name]/name.js'
-//               }
-//             ]
-//           },
-//           {
-//             path: '/deep',
-//             middlewares: [
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js'
-//             ],
-//             children: [
-//               {
-//                 path: '/:other*',
-//                 middlewares: [
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js',
-//                   '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/deep/_middleware.js'
-//                 ],
-//                 children: [
-//                   {
-//                     path: '/',
-//                     middlewares: [
-//                       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//                       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js',
-//                       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/deep/_middleware.js',
-//                       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/deep/[[...other]]/_middleware.js'
-//                     ],
-//                     filepath:
-//                       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/deep/[[...other]]/index.js'
-//                   }
-//                 ]
-//               }
-//             ]
-//           },
-//           {
-//             path: '/',
-//             middlewares: [
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js'
-//             ],
-//             filepath:
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/index.js'
-//           },
-//           {
-//             path: '/login',
-//             middlewares: [
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js',
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/_middleware.js'
-//             ],
-//             filepath:
-//               '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/middleware/[local]/login.js'
-//           }
-//         ]
-//       }
-//     ]
-//   },
-//   {
-//     path: '/overwrite-default-head',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/overwrite-default-head.js'
-//   },
-//   {
-//     path: '/process-env',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/process-env.js'
-//   },
-//   {
-//     path: '/query',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/query.js'
-//   },
-//   {
-//     path: '/redirect',
-//     middlewares: [
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/_middleware.js'
-//     ],
-//     filepath:
-//       '/Users/ives/workspace/shuvi-fork/shuvi/test/fixtures/basic/src/pages/redirect.js'
-//   }
-// ];

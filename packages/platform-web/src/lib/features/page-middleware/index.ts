@@ -3,6 +3,7 @@ import { getMiddlewareRoutes } from '@shuvi/platform-shared/lib/node';
 import { getRoutesContentFromRawRoutes } from './lib';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import { IRouteRecord } from '@shuvi/router';
+import { IMiddlewareRouteConfig } from './lib/routes';
 
 export { middleware as getPageMiddleware } from './lib/middleware';
 
@@ -21,7 +22,10 @@ export default createPlugin({
         createFile({
           name,
           content: () => {
-            return getRoutesContentFromRawRoutes(routes, paths.pagesDir);
+            return getRoutesContentFromRawRoutes(
+              routes as IMiddlewareRouteConfig[],
+              paths.pagesDir
+            );
           }
         })
       ];
@@ -44,7 +48,10 @@ export default createPlugin({
             rawRoutes = routes;
           }
 
-          return getRoutesContentFromRawRoutes(rawRoutes, paths.routesDir);
+          return getRoutesContentFromRawRoutes(
+            rawRoutes as IMiddlewareRouteConfig[],
+            paths.routesDir
+          );
         },
         dependencies: paths.routesDir
       })
