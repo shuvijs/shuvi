@@ -43,7 +43,6 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
     let navigate = useNavigate();
     const location = useCurrentRoute();
     let path = useResolvedPath(to);
-
     function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
       if (onClick) onClick(event);
       if (
@@ -81,6 +80,8 @@ export interface LinkProps
   replace?: boolean;
   state?: State;
   to: PathRecord;
+  prefetch?: boolean;
+  onMouseEnter?: (e: any) => void;
 }
 
 if (__DEV__) {
@@ -90,6 +91,8 @@ if (__DEV__) {
     replace: PropTypes.bool,
     state: PropTypes.object,
     target: PropTypes.string,
+    prefetch: PropTypes.bool,
+    onMouseEnter: PropTypes.func,
     // @ts-ignore proptypes's bug?
     to: PropTypes.oneOfType([
       PropTypes.string,

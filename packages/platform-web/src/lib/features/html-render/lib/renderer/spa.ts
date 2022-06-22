@@ -8,7 +8,8 @@ export class SpaRenderer extends BaseRenderer {
     const appData: IAppData = {
       pageData: {},
       ssr: serverPluginContext.config.ssr,
-      loadersData: {}
+      loadersData: {},
+      clientManifestPath: {}
     };
     return {
       htmlAttrs: {},
