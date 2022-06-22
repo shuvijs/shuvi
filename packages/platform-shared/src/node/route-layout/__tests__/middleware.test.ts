@@ -28,8 +28,34 @@ const getFixtureMiddlewareRoutes = async (dirname: string) => {
 };
 
 describe('middleware routes test', () => {
-  it('should ', async () => {
+  it('should get correct middlewares', async () => {
     const result = await getFixtureMiddlewareRoutes('middlewares');
-    console.log(result);
+    expect(result).toMatchObject({
+      routes: [
+        {
+          path: '/a',
+          middlewares: ['middleware.js', 'a/middleware.js']
+        },
+        {
+          middlewares: ['middleware.js'],
+          path: '/c'
+        },
+        {
+          path: '/',
+          middlewares: ['middleware.js']
+        }
+      ],
+      warnings: [],
+      errors: []
+    });
+  });
+
+  it('should get empty array when has not middleware', async () => {
+    const result = await getFixtureMiddlewareRoutes('layout');
+    expect(result).toMatchObject({
+      errors: [],
+      warnings: [],
+      routes: []
+    });
   });
 });

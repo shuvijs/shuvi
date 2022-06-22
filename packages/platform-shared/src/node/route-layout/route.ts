@@ -295,15 +295,16 @@ export const getMiddlewareRoutes = async (dirname: string) => {
       const onlyHasPage = rawRoute.type === 'page' && !hasLayout;
 
       if (rawRoute.type === 'layout' || onlyHasPage) {
-        let path = segment + '/' + rawRoute.segment;
-        if (path === '//') {
-          path = '/';
+        if (middlewares.length) {
+          let path = segment + '/' + rawRoute.segment;
+          if (path === '//') {
+            path = '/';
+          }
+          routes.push({
+            path,
+            middlewares
+          });
         }
-
-        routes.push({
-          path,
-          middlewares
-        });
       }
     }
 
