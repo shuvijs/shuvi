@@ -6,37 +6,23 @@ on:
       - v* # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  publish-npm:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
-
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          cache: 'pnpm'
-
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2021-08-12
-          profile: minimal
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm build
-
-      - name: Run unit-test and e2e-test
-        run: pnpm test
-
-      - name: Publish to npm
-        run: npm publish --access restricted
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
