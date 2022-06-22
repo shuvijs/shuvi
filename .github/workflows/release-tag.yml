@@ -42,7 +42,7 @@ jobs:
       - name: create and publish versions
         uses: changesets/action@v1
         with:
-          publish: pnpm publish -r --access restricted
+          publish: pnpm publish -r --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
