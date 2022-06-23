@@ -20,7 +20,7 @@ export interface DevMiddleware {
 export async function getDevMiddleware(
   serverPluginContext: IServerPluginContext
 ): Promise<DevMiddleware> {
-  const bundler = getBundler(serverPluginContext);
+  const bundler = await getBundler(serverPluginContext);
   const compiler = await bundler.getWebpackCompiler();
   // watch before pass compiler to WebpackDevMiddleware
   bundler.watch({

@@ -3,7 +3,6 @@ import webpack from 'webpack';
 import * as path from 'path';
 import WebpackChain from 'webpack-chain';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { NAME } from '@shuvi/shared/lib/constants';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
@@ -18,22 +17,19 @@ export interface BrowserOptions extends BaseOptions {
   analyze?: boolean;
 }
 
-export function createBrowserWebpackChain({
-  webpackHelpers,
-  ...baseOptions
-}: BrowserOptions): WebpackChain {
-  const { dev, publicPath, analyze } = baseOptions;
-  const chain = baseWebpackChain(baseOptions);
-  const { useTypeScript, typeScriptPath, tsConfigPath } = getTypeScriptInfo(
-    baseOptions.projectRoot
-  );
+export function createBrowserWebpackChain(
+  options: BrowserOptions
+): WebpackChain {
+  const { typescript, dev, publicPath, analyze } = options;
+  const chain = baseWebpackChain(options);
+  const useTypeScript = !!typescript?.useTypeScript;
 
   chain.target('web');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
   chain.resolve.extensions.merge([
+    ...(useTypeScript ? ['.ts', '.tsx'] : []),
     '.mjs',
     '.js',
-    ...(useTypeScript ? ['.tsx', '.ts'] : []),
     '.jsx',
     '.json',
     '.wasm'
@@ -45,9 +41,9 @@ export function createBrowserWebpackChain({
       .use(require.resolve('fork-ts-checker-webpack-plugin'), [
         {
           typescript: {
-            configFile: tsConfigPath,
+            configFile: typescript.tsConfigPath,
             mode: 'write-references',
-            typeScriptPath,
+            typeScriptPath: typescript.typeScriptPath,
             diagnosticOptions: {
               syntactic: true
             },
@@ -55,7 +51,7 @@ export function createBrowserWebpackChain({
               compilerOptions: {
                 incremental: true,
                 tsBuildInfoFile: path.resolve(
-                  baseOptions.projectRoot,
+                  options.projectRoot,
                   `.${NAME}/cache`,
                   'tsconfig.tsbuildinfo'
                 )
@@ -72,10 +68,11 @@ export function createBrowserWebpackChain({
         }
       ]);
   }
-  // if (baseOptions.target) {
+
+  // if (options.target) {
   //   chain.resolve
   //     .plugin('private/prefer-resolver-plugin')
-  //     .use(PreferResolverPlugin, [{ suffix: baseOptions.target }]);
+  //     .use(PreferResolverPlugin, [{ suffix: options.target }]);
   // }
 
   if (dev) {
@@ -120,9 +117,7 @@ export function createBrowserWebpackChain({
                 );
               }
 
-              hash.update(
-                module.libIdent({ context: baseOptions.projectRoot })
-              );
+              hash.update(module.libIdent({ context: options.projectRoot }));
             }
 
             return hash.digest('hex').substring(0, 8);
@@ -205,6 +200,6 @@ export function createBrowserWebpackChain({
   return withStyle(chain, {
     extractCss: !dev,
     publicPath,
-    parcelCss: baseOptions.parcelCss
+    parcelCss: options.parcelCss
   });
 }

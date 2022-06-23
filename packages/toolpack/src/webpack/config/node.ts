@@ -1,37 +1,28 @@
 import WebpackChain from 'webpack-chain';
-import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
-import { resolvePreferTarget } from './parts/resolve';
 import { IWebpackHelpers } from '../types';
 
 export interface NodeOptions extends BaseOptions {
   webpackHelpers: IWebpackHelpers;
 }
 
-export function createNodeWebpackChain({
-  webpackHelpers,
-  ...baseOptions
-}: NodeOptions): WebpackChain {
-  const chain = baseWebpackChain(baseOptions);
-  const { useTypeScript } = getTypeScriptInfo(baseOptions.projectRoot);
+export function createNodeWebpackChain(options: NodeOptions): WebpackChain {
+  const { webpackHelpers, typescript } = options;
+  const chain = baseWebpackChain(options);
+  const useTypeScript = !!typescript?.useTypeScript;
 
   chain.target('node');
   chain.devtool(false);
-  const extensions = [
+  chain.resolve.extensions.merge([
+    ...(useTypeScript ? ['.ts', '.tsx'] : []),
     '.js',
     '.mjs',
-    ...(useTypeScript ? ['.tsx', '.ts'] : []),
     '.jsx',
     '.json',
     '.wasm'
-  ];
-  chain.resolve.extensions.merge(
-    baseOptions.target
-      ? resolvePreferTarget(baseOptions.target, extensions)
-      : extensions
-  );
+  ]);
   // fix: Can't reexport the named export 'BREAK' from non EcmaScript module
   // related issue: https://github.com/graphql/graphql-js/issues/1272
   chain.resolve.mainFields.clear().add('main').add('module');
@@ -41,8 +32,8 @@ export function createNodeWebpackChain({
   webpackHelpers.addExternals(
     chain,
     nodeExternals({
-      projectRoot: baseOptions.projectRoot,
-      include: baseOptions.include
+      projectRoot: options.projectRoot,
+      include: options.include
     })
   );
 
@@ -69,5 +60,5 @@ export function createNodeWebpackChain({
     }
   ]);
 
-  return withStyle(chain, { ssr: true, parcelCss: baseOptions.parcelCss });
+  return withStyle(chain, { ssr: true, parcelCss: options.parcelCss });
 }
