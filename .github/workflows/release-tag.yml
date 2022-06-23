@@ -16,15 +16,13 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: yyx990803/release-tag@master #https://github.com/yyx990803/release-tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+            Please refer to CHANGELOG.md for details.
           draft: false
           prerelease: false
