@@ -4,7 +4,7 @@ on:
     paths:
       - 'packages/toolpack/scripts/version.js'
   release:
-    types: [published]
+    types: [created]
 
 name: Release binary
 
