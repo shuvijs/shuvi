@@ -23,6 +23,6 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: |
-            Please refer to CHANGELOG.md for details.
+            Please refer to [CHANGELOG.md](CHANGELOG.md) for details.
           draft: false
           prerelease: false
