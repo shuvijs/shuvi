@@ -28,3 +28,12 @@ export const resolveFile = (fileName: string): string => {
   }
   throw new Error(`cannot resolve actual file of module: ${fileName}`);
 };
+
+export const isDirectory = async (dirname: string) => {
+  try {
+    const stats = await fs.promises.lstat(dirname);
+    return stats.isDirectory();
+  } catch (e) {
+    return false;
+  }
+};

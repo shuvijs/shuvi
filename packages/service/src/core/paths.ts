@@ -18,6 +18,7 @@ export function getPaths(opts: IPathsOpts): IPaths {
     rootDir,
     srcDir,
     pagesDir: srcChildDir('pages'),
+    routesDir: srcChildDir('routes'),
     apisDir: srcChildDir('apis'),
     appDir: toAbsolute(`.${NAME}/app`),
     privateDir: toAbsolute(`.${NAME}`),

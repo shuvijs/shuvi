@@ -56,7 +56,7 @@ export interface IPreset {
 export interface IPaths {
   rootDir: string;
   buildDir: string;
-
+  routesDir: string;
   // dir to store shuvi's artifacts
   privateDir: string;
 

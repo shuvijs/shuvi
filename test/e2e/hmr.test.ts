@@ -6,10 +6,10 @@ import {
   check,
   getIframeTextContent
 } from '../utils';
-import { readFileSync, writeFileSync, renameSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 function resolvePagePath(page: string) {
-  return resolveFixture('basic/src/pages/hmr', page);
+  return resolveFixture('basic/src/routes/hmr/' + page, 'page.js');
 }
 
 jest.setTimeout(5 * 60 * 1000);
@@ -64,7 +64,8 @@ describe('Hot Module Reloading', () => {
 
   describe('editing a page', () => {
     test('should detect the changes and display it', async () => {
-      const pagePath = resolvePagePath('two.js');
+      const pagePath = resolvePagePath('two');
+
       let originalContent: string | undefined;
       let done = false;
 
@@ -107,7 +108,7 @@ describe('Hot Module Reloading', () => {
     });
 
     test('should show compile error message', async () => {
-      const pagePath = resolvePagePath('two.js');
+      const pagePath = resolvePagePath('two');
       let originalContent: string | undefined;
       let done = false;
 

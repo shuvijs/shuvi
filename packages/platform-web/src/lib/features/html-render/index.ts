@@ -1,12 +1,9 @@
-import { createPlugin, IUserRouteConfig, IRouteConfig } from '@shuvi/service';
+import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
+import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
 import {
-  getRoutesFromFiles,
-  renameFilepathToComponent
-} from '@shuvi/service/lib/route';
-import {
-  getUserCustomFileCandidates,
+  getAllFiles,
   getFirstModuleExport,
-  getAllFiles
+  getUserCustomFileCandidates
 } from '@shuvi/service/lib/project/file-utils';
 import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 import * as fs from 'fs';
@@ -14,14 +11,15 @@ import * as path from 'path';
 import { extendedHooks } from './hooks';
 import {
   getNormalizedRoutes,
+  getRoutes,
   getRoutesContent,
-  setRoutes,
-  getRoutes
+  ifComponentHasLoader,
+  setRoutes
 } from './lib';
 import server from './server-plugin-custom-server';
-import { ifComponentHasLoader } from './lib';
 import { FileOptions } from '@shuvi/service/lib/project';
-
+import { isDirectory } from '@shuvi/utils/lib/file';
+import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node/route-layout/route';
 export { IRenderToHTML } from './hooks';
 export {
   getSSRMiddleware,
@@ -73,13 +71,30 @@ const core = createPlugin({
     } else {
       routesFile = createFile({
         name: 'routes.js',
-        content: () => {
-          const rawRoutes = getRoutesFromFiles(
-            getAllFiles(paths.pagesDir),
-            paths.pagesDir
-          );
-          const renamedRoutes = renameFilepathToComponent(rawRoutes);
-          const modifiedRoutes = getRoutesAfterPlugin(renamedRoutes);
+        content: async () => {
+          // read src routes
+          let rawRoutes: IUserRouteConfig[];
+
+          const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+
+          if (hasRoutesDir) {
+            const { routes, warnings } = await getPageAndLayoutRoutes(
+              paths.routesDir
+            );
+
+            warnings.forEach(warning => {
+              console.warn(warning.msg);
+            });
+
+            rawRoutes = routes;
+          } else {
+            rawRoutes = getRoutesFromFiles(
+              getAllFiles(paths.pagesDir),
+              paths.pagesDir
+            );
+          }
+
+          const modifiedRoutes = getRoutesAfterPlugin(rawRoutes);
           const normalizedRoutes = getNormalizedRoutes(
             modifiedRoutes,
             paths.pagesDir
@@ -117,8 +132,7 @@ const core = createPlugin({
           imports += `import { loader as loader_${index} } from '${component}'\n`;
           exports += `'${id}': loader_${index},\n`;
         });
-        const content = `${imports}  export default {\n  ${exports}\n}`;
-        return content;
+        return `${imports}  export default {\n  ${exports}\n}`;
       },
       dependencies: [
         paths.pagesDir,

@@ -148,6 +148,7 @@ importers:
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/shared': 0.0.1-pre.10
       '@shuvi/toolpack': 0.0.1-pre.10
+      '@shuvi/utils': 0.0.1-pre.10
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
@@ -157,6 +158,7 @@ importers:
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
+      '@shuvi/utils': link:../utils
       redux: 4.1.2
 
   packages/platform-web:
