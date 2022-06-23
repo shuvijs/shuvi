@@ -17,7 +17,5 @@ jobs:
       - name: Create Release Pull Request
         id: release_tag
         uses: changesets/action@v1
-        with:
-          tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
