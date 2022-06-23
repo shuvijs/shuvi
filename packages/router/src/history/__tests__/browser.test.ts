@@ -27,7 +27,7 @@ describe('a browser history', () => {
     // @ts-ignore
     window.history.replaceState(null, null, '/');
     let history = createBrowserHistory();
-    router = createRouter({ routes: [] as IRouteRecord[], history });
+    router = createRouter({ routes: [] as IRouteRecord[], history }).init();
   });
 
   it('knows how to create hrefs from location objects', () => {

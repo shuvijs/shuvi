@@ -7,7 +7,9 @@ declare module '@shuvi/app/files/middlewareRoutes' {
 }
 
 declare module '@shuvi/app/files/routerConfig' {
+  import { ILoaderOptions } from '@shuvi/service/lib/core';
   export const historyMode: 'browser' | 'hash';
+  export const loaderOptions: ILoaderOptions;
 }
 
 declare module '@shuvi/app/files/routes' {

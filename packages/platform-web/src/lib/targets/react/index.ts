@@ -16,10 +16,20 @@ const webReactMainPlugin = createPlugin({
       source: resolveAppFile('react/loader'),
       exported: '{ useLoaderData }'
     },
+    // typescript type cannot be exported at js file so put it at `index.d.ts`
+    {
+      source: resolveAppFile('react/loader'),
+      exported: '{ Loader }',
+      filepath: 'index.d.ts'
+    },
     {
       source: resolveLib('@shuvi/router-react'),
       exported:
-        '{ useParams, useRouter, useCurrentRoute, Link, RouterView, withRouter }'
+        '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
+    },
+    {
+      source: resolveAppFile('react/Link'),
+      exported: '{ Link }'
     }
   ]
 });

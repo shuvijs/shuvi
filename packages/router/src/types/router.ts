@@ -95,8 +95,11 @@ export interface IRouter<RouteRecord extends { path: string } = any> {
   forward(): void;
   ready: Promise<any>;
 
+  init: () => IRouter<RouteRecord>;
+
   listen: (listener: Listener) => RemoveListenerCallback;
   beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
+  beforeResolve: (listener: NavigationGuardHook) => RemoveListenerCallback;
   afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
 
   replaceRoutes: (routes: RouteRecord[]) => void;
