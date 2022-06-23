@@ -1,37 +1,60 @@
 import { createPlugin } from '@shuvi/service';
-import { getRoutesFromFiles } from '@shuvi/service/lib/route';
-import { getAllFiles } from '@shuvi/service/lib/project/file-utils';
+import { getMiddlewareRoutes } from '@shuvi/platform-shared/lib/node';
 import { getRoutesContentFromRawRoutes } from './lib';
+import { isDirectory } from '@shuvi/utils/lib/file';
+import { IRouteRecord } from '@shuvi/router';
+import { IMiddlewareRouteConfig } from './lib/routes';
 
 export { middleware as getPageMiddleware } from './lib/middleware';
 
 export default createPlugin({
-  addRuntimeFile: ({ createFile }, context) => {
+  addRuntimeFile: async ({ createFile }, context) => {
+    const name = 'middlewareRoutes.js';
     const {
       config: { routes },
       paths
     } = context;
-    // if config.routes is defined, use config
+
     const hasConfigRoutes = Array.isArray(routes);
-    const middlewareRoutesFile = hasConfigRoutes
-      ? createFile({
-          name: 'middlewareRoutes.js',
+
+    if (hasConfigRoutes) {
+      return [
+        createFile({
+          name,
           content: () => {
-            return getRoutesContentFromRawRoutes(routes, paths.pagesDir);
-          }
-        })
-      : createFile({
-          name: 'middlewareRoutes.js',
-          content: () => {
-            const rawRoutes = getRoutesFromFiles(
-              getAllFiles(paths.pagesDir),
+            return getRoutesContentFromRawRoutes(
+              routes as IMiddlewareRouteConfig[],
               paths.pagesDir
             );
-            return getRoutesContentFromRawRoutes(rawRoutes, paths.pagesDir);
-          },
-          dependencies: paths.pagesDir
-        });
+          }
+        })
+      ];
+    }
 
-    return [middlewareRoutesFile];
+    return [
+      createFile({
+        name,
+        content: async () => {
+          const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
+          let rawRoutes: IRouteRecord[] = [];
+
+          if (hasRoutesDir) {
+            const { routes, warnings } = await getMiddlewareRoutes(
+              paths.routesDir
+            );
+            warnings.forEach(warning => {
+              console.warn(warning);
+            });
+            rawRoutes = routes;
+          }
+
+          return getRoutesContentFromRawRoutes(
+            rawRoutes as IMiddlewareRouteConfig[],
+            paths.routesDir
+          );
+        },
+        dependencies: paths.routesDir
+      })
+    ];
   }
 });

@@ -1,29 +1,20 @@
 import * as path from 'path';
-import { IRouteRecord, rankRouteBranches } from '@shuvi/router';
+import { rankRouteBranches } from '@shuvi/router';
 
 export interface IMiddlewareRouteConfig {
   path: string;
-  children?: IMiddlewareRouteConfig[];
   middlewares: string[];
 }
 
-type IMiddlewareRouteHandlerWithoutChildren = Omit<
-  IMiddlewareRouteConfig,
-  'children'
->;
-
 function flattenMiddlewareRoutes(
   middlewareRoutes: IMiddlewareRouteConfig[],
-  branches: IMiddlewareRouteHandlerWithoutChildren[] = [],
+  branches: IMiddlewareRouteConfig[] = [],
   parentPath = ''
-): IMiddlewareRouteHandlerWithoutChildren[] {
+): IMiddlewareRouteConfig[] {
   middlewareRoutes.forEach(route => {
-    const { children, middlewares } = route;
+    const { middlewares } = route;
     let tempPath = path.join(parentPath, route.path);
 
-    if (children) {
-      flattenMiddlewareRoutes(children, branches, tempPath);
-    }
     if (middlewares) {
       branches.push({
         path: tempPath,
@@ -43,15 +34,15 @@ export function serializeMiddlewareRoutes(
     [],
     path.resolve('/', parentPath)
   );
-  let rankmiddlewareRoutes = tempMiddlewareRoutes.map(
+  let rankMiddlewareRoutes = tempMiddlewareRoutes.map(
     middlewareRoute =>
       [middlewareRoute.path, middlewareRoute] as [
         string,
         typeof middlewareRoute
       ]
   );
-  rankmiddlewareRoutes = rankRouteBranches(rankmiddlewareRoutes);
-  tempMiddlewareRoutes = rankmiddlewareRoutes.map(
+  rankMiddlewareRoutes = rankRouteBranches(rankMiddlewareRoutes);
+  tempMiddlewareRoutes = rankMiddlewareRoutes.map(
     middlewareRoute => middlewareRoute[1]
   );
   let res = '';
@@ -70,30 +61,6 @@ export function serializeMiddlewareRoutes(
     res += strRoute;
   }
   return `[${res}]`;
-}
-
-export function pickMiddlewareAndPath(
-  middlewareRoutes: IRouteRecord[]
-): IMiddlewareRouteConfig[] {
-  const res: IMiddlewareRouteConfig[] = [];
-  for (let index = 0; index < middlewareRoutes.length; index++) {
-    const { path, middlewares, children } = middlewareRoutes[
-      index
-    ] as IRouteRecord & { middlewares: any };
-    const route = {
-      path
-    } as IMiddlewareRouteConfig;
-
-    if (middlewares) {
-      route.middlewares = middlewares;
-    }
-
-    if (children && children.length > 0) {
-      route.children = pickMiddlewareAndPath(children);
-    }
-    res.push(route);
-  }
-  return res;
 }
 
 export function normalizeMiddlewareRoutes(
@@ -116,12 +83,6 @@ export function normalizeMiddlewareRoutes(
       );
     }
 
-    if (middlewareRoute.children && middlewareRoute.children.length > 0) {
-      middlewareRoute.children = normalizeMiddlewareRoutes(
-        middlewareRoute.children,
-        option
-      );
-    }
     res.push(middlewareRoute);
   }
 
@@ -129,14 +90,12 @@ export function normalizeMiddlewareRoutes(
 }
 
 export function getRoutesContentFromRawRoutes(
-  rawRoutes: IRouteRecord[],
+  rawRoutes: IMiddlewareRouteConfig[],
   pagesDir: string
 ): string {
-  const middlewareRoutes = pickMiddlewareAndPath(rawRoutes);
-  const normalizedRoutes = normalizeMiddlewareRoutes(middlewareRoutes, {
+  const normalizedRoutes = normalizeMiddlewareRoutes(rawRoutes, {
     pagesDir
   });
   const serialized = serializeMiddlewareRoutes(normalizedRoutes);
-  const content = `export default ${serialized}`;
-  return content;
+  return `export default ${serialized}`;
 }
