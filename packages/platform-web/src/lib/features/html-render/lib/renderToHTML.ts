@@ -14,36 +14,29 @@ export async function renderToHTML({
 }: {
   req: IRequest;
   serverPluginContext: IServerPluginContext;
-}): Promise<{ result: RenderResult; appContext: any; error?: IPageError }> {
+}): Promise<{ result: RenderResult; error?: IPageError }> {
   let result: RenderResult = null;
   let error: IPageError | undefined;
   const renderer = new Renderer({ serverPluginContext });
   const { application } = server;
-  const app = application.createApp({
-    async render({ appContext, AppComponent, router, modelManager }) {
-      result = await renderer.renderDocument({
-        router,
-        app,
-        AppComponent,
-        appContext,
-        modelManager
-      });
-      const errorState = modelManager.get(errorModel).$state();
-      if (typeof errorState.errorCode === 'number') {
-        error = errorState;
-      }
-    },
-    req
-  });
+  const app = application.createApp({ req });
 
-  let appContext: any;
   try {
-    appContext = await app.run();
+    await app.init();
+    const publicApp = app.getPublicAPI();
+    result = await renderer.renderDocument({
+      app: publicApp,
+      req
+    });
+    const errorState = app.modelManager.get(errorModel).$state();
+    if (typeof errorState.errorCode === 'number') {
+      error = errorState;
+    }
   } catch (error) {
     throw error;
   } finally {
     await app.dispose();
   }
 
-  return { appContext, result, error };
+  return { result, error };
 }

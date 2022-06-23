@@ -1,23 +1,16 @@
-import UserAppComponent from '@shuvi/app/user/app';
-import routes from '@shuvi/app/files/routes';
+import { getRoutes } from '@shuvi/app/core/platform';
 import {
-  getRoutes,
-  app as PlatformAppComponent
-} from '@shuvi/app/core/platform';
-import {
-  IApplication,
+  Application,
   getModelManager,
   getErrorHandler,
   IAppState,
-  IAppRenderFn,
-  IClientAppContext,
-  IPageRouteRecord,
-  IAppData
+  IAppData,
+  IAppContext,
+  IRawPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import {
   createRouter,
-  IRouter,
   History,
   createBrowserHistory,
   createHashHistory
@@ -27,22 +20,20 @@ import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { getLoaderManager } from '../react/loader/loaderManager';
 import { getLoadersHook } from '../react/utils/router';
 
-declare let __SHUVI: any;
-let app: IApplication;
-let currentAppContext: IClientAppContext;
-let currentAppRouter: IRouter<IPageRouteRecord>;
-let currentAppData: IAppData;
+let app: Application<IAppContext>;
 
-export function createApp<CompType, AppState extends IAppState>(options: {
-  render: IAppRenderFn<IClientAppContext, CompType>;
+export function createApp<AppState extends IAppState>(options: {
+  routes: IRawPageRouteRecord[];
+  appComponent: any;
+  userComponents: any;
   appData: IAppData<any, AppState>;
 }) {
   // app is a singleton in client side
   if (app) {
     return app;
   }
-  const { appData } = options;
-  currentAppData = appData;
+
+  const { routes, appData, appComponent, userComponents } = options;
   const { loadersData = {}, appState, routeProps } = appData;
   const modelManager = getModelManager(appState);
   let history: History;
@@ -52,7 +43,7 @@ export function createApp<CompType, AppState extends IAppState>(options: {
     history = createBrowserHistory();
   }
 
-  const context: IClientAppContext = {};
+  const context = {};
 
   // loaderManager is created here and will be cached.
   getLoaderManager(loadersData, appData.ssr);
@@ -70,42 +61,13 @@ export function createApp<CompType, AppState extends IAppState>(options: {
   });
   router.beforeResolve(getLoadersHook(context, loaderOptions));
   router.init();
-  currentAppRouter = router;
-  currentAppContext = context;
 
   app = application({
-    AppComponent: PlatformAppComponent,
+    AppComponent: appComponent,
+    UserAppComponent: userComponents,
     router,
     context,
-    modelManager,
-    render: options.render,
-    UserAppComponent
+    modelManager
   });
   return app;
-}
-
-if (module.hot) {
-  const handleHotUpdate = async () => {
-    const rerender = async () => {
-      currentAppRouter.replaceRoutes(
-        getRoutes(routes, currentAppContext, currentAppData)
-      );
-      app.rerender({ AppComponent: PlatformAppComponent, UserAppComponent });
-    };
-
-    // if we are in the midsf of route transition, don't render unit it's done
-    if (__SHUVI.router._pending) {
-      const removelistener = __SHUVI.router.afterEach(() => {
-        removelistener();
-        rerender();
-      });
-    } else {
-      rerender();
-    }
-  };
-
-  module.hot.accept(
-    ['@shuvi/app/user/app', '@shuvi/app/files/routes'],
-    handleHotUpdate
-  );
 }

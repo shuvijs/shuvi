@@ -3,16 +3,12 @@
 import { view } from '@shuvi/app/core/platform';
 import { createApp } from '../application';
 
-const app: ReturnType<typeof createApp> = createApp({
-  async render({ AppComponent }) {
-    view.renderApp({
-      AppComponent: AppComponent
-    });
-  }
-});
+const app = createApp();
 
-const rerender = () => {
-  app.rerender();
+const render = () => {
+  view.renderApp({
+    AppComponent: app.getPublicAPI().appComponent
+  });
 };
 
-export { app, rerender };
+export { app, render };

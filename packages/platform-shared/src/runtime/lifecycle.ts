@@ -83,18 +83,18 @@ export type IPluginRecord = {
   };
 };
 
+export type IPluginList = [IRuntimePlugin, SerializedPluginOptions?][];
+
 export const initPlugins = async (
   pluginManager: PluginManager,
-  runtimeModule: Partial<IRuntimeModule>, // 内联plugin，不含options
-  pluginRecord: IPluginRecord // 外部plugin
+  plugins: IPluginList
 ) => {
   // clear plugin at development mode every time
   if (process.env.NODE_ENV === 'development') {
     pluginManager.clear();
   }
 
-  for (const name in pluginRecord) {
-    const { plugin, options } = pluginRecord[name];
+  for (const [plugin, options] of plugins) {
     let parsedOptions: any;
     if (options) {
       parsedOptions = JSON.parse(options);
@@ -107,23 +107,4 @@ export const initPlugins = async (
       );
     }
   }
-
-  const pluginConstructor: IRuntimePluginConstructor = {};
-  const methods: Array<keyof typeof runtimeModule> = [
-    'getAppComponent',
-    'getRootAppComponent',
-    'getAppContext',
-    'init',
-    'dispose'
-  ];
-
-  for (let index = 0; index < methods.length; index++) {
-    const method = methods[index];
-    if (typeof runtimeModule[method] === 'function') {
-      //@ts-ignore
-      pluginConstructor[method] = runtimeModule[method];
-    }
-  }
-
-  pluginManager.usePlugin(pluginManager.createPlugin(pluginConstructor));
 };
