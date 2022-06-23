@@ -25,13 +25,13 @@ declare module '@shuvi/app/files/apiRoutes' {
 }
 
 declare module '@shuvi/app/files/user/document' {
-  import { IDocumentModule } from '@shuvi/platform-web/lib/types';
+  import { IDocumentModule } from '@shuvi/platform-web/lib/types/resources';
   declare const document: IDocumentModule;
   export default document;
 }
 
 declare module '@shuvi/app/files/user/server' {
-  import { IServerModule } from '@shuvi/platform-web/lib/serverPlugin/hooks';
+  import { IServerModule } from '@shuvi/platform-web/lib/types/resources';
   declare const server: IServerModule;
   export default server;
 }

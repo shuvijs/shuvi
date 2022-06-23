@@ -4,12 +4,15 @@ import {
   IServerPluginConstructor
 } from '@shuvi/service';
 import {
-  ApplicationCreater,
-  IServerAppContext,
-  IViewServer
+  IAppContext,
+  CreateServerApp
 } from '@shuvi/platform-shared/lib/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-import { IDocumentProps, ITemplateData } from '../features/html-render';
+import {
+  IDocumentProps,
+  ITemplateData,
+  IViewServer
+} from '../features/html-render';
 import { IApiRequestHandler } from '../features/api-middleware';
 import '../features/html-render/types';
 
@@ -39,11 +42,9 @@ export type IMiddlewareRoutes = {
 export interface IDocumentModule {
   onDocumentProps(
     documentProps: IDocumentProps,
-    context: IServerAppContext
+    context: IAppContext
   ): Promise<IDocumentProps> | IDocumentProps;
-  getTemplateData(
-    context: IServerAppContext
-  ): Promise<ITemplateData> | ITemplateData;
+  getTemplateData(context: IAppContext): Promise<ITemplateData> | ITemplateData;
 }
 
 export interface IServerModule {
@@ -59,7 +60,7 @@ declare module '@shuvi/service/lib/resources' {
     apiRoutes: IApiRoutes;
     middlewareRoutes: IMiddlewareRoutes;
     application: {
-      createApp: ApplicationCreater<IServerAppContext>;
+      createApp: CreateServerApp;
     };
     document: Partial<IDocumentModule>;
     view: IViewServer;

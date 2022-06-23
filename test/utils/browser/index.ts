@@ -64,6 +64,8 @@ export default class Browser {
     if (url) {
       if (options.disableJavaScript) {
         await page.setJavaScriptEnabled(false);
+      } else {
+        await page.setJavaScriptEnabled(true);
       }
       const response = await page.goto(url, options);
       page.statusCode = response?.status();

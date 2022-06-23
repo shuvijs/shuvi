@@ -499,7 +499,7 @@ export default function createBabelRegister ({ only }) {
         absoluteRuntime: path.resolve(__dirname, '..', 'node_modules/@babel/runtime')
       }]
     ],
-    extensions: ['.jsx', '.js', '.ts', '.tsx'],
+    extensions: ['.js','.jsx', '.ts', '.tsx'],
     babelrc: false,
     configFile: false,
     cache: false

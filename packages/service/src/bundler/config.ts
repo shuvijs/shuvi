@@ -4,6 +4,7 @@ import {
   createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
 import { IPluginContext } from '../core';
+import { getTypeScriptInfo } from './typescript';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import {
   BUILD_MEDIA_PATH,
@@ -34,11 +35,13 @@ export function createWebpackConfig(
   const parcelCss = !!config.experimental.parcelCss;
 
   const include = [paths.appDir, paths.srcDir, ...(opts.include || [])];
+  const typescript = getTypeScriptInfo();
   if (opts.node) {
     chain = createNodeWebpackChain({
       buildManifestFilename: BUILD_MANIFEST_PATH,
       dev,
       parcelCss,
+      typescript,
       env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,
       name: opts.name,
@@ -53,6 +56,7 @@ export function createWebpackConfig(
       analyze: config.analyze,
       buildManifestFilename: BUILD_MANIFEST_PATH,
       dev,
+      typescript,
       parcelCss,
       env: config.env,
       mediaFilename: BUILD_MEDIA_PATH,

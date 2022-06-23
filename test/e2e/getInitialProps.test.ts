@@ -28,14 +28,13 @@ describe('GetInitialProps', () => {
         'query',
         'params',
         'redirect',
+        'req',
         'appContext'
       ].forEach(key => {
         expect(initialPropsCtx[key]).toBeDefined();
       });
 
-      const appContext = initialPropsCtx.appContext;
-
-      const req = appContext.req;
+      const req = initialPropsCtx.req;
       expect(typeof req.headers).toBe('object');
       expect(req.url).toBe('/test?a=2');
       expect(req.query).toEqual({ a: '2' });
@@ -56,15 +55,14 @@ describe('GetInitialProps', () => {
         'query',
         'params',
         'redirect',
+        'req',
         'appContext',
         'fetchInitialProps'
       ].forEach(key => {
         expect(initialPropsCtx[key]).toBeDefined();
       });
 
-      const appContext = initialPropsCtx.appContext;
-
-      const req = appContext.req;
+      const req = initialPropsCtx.req;
       expect(typeof req.headers).toBe('object');
       expect(req.url).toBe('/test?a=2');
       expect(req.query).toEqual({ a: '2' });

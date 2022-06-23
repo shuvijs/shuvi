@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -16,10 +20,19 @@
     "jsx": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@shuvi/runtime": [".shuvi/runtime"],
-      "@shuvi/runtime/*": [".shuvi/runtime/*"]
+      "@shuvi/runtime": [
+        ".shuvi/runtime"
+      ],
+      "@shuvi/runtime/*": [
+        ".shuvi/runtime/*"
+      ]
     }
   },
-  "exclude": ["node_modules"],
-  "include": ["src", ".shuvi/app/types-plugin-extended.d.ts"]
+  "include": [
+    ".shuvi/app/types-plugin-extended.d.ts",
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

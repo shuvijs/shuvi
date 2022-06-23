@@ -9,6 +9,9 @@ import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import { AppSourceRegexs } from '../../constants';
 import * as crypto from 'crypto';
+import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
+
+type TsCompilerOptions = import('typescript').CompilerOptions;
 
 const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);
@@ -21,7 +24,13 @@ export interface BaseOptions {
 
   // src files need to be include
   include: string[];
-
+  typescript?: {
+    useTypeScript: boolean;
+    typeScriptPath?: string;
+    tsConfigPath?: string;
+    tsCompilerOptions?: TsCompilerOptions;
+    resolvedBaseUrl?: string;
+  };
   mediaFilename: string;
   buildManifestFilename: string;
   target?: string;
@@ -58,6 +67,7 @@ export function baseWebpackChain({
   parcelCss,
   projectRoot,
   include,
+  typescript,
   mediaFilename,
   name,
   buildManifestFilename,
@@ -241,6 +251,15 @@ export function baseWebpackChain({
       ? false
       : getCacheConfig()
   );
+
+  if (typescript?.tsCompilerOptions?.paths && typescript?.resolvedBaseUrl) {
+    config.resolve
+      .plugin('jsconfig-paths-plugin')
+      .use(JsConfigPathsPlugin, [
+        typescript.tsCompilerOptions.paths,
+        typescript.resolvedBaseUrl
+      ]);
+  }
 
   if (dev) {
     // For webpack-dev-middleware usage

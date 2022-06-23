@@ -21,7 +21,13 @@ import { FileOptions } from '@shuvi/service/lib/project';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node/route-layout/route';
 export { IRenderToHTML } from './hooks';
-export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
+export {
+  getSSRMiddleware,
+  IDocumentProps,
+  ITemplateData,
+  IViewServer,
+  IViewClient
+} from './lib';
 
 const core = createPlugin({
   setup: ({ addHooks }) => {
