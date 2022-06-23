@@ -9,6 +9,8 @@ import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import { AppSourceRegexs } from '../../constants';
 import * as crypto from 'crypto';
+import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
+import { paths, baseUrl } from '../../utils/verifyTypeScriptSetup';
 
 const resolveLocalLoader = (name: string) =>
   path.join(__dirname, `../loaders/${name}`);
@@ -241,6 +243,10 @@ export function baseWebpackChain({
       ? false
       : getCacheConfig()
   );
+
+  config.resolve
+    .plugin('jsconfig-paths-plugin')
+    .use(JsConfigPathsPlugin, [paths, baseUrl]);
 
   if (dev) {
     // For webpack-dev-middleware usage
