@@ -1,9 +1,7 @@
 import {
   IAppState,
   IAppComponent as PlatformAppComponent,
-  IRouteComponent as PlatformRouteComponent,
-  IViewClient,
-  IViewServer
+  IRouteComponent as PlatformRouteComponent
 } from '@shuvi/platform-shared/esm/runtime';
 
 export type IReactAppData = {
@@ -27,6 +25,3 @@ export type IRouteProps = {
 export type IAppComponent = PlatformAppComponent<React.Component, any>;
 
 export type IRouteComponent = PlatformRouteComponent<React.Component, any>;
-
-export type IReactServerView = IViewServer<React.ComponentType, IReactAppData>;
-export type IReactClientView = IViewClient<React.ComponentType, IReactAppData>;

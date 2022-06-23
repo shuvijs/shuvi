@@ -26,9 +26,9 @@ describe('useLoaderData', () => {
 
     test('should not get loader data when hydrating at client side', async () => {
       page = await ctx.browser.page(ctx.url('/'));
-      const logs = [];
-      const errors = [];
-      page.on('console', msg => logs.push(msg.text));
+      const logs: string[] = [];
+      const errors: string[] = [];
+      page.on('console', msg => logs.push(msg.text()));
       page.on('pageerror', (error: { message: string }) =>
         errors.push(error.message)
       );
@@ -44,9 +44,9 @@ describe('useLoaderData', () => {
       expect(await page.$text('p')).toBe('');
       await page.close();
       page = await ctx.browser.page(ctx.url('/'));
-      const logs = [];
-      const errors = [];
-      page.on('console', msg => logs.push(msg.text));
+      const logs: string[] = [];
+      const errors: string[] = [];
+      page.on('console', msg => logs.push(msg.text()));
       page.on('pageerror', (error: { message: string }) =>
         errors.push(error.message)
       );
@@ -87,11 +87,11 @@ describe('useLoaderData', () => {
       expect(await page.$text('[data-test-id="time"]')).toBe('1');
 
       await page.shuvi.navigate('/two');
-      await page.waitForTimeout(1000);
+      await page.waitForSelector('[data-test-id="two"]');
       expect(await page.$text('[data-test-id="time"]')).toBe('2');
 
       await page.shuvi.navigate('/one', { test: 123 });
-      await page.waitForTimeout(1000);
+      await page.waitForSelector('[data-test-id="one"]');
       expect(await page.$text('[data-test-id="test"]')).toBe('123');
     });
   });

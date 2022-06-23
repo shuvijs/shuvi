@@ -3,7 +3,6 @@ import {
   IData,
   getPublicRuntimeConfig
 } from '@shuvi/platform-shared/lib/runtime';
-import { IRouter } from '@shuvi/router';
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer } from './base';
@@ -11,13 +10,9 @@ import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
 
 export class SsrRenderer extends BaseRenderer {
-  async getDocumentProps({
-    app,
-    AppComponent,
-    router,
-    modelManager,
-    appContext
-  }: IRenderDocumentOptions) {
+  async getDocumentProps({ app, req }: IRenderDocumentOptions) {
+    const { router, context } = app;
+
     const serverPluginContext = this._serverPluginContext;
     const { view } = server;
     const { getAssetPublicUrl } = serverPluginContext;
@@ -25,10 +20,8 @@ export class SsrRenderer extends BaseRenderer {
       throw new Error('router is null');
     }
     const result = await view.renderApp({
-      AppComponent,
-      router: router as IRouter,
-      modelManager,
-      appContext,
+      app,
+      req,
       manifest: clientManifest,
       getAssetPublicUrl
     });
@@ -41,7 +34,7 @@ export class SsrRenderer extends BaseRenderer {
 
     const mainAssetsTags = this._getMainAssetTags();
     const pageDataList = await serverPluginContext.serverPluginRunner.pageData(
-      appContext
+      context
     );
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
