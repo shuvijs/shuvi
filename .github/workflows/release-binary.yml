@@ -3,8 +3,6 @@ on:
     branches: [release/*]
     paths:
       - 'packages/toolpack/scripts/version.js'
-  release:
-    types: [created]
 
 name: Release binary
 
