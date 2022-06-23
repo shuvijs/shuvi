@@ -9,7 +9,7 @@ import {
   IServerMiddleware,
   IServerPluginContext,
   ServerPluginInstance
-} from '..';
+} from '../server';
 import { DevMiddleware } from '../server/middlewares/dev';
 
 export interface IUserRouteConfig {

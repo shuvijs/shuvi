@@ -11,13 +11,14 @@ import webpack, {
   Compiler as WebapckCompiler,
   webpackPath
 } from '@shuvi/toolpack/lib/webpack';
+import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IPluginContext } from '../core';
 import { Target, TargetChain } from '../core/lifecycle';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
 import { BUILD_DEFAULT_DIR } from '../constants';
-import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
+import { setupTypeScript } from './typescript';
 
 type CompilerErr = {
   moduleName: string;
@@ -332,6 +333,7 @@ class WebpackBundler {
   }
 }
 
-export function getBundler(_cliContext: IPluginContext) {
+export async function getBundler(_cliContext: IPluginContext) {
+  await setupTypeScript(_cliContext.paths);
   return new WebpackBundler(_cliContext);
 }

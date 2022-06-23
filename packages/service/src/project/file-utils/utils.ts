@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
-import { getTypeScriptInfo } from '@shuvi/utils/lib/detectTypescript';
 import { withExts } from '@shuvi/utils/lib/file';
 
 export const getAllFiles = (dependencies: string | string[]) => {
@@ -53,10 +52,7 @@ export const getUserCustomFileCandidates = (
   fallbackType: 'nullish' | 'noop' | 'noopFn'
 ): string[] => {
   const SRC_DIR = 'src';
-  const { useTypeScript } = getTypeScriptInfo(rootPath);
-  const moduleFileExtensions = useTypeScript
-    ? ['.tsx', '.ts', '.js', '.jsx']
-    : ['.js', '.jsx', '.tsx', '.ts'];
+  const moduleFileExtensions = ['.ts', '.tsx', '.js', '.jsx'];
   const fallbackMap: Record<typeof fallbackType, string> = {
     nullish: require.resolve('@shuvi/utils/lib/nullish'),
     noop: require.resolve('@shuvi/utils/lib/noop'),

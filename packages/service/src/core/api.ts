@@ -23,7 +23,6 @@ import {
   Resources,
   CorePluginInstance
 } from './lifecycle';
-import { setupTypeScript } from './setupTypeScript';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import { ServerPluginInstance } from '../server';
@@ -179,11 +178,7 @@ class Api {
   }
 
   async buildApp(): Promise<void> {
-    await Promise.all([
-      setupTypeScript(this._paths),
-      this._removeLastArtifacts(),
-      this._initArtifacts()
-    ]);
+    await Promise.all([this._removeLastArtifacts(), this._initArtifacts()]);
     await this._projectBuilder.build(this._paths.privateDir);
   }
 

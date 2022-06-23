@@ -17,7 +17,7 @@ export const findFirstExistedFile = (files: string[]): string | null => {
 
 export const resolveFile = (fileName: string): string => {
   if (path.extname(fileName)) return fileName;
-  const moduleFileExtensions = ['.tsx', '.ts', '.js', '.jsx'];
+  const moduleFileExtensions = ['.ts', '.tsx', '.js', '.jsx'];
   const files = withExts(fileName, moduleFileExtensions);
   const file = findFirstExistedFile(files);
   if (file) {

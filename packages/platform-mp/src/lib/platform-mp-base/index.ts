@@ -66,7 +66,7 @@ const getAllFiles = (
   return currentFileList;
 };
 
-const moduleFileExtensions = ['.js', '.jsx', '.tsx', '.ts'];
+const moduleFileExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 type IUserRouteHandlerWithoutChildren = Omit<IUserRouteConfig, 'children'>;
 type IUserRouteHandlerOtherData = Omit<
@@ -422,7 +422,7 @@ export default abstract class PlatformMpBase {
         config.merge({
           entry,
           resolve: {
-            extensions: ['.tsx', '.ts', '.js', '.mjs', '.jsx'],
+            extensions: ['.ts', '.tsx', '.js', '.mjs', '.jsx'],
             mainFields: ['jsnext:main', 'browser', 'module', 'main'],
             symlinks: true,
             alias: {

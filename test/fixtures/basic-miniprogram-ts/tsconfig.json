@@ -11,6 +11,7 @@
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "strictNullChecks": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -25,13 +26,13 @@
       "@shuvi/runtime/*": [
         ".shuvi/runtime/*"
       ]
-    },
-    "strictNullChecks": true
+    }
   },
+  "include": [
+    ".shuvi/app/types-plugin-extended.d.ts",
+    "src"
+  ],
   "exclude": [
     "node_modules"
-  ],
-  "include": [
-    "src"
   ]
 }
