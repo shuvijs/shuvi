@@ -95,6 +95,9 @@ async function checkDependencies({
   process.exit(1);
 }
 
+export let paths: Record<string, string | string[]> = {};
+export let baseUrl: string = './';
+
 export async function verifyTypeScriptSetup({
   projectDir,
   srcDir,
@@ -125,6 +128,23 @@ export async function verifyTypeScriptSetup({
     if (hasTypeScriptFiles) {
       firstTimeSetup = true;
     } else {
+      // load jsconfig.json
+      let jsConfig: any;
+      const jsConfigPath = path.join(projectDir, 'jsconfig.json');
+      const hasJsConfig = await fileExists(jsConfigPath);
+      if (!hasJsConfig) return;
+
+      try {
+        jsConfig = await readFile(jsConfigPath, 'utf8').then(val => val.trim());
+        jsConfig = JSON.parse(jsConfig || '{}');
+      } catch (err) {}
+
+      paths = {
+        ...jsConfig?.compilerOptions?.paths
+      };
+      baseUrl = projectDir;
+
+      await writeJson(jsConfigPath, jsConfig);
       return;
     }
   }
@@ -281,6 +301,11 @@ export async function verifyTypeScriptSetup({
   if (onTsConfig) {
     onTsConfig(appTsConfig, parsedTsConfig, parsedCompilerOptions);
   }
+
+  paths = {
+    ...appTsConfig?.compilerOptions?.paths
+  };
+  baseUrl = projectDir;
 
   if (messages.length > 0) {
     if (firstTimeSetup) {
