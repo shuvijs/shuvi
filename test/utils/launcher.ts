@@ -111,7 +111,7 @@ async function launchShuvi(
       env: {} as any
     };
     if (envOverrides) {
-      Object.assign(spawnOptions.env, envOverrides);
+      Object.assign(spawnOptions.env!, envOverrides);
     }
     // At first, build when production mode
     if (!isDev) {
