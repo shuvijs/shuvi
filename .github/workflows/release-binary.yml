@@ -2,12 +2,13 @@ on:
   push:
     branches: [release/*]
     paths:
-      - "packages/toolpack/scripts/version.js"
+      - 'packages/toolpack/scripts/version.js'
+  release:
+    types: [published]
 
 name: Release binary
 
 jobs:
-
   test-unit:
     name: Unit Test Native Code
     runs-on: ubuntu-18.04
