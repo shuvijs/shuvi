@@ -24,3 +24,4 @@ export {
 
 export type { IRouteLoaderContext } from './context/routeLoaderContext';
 export * from './applicationTypes';
+export type { Application } from './application';

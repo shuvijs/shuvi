@@ -1,5 +1,4 @@
-import { IAppData, IHtmlTag } from '@shuvi/platform-shared/lib/runtime';
-
+import { IAppData } from '@shuvi/platform-shared/lib/runtime';
 import invariant from '@shuvi/utils/lib/invariant';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 
@@ -21,8 +20,9 @@ import {
   documentPath
 } from '@shuvi/service/lib/resources';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
+import generateClientManifestPath from '../generateClientManifestPath';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IDocumentProps, ITemplateData } from './types';
+import { IDocumentProps, ITemplateData, IHtmlTag } from './types';
 
 import {
   IRendererConstructorOptions,
@@ -82,17 +82,12 @@ export abstract class BaseRenderer {
 
   async renderDocument({
     app,
-    AppComponent,
-    router,
-    modelManager,
-    appContext
+    req
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
+    const { context: appContext } = app;
     let docProps = await this.getDocumentProps({
       app,
-      AppComponent,
-      router,
-      modelManager,
-      appContext
+      req
     });
 
     if (isRedirect(docProps)) {
@@ -196,6 +191,10 @@ export abstract class BaseRenderer {
   }
 
   protected _getInlineAppData(appData: IAppData): IHtmlTag {
+    appData.clientManifestPath = generateClientManifestPath(
+      clientManifest,
+      this._serverPluginContext.getAssetPublicUrl
+    );
     const data = JSON.stringify(appData);
     return tag(
       'script',

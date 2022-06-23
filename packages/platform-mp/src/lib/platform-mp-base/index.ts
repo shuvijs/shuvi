@@ -168,8 +168,7 @@ export default abstract class PlatformMpBase {
         },
         {
           source: resolveLib('@shuvi/router-react'),
-          exported:
-            '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
+          exported: '{ useParams, useRouter, useCurrentRoute, RouterView }'
         },
         {
           source: resolveLib('@shuvi/router-mp'),

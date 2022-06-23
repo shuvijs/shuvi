@@ -1,10 +1,18 @@
-import { IRedirectState, IRouter } from '@shuvi/router';
+import { IRedirectState } from '@shuvi/router';
 import {
   IApplication,
-  IModelManager
+  IRequest,
+  IHtmlAttrs,
+  IHtmlTag,
+  IClientRendererOptions,
+  IServerRendererOptions,
+  IViewClient,
+  IViewServer,
+  IRenderAppResult
 } from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-shared/lib/runtime';
+
+export { IHtmlAttrs, IHtmlTag };
 
 export interface IRenderResultRedirect extends IRedirectState {
   $type: 'redirect';
@@ -16,10 +24,7 @@ export interface IRendererConstructorOptions {
 
 export type IRenderDocumentOptions = {
   app: IApplication;
-  AppComponent: any;
-  router?: IRouter;
-  modelManager: IModelManager;
-  appContext: any;
+  req: IRequest;
 };
 
 export interface IDocumentProps {
@@ -34,3 +39,13 @@ export interface IDocumentProps {
 export interface ITemplateData {
   [x: string]: any;
 }
+
+export interface IRenderOptions extends IRenderDocumentOptions {}
+
+export {
+  IRenderAppResult,
+  IClientRendererOptions,
+  IServerRendererOptions,
+  IViewClient,
+  IViewServer
+};

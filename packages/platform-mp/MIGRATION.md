@@ -64,8 +64,8 @@ module.exports = defaultConfig
 ```
 ### tips
 
-1. support @shuvi/runtime apis, eg: import { getRuntimeConfig, useParams, useRouter, useCurrentRoute, RouterView, withRouter } from '@shuvi/runtime'
-1. support web routes way, but must navigate by methods under useRouter()
-1. component should not return undefined;
-1. resolve file by extensions: a.bmp.js>a.js;
-1. not support less
+1. support @shuvi/runtime apis, eg: import { getRuntimeConfig, useParams, useRouter, useCurrentRoute, RouterView } from '@shuvi/runtime'
+2. support web routes way, but must navigate by methods under useRouter()
+3. component should not return undefined;
+4. resolve file by extensions: a.bmp.js>a.js;
+5. not support less
