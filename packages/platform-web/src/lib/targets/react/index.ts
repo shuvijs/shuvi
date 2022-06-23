@@ -24,8 +24,7 @@ const webReactMainPlugin = createPlugin({
     },
     {
       source: resolveLib('@shuvi/router-react'),
-      exported:
-        '{ useParams, useRouter, useCurrentRoute, RouterView, withRouter }'
+      exported: '{ useParams, useRouter, useCurrentRoute, RouterView }'
     },
     {
       source: resolveAppFile('react/Link'),

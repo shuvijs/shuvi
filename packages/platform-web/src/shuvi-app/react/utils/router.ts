@@ -10,7 +10,7 @@ import {
   errorModel,
   IRouteLoaderContext,
   IPageRouteRecord,
-  IClientAppContext,
+  IAppContext,
   IRouteData
 } from '@shuvi/platform-shared/esm/runtime';
 import isEqual from '@shuvi/utils/lib/isEqual';
@@ -21,7 +21,7 @@ import { getLoaderManager, Loader } from '../loader/loaderManager';
 import { ILoaderOptions } from '@shuvi/service/lib/core';
 const isServer = typeof window === 'undefined';
 
-export type INormalizeRoutesContext = IClientAppContext;
+export type INormalizeRoutesContext = IAppContext;
 
 type IPageRouteWithElement = IPageRouteRecord & { element?: any };
 
@@ -35,7 +35,7 @@ let loaders = pageLoaders;
 
 export const getLoadersHook =
   (
-    appContext: IClientAppContext,
+    appContext: INormalizeRoutesContext,
     loaderOptions: ILoaderOptions
   ): NavigationGuardHook =>
   async (to, from, next) => {
