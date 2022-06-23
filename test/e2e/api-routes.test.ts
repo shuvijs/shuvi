@@ -503,12 +503,9 @@ describe('apiRoutes development', () => {
 
   describe('apiRoutes hmr', () => {
     test('should detect the changes and display it', async () => {
-      const hasRoutesDir = await isDirectory(
-        resolveFixture('api-routes/src/routes/')
+      const filePath = resolveFixture(
+        'api-routes/src/routes/api/hmr-test/api.js'
       );
-      const filePath = hasRoutesDir
-        ? resolveFixture('api-routes/src/routes/api/hmr-test/api.js')
-        : resolveFixture('api-routes/src/apis/hmr-test.js');
       let originalContent: string | undefined;
       let done = false;
       let page;
