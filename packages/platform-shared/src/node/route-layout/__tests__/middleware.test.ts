@@ -37,8 +37,28 @@ describe('middleware routes test', () => {
           middlewares: ['middleware.js', 'a/middleware.js']
         },
         {
-          middlewares: ['middleware.js'],
-          path: '/c'
+          path: '/b/b1',
+          middlewares: [
+            'middleware.js',
+            'b/middleware.js',
+            'b/b1/middleware.js'
+          ]
+        },
+        {
+          path: '/b/b2',
+          middlewares: [
+            'middleware.js',
+            'b/middleware.js',
+            'b/b2/middleware.js'
+          ]
+        },
+        {
+          path: '/b',
+          middlewares: ['middleware.js', 'b/middleware.js']
+        },
+        {
+          path: '/c',
+          middlewares: ['middleware.js']
         },
         {
           path: '/',

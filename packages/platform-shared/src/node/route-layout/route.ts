@@ -251,7 +251,6 @@ export type MiddlewareRecord = {
 
 export const getMiddlewareRoutes = async (dirname: string) => {
   const { rawRoutes, warnings, errors } = await getRawRoutesFromDir(dirname);
-  const allowTypes = ['dir', 'page', 'layout'];
 
   const _getMiddlewareRoutes = async (
     rawRoutes: RawRoute[],
@@ -269,18 +268,10 @@ export const getMiddlewareRoutes = async (dirname: string) => {
       ? [...parentMiddlewares, currentLevelMiddleware.filepath]
       : parentMiddlewares;
 
-    //
-    //
-    //
-    //
+    const hasLayout = rawRoutes.some(route => route.type === 'layout');
+    const hasPage = rawRoutes.some(route => route.type === 'page');
 
-    const allowedRawRoutes = rawRoutes.filter(route =>
-      allowTypes.includes(route.type)
-    );
-
-    const hasLayout = allowedRawRoutes.some(route => route.type === 'layout');
-
-    for (const rawRoute of allowedRawRoutes) {
+    for (const rawRoute of rawRoutes) {
       if (rawRoute.type === 'dir') {
         await _getMiddlewareRoutes(
           rawRoute.children,
@@ -292,9 +283,13 @@ export const getMiddlewareRoutes = async (dirname: string) => {
         continue;
       }
 
-      const onlyHasPage = rawRoute.type === 'page' && !hasLayout;
+      const isPage = rawRoute.type === 'page';
+      const isLayout = rawRoute.type === 'layout';
+      const isMiddleware = rawRoute.type === 'middleware';
+      const onlyHasPage = isPage && !hasLayout;
+      const onlyHasMiddleware = isMiddleware && !hasLayout && !hasPage;
 
-      if (rawRoute.type === 'layout' || onlyHasPage) {
+      if (isLayout || onlyHasPage || onlyHasMiddleware) {
         if (middlewares.length) {
           let path = segment + '/' + rawRoute.segment;
           if (path === '//') {
