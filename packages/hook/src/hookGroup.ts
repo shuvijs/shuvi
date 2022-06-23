@@ -367,7 +367,9 @@ export const createHookManager = <
         used = true;
       }
       if (hasContext && !_context) {
-        throw new Error(`Context not set. Hook ${hookName} running failed.`);
+        throw new Error(
+          `Context not set. Hook ${String(hookName)} running failed.`
+        );
       }
       // @ts-ignore
       return hook.run(...args, _context);

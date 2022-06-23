@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { IRouteRecord } from '@shuvi/router';
-import { RouteException } from '@shuvi/platform-shared/lib/node/route-layout/route';
+import { RouteException } from '../route';
 
 export const getFixturePath = (
   fixturePath: string,
