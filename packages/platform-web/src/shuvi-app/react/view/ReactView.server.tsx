@@ -21,15 +21,19 @@ import { getLoaderManager } from '../loader/loaderManager';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
-    AppComponent,
-    router,
-    appContext,
-    modelManager,
+    app,
+    req,
     manifest,
     getAssetPublicUrl
   }) => {
     await Loadable.preloadAll();
 
+    const {
+      modelManager,
+      router,
+      appComponent: AppComponent,
+      context: appContext
+    } = app;
     const redirector = createRedirector();
 
     const error = getErrorHandler(modelManager);
@@ -69,6 +73,7 @@ export class ReactServerView implements IReactServerView {
             pathname,
             query,
             appContext,
+            req,
             params: matchedRoute.params,
             redirect: redirector.handler,
             error: error.errorHandler
@@ -97,6 +102,7 @@ export class ReactServerView implements IReactServerView {
         query,
         params,
         appContext,
+        req,
         fetchInitialProps,
         redirect: redirector.handler,
         error: error.errorHandler

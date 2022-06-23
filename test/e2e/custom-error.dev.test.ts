@@ -114,6 +114,7 @@ describe('Custom throw error in development spa', () => {
     await page.close();
     await ctx.close();
   });
+
   test('should render error page with status in dev', async () => {
     result = await page.goto(ctx.url('/ctx-error?a=1'));
 
@@ -130,6 +131,7 @@ describe('Custom throw error in development spa', () => {
     expect(await page.$text('#error-show-client')).toContain(
       'error only in client for test'
     );
+
     await page.shuvi.navigate('/about');
     await page.waitForSelector('#about');
     expect(await page.$text('#about')).toBe('About Page');

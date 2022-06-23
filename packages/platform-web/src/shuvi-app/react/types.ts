@@ -29,6 +29,6 @@ export type IAppComponent = PlatformAppComponent<React.Component, any>;
 
 export type IRouteComponent = PlatformRouteComponent<React.Component, any>;
 
-export type IReactServerView = IViewServer<React.ComponentType, IReactAppData>;
+export type IReactServerView = IViewServer<IReactAppData>;
 
-export type IReactClientView = IViewClient<React.ComponentType, IReactAppData>;
+export type IReactClientView = IViewClient<IReactAppData>;

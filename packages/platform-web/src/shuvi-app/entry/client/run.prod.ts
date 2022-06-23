@@ -1,4 +1,4 @@
 /// <reference lib="dom" />
-import { app } from './setup-app';
+import { run } from './setup-app';
 
-app.run();
+run();

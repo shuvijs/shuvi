@@ -23,7 +23,13 @@ import { ifComponentHasLoader } from './lib';
 import { FileOptions } from '@shuvi/service/lib/project';
 
 export { IRenderToHTML } from './hooks';
-export { getSSRMiddleware, IDocumentProps, ITemplateData } from './lib';
+export {
+  getSSRMiddleware,
+  IDocumentProps,
+  ITemplateData,
+  IViewServer,
+  IViewClient
+} from './lib';
 
 const core = createPlugin({
   setup: ({ addHooks }) => {

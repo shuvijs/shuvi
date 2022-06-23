@@ -10,6 +10,7 @@ const MyApp = props => (
 
 MyApp.getInitialProps = async ctx => {
   await ctx.fetchInitialProps();
+  console.log('ctx', ctx);
   return normalizeContextForSerialize(ctx);
 };
 

@@ -1,5 +1,5 @@
 import { useMatchedRoute } from '@shuvi/router-react';
-import { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
+import type { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
 import { useState, useEffect } from 'react';
 import { getLoaderManager, LoaderResult, LoaderStatus } from './loaderManager';
 import { noLoaderMessage } from '../utils/errorMessage';

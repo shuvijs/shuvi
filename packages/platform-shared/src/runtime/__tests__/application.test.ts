@@ -1,10 +1,10 @@
-import application from '../application';
+import { Application } from '../application';
 import { IAppContext } from '../applicationTypes';
 import { createRouter, createMemoryHistory } from '../router';
 import { getModelManager } from '../store';
 
-function getApp({ render }: any = {}) {
-  const app = application({
+function getApp() {
+  const app = new Application({
     context: {
       test: true
     } as unknown as IAppContext,
@@ -19,10 +19,7 @@ function getApp({ render }: any = {}) {
           component: ''
         }
       ]
-    }).init(),
-    async render(options) {
-      return render && render(options);
-    }
+    }).init()
   });
   return app;
 }
@@ -35,7 +32,7 @@ describe('application', () => {
       hooks: { init }
     } = app.pluginManager;
     init.use(fn);
-    await app.run();
+    await app.init();
     expect(fn).toHaveBeenCalled();
   });
 
@@ -48,8 +45,8 @@ describe('application', () => {
       context.foo = 'bar';
       return context;
     });
-    await app.run();
-    const ctx = app.getContext();
+    await app.init();
+    const ctx = app.context;
     expect(ctx.foo).toBe('bar');
   });
 
@@ -64,10 +61,10 @@ describe('application', () => {
       WrapApp.test = 'test';
       return WrapApp;
     });
-    await app.run();
+    await app.init();
 
-    expect(typeof app.AppComponent).toBe('function');
-    expect(app.AppComponent.test).toBe('test');
+    expect(typeof app.appComponent).toBe('function');
+    expect(app.appComponent.test).toBe('test');
   });
 
   test('should add dispose hook', async () => {
@@ -77,7 +74,7 @@ describe('application', () => {
       hooks: { dispose }
     } = app.pluginManager;
     dispose.use(fn);
-    await app.run();
+    await app.init();
     await app.dispose();
     expect(fn).toHaveBeenCalled();
   });

@@ -7,7 +7,7 @@ import {
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { getModelManager } from '../store/getModelsManager';
 import { errorModel, IPageError } from '../store/models';
-import { IAppContext } from '../applicationTypes';
+import { IAppContext, IRequest } from '../applicationTypes';
 
 export type IURLQuery = ParsedQuery;
 export type IURLParams = IParams;
@@ -26,7 +26,9 @@ export type IErrorHandler = (
 /**
  * route component getInitialProps params `context`
  */
-export interface IRouteLoaderContext<UserAppContext extends IAppContext = {}> {
+export interface IRouteLoaderContext<
+  UserAppContext extends IAppContext = IAppContext
+> {
   /**
    * is running on server, if server is true, client will be false
    */
@@ -70,9 +72,11 @@ export interface IRouteLoaderContext<UserAppContext extends IAppContext = {}> {
    */
   error: IErrorHandler;
   /**
-   * Application context object, which accompanies the entire application life cycle
-   * {@link IClientUserContext} for client
-   * {@link IServerUserContext} for server
+   * server only
+   */
+  req?: IRequest;
+  /**
+   * extended by user
    */
   appContext: UserAppContext;
 }

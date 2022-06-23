@@ -22,13 +22,16 @@ export class ReactClientView implements IReactClientView {
 
   renderApp: IReactClientView['renderApp'] = async ({
     appContainer,
-    AppComponent,
-    appData,
-    router,
-    appContext,
-    modelManager
+    app,
+    appData
   }) => {
     const { _isInitialRender: isInitialRender } = this;
+    const {
+      modelManager,
+      router,
+      appComponent: AppComponent,
+      context: appContext
+    } = app;
     let { ssr, appProps, dynamicIds } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
