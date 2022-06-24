@@ -73,7 +73,7 @@ const core = createPlugin({
         name: 'routes.js',
         content: async () => {
           // read src routes
-          let rawRoutes: IUserRouteConfig[];
+          let rawRoutes: IUserRouteConfig[] = [];
 
           const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
 
@@ -87,11 +87,6 @@ const core = createPlugin({
             });
 
             rawRoutes = routes;
-          } else {
-            rawRoutes = getRoutesFromFiles(
-              getAllFiles(paths.pagesDir),
-              paths.pagesDir
-            );
           }
 
           const modifiedRoutes = getRoutesAfterPlugin(rawRoutes);
