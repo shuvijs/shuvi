@@ -1,9 +1,9 @@
-import setHeader from './api/set-header.js';
-import setCookie from './api/set-cookie';
-import healthCheck from './api/health-check';
-import user from './api/user';
-import setting from './api/setting';
-import modifyHtml from './api/modify-html';
+import setHeader from './routes/api/set-header/api';
+import setCookie from './routes/api/set-cookie/api';
+import healthCheck from './routes/api/health-check/api';
+import user from './routes/api/user/api';
+import setting from './routes/api/setting/api';
+import modifyHtml from './routes/api/modify-html/api';
 
 export const middlewares = [
   setHeader,
