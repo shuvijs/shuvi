@@ -1,4 +1,4 @@
-import WebpackChain from 'webpack-chain';
+import { WebpackChain } from '@shuvi/toolpack/lib/webpack';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
   createCodeFrameFormatter

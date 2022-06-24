@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import webpack from 'webpack';
 import * as path from 'path';
-import WebpackChain from 'webpack-chain';
+import { WebpackChain } from './base';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { NAME } from '@shuvi/shared/lib/constants';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';

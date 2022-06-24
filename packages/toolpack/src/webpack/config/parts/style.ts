@@ -2,7 +2,7 @@ import {
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_PREPARE
 } from '@shuvi/shared/lib/constants';
-import Config from 'webpack-chain';
+import { WebpackChain as Config } from '../base';
 import Rule from 'webpack-chain/src/Rule';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as loaderUtils from 'loader-utils';
