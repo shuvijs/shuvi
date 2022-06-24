@@ -1,10 +1,13 @@
 import { promises as fs } from 'fs';
 import { join, extname, basename } from 'path';
-import { normalizeFilePath, normalizeRoutePath } from '../route/route';
 import { isDirectory } from '@shuvi/utils/lib/file';
+import invariant from '@shuvi/utils/lib/invariant';
 
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
 const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
+
+const dynamicMatchAllRegex = /\[\[(.+?)\]\]/g;
+const dynamicMatchPartRegex = /\[(.+?)\]/g;
 
 type GetArrayElementType<T extends readonly any[]> = T extends readonly any[]
   ? T[number]
@@ -14,6 +17,78 @@ export type SupportFileType = GetArrayElementType<typeof supportFileTypes>;
 
 type CapName = Capitalize<SupportFileType>;
 type FileTypeChecker = Record<`is${CapName}`, (filename: string) => boolean>;
+
+export function normalizeFilePath(filepath: string) {
+  const res = filepath
+    // Remove the file extension from the end
+    .replace(/\.\w+$/, '')
+    // Convert to unix path
+    .replace(/\\/g, '/');
+
+  return res.charAt(0) !== '/' ? '/' + res : res;
+}
+
+export function parseDynamicPath(normalizedRoute: string): string {
+  invariant(
+    normalizedRoute.length >= 1,
+    'parseDynamicPath param normalizedRoute length should not >= 1'
+  );
+  invariant(
+    !checkSpecialRegexChars(normalizedRoute),
+    'filePath should not be special regex chars: |\\{}()^$+*?'
+  );
+  return normalizedRoute
+    .slice(1)
+    .split('/')
+    .map(segment => {
+      let result = '';
+      result = segment.replace(
+        dynamicMatchAllRegex,
+        function (matchString, ...matchArr) {
+          return parseMatchRepeat(matchArr[0], true);
+        }
+      );
+      result = result.replace(
+        dynamicMatchPartRegex,
+        function (matchString, ...matchArr) {
+          return parseMatchRepeat(matchArr[0], false);
+        }
+      );
+      return `/${result}`;
+    })
+    .join('');
+}
+
+function parseMatchRepeat(param: string, optional: boolean): string {
+  const repeat = param.startsWith('...');
+  if (repeat) {
+    param = param.slice(3);
+  }
+  return repeat
+    ? optional
+      ? `:${param}*`
+      : `:${param}+`
+    : `:${param}${optional ? '?' : ''}`;
+}
+
+function checkSpecialRegexChars(string: string): boolean {
+  return /[|\\{}()^$+*?]/g.test(string);
+}
+
+export function normalizeRoutePath(rawPath: string) {
+  // /xxxx/index -> /xxxx/
+  let routePath = rawPath.replace(/\/index$/, '/');
+
+  // remove the last slash
+  // e.g. /abc/ -> /abc
+  if (routePath !== '/' && routePath.slice(-1) === '/') {
+    routePath = routePath.slice(0, -1);
+  }
+
+  routePath = parseDynamicPath(routePath);
+
+  return routePath;
+}
 
 export const normalize = (path: string) => {
   const result = normalizeRoutePath(normalizeFilePath(path));
