@@ -1,4 +1,4 @@
-import Diff from '../components/diff.ts';
+import Diff from '../../components/diff.ts';
 
 export default function cjs() {
   return (

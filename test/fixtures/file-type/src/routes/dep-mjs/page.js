@@ -1,4 +1,4 @@
-import Diff from '../components/diff.mjs';
+import Diff from '../../components/diff.mjs';
 
 export default function mjs() {
   return (

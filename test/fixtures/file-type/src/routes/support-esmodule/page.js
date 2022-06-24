@@ -1,5 +1,5 @@
-import Esmodule from '../components/esmodule';
-import { consoleDepa } from '../components/tree-shaking';
+import Esmodule from '../../components/esmodule';
+import { consoleDepa } from '../../components/tree-shaking';
 
 export default function EsmodulePage() {
   return (

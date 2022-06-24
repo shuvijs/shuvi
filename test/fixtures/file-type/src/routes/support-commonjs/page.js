@@ -1,4 +1,4 @@
-import * as commonjs from '../components/commonjs';
+import * as commonjs from '../../components/commonjs';
 
 export default function CommonjsPage() {
   return (
