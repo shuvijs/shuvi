@@ -1,6 +1,6 @@
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { shouldUseRelativeAssetPaths } from '@shuvi/toolpack/lib/webpack/config';
-import { WebpackChain } from '@shuvi/toolpack/lib/webpack/config';
+import { WebpackChain } from '@shuvi/toolpack/lib/webpack';
 
 // 1 scss-loader 特殊设置
 //     1.1 全局注入 scss 文件--没有实现，感觉没用
