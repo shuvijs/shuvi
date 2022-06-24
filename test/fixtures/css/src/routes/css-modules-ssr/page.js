@@ -1,6 +1,6 @@
-import style from './style.css';
-import style2 from './style.sass';
-import style3 from './style.scss';
+import style from '../style.css';
+import style2 from '../sass/style.sass';
+import style3 from '../scss/style.scss';
 
 export default () => (
   <div>

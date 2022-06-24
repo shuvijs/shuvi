@@ -1,5 +1,6 @@
-import style from './style.css';
-import m from './modules.css';
+import style from '../style.css';
+import m from '../modules.css';
+
 export default () => (
   <div>
     <div id="css-modules" className={style.test}>
