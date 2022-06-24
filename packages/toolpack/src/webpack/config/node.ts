@@ -1,4 +1,4 @@
-import WebpackChain from 'webpack-chain';
+import { WebpackChain } from './base';
 import { baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
