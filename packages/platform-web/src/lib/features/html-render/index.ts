@@ -1,5 +1,4 @@
 import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
-import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
 import {
   getAllFiles,
   getFirstModuleExport,
