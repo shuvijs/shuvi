@@ -58,13 +58,13 @@ const core = createPlugin({
       const modifiedRoutes = getRoutesAfterPlugin(routes);
       const normalizedRoutes = getNormalizedRoutes(
         modifiedRoutes,
-        paths.pagesDir
+        paths.routesDir
       );
       setRoutes(normalizedRoutes);
       routesFile = createFile({
         name: 'routes.js',
         content: () => {
-          return getRoutesContent(normalizedRoutes, paths.pagesDir);
+          return getRoutesContent(normalizedRoutes, paths.routesDir);
         }
       });
     } else {
@@ -91,12 +91,12 @@ const core = createPlugin({
           const modifiedRoutes = getRoutesAfterPlugin(rawRoutes);
           const normalizedRoutes = getNormalizedRoutes(
             modifiedRoutes,
-            paths.pagesDir
+            paths.routesDir
           );
           setRoutes(normalizedRoutes);
-          return getRoutesContent(normalizedRoutes, paths.pagesDir);
+          return getRoutesContent(normalizedRoutes, paths.routesDir);
         },
-        dependencies: paths.pagesDir
+        dependencies: paths.routesDir
       });
     }
     const loadersFile = createFile({
@@ -129,7 +129,7 @@ const core = createPlugin({
         return `${imports}  export default {\n  ${exports}\n}`;
       },
       dependencies: [
-        paths.pagesDir,
+        paths.routesDir,
         path.join(paths.appDir, 'files', 'routes.js')
       ]
     });
@@ -176,7 +176,7 @@ const core = createPlugin({
         }
         return '';
       },
-      dependencies: [paths.pagesDir, loadersFileName]
+      dependencies: [paths.routesDir, loadersFileName]
     });
     return [
       userDocumentFile,
