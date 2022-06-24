@@ -1,5 +1,4 @@
 import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
-import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
 import {
   getAllFiles,
   getFirstModuleExport,
@@ -19,7 +18,7 @@ import {
 import server from './server-plugin-custom-server';
 import { FileOptions } from '@shuvi/service/lib/project';
 import { isDirectory } from '@shuvi/utils/lib/file';
-import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node/route-layout/route';
+import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node';
 export { IRenderToHTML } from './hooks';
 export {
   getSSRMiddleware,
@@ -59,13 +58,13 @@ const core = createPlugin({
       const modifiedRoutes = getRoutesAfterPlugin(routes);
       const normalizedRoutes = getNormalizedRoutes(
         modifiedRoutes,
-        paths.pagesDir
+        paths.routesDir
       );
       setRoutes(normalizedRoutes);
       routesFile = createFile({
         name: 'routes.js',
         content: () => {
-          return getRoutesContent(normalizedRoutes, paths.pagesDir);
+          return getRoutesContent(normalizedRoutes, paths.routesDir);
         }
       });
     } else {
@@ -73,7 +72,7 @@ const core = createPlugin({
         name: 'routes.js',
         content: async () => {
           // read src routes
-          let rawRoutes: IUserRouteConfig[];
+          let rawRoutes: IUserRouteConfig[] = [];
 
           const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
 
@@ -87,22 +86,17 @@ const core = createPlugin({
             });
 
             rawRoutes = routes;
-          } else {
-            rawRoutes = getRoutesFromFiles(
-              getAllFiles(paths.pagesDir),
-              paths.pagesDir
-            );
           }
 
           const modifiedRoutes = getRoutesAfterPlugin(rawRoutes);
           const normalizedRoutes = getNormalizedRoutes(
             modifiedRoutes,
-            paths.pagesDir
+            paths.routesDir
           );
           setRoutes(normalizedRoutes);
-          return getRoutesContent(normalizedRoutes, paths.pagesDir);
+          return getRoutesContent(normalizedRoutes, paths.routesDir);
         },
-        dependencies: paths.pagesDir
+        dependencies: paths.routesDir
       });
     }
     const loadersFile = createFile({
@@ -135,7 +129,7 @@ const core = createPlugin({
         return `${imports}  export default {\n  ${exports}\n}`;
       },
       dependencies: [
-        paths.pagesDir,
+        paths.routesDir,
         path.join(paths.appDir, 'files', 'routes.js')
       ]
     });
@@ -182,7 +176,7 @@ const core = createPlugin({
         }
         return '';
       },
-      dependencies: [paths.pagesDir, loadersFileName]
+      dependencies: [paths.routesDir, loadersFileName]
     });
     return [
       userDocumentFile,

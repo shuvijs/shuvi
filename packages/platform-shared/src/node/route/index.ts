@@ -1,1 +1,5 @@
-export { getRoutesFromFiles } from './route';
+export {
+  getPageAndLayoutRoutes,
+  getApiRoutes,
+  getMiddlewareRoutes
+} from './route';

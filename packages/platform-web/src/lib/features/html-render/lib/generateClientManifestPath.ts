@@ -9,8 +9,8 @@ export default function generateClientManifestPath(
 
   for (const path_full in loadable) {
     let path_short: string = path_full
-      .replace(/^.*\/pages\//, '/')
-      .replace(/\.js.*|\.ts.*|\?.*$/, '');
+      .replace(/^.*\/routes\//, '/')
+      .replace(/\/page.js.*|\/page.ts.*|\?.*$/, '');
     if (path_short === '/index') path_short = '/';
     clientManifestPath[path_short] = assetMap.loadble[path_full].files.map(
       file => getAssetPublicUrl(file)

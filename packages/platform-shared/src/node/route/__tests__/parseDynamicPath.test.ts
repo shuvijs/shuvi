@@ -1,4 +1,4 @@
-import parseDynamicPath from '../parseDynamicPath';
+import { parseDynamicPath } from '../helpers';
 
 describe('parse dynamic path', () => {
   test('should work', async () => {

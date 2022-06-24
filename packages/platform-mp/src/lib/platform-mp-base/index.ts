@@ -8,15 +8,18 @@ import {
   BUILD_DEFAULT_DIR
 } from '@shuvi/service';
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
+import {
+  findFirstExistedFile,
+  isDirectory,
+  withExts
+} from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
-import { getRoutesFromFiles } from '@shuvi/platform-shared/lib/node';
+import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node';
 import { FileOptions } from '@shuvi/service/lib/project';
 import {
   sharedPlugin,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/lib/node';
-import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
   UnRecursiveTemplate,
@@ -324,10 +327,13 @@ export default abstract class PlatformMpBase {
         };
         let { routes } = context.config;
         if (!routes) {
-          const allFiles = recursiveReadDirSync(context.paths.pagesDir, {
-            rootDir: ''
-          });
-          routes = getRoutesFromFiles(allFiles, context.paths.pagesDir);
+          if (await isDirectory(context.paths.routesDir)) {
+            routes = (await getPageAndLayoutRoutes(
+              context.paths.routesDir
+            )) as unknown as IUserRouteConfig[];
+          } else {
+            routes = [];
+          }
         }
         return getFiles(routes);
       }

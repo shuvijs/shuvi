@@ -1,19 +1,35 @@
-import * as path from 'path';
+import { join } from 'path';
+import { IRouteRecord } from '@shuvi/router';
+import { RouteException } from '../route';
 
-export function resolveFixture(name: string) {
-  return path.join(__dirname, 'fixtures', name);
-}
+export const getFixturePath = (
+  fixturePath: string,
+  dirname: string = __dirname
+) => {
+  return join(dirname, 'fixtures', fixturePath);
+};
 
-export function resolveFixtureFile(name: string, file: string) {
-  return path.join(resolveFixture(name), file);
-}
-
-export function sortByPath(routes: any[]) {
-  const res = routes.slice().sort((a, b) => a.path.localeCompare(b.path));
-  res.forEach(route => {
-    if (route.routes) {
-      route.routes = sortByPath(route.routes);
+export const normalizePath = (
+  routes: IRouteRecord[],
+  dir: string,
+  key: keyof IRouteRecord = 'component'
+): IRouteRecord[] => {
+  return routes.map(route => {
+    if (route.children) {
+      route.children = normalizePath(route.children, dir, key);
     }
+    return {
+      ...route,
+      [key]: route[key].replace(dir + '/', '')
+    };
   });
-  return res;
-}
+};
+
+export const normalizeWarnings = (warnings: RouteException[], dir: string) => {
+  return warnings.map(warning => {
+    return {
+      ...warning,
+      msg: warning.msg.replace(dir + '/', '')
+    };
+  });
+};
