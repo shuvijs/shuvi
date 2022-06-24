@@ -1,1 +1,3 @@
-export const AppSourceRegexs: RegExp[] = [/[/\\]shuvi-app[/\\]/];
+export const AppSourceRegexs: RegExp[] = [
+  /([/\\]shuvi-app[/\\])|([/\\]\.shuvi[/\\])/
+];

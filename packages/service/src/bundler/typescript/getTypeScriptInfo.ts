@@ -81,7 +81,7 @@ function checkDependencies(
 export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {
   const typescriptFiles = await recursiveReadDir(projectDir, {
     filter: /.*\.(ts|tsx)$/,
-    ignore: /(node_modules|.*\.d\.ts)/
+    ignore: /(\.shuvi)|(node_modules|.*\.d\.ts)/
   });
 
   return typescriptFiles.length > 0;

@@ -10,6 +10,7 @@ import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import { AppSourceRegexs } from '../../constants';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
+import SupportTsExtensionResolverPlugin from '../plugins/support-ts-extension-resolver-plugin';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
 
@@ -259,6 +260,12 @@ export function baseWebpackChain({
         typescript.tsCompilerOptions.paths,
         typescript.resolvedBaseUrl
       ]);
+  }
+
+  if (!typescript?.useTypeScript) {
+    config.resolve
+      .plugin('support-ts-extension-resolver-plugin')
+      .use(SupportTsExtensionResolverPlugin);
   }
 
   if (dev) {
