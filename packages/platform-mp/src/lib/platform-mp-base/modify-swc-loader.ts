@@ -1,4 +1,4 @@
-import { WebpackChain } from '@shuvi/toolpack/lib/webpack/config';
+import { WebpackChain } from '@shuvi/toolpack/lib/webpack';
 
 export default function modifySwcLoader(config: WebpackChain) {
   const shuviBabelLoader = config.module

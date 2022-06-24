@@ -3,6 +3,7 @@ import webpack from 'webpack';
 export { webpack as default };
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 export { WebpackDevMiddleware };
+export { WebpackChain } from './config';
 /**
  * re-export for shuvi plugin
  */
