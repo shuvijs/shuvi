@@ -16,6 +16,8 @@ export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack`;
 
 export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/runtime/polyfill`;
 
+export const BUILD_CLIENT_PUBLIC_DIR = `publicAssets`;
+
 export const BUILD_SERVER_DIR = 'server';
 
 export const BUILD_SERVER_FILE_SERVER = `server`;

@@ -7,7 +7,8 @@ import {
   IPluginContext,
   IPlatform,
   getBundler,
-  BUILD_DEFAULT_DIR
+  BUILD_DEFAULT_DIR,
+  BUILD_CLIENT_PUBLIC_DIR
 } from '@shuvi/service';
 
 export interface IBuildOptions {
@@ -47,7 +48,10 @@ function copyPublicFolder(context: IPluginContext) {
 
   fs.copySync(
     context.paths.publicDir,
-    path.join(context.paths.buildDir, BUILD_DEFAULT_DIR),
+    path.join(
+      context.paths.buildDir,
+      `${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_PUBLIC_DIR}`
+    ),
     {
       dereference: true
     }
