@@ -44,7 +44,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['runtime/index.js', 'export * from "something to export"'],
+      ['runtime/index.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"']
     ]);
   });
@@ -60,7 +60,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['runtime/index.js', 'export * from "something to export"'],
+      ['runtime/index.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"']
     ]);
 
@@ -71,7 +71,7 @@ describe('projectBuilder', () => {
 
     checkMatch([
       [
-        'runtime/index.js',
+        'runtime/index.ts',
         'export * from "something to export"\nexport * from "export2"'
       ],
       ['test.js', 'export default () => "test page"']
@@ -93,7 +93,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['runtime/index.js', 'export * from "something to export"'],
+      ['runtime/index.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"']
     ]);
   });
