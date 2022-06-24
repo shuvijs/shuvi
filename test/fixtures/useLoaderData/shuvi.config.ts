@@ -53,6 +53,23 @@ export default defineConfig({
           ]
         }
       ]
+    },
+    {
+      path: '/context',
+      children: [
+        {
+          path: 'error',
+          component: 'context/error'
+        },
+        {
+          path: 'redirect',
+          component: 'context/redirect'
+        },
+        {
+          path: 'static',
+          component: 'context/static'
+        }
+      ]
     }
   ]
 });
