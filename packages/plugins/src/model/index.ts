@@ -6,12 +6,12 @@ export default createPlugin({
     {
       source: path.dirname(require.resolve('@shuvi/redox/package.json')),
       exported: '{ defineModel, redox }',
-      filepath: 'model.js'
+      filepath: 'model.ts'
     },
     {
       source: path.dirname(require.resolve('@shuvi/redox-react/package.json')),
       exported: '*',
-      filepath: 'model.js'
+      filepath: 'model.ts'
     }
   ]
 }) as CorePluginInstance;

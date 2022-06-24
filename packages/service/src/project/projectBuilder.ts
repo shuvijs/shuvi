@@ -60,7 +60,7 @@ class ProjectBuilder {
   addRuntimeService(
     source: string,
     exported: string,
-    filepath: string = 'index.js'
+    filepath: string = 'index.ts'
   ): void {
     const services = this._projectContext.runtimeServices;
     filepath = path.join('runtime', path.resolve('/', filepath));
