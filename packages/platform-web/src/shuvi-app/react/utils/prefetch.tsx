@@ -1,3 +1,5 @@
+import routes from '@shuvi/app/files/routes';
+
 function hasSupportPrefetch() {
   try {
     const link: HTMLLinkElement = document.createElement('link');
@@ -40,11 +42,19 @@ function getFilesForRoute(
   clientManifestPath: Record<string, string[]>
 ): Promise<any> {
   return Promise.resolve(clientManifestPath).then(manifest => {
-    if (!manifest || !(route in manifest)) {
+    let targetRoute: string = '';
+
+    routes.forEach(({ path, __componentSourceWithAffix__ }) => {
+      if (path === route) {
+        targetRoute = __componentSourceWithAffix__;
+      }
+    });
+
+    if (!manifest || !(targetRoute in manifest)) {
       throw new Error(`Failed to lookup route: ${route}`);
     }
 
-    const allFiles = manifest[route].map(entry => encodeURI(entry));
+    const allFiles = manifest[targetRoute].map(path => encodeURI(path));
 
     return {
       scripts: allFiles.filter(v => v.endsWith('.js')),

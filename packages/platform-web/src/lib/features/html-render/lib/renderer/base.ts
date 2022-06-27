@@ -191,10 +191,7 @@ export abstract class BaseRenderer {
   }
 
   protected _getInlineAppData(appData: IAppData): IHtmlTag {
-    appData.clientManifestPath = generateClientManifestPath(
-      clientManifest,
-      this._serverPluginContext.getAssetPublicUrl
-    );
+    appData.clientManifestPath = generateClientManifestPath(clientManifest);
     const data = JSON.stringify(appData);
     return tag(
       'script',
