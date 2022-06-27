@@ -16,8 +16,6 @@ import {
   setRoutes
 } from './lib';
 import server from './server-plugin-custom-server';
-import { FileOptions } from '@shuvi/service/lib/project';
-import { isDirectory } from '@shuvi/utils/lib/file';
 import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node';
 export { IRenderToHTML } from './hooks';
 export {
@@ -35,7 +33,7 @@ const core = createPlugin({
   addRuntimeFile: ({ createFile }, context) => {
     const {
       config: {
-        routes,
+        routes: routesFromConfig,
         router: { history },
         experimental: { loader }
       },
@@ -51,54 +49,35 @@ const core = createPlugin({
     });
     const getRoutesAfterPlugin = (routes: IUserRouteConfig[]) =>
       pluginRunner.appRoutes(routes);
-    // if config.routes is defined, use config
-    const hasConfigRoutes = Array.isArray(routes);
-    let routesFile: FileOptions;
-    if (hasConfigRoutes) {
-      const modifiedRoutes = getRoutesAfterPlugin(routes);
-      const normalizedRoutes = getNormalizedRoutes(
-        modifiedRoutes,
-        paths.routesDir
-      );
-      setRoutes(normalizedRoutes);
-      routesFile = createFile({
-        name: 'routes.js',
-        content: () => {
-          return getRoutesContent(normalizedRoutes, paths.routesDir);
-        }
-      });
-    } else {
-      routesFile = createFile({
-        name: 'routes.js',
-        content: async () => {
-          // read src routes
-          let rawRoutes: IUserRouteConfig[] = [];
 
-          const hasRoutesDir: boolean = await isDirectory(paths.routesDir);
-
-          if (hasRoutesDir) {
-            const { routes, warnings } = await getPageAndLayoutRoutes(
-              paths.routesDir
-            );
-
-            warnings.forEach(warning => {
-              console.warn(warning.msg);
-            });
-
-            rawRoutes = routes;
-          }
-
-          const modifiedRoutes = getRoutesAfterPlugin(rawRoutes);
-          const normalizedRoutes = getNormalizedRoutes(
-            modifiedRoutes,
+    const routesFile = createFile({
+      name: 'routes.js',
+      content: async () => {
+        let routes: IUserRouteConfig[];
+        // if config.routes is defined, use config
+        const hasConfigRoutes = Array.isArray(routesFromConfig);
+        if (hasConfigRoutes) {
+          routes = routesFromConfig as IUserRouteConfig[];
+        } else {
+          const { routes: _routes, warnings } = await getPageAndLayoutRoutes(
             paths.routesDir
           );
-          setRoutes(normalizedRoutes);
-          return getRoutesContent(normalizedRoutes, paths.routesDir);
-        },
-        dependencies: paths.routesDir
-      });
-    }
+          warnings.forEach(warning => {
+            console.warn(warning.msg);
+          });
+          routes = _routes;
+        }
+
+        const modifiedRoutes = getRoutesAfterPlugin(routes);
+        const normalizedRoutes = getNormalizedRoutes(
+          modifiedRoutes,
+          paths.routesDir
+        );
+        setRoutes(normalizedRoutes);
+        return getRoutesContent(normalizedRoutes, paths.routesDir);
+      },
+      dependencies: paths.routesDir
+    });
     const loadersFile = createFile({
       name: 'loaders.js',
       content: () => {
