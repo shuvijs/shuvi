@@ -1,4 +1,5 @@
-import routes from '@shuvi/app/files/routes';
+import type { IRouter } from '@shuvi/router';
+import { getPublicPath } from './getPublicPath';
 
 function hasSupportPrefetch() {
   try {
@@ -39,37 +40,44 @@ function prefetchViaDom(
 
 function getFilesForRoute(
   route: string,
-  clientManifestPath: Record<string, string[]>
-): Promise<any> {
-  return Promise.resolve(clientManifestPath).then(manifest => {
-    let targetRoute: string = '';
+  clientManifestPath: Record<string, string[]>,
+  router: IRouter,
+  publicPathFromAppData: string
+): any {
+  let allFiles: string[] = [];
+  const targetRoute = router.match(route);
+  if (!clientManifestPath || !targetRoute?.length) {
+    throw new Error(`Failed to lookup route: ${route}`);
+  }
 
-    routes.forEach(({ path, __componentSourceWithAffix__ }) => {
-      if (path === route) {
-        targetRoute = __componentSourceWithAffix__;
-      }
-    });
-
-    if (!manifest || !(targetRoute in manifest)) {
-      throw new Error(`Failed to lookup route: ${route}`);
-    }
-
-    const allFiles = manifest[targetRoute].map(path => encodeURI(path));
-
-    return {
-      scripts: allFiles.filter(v => v.endsWith('.js')),
-      css: allFiles.filter(v => v.endsWith('.css'))
-    };
+  targetRoute.forEach(({ route: { id } }) => {
+    allFiles.push(
+      ...clientManifestPath[id].map(path =>
+        getPublicPath(path, publicPathFromAppData)
+      )
+    );
   });
+
+  return {
+    scripts: allFiles.filter(v => v.endsWith('.js')),
+    css: allFiles.filter(v => v.endsWith('.css'))
+  };
 }
 
 export async function prefetchFn(
   route: string,
-  clientManifestPath: Record<string, string[]>
+  clientManifestPath: Record<string, string[]>,
+  router: IRouter,
+  publicPathFromAppData: string
 ): Promise<Promise<void> | void> {
   if (process.env.NODE_ENV !== 'production') return;
   if (typeof window === 'undefined' || !route) return;
-  const output = await getFilesForRoute(route, clientManifestPath);
+  const output = await getFilesForRoute(
+    route,
+    clientManifestPath,
+    router,
+    publicPathFromAppData
+  );
   const canPrefetch: boolean = hasSupportPrefetch();
   await Promise.all(
     canPrefetch

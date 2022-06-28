@@ -22,7 +22,7 @@ import {
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
 import generateClientManifestPath from '../generateClientManifestPath';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IDocumentProps, ITemplateData, IHtmlTag } from './types';
+import { IDocumentProps, ITemplateData, IHtmlTag, IApplication } from './types';
 
 import {
   IRendererConstructorOptions,
@@ -74,6 +74,7 @@ export function isRedirect(obj: any): obj is IRenderResultRedirect {
 export abstract class BaseRenderer {
   protected _serverPluginContext: IServerPluginContext;
   protected _documentTemplate: ReturnType<typeof parseTemplateFile>;
+  protected _app?: IApplication;
 
   constructor({ serverPluginContext }: IRendererConstructorOptions) {
     this._serverPluginContext = serverPluginContext;
@@ -85,6 +86,7 @@ export abstract class BaseRenderer {
     req
   }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
     const { context: appContext } = app;
+    this._app = app;
     let docProps = await this.getDocumentProps({
       app,
       req
@@ -191,7 +193,13 @@ export abstract class BaseRenderer {
   }
 
   protected _getInlineAppData(appData: IAppData): IHtmlTag {
-    appData.clientManifestPath = generateClientManifestPath(clientManifest);
+    const routes = this._app?.router.routes || [];
+    appData.clientManifestPath = generateClientManifestPath(
+      clientManifest,
+      routes
+    );
+    appData.publicPathFromAppData =
+      this._serverPluginContext.getAssetPublicUrl();
     const data = JSON.stringify(appData);
     return tag(
       'script',

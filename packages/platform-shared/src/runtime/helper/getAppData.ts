@@ -15,6 +15,7 @@ export type IAppData<Data = {}, appState = any> = {
   loadersData?: { [x: string]: any };
   appState?: appState;
   clientManifestPath: Record<string, string[]>;
+  publicPathFromAppData: string;
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -29,7 +30,8 @@ export function getAppData(): IAppData {
   if (typeof window === 'undefined') {
     return {
       ssr: false,
-      clientManifestPath: {}
+      clientManifestPath: {},
+      publicPathFromAppData: ''
     };
   }
 
@@ -39,7 +41,8 @@ export function getAppData(): IAppData {
       ssr: false,
       pageData: {},
       loadersData: {},
-      clientManifestPath: {}
+      clientManifestPath: {},
+      publicPathFromAppData: ''
     };
   }
 

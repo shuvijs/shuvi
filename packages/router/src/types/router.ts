@@ -20,6 +20,9 @@ export type IRouteRecord<Element = any, ExtendedTypes = {}> = {
   props?: IRouteComponentProps;
   path: string;
   filepath?: string;
+  id: string;
+  __componentSourceWithAffix__: string;
+  __resolveWeak__: () => any;
 } & ExtendedTypes;
 
 export interface NavigationGuardHook<R extends IRouteRecord = any> {
@@ -83,7 +86,14 @@ export interface IRoute<RouteRecord extends IRouteRecord = IRouteRecord>
   // href: string?
 }
 
-export interface IRouter<RouteRecord extends { path: string } = any> {
+export interface IRouter<
+  RouteRecord extends {
+    path: string;
+    id: string;
+    __componentSourceWithAffix__: string;
+    __resolveWeak__: () => any;
+  } = any
+> {
   current: IRoute<RouteRecord>;
   action: History['action'];
   push(to: PathRecord, state?: any): void;
@@ -94,6 +104,8 @@ export interface IRouter<RouteRecord extends { path: string } = any> {
   resolve: History['resolve'];
   forward(): void;
   ready: Promise<any>;
+  routes: IRouteRecord[];
+  match(to: PathRecord): Array<IRouteMatch<RouteRecord>>;
 
   init: () => IRouter<RouteRecord>;
 
