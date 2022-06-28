@@ -28,7 +28,7 @@ import History from './history/base';
 import { getRedirectFromRoutes } from './getRedirectFromRoutes';
 
 const START: IRoute<any> = {
-  matches: null,
+  matches: [],
   params: {},
   pathname: '/',
   search: '',
@@ -189,7 +189,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const nextRoute = this._getNextRoute(to);
     const current = this._current;
 
-    const nextMatches = nextRoute.matches || [];
+    const nextMatches = nextRoute.matches;
 
     const routeRedirect = getRedirectFromRoutes(nextMatches);
 
