@@ -7,19 +7,44 @@ const FIXTURE = 'prefetch-link';
 const WITH_PREFETCH_LINK = '/foo';
 const WITHOUT_PREFETCH_LINK = '/bar';
 
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
 let ctx: AppCtx;
 let page: Page;
 let manifest: any;
+let publicPath: any;
+let withPrefetchIds: string[];
+let withoutPrefetchIds: string[];
 
 describe('Prefetch Support', () => {
   beforeAll(async () => {
     Object.assign(process.env, {
       NODE_ENV: 'production'
     });
+
     ctx = await serveFixture(FIXTURE);
     page = await ctx.browser.page(ctx.url('/'));
+
     const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
+
     manifest = appData.clientManifestPath;
+    publicPath = JSON.parse(
+      await page.evaluate(() =>
+        JSON.stringify(window.__shuvi_dynamic_public_path__)
+      )
+    );
+
+    const withPrefetchRoutes = await page.shuvi.match(WITH_PREFETCH_LINK);
+    withPrefetchIds = withPrefetchRoutes.map(({ route: { id } }: any) => id);
+
+    const withoutPrefetchRoutes = await page.shuvi.match(WITHOUT_PREFETCH_LINK);
+    withoutPrefetchIds = withoutPrefetchRoutes.map(
+      ({ route: { id } }: any) => id
+    );
   });
 
   afterAll(async () => {
@@ -42,33 +67,32 @@ describe('Prefetch Support', () => {
     //Make sure the link has been created
     await page.waitForTimeout(1000);
 
-    const prefetchHrefArray = await page.$$attr(
+    const prefetchIdArray = await page.$$attr(
       'head [rel="prefetch"]',
-      'href'
+      'data-id'
     );
 
     // should prefetch the with-prefetch link
-    expect(prefetchHrefArray).toEqual(
-      expect.arrayContaining(manifest[WITH_PREFETCH_LINK])
-    );
+    expect(prefetchIdArray).toEqual(expect.arrayContaining(withPrefetchIds));
 
     // should not prefetch the without-prefetch link
-    expect(prefetchHrefArray).toEqual(
-      expect.not.arrayContaining(manifest[WITHOUT_PREFETCH_LINK])
+    expect(prefetchIdArray).toEqual(
+      expect.not.arrayContaining(withoutPrefetchIds)
     );
   });
 
   test('should prefetch when hover the link even if prefetch is set to false', async () => {
     await page.hover('#without-prefetch');
 
-    const prefetchHrefArray = await page.$$attr(
+    //Make sure the link has been created
+    await page.waitForTimeout(1000);
+
+    const prefetchIdArray = await page.$$attr(
       'head [rel="prefetch"]',
-      'href'
+      'data-id'
     );
 
     // should prefetch the without-prefetch link
-    expect(prefetchHrefArray).toEqual(
-      expect.arrayContaining(manifest[WITHOUT_PREFETCH_LINK])
-    );
+    expect(prefetchIdArray).toEqual(expect.arrayContaining(withoutPrefetchIds));
   });
 });

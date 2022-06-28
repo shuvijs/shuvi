@@ -11,7 +11,7 @@ function hasSupportPrefetch() {
 }
 
 function prefetchViaDom(
-  href: string,
+  { href, id }: any,
   as: string,
   link?: HTMLLinkElement
 ): Promise<any> {
@@ -30,6 +30,7 @@ function prefetchViaDom(
     link!.rel = `prefetch`;
     link!.onload = res as any;
     link!.onerror = rej;
+    link.dataset.id = id;
 
     // `href` should always be last:
     link!.href = href;
@@ -44,7 +45,7 @@ function getFilesForRoute(
   router: IRouter,
   publicPathFromAppData: string
 ): any {
-  let allFiles: string[] = [];
+  let allFiles: any[] = [];
   const targetRoute = router.match(route);
   if (!clientManifestPath || !targetRoute?.length) {
     throw new Error(`Failed to lookup route: ${route}`);
@@ -52,15 +53,16 @@ function getFilesForRoute(
 
   targetRoute.forEach(({ route: { id } }) => {
     allFiles.push(
-      ...clientManifestPath[id].map(path =>
-        getPublicPath(path, publicPathFromAppData)
-      )
+      ...clientManifestPath[id].map(path => ({
+        href: getPublicPath(path, publicPathFromAppData),
+        id
+      }))
     );
   });
 
   return {
-    scripts: allFiles.filter(v => v.endsWith('.js')),
-    css: allFiles.filter(v => v.endsWith('.css'))
+    scripts: allFiles.filter(({ href }) => href.endsWith('.js')),
+    css: allFiles.filter(({ href }) => href.endsWith('.css'))
   };
 }
 
@@ -82,7 +84,7 @@ export async function prefetchFn(
   await Promise.all(
     canPrefetch
       ? output.scripts.map((script: { toString: () => string }) =>
-          prefetchViaDom(script.toString(), 'script')
+          prefetchViaDom(script, 'script')
         )
       : []
   );
