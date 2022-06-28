@@ -9,10 +9,9 @@ export { middleware as getApiMiddleware } from './lib';
 export default createPlugin({
   addRuntimeFile: async ({ createFile }, context) => {
     const {
-      config: { apiRoutes, apiConfig },
+      config: { apiRoutes },
       paths
     } = context;
-    const { prefix } = apiConfig;
 
     return [
       createFile({
@@ -21,7 +20,7 @@ export default createPlugin({
           const hasConfigRoutes = Array.isArray(apiRoutes);
 
           if (hasConfigRoutes) {
-            return getRoutesContent(apiRoutes, paths.apisDir, prefix);
+            return getRoutesContent(apiRoutes, paths.apisDir);
           }
 
           const { routes, warnings } = await getApiRoutes(paths.routesDir);
