@@ -9,7 +9,8 @@ import {
   NavigationGuardHook,
   NavigationResolvedHook,
   Listener,
-  NavigationHookContext
+  NavigationHookContext,
+  IRouteMatch
 } from './types';
 import { matchRoutes } from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
@@ -76,33 +77,12 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     return this._current;
   }
 
-  get action() {
-    return this._history.action;
+  get routes(): readonly RouteRecord[] {
+    return this._routes;
   }
 
-  replaceRoutes(routes: RouteRecord[]) {
-    if (this._ready) {
-      this._ready = false;
-      this._readyDefer = Defer<void>();
-    } else {
-      // do nothing
-      // keep _readyDefer as it is, cause user might called router.ready()
-    }
-
-    if (this._cancleHandler) {
-      // cancel current transition
-      this._cancleHandler();
-      this._cancleHandler = null;
-    }
-
-    this._routes = createRoutesFromArray(routes);
-    this._current = START;
-
-    const setup = () => this._history.setup();
-    this._history.transitionTo(this._getCurrent(), {
-      onTransition: setup,
-      onAbort: setup
-    });
+  get action() {
+    return this._history.action;
   }
 
   init() {
@@ -159,6 +139,37 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       to,
       from ? joinPaths([this._basename, from]) : this._basename
     );
+  }
+
+  match(to: PathRecord): Array<IRouteMatch<RouteRecord>> {
+    const { _routes: routes, _basename: basename } = this;
+    const matches = matchRoutes(routes, to, basename);
+    return matches || [];
+  }
+
+  replaceRoutes(routes: RouteRecord[]) {
+    if (this._ready) {
+      this._ready = false;
+      this._readyDefer = Defer<void>();
+    } else {
+      // do nothing
+      // keep _readyDefer as it is, cause user might called router.ready()
+    }
+
+    if (this._cancleHandler) {
+      // cancel current transition
+      this._cancleHandler();
+      this._cancleHandler = null;
+    }
+
+    this._routes = createRoutesFromArray(routes);
+    this._current = START;
+
+    const setup = () => this._history.setup();
+    this._history.transitionTo(this._getCurrent(), {
+      onTransition: setup,
+      onAbort: setup
+    });
   }
 
   /*
@@ -287,11 +298,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     routeContext?: Map<RouteRecord, NavigationHookContext>
   ): IRoute<RouteRecord> {
     const {
-      _routes: routes,
-      _basename: basename,
       _history: { location }
     } = this;
-    const matches = matchRoutes(routes, location, basename);
+    const matches = this.match(location);
     let params;
     if (matches) {
       params = matches[matches.length - 1].params;
@@ -324,9 +333,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   }
 
   private _getNextRoute(to: PathRecord): IRoute<RouteRecord> {
-    const { _routes: routes, _basename: basename } = this;
-    const matches = matchRoutes(routes, to, basename);
-    const params = matches ? matches[matches.length - 1].params : {};
+    const matches = this.match(to);
+    const params = matches.length ? matches[matches.length - 1].params : {};
     const parsedPath = resolvePath(to);
     return {
       matches,
