@@ -1,5 +1,4 @@
 export {
-  matchRoutes,
   matchPathname,
   rankRouteBranches,
   parseQuery,
