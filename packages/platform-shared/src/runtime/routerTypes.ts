@@ -25,9 +25,9 @@ export interface IPageRouteRecord extends IRouteRecord {
   path: string;
   fullPath?: string;
   __componentSource__?: never;
-  __componentSourceWithAffix__: string;
+  __componentSourceWithAffix__?: string;
   __import__?: never;
-  __resolveWeak__: () => any;
+  __resolveWeak__?: () => any;
   [x: string]: any;
 }
 
