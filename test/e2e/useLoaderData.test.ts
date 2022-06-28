@@ -96,7 +96,7 @@ describe('useLoaderData', () => {
     });
 
     // FIXME: failed test
-    describe.skip('redirect', () => {
+    describe('redirect', () => {
       it('should work in server', async () => {
         page = await ctx.browser.page(
           ctx.url('/context/redirect', { target: '/context/static' })
@@ -115,7 +115,7 @@ describe('useLoaderData', () => {
     });
 
     // FIXME: failed test
-    describe.skip('error', () => {
+    describe('error', () => {
       it('should work in server', async () => {
         page = await ctx.browser.page(
           ctx.url('/context/error', { message: 'random_sdfsf_test_error' })
@@ -130,7 +130,7 @@ describe('useLoaderData', () => {
           message: 'random_sdfsf_test_error'
         });
         await page.waitForTimeout(1000);
-        expect(await page.$text('div')).toBe('random_sdfsf_test_error');
+        expect(await page.$text('div')).toMatch('random_sdfsf_test_error');
       });
     });
   });
