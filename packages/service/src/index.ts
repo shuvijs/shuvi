@@ -9,6 +9,8 @@ export {
   IPlatformContent,
   IUserRouteConfig,
   IRouteConfig,
+  IApiRouteConfig,
+  IMiddlewareRouteConfig,
   CorePluginConstructor,
   loadConfig,
   defineConfig,

@@ -1,10 +1,9 @@
 import { createHash } from 'crypto';
-import * as fs from 'fs';
 import * as path from 'path';
 import { IUserRouteConfig, IRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { getExports } from '@shuvi/service/lib/project/file-utils';
-import { resolveFile } from '@shuvi/utils/lib/file';
+
+export { IUserRouteConfig };
 
 export type Templates<T extends {}> = {
   [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
@@ -59,46 +58,10 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
 }
 
 export function normalizeRoutes(
-  routes: IUserRouteConfig[],
-  option: { componentDir: string }
-): IUserRouteConfig[] {
-  const res: IUserRouteConfig[] = [];
-  for (let index = 0; index < routes.length; index++) {
-    const route = { ...routes[index] };
-    if (route.component) {
-      const absPath = path.isAbsolute(route.component)
-        ? route.component
-        : path.resolve(option.componentDir, route.component);
-
-      route.component = absPath.replace(/\\/g, '/');
-    }
-
-    if (route.children && route.children.length > 0) {
-      route.children = normalizeRoutes(route.children, option);
-    }
-    res.push(route);
-  }
-
-  return res;
-}
-
-export const ifComponentHasLoader = (component: string) => {
-  const file = resolveFile(component);
-  if (file) {
-    const content = fs.readFileSync(file, 'utf-8');
-    try {
-      const exports = getExports(content);
-      return exports.includes('loader');
-    } catch {}
-  }
-  return false;
-};
-
-export const getNormalizedRoutes = (
-  routes: (IUserRouteConfig | IRouteConfig)[],
+  routes: (IUserRouteConfig | IUserRouteConfig)[],
   componentDir: string,
   parentPath: string = ''
-): IRouteConfig[] => {
+): IRouteConfig[] {
   const res: IRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] } as IRouteConfig;
@@ -114,24 +77,15 @@ export const getNormalizedRoutes = (
     }
 
     if (route.children && route.children.length > 0) {
-      route.children = getNormalizedRoutes(
-        route.children,
-        componentDir,
-        fullpath
-      );
+      route.children = normalizeRoutes(route.children, componentDir, fullpath);
     }
     res.push(route);
   }
   return res;
-};
+}
 
-export const getRoutesContent = (
-  routes: IRouteConfig[],
-  componentDir: string
-): string => {
+export const generateRoutesContent = (routes: IRouteConfig[]): string => {
   const serialized = serializeRoutes(routes);
   const routesContent = `export default ${serialized}`;
   return routesContent;
 };
-
-export * from './store';

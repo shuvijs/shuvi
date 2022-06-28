@@ -1,4 +1,10 @@
 import { basename, extname, join, dirname } from 'path';
+import { isDirectory } from '@shuvi/utils/lib/file';
+import {
+  IUserRouteConfig,
+  IApiRouteConfig,
+  IMiddlewareRouteConfig
+} from '@shuvi/service';
 import {
   getAllowFilesAndDirs,
   hasAllowFiles,
@@ -6,8 +12,9 @@ import {
   SupportFileType
 } from './helpers';
 
-import type { IRouteRecord } from '@shuvi/router';
-import { isDirectory } from '@shuvi/utils/lib/file';
+export type IPageRouteConfig = IUserRouteConfig;
+
+export type { IApiRouteConfig, IMiddlewareRouteConfig };
 
 interface RawFileRoute {
   kind: 'file';
@@ -38,9 +45,14 @@ export interface RouteResult<T> {
   routes: T[];
 }
 
-export type Routes = RouteResult<RawRoute>;
+export type RawRoutes = RouteResult<RawRoute>;
+export type PageRoutes = RouteResult<IPageRouteConfig>;
+export type ApiRoutes = RouteResult<IApiRouteConfig>;
+export type MiddlewareRoutes = RouteResult<IMiddlewareRouteConfig>;
 
-export const getRawRoutesFromDir = async (dirname: string): Promise<Routes> => {
+export const getRawRoutesFromDir = async (
+  dirname: string
+): Promise<RawRoutes> => {
   if (!(await isDirectory(dirname))) {
     return {
       routes: [],
@@ -111,96 +123,7 @@ export const getRawRoutesFromDir = async (dirname: string): Promise<Routes> => {
   };
 };
 
-export const getApiRoutes = async (
-  dir: string
-): Promise<RouteResult<IRouteRecord>> => {
-  const getConflictWaring = (
-    rawRoute: RawRoute,
-    conflictRawRoute: RawRoute
-  ) => {
-    return `Find both ${basename(conflictRawRoute.filepath)} and ${basename(
-      rawRoute.filepath
-    )} in "${dirname(rawRoute.filepath)}"!, only "${basename(
-      conflictRawRoute.filepath
-    )}" is used.`;
-  };
-
-  const {
-    routes: rawRoutes,
-    warnings,
-    errors
-  } = await getRawRoutesFromDir(dir);
-
-  const _getApiRoutes = (
-    rawRoutes: RawRoute[],
-    routes: IRouteRecord[],
-    prefix: string = ''
-  ) => {
-    const page = rawRoutes.find(
-      route => route.kind === 'file' && route.type === 'page'
-    );
-    const layout = rawRoutes.find(
-      route => route.kind === 'file' && route.type === 'layout'
-    );
-    const allowedRoutes = rawRoutes.filter(
-      route => route.kind === 'dir' || route.type === 'api'
-    );
-
-    for (let rawRoute of allowedRoutes) {
-      prefix = prefix === '/' ? '' : prefix;
-
-      if (rawRoute.kind === 'dir') {
-        _getApiRoutes(
-          rawRoute.children,
-          routes,
-          prefix + '/' + rawRoute.parentSegment
-        );
-        continue;
-      }
-      if (rawRoute.type === 'api') {
-        if (layout) {
-          warnings.push({
-            type: 'api',
-            msg: getConflictWaring(rawRoute, layout)
-          });
-          continue;
-        }
-
-        if (page) {
-          warnings.push({
-            type: 'api',
-            msg: getConflictWaring(rawRoute, page)
-          });
-          continue;
-        }
-
-        let path = prefix + '/' + rawRoute.segment;
-        if (path === '//') {
-          path = '/';
-        }
-
-        routes.push({
-          path,
-          filepath: rawRoute.filepath
-        });
-      }
-    }
-    return routes;
-  };
-
-  const routes = _getApiRoutes(rawRoutes, [], '');
-  const filterException = (e: RouteException) => e.type === 'api';
-
-  return {
-    routes,
-    warnings: warnings.filter(filterException),
-    errors: errors.filter(filterException)
-  };
-};
-
-export const getPageAndLayoutRoutes = async (
-  dirname: string
-): Promise<RouteResult<IRouteRecord>> => {
+export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
@@ -209,13 +132,13 @@ export const getPageAndLayoutRoutes = async (
 
   const _getPageAndLayoutRoutes = async (
     rawRoutes: RawRoute[],
-    routes: IRouteRecord[],
+    routes: IPageRouteConfig[],
     segment = ''
   ) => {
     const layoutRoute = rawRoutes.some(
       route => route.kind === 'file' && route.type === 'layout'
     );
-    const route = {} as IRouteRecord;
+    const route = {} as IPageRouteConfig;
 
     if (layoutRoute) {
       route.children = [];
@@ -270,14 +193,94 @@ export const getPageAndLayoutRoutes = async (
   };
 };
 
-export type MiddlewareRecord = {
-  middlewares: string[];
-  path: string;
+export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
+  const getConflictWaring = (
+    rawRoute: RawRoute,
+    conflictRawRoute: RawRoute
+  ) => {
+    return `Find both ${basename(conflictRawRoute.filepath)} and ${basename(
+      rawRoute.filepath
+    )} in "${dirname(rawRoute.filepath)}"!, only "${basename(
+      conflictRawRoute.filepath
+    )}" is used.`;
+  };
+
+  const {
+    routes: rawRoutes,
+    warnings,
+    errors
+  } = await getRawRoutesFromDir(dir);
+
+  const _getApiRoutes = (
+    rawRoutes: RawRoute[],
+    routes: IApiRouteConfig[],
+    prefix: string = ''
+  ) => {
+    const page = rawRoutes.find(
+      route => route.kind === 'file' && route.type === 'page'
+    );
+    const layout = rawRoutes.find(
+      route => route.kind === 'file' && route.type === 'layout'
+    );
+    const allowedRoutes = rawRoutes.filter(
+      route => route.kind === 'dir' || route.type === 'api'
+    );
+
+    for (let rawRoute of allowedRoutes) {
+      prefix = prefix === '/' ? '' : prefix;
+
+      if (rawRoute.kind === 'dir') {
+        _getApiRoutes(
+          rawRoute.children,
+          routes,
+          prefix + '/' + rawRoute.parentSegment
+        );
+        continue;
+      }
+      if (rawRoute.type === 'api') {
+        if (layout) {
+          warnings.push({
+            type: 'api',
+            msg: getConflictWaring(rawRoute, layout)
+          });
+          continue;
+        }
+
+        if (page) {
+          warnings.push({
+            type: 'api',
+            msg: getConflictWaring(rawRoute, page)
+          });
+          continue;
+        }
+
+        let path = prefix + '/' + rawRoute.segment;
+        if (path === '//') {
+          path = '/';
+        }
+
+        routes.push({
+          path,
+          handler: rawRoute.filepath
+        });
+      }
+    }
+    return routes;
+  };
+
+  const routes = _getApiRoutes(rawRoutes, [], '');
+  const filterException = (e: RouteException) => e.type === 'api';
+
+  return {
+    routes,
+    warnings: warnings.filter(filterException),
+    errors: errors.filter(filterException)
+  };
 };
 
 export const getMiddlewareRoutes = async (
   dirname: string
-): Promise<RouteResult<MiddlewareRecord>> => {
+): Promise<MiddlewareRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
@@ -286,7 +289,7 @@ export const getMiddlewareRoutes = async (
 
   const _getMiddlewareRoutes = async (
     rawRoutes: RawRoute[],
-    routes: MiddlewareRecord[],
+    routes: IMiddlewareRouteConfig[],
     segment: string,
     parentMiddlewares: string[]
   ) => {

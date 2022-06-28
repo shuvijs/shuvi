@@ -1,5 +1,8 @@
 export {
-  getPageAndLayoutRoutes,
+  IPageRouteConfig,
+  IApiRouteConfig,
+  IMiddlewareRouteConfig,
+  getPageRoutes,
   getApiRoutes,
   getMiddlewareRoutes
 } from './route';

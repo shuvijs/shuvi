@@ -1,9 +1,7 @@
 import { rankRouteBranches } from '@shuvi/router';
+import { IMiddlewareRouteConfig } from '@shuvi/platform-shared/lib/node';
 
-export interface IMiddlewareRouteConfig {
-  path: string;
-  middlewares: string[];
-}
+export { IMiddlewareRouteConfig };
 
 export function serializeMiddlewareRoutes(
   middlewareRoutes: IMiddlewareRouteConfig[]
@@ -37,7 +35,7 @@ export function serializeMiddlewareRoutes(
   return `[${res}]`;
 }
 
-export function getRoutesContentFromRawRoutes(
+export function generateRoutesContent(
   rawRoutes: IMiddlewareRouteConfig[]
 ): string {
   const serialized = serializeMiddlewareRoutes(rawRoutes);

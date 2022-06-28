@@ -1,4 +1,4 @@
-import { createPlugin, IRouteConfig, IUserRouteConfig } from '@shuvi/service';
+import { createPlugin, IRouteConfig } from '@shuvi/service';
 import {
   getAllFiles,
   getFirstModuleExport,
@@ -8,15 +8,10 @@ import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 import * as fs from 'fs';
 import * as path from 'path';
 import { extendedHooks } from './hooks';
-import {
-  getNormalizedRoutes,
-  getRoutes,
-  getRoutesContent,
-  ifComponentHasLoader,
-  setRoutes
-} from './lib';
+import { ifComponentHasLoader } from './lib';
 import server from './server-plugin-custom-server';
-import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node';
+import { getRoutes } from '../filesystem-routes';
+
 export { IRenderToHTML } from './hooks';
 export {
   getSSRMiddleware,
@@ -33,12 +28,10 @@ const core = createPlugin({
   addRuntimeFile: ({ createFile }, context) => {
     const {
       config: {
-        routes: routesFromConfig,
         router: { history },
         experimental: { loader }
       },
-      paths,
-      pluginRunner
+      paths
     } = context;
     const routerConfigFile = createFile({
       name: 'routerConfig.js',
@@ -47,36 +40,7 @@ const core = createPlugin({
         export const loaderOptions = ${JSON.stringify(loader)}`;
       }
     });
-    const getRoutesAfterPlugin = (routes: IUserRouteConfig[]) =>
-      pluginRunner.appRoutes(routes);
 
-    const routesFile = createFile({
-      name: 'routes.js',
-      content: async () => {
-        let routes: IUserRouteConfig[];
-        const hasConfigRoutes = Array.isArray(routesFromConfig);
-        if (hasConfigRoutes) {
-          routes = routesFromConfig as IUserRouteConfig[];
-        } else {
-          const { routes: _routes, warnings } = await getPageAndLayoutRoutes(
-            paths.routesDir
-          );
-          warnings.forEach(warning => {
-            console.warn(warning.msg);
-          });
-          routes = _routes;
-        }
-
-        const modifiedRoutes = getRoutesAfterPlugin(routes);
-        const normalizedRoutes = getNormalizedRoutes(
-          modifiedRoutes,
-          paths.routesDir
-        );
-        setRoutes(normalizedRoutes);
-        return getRoutesContent(normalizedRoutes, paths.routesDir);
-      },
-      dependencies: paths.routesDir
-    });
     const loadersFile = createFile({
       name: 'loaders.js',
       content: () => {
@@ -159,7 +123,6 @@ const core = createPlugin({
     return [
       userDocumentFile,
       routerConfigFile,
-      routesFile,
       userServerFile,
       loadersFile,
       pageLoadersFile

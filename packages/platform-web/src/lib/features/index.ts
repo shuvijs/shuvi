@@ -1,17 +1,18 @@
 import FeatureOnDemanCompilePage from './on-demand-compile-page';
-import FeatureAPIMiddleware from './api-middleware';
-import FeaturePageMiddleware from './page-middleware';
 import FeatureHTMLRender from './html-render';
+import FilesystemRoutes from './filesystem-routes';
 
 export { buildHtml } from './main/buildHtml';
 
-export { getMiddlewares, getMiddlewaresBeforeDevMiddlewares } from './middlewares'
+export {
+  getMiddlewares,
+  getMiddlewaresBeforeDevMiddlewares
+} from './middlewares';
 
-export { getPlugin as getMainPlugin } from './main'
+export { getPlugin as getMainPlugin } from './main';
 
 export const featurePlugins = [
   FeatureOnDemanCompilePage,
-  FeatureAPIMiddleware,
-  FeaturePageMiddleware,
+  FilesystemRoutes,
   FeatureHTMLRender
 ];

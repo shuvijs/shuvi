@@ -1,4 +1,4 @@
-import { serializeRoutes, normalizeRoutes } from '..';
+import { serializeRoutes, normalizeRoutes } from '../routes';
 
 describe('serializeRoutes', () => {
   const routes = [
@@ -78,7 +78,7 @@ describe('normalizeRoutes', () => {
             component: '/b'
           }
         ],
-        { componentDir: '/test' }
+        '/test'
       );
 
       expect(routes).toMatchObject([
