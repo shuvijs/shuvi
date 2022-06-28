@@ -42,8 +42,7 @@ export class ReactServerView implements IReactServerView {
 
     let { pathname, query, matches, redirected } = router.current;
     // handler no matches
-    if (!matches) {
-      matches = [];
+    if (!matches.length) {
       error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
     }
 

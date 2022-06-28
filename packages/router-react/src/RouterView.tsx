@@ -48,7 +48,7 @@ export function RouterView(): React.ReactElement | null {
   } = React.useContext(MatchedRouteContext);
   const { matches } = useCurrentRoute();
 
-  if (!matches) {
+  if (!matches.length) {
     return null;
   }
 

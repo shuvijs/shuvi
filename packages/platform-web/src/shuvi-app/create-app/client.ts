@@ -53,7 +53,7 @@ export function createApp<AppState extends IAppState>(options: {
     routes: getRoutes(routes, context, { routeProps })
   });
   router.afterEach(_current => {
-    if (!_current.matches) {
+    if (!_current.matches.length) {
       getErrorHandler(modelManager).errorHandler(
         SHUVI_ERROR_CODE.PAGE_NOT_FOUND
       );
