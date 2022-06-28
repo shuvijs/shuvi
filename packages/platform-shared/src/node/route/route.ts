@@ -38,6 +38,12 @@ export interface Routes {
   errors: RouteException[];
 }
 
+export interface RouteResult<T> {
+  warnings: RouteException[];
+  errors: RouteException[];
+  routes: T[];
+}
+
 export const getRawRoutesFromDir = async (dirname: string): Promise<Routes> => {
   if (!(await isDirectory(dirname))) {
     return {
@@ -109,7 +115,9 @@ export const getRawRoutesFromDir = async (dirname: string): Promise<Routes> => {
   };
 };
 
-export const getApiRoutes = async (dir: string) => {
+export const getApiRoutes = async (
+  dir: string
+): Promise<RouteResult<IRouteRecord>> => {
   const getConflictWaring = (
     rawRoute: RawRoute,
     conflictRawRoute: RawRoute
@@ -194,7 +202,9 @@ export const getApiRoutes = async (dir: string) => {
   };
 };
 
-export const getPageAndLayoutRoutes = async (dirname: string) => {
+export const getPageAndLayoutRoutes = async (
+  dirname: string
+): Promise<RouteResult<IRouteRecord>> => {
   const {
     routes: rawRoutes,
     warnings,
@@ -267,10 +277,11 @@ export const getPageAndLayoutRoutes = async (dirname: string) => {
 export type MiddlewareRecord = {
   middlewares: string[];
   path: string;
-  children?: MiddlewareRecord[];
 };
 
-export const getMiddlewareRoutes = async (dirname: string) => {
+export const getMiddlewareRoutes = async (
+  dirname: string
+): Promise<RouteResult<MiddlewareRecord>> => {
   const {
     routes: rawRoutes,
     warnings,
