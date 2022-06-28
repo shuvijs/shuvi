@@ -1,13 +1,9 @@
 import { createHash } from 'crypto';
-import * as path from 'path';
 import { IUserRouteConfig, IRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
+import { getNormalizedAbsolutePath } from '@shuvi/utils/lib/file';
 
 export { IUserRouteConfig };
-
-export type Templates<T extends {}> = {
-  [K in keyof T]?: (v: T[K], route: T & { id: string }) => string;
-};
 
 type RouteKeysWithoutChildren = keyof Omit<IUserRouteConfig, 'children'>;
 
@@ -69,11 +65,10 @@ export function normalizeRoutes(
     const fullpath = pathWithSlash ? parentPath + pathWithSlash : parentPath;
     route.id = genRouteId(fullpath);
     if (route.component) {
-      const absPath = path.isAbsolute(route.component)
-        ? route.component
-        : path.resolve(componentDir, route.component);
-
-      route.component = absPath.replace(/\\/g, '/');
+      route.component = getNormalizedAbsolutePath(
+        route.component,
+        componentDir
+      );
     }
 
     if (route.children && route.children.length > 0) {
@@ -86,6 +81,5 @@ export function normalizeRoutes(
 
 export const generateRoutesContent = (routes: IRouteConfig[]): string => {
   const serialized = serializeRoutes(routes);
-  const routesContent = `export default ${serialized}`;
-  return routesContent;
+  return `export default ${serialized}`;
 };
