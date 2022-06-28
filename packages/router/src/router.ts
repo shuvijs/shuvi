@@ -302,7 +302,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     } = this;
     const matches = this.match(location);
     let params;
-    if (matches) {
+    if (matches.length) {
       params = matches[matches.length - 1].params;
       if (routeContext) {
         for (const { route } of matches) {
