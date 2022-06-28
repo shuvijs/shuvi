@@ -1,5 +1,4 @@
 import { join } from 'path';
-import { IRouteRecord } from '@shuvi/router';
 import { RouteException } from '../route';
 
 export const getFixturePath = (
@@ -10,17 +9,21 @@ export const getFixturePath = (
 };
 
 export const normalizePath = (
-  routes: IRouteRecord[],
+  routes: any[],
   dir: string,
-  key: keyof IRouteRecord = 'component'
-): IRouteRecord[] => {
+  key: 'component' | 'handler' | 'middlewares'
+): any[] => {
   return routes.map(route => {
     if (route.children) {
       route.children = normalizePath(route.children, dir, key);
     }
+
+    const value = route[key];
     return {
       ...route,
-      [key]: route[key].replace(dir + '/', '')
+      [key]: Array.isArray(value)
+        ? value.map(a => a.replace(dir + '/', ''))
+        : value.replace(dir + '/', '')
     };
   });
 };

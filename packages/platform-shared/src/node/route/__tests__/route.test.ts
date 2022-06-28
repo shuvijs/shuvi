@@ -1,12 +1,12 @@
 import { getFixturePath, normalizePath, normalizeWarnings } from './utils';
-import { getPageAndLayoutRoutes } from '../route';
+import { getPageRoutes } from '../route';
 
 const getFixturePageRoutes = async (dirname: string) => {
   const dir = getFixturePath(dirname);
-  const { routes, warnings, errors } = await getPageAndLayoutRoutes(dir);
+  const { routes, warnings, errors } = await getPageRoutes(dir);
 
   return {
-    routes: normalizePath(routes, dir),
+    routes: normalizePath(routes, dir, 'component'),
     warnings: normalizeWarnings(warnings, dir),
     errors: normalizeWarnings(errors, dir)
   };
@@ -192,50 +192,6 @@ describe('filesystem routes', () => {
       warnings: []
     });
   });
-
-  // it('should get correct result with page and middleware', async () => {
-  //   const result = await getFixturePageRoutes('middlewares');
-  //   expect(result).toMatchObject({
-  //     routes: [
-  //       { path: '/a', middlewarePath: 'a/middleware.js' },
-  //       { path: '/a', pagePath: 'a/page.js' },
-  //       { path: '/', middlewarePath: 'middleware.js' },
-  //       { path: '/', pagePath: 'page.js' }
-  //     ],
-  //     errors: [],
-  //     warnings: []
-  //   });
-  // });
-  //
-  // it('should ignore api when has api and page', async () => {
-  //   const result = await getFixturePageRoutes('ignore-api');
-  //   expect(result).toMatchObject({
-  //     routes: [
-  //       { path: '/a', pagePath: 'a/page.js' },
-  //       { path: '/', pagePath: 'page.js' }
-  //     ],
-  //     errors: [],
-  //     warnings: [
-  //       'Find both api.js and page.js in "packages/platform-shared/src/node/route-layout/__tests__/fixtures/ignore-api/a"!, only "api.js" is used.',
-  //       'Find both api.js and page.js in "packages/platform-shared/src/node/route-layout/__tests__/fixtures/ignore-api"!, only "api.js" is used.'
-  //     ]
-  //   });
-  // });
-
-  // it('should get correct api result', async () => {
-  //   const result = await getApiRoutesForTest('api');
-  //
-  //   expect(result).toMatchObject([
-  //     {
-  //       path: '/',
-  //       filepath: 'layout.js',
-  //       children: [
-  //         { path: 'api', filepath: 'api/api.js' },
-  //         { path: 'api/users', filepath: 'api/users/api.js' }
-  //       ]
-  //     }
-  //   ]);
-  // });
 
   it('should get correct result with mixed page and layout', async () => {
     const result = await getFixturePageRoutes('mixed-layout-page');
