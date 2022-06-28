@@ -89,9 +89,6 @@ export interface IRoute<RouteRecord extends IRouteRecord = IRouteRecord>
 export interface IRouter<
   RouteRecord extends {
     path: string;
-    id?: string;
-    __componentSourceWithAffix__?: string;
-    __resolveWeak__?: () => any;
   } = any
 > {
   current: IRoute<RouteRecord>;

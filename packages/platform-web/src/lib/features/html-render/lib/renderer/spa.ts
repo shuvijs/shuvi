@@ -9,7 +9,8 @@ export class SpaRenderer extends BaseRenderer {
       pageData: {},
       ssr: serverPluginContext.config.ssr,
       loadersData: {},
-      clientManifestPath: {}
+      clientManifestPath: {},
+      publicPathFromAppData: ''
     };
     return {
       htmlAttrs: {},

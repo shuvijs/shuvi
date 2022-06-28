@@ -30,7 +30,6 @@ export interface IRouteConfig extends IUserRouteConfig {
 export interface IApiRouteConfig {
   path: string;
   apiModule: string;
-  children?: IApiRouteConfig[];
 }
 
 export interface IMiddlewareRouteConfig {

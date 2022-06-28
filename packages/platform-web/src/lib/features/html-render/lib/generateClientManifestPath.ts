@@ -8,7 +8,7 @@ export default function generateClientManifestPath(
   let clientManifestPath: Record<string, string[]> = {};
   const loadable = assetMap.loadble;
   routes.forEach(({ id, __componentSourceWithAffix__ }) => {
-    clientManifestPath[id] = loadable[__componentSourceWithAffix__].files;
+    clientManifestPath[id!] = loadable[__componentSourceWithAffix__!].files;
   });
 
   return clientManifestPath;
