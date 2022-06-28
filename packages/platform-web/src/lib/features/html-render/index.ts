@@ -54,7 +54,6 @@ const core = createPlugin({
       name: 'routes.js',
       content: async () => {
         let routes: IUserRouteConfig[];
-        // if config.routes is defined, use config
         const hasConfigRoutes = Array.isArray(routesFromConfig);
         if (hasConfigRoutes) {
           routes = routesFromConfig as IUserRouteConfig[];

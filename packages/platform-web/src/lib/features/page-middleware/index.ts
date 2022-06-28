@@ -32,7 +32,7 @@ export default createPlugin({
             routes = _routes;
           }
 
-          return getRoutesContentFromRawRoutes(routes, paths.routesDir);
+          return getRoutesContentFromRawRoutes(routes);
         },
         dependencies: paths.routesDir
       })
