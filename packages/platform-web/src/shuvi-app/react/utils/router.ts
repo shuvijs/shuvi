@@ -39,9 +39,9 @@ export const getLoadersHook =
     loaderOptions: ILoaderOptions
   ): NavigationGuardHook =>
   async (to, from, next) => {
-    const toMatches: IRouteMatch<IPageRouteRecord>[] = to.matches || [];
+    const toMatches: IRouteMatch<IPageRouteRecord>[] = to.matches;
     const fromMatches: (IRouteMatch<IPageRouteRecord> | undefined)[] =
-      from.matches || [];
+      from.matches;
     let changedMatches: IRouteMatch<IPageRouteRecord>[] = [];
 
     /**
