@@ -13,10 +13,10 @@ import {
   ITemplateData,
   IViewServer
 } from '../features/html-render';
-import { IApiRequestHandler } from '../features/api-middleware';
+import { IApiRequestHandler } from '../features/filesystem-routes';
 import '../features/html-render/types';
 
-interface IApiModule {
+interface IApiHandler {
   default: IApiRequestHandler;
   config?: {
     apiConfig?: {
@@ -31,7 +31,7 @@ interface IApiModule {
 
 export type IApiRoutes = {
   path: string;
-  apiModule: IApiModule;
+  handler: IApiHandler;
 }[];
 
 export type IMiddlewareRoutes = {

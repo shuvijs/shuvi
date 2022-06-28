@@ -6,7 +6,7 @@ const getFixtureApiRoutes = async (dirname: string) => {
   const { routes, warnings, errors } = await getApiRoutes(dir);
 
   return {
-    routes: normalizePath(routes, dir, 'filepath'),
+    routes: normalizePath(routes, dir, 'handler'),
     warnings: normalizeWarnings(warnings, dir),
     errors: normalizeWarnings(errors, dir)
   };
@@ -20,15 +20,15 @@ describe('api routes test', () => {
       routes: [
         {
           path: '/api',
-          filepath: 'api/api.js'
+          handler: 'api/api.js'
         },
         {
           path: '/api/users/:id',
-          filepath: 'api/users/[id]/api.js'
+          handler: 'api/users/[id]/api.js'
         },
         {
           path: '/api/users',
-          filepath: 'api/users/api.js'
+          handler: 'api/users/api.js'
         }
       ],
       warnings: [],

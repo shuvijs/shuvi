@@ -14,7 +14,7 @@ import {
   withExts
 } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
-import { getPageAndLayoutRoutes } from '@shuvi/platform-shared/lib/node';
+import { getPageRoutes } from '@shuvi/platform-shared/lib/node';
 import { FileOptions } from '@shuvi/service/lib/project';
 import {
   sharedPlugin,
@@ -328,7 +328,7 @@ export default abstract class PlatformMpBase {
         let { routes } = context.config;
         if (!routes) {
           if (await isDirectory(context.paths.routesDir)) {
-            routes = (await getPageAndLayoutRoutes(
+            routes = (await getPageRoutes(
               context.paths.routesDir
             )) as unknown as IUserRouteConfig[];
           } else {

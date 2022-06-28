@@ -3,7 +3,6 @@ import {
   CorePluginInstance,
   PluginRunner
 } from './lifecycle';
-
 import { FileOptions } from '../project';
 import {
   IServerMiddleware,
@@ -29,7 +28,7 @@ export interface IRouteConfig extends IUserRouteConfig {
 
 export interface IApiRouteConfig {
   path: string;
-  apiModule: string;
+  handler: string;
 }
 
 export interface IMiddlewareRouteConfig {
@@ -148,7 +147,6 @@ export interface IRouterConfig {
 }
 
 export interface IApiConfig {
-  prefix?: string;
   /**
    * The byte limit of the body. This is the number of bytes or any string
    * format supported by `bytes`, for example `1000`, `'500kb'` or `'3mb'`

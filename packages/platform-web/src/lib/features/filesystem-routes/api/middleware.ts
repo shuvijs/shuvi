@@ -6,16 +6,13 @@ import { apiRouteHandler } from './apiRouteHandler';
 export function middleware(ctx: IServerPluginContext): IRequestHandlerWithNext {
   return async function (req, res, next) {
     const { apiRoutes } = server;
-    const { prefix, ...otherConfig } = ctx.config.apiConfig || {};
-    if (!req.url.startsWith(prefix!)) {
-      return next();
-    }
+    const commonApiConfig = ctx.config.apiConfig || {};
     let tempApiModule;
-    for (const { path, apiModule } of apiRoutes) {
+    for (const { path, handler } of apiRoutes) {
       const match = matchPathname(path, req.pathname);
       if (match) {
         req.params = match.params;
-        tempApiModule = apiModule;
+        tempApiModule = handler;
         break;
       }
     }
@@ -24,7 +21,7 @@ export function middleware(ctx: IServerPluginContext): IRequestHandlerWithNext {
         const { config: { apiConfig = {} } = {}, default: resolver } =
           tempApiModule;
         let overridesConfig = {
-          ...otherConfig,
+          ...commonApiConfig,
           ...apiConfig
         };
 

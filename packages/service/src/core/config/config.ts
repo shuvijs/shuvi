@@ -41,7 +41,6 @@ export const createDefaultConfig: () => UserConfig = () => ({
     history: 'auto'
   },
   apiConfig: {
-    prefix: '/api',
     bodyParser: true
   },
   experimental: {
@@ -115,10 +114,6 @@ export function resolveConfig(
 ): Config {
   const configs = [{}, config].concat(overrides || []);
   const resolvedConfig: Config = mergeConfig.apply(null, configs);
-  const apiRouteConfigPrefix = resolvedConfig.apiConfig.prefix;
-  if (apiRouteConfigPrefix) {
-    resolvedConfig.apiConfig.prefix = path.resolve('/', apiRouteConfigPrefix);
-  }
   if (resolvedConfig.router.history === 'auto') {
     resolvedConfig.router.history = resolvedConfig.ssr ? 'browser' : 'hash';
   }
