@@ -73,8 +73,8 @@ export const getLoadersHook =
       }
     }
     const loaderManager = getLoaderManager();
-    const { shouldHydrated } = loaderManager;
-    if (shouldHydrated) {
+    const { shouldHydrate } = loaderManager;
+    if (shouldHydrate) {
       const { hasError } = modelManager.get(errorModel).$state();
       if (hasError) {
         // hydrated error page, run Component.getInitialProps by client
@@ -113,7 +113,7 @@ export const getLoadersHook =
       if (sequential) {
         for (const loader of targetLoaders) {
           // initialData must not null if hydrating
-          if (shouldHydrated) {
+          if (shouldHydrate) {
             if (loader?.result.error) {
               await loader.load(true);
             }
@@ -127,7 +127,7 @@ export const getLoadersHook =
           targetLoaders
             .filter(loader => {
               // skip when hydrating and no error
-              if (shouldHydrated && !loader?.result.error) {
+              if (shouldHydrate && !loader?.result.error) {
                 return false;
               }
               return true;
@@ -191,8 +191,8 @@ export function normalizeRoutes(
 
         // support both getInitialProps and loader
         const loaderManager = getLoaderManager();
-        const { shouldHydrated } = loaderManager;
-        if (shouldHydrated) {
+        const { shouldHydrate } = loaderManager;
+        if (shouldHydrate) {
           const { hasError } = modelManager.get(errorModel).$state();
           if (hasError) {
             // hydrated error page, run Component.getInitialProps by client
@@ -219,7 +219,7 @@ export function normalizeRoutes(
         }
         if (Component.getInitialProps) {
           console.warn(getInitialPropsDeprecatingMessage);
-          if (shouldHydrated) {
+          if (shouldHydrate) {
             // only hydrated once, use server state
             context.props = routeProps[id];
             return next();
