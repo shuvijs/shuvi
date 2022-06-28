@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { rankRouteBranches } from '@shuvi/router';
 
 export interface IMiddlewareRouteConfig {
@@ -6,35 +5,10 @@ export interface IMiddlewareRouteConfig {
   middlewares: string[];
 }
 
-function flattenMiddlewareRoutes(
-  middlewareRoutes: IMiddlewareRouteConfig[],
-  branches: IMiddlewareRouteConfig[] = [],
-  parentPath = ''
-): IMiddlewareRouteConfig[] {
-  middlewareRoutes.forEach(route => {
-    const { middlewares } = route;
-    let tempPath = path.join(parentPath, route.path);
-
-    if (middlewares) {
-      branches.push({
-        path: tempPath,
-        middlewares
-      });
-    }
-  });
-  return branches;
-}
-
 export function serializeMiddlewareRoutes(
-  middlewareRoutes: IMiddlewareRouteConfig[],
-  parentPath = ''
+  middlewareRoutes: IMiddlewareRouteConfig[]
 ): string {
-  let tempMiddlewareRoutes = flattenMiddlewareRoutes(
-    middlewareRoutes,
-    [],
-    path.resolve('/', parentPath)
-  );
-  let rankMiddlewareRoutes = tempMiddlewareRoutes.map(
+  let rankMiddlewareRoutes = middlewareRoutes.map(
     middlewareRoute =>
       [middlewareRoute.path, middlewareRoute] as [
         string,
@@ -42,12 +16,12 @@ export function serializeMiddlewareRoutes(
       ]
   );
   rankMiddlewareRoutes = rankRouteBranches(rankMiddlewareRoutes);
-  tempMiddlewareRoutes = rankMiddlewareRoutes.map(
+  middlewareRoutes = rankMiddlewareRoutes.map(
     middlewareRoute => middlewareRoute[1]
   );
   let res = '';
-  for (let index = 0; index < tempMiddlewareRoutes.length; index++) {
-    const { middlewares, path } = tempMiddlewareRoutes[index];
+  for (let index = 0; index < middlewareRoutes.length; index++) {
+    const { middlewares, path } = middlewareRoutes[index];
     let strRoute = `\n{
       path: "${path}",
       ${
@@ -63,39 +37,9 @@ export function serializeMiddlewareRoutes(
   return `[${res}]`;
 }
 
-export function normalizeMiddlewareRoutes(
-  middlewareRoutes: IMiddlewareRouteConfig[],
-  option: { pagesDir: string }
-): IMiddlewareRouteConfig[] {
-  const res: IMiddlewareRouteConfig[] = [];
-  for (let index = 0; index < middlewareRoutes.length; index++) {
-    const middlewareRoute = { ...middlewareRoutes[index] };
-    if (middlewareRoute.middlewares) {
-      middlewareRoute.middlewares = middlewareRoute.middlewares.map(
-        middleware => {
-          const absPath = path.isAbsolute(middleware)
-            ? middleware
-            : path.resolve(option.pagesDir, middleware);
-
-          middleware = absPath.replace(/\\/g, '/');
-          return middleware;
-        }
-      );
-    }
-
-    res.push(middlewareRoute);
-  }
-
-  return res;
-}
-
 export function getRoutesContentFromRawRoutes(
-  rawRoutes: IMiddlewareRouteConfig[],
-  pagesDir: string
+  rawRoutes: IMiddlewareRouteConfig[]
 ): string {
-  const normalizedRoutes = normalizeMiddlewareRoutes(rawRoutes, {
-    pagesDir
-  });
-  const serialized = serializeMiddlewareRoutes(normalizedRoutes);
+  const serialized = serializeMiddlewareRoutes(rawRoutes);
   return `export default ${serialized}`;
 }

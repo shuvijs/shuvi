@@ -6,44 +6,15 @@ export interface IApiRouteConfig {
   apiModule: string;
 }
 
-type IApiRouteHandlerWithoutChildren = Omit<IApiRouteConfig, 'children'>;
-
-function flattenApiRoutes(
-  apiRoutes: IApiRouteConfig[],
-  branches: IApiRouteHandlerWithoutChildren[] = [],
-  parentPath = ''
-): IApiRouteHandlerWithoutChildren[] {
-  apiRoutes.forEach(route => {
-    const { apiModule } = route;
-    let tempPath = path.join(parentPath, route.path);
-
-    if (apiModule) {
-      branches.push({
-        path: tempPath,
-        apiModule
-      });
-    }
-  });
-  return branches;
-}
-
-export function serializeApiRoutes(
-  apiRoutes: IApiRouteConfig[],
-  parentPath = ''
-): string {
-  let tempApiRoutes = flattenApiRoutes(
-    apiRoutes,
-    [],
-    path.resolve('/', parentPath)
-  );
-  let rankApiRoutes = tempApiRoutes.map(
+export function serializeApiRoutes(apiRoutes: IApiRouteConfig[]): string {
+  let rankApiRoutes = apiRoutes.map(
     apiRoute => [apiRoute.path, apiRoute] as [string, typeof apiRoute]
   );
   rankApiRoutes = rankRouteBranches(rankApiRoutes);
-  tempApiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
+  apiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
   let res = '';
-  for (let index = 0; index < tempApiRoutes.length; index++) {
-    const { apiModule, path } = tempApiRoutes[index];
+  for (let index = 0; index < apiRoutes.length; index++) {
+    const { apiModule, path } = apiRoutes[index];
     let strRoute = `\n{
       path: "${path}",
       ${apiModule ? `apiModule: require("${apiModule}"),` : ''}
@@ -95,18 +66,16 @@ export function normalizeApiRoutes(
 
 export const getRoutesContent = (
   apiRoutes: IApiRouteConfig[],
-  apisDir: string,
-  prefix?: string
+  apisDir: string
 ): string => {
   const normalizedRoutes = normalizeApiRoutes(apiRoutes, { apisDir });
-  const serialized = serializeApiRoutes(normalizedRoutes, prefix);
+  const serialized = serializeApiRoutes(normalizedRoutes);
   return `export default ${serialized}`;
 };
 
 export const getRoutesContentFromRawRoutes = (
   rawRoutes: IRouteRecord[],
-  apisDir: string,
-  prefix?: string
+  apisDir: string
 ): string => {
-  return getRoutesContent(renameFilepathToModule(rawRoutes), apisDir, prefix);
+  return getRoutesContent(renameFilepathToModule(rawRoutes), apisDir);
 };

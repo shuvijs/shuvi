@@ -32,17 +32,13 @@ export interface RouteException {
   msg: string;
 }
 
-export interface Routes {
-  routes: RawRoute[];
-  warnings: RouteException[];
-  errors: RouteException[];
-}
-
 export interface RouteResult<T> {
   warnings: RouteException[];
   errors: RouteException[];
   routes: T[];
 }
+
+export type Routes = RouteResult<RawRoute>;
 
 export const getRawRoutesFromDir = async (dirname: string): Promise<Routes> => {
   if (!(await isDirectory(dirname))) {
