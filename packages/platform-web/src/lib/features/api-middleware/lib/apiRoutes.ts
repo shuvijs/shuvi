@@ -2,7 +2,6 @@ import * as path from 'path';
 import { rankRouteBranches, IRouteRecord } from '@shuvi/router';
 export interface IApiRouteConfig {
   path: string;
-  children?: IApiRouteConfig[];
   apiModule: string;
 }
 
@@ -14,12 +13,9 @@ function flattenApiRoutes(
   parentPath = ''
 ): IApiRouteHandlerWithoutChildren[] {
   apiRoutes.forEach(route => {
-    const { children, apiModule } = route;
+    const { apiModule } = route;
     let tempPath = path.join(parentPath, route.path);
 
-    if (children) {
-      flattenApiRoutes(children, branches, tempPath);
-    }
     if (apiModule) {
       branches.push({
         path: tempPath,
@@ -61,7 +57,7 @@ export function renameFilepathToModule(
 ): IApiRouteConfig[] {
   const res: IApiRouteConfig[] = [];
   for (let index = 0; index < apiRoutes.length; index++) {
-    const { path, filepath, children } = apiRoutes[index];
+    const { path, filepath } = apiRoutes[index];
     const route = {
       path
     } as IApiRouteConfig;
@@ -70,9 +66,6 @@ export function renameFilepathToModule(
       route.apiModule = filepath;
     }
 
-    if (children && children.length > 0) {
-      route.children = renameFilepathToModule(children);
-    }
     res.push(route);
   }
   return res;
@@ -93,9 +86,6 @@ export function normalizeApiRoutes(
       apiRoute.apiModule = absPath.replace(/\\/g, '/');
     }
 
-    if (apiRoute.children && apiRoute.children.length > 0) {
-      apiRoute.children = normalizeApiRoutes(apiRoute.children, option);
-    }
     res.push(apiRoute);
   }
 
