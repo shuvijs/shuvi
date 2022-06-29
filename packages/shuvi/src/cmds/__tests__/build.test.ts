@@ -1,4 +1,8 @@
 import { createCliTestProject } from 'shuvi-test-utils';
+import {
+  BUILD_CLIENT_ASSET_DIR,
+  BUILD_DEFAULT_DIR
+} from '@shuvi/service/lib/constants';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -6,10 +10,20 @@ describe('shuvi build command', () => {
   test('should build app correctly', async () => {
     const project = createCliTestProject('test/fixtures/inspect');
     project.clear('dist');
-    expect(project.exist('dist/client/static')).toBeFalsy();
+    expect(
+      project.exist(
+        `dist/${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_ASSET_DIR}/static`
+      )
+    ).toBeFalsy();
     const { message } = await project.run('build');
-    expect(project.exist('dist/client/static')).toBeTruthy();
-    expect(project.exist('dist/analyze/client.html')).toBeFalsy();
+    expect(
+      project.exist(
+        `dist/${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_ASSET_DIR}/static`
+      )
+    ).toBeTruthy();
+    expect(
+      project.exist(`dist/${BUILD_DEFAULT_DIR}/analyze/client.html`)
+    ).toBeFalsy();
     expect(message).toMatch('Build successfully!');
   });
 
@@ -17,8 +31,14 @@ describe('shuvi build command', () => {
     const project = createCliTestProject('test/fixtures/inspect');
     project.clear('dist');
     const { message } = await project.run('build', ['--analyze']);
-    expect(project.exist('dist/client/static')).toBeTruthy();
-    expect(project.exist('dist/analyze/client.html')).toBeTruthy();
+    expect(
+      project.exist(
+        `dist/${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_ASSET_DIR}/static`
+      )
+    ).toBeTruthy();
+    expect(
+      project.exist(`dist/${BUILD_DEFAULT_DIR}/analyze/client.html`)
+    ).toBeTruthy();
     expect(message).toMatch('Build successfully!');
   });
 

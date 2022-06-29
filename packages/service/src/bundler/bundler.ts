@@ -17,7 +17,11 @@ import { Target, TargetChain } from '../core/lifecycle';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import { BUILD_DEFAULT_DIR } from '../constants';
+import {
+  BUILD_DEFAULT_DIR,
+  BUILD_CLIENT_ASSET_DIR,
+  PUBLIC_PATH
+} from '../constants';
 import { setupTypeScript } from './typescript';
 
 type CompilerErr = {
@@ -281,7 +285,10 @@ class WebpackBundler {
       name: BUNDLER_DEFAULT_TARGET,
       node: false,
       entry: {},
-      outputDir: BUILD_DEFAULT_DIR,
+      outputDir:
+        this._cliContext.config.publicPath === PUBLIC_PATH
+          ? `${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_ASSET_DIR}`
+          : BUILD_DEFAULT_DIR,
       webpackHelpers: defaultWebpackHelpers
     });
     return [

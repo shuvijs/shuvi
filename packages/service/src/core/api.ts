@@ -15,7 +15,7 @@ import {
   ResolvedPlugin
 } from './apiTypes';
 import { createFile, ProjectBuilder, FileOptions } from '../project';
-import { PUBLIC_PATH } from '../constants';
+import { PUBLIC_PATH, BUILD_CLIENT_ASSET_DIR } from '../constants';
 import { resolveConfig } from './config';
 import {
   getManager,
@@ -174,7 +174,11 @@ class Api {
       prefix += '/';
     }
 
-    return prefix;
+    if (prefix !== PUBLIC_PATH) {
+      return prefix;
+    }
+
+    return `${prefix}${BUILD_CLIENT_ASSET_DIR}/`;
   }
 
   async buildApp(): Promise<void> {
