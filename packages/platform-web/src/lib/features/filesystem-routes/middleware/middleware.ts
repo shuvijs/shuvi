@@ -14,14 +14,13 @@ export function middleware(
       const match = matchPathname(middlewareRoute.path, req.pathname);
       if (match) {
         req.params = match.params;
-        middlewares = middlewareRoutes[i].middlewares;
+        middlewares = middlewareRoutes[i].middlewares || [];
         break;
       }
     }
 
     // run middlewares
     let i = 0;
-
     const runNext = () => runMiddleware(middlewares[++i]);
 
     const runMiddleware = async (middleware: IRequestHandlerWithNext) => {

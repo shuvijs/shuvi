@@ -16,6 +16,7 @@ export const renderWithRoutes = (
   { route = '/' }: { route?: string } = {}
 ) => {
   return renderRoutes(normalizeRoutes(routes, {}, routeData), {
-    route
+    route,
+    initialShouldHydrate: Boolean(routeData.routeProps)
   });
 };

@@ -59,7 +59,7 @@ export function createApp<AppState extends IAppState>(options: {
       );
     }
   });
-  router.beforeResolve(getLoadersHook(context, loaderOptions));
+  router.beforeResolve(getLoadersHook(context, loaderOptions, modelManager));
   router.init();
 
   app = application({

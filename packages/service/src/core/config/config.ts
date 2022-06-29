@@ -46,8 +46,7 @@ export const createDefaultConfig: () => UserConfig = () => ({
   experimental: {
     parcelCss: false,
     loader: {
-      sequential: true,
-      blockingNavigation: true
+      sequential: true
     }
   },
   typescript: {
