@@ -20,7 +20,7 @@ import {
   documentPath
 } from '@shuvi/service/lib/resources';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
-import generateClientManifestPath from '../generateClientManifestPath';
+import generateFilesByRoutId from '../generateFilesByRoutId';
 import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
 import { IDocumentProps, ITemplateData, IHtmlTag, IApplication } from './types';
 
@@ -194,12 +194,8 @@ export abstract class BaseRenderer {
 
   protected _getInlineAppData(appData: IAppData): IHtmlTag {
     const routes = this._app?.router.routes || [];
-    appData.clientManifestPath = generateClientManifestPath(
-      clientManifest,
-      routes
-    );
-    appData.publicPathFromAppData =
-      this._serverPluginContext.getAssetPublicUrl();
+    appData.filesByRoutId = generateFilesByRoutId(clientManifest, routes);
+    appData.publicPath = this._serverPluginContext.getAssetPublicUrl();
     const data = JSON.stringify(appData);
     return tag(
       'script',

@@ -6,10 +6,10 @@ declare global {
   }
 }
 
-export function getPublicPath(path: string, publicPathFromAppData: string) {
-  if (window[IDENTITY_RUNTIME_PUBLICPATH] !== publicPathFromAppData) {
+export function getPublicPath(path: string, publicPath: string) {
+  if (window[IDENTITY_RUNTIME_PUBLICPATH] !== publicPath) {
     return window[IDENTITY_RUNTIME_PUBLICPATH] + path;
   }
 
-  return publicPathFromAppData + path;
+  return publicPath + path;
 }

@@ -15,7 +15,7 @@ declare global {
 
 let ctx: AppCtx;
 let page: Page;
-let manifest: any;
+let filesByRoutId: any;
 let publicPath: any;
 let withPrefetchIds: string[];
 let withoutPrefetchIds: string[];
@@ -31,7 +31,7 @@ describe('Prefetch Support', () => {
 
     const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
 
-    manifest = appData.clientManifestPath;
+    filesByRoutId = appData.filesByRoutId;
     publicPath = JSON.parse(
       await page.evaluate(() =>
         JSON.stringify(window.__shuvi_dynamic_public_path__)

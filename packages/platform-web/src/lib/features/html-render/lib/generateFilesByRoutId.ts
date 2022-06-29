@@ -1,15 +1,15 @@
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IRouteRecord } from '@shuvi/router';
 
-export default function generateClientManifestPath(
+export default function generateFilesByRoutId(
   assetMap: IManifest,
   routes: IRouteRecord[]
 ): Record<string, string[]> {
-  let clientManifestPath: Record<string, string[]> = {};
+  let filesByRoutId: Record<string, string[]> = {};
   const loadable = assetMap.loadble;
   routes.forEach(({ id, __componentSourceWithAffix__ }) => {
-    clientManifestPath[id!] = loadable[__componentSourceWithAffix__!].files;
+    filesByRoutId[id!] = loadable[__componentSourceWithAffix__!].files;
   });
 
-  return clientManifestPath;
+  return filesByRoutId;
 }

@@ -41,20 +41,20 @@ function prefetchViaDom(
 
 function getFilesForRoute(
   route: string,
-  clientManifestPath: Record<string, string[]>,
+  filesByRoutId: Record<string, string[]>,
   router: IRouter,
-  publicPathFromAppData: string
+  publicPath: string
 ): any {
   let allFiles: any[] = [];
   const targetRoute = router.match(route);
-  if (!clientManifestPath || !targetRoute?.length) {
+  if (!filesByRoutId || !targetRoute?.length) {
     throw new Error(`Failed to lookup route: ${route}`);
   }
 
   targetRoute.forEach(({ route: { id } }) => {
     allFiles.push(
-      ...clientManifestPath[id].map(path => ({
-        href: getPublicPath(path, publicPathFromAppData),
+      ...filesByRoutId[id].map(path => ({
+        href: getPublicPath(path, publicPath),
         id
       }))
     );
@@ -68,17 +68,17 @@ function getFilesForRoute(
 
 export async function prefetchFn(
   route: string,
-  clientManifestPath: Record<string, string[]>,
+  filesByRoutId: Record<string, string[]>,
   router: IRouter,
-  publicPathFromAppData: string
+  publicPath: string
 ): Promise<Promise<void> | void> {
   if (process.env.NODE_ENV !== 'production') return;
   if (typeof window === 'undefined' || !route) return;
   const output = await getFilesForRoute(
     route,
-    clientManifestPath,
+    filesByRoutId,
     router,
-    publicPathFromAppData
+    publicPath
   );
   const canPrefetch: boolean = hasSupportPrefetch();
   await Promise.all(

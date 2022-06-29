@@ -18,7 +18,7 @@ export const Link = function LinkWithPrefetch({
   ref,
   ...rest
 }: LinkWrapperProps) {
-  const { clientManifestPath, publicPathFromAppData } = getAppData();
+  const { filesByRoutId, publicPath } = getAppData();
   const href = useHref(to);
   const previousHref = React.useRef<string>(href);
   const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
@@ -47,7 +47,7 @@ export const Link = function LinkWithPrefetch({
     const shouldPrefetch =
       prefetch !== false && isVisible && !isAbsoluteUrl(href);
     if (shouldPrefetch && !prefetched[href]) {
-      prefetchFn(href, clientManifestPath, router, publicPathFromAppData);
+      prefetchFn(href, filesByRoutId, router, publicPath);
       prefetched[href] = true;
     }
   }, [href, prefetch, isVisible]);
@@ -62,7 +62,7 @@ export const Link = function LinkWithPrefetch({
         onMouseEnter(e);
       }
       if (!isAbsoluteUrl(href) && !prefetched[href]) {
-        prefetchFn(href, clientManifestPath, router, publicPathFromAppData);
+        prefetchFn(href, filesByRoutId, router, publicPath);
         prefetched[href] = true;
       }
     }

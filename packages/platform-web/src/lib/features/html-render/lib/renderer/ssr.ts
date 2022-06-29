@@ -44,8 +44,8 @@ export class SsrRenderer extends BaseRenderer {
       ...result.appData,
       pageData,
       ssr: serverPluginContext.config.ssr,
-      clientManifestPath: {},
-      publicPathFromAppData: ''
+      filesByRoutId: {},
+      publicPath: ''
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 
