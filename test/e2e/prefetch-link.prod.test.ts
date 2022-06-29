@@ -1,3 +1,4 @@
+import got from 'got';
 import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 import { AppCtx, Page, serveFixture } from '../utils';
 
@@ -16,9 +17,8 @@ declare global {
 let ctx: AppCtx;
 let page: Page;
 let filesByRoutId: any;
-let publicPath: any;
-let withPrefetchIds: string[];
-let withoutPrefetchIds: string[];
+let withPrefetchId: string;
+let withoutPrefetchId: string;
 
 describe('Prefetch Support', () => {
   beforeAll(async () => {
@@ -32,19 +32,14 @@ describe('Prefetch Support', () => {
     const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
 
     filesByRoutId = appData.filesByRoutId;
-    publicPath = JSON.parse(
-      await page.evaluate(() =>
-        JSON.stringify(window.__shuvi_dynamic_public_path__)
-      )
-    );
 
     const withPrefetchRoutes = await page.shuvi.match(WITH_PREFETCH_LINK);
-    withPrefetchIds = withPrefetchRoutes.map(({ route: { id } }: any) => id);
+    withPrefetchId = withPrefetchRoutes.map(({ route: { id } }: any) => id)[0];
 
     const withoutPrefetchRoutes = await page.shuvi.match(WITHOUT_PREFETCH_LINK);
-    withoutPrefetchIds = withoutPrefetchRoutes.map(
+    withoutPrefetchId = withoutPrefetchRoutes.map(
       ({ route: { id } }: any) => id
-    );
+    )[0];
   });
 
   afterAll(async () => {
@@ -73,12 +68,23 @@ describe('Prefetch Support', () => {
     );
 
     // should prefetch the with-prefetch link
-    expect(prefetchIdArray).toEqual(expect.arrayContaining(withPrefetchIds));
+    expect(prefetchIdArray.includes(withPrefetchId)).toEqual(true);
 
     // should not prefetch the without-prefetch link
-    expect(prefetchIdArray).toEqual(
-      expect.not.arrayContaining(withoutPrefetchIds)
+    expect(prefetchIdArray.includes(withoutPrefetchId)).toEqual(false);
+
+    const prefetchLinkArray = await page.$$attr(
+      'head [rel="prefetch"]',
+      'href'
     );
+
+    //Need to prefetch the target link correctly
+    for (const href of prefetchLinkArray) {
+      const { body } = await got.get(ctx.url(`${href}`));
+      if (href === filesByRoutId[withPrefetchId]) {
+        expect(body.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
+      }
+    }
   });
 
   test('should prefetch when hover the link even if prefetch is set to false', async () => {
@@ -93,6 +99,19 @@ describe('Prefetch Support', () => {
     );
 
     // should prefetch the without-prefetch link
-    expect(prefetchIdArray).toEqual(expect.arrayContaining(withoutPrefetchIds));
+    expect(prefetchIdArray.includes(withoutPrefetchId)).toEqual(true);
+
+    const prefetchLinkArray = await page.$$attr(
+      'head [rel="prefetch"]',
+      'href'
+    );
+
+    //Need to prefetch the target link correctly
+    for (const href of prefetchLinkArray) {
+      const { body } = await got.get(ctx.url(`${href}`));
+      if (href === filesByRoutId[withoutPrefetchId]) {
+        expect(body.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
+      }
+    }
   });
 });
