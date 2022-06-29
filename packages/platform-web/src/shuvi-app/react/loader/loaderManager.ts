@@ -125,10 +125,10 @@ export const createLoaderManager = (
   initialDataMap?: Record<string, LoaderResult>,
   initialShouldHydrate?: boolean
 ) => {
-  /** `initialDataMap` and `shouldHydrated` are only used at client side
-   * At client side, `initialDataMap` should be non-null and `shouldHydrated` should be true when initializing.
+  /** `initialDataMap` and `shouldHydrate` are only used at client side
+   * At client side, `initialDataMap` should be non-null and `shouldHydrate` should be true when initializing.
    */
-  let shouldHydrated = initialShouldHydrate || false;
+  let shouldHydrate = initialShouldHydrate || false;
   const initialLoadersData = initialDataMap || {};
   const loadersMap = new Map<string, Loader>();
   const add = (loaderFn: () => Promise<any>, id: string) => {
@@ -180,7 +180,7 @@ export const createLoaderManager = (
     add,
     get,
     initialLoadersData,
-    shouldHydrated
+    shouldHydrate
   };
 };
 

@@ -139,7 +139,6 @@ export type IPlatform = (
 
 export type ILoaderOptions = {
   sequential?: boolean;
-  blockingNavigation?: boolean;
 };
 
 export interface IRouterConfig {

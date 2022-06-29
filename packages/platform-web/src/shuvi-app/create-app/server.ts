@@ -24,18 +24,19 @@ export function createApp<Router extends IRouter<IPageRouteRecord>>(options: {
     initialIndex: 0
   });
   const context = { req };
+  const modelManager = getModelManager();
   const router = createRouter({
     history,
     routes: getRoutes(routes, context)
   }) as Router;
-  router.beforeResolve(getLoadersHook(context, loaderOptions));
+  router.beforeResolve(getLoadersHook(context, loaderOptions, modelManager));
   router.init();
 
   return application({
     AppComponent: PlatformAppComponent,
     router,
     context,
-    modelManager: getModelManager(),
+    modelManager,
     UserAppComponent
   });
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import { createRedirector, IParams } from '@shuvi/router';
+import { IParams } from '@shuvi/router';
 import {
   getErrorHandler,
   IAppComponent,
@@ -18,6 +18,7 @@ import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
 import { getInitialPropsDeprecatingMessage } from '../utils/errorMessage';
 import { getLoaderManager } from '../loader/loaderManager';
+import { getRedirector } from '@shuvi/platform-shared/lib/runtime/context/routeLoaderContext';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -34,7 +35,7 @@ export class ReactServerView implements IReactServerView {
       appComponent: AppComponent,
       context: appContext
     } = app;
-    const redirector = createRedirector();
+    const redirector = getRedirector(modelManager);
 
     const error = getErrorHandler(modelManager);
 
