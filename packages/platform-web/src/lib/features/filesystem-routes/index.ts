@@ -112,7 +112,7 @@ export default createPlugin({
           });
           routes = _routes;
         }
-        return generateMiddlewareRoutesContent(routes);
+        return generateMiddlewareRoutesContent(routes, paths.routesDir);
       },
       dependencies: paths.routesDir
     });

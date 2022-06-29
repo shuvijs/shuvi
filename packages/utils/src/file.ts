@@ -37,3 +37,10 @@ export const isDirectory = async (dirname: string) => {
     return false;
   }
 };
+
+export const normalizePath = (filepath: string, baseDir: string) => {
+  const absPath = path.isAbsolute(filepath)
+    ? filepath
+    : path.join(baseDir, filepath);
+  return absPath.replace(/\\/g, '/');
+};
