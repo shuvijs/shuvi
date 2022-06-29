@@ -72,13 +72,14 @@ describe('Prefetch Support', () => {
 
     // should not prefetch the without-prefetch link
     expect(prefetchIdArray.includes(withoutPrefetchId)).toEqual(false);
+  });
 
+  test('Need to prefetch the target link correctly', async () => {
     const prefetchLinkArray = await page.$$attr(
       'head [rel="prefetch"]',
       'href'
     );
 
-    //Need to prefetch the target link correctly
     for (const href of prefetchLinkArray) {
       const { body } = await got.get(ctx.url(`${href}`));
       if (href === filesByRoutId[withPrefetchId]) {
@@ -100,7 +101,9 @@ describe('Prefetch Support', () => {
 
     // should prefetch the without-prefetch link
     expect(prefetchIdArray.includes(withoutPrefetchId)).toEqual(true);
+  });
 
+  test('Need to prefetch the target link correctly', async () => {
     const prefetchLinkArray = await page.$$attr(
       'head [rel="prefetch"]',
       'href'
