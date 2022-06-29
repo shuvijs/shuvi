@@ -1,6 +1,6 @@
 import { rankRouteBranches } from '@shuvi/router';
 import { IMiddlewareRouteConfig } from '@shuvi/platform-shared/lib/node';
-import { getNormalizedAbsolutePath } from '@shuvi/utils/lib/file';
+import { normalizedAbsolutePath } from '@shuvi/utils/lib/file';
 
 export { IMiddlewareRouteConfig };
 
@@ -13,7 +13,7 @@ export function normalizeMiddlewareRoutes(
     const middlewareRoute = { ...middlewareRoutes[index] };
     if (middlewareRoute.middlewares) {
       middlewareRoute.middlewares = middlewareRoute.middlewares.map(
-        middleware => getNormalizedAbsolutePath(middleware, option.baseDir)
+        middleware => normalizedAbsolutePath(middleware, option.baseDir)
       );
     }
 

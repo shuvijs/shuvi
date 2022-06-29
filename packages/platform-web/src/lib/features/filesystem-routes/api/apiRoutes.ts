@@ -1,6 +1,6 @@
 import { rankRouteBranches } from '@shuvi/router';
 import { IApiRouteConfig } from '@shuvi/platform-shared/lib/node';
-import { getNormalizedAbsolutePath } from '@shuvi/utils/lib/file';
+import { normalizedAbsolutePath } from '@shuvi/utils/lib/file';
 
 export { IApiRouteConfig };
 
@@ -30,7 +30,7 @@ export function normalizeApiRoutes(
   for (let index = 0; index < apiRoutes.length; index++) {
     const apiRoute = { ...apiRoutes[index] };
     if (apiRoute.handler) {
-      apiRoute.handler = getNormalizedAbsolutePath(
+      apiRoute.handler = normalizedAbsolutePath(
         apiRoute.handler,
         option.apisDir
       );
