@@ -99,7 +99,7 @@ export class ReactClientView implements IReactClientView {
 
     const ssrCallback = () => {
       this._isInitialRender = false;
-      loaderManager.shouldHydrated = false;
+      loaderManager.shouldHydrate = false;
     };
 
     renderAction({

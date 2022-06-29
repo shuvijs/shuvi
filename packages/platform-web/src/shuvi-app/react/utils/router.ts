@@ -1,20 +1,17 @@
-import {
-  createRedirector,
-  IRoute,
-  IRouteMatch,
-  NavigationGuardHook
-} from '@shuvi/router';
+import { IRoute, IRouteMatch, NavigationGuardHook } from '@shuvi/router';
 import {
   getErrorHandler,
   getModelManager,
   errorModel,
+  IModelManager,
   IRouteLoaderContext,
   IPageRouteRecord,
   IAppContext,
   IRouteData
 } from '@shuvi/platform-shared/esm/runtime';
+import { getRedirector } from '@shuvi/platform-shared/lib/runtime/context/routeLoaderContext';
 import isEqual from '@shuvi/utils/lib/isEqual';
-import { createError } from './createError';
+import { createError, IPageErrorHandler } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import { getLoaderManager, Loader } from '../loader/loaderManager';
@@ -25,18 +22,26 @@ export type INormalizeRoutesContext = IAppContext;
 
 type IPageRouteWithElement = IPageRouteRecord & { element?: any };
 
-let hydrated: { [x: string]: boolean } = {};
-
-export function resetHydratedState() {
-  hydrated = {};
-}
-
 let loaders = pageLoaders;
+let currentErrorComp: IPageErrorHandler;
+let currentTo: IRoute<any>;
+
+/**
+ * ErrorComp is reused at route `resolve` hook and `beforeResolve` hook during the same route transition.
+ * So it needs to be reset at every new route transition.
+ */
+const resetErrorComp = (newTo: IRoute<any>) => {
+  if (!currentTo || currentTo !== newTo) {
+    currentTo = newTo;
+    currentErrorComp = createError();
+  }
+};
 
 export const getLoadersHook =
   (
     appContext: INormalizeRoutesContext,
-    loaderOptions: ILoaderOptions
+    loaderOptions: ILoaderOptions,
+    modelManager: IModelManager
   ): NavigationGuardHook =>
   async (to, from, next) => {
     const toMatches: IRouteMatch<IPageRouteRecord>[] = to.matches;
@@ -67,19 +72,17 @@ export const getLoadersHook =
         changedMatches.push(currentToMatch);
       }
     }
-    const modelManager = getModelManager();
     const loaderManager = getLoaderManager();
-    const { shouldHydrated } = loaderManager;
-    if (shouldHydrated) {
+    const { shouldHydrate } = loaderManager;
+    if (shouldHydrate) {
       const { hasError } = modelManager.get(errorModel).$state();
       if (hasError) {
         // hydrated error page, run Component.getInitialProps by client
         return next();
       }
     }
-    const errorComp = createError();
-
-    const redirector = createRedirector();
+    const error = getErrorHandler(modelManager);
+    const redirector = getRedirector(modelManager);
     const loaderGenerator = (routeId: string, to: IRoute<any>) => async () => {
       const loaderFn = loaders[routeId];
       if (typeof loaderFn === 'function') {
@@ -90,7 +93,7 @@ export const getLoadersHook =
           params: to.params,
           appContext,
           redirect: redirector.handler,
-          error: errorComp.handler
+          error: isServer ? error.errorHandler : currentErrorComp.handler
         });
       }
     };
@@ -104,13 +107,13 @@ export const getLoadersHook =
         targetLoaders.push(loaderManager.add(loaderGenerator(id, to), id));
       }
     });
-    const { sequential, blockingNavigation } = loaderOptions;
+    const { sequential } = loaderOptions;
     const executeLoaders = async () => {
       // call loaders in sequence
       if (sequential) {
         for (const loader of targetLoaders) {
           // initialData must not null if hydrating
-          if (shouldHydrated) {
+          if (shouldHydrate) {
             if (loader?.result.error) {
               await loader.load(true);
             }
@@ -124,7 +127,7 @@ export const getLoadersHook =
           targetLoaders
             .filter(loader => {
               // skip when hydrating and no error
-              if (shouldHydrated && !loader?.result.error) {
+              if (shouldHydrate && !loader?.result.error) {
                 return false;
               }
               return true;
@@ -133,14 +136,26 @@ export const getLoadersHook =
         );
       }
     };
-    if (blockingNavigation) {
-      await executeLoaders();
-      loaderManager.notifyLoaders(targetIds);
-    } else {
-      executeLoaders().then(() => {
-        loaderManager.notifyLoaders(targetIds);
-      });
+    await executeLoaders();
+    if (!isServer) {
+      // handle redirect
+      if (redirector.redirected) {
+        next(redirector.state!.path);
+        redirector.reset();
+      }
+
+      // handle error
+      const error = getErrorHandler(modelManager);
+      if (currentErrorComp?.errorCode !== undefined) {
+        error.errorHandler(
+          currentErrorComp.errorCode,
+          currentErrorComp.errorDesc
+        );
+      } else {
+        error.reset();
+      }
     }
+    loaderManager.notifyLoaders(targetIds);
     next();
   };
 
@@ -162,34 +177,33 @@ export function normalizeRoutes(
     const { id, component } = res;
     if (component) {
       res.resolve = async (to, _from, next, context) => {
+        resetErrorComp(to);
         if (isServer) {
           return next();
         }
-
         const modelManager = getModelManager();
 
         // support both getInitialProps and loader
-        const shouldHydrated = routeProps[id] !== undefined && !hydrated[id];
-        if (shouldHydrated) {
+        const loaderManager = getLoaderManager();
+        const { shouldHydrate } = loaderManager;
+        if (shouldHydrate) {
           const { hasError } = modelManager.get(errorModel).$state();
           if (hasError) {
-            hydrated[id] = true; // hydrated error page, run Component.getInitialProps by client
+            // hydrated error page, run Component.getInitialProps by client
             return next();
           }
         }
-
         let Component: any;
         const preload = component.preload;
-        const errorComp = createError();
 
-        const redirector = createRedirector();
+        const redirector = getRedirector(modelManager);
         if (preload) {
           try {
             const preloadComponent = await preload();
             Component = preloadComponent.default || preloadComponent;
           } catch (err) {
             console.error(err);
-            errorComp.handler(500);
+            currentErrorComp.handler(500);
             Component = function () {
               return null;
             };
@@ -199,9 +213,8 @@ export function normalizeRoutes(
         }
         if (Component.getInitialProps) {
           console.warn(getInitialPropsDeprecatingMessage);
-          if (shouldHydrated) {
+          if (shouldHydrate) {
             // only hydrated once, use server state
-            hydrated[id] = true;
             context.props = routeProps[id];
             return next();
           } else {
@@ -211,7 +224,7 @@ export function normalizeRoutes(
               pathname: to.pathname,
               params: to.params,
               redirect: redirector.handler,
-              error: errorComp.handler,
+              error: currentErrorComp.handler,
               appContext
             } as IRouteLoaderContext);
 
@@ -227,12 +240,13 @@ export function normalizeRoutes(
         // reset() make errorPage hide error and show /a page (splash screen)
         // the splash time is lazy load /b
         // route /b and component load show page /b
-        const error = getErrorHandler(modelManager);
+        /* const error = getErrorHandler(modelManager);
+        console.log('errorComp resolve')
         if (errorComp.errorCode !== undefined) {
           error.errorHandler(errorComp.errorCode, errorComp.errorDesc);
         } else {
           error.reset();
-        }
+        } */
         next();
       };
     }
