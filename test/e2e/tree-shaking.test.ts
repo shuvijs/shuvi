@@ -1,6 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { AppCtx, serveFixture, resolveFixture } from '../utils';
+import {
+  BUILD_CLIENT_ASSET_DIR,
+  BUILD_DEFAULT_DIR
+} from '@shuvi/service/lib/constants';
 
 const depa = 'depa';
 const depb = 'depb';
@@ -21,7 +25,9 @@ function getFileContent(manifest: any, fileName: string): string {
   if (!realFile) {
     throw new Error(`con't find webpack bundle file: ${fileName}`);
   }
-  const fileDir = resolveFixture('tree-shaking/dist/client/');
+  const fileDir = resolveFixture(
+    `tree-shaking/dist/${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_ASSET_DIR}`
+  );
   const fileContent = fs.readFileSync(path.join(fileDir, realFile), 'utf-8');
   return fileContent;
 }
@@ -38,7 +44,7 @@ describe('Tree Shaking', () => {
     });
     ctx = await serveFixture('tree-shaking');
     manifest = await require(resolveFixture(
-      'tree-shaking/dist/client/build-manifest.json'
+      `tree-shaking/dist/${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_ASSET_DIR}/build-manifest.json`
     ));
   });
   afterAll(async () => {

@@ -1,11 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { AppCtx, Page, resolveFixture, serveFixture } from '../utils';
+import {
+  BUILD_CLIENT_ASSET_DIR,
+  BUILD_DEFAULT_DIR
+} from '@shuvi/service/lib/constants';
 
 jest.setTimeout(5 * 60 * 1000);
 
 function deleteFile() {
-  const fileDir = resolveFixture('custom-error/dist/client/static/chunks');
+  const fileDir = resolveFixture(
+    `custom-error/dist/${BUILD_DEFAULT_DIR}/${BUILD_CLIENT_ASSET_DIR}/static/chunks`
+  );
   const files = fs.readdirSync(fileDir);
   let isRemove = false;
   if (files.length) {

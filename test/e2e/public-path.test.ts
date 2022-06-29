@@ -1,5 +1,8 @@
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
-import { PUBLIC_PATH } from '@shuvi/service/lib/constants';
+import {
+  PUBLIC_PATH,
+  BUILD_CLIENT_ASSET_DIR
+} from '@shuvi/service/lib/constants';
 import { AppCtx, Page, launchFixture } from '../utils';
 
 let ctx: AppCtx;
@@ -25,7 +28,7 @@ describe('public path', () => {
       (name: any) => window[name],
       IDENTITY_RUNTIME_PUBLICPATH
     );
-    expect(pubicPath).toBe(PUBLIC_PATH);
+    expect(pubicPath).toBe(`${PUBLIC_PATH}${BUILD_CLIENT_ASSET_DIR}/`);
   });
 });
 
