@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import { IUserRouteConfig, IRouteConfig } from '@shuvi/service';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { normalizedAbsolutePath } from '@shuvi/utils/lib/file';
+import { normalizePath } from '@shuvi/utils/lib/file';
 
 export { IUserRouteConfig };
 
@@ -65,7 +65,7 @@ export function normalizeRoutes(
     const fullpath = pathWithSlash ? parentPath + pathWithSlash : parentPath;
     route.id = genRouteId(fullpath);
     if (route.component) {
-      route.component = normalizedAbsolutePath(route.component, componentDir);
+      route.component = normalizePath(route.component, componentDir);
     }
 
     if (route.children && route.children.length > 0) {

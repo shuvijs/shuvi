@@ -38,7 +38,7 @@ export const isDirectory = async (dirname: string) => {
   }
 };
 
-export const normalizedAbsolutePath = (filepath: string, baseDir: string) => {
+export const normalizePath = (filepath: string, baseDir: string) => {
   const absPath = path.isAbsolute(filepath)
     ? filepath
     : path.join(baseDir, filepath);
