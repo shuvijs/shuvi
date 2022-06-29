@@ -107,7 +107,7 @@ export const getLoadersHook =
         targetLoaders.push(loaderManager.add(loaderGenerator(id, to), id));
       }
     });
-    const { sequential, blockingNavigation } = loaderOptions;
+    const { sequential } = loaderOptions;
     const executeLoaders = async () => {
       // call loaders in sequence
       if (sequential) {
@@ -136,32 +136,26 @@ export const getLoadersHook =
         );
       }
     };
-    if (blockingNavigation) {
-      await executeLoaders();
-      if (!isServer) {
-        // handle redirect
-        if (redirector.redirected) {
-          next(redirector.state!.path);
-          redirector.reset();
-        }
-
-        // handle error
-        const error = getErrorHandler(modelManager);
-        if (currentErrorComp?.errorCode !== undefined) {
-          error.errorHandler(
-            currentErrorComp.errorCode,
-            currentErrorComp.errorDesc
-          );
-        } else {
-          error.reset();
-        }
+    await executeLoaders();
+    if (!isServer) {
+      // handle redirect
+      if (redirector.redirected) {
+        next(redirector.state!.path);
+        redirector.reset();
       }
-      loaderManager.notifyLoaders(targetIds);
-    } else {
-      executeLoaders().then(() => {
-        loaderManager.notifyLoaders(targetIds);
-      });
+
+      // handle error
+      const error = getErrorHandler(modelManager);
+      if (currentErrorComp?.errorCode !== undefined) {
+        error.errorHandler(
+          currentErrorComp.errorCode,
+          currentErrorComp.errorDesc
+        );
+      } else {
+        error.reset();
+      }
     }
+    loaderManager.notifyLoaders(targetIds);
     next();
   };
 
