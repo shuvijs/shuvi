@@ -1,21 +1,22 @@
-import { IAppData } from '@shuvi/platform-shared/lib/runtime';
-import { BaseRenderer } from './base';
+import { BaseRenderer, AppData } from './base';
+import { IRenderDocumentOptions } from './types';
 
 export class SpaRenderer extends BaseRenderer {
-  getDocumentProps() {
+  getDocumentProps({ app }: IRenderDocumentOptions) {
     const assets = this._getMainAssetTags();
     const serverPluginContext = this._serverPluginContext;
-    const appData: IAppData = {
+    const appData: AppData = {
       pageData: {},
       ssr: serverPluginContext.config.ssr,
-      loadersData: {},
-      filesByRoutId: {},
-      publicPath: ''
+      loadersData: {}
     };
     return {
       htmlAttrs: {},
       headTags: [...assets.styles],
-      mainTags: [this._getInlineAppData(appData), this._getAppContainerTag()],
+      mainTags: [
+        this._getInlineAppData(app, appData),
+        this._getAppContainerTag()
+      ],
       scriptTags: [...assets.scripts]
     };
   }

@@ -3,14 +3,16 @@ import {
   InitialEntry,
   State,
   PathRecord,
-  IRouteRecord as IOriginRouteRecord,
-  IPartialRouteRecord as IOriginalRouteRecord,
+  IRouteRecord as IOriginalRouteRecord,
   IRouter
 } from '@shuvi/router';
 
-export type IRouteRecord<T = {}> = IOriginRouteRecord<React.ReactNode, T>;
+export type IReactRouteRecord<T = {}> = IOriginalRouteRecord<
+  React.ReactNode,
+  T
+>;
 
-export type IPartialRouteRecord = IOriginalRouteRecord;
+export type IReactPartialRouteRecord = Partial<IReactRouteRecord>;
 
 export interface IRouterContextObject {
   static: boolean;
@@ -21,13 +23,13 @@ export interface IRouteContextObject<ExtendedTypes = {}> {
   depth: number;
   params: IParams;
   pathname: string;
-  route: IRouteRecord<ExtendedTypes> | null;
+  route: IReactRouteRecord<ExtendedTypes> | null;
 }
 
 export interface IMemoryRouterProps {
   basename?: string;
   children?: React.ReactNode;
-  routes?: IRouteRecord[];
+  routes?: IReactRouteRecord[];
   initialEntries?: InitialEntry[];
   initialIndex?: number;
 }

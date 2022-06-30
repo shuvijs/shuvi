@@ -30,6 +30,8 @@ import {
   IRenderResultRedirect
 } from './types';
 
+export type AppData = Omit<IAppData, 'filesByRoutId' | 'publicPath'>;
+
 function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
   let hasMetaCharset = false;
   let hasMetaViewport = false;
@@ -192,11 +194,13 @@ export abstract class BaseRenderer {
     );
   }
 
-  protected _getInlineAppData(appData: IAppData): IHtmlTag {
-    const routes = this._app?.router.routes || [];
-    appData.filesByRoutId = generateFilesByRoutId(clientManifest, routes);
-    appData.publicPath = this._serverPluginContext.getAssetPublicUrl();
-    const data = JSON.stringify(appData);
+  protected _getInlineAppData(app: IApplication, appData: AppData): IHtmlTag {
+    const routes = app.router.routes || [];
+    const data = JSON.stringify({
+      ...appData,
+      filesByRoutId: generateFilesByRoutId(clientManifest, routes),
+      publicPath: this._serverPluginContext.getAssetPublicUrl()
+    });
     return tag(
       'script',
       {
