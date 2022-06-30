@@ -2,11 +2,14 @@ import * as React from 'react';
 import {
   Link as LinkFromRouterReact,
   useHref,
-  LinkProps
+  LinkProps,
+  RouterContext
 } from '@shuvi/router-react';
 import useIntersection from './utils/useIntersection';
 import { prefetchFn, isAbsoluteUrl } from './utils/prefetch';
 import { getAppData } from '@shuvi/platform-shared/lib/runtime';
+
+const prefetched: { [cacheKey: string]: boolean } = {};
 
 export const Link = function LinkWithPrefetch({
   prefetch,
@@ -15,10 +18,11 @@ export const Link = function LinkWithPrefetch({
   ref,
   ...rest
 }: LinkWrapperProps) {
-  const { clientManifestPath } = getAppData();
+  const { filesByRoutId, publicPath } = getAppData();
   const href = useHref(to);
   const previousHref = React.useRef<string>(href);
   const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
+  const { router } = React.useContext(RouterContext);
   const setRef = React.useCallback(
     (el: Element) => {
       // Before the link getting observed, check if visible state need to be reset
@@ -42,8 +46,9 @@ export const Link = function LinkWithPrefetch({
   React.useEffect(() => {
     const shouldPrefetch =
       prefetch !== false && isVisible && !isAbsoluteUrl(href);
-    if (shouldPrefetch) {
-      prefetchFn(href, clientManifestPath);
+    if (shouldPrefetch && !prefetched[href]) {
+      prefetchFn(href, filesByRoutId, router, publicPath);
+      prefetched[href] = true;
     }
   }, [href, prefetch, isVisible]);
 
@@ -56,20 +61,14 @@ export const Link = function LinkWithPrefetch({
       if (typeof onMouseEnter === 'function') {
         onMouseEnter(e);
       }
-      if (!isAbsoluteUrl(href)) {
-        prefetchFn(href, clientManifestPath);
+      if (!isAbsoluteUrl(href) && !prefetched[href]) {
+        prefetchFn(href, filesByRoutId, router, publicPath);
+        prefetched[href] = true;
       }
     }
   };
 
-  return (
-    <LinkFromRouterReact
-      prefetch={prefetch}
-      to={to}
-      {...rest}
-      {...childProps}
-    />
-  );
+  return <LinkFromRouterReact to={to} {...rest} {...childProps} />;
 };
 
 interface LinkWrapperProps extends LinkProps {

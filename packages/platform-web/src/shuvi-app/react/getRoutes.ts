@@ -34,7 +34,7 @@ export default function getRoutes(
           modules: [__componentSourceWithAffix__]
         });
       }
-      return route;
+      return { __componentSourceWithAffix__, __resolveWeak__, ...route };
     });
   const routesWithRequire = getRoutesWithRequire(routes || []);
   return normalizeRoutes(routesWithRequire, appContext, routeData);
