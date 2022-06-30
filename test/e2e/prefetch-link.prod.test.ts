@@ -63,6 +63,16 @@ describe('Prefetch Support', () => {
     );
   });
 
+  test('Make sure the prefetch links are correct files', async () => {
+    const { body: withPrefetchBody } = await got.get(ctx.url(withPrefetchHref));
+    expect(withPrefetchBody.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
+
+    const { body: withoutPrefetchBody } = await got.get(
+      ctx.url(withoutPrefetchHref)
+    );
+    expect(withoutPrefetchBody.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
+  });
+
   test('should prefetch link when visible and prefetch is not set to false', async () => {
     // scroll to the links
     await page.$eval('#view', (e: Element) => {
@@ -83,11 +93,6 @@ describe('Prefetch Support', () => {
     expect(prefetchHrefArray.includes(withoutPrefetchHref)).toEqual(false);
   });
 
-  test('Need to prefetch the target link correctly', async () => {
-    const { body } = await got.get(ctx.url(withPrefetchHref));
-    expect(body.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
-  });
-
   test('should prefetch when hover the link even if prefetch is set to false', async () => {
     await page.hover('#without-prefetch');
 
@@ -101,10 +106,5 @@ describe('Prefetch Support', () => {
 
     // should prefetch the without-prefetch link
     expect(prefetchHrefArray.includes(withoutPrefetchHref)).toEqual(true);
-  });
-
-  test('Need to prefetch the target link correctly', async () => {
-    const { body } = await got.get(ctx.url(withoutPrefetchHref));
-    expect(body.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
   });
 });
