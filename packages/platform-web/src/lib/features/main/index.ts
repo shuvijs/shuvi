@@ -4,8 +4,7 @@ import {
   BUILD_SERVER_FILE_SERVER,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
-  createPlugin,
-  IPluginContext
+  createPlugin
 } from '@shuvi/service';
 import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
 
@@ -23,12 +22,9 @@ import { appRoutes } from './hooks';
 import { buildHtml } from './buildHtml';
 import { getMiddlewares } from '../middlewares';
 
-function getServerEntry(context: IPluginContext): IWebpackEntry {
-  const { ssr } = context.config;
+function getServerEntry(): IWebpackEntry {
   return {
-    [BUILD_SERVER_FILE_SERVER]: [
-      resolveAppFile('entry', 'server', ssr ? 'ssr' : 'spa')
-    ]
+    [BUILD_SERVER_FILE_SERVER]: [resolveAppFile('entry', 'server/index')]
   };
 }
 
@@ -75,7 +71,7 @@ export const getPlugin = (
       const serverChain = createConfig({
         name: BUNDLER_TARGET_SERVER,
         node: true,
-        entry: getServerEntry(context),
+        entry: getServerEntry(),
         outputDir: BUILD_SERVER_DIR,
         webpackHelpers: serverWebpackHelpers
       });

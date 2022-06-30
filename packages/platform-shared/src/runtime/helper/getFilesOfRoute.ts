@@ -21,6 +21,10 @@ export function getFilesOfRoute(router: IRouter, to: PathRecord): RouteFiles {
   const targetRoute = router.match(to);
 
   targetRoute.forEach(({ route: { id } }) => {
+    if (!filesByRoutId[id]) {
+      return;
+    }
+
     filesByRoutId[id].map(path => {
       const file = {
         url: `${publicPath}${path}`,
