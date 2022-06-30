@@ -5,7 +5,7 @@ function App() {
   const data = useLoaderData<{ path: string }>();
   return (
     <div>
-      This is {data?.path}
+      This is {data.path}
       <div>
         <Link to={`/parent/foo/a?sssss=2222`}>Add Query</Link>
         <br />
