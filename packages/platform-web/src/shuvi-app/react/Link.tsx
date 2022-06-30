@@ -5,11 +5,67 @@ import {
   LinkProps,
   RouterContext
 } from '@shuvi/router-react';
+import {
+  IRouter,
+  PathRecord,
+  getFilesOfRoute
+} from '@shuvi/platform-shared/lib/runtime';
 import useIntersection from './utils/useIntersection';
-import { prefetchFn, isAbsoluteUrl } from './utils/prefetch';
-import { getAppData } from '@shuvi/platform-shared/lib/runtime';
 
+const ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z\d+\-.]*?:/;
 const prefetched: { [cacheKey: string]: boolean } = {};
+
+function hasSupportPrefetch() {
+  try {
+    const link: HTMLLinkElement = document.createElement('link');
+    return link.relList.supports('prefetch');
+  } catch (e) {
+    return false;
+  }
+}
+
+function prefetchViaDom(href: string, id: string, as: string): Promise<any> {
+  return new Promise<void>((res, rej) => {
+    const selector = `
+        link[rel="prefetch"][href^="${href}"],
+        script[src^="${href}"]`;
+    if (document.querySelector(selector)) {
+      return res();
+    }
+
+    const link = document.createElement('link');
+
+    // The order of property assignment here is intentional:
+    if (as) link.as = as;
+    link.rel = `prefetch`;
+    link.onload = res as any;
+    link.onerror = rej;
+    link.dataset.id = id;
+
+    // `href` should always be last:
+    link.href = href;
+
+    document.head.appendChild(link);
+  });
+}
+
+async function prefetchFn(router: IRouter, to: PathRecord): Promise<void> {
+  const files = getFilesOfRoute(router, to);
+
+  if (process.env.NODE_ENV !== 'production') return;
+  if (typeof window === 'undefined') return;
+
+  const canPrefetch: boolean = hasSupportPrefetch();
+  await Promise.all(
+    canPrefetch
+      ? files.js.map(({ url, id }) => prefetchViaDom(url, id, 'script'))
+      : []
+  );
+}
+
+const isAbsoluteUrl = (url: string) => {
+  return ABSOLUTE_URL_REGEX.test(url);
+};
 
 export const Link = function LinkWithPrefetch({
   prefetch,
@@ -18,7 +74,6 @@ export const Link = function LinkWithPrefetch({
   ref,
   ...rest
 }: LinkWrapperProps) {
-  const { filesByRoutId, publicPath } = getAppData();
   const href = useHref(to);
   const previousHref = React.useRef<string>(href);
   const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
@@ -47,7 +102,7 @@ export const Link = function LinkWithPrefetch({
     const shouldPrefetch =
       prefetch !== false && isVisible && !isAbsoluteUrl(href);
     if (shouldPrefetch && !prefetched[href]) {
-      prefetchFn(href, filesByRoutId, router, publicPath);
+      prefetchFn(router, href);
       prefetched[href] = true;
     }
   }, [href, prefetch, isVisible]);
@@ -62,7 +117,7 @@ export const Link = function LinkWithPrefetch({
         onMouseEnter(e);
       }
       if (!isAbsoluteUrl(href) && !prefetched[href]) {
-        prefetchFn(href, filesByRoutId, router, publicPath);
+        prefetchFn(router, href);
         prefetched[href] = true;
       }
     }

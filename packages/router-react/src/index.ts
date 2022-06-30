@@ -7,3 +7,4 @@ export { Link, LinkProps } from './Link';
 export * from './hooks';
 export * from './contexts';
 export * from './types';
+export * from '@shuvi/router';
