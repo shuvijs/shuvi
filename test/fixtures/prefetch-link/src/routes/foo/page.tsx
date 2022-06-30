@@ -1,1 +1,1 @@
-export default () => <div id="foo">Foo Page</div>;
+export default () => <div id="foo">/foo</div>;

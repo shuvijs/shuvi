@@ -16,6 +16,7 @@ export interface Page extends puppeteer.Page {
   statusCode?: number;
   shuvi: {
     navigate(path: string, query?: Record<string, any>): Promise<any>;
+    match(path: string): any;
   };
 }
 
@@ -152,8 +153,20 @@ export default class Browser {
           $shuvi,
           path
         );
+      },
+      async match(path: string) {
+        const $shuvi = await getShuvi();
+        return JSON.parse(
+          await page.evaluate(
+            ($shuvi: { router: any }, path: string) =>
+              JSON.stringify($shuvi.router.match(path)),
+            $shuvi,
+            path
+          )
+        );
       }
     };
+
     return page;
   }
 }
