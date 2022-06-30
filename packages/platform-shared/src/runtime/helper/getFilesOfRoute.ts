@@ -14,7 +14,7 @@ export type RouteFiles = {
 
 export function getFilesOfRoute(router: IRouter, to: PathRecord): RouteFiles {
   const { filesByRoutId } = getAppData();
-  const { publicPath } = getPublicPath();
+  const publicPath = getPublicPath();
 
   const js: RouteFile[] = [];
   const css: RouteFile[] = [];
@@ -23,7 +23,7 @@ export function getFilesOfRoute(router: IRouter, to: PathRecord): RouteFiles {
   targetRoute.forEach(({ route: { id } }) => {
     filesByRoutId[id].map(path => {
       const file = {
-        url: `${publicPath}/${path}`,
+        url: `${publicPath}${path}`,
         id
       };
       if (path.endsWith('.js')) {
