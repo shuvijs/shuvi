@@ -19,6 +19,7 @@ let page: Page;
 let filesByRoutId: any;
 let withPrefetchId: string;
 let withoutPrefetchId: string;
+let publicPath: string;
 
 describe('Prefetch Support', () => {
   beforeAll(async () => {
@@ -32,6 +33,17 @@ describe('Prefetch Support', () => {
     const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
 
     filesByRoutId = appData.filesByRoutId;
+    const publicPathClient = JSON.parse(
+      await page.evaluate(() =>
+        JSON.stringify(window.__shuvi_dynamic_public_path__)
+      )
+    );
+    const publicPathServer = appData.publicPath;
+
+    publicPath =
+      publicPathClient && publicPathClient !== publicPathServer
+        ? publicPathClient
+        : publicPathServer;
 
     const withPrefetchRoutes = await page.shuvi.match(WITH_PREFETCH_LINK);
     withPrefetchId = withPrefetchRoutes.map(({ route: { id } }: any) => id)[0];
@@ -75,17 +87,10 @@ describe('Prefetch Support', () => {
   });
 
   test('Need to prefetch the target link correctly', async () => {
-    const prefetchLinkArray = await page.$$attr(
-      'head [rel="prefetch"]',
-      'href'
+    const { body } = await got.get(
+      ctx.url(`${publicPath}${filesByRoutId[withPrefetchId]}`)
     );
-
-    for (const href of prefetchLinkArray) {
-      const { body } = await got.get(ctx.url(`${href}`));
-      if (href === filesByRoutId[withPrefetchId]) {
-        expect(body.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
-      }
-    }
+    expect(body.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
   });
 
   test('should prefetch when hover the link even if prefetch is set to false', async () => {
@@ -104,17 +109,9 @@ describe('Prefetch Support', () => {
   });
 
   test('Need to prefetch the target link correctly', async () => {
-    const prefetchLinkArray = await page.$$attr(
-      'head [rel="prefetch"]',
-      'href'
+    const { body } = await got.get(
+      ctx.url(`${publicPath}${filesByRoutId[withoutPrefetchId]}`)
     );
-
-    //Need to prefetch the target link correctly
-    for (const href of prefetchLinkArray) {
-      const { body } = await got.get(ctx.url(`${href}`));
-      if (href === filesByRoutId[withoutPrefetchId]) {
-        expect(body.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
-      }
-    }
+    expect(body.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
   });
 });
