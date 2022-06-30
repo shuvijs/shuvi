@@ -1,3 +1,6 @@
+import type { IRouter } from '@shuvi/router';
+import { getPublicPath } from './getPublicPath';
+
 function hasSupportPrefetch() {
   try {
     const link: HTMLLinkElement = document.createElement('link');
@@ -8,7 +11,7 @@ function hasSupportPrefetch() {
 }
 
 function prefetchViaDom(
-  href: string,
+  { href, id }: any,
   as: string,
   link?: HTMLLinkElement
 ): Promise<any> {
@@ -27,6 +30,7 @@ function prefetchViaDom(
     link!.rel = `prefetch`;
     link!.onload = res as any;
     link!.onerror = rej;
+    link.dataset.id = id;
 
     // `href` should always be last:
     link!.href = href;
@@ -37,34 +41,50 @@ function prefetchViaDom(
 
 function getFilesForRoute(
   route: string,
-  clientManifestPath: Record<string, string[]>
-): Promise<any> {
-  return Promise.resolve(clientManifestPath).then(manifest => {
-    if (!manifest || !(route in manifest)) {
-      throw new Error(`Failed to lookup route: ${route}`);
-    }
+  filesByRoutId: Record<string, string[]>,
+  router: IRouter,
+  publicPath: string
+): any {
+  let allFiles: any[] = [];
+  const targetRoute = router.match(route);
+  if (!filesByRoutId || !targetRoute?.length) {
+    throw new Error(`Failed to lookup route: ${route}`);
+  }
 
-    const allFiles = manifest[route].map(entry => encodeURI(entry));
-
-    return {
-      scripts: allFiles.filter(v => v.endsWith('.js')),
-      css: allFiles.filter(v => v.endsWith('.css'))
-    };
+  targetRoute.forEach(({ route: { id } }) => {
+    allFiles.push(
+      ...filesByRoutId[id].map(path => ({
+        href: getPublicPath(path, publicPath),
+        id
+      }))
+    );
   });
+
+  return {
+    scripts: allFiles.filter(({ href }) => href.endsWith('.js')),
+    css: allFiles.filter(({ href }) => href.endsWith('.css'))
+  };
 }
 
 export async function prefetchFn(
   route: string,
-  clientManifestPath: Record<string, string[]>
+  filesByRoutId: Record<string, string[]>,
+  router: IRouter,
+  publicPath: string
 ): Promise<Promise<void> | void> {
   if (process.env.NODE_ENV !== 'production') return;
   if (typeof window === 'undefined' || !route) return;
-  const output = await getFilesForRoute(route, clientManifestPath);
+  const output = await getFilesForRoute(
+    route,
+    filesByRoutId,
+    router,
+    publicPath
+  );
   const canPrefetch: boolean = hasSupportPrefetch();
   await Promise.all(
     canPrefetch
       ? output.scripts.map((script: { toString: () => string }) =>
-          prefetchViaDom(script.toString(), 'script')
+          prefetchViaDom(script, 'script')
         )
       : []
   );

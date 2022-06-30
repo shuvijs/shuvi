@@ -12,7 +12,7 @@ import {
 } from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
 
-export { IHtmlAttrs, IHtmlTag };
+export { IHtmlAttrs, IHtmlTag, IApplication };
 
 export interface IRenderResultRedirect extends IRedirectState {
   $type: 'redirect';

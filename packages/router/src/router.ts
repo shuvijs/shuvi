@@ -77,7 +77,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     return this._current;
   }
 
-  get routes(): readonly RouteRecord[] {
+  get routes(): RouteRecord[] {
     return this._routes;
   }
 

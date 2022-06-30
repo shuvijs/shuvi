@@ -14,7 +14,8 @@ export type IAppData<Data = {}, appState = any> = {
   routeProps?: { [x: string]: any };
   loadersData?: { [x: string]: any };
   appState?: appState;
-  clientManifestPath: Record<string, string[]>;
+  filesByRoutId: Record<string, string[]>;
+  publicPath: string;
 } & {
   [K in keyof Data]: Data[K];
 };
@@ -29,7 +30,8 @@ export function getAppData(): IAppData {
   if (typeof window === 'undefined') {
     return {
       ssr: false,
-      clientManifestPath: {}
+      filesByRoutId: {},
+      publicPath: ''
     };
   }
 
@@ -39,7 +41,8 @@ export function getAppData(): IAppData {
       ssr: false,
       pageData: {},
       loadersData: {},
-      clientManifestPath: {}
+      filesByRoutId: {},
+      publicPath: ''
     };
   }
 
