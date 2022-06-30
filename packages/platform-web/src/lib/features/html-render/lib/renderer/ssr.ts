@@ -1,11 +1,10 @@
 import {
-  IAppData,
   IData,
   getPublicRuntimeConfig
 } from '@shuvi/platform-shared/lib/runtime';
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
-import { BaseRenderer } from './base';
+import { BaseRenderer, AppData } from './base';
 import { tag } from './htmlTag';
 import { IRenderDocumentOptions } from './types';
 
@@ -40,12 +39,10 @@ export class SsrRenderer extends BaseRenderer {
       Object.assign(acc, data);
       return acc;
     }, {}) as IData;
-    const appData: IAppData = {
+    const appData: AppData = {
       ...result.appData,
       pageData,
-      ssr: serverPluginContext.config.ssr,
-      filesByRoutId: {},
-      publicPath: ''
+      ssr: serverPluginContext.config.ssr
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 
@@ -57,7 +54,7 @@ export class SsrRenderer extends BaseRenderer {
         ...(result.headEndTags || [])
       ],
       mainTags: [
-        this._getInlineAppData(appData),
+        this._getInlineAppData(app, appData),
         ...(result.mainBeginTags || []),
         this._getAppContainerTag(result.appHtml),
         ...(result.mainEndTags || [])

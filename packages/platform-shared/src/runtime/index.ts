@@ -1,4 +1,13 @@
-export { getAppData, getPageData, IAppData, IData } from './helper';
+export {
+  getAppData,
+  getPageData,
+  getPublicPath,
+  getFilesOfRoute,
+  RouteFile,
+  RouteFiles,
+  IAppData,
+  IData
+} from './helper';
 
 export * from './routerTypes';
 export * from './router';
