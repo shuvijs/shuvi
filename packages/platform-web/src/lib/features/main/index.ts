@@ -60,12 +60,6 @@ export const getPlugin = (
         setPublicRuntimeConfig(publicRuntimeConfig);
       }
     },
-    addRuntimeService: () => [
-      {
-        source: path.resolve(__dirname, '../../types/runtime-service'),
-        exported: '* as RuntimeServer'
-      }
-    ],
     addExtraTarget: ({ createConfig }, context) => {
       const serverWebpackHelpers = webpackHelpers();
       const serverChain = createConfig({
