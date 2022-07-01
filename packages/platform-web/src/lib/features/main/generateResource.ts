@@ -3,7 +3,8 @@ import * as fse from 'fs-extra';
 import {
   BUILD_DEFAULT_DIR,
   BUILD_SERVER_DIR,
-  BUILD_MANIFEST_PATH,
+  CLIENT_BUILD_MANIFEST_PATH,
+  SERVER_BUILD_MANIFEST_PATH,
   BUILD_SERVER_FILE_SERVER,
   IPluginContext
 } from '@shuvi/service';
@@ -14,14 +15,14 @@ const generateResources = (context: IPluginContext) => {
   const serverManifestPath = path.join(
     buildDir,
     BUILD_SERVER_DIR,
-    BUILD_MANIFEST_PATH
+    SERVER_BUILD_MANIFEST_PATH
   );
 
   const result: [string, string | undefined][] = [];
 
   result.push([
     'clientManifest',
-    path.join(buildDir, BUILD_DEFAULT_DIR, BUILD_MANIFEST_PATH)
+    path.join(buildDir, BUILD_DEFAULT_DIR, CLIENT_BUILD_MANIFEST_PATH)
   ]);
   result.push(['serverManifest', serverManifestPath]);
 
