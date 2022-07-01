@@ -11,13 +11,17 @@ const core = createPlugin({
   },
   addRuntimeService: () => [
     {
-      // must be lib, because this moudle won't be bundled
+      // must be lib, because this module won't be bundled
       source: resolveFile('lib', 'runtime', 'runtimeConfig'),
       exported: '{ getRuntimeConfig }'
     },
     {
+      source: resolveFile('esm', 'runtime', 'helper', 'getPageData'),
+      exported: '{ getPageData }'
+    },
+    {
       // todo: rename and limit export modules
-      source: resolveFile('esm', 'runtime'),
+      source: resolveFile('esm', 'runtime', 'runtimePublicExport'),
       exported: '*'
     },
     {

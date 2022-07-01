@@ -178,12 +178,6 @@ export default abstract class PlatformMpBase {
           source: resolveRouterFile('esm', 'index'),
           exported: '*',
           filepath: 'router-mp.js'
-        },
-        {
-          source: require.resolve(
-            '@shuvi/platform-shared/lib/runtime/helper/getPageData'
-          ),
-          exported: '{ getPageData }'
         }
       ]
     });
