@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   Link as LinkFromRouterReact,
-  useHref,
   LinkProps,
   RouterContext
 } from '@shuvi/router-react';
@@ -74,16 +73,16 @@ export const Link = function LinkWithPrefetch({
   ref,
   ...rest
 }: LinkWrapperProps) {
-  const href = typeof to === 'string' ? to : useHref(to);
-  const previousHref = React.useRef<string>(href);
+  const isHrefString = typeof to === 'string';
+  const previousHref = React.useRef(to);
   const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
   const { router } = React.useContext(RouterContext);
   const setRef = React.useCallback(
     (el: Element) => {
       // Before the link getting observed, check if visible state need to be reset
-      if (previousHref.current !== href) {
+      if (previousHref.current !== to) {
         resetVisible();
-        previousHref.current = href;
+        previousHref.current = to;
       }
 
       if (prefetch !== false) setIntersectionRef(el);
@@ -95,17 +94,17 @@ export const Link = function LinkWithPrefetch({
         }
       }
     },
-    [href, resetVisible, setIntersectionRef, ref]
+    [to, resetVisible, setIntersectionRef, ref]
   );
 
   React.useEffect(() => {
     const shouldPrefetch =
-      prefetch !== false && isVisible && !isAbsoluteUrl(href);
-    if (shouldPrefetch && !prefetched[href]) {
-      prefetchFn(router, href);
-      prefetched[href] = true;
+      prefetch !== false && isVisible && isHrefString && !isAbsoluteUrl(to);
+    if (shouldPrefetch && !prefetched[to]) {
+      prefetchFn(router, to);
+      prefetched[to] = true;
     }
-  }, [href, prefetch, isVisible]);
+  }, [to, prefetch, isVisible]);
 
   const childProps: {
     ref?: any;
@@ -116,9 +115,9 @@ export const Link = function LinkWithPrefetch({
       if (typeof onMouseEnter === 'function') {
         onMouseEnter(e);
       }
-      if (!isAbsoluteUrl(href) && !prefetched[href]) {
-        prefetchFn(router, href);
-        prefetched[href] = true;
+      if (isHrefString && !isAbsoluteUrl(to) && !prefetched[to]) {
+        prefetchFn(router, to);
+        prefetched[to] = true;
       }
     }
   };
