@@ -74,7 +74,7 @@ export const Link = function LinkWithPrefetch({
   ref,
   ...rest
 }: LinkWrapperProps) {
-  const href = useHref(to);
+  const href = typeof to === 'string' ? to : useHref(to);
   const previousHref = React.useRef<string>(href);
   const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
   const { router } = React.useContext(RouterContext);
