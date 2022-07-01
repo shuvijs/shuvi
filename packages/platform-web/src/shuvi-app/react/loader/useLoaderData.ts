@@ -1,30 +1,33 @@
 import { useMatchedRoute } from '@shuvi/router-react';
 import type { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
 import { useState, useEffect } from 'react';
-import { getLoaderManager, LoaderResult, LoaderStatus } from './loaderManager';
+import { getLoaderManager, LoaderStatus } from './loaderManager';
 import { noLoaderMessage } from '../utils/errorMessage';
 
-export const useLoaderData = <T>(): T | null => {
+export const useLoaderData = <T = any>(): T => {
   const currentMatch = useMatchedRoute<IPageRouteRecord>();
   const loaderManager = getLoaderManager();
   const id = currentMatch.route?.id as string;
   const loader = loaderManager.get(id);
   if (!loader) {
-    console.error(noLoaderMessage);
+    throw Error(noLoaderMessage);
   }
-  // use server loader data only when hydrating
-  const [result, setResult] = useState<LoaderResult>(
-    loader?.result as LoaderResult
-  );
+
+  // error indicates loader running failed and it should be thrown to break off rendering
+  if (loader.result.error) {
+    throw Error('loader running failed');
+  }
+
+  const [result, setResult] = useState(loader.result.data);
   useEffect(() => {
     const cancel = loader?.onChange((status, loaderResult) => {
       if (status === LoaderStatus.fulfilled) {
-        setResult(loaderResult);
+        setResult(loaderResult.data);
       }
     });
     return () => {
       cancel?.();
     };
   }, []);
-  return result?.data;
+  return result;
 };

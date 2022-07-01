@@ -19,6 +19,14 @@ export default defineConfig({
       component: 'server-fail'
     },
     {
+      path: '/always-fail',
+      component: 'always-fail'
+    },
+    {
+      path: '/no-loader',
+      component: 'no-loader'
+    },
+    {
       path: '/:foo',
       component: 'foo'
     },

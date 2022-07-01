@@ -14,7 +14,11 @@ import isEqual from '@shuvi/utils/lib/isEqual';
 import { createError, IPageErrorHandler } from './createError';
 import { getInitialPropsDeprecatingMessage } from './errorMessage';
 import pageLoaders from '@shuvi/app/files/page-loaders';
-import { getLoaderManager, Loader } from '../loader/loaderManager';
+import {
+  getLoaderManager,
+  Loader,
+  LoaderReject
+} from '../loader/loaderManager';
 import { ILoaderOptions } from '@shuvi/service/lib/core';
 const isServer = typeof window === 'undefined';
 
@@ -114,11 +118,16 @@ export const getLoadersHook =
         for (const loader of targetLoaders) {
           // initialData must not null if hydrating
           if (shouldHydrate) {
-            if (loader?.result.error) {
+            if (loader.result.error) {
               await loader.load(true);
             }
           } else {
-            await loader?.load(true);
+            try {
+              await loader?.load(true);
+            } catch (e) {
+              loaderManager.rejecteds.push((e as LoaderReject).id);
+              next();
+            }
           }
         }
       } else {
@@ -127,13 +136,16 @@ export const getLoadersHook =
           targetLoaders
             .filter(loader => {
               // skip when hydrating and no error
-              if (shouldHydrate && !loader?.result.error) {
+              if (shouldHydrate && !loader.result.error) {
                 return false;
               }
               return true;
             })
             .map(loader => loader?.load(true))
-        );
+        ).catch(e => {
+          loaderManager.rejecteds.push((e as LoaderReject).id);
+          next();
+        });
       }
     };
     await executeLoaders();

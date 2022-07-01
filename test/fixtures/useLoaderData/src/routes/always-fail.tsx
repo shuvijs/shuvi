@@ -15,13 +15,7 @@ type LoaderData = {
 };
 
 export const loader: Loader<LoaderData> = async () => {
-  if (typeof window === 'undefined') {
-    throw new Error('server failed');
-  }
-  console.log('server-fail');
-  return {
-    hello: 'world'
-  };
+  throw new Error('server failed');
 };
 
 export default Index;
