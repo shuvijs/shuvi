@@ -6,9 +6,10 @@ const Index = () => {
   const data = useLoaderData<LoaderData>();
   return (
     <div>
-      <p>{data?.hello}</p>
+      <p>{data.hello}</p>
       <div>
         <Link to={`/parent/foo/a`}>Go /foo/a</Link>
+        <Link to={`/always-fail`}>Go /always-fail</Link>
       </div>
     </div>
   );

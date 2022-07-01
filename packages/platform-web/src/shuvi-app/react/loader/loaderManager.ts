@@ -13,6 +13,11 @@ export type LoaderResult = {
   _error?: any;
 };
 
+export type LoaderReject = {
+  id: string;
+  error: Error;
+};
+
 const createLoader = (
   initialData: Partial<LoaderResult> = {
     loading: false,
@@ -21,7 +26,7 @@ const createLoader = (
     error: undefined
   },
   loaderFn: () => Promise<any>,
-  skip = false
+  id: string
 ) => {
   let promise: Promise<any> | null;
   let status: LoaderStatus = LoaderStatus.idle;
@@ -34,10 +39,6 @@ const createLoader = (
   >();
 
   const load = async (doNotNotify: boolean = false) => {
-    if (skip) {
-      return promise;
-    }
-
     if (status === LoaderStatus.loading) {
       return promise;
     }
@@ -45,7 +46,7 @@ const createLoader = (
     status = LoaderStatus.loading;
     notify();
 
-    promise = new Promise(resolve => {
+    promise = new Promise((resolve, reject) => {
       currentLoaderFn()
         .then(value => {
           data = value;
@@ -59,7 +60,10 @@ const createLoader = (
           data = null;
           status = LoaderStatus.rejected;
           !doNotNotify && notify();
-          resolve(e);
+          reject({
+            id,
+            error: e
+          } as LoaderReject);
         })
         .finally(() => {
           promise = null;
@@ -141,7 +145,8 @@ export const createLoaderManager = (
         typeof initialLoadersData[id] !== 'undefined'
           ? initialLoadersData[id]
           : {},
-        loaderFn
+        loaderFn,
+        id
       );
       loadersMap.set(id, loader);
     }
@@ -159,7 +164,7 @@ export const createLoaderManager = (
         pendingLoaders.push([id, loader] as [string, Loader]);
       }
     }
-    await Promise.all(pendingLoaders.map(item => item[1].promise));
+
     const loaders = Array.from(loadersMap.entries());
     return loaders.reduce<Record<string, LoaderResult>>((res, [id, loader]) => {
       res[id] = loader.result;
@@ -174,12 +179,14 @@ export const createLoaderManager = (
     });
   };
 
+  const rejecteds: string[] = [];
   return {
     getLoadersData,
     notifyLoaders,
     add,
     get,
     initialLoadersData,
+    rejecteds,
     shouldHydrate
   };
 };

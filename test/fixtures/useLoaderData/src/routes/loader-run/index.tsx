@@ -5,7 +5,7 @@ function App() {
   return (
     <div>
       <div>This is loader-run</div>
-      <div data-test-id="time-loader-run">{data?.time}</div>
+      <div data-test-id="time-loader-run">{data.time}</div>
       <div>
         <Link to={'/loader-run/foo/a'}>To /loader-run/foo/a</Link>
       </div>

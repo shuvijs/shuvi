@@ -84,6 +84,12 @@ export class ReactServerView implements IReactServerView {
       }
     }
     const loaderManager = getLoaderManager();
+    const { rejecteds } = loaderManager;
+    if (rejecteds.length) {
+      return {
+        fallbackToCSR: true
+      };
+    }
     const loadersData = await loaderManager.getLoadersData();
     const fetchInitialProps = async () => {
       if (pendingDataFetchs.length) {
@@ -141,6 +147,10 @@ export class ReactServerView implements IReactServerView {
 
     try {
       htmlContent = renderToString(RootApp);
+    } catch {
+      return {
+        fallbackToCSR: true
+      };
     } finally {
       head = Head.rewind() || [];
     }
