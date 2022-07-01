@@ -140,15 +140,7 @@ const core = createPlugin({
       loadersFile,
       pageLoadersFile
     ];
-  },
-  addRuntimeService: () => [
-    {
-      source: require.resolve(
-        '@shuvi/platform-shared/lib/runtime/helper/getPageData'
-      ),
-      exported: '{ getPageData }'
-    }
-  ]
+  }
 });
 
 export default {
