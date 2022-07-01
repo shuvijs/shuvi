@@ -12,7 +12,7 @@ import {
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
-import { getLoadersHook } from '../react/utils/router';
+import { getLoadersAndPreloadHook } from '../react/utils/router';
 
 // export function createApp<Router extends IRouter<IPageRouteRecord>>(options: {
 export const createApp: CreateServerApp = options => {
@@ -28,7 +28,9 @@ export const createApp: CreateServerApp = options => {
     routes: getRoutes(routes)
   }) as IRouter;
   if (ssr) {
-    router.beforeResolve(getLoadersHook(context, loaderOptions, modelManager));
+    router.beforeResolve(
+      getLoadersAndPreloadHook(context, loaderOptions, modelManager)
+    );
   }
   router.init();
 

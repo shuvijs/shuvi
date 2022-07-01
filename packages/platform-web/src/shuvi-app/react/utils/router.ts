@@ -8,7 +8,7 @@ import {
 } from '@shuvi/platform-shared/esm/runtime';
 import { getRedirector } from '@shuvi/platform-shared/lib/runtime/context/routeLoaderContext';
 import isEqual from '@shuvi/utils/lib/isEqual';
-import { createError, IPageErrorHandler } from './createError';
+import { createError } from './createError';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import {
   getLoaderManager,
@@ -21,35 +21,28 @@ const isServer = typeof window === 'undefined';
 
 export type INormalizeRoutesContext = IAppContext;
 
-type IPageRouteWithElement = IPageRouteRecord & { element?: any };
-
 let loaders = pageLoaders;
-let currentErrorComp: IPageErrorHandler;
-let currentTo: IRoute<any>;
 
-/**
- * ErrorComp is reused at route `resolve` hook and `beforeResolve` hook during the same route transition.
- * So it needs to be reset at every new route transition.
- */
-const resetErrorComp = (newTo: IRoute<any>) => {
-  if (!currentTo || currentTo !== newTo) {
-    currentTo = newTo;
-    currentErrorComp = createError();
-  }
-};
-
-export const getLoadersHook =
+export const getLoadersAndPreloadHook =
   (
     appContext: INormalizeRoutesContext,
     loaderOptions: ILoaderOptions,
     modelManager: IModelManager
   ): NavigationGuardHook =>
   async (to, from, next) => {
+    const errorComp = createError();
     const toMatches: IRouteMatch<IPageRouteRecord>[] = to.matches;
     const fromMatches: (IRouteMatch<IPageRouteRecord> | undefined)[] =
       from.matches;
     let changedMatches: IRouteMatch<IPageRouteRecord>[] = [];
-
+    // preload route components
+    const preloadAll: Promise<any>[] = [];
+    toMatches.forEach(match => {
+      const preload = match.route.component?.preload;
+      if (preload && typeof preload === 'function') {
+        preloadAll.push(preload());
+      }
+    });
     /**
      * When a navigation is triggered, loaders should run in the following situation:
      * 1. If a route changed (new route or same dynamic route but different params), its loader and all its children's loaders should run.
@@ -94,7 +87,7 @@ export const getLoadersHook =
           params: to.params,
           appContext,
           redirect: redirector.handler,
-          error: isServer ? error.errorHandler : currentErrorComp.handler
+          error: isServer ? error.errorHandler : errorComp.handler
         });
       }
     };
@@ -145,7 +138,14 @@ export const getLoadersHook =
         });
       }
     };
-    await executeLoaders();
+    try {
+      await Promise.all([executeLoaders(), ...preloadAll]);
+    } catch (e) {
+      // executeLoaders won't reject
+      // if these code is invoked, that must be error with preload
+      console.error(e);
+      errorComp.handler(500);
+    }
     if (!isServer) {
       // handle redirect
       if (redirector.redirected) {
@@ -153,11 +153,8 @@ export const getLoadersHook =
         redirector.reset();
       }
 
-      if (currentErrorComp?.errorCode !== undefined) {
-        error.errorHandler(
-          currentErrorComp.errorCode,
-          currentErrorComp.errorDesc
-        );
+      if (errorComp?.errorCode !== undefined) {
+        error.errorHandler(errorComp.errorCode, errorComp.errorDesc);
       } else {
         error.reset();
       }
@@ -165,44 +162,6 @@ export const getLoadersHook =
     loaderManager.notifyLoaders(targetIds);
     next();
   };
-
-export function normalizeRoutes(
-  routes: IPageRouteRecord[] | undefined
-): IPageRouteWithElement[] {
-  if (!routes) {
-    return [] as IPageRouteWithElement[];
-  }
-
-  return routes.map((route: IPageRouteRecord) => {
-    const res: IPageRouteWithElement = {
-      ...route
-    };
-
-    const { component } = res;
-    if (component) {
-      res.resolve = async (to, _from, next) => {
-        if (isServer) {
-          return next();
-        }
-
-        resetErrorComp(to);
-        const preload = component.preload;
-        if (preload) {
-          try {
-            await preload();
-          } catch (err) {
-            console.error(err);
-            currentErrorComp.handler(500);
-            return next();
-          }
-        }
-        next();
-      };
-    }
-    res.children = normalizeRoutes(res.children);
-    return res;
-  });
-}
 
 if (module.hot) {
   module.hot.accept('@shuvi/app/files/page-loaders', () => {

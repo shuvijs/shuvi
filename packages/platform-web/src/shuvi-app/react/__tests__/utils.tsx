@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { IRouteRecord, MemoryRouter, RouterView } from '@shuvi/router-react';
 import { render, ReactTestRenderer } from 'shuvi-test-utils/reactTestRender';
-import { normalizeRoutes } from '../utils/router';
 import { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
 
 const renderRoutes = (
@@ -27,7 +26,7 @@ export const renderWithRoutes = (
   } = {},
   { route = '/' }: { route?: string } = {}
 ) => {
-  return renderRoutes(normalizeRoutes(routes), {
+  return renderRoutes(routes, {
     route
   });
 };
