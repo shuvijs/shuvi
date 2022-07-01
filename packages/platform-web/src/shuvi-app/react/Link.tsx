@@ -73,19 +73,19 @@ export const Link = function LinkWithPrefetch({
   ref,
   ...rest
 }: LinkWrapperProps) {
-  const isHrefString = typeof to === 'string';
+  const isHrefValid = typeof to === 'string' && !isAbsoluteUrl(to);
   const previousHref = React.useRef(to);
   const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
   const { router } = React.useContext(RouterContext);
   const setRef = React.useCallback(
     (el: Element) => {
       // Before the link getting observed, check if visible state need to be reset
-      if (previousHref.current !== to) {
+      if (isHrefValid && previousHref.current !== to) {
         resetVisible();
         previousHref.current = to;
       }
 
-      if (prefetch !== false) setIntersectionRef(el);
+      if (isHrefValid && prefetch !== false) setIntersectionRef(el);
 
       if (ref) {
         if (typeof ref === 'function') ref(el);
@@ -94,12 +94,11 @@ export const Link = function LinkWithPrefetch({
         }
       }
     },
-    [to, resetVisible, setIntersectionRef, ref]
+    [to, isHrefValid, prefetch, resetVisible, setIntersectionRef, ref]
   );
 
   React.useEffect(() => {
-    const shouldPrefetch =
-      prefetch !== false && isVisible && isHrefString && !isAbsoluteUrl(to);
+    const shouldPrefetch = isHrefValid && prefetch !== false && isVisible;
     if (shouldPrefetch && !prefetched[to]) {
       prefetchFn(router, to);
       prefetched[to] = true;
@@ -115,7 +114,7 @@ export const Link = function LinkWithPrefetch({
       if (typeof onMouseEnter === 'function') {
         onMouseEnter(e);
       }
-      if (isHrefString && !isAbsoluteUrl(to) && !prefetched[to]) {
+      if (isHrefValid && !prefetched[to]) {
         prefetchFn(router, to);
         prefetched[to] = true;
       }
