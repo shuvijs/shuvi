@@ -43,7 +43,13 @@ const core = createPlugin({
 
     const loadersFile = createFile({
       name: 'loaders.js',
-      content: () => {
+      content: async () => {
+        // fixme: await dependencies
+        await new Promise<void>(resolve => {
+          setTimeout(() => {
+            resolve();
+          }, 1000);
+        });
         const routes = getRoutes();
         const loaders: Record<string, string> = {};
         const traverseRoutes = (routes: IRouteConfig[]) => {
@@ -113,6 +119,13 @@ const core = createPlugin({
     const pageLoadersFile = createFile({
       name: 'page-loaders.js',
       content: async () => {
+        // fixme: await dependencies
+        await new Promise<void>(resolve => {
+          setTimeout(() => {
+            resolve();
+          }, 1500);
+        });
+
         if (fs.existsSync(loadersFileName)) {
           return await buildToString(loadersFileName);
         }

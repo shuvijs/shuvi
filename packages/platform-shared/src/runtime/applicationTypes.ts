@@ -5,10 +5,6 @@ import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IPluginList } from './lifecycle';
 import { IModelManager } from './store';
 import { IAppData } from './helper';
-import {
-  IAppGetInitoalPropsContext,
-  IRouteLoaderContext
-} from './context/routeLoaderContext';
 import { Application } from './application';
 
 export type IRequest = IncomingMessage & {
@@ -19,14 +15,6 @@ export interface IAppContext extends CustomAppContext {
   [x: string]: unknown;
 }
 
-export type IAppComponent<C, P = {}> = C & {
-  getInitialProps?(context: IAppGetInitoalPropsContext): P | Promise<P>;
-};
-
-export type IRouteComponent<C, P = {}> = C & {
-  getInitialProps?(context: IRouteLoaderContext): P | Promise<P>;
-};
-
 export type IRerenderConfig = {
   AppComponent?: any;
   UserAppComponent?: any;
@@ -35,7 +23,7 @@ export type IRerenderConfig = {
 export interface IApplication<Context extends IAppContext = IAppContext> {
   readonly context: Context;
   readonly router: IRouter;
-  readonly appComponent: IAppComponent<any>;
+  readonly appComponent: any;
   readonly modelManager: IModelManager;
 }
 
@@ -109,5 +97,5 @@ export interface IViewServer<ExtraAppData = {}>
   > {}
 
 export interface CreateServerApp {
-  (options: { req: IRequest }): Application<IAppContext>;
+  (options: { req: IRequest; ssr: boolean }): Application<IAppContext>;
 }

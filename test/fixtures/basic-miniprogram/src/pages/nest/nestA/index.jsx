@@ -9,13 +9,4 @@ function NestedA () {
   )
 }
 
-NestedA.getInitialProps = ctx => {
-  const {query, error} = ctx;
-  if(query.a){
-    error(500, 'NestedA error');
-    return;
-  }
-  return {};
-};
-
 export default NestedA;

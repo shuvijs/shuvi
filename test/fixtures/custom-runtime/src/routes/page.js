@@ -1,8 +1,3 @@
-export default function Index(props) {
-  return <div>Index Page: {props.index}</div>;
+export default function Index() {
+  return <div id="page">Index Page</div>;
 }
-Index.getInitialProps = function () {
-  return {
-    index: 'index props'
-  };
-};

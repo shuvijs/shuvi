@@ -2,7 +2,7 @@ import { IErrorHandler, IPageError } from '@shuvi/platform-shared/esm/runtime';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 
 export interface IPageErrorHandler extends IPageError {
-  handler: IErrorHandler;
+  handler: IErrorHandler['errorHandler'];
 }
 
 export function createError(): IPageErrorHandler {
