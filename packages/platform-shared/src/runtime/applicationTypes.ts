@@ -89,6 +89,7 @@ export type IRenderAppResult<Data = {}> = {
   appData?: Data;
   appHtml?: string;
   redirect?: IRedirectState;
+  fallbackToCSR?: boolean;
 };
 
 export interface IView<

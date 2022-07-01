@@ -5,7 +5,7 @@ function App() {
   const data = useLoaderData<{ foo: string }>();
   return (
     <div>
-      This is /parent/foo{data?.foo}
+      This is /parent/foo{data.foo}
       <RouterView />
     </div>
   );

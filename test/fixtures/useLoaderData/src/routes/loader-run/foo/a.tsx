@@ -5,8 +5,8 @@ function App() {
   return (
     <div>
       <div>this is loader-run foo a</div>
-      <div data-test-id="path">{data?.path}</div>
-      <div data-test-id="time-foo-a">{data?.time}</div>
+      <div data-test-id="path">{data.path}</div>
+      <div data-test-id="time-foo-a">{data.time}</div>
       <div>
         <Link to={`/loader-run/foo/a?sssss=2222`}>Add Query Self</Link>
         <br />

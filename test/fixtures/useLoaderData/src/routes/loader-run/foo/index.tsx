@@ -5,8 +5,8 @@ function App() {
   return (
     <div>
       <div>This is /loader-run/foo</div>
-      <div data-test-id="param">{data?.foo}</div>
-      <div data-test-id="time-foo">{data?.time}</div>
+      <div data-test-id="param">{data.foo}</div>
+      <div data-test-id="time-foo">{data.time}</div>
       <RouterView />
     </div>
   );

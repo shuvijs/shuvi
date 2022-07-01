@@ -7,8 +7,8 @@ const One = () => {
   return (
     <div data-test-id="one">
       <div data-test-id="name">Page One</div>
-      <div data-test-id="time">{data?.time}</div>
-      <div data-test-id="test">{data?.query.test}</div>
+      <div data-test-id="time">{data.time}</div>
+      <div data-test-id="test">{data.query.test}</div>
       <Link to="/two">Goto Page Two</Link>
       <br />
       <Link to="/one?test=456">Goto Page One With Query</Link>
