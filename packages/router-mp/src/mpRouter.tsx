@@ -1,22 +1,13 @@
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
 import * as qs from 'query-string';
 import * as PropTypes from 'prop-types';
 import { Current as TaroCurrent } from '@tarojs/runtime';
-import {
-  InitialEntry,
-  createRouter,
-  IRouter,
-  createRedirector
-} from '@shuvi/router';
+import { InitialEntry, createRouter, IRouter } from '@shuvi/router';
 import { createMpHistory } from './mpHistory';
 import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
 import ErrorPage from './ErrorPage';
-import {
-  getModelManager,
-  getErrorHandler
-} from '@shuvi/platform-shared/esm/runtime';
+import { getModelManager } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '@shuvi/platform-web/shuvi-app/react/AppContainer';
 
 export interface IMpRouterProps {
@@ -36,13 +27,7 @@ export function MpRouter({
 }: IMpRouterProps): React.ReactElement | null {
   let routerRef = React.useRef<IRouter>();
 
-  const [initProps, setProps] = useState<boolean>(false);
-
-  const redirector = createRedirector();
-
   const modelManager = getModelManager();
-
-  const error = getErrorHandler(modelManager);
 
   if (routerRef.current == null) {
     routerRef.current = createRouter({
@@ -87,51 +72,10 @@ export function MpRouter({
 
   const appContext = {
     pageData: {},
-    routeProps: {},
     historyMode: 'memory'
   };
 
-  const isRendered = useRef(true);
-  useEffect(() => {
-    const router = routerRef.current;
-    isRendered.current = true;
-    const runGetInitialProps = async () => {
-      const { pathname, query, params, matches } = router!.current;
-      await router!.ready;
-      const matchRoute = matches && matches[0] && matches[0].route;
-      let props = {};
-      error.reset();
-      if (matchRoute && matchRoute.component.getInitialProps) {
-        props = await matchRoute.component.getInitialProps({
-          isServer: false,
-          pathname,
-          query,
-          params,
-          redirect: redirector.handler,
-          appContext,
-          error: error.errorHandler,
-          async fetchInitialProps() {
-            // do nothing
-          }
-        });
-        matchRoute.props = {
-          ...props,
-          ...(matchRoute.props || {})
-        };
-        if (redirector.redirected) {
-          router!.replace(redirector.state!.path);
-          return;
-        }
-      }
-      if (isRendered.current) setProps(true);
-    };
-    runGetInitialProps();
-    return () => {
-      isRendered.current = false;
-    };
-  }, []);
-
-  return initProps ? (
+  return (
     <Router router={routerRef.current}>
       <AppContainer
         appContext={appContext}
@@ -141,7 +85,7 @@ export function MpRouter({
         <RouterView />
       </AppContainer>
     </Router>
-  ) : null;
+  );
 }
 
 if (__DEV__) {

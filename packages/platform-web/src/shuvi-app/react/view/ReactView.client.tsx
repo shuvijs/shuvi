@@ -2,10 +2,7 @@ import * as React from 'react';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { createRedirector } from '@shuvi/router';
-import {
-  getErrorHandler,
-  IAppComponent
-} from '@shuvi/platform-shared/esm/runtime';
+import { getErrorHandler } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
@@ -44,34 +41,18 @@ export class ReactClientView implements IReactClientView {
 
     const error = getErrorHandler(modelManager);
 
-    const TypedAppComponent =
-      AppComponent as IAppComponent<React.ComponentType>;
+    const TypedAppComponent = AppComponent as React.ComponentType;
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
       await router.ready;
     } else {
       await router.ready;
-      const { pathname, query, params, matches } = router.current;
+      const { matches } = router.current;
 
       if (!matches.length) {
         // no handler no matches
         error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
-      }
-
-      if (TypedAppComponent.getInitialProps) {
-        appProps = await TypedAppComponent.getInitialProps({
-          isServer: false,
-          pathname,
-          query,
-          params,
-          redirect: redirector.handler,
-          error: error.errorHandler,
-          appContext,
-          async fetchInitialProps() {
-            // do nothing
-          }
-        });
       }
     }
 

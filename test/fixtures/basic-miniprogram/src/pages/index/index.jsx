@@ -20,7 +20,7 @@ const runtimeConfig = getRuntimeConfig();
 import './index.scss'
 import style from './test.scss'
 
-function IndexPage ({success, routePropsTest}) {
+function IndexPage () {
   const { query, params } = useCurrentRoute();
   const [o, setO] = useState({ haha: 123 })
   useEffect(() => {
@@ -64,10 +64,6 @@ function IndexPage ({success, routePropsTest}) {
       </View>
       <View>query：{JSON.stringify(query)}</View>
       <View>params：{JSON.stringify(params)}</View>
-      <View>routeProps：{JSON.stringify({
-        success,
-        routePropsTest
-      })}</View>
       <Hello />
       <Nested />
       <Welcome name="normal" />
@@ -76,12 +72,5 @@ function IndexPage ({success, routePropsTest}) {
     </View>
   )
 }
-
-IndexPage.getInitialProps = ctx => {
-  console.log('getInitialProps')
-  return {
-    success: 'ok'
-  };
-};
 
 export default IndexPage;

@@ -10,27 +10,18 @@ declare module '@shuvi/app/core/error' {
 declare module '@shuvi/app/core/platform' {
   import React from 'react';
   import {
-    IAppContext,
     IPageRouteRecord,
     IRawPageRouteRecord,
-    IViewClient,
-    IAppComponent,
-    IRouteComponent,
-    IRouteData
+    IViewClient
   } from '@shuvi/platform-shared/src/runtime';
 
   export interface IGetRoutes {
-    (
-      routes: IRawPageRouteRecord[],
-      context: IAppContext,
-      routeData?: IRouteData
-    ): IPageRouteRecord[];
+    (routes: IRawPageRouteRecord[]): IPageRouteRecord[];
   }
 
   export const getRoutes: IGetRoutes;
   export const view: IViewClient;
-  export const app: IAppComponent<React.Component>;
-  export const page404: IRouteComponent<React.Component>;
+  export const app: any;
 }
 
 declare module '@shuvi/app/core/plugins' {

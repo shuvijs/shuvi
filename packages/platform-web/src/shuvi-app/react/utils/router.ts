@@ -1,18 +1,14 @@
 import { IRoute, IRouteMatch, NavigationGuardHook } from '@shuvi/router';
 import {
   getErrorHandler,
-  getModelManager,
   errorModel,
   IModelManager,
-  IRouteLoaderContext,
   IPageRouteRecord,
-  IAppContext,
-  IRouteData
+  IAppContext
 } from '@shuvi/platform-shared/esm/runtime';
 import { getRedirector } from '@shuvi/platform-shared/lib/runtime/context/routeLoaderContext';
 import isEqual from '@shuvi/utils/lib/isEqual';
 import { createError, IPageErrorHandler } from './createError';
-import { getInitialPropsDeprecatingMessage } from './errorMessage';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import {
   getLoaderManager,
@@ -20,6 +16,7 @@ import {
   LoaderReject
 } from '../loader/loaderManager';
 import { ILoaderOptions } from '@shuvi/service/lib/core';
+
 const isServer = typeof window === 'undefined';
 
 export type INormalizeRoutesContext = IAppContext;
@@ -156,8 +153,6 @@ export const getLoadersHook =
         redirector.reset();
       }
 
-      // handle error
-      const error = getErrorHandler(modelManager);
       if (currentErrorComp?.errorCode !== undefined) {
         error.errorHandler(
           currentErrorComp.errorCode,
@@ -172,11 +167,8 @@ export const getLoadersHook =
   };
 
 export function normalizeRoutes(
-  routes: IPageRouteRecord[] | undefined,
-  appContext: INormalizeRoutesContext = {},
-  routeData?: IRouteData
+  routes: IPageRouteRecord[] | undefined
 ): IPageRouteWithElement[] {
-  const routeProps = routeData?.routeProps || {};
   if (!routes) {
     return [] as IPageRouteWithElement[];
   }
@@ -186,83 +178,28 @@ export function normalizeRoutes(
       ...route
     };
 
-    const { id, component } = res;
+    const { component } = res;
     if (component) {
-      res.resolve = async (to, _from, next, context) => {
-        resetErrorComp(to);
+      res.resolve = async (to, _from, next) => {
         if (isServer) {
           return next();
         }
-        const modelManager = getModelManager();
 
-        // support both getInitialProps and loader
-        const loaderManager = getLoaderManager();
-        const { shouldHydrate } = loaderManager;
-        if (shouldHydrate) {
-          const { hasError } = modelManager.get(errorModel).$state();
-          if (hasError) {
-            // hydrated error page, run Component.getInitialProps by client
-            return next();
-          }
-        }
-        let Component: any;
+        resetErrorComp(to);
         const preload = component.preload;
-
-        const redirector = getRedirector(modelManager);
         if (preload) {
           try {
-            const preloadComponent = await preload();
-            Component = preloadComponent.default || preloadComponent;
+            await preload();
           } catch (err) {
             console.error(err);
             currentErrorComp.handler(500);
-            Component = function () {
-              return null;
-            };
-          }
-        } else {
-          Component = component;
-        }
-        if (Component.getInitialProps) {
-          console.warn(getInitialPropsDeprecatingMessage);
-          if (shouldHydrate) {
-            // only hydrated once, use server state
-            context.props = routeProps[id];
             return next();
-          } else {
-            context.props = await Component.getInitialProps({
-              isServer: false,
-              query: to.query,
-              pathname: to.pathname,
-              params: to.params,
-              redirect: redirector.handler,
-              error: currentErrorComp.handler,
-              appContext
-            } as IRouteLoaderContext);
-
-            if (redirector.redirected) {
-              next(redirector.state!.path);
-              return;
-            }
           }
         }
-        // not reset at method private _doTransition to Avoid splash screen，eg：
-        // /a special query a=1, trigger page 500 error
-        // in error page link=>/b when click link trigger error store reset() right now
-        // reset() make errorPage hide error and show /a page (splash screen)
-        // the splash time is lazy load /b
-        // route /b and component load show page /b
-        /* const error = getErrorHandler(modelManager);
-        console.log('errorComp resolve')
-        if (errorComp.errorCode !== undefined) {
-          error.errorHandler(errorComp.errorCode, errorComp.errorDesc);
-        } else {
-          error.reset();
-        } */
         next();
       };
     }
-    res.children = normalizeRoutes(res.children, appContext, routeData);
+    res.children = normalizeRoutes(res.children);
     return res;
   });
 }

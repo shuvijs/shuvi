@@ -11,7 +11,6 @@ export type IAppData<Data = {}, appState = any> = {
   pageData?: {
     [key: string]: any;
   };
-  routeProps?: { [x: string]: any };
   loadersData?: { [x: string]: any };
   appState?: appState;
   filesByRoutId: Record<string, string[]>;

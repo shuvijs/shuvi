@@ -34,7 +34,7 @@ export function createApp<AppState extends IAppState>(options: {
   }
 
   const { routes, appData, appComponent, userComponents } = options;
-  const { loadersData = {}, appState, routeProps } = appData;
+  const { loadersData = {}, appState } = appData;
   const modelManager = getModelManager(appState);
   let history: History;
   if (historyMode === 'hash') {
@@ -50,16 +50,20 @@ export function createApp<AppState extends IAppState>(options: {
 
   const router = createRouter({
     history,
-    routes: getRoutes(routes, context, { routeProps })
-  });
-  router.afterEach(_current => {
-    if (!_current.matches.length) {
-      getErrorHandler(modelManager).errorHandler(
-        SHUVI_ERROR_CODE.PAGE_NOT_FOUND
-      );
-    }
+    routes: getRoutes(routes)
   });
   router.beforeResolve(getLoadersHook(context, loaderOptions, modelManager));
+  router.afterEach(_current => {
+    const error = getErrorHandler(modelManager);
+    if (!_current.matches.length) {
+      error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+    } else {
+      // FIXME
+      setTimeout(() => {
+        error.resetErrorState();
+      }, 0);
+    }
+  });
   router.init();
 
   app = application({

@@ -5,6 +5,7 @@ interface IRedirector {
   handler: IRedirectFn;
 }
 
+// todo: move this out from router
 export function createRedirector(): IRedirector {
   const redirector = {
     redirected: false,
