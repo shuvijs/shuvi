@@ -1,6 +1,5 @@
 import got from 'got';
 import { AppCtx, launchFixture, serveFixture } from '../utils';
-import { ASSET_PUBLIC_PATH } from '@shuvi/service/lib/constants';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -18,14 +17,14 @@ describe('Public Dir', () => {
     ctx = await launchFixture('public-dir');
 
     // file
-    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}user.json`), {
+    res = await got.get(ctx.url(`/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('name', 'foo');
 
     // nest
-    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest/user.json`), {
+    res = await got.get(ctx.url(`/nest/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
@@ -33,7 +32,7 @@ describe('Public Dir', () => {
 
     // folder
     try {
-      await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest`), {
+      await got.get(ctx.url(`/nest`), {
         responseType: 'json'
       });
     } catch (error: any) {
@@ -45,18 +44,17 @@ describe('Public Dir', () => {
     let res;
 
     expect.assertions(5);
-    // BUG: jest.resetModules() would cause Error('Callback was already called.');
     ctx = await serveFixture('public-dir');
 
     // file
-    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}user.json`), {
+    res = await got.get(ctx.url(`/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('name', 'foo');
 
     // nest
-    res = await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest/user.json`), {
+    res = await got.get(ctx.url(`/nest/user.json`), {
       responseType: 'json'
     });
     expect(res.statusCode).toBe(200);
@@ -64,11 +62,42 @@ describe('Public Dir', () => {
 
     // folder
     try {
-      await got.get(ctx.url(`${ASSET_PUBLIC_PATH}nest`), {
+      await got.get(ctx.url(`/nest`), {
         responseType: 'json'
       });
     } catch (error: any) {
       expect(error.response.statusCode).toBe(404);
+    }
+  });
+
+  test('should work for SPA after build', async () => {
+    let res;
+
+    expect.assertions(5);
+    ctx = await serveFixture('public-dir', { ssr: false });
+
+    // file
+    res = await got.get(ctx.url(`/user.json`), {
+      responseType: 'json'
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('name', 'foo');
+
+    // nest
+    res = await got.get(ctx.url(`/nest/user.json`), {
+      responseType: 'json'
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('name', 'bar');
+
+    // folder
+    try {
+      await got.get(ctx.url(`/nest`), {
+        responseType: 'json'
+      });
+    } catch (error: any) {
+      console.log('error', error);
+      expect(error.response.statusCode).toBe(200);
     }
   });
 });

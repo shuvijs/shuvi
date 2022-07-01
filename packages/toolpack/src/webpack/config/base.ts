@@ -23,6 +23,8 @@ export interface BaseOptions {
   name: string;
   projectRoot: string;
 
+  outputDir: string;
+
   // src files need to be include
   include: string[];
   typescript?: {
@@ -32,7 +34,6 @@ export interface BaseOptions {
     tsCompilerOptions?: TsCompilerOptions;
     resolvedBaseUrl?: string;
   };
-  mediaFilename: string;
   buildManifestFilename: string;
   target?: string;
   publicPath?: string;
@@ -65,11 +66,11 @@ export { WebpackChain };
 
 export function baseWebpackChain({
   dev,
+  outputDir,
   parcelCss,
   projectRoot,
   include,
   typescript,
-  mediaFilename,
   name,
   buildManifestFilename,
   publicPath = '/',
@@ -111,14 +112,16 @@ export function baseWebpackChain({
     ]);
   }
 
+  config.output.path(outputDir);
   config.output.merge({
     publicPath,
-    hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
-    hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
+    filename: `${dev ? '[name]' : '[name].[contenthash:8]'}.js`,
     // This saves chunks with the name given via `import()`
     chunkFilename: `static/chunks/${
       dev ? '[name]' : '[name].[contenthash:8]'
     }.js`,
+    hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
+    hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
     webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm'
@@ -176,7 +179,7 @@ export function baseWebpackChain({
     .use('file-loader')
     .loader(require.resolve('file-loader'))
     .options({
-      name: mediaFilename
+      name: 'static/media/[name].[hash:8].[ext]'
     });
 
   config.plugin('chunk-names').use(ChunkNamePlugin);

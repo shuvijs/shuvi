@@ -38,7 +38,7 @@ describe('Tree Shaking', () => {
     });
     ctx = await serveFixture('tree-shaking');
     manifest = await require(resolveFixture(
-      'tree-shaking/dist/client/build-manifest.json'
+      'tree-shaking/dist/build-manifest.client.json'
     ));
   });
   afterAll(async () => {

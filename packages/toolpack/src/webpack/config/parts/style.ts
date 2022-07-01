@@ -10,6 +10,8 @@ import * as path from 'path';
 import { shouldUseRelativeAssetPaths } from './helpers';
 
 interface StyleOptions {
+  filename: string;
+  chunkFilename: string;
   publicPath?: string;
   extractCss?: boolean;
   sourceMap?: boolean;
@@ -249,7 +251,15 @@ function cssRule({
 
 export function withStyle(
   chain: Config,
-  { extractCss, sourceMap, ssr, publicPath, parcelCss }: StyleOptions
+  {
+    extractCss,
+    sourceMap,
+    ssr,
+    publicPath,
+    parcelCss,
+    filename,
+    chunkFilename
+  }: StyleOptions
 ): Config {
   const oneOfs = chain.module.rule('main').oneOfs;
   if (ssr) {
@@ -288,8 +298,8 @@ export function withStyle(
   if (extractCss) {
     chain.plugin('mini-css-extract-plugin').use(MiniCssExtractPlugin, [
       {
-        filename: 'static/css/[contenthash:8].css',
-        chunkFilename: 'static/css/[contenthash:8].chunk.css'
+        filename,
+        chunkFilename
       }
     ]);
   }
