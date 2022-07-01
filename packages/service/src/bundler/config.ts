@@ -7,8 +7,8 @@ import { IPluginContext } from '../core';
 import { getTypeScriptInfo } from './typescript';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import {
-  BUILD_MEDIA_PATH,
-  BUILD_MANIFEST_PATH,
+  CLIENT_BUILD_MANIFEST_PATH,
+  SERVER_BUILD_MANIFEST_PATH,
   BUILD_CLIENT_RUNTIME_WEBPACK
 } from '../constants';
 
@@ -21,7 +21,7 @@ export interface IWebpackConfigOptions {
   node: boolean;
   entry: IWebpackEntry;
   include?: string[];
-  outputDir: string;
+  outputDir?: string;
   webpackHelpers: IWebpackHelpers;
 }
 
@@ -36,37 +36,38 @@ export function createWebpackConfig(
 
   const include = [paths.appDir, paths.srcDir, ...(opts.include || [])];
   const typescript = getTypeScriptInfo();
+  const outputDir = opts.outputDir
+    ? `${paths.buildDir}/${opts.outputDir}`
+    : paths.buildDir;
   if (opts.node) {
     chain = createNodeWebpackChain({
-      buildManifestFilename: BUILD_MANIFEST_PATH,
+      outputDir,
       dev,
       parcelCss,
       typescript,
+      include,
+      webpackHelpers,
+      buildManifestFilename: SERVER_BUILD_MANIFEST_PATH,
       env: config.env,
-      mediaFilename: BUILD_MEDIA_PATH,
       name: opts.name,
       projectRoot: paths.rootDir,
-      include,
-      publicPath: assetPublicPath,
-      webpackHelpers
+      publicPath: assetPublicPath
     });
-    chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
   } else {
     chain = createBrowserWebpackChain({
-      analyze: config.analyze,
-      buildManifestFilename: BUILD_MANIFEST_PATH,
+      outputDir,
       dev,
       typescript,
       parcelCss,
-      env: config.env,
-      mediaFilename: BUILD_MEDIA_PATH,
-      name: opts.name,
-      projectRoot: paths.rootDir,
       include,
-      publicPath: assetPublicPath,
-      webpackHelpers
+      webpackHelpers,
+      env: config.env,
+      name: opts.name,
+      analyze: config.analyze,
+      buildManifestFilename: CLIENT_BUILD_MANIFEST_PATH,
+      projectRoot: paths.rootDir,
+      publicPath: assetPublicPath
     });
-    chain.output.path(`${paths.buildDir}/${opts.outputDir}`);
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
   }
 

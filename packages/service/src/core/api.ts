@@ -15,7 +15,7 @@ import {
   ResolvedPlugin
 } from './apiTypes';
 import { createFile, ProjectBuilder, FileOptions } from '../project';
-import { PUBLIC_PATH } from '../constants';
+import { DEFAULT_PUBLIC_PATH } from '../constants';
 import { resolveConfig } from './config';
 import {
   getManager,
@@ -165,16 +165,13 @@ class Api {
   }
 
   get assetPublicPath(): string {
-    let prefix =
-      this._mode === 'development'
-        ? PUBLIC_PATH
-        : this._config.publicPath || PUBLIC_PATH;
+    let publicPath = this._config.publicPath || DEFAULT_PUBLIC_PATH;
 
-    if (!prefix.endsWith('/')) {
-      prefix += '/';
+    if (!publicPath.endsWith('/')) {
+      publicPath += '/';
     }
 
-    return prefix;
+    return publicPath;
   }
 
   async buildApp(): Promise<void> {
