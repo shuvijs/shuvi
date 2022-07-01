@@ -14,7 +14,7 @@ import { navigateBack } from '@shuvi/runtime/router-mp';
 import _ from 'lodash'
 const runtimeConfig = getRuntimeConfig();
 
-function Detail({time}) {
+function Detail() {
   const { query, params } = useCurrentRoute();
   useEffect(()=>{
     consoleLogMain()
@@ -44,23 +44,8 @@ function Detail({time}) {
       </View>
       <View>query：{JSON.stringify(query)}</View>
       <View>params：{JSON.stringify(params)}</View>
-      <View>time：{time}</View>
     </View>
   )
 }
-
-let globalTime = 0;
-
-Detail.getInitialProps = async ({ isServer }) => {
-  await new Promise(resolve => setTimeout(() => resolve(), 300));
-
-  if (!isServer) {
-    globalTime++;
-  }
-
-  return {
-    time: globalTime
-  };
-};
 
 export default Detail;

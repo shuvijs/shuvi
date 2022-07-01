@@ -17,7 +17,7 @@ const secondPageComponent = loadRouteComponent(() => {
   return import('./fixtures/loadRouteComponent/secondPage');
 });
 
-describe('loadRouteComponent [node]', () => {
+describe.skip('loadRouteComponent [node]', () => {
   it('basic', async () => {
     const routes = [
       {

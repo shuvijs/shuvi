@@ -1,8 +1,4 @@
-import {
-  IAppState,
-  IAppComponent as PlatformAppComponent,
-  IRouteComponent as PlatformRouteComponent
-} from '@shuvi/platform-shared/esm/runtime';
+import { IAppState } from '@shuvi/platform-shared/esm/runtime';
 
 export type IReactAppData = {
   appProps?: Record<string, any>;
@@ -11,17 +7,8 @@ export type IReactAppData = {
   };
   dynamicIds?: Array<string | number>;
   appState?: IAppState;
-  routeProps: IRouteProps;
 };
-
-export interface IAppContainerProps {
-  routeProps: IRouteProps;
-}
 
 export type IRouteProps = {
   [x: string]: any;
 };
-
-export type IAppComponent = PlatformAppComponent<React.Component, any>;
-
-export type IRouteComponent = PlatformRouteComponent<React.Component, any>;

@@ -62,27 +62,6 @@ describe('Basic Features', () => {
     });
   });
 
-  describe('redirect', () => {
-    let localPage: Page;
-    afterAll(async () => {
-      await localPage.close();
-    });
-
-    test('should work in server side', async () => {
-      localPage = await ctx.browser.page(
-        ctx.url('/redirect', { target: '/about' })
-      );
-      expect(await localPage.$text('div')).toBe('About Page');
-    });
-
-    test('should work in client side', async () => {
-      await localPage.goto(ctx.url('/'));
-      await localPage.shuvi.navigate('/redirect', { target: '/about' });
-      await localPage.waitForSelector('#about');
-      expect(await localPage.$text('#about')).toBe('About Page');
-    });
-  });
-
   describe('router', () => {
     let localPage: Page;
     afterEach(async () => {

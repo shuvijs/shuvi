@@ -24,7 +24,7 @@ export type IErrorHandler = (
 ) => void;
 
 /**
- * route component getInitialProps params `context`
+ *  "context object" of route component' loader function
  */
 export interface IRouteLoaderContext<
   UserAppContext extends IAppContext = IAppContext
@@ -79,13 +79,6 @@ export interface IRouteLoaderContext<
    * extended by user
    */
   appContext: UserAppContext;
-}
-
-/**
- * app component getInitialProps params `context`
- */
-export interface IAppGetInitoalPropsContext extends IRouteLoaderContext {
-  fetchInitialProps(): Promise<void>;
 }
 
 // todo: remove createRedirector from router

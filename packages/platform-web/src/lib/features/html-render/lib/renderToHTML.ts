@@ -19,7 +19,10 @@ export async function renderToHTML({
   let error: IPageError | undefined;
   const renderer = new Renderer({ serverPluginContext });
   const { application } = server;
-  const app = application.createApp({ req });
+  const app = application.createApp({
+    req,
+    ssr: serverPluginContext.config.ssr
+  });
 
   try {
     await app.init();

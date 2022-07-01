@@ -6,8 +6,7 @@ import { Link } from '@shuvi/runtime/router-mp';
 import './index.scss'
 import style from './test.scss'
 
-function IndexPage({success}) {
-  const [o, setO] = useState({ haha: 1234 })
+function IndexPage() {
   useEffect(() => {
     console.warn('useEffect')
   })
@@ -31,18 +30,8 @@ function IndexPage({success}) {
       <Link target={'_blank'} to={'/my/a/b/c?query=query'}>
         link test /my/a/b/c?query=query
       </Link>
-      <View>routeProps：{JSON.stringify({
-        success,
-      })}</View>
     </View>
   )
 }
-
-IndexPage.getInitialProps = ctx => {
-  console.log('getInitialProps')
-  return {
-    success: 'ok'
-  };
-};
 
 export default IndexPage;

@@ -47,7 +47,6 @@ export class SsrRenderer extends BaseRenderer {
     if (result.fallbackToCSR) {
       appData.ssr = false;
       appData.loadersData = {};
-      appData.routeProps = {};
     }
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 

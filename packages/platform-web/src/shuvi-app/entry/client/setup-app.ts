@@ -40,7 +40,7 @@ if (module.hot) {
   const handleHotUpdate = async () => {
     const rerender = async () => {
       const UserAppComponent = require('@shuvi/app/user/app').default;
-      app.router.replaceRoutes(getRoutes(routes, app.context, appData));
+      app.router.replaceRoutes(getRoutes(routes));
       await app.updateComponents({
         AppComponent: PlatformAppComponent,
         UserAppComponent

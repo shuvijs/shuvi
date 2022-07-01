@@ -14,10 +14,6 @@ export type IURLParams = IParams;
 
 export { IRedirectFn, IRouter, IRoute, IRedirectState };
 
-export type IRouteData = {
-  routeProps?: { [x: string]: any };
-};
-
 export interface IPageRouteRecord extends IRouteRecord {
   id: string;
   component?: any;
