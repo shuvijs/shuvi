@@ -1,44 +1,47 @@
 import UserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/files/routes';
-import { loaderOptions } from '@shuvi/app/files/routerConfig';
-
 import {
   getRoutes,
   app as PlatformAppComponent
 } from '@shuvi/app/core/platform';
 import {
+  Application,
   getModelManager,
   CreateServerApp
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
-import { getLoadersAndPreloadHook } from '../react/utils/router';
+import { getLoadersAndPreloadHook } from '../loader';
 
-// export function createApp<Router extends IRouter<IPageRouteRecord>>(options: {
 export const createApp: CreateServerApp = options => {
   const { req, ssr } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
   });
-  const context = { req };
   const modelManager = getModelManager();
   const router = createRouter({
     history,
     routes: getRoutes(routes)
   }) as IRouter;
+  let app: Application;
+
   if (ssr) {
     router.beforeResolve(
-      getLoadersAndPreloadHook(context, loaderOptions, modelManager)
+      getLoadersAndPreloadHook(modelManager, {
+        req,
+        getAppContext: () => app.context
+      })
     );
   }
-  router.init();
 
-  return application({
+  app = application({
     AppComponent: PlatformAppComponent,
     router,
-    context,
     modelManager,
     UserAppComponent
   });
+  router.init();
+
+  return app;
 };

@@ -1,6 +1,6 @@
 import * as customRuntime from '@shuvi/app/user/runtime';
 import { pluginRecord } from '@shuvi/app/core/plugins';
-import { IApplicationOptions, IAppContext } from '../runtime/applicationTypes';
+import { IApplicationOptions } from '../runtime/applicationTypes';
 import {
   createPlugin,
   IRuntimePluginConstructor,
@@ -44,9 +44,7 @@ function getPlugins(
   return plugins;
 }
 
-export default function application<Context extends IAppContext>(
-  options: IApplicationOptions<Context>
-): Application<Context> {
+export default function application(options: IApplicationOptions): Application {
   const application = new Application({
     ...options,
     plugins: getPlugins(customRuntime, pluginRecord)

@@ -14,8 +14,6 @@ export const withRedox = (
     );
   };
 
-  App?.getInitialProps &&
-    (ReduxAppWrapper.getInitialProps = App.getInitialProps);
   ReduxAppWrapper.displayName = 'ReduxAppWrapper';
 
   return ReduxAppWrapper;

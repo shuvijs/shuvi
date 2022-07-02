@@ -10,7 +10,7 @@ import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { renderAction } from './render-action';
-import { getLoaderManager } from '../loader/loaderManager';
+import { getLoaderManager } from '../../loader';
 
 const headManager = new HeadManager();
 

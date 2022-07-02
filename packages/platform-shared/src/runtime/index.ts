@@ -13,6 +13,9 @@ export * from './routerTypes';
 export * from './router';
 export * from './runtimeConfig';
 
+export * from './applicationTypes';
+export type { Application } from './application';
+
 export {
   // todo: remove
   getModelManager,
@@ -22,7 +25,8 @@ export {
   IModelManager,
   IErrorHandler,
   IPageError,
-  errorModel
+  errorModel,
+  redirectModel
 } from './store';
 
 export {
@@ -30,7 +34,3 @@ export {
   createPlugin,
   RuntimePluginInstance
 } from './lifecycle';
-
-export type { IRouteLoaderContext } from './context/routeLoaderContext';
-export * from './applicationTypes';
-export type { Application } from './application';
