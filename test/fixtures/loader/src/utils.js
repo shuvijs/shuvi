@@ -1,20 +1,12 @@
 function serializeAppContext(ctx) {
   return Object.keys(ctx).reduce((acc, key) => {
     const value = ctx[key];
-    if (key === 'req') {
-      acc['req'] = {
-        headers: value.headers,
-        url: value.url,
-        pathname: value.pathname,
-        query: value.query
-      };
+
+    const type = typeof value;
+    if (type === 'function') {
+      acc[key] = 'function';
     } else {
-      const type = typeof value;
-      if (type === 'function') {
-        acc[key] = 'function';
-      } else {
-        acc[key] = ctx[key];
-      }
+      acc[key] = ctx[key];
     }
 
     return acc;
@@ -24,7 +16,14 @@ function serializeAppContext(ctx) {
 export function normalizeContextForSerialize(ctx) {
   return Object.keys(ctx).reduce((acc, key) => {
     const value = ctx[key];
-    if (key === 'appContext') {
+    if (key === 'req') {
+      acc['req'] = {
+        headers: value.headers,
+        url: value.url,
+        pathname: value.pathname,
+        query: value.query
+      };
+    } else if (key === 'appContext') {
       acc[key] = serializeAppContext(value);
     } else {
       const type = typeof value;

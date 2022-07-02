@@ -9,8 +9,7 @@ import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
-import { getLoaderManager } from '../loader/loaderManager';
-import { getRedirector } from '@shuvi/platform-shared/lib/runtime/context/routeLoaderContext';
+import { getLoaderManager, getRedirector } from '../../loader';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({

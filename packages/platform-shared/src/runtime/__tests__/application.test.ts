@@ -1,13 +1,9 @@
 import { Application } from '../application';
-import { IAppContext } from '../applicationTypes';
 import { createRouter, createMemoryHistory } from '../router';
 import { getModelManager } from '../store';
 
 function getApp() {
   const app = new Application({
-    context: {
-      test: true
-    } as unknown as IAppContext,
     modelManager: getModelManager(),
     AppComponent: {},
     router: createRouter({
@@ -53,8 +49,12 @@ describe('application', () => {
   test('should wrap getAppComponent hook', async () => {
     const app = getApp();
     const {
-      hooks: { getAppComponent }
+      hooks: { getAppContext, getAppComponent }
     } = app.pluginManager;
+    getAppContext.use(context => {
+      context.test = true;
+      return context;
+    });
     getAppComponent.use((AppComponent: any, context: any) => {
       expect(context.test).toBe(true);
       const WrapApp = () => AppComponent;
