@@ -16,7 +16,6 @@ export type IRouteRecord<Element = any, ExtendedTypes = {}> = {
   children?: IRouteRecord<Element, ExtendedTypes>[];
   component?: Element; // For react will be React.Element
   redirect?: string;
-  resolve?: NavigationGuardHookWithContext;
   props?: IRouteComponentProps;
   path: string;
   filepath?: string;
