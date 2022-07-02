@@ -13,8 +13,8 @@ const webReactMainPlugin = createPlugin({
       exported: '{ default as dynamic }'
     },
     {
-      source: resolveAppFile('react/loader'),
-      exported: '{ useLoaderData, type Loader }'
+      source: resolveAppFile('react/useLoaderData'),
+      exported: '{ useLoaderData }'
     },
     {
       source: resolveLib('@shuvi/router-react'),

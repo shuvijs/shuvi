@@ -5,7 +5,6 @@ import {
   getErrorHandler,
   IAppState,
   IAppData,
-  IAppContext,
   IRawPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
@@ -15,12 +14,11 @@ import {
   createBrowserHistory,
   createHashHistory
 } from '@shuvi/router';
-import { historyMode, loaderOptions } from '@shuvi/app/files/routerConfig';
+import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { getLoaderManager } from '../react/loader/loaderManager';
-import { getLoadersAndPreloadHook } from '../react/utils/router';
+import { getLoaderManager, getLoadersAndPreloadHook } from '../loader';
 
-let app: Application<IAppContext>;
+let app: Application;
 
 export function createApp<AppState extends IAppState>(options: {
   routes: IRawPageRouteRecord[];
@@ -43,8 +41,6 @@ export function createApp<AppState extends IAppState>(options: {
     history = createBrowserHistory();
   }
 
-  const context = {};
-
   // loaderManager is created here and will be cached.
   getLoaderManager(loadersData, appData.ssr);
 
@@ -53,7 +49,9 @@ export function createApp<AppState extends IAppState>(options: {
     routes: getRoutes(routes)
   });
   router.beforeResolve(
-    getLoadersAndPreloadHook(context, loaderOptions, modelManager)
+    getLoadersAndPreloadHook(modelManager, {
+      getAppContext: () => app.context
+    })
   );
   router.afterEach(_current => {
     const error = getErrorHandler(modelManager);
@@ -66,14 +64,15 @@ export function createApp<AppState extends IAppState>(options: {
       }, 0);
     }
   });
-  router.init();
 
   app = application({
     AppComponent: appComponent,
     UserAppComponent: userComponents,
     router,
-    context,
     modelManager
   });
+
+  router.init();
+
   return app;
 }

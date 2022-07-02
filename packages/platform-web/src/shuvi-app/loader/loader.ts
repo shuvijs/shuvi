@@ -3,31 +3,23 @@ import {
   getErrorHandler,
   errorModel,
   IModelManager,
+  IRequest,
   IPageRouteRecord,
   IAppContext
 } from '@shuvi/platform-shared/esm/runtime';
-import { getRedirector } from '@shuvi/platform-shared/lib/runtime/context/routeLoaderContext';
 import isEqual from '@shuvi/utils/lib/isEqual';
-import { createError } from './createError';
+import { createError, getRedirector } from './loaderContext';
 import pageLoaders from '@shuvi/app/files/page-loaders';
-import {
-  getLoaderManager,
-  Loader,
-  LoaderReject
-} from '../loader/loaderManager';
-import { ILoaderOptions } from '@shuvi/service/lib/core';
+import { getLoaderManager, Loader, LoaderReject } from './loaderManager';
 
 const isServer = typeof window === 'undefined';
-
-export type INormalizeRoutesContext = IAppContext;
 
 let loaders = pageLoaders;
 
 export const getLoadersAndPreloadHook =
   (
-    appContext: INormalizeRoutesContext,
-    loaderOptions: ILoaderOptions,
-    modelManager: IModelManager
+    modelManager: IModelManager,
+    { req, getAppContext }: { req?: IRequest; getAppContext: () => IAppContext }
   ): NavigationGuardHook =>
   async (to, from, next) => {
     const errorComp = createError();
@@ -77,6 +69,7 @@ export const getLoadersAndPreloadHook =
     }
     const error = getErrorHandler(modelManager);
     const redirector = getRedirector(modelManager);
+    const appContext = getAppContext();
     const loaderGenerator = (routeId: string, to: IRoute<any>) => async () => {
       const loaderFn = loaders[routeId];
       if (typeof loaderFn === 'function') {
@@ -85,9 +78,10 @@ export const getLoadersAndPreloadHook =
           pathname: to.pathname,
           query: to.query,
           params: to.params,
-          appContext,
           redirect: redirector.handler,
-          error: isServer ? error.errorHandler : errorComp.handler
+          error: isServer ? error.errorHandler : errorComp.handler,
+          appContext,
+          ...(req ? { req } : {})
         });
       }
     };
@@ -101,42 +95,23 @@ export const getLoadersAndPreloadHook =
         targetLoaders.push(loaderManager.add(loaderGenerator(id, to), id));
       }
     });
-    const { sequential } = loaderOptions;
     const executeLoaders = async () => {
-      // call loaders in sequence
-      if (sequential) {
-        for (const loader of targetLoaders) {
-          // initialData must not null if hydrating
-          if (shouldHydrate) {
-            if (loader.result.error) {
-              await loader.load(true);
+      // call loaders in parallel
+      await Promise.all(
+        targetLoaders
+          .filter(loader => {
+            // skip when hydrating and no error
+            if (shouldHydrate && !loader.result.error) {
+              return false;
             }
-          } else {
-            try {
-              await loader?.load(true);
-            } catch (e) {
-              loaderManager.rejecteds.push((e as LoaderReject).id);
-              next();
-            }
-          }
-        }
-      } else {
-        // call loaders in parallel
-        await Promise.all(
-          targetLoaders
-            .filter(loader => {
-              // skip when hydrating and no error
-              if (shouldHydrate && !loader.result.error) {
-                return false;
-              }
-              return true;
-            })
-            .map(loader => loader?.load(true))
-        ).catch(e => {
-          loaderManager.rejecteds.push((e as LoaderReject).id);
-          next();
-        });
-      }
+            return true;
+          })
+          .map(loader => loader?.load(true))
+      ).catch(e => {
+        console.error('run loader failed', e);
+        loaderManager.rejecteds.push((e as LoaderReject).id);
+        next();
+      });
     };
     try {
       await Promise.all([executeLoaders(), ...preloadAll]);

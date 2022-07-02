@@ -20,15 +20,14 @@ export type IRerenderConfig = {
   UserAppComponent?: any;
 };
 
-export interface IApplication<Context extends IAppContext = IAppContext> {
-  readonly context: Context;
+export interface IApplication {
+  readonly context: IAppContext;
   readonly router: IRouter;
   readonly appComponent: any;
   readonly modelManager: IModelManager;
 }
 
-export interface IApplicationOptions<AppContext extends IAppContext> {
-  context: AppContext;
+export interface IApplicationOptions {
   router: IRouter;
   modelManager: IModelManager;
   AppComponent: any;
@@ -97,5 +96,5 @@ export interface IViewServer<ExtraAppData = {}>
   > {}
 
 export interface CreateServerApp {
-  (options: { req: IRequest; ssr: boolean }): Application<IAppContext>;
+  (options: { req: IRequest; ssr: boolean }): Application;
 }

@@ -10,17 +10,17 @@ import {
   IRerenderConfig
 } from './applicationTypes';
 
-export class Application<Context extends IAppContext> {
+export class Application {
   private _router: IRouter;
   private _appComponent: any;
   private _pluginManager: PluginManager;
-  private _context: Context;
+  private _context: IAppContext;
   private _modelManager: IModelManager;
   private _userAppComponent?: any;
 
-  constructor(options: IApplicationOptions<Context>) {
+  constructor(options: IApplicationOptions) {
     this._router = options.router;
-    this._context = options.context;
+    this._context = {};
     this._modelManager = options.modelManager;
     this._appComponent = options.AppComponent;
     this._userAppComponent = options.UserAppComponent;
@@ -61,8 +61,7 @@ export class Application<Context extends IAppContext> {
       isServer: typeof window === 'undefined',
       pathname: to.pathname,
       query: to.query,
-      params: to.params,
-      appContext: this._context
+      params: to.params
       // redirect: redirector.handler,
       // error: error.handler,
 
@@ -100,7 +99,7 @@ export class Application<Context extends IAppContext> {
   private async _initAppContext() {
     this._context = (await this._pluginManager.runner.getAppContext(
       this._context
-    )) as IAppContext & Context;
+    )) as IAppContext;
   }
 
   private async _initAppComponent() {
@@ -115,7 +114,7 @@ export class Application<Context extends IAppContext> {
     );
   }
 
-  getPublicAPI(): IApplication<Context> {
+  getPublicAPI(): IApplication {
     return {
       context: this._context,
       router: this._router,

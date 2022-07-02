@@ -28,16 +28,14 @@ const core = createPlugin({
   addRuntimeFile: ({ createFile }, context) => {
     const {
       config: {
-        router: { history },
-        experimental: { loader }
+        router: { history }
       },
       paths
     } = context;
     const routerConfigFile = createFile({
       name: 'routerConfig.js',
       content: () => {
-        return `export const historyMode = "${history}";
-        export const loaderOptions = ${JSON.stringify(loader)}`;
+        return `export const historyMode = "${history}";`;
       }
     });
 

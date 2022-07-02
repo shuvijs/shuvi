@@ -137,10 +137,6 @@ export type IPlatform = (
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
-export type ILoaderOptions = {
-  sequential?: boolean;
-};
-
 export interface IRouterConfig {
   history?: IRouterHistoryMode;
 }
@@ -180,7 +176,6 @@ export interface UserConfig {
   analyze?: boolean;
   experimental?: {
     parcelCss?: boolean;
-    loader?: ILoaderOptions;
   };
 }
 
@@ -190,7 +185,6 @@ export interface Config
   apiConfig: Required<IApiConfig>;
   experimental: {
     parcelCss: boolean;
-    loader: ILoaderOptions;
   };
 }
 

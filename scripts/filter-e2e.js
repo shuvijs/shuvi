@@ -1,6 +1,6 @@
 const path = require('path');
 
-const e2eTests = ['test/fixtures', 'test/e2e'];
+const e2eTests = ['test/e2e'];
 
 module.exports = list => {
   return {
