@@ -225,7 +225,8 @@ describe('custom/error.js', () => {
       expect(await page.$text('#about')).toBe('About Page');
     });
 
-    test('spa route resolve error', async () => {
+    // FIXME: the timing of invoking error in preload and loader is unstable
+    test.skip('spa route resolve error', async () => {
       deleteFile();
       result = await page.goto(ctx.url('/ctx-error?a=1'));
       expect(result.status()).toBe(200);

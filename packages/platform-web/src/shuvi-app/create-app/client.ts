@@ -18,7 +18,7 @@ import {
 import { historyMode, loaderOptions } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { getLoaderManager } from '../react/loader/loaderManager';
-import { getLoadersHook } from '../react/utils/router';
+import { getLoadersAndPreloadHook } from '../react/utils/router';
 
 let app: Application<IAppContext>;
 
@@ -52,7 +52,9 @@ export function createApp<AppState extends IAppState>(options: {
     history,
     routes: getRoutes(routes)
   });
-  router.beforeResolve(getLoadersHook(context, loaderOptions, modelManager));
+  router.beforeResolve(
+    getLoadersAndPreloadHook(context, loaderOptions, modelManager)
+  );
   router.afterEach(_current => {
     const error = getErrorHandler(modelManager);
     if (!_current.matches.length) {

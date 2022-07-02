@@ -23,7 +23,6 @@ import {
 } from './utils';
 import { isError } from './utils/error';
 import { runQueue } from './utils/async';
-import { extractHooks } from './utils/extract-hooks';
 import History from './history/base';
 import { getRedirectFromRoutes } from './getRedirectFromRoutes';
 
@@ -202,7 +201,6 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const routeContext = new Map<RouteRecord, NavigationHookContext>();
     const queue = ([] as Array<NavigationGuardHook>).concat(
       this._beforeEachs.toArray(),
-      extractHooks(nextMatches, 'resolve', routeContext),
       this._beforeResolves.toArray()
     );
 
