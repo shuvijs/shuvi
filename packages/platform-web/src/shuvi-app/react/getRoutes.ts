@@ -3,7 +3,6 @@ import {
   IRawPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import { loadRouteComponent } from './loadRouteComponent';
-import { normalizeRoutes } from './utils/router';
 
 export default function getRoutes(
   routes: IRawPageRouteRecord[]
@@ -34,5 +33,5 @@ export default function getRoutes(
       return { __componentSourceWithAffix__, __resolveWeak__, ...route };
     });
   const routesWithRequire = getRoutesWithRequire(routes || []);
-  return normalizeRoutes(routesWithRequire);
+  return routesWithRequire;
 }
