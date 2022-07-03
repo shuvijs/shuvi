@@ -1,6 +1,8 @@
 import { IRoute, IRouteMatch, NavigationGuardHook } from '@shuvi/router';
 import {
   getErrorHandler,
+  createError,
+  getRedirector,
   errorModel,
   IModelManager,
   IRequest,
@@ -8,7 +10,6 @@ import {
   IAppContext
 } from '@shuvi/platform-shared/esm/runtime';
 import isEqual from '@shuvi/utils/lib/isEqual';
-import { createError, getRedirector } from './loaderContext';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import { getLoaderManager, Loader, LoaderReject } from './loaderManager';
 
