@@ -2,7 +2,7 @@ import { getManager, PluginManager } from './lifecycle';
 import { setApp } from './appProxy';
 import { initPlugins } from './lifecycle';
 import { IModelManager } from './store';
-import { IRouter, IRoute } from './routerTypes';
+import { IRouter } from './routerTypes';
 import {
   IApplication,
   IAppContext,
@@ -53,21 +53,6 @@ export class Application {
 
   get modelManager() {
     return this._modelManager;
-  }
-
-  getRouteLoaderContext(to: IRoute): any {
-    // todo
-    return {
-      isServer: typeof window === 'undefined',
-      pathname: to.pathname,
-      query: to.query,
-      params: to.params
-      // redirect: redirector.handler,
-      // error: error.handler,
-
-      // server only
-      // req: this._req
-    };
   }
 
   async updateComponents({

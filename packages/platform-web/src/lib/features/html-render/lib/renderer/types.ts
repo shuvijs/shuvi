@@ -1,4 +1,3 @@
-import { IRedirectState } from '@shuvi/router';
 import {
   IApplication,
   IRequest,
@@ -8,7 +7,8 @@ import {
   IServerRendererOptions,
   IViewClient,
   IViewServer,
-  IRenderAppResult
+  IRenderAppResult,
+  IRedirectState
 } from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
 

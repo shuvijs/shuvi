@@ -24,23 +24,22 @@ export type IRouteRecord<Element = any, ExtendedTypes = {}> = {
   __resolveWeak__?: () => any;
 } & ExtendedTypes;
 
+export interface NavigationGuardNext {
+  (): void;
+  (error: Error): void;
+  (location: string | { path?: string; replace?: boolean }): void;
+  (valid: boolean | undefined): void;
+}
+
 export interface NavigationGuardHook<R extends IRouteRecord = any> {
-  (
-    to: IRoute<R>,
-    from: IRoute<R>,
-    next: (
-      nextObject?: false | string | { path?: string; replace?: boolean } | Error
-    ) => void
-  ): void;
+  (to: IRoute<R>, from: IRoute<R>, next: NavigationGuardNext): void;
 }
 
 export interface NavigationGuardHookWithContext<R extends IRouteRecord = any> {
   (
     to: IRoute<R>,
     from: IRoute<R>,
-    next: (
-      nextObject?: false | string | { path?: string; replace?: boolean } | Error
-    ) => void,
+    next: NavigationGuardNext,
     context: NavigationHookContext
   ): void;
 }
@@ -111,13 +110,4 @@ export interface IRouter<
   afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
 
   replaceRoutes: (routes: RouteRecord[]) => void;
-}
-
-export interface IRedirectFn {
-  (status: number, path: string): void;
-  (path: string): void;
-}
-export interface IRedirectState {
-  status?: number;
-  path: string;
 }

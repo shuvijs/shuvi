@@ -1,8 +1,11 @@
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { getModelManager } from './getModelsManager';
-import { errorModel, IPageError } from './models';
+import { getModelManager, errorModel, IPageError } from '../store';
 
 const isServer = typeof window === 'undefined';
+
+export interface IPageErrorHandler extends IPageError {
+  handler: IErrorHandler['errorHandler'];
+}
 
 export type IErrorHandlerFn = (
   errorCode?: SHUVI_ERROR_CODE | string,
@@ -17,12 +20,43 @@ export interface IErrorHandler {
 
 let errorHandler: IErrorHandler;
 
+export function createError(): IPageErrorHandler {
+  const pageError = {
+    errorCode: undefined,
+    errorDesc: undefined
+  } as unknown as IPageErrorHandler;
+
+  pageError.handler = (
+    errorCode?: SHUVI_ERROR_CODE | string,
+    errorDesc?: string
+  ) => {
+    if (pageError.errorCode !== undefined) {
+      return pageError;
+    }
+    if (typeof errorCode === 'number') {
+      pageError.errorCode = errorCode;
+      pageError.errorDesc = errorDesc;
+    } else {
+      pageError.errorCode = SHUVI_ERROR_CODE.APP_ERROR;
+      pageError.errorDesc = errorCode;
+    }
+    return pageError;
+  };
+
+  return pageError;
+}
+
 function createErrorHanlder(modelManager: ReturnType<typeof getModelManager>) {
   const errorStore = modelManager.get(errorModel);
   let shouldReset = false;
 
   return {
     errorHandler(errorCode?: SHUVI_ERROR_CODE | string, errorDesc?: string) {
+      const { hasError } = errorStore.$state();
+      if (hasError) {
+        return;
+      }
+
       shouldReset = false;
       const payload = {
         hasError: true
