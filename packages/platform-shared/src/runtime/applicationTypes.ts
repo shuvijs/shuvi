@@ -1,5 +1,5 @@
 import type { IncomingMessage } from 'http';
-import { IRouter, IRedirectState } from './routerTypes';
+import { IRouter } from './routerTypes';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IPluginList } from './lifecycle';
@@ -19,6 +19,16 @@ export type IRerenderConfig = {
   AppComponent?: any;
   UserAppComponent?: any;
 };
+
+export interface IRedirectFn {
+  (status: number, path: string): void;
+  (path: string): void;
+}
+
+export interface IRedirectState {
+  status?: number;
+  path: string;
+}
 
 export interface IApplication {
   readonly context: IAppContext;

@@ -11,8 +11,7 @@ export {
   parseQuery,
   resolvePath,
   joinPaths,
-  createLocation,
-  createRedirector
+  createLocation
 } from './utils';
 
 export * from './types';

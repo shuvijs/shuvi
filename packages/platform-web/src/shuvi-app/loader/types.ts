@@ -1,7 +1,11 @@
-import { IRedirectState, IRedirectFn } from '@shuvi/router';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { IParams, ParsedQuery } from '@shuvi/router';
-import { IAppContext, IRequest } from '@shuvi/platform-shared/esm/runtime';
+import {
+  IAppContext,
+  IRequest,
+  IRedirectState,
+  IRedirectFn
+} from '@shuvi/platform-shared/esm/runtime';
 
 export type IURLQuery = ParsedQuery;
 export type IURLParams = IParams;

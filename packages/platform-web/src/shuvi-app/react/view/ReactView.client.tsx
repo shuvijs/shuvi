@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import { createRedirector } from '@shuvi/router';
-import { getErrorHandler } from '@shuvi/platform-shared/esm/runtime';
+import {
+  getErrorHandler,
+  getRedirector
+} from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
@@ -37,7 +39,7 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    const redirector = createRedirector();
+    const redirector = getRedirector(modelManager);
 
     const error = getErrorHandler(modelManager);
 

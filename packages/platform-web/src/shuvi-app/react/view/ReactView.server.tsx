@@ -2,14 +2,18 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import { getErrorHandler, IHtmlTag } from '@shuvi/platform-shared/esm/runtime';
+import {
+  getErrorHandler,
+  getRedirector,
+  IHtmlTag
+} from '@shuvi/platform-shared/esm/runtime';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
-import { getLoaderManager, getRedirector } from '../../loader';
+import { getLoaderManager } from '../../loader';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
