@@ -16,15 +16,5 @@ export default option =>
         </div>
       );
       return newApp;
-    },
-    getRootAppComponent: App => {
-      const newApp = () => (
-        <div>
-          <div>This is getRootAppComponent</div>
-          <App />
-          <Hello />
-        </div>
-      );
-      return newApp;
     }
   });

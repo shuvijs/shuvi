@@ -26,7 +26,6 @@ function getPlugins(
   const pluginConstructor: IRuntimePluginConstructor = {};
   const methods: Array<keyof typeof runtime> = [
     'getAppComponent',
-    'getRootAppComponent',
     'getAppContext',
     'init',
     'dispose'

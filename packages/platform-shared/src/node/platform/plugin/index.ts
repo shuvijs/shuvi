@@ -23,10 +23,6 @@ const core = createPlugin({
       // todo: rename and limit export modules
       source: resolveFile('esm', 'runtime', 'runtimePublicExport'),
       exported: '*'
-    },
-    {
-      source: resolveFile('esm', 'runtime', 'appProxy'),
-      exported: '{ App }'
     }
   ]
 });

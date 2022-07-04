@@ -1,5 +1,4 @@
 import { getManager, PluginManager } from './lifecycle';
-import { setApp } from './appProxy';
 import { initPlugins } from './lifecycle';
 import { IModelManager } from './store';
 import { IRouter } from './routerTypes';
@@ -16,14 +15,12 @@ export class Application {
   private _pluginManager: PluginManager;
   private _context: IAppContext;
   private _modelManager: IModelManager;
-  private _userAppComponent?: any;
 
   constructor(options: IApplicationOptions) {
     this._router = options.router;
     this._context = {};
     this._modelManager = options.modelManager;
     this._appComponent = options.AppComponent;
-    this._userAppComponent = options.UserAppComponent;
     this._pluginManager = getManager();
 
     initPlugins(this._pluginManager, options.plugins || []);
@@ -55,21 +52,10 @@ export class Application {
     return this._modelManager;
   }
 
-  async updateComponents({
-    AppComponent,
-    UserAppComponent
-  }: IRerenderConfig = {}) {
+  async updateComponents({ AppComponent }: IRerenderConfig = {}) {
     if (AppComponent && AppComponent !== this._appComponent) {
       this._appComponent = AppComponent;
     }
-    if (UserAppComponent) {
-      if (UserAppComponent !== this._userAppComponent) {
-        this._userAppComponent = UserAppComponent;
-      }
-    } else {
-      this._userAppComponent = undefined;
-    }
-
     await this._initAppComponent();
   }
 
@@ -88,13 +74,8 @@ export class Application {
   }
 
   private async _initAppComponent() {
-    this._appComponent = await this._pluginManager.runner.getRootAppComponent(
-      this._appComponent,
-      this._context
-    );
-    setApp(this._appComponent);
     this._appComponent = await this._pluginManager.runner.getAppComponent(
-      this._userAppComponent ? this._userAppComponent : this._appComponent,
+      this._appComponent,
       this._context
     );
   }

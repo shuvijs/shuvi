@@ -1,7 +1,7 @@
-import { App, useRouter } from '@shuvi/runtime';
 import React from 'react';
+import { RouterView, useRouter } from '@shuvi/runtime';
 
-const MyApp = () => {
+const GlobalLayout = () => {
   const router = useRouter();
 
   React.useEffect(() => {
@@ -14,7 +14,7 @@ const MyApp = () => {
     return () => routerListener();
   }, []);
 
-  return <App />;
+  return <RouterView />;
 };
 
-export default MyApp;
+export default GlobalLayout;

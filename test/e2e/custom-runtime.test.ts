@@ -27,11 +27,8 @@ describe('custom/runtime.js', () => {
     expect(await page.$text('div')).toMatch(/404/);
   });
 
-  test('appComponent and rootAppComponent should work', async () => {
+  test('appComponent should work', async () => {
     page = await ctx.browser.page(ctx.url('/'));
-    expect(await page.$text('#root-app-component')).toBe(
-      'This is Root AppComponent'
-    );
     expect(await page.$text('#app-component')).toBe('This is AppComponent');
     expect(await page.$text('#page')).toBe('Index Page');
   });

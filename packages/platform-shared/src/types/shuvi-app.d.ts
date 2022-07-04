@@ -45,11 +45,6 @@ declare module '@shuvi/app/core/setPublicRuntimeConfig' {
   export default function setPublicRuntimeConfig(config: IRuntimeConfig): void;
 }
 
-declare module '@shuvi/app/user/app' {
-  const UserAppComponent: any;
-  export default UserAppComponent;
-}
-
 declare module '@shuvi/app/user/error' {
   const Error: any;
   export default Error;
@@ -59,7 +54,6 @@ declare module '@shuvi/app/user/runtime' {
   import { IRuntimeModule } from '@shuvi/platform-shared/src/runtime/lifecycle';
   export const onInit: IRuntimeModule['onInit'];
   export const getAppComponent: IRuntimeModule['getAppComponent'];
-  export const getRootAppComponent: IRuntimeModule['getRootAppComponent'];
   export const getAppContext: IRuntimeModule['getAppContext'];
   export const onRenderDone: IRuntimeModule['onRenderDone'];
   export const onDispose: IRuntimeModule['onDispose'];
