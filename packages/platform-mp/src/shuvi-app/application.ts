@@ -1,4 +1,4 @@
-import AppComponent from '@shuvi/app/core/app';
+import { app as AppComponent } from '@shuvi/app/core/platform';
 import { getModelManager } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 

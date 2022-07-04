@@ -1,5 +1,5 @@
+import { RouterView, useRouter } from '@shuvi/runtime';
 import React from 'react';
-import { App, useRouter } from '@shuvi/runtime';
 
 const MyApp = () => {
   const router = useRouter();
@@ -14,7 +14,7 @@ const MyApp = () => {
     return () => routerListener();
   }, []);
 
-  return <App />;
+  return <RouterView />;
 };
 
 export default MyApp;

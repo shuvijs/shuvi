@@ -18,7 +18,6 @@ export interface IAppContext extends CustomAppContext {
 
 export type IRerenderConfig = {
   AppComponent?: any;
-  UserAppComponent?: any;
 };
 
 export interface IApplication {
@@ -32,7 +31,6 @@ export interface IApplicationOptions {
   router: IRouter;
   modelManager: IModelManager;
   AppComponent: any;
-  UserAppComponent?: any;
   plugins?: IPluginList;
 }
 
