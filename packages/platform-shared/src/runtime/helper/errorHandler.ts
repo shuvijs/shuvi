@@ -1,5 +1,5 @@
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { getModelManager, errorModel, IPageError } from '../store';
+import { getStoreManager, errorModel, IPageError } from '../store';
 
 const isServer = typeof window === 'undefined';
 
@@ -46,13 +46,13 @@ export function createError(): IPageErrorHandler {
   return pageError;
 }
 
-function createErrorHanlder(modelManager: ReturnType<typeof getModelManager>) {
-  const errorStore = modelManager.get(errorModel);
+function createErrorHanlder(storeManager: ReturnType<typeof getStoreManager>) {
+  const errorStore = storeManager.get(errorModel);
   let shouldReset = false;
 
   return {
     errorHandler(errorCode?: SHUVI_ERROR_CODE | string, errorDesc?: string) {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       if (hasError) {
         return;
       }
@@ -74,7 +74,7 @@ function createErrorHanlder(modelManager: ReturnType<typeof getModelManager>) {
       shouldReset = true;
     },
     resetErrorState() {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       if (hasError && shouldReset) {
         errorStore.reset();
       }
@@ -84,14 +84,14 @@ function createErrorHanlder(modelManager: ReturnType<typeof getModelManager>) {
 }
 
 export function getErrorHandler(
-  modelManager: ReturnType<typeof getModelManager>
+  storeManager: ReturnType<typeof getStoreManager>
 ): IErrorHandler {
   if (isServer) {
-    return createErrorHanlder(modelManager);
+    return createErrorHanlder(storeManager);
   }
 
   if (!errorHandler) {
-    errorHandler = createErrorHanlder(modelManager);
+    errorHandler = createErrorHanlder(storeManager);
   }
 
   return errorHandler;

@@ -4,7 +4,7 @@ import {
   createError,
   getRedirector,
   errorModel,
-  IModelManager,
+  IStoreManager,
   IRequest,
   IPageRouteRecord,
   IAppContext
@@ -19,7 +19,7 @@ let loaders = pageLoaders;
 
 export const getLoadersAndPreloadHook =
   (
-    modelManager: IModelManager,
+    storeManager: IStoreManager,
     { req, getAppContext }: { req?: IRequest; getAppContext: () => IAppContext }
   ): NavigationGuardHook =>
   async (to, from, next) => {
@@ -62,14 +62,14 @@ export const getLoadersAndPreloadHook =
     const loaderManager = getLoaderManager();
     const { shouldHydrate } = loaderManager;
     if (shouldHydrate) {
-      const { hasError } = modelManager.get(errorModel).$state();
+      const { hasError } = storeManager.get(errorModel).$state;
       if (hasError) {
         // hydrated error page, run Component.getInitialProps by client
         return next();
       }
     }
-    const error = getErrorHandler(modelManager);
-    const redirector = getRedirector(modelManager);
+    const error = getErrorHandler(storeManager);
+    const redirector = getRedirector(storeManager);
     const appContext = getAppContext();
     const loaderGenerator = (routeId: string, to: IRoute<any>) => async () => {
       const loaderFn = loaders[routeId];

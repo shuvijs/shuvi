@@ -39,7 +39,7 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    const redirector = getRedirector(modelManager);
+    const redirector = getRedirector(storeManager);
 
     const error = getErrorHandler(storeManager);
 
@@ -59,7 +59,7 @@ export class ReactClientView implements IReactClientView {
     }
 
     if (redirector.redirected) {
-      router.replace(redirector.state!.path);
+      router.replace(redirector.state.path);
     }
 
     const root = (

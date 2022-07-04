@@ -1,11 +1,11 @@
-import { getModelManager, redirectModel } from '../store';
+import { getStoreManager, redirectModel } from '../store';
 
 export function getRedirector(
-  modelManager: ReturnType<typeof getModelManager>
+  storeManager: ReturnType<typeof getStoreManager>
 ) {
-  const redirectStore = modelManager.get(redirectModel);
+  const redirectStore = storeManager.get(redirectModel);
   const handler = (first?: number | string, second?: string) => {
-    if (redirectStore.$state().redirected) {
+    if (redirectStore.$state.redirected) {
       return;
     }
 
@@ -35,10 +35,10 @@ export function getRedirector(
     handler,
     reset,
     get redirected() {
-      return redirectStore.$state().redirected;
+      return redirectStore.$state.redirected;
     },
     get state() {
-      const { path, status } = redirectStore.$state();
+      const { path, status } = redirectStore.$state;
       return {
         path,
         status
