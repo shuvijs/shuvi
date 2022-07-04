@@ -74,7 +74,7 @@ class Headers {
     delete this._map[normalizeName(name)];
   }
 
-  getfunction(name: string) {
+  get(name: string) {
     name = normalizeName(name);
     return this.has(name) ? this._map[name] : null;
   }
@@ -119,22 +119,50 @@ if (supportIterator) {
   (Headers.prototype as any)[Symbol.iterator] = Headers.prototype.entries;
 }
 
-class Response {
-  public body: string;
-  public status: number;
-  public statusText: string;
-  public headers: Headers;
+export type ResponseType = 'error' | 'json' | 'redirect';
 
-  constructor(body: string, options: ResponseOptions = {}) {
-    this.body = body;
+export interface Response {
+  readonly data: string;
+  readonly status: number;
+  readonly statusText: string;
+  readonly headers: Headers;
+}
+
+class ResponseImpl implements Response {
+  public readonly __shuvi_resp_type__: 'error' | 'json' | 'redirect';
+  public readonly data: any;
+  public readonly status: number;
+  public readonly statusText: string;
+  public readonly headers: Headers;
+
+  constructor(data: any, type: ResponseType, options: ResponseOptions = {}) {
+    this.__shuvi_resp_type__ = type;
+    this.data = data;
     this.status = options.status || 200;
     this.statusText = options.statusText || '';
     this.headers = new Headers(options.headers);
   }
 }
 
+function createTypeCreator(type: ResponseType) {
+  return (obj: any): obj is Response => {
+    return obj && obj.__shuvi_resp_type__ === type;
+  };
+}
+
+export const isResponse = (obj: any): obj is Response =>
+  obj && typeof obj.__shuvi_resp_type__ === 'string';
+
+export const isJson = createTypeCreator('json');
+export const isRedirect = createTypeCreator('redirect');
+export const isError = createTypeCreator('error');
+
+export function json(data: any): Response {
+  return new ResponseImpl(data, 'json');
+}
+
 export function redirect(to: string, status: number = 302): Response {
-  return new Response('', {
+  return new ResponseImpl('', 'redirect', {
     status,
     headers: {
       Location: to
@@ -142,8 +170,11 @@ export function redirect(to: string, status: number = 302): Response {
   });
 }
 
-export function error(body: string, status: number = 500): Response {
-  return new Response(body, {
-    status
+export function error(): Response;
+export function error(body: string): Response;
+export function error(body: string, statusCode?: number): Response;
+export function error(body?: string, statusCode: number = 500): Response {
+  return new ResponseImpl(body, 'error', {
+    status: statusCode
   });
 }
