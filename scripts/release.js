@@ -6,6 +6,7 @@ const semver = require('semver');
 const currentVersion = require('../package.json').version;
 const { prompt } = require('enquirer');
 const execa = require('execa');
+const help = require('./releaseHelp.js');
 const pre =
   args.pre ||
   (semver.prerelease(currentVersion) && semver.prerelease(currentVersion)[0]);
@@ -18,6 +19,7 @@ const packages = fs
 const testPackages = fs
   .readdirSync(path.resolve(__dirname, '../test/packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
+const isNeedHelp = args.help || args.h;
 
 const skippedPackages = [
   'app',
@@ -51,6 +53,11 @@ const step = msg => console.log(chalk.cyan(msg));
 
 async function main() {
   let targetVersion = args._[0];
+
+  if (isNeedHelp) {
+    console.log(help);
+    return;
+  }
 
   if (!targetVersion) {
     // no explicit version, offer suggestions
@@ -89,15 +96,6 @@ async function main() {
     return;
   }
 
-  // run tests before release
-  step('\nRunning tests...');
-  if (!skipTests && !isDryRun) {
-    await run(bin('jest'), ['--clearCache']);
-    await run('pnpm', ['test', '--bail']);
-  } else {
-    console.log(`(skipped)`);
-  }
-
   // update all package versions and inter-dependencies
   step('\nUpdating cross dependencies...');
   updateVersions(targetVersion);
@@ -114,9 +112,22 @@ async function main() {
   step('\nGenerating changelog...');
   await run(`pnpm`, ['changelog']);
 
-  // update pnpm-lock.yaml
+  // clean all package
+  step('\nClean all package...');
+  await run(`pnpm`, ['clean']);
+
+  // install all packages and update pnpm-lock.yaml
   step('\nUpdating lockfile...');
-  await run(`pnpm`, ['install', '--lockfile-only']);
+  await run(`pnpm`, ['install']);
+
+  // run tests before release
+  step('\nRunning tests...');
+  if (!skipTests && !isDryRun) {
+    await run(bin('jest'), ['--clearCache']);
+    await run('pnpm', ['test', '--bail']);
+  } else {
+    console.log(`(skipped)`);
+  }
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
 
