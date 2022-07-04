@@ -224,7 +224,7 @@ async function publishPackage(pkgName, version) {
         ...(releaseTag ? ['--tag', releaseTag] : []),
         '--access',
         'public',
-        isDryRun ? '--dry-run' : undefined
+        ...(isDryRun ? ['--dry-run', '--no-git-checks'] : [])
       ],
       {
         cwd: pkgRoot,
