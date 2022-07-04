@@ -79,7 +79,7 @@ describe('custom/error.js', () => {
 
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 502 custom error describe'
+        'custom error 502 custom error server'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
@@ -167,7 +167,7 @@ describe('custom/error.js', () => {
 
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 502 custom error describe'
+        'custom error 502 custom error client'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'

@@ -37,39 +37,6 @@ describe('loader', () => {
       expect(errors.length).toBe(0);
     });
 
-    test('should fallback to client-side rendering if any `loader` throw error at server side', async () => {
-      page = await ctx.browser.page(ctx.url('/server-fail'), {
-        disableJavaScript: true
-      });
-      expect(await page.$text('div')).toBe('');
-      expect(JSON.parse(await page.$text('#__APP_DATA')).ssr).toBe(false);
-      await page.close();
-      page = await ctx.browser.page(ctx.url('/server-fail'));
-      const { texts, dispose } = page.collectBrowserLog();
-      expect(await page.$text('p')).toBe('world');
-      expect(texts.length).toBe(0);
-      dispose();
-    });
-
-    test('should throw internal error if any `loader` throw error at client side initial rendering', async () => {
-      page = await ctx.browser.page(ctx.url('/always-fail'));
-      await page.waitForSelector('#__APP');
-      expect(await page.$text('div')).toMatch('Internal Server Error');
-    });
-
-    test('should throw internal error if any `loader` throw error at client side route navigation', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
-      await page.shuvi.navigate('/always-fail');
-      await page.waitForSelector('#__APP');
-      expect(await page.$text('div')).toMatch('Internal Server Error');
-    });
-
-    test('should throw internal error if `useLoaderData` is called but no `loader` function exported in the route module', async () => {
-      page = await ctx.browser.page(ctx.url('/no-loader'));
-      await page.waitForTimeout(1000);
-      expect(await page.$text('div')).toMatch('Internal Server Error');
-    });
-
     test('PageComponent should receive context object', async () => {
       page = await ctx.browser.page(ctx.url('/test?a=2'));
       const loaderData = JSON.parse(await page.$text('[data-test-id="foo"]'));

@@ -97,7 +97,7 @@ describe('custom/error.js', () => {
 
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 502 custom error describe'
+        'custom error 502 custom error server'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
@@ -123,7 +123,7 @@ describe('custom/error.js', () => {
       expect(result.status()).toBe(502);
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 502 custom error describe'
+        'custom error 502 custom error server'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
@@ -205,7 +205,7 @@ describe('custom/error.js', () => {
 
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 502 custom error describe'
+        'custom error 502 custom error client'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
@@ -225,8 +225,7 @@ describe('custom/error.js', () => {
       expect(await page.$text('#about')).toBe('About Page');
     });
 
-    // FIXME: the timing of invoking error in preload and loader is unstable
-    test.skip('spa route resolve error', async () => {
+    test('spa route resolve error', async () => {
       deleteFile();
       result = await page.goto(ctx.url('/ctx-error?a=1'));
       expect(result.status()).toBe(200);
