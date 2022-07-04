@@ -1,14 +1,14 @@
 import { Application } from '../application';
 import { IAppContext } from '../applicationTypes';
 import { createRouter, createMemoryHistory } from '../router';
-import { getModelManager } from '../store';
+import { getStoreManager } from '../store';
 
 function getApp() {
   const app = new Application({
     context: {
       test: true
     } as unknown as IAppContext,
-    modelManager: getModelManager(),
+    storeManager: getStoreManager(),
     AppComponent: {},
     router: createRouter({
       history: createMemoryHistory(),
