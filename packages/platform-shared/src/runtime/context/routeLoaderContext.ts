@@ -5,7 +5,7 @@ import {
   ParsedQuery
 } from '@shuvi/router';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { getModelManager } from '../store/getModelsManager';
+import { getStoreManager } from '../store/getStoreManager';
 import { errorModel, redirectModel, IPageError } from '../store/models';
 import { IAppContext, IRequest } from '../applicationTypes';
 
@@ -125,11 +125,11 @@ export function createRedirector(): IRedirector {
 
 /** make redirector be reusable at different places */
 export function getRedirector(
-  modelManager: ReturnType<typeof getModelManager>
+  storeManager: ReturnType<typeof getStoreManager>
 ) {
-  const redirectStore = modelManager.get(redirectModel);
+  const redirectStore = storeManager.get(redirectModel);
   const handler = (first?: number | string, second?: string) => {
-    if (redirectStore.$state().redirected) {
+    if (redirectStore.$state.redirected) {
       return;
     }
 
@@ -159,10 +159,10 @@ export function getRedirector(
     handler,
     reset,
     get redirected() {
-      return redirectStore.$state().redirected;
+      return redirectStore.$state.redirected;
     },
     get state() {
-      const { path, status } = redirectStore.$state();
+      const { path, status } = redirectStore.$state;
       return {
         path,
         status
@@ -172,14 +172,14 @@ export function getRedirector(
 }
 
 export function getErrorHandler(
-  modelManager: ReturnType<typeof getModelManager>
+  storeManager: ReturnType<typeof getStoreManager>
 ): {
   errorHandler: IErrorHandler;
   reset: () => void;
 } {
   return {
     errorHandler(errorCode?: SHUVI_ERROR_CODE | string, errorDesc?: string) {
-      const errorStore = modelManager.get(errorModel);
+      const errorStore = storeManager.get(errorModel);
       const payload = {
         hasError: true
       } as IPageError;
@@ -193,8 +193,8 @@ export function getErrorHandler(
       errorStore.update(payload);
     },
     reset() {
-      const errorStore = modelManager.get(errorModel);
-      const { hasError } = errorStore.$state();
+      const errorStore = storeManager.get(errorModel);
+      const { hasError } = errorStore.$state;
       if (!hasError) {
         return;
       }

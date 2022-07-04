@@ -1,7 +1,7 @@
 import { getRoutes } from '@shuvi/app/core/platform';
 import {
   Application,
-  getModelManager,
+  getStoreManager,
   getErrorHandler,
   IAppState,
   IAppData,
@@ -35,7 +35,7 @@ export function createApp<AppState extends IAppState>(options: {
 
   const { routes, appData, appComponent, userComponents } = options;
   const { loadersData = {}, appState, routeProps } = appData;
-  const modelManager = getModelManager(appState);
+  const storeManager = getStoreManager(appState);
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory();
@@ -54,12 +54,12 @@ export function createApp<AppState extends IAppState>(options: {
   });
   router.afterEach(_current => {
     if (!_current.matches.length) {
-      getErrorHandler(modelManager).errorHandler(
+      getErrorHandler(storeManager).errorHandler(
         SHUVI_ERROR_CODE.PAGE_NOT_FOUND
       );
     }
   });
-  router.beforeResolve(getLoadersHook(context, loaderOptions, modelManager));
+  router.beforeResolve(getLoadersHook(context, loaderOptions, storeManager));
   router.init();
 
   app = application({
@@ -67,7 +67,7 @@ export function createApp<AppState extends IAppState>(options: {
     UserAppComponent: userComponents,
     router,
     context,
-    modelManager
+    storeManager
   });
   return app;
 }

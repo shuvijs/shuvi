@@ -3,7 +3,7 @@ import { IRouter, IRedirectState } from './routerTypes';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IPluginList } from './lifecycle';
-import { IModelManager } from './store';
+import { IStoreManager } from './store';
 import { IAppData } from './helper';
 import {
   IAppGetInitoalPropsContext,
@@ -36,13 +36,13 @@ export interface IApplication<Context extends IAppContext = IAppContext> {
   readonly context: Context;
   readonly router: IRouter;
   readonly appComponent: IAppComponent<any>;
-  readonly modelManager: IModelManager;
+  readonly storeManager: IStoreManager;
 }
 
 export interface IApplicationOptions<AppContext extends IAppContext> {
   context: AppContext;
   router: IRouter;
-  modelManager: IModelManager;
+  storeManager: IStoreManager;
   AppComponent: any;
   UserAppComponent?: any;
   plugins?: IPluginList;

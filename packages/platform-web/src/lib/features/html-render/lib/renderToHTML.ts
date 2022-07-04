@@ -28,7 +28,7 @@ export async function renderToHTML({
       app: publicApp,
       req
     });
-    const errorState = app.modelManager.get(errorModel).$state();
+    const errorState = app.storeManager.get(errorModel).$state;
     if (typeof errorState.errorCode === 'number') {
       error = errorState;
     }

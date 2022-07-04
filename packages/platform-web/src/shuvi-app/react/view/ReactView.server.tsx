@@ -30,14 +30,14 @@ export class ReactServerView implements IReactServerView {
     await Loadable.preloadAll();
 
     const {
-      modelManager,
+      storeManager,
       router,
       appComponent: AppComponent,
       context: appContext
     } = app;
-    const redirector = getRedirector(modelManager);
+    const redirector = getRedirector(storeManager);
 
-    const error = getErrorHandler(modelManager);
+    const error = getErrorHandler(storeManager);
 
     await router.ready;
 
@@ -129,7 +129,7 @@ export class ReactServerView implements IReactServerView {
           >
             <AppContainer
               appContext={appContext}
-              modelManager={modelManager}
+              storeManager={storeManager}
               errorComp={ErrorPage}
             >
               <AppComponent {...appInitialProps} />
@@ -194,7 +194,7 @@ export class ReactServerView implements IReactServerView {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
 
-    appData.appState = modelManager.getChangedState();
+    appData.appState = storeManager.getState();
 
     return {
       appData,

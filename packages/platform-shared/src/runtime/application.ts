@@ -1,7 +1,7 @@
 import { getManager, PluginManager } from './lifecycle';
 import { setApp } from './appProxy';
 import { initPlugins } from './lifecycle';
-import { IModelManager } from './store';
+import { IStoreManager } from './store';
 import { IRouter, IRoute } from './routerTypes';
 import {
   IApplication,
@@ -15,13 +15,13 @@ export class Application<Context extends IAppContext> {
   private _appComponent: any;
   private _pluginManager: PluginManager;
   private _context: Context;
-  private _modelManager: IModelManager;
+  private _storeManager: IStoreManager;
   private _userAppComponent?: any;
 
   constructor(options: IApplicationOptions<Context>) {
     this._router = options.router;
     this._context = options.context;
-    this._modelManager = options.modelManager;
+    this._storeManager = options.storeManager;
     this._appComponent = options.AppComponent;
     this._userAppComponent = options.UserAppComponent;
     this._pluginManager = getManager();
@@ -51,8 +51,8 @@ export class Application<Context extends IAppContext> {
     await this._initAppComponent();
   }
 
-  get modelManager() {
-    return this._modelManager;
+  get storeManager() {
+    return this._storeManager;
   }
 
   getRouteLoaderContext(to: IRoute): any {
@@ -120,7 +120,7 @@ export class Application<Context extends IAppContext> {
       context: this._context,
       router: this._router,
       appComponent: this._appComponent,
-      modelManager: this._modelManager
+      storeManager: this._storeManager
     };
   }
 }

@@ -1,4 +1,4 @@
-import { useModel, defineModel } from '@shuvi/runtime/model';
+import { defineModel, useRootModel } from '@shuvi/runtime/model';
 
 const sleep = (time: number) =>
   new Promise(resolve => {
@@ -14,14 +14,14 @@ const core = defineModel({
     step: 1
   },
   reducers: {
-    addStep: state => {
+    addStep: function (state) {
       return {
         ...state,
         step: state.step + 1
       };
     }
   },
-  effects: {
+  actions: {
     async addStepAsync() {
       await sleep(1000);
       this.addStep();
@@ -44,7 +44,7 @@ const base = defineModel(
         };
       }
     },
-    effects: {
+    actions: {
       async addStepAsync() {
         await sleep(1000);
         this.addStep();
@@ -69,9 +69,9 @@ const count = defineModel(
         };
       }
     },
-    effects: {
+    actions: {
       async addCountAsync() {
-        this.addCount(this.$dep.base.$state().step);
+        this.addCount(this.$dep.base.$state.step);
         await this.$dep.base.addStepAsync();
       }
     }
@@ -80,8 +80,8 @@ const count = defineModel(
 );
 
 export default function Index() {
-  const [{ num, hello: helloCount }, { addCountAsync }] = useModel(count);
-  const [{ hello: helloBase, step }, { addStepAsync }] = useModel(base);
+  const [{ num, hello: helloCount }, { addCountAsync }] = useRootModel(count);
+  const [{ hello: helloBase, step }, { addStepAsync }] = useRootModel(base);
   return (
     <div>
       <div>
@@ -110,8 +110,9 @@ export default function Index() {
 }
 
 Index.getInitialProps = async function (ctx: any) {
-  const modelManager = ctx.appContext.modelManager;
-  const baseStore = modelManager.get(base);
+  const storeManager = ctx.appContext.storeManager;
+  const baseStore = storeManager.get(base);
   await baseStore.addStepAsync();
-  console.log(baseStore.$state());
+  console.log(baseStore.$state);
+  return {};
 };

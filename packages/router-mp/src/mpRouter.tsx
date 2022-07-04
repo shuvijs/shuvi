@@ -14,7 +14,7 @@ import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
 import ErrorPage from './ErrorPage';
 import {
-  getModelManager,
+  getStoreManager,
   getErrorHandler
 } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '@shuvi/platform-web/shuvi-app/react/AppContainer';
@@ -40,9 +40,9 @@ export function MpRouter({
 
   const redirector = createRedirector();
 
-  const modelManager = getModelManager();
+  const storeManager = getStoreManager();
 
-  const error = getErrorHandler(modelManager);
+  const error = getErrorHandler(storeManager);
 
   if (routerRef.current == null) {
     routerRef.current = createRouter({
@@ -135,7 +135,7 @@ export function MpRouter({
     <Router router={routerRef.current}>
       <AppContainer
         appContext={appContext}
-        modelManager={modelManager}
+        storeManager={storeManager}
         errorComp={ErrorPage}
       >
         <RouterView />

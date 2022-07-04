@@ -15,11 +15,11 @@ export * from './runtimeConfig';
 
 export {
   // todo: remove
-  getModelManager,
+  getStoreManager,
   // todo: remove
   getErrorHandler,
   IAppState,
-  IModelManager,
+  IStoreManager,
   IErrorHandler,
   IPageError,
   errorModel

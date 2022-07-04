@@ -1,9 +1,9 @@
 import { IRoute, IRouteMatch, NavigationGuardHook } from '@shuvi/router';
 import {
   getErrorHandler,
-  getModelManager,
+  getStoreManager,
   errorModel,
-  IModelManager,
+  IStoreManager,
   IRouteLoaderContext,
   IPageRouteRecord,
   IAppContext,
@@ -41,7 +41,7 @@ export const getLoadersHook =
   (
     appContext: INormalizeRoutesContext,
     loaderOptions: ILoaderOptions,
-    modelManager: IModelManager
+    storeManager: IStoreManager
   ): NavigationGuardHook =>
   async (to, from, next) => {
     const toMatches: IRouteMatch<IPageRouteRecord>[] = to.matches;
@@ -75,14 +75,14 @@ export const getLoadersHook =
     const loaderManager = getLoaderManager();
     const { shouldHydrate } = loaderManager;
     if (shouldHydrate) {
-      const { hasError } = modelManager.get(errorModel).$state();
+      const { hasError } = storeManager.get(errorModel).$state;
       if (hasError) {
         // hydrated error page, run Component.getInitialProps by client
         return next();
       }
     }
-    const error = getErrorHandler(modelManager);
-    const redirector = getRedirector(modelManager);
+    const error = getErrorHandler(storeManager);
+    const redirector = getRedirector(storeManager);
     const loaderGenerator = (routeId: string, to: IRoute<any>) => async () => {
       const loaderFn = loaders[routeId];
       if (typeof loaderFn === 'function') {
@@ -145,7 +145,7 @@ export const getLoadersHook =
       }
 
       // handle error
-      const error = getErrorHandler(modelManager);
+      const error = getErrorHandler(storeManager);
       if (currentErrorComp?.errorCode !== undefined) {
         error.errorHandler(
           currentErrorComp.errorCode,
@@ -181,13 +181,13 @@ export function normalizeRoutes(
         if (isServer) {
           return next();
         }
-        const modelManager = getModelManager();
+        const storeManager = getStoreManager();
 
         // support both getInitialProps and loader
         const loaderManager = getLoaderManager();
         const { shouldHydrate } = loaderManager;
         if (shouldHydrate) {
-          const { hasError } = modelManager.get(errorModel).$state();
+          const { hasError } = storeManager.get(errorModel).$state;
           if (hasError) {
             // hydrated error page, run Component.getInitialProps by client
             return next();
@@ -196,7 +196,7 @@ export function normalizeRoutes(
         let Component: any;
         const preload = component.preload;
 
-        const redirector = getRedirector(modelManager);
+        const redirector = getRedirector(storeManager);
         if (preload) {
           try {
             const preloadComponent = await preload();
@@ -240,7 +240,7 @@ export function normalizeRoutes(
         // reset() make errorPage hide error and show /a page (splash screen)
         // the splash time is lazy load /b
         // route /b and component load show page /b
-        /* const error = getErrorHandler(modelManager);
+        /* const error = getErrorHandler(storeManager);
         console.log('errorComp resolve')
         if (errorComp.errorCode !== undefined) {
           error.errorHandler(errorComp.errorCode, errorComp.errorDesc);

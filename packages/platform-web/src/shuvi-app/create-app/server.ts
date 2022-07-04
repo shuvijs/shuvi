@@ -8,7 +8,7 @@ import {
 } from '@shuvi/app/core/platform';
 import {
   IPageRouteRecord,
-  getModelManager
+  getStoreManager
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
@@ -24,19 +24,19 @@ export function createApp<Router extends IRouter<IPageRouteRecord>>(options: {
     initialIndex: 0
   });
   const context = { req };
-  const modelManager = getModelManager();
+  const storeManager = getStoreManager();
   const router = createRouter({
     history,
     routes: getRoutes(routes, context)
   }) as Router;
-  router.beforeResolve(getLoadersHook(context, loaderOptions, modelManager));
+  router.beforeResolve(getLoadersHook(context, loaderOptions, storeManager));
   router.init();
 
   return application({
     AppComponent: PlatformAppComponent,
     router,
     context,
-    modelManager,
+    storeManager,
     UserAppComponent
   });
 }

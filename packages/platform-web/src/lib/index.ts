@@ -1,4 +1,4 @@
-import { IPlatform, resolvePlugin } from '@shuvi/service';
+import { IPlatform } from '@shuvi/service';
 
 import {
   sharedPlugin,
@@ -8,6 +8,7 @@ import { resolveAppFile } from './paths';
 
 import {
   featurePlugins,
+  getRedoxPlugin,
   getMiddlewares,
   getMiddlewaresBeforeDevMiddlewares,
   getMainPlugin
@@ -31,13 +32,15 @@ const platform: IPlatform = async (
     entry,
     polyfills
   );
-  const modelPlugin = resolvePlugin('@shuvi/plugins/model', { dir: __dirname });
+
+  const redoxPlugin = getRedoxPlugin();
+
   return {
     plugins: [
       mainPlugin,
-      modelPlugin,
       sharedPlugin,
       ...featurePlugins,
+      redoxPlugin,
       ...platformFrameworkContent.plugins
     ],
     getPresetRuntimeFiles,

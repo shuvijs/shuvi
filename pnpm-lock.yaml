@@ -81,7 +81,6 @@ importers:
       '@babel/plugin-syntax-dynamic-import': ^7.8.3
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
-      '@shuvi/plugins': 0.0.1-pre.10
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/router-mp': 0.0.1-pre.10
       '@shuvi/router-react': 0.0.1-pre.10
@@ -112,7 +111,6 @@ importers:
       '@babel/plugin-syntax-dynamic-import': 7.8.3_@babel+core@7.12.10
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/plugins': link:../plugins
       '@shuvi/router': link:../router
       '@shuvi/router-mp': link:../router-mp
       '@shuvi/router-react': link:../router-react
@@ -142,7 +140,7 @@ importers:
   packages/platform-shared:
     specifiers:
       '@shuvi/hook': 0.0.1-pre.10
-      '@shuvi/redox': 0.0.1-pre.6
+      '@shuvi/redox': 0.0.2
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/runtime': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
@@ -152,7 +150,7 @@ importers:
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
-      '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
+      '@shuvi/redox': 0.0.2
       '@shuvi/router': link:../router
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
@@ -166,9 +164,8 @@ importers:
       '@next/react-refresh-utils': 12.1.6
       '@shuvi/hook': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
-      '@shuvi/plugins': 0.0.1-pre.10
-      '@shuvi/redox': 0.0.1-pre.6
-      '@shuvi/redox-react': 0.0.1-pre.6
+      '@shuvi/redox': 0.0.2
+      '@shuvi/redox-react': 0.0.2
       '@shuvi/router': 0.0.1-pre.10
       '@shuvi/router-react': 0.0.1-pre.10
       '@shuvi/runtime': 0.0.1-pre.10
@@ -197,9 +194,8 @@ importers:
       '@next/react-refresh-utils': 12.1.6_mrng46iweft73kaoehgasn3du4
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/plugins': link:../plugins
-      '@shuvi/redox': 0.0.1-pre.6
-      '@shuvi/redox-react': 0.0.1-pre.6_gug7xcu4ipcswrgwaznomd7nyu
+      '@shuvi/redox': 0.0.2
+      '@shuvi/redox-react': 0.0.2_pmx5plredp57me2lljzl57sd74
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
@@ -225,35 +221,6 @@ importers:
       '@types/ejs': 3.1.0
       '@types/raw-body': 2.3.0
       webpack: 5.73.0
-
-  packages/plugins:
-    specifiers:
-      '@shuvi/hook': 0.0.1-pre.10
-      '@shuvi/platform-shared': 0.0.1-pre.10
-      '@shuvi/redox': 0.0.1-pre.6
-      '@shuvi/redox-react': 0.0.1-pre.6
-      '@shuvi/runtime': 0.0.1-pre.10
-      '@shuvi/service': 0.0.1-pre.10
-      '@shuvi/utils': 0.0.1-pre.10
-      '@types/react': ^18.0.9
-      '@types/react-dom': ^18.0.5
-      react: 18.1.0
-      react-dom: 18.1.0
-      redux: 4.1.2
-    dependencies:
-      '@shuvi/hook': link:../hook
-      '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
-      '@shuvi/redox-react': 0.0.1-pre.6_gug7xcu4ipcswrgwaznomd7nyu
-      '@shuvi/runtime': link:../runtime
-      '@shuvi/service': link:../service
-      '@shuvi/utils': link:../utils
-      redux: 4.1.2
-    devDependencies:
-      '@types/react': 18.0.9
-      '@types/react-dom': 18.0.5
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
 
   packages/router:
     specifiers:
@@ -400,7 +367,6 @@ importers:
       '@shuvi/platform-mp': 0.0.1-pre.10
       '@shuvi/platform-shared': 0.0.1-pre.10
       '@shuvi/platform-web': 0.0.1-pre.10
-      '@shuvi/plugins': 0.0.1-pre.10
       '@shuvi/service': 0.0.1-pre.10
       '@shuvi/shared': 0.0.1-pre.10
       '@shuvi/toolpack': 0.0.1-pre.10
@@ -417,7 +383,6 @@ importers:
       '@shuvi/platform-mp': link:../platform-mp
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/platform-web': link:../platform-web
-      '@shuvi/plugins': link:../plugins
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
@@ -606,6 +571,8 @@ importers:
       '@shuvi/platform-mp': workspace:*
       '@shuvi/platform-shared': workspace:*
       '@shuvi/platform-web': workspace:*
+      '@shuvi/redox': 0.0.2
+      '@shuvi/redox-log': 0.0.2
       '@shuvi/router': workspace:*
       '@shuvi/service': workspace:*
       '@shuvi/shared': workspace:*
@@ -628,6 +595,8 @@ importers:
       '@shuvi/platform-mp': link:../packages/platform-mp
       '@shuvi/platform-shared': link:../packages/platform-shared
       '@shuvi/platform-web': link:../packages/platform-web
+      '@shuvi/redox': 0.0.2
+      '@shuvi/redox-log': 0.0.2
       '@shuvi/router': link:../packages/router
       '@shuvi/service': link:../packages/service
       '@shuvi/shared': link:../packages/shared
@@ -3782,6 +3751,11 @@ packages:
       rxjs: 6.5.5
     dev: true
 
+  /@shuvi/redox-log/0.0.2:
+    resolution: {integrity: sha512-Pp3vgxnHzaKQrNpnQCl/nKmCCCX0z1aRGT0ef5q0jWA6rdGrEBjyP5XW2vYGplqWF+c0z0i1yMGOExcomsDiWQ==}
+    engines: {node: '>=10'}
+    dev: true
+
   /@shuvi/redox-react/0.0.1-pre.4_4vuqpopq4lzjzk6ywh7fybezpa:
     resolution: {integrity: sha512-T+h4W1/mLLI8L0P9vHnaewvft9SMF5UD6nBKdXgIF3Fwgpqzl0DIYjOHIurL8QAOty6pdp0AB9aOnzaB8DGt2A==}
     peerDependencies:
@@ -3794,14 +3768,14 @@ packages:
       react-dom: 16.8.0_react@16.8.0
     dev: false
 
-  /@shuvi/redox-react/0.0.1-pre.6_gug7xcu4ipcswrgwaznomd7nyu:
-    resolution: {integrity: sha512-LGh4JBLiJ7c9BnQy818S8cZ76FDC7tudcYaG+sxNmk4dwRZzGXQPM5oracHH5jcNbnGMIQEgpioMzzMQuhTWiw==}
+  /@shuvi/redox-react/0.0.2_pmx5plredp57me2lljzl57sd74:
+    resolution: {integrity: sha512-EDu8wTQckEdvQmd9z8abcumr/cA3eaL+5MjQGcp/whvDTdk4ML9su6e62CS/EtnkZicOt8+P9h4L7KU5TJd8Ag==}
     peerDependencies:
-      '@shuvi/redox': 0.0.1-pre.6
+      '@shuvi/redox': 0.0.2
       react: '>=16.8'
       react-dom: '>=16.8'
     dependencies:
-      '@shuvi/redox': 0.0.1-pre.6_redux@4.1.2
+      '@shuvi/redox': 0.0.2
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
     dev: false
@@ -3818,26 +3792,11 @@ packages:
       tiny-invariant: 1.2.0
     dev: false
 
-  /@shuvi/redox/0.0.1-pre.6:
-    resolution: {integrity: sha512-FWWrRHXVpYZWSlGLKpUCdi2Ctb/52nDeC0NpNjhKihKpqkHOUMBkSLrfJUZIqXFzSdgjn3Ymd3s5lsLfHzCJkQ==}
+  /@shuvi/redox/0.0.2:
+    resolution: {integrity: sha512-MhGS29BjeHhxtuwdQhu9qGCLNaBDBfjdFnub5qjpq1Et8TgFcA4RTLaEIJy4RLmI+161p7h4ujhmWIuAJaWKHQ==}
     engines: {node: '>=10'}
-    peerDependencies:
-      redux: '>=4'
     dependencies:
       immer: 9.0.6
-      tiny-invariant: 1.2.0
-    dev: false
-
-  /@shuvi/redox/0.0.1-pre.6_redux@4.1.2:
-    resolution: {integrity: sha512-FWWrRHXVpYZWSlGLKpUCdi2Ctb/52nDeC0NpNjhKihKpqkHOUMBkSLrfJUZIqXFzSdgjn3Ymd3s5lsLfHzCJkQ==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      redux: '>=4'
-    dependencies:
-      immer: 9.0.6
-      redux: 4.1.2
-      tiny-invariant: 1.2.0
-    dev: false
 
   /@shuvi/swc-darwin-arm64/0.0.1-pre.2:
     resolution: {integrity: sha512-nIKOtV6YngDp6QXyKtD1L0JpAmhdKUxgE9YatRWJSCtZ7xwAwV68sGusTLyExN01RUHeqGC0rWNYRqdAipdIkw==}
@@ -8083,7 +8042,6 @@ packages:
 
   /immer/9.0.6:
     resolution: {integrity: sha512-G95ivKpy+EvVAnAab4fVa4YGYn24J1SpEktnJX7JJ45Bd7xqME/SCplFzYFmTbrkwZbQ4xJK1xMTUYBkN6pWsQ==}
-    dev: false
 
   /immutable/4.0.0:
     resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
