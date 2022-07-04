@@ -38,7 +38,6 @@ export function createApp<AppState extends IAppState>(options: {
     return app;
   }
 
-
   const { routes, appData, appComponent } = options;
   const { loadersData = {}, appState, ssr } = appData;
   let history: History;
