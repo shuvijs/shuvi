@@ -1,15 +1,11 @@
 import {
-  IRouteData,
   IPageRouteRecord,
   IRawPageRouteRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import { loadRouteComponent } from './loadRouteComponent';
-import { normalizeRoutes, INormalizeRoutesContext } from './utils/router';
 
 export default function getRoutes(
-  routes: IRawPageRouteRecord[],
-  appContext: INormalizeRoutesContext = {},
-  routeData?: IRouteData
+  routes: IRawPageRouteRecord[]
 ): IPageRouteRecord[] {
   const getRoutesWithRequire = (
     routes: IRawPageRouteRecord[]
@@ -37,5 +33,5 @@ export default function getRoutes(
       return { __componentSourceWithAffix__, __resolveWeak__, ...route };
     });
   const routesWithRequire = getRoutesWithRequire(routes || []);
-  return normalizeRoutes(routesWithRequire, appContext, routeData);
+  return routesWithRequire;
 }

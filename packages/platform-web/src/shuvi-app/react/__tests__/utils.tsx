@@ -1,22 +1,32 @@
-import { renderRoutes } from '../utils/__tests__/utils';
-import { normalizeRoutes } from '../utils/router';
-import {
-  IRouteData,
-  IPageRouteRecord
-} from '@shuvi/platform-shared/esm/runtime';
+import * as React from 'react';
+import { IRouteRecord, MemoryRouter, RouterView } from '@shuvi/router-react';
+import { render, ReactTestRenderer } from 'shuvi-test-utils/reactTestRender';
+import { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
+
+const renderRoutes = (
+  routes: IRouteRecord[],
+  { route = '/' }: { route?: string } = {}
+): ReactTestRenderer => {
+  const Wrapper: React.FC = () => (
+    <MemoryRouter initialEntries={[route]} routes={routes}>
+      <RouterView />
+    </MemoryRouter>
+  );
+  const result = render(<Wrapper />);
+  return {
+    ...result
+  };
+};
 
 export const renderWithRoutes = (
   {
-    routes = [],
-    routeData = {}
+    routes = []
   }: {
     routes?: IPageRouteRecord[];
-    routeData?: IRouteData;
   } = {},
   { route = '/' }: { route?: string } = {}
 ) => {
-  return renderRoutes(normalizeRoutes(routes, {}, routeData), {
-    route,
-    initialShouldHydrate: Boolean(routeData.routeProps)
+  return renderRoutes(routes, {
+    route
   });
 };

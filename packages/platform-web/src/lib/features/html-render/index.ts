@@ -28,22 +28,26 @@ const core = createPlugin({
   addRuntimeFile: ({ createFile }, context) => {
     const {
       config: {
-        router: { history },
-        experimental: { loader }
+        router: { history }
       },
       paths
     } = context;
     const routerConfigFile = createFile({
       name: 'routerConfig.js',
       content: () => {
-        return `export const historyMode = "${history}";
-        export const loaderOptions = ${JSON.stringify(loader)}`;
+        return `export const historyMode = "${history}";`;
       }
     });
 
     const loadersFile = createFile({
       name: 'loaders.js',
-      content: () => {
+      content: async () => {
+        // fixme: await dependencies
+        await new Promise<void>(resolve => {
+          setTimeout(() => {
+            resolve();
+          }, 1000);
+        });
         const routes = getRoutes();
         const loaders: Record<string, string> = {};
         const traverseRoutes = (routes: IRouteConfig[]) => {
@@ -113,6 +117,13 @@ const core = createPlugin({
     const pageLoadersFile = createFile({
       name: 'page-loaders.js',
       content: async () => {
+        // fixme: await dependencies
+        await new Promise<void>(resolve => {
+          setTimeout(() => {
+            resolve();
+          }, 1500);
+        });
+
         if (fs.existsSync(loadersFileName)) {
           return await buildToString(loadersFileName);
         }
@@ -127,15 +138,7 @@ const core = createPlugin({
       loadersFile,
       pageLoadersFile
     ];
-  },
-  addRuntimeService: () => [
-    {
-      source: require.resolve(
-        '@shuvi/platform-shared/lib/runtime/helper/getPageData'
-      ),
-      exported: '{ getPageData }'
-    }
-  ]
+  }
 });
 
 export default {

@@ -8,6 +8,7 @@ import {
   PathRecord,
   NavigationGuardHook,
   NavigationResolvedHook,
+  NavigationGuardNext,
   Listener,
   NavigationHookContext,
   IRouteMatch
@@ -23,7 +24,6 @@ import {
 } from './utils';
 import { isError } from './utils/error';
 import { runQueue } from './utils/async';
-import { extractHooks } from './utils/extract-hooks';
 import History from './history/base';
 import { getRedirectFromRoutes } from './getRedirectFromRoutes';
 
@@ -202,7 +202,6 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const routeContext = new Map<RouteRecord, NavigationHookContext>();
     const queue = ([] as Array<NavigationGuardHook>).concat(
       this._beforeEachs.toArray(),
-      extractHooks(nextMatches, 'resolve', routeContext),
       this._beforeResolves.toArray()
     );
 
@@ -235,7 +234,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       }
 
       try {
-        hook(nextRoute, current, to => {
+        hook(nextRoute, current, (to => {
           if (to === false) {
             abort();
           } else if (isError(to)) {
@@ -255,9 +254,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
               this.push(to);
             }
           } else {
-            next(to);
+            next();
           }
-        });
+        }) as NavigationGuardNext);
       } catch (err) {
         abort();
         console.error('Uncaught error during navigation:', err);

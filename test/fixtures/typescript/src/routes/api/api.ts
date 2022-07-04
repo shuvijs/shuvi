@@ -1,6 +1,7 @@
-import type { RuntimeServer } from '@shuvi/runtime';
-
-const apiHandler: RuntimeServer.IApiRequestHandler = function handler(
+// FIXME: `RuntimeServer` export
+/* import type { RuntimeServer } from '@shuvi/runtime';
+ */
+const apiHandler /* : RuntimeServer.IApiRequestHandler */ = function handler(
   req,
   res
 ) {

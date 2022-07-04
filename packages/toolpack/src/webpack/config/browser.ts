@@ -1,14 +1,13 @@
 import * as crypto from 'crypto';
 import webpack from 'webpack';
 import * as path from 'path';
-import { WebpackChain } from './base';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { NAME } from '@shuvi/shared/lib/constants';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
-import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
-import { baseWebpackChain, BaseOptions } from './base';
-import { withStyle } from './parts/style';
 import { IWebpackHelpers } from '../types';
+import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
+import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
+import { withStyle } from './parts/style';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
@@ -200,6 +199,8 @@ export function createBrowserWebpackChain(
   return withStyle(chain, {
     extractCss: !dev,
     publicPath,
-    parcelCss: options.parcelCss
+    parcelCss: options.parcelCss,
+    filename: 'static/css/[contenthash:8].css',
+    chunkFilename: 'static/css/[contenthash:8].chunk.css'
   });
 }

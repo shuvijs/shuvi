@@ -1,7 +1,7 @@
 import * as path from 'path';
 import {
   BUILD_SERVER_DIR,
-  BUILD_MANIFEST_PATH,
+  SERVER_BUILD_MANIFEST_PATH,
   BUILD_SERVER_FILE_SERVER,
   IPluginContext
 } from '@shuvi/service';
@@ -11,7 +11,7 @@ const generateResources = (context: IPluginContext) => {
   const serverManifestPath = path.join(
     buildDir,
     BUILD_SERVER_DIR,
-    BUILD_MANIFEST_PATH
+    SERVER_BUILD_MANIFEST_PATH
   );
 
   const result: [string, string | undefined][] = [

@@ -62,8 +62,8 @@ export const getPlugin = (
     },
     addRuntimeService: () => [
       {
-        source: path.resolve(__dirname, '../../types/runtime-service'),
-        exported: '* as RuntimeServer'
+        source: resolveAppFile('loader'),
+        exported: '{ type Loader }'
       }
     ],
     addExtraTarget: ({ createConfig }, context) => {

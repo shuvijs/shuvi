@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import { createRedirector } from '@shuvi/router';
 import {
   getErrorHandler,
-  IAppComponent
+  getRedirector
 } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
@@ -13,7 +12,7 @@ import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { renderAction } from './render-action';
-import { getLoaderManager } from '../loader/loaderManager';
+import { getLoaderManager } from '../../loader';
 
 const headManager = new HeadManager();
 
@@ -40,38 +39,22 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    const redirector = createRedirector();
+    const redirector = getRedirector(modelManager);
 
     const error = getErrorHandler(storeManager);
 
-    const TypedAppComponent =
-      AppComponent as IAppComponent<React.ComponentType>;
+    const TypedAppComponent = AppComponent as React.ComponentType;
 
     if (ssr) {
       await Loadable.preloadReady(dynamicIds);
       await router.ready;
     } else {
       await router.ready;
-      const { pathname, query, params, matches } = router.current;
+      const { matches } = router.current;
 
       if (!matches.length) {
         // no handler no matches
         error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
-      }
-
-      if (TypedAppComponent.getInitialProps) {
-        appProps = await TypedAppComponent.getInitialProps({
-          isServer: false,
-          pathname,
-          query,
-          params,
-          redirect: redirector.handler,
-          error: error.errorHandler,
-          appContext,
-          async fetchInitialProps() {
-            // do nothing
-          }
-        });
       }
     }
 

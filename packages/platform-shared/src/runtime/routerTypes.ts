@@ -3,20 +3,13 @@ import {
   IParams,
   IRouter,
   IRoute,
-  IRouteRecord,
-  IRedirectFn,
-  // todo: remove
-  IRedirectState
+  IRouteRecord
 } from '@shuvi/router';
 
 export type IURLQuery = ParsedQuery;
 export type IURLParams = IParams;
 
-export { IRedirectFn, IRouter, IRoute, IRedirectState };
-
-export type IRouteData = {
-  routeProps?: { [x: string]: any };
-};
+export { IRouter, IRoute };
 
 export interface IPageRouteRecord extends IRouteRecord {
   id: string;

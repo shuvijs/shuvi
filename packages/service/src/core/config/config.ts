@@ -8,7 +8,7 @@ import {
 } from '@shuvi/toolpack/lib/utils/bundle-require';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { Config, UserConfig } from '../apiTypes';
-import { PUBLIC_PATH } from '../../constants';
+import { DEFAULT_PUBLIC_PATH } from '../../constants';
 import { loadDotenvConfig } from './loadDotenvConfig';
 
 export interface LoadConfigOptions {
@@ -36,7 +36,7 @@ export const createDefaultConfig: () => UserConfig = () => ({
     target: 'ssr'
   },
   publicDir: 'public',
-  publicPath: PUBLIC_PATH,
+  publicPath: DEFAULT_PUBLIC_PATH,
   router: {
     history: 'auto'
   },
@@ -46,7 +46,7 @@ export const createDefaultConfig: () => UserConfig = () => ({
   experimental: {
     parcelCss: false,
     loader: {
-      sequential: true
+      sequential: false
     }
   },
   typescript: {

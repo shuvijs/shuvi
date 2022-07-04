@@ -1,5 +1,4 @@
-import { WebpackChain } from './base';
-import { baseWebpackChain, BaseOptions } from './base';
+import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
 import { IWebpackHelpers } from '../types';
@@ -60,5 +59,10 @@ export function createNodeWebpackChain(options: NodeOptions): WebpackChain {
     }
   ]);
 
-  return withStyle(chain, { ssr: true, parcelCss: options.parcelCss });
+  return withStyle(chain, {
+    ssr: true,
+    parcelCss: options.parcelCss,
+    filename: 'static/css/[contenthash:8].css',
+    chunkFilename: 'static/css/[contenthash:8].chunk.css'
+  });
 }

@@ -2,7 +2,7 @@ import { getManager, PluginManager } from './lifecycle';
 import { setApp } from './appProxy';
 import { initPlugins } from './lifecycle';
 import { IStoreManager } from './store';
-import { IRouter, IRoute } from './routerTypes';
+import { IRouter } from './routerTypes';
 import {
   IApplication,
   IAppContext,
@@ -10,17 +10,17 @@ import {
   IRerenderConfig
 } from './applicationTypes';
 
-export class Application<Context extends IAppContext> {
+export class Application {
   private _router: IRouter;
   private _appComponent: any;
   private _pluginManager: PluginManager;
-  private _context: Context;
+  private _context: IAppContext;
   private _storeManager: IStoreManager;
   private _userAppComponent?: any;
 
-  constructor(options: IApplicationOptions<Context>) {
+  constructor(options: IApplicationOptions) {
     this._router = options.router;
-    this._context = options.context;
+    this._context = {};
     this._storeManager = options.storeManager;
     this._appComponent = options.AppComponent;
     this._userAppComponent = options.UserAppComponent;
@@ -55,22 +55,6 @@ export class Application<Context extends IAppContext> {
     return this._storeManager;
   }
 
-  getRouteLoaderContext(to: IRoute): any {
-    // todo
-    return {
-      isServer: typeof window === 'undefined',
-      pathname: to.pathname,
-      query: to.query,
-      params: to.params,
-      appContext: this._context
-      // redirect: redirector.handler,
-      // error: error.handler,
-
-      // server only
-      // req: this._req
-    };
-  }
-
   async updateComponents({
     AppComponent,
     UserAppComponent
@@ -100,7 +84,7 @@ export class Application<Context extends IAppContext> {
   private async _initAppContext() {
     this._context = (await this._pluginManager.runner.getAppContext(
       this._context
-    )) as IAppContext & Context;
+    )) as IAppContext;
   }
 
   private async _initAppComponent() {
@@ -115,7 +99,7 @@ export class Application<Context extends IAppContext> {
     );
   }
 
-  getPublicAPI(): IApplication<Context> {
+  getPublicAPI(): IApplication {
     return {
       context: this._context,
       router: this._router,

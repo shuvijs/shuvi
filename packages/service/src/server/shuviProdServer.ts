@@ -1,11 +1,7 @@
 import { ShuviServer } from './shuviServer';
 import { IRequestHandlerWithNext } from '../server/http-server';
 import { isStaticFileExist, serveStatic } from './utils';
-import {
-  BUILD_DEFAULT_DIR,
-  ASSET_PUBLIC_PATH,
-  PUBLIC_PATH
-} from '../constants';
+import { BUILD_DEFAULT_DIR } from '../constants';
 import { IServerPluginContext } from './plugin';
 
 const getAssetMiddleware = (
@@ -35,9 +31,10 @@ const getAssetMiddleware = (
 export class ShuviProdServer extends ShuviServer {
   async init() {
     const { _serverContext: context } = this;
-    const assetsMiddleware = getAssetMiddleware(context);
-    this._server.use(`${PUBLIC_PATH}:path(.*)`, assetsMiddleware);
-    this._server.use(`${ASSET_PUBLIC_PATH}:path(.*)`, assetsMiddleware);
+    if (context.assetPublicPath.startsWith('/')) {
+      const assetsMiddleware = getAssetMiddleware(context);
+      this._server.use(`${context.assetPublicPath}:path(.*)`, assetsMiddleware);
+    }
     await this._initMiddlewares();
   }
 }

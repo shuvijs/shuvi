@@ -44,6 +44,10 @@ export class SsrRenderer extends BaseRenderer {
       pageData,
       ssr: serverPluginContext.config.ssr
     };
+    if (result.fallbackToCSR) {
+      appData.ssr = false;
+      appData.loadersData = {};
+    }
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 
     const documentProps = {
