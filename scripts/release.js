@@ -122,8 +122,8 @@ async function main() {
 
   if (stdout) {
     step('\nCommitting changes...');
-    // await runIfNotDry('git', ['add', '-A']);
-    // await runIfNotDry('git', ['commit', '-m', `release: v${targetVersion}`]);
+    await runIfNotDry('git', ['add', '-A']);
+    await runIfNotDry('git', ['commit', '-m', `release: v${targetVersion}`]);
   } else {
     console.log('No changes to commit.');
   }
@@ -224,8 +224,7 @@ async function publishPackage(pkgName, version) {
         ...(releaseTag ? ['--tag', releaseTag] : []),
         '--access',
         'public',
-        isDryRun ? '--dry-run' : undefined,
-        '--no-git-checks'
+        isDryRun ? '--dry-run' : undefined
       ],
       {
         cwd: pkgRoot,
