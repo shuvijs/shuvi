@@ -1,13 +1,13 @@
-import { App, getRuntimeConfig } from '@shuvi/runtime';
+import { RouterView, getRuntimeConfig } from '@shuvi/runtime';
 
 const isServer = typeof window === 'undefined';
 const runtimeConfig = getRuntimeConfig();
 
-const MyApp = () => (
+const GlobalLayout = () => (
   <div>
     <div id="app">{isServer ? null : runtimeConfig.a}</div>
-    <App />
+    <RouterView />
   </div>
 );
 
-export default MyApp;
+export default GlobalLayout;

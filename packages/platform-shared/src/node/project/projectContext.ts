@@ -2,7 +2,6 @@ import { IRuntimeConfig } from '@shuvi/service/lib/core';
 
 export interface UserModule {
   runtime: string | string[];
-  app: string | string[];
   error: string | string[];
 }
 
@@ -22,7 +21,6 @@ export const createProjectContext = (): ProjectContext => {
     platformModule: '',
     userModule: {
       runtime: '',
-      app: '',
       error: ''
     }
   };
