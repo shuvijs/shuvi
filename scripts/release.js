@@ -19,7 +19,7 @@ const packages = fs
 const testPackages = fs
   .readdirSync(path.resolve(__dirname, '../test/packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
-const isNeedHelp = args.help || args.h;
+const isNeedHelp = args.help || args.h || args._[0] === 'help';
 
 const skippedPackages = [
   'app',
@@ -100,14 +100,6 @@ async function main() {
   step('\nUpdating cross dependencies...');
   updateVersions(targetVersion);
 
-  // build all packages with types
-  step('\nBuilding all packages...');
-  if (!skipBuild && !isDryRun) {
-    await run('pnpm', ['build']);
-  } else {
-    console.log(`(skipped)`);
-  }
-
   // generate changelog
   step('\nGenerating changelog...');
   await run(`pnpm`, ['changelog']);
@@ -119,6 +111,14 @@ async function main() {
   // install all packages and update pnpm-lock.yaml
   step('\nUpdating lockfile...');
   await run(`pnpm`, ['install']);
+
+  // build all packages with types
+  step('\nBuilding all packages...');
+  if (!skipBuild && !isDryRun) {
+    await run('pnpm', ['build']);
+  } else {
+    console.log(`(skipped)`);
+  }
 
   // run tests before release
   step('\nRunning tests...');
