@@ -23,7 +23,6 @@ let app: Application;
 export function createApp<AppState extends IAppState>(options: {
   routes: IRawPageRouteRecord[];
   appComponent: any;
-  userComponents: any;
   appData: IAppData<any, AppState>;
 }) {
   // app is a singleton in client side
@@ -31,7 +30,7 @@ export function createApp<AppState extends IAppState>(options: {
     return app;
   }
 
-  const { routes, appData, appComponent, userComponents } = options;
+  const { routes, appData, appComponent } = options;
   const { loadersData = {}, appState } = appData;
   const modelManager = getModelManager(appState);
   let history: History;
@@ -67,7 +66,6 @@ export function createApp<AppState extends IAppState>(options: {
 
   app = application({
     AppComponent: appComponent,
-    UserAppComponent: userComponents,
     router,
     modelManager
   });

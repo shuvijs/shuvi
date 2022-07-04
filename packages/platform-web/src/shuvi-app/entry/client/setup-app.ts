@@ -6,7 +6,6 @@ import {
   getRoutes,
   app as PlatformAppComponent
 } from '@shuvi/app/core/platform';
-import UserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/esm/runtime';
 import { createApp } from '../../create-app/client';
@@ -15,7 +14,6 @@ const appData = getAppData();
 
 const app = createApp({
   appComponent: PlatformAppComponent,
-  userComponents: UserAppComponent,
   routes,
   appData
 });
@@ -39,11 +37,9 @@ export { run };
 if (module.hot) {
   const handleHotUpdate = async () => {
     const rerender = async () => {
-      const UserAppComponent = require('@shuvi/app/user/app').default;
       app.router.replaceRoutes(getRoutes(routes));
       await app.updateComponents({
-        AppComponent: PlatformAppComponent,
-        UserAppComponent
+        AppComponent: PlatformAppComponent
       });
       render();
     };
@@ -59,8 +55,5 @@ if (module.hot) {
     }
   };
 
-  module.hot.accept(
-    ['@shuvi/app/user/app', '@shuvi/app/files/routes'],
-    handleHotUpdate
-  );
+  module.hot.accept(['@shuvi/app/files/routes'], handleHotUpdate);
 }

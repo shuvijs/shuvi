@@ -1,9 +1,5 @@
-import UserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/files/routes';
-import {
-  getRoutes,
-  app as PlatformAppComponent
-} from '@shuvi/app/core/platform';
+import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   Application,
   getModelManager,
@@ -36,10 +32,9 @@ export const createApp: CreateServerApp = options => {
   }
 
   app = application({
-    AppComponent: PlatformAppComponent,
+    AppComponent,
     router,
-    modelManager,
-    UserAppComponent
+    modelManager
   });
   router.init();
 
