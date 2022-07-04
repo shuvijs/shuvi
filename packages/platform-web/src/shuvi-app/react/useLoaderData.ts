@@ -1,7 +1,9 @@
 import { useMatchedRoute } from '@shuvi/router-react';
-import { IPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
-import { getLoaderManager, LoaderStatus } from '../loader';
-import { useState, useEffect } from 'react';
+import {
+  IPageRouteRecord,
+  getLoaderManager
+} from '@shuvi/platform-shared/esm/runtime';
+import { useRef, useEffect, useReducer } from 'react';
 
 export const noLoaderMessage =
   'Warning: no loader found. Please make sure the page component where `useLoaderData` is called has a `loader` export.';
@@ -10,26 +12,24 @@ export const useLoaderData = <T = any>(): T => {
   const currentMatch = useMatchedRoute<IPageRouteRecord>();
   const loaderManager = getLoaderManager();
   const id = currentMatch.route?.id as string;
-  const loader = loaderManager.get(id);
-  if (!loader) {
+  const data = loaderManager.getData(id);
+  if (data === null) {
     throw Error(noLoaderMessage);
   }
 
-  // error indicates loader running failed and it should be thrown to break off rendering
-  if (loader.result.error) {
-    throw Error('loader running failed');
-  }
-
-  const [result, setResult] = useState(loader.result.data);
+  const dataRef = useRef(data);
+  const [_, forceUpdate] = useReducer(state => state * -1, 1);
   useEffect(() => {
-    const cancel = loader?.onChange((status, loaderResult) => {
-      if (status === LoaderStatus.fulfilled) {
-        setResult(loaderResult.data);
+    const cancel = loaderManager.subscribe(() => {
+      const newData = loaderManager.getData(id);
+      if (newData !== data) {
+        dataRef.current = newData;
+        forceUpdate();
       }
     });
-    return () => {
-      cancel?.();
-    };
+
+    return cancel;
   }, []);
-  return result;
+
+  return dataRef.current;
 };

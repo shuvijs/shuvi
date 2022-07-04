@@ -1,25 +1,13 @@
-import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { IParams, ParsedQuery } from '@shuvi/router';
-import {
-  IAppContext,
-  IRequest,
-  IRedirectState,
-  IRedirectFn
-} from '@shuvi/platform-shared/esm/runtime';
+import { IURLQuery, IURLParams } from '../routerTypes';
+import { IAppContext, IRequest } from '../applicationTypes';
+import { Response, error, redirect } from '../response';
 
-export type IURLQuery = ParsedQuery;
-export type IURLParams = IParams;
-
-export interface IRedirector {
-  redirected: boolean;
-  state?: IRedirectState;
-  handler: IRedirectFn;
+export interface LoaderContextOptions {
+  isServer: boolean;
+  req?: IRequest;
+  query: IURLQuery;
+  getAppContext: () => IAppContext;
 }
-
-export type IErrorHandler = (
-  errorCode?: SHUVI_ERROR_CODE | string,
-  errorDesc?: string
-) => void;
 
 /**
  * route component getInitialProps params `context`
@@ -59,14 +47,14 @@ export interface IRouteLoaderContext {
    * redirect('/target', 301)
    * ```
    */
-  redirect: IRedirectFn;
+  redirect: typeof redirect;
   /**
    * throw error if necessary
    * ```ts
    * error(502, 'custom error describe')
    * ```
    */
-  error: IErrorHandler;
+  error: typeof error;
   /**
    * server only
    */
@@ -79,12 +67,10 @@ export interface IRouteLoaderContext {
 
 export type Loader<T extends {} = {}> = (
   loaderContenxt: IRouteLoaderContext
-) => Promise<T | Response | void> | T | Response | void;
+) => Promise<T | Response | void | undefined> | T | Response | void | undefined;
 
-export type LoaderData<T = any> = {
-  data: T | null;
-  error?: Error | Error['message'];
-  loading?: boolean;
-};
+export type NormalizedLoader = (
+  loaderContenxt: IRouteLoaderContext
+) => Promise<Response | undefined>;
 
-export type LoadersData = Record<string, LoaderData>;
+export type LoaderDataRecord = Record<string, any>;

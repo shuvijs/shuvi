@@ -1,6 +1,10 @@
 const path = require('path');
 
-const e2eTests = ['test/e2e'];
+let e2eTests = ['test/fixtures', 'test/e2e'];
+
+if (process.env.SKIP_FIXTURES) {
+  e2eTests = e2eTests.filter(s => s !== 'test/fixtures');
+}
 
 module.exports = list => {
   return {

@@ -22,7 +22,7 @@ import {
   resolvePath,
   Events
 } from './utils';
-import { isError } from './utils/error';
+import { isError, isFunction } from './utils/error';
 import { runQueue } from './utils/async';
 import History from './history/base';
 import { getRedirectFromRoutes } from './getRedirectFromRoutes';
@@ -224,6 +224,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       }
     };
     this._pending = to;
+    let finishedCallbacks: Function[] = [];
     const iterator = (hook: NavigationGuardHook, next: Function) => {
       if (cancel) {
         return;
@@ -254,6 +255,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
               this.push(to);
             }
           } else {
+            if (isFunction(to)) {
+              finishedCallbacks.push(to);
+            }
             next();
           }
         }) as NavigationGuardNext);
@@ -289,6 +293,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       this._listeners.call({
         action: this._history.action,
         location: this._history.location
+      });
+      finishedCallbacks.forEach(fn => {
+        fn();
       });
     });
   }
