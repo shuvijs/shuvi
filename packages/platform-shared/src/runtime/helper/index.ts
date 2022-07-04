@@ -3,4 +3,4 @@ export { getPageData } from './getPageData';
 export * from './getPublicPath';
 export * from './getFilesOfRoute';
 export * from './errorHandler';
-export * from './redirectorHandler';
+export * from './router';

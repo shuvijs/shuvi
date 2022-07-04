@@ -6,6 +6,7 @@ import { IPluginList } from './lifecycle';
 import { IModelManager } from './store';
 import { IAppData } from './helper';
 import { Application } from './application';
+import { Response } from './response';
 
 export type IRequest = IncomingMessage & {
   [x: string]: any;
@@ -19,16 +20,6 @@ export type IRerenderConfig = {
   AppComponent?: any;
   UserAppComponent?: any;
 };
-
-export interface IRedirectFn {
-  (status: number, path: string): void;
-  (path: string): void;
-}
-
-export interface IRedirectState {
-  status?: number;
-  path: string;
-}
 
 export interface IApplication {
   readonly context: IAppContext;
@@ -75,7 +66,7 @@ export interface IServerRendererOptions extends IRenderOptions {
   getAssetPublicUrl(path: string): string;
 }
 
-export type IRenderAppResult<Data = {}> = {
+export type IRenderAppResult<ExtraAppData = {}> = {
   htmlAttrs?: IHtmlAttrs;
   headBeginTags?: IHtmlTag[];
   headEndTags?: IHtmlTag[];
@@ -83,10 +74,9 @@ export type IRenderAppResult<Data = {}> = {
   mainEndTags?: IHtmlTag[];
   scriptBeginTags?: IHtmlTag[];
   scriptEndTags?: IHtmlTag[];
-  appData?: Data;
+  appData?: ExtraAppData;
+  redirect?: Response;
   appHtml?: string;
-  redirect?: IRedirectState;
-  fallbackToCSR?: boolean;
 };
 
 export interface IView<

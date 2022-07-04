@@ -5,7 +5,15 @@ import {
   getErrorHandler,
   IAppState,
   IAppData,
-  IRawPageRouteRecord
+  IRawPageRouteRecord,
+  runPreload,
+  runLoaders,
+  getRouteMatchesWithInvalidLoader,
+  Response,
+  getLoaderManager,
+  isRedirect,
+  isError,
+  isResponse
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import {
@@ -14,9 +22,9 @@ import {
   createBrowserHistory,
   createHashHistory
 } from '@shuvi/router';
+import pageLoaders from '@shuvi/app/files/page-loaders';
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { getLoaderManager, getLoadersAndPreloadHook } from '../loader';
 
 let app: Application;
 
@@ -32,8 +40,7 @@ export function createApp<AppState extends IAppState>(options: {
   }
 
   const { routes, appData, appComponent, userComponents } = options;
-  const { loadersData = {}, appState } = appData;
-  const modelManager = getModelManager(appState);
+  const { loadersData = {}, appState, ssr } = appData;
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory();
@@ -41,28 +48,88 @@ export function createApp<AppState extends IAppState>(options: {
     history = createBrowserHistory();
   }
 
-  // loaderManager is created here and will be cached.
-  getLoaderManager(loadersData, appData.ssr);
-
   const router = createRouter({
     history,
     routes: getRoutes(routes)
   });
-  router.beforeResolve(
-    getLoadersAndPreloadHook(modelManager, {
-      getAppContext: () => app.context
-    })
-  );
-  router.afterEach(_current => {
-    const error = getErrorHandler(modelManager);
-    if (!_current.matches.length) {
-      error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
-    } else {
-      // FIXME
-      setTimeout(() => {
-        error.resetErrorState();
-      }, 0);
+  const hasHydrateData = Object.keys(loadersData).length > 0;
+  const loaderManager = getLoaderManager(loadersData);
+  const modelManager = getModelManager(appState);
+  const error = getErrorHandler(modelManager);
+  let shouldHydrate = ssr && hasHydrateData;
+  let hasServerError = error.hasError();
+
+  router.beforeResolve(async (to, from, next) => {
+    if (shouldHydrate) {
+      shouldHydrate = false;
+      return next();
     }
+
+    if (hasServerError) {
+      hasServerError = false;
+      return next();
+    }
+
+    if (!to.matches.length) {
+      error.errorHandler({ code: SHUVI_ERROR_CODE.PAGE_NOT_FOUND });
+      next();
+      return;
+    }
+
+    const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
+    let loaderDatas: (Response | undefined)[] = [];
+    const _runLoaders = async () => {
+      loaderDatas = await runLoaders(matches, pageLoaders, {
+        isServer: false,
+        query: to.query,
+        getAppContext: () => app.context
+      });
+    };
+    let preloadError;
+    const _preload = async () => {
+      try {
+        await runPreload(to);
+      } catch (err) {
+        preloadError = err;
+      }
+    };
+
+    await Promise.all([_preload(), _runLoaders()]);
+
+    if (preloadError) {
+      error.errorHandler();
+      next();
+      return;
+    }
+
+    for (let index = 0; index < loaderDatas.length; index++) {
+      const data = loaderDatas[index];
+      if (isRedirect(data)) {
+        loaderManager.clearAllData();
+        next(data.headers.get('Location')!);
+        return;
+      }
+
+      if (isError(data)) {
+        loaderManager.clearAllData();
+        error.errorHandler({
+          code: (data as Response).status,
+          message: (data as Response).data
+        });
+        next();
+        return;
+      }
+
+      if (isResponse(data)) {
+        loaderManager.setData(matches[index].route.id, (data as Response).data);
+      } else {
+        loaderManager.setData(matches[index].route.id, undefined);
+      }
+    }
+
+    next(() => {
+      error.reset();
+    });
   });
 
   app = application({
