@@ -130,7 +130,5 @@ export function createApp<AppState extends IAppState>(options: {
     storeManager
   });
 
-  router.init();
-
   return app;
 }
