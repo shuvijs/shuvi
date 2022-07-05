@@ -1,17 +1,21 @@
-import UserAppComponent from '@shuvi/app/user/app';
 import routes from '@shuvi/app/files/routes';
-import {
-  getRoutes,
-  app as PlatformAppComponent
-} from '@shuvi/app/core/platform';
+import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   Application,
   getStoreManager,
-  CreateServerApp
+  CreateServerApp,
+  runLoaders,
+  getRouteMatchesWithInvalidLoader,
+  Response,
+  isRedirect,
+  isError,
+  isResponse,
+  getLoaderManager,
+  getErrorHandler
 } from '@shuvi/platform-shared/esm/runtime';
+import pageLoaders from '@shuvi/app/files/page-loaders';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
-import { getLoadersAndPreloadHook } from '../loader';
 
 export const createApp: CreateServerApp = options => {
   const { req, ssr } = options;
@@ -25,21 +29,55 @@ export const createApp: CreateServerApp = options => {
     routes: getRoutes(routes)
   }) as IRouter;
   let app: Application;
+  const loaderManager = getLoaderManager();
+  const error = getErrorHandler(storeManager);
 
   if (ssr) {
-    router.beforeResolve(
-      getLoadersAndPreloadHook(storeManager, {
+    router.beforeResolve(async (to, from, next) => {
+      const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
+      const loaderDatas = await runLoaders(matches, pageLoaders, {
+        isServer: true,
         req,
+        query: to.query,
         getAppContext: () => app.context
-      })
-    );
+      });
+
+      for (let index = 0; index < loaderDatas.length; index++) {
+        const data = loaderDatas[index];
+        if (isRedirect(data)) {
+          loaderManager.clearAllData();
+          next(data.headers.get('Location')!);
+          return;
+        }
+
+        if (isError(data)) {
+          loaderManager.clearAllData();
+          error.errorHandler({
+            code: (data as Response).status,
+            message: (data as Response).data
+          });
+          next();
+          return;
+        }
+
+        if (isResponse(data)) {
+          loaderManager.setData(
+            matches[index].route.id,
+            (data as Response).data
+          );
+        } else {
+          loaderManager.setData(matches[index].route.id, undefined);
+        }
+      }
+
+      next();
+    });
   }
 
   app = application({
-    AppComponent: PlatformAppComponent,
+    AppComponent,
     router,
-    storeManager,
-    UserAppComponent
+    storeManager
   });
   router.init();
 

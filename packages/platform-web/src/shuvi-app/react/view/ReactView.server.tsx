@@ -4,8 +4,9 @@ import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import {
   getErrorHandler,
-  getRedirector,
-  IHtmlTag
+  IHtmlTag,
+  getLoaderManager,
+  redirect
 } from '@shuvi/platform-shared/esm/runtime';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
@@ -13,7 +14,6 @@ import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { ErrorBoundary } from './ErrorBoundary';
-import { getLoaderManager } from '../../loader';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -29,8 +29,6 @@ export class ReactServerView implements IReactServerView {
       appComponent: AppComponent,
       context: appContext
     } = app;
-    const redirector = getRedirector(storeManager);
-
     const error = getErrorHandler(storeManager);
 
     await router.ready;
@@ -38,30 +36,19 @@ export class ReactServerView implements IReactServerView {
     let { pathname, matches, redirected } = router.current;
     // handler no matches
     if (!matches.length) {
-      error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+      error.errorHandler({
+        code: SHUVI_ERROR_CODE.PAGE_NOT_FOUND
+      });
     }
 
     if (redirected) {
       return {
-        redirect: {
-          path: pathname
-        }
+        redirect: redirect(pathname)
       };
     }
 
     const loaderManager = getLoaderManager();
-    const { rejecteds } = loaderManager;
-    if (rejecteds.length) {
-      return {
-        fallbackToCSR: true
-      };
-    }
-    const loadersData = await loaderManager.getLoadersData();
-    if (redirector.redirected) {
-      return {
-        redirect: redirector.state
-      };
-    }
+    const loadersData = await loaderManager.getAllData();
 
     const loadableModules: string[] = [];
     let htmlContent: string;
@@ -87,11 +74,8 @@ export class ReactServerView implements IReactServerView {
 
     try {
       htmlContent = renderToString(RootApp);
-    } catch {
-      return {
-        fallbackToCSR: true
-      };
     } finally {
+      loaderManager.clearAllData();
       head = Head.rewind() || [];
     }
 

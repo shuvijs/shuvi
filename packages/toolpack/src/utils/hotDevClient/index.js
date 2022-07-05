@@ -318,8 +318,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
     // HMR failed, need to refresh
     const hmrStatus = module.hot.status();
     if (hmrStatus === 'abort' || hmrStatus === 'fail') {
-      console.log('ssss');
-      // window.location.reload();
+      window.location.reload();
     }
     return;
   }

@@ -7,14 +7,15 @@ import {
   IServerRendererOptions,
   IViewClient,
   IViewServer,
-  IRenderAppResult,
-  IRedirectState
+  IRenderAppResult
 } from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
 
 export { IHtmlAttrs, IHtmlTag, IApplication };
 
-export interface IRenderResultRedirect extends IRedirectState {
+export interface IRenderResultRedirect {
+  status?: number;
+  path: string;
   $type: 'redirect';
 }
 

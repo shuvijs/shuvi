@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import {
-  getErrorHandler,
-  getRedirector
-} from '@shuvi/platform-shared/esm/runtime';
+import { getErrorHandler } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
@@ -12,7 +9,6 @@ import { IReactClientView } from '../types';
 import ErrorPage from '../ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { renderAction } from './render-action';
-import { getLoaderManager } from '../../loader';
 
 const headManager = new HeadManager();
 
@@ -39,8 +35,6 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    const redirector = getRedirector(storeManager);
-
     const error = getErrorHandler(storeManager);
 
     const TypedAppComponent = AppComponent as React.ComponentType;
@@ -54,12 +48,10 @@ export class ReactClientView implements IReactClientView {
 
       if (!matches.length) {
         // no handler no matches
-        error.errorHandler(SHUVI_ERROR_CODE.PAGE_NOT_FOUND);
+        error.errorHandler({
+          code: SHUVI_ERROR_CODE.PAGE_NOT_FOUND
+        });
       }
-    }
-
-    if (redirector.redirected) {
-      router.replace(redirector.state.path);
     }
 
     const root = (
@@ -78,11 +70,8 @@ export class ReactClientView implements IReactClientView {
       </ErrorBoundary>
     );
 
-    const loaderManager = getLoaderManager();
-
     const ssrCallback = () => {
       this._isInitialRender = false;
-      loaderManager.shouldHydrate = false;
     };
 
     renderAction({

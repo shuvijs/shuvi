@@ -9,9 +9,9 @@ export const loader: Loader = async ctx => {
   const { query, redirect } = ctx;
   if (query) {
     if (query.code) {
-      redirect(+query.code, query.target as string);
+      return redirect(+query.code, query.target as string);
     } else {
-      redirect(query.target as string);
+      return redirect(query.target as string);
     }
   }
 };

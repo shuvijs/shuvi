@@ -24,11 +24,14 @@ export type IRouteRecord<Element = any, ExtendedTypes = {}> = {
   __resolveWeak__?: () => any;
 } & ExtendedTypes;
 
+export type NavigationGuardNextCallback = () => any;
+
 export interface NavigationGuardNext {
   (): void;
   (error: Error): void;
   (location: string | { path?: string; replace?: boolean }): void;
   (valid: boolean | undefined): void;
+  (cb: NavigationGuardNextCallback): void;
 }
 
 export interface NavigationGuardHook<R extends IRouteRecord = any> {
