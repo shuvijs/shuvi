@@ -35,6 +35,7 @@ describe('Dynamic', () => {
   test('should render even there are no physical chunk exists', async () => {
     page = await ctx.browser.page(ctx.url('/no-chunk'));
 
+    await page.waitForSelector('p.dynamic');
     expect(await page.$text('p:nth-child(1)')).toBe('Welcome, normal');
     expect(await page.$text('p:nth-child(2)')).toBe('Welcome, dynamic');
   });

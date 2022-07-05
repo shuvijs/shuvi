@@ -1,5 +1,6 @@
 export const DEFAULT_PUBLIC_PATH = '/';
 
+// todo: remove some of these contants to platform-shared or platform-web
 export const CLIENT_BUILD_MANIFEST_PATH = '../build-manifest.client.json';
 
 export const SERVER_BUILD_MANIFEST_PATH = '../build-manifest.server.json';

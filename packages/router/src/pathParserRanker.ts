@@ -214,7 +214,7 @@ export function tokensToParser(
   else if (options.strict) pattern += '(?:/*|$)';
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i');
-  console.log('re', re);
+
   function parse(path: string): MatchPathParams | null {
     const match = path.match(re);
     const params: PathParams = {};

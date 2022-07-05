@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { UserConfig } from '../../apiTypes';
+import { Config } from '../../apiTypes';
 import { loadConfig, resolveConfig, getFullUserConfig } from '../config';
 
 export function resolveFixture(name: string) {
@@ -8,7 +8,7 @@ export function resolveFixture(name: string) {
 
 export async function loadFixture(
   name: string,
-  userConfig: UserConfig = {},
+  userConfig: Config = {},
   configFile?: string
 ) {
   const config = await loadConfig({
