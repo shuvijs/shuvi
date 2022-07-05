@@ -56,8 +56,8 @@ describe('Path parser', () => {
     it('allow a trailing slash in repeated params', () => {
       matchParams('/a/:id+', '/a/b/c/d/', { id: ['b', 'c', 'd'] });
       matchParams('/a/:id*', '/a/b/c/d/', { id: ['b', 'c', 'd'] });
-      matchParams('/a/:id*', '/a/', { id: '' });
-      matchParams('/a/:id*', '/a', { id: '' });
+      matchParams('/a/:id*', '/a/', { id: [] });
+      matchParams('/a/:id*', '/a', { id: [] });
     });
 
     it('allow no slash', () => {
@@ -146,7 +146,7 @@ describe('Path parser', () => {
 
     it('empty param optional', () => {
       matchParams('/:a?', '/', { a: '' });
-      matchParams('/:a*', '/', { a: '' });
+      matchParams('/:a*', '/', { a: [] });
     });
 
     it('static then empty param optional', () => {
@@ -154,11 +154,11 @@ describe('Path parser', () => {
       matchParams('/a/:a?', '/a/a', { a: 'a' });
       matchParams('/a/:a?', '/a/a/', { a: 'a' });
       matchParams('/a/:a?', '/a/', { a: '' });
-      matchParams('/a/:a*', '/a', { a: '' });
-      matchParams('/a/:a*', '/a/', { a: '' });
+      matchParams('/a/:a*', '/a', { a: [] });
+      matchParams('/a/:a*', '/a/', { a: [] });
       matchParams('/a/:a(.*)', '/a', null);
       matchParams('/a/:a(.*)', '/a/', { a: '' });
-      matchParams('/a/-:a*', '/a/-', { a: '' });
+      matchParams('/a/-:a*', '/a/-', { a: [] });
       matchParams('/a/-:a*', '/a/-/b/c', null);
       matchParams('/a/-:a*', '/a/-b/c', { a: ['b', 'c'] });
       matchParams('/a/-:a(.*)', '/a/-b/c', { a: 'b/c' });

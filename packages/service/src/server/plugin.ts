@@ -5,7 +5,7 @@ import {
   IPluginInstance,
   IPluginHandlers
 } from '@shuvi/hook';
-import { CustomServerPluginHooks } from '@shuvi/runtime'
+import { CustomServerPluginHooks } from '@shuvi/runtime';
 import { IPluginContext } from '../core';
 import { IProxy } from './pluginTypes';
 
@@ -41,7 +41,7 @@ export const getManager = () =>
 
 export const { createPlugin: createServerPlugin } = getManager();
 
-export type IServerPluginConstructor = IPluginHandlers<
+export type ServerPluginConstructor = IPluginHandlers<
   InternalServerPluginHooks & CustomServerPluginHooks,
   IServerPluginContext
 >;

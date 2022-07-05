@@ -1,7 +1,7 @@
 import {
   IRequestHandlerWithNext,
   IServerMiddleware,
-  IServerPluginConstructor
+  ServerPluginConstructor
 } from '@shuvi/service';
 import {
   IAppContext,
@@ -49,13 +49,13 @@ export interface IDocumentModule {
 
 export interface IServerModule {
   middlewares?: IServerMiddleware | IServerMiddleware[];
-  getPageData?: IServerPluginConstructor['pageData'];
-  renderToHTML?: IServerPluginConstructor['renderToHTML'];
+  getPageData?: ServerPluginConstructor['pageData'];
+  renderToHTML?: ServerPluginConstructor['renderToHTML'];
   /**
    *  we already have onDocumentProps in document.js,
    *  for simplicity, we don't need to add it here.
    */
-  // modifyHtml?: IServerPluginConstructor['modifyHtml'];
+  // modifyHtml?: ServerPluginConstructor['modifyHtml'];
 }
 
 declare module '@shuvi/service/lib/resources' {

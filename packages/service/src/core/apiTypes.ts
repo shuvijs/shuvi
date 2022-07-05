@@ -42,8 +42,8 @@ export type IShuviMode = 'development' | 'production';
 
 export interface IPresetSpec {
   (options: any): {
-    presets?: UserConfig['presets'];
-    plugins?: UserConfig['plugins'];
+    presets?: Config['presets'];
+    plugins?: Config['plugins'];
   };
 }
 
@@ -152,7 +152,7 @@ export interface IApiConfig {
 
 export type IRuntimeConfig = Record<string, string>;
 
-export interface UserConfig {
+export interface Config {
   outputPath?: string;
   ssr?: boolean;
   publicDir?: string;
@@ -179,8 +179,8 @@ export interface UserConfig {
   };
 }
 
-export interface Config
-  extends Omit<Required<UserConfig>, 'router' | 'apiConfig' | 'experimental'> {
+export interface NormalizedConfig
+  extends Omit<Required<Config>, 'router' | 'apiConfig' | 'experimental'> {
   router: Required<IRouterConfig>;
   apiConfig: Required<IApiConfig>;
   experimental: {
@@ -191,7 +191,7 @@ export interface Config
 export type IPluginContext = {
   mode: IShuviMode;
   paths: IPaths;
-  config: Config;
+  config: NormalizedConfig;
   phase: IPhase;
   pluginRunner: PluginRunner;
   assetPublicPath: string;

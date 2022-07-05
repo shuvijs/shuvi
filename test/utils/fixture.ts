@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { loadConfig, UserConfig } from '@shuvi/service';
+import { loadConfig, Config } from '@shuvi/service';
 import { createDefaultConfig } from '@shuvi/service/lib/core/config';
 
 export function resolveFixture(...paths: string[]) {
@@ -9,8 +9,8 @@ export function resolveFixture(...paths: string[]) {
 
 export async function loadFixture(
   fixture: string,
-  overrides: UserConfig = {}
-): Promise<Required<UserConfig>> {
+  overrides: Config = {}
+): Promise<Required<Config>> {
   const config = await loadConfig({
     rootDir: resolveFixture(fixture)
   });

@@ -1,10 +1,8 @@
 import { IPlatform } from '@shuvi/service';
-
 import {
-  sharedPlugin,
+  SharedPlugins,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/lib/node';
-import { RedoxPlugin } from '@shuvi/platform-shared/lib/redox';
 import { resolveAppFile } from './paths';
 
 import {
@@ -35,9 +33,8 @@ const platform: IPlatform = async (
 
   return {
     plugins: [
+      ...SharedPlugins,
       mainPlugin,
-      sharedPlugin,
-      RedoxPlugin,
       ...featurePlugins,
       ...platformFrameworkContent.plugins
     ],

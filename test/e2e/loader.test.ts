@@ -60,7 +60,7 @@ describe('loader', () => {
       expect(loaderData.isServer).toBe(true);
       expect(loaderData.query.a).toBe('2');
       expect(loaderData.params.foo).toBe('test');
-      expect(loaderData.appContext).toHaveProperty('modelManager');
+      expect(loaderData.appContext).toHaveProperty('storeManager');
     });
 
     test('should be called after a client navigation', async () => {
@@ -151,7 +151,7 @@ describe('loader', () => {
       expect(loaderContext.isServer).toBe(false);
       expect(loaderContext.query.a).toBe('2');
       expect(loaderContext.params.foo).toBe('test');
-      expect(loaderContext.appContext).toHaveProperty('modelManager');
+      expect(loaderContext.appContext).toHaveProperty('storeManager');
     });
 
     test('should be called after navigations', async () => {

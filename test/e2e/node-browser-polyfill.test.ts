@@ -18,6 +18,7 @@ describe('Node Browser Polyfill', () => {
 
   test('should polyfill node API for browser correctly', async () => {
     page = await ctx.browser.page(ctx.url('/'));
+    await page.waitForSelector('#node-browser-polyfills');
     const data = await page.$text('#node-browser-polyfills');
 
     const parsedData = JSON.parse(data);

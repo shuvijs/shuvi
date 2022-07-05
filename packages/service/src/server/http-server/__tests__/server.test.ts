@@ -106,7 +106,7 @@ describe('server', () => {
       await server.listen(port);
 
       await got(`http://${host}:${port}`);
-      expect(params).toStrictEqual({ path: '' });
+      expect(params).toStrictEqual({ path: [] });
 
       await got(`http://${host}:${port}/path/to/match/route`);
       expect(params).toStrictEqual({ path: ['path', 'to', 'match', 'route'] });

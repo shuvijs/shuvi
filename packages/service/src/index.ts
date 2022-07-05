@@ -1,9 +1,27 @@
+export * from './constants';
+
+export { getBundler } from './bundler';
+
+export { ProjectBuilder } from './project';
+
+export {
+  IShuviServer,
+  IResponse,
+  IRequest,
+  IServerPluginContext,
+  IRequestHandlerWithNext,
+  ServerPluginConstructor,
+  ServerPluginInstance,
+  IServerMiddleware,
+  createShuviServer,
+  createServerPlugin
+} from './server';
+
 export {
   Api,
-  getApi,
-  UserConfig,
   IPaths,
   Config,
+  NormalizedConfig,
   IPluginContext,
   IPlatform,
   IPlatformContent,
@@ -12,16 +30,9 @@ export {
   IApiRouteConfig,
   IMiddlewareRouteConfig,
   CorePluginConstructor,
+  CorePluginInstance,
+  getApi,
   loadConfig,
   defineConfig,
-  resolvePlugin
+  createPlugin
 } from './core';
-export { ProjectBuilder } from './project';
-export { getBundler } from './bundler';
-export * from './constants';
-export * from './server';
-export {
-  createPlugin,
-  PluginHooks,
-  CorePluginInstance
-} from './core/lifecycle';

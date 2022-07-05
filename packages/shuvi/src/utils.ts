@@ -1,7 +1,7 @@
 import { existsSync } from 'fs';
 import * as path from 'path';
 import { CommanderStatic } from 'commander';
-import { UserConfig, IPlatform } from '@shuvi/service';
+import { Config, IPlatform } from '@shuvi/service';
 import {
   loadConfig,
   mergeConfig,
@@ -47,7 +47,7 @@ export async function getConfigFromCli(
   cwd: string,
   cliOptions: Record<string, any>,
   cliOptionsKeyMap: OptionsKeyMap = {}
-): Promise<Required<UserConfig>> {
+): Promise<Required<Config>> {
   const configFilePath =
     cliOptions.config && path.resolve(cwd, cliOptions.config);
   const configFromFile = await loadConfig({
@@ -65,7 +65,7 @@ export async function getConfigFromCli(
 export function getConfigFromCliOtherOptions(
   cliOptions: Record<string, any>,
   cliOptionsKeyMap: OptionsKeyMap = {}
-): UserConfig {
+): Config {
   const config = {};
   Object.keys(cliOptionsKeyMap).forEach(key => {
     if (typeof cliOptions[key] !== 'undefined') {

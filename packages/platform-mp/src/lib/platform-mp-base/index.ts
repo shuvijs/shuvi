@@ -17,7 +17,7 @@ import { rankRouteBranches } from '@shuvi/router';
 import { getPageRoutes } from '@shuvi/platform-shared/lib/node';
 import { FileOptions } from '@shuvi/service/lib/project';
 import {
-  sharedPlugin,
+  SharedPlugins,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/lib/node';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
@@ -122,7 +122,7 @@ export default abstract class PlatformMpBase {
       this.getSetupAppPlugin(),
       this.getSetupRoutesPlugin(),
       this.getConfigWebpackPlugin(),
-      sharedPlugin
+      ...SharedPlugins
     ].filter(Boolean);
   }
 

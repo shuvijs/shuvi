@@ -1,17 +1,15 @@
 import * as path from 'path';
 import { createPlugin } from '@shuvi/service';
 import server from './server';
+import { resolvePluginFile } from '../../../utils';
 
 const resolveLib = (module: string) =>
   path.dirname(require.resolve(path.join(module, 'package.json')));
 
-const runtimePath = require.resolve(
-  path.join(__dirname, '../../esm/redox/runtime')
-);
 const core = createPlugin({
   addRuntimeService: () => [
     {
-      source: path.dirname(require.resolve('@shuvi/redox/package.json')),
+      source: resolveLib('@shuvi/redox'),
       exported: '*',
       filepath: 'model.ts'
     }
@@ -21,10 +19,11 @@ const core = createPlugin({
     return config;
   }
 });
-export const RedoxPlugin = {
+
+export default {
   core,
   runtime: {
-    plugin: runtimePath
+    plugin: resolvePluginFile('model', 'runtime')
   },
   server,
   types: path.join(__dirname, 'types')
