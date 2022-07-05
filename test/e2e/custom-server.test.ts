@@ -22,19 +22,6 @@ describe('custom/server.js', () => {
     expect(await page.$text('[data-test-id="page-data"]')).toBe('bar');
   });
 
-  test('should inject custom documentProps', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
-
-    expect(
-      (
-        await page.$$eval(
-          'head > meta[name="testDocumentProps"]',
-          element => element
-        )
-      ).length
-    ).toBe(1);
-  });
-
   test('should replace renderToHTML by hooks', async () => {
     jest.spyOn(console, 'log');
 

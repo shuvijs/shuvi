@@ -51,7 +51,11 @@ export interface IServerModule {
   middlewares?: IServerMiddleware | IServerMiddleware[];
   getPageData?: IServerPluginConstructor['pageData'];
   renderToHTML?: IServerPluginConstructor['renderToHTML'];
-  modifyHtml?: IServerPluginConstructor['modifyHtml'];
+  /**
+   *  we already have onDocumentProps in document.js,
+   *  for simplicity, we don't need to add it here.
+   */
+  // modifyHtml?: IServerPluginConstructor['modifyHtml'];
 }
 
 declare module '@shuvi/service/lib/resources' {
