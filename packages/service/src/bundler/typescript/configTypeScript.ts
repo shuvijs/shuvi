@@ -32,6 +32,10 @@ export async function writeDefaultConfigurations(
       value: true,
       reason: 'requirement for SWC / babel'
     },
+    noImplicitThis: {
+      value: true,
+      reason: 'requirement for redox'
+    },
     module: {
       parsedValue: ts.ModuleKind.ESNext,
       // All of these values work:

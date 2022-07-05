@@ -1,7 +1,7 @@
 import { getRoutes } from '@shuvi/app/core/platform';
 import {
   Application,
-  getModelManager,
+  getStoreManager,
   getErrorHandler,
   IAppState,
   IAppData,
@@ -51,8 +51,8 @@ export function createApp<AppState extends IAppState>(options: {
   });
   const hasHydrateData = Object.keys(loadersData).length > 0;
   const loaderManager = getLoaderManager();
-  const modelManager = getModelManager(appState);
-  const error = getErrorHandler(modelManager);
+  const storeManager = getStoreManager(appState);
+  const error = getErrorHandler(storeManager);
   let shouldHydrate = ssr && hasHydrateData;
   let hasServerError = error.hasError();
 
@@ -127,7 +127,7 @@ export function createApp<AppState extends IAppState>(options: {
   app = application({
     AppComponent: appComponent,
     router,
-    modelManager
+    storeManager
   });
 
   router.init();
