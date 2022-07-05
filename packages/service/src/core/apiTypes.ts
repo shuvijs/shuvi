@@ -15,7 +15,6 @@ export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
   name?: string;
   component?: string;
-  //middlewares?: string[];
   redirect?: string;
   path: string;
   fullPath?: string;

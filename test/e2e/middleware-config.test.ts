@@ -19,6 +19,18 @@ describe('Middleware config test', () => {
     const inA = res.headers['in-a'];
     const inA1 = res.headers['in-a1'];
     const rightResult = inIndex && !inA && !inA1;
+
+    expect(rightResult).toBeTruthy();
+  });
+
+  // FIXME: trailingSlash
+  it.skip('should get correct headers when visited /a', async () => {
+    const res = await got.get(ctx.url('/a'));
+    const inIndex = res.headers['in-index'];
+    const inA = res.headers['in-a'];
+    const inA1 = res.headers['in-a1'];
+    const rightResult = !inIndex && inA && !inA1;
+
     expect(rightResult).toBeTruthy();
   });
 
