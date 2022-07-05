@@ -65,7 +65,6 @@ export const createApp: CreateServerApp = options => {
     router,
     modelManager
   });
-  router.init();
 
   return app;
 };

@@ -130,7 +130,5 @@ export function createApp<AppState extends IAppState>(options: {
     modelManager
   });
 
-  router.init();
-
   return app;
 }
