@@ -35,6 +35,10 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
   config.resolve.alias.set('@shuvi/platform-web', PACKAGE_DIR);
   config.resolve.alias.set('@shuvi/service', resolveLocal('@shuvi/service'));
   config.resolve.alias.set(
+    '@shuvi/redox-react',
+    resolveLocal('@shuvi/redox-react')
+  );
+  config.resolve.alias.set(
     '@shuvi/router-react$',
     resolveLocal('@shuvi/router-react')
   );

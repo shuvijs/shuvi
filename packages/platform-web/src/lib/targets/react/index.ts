@@ -23,6 +23,11 @@ const webReactMainPlugin = createPlugin({
     {
       source: resolveAppFile('react/Link'),
       exported: '{ Link }'
+    },
+    {
+      source: resolveLib('@shuvi/redox-react'),
+      exported: '*',
+      filepath: 'model.ts'
     }
   ]
 });
