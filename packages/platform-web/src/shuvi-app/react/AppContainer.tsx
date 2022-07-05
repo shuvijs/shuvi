@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createContext, useMemo, Context } from 'react';
 import {
-  IModelManager,
+  IStoreManager,
   IPageError,
   errorModel
 } from '@shuvi/platform-shared/esm/runtime';
@@ -14,7 +14,7 @@ export interface IAppContext {
 }
 
 const AppContext = createContext<IAppContext>(null as any);
-const AppStoreContext: Context<IModelManager> = createContext<IModelManager>(
+const AppStoreContext: Context<IStoreManager> = createContext<IStoreManager>(
   null as any
 );
 
@@ -45,17 +45,17 @@ export default function AppContainer({
   children,
   appContext,
   errorComp,
-  modelManager,
+  storeManager,
   ...appProps
 }: IAppContext & {
   children: React.ReactElement;
   errorComp?: React.ComponentType<IPageError>;
-  modelManager: IModelManager;
+  storeManager: IStoreManager;
 }) {
   const appCtx: IAppContext = useMemo(() => ({ appContext }), [appContext]);
   return (
     <AppContext.Provider value={appCtx}>
-      <Provider modelManager={modelManager}>
+      <Provider storeManager={storeManager}>
         <AppStore errorComp={errorComp}>
           {React.cloneElement(children, {
             ...children.props,

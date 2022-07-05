@@ -6,10 +6,10 @@ export * from './runtimeConfig';
 export * from './response';
 export {
   // todo: remove
-  getModelManager,
+  getStoreManager,
   // todo: remove
   IAppState,
-  IModelManager,
+  IStoreManager,
   IPageError,
   errorModel
 } from './store';

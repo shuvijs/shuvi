@@ -23,7 +23,6 @@ const dome = defineModel({
   },
   reducers: {
     add: (state, step) => {
-      // return state;
       return {
         ...state,
         number: state.number + step
@@ -48,19 +47,14 @@ const user = defineModel(
       }
     },
     views: {
-      d(_state, dependState) {
-        return dependState.dome;
+      d() {
+        return this.$dep.dome;
       },
-      one(_state, dependState) {
-        return dependState.dome.number;
+      one() {
+        return this.$dep.dome.number;
       },
-      double(state, _dependState, args): string {
-        // console.log('views', state, rootState, views, args);
-        // console.log('this', this)
-        // console.log('this', views.one)
-        // return state.id * args;
-        console.log('double computed');
-        return `state.id=>${state.id}, args=>${args},views.one=>${this.one}`;
+      double(args: number): string {
+        return `state.id=>${this.$state.id}, args=>${args},views.one=>${this.one}`;
       }
     }
   },

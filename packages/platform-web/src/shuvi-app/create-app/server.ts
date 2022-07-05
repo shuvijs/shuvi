@@ -2,7 +2,7 @@ import routes from '@shuvi/app/files/routes';
 import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   Application,
-  getModelManager,
+  getStoreManager,
   CreateServerApp,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
@@ -21,14 +21,14 @@ export const createApp: CreateServerApp = options => {
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
   });
-  const modelManager = getModelManager();
+  const storeManager = getStoreManager();
   const router = createRouter({
     history,
     routes: getRoutes(routes)
   }) as IRouter;
   let app: Application;
   const loaderManager = getLoaderManager();
-  const error = getErrorHandler(modelManager);
+  const error = getErrorHandler(storeManager);
 
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
@@ -63,7 +63,7 @@ export const createApp: CreateServerApp = options => {
   app = application({
     AppComponent,
     router,
-    modelManager
+    storeManager
   });
   router.init();
 

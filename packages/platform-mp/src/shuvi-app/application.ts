@@ -1,5 +1,5 @@
 import { app as AppComponent } from '@shuvi/app/core/platform';
-import { getModelManager } from '@shuvi/platform-shared/esm/runtime';
+import { getStoreManager } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 
 export function createApp() {
@@ -8,6 +8,6 @@ export function createApp() {
   return application({
     AppComponent,
     router: router as never,
-    modelManager: getModelManager()
+    storeManager: getStoreManager()
   });
 }

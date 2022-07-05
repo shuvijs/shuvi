@@ -3,7 +3,7 @@ import { IRouter } from './routerTypes';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IPluginList } from './lifecycle';
-import { IModelManager } from './store';
+import { IStoreManager } from './store';
 import { IAppData } from './helper';
 import { Application } from './application';
 import { Response } from './response';
@@ -24,12 +24,12 @@ export interface IApplication {
   readonly context: IAppContext;
   readonly router: IRouter;
   readonly appComponent: any;
-  readonly modelManager: IModelManager;
+  readonly storeManager: IStoreManager;
 }
 
 export interface IApplicationOptions {
   router: IRouter;
-  modelManager: IModelManager;
+  storeManager: IStoreManager;
   AppComponent: any;
   plugins?: IPluginList;
 }
