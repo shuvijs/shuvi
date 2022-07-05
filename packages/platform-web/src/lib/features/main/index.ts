@@ -60,12 +60,6 @@ export const getPlugin = (
         setPublicRuntimeConfig(publicRuntimeConfig);
       }
     },
-    addRuntimeService: () => [
-      {
-        source: resolveAppFile('loader'),
-        exported: '{ type Loader }'
-      }
-    ],
     addExtraTarget: ({ createConfig }, context) => {
       const serverWebpackHelpers = webpackHelpers();
       const serverChain = createConfig({
