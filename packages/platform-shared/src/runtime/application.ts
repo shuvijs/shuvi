@@ -1,6 +1,6 @@
 import { getManager, PluginManager } from './lifecycle';
 import { initPlugins } from './lifecycle';
-import { IModelManager } from './store';
+import { IStoreManager } from './store';
 import { IRouter } from './routerTypes';
 import {
   IApplication,
@@ -14,12 +14,12 @@ export class Application {
   private _appComponent: any;
   private _pluginManager: PluginManager;
   private _context: IAppContext;
-  private _modelManager: IModelManager;
+  private _storeManager: IStoreManager;
 
   constructor(options: IApplicationOptions) {
     this._router = options.router;
     this._context = {};
-    this._modelManager = options.modelManager;
+    this._storeManager = options.storeManager;
     this._appComponent = options.AppComponent;
     this._pluginManager = getManager();
 
@@ -48,8 +48,8 @@ export class Application {
     await this._initAppComponent();
   }
 
-  get modelManager() {
-    return this._modelManager;
+  get storeManager() {
+    return this._storeManager;
   }
 
   async updateComponents({ AppComponent }: IRerenderConfig = {}) {
@@ -85,7 +85,7 @@ export class Application {
       context: this._context,
       router: this._router,
       appComponent: this._appComponent,
-      modelManager: this._modelManager
+      storeManager: this._storeManager
     };
   }
 }

@@ -22,7 +22,7 @@ export class ReactClientView implements IReactClientView {
   }) => {
     const { _isInitialRender: isInitialRender } = this;
     const {
-      modelManager,
+      storeManager,
       router,
       appComponent: AppComponent,
       context: appContext
@@ -35,7 +35,7 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    const error = getErrorHandler(modelManager);
+    const error = getErrorHandler(storeManager);
 
     const TypedAppComponent = AppComponent as React.ComponentType;
 
@@ -60,7 +60,7 @@ export class ReactClientView implements IReactClientView {
           <Router router={router}>
             <AppContainer
               appContext={appContext}
-              modelManager={modelManager}
+              storeManager={storeManager}
               errorComp={ErrorPage}
             >
               <TypedAppComponent {...appProps} />

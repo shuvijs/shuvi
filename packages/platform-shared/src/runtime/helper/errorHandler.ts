@@ -1,5 +1,5 @@
 import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
-import { getModelManager, errorModel, IPageError } from '../store';
+import { getStoreManager, errorModel, IPageError } from '../store';
 
 export type Error = {
   code?: number;
@@ -15,13 +15,13 @@ export interface IErrorHandler {
 }
 
 export function getErrorHandler(
-  modelManager: ReturnType<typeof getModelManager>
+  storeManager: ReturnType<typeof getStoreManager>
 ): IErrorHandler {
-  const errorStore = modelManager.get(errorModel);
+  const errorStore = storeManager.get(errorModel);
 
   return {
     errorHandler({ code = SHUVI_ERROR_CODE.APP_ERROR, message }: Error = {}) {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       if (hasError) {
         return;
       }
@@ -34,13 +34,13 @@ export function getErrorHandler(
       errorStore.update(payload);
     },
     reset() {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       if (hasError) {
         errorStore.reset();
       }
     },
     hasError() {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       return hasError;
     }
   };

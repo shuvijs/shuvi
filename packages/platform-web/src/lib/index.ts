@@ -1,9 +1,10 @@
-import { IPlatform, resolvePlugin } from '@shuvi/service';
+import { IPlatform } from '@shuvi/service';
 
 import {
   sharedPlugin,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/lib/node';
+import { RedoxPlugin } from '@shuvi/platform-shared/lib/redox';
 import { resolveAppFile } from './paths';
 
 import {
@@ -31,12 +32,12 @@ const platform: IPlatform = async (
     entry,
     polyfills
   );
-  const modelPlugin = resolvePlugin('@shuvi/plugins/model', { dir: __dirname });
+
   return {
     plugins: [
       mainPlugin,
-      modelPlugin,
       sharedPlugin,
+      RedoxPlugin,
       ...featurePlugins,
       ...platformFrameworkContent.plugins
     ],
