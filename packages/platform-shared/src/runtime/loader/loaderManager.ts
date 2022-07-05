@@ -1,7 +1,7 @@
 let loaderManager: LoaderManager;
 
-function createLoaderManager(initDatas: Record<string, any>) {
-  const datas = new Map<string, any>(Object.entries(initDatas));
+function createLoaderManager() {
+  const datas = new Map<string, any>();
   const subscribers: Function[] = [];
 
   return {
@@ -19,10 +19,16 @@ function createLoaderManager(initDatas: Record<string, any>) {
 
       return datas.get(id);
     },
-    setData(id: string, data: any) {
-      datas.set(id, data);
-      subscribers.forEach(subscriber => subscriber());
+    setDatas(obj: Record<string, any>) {
+      for (const [id, data] of Object.entries(obj)) {
+        datas.set(id, data);
+      }
+      subscribers.forEach(fn => fn());
     },
+    // setData(id: string, data: any) {
+    //   datas.set(id, data);
+    //   subscribers.forEach(fn => fn());
+    // },
     subscribe(cb: Function) {
       subscribers.push(cb);
 
@@ -39,12 +45,12 @@ function createLoaderManager(initDatas: Record<string, any>) {
   };
 }
 
-export const getLoaderManager = (initialDataMap?: Record<string, any>) => {
+export const getLoaderManager = () => {
   if (loaderManager) {
     return loaderManager;
   }
 
-  loaderManager = createLoaderManager(initialDataMap || {});
+  loaderManager = createLoaderManager();
   return loaderManager;
 };
 

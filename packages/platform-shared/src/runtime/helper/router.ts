@@ -1,7 +1,6 @@
 import isEqual from '@shuvi/utils/lib/isEqual';
-import { Response } from '../response';
 import { IRoute, IPageRouteRecord, IRouteMatch } from '../routerTypes';
-import { Loader, LoaderContextOptions, runLoaders } from '../loader';
+import { Loader } from '../loader';
 
 type PreloadFn = () => Promise<void>;
 
@@ -61,21 +60,4 @@ export function getRouteMatchesWithInvalidLoader(
   });
 
   return targets;
-}
-
-export async function handleRouteResolve(
-  to: IRoute<IPageRouteRecord>,
-  from: IRoute<IPageRouteRecord>,
-  loaders: Record<string, Loader>,
-  options: LoaderContextOptions
-) {
-  const routes = getRouteMatchesWithInvalidLoader(to, from, loaders);
-  let loaderResult: (Response | undefined)[] = [];
-  const _runLoaders = async () => {
-    loaderResult = await runLoaders(routes, loaders, options);
-  };
-
-  await Promise.all([runPreload(to), _runLoaders()]);
-
-  return loaderResult;
 }

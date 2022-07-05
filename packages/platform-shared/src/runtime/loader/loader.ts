@@ -8,7 +8,7 @@ import {
   isError,
   isRedirect
 } from '../response';
-import { Loader, LoaderContextOptions } from './types';
+import { Loader, LoaderContextOptions, LoaderDataRecord } from './types';
 
 // todo: add unit tests
 export async function runInParallerAndBail<T>(
@@ -60,7 +60,7 @@ export async function runLoaders(
   matches: IRouteMatch<IPageRouteRecord>[],
   loadersByRouteId: Record<string, Loader>,
   { isServer, query, req, getAppContext }: LoaderContextOptions
-): Promise<(Response | undefined)[]> {
+): Promise<Response | LoaderDataRecord> {
   if (!matches.length) {
     return [];
   }
@@ -96,5 +96,26 @@ export async function runLoaders(
   };
 
   // call loaders in parallel
-  return await runInParallerAndBail(matches.map(createLoader));
+  const resultList = await runInParallerAndBail(matches.map(createLoader));
+  const loaderDatas: LoaderDataRecord = {};
+
+  for (let index = 0; index < resultList.length; index++) {
+    const item = resultList[index];
+    if (isRedirect(item)) {
+      return item;
+    }
+
+    if (isError(item)) {
+      return item;
+    }
+
+    if (item) {
+      loaderDatas[matches[index].route.id] = (item as Response).data;
+    } else {
+      // allow return undefined
+      loaderDatas[matches[index].route.id].route.id = undefined;
+    }
+  }
+
+  return loaderDatas;
 }

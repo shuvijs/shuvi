@@ -6,10 +6,8 @@ import {
   CreateServerApp,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
-  Response,
   isRedirect,
   isError,
-  isResponse,
   getLoaderManager,
   getErrorHandler
 } from '@shuvi/platform-shared/esm/runtime';
@@ -35,40 +33,28 @@ export const createApp: CreateServerApp = options => {
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
-      const loaderDatas = await runLoaders(matches, pageLoaders, {
+      const loaderResult = await runLoaders(matches, pageLoaders, {
         isServer: true,
         req,
         query: to.query,
         getAppContext: () => app.context
       });
 
-      for (let index = 0; index < loaderDatas.length; index++) {
-        const data = loaderDatas[index];
-        if (isRedirect(data)) {
-          loaderManager.clearAllData();
-          next(data.headers.get('Location')!);
-          return;
-        }
-
-        if (isError(data)) {
-          loaderManager.clearAllData();
-          error.errorHandler({
-            code: (data as Response).status,
-            message: (data as Response).data
-          });
-          next();
-          return;
-        }
-
-        if (isResponse(data)) {
-          loaderManager.setData(
-            matches[index].route.id,
-            (data as Response).data
-          );
-        } else {
-          loaderManager.setData(matches[index].route.id, undefined);
-        }
+      if (isRedirect(loaderResult)) {
+        next(loaderResult.headers.get('Location')!);
+        return;
       }
+
+      if (isError(loaderResult)) {
+        error.errorHandler({
+          code: loaderResult.status,
+          message: loaderResult.data
+        });
+        next();
+        return;
+      }
+
+      loaderManager.setDatas(loaderResult);
 
       next();
     });
