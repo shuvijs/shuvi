@@ -7,7 +7,7 @@ import {
   JS_EXT_RE
 } from '@shuvi/toolpack/lib/utils/bundle-require';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
-import { Config, UserConfig } from '../apiTypes';
+import { NormalizedConfig, Config } from '../apiTypes';
 import { DEFAULT_PUBLIC_PATH } from '../../constants';
 import { loadDotenvConfig } from './loadDotenvConfig';
 
@@ -18,14 +18,14 @@ export interface LoadConfigOptions {
 }
 
 export interface ResolveConfigOptions {
-  config?: UserConfig;
-  overrides?: UserConfig[];
+  config?: Config;
+  overrides?: Config[];
 }
 
 const DEFAUL_CONFIG_FILE_NAME = 'shuvi.config';
 const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'];
 
-export const createDefaultConfig: () => UserConfig = () => ({
+export const createDefaultConfig: () => Config = () => ({
   ssr: true,
   env: {},
   rootDir: process.cwd(),
@@ -54,7 +54,7 @@ export const createDefaultConfig: () => UserConfig = () => ({
   }
 });
 
-export const defineConfig = (config: UserConfig) => config;
+export const defineConfig = (config: Config) => config;
 
 export function mergeConfig(...configs: any[]): any {
   return deepmerge(...configs);
@@ -64,7 +64,7 @@ export async function loadConfig({
   rootDir = '.',
   filepath = '',
   loadEnv = true
-}: LoadConfigOptions = {}): Promise<UserConfig> {
+}: LoadConfigOptions = {}): Promise<Config> {
   rootDir = path.resolve(rootDir);
 
   // read dotenv so we can get env in shuvi.config.js
@@ -89,7 +89,7 @@ export async function loadConfig({
       return {};
     }
   }
-  let fileConfig: UserConfig = {};
+  let fileConfig: Config = {};
 
   const getOutputFile = (filepath: string) =>
     path.join(
@@ -106,22 +106,20 @@ export async function loadConfig({
   return fileConfig;
 }
 
-/** resolve a full `UserConfig` to be a `Config` */
+/** resolve a full `Config` to be a `Config` */
 export function resolveConfig(
-  config: UserConfig,
-  overrides: UserConfig[] = []
-): Config {
+  config: Config,
+  overrides: Config[] = []
+): NormalizedConfig {
   const configs = [{}, config].concat(overrides || []);
-  const resolvedConfig: Config = mergeConfig.apply(null, configs);
+  const resolvedConfig: NormalizedConfig = mergeConfig.apply(null, configs);
   if (resolvedConfig.router.history === 'auto') {
     resolvedConfig.router.history = resolvedConfig.ssr ? 'browser' : 'hash';
   }
   return resolvedConfig;
 }
 
-/** patch a userConfig to be a full `UserConfig` */
-export function getFullUserConfig(
-  config: UserConfig = {}
-): Required<UserConfig> {
+/** patch a userConfig to be a full `Config` */
+export function getFullUserConfig(config: Config = {}): Required<Config> {
   return mergeConfig(createDefaultConfig(), config);
 }

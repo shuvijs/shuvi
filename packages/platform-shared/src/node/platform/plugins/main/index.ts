@@ -1,9 +1,7 @@
 import { createPlugin } from '@shuvi/service';
 import * as path from 'path';
 import { extendedHooks } from './hooks';
-
-const resolveFile = (...paths: string[]) =>
-  path.resolve(__dirname, '..', '..', '..', '..', ...paths);
+import { resolveRuntimeFile, resolveRuntimeLibFile } from '../../../utils';
 
 const core = createPlugin({
   setup: ({ addHooks }) => {
@@ -12,25 +10,25 @@ const core = createPlugin({
   addRuntimeService: () => [
     {
       // must be lib, because this module won't be bundled
-      source: resolveFile('lib', 'runtime', 'runtimeConfig'),
+      source: resolveRuntimeLibFile('runtimeConfig'),
       exported: '{ getRuntimeConfig }'
     },
     {
-      source: resolveFile('esm', 'runtime', 'helper', 'getPageData'),
+      source: resolveRuntimeFile('helper', 'getPageData'),
       exported: '{ getPageData }'
     },
     {
-      source: resolveFile('esm', 'runtime', 'loader'),
+      source: resolveRuntimeFile('loader'),
       exported: '{ type Loader }'
     },
     {
-      source: resolveFile('esm', 'runtime', 'runtimePublicExport'),
+      source: resolveRuntimeFile('runtimePublicExport'),
       exported: '*'
     }
   ]
 });
 
-export const sharedPlugin = {
+export default {
   core,
   types: path.join(__dirname, 'types')
 };

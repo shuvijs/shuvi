@@ -3,8 +3,8 @@ import { joinPath } from '@shuvi/utils/lib/string';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import {
-  UserConfig,
   Config,
+  NormalizedConfig,
   IPaths,
   IShuviMode,
   IPhase,
@@ -33,7 +33,7 @@ const ServiceModes: IShuviMode[] = ['development', 'production'];
 interface IApiOPtions {
   cwd: string;
   mode: IShuviMode;
-  config?: UserConfig;
+  config?: Config;
   phase: IPhase;
   platform?: IPlatform;
 }
@@ -48,8 +48,8 @@ class Api {
   private _cwd: string;
   private _mode: IShuviMode;
   private _phase: IPhase;
-  private _userConfig: UserConfig;
-  private _config!: Config;
+  private _userConfig: Config;
+  private _config!: NormalizedConfig;
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
   private _platform?: IPlatform;

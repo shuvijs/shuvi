@@ -1,5 +1,5 @@
 import { getApi } from '../api';
-import { UserConfig, getFullUserConfig } from '..';
+import { Config, getFullUserConfig } from '..';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import { readFileSync } from 'fs';
@@ -30,7 +30,7 @@ describe('plugins', () => {
   });
 
   test('should access config and paths', async () => {
-    let config: UserConfig;
+    let config: Config;
 
     const api = await getApi({
       cwd: path.join(__dirname, 'fixtures', 'dotenv'),

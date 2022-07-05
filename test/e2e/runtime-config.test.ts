@@ -49,6 +49,7 @@ describe('SSR: Runtime Config', () => {
 
   test('should not access private config on client-side', async () => {
     page = await ctx.browser.page(ctx.url('/no-private'));
+    await page.waitForSelector('#no-private');
     expect(await page.$text('#no-private')).toBe('');
   });
 });

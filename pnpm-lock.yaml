@@ -583,8 +583,6 @@ importers:
       '@shuvi/platform-mp': workspace:*
       '@shuvi/platform-shared': workspace:*
       '@shuvi/platform-web': workspace:*
-      '@shuvi/redox': 0.0.2
-      '@shuvi/redox-log': 0.0.2
       '@shuvi/router': workspace:*
       '@shuvi/service': workspace:*
       '@shuvi/shared': workspace:*
@@ -607,8 +605,6 @@ importers:
       '@shuvi/platform-mp': link:../packages/platform-mp
       '@shuvi/platform-shared': link:../packages/platform-shared
       '@shuvi/platform-web': link:../packages/platform-web
-      '@shuvi/redox': 0.0.2
-      '@shuvi/redox-log': 0.0.2
       '@shuvi/router': link:../packages/router
       '@shuvi/service': link:../packages/service
       '@shuvi/shared': link:../packages/shared
@@ -3766,11 +3762,6 @@ packages:
     dependencies:
       any-observable: 0.3.0_rxjs@6.5.5
       rxjs: 6.5.5
-    dev: true
-
-  /@shuvi/redox-log/0.0.2:
-    resolution: {integrity: sha512-Pp3vgxnHzaKQrNpnQCl/nKmCCCX0z1aRGT0ef5q0jWA6rdGrEBjyP5XW2vYGplqWF+c0z0i1yMGOExcomsDiWQ==}
-    engines: {node: '>=10'}
     dev: true
 
   /@shuvi/redox-react/0.0.1-pre.4_4vuqpopq4lzjzk6ywh7fybezpa:

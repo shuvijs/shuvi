@@ -3,8 +3,7 @@ import {
   createHookManager,
   createAsyncParallelHook,
   IPluginInstance,
-  IPluginHandlers,
-  HookMap
+  IPluginHandlers
 } from '@shuvi/hook';
 import { CustomCorePluginHooks } from '@shuvi/runtime';
 
@@ -71,8 +70,6 @@ const builtinPluginHooks = {
 export * from './lifecycleTypes';
 
 type BuiltinPluginHooks = typeof builtinPluginHooks;
-
-export interface PluginHooks extends HookMap {}
 
 export type CorePluginInstance = IPluginInstance<
   BuiltinPluginHooks & CustomCorePluginHooks,

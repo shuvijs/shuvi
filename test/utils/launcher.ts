@@ -1,5 +1,5 @@
 import * as qs from 'querystring';
-import { UserConfig } from '@shuvi/service';
+import { Config } from '@shuvi/service';
 import { getApi, createShuviServer, IShuviServer } from '@shuvi/service';
 import { getPlatform } from 'shuvi/lib/utils';
 import { loadFixture, resolveFixture } from './fixture';
@@ -43,7 +43,7 @@ async function createTestContext(app: IShuviServer): Promise<AppCtx> {
 
 export function buildFixture(
   fixture: string,
-  configOverrides: UserConfig = {},
+  configOverrides: Config = {},
   spawnOptions: SpawnOptions = {}
 ) {
   return shuviSync(
@@ -59,7 +59,7 @@ export function buildFixture(
 
 export async function launchFixtureAtCurrentProcess(
   name: string,
-  overrides: UserConfig = {}
+  overrides: Config = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
   const platform = getPlatform(config.platform.name);
@@ -75,7 +75,7 @@ export async function launchFixtureAtCurrentProcess(
 
 export async function serveFixtureAtCurrentProcess(
   name: string,
-  overrides: UserConfig = {}
+  overrides: Config = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
   const platform = getPlatform(config.platform.name);
@@ -100,7 +100,7 @@ async function launchShuvi(
   projectPath: string,
   port: number,
   isDev: boolean,
-  configOverrides: UserConfig,
+  configOverrides: Config,
   envOverrides: Partial<NodeJS.ProcessEnv>,
   handleStdoutStderr: IHandleStdoutStderr
 ): Promise<ChildProcess> {
@@ -175,7 +175,7 @@ async function launchShuvi(
 
 export async function launchFixture(
   name: string,
-  configOverrides: UserConfig = {},
+  configOverrides: Config = {},
   envOverrides: Partial<NodeJS.ProcessEnv> = {},
   isDev: boolean = true,
   handleStdoutStderr: IHandleStdoutStderr = {}
@@ -214,7 +214,7 @@ export async function launchFixture(
 
 export async function serveFixture(
   name: string,
-  configOverrides: UserConfig = {},
+  configOverrides: Config = {},
   envOverrides: Partial<NodeJS.ProcessEnv> = {},
   handleStdoutStderr: IHandleStdoutStderr = {}
 ): Promise<AppCtx> {
