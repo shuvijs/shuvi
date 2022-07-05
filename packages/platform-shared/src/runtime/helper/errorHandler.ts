@@ -21,7 +21,7 @@ export function getErrorHandler(
 
   return {
     errorHandler({ code = SHUVI_ERROR_CODE.APP_ERROR, message }: Error = {}) {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       if (hasError) {
         return;
       }
@@ -34,13 +34,13 @@ export function getErrorHandler(
       errorStore.update(payload);
     },
     reset() {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       if (hasError) {
         errorStore.reset();
       }
     },
     hasError() {
-      const { hasError } = errorStore.$state();
+      const { hasError } = errorStore.$state;
       return hasError;
     }
   };
