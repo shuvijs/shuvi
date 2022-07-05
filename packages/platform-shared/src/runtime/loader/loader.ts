@@ -109,11 +109,12 @@ export async function runLoaders(
       return item;
     }
 
+    const routeId = matches[index].route.id;
     if (item) {
-      loaderDatas[matches[index].route.id] = (item as Response).data;
+      loaderDatas[routeId] = (item as Response).data;
     } else {
       // allow return undefined
-      loaderDatas[matches[index].route.id].route.id = undefined;
+      loaderDatas[routeId] = undefined;
     }
   }
 

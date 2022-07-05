@@ -60,7 +60,7 @@ describe('loader', () => {
       expect(loaderData.isServer).toBe(true);
       expect(loaderData.query.a).toBe('2');
       expect(loaderData.params.foo).toBe('test');
-      expect(loaderData.appContext).toEqual({});
+      expect(loaderData.appContext).toHaveProperty('modelManager');
     });
 
     test('should be called after a client navigation', async () => {
@@ -82,6 +82,7 @@ describe('loader', () => {
         page = await ctx.browser.page(
           ctx.url('/context/redirect', { target: '/context/static' })
         );
+        await page.waitForSelector('#page-context-static');
         expect(await page.$text('#page-context-static')).toBe('Static Page');
       });
 
@@ -150,7 +151,7 @@ describe('loader', () => {
       expect(loaderContext.isServer).toBe(false);
       expect(loaderContext.query.a).toBe('2');
       expect(loaderContext.params.foo).toBe('test');
-      expect(loaderContext.appContext).toEqual({});
+      expect(loaderContext.appContext).toHaveProperty('modelManager');
     });
 
     test('should be called after navigations', async () => {

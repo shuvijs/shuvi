@@ -46,6 +46,7 @@ export class Application {
     await this._initPlugin();
     await this._initAppContext();
     await this._initAppComponent();
+    this._router.init();
   }
 
   get storeManager() {
