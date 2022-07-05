@@ -15,7 +15,7 @@ export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
   name?: string;
   component?: string;
-  middlewares?: string[];
+  //middlewares?: string[];
   redirect?: string;
   path: string;
   fullPath?: string;
@@ -160,6 +160,7 @@ export interface UserConfig {
   env?: Record<string, string>;
   router?: IRouterConfig;
   routes?: IUserRouteConfig[]; // generate by files what under src/pages or user defined
+  middlewareRoutes?: IMiddlewareRouteConfig[];
   apiRoutes?: IApiRouteConfig[]; // generate by files what under src/apis or user defined
   apiConfig?: IApiConfig;
   runtimeConfig?: IRuntimeConfig;
