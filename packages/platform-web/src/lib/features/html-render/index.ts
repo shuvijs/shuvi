@@ -9,7 +9,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { extendedHooks } from './hooks';
 import { ifComponentHasLoader } from './lib';
-import server from './server-plugin-custom-server';
 import { getRoutes } from '../filesystem-routes';
 
 export { IRenderToHTML } from './hooks';
@@ -84,11 +83,6 @@ const core = createPlugin({
       'document',
       'noop'
     );
-    const serverCandidates = getUserCustomFileCandidates(
-      paths.rootDir,
-      'server',
-      'noop'
-    );
     const userDocumentFile = createFile({
       name: 'user/document.js',
       content: () => {
@@ -99,16 +93,7 @@ const core = createPlugin({
       },
       dependencies: documentCandidates
     });
-    const userServerFile = createFile({
-      name: 'user/server.js',
-      content: () => {
-        return getFirstModuleExport(
-          getAllFiles(serverCandidates),
-          serverCandidates
-        );
-      },
-      dependencies: serverCandidates
-    });
+
     const loadersFileName = path.join(
       context.paths.appDir,
       'files',
@@ -131,18 +116,12 @@ const core = createPlugin({
       },
       dependencies: [paths.routesDir, loadersFileName]
     });
-    return [
-      userDocumentFile,
-      routerConfigFile,
-      userServerFile,
-      loadersFile,
-      pageLoadersFile
-    ];
+
+    return [userDocumentFile, routerConfigFile, loadersFile, pageLoadersFile];
   }
 });
 
 export default {
   core,
-  server,
   types: path.join(__dirname, 'types')
 };
