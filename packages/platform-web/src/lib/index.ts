@@ -4,11 +4,11 @@ import {
   sharedPlugin,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/lib/node';
+import { RedoxPlugin } from '@shuvi/platform-shared/lib/redox';
 import { resolveAppFile } from './paths';
 
 import {
   featurePlugins,
-  getRedoxPlugin,
   getMiddlewares,
   getMiddlewaresBeforeDevMiddlewares,
   getMainPlugin
@@ -33,14 +33,12 @@ const platform: IPlatform = async (
     polyfills
   );
 
-  const redoxPlugin = getRedoxPlugin();
-
   return {
     plugins: [
       mainPlugin,
       sharedPlugin,
+      RedoxPlugin,
       ...featurePlugins,
-      redoxPlugin,
       ...platformFrameworkContent.plugins
     ],
     getPresetRuntimeFiles,

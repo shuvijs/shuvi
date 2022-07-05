@@ -111,8 +111,9 @@ export default function Index() {
 
 export const loader = async ctx => {
   // console.log('ctx.appContext: ', ctx.appContext);
-  const storeManager = ctx.appContext.storeManager;
-  const baseStore = storeManager.get(base);
-  await baseStore.addStepAsync();
-  console.log(baseStore.$state);
+  // const storeManager = ctx.appContext.storeManager;
+  // const baseStore = storeManager.get(base);
+  // await baseStore.addStepAsync();
+  // console.log(baseStore.$state);
+  return {};
 };

@@ -1,6 +1,6 @@
 import { AsyncParallelHook } from '@shuvi/hook';
-import { IAppContext } from '@shuvi/platform-shared/lib/runtime';
 import type { IStoreManager } from '@shuvi/redox';
+import { IAppContext } from '../runtime';
 
 declare module '@shuvi/runtime' {
   export interface CustomAppContext {
@@ -12,11 +12,6 @@ declare module '@shuvi/runtime' {
     pageData: AsyncParallelHook<void, IAppContext, Record<string, unknown>>;
   }
 }
-
-export type InitRedox = (params: {
-  initialState: any;
-  ctx: IAppContext;
-}) => IStoreManager;
 
 // export type CreateRedox = (
 //   initialState: any,

@@ -1,6 +1,5 @@
 import FeatureOnDemanCompilePage from './on-demand-compile-page';
 import FeatureHTMLRender from './html-render';
-import getRedoxPlugin from './redox';
 import FilesystemRoutes from './filesystem-routes';
 
 export { buildHtml } from './main/buildHtml';
@@ -17,5 +16,3 @@ export const featurePlugins = [
   FilesystemRoutes,
   FeatureHTMLRender
 ];
-
-export { getRedoxPlugin };

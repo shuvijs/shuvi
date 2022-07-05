@@ -194,7 +194,6 @@ importers:
       '@next/react-refresh-utils': 12.1.6_mrng46iweft73kaoehgasn3du4
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/redox': 0.0.2
       '@shuvi/redox-react': 0.0.2_pmx5plredp57me2lljzl57sd74
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
@@ -215,6 +214,7 @@ importers:
       react-refresh: 0.12.0
       use-sync-external-store: 1.1.0_react@18.1.0
     devDependencies:
+      '@shuvi/redox': 0.0.2
       '@testing-library/react': 10.0.2_ef5jwxihqo6n7gxfmzogljlgcm
       '@types/content-type': 1.1.5
       '@types/cookie': 0.4.1

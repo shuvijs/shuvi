@@ -2,7 +2,7 @@ import * as React from 'react';
 import { RedoxRoot } from '@shuvi/redox-react';
 import type { IStoreManager } from '@shuvi/redox';
 
-export const withRedox = (
+export const RedoxWrapper = (
   App: any,
   appContext: { storeManager: IStoreManager }
 ) => {

@@ -5,9 +5,6 @@ import { extendedHooks } from './hooks';
 const resolveFile = (...paths: string[]) =>
   path.resolve(__dirname, '..', '..', '..', '..', ...paths);
 
-const resolveLib = (module: string) =>
-  path.dirname(require.resolve(path.join(module, 'package.json')));
-
 const core = createPlugin({
   setup: ({ addHooks }) => {
     addHooks(extendedHooks);
@@ -29,17 +26,8 @@ const core = createPlugin({
     {
       source: resolveFile('esm', 'runtime', 'runtimePublicExport'),
       exported: '*'
-    },
-    {
-      source: resolveLib('@shuvi/redox'),
-      exported: '*',
-      filepath: 'model.ts'
     }
-  ],
-  configWebpack: config => {
-    config.resolve.alias.set('@shuvi/redox', resolveLib('@shuvi/redox'));
-    return config;
-  }
+  ]
 });
 
 export const sharedPlugin = {
