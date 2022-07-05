@@ -20,7 +20,10 @@ const core = createPlugin({
       exported: '{ getPageData }'
     },
     {
-      // todo: rename and limit export modules
+      source: resolveFile('esm', 'runtime', 'loader'),
+      exported: '{ type Loader }'
+    },
+    {
       source: resolveFile('esm', 'runtime', 'runtimePublicExport'),
       exported: '*'
     }

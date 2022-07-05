@@ -9,7 +9,7 @@ export const loader: Loader = async ctx => {
   const { query, error } = ctx;
   if (query) {
     if (query.code) {
-      return error(+query.code, query.message as string);
+      return error(query.message as string, +query.code);
     } else {
       return error(query.message as string);
     }
