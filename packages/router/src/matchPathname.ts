@@ -8,18 +8,18 @@ function safelyDecodeURIComponent(
   optional?: boolean
 ) {
   try {
-    if(Array.isArray(value)){
-      return value.map((item) =>{
+    if (Array.isArray(value)) {
+      return value.map(item => {
         return decodeURIComponent(item.replace(/\+/g, ' '));
-      })
+      });
     }
     return decodeURIComponent(value.replace(/\+/g, ' '));
   } catch (error) {
     if (!optional) {
       console.warn(
         `The value for the URL param "${paramName}" will not be decoded because` +
-        ` the string "${value}" is a malformed URL segment. This is probably` +
-        ` due to a bad percent encoding (${error}).`
+          ` the string "${value}" is a malformed URL segment. This is probably` +
+          ` due to a bad percent encoding (${error}).`
       );
     }
 
@@ -42,7 +42,11 @@ export function matchPathname(
 
   const { path, caseSensitive = false, end = true } = pattern;
 
-  const pathParser = tokensToParser(tokenizePath(path), { end, sensitive: caseSensitive });;
+  const pathParser = tokensToParser(tokenizePath(path), {
+    strict: false,
+    end,
+    sensitive: caseSensitive
+  });
 
   const matchResult = pathParser.parse(pathname);
 
@@ -50,9 +54,9 @@ export function matchPathname(
 
   const { keys = [] } = pathParser;
 
-  const {match, params} = matchResult;
+  const { match, params } = matchResult;
 
-  const safelyDecodetParams = (keys).reduce((memo, key, index) => {
+  const safelyDecodedParams = keys.reduce((memo, key, index) => {
     const keyName = key.name;
     memo[keyName] = safelyDecodeURIComponent(
       params[keyName],
@@ -62,7 +66,7 @@ export function matchPathname(
     return memo;
   }, {} as IParams);
 
-  return { path, pathname: match, params: safelyDecodetParams };
+  return { path, pathname: match, params: safelyDecodedParams };
 }
 
 /**

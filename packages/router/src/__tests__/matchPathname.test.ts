@@ -16,7 +16,7 @@ describe('matchPathname', () => {
 
     expect(matchPathname('/:other(.*)', '/123/any')).toStrictEqual({
       params: {
-        'other': '123/any'
+        other: '123/any'
       },
       path: '/:other(.*)',
       pathname: '/123/any'
@@ -135,5 +135,93 @@ describe('matchPathname', () => {
     });
 
     expect(console.warn).toBeCalledTimes(0);
+  });
+
+  describe('repeatable params/*', () => {
+    it('should match with empty /', () => {
+      expect(matchPathname({ path: '/:chapters*' }, '/')).toStrictEqual({
+        params: {
+          chapters: []
+        },
+        path: '/:chapters*',
+        pathname: '/'
+      });
+    });
+
+    it('should match and get params as array', () => {
+      expect(
+        matchPathname({ path: '/:chapters*' }, '/one/two/three')
+      ).toStrictEqual({
+        params: {
+          chapters: ['one', 'two', 'three']
+        },
+        path: '/:chapters*',
+        pathname: '/one/two/three'
+      });
+    });
+  });
+
+  describe('repeatable params/+', () => {
+    it('should not match with empty /', () => {
+      expect(matchPathname({ path: '/:chapters+' }, '/')).toBeNull();
+    });
+
+    it('should match and get params as array', () => {
+      expect(
+        matchPathname({ path: '/:chapters+' }, '/one/two/three')
+      ).toStrictEqual({
+        params: {
+          chapters: ['one', 'two', 'three']
+        },
+        path: '/:chapters+',
+        pathname: '/one/two/three'
+      });
+    });
+  });
+
+  describe('trailing slash', () => {
+    it('should match with trailing / in path', () => {
+      expect(matchPathname({ path: '/a/' }, '/a')).toStrictEqual({
+        params: {},
+        path: '/a/',
+        pathname: '/a'
+      });
+
+      expect(matchPathname({ path: '/a/' }, '/a/')).toStrictEqual({
+        params: {},
+        path: '/a/',
+        pathname: '/a/'
+      });
+    });
+
+    it('should match without trailing / in path', () => {
+      expect(matchPathname({ path: '/a' }, '/a')).toStrictEqual({
+        params: {},
+        path: '/a',
+        pathname: '/a'
+      });
+
+      expect(matchPathname({ path: '/a' }, '/a/')).toStrictEqual({
+        params: {},
+        path: '/a',
+        pathname: '/a/'
+      });
+    });
+  });
+
+  describe('options: end = false', () => {
+    it('should match', () => {
+      expect(matchPathname({ path: '/a', end: false }, '/a')).toStrictEqual({
+        params: {},
+        path: '/a',
+        pathname: '/a'
+      });
+
+      expect(matchPathname({ path: '/a', end: false }, '/a/')).toStrictEqual({
+        params: {},
+        path: '/a',
+        pathname: '/a'
+      });
+    });
   });
 });
