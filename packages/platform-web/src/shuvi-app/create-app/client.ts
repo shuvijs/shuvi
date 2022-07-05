@@ -9,11 +9,9 @@ import {
   runPreload,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
-  Response,
   getLoaderManager,
   isRedirect,
-  isError,
-  isResponse
+  isError
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import {
@@ -52,7 +50,7 @@ export function createApp<AppState extends IAppState>(options: {
     routes: getRoutes(routes)
   });
   const hasHydrateData = Object.keys(loadersData).length > 0;
-  const loaderManager = getLoaderManager(loadersData);
+  const loaderManager = getLoaderManager();
   const modelManager = getModelManager(appState);
   const error = getErrorHandler(modelManager);
   let shouldHydrate = ssr && hasHydrateData;
@@ -61,6 +59,7 @@ export function createApp<AppState extends IAppState>(options: {
   router.beforeResolve(async (to, from, next) => {
     if (shouldHydrate) {
       shouldHydrate = false;
+      loaderManager.setDatas(loadersData);
       return next();
     }
 
@@ -76,24 +75,27 @@ export function createApp<AppState extends IAppState>(options: {
     }
 
     const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
-    let loaderDatas: (Response | undefined)[] = [];
     const _runLoaders = async () => {
-      loaderDatas = await runLoaders(matches, pageLoaders, {
+      return await runLoaders(matches, pageLoaders, {
         isServer: false,
         query: to.query,
         getAppContext: () => app.context
       });
     };
-    let preloadError;
     const _preload = async () => {
+      let preloadError;
       try {
         await runPreload(to);
       } catch (err) {
         preloadError = err;
       }
+      return preloadError;
     };
 
-    await Promise.all([_preload(), _runLoaders()]);
+    const [preloadError, loaderResult] = await Promise.all([
+      _preload(),
+      _runLoaders()
+    ]);
 
     if (preloadError) {
       error.errorHandler();
@@ -101,30 +103,21 @@ export function createApp<AppState extends IAppState>(options: {
       return;
     }
 
-    for (let index = 0; index < loaderDatas.length; index++) {
-      const data = loaderDatas[index];
-      if (isRedirect(data)) {
-        loaderManager.clearAllData();
-        next(data.headers.get('Location')!);
-        return;
-      }
-
-      if (isError(data)) {
-        loaderManager.clearAllData();
-        error.errorHandler({
-          code: (data as Response).status,
-          message: (data as Response).data
-        });
-        next();
-        return;
-      }
-
-      if (isResponse(data)) {
-        loaderManager.setData(matches[index].route.id, (data as Response).data);
-      } else {
-        loaderManager.setData(matches[index].route.id, undefined);
-      }
+    if (isRedirect(loaderResult)) {
+      next(loaderResult.headers.get('Location')!);
+      return;
     }
+
+    if (isError(loaderResult)) {
+      error.errorHandler({
+        code: loaderResult.status,
+        message: loaderResult.data
+      });
+      next();
+      return;
+    }
+
+    loaderManager.setDatas(loaderResult);
 
     next(() => {
       error.reset();
