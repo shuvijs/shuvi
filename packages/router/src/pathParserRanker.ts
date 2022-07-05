@@ -214,7 +214,7 @@ export function tokensToParser(
   else if (options.strict) pattern += '(?:/*|$)';
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i');
-
+  console.log('re', re);
   function parse(path: string): MatchPathParams | null {
     const match = path.match(re);
     const params: PathParams = {};
@@ -224,7 +224,11 @@ export function tokensToParser(
     for (let i = 1; i < match.length; i++) {
       const value: string = match[i] || '';
       const key = keys[i - 1];
-      params[key.name] = value && key.repeatable ? value.split('/') : value;
+      if (key.repeatable) {
+        params[key.name] = value ? value.split('/') : [];
+      } else {
+        params[key.name] = value;
+      }
     }
 
     return {

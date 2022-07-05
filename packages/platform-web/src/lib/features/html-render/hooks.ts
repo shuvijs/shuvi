@@ -28,6 +28,7 @@ const addMiddleware = createSyncHook<
   void,
   IServerMiddleware | IServerMiddleware[]
 >();
+
 export const extendedHooks = {
   pageData,
   renderToHTML,

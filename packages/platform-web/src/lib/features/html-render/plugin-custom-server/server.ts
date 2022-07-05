@@ -1,6 +1,6 @@
 import { createServerPlugin } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
-import { extendedHooks } from './hooks';
+import { extendedHooks } from '../hooks';
 
 export default createServerPlugin({
   setup: ({ addHooks }) => {
@@ -15,12 +15,6 @@ export default createServerPlugin({
   renderToHTML: (renderToHTML, context) => {
     return (
       server?.server?.renderToHTML?.(renderToHTML, context) || renderToHTML
-    );
-  },
-  modifyHtml: (documentProps, appContext, context) => {
-    return (
-      server?.server?.modifyHtml?.(documentProps, appContext, context) ||
-      documentProps
     );
   }
 });
