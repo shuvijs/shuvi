@@ -306,7 +306,7 @@ export const getMiddlewareRoutes = async (
 
       if (rawRoute.type === 'middleware') {
         let path = segment + '/' + rawRoute.segment;
-        let catchAllOp = '/:rest(.*)';
+        let catchAllOp = '/:rest*';
 
         if (path === '//') {
           path = '/';

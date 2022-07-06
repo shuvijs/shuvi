@@ -2,7 +2,7 @@ export default {
   ssr: true,
   middlewareRoutes: [
     {
-      path: '/a/:rest(.*)',
+      path: '/a/:rest*',
       middlewares: ['a/m.js']
     },
     {
