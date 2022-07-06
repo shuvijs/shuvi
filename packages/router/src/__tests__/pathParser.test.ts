@@ -45,22 +45,37 @@ describe('Path parser', () => {
     });
 
     it('allows a trailing slash', () => {
+      matchParams('/home', '/home', {});
       matchParams('/home', '/home/', {});
+      matchParams('/a/b', '/a/b', {});
       matchParams('/a/b', '/a/b/', {});
     });
 
     it('enforces a trailing slash', () => {
       matchParams('/home/', '/home', null, { strict: true });
+      matchParams('/home/', '/home/', {}, { strict: true });
     });
 
     it('allow a trailing slash in repeated params', () => {
       matchParams('/a/:id+', '/a/b/c/d/', { id: ['b', 'c', 'd'] });
-      matchParams('/a/:id*', '/a/b/c/d/', { id: ['b', 'c', 'd'] });
+      matchParams('/a/:id+', '/a/b/c/d', { id: ['b', 'c', 'd'] });
       matchParams('/a/:id*', '/a/', { id: [] });
       matchParams('/a/:id*', '/a', { id: [] });
     });
 
-    it('allow no slash', () => {
+    it('allow no trailing slash', () => {
+      matchParams('/a/:id+', '/a/b/c/d/', null, { strict: true });
+      matchParams(
+        '/a/:id+',
+        '/a/b/c/d',
+        { id: ['b', 'c', 'd'] },
+        { strict: true }
+      );
+      matchParams('/a/:id*', '/a/', null, { strict: true });
+      matchParams('/a/:id*', '/a', { id: [] }, { strict: true });
+    });
+
+    it('allow no trailing slash', () => {
       matchParams('/home', '/home/', null, { strict: true });
       matchParams('/home', '/home', {}, { strict: true });
     });
@@ -182,30 +197,47 @@ describe('Path parser', () => {
       matchParams('/:a*/one', '/two/one', { a: ['two'] });
     });
 
-    it('param repeatable', () => {
-      matchParams('/:a+', '/one/two', {
-        a: ['one', 'two']
+    describe('repeated params', () => {
+      it('should not match empty with + ', () => {
+        matchParams('/:id+', '/', null);
       });
-      matchParams('/:a*', '/one/two', {
-        a: ['one', 'two']
+
+      it('should match empty with *', () => {
+        matchParams('/:id*', '/', { id: [] });
+      });
+
+      it('should match', () => {
+        matchParams('/:id+', '/a/b/c', {
+          id: ['a', 'b', 'c']
+        });
+        matchParams('/:id*', '/a/b/c', {
+          id: ['a', 'b', 'c']
+        });
+      });
+
+      it('should match with static segments', () => {
+        matchParams('/one/:a+', '/one/two', {
+          a: ['two']
+        });
+        matchParams('/one/:a+', '/one/two/three', {
+          a: ['two', 'three']
+        });
+        matchParams('/one/:a*', '/one/two', {
+          a: ['two']
+        });
+        matchParams('/one/:a*', '/one/two/three', {
+          a: ['two', 'three']
+        });
       });
     });
 
-    it('param repeatable with static', () => {
-      matchParams('/one/:a+', '/one/two', {
-        a: ['two']
-      });
-      matchParams('/one/:a+', '/one/two/three', {
-        a: ['two', 'three']
-      });
-      matchParams('/one/:a*', '/one/two', {
-        a: ['two']
-      });
-      matchParams('/one/:a*', '/one/two/three', {
-        a: ['two', 'three']
+    describe('options: end = false', () => {
+      it('static', () => {
+        matchParams('/a', '/a', {}, { end: false });
+        matchParams('/a', '/a/b', {}, { end: false });
+        matchParams('/a', '/a/b/c', {}, { end: false });
       });
     });
-
     // end of parsing urls
   });
 
