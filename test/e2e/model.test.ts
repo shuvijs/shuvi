@@ -4,7 +4,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('redox', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('redox');
+    ctx = await launchFixture('model');
     page = await ctx.browser.page();
   });
   afterAll(async () => {
