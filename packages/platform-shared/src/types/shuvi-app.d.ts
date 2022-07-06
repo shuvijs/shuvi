@@ -50,7 +50,7 @@ declare module '@shuvi/app/user/error' {
   export default Error;
 }
 
-declare module '@shuvi/app/user/runtime' {
+declare module '@shuvi/app/user/app' {
   import { IRuntimeModule } from '@shuvi/platform-shared/src/runtime/lifecycle';
   export const onInit: IRuntimeModule['onInit'];
   export const getAppComponent: IRuntimeModule['getAppComponent'];

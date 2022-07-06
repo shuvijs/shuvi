@@ -9,3 +9,7 @@ export const getAppComponent = UserApp => {
   }
   return AppComponent;
 };
+
+export const getAppContext = () => {
+  console.log(1231231);
+};

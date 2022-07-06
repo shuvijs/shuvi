@@ -5,9 +5,9 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('custom/runtime.js', () => {
+describe('custom/app.js', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('custom-runtime');
+    ctx = await launchFixture('custom-app');
   });
   afterAll(async () => {
     await ctx.close();
