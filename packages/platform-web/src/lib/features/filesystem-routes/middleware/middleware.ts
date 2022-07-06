@@ -9,16 +9,15 @@ export function middleware(
     const { middlewareRoutes = [] } = server;
     // match path for get middlewares
     let middlewares: IRequestHandlerWithNext[] = [];
+
     for (let i = 0; i < middlewareRoutes.length; i++) {
       const middlewareRoute = middlewareRoutes[i];
       const match = matchPathname(middlewareRoute.path, req.pathname);
       if (match) {
         req.params = match.params;
-        middlewares = middlewareRoutes[i].middlewares || [];
-        break;
+        middlewares.unshift(...(middlewareRoutes[i].middlewares || []));
       }
     }
-
     // run middlewares
     let i = 0;
     const runNext = () => runMiddleware(middlewares[++i]);
