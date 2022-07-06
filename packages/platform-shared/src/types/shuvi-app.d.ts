@@ -55,6 +55,5 @@ declare module '@shuvi/app/user/app' {
   export const onInit: IRuntimeModule['onInit'];
   export const getAppComponent: IRuntimeModule['getAppComponent'];
   export const getAppContext: IRuntimeModule['getAppContext'];
-  export const onRenderDone: IRuntimeModule['onRenderDone'];
   export const onDispose: IRuntimeModule['onDispose'];
 }

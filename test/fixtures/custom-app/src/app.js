@@ -1,3 +1,14 @@
+export const init = () => {
+  console.log('init');
+};
+
+export const getAppContext = ctx => {
+  return {
+    ...ctx,
+    testFlag: 1
+  };
+};
+
 export const getAppComponent = UserApp => {
   function AppComponent(props) {
     return (
@@ -10,6 +21,6 @@ export const getAppComponent = UserApp => {
   return AppComponent;
 };
 
-export const getAppContext = () => {
-  console.log(1231231);
+export const dispose = () => {
+  console.log('dispose');
 };
