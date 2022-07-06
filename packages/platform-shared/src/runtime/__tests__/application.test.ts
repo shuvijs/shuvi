@@ -1,10 +1,8 @@
 import { Application } from '../application';
 import { createRouter, createMemoryHistory } from '../router';
-import { getStoreManager } from '../store';
 
 function getApp() {
   const app = new Application({
-    storeManager: getStoreManager(),
     AppComponent: {},
     router: createRouter({
       history: createMemoryHistory(),

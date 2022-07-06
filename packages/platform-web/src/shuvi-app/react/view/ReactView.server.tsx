@@ -1,19 +1,16 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
-import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import {
-  getErrorHandler,
   IHtmlTag,
   getLoaderManager,
   redirect
 } from '@shuvi/platform-shared/esm/runtime';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
-import ErrorPage from '../ErrorPage';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
-import { ErrorBoundary } from './ErrorBoundary';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -23,22 +20,13 @@ export class ReactServerView implements IReactServerView {
   }) => {
     await Loadable.preloadAll();
 
-    const {
-      storeManager,
-      router,
-      appComponent: AppComponent,
-      context: appContext
-    } = app;
-    const error = getErrorHandler(storeManager);
-
+    const { storeManager, router, error, appComponent: AppComponent } = app;
     await router.ready;
 
     let { pathname, matches, redirected } = router.current;
     // handler no matches
     if (!matches.length) {
-      error.errorHandler({
-        code: SHUVI_ERROR_CODE.PAGE_NOT_FOUND
-      });
+      error.error(SHUVI_ERROR.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
@@ -55,21 +43,15 @@ export class ReactServerView implements IReactServerView {
     let head: IHtmlTag[];
 
     const RootApp = (
-      <ErrorBoundary>
-        <Router static router={router}>
+      <Router static router={router}>
+        <AppContainer app={app}>
           <LoadableContext.Provider
             value={moduleName => loadableModules.push(moduleName)}
           >
-            <AppContainer
-              appContext={appContext}
-              storeManager={storeManager}
-              errorComp={ErrorPage}
-            >
-              <AppComponent />
-            </AppContainer>
+            <AppComponent />
           </LoadableContext.Provider>
-        </Router>
-      </ErrorBoundary>
+        </AppContainer>
+      </Router>
     );
 
     try {

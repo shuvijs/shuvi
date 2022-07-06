@@ -1,13 +1,10 @@
 import * as React from 'react';
-import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import { getErrorHandler } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { IReactClientView } from '../types';
-import ErrorPage from '../ErrorPage';
-import { ErrorBoundary } from './ErrorBoundary';
 import { renderAction } from './render-action';
 
 const headManager = new HeadManager();
@@ -21,12 +18,7 @@ export class ReactClientView implements IReactClientView {
     appData
   }) => {
     const { _isInitialRender: isInitialRender } = this;
-    const {
-      storeManager,
-      router,
-      appComponent: AppComponent,
-      context: appContext
-    } = app;
+    const { router, appComponent: AppComponent, error } = app;
     let { ssr, appProps, dynamicIds } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
@@ -34,8 +26,6 @@ export class ReactClientView implements IReactClientView {
     } else {
       (window as any).__SHUVI = { router };
     }
-
-    const error = getErrorHandler(storeManager);
 
     const TypedAppComponent = AppComponent as React.ComponentType;
 
@@ -48,26 +38,18 @@ export class ReactClientView implements IReactClientView {
 
       if (!matches.length) {
         // no handler no matches
-        error.errorHandler({
-          code: SHUVI_ERROR_CODE.PAGE_NOT_FOUND
-        });
+        error.error(SHUVI_ERROR.PAGE_NOT_FOUND);
       }
     }
 
     const root = (
-      <ErrorBoundary>
-        <HeadManagerContext.Provider value={headManager.updateHead}>
-          <Router router={router}>
-            <AppContainer
-              appContext={appContext}
-              storeManager={storeManager}
-              errorComp={ErrorPage}
-            >
-              <TypedAppComponent {...appProps} />
-            </AppContainer>
-          </Router>
-        </HeadManagerContext.Provider>
-      </ErrorBoundary>
+      <Router router={router}>
+        <AppContainer app={app}>
+          <HeadManagerContext.Provider value={headManager.updateHead}>
+            <TypedAppComponent {...appProps} />
+          </HeadManagerContext.Provider>
+        </AppContainer>
+      </Router>
     );
 
     const ssrCallback = () => {

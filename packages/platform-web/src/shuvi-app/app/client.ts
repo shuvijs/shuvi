@@ -1,8 +1,6 @@
 import { getRoutes } from '@shuvi/app/core/platform';
 import {
   Application,
-  getStoreManager,
-  getErrorHandler,
   IAppState,
   IAppData,
   IRawPageRouteRecord,
@@ -22,14 +20,14 @@ import {
 } from '@shuvi/router';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import { historyMode } from '@shuvi/app/files/routerConfig';
-import { SHUVI_ERROR_CODE } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 
 let app: Application;
 
-export function createApp<AppState extends IAppState>(options: {
+export function createApp(options: {
   routes: IRawPageRouteRecord[];
   appComponent: any;
-  appData: IAppData<any, AppState>;
+  appData: IAppData<any, IAppState>;
 }) {
   // app is a singleton in client side
   if (app) {
@@ -49,12 +47,17 @@ export function createApp<AppState extends IAppState>(options: {
     history,
     routes: getRoutes(routes)
   });
+
+  app = application({
+    initialState: appState,
+    AppComponent: appComponent,
+    router
+  });
+
   const hasHydrateData = Object.keys(loadersData).length > 0;
   const loaderManager = getLoaderManager();
-  const storeManager = getStoreManager(appState);
-  const error = getErrorHandler(storeManager);
   let shouldHydrate = ssr && hasHydrateData;
-  let hasServerError = error.hasError();
+  let hasServerError = app.error.hasError();
 
   router.beforeResolve(async (to, from, next) => {
     if (shouldHydrate) {
@@ -69,7 +72,7 @@ export function createApp<AppState extends IAppState>(options: {
     }
 
     if (!to.matches.length) {
-      error.errorHandler({ code: SHUVI_ERROR_CODE.PAGE_NOT_FOUND });
+      app.error.error(SHUVI_ERROR.PAGE_NOT_FOUND);
       next();
       return;
     }
@@ -98,7 +101,7 @@ export function createApp<AppState extends IAppState>(options: {
     ]);
 
     if (preloadError) {
-      error.errorHandler();
+      app.error.error();
       next();
       return;
     }
@@ -109,7 +112,7 @@ export function createApp<AppState extends IAppState>(options: {
     }
 
     if (isError(loaderResult)) {
-      error.errorHandler({
+      app.error.error({
         code: loaderResult.status,
         message: loaderResult.data
       });
@@ -120,14 +123,8 @@ export function createApp<AppState extends IAppState>(options: {
     loaderManager.setDatas(loaderResult);
 
     next(() => {
-      error.reset();
+      app.error.clear();
     });
-  });
-
-  app = application({
-    AppComponent: appComponent,
-    router,
-    storeManager
   });
 
   return app;
