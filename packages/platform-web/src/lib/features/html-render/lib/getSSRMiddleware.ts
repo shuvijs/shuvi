@@ -27,7 +27,7 @@ function initServerRender(serverPluginContext: IServerPluginContext) {
     }
 
     if (error) {
-      res.statusCode = error.errorCode!;
+      res.statusCode = error.code!;
     }
 
     return result;

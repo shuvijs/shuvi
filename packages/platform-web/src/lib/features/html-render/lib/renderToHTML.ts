@@ -1,12 +1,12 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
 import { Renderer, IRenderResultRedirect } from './renderer';
-import {
-  errorModel,
-  IPageError
-} from '@shuvi/platform-shared/lib/runtime/store';
 
 type RenderResult = null | string | IRenderResultRedirect;
+
+type Error = {
+  code: number;
+};
 
 export async function renderToHTML({
   req,
@@ -14,9 +14,9 @@ export async function renderToHTML({
 }: {
   req: IRequest;
   serverPluginContext: IServerPluginContext;
-}): Promise<{ result: RenderResult; error?: IPageError }> {
+}): Promise<{ result: RenderResult; error?: Error }> {
   let result: RenderResult = null;
-  let error: IPageError | undefined;
+  let error: Error | undefined;
   const renderer = new Renderer({ serverPluginContext });
   const { application } = server;
   const app = application.createApp({
@@ -31,9 +31,11 @@ export async function renderToHTML({
       app: publicApp,
       req
     });
-    const errorState = app.storeManager.get(errorModel).$state;
-    if (typeof errorState.errorCode === 'number') {
-      error = errorState;
+    const appError = app.error.getError();
+    if (appError) {
+      error = {
+        code: typeof appError.code !== 'undefined' ? appError.code : 500
+      };
     }
   } catch (error) {
     throw error;

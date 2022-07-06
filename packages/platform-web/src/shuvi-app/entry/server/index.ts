@@ -1,5 +1,5 @@
 // This is the shuvi server-side main module exports collection
-import * as application from '../../create-app/server';
+import * as application from '../../app/server';
 import * as server from '@shuvi/app/files/user/server';
 import * as document from '@shuvi/app/files/user/document';
 import { default as apiRoutes } from '@shuvi/app/files/apiRoutes';

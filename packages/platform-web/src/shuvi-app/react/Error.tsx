@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { IPageError } from '@shuvi/platform-shared/esm/runtime';
-// @ts-ignore
 import { Head } from './head';
 
 const style = {
@@ -29,7 +27,13 @@ const style = {
   }
 } as const;
 
-export default function error({ errorCode, errorDesc }: IPageError) {
+export default function Error({
+  errorCode,
+  errorDesc
+}: {
+  errorCode?: number;
+  errorDesc?: string;
+}) {
   return (
     <div style={style.container}>
       <Head>
@@ -38,7 +42,7 @@ export default function error({ errorCode, errorDesc }: IPageError) {
 
       <div style={style.error}>
         <div style={style.errorCode}>{errorCode}</div>
-        {errorDesc && <div style={style.errorDesc}>{errorDesc}</div>}
+        <div style={style.errorDesc}>{errorDesc || 'Error'}</div>
       </div>
     </div>
   );
