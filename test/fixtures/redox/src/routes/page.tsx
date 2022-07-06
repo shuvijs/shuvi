@@ -23,7 +23,7 @@ const core = defineModel({
   },
   actions: {
     async addStepAsync() {
-      await sleep(1000);
+      await sleep(100);
       this.addStep();
     }
   }
@@ -46,7 +46,7 @@ const base = defineModel(
     },
     actions: {
       async addStepAsync() {
-        await sleep(1000);
+        await sleep(100);
         this.addStep();
       }
     }
@@ -96,8 +96,10 @@ export default function Index() {
       </div>
 
       <div>
-        Base: {helloBase} {step}
+        Base: {helloBase}
+        <span id="step">{step}</span>
         <button
+          id="add-async"
           onClick={() => {
             addStepAsync();
           }}
@@ -110,10 +112,9 @@ export default function Index() {
 }
 
 export const loader = async ctx => {
-  // console.log('ctx.appContext: ', ctx.appContext);
-  // const storeManager = ctx.appContext.storeManager;
-  // const baseStore = storeManager.get(base);
-  // await baseStore.addStepAsync();
-  // console.log(baseStore.$state);
+  const storeManager = ctx.appContext.storeManager;
+  const baseStore = storeManager.get(base);
+  await baseStore.addStepAsync();
+  console.log(baseStore.$state);
   return {};
 };
