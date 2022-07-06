@@ -290,61 +290,43 @@ export const getMiddlewareRoutes = async (
   const _getMiddlewareRoutes = async (
     rawRoutes: RawRoute[],
     routes: IMiddlewareRouteConfig[],
-    segment: string,
-    parentMiddlewares: string[]
+    segment: string
   ) => {
     segment = segment === '/' ? '' : segment;
-
-    const currentLevelMiddleware = rawRoutes.find(
-      route => route.kind === 'file' && route.type === 'middleware'
-    );
-
-    const middlewares = currentLevelMiddleware
-      ? [...parentMiddlewares, currentLevelMiddleware.filepath]
-      : parentMiddlewares;
-
-    const hasLayout = rawRoutes.some(
-      route => route.kind === 'file' && route.type === 'layout'
-    );
-    const hasPage = rawRoutes.some(
-      route => route.kind === 'file' && route.type === 'page'
-    );
 
     for (const rawRoute of rawRoutes) {
       if (rawRoute.kind === 'dir') {
         await _getMiddlewareRoutes(
           rawRoute.children,
           routes,
-          segment + '/' + rawRoute.parentSegment,
-          middlewares
+          segment + '/' + rawRoute.parentSegment
         );
         continue;
       }
 
-      const isPage = rawRoute.type === 'page';
-      const isLayout = rawRoute.type === 'layout';
-      const isMiddleware = rawRoute.type === 'middleware';
-      const onlyHasPage = isPage && !hasLayout;
-      const onlyHasMiddleware = isMiddleware && !hasLayout && !hasPage;
+      if (rawRoute.type === 'middleware') {
+        let path = segment + '/' + rawRoute.segment;
+        let catchAllOp = '/:rest*';
 
-      if (isLayout || onlyHasPage || onlyHasMiddleware) {
-        if (middlewares.length) {
-          let path = segment + '/' + rawRoute.segment;
-          if (path === '//') {
-            path = '/';
-          }
-          routes.push({
-            path,
-            middlewares
-          });
+        if (path === '//') {
+          path = '/';
         }
+
+        if (path === '/') {
+          catchAllOp = catchAllOp.slice(1);
+        }
+
+        routes.push({
+          path: path + catchAllOp,
+          middlewares: [rawRoute.filepath]
+        });
       }
     }
 
     return routes;
   };
 
-  const routes = await _getMiddlewareRoutes(rawRoutes, [], '', []);
+  const routes = await _getMiddlewareRoutes(rawRoutes, [], '');
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
