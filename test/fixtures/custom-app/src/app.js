@@ -2,14 +2,14 @@ export const init = () => {
   console.log('init');
 };
 
-export const getAppContext = ctx => {
+export const appContext = ctx => {
   return {
     ...ctx,
     testFlag: 1
   };
 };
 
-export const getAppComponent = UserApp => {
+export const appComponent = UserApp => {
   function AppComponent(props) {
     return (
       <div>

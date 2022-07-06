@@ -1,17 +1,17 @@
-import * as customRuntime from '@shuvi/app/user/app';
+import * as customApp from '@shuvi/app/user/app';
 import { pluginRecord } from '@shuvi/app/core/plugins';
 import { IApplicationOptions } from '../runtime/applicationTypes';
 import {
   createPlugin,
   IRuntimePluginConstructor,
-  IRuntimeModule,
+  IAppModule,
   IPluginRecord,
   IPluginList
 } from '../runtime/lifecycle';
 import { Application } from '../runtime/application';
 
 function getPlugins(
-  runtime: Partial<IRuntimeModule>,
+  runtime: Partial<IAppModule>,
   pluginRecords: IPluginRecord
 ) {
   const plugins: IPluginList = [];
@@ -25,8 +25,8 @@ function getPlugins(
 
   const pluginConstructor: IRuntimePluginConstructor = {};
   const methods: Array<keyof typeof runtime> = [
-    'getAppComponent',
-    'getAppContext',
+    'appComponent',
+    'appContext',
     'init',
     'dispose'
   ];
@@ -46,7 +46,7 @@ function getPlugins(
 export default function application(options: IApplicationOptions): Application {
   const application = new Application({
     ...options,
-    plugins: getPlugins(customRuntime, pluginRecord)
+    plugins: getPlugins(customApp, pluginRecord)
   });
 
   return application;

@@ -12,8 +12,8 @@ import { IAppContext } from './applicationTypes';
 type AppComponent = unknown;
 
 const init = createAsyncParallelHook<void>();
-const getAppContext = createAsyncSeriesWaterfallHook<IAppContext, void>();
-const getAppComponent = createAsyncSeriesWaterfallHook<
+const appContext = createAsyncSeriesWaterfallHook<IAppContext, void>();
+const appComponent = createAsyncSeriesWaterfallHook<
   AppComponent,
   IAppContext
 >();
@@ -21,8 +21,8 @@ const dispose = createAsyncParallelHook<void>();
 
 const builtinRuntimePluginHooks = {
   init,
-  getAppComponent,
-  getAppContext,
+  appComponent,
+  appContext,
   dispose
 };
 
@@ -48,10 +48,10 @@ export type IRuntimePluginConstructor = IPluginHandlers<
   void
 >;
 
-export type IRuntimeModule = {
+export type IAppModule = {
   init: IRuntimePluginConstructor['init'];
-  getAppContext: IRuntimePluginConstructor['getAppContext'];
-  getAppComponent: IRuntimePluginConstructor['getAppComponent'];
+  appContext: IRuntimePluginConstructor['appContext'];
+  appComponent: IRuntimePluginConstructor['appComponent'];
   dispose: IRuntimePluginConstructor['dispose'];
 };
 
