@@ -4,17 +4,8 @@ export * from './router';
 export * from './runtimeConfig';
 
 export * from './response';
-export {
-  // todo: remove
-  getStoreManager,
-  // todo: remove
-  IAppState,
-  IStoreManager,
-  IPageError,
-  errorModel
-} from './store';
-
 export * from './loader';
+export { errorModel } from './models/error';
 
 export * from './applicationTypes';
 export type { Application } from './application';

@@ -1,8 +1,10 @@
 import { getManager, PluginManager } from './lifecycle';
 import { initPlugins } from './lifecycle';
-import { IStoreManager } from './store';
+import { Store, redox } from '@shuvi/redox';
+import { ErrorModel, errorModel } from './models/error';
 import { IRouter } from './routerTypes';
 import {
+  IStoreManager,
   IApplication,
   IAppContext,
   IApplicationOptions,
@@ -10,6 +12,7 @@ import {
 } from './applicationTypes';
 
 export class Application {
+  private _error: Store<ErrorModel>;
   private _router: IRouter;
   private _appComponent: any;
   private _pluginManager: PluginManager;
@@ -19,7 +22,8 @@ export class Application {
   constructor(options: IApplicationOptions) {
     this._router = options.router;
     this._context = {};
-    this._storeManager = options.storeManager;
+    this._storeManager = redox({ initialState: options.initialState });
+    this._error = this._storeManager.get(errorModel);
     this._appComponent = options.AppComponent;
     this._pluginManager = getManager();
 
@@ -40,6 +44,10 @@ export class Application {
 
   get appComponent() {
     return this._appComponent;
+  }
+
+  get error() {
+    return this._error;
   }
 
   async init() {
@@ -86,7 +94,8 @@ export class Application {
       context: this._context,
       router: this._router,
       appComponent: this._appComponent,
-      storeManager: this._storeManager
+      storeManager: this._storeManager,
+      error: this._error
     };
   }
 }

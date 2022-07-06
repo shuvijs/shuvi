@@ -6,8 +6,6 @@ import { InitialEntry, createRouter, IRouter } from '@shuvi/router';
 import { createMpHistory } from './mpHistory';
 import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
-import ErrorPage from './ErrorPage';
-import { getStoreManager } from '@shuvi/platform-shared/esm/runtime';
 import AppContainer from '@shuvi/platform-web/shuvi-app/react/AppContainer';
 
 export interface IMpRouterProps {
@@ -27,8 +25,9 @@ export function MpRouter({
 }: IMpRouterProps): React.ReactElement | null {
   let routerRef = React.useRef<IRouter>();
 
-  const storeManager = getStoreManager();
-
+  // FIXME
+  // @ts-ignore: get app from somewhere
+  const app = null as any;
   if (routerRef.current == null) {
     routerRef.current = createRouter({
       basename,
@@ -70,18 +69,9 @@ export function MpRouter({
     }
   }
 
-  const appContext = {
-    pageData: {},
-    historyMode: 'memory'
-  };
-
   return (
     <Router router={routerRef.current}>
-      <AppContainer
-        appContext={appContext}
-        storeManager={storeManager}
-        errorComp={ErrorPage}
-      >
+      <AppContainer app={app}>
         <RouterView />
       </AppContainer>
     </Router>

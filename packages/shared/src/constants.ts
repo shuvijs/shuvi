@@ -26,17 +26,14 @@ export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;
 
 export const ROUTE_NOT_FOUND_NAME = `404`;
 
-export enum SHUVI_ERROR_CODE {
-  APP_ERROR = 500, //  对应 server 端的 500
-  PAGE_NOT_FOUND = 404 //  对应 server 端的 404
-}
-
-export const DEFAULT_ERROR_MESSAGE = {
-  [SHUVI_ERROR_CODE.APP_ERROR]: {
-    errorDesc: 'Internal Server Error.'
+export const SHUVI_ERROR = {
+  APP_ERROR: {
+    code: 500,
+    message: 'Internal Application Error.'
   },
-  [SHUVI_ERROR_CODE.PAGE_NOT_FOUND]: {
-    errorDesc: 'This page could not be found.'
+  PAGE_NOT_FOUND: {
+    code: 404,
+    message: 'This page could not be found.'
   }
 };
 

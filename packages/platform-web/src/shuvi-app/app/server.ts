@@ -2,14 +2,12 @@ import routes from '@shuvi/app/files/routes';
 import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   Application,
-  getStoreManager,
   CreateServerApp,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
   isRedirect,
   isError,
-  getLoaderManager,
-  getErrorHandler
+  getLoaderManager
 } from '@shuvi/platform-shared/esm/runtime';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
@@ -21,14 +19,12 @@ export const createApp: CreateServerApp = options => {
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
   });
-  const storeManager = getStoreManager();
   const router = createRouter({
     history,
     routes: getRoutes(routes)
   }) as IRouter;
   let app: Application;
   const loaderManager = getLoaderManager();
-  const error = getErrorHandler(storeManager);
 
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
@@ -46,7 +42,7 @@ export const createApp: CreateServerApp = options => {
       }
 
       if (isError(loaderResult)) {
-        error.errorHandler({
+        app.error.error({
           code: loaderResult.status,
           message: loaderResult.data
         });
@@ -62,8 +58,7 @@ export const createApp: CreateServerApp = options => {
 
   app = application({
     AppComponent,
-    router,
-    storeManager
+    router
   });
 
   return app;
