@@ -39,7 +39,7 @@ export default createPlugin({
   },
   addRuntimeFile: async ({ createFile }, context) => {
     const {
-      config: { routes: pageRoutes, apiRoutes },
+      config: { routes: pageRoutes, middlewareRoutes, apiRoutes },
       paths,
       pluginRunner
     } = context;
@@ -100,9 +100,9 @@ export default createPlugin({
       name: 'middlewareRoutes.js',
       content: async () => {
         let routes: IMiddlewareRouteConfig[];
-        const hasConfigRoutes = Array.isArray(pageRoutes);
+        const hasConfigRoutes = Array.isArray(middlewareRoutes);
         if (hasConfigRoutes) {
-          routes = pageRoutes as IMiddlewareRouteConfig[];
+          routes = middlewareRoutes;
         } else {
           const { routes: _routes, warnings } = await getMiddlewareRoutes(
             paths.routesDir

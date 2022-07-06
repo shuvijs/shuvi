@@ -18,35 +18,23 @@ describe('middleware routes test', () => {
     expect(result).toMatchObject({
       routes: [
         {
-          path: '/a',
-          middlewares: ['middleware.js', 'a/middleware.js']
+          path: '/a/:rest*',
+          middlewares: ['a/middleware.js']
         },
         {
-          path: '/b/b1',
-          middlewares: [
-            'middleware.js',
-            'b/middleware.js',
-            'b/b1/middleware.js'
-          ]
+          path: '/b/b1/:rest*',
+          middlewares: ['b/b1/middleware.js']
         },
         {
-          path: '/b/b2',
-          middlewares: [
-            'middleware.js',
-            'b/middleware.js',
-            'b/b2/middleware.js'
-          ]
+          path: '/b/b2/:rest*',
+          middlewares: ['b/b2/middleware.js']
         },
         {
-          path: '/b',
-          middlewares: ['middleware.js', 'b/middleware.js']
+          path: '/b/:rest*',
+          middlewares: ['b/middleware.js']
         },
         {
-          path: '/c',
-          middlewares: ['middleware.js']
-        },
-        {
-          path: '/',
+          path: '/:rest*',
           middlewares: ['middleware.js']
         }
       ],
