@@ -6,7 +6,7 @@ export interface LoaderContextOptions {
   isServer: boolean;
   req?: IRequest;
   query: IURLQuery;
-  getAppContext: () => IAppContext;
+  appContext: () => IAppContext;
 }
 
 /**

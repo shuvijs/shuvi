@@ -53,7 +53,7 @@ declare module '@shuvi/app/user/error' {
 declare module '@shuvi/app/user/app' {
   import { IAppModule } from '@shuvi/platform-shared/src/runtime/lifecycle';
   export const init: IAppModule['onInit'];
-  export const getAppComponent: IAppModule['appComponent'];
-  export const getAppContext: IAppModule['appContext'];
+  export const appComponent: IAppModule['appComponent'];
+  export const appContext: IAppModule['appContext'];
   export const dispose: IAppModule['onDispose'];
 }

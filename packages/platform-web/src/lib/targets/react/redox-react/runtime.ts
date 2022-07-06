@@ -3,7 +3,7 @@ import { createPlugin } from '@shuvi/platform-shared/lib/runtime';
 import { RedoxWrapper } from './RedoxWrapper';
 
 export default createPlugin({
-  getAppComponent: async (App, appContext) => {
+  appComponent: async (App, appContext) => {
     return RedoxWrapper(App, appContext as { storeManager: IStoreManager });
   }
 });

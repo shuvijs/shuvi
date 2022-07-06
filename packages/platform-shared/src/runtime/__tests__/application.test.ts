@@ -44,7 +44,7 @@ describe('application', () => {
     expect(ctx.foo).toBe('bar');
   });
 
-  test('should wrap getAppComponent hook', async () => {
+  test('should wrap appComponent hook', async () => {
     const app = getApp();
     const {
       hooks: { appContext, appComponent }
