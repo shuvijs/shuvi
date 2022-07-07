@@ -5,11 +5,14 @@ import ForkTsCheckerWebpackPlugin, {
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import Logger from '@shuvi/utils/lib/logger';
+import invariant from '@shuvi/utils/lib/invariant';
 import { inspect } from 'util';
 import webpack, {
   MultiCompiler as WebapckMultiCompiler,
   Compiler as WebapckCompiler,
-  webpackPath
+  webpackPath,
+  WebpackVirtualModules,
+  DynamicDLLPlugin
 } from '@shuvi/toolpack/lib/webpack';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IPluginContext } from '../core';
@@ -17,8 +20,14 @@ import { Target, TargetChain } from '../core/lifecycle';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import { BUILD_DEFAULT_DIR } from '../constants';
+import {
+  BUILD_DEFAULT_DIR,
+  DLL_NAME,
+  DEFAULT_DLL_PUBLIC_PATH,
+  DLL_FILENAME
+} from '../constants';
 import { setupTypeScript } from './typescript';
+import { isString, isArray } from './utils';
 
 type CompilerErr = {
   moduleName: string;
@@ -65,7 +74,34 @@ class WebpackBundler {
 
     if (!this._compiler) {
       this._targets = await this._getTargets();
-      this._compiler = webpack(this._targets.map(t => t.config));
+      if (this._cliContext.config.experimental.preBundle) {
+        this._compiler = webpack(
+          this._targets.map(({ config }) => {
+            const { asyncEntry, virtualModules } = this._makeAsyncEntry(
+              config.entry
+            );
+            config.entry = { a: ['123'] };
+            config.entry = asyncEntry;
+            if (!config.plugins) {
+              config.plugins = [];
+            }
+            //TODO: opts.resolveWebpackModule, include and onSnapshot
+            config.plugins.push(
+              new WebpackVirtualModules(virtualModules),
+              new webpack.container.ModuleFederationPlugin(this._getMFconfig()),
+              new DynamicDLLPlugin({
+                exclude: [/webpack-hot-middleware\/client/, /react-refresh/],
+                dllName: DLL_NAME,
+                resolveWebpackModule: require,
+                onSnapshot: () => {}
+              })
+            );
+            return config;
+          })
+        );
+      } else {
+        this._compiler = webpack(this._targets.map(t => t.config));
+      }
 
       let isFirstSuccessfulCompile = true;
       if (ignoreTypeScriptErrors) {
@@ -336,6 +372,71 @@ class WebpackBundler {
       }
     }
     return targets;
+  }
+
+  private _makeAsyncEntry(entry: any) {
+    const asyncEntry: Record<string, string> = {};
+    const virtualModules: Record<string, string> = {};
+    const entryObject = (
+      isString(entry) || isArray(entry)
+        ? { main: ([] as any).concat(entry) }
+        : entry
+    ) as Record<string, string[]>;
+
+    for (const key of Object.keys(entryObject)) {
+      const virtualPath = `./dynamic-dll-virtual-entry/${key}.js`;
+      const virtualContent: string[] = [];
+      const entryFiles = isArray(entryObject[key])
+        ? entryObject[key]
+        : ([entryObject[key]] as unknown as string[]);
+      for (let entry of entryFiles) {
+        invariant(isString(entry), 'wepback entry must be a string');
+        virtualContent.push(`import('${entry}');`);
+      }
+      virtualModules[virtualPath] = virtualContent.join('\n');
+      asyncEntry[key] = virtualPath;
+    }
+
+    return {
+      asyncEntry,
+      virtualModules
+    };
+  }
+
+  private _getMFconfig() {
+    return {
+      name: '__',
+      remotes: {
+        // [NAME]: `${NAME}@${DETAULT_PUBLIC_PATH}${DLL_FILENAME}`,
+        // https://webpack.js.org/concepts/module-federation/#promise-based-dynamic-remotes
+        [DLL_NAME]: `
+promise new Promise(resolve => {
+  const remoteUrl = '${DEFAULT_DLL_PUBLIC_PATH}${DLL_FILENAME}';
+  const script = document.createElement('script');
+  script.src = remoteUrl;
+  script.onload = () => {
+    // the injected script has loaded and is available on window
+    // we can now resolve this Promise
+    const proxy = {
+      get: (request) => {
+        const promise = window['${DLL_NAME}'].get(request);
+        return promise;
+      },
+      init: (arg) => {
+        try {
+          return window['${DLL_NAME}'].init(arg);
+        } catch(e) {
+          console.log('remote container already initialized');
+        }
+      }
+    }
+    resolve(proxy);
+  }
+  // inject this script with the src set to the versioned remoteEntry.js
+  document.head.appendChild(script);
+})`.trim()
+      }
+    };
   }
 }
 

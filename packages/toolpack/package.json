@@ -75,7 +75,8 @@
     "webpack-bundle-analyzer": "4.3.0",
     "webpack-chain": "6.5.1",
     "webpack-sources": "2.2.0",
-    "webpack-dev-middleware": "4.1.0"
+    "webpack-dev-middleware": "4.1.0",
+    "webpack-virtual-modules": "0.4.3"
   },
   "optionalDependencies": {
     "@shuvi/swc-darwin-arm64": "latest",

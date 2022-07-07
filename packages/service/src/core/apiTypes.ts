@@ -177,6 +177,7 @@ export interface Config {
   analyze?: boolean;
   experimental?: {
     parcelCss?: boolean;
+    preBundle?: boolean;
   };
 }
 
@@ -186,6 +187,7 @@ export interface NormalizedConfig
   apiConfig: Required<IApiConfig>;
   experimental: {
     parcelCss: boolean;
+    preBundle: boolean;
   };
 }
 

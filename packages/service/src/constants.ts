@@ -24,3 +24,9 @@ export const PHASE_PRODUCTION_SERVER = 'PHASE_PRODUCTION_SERVER';
 export const PHASE_DEVELOPMENT_SERVER = 'PHASE_DEVELOPMENT_SERVER';
 
 export const PHASE_INSPECT_WEBPACK = 'PHASE_INSPECT_WEBPACK';
+
+export const DLL_NAME = 'dll';
+
+export const DEFAULT_DLL_PUBLIC_PATH = `/__${DLL_NAME}/`;
+
+export const DLL_FILENAME = 'dll.js';

@@ -247,7 +247,6 @@ importers:
       launch-editor: 2.2.1
       rimraf: ^3.0.2
       send: 0.17.1
-      webpack-chain: 6.5.1
     dependencies:
       '@babel/code-frame': 7.16.0
       '@babel/generator': 7.16.0
@@ -271,7 +270,6 @@ importers:
       launch-editor: 2.2.1
       rimraf: 3.0.2
       send: 0.17.1
-      webpack-chain: 6.5.1
     devDependencies:
       '@babel/types': 7.12.11
       '@types/babel__code-frame': 7.0.3
@@ -390,6 +388,7 @@ importers:
       webpack-chain: 6.5.1
       webpack-dev-middleware: 4.1.0
       webpack-sources: 2.2.0
+      webpack-virtual-modules: 0.4.3
     dependencies:
       '@babel/core': 7.12.10
       '@babel/plugin-proposal-class-properties': 7.12.1_@babel+core@7.12.10
@@ -444,6 +443,7 @@ importers:
       webpack-chain: 6.5.1
       webpack-dev-middleware: 4.1.0_webpack@5.73.0
       webpack-sources: 2.2.0
+      webpack-virtual-modules: 0.4.3
     optionalDependencies:
       '@shuvi/swc-darwin-arm64': 0.0.1-pre.2
       '@shuvi/swc-darwin-x64': 0.0.1-pre.2
@@ -11063,6 +11063,10 @@ packages:
   /webpack-sources/3.2.3:
     resolution: {integrity: sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==}
     engines: {node: '>=10.13.0'}
+
+  /webpack-virtual-modules/0.4.3:
+    resolution: {integrity: sha512-5NUqC2JquIL2pBAAo/VfBP6KuGkHIZQXW/lNKupLPfhViwh8wNsu0BObtl09yuKZszeEUfbXz8xhrHvSG16Nqw==}
+    dev: false
 
   /webpack/5.73.0:
     resolution: {integrity: sha512-svjudQRPPa0YiOYa2lM/Gacw0r6PvxptHj4FuEKQ2kX05ZLkjbVc5MnPs6its5j7IZljnIqSVo/OsY2X0IpHGA==}
