@@ -1,4 +1,4 @@
-import { createFileWithoutName } from '@shuvi/service/lib/project';
+import { defineFile } from '../../..';
 import * as path from 'path';
 
 const runtimeConfigPath = path.resolve(
@@ -6,7 +6,7 @@ const runtimeConfigPath = path.resolve(
   '../../../../../../runtime/runtimeConfig'
 );
 export default () =>
-  createFileWithoutName({
+  defineFile({
     content: () =>
       `export { setRuntimeConfig as default } from '${runtimeConfigPath}'`
   });

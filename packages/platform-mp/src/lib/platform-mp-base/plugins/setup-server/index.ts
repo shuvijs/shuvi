@@ -17,13 +17,13 @@ import { resolveAppFile } from '../../../paths';
 
 export default createPlugin({
   addResource: context => generateResource(context),
-  addRuntimeFile: async ({ createFile }, context) => {
+  addRuntimeFile: async ({ defineFile }, context) => {
     const serverCandidates = getUserCustomFileCandidates(
       context.paths.rootDir,
       'server',
       'noop'
     );
-    const userServerFile = createFile({
+    const userServerFile = defineFile({
       name: 'user/server.js',
       content: () => {
         return getFirstModuleExport(

@@ -1,6 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { FileOptions } from '@shuvi/service/lib/project';
+import {
+  defineFile as originalDefineFile,
+  FileOptions,
+  DefineFileOption
+} from '@shuvi/service/lib/project';
 import { ProjectContext } from '../projectContext';
 
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
@@ -26,10 +30,12 @@ const getAllFiles = (
     } else if (/\.(js|ts)$/.test(file) && !/\.d\.ts$/.test(file)) {
       const fileOptionsCreater = require(filepath).default;
       const options = fileOptionsCreater(context);
-      currentFileList.push({
-        ...options,
-        name
-      });
+      currentFileList.push(
+        originalDefineFile({
+          ...options,
+          name
+        })
+      );
     }
   });
   return currentFileList;
@@ -38,3 +44,5 @@ const getAllFiles = (
 export function getFilePresets(context: ProjectContext): FileOptions[] {
   return getAllFiles(context, path.join(__dirname, 'files'));
 }
+
+export const defineFile = (options: Omit<DefineFileOption, 'name'>) => options;

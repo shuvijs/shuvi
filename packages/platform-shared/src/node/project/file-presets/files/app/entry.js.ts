@@ -1,9 +1,10 @@
-import { createFileWithoutName, fileUtils } from '@shuvi/service/lib/project';
+import { fileUtils } from '@shuvi/service/lib/project';
+import { defineFile } from '../..';
 import { ProjectContext } from '../../../projectContext';
 import * as os from 'os';
 
 export default (context: ProjectContext) =>
-  createFileWithoutName({
+  defineFile({
     content: () => {
       const codes = context.entryCodes;
       let imports = '';

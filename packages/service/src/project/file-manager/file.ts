@@ -129,9 +129,11 @@ export const PublicInstanceProxyHandlers = {
 export function createFileInstance(options: FileOptions): FileInternalInstance {
   const instance: FileInternalInstance = {
     type: options,
+    id: options.id,
     name: options.name,
 
     content: options.content as FileInternalContentFunction,
+    fileContent: '',
     update: null!, // will be set synchronously right after creation
     destroy: null!, // will be set synchronously right after creation
     proxy: null,

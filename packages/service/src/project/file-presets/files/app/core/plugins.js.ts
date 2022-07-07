@@ -1,7 +1,7 @@
-import { createFileWithoutName } from '../../../..';
+import { defineFile } from '../../..';
 import { ProjectContext } from '../../../../projectContext';
 
-export default createFileWithoutName({
+export default defineFile({
   content: (context: ProjectContext) => {
     const plugins = context.runtimePlugins;
     const pluginRecord: string[] = [];

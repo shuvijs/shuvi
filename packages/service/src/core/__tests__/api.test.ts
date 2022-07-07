@@ -73,14 +73,17 @@ test('add App files, add App services', async () => {
         {
           addRuntimeFile: () => [
             {
+              id: 'fileA.js',
               name: 'fileA.js',
               content: () => 'test.js'
             },
             {
+              id: 'fileB.js',
               name: '../fileB.js',
               content: () => 'test.js'
             },
             {
+              id: 'fileC.js',
               name: '/fileC.js',
               content: () => 'test.js'
             }
