@@ -37,7 +37,7 @@ const initStore: InitRedox = ({ initialState, ctx }) => {
 };
 
 export default createPlugin({
-  getAppContext: ctx => {
+  appContext: ctx => {
     if (!ctx.storeManager) {
       let initialState = {};
       if (!isServer) {

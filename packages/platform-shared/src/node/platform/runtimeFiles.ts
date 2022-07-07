@@ -34,7 +34,7 @@ export const getPresetRuntimeFilesCreator =
     const context = createProjectContext();
     context.userModule = {
       error: getCandidates('error', 'nullish'),
-      runtime: getCandidates('runtime', 'noop')
+      app: getCandidates('app', 'noop')
     };
     context.platformModule = platformModule;
     const { public: publicRuntimeConfig, server: serverRuntimeConfig } =

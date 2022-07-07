@@ -8,7 +8,7 @@ const Hello = dynamic(() => import("./hello.jsx"), {
 
 export default option =>
   createPlugin({
-    getAppComponent: App => {
+    appComponent: App => {
       const newApp = () => (
         <div>
           <div>This is getAppComponent {option.hello}</div>

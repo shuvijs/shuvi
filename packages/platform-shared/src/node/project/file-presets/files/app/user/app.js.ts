@@ -4,8 +4,8 @@ import { ProjectContext } from '../../../../projectContext';
 const { getAllFiles, getFirstModuleExport } = fileUtils;
 
 export default (context: ProjectContext) => {
-  const { runtime } = context.userModule;
-  const candidates = Array.isArray(runtime) ? runtime : [runtime];
+  const { app } = context.userModule;
+  const candidates = Array.isArray(app) ? app : [app];
   return createFileWithoutName({
     dependencies: candidates,
     content: () => {

@@ -33,9 +33,9 @@ describe('application', () => {
   test('should add createAppContext hook', async () => {
     const app = getApp();
     const {
-      hooks: { getAppContext }
+      hooks: { appContext }
     } = app.pluginManager;
-    getAppContext.use(context => {
+    appContext.use(context => {
       context.foo = 'bar';
       return context;
     });
@@ -44,16 +44,16 @@ describe('application', () => {
     expect(ctx.foo).toBe('bar');
   });
 
-  test('should wrap getAppComponent hook', async () => {
+  test('should wrap appComponent hook', async () => {
     const app = getApp();
     const {
-      hooks: { getAppContext, getAppComponent }
+      hooks: { appContext, appComponent }
     } = app.pluginManager;
-    getAppContext.use(context => {
+    appContext.use(context => {
       context.test = true;
       return context;
     });
-    getAppComponent.use((AppComponent: any, context: any) => {
+    appComponent.use((AppComponent: any, context: any) => {
       expect(context.test).toBe(true);
       const WrapApp = () => AppComponent;
       WrapApp.test = 'test';
