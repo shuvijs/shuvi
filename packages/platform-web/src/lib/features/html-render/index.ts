@@ -20,14 +20,14 @@ const core = createPlugin({
   setup: ({ addHooks }) => {
     addHooks(extendedHooks);
   },
-  addRuntimeFile: ({ createFile }, context) => {
+  addRuntimeFile: ({ defineFile }, context) => {
     const {
       config: {
         router: { history }
       },
       paths
     } = context;
-    const routerConfigFile = createFile({
+    const routerConfigFile = defineFile({
       name: 'routerConfig.js',
       content: () => {
         return `export const historyMode = "${history}";`;
@@ -39,7 +39,7 @@ const core = createPlugin({
       'document',
       'noop'
     );
-    const userDocumentFile = createFile({
+    const userDocumentFile = defineFile({
       name: 'user/document.js',
       content: () => {
         return getFirstModuleExport(

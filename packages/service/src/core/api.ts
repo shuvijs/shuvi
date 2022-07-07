@@ -14,7 +14,7 @@ import {
   RuntimePluginConfig,
   ResolvedPlugin
 } from './apiTypes';
-import { createFile, ProjectBuilder, FileOptions } from '../project';
+import { defineFile, ProjectBuilder, FileOptions } from '../project';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
 import { resolveConfig } from './config';
 import {
@@ -293,7 +293,7 @@ class Api {
   private async _initArtifacts() {
     const runner = this._pluginManager.runner;
     const addRuntimeFileUtils = {
-      createFile,
+      defineFile,
       getContent: this._projectBuilder.getContentGetter()
     };
     const [appRuntimeFiles, runtimeServices] = await Promise.all([

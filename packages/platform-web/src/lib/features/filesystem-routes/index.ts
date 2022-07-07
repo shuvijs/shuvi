@@ -41,7 +41,7 @@ export default createPlugin({
     routes = _routes;
     return routes;
   },
-  addRuntimeFile: async ({ createFile }, context) => {
+  addRuntimeFile: async ({ defineFile }, context) => {
     const {
       config: { routes: pageRoutes, middlewareRoutes, apiRoutes },
       paths,
@@ -51,7 +51,7 @@ export default createPlugin({
     const getRoutesAfterPlugin = (routes: IUserRouteConfig[]) =>
       pluginRunner.appRoutes(routes);
 
-    const pageRoutesFile = createFile({
+    const pageRoutesFile = defineFile({
       name: 'routes.js',
       content: async () => {
         let routes: IUserRouteConfig[];
@@ -74,13 +74,12 @@ export default createPlugin({
           paths.routesDir
         );
         setRoutes(normalizedRoutes);
-        console.log('pageRoutesFile end');
         return generatePageRoutesContent(normalizedRoutes);
       },
       dependencies: [paths.routesDir]
     });
 
-    const apiRoutesFile = createFile({
+    const apiRoutesFile = defineFile({
       name: 'apiRoutes.js',
       content: async () => {
         let routes: IApiRouteConfig[] = [];
@@ -101,7 +100,7 @@ export default createPlugin({
       },
       dependencies: [paths.routesDir]
     });
-    const middlewareRoutesFile = createFile({
+    const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
       content: async () => {
         let routes: IMiddlewareRouteConfig[];
@@ -122,10 +121,9 @@ export default createPlugin({
       dependencies: [paths.routesDir]
     });
 
-    const loadersFile = createFile({
+    const loadersFile = defineFile({
       name: 'loaders.js',
       content: async () => {
-        console.log('loadersFile start');
         const routes = getRoutes();
         const loaders: Record<string, string> = {};
         const traverseRoutes = (routes: IRouteConfig[]) => {
@@ -159,7 +157,7 @@ export default createPlugin({
       'files',
       'loaders.js'
     );
-    const pageLoadersFile = createFile({
+    const pageLoadersFile = defineFile({
       name: 'page-loaders.js',
       content: async () => {
         if (fs.existsSync(loadersFileName)) {

@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { FileOptions } from '../file-manager';
-
+import { defineFile as originalDefineFile, FileOptions } from '../file-manager';
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
 /**
@@ -23,10 +22,12 @@ const getAllFiles = (
       // Match *.ts (source) or *.js (compiled) file, but ignore *.d.ts file
     } else if (/\.(js|ts)$/.test(file) && !/\.d\.ts$/.test(file)) {
       const options = require(filepath).default;
-      currentFileList.push({
-        ...options,
-        name
-      });
+      currentFileList.push(
+        originalDefineFile({
+          ...options,
+          name
+        })
+      );
     }
   });
   return currentFileList;
@@ -35,3 +36,7 @@ const getAllFiles = (
 export function getFilePresets() {
   return getAllFiles(path.join(__dirname, 'files'));
 }
+
+export type FileOptionsWithoutName = Omit<FileOptions, 'name'>;
+
+export const defineFile = (options: FileOptionsWithoutName) => options;
