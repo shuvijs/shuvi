@@ -180,7 +180,7 @@ class Api {
   }
 
   addRuntimeFile(options: FileOptions): void {
-    // make addAppFile root as .shuvi/app/files/
+    // modify options.name to make addAppFile root as .shuvi/app/files/
     options.name = path.join('app', 'files', path.resolve('/', options.name));
     this._projectBuilder.addFile(options);
   }
@@ -292,7 +292,10 @@ class Api {
 
   private async _initArtifacts() {
     const runner = this._pluginManager.runner;
-    const addRuntimeFileUtils = { createFile };
+    const addRuntimeFileUtils = {
+      createFile,
+      getContent: this._projectBuilder.getContentGetter()
+    };
     const [appRuntimeFiles, runtimeServices] = await Promise.all([
       (await runner.addRuntimeFile(addRuntimeFileUtils)).flat(),
       (await runner.addRuntimeService()).flat()

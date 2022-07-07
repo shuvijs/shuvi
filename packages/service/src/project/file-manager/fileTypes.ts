@@ -12,14 +12,16 @@ export interface FileInternalOptions {
   // id: string;
 }
 
-export interface FileOptionsBase<Data, Method extends MethodOptions>
+export interface FileOptionsBase<Data = any, Method extends MethodOptions = any>
   extends FileInternalOptions {
   name: string;
+  id?: string; // if id is not provided, name will be set as id
   content: (
     this: CreateFilePublicInstance<Data, Method>,
     ctx: any
   ) => Promise<string> | string | null | undefined;
 
+  dependencies?: FileOptionsBase[];
   // state
   // Limitation: we cannot expose RawBindings on the `this` context for data
   // since that leads to some sort of circular inference and breaks ThisType
@@ -38,8 +40,9 @@ export interface FileOptionsBase<Data, Method extends MethodOptions>
 export type FileOptions<
   Data = any,
   Method extends MethodOptions = any
-> = FileOptionsBase<Data, Method> &
-  ThisType<CreateFilePublicInstance<Data, Method>>;
+> = FileOptionsBase<Data, Method> & { id: string } & ThisType<
+    CreateFilePublicInstance<Data, Method>
+  >;
 
 // public properties exposed on the proxy, which is used as the render context
 // in templates (as `this` in the render option)
@@ -68,6 +71,7 @@ export type FileType<
 > = FileOptions<Data, Method>;
 
 export interface FileInternalInstance {
+  id: string;
   name: string;
 
   type: FileType;
@@ -87,6 +91,7 @@ export interface FileInternalInstance {
    */
   accessCache: Data | null;
 
+  fileContent: string;
   // the rest are only for stateful components ---------------------------------
 
   // main proxy that serves as the public instance (`this`)

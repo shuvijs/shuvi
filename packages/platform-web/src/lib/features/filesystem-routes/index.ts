@@ -1,9 +1,11 @@
-import { createPlugin } from '@shuvi/service';
+import { createPlugin, IRouteConfig } from '@shuvi/service';
 import {
   getPageRoutes,
   getApiRoutes,
   getMiddlewareRoutes
 } from '@shuvi/platform-shared/lib/node';
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   getRoutes,
   setRoutes,
@@ -22,6 +24,8 @@ import {
   generateRoutesContent as generateApiRoutesContent,
   IApiRouteConfig
 } from './api';
+import { ifComponentHasLoader } from '../html-render/lib';
+import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 
 export {
   IApiRequestHandler,
@@ -70,9 +74,10 @@ export default createPlugin({
           paths.routesDir
         );
         setRoutes(normalizedRoutes);
+        console.log('pageRoutesFile end');
         return generatePageRoutesContent(normalizedRoutes);
       },
-      dependencies: paths.routesDir
+      dependencies: [paths.routesDir]
     });
 
     const apiRoutesFile = createFile({
@@ -94,7 +99,7 @@ export default createPlugin({
 
         return generateApiRoutesContent(routes, paths.routesDir);
       },
-      dependencies: paths.routesDir
+      dependencies: [paths.routesDir]
     });
     const middlewareRoutesFile = createFile({
       name: 'middlewareRoutes.js',
@@ -114,9 +119,63 @@ export default createPlugin({
         }
         return generateMiddlewareRoutesContent(routes, paths.routesDir);
       },
-      dependencies: paths.routesDir
+      dependencies: [paths.routesDir]
     });
 
-    return [pageRoutesFile, apiRoutesFile, middlewareRoutesFile];
+    const loadersFile = createFile({
+      name: 'loaders.js',
+      content: async () => {
+        console.log('loadersFile start');
+        const routes = getRoutes();
+        const loaders: Record<string, string> = {};
+        const traverseRoutes = (routes: IRouteConfig[]) => {
+          routes.forEach(r => {
+            const { component, id, children } = r;
+            if (component && id) {
+              const hasLoader = ifComponentHasLoader(component);
+              if (hasLoader) {
+                loaders[id] = component;
+              }
+            }
+            if (children) {
+              traverseRoutes(children);
+            }
+          });
+        };
+        traverseRoutes(routes);
+        let imports = '';
+        let exports = '';
+        Object.entries(loaders).forEach((loader, index) => {
+          const [id, component] = loader;
+          imports += `import { loader as loader_${index} } from '${component}'\n`;
+          exports += `'${id}': loader_${index},\n`;
+        });
+        return `${imports}  export default {\n  ${exports}\n}`;
+      },
+      dependencies: [pageRoutesFile]
+    });
+    const loadersFileName = path.join(
+      context.paths.appDir,
+      'files',
+      'loaders.js'
+    );
+    const pageLoadersFile = createFile({
+      name: 'page-loaders.js',
+      content: async () => {
+        if (fs.existsSync(loadersFileName)) {
+          return await buildToString(loadersFileName);
+        }
+        return '';
+      },
+      dependencies: [loadersFile]
+    });
+
+    return [
+      pageRoutesFile,
+      apiRoutesFile,
+      middlewareRoutesFile,
+      loadersFile,
+      pageLoadersFile
+    ];
   }
 });

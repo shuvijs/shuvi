@@ -58,7 +58,7 @@ describe('createFile', () => {
             content() {
               return fs.readFileSync(fileA, 'utf8') as string;
             },
-            dependencies: fileA
+            dependencies: [fileA]
           })
         );
         await fileManager.mount(resolveFixture('createFile'));
@@ -154,7 +154,7 @@ describe('createFile', () => {
             content() {
               return fs.readFileSync(fileA, 'utf8') as string;
             },
-            dependencies: fileA
+            dependencies: [fileA]
           })
         );
         await fileManager.mount(resolveFixture('createFile'));

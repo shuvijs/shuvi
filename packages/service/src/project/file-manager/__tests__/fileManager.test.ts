@@ -176,6 +176,164 @@ describe('fileManager', () => {
     });
   });
 
+  describe('with dependencies', () => {
+    test('should create files in the order of dependencies', async () => {
+      jest.spyOn(console, 'log');
+      const fileManager = getFileManager({ watch: false });
+      const { addFile, mount } = fileManager;
+      const fileA = {
+        name: 'a',
+        content() {
+          console.log('file a');
+          return 'file a';
+        }
+      };
+
+      const fileB = {
+        name: 'b',
+        content() {
+          console.log('file b');
+          return 'file b';
+        },
+        dependencies: [fileA]
+      };
+
+      const fileC = {
+        name: 'c',
+        content() {
+          console.log('file c');
+          return 'file c';
+        },
+        dependencies: [fileA, fileB]
+      };
+      addFile(fileC);
+      addFile(fileB);
+      addFile(fileA);
+      await mount('/');
+      const files = await recursiveReadDir('/');
+      expect(files).toEqual(['a', 'b', 'c']);
+      expect(console.log).toHaveBeenNthCalledWith(1, 'file a');
+      expect(console.log).toHaveBeenNthCalledWith(2, 'file b');
+      expect(console.log).toHaveBeenNthCalledWith(3, 'file c');
+      expect(await readFile('/a')).toEqual('file a');
+      expect(await readFile('/b')).toEqual('file b');
+      expect(await readFile('/c')).toEqual('file c');
+    });
+
+    test('getContent should work', async () => {
+      const fileManager = getFileManager({ watch: false });
+      const { addFile, getContent, mount } = fileManager;
+      const fileA = {
+        name: 'a',
+        content() {
+          return 'file a';
+        }
+      };
+
+      const fileB = {
+        name: 'b',
+        content() {
+          return getContent(fileA) + 'file b';
+        },
+        dependencies: [fileA]
+      };
+
+      const fileC = {
+        name: 'c',
+        content() {
+          return getContent(fileA) + getContent(fileB) + 'file c';
+        },
+        dependencies: [fileA, fileB]
+      };
+      addFile(fileC);
+      addFile(fileB);
+      addFile(fileA);
+      await mount('/');
+      const files = await recursiveReadDir('/');
+      expect(files).toEqual(['a', 'b', 'c']);
+      expect(await readFile('/a')).toEqual('file a');
+      expect(await readFile('/b')).toEqual('file afile b');
+      expect(await readFile('/c')).toEqual('file afile afile bfile c');
+    });
+
+    test('should update file after dependencies update', async () => {
+      const fileManager = getFileManager({ watch: true });
+      const { addFile, getContent, mount } = fileManager;
+
+      const state = reactive({
+        content: 'file a'
+      });
+
+      const fileA = {
+        name: 'a',
+        content() {
+          return state.content;
+        }
+      };
+
+      const fileB = {
+        name: 'b',
+        content() {
+          return getContent(fileA) + 'file b';
+        },
+        dependencies: [fileA]
+      };
+
+      const fileC = {
+        name: 'c',
+        content() {
+          return getContent(fileA) + getContent(fileB) + 'file c';
+        },
+        dependencies: [fileA, fileB]
+      };
+      addFile(fileC);
+      addFile(fileB);
+      addFile(fileA);
+
+      await mount('/');
+      const files = await recursiveReadDir('/');
+      expect(files).toEqual(['a', 'b', 'c']);
+      expect(await readFile('/a')).toEqual('file a');
+      expect(await readFile('/b')).toEqual('file afile b');
+      expect(await readFile('/c')).toEqual('file afile afile bfile c');
+
+      return waitForUpdate(() => {
+        state.content = 'file aa';
+      })
+        .then(async () => {
+          const files = await recursiveReadDir('/');
+          expect(files).toEqual(['a', 'b', 'c']);
+          expect(await readFile('/a')).toEqual('file aa');
+          expect(await readFile('/b')).toEqual('file aafile b');
+          expect(await readFile('/c')).toEqual('file aafile aafile bfile c');
+        })
+        .endPromise();
+    });
+
+    test('should update file after changing state', async () => {
+      const fileManager = getFileManager({ watch: true });
+      const state = reactive({
+        content: 'a'
+      });
+      fileManager.addFile({
+        name: 'test',
+        content() {
+          return state.content;
+        }
+      });
+      await fileManager.mount('/');
+      expect(await readFile('/test')).toEqual('a');
+
+      return waitForUpdate(() => {
+        state.content = 'b';
+      })
+        .then(async () => {
+          expect(await readFile('/test')).toEqual('b');
+        })
+        .endPromise();
+    });
+  });
+
   describe('createFile should work without watching files', () => {
     describe('should work without using context', () => {
       test('should create file after mount', async () => {
