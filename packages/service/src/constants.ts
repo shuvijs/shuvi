@@ -30,3 +30,11 @@ export const DLL_NAME = 'dll';
 export const DEFAULT_DLL_PUBLIC_PATH = `/__${DLL_NAME}/`;
 
 export const DLL_FILENAME = 'dll.js';
+
+export const DEFAULT_TMP_DIR_NAME = `.dll`;
+
+export const METADATA_FILENAME = '_metadata.json';
+
+export const UPDATE_FILENAME = '_update.json';
+
+export const MF_VA_PREFIX = 'vf_';
