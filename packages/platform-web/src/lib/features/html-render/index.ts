@@ -7,10 +7,10 @@ import {
 import * as path from 'path';
 import { extendedHooks } from './hooks';
 
-export { IRenderToHTML } from './hooks';
+export { IHandlePageRequest } from './hooks';
 export {
   getSSRMiddleware,
-  IDocumentProps,
+  IHtmlDocument,
   ITemplateData,
   IViewServer,
   IViewClient

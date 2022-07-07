@@ -9,7 +9,7 @@ import {
 } from '@shuvi/platform-shared/lib/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import {
-  IDocumentProps,
+  IHtmlDocument,
   ITemplateData,
   IViewServer
 } from '../features/html-render';
@@ -41,16 +41,16 @@ export type IMiddlewareRoutes = {
 
 export interface IDocumentModule {
   onDocumentProps(
-    documentProps: IDocumentProps,
+    documentProps: IHtmlDocument,
     context: IAppContext
-  ): Promise<IDocumentProps> | IDocumentProps;
+  ): Promise<IHtmlDocument> | IHtmlDocument;
   getTemplateData(context: IAppContext): Promise<ITemplateData> | ITemplateData;
 }
 
 export interface IServerModule {
   middlewares?: IServerMiddleware | IServerMiddleware[];
   getPageData?: ServerPluginConstructor['pageData'];
-  renderToHTML?: ServerPluginConstructor['renderToHTML'];
+  handlePageRequest?: ServerPluginConstructor['handlePageRequest'];
   /**
    *  we already have onDocumentProps in document.js,
    *  for simplicity, we don't need to add it here.

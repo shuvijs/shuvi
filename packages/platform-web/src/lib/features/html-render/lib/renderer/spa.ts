@@ -1,8 +1,8 @@
 import { BaseRenderer, AppData } from './base';
-import { IRenderDocumentOptions } from './types';
+import { IRenderDocumentOptions, IHtmlDocument } from './types';
 
 export class SpaRenderer extends BaseRenderer {
-  getDocumentProps({ app }: IRenderDocumentOptions) {
+  renderDocument({ app }: IRenderDocumentOptions) {
     const assets = this._getMainAssetTags();
     const serverPluginContext = this._serverPluginContext;
     const appData: AppData = {
@@ -10,7 +10,7 @@ export class SpaRenderer extends BaseRenderer {
       ssr: serverPluginContext.config.ssr,
       loadersData: {}
     };
-    return {
+    const document: IHtmlDocument = {
       htmlAttrs: {},
       headTags: [...assets.styles],
       mainTags: [
@@ -19,5 +19,7 @@ export class SpaRenderer extends BaseRenderer {
       ],
       scriptTags: [...assets.scripts]
     };
+
+    return document;
   }
 }

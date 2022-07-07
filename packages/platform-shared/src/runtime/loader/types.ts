@@ -1,12 +1,20 @@
 import { IURLQuery, IURLParams } from '../routerTypes';
 import { IAppContext, IRequest } from '../applicationTypes';
-import { Response, error, redirect } from '../response';
+import { Response } from '../response';
 
 export interface LoaderContextOptions {
   isServer: boolean;
   req?: IRequest;
   query: IURLQuery;
   getAppContext: () => IAppContext;
+}
+
+export type RedirectFunction = (to: string, status?: number) => any;
+
+export interface ErrorFunction {
+  (): any;
+  (msg: string): any;
+  (msg: string, statusCode?: number): any;
 }
 
 /**
@@ -47,14 +55,14 @@ export interface IRouteLoaderContext {
    * redirect('/target', 301)
    * ```
    */
-  redirect: typeof redirect;
+  redirect: RedirectFunction;
   /**
    * throw error if necessary
    * ```ts
-   * error(502, 'custom error describe')
+   * error('custom error describe', 502)
    * ```
    */
-  error: typeof error;
+  error: ErrorFunction;
   /**
    * server only
    */
@@ -67,7 +75,7 @@ export interface IRouteLoaderContext {
 
 export type Loader<T extends {} = {}> = (
   loaderContenxt: IRouteLoaderContext
-) => Promise<T | Response | void | undefined> | T | Response | void | undefined;
+) => Promise<T | void | undefined> | T | void | undefined;
 
 export type NormalizedLoader = (
   loaderContenxt: IRouteLoaderContext
