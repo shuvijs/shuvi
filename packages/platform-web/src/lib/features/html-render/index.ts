@@ -123,5 +123,6 @@ const core = createPlugin({
 
 export default {
   core,
+  // FIXME: should be a module path, not file path
   types: path.join(__dirname, 'types')
 };
