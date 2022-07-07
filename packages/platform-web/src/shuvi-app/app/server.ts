@@ -5,8 +5,8 @@ import {
   CreateServerApp,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
+  isResponse,
   isRedirect,
-  isError,
   getLoaderManager
 } from '@shuvi/platform-shared/esm/runtime';
 import pageLoaders from '@shuvi/app/files/page-loaders';
@@ -29,28 +29,35 @@ export const createApp: CreateServerApp = options => {
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
-      const loaderResult = await runLoaders(matches, pageLoaders, {
-        isServer: true,
-        req,
-        query: to.query,
-        getAppContext: () => app.context
-      });
+      try {
+        const loaderResult = await runLoaders(matches, pageLoaders, {
+          isServer: true,
+          req,
+          query: to.query,
+          getAppContext: () => app.context
+        });
+        loaderManager.setDatas(loaderResult);
+      } catch (error: any) {
+        if (isRedirect(error)) {
+          next(error.headers.get('Location')!);
+          return;
+        }
 
-      if (isRedirect(loaderResult)) {
-        next(loaderResult.headers.get('Location')!);
-        return;
-      }
+        if (isResponse(error) && error.status >= 400 && error.status < 600) {
+          app.error.error({
+            code: error.status,
+            message: error.data
+          });
+          next();
+          return;
+        }
 
-      if (isError(loaderResult)) {
         app.error.error({
-          code: loaderResult.status,
-          message: loaderResult.data
+          message: error.message || 'Loader Error'
         });
         next();
         return;
       }
-
-      loaderManager.setDatas(loaderResult);
 
       next();
     });

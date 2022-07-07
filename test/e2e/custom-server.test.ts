@@ -22,12 +22,12 @@ describe('custom/server.js', () => {
     expect(await page.$text('[data-test-id="page-data"]')).toBe('bar');
   });
 
-  test('should replace renderToHTML by hooks', async () => {
+  test('should replace handlePageRequest by hooks', async () => {
     jest.spyOn(console, 'log');
 
     page = await ctx.browser.page(ctx.url('/'));
     expect(console.log).toHaveBeenLastCalledWith(
-      expect.stringMatching(/custom-renderToHTML[\s\S]+\<html\>/)
+      expect.stringMatching(/test-handle-page-request/)
     );
   });
 });

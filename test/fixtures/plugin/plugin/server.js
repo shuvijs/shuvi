@@ -16,11 +16,10 @@ module.exports = option =>
       });
       return documentProps;
     },
-    renderToHTML: renderToHTML => {
+    handlePageRequest: originalHandlePageRequest => {
       return async (req, res) => {
-        const html = await renderToHTML(req, res);
-        console.log('custom-renderToHTML', html);
-        return html;
+        await originalHandlePageRequest(req, res);
+        console.log('test-handle-page-request');
       };
     },
     onListen: () => {
