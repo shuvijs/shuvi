@@ -66,6 +66,8 @@ type CompilerDiagnostics = {
 };
 
 type ShareConfig = Record<string, any>;
+
+type OnBuildComplete = (error?: null | Error) => void;
 interface WatchTargetOptions {
   typeChecking?: boolean;
   onErrors?(errors: CompilerErr[]): void;
@@ -201,11 +203,16 @@ class WebpackBundler {
   private _dllPlugin: DynamicDLLPlugin | null = null;
   private _dirDll: string;
   private _nextBuild: ModuleSnapshot | undefined = undefined;
+  private _completeFns: OnBuildComplete[] = [];
+  private _isBuilding = false;
 
   constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
     this._options = options;
     this._cliContext = cliContext;
-    this._dirDll = path.join(process.cwd(), DEFAULT_TMP_DIR_NAME);
+    this._dirDll = path.join(
+      this._cliContext.paths.rootDir,
+      DEFAULT_TMP_DIR_NAME
+    );
   }
 
   async getWebpackCompiler(opts?: {
@@ -221,6 +228,9 @@ class WebpackBundler {
     if (this._cliContext.config.experimental.preBundle) {
       this._compiler = webpack(
         this._targets.map(({ config }) => {
+          if (config.target === 'node') {
+            return config;
+          }
           if (opts !== undefined) {
             return getWebpackConfig(opts);
           } else {
@@ -616,10 +626,41 @@ promise new Promise(resolve => {
       delete requiredSnapshot[lib];
     });
 
-    await this._buildDll(requiredSnapshot, {
-      outputDir: this._dirDll,
-      force: process.env.DLL_FORCE_BUILD === 'true'
-    });
+    if (this._isBuilding) {
+      this._nextBuild = snapshot;
+      return;
+    }
+
+    let error: any = null;
+    this._isBuilding = true;
+    let hasBuild: boolean = false;
+    let timer = new Date().getTime();
+    try {
+      [hasBuild] = await this._buildDll(snapshot, {
+        outputDir: this._dirDll,
+        force: process.env.DLL_FORCE_BUILD === 'true'
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    this._isBuilding = false;
+
+    if (error) {
+      console.error(`[@shuvi/dll]: Bundle Error`);
+      console.error(error);
+    }
+
+    this._completeFns.forEach(fn => fn(error));
+    this._completeFns = [];
+
+    if (hasBuild) {
+      console.log(
+        `[@shuvi/dll]: Bundle Success, cost ${new Date().getTime() - timer}ms`
+      );
+      timer = new Date().getTime();
+    }
+
     this._dllPlugin!.disableDllReference();
     this._hasBuilt = true;
   };
@@ -702,6 +743,14 @@ promise new Promise(resolve => {
     renameSync(dllPendingDir, dllDir);
 
     return [true, metadata];
+  }
+
+  onBuildComplete(fn: OnBuildComplete) {
+    if (this._isBuilding) {
+      this._completeFns.push(fn);
+    } else {
+      fn();
+    }
   }
 }
 

@@ -101,7 +101,7 @@ export function getConfig({
       target: 'es2015' // Syntax to compile to (see options below for possible values)
     });
 
-  const DLL_VERSION = require('../../package.json').version;
+  const DLL_VERSION = require('../../../package.json').version;
 
   const stringifiedConfig = Object.entries({
     esmFullSpecific,

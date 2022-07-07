@@ -244,9 +244,11 @@ importers:
       dotenv-expand: 5.1.0
       es-module-lexer: 0.10.5
       esbuild: ^0.14.39
+      esbuild-loader: ^2.19.0
       fs-extra: 9.0.1
       http-proxy-middleware: 1.0.6
       launch-editor: 2.2.1
+      mrmime: 1.0.0
       rimraf: ^3.0.2
       send: 0.17.1
     dependencies:
@@ -269,9 +271,11 @@ importers:
       dotenv-expand: 5.1.0
       es-module-lexer: 0.10.5
       esbuild: 0.14.48
+      esbuild-loader: 2.19.0
       fs-extra: 9.0.1
       http-proxy-middleware: 1.0.6
       launch-editor: 2.2.1
+      mrmime: 1.0.0
       rimraf: 3.0.2
       send: 0.17.1
     devDependencies:
@@ -5687,6 +5691,19 @@ packages:
     dev: false
     optional: true
 
+  /esbuild-loader/2.19.0:
+    resolution: {integrity: sha512-urGNVE6Tl2rqx92ElKi/LiExXjGvcH6HfDBFzJ9Ppwqh4n6Jmx8x7RKAyMzSM78b6CAaJLhDncG5sPrL0ROh5Q==}
+    peerDependencies:
+      webpack: ^4.40.0 || ^5.0.0
+    dependencies:
+      esbuild: 0.14.48
+      joycon: 3.1.1
+      json5: 2.2.1
+      loader-utils: 2.0.0
+      tapable: 2.2.0
+      webpack-sources: 2.2.0
+    dev: false
+
   /esbuild-netbsd-64/0.14.38:
     resolution: {integrity: sha512-cljBAApVwkpnJZfnRVThpRBGzCi+a+V9Ofb1fVkKhtrPLDYlHLrSYGtmnoTVWDQdU516qYI8+wOgcGZ4XIZh0Q==}
     engines: {node: '>=12'}
@@ -7552,6 +7569,22 @@ packages:
       - ts-node
     dev: true
 
+  /joycon/3.1.1:
+    resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
+    engines: {node: '>=10'}
+    dev: false
+
+  /js-tokens/4.0.0:
+    resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
+
+  /js-yaml/3.13.1:
+    resolution: {integrity: sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==}
+    hasBin: true
+    dependencies:
+      argparse: 1.0.10
+      esprima: 4.0.1
+    dev: true
+
   /js-tokens/4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -7662,7 +7695,6 @@ packages:
     resolution: {integrity: sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==}
     engines: {node: '>=6'}
     hasBin: true
-    dev: true
 
   /jsonc-parser/3.0.0:
     resolution: {integrity: sha512-fQzRfAbIBnR0IQvftw9FJveWiHp72Fg20giDrHz6TdfB12UH/uue0D3hm57UB5KgAVuniLMCaS8P1IMj9NR7cA==}
@@ -8272,6 +8304,11 @@ packages:
     resolution: {integrity: sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /mrmime/1.0.0:
+    resolution: {integrity: sha512-a70zx7zFfVO7XpnQ2IX1Myh9yY4UYvfld/dikWRnsXxbyvMcfz+u6UfgNAtH+k2QqtJuzVpv6eLTx1G2+WKZbQ==}
+    engines: {node: '>=10'}
+    dev: false
 
   /ms/2.0.0:
     resolution: {integrity: sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=}
