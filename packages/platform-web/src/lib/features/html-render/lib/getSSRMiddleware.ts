@@ -4,50 +4,46 @@ import {
   IRequestHandlerWithNext,
   IServerPluginContext
 } from '@shuvi/service';
-
 import { sendHTML } from '@shuvi/service/lib/server/utils';
-
 import { renderToHTML } from './renderToHTML';
-import { isRedirect } from './renderer';
+import {
+  Response,
+  isRedirect,
+  isText
+} from '@shuvi/platform-shared/lib/runtime';
 
-function initServerRender(serverPluginContext: IServerPluginContext) {
-  return async function (
-    req: IncomingMessage,
-    res: ServerResponse
-  ): Promise<string | null> {
-    const { result, error } = await renderToHTML({
+function createPageHandler(serverPluginContext: IServerPluginContext) {
+  return async function (req: IncomingMessage, res: ServerResponse) {
+    const result = await renderToHTML({
       req: req as IRequest,
       serverPluginContext
     });
 
     if (isRedirect(result)) {
-      res.writeHead(result.status ?? 302, { Location: result.path });
+      const redirectResp = result as Response;
+      res.writeHead(redirectResp.status, {
+        Location: redirectResp.headers.get('Location')!
+      });
       res.end();
-      return null;
+    } else if (isText(result)) {
+      const textResp = result as Response;
+      res.statusCode = textResp.status;
+      sendHTML(req, res, textResp.data);
+    } else {
+      // shuold never reach here
+      throw new Error('Unexpected reponse type from renderToHTML');
     }
-
-    if (error) {
-      res.statusCode = error.code!;
-    }
-
-    return result;
   };
 }
 
 export function getSSRMiddleware(
   api: IServerPluginContext
 ): IRequestHandlerWithNext {
-  const serverRender = initServerRender(api);
+  let pageHandler = createPageHandler(api);
   return async function (req, res, next) {
     try {
-      const renderToHTML = await api.serverPluginRunner.renderToHTML(
-        serverRender
-      );
-      const html = await renderToHTML(req, res);
-      if (html) {
-        // send the response
-        sendHTML(req, res, html);
-      }
+      pageHandler = await api.serverPluginRunner.handlePageRequest(pageHandler);
+      await pageHandler(req, res);
     } catch (error) {
       next(error);
     }

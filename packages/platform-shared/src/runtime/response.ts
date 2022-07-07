@@ -119,7 +119,7 @@ if (supportIterator) {
   (Headers.prototype as any)[Symbol.iterator] = Headers.prototype.entries;
 }
 
-export type ResponseType = 'error' | 'json' | 'redirect';
+export type ResponseType = 'text' | 'json' | 'redirect' | 'plain';
 
 export interface Response {
   readonly data: string;
@@ -129,7 +129,7 @@ export interface Response {
 }
 
 class ResponseImpl implements Response {
-  public readonly __shuvi_resp_type__: 'error' | 'json' | 'redirect';
+  public readonly __shuvi_resp_type__: ResponseType;
   public readonly data: any;
   public readonly status: number;
   public readonly statusText: string;
@@ -154,11 +154,19 @@ export const isResponse = (obj: any): obj is Response =>
   obj && typeof obj.__shuvi_resp_type__ === 'string';
 
 export const isJson = createTypeCreator('json');
+export const isText = createTypeCreator('text');
 export const isRedirect = createTypeCreator('redirect');
-export const isError = createTypeCreator('error');
+
+export function response(data: any, options?: ResponseOptions): Response {
+  return new ResponseImpl(data, 'plain', options);
+}
 
 export function json(data: any): Response {
   return new ResponseImpl(data, 'json');
+}
+
+export function text(data: string, options?: ResponseOptions): Response {
+  return new ResponseImpl(data, 'text', options);
 }
 
 export function redirect(to: string, status: number = 302): Response {
@@ -167,14 +175,5 @@ export function redirect(to: string, status: number = 302): Response {
     headers: {
       Location: to
     }
-  });
-}
-
-export function error(): Response;
-export function error(body: string): Response;
-export function error(body: string, statusCode?: number): Response;
-export function error(body?: string, statusCode: number = 500): Response {
-  return new ResponseImpl(body, 'error', {
-    status: statusCode
   });
 }

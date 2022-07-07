@@ -7,17 +7,11 @@ import {
   IServerRendererOptions,
   IViewClient,
   IViewServer,
-  IRenderAppResult
+  IRenderAppServerResult
 } from '@shuvi/platform-shared/lib/runtime';
 import { IServerPluginContext } from '@shuvi/service';
 
 export { IHtmlAttrs, IHtmlTag, IApplication };
-
-export interface IRenderResultRedirect {
-  status?: number;
-  path: string;
-  $type: 'redirect';
-}
 
 export interface IRendererConstructorOptions {
   serverPluginContext: IServerPluginContext;
@@ -28,7 +22,7 @@ export type IRenderDocumentOptions = {
   req: IRequest;
 };
 
-export interface IDocumentProps {
+export interface IHtmlDocument {
   htmlAttrs: IHtmlAttrs;
   headTags: IHtmlTag<
     'meta' | 'link' | 'style' | 'script' | 'noscript' | 'title'
@@ -37,14 +31,10 @@ export interface IDocumentProps {
   scriptTags: IHtmlTag<'script'>[];
 }
 
-export interface ITemplateData {
-  [x: string]: any;
-}
-
 export interface IRenderOptions extends IRenderDocumentOptions {}
 
 export {
-  IRenderAppResult,
+  IRenderAppServerResult,
   IClientRendererOptions,
   IServerRendererOptions,
   IViewClient,

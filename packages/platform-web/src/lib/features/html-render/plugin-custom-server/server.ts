@@ -12,9 +12,10 @@ export default createServerPlugin({
   pageData: (appContext, context) => {
     return server?.server?.getPageData?.(appContext, context) || {};
   },
-  renderToHTML: (renderToHTML, context) => {
+  handlePageRequest: (originalHandlePageRequest, context) => {
     return (
-      server?.server?.renderToHTML?.(renderToHTML, context) || renderToHTML
+      server?.server?.handlePageRequest?.(originalHandlePageRequest, context) ||
+      originalHandlePageRequest
     );
   }
 });
