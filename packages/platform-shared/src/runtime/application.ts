@@ -77,13 +77,13 @@ export class Application {
   }
 
   private async _initAppContext() {
-    this._context = (await this._pluginManager.runner.getAppContext(
+    this._context = (await this._pluginManager.runner.appContext(
       this._context
     )) as IAppContext;
   }
 
   private async _initAppComponent() {
-    this._appComponent = await this._pluginManager.runner.getAppComponent(
+    this._appComponent = await this._pluginManager.runner.appComponent(
       this._appComponent,
       this._context
     );

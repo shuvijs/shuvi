@@ -5,9 +5,9 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('custom/runtime.js', () => {
+describe('custom/app.js', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('custom-runtime');
+    ctx = await launchFixture('custom-app');
   });
   afterAll(async () => {
     await ctx.close();
@@ -31,5 +31,14 @@ describe('custom/runtime.js', () => {
     page = await ctx.browser.page(ctx.url('/'));
     expect(await page.$text('#app-component')).toBe('This is AppComponent');
     expect(await page.$text('#page')).toBe('Index Page');
+    expect(await page.$text('#test-flag')).toBe('1');
+  });
+
+  it('should get correct log', async () => {
+    const logSpy = jest.spyOn(console, 'log');
+    page = await ctx.browser.page(ctx.url('/'));
+
+    expect(logSpy).toHaveBeenNthCalledWith(1, 'init\n');
+    expect(logSpy).toHaveBeenNthCalledWith(2, 'dispose\n');
   });
 });

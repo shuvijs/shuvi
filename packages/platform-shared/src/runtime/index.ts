@@ -10,8 +10,4 @@ export { errorModel } from './models/error';
 export * from './applicationTypes';
 export type { Application } from './application';
 
-export {
-  IRuntimeModule,
-  createPlugin,
-  RuntimePluginInstance
-} from './lifecycle';
+export { IAppModule, createPlugin, RuntimePluginInstance } from './lifecycle';
