@@ -1,9 +1,9 @@
-import { createFileWithoutName } from '@shuvi/service/lib/project';
+import { defineFile } from '../../..';
 import { getPublicRuntimeConfig } from '../../../../../../runtime/runtimeConfig';
 import { ProjectContext } from '../../../../projectContext';
 
 export default (context: ProjectContext) =>
-  createFileWithoutName({
+  defineFile({
     content: () => {
       const runtimeConfigContent = getPublicRuntimeConfig()
         ? JSON.stringify(getPublicRuntimeConfig())

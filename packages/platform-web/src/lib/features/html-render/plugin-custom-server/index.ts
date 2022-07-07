@@ -7,7 +7,7 @@ import {
 import server from './server';
 
 const core = createPlugin({
-  addRuntimeFile: ({ createFile }, context) => {
+  addRuntimeFile: ({ defineFile }, context) => {
     const { paths } = context;
 
     const serverCandidates = getUserCustomFileCandidates(
@@ -15,7 +15,7 @@ const core = createPlugin({
       'server',
       'noop'
     );
-    const userServerFile = createFile({
+    const userServerFile = defineFile({
       name: 'user/server.js',
       content: () => {
         return getFirstModuleExport(

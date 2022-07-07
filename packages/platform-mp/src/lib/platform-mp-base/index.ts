@@ -185,7 +185,7 @@ export default abstract class PlatformMpBase {
 
   getSetupRoutesPlugin(): CorePluginInstance {
     return createPlugin({
-      addRuntimeFile: async ({ createFile }, context) => {
+      addRuntimeFile: async ({ defineFile }, context) => {
         const getFiles = (routes: IUserRouteConfig[]) => {
           const appFiles: FileOptions[] = [];
 
@@ -260,7 +260,7 @@ export default abstract class PlatformMpBase {
           rankRoutes = rankRouteBranches(rankRoutes);
           routesMap = rankRoutes.map(apiRoute => apiRoute[1]);
           appFiles.push(
-            createFile({
+            defineFile({
               name: 'routesMap.js',
               content: () => `export default ${JSON.stringify(routesMap)}`
             })
@@ -289,7 +289,7 @@ export default abstract class PlatformMpBase {
             const pageConfig = pageConfigFile ? readConfig(pageConfigFile) : {};
             this.appConfigs[page] = pageConfig;
             appFiles.push(
-              createFile({
+              defineFile({
                 name: `${page}.js`,
                 content: () => `
         import * as React from 'react';

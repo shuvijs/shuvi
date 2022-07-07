@@ -1,9 +1,9 @@
-import { createFileWithoutName } from '@shuvi/service/lib/project';
+import { defineFile } from '../../..';
 
 const content = `import userError from '@shuvi/app/user/error'
 export default userError
 `;
 export default () =>
-  createFileWithoutName({
+  defineFile({
     content: () => content
   });
