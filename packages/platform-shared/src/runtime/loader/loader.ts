@@ -4,7 +4,8 @@ import {
   Response,
   json as createJson,
   redirect as createRedirect,
-  response
+  response,
+  isResponse
 } from '../response';
 import { Loader, LoaderContextOptions, LoaderDataRecord } from './types';
 
@@ -109,7 +110,7 @@ export async function runLoaders(
         res = createJson(value);
       }
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development' && !isResponse(error)) {
         console.error(`loader function error of route "${match.route.path}"`);
         console.error(error);
       }
