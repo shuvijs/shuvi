@@ -59,13 +59,13 @@ export async function runInParallerAndBail<T>(
 export async function runLoaders(
   matches: IRouteMatch<IPageRouteRecord>[],
   loadersByRouteId: Record<string, Loader>,
-  { isServer, query, req, appContext }: LoaderContextOptions
+  { isServer, query, req, getAppContext }: LoaderContextOptions
 ): Promise<Response | LoaderDataRecord> {
   if (!matches.length) {
     return [];
   }
 
-  const ctx = appContext();
+  const appContext = getAppContext();
   const createLoader = (match: IRouteMatch<IPageRouteRecord>) => async () => {
     const loaderFn = loadersByRouteId[match.route.id];
     let res: Response | undefined;
@@ -77,7 +77,7 @@ export async function runLoaders(
         query: query,
         redirect: createRedirect,
         error: createError,
-        appContext: ctx,
+        appContext,
         ...(req ? { req } : {})
       });
       if (isResponse(value)) {

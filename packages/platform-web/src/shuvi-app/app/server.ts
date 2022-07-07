@@ -33,7 +33,7 @@ export const createApp: CreateServerApp = options => {
         isServer: true,
         req,
         query: to.query,
-        appContext: () => app.context
+        getAppContext: () => app.context
       });
 
       if (isRedirect(loaderResult)) {

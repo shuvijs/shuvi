@@ -82,7 +82,7 @@ export function createApp(options: {
       return await runLoaders(matches, pageLoaders, {
         isServer: false,
         query: to.query,
-        appContext: () => app.context
+        getAppContext: () => app.context
       });
     };
     const _preload = async () => {
