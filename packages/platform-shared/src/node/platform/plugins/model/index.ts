@@ -26,5 +26,6 @@ export default {
     plugin: resolvePluginFile('model', 'runtime')
   },
   server,
+  // FIXME: should be a module path, not file path
   types: path.join(__dirname, 'types')
 };
