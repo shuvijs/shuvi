@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { getFileManager, FileManager, FileOptions } from './file-manager';
+import { getFileManager, FileManager, FileOptionsBase } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { getExportsFromObject, getContentProxyObj } from './file-utils';
 import { RuntimePluginConfig } from '../core';
@@ -35,7 +35,7 @@ const isTruthy = (value: unknown, recursive = true): boolean => {
 class ProjectBuilder {
   private _projectContext: ProjectContext;
   private _fileManager: FileManager;
-  private _internalFiles: FileOptions[];
+  private _internalFiles: FileOptionsBase[];
 
   constructor(option: ProjectBuilderOptions = {}) {
     this._projectContext = createProjectContext();
@@ -44,7 +44,7 @@ class ProjectBuilder {
       context: this._projectContext
     });
     this._internalFiles = getFilePresets();
-    this._internalFiles.forEach((file: FileOptions) => {
+    this._internalFiles.forEach((file: FileOptionsBase) => {
       this._fileManager.addFile(file);
     });
   }
@@ -128,7 +128,7 @@ class ProjectBuilder {
   /**
    * default path is the root path
    */
-  addFile(options: FileOptions): void {
+  addFile(options: FileOptionsBase): void {
     this._fileManager.addFile(options);
   }
 
@@ -142,6 +142,10 @@ class ProjectBuilder {
 
   async stopBuild(): Promise<void> {
     await this._fileManager.unmount();
+  }
+
+  getContentGetter() {
+    return this._fileManager.getContent;
   }
 }
 

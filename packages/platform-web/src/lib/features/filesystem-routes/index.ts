@@ -1,9 +1,11 @@
-import { createPlugin } from '@shuvi/service';
+import { createPlugin, IRouteConfig } from '@shuvi/service';
 import {
   getPageRoutes,
   getApiRoutes,
   getMiddlewareRoutes
 } from '@shuvi/platform-shared/lib/node';
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   getRoutes,
   setRoutes,
@@ -22,6 +24,8 @@ import {
   generateRoutesContent as generateApiRoutesContent,
   IApiRouteConfig
 } from './api';
+import { ifComponentHasLoader } from '../html-render/lib';
+import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 
 export {
   IApiRequestHandler,
@@ -37,7 +41,7 @@ export default createPlugin({
     routes = _routes;
     return routes;
   },
-  addRuntimeFile: async ({ createFile }, context) => {
+  addRuntimeFile: async ({ defineFile }, context) => {
     const {
       config: { routes: pageRoutes, middlewareRoutes, apiRoutes },
       paths,
@@ -47,7 +51,7 @@ export default createPlugin({
     const getRoutesAfterPlugin = (routes: IUserRouteConfig[]) =>
       pluginRunner.appRoutes(routes);
 
-    const pageRoutesFile = createFile({
+    const pageRoutesFile = defineFile({
       name: 'routes.js',
       content: async () => {
         let routes: IUserRouteConfig[];
@@ -72,10 +76,10 @@ export default createPlugin({
         setRoutes(normalizedRoutes);
         return generatePageRoutesContent(normalizedRoutes);
       },
-      dependencies: paths.routesDir
+      dependencies: [paths.routesDir]
     });
 
-    const apiRoutesFile = createFile({
+    const apiRoutesFile = defineFile({
       name: 'apiRoutes.js',
       content: async () => {
         let routes: IApiRouteConfig[] = [];
@@ -94,9 +98,9 @@ export default createPlugin({
 
         return generateApiRoutesContent(routes, paths.routesDir);
       },
-      dependencies: paths.routesDir
+      dependencies: [paths.routesDir]
     });
-    const middlewareRoutesFile = createFile({
+    const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
       content: async () => {
         let routes: IMiddlewareRouteConfig[];
@@ -114,9 +118,62 @@ export default createPlugin({
         }
         return generateMiddlewareRoutesContent(routes, paths.routesDir);
       },
-      dependencies: paths.routesDir
+      dependencies: [paths.routesDir]
     });
 
-    return [pageRoutesFile, apiRoutesFile, middlewareRoutesFile];
+    const loadersFile = defineFile({
+      name: 'loaders.js',
+      content: async () => {
+        const routes = getRoutes();
+        const loaders: Record<string, string> = {};
+        const traverseRoutes = (routes: IRouteConfig[]) => {
+          routes.forEach(r => {
+            const { component, id, children } = r;
+            if (component && id) {
+              const hasLoader = ifComponentHasLoader(component);
+              if (hasLoader) {
+                loaders[id] = component;
+              }
+            }
+            if (children) {
+              traverseRoutes(children);
+            }
+          });
+        };
+        traverseRoutes(routes);
+        let imports = '';
+        let exports = '';
+        Object.entries(loaders).forEach((loader, index) => {
+          const [id, component] = loader;
+          imports += `import { loader as loader_${index} } from '${component}'\n`;
+          exports += `'${id}': loader_${index},\n`;
+        });
+        return `${imports}  export default {\n  ${exports}\n}`;
+      },
+      dependencies: [pageRoutesFile]
+    });
+    const loadersFileName = path.join(
+      context.paths.appDir,
+      'files',
+      'loaders.js'
+    );
+    const pageLoadersFile = defineFile({
+      name: 'page-loaders.js',
+      content: async () => {
+        if (fs.existsSync(loadersFileName)) {
+          return await buildToString(loadersFileName);
+        }
+        return '';
+      },
+      dependencies: [loadersFile]
+    });
+
+    return [
+      pageRoutesFile,
+      apiRoutesFile,
+      middlewareRoutesFile,
+      loadersFile,
+      pageLoadersFile
+    ];
   }
 });

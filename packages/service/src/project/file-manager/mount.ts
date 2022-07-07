@@ -6,16 +6,19 @@ import { FileOptions, createFileInstance } from './file';
 import { queueJob, queuePostFlushCb } from './scheduler';
 import { invokeArrayFns } from './utils';
 import { FileInternalInstance } from './fileTypes';
+import { DependencyInfo } from './fileManager';
 
 export function mount(
   options: FileOptions,
   context: any = {},
-  watch: boolean
+  watch: boolean,
+  dependencyMap: Map<string, DependencyInfo>,
+  instances: Map<string, FileInternalInstance>
 ): Promise<FileInternalInstance> {
   const defer = Defer<FileInternalInstance>();
   const instance = createFileInstance(options);
 
-  const { content, name: fsPath, setupState } = instance;
+  const { id, content, name: fsPath, setupState } = instance;
   const dir = path.dirname(fsPath);
   let fd: any;
   const componentEffect = async () => {
@@ -23,7 +26,9 @@ export function mount(
     if (!instance.isMounted) {
       fse.ensureDirSync(dir);
       fd = fse.openSync(fsPath, 'w+');
-      const fileContent = await content(context, setupState);
+
+      const contentPromise = content(context, setupState);
+      const fileContent = await contentPromise;
       if (fileContent != undefined) {
         fse.writeSync(fd, fileContent, 0);
       }
@@ -33,18 +38,32 @@ export function mount(
       if (watch) {
         invokeArrayFns(instance.mounted);
       }
+      instance.fileContent = fileContent;
       instance.isMounted = true;
       defer.resolve(instance);
       return;
     }
-    const fileContent = await content(context, setupState);
+    const contentPromise = content(context, setupState);
+    const fileContent = await contentPromise;
+    instance.fileContent = fileContent;
+    instance.isMounted = true;
     fse.ftruncateSync(fd, 0);
     fse.writeSync(fd, fileContent, 0);
+    // trigger update of dependents at watch mode
+    if (watch) {
+      const dependents = dependencyMap.get(id)?.dependents;
+      if (dependents && dependents.length) {
+        dependents.forEach(dependentId => {
+          const dependentInstance = instances.get(dependentId);
+          dependentInstance?.update();
+        });
+      }
+    }
   };
   if (watch) {
     instance.update = effect(componentEffect, {
       scheduler: queueJob,
-      allowRecurse: true,
+      allowRecurse: true
       // lazy: true,
     });
   } else {
