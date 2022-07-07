@@ -1,10 +1,8 @@
+// exported by @shuvi/runtme
+
 export { IRequestHandlerWithNext } from '@shuvi/service';
 
-export {
-  IDocumentProps,
-  ITemplateData,
-  IRenderToHTML
-} from '../features/html-render';
+export { IHtmlDocument, ITemplateData } from '../features/html-render';
 
 export { IApiRoutes, IMiddlewareRoutes, IDocumentModule } from './resources';
 

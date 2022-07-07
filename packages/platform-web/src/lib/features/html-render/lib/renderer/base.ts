@@ -1,130 +1,39 @@
-import { IAppData } from '@shuvi/platform-shared/lib/runtime';
-import invariant from '@shuvi/utils/lib/invariant';
+import { IAppData, Response } from '@shuvi/platform-shared/lib/runtime';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
-
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
   IServerPluginContext
 } from '@shuvi/service';
-
 import {
   CLIENT_CONTAINER_ID,
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '@shuvi/shared/lib/constants';
-import {
-  clientManifest,
-  server,
-  documentPath
-} from '@shuvi/service/lib/resources';
-import { parseTemplateFile, renderTemplate } from '../viewTemplate';
+import { clientManifest } from '@shuvi/service/lib/resources';
 import generateFilesByRoutId from '../generateFilesByRoutId';
-import { tag, stringifyTag, stringifyAttrs } from './htmlTag';
-import { IDocumentProps, ITemplateData, IHtmlTag, IApplication } from './types';
-
-import {
-  IRendererConstructorOptions,
-  IRenderDocumentOptions,
-  IRenderResultRedirect
-} from './types';
+import { tag } from './htmlTag';
+import { IHtmlDocument, IHtmlTag, IApplication } from './types';
+import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
 
 export type AppData = Omit<IAppData, 'filesByRoutId' | 'publicPath'>;
 
-function addDefaultHtmlTags(documentProps: IDocumentProps): IDocumentProps {
-  let hasMetaCharset = false;
-  let hasMetaViewport = false;
-
-  for (const { tagName, attrs } of documentProps.headTags) {
-    if (hasMetaCharset && hasMetaViewport) {
-      break;
-    }
-
-    if (tagName === 'meta') {
-      if (attrs.charset) {
-        hasMetaCharset = true;
-      } else if (attrs.name === 'viewport') {
-        hasMetaViewport = true;
-      }
-    }
-  }
-
-  if (!hasMetaCharset) {
-    documentProps.headTags.unshift(
-      tag('meta', {
-        charset: 'utf-8'
-      })
-    );
-  }
-  if (!hasMetaViewport) {
-    documentProps.headTags.unshift(
-      tag('meta', {
-        name: 'viewport',
-        content: 'width=device-width,minimum-scale=1,initial-scale=1'
-      })
-    );
-  }
-
-  return documentProps;
-}
-
-export function isRedirect(obj: any): obj is IRenderResultRedirect {
-  return obj && (obj as IRenderResultRedirect).$type === 'redirect';
-}
-
 export abstract class BaseRenderer {
   protected _serverPluginContext: IServerPluginContext;
-  protected _documentTemplate: ReturnType<typeof parseTemplateFile>;
   protected _app?: IApplication;
 
   constructor({ serverPluginContext }: IRendererConstructorOptions) {
     this._serverPluginContext = serverPluginContext;
-    this._documentTemplate = parseTemplateFile(documentPath);
   }
 
-  async renderDocument({
+  abstract renderDocument({
     app,
     req
-  }: IRenderDocumentOptions): Promise<string | IRenderResultRedirect> {
-    const { context: appContext } = app;
-    this._app = app;
-    let docProps = await this.getDocumentProps({
-      app,
-      req
-    });
-
-    if (isRedirect(docProps)) {
-      return docProps;
-    }
-
-    const { document } = server;
-
-    if (document.onDocumentProps) {
-      docProps = await document.onDocumentProps(docProps, appContext);
-      invariant(
-        typeof docProps === 'object',
-        'onDocumentProps not returning object.'
-      );
-    }
-
-    docProps = await this._serverPluginContext.serverPluginRunner.modifyHtml(
-      docProps as IDocumentProps,
-      appContext
-    );
-
-    return this._renderDocument(
-      addDefaultHtmlTags(docProps),
-      document.getTemplateData ? document.getTemplateData(appContext) : {}
-    );
-  }
-
-  protected abstract getDocumentProps(
-    options: IRenderDocumentOptions
-  ):
-    | Promise<IDocumentProps | IRenderResultRedirect>
-    | IDocumentProps
-    | IRenderResultRedirect;
+  }: IRenderDocumentOptions):
+    | Promise<IHtmlDocument | Response>
+    | IHtmlDocument
+    | Response;
 
   protected _getMainAssetTags(): {
     styles: IHtmlTag<any>[];
@@ -209,25 +118,5 @@ export abstract class BaseRenderer {
       },
       htmlEscapeJsonString(data)
     );
-  }
-
-  private _renderDocument(
-    documentProps: IDocumentProps,
-    templateData: ITemplateData = {}
-  ) {
-    const htmlAttrs = stringifyAttrs(documentProps.htmlAttrs);
-    const head = documentProps.headTags.map(tag => stringifyTag(tag)).join('');
-    const main = documentProps.mainTags.map(tag => stringifyTag(tag)).join('');
-    const script = documentProps.scriptTags
-      .map(tag => stringifyTag(tag))
-      .join('');
-
-    return renderTemplate(this._documentTemplate, {
-      htmlAttrs,
-      head,
-      main,
-      script,
-      ...templateData
-    });
   }
 }

@@ -9,7 +9,8 @@ import {
   getRouteMatchesWithInvalidLoader,
   getLoaderManager,
   isRedirect,
-  isError
+  isResponse,
+  LoaderDataRecord
 } from '@shuvi/platform-shared/esm/runtime';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import {
@@ -78,49 +79,71 @@ export function createApp(options: {
     }
 
     const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
-    const _runLoaders = async () => {
-      return await runLoaders(matches, pageLoaders, {
-        isServer: false,
-        query: to.query,
-        getAppContext: () => app.context
-      });
-    };
-    const _preload = async () => {
-      let preloadError;
-      try {
-        await runPreload(to);
-      } catch (err) {
-        preloadError = err;
+    let isPreloadError = false;
+    try {
+      const loaderDatas = await new Promise<LoaderDataRecord>(
+        (resolve, reject) => {
+          let value: LoaderDataRecord;
+          let error: any;
+          let requireNum = 2;
+          let resolvedNum = 0;
+
+          const tryResolve = () => {
+            if (++resolvedNum === requireNum) {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(value);
+              }
+            }
+          };
+          // if preload has error, reject directly
+          runPreload(to)
+            .then(tryResolve)
+            .catch(err => {
+              isPreloadError = true;
+              reject(err);
+            });
+
+          runLoaders(matches, pageLoaders, {
+            isServer: false,
+            query: to.query,
+            getAppContext: () => app.context
+          })
+            .then(_value => {
+              value = _value;
+              tryResolve();
+            })
+            .catch(err => {
+              error = err;
+              tryResolve();
+            });
+        }
+      );
+      loaderManager.setDatas(loaderDatas);
+    } catch (error: any) {
+      if (isRedirect(error)) {
+        next(error.headers.get('Location')!);
+        return;
       }
-      return preloadError;
-    };
 
-    const [preloadError, loaderResult] = await Promise.all([
-      _preload(),
-      _runLoaders()
-    ]);
+      if (isResponse(error) && error.status >= 400 && error.status < 600) {
+        app.error.error({
+          code: error.status,
+          message: error.data
+        });
+        next();
+        return;
+      }
 
-    if (preloadError) {
-      app.error.error();
-      next();
-      return;
-    }
-
-    if (isRedirect(loaderResult)) {
-      next(loaderResult.headers.get('Location')!);
-      return;
-    }
-
-    if (isError(loaderResult)) {
       app.error.error({
-        code: loaderResult.status,
-        message: loaderResult.data
+        code: SHUVI_ERROR.APP_ERROR.code,
+        message:
+          error.message || isPreloadError ? 'Preload Error' : 'Loader Error'
       });
       next();
       return;
     }
-
-    loaderManager.setDatas(loaderResult);
 
     next(() => {
       app.error.clear();

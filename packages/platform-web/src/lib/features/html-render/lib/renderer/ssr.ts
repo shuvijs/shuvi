@@ -1,15 +1,16 @@
 import {
   IData,
-  getPublicRuntimeConfig
+  getPublicRuntimeConfig,
+  isResponse
 } from '@shuvi/platform-shared/lib/runtime';
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer, AppData } from './base';
 import { tag } from './htmlTag';
-import { IRenderDocumentOptions } from './types';
+import { IHtmlDocument, IRenderDocumentOptions } from './types';
 
 export class SsrRenderer extends BaseRenderer {
-  async getDocumentProps({ app, req }: IRenderDocumentOptions) {
+  async renderDocument({ app, req }: IRenderDocumentOptions) {
     const { router, context } = app;
 
     const serverPluginContext = this._serverPluginContext;
@@ -24,12 +25,9 @@ export class SsrRenderer extends BaseRenderer {
       manifest: clientManifest,
       getAssetPublicUrl
     });
-    if (result.redirect) {
-      return {
-        $type: 'redirect',
-        path: result.redirect.headers.get('Location')!,
-        status: result.redirect.status
-      } as const;
+
+    if (isResponse(result)) {
+      return result;
     }
 
     const mainAssetsTags = this._getMainAssetTags();
@@ -47,7 +45,7 @@ export class SsrRenderer extends BaseRenderer {
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 
-    const documentProps = {
+    const document: IHtmlDocument = {
       htmlAttrs: { ...result.htmlAttrs },
       headTags: [
         ...(result.headBeginTags || []),
@@ -57,7 +55,7 @@ export class SsrRenderer extends BaseRenderer {
       mainTags: [
         this._getInlineAppData(app, appData),
         ...(result.mainBeginTags || []),
-        this._getAppContainerTag(result.appHtml),
+        this._getAppContainerTag(result.content),
         ...(result.mainEndTags || [])
       ],
       scriptTags: [
@@ -72,7 +70,6 @@ export class SsrRenderer extends BaseRenderer {
       ]
     };
 
-    documentProps.mainTags.push();
-    return documentProps;
+    return document;
   }
 }

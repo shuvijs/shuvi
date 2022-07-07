@@ -20,21 +20,26 @@ export class ReactServerView implements IReactServerView {
   }) => {
     await Loadable.preloadAll();
 
-    const { storeManager, router, error, appComponent: AppComponent } = app;
+    const {
+      storeManager,
+      router,
+      error: appError,
+      appComponent: AppComponent
+    } = app;
     await router.ready;
 
+    // todo: move these into renderer
     let { pathname, matches, redirected } = router.current;
     // handler no matches
     if (!matches.length) {
-      error.error(SHUVI_ERROR.PAGE_NOT_FOUND);
+      appError.error(SHUVI_ERROR.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
-      return {
-        redirect: redirect(pathname)
-      };
+      return redirect(pathname);
     }
 
+    // todo: move loader into app, avoid using global module
     const loaderManager = getLoaderManager();
     const loadersData = await loaderManager.getAllData();
 
@@ -110,7 +115,7 @@ export class ReactServerView implements IReactServerView {
 
     return {
       appData,
-      appHtml: htmlContent,
+      content: htmlContent,
       htmlAttrs: {},
       headBeginTags: [...head, ...preloadDynamicChunks],
       headEndTags: [...styles],

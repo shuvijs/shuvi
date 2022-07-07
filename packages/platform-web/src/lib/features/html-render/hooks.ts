@@ -6,23 +6,20 @@ import {
 } from '@shuvi/hook';
 import { IAppContext } from '@shuvi/platform-shared/lib/runtime';
 import { IServerMiddleware } from '@shuvi/service';
-import { IDocumentProps } from './lib';
+import { IHtmlDocument } from './lib';
 
-export type IRenderToHTML = (
+export type IHandlePageRequest = (
   req: IncomingMessage,
   res: ServerResponse
-) => Promise<string | null>;
+) => any;
 
 const pageData = createAsyncParallelHook<
   void,
   IAppContext,
   Record<string, unknown>
 >();
-const renderToHTML = createAsyncSeriesWaterfallHook<IRenderToHTML>();
-const modifyHtml = createAsyncSeriesWaterfallHook<
-  IDocumentProps,
-  IAppContext
->();
+const handlePageRequest = createAsyncSeriesWaterfallHook<IHandlePageRequest>();
+const modifyHtml = createAsyncSeriesWaterfallHook<IHtmlDocument, IAppContext>();
 const addMiddleware = createSyncHook<
   void,
   void,
@@ -31,7 +28,7 @@ const addMiddleware = createSyncHook<
 
 export const extendedHooks = {
   pageData,
-  renderToHTML,
+  handlePageRequest,
   modifyHtml,
   addMiddleware
 };

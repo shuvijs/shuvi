@@ -1,21 +1,24 @@
+import invariant from '@shuvi/utils/lib/invariant';
 import { IRouteMatch, IPageRouteRecord } from '../routerTypes';
 import {
   Response,
-  isResponse,
   json as createJson,
-  error as createError,
   redirect as createRedirect,
-  isError,
-  isRedirect
+  response
 } from '../response';
 import { Loader, LoaderContextOptions, LoaderDataRecord } from './types';
+
+interface Result<T> {
+  error?: unknown;
+  result?: T;
+}
 
 // todo: add unit tests
 export async function runInParallerAndBail<T>(
   fns: Array<() => Promise<T> | T>
-) {
-  return new Promise<T[]>(resolve => {
-    const result: T[] = [];
+): Promise<Result<T>[]> {
+  return new Promise<Result<T>[]>(resolve => {
+    const resultList: Result<T>[] = [];
     let total = fns.length;
     let finishedNum = 0;
     let finished = new Map<number, boolean>();
@@ -23,7 +26,7 @@ export async function runInParallerAndBail<T>(
 
     const doResolve = () => {
       abort = true;
-      resolve(result.slice());
+      resolve(resultList.slice());
     };
     const isAllFinishedBefore = (targetIndex: number) => {
       for (let i = 0; i < targetIndex; i++) {
@@ -36,19 +39,28 @@ export async function runInParallerAndBail<T>(
 
     // call loaders in parallel
     fns.map(async (fn, index) => {
-      const value = await fn();
+      let result: T | undefined;
+      let error: unknown | undefined;
+      try {
+        result = await fn();
+      } catch (err: unknown) {
+        error = err;
+      }
 
       if (abort) return;
 
-      result[index] = value;
+      resultList[index] = {
+        error,
+        result
+      };
       finishedNum += 1;
       finished.set(index, true);
 
       if (finishedNum === total) {
         doResolve();
       } else if (finishedNum === index + 1 && isAllFinishedBefore(index)) {
-        if (isRedirect(value) || isError(value)) {
-          // we have a response of bailed type
+        if (error) {
+          // we can bail
           doResolve();
         }
       }
@@ -56,11 +68,24 @@ export async function runInParallerAndBail<T>(
   });
 }
 
+function redirectHelper(to: string, status: number = 302) {
+  throw createRedirect(to, status);
+}
+
+function errorHelper(msg?: string, statusCode: number = 500) {
+  invariant(
+    statusCode >= 400 && statusCode < 600,
+    'status code should be 4xx and 5xx'
+  );
+
+  throw response(msg, { status: statusCode });
+}
+
 export async function runLoaders(
   matches: IRouteMatch<IPageRouteRecord>[],
   loadersByRouteId: Record<string, Loader>,
   { isServer, query, req, getAppContext }: LoaderContextOptions
-): Promise<Response | LoaderDataRecord> {
+): Promise<LoaderDataRecord> {
   if (!matches.length) {
     return [];
   }
@@ -75,21 +100,20 @@ export async function runLoaders(
         pathname: match.pathname,
         params: match.params,
         query: query,
-        redirect: createRedirect,
-        error: createError,
+        redirect: redirectHelper,
+        error: errorHelper,
         appContext,
         ...(req ? { req } : {})
       });
-      if (isResponse(value)) {
-        res = value;
-      } else if (value) {
+      if (value) {
         res = createJson(value);
       }
     } catch (error) {
-      let errorMessage = `loader function error of route "${match.route.path}"`;
-      console.error(errorMessage);
-      console.error(error);
-      res = createError();
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`loader function error of route "${match.route.path}"`);
+        console.error(error);
+      }
+      throw error;
     }
 
     return res;
@@ -101,17 +125,13 @@ export async function runLoaders(
 
   for (let index = 0; index < resultList.length; index++) {
     const item = resultList[index];
-    if (isRedirect(item)) {
-      return item;
-    }
-
-    if (isError(item)) {
-      return item;
+    if (item.error) {
+      throw item.error;
     }
 
     const routeId = matches[index].route.id;
-    if (item) {
-      loaderDatas[routeId] = (item as Response).data;
+    if (item.result) {
+      loaderDatas[routeId] = item.result.data;
     } else {
       // allow return undefined
       loaderDatas[routeId] = undefined;

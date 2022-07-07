@@ -87,7 +87,7 @@ export interface IServerRendererOptions extends IRenderOptions {
   getAssetPublicUrl(path: string): string;
 }
 
-export type IRenderAppResult<ExtraAppData = {}> = {
+export type IRenderAppServerResult<ExtraAppData = {}> = {
   htmlAttrs?: IHtmlAttrs;
   headBeginTags?: IHtmlTag[];
   headEndTags?: IHtmlTag[];
@@ -96,8 +96,7 @@ export type IRenderAppResult<ExtraAppData = {}> = {
   scriptBeginTags?: IHtmlTag[];
   scriptEndTags?: IHtmlTag[];
   appData?: ExtraAppData;
-  redirect?: Response;
-  appHtml?: string;
+  content?: string;
 };
 
 export interface IView<
@@ -113,7 +112,7 @@ export interface IViewClient<ExtraAppData = {}>
 export interface IViewServer<ExtraAppData = {}>
   extends IView<
     IServerRendererOptions,
-    Promise<IRenderAppResult<ExtraAppData>>
+    Promise<IRenderAppServerResult<ExtraAppData> | Response>
   > {}
 
 export interface CreateServerApp {

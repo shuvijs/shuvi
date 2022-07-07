@@ -11,10 +11,10 @@ import { extendedHooks } from './hooks';
 import { ifComponentHasLoader } from './lib';
 import { getRoutes } from '../filesystem-routes';
 
-export { IRenderToHTML } from './hooks';
+export { IHandlePageRequest } from './hooks';
 export {
   getSSRMiddleware,
-  IDocumentProps,
+  IHtmlDocument,
   ITemplateData,
   IViewServer,
   IViewClient
