@@ -1,7 +1,7 @@
 import { createServerPlugin, ServerPluginInstance } from '@shuvi/service';
 
 export default createServerPlugin({
-  onListen: () => {
+  listen: () => {
     console.warn('plugin-no-exports server');
   }
 }) as ServerPluginInstance;

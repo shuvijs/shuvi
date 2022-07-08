@@ -35,7 +35,7 @@ export class ShuviDevServer extends ShuviServer {
     const publicDirMiddleware = getPublicDirMiddleware(context);
     const devMiddleware = await getDevMiddleware(context);
     await devMiddleware.waitUntilValid();
-    const proxy = (await context.serverPluginRunner.addProxy()).flat();
+    const proxy = [];
     let proxyFromConfig = context.config.proxy;
     if (proxyFromConfig && typeof proxyFromConfig === 'object') {
       if (Array.isArray(proxyFromConfig)) {
