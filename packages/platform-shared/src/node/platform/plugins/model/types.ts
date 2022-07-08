@@ -9,6 +9,6 @@ declare module '@shuvi/runtime' {
   }
 
   export interface CustomServerPluginHooks {
-    pageData: AsyncParallelHook<void, IAppContext, Record<string, unknown>>;
+    getPageData: AsyncParallelHook<void, IAppContext, Record<string, unknown>>;
   }
 }

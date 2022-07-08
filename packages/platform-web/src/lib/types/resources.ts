@@ -3,16 +3,9 @@ import {
   IServerMiddleware,
   ServerPluginConstructor
 } from '@shuvi/service';
-import {
-  IAppContext,
-  CreateServerApp
-} from '@shuvi/platform-shared/lib/runtime';
+import { CreateServerApp } from '@shuvi/platform-shared/lib/runtime';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-import {
-  IHtmlDocument,
-  ITemplateData,
-  IViewServer
-} from '../features/html-render';
+import { IViewServer } from '../features/html-render';
 import { IApiRequestHandler } from '../features/filesystem-routes';
 import '../features/html-render/types';
 
@@ -39,23 +32,11 @@ export type IMiddlewareRoutes = {
   middlewares: IRequestHandlerWithNext[];
 }[];
 
-export interface IDocumentModule {
-  onDocumentProps(
-    documentProps: IHtmlDocument,
-    context: IAppContext
-  ): Promise<IHtmlDocument> | IHtmlDocument;
-  getTemplateData(context: IAppContext): Promise<ITemplateData> | ITemplateData;
-}
-
 export interface IServerModule {
   middlewares?: IServerMiddleware | IServerMiddleware[];
-  getPageData?: ServerPluginConstructor['pageData'];
+  getPageData?: ServerPluginConstructor['getPageData'];
   handlePageRequest?: ServerPluginConstructor['handlePageRequest'];
-  /**
-   *  we already have onDocumentProps in document.js,
-   *  for simplicity, we don't need to add it here.
-   */
-  // modifyHtml?: ServerPluginConstructor['modifyHtml'];
+  modifyHtml?: ServerPluginConstructor['modifyHtml'];
 }
 
 declare module '@shuvi/service/lib/resources' {
@@ -66,7 +47,6 @@ declare module '@shuvi/service/lib/resources' {
     application: {
       createApp: CreateServerApp;
     };
-    document: Partial<IDocumentModule>;
     view: IViewServer;
   };
   export const documentPath: string;

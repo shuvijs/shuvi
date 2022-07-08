@@ -1,4 +1,3 @@
-import invariant from '@shuvi/utils/lib/invariant';
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
 import { Response, isResponse, text } from '@shuvi/platform-shared/lib/runtime';
@@ -51,7 +50,7 @@ export async function renderToHTML({
 }): Promise<Response> {
   let result: Response;
   const renderer = new Renderer({ serverPluginContext });
-  const { application, document } = server;
+  const { application } = server;
   const app = application.createApp({
     req,
     ssr: serverPluginContext.config.ssr
@@ -69,23 +68,8 @@ export async function renderToHTML({
       result = doc;
     } else {
       addEssentialTagsIfMissing(doc);
-
-      if (document.onDocumentProps) {
-        doc = await document.onDocumentProps(doc, app.context);
-        invariant(
-          typeof doc === 'object',
-          'onDocumentProps not returning object.'
-        );
-      }
-      doc = await serverPluginContext.serverPluginRunner.modifyHtml(
-        doc,
-        app.context
-      );
-
-      const htmlStr = renderer.renderDocumentToString(
-        doc,
-        document.getTemplateData ? document.getTemplateData(app.context) : {}
-      );
+      await serverPluginContext.serverPluginRunner.modifyHtml(doc, app.context);
+      const htmlStr = renderer.renderDocumentToString(doc);
       const appError = app.error.getError();
       result = text(htmlStr, {
         status:

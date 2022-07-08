@@ -6,10 +6,10 @@ export default createServerPlugin({
   setup: ({ addHooks }) => {
     addHooks(extendedHooks);
   },
-  addMiddleware: () => {
+  middlewares: () => {
     return server?.server?.middlewares || [];
   },
-  pageData: (appContext, context) => {
+  getPageData: (appContext, context) => {
     return server?.server?.getPageData?.(appContext, context) || {};
   },
   handlePageRequest: (originalHandlePageRequest, context) => {
@@ -17,5 +17,8 @@ export default createServerPlugin({
       server?.server?.handlePageRequest?.(originalHandlePageRequest, context) ||
       originalHandlePageRequest
     );
+  },
+  modifyHtml: async (document, context, pluginContext) => {
+    await server?.server?.modifyHtml?.(document, context, pluginContext);
   }
 });

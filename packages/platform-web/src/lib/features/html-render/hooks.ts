@@ -13,22 +13,22 @@ export type IHandlePageRequest = (
   res: ServerResponse
 ) => any;
 
-const pageData = createAsyncParallelHook<
+const middlewares = createSyncHook<
+  void,
+  void,
+  IServerMiddleware | IServerMiddleware[]
+>();
+const getPageData = createAsyncParallelHook<
   void,
   IAppContext,
   Record<string, unknown>
 >();
 const handlePageRequest = createAsyncSeriesWaterfallHook<IHandlePageRequest>();
-const modifyHtml = createAsyncSeriesWaterfallHook<IHtmlDocument, IAppContext>();
-const addMiddleware = createSyncHook<
-  void,
-  void,
-  IServerMiddleware | IServerMiddleware[]
->();
+const modifyHtml = createAsyncParallelHook<IHtmlDocument, IAppContext>();
 
 export const extendedHooks = {
-  pageData,
+  middlewares,
+  getPageData,
   handlePageRequest,
-  modifyHtml,
-  addMiddleware
+  modifyHtml
 };

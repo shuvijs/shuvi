@@ -1,7 +1,7 @@
 import { createServerPlugin, ServerPluginInstance } from '@shuvi/service';
 
 export default createServerPlugin({
-  pageData: appContext => {
+  getPageData: appContext => {
     const { storeManager } = appContext;
     delete appContext.storeManager;
     return {

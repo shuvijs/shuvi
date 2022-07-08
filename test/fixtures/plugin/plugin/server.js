@@ -2,7 +2,7 @@ const { createServerPlugin } = require('@shuvi/service');
 
 module.exports = option =>
   createServerPlugin({
-    pageData: () => {
+    getPageData: () => {
       return {
         foo: 'bar' + option.world
       };

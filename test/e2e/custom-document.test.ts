@@ -19,25 +19,6 @@ describe('custom/document.ejs', () => {
   test('should work', async () => {
     page = await ctx.browser.page(ctx.url('/'));
 
-    expect(await page.$attr('body', 'test')).toBe('1');
-  });
-});
-
-describe('custom/document.js', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('custom-document');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-  afterEach(async () => {
-    await page.close();
-  });
-
-  test('should work', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
-
-    expect(await page.$attr('meta[name="test"]', 'content')).toBe('1');
-    expect(await page.$attr('body', 'test')).toBe('1');
+    expect(await page.$attr('body', 'test')).toBe('test');
   });
 });
