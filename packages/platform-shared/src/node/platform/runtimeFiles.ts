@@ -15,7 +15,7 @@ export const getRuntimeConfigFromConfig = async (
 
 /**
  * A creator for `getPresetRuntimeFiles` which helps platforms to build a bunch of runtime files including
- * `core/app`, `core/error`, `core/platform`, `core/plugins`, `core/polyfill`, `core/runtimeConfig`, `core/setRuntimeConfig`,
+ * `core/error`, `core/platform`, `core/plugins`, `core/polyfill`, `core/runtimeConfig`, `core/setRuntimeConfig`,
  * `user/error`, `user/runtime` and `entry`
  */
 export const getPresetRuntimeFilesCreator =
