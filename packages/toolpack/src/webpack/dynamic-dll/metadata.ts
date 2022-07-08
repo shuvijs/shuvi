@@ -1,7 +1,8 @@
 import { join } from 'path';
 import { existsSync, readJSONSync, writeJSONSync } from 'fs-extra';
-import { METADATA_FILENAME, UPDATE_FILENAME } from '../../constants';
-import { ModuleInfo } from '@shuvi/toolpack/lib/webpack';
+
+import { METADATA_FILENAME, UPDATE_FILENAME } from './constants';
+import { ModuleInfo } from './moduleCollector';
 import { getDllDir } from './utils';
 
 export interface Metadata {

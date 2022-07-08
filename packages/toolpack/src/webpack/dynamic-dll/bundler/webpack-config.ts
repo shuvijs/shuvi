@@ -1,8 +1,9 @@
-import * as path from 'path';
-import webpack, { WebpackChain } from '@shuvi/toolpack/lib/webpack';
-import type { Configuration } from '@shuvi/toolpack/lib/webpack';
+import path from 'path';
+import webpack from 'webpack';
+import WebpackChain from 'webpack-chain';
+import type { Configuration } from 'webpack';
 
-export type ShareConfig = Record<string, any>;
+type ShareConfig = Record<string, any>;
 
 export interface ConfigOptions {
   name: string;
@@ -101,7 +102,7 @@ export function getConfig({
       target: 'es2015' // Syntax to compile to (see options below for possible values)
     });
 
-  const DLL_VERSION = require('../../../package.json').version;
+  const DLL_VERSION = require('../../../../package.json').version;
 
   const stringifiedConfig = Object.entries({
     esmFullSpecific,

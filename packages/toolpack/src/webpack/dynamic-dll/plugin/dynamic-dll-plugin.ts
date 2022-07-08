@@ -1,10 +1,10 @@
-import type { Compiler, Stats } from '../../index';
+import type { Compiler, Stats } from 'webpack';
 import {
   getModuleCollector,
   ModuleCollector,
   ModuleCollectorOptions,
   ModuleSnapshot
-} from './moduleCollector';
+} from '../moduleCollector';
 
 export type SnapshotListener = (snapshot: ModuleSnapshot) => void;
 

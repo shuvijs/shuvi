@@ -1,30 +1,15 @@
-import { Configuration, WebpackChain } from '@shuvi/toolpack/lib/webpack';
-import * as path from 'path';
-import { createHash } from 'crypto';
-import {
-  removeSync,
-  renameSync,
-  existsSync,
-  writeFileSync,
-  writeFile,
-  mkdirpSync,
-  emptyDirSync
-} from 'fs-extra';
+import { WebpackChain, DynamicDll } from '@shuvi/toolpack/lib/webpack';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
   createCodeFrameFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import Logger from '@shuvi/utils/lib/logger';
-import invariant from '@shuvi/utils/lib/invariant';
 import { inspect } from 'util';
 import webpack, {
   MultiCompiler as WebapckMultiCompiler,
   Compiler as WebapckCompiler,
-  webpackPath,
-  WebpackVirtualModules,
-  DynamicDLLPlugin,
-  ModuleSnapshot
+  webpackPath
 } from '@shuvi/toolpack/lib/webpack';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IPluginContext } from '../core';
@@ -32,29 +17,8 @@ import { Target, TargetChain } from '../core/lifecycle';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import {
-  BUILD_DEFAULT_DIR,
-  DLL_NAME,
-  DEFAULT_DLL_PUBLIC_PATH,
-  DLL_FILENAME,
-  DEFAULT_TMP_DIR_NAME
-} from '../constants';
+import { BUILD_DEFAULT_DIR } from '../constants';
 import { setupTypeScript } from './typescript';
-import {
-  isString,
-  isArray,
-  writeUpdate,
-  getMetadata,
-  checkNotInNodeModules,
-  Metadata,
-  writeMetadata,
-  getDllDir,
-  getDllPendingDir,
-  getDepsDir,
-  Dep,
-  version,
-  getConfig
-} from './dynamicDll';
 
 type CompilerErr = {
   moduleName: string;
@@ -65,23 +29,10 @@ type CompilerDiagnostics = {
   warnings: CompilerErr[];
 };
 
-type ShareConfig = Record<string, any>;
-
-type OnBuildComplete = (error?: null | Error) => void;
 interface WatchTargetOptions {
   typeChecking?: boolean;
   onErrors?(errors: CompilerErr[]): void;
   onWarns?(warns: CompilerErr[]): void;
-}
-interface BuildOptions {
-  outputDir: string;
-  configWebpack?: (chain: WebpackChain) => WebpackChain;
-  shared?: ShareConfig;
-  externals?: Configuration['externals'];
-  esmFullSpecific?: Boolean;
-  force?: boolean;
-  deps?: any;
-  entry?: any;
 }
 
 export interface NormalizedBundlerOptions {
@@ -98,204 +49,70 @@ const logger = Logger('shuvi:bundler');
 
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
-function getHash(text: string): string {
-  return createHash('sha256').update(text).digest('hex').substring(0, 8);
-}
-
-/**
- * hash everything that can change the build result
- *
- * @param {BuildOptions} options
- * @returns {string}
- */
-function getMainHash(options: BuildOptions): string {
-  let content = JSON.stringify({
-    shared: options.shared
-  });
-  return getHash([version, content].join(''));
-}
-
-function getBuildHash(hash: string, snapshot: ModuleSnapshot) {
-  return getHash(hash + JSON.stringify(snapshot));
-}
-
-function isSnapshotSame(pre: ModuleSnapshot, cur: ModuleSnapshot): boolean {
-  const keys = Object.keys(cur);
-
-  for (let index = 0; index < keys.length; index++) {
-    const id = keys[index];
-    const preItem = pre[id];
-    const nextItem = cur[id];
-    if (!preItem) {
-      return false;
-    }
-
-    if (preItem.version !== nextItem.version) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-async function buildDeps({ deps, dir }: { deps: Dep[]; dir: string }) {
-  mkdirpSync(dir);
-
-  // expose files
-  await Promise.all(
-    deps.map(async dep => {
-      const content = await dep.buildExposeContent();
-      await writeFile(dep.filename, content, 'utf-8');
-    })
-  );
-
-  // index file
-  writeFileSync(
-    path.join(dir, 'index.js'),
-    'export default "dynamicDll index.js";',
-    'utf-8'
-  );
-
-  return deps;
-}
-
-function getWebpackConfig({
-  deps,
-  entry,
-  outputDir,
-  shared,
-  externals,
-  esmFullSpecific
-}: {
-  deps: Dep[];
-  entry: string;
-  outputDir: string;
-  shared?: ShareConfig;
-  externals: Configuration['externals'];
-  esmFullSpecific: Boolean;
-}) {
-  const exposes = deps.reduce<Record<string, string>>((memo, dep) => {
-    memo[`./${dep.request}`] = dep.filename;
-    return memo;
-  }, {});
-
-  const chain = getConfig({
-    name: DLL_NAME,
-    entry,
-    filename: DLL_FILENAME,
-    outputDir,
-    publicPath: DEFAULT_DLL_PUBLIC_PATH,
-    shared,
-    externals,
-    esmFullSpecific,
-    exposes
-  });
-
-  return chain.toConfig();
-}
-
 class WebpackBundler {
   private _cliContext: IPluginContext;
   private _compiler: WebapckMultiCompiler | null = null;
   private _options: NormalizedBundlerOptions;
   private _targets: Target[] = [];
-  private _hasBuilt: boolean = false;
-  private _dllPlugin: DynamicDLLPlugin | null = null;
-  private _dirDll: string;
-  private _nextBuild: ModuleSnapshot | undefined = undefined;
-  private _completeFns: OnBuildComplete[] = [];
-  private _isBuilding = false;
 
   constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
     this._options = options;
     this._cliContext = cliContext;
-    this._dirDll = path.join(
-      this._cliContext.paths.rootDir,
-      DEFAULT_TMP_DIR_NAME
-    );
   }
 
-  async getWebpackCompiler(opts?: {
-    deps: Dep[];
-    entry: string;
-    outputDir: string;
-    shared?: ShareConfig;
-    externals: Configuration['externals'];
-    esmFullSpecific: Boolean;
-  }): Promise<WebapckMultiCompiler> {
+  async getWebpackCompiler(
+    dynamicDll?: DynamicDll | null
+  ): Promise<WebapckMultiCompiler> {
     const ignoreTypeScriptErrors = this._options.ignoreTypeScriptErrors;
-    this._targets = await this._getTargets();
-    if (this._cliContext.config.experimental.preBundle) {
-      this._compiler = webpack(
-        this._targets.map(({ config }) => {
-          if (config.target === 'node') {
-            return config;
-          }
-          if (opts !== undefined) {
-            return getWebpackConfig(opts);
-          } else {
-            const { asyncEntry, virtualModules } = this._makeAsyncEntry(
-              config.entry
-            );
-            config.entry = asyncEntry;
-            if (!config.plugins) {
-              config.plugins = [];
+    if (!this._compiler) {
+      this._targets = await this._getTargets();
+      if (this._cliContext.config.experimental.preBundle) {
+        this._compiler = webpack(
+          this._targets.map(({ config }) => {
+            if (config.target === 'node') {
+              return config;
             }
-            this._dllPlugin = new DynamicDLLPlugin({
-              exclude: [/webpack-hot-middleware\/client/, /react-refresh/],
-              dllName: DLL_NAME,
-              resolveWebpackModule: require,
-              onSnapshot: this.handleSnapshot
-            });
-
-            config.plugins.push(
-              new WebpackVirtualModules(virtualModules),
-              new webpack.container.ModuleFederationPlugin(this._getMFconfig()),
-              this._dllPlugin
-            );
-            return config;
-          }
-        })
-      );
-    } else {
-      if (!this._compiler) {
+            return dynamicDll ? dynamicDll.modifyWebpack(config) : config;
+          })
+        );
+      } else {
         this._compiler = webpack(this._targets.map(t => t.config));
       }
-    }
 
-    let isFirstSuccessfulCompile = true;
-    if (ignoreTypeScriptErrors) {
-      console.log('Skipping validation of types');
-      this._compiler.compilers.forEach(compiler => {
-        ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
-          'afterTypeScriptCheck',
-          (issues: Issue[]) => issues.filter(msg => msg.severity !== 'error')
-        );
-      });
-    }
-
-    this._compiler.hooks.done.tap('done', async stats => {
-      const warnings: webpack.StatsError[] = [];
-      const errors: webpack.StatsError[] = [];
-      stats.stats.forEach(s => {
-        const statsData = s.toJson({
-          all: false,
-          warnings: true,
-          errors: true
+      let isFirstSuccessfulCompile = true;
+      if (ignoreTypeScriptErrors) {
+        console.log('Skipping validation of types');
+        this._compiler.compilers.forEach(compiler => {
+          ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
+            'afterTypeScriptCheck',
+            (issues: Issue[]) => issues.filter(msg => msg.severity !== 'error')
+          );
         });
-        warnings.push(...(statsData.warnings || []));
-        errors.push(...(statsData.errors || []));
-      });
-
-      const isSuccessful = !warnings.length && !errors.length;
-      if (isSuccessful) {
-        setImmediate(first => {
-          // make sure this event is fired after all bundler:target-done
-          this._cliContext.pluginRunner.afterBundlerDone({ first, stats });
-        }, isFirstSuccessfulCompile);
-        isFirstSuccessfulCompile = false;
       }
-    });
+
+      this._compiler.hooks.done.tap('done', async stats => {
+        const warnings: webpack.StatsError[] = [];
+        const errors: webpack.StatsError[] = [];
+        stats.stats.forEach(s => {
+          const statsData = s.toJson({
+            all: false,
+            warnings: true,
+            errors: true
+          });
+          warnings.push(...(statsData.warnings || []));
+          errors.push(...(statsData.errors || []));
+        });
+
+        const isSuccessful = !warnings.length && !errors.length;
+        if (isSuccessful) {
+          setImmediate(first => {
+            // make sure this event is fired after all bundler:target-done
+            this._cliContext.pluginRunner.afterBundlerDone({ first, stats });
+          }, isFirstSuccessfulCompile);
+          isFirstSuccessfulCompile = false;
+        }
+      });
+    }
 
     return this._compiler!;
   }
@@ -334,10 +151,7 @@ class WebpackBundler {
     });
   }
 
-  async build(
-    snapshot?: ModuleSnapshot,
-    options?: BuildOptions
-  ): Promise<BundlerResult> {
+  async build(): Promise<BundlerResult> {
     const compiler = await this.getWebpackCompiler();
     return runCompiler(compiler);
   }
@@ -534,223 +348,6 @@ class WebpackBundler {
       }
     }
     return targets;
-  }
-
-  private _makeAsyncEntry(entry: any) {
-    const asyncEntry: Record<string, string> = {};
-    const virtualModules: Record<string, string> = {};
-    const entryObject = (
-      isString(entry) || isArray(entry)
-        ? { main: ([] as any).concat(entry) }
-        : entry
-    ) as Record<string, string[]>;
-
-    for (const key of Object.keys(entryObject)) {
-      const virtualPath = `./dynamic-dll-virtual-entry/${key}.js`;
-      const virtualContent: string[] = [];
-      const entryFiles = isArray(entryObject[key])
-        ? entryObject[key]
-        : ([entryObject[key]] as unknown as string[]);
-      for (let entry of entryFiles) {
-        invariant(isString(entry), 'wepback entry must be a string');
-        virtualContent.push(`import('${entry}');`);
-      }
-      virtualModules[virtualPath] = virtualContent.join('\n');
-      asyncEntry[key] = virtualPath;
-    }
-
-    return {
-      asyncEntry,
-      virtualModules
-    };
-  }
-
-  private _getMFconfig() {
-    return {
-      name: '__',
-      remotes: {
-        // [NAME]: `${NAME}@${DETAULT_PUBLIC_PATH}${DLL_FILENAME}`,
-        // https://webpack.js.org/concepts/module-federation/#promise-based-dynamic-remotes
-        [DLL_NAME]: `
-promise new Promise(resolve => {
-  const remoteUrl = '${DEFAULT_DLL_PUBLIC_PATH}${DLL_FILENAME}';
-  const script = document.createElement('script');
-  script.src = remoteUrl;
-  script.onload = () => {
-    // the injected script has loaded and is available on window
-    // we can now resolve this Promise
-    const proxy = {
-      get: (request) => {
-        const promise = window['${DLL_NAME}'].get(request);
-        return promise;
-      },
-      init: (arg) => {
-        try {
-          return window['${DLL_NAME}'].init(arg);
-        } catch(e) {
-          console.log('remote container already initialized');
-        }
-      }
-    }
-    resolve(proxy);
-  }
-  // inject this script with the src set to the versioned remoteEntry.js
-  document.head.appendChild(script);
-})`.trim()
-      }
-    };
-  }
-
-  private getRemovedModules(
-    snapshot: ModuleSnapshot,
-    originModules: ModuleSnapshot
-  ) {
-    return Object.keys(originModules).filter(key => {
-      if (snapshot[key]) {
-        return false;
-      }
-      return checkNotInNodeModules(key, this._cliContext.paths.rootDir);
-    });
-  }
-
-  private handleSnapshot = async (snapshot: ModuleSnapshot) => {
-    if (this._hasBuilt) {
-      writeUpdate(this._dirDll, snapshot);
-      return;
-    }
-    const originModules = getMetadata(this._dirDll).modules;
-    const diffNames = this.getRemovedModules(snapshot, originModules);
-    const requiredSnapshot = { ...originModules, ...snapshot };
-
-    diffNames.forEach(lib => {
-      delete requiredSnapshot[lib];
-    });
-
-    if (this._isBuilding) {
-      this._nextBuild = snapshot;
-      return;
-    }
-
-    let error: any = null;
-    this._isBuilding = true;
-    let hasBuild: boolean = false;
-    let timer = new Date().getTime();
-    try {
-      [hasBuild] = await this._buildDll(snapshot, {
-        outputDir: this._dirDll,
-        force: process.env.DLL_FORCE_BUILD === 'true'
-      });
-    } catch (err) {
-      error = err;
-    }
-
-    this._isBuilding = false;
-
-    if (error) {
-      console.error(`[@shuvi/dll]: Bundle Error`);
-      console.error(error);
-    }
-
-    this._completeFns.forEach(fn => fn(error));
-    this._completeFns = [];
-
-    if (hasBuild) {
-      console.log(
-        `[@shuvi/dll]: Bundle Success, cost ${new Date().getTime() - timer}ms`
-      );
-      timer = new Date().getTime();
-    }
-
-    this._dllPlugin!.disableDllReference();
-    this._hasBuilt = true;
-  };
-
-  private async _buildDll(
-    snapshot: ModuleSnapshot,
-    options: BuildOptions
-  ): Promise<[boolean, Metadata]> {
-    const {
-      externals = {},
-      shared = {},
-      outputDir,
-      force,
-      esmFullSpecific = true
-    } = options;
-
-    const mainHash = getMainHash(options);
-    const dllDir = getDllDir(outputDir);
-    const preMetadata = getMetadata(outputDir);
-    const metadata: Metadata = {
-      hash: mainHash,
-      buildHash: preMetadata.buildHash,
-      modules: snapshot
-    };
-
-    if (
-      !force &&
-      preMetadata.hash === metadata.hash &&
-      isSnapshotSame(preMetadata.modules, snapshot)
-    ) {
-      return [false, preMetadata];
-    }
-
-    const dllPendingDir = getDllPendingDir(outputDir);
-
-    // create a temporal dir to build. This avoids leaving the dll
-    // in a corrupted state if there is an error during the build
-    if (existsSync(dllPendingDir)) {
-      emptyDirSync(dllPendingDir);
-    }
-
-    const depsDir = getDepsDir(dllPendingDir);
-    const deps = Object.entries(snapshot).map(
-      ([request, { version, libraryPath }]) => {
-        return new Dep({
-          request,
-          libraryPath,
-          version,
-          outputPath: depsDir
-        });
-      }
-    );
-    await buildDeps({
-      deps,
-      dir: depsDir
-    });
-    let timer = new Date().getTime();
-    await runCompiler(
-      await this.getWebpackCompiler({
-        deps,
-        entry: path.join(depsDir, 'index.js'),
-        shared,
-        externals,
-        esmFullSpecific,
-        outputDir: dllPendingDir
-      })
-    );
-    console.log(`[dll Bundle time]: ${new Date().getTime() - timer}ms`);
-
-    if (this._nextBuild) {
-      const param = this._nextBuild;
-      this._nextBuild = undefined;
-      return await this._buildDll(param, options);
-    }
-    metadata.buildHash = getBuildHash(metadata.hash, snapshot);
-
-    // finish build
-    writeMetadata(dllPendingDir, metadata);
-    removeSync(dllDir);
-    renameSync(dllPendingDir, dllDir);
-
-    return [true, metadata];
-  }
-
-  onBuildComplete(fn: OnBuildComplete) {
-    if (this._isBuilding) {
-      this._completeFns.push(fn);
-    } else {
-      fn();
-    }
   }
 }
 

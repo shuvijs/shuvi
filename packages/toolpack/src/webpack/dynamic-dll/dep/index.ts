@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { MF_VA_PREFIX } from '../../../constants';
+import { MF_VA_PREFIX } from '../constants';
 import { getExposeFromContent } from './getExposeFromContent';
 
 function trimFileContent(content: string) {

@@ -25,6 +25,5 @@ test/packages/*/esm/
 
 test/fixtures/**/dist/
 test/fixtures/**/.shuvi/
-test/fixtures/**/.dll/
 examples/**/.shuvi
 examples/**/dist

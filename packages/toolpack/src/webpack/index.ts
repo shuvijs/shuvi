@@ -4,8 +4,7 @@ export { webpack as default };
 import WebpackDevMiddleware from 'webpack-dev-middleware';
 export { WebpackDevMiddleware };
 export { WebpackChain } from './config';
-export { WebpackVirtualModules } from './plugins/webpack-virtual-modules-plugin';
-export * from './plugins/dynamic-dll-plugin';
+export { DynamicDll } from './dynamic-dll';
 /**
  * re-export for shuvi plugin
  */

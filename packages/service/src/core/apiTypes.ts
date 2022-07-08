@@ -67,6 +67,9 @@ export interface IPaths {
   //resources file
   resources: string;
 
+  //cache file
+  cacheDir: string;
+
   // user src dir
   srcDir: string;
 
