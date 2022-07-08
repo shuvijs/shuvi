@@ -22,7 +22,7 @@ module.exports = option =>
         console.log('test-handle-page-request');
       };
     },
-    onListen: () => {
+    listen: () => {
       console.warn('onListen');
     }
   });

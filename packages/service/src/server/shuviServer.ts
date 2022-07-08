@@ -46,7 +46,7 @@ export abstract class ShuviServer implements IShuviServer {
 
   async listen(port: number, hostname?: string) {
     await this._server.listen(port, hostname);
-    await this._pluginManager.runner.onListen({ port, hostname });
+    await this._pluginManager.runner.listen({ port, hostname });
   }
 
   async close() {

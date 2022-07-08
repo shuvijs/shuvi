@@ -7,7 +7,6 @@ import {
 } from '@shuvi/hook';
 import { CustomServerPluginHooks } from '@shuvi/runtime';
 import { IPluginContext } from '../core';
-import { IProxy } from './pluginTypes';
 
 export * from './pluginTypes';
 
@@ -19,13 +18,10 @@ export type PluginManager = ReturnType<typeof getManager>;
 
 export type PluginRunner = PluginManager['runner'];
 
-const onListen = createAsyncParallelHook<{ port: number; hostname?: string }>();
-
-const addProxy = createAsyncParallelHook<void, void, IProxy>();
+const listen = createAsyncParallelHook<{ port: number; hostname?: string }>();
 
 const internalHooks = {
-  addProxy,
-  onListen
+  listen
 };
 
 export type InternalServerPluginHooks = typeof internalHooks;
