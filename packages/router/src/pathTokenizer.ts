@@ -18,7 +18,7 @@ interface TokenStatic {
   value: string;
 }
 
-interface TokenParam {
+export interface TokenParam {
   type: TokenType.Param;
   regexp?: string;
   value: string;
@@ -36,14 +36,6 @@ export type Token = TokenStatic | TokenParam | TokenGroup;
 const ROOT_TOKEN: Token = {
   type: TokenType.Static,
   value: ''
-};
-
-export const WILDCARD_TOKEN: TokenParam = {
-  type: TokenType.Param,
-  value: '*',
-  regexp: '',
-  repeatable: true,
-  optional: true
 };
 
 const VALID_PARAM_RE = /[a-zA-Z0-9_]/;
@@ -198,38 +190,6 @@ export function tokenizePath(path: string): Array<Token[]> {
   finalizeSegment();
 
   // tokenCache.set(path, tokens)
-
-  // end with *, eg: /* /a* /a/*
-  const lastTokenGroup = tokens[tokens.length - 1];
-  if (lastTokenGroup) {
-    const lastToken = lastTokenGroup[lastTokenGroup.length - 1];
-    if (lastToken) {
-      if (lastToken.type === TokenType.Static) {
-        if (lastToken.value === WILDCARD_TOKEN.value) {
-          lastTokenGroup.pop();
-          if (!lastTokenGroup.length) {
-            tokens.pop();
-          }
-          tokens.push([WILDCARD_TOKEN]);
-        } else if (lastToken.value.endsWith(WILDCARD_TOKEN.value)) {
-          console.warn(
-            `Route path "${lastToken.value}" will be treated as if it were ` +
-              `"${lastToken.value.replace(
-                /\*$/,
-                '/*'
-              )}" because the \`*\` character must ` +
-              `always follow a \`/\` in the pattern. To get rid of this warning, ` +
-              `please change the route path to "${lastToken.value.replace(
-                /\*$/,
-                '/*'
-              )}".`
-          );
-          lastToken.value = lastToken.value.slice(0, -1);
-          tokens.push([WILDCARD_TOKEN]);
-        }
-      }
-    }
-  }
 
   return tokens;
 }

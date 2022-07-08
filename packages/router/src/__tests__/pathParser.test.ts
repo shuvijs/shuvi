@@ -200,15 +200,14 @@ describe('Path parser', () => {
     describe('match *', () => {
       it('could work without /', () => {
         matchParams('*', '/a/b/c', { '*': 'a/b/c' });
-        matchParams('/a*', '/a/b/c', { '*': 'b/c' });
-        matchParams('/a*', '/a/b/c/', { '*': 'b/c' });
+        matchParams('/a*', '/a/b/c/', { '*': 'b/c/' });
         matchParams('/:a/:b-*', '/a/b-/c', { a: 'a', b: 'b', '*': 'c' });
       });
 
       it('allow trailingSlash', () => {
         matchParams('/a/*', '/a', { '*': '' });
         matchParams('/a/*', '/a/', { '*': '' });
-        matchParams('/a/*', '/a/b/', { '*': 'b' });
+        matchParams('/a/*', '/a/b/', { '*': 'b/' });
       });
 
       it('no trailingSlash when strict is true', () => {

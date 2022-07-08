@@ -1,4 +1,4 @@
-import { Token, TokenType, WILDCARD_TOKEN } from './pathTokenizer';
+import { Token, TokenType, TokenParam } from './pathTokenizer';
 
 type PathParams = Record<string, string | string[]>;
 
@@ -87,6 +87,19 @@ const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
   end: true
 };
 
+const WILDCARD_TOKEN: TokenParam = {
+  type: TokenType.Param,
+  value: '*',
+  regexp: '.*',
+  repeatable: true,
+  optional: true
+};
+
+const WILDCARD_TOKEN_STRICT: TokenParam = {
+  ...WILDCARD_TOKEN,
+  regexp: '.{1}'
+};
+
 // Scoring values used in tokensToParser
 const enum PathScore {
   _multiplier = 10,
@@ -119,6 +132,44 @@ export function tokensToParser(
   extraOptions?: _PathParserOptions
 ): PathParser {
   const options = Object.assign({}, BASE_PATH_PARSER_OPTIONS, extraOptions);
+
+  /**
+   * end with *, eg: /* /a* /a/*
+   */
+  let wildcardToken = WILDCARD_TOKEN;
+  if (options.strict) {
+    wildcardToken = WILDCARD_TOKEN_STRICT;
+  }
+  const lastTokenGroup = segments[segments.length - 1];
+  if (lastTokenGroup) {
+    const lastToken = lastTokenGroup[lastTokenGroup.length - 1];
+    if (lastToken) {
+      if (lastToken.type === TokenType.Static) {
+        if (lastToken.value === wildcardToken.value) {
+          lastTokenGroup.pop();
+          if (!lastTokenGroup.length) {
+            segments.pop();
+          }
+          segments.push([wildcardToken]);
+        } else if (lastToken.value.endsWith(wildcardToken.value)) {
+          console.warn(
+            `Route path "${lastToken.value}" will be treated as if it were ` +
+              `"${lastToken.value.replace(
+                /\*$/,
+                '/*'
+              )}" because the \`*\` character must ` +
+              `always follow a \`/\` in the pattern. To get rid of this warning, ` +
+              `please change the route path to "${lastToken.value.replace(
+                /\*$/,
+                '/*'
+              )}".`
+          );
+          lastToken.value = lastToken.value.slice(0, -1);
+          segments.push([wildcardToken]);
+        }
+      }
+    }
+  }
 
   // the amount of scores is the same as the length of segments except for the root segment "/"
   let score: Array<number[]> = [];
@@ -224,7 +275,7 @@ export function tokensToParser(
     for (let i = 1; i < match.length; i++) {
       const value: string = match[i] || '';
       const key = keys[i - 1];
-      if (key.repeatable && key.name !== WILDCARD_TOKEN.value) {
+      if (key.repeatable && key.name !== wildcardToken.value) {
         params[key.name] = value ? value.split('/') : [];
       } else {
         params[key.name] = value;
