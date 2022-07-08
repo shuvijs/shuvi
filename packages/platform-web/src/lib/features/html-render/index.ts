@@ -1,9 +1,4 @@
 import { createPlugin } from '@shuvi/service';
-import {
-  getAllFiles,
-  getFirstModuleExport,
-  getUserCustomFileCandidates
-} from '@shuvi/service/lib/project/file-utils';
 import * as path from 'path';
 import { extendedHooks } from './hooks';
 
@@ -24,8 +19,7 @@ const core = createPlugin({
     const {
       config: {
         router: { history }
-      },
-      paths
+      }
     } = context;
     const routerConfigFile = defineFile({
       name: 'routerConfig.js',
@@ -34,23 +28,7 @@ const core = createPlugin({
       }
     });
 
-    const documentCandidates = getUserCustomFileCandidates(
-      paths.rootDir,
-      'document',
-      'noop'
-    );
-    const userDocumentFile = defineFile({
-      name: 'user/document.js',
-      content: () => {
-        return getFirstModuleExport(
-          getAllFiles(documentCandidates),
-          documentCandidates
-        );
-      },
-      dependencies: documentCandidates
-    });
-
-    return [userDocumentFile, routerConfigFile];
+    return [routerConfigFile];
   }
 });
 

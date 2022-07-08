@@ -31,9 +31,8 @@ export class SsrRenderer extends BaseRenderer {
     }
 
     const mainAssetsTags = this._getMainAssetTags();
-    const pageDataList = await serverPluginContext.serverPluginRunner.pageData(
-      context
-    );
+    const pageDataList =
+      await serverPluginContext.serverPluginRunner.getPageData(context);
     const pageData = pageDataList.reduce((acc, data) => {
       Object.assign(acc, data);
       return acc;
