@@ -59,8 +59,10 @@ describe('Path parser', () => {
     it('allow a trailing slash in repeated params', () => {
       matchParams('/a/:id+', '/a/b/c/d/', { id: ['b', 'c', 'd'] });
       matchParams('/a/:id+', '/a/b/c/d', { id: ['b', 'c', 'd'] });
+      matchParams('/a/:id+/', '/a/b/c/d', { id: ['b', 'c', 'd'] });
       matchParams('/a/:id*', '/a/', { id: [] });
       matchParams('/a/:id*', '/a', { id: [] });
+      matchParams('/a/:id*/', '/a', { id: [] });
     });
 
     it('allow no trailing slash', () => {

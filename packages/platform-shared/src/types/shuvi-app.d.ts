@@ -1,12 +1,8 @@
-declare module '@shuvi/app/core/app' {
-  const App: any;
-  export default App;
-}
-
 declare module '@shuvi/app/core/error' {
   const Error: any;
   export default Error;
 }
+
 declare module '@shuvi/app/core/platform' {
   import React from 'react';
   import {
