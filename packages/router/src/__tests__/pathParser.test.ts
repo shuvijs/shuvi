@@ -225,7 +225,7 @@ describe('Path parser', () => {
         matchParams('/a/*', '/a', { '*': '' }, { strict: true });
       });
 
-      it("* should not match all when it's position is not last", () => {
+      it("* should be a static char when it's position is not last", () => {
         matchParams('/a/*/:b', '/a/*/b', { b: 'b' });
       });
     });

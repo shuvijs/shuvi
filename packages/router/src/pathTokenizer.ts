@@ -212,6 +212,18 @@ export function tokenizePath(path: string): Array<Token[]> {
           }
           tokens.push([WILDCARD_TOKEN]);
         } else if (lastToken.value.endsWith(WILDCARD_TOKEN.value)) {
+          console.warn(
+            `Route path "${lastToken.value}" will be treated as if it were ` +
+              `"${lastToken.value.replace(
+                /\*$/,
+                '/*'
+              )}" because the \`*\` character must ` +
+              `always follow a \`/\` in the pattern. To get rid of this warning, ` +
+              `please change the route path to "${lastToken.value.replace(
+                /\*$/,
+                '/*'
+              )}".`
+          );
           lastToken.value = lastToken.value.slice(0, -1);
           tokens.push([WILDCARD_TOKEN]);
         }
