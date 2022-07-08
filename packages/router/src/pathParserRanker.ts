@@ -1,4 +1,4 @@
-import { Token, TokenType } from './pathTokenizer';
+import { Token, TokenType, WILDCARD_TOKEN } from './pathTokenizer';
 
 type PathParams = Record<string, string | string[]>;
 
@@ -224,7 +224,7 @@ export function tokensToParser(
     for (let i = 1; i < match.length; i++) {
       const value: string = match[i] || '';
       const key = keys[i - 1];
-      if (key.repeatable) {
+      if (key.repeatable && key.name !== WILDCARD_TOKEN.value) {
         params[key.name] = value ? value.split('/') : [];
       } else {
         params[key.name] = value;

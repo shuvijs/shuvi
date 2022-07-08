@@ -197,6 +197,39 @@ describe('Path parser', () => {
       matchParams('/:a*/one', '/two/one', { a: ['two'] });
     });
 
+    describe('match *', () => {
+      it('* cloud match all', () => {
+        matchParams('/*', '/b', { '*': 'b' });
+        matchParams('/*', '/b-/v1', { '*': 'b-/v1' });
+        matchParams('/a/*', '/a/b', { '*': 'b' });
+      });
+
+      it('params result should be string', () => {
+        matchParams('/a/*', '/a/b/c', { '*': 'b/c' });
+        matchParams('/a/*', '/a/b/c/', { '*': 'b/c' });
+      });
+
+      it('could work without /', () => {
+        matchParams('*', '/a/b/c', { '*': 'a/b/c' });
+        matchParams('/a*', '/a/b/c', { '*': 'b/c' });
+        matchParams('/a*', '/a/b/c/', { '*': 'b/c' });
+        matchParams('/:a/:b-*', '/a/b-/c', { a: 'a', b: 'b', '*': 'c' });
+      });
+
+      it('allow trailingSlash', () => {
+        matchParams('/a/*', '/a/', { '*': '' });
+      });
+
+      it('allow no trailingSlash when strict is false', () => {
+        matchParams('/a/*', '/a/', null, { strict: true });
+        matchParams('/a/*', '/a', { '*': '' }, { strict: true });
+      });
+
+      it("* should not match all when it's position is not last", () => {
+        matchParams('/a/*/:b', '/a/*/b', { b: 'b' });
+      });
+    });
+
     describe('repeated params', () => {
       it('should not match empty with + ', () => {
         matchParams('/:id+', '/', null);

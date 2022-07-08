@@ -2,7 +2,7 @@
 export const enum TokenType {
   Static,
   Param,
-  Group,
+  Group
 }
 
 const enum TokenizerState {
@@ -10,32 +10,40 @@ const enum TokenizerState {
   Param,
   ParamRegExp, // custom re for a param
   ParamRegExpEnd, // check if there is any ? + *
-  EscapeNext,
+  EscapeNext
 }
 
 interface TokenStatic {
-  type: TokenType.Static
-  value: string
+  type: TokenType.Static;
+  value: string;
 }
 
 interface TokenParam {
-  type: TokenType.Param
-  regexp?: string
-  value: string
-  optional: boolean
-  repeatable: boolean
+  type: TokenType.Param;
+  regexp?: string;
+  value: string;
+  optional: boolean;
+  repeatable: boolean;
 }
 
 interface TokenGroup {
-  type: TokenType.Group
-  value: Exclude<Token, TokenGroup>[]
+  type: TokenType.Group;
+  value: Exclude<Token, TokenGroup>[];
 }
 
-export type Token = TokenStatic | TokenParam | TokenGroup
+export type Token = TokenStatic | TokenParam | TokenGroup;
 
 const ROOT_TOKEN: Token = {
   type: TokenType.Static,
   value: ''
+};
+
+export const WILDCARD_TOKEN: TokenParam = {
+  type: TokenType.Param,
+  value: '*',
+  regexp: '',
+  repeatable: true,
+  optional: true
 };
 
 const VALID_PARAM_RE = /[a-zA-Z0-9_]/;
@@ -92,9 +100,7 @@ export function tokenizePath(path: string): Array<Token[]> {
       state === TokenizerState.ParamRegExpEnd
     ) {
       if (segment.length > 1 && (char === '*' || char === '+'))
-        crash(
-          `A repeatable param (${buffer}) must be alone in its segment. `
-        );
+        crash(`A repeatable param (${buffer}) must be alone in its segment. `);
       segment.push({
         type: TokenType.Param,
         value: buffer,
@@ -192,6 +198,26 @@ export function tokenizePath(path: string): Array<Token[]> {
   finalizeSegment();
 
   // tokenCache.set(path, tokens)
+
+  // end with *, eg: /* /a* /a/*
+  const lastTokenGroup = tokens[tokens.length - 1];
+  if (lastTokenGroup) {
+    const lastToken = lastTokenGroup[lastTokenGroup.length - 1];
+    if (lastToken) {
+      if (lastToken.type === TokenType.Static) {
+        if (lastToken.value === WILDCARD_TOKEN.value) {
+          lastTokenGroup.pop();
+          if (!lastTokenGroup.length) {
+            tokens.pop();
+          }
+          tokens.push([WILDCARD_TOKEN]);
+        } else if (lastToken.value.endsWith(WILDCARD_TOKEN.value)) {
+          lastToken.value = lastToken.value.slice(0, -1);
+          tokens.push([WILDCARD_TOKEN]);
+        }
+      }
+    }
+  }
 
   return tokens;
 }
