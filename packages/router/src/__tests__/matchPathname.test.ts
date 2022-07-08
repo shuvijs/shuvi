@@ -9,7 +9,9 @@ describe('matchPathname', () => {
     });
 
     expect(matchPathname('/*', '/*')).toStrictEqual({
-      params: {},
+      params: {
+        '*': '*'
+      },
       path: '/*',
       pathname: '/*'
     });
