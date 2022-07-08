@@ -23,12 +23,6 @@ declare module '@shuvi/app/files/middlewareRoutes' {
   export default middlewareRoutes;
 }
 
-declare module '@shuvi/app/files/user/document' {
-  import { IDocumentModule } from '@shuvi/platform-web/esm/types/resources';
-  declare const document: IDocumentModule;
-  export default document;
-}
-
 declare module '@shuvi/app/files/user/server' {
   import { IServerModule } from '@shuvi/platform-web/esm/types/resources';
   declare const server: IServerModule;

@@ -107,7 +107,7 @@ export default abstract class PlatformMpBase {
       ),
       getMiddlewares: context => {
         const middlewaresFromPlugin = context.serverPluginRunner
-          .addMiddleware()
+          .middlewares()
           .flat();
         return middlewaresFromPlugin;
       }
