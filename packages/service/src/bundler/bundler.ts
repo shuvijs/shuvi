@@ -609,7 +609,7 @@ promise new Promise(resolve => {
       if (snapshot[key]) {
         return false;
       }
-      return checkNotInNodeModules(key);
+      return checkNotInNodeModules(key, this._cliContext.paths.rootDir);
     });
   }
 

@@ -70,7 +70,9 @@ export async function getDevMiddleware(
         '/'
       );
       const filePath = join(
-        getDllDir(join(process.cwd(), DEFAULT_TMP_DIR_NAME)),
+        getDllDir(
+          join(serverPluginContext.paths.rootDir, DEFAULT_TMP_DIR_NAME)
+        ),
         relativePath
       );
       const { mtime } = statSync(filePath);
