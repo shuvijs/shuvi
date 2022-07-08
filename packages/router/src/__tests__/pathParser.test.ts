@@ -198,17 +198,6 @@ describe('Path parser', () => {
     });
 
     describe('match *', () => {
-      it('* cloud match all', () => {
-        matchParams('/*', '/b', { '*': 'b' });
-        matchParams('/*', '/b-/v1', { '*': 'b-/v1' });
-        matchParams('/a/*', '/a/b', { '*': 'b' });
-      });
-
-      it('params result should be string', () => {
-        matchParams('/a/*', '/a/b/c', { '*': 'b/c' });
-        matchParams('/a/*', '/a/b/c/', { '*': 'b/c' });
-      });
-
       it('could work without /', () => {
         matchParams('*', '/a/b/c', { '*': 'a/b/c' });
         matchParams('/a*', '/a/b/c', { '*': 'b/c' });
@@ -217,12 +206,13 @@ describe('Path parser', () => {
       });
 
       it('allow trailingSlash', () => {
+        matchParams('/a/*', '/a', { '*': '' });
         matchParams('/a/*', '/a/', { '*': '' });
+        matchParams('/a/*', '/a/b/', { '*': 'b' });
       });
 
-      it('allow no trailingSlash when strict is false', () => {
+      it('no trailingSlash when strict is true', () => {
         matchParams('/a/*', '/a/', null, { strict: true });
-        matchParams('/a/*', '/a', { '*': '' }, { strict: true });
       });
 
       it("* should be a static char when it's position is not last", () => {
