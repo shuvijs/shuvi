@@ -2,7 +2,7 @@
 export const enum TokenType {
   Static,
   Param,
-  Group,
+  Group
 }
 
 const enum TokenizerState {
@@ -10,28 +10,28 @@ const enum TokenizerState {
   Param,
   ParamRegExp, // custom re for a param
   ParamRegExpEnd, // check if there is any ? + *
-  EscapeNext,
+  EscapeNext
 }
 
 interface TokenStatic {
-  type: TokenType.Static
-  value: string
+  type: TokenType.Static;
+  value: string;
 }
 
-interface TokenParam {
-  type: TokenType.Param
-  regexp?: string
-  value: string
-  optional: boolean
-  repeatable: boolean
+export interface TokenParam {
+  type: TokenType.Param;
+  regexp?: string;
+  value: string;
+  optional: boolean;
+  repeatable: boolean;
 }
 
 interface TokenGroup {
-  type: TokenType.Group
-  value: Exclude<Token, TokenGroup>[]
+  type: TokenType.Group;
+  value: Exclude<Token, TokenGroup>[];
 }
 
-export type Token = TokenStatic | TokenParam | TokenGroup
+export type Token = TokenStatic | TokenParam | TokenGroup;
 
 const ROOT_TOKEN: Token = {
   type: TokenType.Static,
@@ -92,9 +92,7 @@ export function tokenizePath(path: string): Array<Token[]> {
       state === TokenizerState.ParamRegExpEnd
     ) {
       if (segment.length > 1 && (char === '*' || char === '+'))
-        crash(
-          `A repeatable param (${buffer}) must be alone in its segment. `
-        );
+        crash(`A repeatable param (${buffer}) must be alone in its segment. `);
       segment.push({
         type: TokenType.Param,
         value: buffer,
