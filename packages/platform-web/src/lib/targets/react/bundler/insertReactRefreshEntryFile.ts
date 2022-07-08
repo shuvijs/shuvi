@@ -12,6 +12,5 @@ export default createServerPlugin({
         }
       });
     }
-    return documentProps;
   }
 });

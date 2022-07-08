@@ -3,7 +3,7 @@ import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev/devMidd
 
 import { OnDemandRouteManager } from './on-demand-compile-page';
 import { getApiMiddleware, getMiddlewareMiddleware } from './filesystem-routes';
-import { getSSRMiddleware } from './html-render';
+import { getPageMiddleware } from './html-render';
 
 let onDemandRouteManager: OnDemandRouteManager;
 
@@ -16,7 +16,7 @@ export const getMiddlewares = (
     onDemandRouteManager && onDemandRouteManager.ensureRoutesMiddleware(),
     getApiMiddleware(context),
     getMiddlewareMiddleware(context),
-    getSSRMiddleware(context)
+    getPageMiddleware(context)
   ].filter(Boolean);
 };
 

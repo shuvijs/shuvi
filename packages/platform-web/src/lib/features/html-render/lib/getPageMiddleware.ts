@@ -36,7 +36,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
   };
 }
 
-export function getSSRMiddleware(
+export function getPageMiddleware(
   api: IServerPluginContext
 ): IRequestHandlerWithNext {
   let pageHandler = createPageHandler(api);

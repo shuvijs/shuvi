@@ -4,7 +4,7 @@ import { extendedHooks } from './hooks';
 
 export { IHandlePageRequest } from './hooks';
 export {
-  getSSRMiddleware,
+  getPageMiddleware,
   IHtmlDocument,
   ITemplateData,
   IViewServer,
