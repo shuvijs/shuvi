@@ -30,7 +30,7 @@
     }
   },
   "include": [
-    ".shuvi/app/types-plugin-extended.d.ts",
+    ".shuvi/app/shuvi-app.d.ts",
     "src"
   ],
   "exclude": [

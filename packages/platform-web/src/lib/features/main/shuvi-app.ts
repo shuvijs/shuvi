@@ -1,6 +1,4 @@
-import { appRoutes } from './hooks'
-
-import '../../types/resources'
+import { appRoutes } from './hooks';
 
 declare module '@shuvi/runtime' {
   export interface CustomCorePluginHooks {

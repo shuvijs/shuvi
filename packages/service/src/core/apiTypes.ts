@@ -114,6 +114,7 @@ export interface IPlatformConfig {
 }
 
 export type IPlatformContent = {
+  types?: string;
   plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
   getPresetRuntimeFiles: (
     context: IPluginContext

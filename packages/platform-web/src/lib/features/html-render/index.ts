@@ -1,5 +1,4 @@
 import { createPlugin } from '@shuvi/service';
-import * as path from 'path';
 import { extendedHooks } from './hooks';
 
 export { IHandlePageRequest } from './hooks';
@@ -34,6 +33,5 @@ const core = createPlugin({
 
 export default {
   core,
-  // FIXME: should be a module path, not file path
-  types: path.join(__dirname, 'types')
+  types: '@shuvi/platform-web/esm/features/html-render/shuvi-app'
 };

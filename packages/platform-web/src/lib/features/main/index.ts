@@ -1,4 +1,3 @@
-import * as path from 'path';
 import {
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
@@ -96,7 +95,6 @@ export const getPlugin = (
   });
   return {
     core,
-    // FIXME: should be a module path, not file path
-    types: path.join(__dirname, 'types')
+    types: '@shuvi/platform-web/esm/features/main/shuvi-app'
   };
 };
