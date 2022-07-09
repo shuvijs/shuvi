@@ -24,7 +24,7 @@ declare module '@shuvi/app/files/middlewareRoutes' {
 }
 
 declare module '@shuvi/app/files/user/server' {
-  import { IServerModule } from '@shuvi/platform-web/esm/types/resources';
+  import { IServerModule } from '@shuvi/platform-web/esm/types/shuvi-service';
   declare const server: IServerModule;
   export default server;
 }

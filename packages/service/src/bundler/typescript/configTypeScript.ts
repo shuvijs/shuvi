@@ -142,11 +142,11 @@ export async function writeDefaultConfigurations(
   };
 
   if (!('include' in rawConfig)) {
-    userTsConfig.include = ['.shuvi/app/types-plugin-extended.d.ts', 'src'];
+    userTsConfig.include = ['.shuvi/app/shuvi-app.d.ts', 'src'];
     suggestedActions.push(
       chalk.cyan('include') +
         ' was set to ' +
-        chalk.bold(`['.shuvi/app/types-plugin-extended.d.ts', 'src']`)
+        chalk.bold(`['.shuvi/app/shuvi-app.d.ts', 'src']`)
     );
   }
 
