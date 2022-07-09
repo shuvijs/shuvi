@@ -2,7 +2,7 @@ import {
   IData,
   getPublicRuntimeConfig,
   isResponse
-} from '@shuvi/platform-shared/lib/runtime';
+} from '@shuvi/platform-shared/src/shared';
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer, AppData } from './base';

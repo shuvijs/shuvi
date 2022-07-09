@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
+    "module": "commonjs",
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/node",
+    "src/shared"
+  ]
+}

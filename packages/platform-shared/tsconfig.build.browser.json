@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "esm",
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
+    "module": "esnext"
+  },
+  "include": [
+    "src/shuvi-app",
+    "src/shared"
+  ]
+}

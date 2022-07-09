@@ -11,7 +11,7 @@ import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import {
   setRuntimeConfig,
   setPublicRuntimeConfig
-} from '@shuvi/platform-shared/lib/runtime';
+} from '@shuvi/platform-shared/src/shared';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/lib/node';

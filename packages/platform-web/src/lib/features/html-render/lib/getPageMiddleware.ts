@@ -10,7 +10,7 @@ import {
   Response,
   isRedirect,
   isText
-} from '@shuvi/platform-shared/lib/runtime';
+} from '@shuvi/platform-shared/src/shared';
 
 function createPageHandler(serverPluginContext: IServerPluginContext) {
   return async function (req: IncomingMessage, res: ServerResponse) {

@@ -8,7 +8,7 @@ import {
   isResponse,
   isRedirect,
   getLoaderManager
-} from '@shuvi/platform-shared/esm/runtime';
+} from '@shuvi/platform-shared/esm/shared';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import application from '@shuvi/platform-shared/esm/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';

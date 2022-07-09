@@ -4,7 +4,7 @@ import * as querystring from 'querystring';
 import * as cookie from 'cookie';
 const getRawBody = require('raw-body');
 import * as contentType from 'content-type';
-import { IURLParams, IURLQuery } from '@shuvi/platform-shared/esm/runtime';
+import { IURLParams, IURLQuery } from '@shuvi/platform-shared/esm/shared';
 import { IResponse, IRequest } from '@shuvi/service';
 
 export interface IApiReq {

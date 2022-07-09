@@ -1,7 +1,7 @@
 import {
   IPageRouteRecord,
   IRawPageRouteRecord
-} from '@shuvi/platform-shared/esm/runtime';
+} from '@shuvi/platform-shared/esm/shared';
 import { loadRouteComponent } from './loadRouteComponent';
 
 export default function getRoutes(

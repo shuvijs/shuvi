@@ -1,6 +1,6 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
-import { Response, isResponse, text } from '@shuvi/platform-shared/lib/runtime';
+import { Response, isResponse, text } from '@shuvi/platform-shared/src/shared';
 import { Renderer, IHtmlDocument } from './renderer';
 import { tag } from './renderer/htmlTag';
 

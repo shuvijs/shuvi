@@ -5,7 +5,7 @@
 
 import setRuntimeConfig from '@shuvi/app/core/setRuntimeConfig';
 import runtimeConfig from '@shuvi/app/core/runtimeConfig';
-import { getAppData } from '@shuvi/platform-shared/esm/runtime';
+import { getAppData } from '@shuvi/platform-shared/esm/shared';
 
 // === set runtime config ===
 const appData = getAppData();

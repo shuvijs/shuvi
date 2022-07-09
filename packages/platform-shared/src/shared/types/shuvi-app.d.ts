@@ -9,7 +9,7 @@ declare module '@shuvi/app/core/platform' {
     IPageRouteRecord,
     IRawPageRouteRecord,
     IViewClient
-  } from '@shuvi/platform-shared/src/runtime';
+  } from '@shuvi/platform-shared/src/shared';
 
   export interface IGetRoutes {
     (routes: IRawPageRouteRecord[]): IPageRouteRecord[];
@@ -21,23 +21,23 @@ declare module '@shuvi/app/core/platform' {
 }
 
 declare module '@shuvi/app/core/plugins' {
-  import { IPluginRecord } from '@shuvi/platform-shared/src/runtime/runtimeHooks';
+  import { IPluginRecord } from '@shuvi/platform-shared/src/shared/runtimeHooks';
   export const pluginRecord: IPluginRecord;
 }
 
 declare module '@shuvi/app/core/runtimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/platform-shared/src/runtime';
+  import { IRuntimeConfig } from '@shuvi/platform-shared/src/shared';
   declare const runtimneConfig: IRuntimeConfig | null;
   export default runtimneConfig;
 }
 
 declare module '@shuvi/app/core/setRuntimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/platform-shared/src/runtime';
+  import { IRuntimeConfig } from '@shuvi/platform-shared/src/shared';
   export default function setRuntimeConfig(config: IRuntimeConfig): void;
 }
 
 declare module '@shuvi/app/core/setPublicRuntimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/platform-shared/src/runtime';
+  import { IRuntimeConfig } from '@shuvi/platform-shared/src/shared';
   export default function setPublicRuntimeConfig(config: IRuntimeConfig): void;
 }
 
@@ -47,7 +47,7 @@ declare module '@shuvi/app/user/error' {
 }
 
 declare module '@shuvi/app/user/app' {
-  import { IAppModule } from '@shuvi/platform-shared/src/runtime/lifecycle';
+  import { IAppModule } from '@shuvi/platform-shared/src/shared/lifecycle';
   export const init: IAppModule['onInit'];
   export const appComponent: IAppModule['appComponent'];
   export const appContext: IAppModule['appContext'];

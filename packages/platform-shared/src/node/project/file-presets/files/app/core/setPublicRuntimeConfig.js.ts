@@ -3,7 +3,7 @@ import * as path from 'path';
 
 const runtimeConfigPath = path.resolve(
   __dirname,
-  '../../../../../../runtime/runtimeConfig'
+  '../../../../../../shared/runtimeConfig'
 );
 export default () =>
   defineFile({

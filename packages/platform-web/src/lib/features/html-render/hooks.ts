@@ -4,7 +4,7 @@ import {
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook
 } from '@shuvi/hook';
-import { IAppContext } from '@shuvi/platform-shared/lib/runtime';
+import { IAppContext } from '@shuvi/platform-shared/src/shared';
 import { IServerMiddleware } from '@shuvi/service';
 import { IHtmlDocument } from './lib';
 

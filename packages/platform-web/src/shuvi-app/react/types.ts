@@ -2,7 +2,7 @@ import {
   IAppState,
   IViewClient,
   IViewServer
-} from '@shuvi/platform-shared/esm/runtime';
+} from '@shuvi/platform-shared/esm/shared';
 
 export type IReactAppData = {
   appProps?: Record<string, any>;

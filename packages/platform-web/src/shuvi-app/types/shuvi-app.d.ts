@@ -1,12 +1,12 @@
-/// <reference types="@shuvi/platform-shared/src/types/shuvi-app" />
+/// <reference types="@shuvi/platform-shared/src/shared/types/shuvi-app" />
 
 declare module '@shuvi/app/files/routerConfig' {
-  import { ILoaderOptions } from '@shuvi/platform-shared/esm/runtime/loader';
+  import { ILoaderOptions } from '@shuvi/platform-shared/esm/shared/loader';
   export const historyMode: 'browser' | 'hash';
 }
 
 declare module '@shuvi/app/files/routes' {
-  import { IRawPageRouteRecord } from '@shuvi/platform-shared/esm/runtime';
+  import { IRawPageRouteRecord } from '@shuvi/platform-shared/esm/shared';
   declare const routes: IRawPageRouteRecord[];
   export default routes;
 }
@@ -30,8 +30,8 @@ declare module '@shuvi/app/files/user/server' {
 }
 
 declare module '@shuvi/app/files/page-loaders' {
-  import { IRouteLoaderContext } from '@shuvi/platform-shared/esm/runtime';
-  import { Loader } from '@shuvi/platform-shared/esm/runtime';
+  import { IRouteLoaderContext } from '@shuvi/platform-shared/esm/shared';
+  import { Loader } from '@shuvi/platform-shared/esm/shared';
 
   const loaders: Record<string, Loader>;
   export default loaders;

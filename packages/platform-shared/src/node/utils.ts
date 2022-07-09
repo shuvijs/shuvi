@@ -14,7 +14,7 @@ export const resolvePluginFile = (pluginName: string, ...paths: string[]) =>
   );
 
 export const resolveRuntimeFile = (...paths: string[]) =>
-  path.join(PackageDir, 'esm', 'runtime', ...paths);
+  path.join(PackageDir, 'esm', 'shared', ...paths);
 
 export const resolveRuntimeLibFile = (...paths: string[]) =>
-  path.join(PackageDir, 'lib', 'runtime', ...paths);
+  path.join(PackageDir, 'lib', 'shared', ...paths);

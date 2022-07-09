@@ -6,7 +6,7 @@ import {
   IHtmlTag,
   getLoaderManager,
   redirect
-} from '@shuvi/platform-shared/esm/runtime';
+} from '@shuvi/platform-shared/esm/shared';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';

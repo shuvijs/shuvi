@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IApplication, errorModel } from '@shuvi/platform-shared/esm/runtime';
+import { IApplication, errorModel } from '@shuvi/platform-shared/esm/shared';
 import { createContainer } from '@shuvi/redox-react';
 import { AppProvider } from './applicationContext';
 import ErrorPage from './ErrorPage';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { View } from '@tarojs/components';
-import { IError } from '@shuvi/platform-shared/esm/runtime';
+import { IError } from '@shuvi/platform-shared/esm/shared';
 import { ViewProps } from '@tarojs/components/types/View';
 
 type ViewType = React.FC<PropsWithChildren<ViewProps>>;

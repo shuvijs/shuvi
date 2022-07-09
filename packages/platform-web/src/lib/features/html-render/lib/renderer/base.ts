@@ -1,4 +1,4 @@
-import { IAppData, Response } from '@shuvi/platform-shared/lib/runtime';
+import { IAppData, Response } from '@shuvi/platform-shared/src/shared';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
