@@ -2,7 +2,7 @@ import { IPlatform } from '@shuvi/service';
 import {
   SharedPlugins,
   getPresetRuntimeFilesCreator
-} from '@shuvi/platform-shared/lib/node';
+} from '@shuvi/platform-shared/node';
 import { resolveAppFile } from './paths';
 
 import {

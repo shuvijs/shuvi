@@ -3,7 +3,7 @@ import {
   getPageRoutes,
   getApiRoutes,
   getMiddlewareRoutes
-} from '@shuvi/platform-shared/lib/node';
+} from '@shuvi/platform-shared/node';
 import * as fs from 'fs';
 import * as path from 'path';
 import {

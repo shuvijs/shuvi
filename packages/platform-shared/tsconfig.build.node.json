@@ -7,7 +7,9 @@
       "DOM"
     ],
     "module": "commonjs",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "rootDir": "./src",
+    "declarationDir": "./types"
   },
   "include": [
     "src/node",

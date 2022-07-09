@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IRouteRecord, MemoryRouter, RouterView } from '@shuvi/router-react';
 import { render, ReactTestRenderer } from 'shuvi-test-utils/reactTestRender';
-import { IPageRouteRecord } from '@shuvi/platform-shared/esm/shared';
+import { IPageRouteRecord } from '@shuvi/platform-shared/shared';
 
 const renderRoutes = (
   routes: IRouteRecord[],

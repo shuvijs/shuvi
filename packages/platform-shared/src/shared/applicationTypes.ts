@@ -71,7 +71,7 @@ export type IRuntimeConfig = Record<string, string>;
 
 export type IRenderDocumentOptions = {
   app: IApplication;
-  req: IRequest;
+  req?: IRequest;
 };
 
 export interface IRenderOptions extends IRenderDocumentOptions {}

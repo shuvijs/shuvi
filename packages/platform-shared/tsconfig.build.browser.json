@@ -6,7 +6,9 @@
       "esnext",
       "DOM"
     ],
-    "module": "esnext"
+    "module": "esnext",
+    "rootDir": "./src",
+    "declarationDir": "./types"
   },
   "include": [
     "src/shuvi-app",

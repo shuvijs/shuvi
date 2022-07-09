@@ -21,7 +21,7 @@ declare module '@shuvi/app/core/platform' {
 }
 
 declare module '@shuvi/app/core/plugins' {
-  import { IPluginRecord } from '@shuvi/platform-shared/src/shared/runtimeHooks';
+  import { IPluginRecord } from '@shuvi/platform-shared/src/shared/lifecycle';
   export const pluginRecord: IPluginRecord;
 }
 

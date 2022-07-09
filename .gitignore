@@ -20,6 +20,7 @@ node_modules
 packages/*/lib/
 packages/*/shuvi-app/
 packages/*/esm/
+packages/*/types/
 
 test/packages/*/lib/
 test/packages/*/esm/

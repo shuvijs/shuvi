@@ -14,7 +14,7 @@ import {
 } from '@shuvi/platform-shared/src/shared';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
-import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/lib/node';
+import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/node';
 import generateResource from './generateResource';
 import { resolveAppFile } from '../../paths';
 import { appRoutes } from './hooks';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IApplication } from '@shuvi/platform-shared/esm/shared';
+import { IApplication } from '@shuvi/platform-shared/shared';
 
 export const ApplicationContext = React.createContext<IApplication>(
   null as any

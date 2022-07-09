@@ -1,5 +1,5 @@
 import { rankRouteBranches } from '@shuvi/router';
-import { IMiddlewareRouteConfig } from '@shuvi/platform-shared/lib/node';
+import { IMiddlewareRouteConfig } from '@shuvi/platform-shared/node';
 import { normalizePath } from '@shuvi/utils/lib/file';
 
 export { IMiddlewareRouteConfig };
