@@ -12,19 +12,19 @@ declare module '@shuvi/app/files/routes' {
 }
 
 declare module '@shuvi/app/files/apiRoutes' {
-  import { IApiRoutes } from '@shuvi/platform-web/esm/types';
+  import { IApiRoutes } from '@shuvi/platform-web/esm/node/types';
   declare const apiRoutes: IApiRoutes[];
   export default apiRoutes;
 }
 
 declare module '@shuvi/app/files/middlewareRoutes' {
-  import { IMiddlewareRoutes } from '@shuvi/platform-web/esm/types';
+  import { IMiddlewareRoutes } from '@shuvi/platform-web/esm/node/types';
   declare const middlewareRoutes: IMiddlewareRoutes[];
   export default middlewareRoutes;
 }
 
 declare module '@shuvi/app/files/user/server' {
-  import { IServerModule } from '@shuvi/platform-web/esm/types/shuvi-service';
+  import { IServerModule } from '@shuvi/platform-web/esm/node/types/shuvi-service';
   declare const server: IServerModule;
   export default server;
 }
