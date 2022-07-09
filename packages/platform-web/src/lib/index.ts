@@ -32,6 +32,7 @@ const platform: IPlatform = async (
   );
 
   return {
+    types: '@shuvi/platform-web/esm/types/shuvi-service',
     plugins: [
       ...SharedPlugins,
       mainPlugin,

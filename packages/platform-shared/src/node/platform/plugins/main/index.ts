@@ -1,5 +1,4 @@
 import { createPlugin } from '@shuvi/service';
-import * as path from 'path';
 import { extendedHooks } from './hooks';
 import { resolveRuntimeFile, resolveRuntimeLibFile } from '../../../utils';
 
@@ -30,6 +29,5 @@ const core = createPlugin({
 
 export default {
   core,
-  // FIXME: should be a module path, not file path
-  types: path.join(__dirname, 'types')
+  types: '@shuvi/platform-shared/esm/node/platform/plugins/main/shuvi-app'
 };

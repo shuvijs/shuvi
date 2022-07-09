@@ -197,7 +197,7 @@ class Api {
     this._projectBuilder.addRuntimeService(source, exported, filepath);
   }
 
-  addTypeDeclarationFile(file: string): void {
+  addRuntimeTypesPatch(file: string): void {
     this._projectBuilder.addTypeDeclarationFile(file);
   }
 
@@ -244,7 +244,7 @@ class Api {
       this._runtimePluginDirs.push(path.dirname(runtime.plugin));
     }
     if (types) {
-      this.addTypeDeclarationFile(types);
+      this.addRuntimeTypesPatch(types);
     }
   }
 
@@ -262,9 +262,12 @@ class Api {
     const platformContent = await this._platform(platformConfig, {
       serverPlugins: this._serverPlugins
     });
-    // todo: rename to getMiddlewaresBeforeDevMiddlewares
-    const { getMiddlewares, getMiddlewaresBeforeDevMiddlewares, plugins } =
-      platformContent;
+    const {
+      types,
+      getMiddlewares,
+      getMiddlewaresBeforeDevMiddlewares,
+      plugins
+    } = platformContent;
     this._serverConfigs = {
       serverPlugins: this._serverPlugins,
       getMiddlewares,
@@ -281,6 +284,10 @@ class Api {
           resolvedPlugins.push(plugin as ResolvedPlugin);
         }
       });
+    }
+
+    if (types) {
+      this.addRuntimeTypesPatch(types);
     }
 
     return {

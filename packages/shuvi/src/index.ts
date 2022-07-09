@@ -1,6 +1,6 @@
-/// <reference path="../types/plugin-extended.d.ts" />
+/// <reference path="../types/shuvi-app.d.ts" />
 
-export * from '@shuvi/platform-web/lib/types/resources';
+export * from '@shuvi/platform-web/lib/types/shuvi-service';
 
 export {
   defineConfig,
