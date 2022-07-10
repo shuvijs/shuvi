@@ -23,7 +23,7 @@ import { getMiddlewares } from '../middlewares';
 
 function getServerEntry(): IWebpackEntry {
   return {
-    [BUILD_SERVER_FILE_SERVER]: [resolveAppFile('entry', 'server/index')]
+    [BUILD_SERVER_FILE_SERVER]: [resolveAppFile('entry', 'server')]
   };
 }
 
@@ -76,8 +76,8 @@ export const getPlugin = (
     configWebpack: chain => {
       chain.merge({
         entry: {
-          [BUILD_CLIENT_RUNTIME_MAIN]: ['@shuvi/app/entry'],
-          [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill']
+          [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill'],
+          [BUILD_CLIENT_RUNTIME_MAIN]: [resolveAppFile('entry', 'client')]
         }
       });
       return chain;

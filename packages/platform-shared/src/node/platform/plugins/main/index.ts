@@ -1,5 +1,6 @@
 import { createPlugin } from '@shuvi/service';
 import { extendedHooks } from './hooks';
+import './shuvi-app';
 import { resolveRuntimeFile, resolveRuntimeLibFile } from '../../../utils';
 
 const core = createPlugin({

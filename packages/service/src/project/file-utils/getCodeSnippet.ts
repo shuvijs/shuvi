@@ -52,7 +52,7 @@ export function getCodeSnippet(content: string): ICodeSnippet {
   const bodyAst = ast;
 
   const generateOpt = {
-    compact: true
+    compact: false
   };
 
   return {

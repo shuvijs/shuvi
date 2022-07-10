@@ -93,7 +93,6 @@ export default abstract class PlatformMpBase {
 
   getPlatformContent(platformContext: IPlatformContext): IPlatformContent {
     const platformModule = resolveAppFile('index');
-    const entry = `import "${this.entryPath || resolveAppFile('entry')}"`;
     const polyfills = [
       resolveDep('react-app-polyfill/ie11'),
       resolveDep('react-app-polyfill/stable')
@@ -102,7 +101,6 @@ export default abstract class PlatformMpBase {
       plugins: this.getPlugins() as any,
       getPresetRuntimeFiles: getPresetRuntimeFilesCreator(
         platformModule,
-        entry,
         polyfills
       ),
       getMiddlewares: context => {
@@ -130,7 +128,11 @@ export default abstract class PlatformMpBase {
    * setup app files
    */
   getSetupAppPlugin(): CorePluginInstance {
+    const entry = this.entryPath || resolveAppFile('entry');
     return createPlugin({
+      addEntryCode() {
+        return `import "${entry}"`;
+      },
       afterInit: context => {
         const appConfigFile = findFirstExistedFile([
           ...withExts(

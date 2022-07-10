@@ -19,7 +19,7 @@ export const getRuntimeConfigFromConfig = async (
  * `user/error`, `user/runtime` and `entry`
  */
 export const getPresetRuntimeFilesCreator =
-  (platformModule: string, entry: string, polyfills: string[]) =>
+  (platformModule: string, polyfills: string[]) =>
   async (pluginContext: IPluginContext) => {
     const getCandidates = (
       fileName: string,
@@ -46,7 +46,7 @@ export const getPresetRuntimeFilesCreator =
     const runner = pluginContext.pluginRunner;
     const appPolyfills = (await runner.addPolyfill()).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();
-    context.entryCodes.push(entry, ...appEntryCodes);
+    context.entryCodes.push(...appEntryCodes);
     context.polyfills.push(...polyfills, ...appPolyfills);
     const files = getFilePresets(context);
     return files;

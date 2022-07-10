@@ -1,3 +1,7 @@
+declare module '@shuvi/app/core/entry' {
+  export {};
+}
+
 declare module '@shuvi/app/core/error' {
   const Error: any;
   export default Error;
