@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { createPlugin } from '@shuvi/service';
 import server from './server';
+import './shuvi-app';
 import { resolvePluginFile } from '../../../utils';
 
 const resolveLib = (module: string) =>
