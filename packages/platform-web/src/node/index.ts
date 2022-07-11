@@ -3,7 +3,6 @@ import {
   SharedPlugins,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/node';
-import { resolveAppFile } from './paths';
 
 import {
   featurePlugins,
