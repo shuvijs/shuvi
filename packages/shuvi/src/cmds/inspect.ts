@@ -37,7 +37,9 @@ export default async function main(argv: string[]) {
     phase: 'PHASE_INSPECT_WEBPACK'
   });
   await api.init();
-  const bundler = await getBundler(api.pluginContext);
+  const bundler = await getBundler(api.pluginContext, {
+    ignoreTypeScriptErrors: true
+  });
 
   const configs = await bundler.resolveWebpackConfig();
 

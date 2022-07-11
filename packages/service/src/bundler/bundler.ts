@@ -35,6 +35,16 @@ interface WatchTargetOptions {
   onWarns?(warns: CompilerErr[]): void;
 }
 
+export interface NormalizedBundlerOptions {
+  ignoreTypeScriptErrors: boolean;
+}
+
+export type BundlerOptions = Partial<NormalizedBundlerOptions>;
+
+const defaultBundleOptions: NormalizedBundlerOptions = {
+  ignoreTypeScriptErrors: false
+};
+
 const logger = Logger('shuvi:bundler');
 
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
@@ -42,26 +52,22 @@ const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 class WebpackBundler {
   private _cliContext: IPluginContext;
   private _compiler: WebapckMultiCompiler | null = null;
-  /* private _internalTargets: Target[] = [];
-  private _extraTargets: Target[] = []; */
+  private _options: NormalizedBundlerOptions;
   private _targets: Target[] = [];
 
-  constructor(cliContext: IPluginContext) {
+  constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
+    this._options = options;
     this._cliContext = cliContext;
   }
 
   async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
+    const ignoreTypeScriptErrors = this._options.ignoreTypeScriptErrors;
+
     if (!this._compiler) {
       this._targets = await this._getTargets();
       this._compiler = webpack(this._targets.map(t => t.config));
 
       let isFirstSuccessfulCompile = true;
-
-      const userConfig = this._cliContext.config;
-      const ignoreTypeScriptErrors = Boolean(
-        userConfig.typescript.ignoreBuildErrors
-      );
-
       if (ignoreTypeScriptErrors) {
         console.log('Skipping validation of types');
         this._compiler.compilers.forEach(compiler => {
@@ -333,7 +339,10 @@ class WebpackBundler {
   }
 }
 
-export async function getBundler(_cliContext: IPluginContext) {
-  await setupTypeScript(_cliContext.paths);
-  return new WebpackBundler(_cliContext);
+export async function getBundler(
+  ctx: IPluginContext,
+  options: BundlerOptions = {}
+) {
+  await setupTypeScript(ctx.paths);
+  return new WebpackBundler({ ...defaultBundleOptions, ...options }, ctx);
 }

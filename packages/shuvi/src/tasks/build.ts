@@ -22,7 +22,9 @@ const defaultBuildOptions = {
 } as const;
 
 async function bundle(context: IPluginContext) {
-  const bundler = await getBundler(context);
+  const bundler = await getBundler(context, {
+    ignoreTypeScriptErrors: context.config.typescript.ignoreBuildErrors
+  });
   const result = await bundler.build();
   const messages = formatWebpackMessages(result);
 
