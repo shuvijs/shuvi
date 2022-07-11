@@ -21,58 +21,58 @@
   "exports": {
     "./shared": {
       "import": {
-        "types": "./types/shared/index.d.ts",
+        "types": "./@types/shared/index.d.ts",
         "default": "./esm/shared/index.js"
       },
       "require": {
-        "types": "./types/shared/index.d.ts",
+        "types": "./@types/shared/index.d.ts",
         "default": "./lib/shared/index.js"
       }
     },
     "./shared/*": {
       "import": {
-        "types": "./types/shared/*.d.ts",
+        "types": "./@types/shared/*.d.ts",
         "default": "./esm/shared/*.js"
       },
       "require": {
-        "types": "./types/shared/*.d.ts",
+        "types": "./@types/shared/*.d.ts",
         "default": "./lib/shared/*.js"
       }
     },
     "./shared/loader": {
       "import": {
-        "types": "./types/shared/loader/index.d.ts",
+        "types": "./@types/shared/loader/index.d.ts",
         "default": "./esm/shared/loader/index.js"
       },
       "require": {
-        "types": "./types/shared/loader/index.d.ts",
+        "types": "./@types/shared/loader/index.d.ts",
         "default": "./lib/shared/loader/index.js"
       }
     },
     "./shared/store": {
       "import": {
-        "types": "./types/shared/store/index.d.ts",
+        "types": "./@types/shared/store/index.d.ts",
         "default": "./esm/shared/store/index.js"
       },
       "require": {
-        "types": "./types/shared/store/index.d.ts",
+        "types": "./@types/shared/store/index.d.ts",
         "default": "./lib/shared/store/index.js"
       }
     },
     "./node": {
-      "types": "./types/node/index.d.ts",
+      "types": "./@types/node/index.d.ts",
       "default": "./lib/node/index.js"
     },
     "./node/*": {
-      "types": "./types/node/*.d.ts",
+      "types": "./@types/node/*.d.ts",
       "default": "./lib/node/*.js"
     },
     "./shuvi-app": {
-      "types": "./types/shuvi-app/index.d.ts",
+      "types": "./@types/shuvi-app/index.d.ts",
       "default": "./esm/shuvi-app/index.js"
     },
     "./shuvi-app/*": {
-      "types": "./types/shuvi-app/*.d.ts",
+      "types": "./@types/shuvi-app/*.d.ts",
       "default": "./esm/shuvi-app/*.js"
     },
     "./src/shared/types/shuvi-app": "./src/shared/types/shuvi-app.d.ts",

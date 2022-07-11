@@ -8,7 +8,7 @@
     ],
     "module": "esnext",
     "rootDir": "./src",
-    "declarationDir": "./types"
+    "declarationDir": "./@types"
   },
   "include": [
     "src/shuvi-app",

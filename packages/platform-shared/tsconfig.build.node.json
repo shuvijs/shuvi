@@ -9,7 +9,7 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "rootDir": "./src",
-    "declarationDir": "./types"
+    "declarationDir": "./@types"
   },
   "include": [
     "src/node",
