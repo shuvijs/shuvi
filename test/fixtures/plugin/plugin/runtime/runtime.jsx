@@ -1,4 +1,4 @@
-import { createPlugin } from '@shuvi/platform-shared/lib/shared/lifecycle';
+import { createPlugin } from '@shuvi/platform-shared/shared/lifecycle';
 import { dynamic } from "@shuvi/runtime";
 
 const Hello = dynamic(() => import("./hello.jsx"), {

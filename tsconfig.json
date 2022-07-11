@@ -46,7 +46,7 @@
         "test/utils/*"
       ]
     },
-    "module": "nodenext"
+    "module": "NodeNext"
   },
   "exclude": [
     "node_modules",

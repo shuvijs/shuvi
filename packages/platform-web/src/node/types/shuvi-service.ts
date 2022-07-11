@@ -3,7 +3,7 @@ import {
   IServerMiddleware,
   ServerPluginConstructor
 } from '@shuvi/service';
-import { CreateServerApp } from '@shuvi/platform-shared/src/shared';
+import { CreateServerApp } from '@shuvi/platform-shared/shared';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IViewServer } from '../features/html-render';
 import { IApiRequestHandler } from '../features/filesystem-routes';

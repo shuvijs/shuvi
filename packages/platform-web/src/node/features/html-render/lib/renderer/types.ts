@@ -8,7 +8,7 @@ import {
   IViewClient,
   IViewServer,
   IRenderAppServerResult
-} from '@shuvi/platform-shared/src/shared';
+} from '@shuvi/platform-shared/shared';
 import { IServerPluginContext } from '@shuvi/service';
 
 export { IHtmlAttrs, IHtmlTag, IApplication };

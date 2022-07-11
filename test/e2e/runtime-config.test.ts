@@ -27,6 +27,7 @@ describe('SSR: Runtime Config', () => {
   test('should works on server-side and client-sdie', async () => {
     page = await ctx.browser.page(ctx.url('/basic'));
 
+    //await page.waitForSelector('#server-a')
     expect(await page.$text('#server-a')).toBe('a');
     expect(await page.$text('#server-b')).toBe('b');
     await page.waitForSelector('#client-a');

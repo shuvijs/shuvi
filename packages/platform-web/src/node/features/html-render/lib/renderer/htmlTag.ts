@@ -1,4 +1,4 @@
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-shared/src/shared';
+import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-shared/shared';
 import { htmlEscapeContent } from '@shuvi/utils/lib/htmlescape';
 
 /**

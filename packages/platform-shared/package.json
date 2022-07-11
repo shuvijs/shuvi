@@ -21,63 +21,61 @@
   "exports": {
     "./shared": {
       "import": {
-        "default": "./esm/shared/index.js",
-        "types": "./types/shared/index.d.ts"
+        "types": "./types/shared/index.d.ts",
+        "default": "./esm/shared/index.js"
       },
       "require": {
-        "default": "./lib/shared/index.js",
-        "types": "./types/shared/index.d.ts"
+        "types": "./types/shared/index.d.ts",
+        "default": "./lib/shared/index.js"
       }
     },
     "./shared/*": {
       "import": {
-        "default": "./esm/shared/*.js",
-        "types": "./types/shared/*.d.ts"
+        "types": "./types/shared/*.d.ts",
+        "default": "./esm/shared/*.js"
       },
       "require": {
-        "default": "./lib/shared/*.js",
-        "types": "./types/shared/*.d.ts"
+        "types": "./types/shared/*.d.ts",
+        "default": "./lib/shared/*.js"
       }
     },
     "./shared/loader": {
       "import": {
-        "default": "./esm/shared/loader/index.js",
-        "types": "./types/shared/loader/index.d.ts"
+        "types": "./types/shared/loader/index.d.ts",
+        "default": "./esm/shared/loader/index.js"
       },
       "require": {
-        "default": "./lib/shared/loader/index.js",
-        "types": "./types/shared/loader/index.d.ts"
+        "types": "./types/shared/loader/index.d.ts",
+        "default": "./lib/shared/loader/index.js"
       }
     },
     "./shared/store": {
       "import": {
-        "default": "./esm/shared/store/index.js",
-        "types": "./types/shared/store/index.d.ts"
+        "types": "./types/shared/store/index.d.ts",
+        "default": "./esm/shared/store/index.js"
       },
       "require": {
-        "default": "./lib/shared/store/index.js",
-        "types": "./types/shared/store/index.d.ts"
+        "types": "./types/shared/store/index.d.ts",
+        "default": "./lib/shared/store/index.js"
       }
     },
     "./node": {
-      "default": "./lib/node/index.js",
-      "types": "./types/node/index.d.ts"
+      "types": "./types/node/index.d.ts",
+      "default": "./lib/node/index.js"
     },
     "./node/*": {
-      "default": "./lib/node/*.js",
-      "types": "./types/node/*.d.ts"
+      "types": "./types/node/*.d.ts",
+      "default": "./lib/node/*.js"
     },
     "./shuvi-app": {
-      "default": "./esm/shuvi-app/index.js",
-      "types": "./types/shuvi-app/index.d.ts"
+      "types": "./types/shuvi-app/index.d.ts",
+      "default": "./esm/shuvi-app/index.js"
     },
     "./shuvi-app/*": {
-      "default": "./esm/shuvi-app/*.js",
-      "types": "./types/shuvi-app/*.d.ts"
+      "types": "./types/shuvi-app/*.d.ts",
+      "default": "./esm/shuvi-app/*.js"
     },
     "./src/shared/types/shuvi-app": "./src/shared/types/shuvi-app.d.ts",
-    "./src/shared": "./src/shared/index.ts",
-    "./src/shared/lifecycle": "./src/shared/lifecycle.ts",
     "./template/*": "./template/*"
   },
   "scripts": {

@@ -1,7 +1,7 @@
 import {
   createPlugin,
   RuntimePluginInstance
-} from '@shuvi/platform-shared/src/shared';
+} from '@shuvi/platform-shared/shared';
 
 export default createPlugin({
   init: () => {

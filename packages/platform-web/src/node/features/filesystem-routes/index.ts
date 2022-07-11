@@ -1,4 +1,10 @@
-import { createPlugin, IRouteConfig } from '@shuvi/service';
+import {
+  createPlugin,
+  IRouteConfig,
+  IUserRouteConfig,
+  IMiddlewareRouteConfig,
+  IApiRouteConfig
+} from '@shuvi/service';
 import {
   getPageRoutes,
   getApiRoutes,
@@ -10,19 +16,16 @@ import {
   getRoutes,
   setRoutes,
   normalizeRoutes as normalizePageRoutes,
-  IUserRouteConfig,
   generateRoutesContent as generatePageRoutesContent
 } from './page';
 import {
   middleware as getMiddlewareMiddleware,
-  generateRoutesContent as generateMiddlewareRoutesContent,
-  IMiddlewareRouteConfig
+  generateRoutesContent as generateMiddlewareRoutesContent
 } from './middleware';
 import {
   IApiRequestHandler,
   middleware as getApiMiddleware,
-  generateRoutesContent as generateApiRoutesContent,
-  IApiRouteConfig
+  generateRoutesContent as generateApiRoutesContent
 } from './api';
 import { ifComponentHasLoader } from '../html-render/lib';
 import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';

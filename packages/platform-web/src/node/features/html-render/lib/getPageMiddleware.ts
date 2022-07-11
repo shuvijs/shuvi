@@ -6,11 +6,7 @@ import {
 } from '@shuvi/service';
 import { sendHTML } from '@shuvi/service/lib/server/utils';
 import { renderToHTML } from './renderToHTML';
-import {
-  Response,
-  isRedirect,
-  isText
-} from '@shuvi/platform-shared/src/shared';
+import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
 
 function createPageHandler(serverPluginContext: IServerPluginContext) {
   return async function (req: IncomingMessage, res: ServerResponse) {

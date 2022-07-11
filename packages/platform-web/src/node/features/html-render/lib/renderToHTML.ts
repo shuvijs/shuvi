@@ -1,6 +1,6 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
-import { Response, isResponse, text } from '@shuvi/platform-shared/src/shared';
+import { Response, isResponse, text } from '@shuvi/platform-shared/shared';
 import { Renderer, IHtmlDocument } from './renderer';
 import { tag } from './renderer/htmlTag';
 
@@ -67,9 +67,12 @@ export async function renderToHTML({
     if (isResponse(doc)) {
       result = doc;
     } else {
-      addEssentialTagsIfMissing(doc);
-      await serverPluginContext.serverPluginRunner.modifyHtml(doc, app.context);
-      const htmlStr = renderer.renderDocumentToString(doc);
+      addEssentialTagsIfMissing(doc as IHtmlDocument);
+      await serverPluginContext.serverPluginRunner.modifyHtml(
+        doc as IHtmlDocument,
+        app.context
+      );
+      const htmlStr = renderer.renderDocumentToString(doc as IHtmlDocument);
       const appError = app.error.getError();
       result = text(htmlStr, {
         status:

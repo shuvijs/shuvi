@@ -1,6 +1,6 @@
 /// <reference path="../types/shuvi-app.d.ts" />
 
-export * from '@shuvi/platform-web/lib/types/shuvi-service';
+export * from '@shuvi/platform-web/lib/node/types/shuvi-service';
 
 export {
   defineConfig,
@@ -8,4 +8,4 @@ export {
   createPlugin,
   createServerPlugin
 } from '@shuvi/service';
-export { createPlugin as createRuntimePlugin } from '@shuvi/platform-shared/src/shared';
+export { createPlugin as createRuntimePlugin } from '@shuvi/platform-shared/shared';

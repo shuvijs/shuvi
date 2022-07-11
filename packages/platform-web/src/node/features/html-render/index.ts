@@ -33,5 +33,5 @@ const core = createPlugin({
 
 export default {
   core,
-  types: '@shuvi/platform-web/esm/features/html-render/shuvi-app'
+  types: '@shuvi/platform-web/esm/node/features/html-render/shuvi-app'
 };

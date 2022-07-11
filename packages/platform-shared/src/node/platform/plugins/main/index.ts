@@ -1,6 +1,10 @@
 import { createPlugin } from '@shuvi/service';
 import { extendedHooks } from './hooks';
-import { resolveRuntimeFile, resolveRuntimeLibFile } from '../../../utils';
+import {
+  resolveTypeFile,
+  resolveRuntimeFile,
+  resolveRuntimeLibFile
+} from '../../../utils';
 
 const core = createPlugin({
   setup: ({ addHooks }) => {
@@ -17,7 +21,7 @@ const core = createPlugin({
       exported: '{ getPageData }'
     },
     {
-      source: resolveRuntimeFile('loader'),
+      source: resolveTypeFile('loader'),
       exported: '{ type Loader }'
     },
     {
@@ -29,5 +33,5 @@ const core = createPlugin({
 
 export default {
   core,
-  types: '@shuvi/platform-shared/esm/node/platform/plugins/main/shuvi-app'
+  types: '@shuvi/platform-shared/lib/node/platform/plugins/main/shuvi-app'
 };

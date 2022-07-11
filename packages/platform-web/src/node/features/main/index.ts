@@ -11,7 +11,7 @@ import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import {
   setRuntimeConfig,
   setPublicRuntimeConfig
-} from '@shuvi/platform-shared/src/shared';
+} from '@shuvi/platform-shared/shared';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/node';
@@ -95,6 +95,6 @@ export const getPlugin = (
   });
   return {
     core,
-    types: '@shuvi/platform-web/esm/features/main/shuvi-app'
+    types: '@shuvi/platform-web/esm/node/features/main/shuvi-app'
   };
 };

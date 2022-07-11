@@ -1,5 +1,5 @@
 import { IStoreManager } from '@shuvi/redox';
-import { createPlugin } from '@shuvi/platform-shared/src/shared';
+import { createPlugin } from '@shuvi/platform-shared/shared';
 import { RedoxWrapper } from './RedoxWrapper';
 
 export default createPlugin({

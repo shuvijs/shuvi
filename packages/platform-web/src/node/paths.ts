@@ -1,6 +1,6 @@
 import { resolve, dirname, join } from 'path';
 
-export const PACKAGE_DIR = resolve(__dirname, '..', 'esm');
+export const PACKAGE_DIR = resolve(__dirname, '..', '..', 'esm');
 
 export const resolveAppFile = (...paths: string[]) =>
   `${resolve(PACKAGE_DIR, 'shuvi-app', ...paths)}`;
