@@ -3,8 +3,6 @@ import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { PACKAGE_DIR } from '../../../paths';
-import { BUILD_CLIENT_RUNTIME_REACT_REFRESH } from '../constants';
-import serverPlugin from './insertReactRefreshEntryFile';
 import { DefinePlugin } from 'webpack';
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
@@ -68,20 +66,22 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
         )
       }
     ]);
-    config.merge({
-      entry: {
-        [BUILD_CLIENT_RUNTIME_REACT_REFRESH]: [
-          require.resolve(`@next/react-refresh-utils/runtime`)
-        ]
-      }
-    });
   }
   return config;
 };
 
 export default {
   core: createPlugin({
-    configWebpack
-  }),
-  server: serverPlugin
+    configWebpack,
+    addEntryCode(context) {
+      if (context.mode === 'development') {
+        const fastRefreshRuntime = require.resolve(
+          `@next/react-refresh-utils/runtime`
+        );
+        return `import "${fastRefreshRuntime}"`;
+      } else {
+        return '';
+      }
+    }
+  })
 };

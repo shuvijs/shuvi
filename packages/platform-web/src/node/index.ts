@@ -22,12 +22,10 @@ const platform: IPlatform = async (
   const platformFrameworkContent = await platformFramework();
 
   const platformModule = platformFrameworkContent.platformModule as string;
-  const entry = `import "${resolveAppFile('entry', 'client')}"`;
   const polyfills = platformFrameworkContent.polyfills as string[];
 
   const getPresetRuntimeFiles = getPresetRuntimeFilesCreator(
     platformModule,
-    entry,
     polyfills
   );
 

@@ -1,6 +1,6 @@
 import { fileUtils } from '@shuvi/service/lib/project';
-import { defineFile } from '../..';
-import { ProjectContext } from '../../../projectContext';
+import { defineFile } from '../../..';
+import { ProjectContext } from '../../../../projectContext';
 import * as os from 'os';
 
 export default (context: ProjectContext) =>
@@ -20,6 +20,12 @@ export default (context: ProjectContext) =>
           body += `${snippet.body}${os.EOL}`;
         }
       }
-      return `${imports}${os.EOL}${body}`;
+
+      const content = `${imports}${os.EOL}${body}`;
+      if (content.trim() === '') {
+        return '// empty entry';
+      } else {
+        return content;
+      }
     }
   });
