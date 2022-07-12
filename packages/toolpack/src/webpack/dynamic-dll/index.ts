@@ -40,7 +40,7 @@ export class DynamicDll {
 
   constructor(opts: IOpts) {
     this._opts = opts;
-    this._dir = join(opts.dir, NAME);
+    this._dir = opts.dir;
     this._resolveWebpackModule = opts.resolveWebpackModule || require;
 
     this._bundler = new Bundler();

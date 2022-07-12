@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
@@ -26,7 +27,7 @@ export async function getDevMiddleware(
 
   if (serverPluginContext.config.experimental.preBundle) {
     dynamicDll = new DynamicDll({
-      dir: serverPluginContext.paths.cacheDir,
+      dir: path.join(serverPluginContext.paths.cacheDir, 'dll'),
       exclude: [/react-refresh/]
     });
   }
