@@ -9,7 +9,7 @@ describe('collectDeps', () => {
 
     expect(result.imports).toBe('');
     expect(result.body).toBe(trim`
-    const add=(a,b)=>a+b;
+    const add = (a, b) => a + b;
   `);
   });
 
@@ -19,8 +19,8 @@ describe('collectDeps', () => {
     const Hello = () => <div>hello</div>
   `);
 
-    expect(result.imports).toBe(`import React from'react';`);
-    expect(result.body).toBe(trim`const Hello=()=><div>hello</div>;`);
+    expect(result.imports).toBe(`import React from 'react';`);
+    expect(result.body).toBe(trim`const Hello = () => <div>hello</div>;`);
   });
 
   test('should split multiple imports and multiple code', () => {
@@ -31,11 +31,12 @@ describe('collectDeps', () => {
     document.write('hello')
   `);
 
-    expect(result.imports).toBe(
-      `import React from'react';import _ from'lodash';`
+    expect(result.imports).toEqual(
+      [`import React from 'react';`, `import _ from 'lodash';`].join('\n')
     );
-    expect(result.body).toBe(
-      trim`const Hello=()=><div>hello</div>;document.write('hello');`
-    );
+    expect(result.body.split('\n').filter(s => Boolean(s))).toEqual([
+      `const Hello = () => <div>hello</div>;`,
+      `document.write('hello');`
+    ]);
   });
 });
