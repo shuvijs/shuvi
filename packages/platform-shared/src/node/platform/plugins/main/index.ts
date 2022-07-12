@@ -33,5 +33,5 @@ const core = createPlugin({
 
 export default {
   core,
-  types: '@shuvi/platform-shared/lib/node/platform/plugins/main/shuvi-app'
+  types: '@shuvi/platform-shared/@types/node/platform/plugins/main/shuvi-app'
 };
