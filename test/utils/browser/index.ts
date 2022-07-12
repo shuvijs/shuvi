@@ -1,6 +1,6 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
-import puppeteer, { ConsoleMessage, WaitForOptions } from 'puppeteer-core';
+import puppeteer, { ConsoleMessage, NavigationOptions } from 'puppeteer-core';
 import * as qs from 'querystring';
 import ChromeDetector from './chrome';
 
@@ -20,7 +20,7 @@ export interface Page extends puppeteer.Page {
   };
 }
 
-export interface PageOptions extends WaitForOptions {
+export interface PageOptions extends NavigationOptions {
   disableJavaScript?: boolean;
 }
 

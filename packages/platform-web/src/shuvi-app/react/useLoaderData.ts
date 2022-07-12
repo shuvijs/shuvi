@@ -2,7 +2,7 @@ import { useMatchedRoute } from '@shuvi/router-react';
 import {
   IPageRouteRecord,
   getLoaderManager
-} from '@shuvi/platform-shared/esm/runtime';
+} from '@shuvi/platform-shared/shared';
 import { useRef, useEffect, useReducer } from 'react';
 
 export const noLoaderMessage =

@@ -74,8 +74,8 @@ export async function setupTypeScript(paths: IPaths) {
       console.log();
       await fs.writeJson(tsConfigPath, {});
     }
-
-    const ts = (await import(typeScriptPath!)) as TypeScriptModule;
+    // @ts-ignore
+    const { default: ts } = (await import(typeScriptPath!)) as TypeScriptModule;
     const tsConfig = await getTsConfig(ts, tsConfigPath);
     tsCompilerOptions = tsConfig.options;
     await writeDefaultConfigurations(ts, tsConfigPath, tsConfig, paths);

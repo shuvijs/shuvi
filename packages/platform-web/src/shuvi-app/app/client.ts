@@ -11,8 +11,8 @@ import {
   isRedirect,
   isResponse,
   LoaderDataRecord
-} from '@shuvi/platform-shared/esm/runtime';
-import application from '@shuvi/platform-shared/esm/shuvi-app/application';
+} from '@shuvi/platform-shared/shared';
+import application from '@shuvi/platform-shared/shuvi-app/application';
 import {
   createRouter,
   History,
