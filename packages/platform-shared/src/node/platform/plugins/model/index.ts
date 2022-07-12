@@ -27,5 +27,5 @@ export default {
     plugin: resolvePluginFile('model', 'runtime')
   },
   server,
-  types: '@shuvi/platform-shared/esm/node/platform/plugins/model/shuvi-app'
+  types: '@shuvi/platform-shared/@types/node/platform/plugins/model/shuvi-app'
 };

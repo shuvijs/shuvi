@@ -11,24 +11,23 @@
   "sideEffects": [
     "**/shuvi-app/entry/client/**"
   ],
-  "main": "lib/index.js",
-  "module": "es/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/node/index.js",
+  "module": "esm/node/index.js",
+  "types": "lib/node/index.d.ts",
   "files": [
     "lib",
     "esm",
-    "shuvi-app"
+    "types"
   ],
   "scripts": {
     "dev": "run-p watch:*",
-    "watch:app": "tsc -p tsconfig.build.browser.json -w",
-    "watch:node.esm": "tsc -p tsconfig.build.node.json -m esnext --outDir esm -w",
-    "watch:node.cjs": "tsc -p tsconfig.build.node.json -m commonjs --outDir lib -w",
-    "prebuild": "rimraf lib esm shuvi-app",
+    "watch:esm": "tsc -p tsconfig.build.browser.json -w",
+    "watch:cjs": "tsc -p tsconfig.build.node.json -w",
+    "prebuild": "rimraf lib esm types",
     "build": "run-p build:*",
-    "build:app": "tsc -p tsconfig.build.browser.json",
-    "build:node.esm": "tsc -p tsconfig.build.node.json -m esnext --outDir esm",
-    "build:node.cjs": "tsc -p tsconfig.build.node.json -m commonjs --outDir lib"
+    "build:esm": "tsc -p tsconfig.build.node.json -m esnext --outDir esm",
+    "build:cjs": "tsc -p tsconfig.build.node.json",
+    "build:app": "tsc -p tsconfig.build.browser.json"
   },
   "engines": {
     "node": ">= 12.0.0"

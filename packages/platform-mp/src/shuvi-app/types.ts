@@ -1,4 +1,4 @@
-import { IAppState } from '@shuvi/platform-shared/esm/runtime';
+import { IAppState } from '@shuvi/platform-shared/shared';
 
 export type IReactAppData = {
   appProps?: Record<string, any>;
