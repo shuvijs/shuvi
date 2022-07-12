@@ -22,7 +22,7 @@ export const errorModel = defineModel({
       this.setError(payload || SHUVI_ERROR.APP_ERROR);
     },
     clear() {
-      if (this.hasError()) {
+      if (this.hasError) {
         this.setError(undefined);
       }
     }

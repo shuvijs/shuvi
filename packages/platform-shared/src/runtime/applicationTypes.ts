@@ -36,10 +36,10 @@ export type IAppState = {
 };
 
 export interface IErrorManager {
-  getError(): IError | undefined;
+  getError: IError | undefined;
   error: (err: IError) => void;
   clear: () => void;
-  hasError: () => boolean;
+  hasError: boolean;
 }
 
 export interface IApplication {
