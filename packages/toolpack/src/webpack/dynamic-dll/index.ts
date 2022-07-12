@@ -21,7 +21,8 @@ type IResolveWebpackModule = <T extends string>(
 ) => T extends `webpack/${infer R}` ? any : never;
 interface IOpts {
   cwd?: string;
-  dir: string;
+  rootDir: string;
+  cacheDir: string;
   resolveWebpackModule?: IResolveWebpackModule;
   include?: RegExp[];
   exclude?: RegExp[];
@@ -33,14 +34,16 @@ interface IOpts {
 export class DynamicDll {
   private _opts: IOpts;
   private _bundler: Bundler;
-  private _dir: string;
+  private _rootDir: string;
+  private _cacheDir: string;
   private _resolveWebpackModule: IResolveWebpackModule;
   private _dllPlugin: DynamicDLLPlugin;
   private _hasBuilt: boolean = false;
 
   constructor(opts: IOpts) {
     this._opts = opts;
-    this._dir = opts.dir;
+    this._cacheDir = opts.cacheDir;
+    this._rootDir = opts.rootDir;
     this._resolveWebpackModule = opts.resolveWebpackModule || require;
 
     this._bundler = new Bundler();
@@ -62,16 +65,16 @@ export class DynamicDll {
       if (snapshot[key]) {
         return false;
       }
-      return checkNotInNodeModules(key, this._dir);
+      return checkNotInNodeModules(key, this._rootDir);
     });
   }
 
   private handleSnapshot = async (snapshot: ModuleSnapshot) => {
     if (this._hasBuilt) {
-      writeUpdate(this._dir, snapshot);
+      writeUpdate(this._cacheDir, snapshot);
       return;
     }
-    const originModules = getMetadata(this._dir).modules;
+    const originModules = getMetadata(this._cacheDir).modules;
     const diffNames = this.getRemovedModules(snapshot, originModules);
     const requiredSnapshot = { ...originModules, ...snapshot };
 
@@ -100,7 +103,7 @@ export class DynamicDll {
         new RegExp(`^${DEFAULT_PUBLIC_PATH}`),
         '/'
       );
-      const filePath = join(getDllDir(this._dir), relativePath);
+      const filePath = join(getDllDir(this._cacheDir), relativePath);
       const { mtime } = statSync(filePath);
       // Get the last modification time of the file and convert the time into a world time string
       let lastModified = mtime.toUTCString();
@@ -166,7 +169,7 @@ export class DynamicDll {
 
   private async _buildDLL(snapshot: ModuleSnapshot): Promise<void> {
     await this._bundler.build(snapshot, {
-      outputDir: this._dir,
+      outputDir: this._cacheDir,
       shared: this._opts.shared,
       externals: this._opts.externals,
       esmFullSpecific: this._opts.esmFullSpecific,

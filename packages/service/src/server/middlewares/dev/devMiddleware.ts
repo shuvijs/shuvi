@@ -27,7 +27,8 @@ export async function getDevMiddleware(
 
   if (serverPluginContext.config.experimental.preBundle) {
     dynamicDll = new DynamicDll({
-      dir: path.join(serverPluginContext.paths.cacheDir, 'dll'),
+      cacheDir: path.join(serverPluginContext.paths.cacheDir, 'dll'),
+      rootDir: serverPluginContext.paths.rootDir,
       exclude: [/react-refresh/]
     });
   }
