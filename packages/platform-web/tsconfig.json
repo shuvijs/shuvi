@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
     "esModuleInterop": true
   },
-  "include": ["src"]
+  "include": ["src", "shuvi-app-extensions.d.ts"]
 }

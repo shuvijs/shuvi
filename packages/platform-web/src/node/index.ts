@@ -3,13 +3,14 @@ import {
   SharedPlugins,
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/node';
-
 import {
   featurePlugins,
   getMiddlewares,
   getMiddlewaresBeforeDevMiddlewares,
   getMainPlugin
 } from './features';
+import './types/shuvi-service';
+import { resolveToModulePath } from './paths';
 
 const platform: IPlatform = async (
   { framework = 'react' } = {},
@@ -29,7 +30,7 @@ const platform: IPlatform = async (
   );
 
   return {
-    types: '@shuvi/platform-web/esm/node/types/shuvi-service',
+    types: resolveToModulePath('node/types/shuvi-service'),
     plugins: [
       ...SharedPlugins,
       mainPlugin,

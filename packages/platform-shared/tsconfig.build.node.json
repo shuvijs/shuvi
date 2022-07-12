@@ -1,18 +1,12 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "outDir": "lib",
-    "lib": [
-      "esnext",
-      "DOM"
-    ],
-    "module": "commonjs",
+    "lib": ["esnext", "DOM"],
     "esModuleInterop": true,
+    "module": "commonjs",
     "rootDir": "./src",
-    "declarationDir": "./@types"
+    "declarationDir": "./types",
+    "outDir": "lib"
   },
-  "include": [
-    "src/node",
-    "src/shared"
-  ]
+  "include": ["src/node", "src/shared"]
 }

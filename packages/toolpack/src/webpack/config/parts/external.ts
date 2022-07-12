@@ -42,7 +42,7 @@ export function nodeExternals({
 
     const notExternalModules: Test[] = [];
     const externalModules: Test[] = [
-      /platform-shared[/\\](shared)[/\\]runtimeConfig/
+      /platform-shared[/\\]shared[/\\]shuvi-singleton-runtimeConfig/
     ];
 
     // make sure we don't externalize anything that is

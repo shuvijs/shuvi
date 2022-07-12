@@ -2,10 +2,11 @@ import * as path from 'path';
 import { createPlugin } from '@shuvi/service';
 import { resolveLib } from '../../../paths';
 
+// todo: optimize this
 const runtimePath = require.resolve(
   path.join(
     __dirname,
-    '../../../../../esm/node/targets/react/redox-react/runtime'
+    '../../../../../lib/node/targets/react/redox-react/runtime'
   )
 );
 const core = createPlugin({

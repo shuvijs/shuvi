@@ -7,6 +7,7 @@ import { CreateServerApp } from '@shuvi/platform-shared/shared';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IViewServer } from '../features/html-render';
 import { IApiRequestHandler } from '../features/filesystem-routes';
+import '../features/main/shuvi-app';
 import '../features/html-render/shuvi-app';
 
 interface IApiHandler {

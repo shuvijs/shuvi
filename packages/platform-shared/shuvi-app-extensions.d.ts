@@ -8,7 +8,6 @@ declare module '@shuvi/app/core/error' {
 }
 
 declare module '@shuvi/app/core/platform' {
-  import React from 'react';
   import {
     IPageRouteRecord,
     IRawPageRouteRecord,
@@ -31,7 +30,7 @@ declare module '@shuvi/app/core/plugins' {
 
 declare module '@shuvi/app/core/runtimeConfig' {
   import { IRuntimeConfig } from '@shuvi/platform-shared/shared';
-  declare const runtimneConfig: IRuntimeConfig | null;
+  const runtimneConfig: IRuntimeConfig | null;
   export default runtimneConfig;
 }
 
