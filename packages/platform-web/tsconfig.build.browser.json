@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "jsx": "preserve",
-    "outDir": "shuvi-app"
+    "outDir": "esm",
+    "rootDir": "./src"
   },
   "include": [
     "src/shuvi-app"

@@ -14,12 +14,12 @@ import {
   withExts
 } from '@shuvi/utils/lib/file';
 import { rankRouteBranches } from '@shuvi/router';
-import { getPageRoutes } from '@shuvi/platform-shared/lib/node';
+import { getPageRoutes } from '@shuvi/platform-shared/node';
 import { FileOptions } from '@shuvi/service/lib/project';
 import {
   SharedPlugins,
   getPresetRuntimeFilesCreator
-} from '@shuvi/platform-shared/lib/node';
+} from '@shuvi/platform-shared/node';
 import { isEmptyObject, readConfig } from '@tarojs/helper';
 import {
   UnRecursiveTemplate,

@@ -6,7 +6,7 @@ import { InitialEntry, createRouter, IRouter } from '@shuvi/router';
 import { createMpHistory } from './mpHistory';
 import { Router, RouterView, IRouteRecord } from '@shuvi/router-react';
 import { __DEV__ } from './constants';
-import AppContainer from '@shuvi/platform-web/shuvi-app/react/AppContainer';
+import AppContainer from '@shuvi/platform-web/esm/shuvi-app/react/AppContainer';
 
 export interface IMpRouterProps {
   basename?: string;

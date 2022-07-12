@@ -1,6 +1,6 @@
 import { AsyncParallelHook } from '@shuvi/hook';
 import type { IStoreManager } from '@shuvi/redox';
-import { IAppContext } from '../../../../runtime';
+import { IAppContext } from '../../../../shared';
 
 declare module '@shuvi/runtime' {
   export interface CustomAppContext {

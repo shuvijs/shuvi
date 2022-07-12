@@ -1,5 +1,5 @@
 import { IStoreManager, redox } from '@shuvi/redox';
-import { createPlugin, getPageData, IAppContext } from '../../../../runtime';
+import { createPlugin, getPageData, IAppContext } from '../../../../shared';
 
 export type InitRedox = (params: {
   initialState: any;

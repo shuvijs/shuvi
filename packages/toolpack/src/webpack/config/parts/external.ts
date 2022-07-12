@@ -42,7 +42,7 @@ export function nodeExternals({
 
     const notExternalModules: Test[] = [];
     const externalModules: Test[] = [
-      /platform-shared[/\\](lib|esm)[/\\]runtime[/\\]runtimeConfig/
+      /platform-shared[/\\](shared)[/\\]runtimeConfig/
     ];
 
     // make sure we don't externalize anything that is

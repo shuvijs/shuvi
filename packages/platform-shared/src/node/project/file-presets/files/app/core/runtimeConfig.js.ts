@@ -1,5 +1,5 @@
 import { defineFile } from '../../..';
-import { getPublicRuntimeConfig } from '../../../../../../runtime/runtimeConfig';
+import { getPublicRuntimeConfig } from '../../../../../../shared/runtimeConfig';
 import { ProjectContext } from '../../../../projectContext';
 
 export default (context: ProjectContext) =>

@@ -3,7 +3,9 @@
   "compilerOptions": {
     "lib": ["esnext", "DOM"],
     "module": "commonjs",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "outDir": "lib",
+    "rootDir": "./src"
   },
-  "include": ["src/lib"]
+  "include": ["src/node"]
 }

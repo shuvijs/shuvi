@@ -18,9 +18,6 @@
       "@shuvi/libs/lib/*": [
         "packages/libs/src/*"
       ],
-      "@shuvi/platform-shared/lib/*": [
-        "packages/platform-shared/src/*"
-      ],
       "@shuvi/platform-mp/lib/*": [
         "packages/platform-mp/src/*"
       ],
@@ -48,7 +45,8 @@
       "shuvi-test-utils/*": [
         "test/utils/*"
       ]
-    }
+    },
+    "module": "NodeNext"
   },
   "exclude": [
     "node_modules",

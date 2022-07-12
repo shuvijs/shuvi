@@ -1,3 +1,3 @@
 export * from './platform';
-export * from '../runtime/runtimeConfig';
+export * from '../shared/runtimeConfig';
 export * from './route';

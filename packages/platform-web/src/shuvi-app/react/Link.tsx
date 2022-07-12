@@ -8,7 +8,7 @@ import {
   IRouter,
   PathRecord,
   getFilesOfRoute
-} from '@shuvi/platform-shared/lib/runtime';
+} from '@shuvi/platform-shared/shared';
 import useIntersection from './utils/useIntersection';
 
 const ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z\d+\-.]*?:/;
