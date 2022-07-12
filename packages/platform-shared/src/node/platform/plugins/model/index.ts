@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { createPlugin } from '@shuvi/service';
-import server from './server';
+import { resolveToModulePath, resolvePluginFile } from '../../../paths';
 import './shuvi-app';
-import { resolvePluginFile } from '../../../utils';
+import server from './server';
 
 const resolveLib = (module: string) =>
   path.dirname(require.resolve(path.join(module, 'package.json')));
@@ -24,8 +24,9 @@ const core = createPlugin({
 export default {
   core,
   runtime: {
+    // FIXIME: only receive a absolute path, should be able to receive a module path
     plugin: resolvePluginFile('model', 'runtime')
   },
   server,
-  types: '@shuvi/platform-shared/@types/node/platform/plugins/model/shuvi-app'
+  types: resolveToModulePath('node/platform/plugins/model/shuvi-app')
 };

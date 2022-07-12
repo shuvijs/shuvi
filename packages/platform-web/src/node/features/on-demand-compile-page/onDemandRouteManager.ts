@@ -4,7 +4,7 @@ import { clientManifest } from '@shuvi/service/lib/resources';
 import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { getRoutes } from '../filesystem-routes';
+import { getRoutes } from '../filesystem-routes/index';
 
 function acceptsHtml(
   header: string,

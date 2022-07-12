@@ -1,10 +1,7 @@
 import { createPlugin } from '@shuvi/service';
+import { resolveToModulePath } from '../../../paths';
+import './shuvi-app';
 import { extendedHooks } from './hooks';
-import {
-  resolveTypeFile,
-  resolveRuntimeFile,
-  resolveRuntimeLibFile
-} from '../../../utils';
 
 const core = createPlugin({
   setup: ({ addHooks }) => {
@@ -12,20 +9,14 @@ const core = createPlugin({
   },
   addRuntimeService: () => [
     {
-      // must be lib, because this module won't be bundled
-      source: resolveRuntimeLibFile('runtimeConfig'),
+      // must be export separately, we need the module path to always be the
+      // same as what we've defined in
+      // "packages/toolpack/src/webpack/config/parts/external.ts"
+      source: resolveToModulePath('shared/shuvi-singleton-runtimeConfig'),
       exported: '{ getRuntimeConfig }'
     },
     {
-      source: resolveRuntimeFile('helper', 'getPageData'),
-      exported: '{ getPageData }'
-    },
-    {
-      source: resolveTypeFile('loader'),
-      exported: '{ type Loader }'
-    },
-    {
-      source: resolveRuntimeFile('runtimePublicExport'),
+      source: resolveToModulePath('shuvi-app/shuvi-runtime-api'),
       exported: '*'
     }
   ]
@@ -33,5 +24,5 @@ const core = createPlugin({
 
 export default {
   core,
-  types: '@shuvi/platform-shared/@types/node/platform/plugins/main/shuvi-app'
+  types: resolveToModulePath('node/platform/plugins/main/shuvi-app')
 };

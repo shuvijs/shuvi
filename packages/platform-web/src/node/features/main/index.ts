@@ -11,19 +11,19 @@ import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
 import {
   setRuntimeConfig,
   setPublicRuntimeConfig
-} from '@shuvi/platform-shared/shared';
+} from '@shuvi/platform-shared/shared/shuvi-singleton-runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/node';
 import generateResource from './generateResource';
-import { resolveAppFile } from '../../paths';
+import { resolveToModulePath } from '../../paths';
 import { appRoutes } from './hooks';
 import { buildHtml } from './buildHtml';
 import { getMiddlewares } from '../middlewares';
 
 function getServerEntry(): IWebpackEntry {
   return {
-    [BUILD_SERVER_FILE_SERVER]: [resolveAppFile('entry', 'server')]
+    [BUILD_SERVER_FILE_SERVER]: [resolveToModulePath('shuvi-app/entry/server')]
   };
 }
 
@@ -77,7 +77,9 @@ export const getPlugin = (
       chain.merge({
         entry: {
           [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill'],
-          [BUILD_CLIENT_RUNTIME_MAIN]: [resolveAppFile('entry', 'client')]
+          [BUILD_CLIENT_RUNTIME_MAIN]: [
+            resolveToModulePath('shuvi-app/entry/client')
+          ]
         }
       });
       return chain;
@@ -95,6 +97,6 @@ export const getPlugin = (
   });
   return {
     core,
-    types: '@shuvi/platform-web/esm/node/features/main/shuvi-app'
+    types: resolveToModulePath('node/features/main/shuvi-app')
   };
 };

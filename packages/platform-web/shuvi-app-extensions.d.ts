@@ -1,4 +1,4 @@
-/// <reference types="@shuvi/platform-shared/src/shared/types/shuvi-app" />
+/// <reference types="@shuvi/platform-shared/shuvi-app-extensions.d.ts" />
 
 declare module '@shuvi/app/files/routerConfig' {
   import { ILoaderOptions } from '@shuvi/platform-shared/shared/loader';
@@ -12,19 +12,19 @@ declare module '@shuvi/app/files/routes' {
 }
 
 declare module '@shuvi/app/files/apiRoutes' {
-  import { IApiRoutes } from '@shuvi/platform-web/esm/node/types';
+  import { IApiRoutes } from '@shuvi/platform-web/node/types/shuvi-service';
   declare const apiRoutes: IApiRoutes[];
   export default apiRoutes;
 }
 
 declare module '@shuvi/app/files/middlewareRoutes' {
-  import { IMiddlewareRoutes } from '@shuvi/platform-web/esm/node/types';
+  import { IMiddlewareRoutes } from '@shuvi/platform-web/node/types/shuvi-service';
   declare const middlewareRoutes: IMiddlewareRoutes[];
   export default middlewareRoutes;
 }
 
 declare module '@shuvi/app/files/user/server' {
-  import { IServerModule } from '@shuvi/platform-web/esm/node/types/shuvi-service';
+  import { IServerModule } from '@shuvi/platform-web/node/types/shuvi-service';
   declare const server: IServerModule;
   export default server;
 }

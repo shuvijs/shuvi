@@ -1,7 +1,6 @@
 export * from './helper';
 export * from './routerTypes';
 export * from './router';
-export * from './runtimeConfig';
 
 export * from './response';
 export * from './loader';

@@ -1,7 +1,8 @@
 import { createPlugin } from '@shuvi/service';
-import { extendedHooks } from './hooks';
+import { extendedHooks, IHandlePageRequest } from './hooks';
+import { resolveToModulePath } from '../../paths';
 
-export { IHandlePageRequest } from './hooks';
+export type { IHandlePageRequest };
 export {
   getPageMiddleware,
   IHtmlDocument,
@@ -33,5 +34,5 @@ const core = createPlugin({
 
 export default {
   core,
-  types: '@shuvi/platform-web/esm/node/features/html-render/shuvi-app'
+  types: resolveToModulePath('node/features/html-render/shuvi-app')
 };

@@ -11,23 +11,66 @@
   "sideEffects": [
     "**/shuvi-app/entry/client/**"
   ],
-  "main": "lib/node/index.js",
-  "module": "esm/node/index.js",
-  "types": "lib/node/index.d.ts",
   "files": [
     "lib",
     "esm",
-    "types"
+    "types",
+    "shuvi-app-extensions.d.ts"
   ],
+  "exports": {
+    ".": {
+      "types": "./lib/node/index.d.ts",
+      "default": "./lib/node/index.js"
+    },
+    "./shared": {
+      "import": {
+        "types": "./types/shared/index.d.ts",
+        "default": "./esm/shared/index.js"
+      },
+      "require": {
+        "types": "./types/shared/index.d.ts",
+        "default": "./lib/shared/index.js"
+      }
+    },
+    "./shared/*": {
+      "import": {
+        "types": "./types/shared/*.d.ts",
+        "default": "./esm/shared/*.js"
+      },
+      "require": {
+        "types": "./types/shared/*.d.ts",
+        "default": "./lib/shared/*.js"
+      }
+    },
+    "./node": {
+      "types": "./types/node/index.d.ts",
+      "default": "./lib/node/index.js"
+    },
+    "./node/*": {
+      "types": "./types/node/*.d.ts",
+      "default": "./lib/node/*.js"
+    },
+    "./shuvi-app": {
+      "types": "./types/shuvi-app/index.d.ts",
+      "default": "./esm/shuvi-app/index.js"
+    },
+    "./shuvi-app/*": {
+      "types": "./types/shuvi-app/*.d.ts",
+      "default": [
+        "./esm/shuvi-app/*.js",
+        "./esm/shuvi-app/*.jsx"
+      ]
+    },
+    "./shuvi-app-extensions.d.ts": "./shuvi-app-extensions.d.ts"
+  },
   "scripts": {
     "dev": "run-p watch:*",
     "watch:esm": "tsc -p tsconfig.build.browser.json -w",
     "watch:cjs": "tsc -p tsconfig.build.node.json -w",
     "prebuild": "rimraf lib esm types",
     "build": "run-p build:*",
-    "build:esm": "tsc -p tsconfig.build.node.json -m esnext --outDir esm",
-    "build:cjs": "tsc -p tsconfig.build.node.json",
-    "build:app": "tsc -p tsconfig.build.browser.json"
+    "build:esm": "tsc -p tsconfig.build.browser.json",
+    "build:cjs": "tsc -p tsconfig.build.node.json"
   },
   "engines": {
     "node": ">= 12.0.0"
