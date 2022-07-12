@@ -53,8 +53,8 @@ const user = defineModel(
       one() {
         return this.$dep.dome.number;
       },
-      double(args: number): string {
-        return `state.id=>${this.$state.id}, args=>${args},views.one=>${this.one}`;
+      double(): string {
+        return `state.id=>${this.$state.id},views.one=>${this.one}`;
       }
     }
   },
@@ -64,9 +64,9 @@ const user = defineModel(
 const selector = function (stateAndViews: ISelectorParams<typeof user>) {
   return {
     stateData: stateAndViews.id,
-    one: stateAndViews.one(),
-    double: stateAndViews.double(3),
-    d: stateAndViews.d().number
+    one: stateAndViews.one,
+    double: stateAndViews.double,
+    d: stateAndViews.d.number
   };
 };
 
