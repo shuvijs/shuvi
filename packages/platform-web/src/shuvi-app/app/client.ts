@@ -58,7 +58,7 @@ export function createApp(options: {
   const hasHydrateData = Object.keys(loadersData).length > 0;
   const loaderManager = getLoaderManager();
   let shouldHydrate = ssr && hasHydrateData;
-  let hasServerError = app.error.hasError();
+  let hasServerError = app.error.hasError;
 
   router.beforeResolve(async (to, from, next) => {
     if (shouldHydrate) {

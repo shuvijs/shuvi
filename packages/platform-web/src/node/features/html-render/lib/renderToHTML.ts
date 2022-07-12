@@ -67,13 +67,10 @@ export async function renderToHTML({
     if (isResponse(doc)) {
       result = doc;
     } else {
-      addEssentialTagsIfMissing(doc as IHtmlDocument);
-      await serverPluginContext.serverPluginRunner.modifyHtml(
-        doc as IHtmlDocument,
-        app.context
-      );
-      const htmlStr = renderer.renderDocumentToString(doc as IHtmlDocument);
-      const appError = app.error.getError();
+      addEssentialTagsIfMissing(doc);
+      await serverPluginContext.serverPluginRunner.modifyHtml(doc, app.context);
+      const htmlStr = renderer.renderDocumentToString(doc);
+      const appError = app.error.getError;
       result = text(htmlStr, {
         status:
           appError && typeof appError.code !== 'undefined' ? appError.code : 200

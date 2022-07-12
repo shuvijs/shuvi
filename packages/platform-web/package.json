@@ -36,7 +36,7 @@
     "@next/react-refresh-utils": "12.1.6",
     "@shuvi/hook": "0.0.1-pre.10",
     "@shuvi/platform-shared": "0.0.1-pre.10",
-    "@shuvi/redox-react": "0.0.2",
+    "@shuvi/redox-react": "0.0.3",
     "@shuvi/router": "0.0.1-pre.10",
     "@shuvi/router-react": "0.0.1-pre.10",
     "@shuvi/runtime": "0.0.1-pre.10",
@@ -57,7 +57,7 @@
     "use-sync-external-store": "1.1.0"
   },
   "devDependencies": {
-    "@shuvi/redox": "0.0.2",
+    "@shuvi/redox": "0.0.3",
     "@testing-library/react": "^10.0.2",
     "@types/content-type": "^1.1.5",
     "@types/cookie": "^0.4.1",
