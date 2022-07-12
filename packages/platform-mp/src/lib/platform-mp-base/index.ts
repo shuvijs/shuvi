@@ -348,7 +348,7 @@ export default abstract class PlatformMpBase {
         const pageFiles = getAllFiles(context.resolveAppFile('files', 'pages'));
 
         const entry: Record<string, Record<string, any>> = {
-          app: [context.resolveAppFile('entry')],
+          app: [context.resolveAppFile('core', 'entry')],
           comp: [resolveAppFile('template', 'comp')],
           'custom-wrapper': [resolveAppFile('template', 'custom-wrapper')]
         };
