@@ -15,7 +15,8 @@
   "files": [
     "lib",
     "esm",
-    "shuvi-app"
+    "shuvi-app",
+    "shuvi-app-extensions.d.ts"
   ],
   "scripts": {
     "dev": "run-p watch:*",

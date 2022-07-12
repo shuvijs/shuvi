@@ -3,53 +3,18 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shuvi/toolpack/lib/*": [
-        "packages/toolpack/src/*"
-      ],
-      "@shuvi/hook/lib/*": [
-        "packages/hook/src/*"
-      ],
-      "@shuvi/service/lib/*": [
-        "packages/service/src/*"
-      ],
-      "@shuvi/utils/lib/*": [
-        "packages/utils/src/*"
-      ],
-      "@shuvi/libs/lib/*": [
-        "packages/libs/src/*"
-      ],
-      "@shuvi/platform-mp/lib/*": [
-        "packages/platform-mp/src/*"
-      ],
-      "@shuvi/shared/lib/*": [
-        "packages/shared/src/*"
-      ],
-      "@shuvi/router": [
-        "packages/router/src/index"
-      ],
-      "@shuvi/router-react/lib/*": [
-        "packages/router-react/src/*"
-      ],
-      "@shuvi/router-mp/lib/*": [
-        "packages/router-mp/src/*"
-      ],
-      "@shuvi/*": [
-        "packages/*/src"
-      ],
-      "shuvi/lib/*": [
-        "packages/shuvi/src/*"
-      ],
-      "shuvi-test-utils": [
-        "test/utils/index"
-      ],
-      "shuvi-test-utils/*": [
-        "test/utils/*"
-      ]
-    },
-    "module": "NodeNext"
+      "@shuvi/toolpack/lib/*": ["packages/toolpack/src/*"],
+      "@shuvi/hook/lib/*": ["packages/hook/src/*"],
+      "@shuvi/service/lib/*": ["packages/service/src/*"],
+      "@shuvi/utils/lib/*": ["packages/utils/src/*"],
+      "@shuvi/libs/lib/*": ["packages/libs/src/*"],
+      "@shuvi/router": ["packages/router/src/index"],
+      "@shuvi/router-react/lib/*": ["packages/router-react/src/*"],
+      "@shuvi/*": ["packages/*/src"],
+      "shuvi/lib/*": ["packages/shuvi/src/*"],
+      "shuvi-test-utils": ["test/utils/index"],
+      "shuvi-test-utils/*": ["test/utils/*"]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "test/fixtures"
-  ]
+  "exclude": ["node_modules", "test/fixtures"]
 }
