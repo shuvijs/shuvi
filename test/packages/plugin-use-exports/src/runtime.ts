@@ -1,9 +1,9 @@
 import {
-  createPlugin,
+  createRuntimePlugin,
   RuntimePluginInstance
 } from '@shuvi/platform-shared/shared';
 
-export default createPlugin({
+export default createRuntimePlugin({
   init: () => {
     console.warn('plugin-use-exports runtime');
   }

@@ -1,0 +1,6 @@
+{
+  "name": "fixture-loader", 
+  "dependencies": {
+    "shuvi": "workspace:*"
+  }
+}

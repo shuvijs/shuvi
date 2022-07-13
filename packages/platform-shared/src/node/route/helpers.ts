@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import { join, extname, basename } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import invariant from '@shuvi/utils/lib/invariant';
@@ -171,7 +171,7 @@ export const hasAllowFiles = (files: string[]): boolean =>
   files.some(file => isRouteFile(file));
 
 export const readDir = (fullPath: string) => {
-  return fs.readdir(fullPath, { encoding: 'utf-8' });
+  return fs.promises.readdir(fullPath, { encoding: 'utf-8' });
 };
 
 export const hasRouteChildren = async (

@@ -19,23 +19,18 @@
   ],
   "exports": {
     ".": {
-      "types": "./lib/node/index.d.ts",
       "default": "./lib/node/index.js"
     },
     "./node": {
-      "types": "./types/node/index.d.ts",
       "default": "./lib/node/index.js"
     },
     "./node/*": {
-      "types": "./types/node/*.d.ts",
       "default": "./lib/node/*.js"
     },
     "./shuvi-app": {
-      "types": "./types/shuvi-app/index.d.ts",
       "default": "./esm/shuvi-app/index.js"
     },
     "./shuvi-app/*": {
-      "types": "./types/shuvi-app/*.d.ts",
       "default": [
         "./esm/shuvi-app/*.js",
         "./esm/shuvi-app/*.jsx"

@@ -8,11 +8,11 @@ export function middleware(ctx: IServerPluginContext): IRequestHandlerWithNext {
     const { apiRoutes } = server;
     const commonApiConfig = ctx.config.apiConfig || {};
     let tempApiModule;
-    for (const { path, handler } of apiRoutes) {
+    for (const { path, api } of apiRoutes) {
       const match = matchPathname(path, req.pathname);
       if (match) {
         req.params = match.params;
-        tempApiModule = handler;
+        tempApiModule = api;
         break;
       }
     }

@@ -42,7 +42,7 @@ export function nodeExternals({
 
     const notExternalModules: Test[] = [];
     const externalModules: Test[] = [
-      /platform-shared[/\\]shared[/\\]shuvi-singleton-runtimeConfig/
+      /platform-shared[/\\](esm|lib)[/\\]shared[/\\]shuvi-singleton-runtimeConfig/
     ];
 
     // make sure we don't externalize anything that is
@@ -50,6 +50,7 @@ export function nodeExternals({
     if (match(request, include)) {
       return transpiled();
     }
+
     if (match(request, AppSourceRegexs)) {
       return transpiled();
     }

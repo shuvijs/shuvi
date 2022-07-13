@@ -287,7 +287,9 @@ class Api {
     }
 
     if (types) {
-      this.addRuntimeTypesPatch(types);
+      ([] as string[]).concat(types).forEach(type => {
+        this.addRuntimeTypesPatch(type);
+      });
     }
 
     return {

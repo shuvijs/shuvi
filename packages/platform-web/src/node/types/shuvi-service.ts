@@ -1,6 +1,5 @@
 import {
   IRequestHandlerWithNext,
-  IServerMiddleware,
   ServerPluginConstructor
 } from '@shuvi/service';
 import { CreateAppServer } from '../../shared';
@@ -10,31 +9,38 @@ import { IApiRequestHandler } from '../features/filesystem-routes';
 import '../features/main/shuvi-app';
 import '../features/html-render/shuvi-app';
 
-interface IApiHandler {
-  default: IApiRequestHandler;
-  config?: {
-    apiConfig?: {
-      bodyParser?:
-        | {
-            sizeLimit: number | string;
-          }
-        | boolean;
-    };
+export { IApiRequestHandler };
+
+export interface IApiConfig {
+  apiConfig?: {
+    bodyParser?:
+      | {
+          sizeLimit: number | string;
+        }
+      | boolean;
   };
+}
+
+export interface IApiHandler {
+  default: IApiRequestHandler;
+  config?: IApiConfig;
+}
+
+export interface IMiddlewareConfig {
+  default: IRequestHandlerWithNext;
 }
 
 export type IApiRoutes = {
   path: string;
-  handler: IApiHandler;
+  api: IApiHandler;
 }[];
 
 export type IMiddlewareRoutes = {
   path: string;
-  middlewares: IRequestHandlerWithNext[];
+  middleware: IMiddlewareConfig;
 }[];
 
 export interface IServerModule {
-  middlewares?: IServerMiddleware | IServerMiddleware[];
   getPageData?: ServerPluginConstructor['getPageData'];
   handlePageRequest?: ServerPluginConstructor['handlePageRequest'];
   modifyHtml?: ServerPluginConstructor['modifyHtml'];

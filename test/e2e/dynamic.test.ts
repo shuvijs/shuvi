@@ -101,9 +101,9 @@ describe('Dynamic', () => {
 
     test('should render the component on client side', async () => {
       page = await ctx.browser.page(ctx.url('/no-ssr-custom-loading'));
-      await page.waitForSelector('p');
+      await page.waitForSelector('p.hello');
 
-      expect(await page.$text('p')).toBe('Hello World');
+      expect(await page.$text('p.hello')).toBe('Hello World');
     });
   });
 });

@@ -11,9 +11,10 @@ export function normalizeMiddlewareRoutes(
   const res: IMiddlewareRouteConfig[] = [];
   for (let index = 0; index < middlewareRoutes.length; index++) {
     const middlewareRoute = { ...middlewareRoutes[index] };
-    if (middlewareRoute.middlewares) {
-      middlewareRoute.middlewares = middlewareRoute.middlewares.map(
-        middleware => normalizePath(middleware, option.baseDir)
+    if (middlewareRoute.middleware) {
+      middlewareRoute.middleware = normalizePath(
+        middlewareRoute.middleware,
+        option.baseDir
       );
     }
 
@@ -24,7 +25,8 @@ export function normalizeMiddlewareRoutes(
 }
 
 export function serializeMiddlewareRoutes(
-  middlewareRoutes: IMiddlewareRouteConfig[]
+  middlewareRoutes: IMiddlewareRouteConfig[],
+  { sort }: { sort: boolean }
 ): string {
   let rankMiddlewareRoutes = middlewareRoutes.map(
     middlewareRoute =>
@@ -33,22 +35,18 @@ export function serializeMiddlewareRoutes(
         typeof middlewareRoute
       ]
   );
-  rankMiddlewareRoutes = rankRouteBranches(rankMiddlewareRoutes);
+  if (sort) {
+    rankMiddlewareRoutes = rankRouteBranches(rankMiddlewareRoutes);
+  }
   middlewareRoutes = rankMiddlewareRoutes.map(
     middlewareRoute => middlewareRoute[1]
   );
   let res = '';
   for (let index = 0; index < middlewareRoutes.length; index++) {
-    const { middlewares, path } = middlewareRoutes[index];
+    const { middleware, path } = middlewareRoutes[index];
     let strRoute = `\n{
       path: "${path}",
-      ${
-        middlewares
-          ? `middlewares: [${middlewares
-              .map(middleware => `require("${middleware}").middleware`)
-              .join(',')}],`
-          : ''
-      }
+      ${middleware ? `middleware: require("${middleware}"),` : ''}
     },`;
     res += strRoute;
   }
@@ -57,10 +55,17 @@ export function serializeMiddlewareRoutes(
 
 export function generateRoutesContent(
   rawRoutes: IMiddlewareRouteConfig[],
-  baseDir: string
+  {
+    baseDir,
+    sort = false
+  }: {
+    baseDir: string;
+    sort: boolean;
+  }
 ): string {
   const serialized = serializeMiddlewareRoutes(
-    normalizeMiddlewareRoutes(rawRoutes, { baseDir })
+    normalizeMiddlewareRoutes(rawRoutes, { baseDir }),
+    { sort }
   );
   return `export default ${serialized}`;
 }

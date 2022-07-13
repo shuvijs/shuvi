@@ -1,6 +1,6 @@
 import { createPlugin } from '@shuvi/service';
 import { extendedHooks, IHandlePageRequest } from './hooks';
-import { resolveToModulePath } from '../../paths';
+import { resolvePkgFile } from '../../paths';
 
 export type { IHandlePageRequest };
 export {
@@ -34,5 +34,5 @@ const core = createPlugin({
 
 export default {
   core,
-  types: resolveToModulePath('node/features/html-render/shuvi-app')
+  types: resolvePkgFile('lib/node/features/html-render/shuvi-app.d.ts')
 };

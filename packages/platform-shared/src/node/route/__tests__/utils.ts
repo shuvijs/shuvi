@@ -11,7 +11,7 @@ export const getFixturePath = (
 export const normalizePath = (
   routes: any[],
   dir: string,
-  key: 'component' | 'handler' | 'middlewares'
+  key: 'component' | 'api' | 'middleware'
 ): any[] => {
   return routes.map(route => {
     if (route.children) {

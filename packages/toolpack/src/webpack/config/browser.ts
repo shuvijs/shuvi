@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { NAME } from '@shuvi/shared/lib/constants';
+import { resolve } from '@shuvi/utils/lib/resolve';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import { IWebpackHelpers } from '../types';
 import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
@@ -161,12 +162,16 @@ export function createBrowserWebpackChain(
     }
   }
 
-  chain.resolve.alias
-    .set('stream', require.resolve('stream-browserify'))
-    .set('path', require.resolve('path-browserify'))
-    .set('crypto', require.resolve('crypto-browserify'))
-    .set('buffer', require.resolve('buffer'))
-    .set('vm', require.resolve('vm-browserify'));
+  // node polyfills
+  chain.resolve.set('fallback', {
+    buffer: resolve('buffer', {
+      includeCoreModules: false
+    }),
+    crypto: require.resolve('crypto-browserify'),
+    path: require.resolve('path-browserify'),
+    stream: require.resolve('stream-browserify'),
+    vm: require.resolve('vm-browserify')
+  });
 
   chain.plugin('node-buffer-polyfill').use(webpack.ProvidePlugin, [
     {

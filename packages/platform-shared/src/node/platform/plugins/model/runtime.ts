@@ -1,5 +1,9 @@
 import { IStoreManager, redox } from '@shuvi/redox';
-import { createPlugin, getPageData, IAppContext } from '../../../../shared';
+import {
+  createRuntimePlugin,
+  getPageData,
+  IAppContext
+} from '../../../../shared';
 
 export type InitRedox = (params: {
   initialState: any;
@@ -36,7 +40,7 @@ const initStore: InitRedox = ({ initialState, ctx }) => {
   return currentStoreManager;
 };
 
-export default createPlugin({
+export default createRuntimePlugin({
   appContext: ctx => {
     if (!ctx.storeManager) {
       let initialState = {};
