@@ -9,7 +9,6 @@
   "author": "liximomo",
   "license": "MIT",
   "devDependencies": {
-    "@shuvi/platform-mp": "workspace:*",
     "@shuvi/platform-shared": "workspace:*",
     "@shuvi/platform-web": "workspace:*",
     "@shuvi/router": "workspace:*",
