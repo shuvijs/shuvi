@@ -12,10 +12,10 @@ export function serializeApiRoutes(apiRoutes: IApiRouteConfig[]): string {
   apiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
   let res = '';
   for (let index = 0; index < apiRoutes.length; index++) {
-    const { handler, path } = apiRoutes[index];
+    const { api, path } = apiRoutes[index];
     let strRoute = `\n{
       path: "${path}",
-      ${handler ? `handler: require("${handler}"),` : ''}
+      ${api ? `api: require("${api}"),` : ''}
     },`;
     res += strRoute;
   }
@@ -29,8 +29,8 @@ export function normalizeApiRoutes(
   const res: IApiRouteConfig[] = [];
   for (let index = 0; index < apiRoutes.length; index++) {
     const apiRoute = { ...apiRoutes[index] };
-    if (apiRoute.handler) {
-      apiRoute.handler = normalizePath(apiRoute.handler, option.apisDir);
+    if (apiRoute.api) {
+      apiRoute.api = normalizePath(apiRoute.api, option.apisDir);
     }
 
     res.push(apiRoute);

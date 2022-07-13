@@ -261,7 +261,7 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
 
         routes.push({
           path,
-          handler: rawRoute.filepath
+          api: rawRoute.filepath
         });
       }
     }
@@ -318,7 +318,7 @@ export const getMiddlewareRoutes = async (
 
         routes.push({
           path: path + catchAllOp,
-          middlewares: [rawRoute.filepath]
+          middleware: rawRoute.filepath
         });
       }
     }

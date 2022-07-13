@@ -1,0 +1,6 @@
+{
+  "name": "fixture-runtime-public-path",
+  "dependencies": {
+    "@shuvi/shared": "workspace:*"
+  }
+}

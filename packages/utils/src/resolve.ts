@@ -1,3 +1,5 @@
-import * as resolve from 'resolve';
+import * as _resolve from 'resolve';
 
-export default resolve;
+export type ResolveOptions = _resolve.SyncOpts;
+
+export const resolve = _resolve.sync;

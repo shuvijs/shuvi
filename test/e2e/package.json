@@ -1,0 +1,6 @@
+{
+  "name": "test-e2e",
+  "dependencies": {
+    "@shuvi/shared": "workspace:*"
+  }
+}

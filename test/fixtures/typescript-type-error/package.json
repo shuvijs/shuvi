@@ -1,0 +1,6 @@
+{
+  "name": "fixture-typescript-error", 
+  "dependencies": {
+    "shuvi": "workspace:*"
+  }
+}

@@ -40,6 +40,7 @@ export async function writeDefaultConfigurations(
       parsedValue: ts.ModuleKind.ESNext,
       // All of these values work:
       parsedValues: [
+        ts.ModuleKind.Node16,
         ts.ModuleKind.ES2020,
         ts.ModuleKind.ESNext,
         ts.ModuleKind.CommonJS,

@@ -5,7 +5,6 @@
     "esModuleInterop": false,
     "module": "esnext",
     "rootDir": "./src",
-    "declarationDir": "./types",
     "outDir": "esm"
   },
   "files": ["./shuvi-app-extensions"],

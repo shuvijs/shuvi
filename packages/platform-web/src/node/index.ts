@@ -10,7 +10,7 @@ import {
   getMainPlugin
 } from './features';
 import './types/shuvi-service';
-import { resolveToModulePath } from './paths';
+import { resolvePkgFile } from './paths';
 
 const platform: IPlatform = async (
   { framework = 'react' } = {},
@@ -30,7 +30,11 @@ const platform: IPlatform = async (
   );
 
   return {
-    types: resolveToModulePath('node/types/shuvi-service'),
+    types: [
+      resolvePkgFile('shuvi-env.d.ts'),
+      resolvePkgFile('shuvi-image.d.ts'),
+      resolvePkgFile('lib/node/types/shuvi-service.d.ts')
+    ],
     plugins: [
       ...SharedPlugins,
       mainPlugin,

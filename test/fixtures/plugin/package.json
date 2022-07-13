@@ -1,0 +1,8 @@
+{
+  "name": "fixture-plugin", 
+  "dependencies": {
+    "shuvi": "workspace:*",
+    "shuvi-test-plugin-no-exports": "workspace:*",
+    "shuvi-test-plugin-use-exports": "workspace:*"
+  }
+}

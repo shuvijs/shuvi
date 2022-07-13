@@ -6,7 +6,7 @@ const getFixtureMiddlewareRoutes = async (dirname: string) => {
   const { routes, warnings, errors } = await getMiddlewareRoutes(dir);
 
   return {
-    routes: normalizePath(routes, dir, 'middlewares'),
+    routes: normalizePath(routes, dir, 'middleware'),
     warnings: normalizeWarnings(warnings, dir),
     errors: normalizeWarnings(errors, dir)
   };
@@ -19,23 +19,23 @@ describe('middleware routes test', () => {
       routes: [
         {
           path: '/a/*',
-          middlewares: ['a/middleware.js']
+          middleware: 'a/middleware.js'
         },
         {
           path: '/b/b1/*',
-          middlewares: ['b/b1/middleware.js']
+          middleware: 'b/b1/middleware.js'
         },
         {
           path: '/b/b2/*',
-          middlewares: ['b/b2/middleware.js']
+          middleware: 'b/b2/middleware.js'
         },
         {
           path: '/b/*',
-          middlewares: ['b/middleware.js']
+          middleware: 'b/middleware.js'
         },
         {
           path: '/*',
-          middlewares: ['middleware.js']
+          middleware: 'middleware.js'
         }
       ],
       warnings: [],

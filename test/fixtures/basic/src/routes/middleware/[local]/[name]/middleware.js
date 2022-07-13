@@ -1,4 +1,4 @@
-export function middleware(req, res, next) {
+export default function middleware(req, res, next) {
   console.log('[local]=>name=>req.url ', req.url);
   if (req.query.name) {
     res.statusCode = 200;

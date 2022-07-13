@@ -1,7 +1,6 @@
 import routes from '@shuvi/app/files/routes';
 import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
-  Application,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
   isResponse,
@@ -9,7 +8,9 @@ import {
   getLoaderManager
 } from '@shuvi/platform-shared/shared';
 import pageLoaders from '@shuvi/app/files/page-loaders';
-import application from '@shuvi/platform-shared/shuvi-app/application';
+import application, {
+  Application
+} from '@shuvi/platform-shared/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 import { CreateAppServer } from '../../shared';
 

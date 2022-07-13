@@ -1,0 +1,17 @@
+{
+  "name": "shuvi-test",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "test"
+  },
+  "author": "liximomo",
+  "license": "MIT",
+  "devDependencies": {
+    "@shuvi/service": "workspace:*",
+    "@shuvi/shared": "workspace:*",
+    "@shuvi/utils": "workspace:*",
+    "shuvi": "workspace:*"
+  }
+}

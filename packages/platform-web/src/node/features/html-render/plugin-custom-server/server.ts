@@ -6,9 +6,6 @@ export default createServerPlugin({
   setup: ({ addHooks }) => {
     addHooks(extendedHooks);
   },
-  middlewares: () => {
-    return server?.server?.middlewares || [];
-  },
   getPageData: (appContext, context) => {
     return server?.server?.getPageData?.(appContext, context) || {};
   },

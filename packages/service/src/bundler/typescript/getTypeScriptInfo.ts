@@ -2,7 +2,7 @@ import { readFile, pathExists } from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import chalk from '@shuvi/utils/lib/chalk';
-import resolve from '@shuvi/utils/lib/resolve';
+import { resolve } from '@shuvi/utils/lib/resolve';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { TsConfig, TypeScriptModule } from './types';
 
@@ -64,7 +64,7 @@ function checkDependencies(
 
   const missingPackages = deps.filter(p => {
     try {
-      resolutions.set(p.pkg, resolve.sync(p.file, { basedir: `${dir}/` }));
+      resolutions.set(p.pkg, resolve(p.file, { basedir: `${dir}/` }));
       return false;
     } catch (_) {
       return true;

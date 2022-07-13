@@ -2,7 +2,6 @@ import * as path from 'path';
 import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
-import { PACKAGE_DIR } from '../../../paths';
 import { DefinePlugin } from 'webpack';
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
@@ -30,17 +29,22 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     return majorVersion >= 18;
   };
 
-  config.resolve.alias.set('@shuvi/platform-web', PACKAGE_DIR);
   config.resolve.alias.set('@shuvi/service', resolveLocal('@shuvi/service'));
+  config.resolve.alias.set('@shuvi/router$', resolveLocal('@shuvi/router'));
   config.resolve.alias.set(
     '@shuvi/router-react$',
     resolveLocal('@shuvi/router-react')
   );
-  config.resolve.alias.set('@shuvi/router$', resolveLocal('@shuvi/router'));
+
   // @ts-ignore
   config.resolve.alias.set('react$', [
     resolveUser('react'),
     resolveLocal('react')
+  ]);
+  // @ts-ignore
+  config.resolve.alias.set('react/jsx-runtime$', [
+    resolveUser('react/jsx-runtime'),
+    resolveLocal('react', 'jsx-runtime')
   ]);
   // @ts-ignore
   config.resolve.alias.set('react-dom$', [

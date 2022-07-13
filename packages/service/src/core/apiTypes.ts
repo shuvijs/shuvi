@@ -27,12 +27,12 @@ export interface IRouteConfig extends IUserRouteConfig {
 
 export interface IApiRouteConfig {
   path: string;
-  handler: string;
+  api: string;
 }
 
 export interface IMiddlewareRouteConfig {
   path: string;
-  middlewares: string[];
+  middleware: string;
 }
 
 export type IRouterHistoryMode = 'browser' | 'hash' | 'auto' | 'memory';
@@ -114,7 +114,7 @@ export interface IPlatformConfig {
 }
 
 export type IPlatformContent = {
-  types?: string;
+  types?: string | string[];
   plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
   getPresetRuntimeFiles: (
     context: IPluginContext
@@ -154,7 +154,6 @@ export type IRuntimeConfig = Record<string, string>;
 
 export interface Config {
   outputPath?: string;
-  ssr?: boolean;
   publicDir?: string;
   publicPath?: string;
   env?: Record<string, string>;
@@ -169,6 +168,7 @@ export interface Config {
   /**
    * specifically target for `platform-web`
    */
+  ssr?: boolean;
   target?: 'spa' | 'ssr';
   platform?: IPlatformConfig;
   proxy?: any;

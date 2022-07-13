@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { createPlugin } from '@shuvi/service';
-import { resolveToModulePath, resolvePluginFile } from '../../../paths';
+import { resolvePkgFile, resolvePluginFile } from '../../../paths';
 import './shuvi-app';
 import server from './server';
 
@@ -28,5 +28,5 @@ export default {
     plugin: resolvePluginFile('model', 'runtime')
   },
   server,
-  types: resolveToModulePath('node/platform/plugins/model/shuvi-app')
+  types: resolvePkgFile('lib/node/platform/plugins/model/shuvi-app.d.ts')
 };

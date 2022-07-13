@@ -1,5 +1,4 @@
 import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
-import { DEFAULT_PUBLIC_PATH } from '@shuvi/service/lib/constants';
 import { AppCtx, Page, launchFixture } from '../utils';
 
 let ctx: AppCtx;
@@ -25,7 +24,7 @@ describe('public path', () => {
       (name: any) => window[name],
       IDENTITY_RUNTIME_PUBLICPATH
     );
-    expect(pubicPath).toBe(DEFAULT_PUBLIC_PATH);
+    expect(pubicPath).toBe('/');
   });
 });
 

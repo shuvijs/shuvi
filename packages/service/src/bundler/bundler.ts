@@ -331,7 +331,7 @@ class WebpackBundler {
       if (hasEntry(chain)) {
         const chainConfig = chain.toConfig();
         logger.debug(`${name} Config`);
-        logger.debug(inspect(chainConfig.resolve?.plugins, { depth: 10 }));
+        logger.debug(inspect(chainConfig.resolve?.alias, { depth: 10 }));
         targets.push({ name, config: chainConfig });
       }
     }

@@ -1,11 +1,14 @@
-import { resolve, dirname, join } from 'path';
+import path from 'path';
 
-export const PACKAGE_DIR = resolve(__dirname, '..', '..', 'esm');
+const PACKAGE_DIR = path.resolve(__dirname, '..', '..');
 
-export const resolveToModulePath = (...paths: string[]) =>
-  `@shuvi/platform-web/${paths.join('/')}`;
+// export const resolveToModulePath = (...paths: string[]) =>
+//   `@shuvi/platform-web/${paths.join('/')}`;
 
 export const resolveDep = (module: string) => require.resolve(module);
 
 export const resolveLib = (module: string) =>
-  dirname(resolveDep(join(module, 'package.json')));
+  path.dirname(resolveDep(path.join(module, 'package.json')));
+
+export const resolvePkgFile = (...paths: string[]) =>
+  path.join(PACKAGE_DIR, ...paths);

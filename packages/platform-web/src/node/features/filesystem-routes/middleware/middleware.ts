@@ -15,9 +15,10 @@ export function middleware(
       const match = matchPathname(middlewareRoute.path, req.pathname);
       if (match) {
         req.params = match.params;
-        middlewares.unshift(...(middlewareRoutes[i].middlewares || []));
+        middlewares.push(middlewareRoutes[i].middleware.default);
       }
     }
+
     // run middlewares
     let i = 0;
     const runNext = () => runMiddleware(middlewares[++i]);

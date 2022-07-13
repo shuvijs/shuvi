@@ -14,8 +14,8 @@ export const getMiddlewares = (
   return [
     ...middlewaresFromPlugin,
     onDemandRouteManager && onDemandRouteManager.ensureRoutesMiddleware(),
-    getApiMiddleware(context),
     getMiddlewareMiddleware(context),
+    getApiMiddleware(context),
     getPageMiddleware(context)
   ].filter(Boolean);
 };
