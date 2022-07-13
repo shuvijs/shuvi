@@ -1,9 +1,6 @@
 import { getRoutes } from '@shuvi/app/core/platform';
 import {
   Application,
-  IAppState,
-  IAppData,
-  IRawPageRouteRecord,
   runPreload,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
@@ -22,20 +19,20 @@ import {
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
+import { CreateAppClient } from '../../shared';
 
 let app: Application;
 
-export function createApp(options: {
-  routes: IRawPageRouteRecord[];
-  appComponent: any;
-  appData: IAppData<any, IAppState>;
-}) {
+export const createApp: CreateAppClient = ({
+  routes,
+  appData,
+  appComponent
+}) => {
   // app is a singleton in client side
   if (app) {
     return app;
   }
 
-  const { routes, appData, appComponent } = options;
   const { loadersData = {}, appState, ssr } = appData;
   let history: History;
   if (historyMode === 'hash') {
@@ -151,4 +148,4 @@ export function createApp(options: {
   });
 
   return app;
-}
+};
