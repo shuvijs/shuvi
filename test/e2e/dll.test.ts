@@ -1,49 +1,26 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { AppCtx, Page, launchFixture, resolveFixture } from '../utils';
 
 const FIXTURE = 'dll';
-const pkg = 'polyfill';
-
-function getFileContent(manifest: any, fileName: string): string {
-  let realFile = '';
-  const bundleKeys = Object.keys(manifest.bundles);
-  for (let i = 0; i < bundleKeys.length; i++) {
-    const key = bundleKeys[i];
-    if (key.includes(fileName)) {
-      realFile = manifest.bundles[key];
-      break;
-    }
-  }
-  if (!realFile) {
-    throw new Error(`con't find webpack bundle file: ${fileName}`);
-  }
-  const fileDir = resolveFixture('dll/dist/client/');
-  const fileContent = fs.readFileSync(path.join(fileDir, realFile), 'utf-8');
-  return fileContent;
-}
+const pkg = /react@18\.1\.0/; //react@18.1.0
 
 jest.setTimeout(5 * 60 * 1000);
 
 describe('without Dll preBundle', () => {
   let ctx: AppCtx;
   let page: Page;
-  let manifest: any;
+  let modules: string[];
 
   beforeAll(async () => {
     ctx = await launchFixture(FIXTURE, { experimental: { preBundle: false } });
-    manifest = await require(resolveFixture(
-      'dll/dist/build-manifest.client.json'
-    ));
+    modules = await require(resolveFixture(`dll/dist/client/modules.json`));
   });
 
   afterAll(async () => {
     await ctx.close();
   });
 
-  test('polyfill is bundled in main.js', async () => {
-    const fileContent = getFileContent(manifest, 'main');
-    expect(fileContent).toMatch(pkg);
+  test('react is bundled from node-module', async () => {
+    expect(modules.filter(module => pkg.test(module)).length).not.toBe(0);
   });
 
   test('Page /', async () => {
@@ -56,22 +33,20 @@ describe('without Dll preBundle', () => {
 describe('with Dll preBundle', () => {
   let ctx: AppCtx;
   let page: Page;
-  let manifest: any;
+  let modules: string[];
 
   beforeAll(async () => {
+    jest.resetModules();
     ctx = await launchFixture(FIXTURE, { experimental: { preBundle: true } });
-    manifest = await require(resolveFixture(
-      'dll/dist/build-manifest.client.json'
-    ));
+    modules = await require(resolveFixture(`dll/dist/client/modules.json`));
   });
 
   afterAll(async () => {
     await ctx.close();
   });
 
-  test('polyfill is not bundled in main.js', async () => {
-    const fileContent = getFileContent(manifest, 'main');
-    expect(fileContent).not.toMatch(pkg);
+  test('react is bundled from remote instead from node-module', async () => {
+    expect(modules.filter(module => pkg.test(module)).length).toBe(0);
   });
 
   test('Page /', async () => {
