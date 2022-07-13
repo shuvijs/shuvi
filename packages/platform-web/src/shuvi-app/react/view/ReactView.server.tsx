@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
+import { getLoaderManager, redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import {
-  IHtmlTag,
-  getLoaderManager,
-  redirect
-} from '@shuvi/platform-shared/shared';
+import { IHtmlTag } from '../../../shared';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';

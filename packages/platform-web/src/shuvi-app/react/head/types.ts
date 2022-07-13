@@ -1,4 +1,4 @@
-import { IHtmlTag } from '@shuvi/platform-shared/shared';
+import { IHtmlTag } from '../types';
 
 export type SideEffectProps = {
   reduceComponentsToState: <T>(

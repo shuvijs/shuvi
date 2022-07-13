@@ -22,26 +22,6 @@
       "types": "./lib/node/index.d.ts",
       "default": "./lib/node/index.js"
     },
-    "./shared": {
-      "import": {
-        "types": "./types/shared/index.d.ts",
-        "default": "./esm/shared/index.js"
-      },
-      "require": {
-        "types": "./types/shared/index.d.ts",
-        "default": "./lib/shared/index.js"
-      }
-    },
-    "./shared/*": {
-      "import": {
-        "types": "./types/shared/*.d.ts",
-        "default": "./esm/shared/*.js"
-      },
-      "require": {
-        "types": "./types/shared/*.d.ts",
-        "default": "./lib/shared/*.js"
-      }
-    },
     "./node": {
       "types": "./types/node/index.d.ts",
       "default": "./lib/node/index.js"

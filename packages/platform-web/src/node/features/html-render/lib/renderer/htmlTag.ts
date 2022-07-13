@@ -1,5 +1,5 @@
-import { IHtmlAttrs, IHtmlTag } from '@shuvi/platform-shared/shared';
 import { htmlEscapeContent } from '@shuvi/utils/lib/htmlescape';
+import { IHtmlAttrs, IHtmlTag } from './types';
 
 /**
  * All html tag elements which must not contain innerHTML

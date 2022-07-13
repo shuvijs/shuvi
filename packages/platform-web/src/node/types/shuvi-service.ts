@@ -3,7 +3,7 @@ import {
   IServerMiddleware,
   ServerPluginConstructor
 } from '@shuvi/service';
-import { CreateServerApp } from '@shuvi/platform-shared/shared';
+import { CreateAppServer } from '../../shared';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IViewServer } from '../features/html-render';
 import { IApiRequestHandler } from '../features/filesystem-routes';
@@ -46,7 +46,7 @@ declare module '@shuvi/service/lib/resources' {
     apiRoutes: IApiRoutes;
     middlewareRoutes: IMiddlewareRoutes;
     application: {
-      createApp: CreateServerApp;
+      createApp: CreateAppServer;
     };
     view: IViewServer;
   };
