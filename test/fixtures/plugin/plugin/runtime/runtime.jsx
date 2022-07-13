@@ -1,13 +1,12 @@
-import { createPlugin } from '@shuvi/platform-shared/shared/lifecycle';
-import { dynamic } from "@shuvi/runtime";
+import { createRuntimePlugin, dynamic } from '@shuvi/runtime';
 
-const Hello = dynamic(() => import("./hello.jsx"), {
+const Hello = dynamic(() => import('./hello.jsx'), {
   ssr: false,
   loading: () => <p class="dynamic-loader">LOADING</p>
 });
 
 export default option =>
-  createPlugin({
+  createRuntimePlugin({
     appComponent: App => {
       const newApp = () => (
         <div>

@@ -4,15 +4,15 @@ describe('serializeApiRoutes', () => {
   const routes = [
     {
       path: '/',
-      handler: 'Foo'
+      api: 'Foo'
     },
     {
       path: '/nested',
-      handler: 'Foo'
+      api: 'Foo'
     },
     {
       path: '/nested/a',
-      handler: 'Bar'
+      api: 'Bar'
     }
   ];
   test('should work', () => {
@@ -20,15 +20,15 @@ describe('serializeApiRoutes', () => {
       "[
       {
             path: \\"/nested/a\\",
-            handler: require(\\"Bar\\"),
+            api: require(\\"Bar\\"),
           },
       {
             path: \\"/\\",
-            handler: require(\\"Foo\\"),
+            api: require(\\"Foo\\"),
           },
       {
             path: \\"/nested\\",
-            handler: require(\\"Foo\\"),
+            api: require(\\"Foo\\"),
           },]"
     `);
   });
@@ -41,15 +41,15 @@ describe('normalizeApiRoutes', () => {
         [
           {
             path: '/a',
-            handler: 'a'
+            api: 'a'
           },
           {
             path: '/a/aa',
-            handler: 'a/aa'
+            api: 'a/aa'
           },
           {
             path: '/b',
-            handler: '/b'
+            api: '/b'
           }
         ],
         { apisDir: '/test' }
@@ -58,15 +58,15 @@ describe('normalizeApiRoutes', () => {
       expect(routes).toMatchObject([
         {
           path: '/a',
-          handler: '/test/a'
+          api: '/test/a'
         },
         {
           path: '/a/aa',
-          handler: '/test/a/aa'
+          api: '/test/a/aa'
         },
         {
           path: '/b',
-          handler: '/b'
+          api: '/b'
         }
       ]);
     });

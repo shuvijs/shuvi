@@ -1,12 +1,12 @@
 import { createPlugin } from '@shuvi/service';
 import bundlerPlugin from './bundler';
 import { RedoxReactPlugin } from './redox-react';
-import { resolveToModulePath, resolveDep } from '../../paths';
+import { resolvePkgFile, resolveDep } from '../../paths';
 
 const webReactMainPlugin = createPlugin({
   addRuntimeService: () => [
     {
-      source: resolveToModulePath('shuvi-app/react/shuvi-runtime-api'),
+      source: resolvePkgFile('esm/shuvi-app/react/shuvi-runtime-api'),
       exported: '*'
     }
   ]
@@ -14,7 +14,7 @@ const webReactMainPlugin = createPlugin({
 const platformWebReact = () => {
   return {
     plugins: [webReactMainPlugin, bundlerPlugin, RedoxReactPlugin],
-    platformModule: resolveToModulePath('shuvi-app/react/index'),
+    platformModule: resolvePkgFile('esm/shuvi-app/react/index'),
     polyfills: [
       resolveDep('react-app-polyfill/ie11'),
       resolveDep('react-app-polyfill/stable')

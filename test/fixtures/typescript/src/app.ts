@@ -1,10 +1,22 @@
-// FIXME: `IAppModule` export
+import {
+  InitFunction,
+  AppComponentFunction,
+  AppContextFunction,
+  DisposeFunction
+} from '@shuvi/runtime/app';
 
-export const appComponent /* : IAppModule['appComponent'] */ =
-  async UserApp => {
-    return UserApp;
-  };
+export const init: InitFunction = () => {
+  // do nothing
+};
 
-export const appContent /* : IAppModule['appContext'] */ = context => {
+export const appComponent: AppComponentFunction = async UserApp => {
+  return UserApp;
+};
+
+export const appContent: AppContextFunction = context => {
   return context;
+};
+
+export const dispose: DisposeFunction = () => {
+  // do nothing
 };

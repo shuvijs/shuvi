@@ -1,14 +1,14 @@
 import * as customApp from '@shuvi/app/user/app';
 import { pluginRecord } from '@shuvi/app/core/plugins';
-import { IApplicationOptions } from '../shared/applicationTypes';
+import { Application } from '../shared/application';
+import { createRuntimePlugin, IAppModule, IApplicationOptions } from './shared';
 import {
-  createPlugin,
   IRuntimePluginConstructor,
-  IAppModule,
   IPluginRecord,
   IPluginList
 } from '../shared/lifecycle';
-import { Application } from '../shared/application';
+
+export { Application };
 
 function getPlugins(
   runtime: Partial<IAppModule>,
@@ -39,7 +39,7 @@ function getPlugins(
     }
   }
 
-  plugins.push([createPlugin(pluginConstructor)]);
+  plugins.push([createRuntimePlugin(pluginConstructor)]);
   return plugins;
 }
 

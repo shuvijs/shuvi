@@ -106,11 +106,14 @@ export default createPlugin({
     const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
       content: async () => {
+        let sort: boolean;
         let routes: IMiddlewareRouteConfig[];
         const hasConfigRoutes = Array.isArray(middlewareRoutes);
         if (hasConfigRoutes) {
+          sort = false;
           routes = middlewareRoutes;
         } else {
+          sort = true;
           const { routes: _routes, warnings } = await getMiddlewareRoutes(
             paths.routesDir
           );
@@ -119,7 +122,10 @@ export default createPlugin({
           });
           routes = _routes;
         }
-        return generateMiddlewareRoutesContent(routes, paths.routesDir);
+        return generateMiddlewareRoutesContent(routes, {
+          baseDir: paths.routesDir,
+          sort
+        });
       },
       dependencies: [paths.routesDir]
     });

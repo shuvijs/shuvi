@@ -1,4 +1,4 @@
-const { createServerPlugin } = require('@shuvi/service');
+const { createServerPlugin } = require('shuvi');
 
 module.exports = option =>
   createServerPlugin({

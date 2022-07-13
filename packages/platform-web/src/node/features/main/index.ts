@@ -16,14 +16,14 @@ import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/node';
 import generateResource from './generateResource';
-import { resolveToModulePath } from '../../paths';
+import { resolvePkgFile } from '../../paths';
 import { appRoutes } from './hooks';
 import { buildHtml } from './buildHtml';
 import { getMiddlewares } from '../middlewares';
 
 function getServerEntry(): IWebpackEntry {
   return {
-    [BUILD_SERVER_FILE_SERVER]: [resolveToModulePath('shuvi-app/entry/server')]
+    [BUILD_SERVER_FILE_SERVER]: [resolvePkgFile('esm/shuvi-app/entry/server')]
   };
 }
 
@@ -78,12 +78,23 @@ export const getPlugin = (
         entry: {
           [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill'],
           [BUILD_CLIENT_RUNTIME_MAIN]: [
-            resolveToModulePath('shuvi-app/entry/client')
+            resolvePkgFile('esm/shuvi-app/entry/client')
           ]
         }
       });
       return chain;
     },
+    addRuntimeService: () => [
+      {
+        source: resolvePkgFile('lib/node/shuvi-runtime-index'),
+        exported: '*'
+      },
+      {
+        source: resolvePkgFile('lib/node/shuvi-runtime-server'),
+        filepath: 'server.ts',
+        exported: '*'
+      }
+    ],
     addResource: context => generateResource(context),
     afterBuild: async context => {
       await buildHtml({
@@ -97,6 +108,6 @@ export const getPlugin = (
   });
   return {
     core,
-    types: resolveToModulePath('node/features/main/shuvi-app')
+    types: resolvePkgFile('lib/node/features/main/shuvi-app.d.ts')
   };
 };

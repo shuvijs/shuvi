@@ -1,5 +1,6 @@
 packages:
   - 'packages/*'
-  - 'test'
+  - 'test/e2e'
+  - 'test/fixtures/*'
   - 'test/packages/*'
-  - 'test/fixtures/react-16'
+  - 'test/utils'

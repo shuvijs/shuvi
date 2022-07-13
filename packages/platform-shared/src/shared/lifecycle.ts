@@ -34,7 +34,7 @@ export const getManager = () =>
     false
   );
 
-export const { createPlugin } = getManager();
+export const { createPlugin: createRuntimePlugin } = getManager();
 
 export type PluginManager = ReturnType<typeof getManager>;
 
