@@ -2,7 +2,6 @@ import routes from '@shuvi/app/files/routes';
 import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   Application,
-  CreateServerApp,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
   isResponse,
@@ -12,8 +11,9 @@ import {
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import application from '@shuvi/platform-shared/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
+import { CreateAppServer } from '../../shared';
 
-export const createApp: CreateServerApp = options => {
+export const createApp: CreateAppServer = options => {
   const { req, ssr } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],

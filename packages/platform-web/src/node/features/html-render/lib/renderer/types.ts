@@ -1,6 +1,5 @@
+import { IApplication, IRequest } from '@shuvi/platform-shared/shared';
 import {
-  IApplication,
-  IRequest,
   IHtmlAttrs,
   IHtmlTag,
   IClientRendererOptions,
@@ -8,7 +7,7 @@ import {
   IViewClient,
   IViewServer,
   IRenderAppServerResult
-} from '@shuvi/platform-shared/shared';
+} from '../../../../../shared';
 import { IServerPluginContext } from '@shuvi/service';
 
 export { IHtmlAttrs, IHtmlTag, IApplication };

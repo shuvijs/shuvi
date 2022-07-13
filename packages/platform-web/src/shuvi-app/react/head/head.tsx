@@ -2,10 +2,9 @@
 // License: https://github.com/zeit/next.js/blob/977bf8d9ebd2845241b8689317f36e4e487f39d0/license.md
 
 import * as React from 'react';
-import { IHtmlTag } from '@shuvi/platform-shared/shared';
 import withSideEffect from './side-effect';
 import { HeadManagerContext } from './head-manager-context';
-import { HeadElement, HeadState } from './types';
+import { HeadElement, HeadState, HeadItem } from './types';
 
 export const SHUVI_HEAD_ATTRIBUTE = 'data-shuvi-head';
 
@@ -16,8 +15,8 @@ const DOMAttributeNames: Record<string, string> = {
   httpEquiv: 'http-equiv'
 };
 
-function reactElementToTag({ type, props }: HeadElement): IHtmlTag {
-  const tag: IHtmlTag = {
+function reactElementToTag({ type, props }: HeadElement): HeadItem {
+  const tag: HeadItem = {
     tagName: type,
     attrs: {}
   };

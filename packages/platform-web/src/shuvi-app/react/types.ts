@@ -1,8 +1,7 @@
-import {
-  IAppState,
-  IViewClient,
-  IViewServer
-} from '@shuvi/platform-shared/shared';
+import { IAppState } from '@shuvi/platform-shared/shared';
+import { IHtmlTag, IViewClient, IViewServer } from '../../shared';
+
+export { IHtmlTag };
 
 export type IReactAppData = {
   appProps?: Record<string, any>;
