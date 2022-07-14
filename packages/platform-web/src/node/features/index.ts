@@ -1,6 +1,6 @@
 import FeatureOnDemanCompilePage from './on-demand-compile-page';
 import FeatureHTMLRender from './html-render';
-import FeatureCustomServer from './html-render/plugin-custom-server';
+import FeatureCustomServer from './custom-server';
 import FeatyreModel from './model';
 import FilesystemRoutes from './filesystem-routes';
 

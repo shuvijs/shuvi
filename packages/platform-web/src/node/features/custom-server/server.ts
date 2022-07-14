@@ -1,6 +1,6 @@
 import { createServerPlugin } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
-import { extendedHooks } from '../hooks';
+import { extendedHooks } from './hooks';
 
 export default createServerPlugin({
   setup: ({ addHooks }) => {

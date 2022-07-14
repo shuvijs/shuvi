@@ -62,7 +62,7 @@ export class ShuviDevServer extends ShuviServer {
 
     // keep the order
     devMiddleware.apply(server);
-    server.use(`${context.assetPublicPath}:path(.*)`, publicDirMiddleware);
+    server.use(`${context.assetPublicPath}/:path(.*)`, publicDirMiddleware);
 
     await this._initMiddlewares();
   }

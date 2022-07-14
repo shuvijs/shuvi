@@ -455,7 +455,7 @@ describe('apiRoutes development', () => {
     expect(res.body).toBe('hi');
   });
 
-  test('should not match assetPublicPath for static files', async () => {
+  test('assets should have a high priority', async () => {
     const res = await got.get(ctx.url(`/user.json`), {
       responseType: 'json'
     });
