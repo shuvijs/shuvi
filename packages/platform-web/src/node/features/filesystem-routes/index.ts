@@ -47,8 +47,10 @@ const plugin = createPlugin({
     const {
       config: { routes: pageRoutes, middlewareRoutes, apiRoutes },
       paths,
-      pluginRunner
+      pluginRunner,
+      phase
     } = context;
+    const isBuildPhase = phase === 'PHASE_PRODUCTION_BUILD';
 
     const pageRoutesFile = defineFile({
       name: 'routes.js',
@@ -61,9 +63,13 @@ const plugin = createPlugin({
           const { routes: _routes, warnings } = await getPageRoutes(
             paths.routesDir
           );
-          warnings.forEach(warning => {
-            console.warn(warning.msg);
-          });
+
+          if (isBuildPhase) {
+            warnings.forEach(warning => {
+              console.warn(warning.msg);
+            });
+          }
+
           routes = _routes;
         }
 
@@ -89,9 +95,13 @@ const plugin = createPlugin({
           const { routes: _routes, warnings } = await getApiRoutes(
             paths.routesDir
           );
-          warnings.forEach(warning => {
-            console.warn(warning);
-          });
+
+          if (isBuildPhase) {
+            warnings.forEach(warning => {
+              console.warn(warning);
+            });
+          }
+
           routes = _routes;
         }
 
@@ -113,9 +123,11 @@ const plugin = createPlugin({
           const { routes: _routes, warnings } = await getMiddlewareRoutes(
             paths.routesDir
           );
-          warnings.forEach(warning => {
-            console.warn(warning);
-          });
+          if (isBuildPhase) {
+            warnings.forEach(warning => {
+              console.warn(warning);
+            });
+          }
           routes = _routes;
         }
         return generateMiddlewareRoutesContent(routes, {
