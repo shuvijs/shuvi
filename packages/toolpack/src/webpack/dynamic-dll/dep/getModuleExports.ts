@@ -1,3 +1,4 @@
+// @ts-ignore: es-module-lexer misconfigure its package.exports
 import { init, parse } from 'es-module-lexer';
 import { transform } from 'esbuild';
 import { extname } from 'path';
