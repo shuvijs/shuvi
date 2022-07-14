@@ -15,7 +15,7 @@ import {
 } from '@shuvi/platform-shared/node';
 import { resolvePkgFile } from '../../paths';
 import { ifComponentHasLoader } from '../html-render/lib';
-import { addRoutes } from './hooks';
+import { addRoutes, addMiddlewareRoutes } from './hooks';
 import {
   getRoutes,
   setRoutes,
@@ -41,7 +41,7 @@ export {
 
 const plugin = createPlugin({
   setup: ({ addHooks }) => {
-    addHooks({ addRoutes });
+    addHooks({ addRoutes, addMiddlewareRoutes });
   },
   addRuntimeFile: async ({ defineFile }, context) => {
     const {
@@ -69,7 +69,8 @@ const plugin = createPlugin({
 
         const extraRoutes = (await pluginRunner.addRoutes()).flat();
         const normalizedRoutes = normalizePageRoutes(
-          routes.concat(extraRoutes),
+          // user routes come later
+          extraRoutes.concat(routes),
           paths.routesDir
         );
         setRoutes(normalizedRoutes);
@@ -115,7 +116,9 @@ const plugin = createPlugin({
           });
           routes = _routes;
         }
-        return generateMiddlewareRoutesContent(routes, {
+
+        const extraRoutes = (await pluginRunner.addMiddlewareRoutes()).flat();
+        return generateMiddlewareRoutesContent(extraRoutes.concat(routes), {
           baseDir: paths.routesDir
         });
       },
