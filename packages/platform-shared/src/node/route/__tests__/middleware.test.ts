@@ -18,16 +18,16 @@ describe('middleware routes test', () => {
     expect(result).toMatchObject({
       routes: [
         {
-          path: '/a/*',
-          middleware: 'a/middleware.js'
-        },
-        {
           path: '/b/b1/*',
           middleware: 'b/b1/middleware.js'
         },
         {
           path: '/b/b2/*',
           middleware: 'b/b2/middleware.js'
+        },
+        {
+          path: '/a/*',
+          middleware: 'a/middleware.js'
         },
         {
           path: '/b/*',
