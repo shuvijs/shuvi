@@ -1,4 +1,3 @@
-import { rankRouteBranches } from '@shuvi/router';
 import { IMiddlewareRouteConfig } from '@shuvi/platform-shared/node';
 import { normalizePath } from '@shuvi/utils/lib/file';
 
@@ -25,22 +24,8 @@ export function normalizeMiddlewareRoutes(
 }
 
 export function serializeMiddlewareRoutes(
-  middlewareRoutes: IMiddlewareRouteConfig[],
-  { sort }: { sort: boolean }
+  middlewareRoutes: IMiddlewareRouteConfig[]
 ): string {
-  let rankMiddlewareRoutes = middlewareRoutes.map(
-    middlewareRoute =>
-      [middlewareRoute.path, middlewareRoute] as [
-        string,
-        typeof middlewareRoute
-      ]
-  );
-  if (sort) {
-    rankMiddlewareRoutes = rankRouteBranches(rankMiddlewareRoutes);
-  }
-  middlewareRoutes = rankMiddlewareRoutes.map(
-    middlewareRoute => middlewareRoute[1]
-  );
   let res = '';
   for (let index = 0; index < middlewareRoutes.length; index++) {
     const { middleware, path } = middlewareRoutes[index];
@@ -56,16 +41,13 @@ export function serializeMiddlewareRoutes(
 export function generateRoutesContent(
   rawRoutes: IMiddlewareRouteConfig[],
   {
-    baseDir,
-    sort = false
+    baseDir
   }: {
     baseDir: string;
-    sort: boolean;
   }
 ): string {
   const serialized = serializeMiddlewareRoutes(
-    normalizeMiddlewareRoutes(rawRoutes, { baseDir }),
-    { sort }
+    normalizeMiddlewareRoutes(rawRoutes, { baseDir })
   );
   return `export default ${serialized}`;
 }

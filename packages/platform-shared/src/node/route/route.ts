@@ -9,6 +9,7 @@ import {
   getAllowFilesAndDirs,
   hasAllowFiles,
   normalize,
+  sortRoutes,
   SupportFileType
 } from './helpers';
 
@@ -49,6 +50,10 @@ export type RawRoutes = RouteResult<RawRoute>;
 export type PageRoutes = RouteResult<IPageRouteConfig>;
 export type ApiRoutes = RouteResult<IApiRouteConfig>;
 export type MiddlewareRoutes = RouteResult<IMiddlewareRouteConfig>;
+export type RouteConfigType =
+  | IPageRouteConfig
+  | IApiRouteConfig
+  | IMiddlewareRouteConfig;
 
 export const getRawRoutesFromDir = async (
   dirname: string
@@ -130,7 +135,7 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
     errors
   } = await getRawRoutesFromDir(dirname);
 
-  const _getPageAndLayoutRoutes = async (
+  const _getPageRoutes = (
     rawRoutes: RawRoute[],
     routes: IPageRouteConfig[],
     segment = ''
@@ -150,11 +155,7 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
         const preSegment = layoutRoute
           ? ''
           : `${segment}${rawRoute.parentSegment}/`;
-        await _getPageAndLayoutRoutes(
-          rawRoute.children,
-          workRoutes,
-          preSegment
-        );
+        _getPageRoutes(rawRoute.children, workRoutes, preSegment);
       } else if (rawRoute.type === 'page' || rawRoute.type === 'layout') {
         if (rawRoute.type === 'page' && layoutRoute) {
           route.children!.push({
@@ -178,7 +179,7 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
     return routes;
   };
 
-  const routes = await _getPageAndLayoutRoutes(rawRoutes, []);
+  const routes = sortRoutes(_getPageRoutes(rawRoutes, []));
 
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
@@ -268,7 +269,7 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
     return routes;
   };
 
-  const routes = _getApiRoutes(rawRoutes, [], '');
+  const routes = sortRoutes(_getApiRoutes(rawRoutes, [], ''));
   const filterException = (e: RouteException) => e.type === 'api';
 
   return {
@@ -287,7 +288,7 @@ export const getMiddlewareRoutes = async (
     errors
   } = await getRawRoutesFromDir(dirname);
 
-  const _getMiddlewareRoutes = async (
+  const _getMiddlewareRoutes = (
     rawRoutes: RawRoute[],
     routes: IMiddlewareRouteConfig[],
     segment: string
@@ -296,7 +297,7 @@ export const getMiddlewareRoutes = async (
 
     for (const rawRoute of rawRoutes) {
       if (rawRoute.kind === 'dir') {
-        await _getMiddlewareRoutes(
+        _getMiddlewareRoutes(
           rawRoute.children,
           routes,
           segment + '/' + rawRoute.parentSegment
@@ -326,7 +327,7 @@ export const getMiddlewareRoutes = async (
     return routes;
   };
 
-  const routes = await _getMiddlewareRoutes(rawRoutes, [], '');
+  const routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
