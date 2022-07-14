@@ -1,10 +1,11 @@
+import * as path from 'path';
 import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
-import { WebpackDevMiddleware } from '@shuvi/toolpack/lib/webpack';
+import { WebpackDevMiddleware, DynamicDll } from '@shuvi/toolpack/lib/webpack';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -21,7 +22,18 @@ export async function getDevMiddleware(
   serverPluginContext: IServerPluginContext
 ): Promise<DevMiddleware> {
   const bundler = await getBundler(serverPluginContext);
-  const compiler = await bundler.getWebpackCompiler();
+  let compiler;
+  let dynamicDll: DynamicDll | null = null;
+
+  if (serverPluginContext.config.experimental.preBundle) {
+    dynamicDll = new DynamicDll({
+      cacheDir: path.join(serverPluginContext.paths.cacheDir, 'dll'),
+      rootDir: serverPluginContext.paths.rootDir,
+      exclude: [/react-refresh/]
+    });
+  }
+
+  compiler = await bundler.getWebpackCompiler(dynamicDll);
   // watch before pass compiler to WebpackDevMiddleware
   bundler.watch({
     onErrors(errors) {
@@ -51,6 +63,9 @@ export async function getDevMiddleware(
     targetServer.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );
+    if (dynamicDll) {
+      targetServer.use(dynamicDll.middleware);
+    }
   };
 
   const send = (action: string, payload?: any) => {

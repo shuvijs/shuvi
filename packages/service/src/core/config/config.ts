@@ -44,7 +44,11 @@ export const createDefaultConfig: () => Config = () => ({
     bodyParser: true
   },
   experimental: {
-    parcelCss: false
+    parcelCss: false,
+    loader: {
+      sequential: false
+    },
+    preBundle: false
   },
   typescript: {
     ignoreBuildErrors: false
