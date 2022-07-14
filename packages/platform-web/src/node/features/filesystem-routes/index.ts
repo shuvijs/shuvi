@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 import {
   createPlugin,
   IRouteConfig,
@@ -10,8 +13,9 @@ import {
   getApiRoutes,
   getMiddlewareRoutes
 } from '@shuvi/platform-shared/node';
-import * as fs from 'fs';
-import * as path from 'path';
+import { resolvePkgFile } from '../../paths';
+import { ifComponentHasLoader } from '../html-render/lib';
+import { addRoutes } from './hooks';
 import {
   getRoutes,
   setRoutes,
@@ -27,8 +31,6 @@ import {
   middleware as getApiMiddleware,
   generateRoutesContent as generateApiRoutesContent
 } from './api';
-import { ifComponentHasLoader } from '../html-render/lib';
-import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 
 export {
   IApiRequestHandler,
@@ -37,12 +39,9 @@ export {
   getApiMiddleware
 };
 
-let routes: IUserRouteConfig[];
-
-export default createPlugin({
-  appRoutes(_routes) {
-    routes = _routes;
-    return routes;
+const plugin = createPlugin({
+  setup: ({ addHooks }) => {
+    addHooks({ addRoutes });
   },
   addRuntimeFile: async ({ defineFile }, context) => {
     const {
@@ -50,9 +49,6 @@ export default createPlugin({
       paths,
       pluginRunner
     } = context;
-
-    const getRoutesAfterPlugin = (routes: IUserRouteConfig[]) =>
-      pluginRunner.appRoutes(routes);
 
     const pageRoutesFile = defineFile({
       name: 'routes.js',
@@ -71,9 +67,9 @@ export default createPlugin({
           routes = _routes;
         }
 
-        const modifiedRoutes = getRoutesAfterPlugin(routes);
+        const extraRoutes = (await pluginRunner.addRoutes()).flat();
         const normalizedRoutes = normalizePageRoutes(
-          modifiedRoutes,
+          routes.concat(extraRoutes),
           paths.routesDir
         );
         setRoutes(normalizedRoutes);
@@ -186,3 +182,8 @@ export default createPlugin({
     ];
   }
 });
+
+export default {
+  core: plugin,
+  types: resolvePkgFile('lib/node/features/filesystem-routes/shuvi-app.d.ts')
+};
