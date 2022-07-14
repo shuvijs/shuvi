@@ -52,7 +52,7 @@ export async function setupTypeScript(paths: IPaths) {
 
   hasSetup = true;
   const projectDir = paths.rootDir;
-  useTypeScript = await hasTypescriptFiles(projectDir);
+  useTypeScript = await hasTypescriptFiles(paths.srcDir);
   tsCompilerOptions = {};
   if (useTypeScript) {
     typeScriptPath = getTypeScriptPath(projectDir);

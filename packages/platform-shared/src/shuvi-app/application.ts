@@ -10,10 +10,7 @@ import {
 
 export { Application };
 
-function getPlugins(
-  runtime: Partial<IAppModule>,
-  pluginRecords: IPluginRecord
-) {
+function getPlugins(runtime: IAppModule, pluginRecords: IPluginRecord) {
   const plugins: IPluginList = [];
 
   const keys = Object.keys(pluginRecords);

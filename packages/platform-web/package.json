@@ -27,6 +27,12 @@
     "./node/*": {
       "default": "./lib/node/*.js"
     },
+    "./shared": {
+      "default": "./esm/shared/index.js"
+    },
+    "./shared/*": {
+      "default": "./esm/shared/*.js"
+    },
     "./shuvi-app": {
       "default": "./esm/shuvi-app/index.js"
     },
