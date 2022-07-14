@@ -1,4 +1,4 @@
-import { WebpackChain } from '@shuvi/toolpack/lib/webpack';
+import { WebpackChain, DynamicDll } from '@shuvi/toolpack/lib/webpack';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
   createCodeFrameFormatter
@@ -60,12 +60,24 @@ class WebpackBundler {
     this._cliContext = cliContext;
   }
 
-  async getWebpackCompiler(): Promise<WebapckMultiCompiler> {
+  async getWebpackCompiler(
+    dynamicDll?: DynamicDll | null
+  ): Promise<WebapckMultiCompiler> {
     const ignoreTypeScriptErrors = this._options.ignoreTypeScriptErrors;
-
     if (!this._compiler) {
       this._targets = await this._getTargets();
-      this._compiler = webpack(this._targets.map(t => t.config));
+      if (this._cliContext.config.experimental.preBundle) {
+        this._compiler = webpack(
+          this._targets.map(({ config }) => {
+            if (config.target === 'node') {
+              return config;
+            }
+            return dynamicDll ? dynamicDll.modifyWebpack(config) : config;
+          })
+        );
+      } else {
+        this._compiler = webpack(this._targets.map(t => t.config));
+      }
 
       let isFirstSuccessfulCompile = true;
       if (ignoreTypeScriptErrors) {
