@@ -1,7 +1,6 @@
 import * as path from 'path';
 import { createPlugin } from '@shuvi/service';
-import { resolvePkgFile, resolvePluginFile } from '../../../paths';
-import './shuvi-app';
+import { resolvePkgFile } from '../../paths';
 import server from './server';
 
 const resolveLib = (module: string) =>
@@ -24,9 +23,8 @@ const core = createPlugin({
 export default {
   core,
   runtime: {
-    // FIXIME: only receive a absolute path, should be able to receive a module path
-    plugin: resolvePluginFile('model', 'runtime')
+    plugin: resolvePkgFile('lib/node/features/model/runtime.js')
   },
   server,
-  types: resolvePkgFile('lib/node/platform/plugins/model/shuvi-app.d.ts')
+  types: resolvePkgFile('lib/node/features/model/shuvi-app.d.ts')
 };

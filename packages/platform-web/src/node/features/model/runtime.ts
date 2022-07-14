@@ -3,7 +3,7 @@ import {
   createRuntimePlugin,
   getPageData,
   IAppContext
-} from '../../../../shared';
+} from '@shuvi/platform-shared/shared';
 
 export type InitRedox = (params: {
   initialState: any;

@@ -8,6 +8,7 @@ import { IViewServer } from '../features/html-render';
 import { IApiRequestHandler } from '../features/filesystem-routes';
 import '../features/filesystem-routes/shuvi-app';
 import '../features/html-render/shuvi-app';
+import '../features/model/shuvi-app';
 
 export { IApiRequestHandler };
 
