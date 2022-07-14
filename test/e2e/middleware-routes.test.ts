@@ -5,9 +5,9 @@ let ctx: AppCtx;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('server-middleware development', () => {
+describe('middleware-routes development', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('server-middleware');
+    ctx = await launchFixture('middleware-routes');
   });
   afterAll(async () => {
     await ctx.close();
@@ -107,7 +107,7 @@ describe('server-middleware development', () => {
     await page.close();
   });
 
-  test('should not match assetPublicPath for static files', async () => {
+  test('assets should have a high priority', async () => {
     const res = await got.get(ctx.url(`/user.json`), {
       responseType: 'json'
     });
@@ -119,6 +119,16 @@ describe('server-middleware development', () => {
   test('should allow plugin middleware', async () => {
     const page = await ctx.browser.page(ctx.url('/pluginServerMiddleware'));
     expect(await page.$text('body')).toBe('pluginServerMiddleware');
+    await page.close();
+  });
+
+  test('should follow plugin middleware be added order', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    const page = await ctx.browser.page(ctx.url('/testorder'));
+    const consoleResult = consoleSpy.mock.calls.join('');
+    expect(consoleResult).toBe(
+      ['plugin 1', 'plugin 2', 'user default order', '10', ''].join('\n')
+    );
     await page.close();
   });
 });

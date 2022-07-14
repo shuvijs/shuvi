@@ -1,8 +1,5 @@
 import { createPlugin } from '@shuvi/service';
-import { extendedHooks, IHandlePageRequest } from './hooks';
-import { resolvePkgFile } from '../../paths';
 
-export type { IHandlePageRequest };
 export {
   getPageMiddleware,
   IHtmlDocument,
@@ -12,9 +9,6 @@ export {
 } from './lib';
 
 const core = createPlugin({
-  setup: ({ addHooks }) => {
-    addHooks(extendedHooks);
-  },
   addRuntimeFile: ({ defineFile }, context) => {
     const {
       config: {
@@ -33,6 +27,5 @@ const core = createPlugin({
 });
 
 export default {
-  core,
-  types: resolvePkgFile('lib/node/features/html-render/shuvi-app.d.ts')
+  core
 };

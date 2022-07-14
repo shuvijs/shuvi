@@ -10,9 +10,7 @@ let onDemandRouteManager: OnDemandRouteManager;
 export const getMiddlewares = (
   context: IServerPluginContext
 ): IServerMiddleware[] => {
-  const middlewaresFromPlugin = context.serverPluginRunner.middlewares().flat();
   return [
-    ...middlewaresFromPlugin,
     onDemandRouteManager && onDemandRouteManager.ensureRoutesMiddleware(),
     getMiddlewareMiddleware(context),
     getApiMiddleware(context),
