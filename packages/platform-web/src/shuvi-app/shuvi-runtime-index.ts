@@ -2,7 +2,7 @@
 
 import { IRequestHandlerWithNext } from '@shuvi/service';
 
-import { IApiRequestHandler } from './features/filesystem-routes/index';
+import { IApiRequestHandler } from '../shared';
 
 export type MiddlewareHandler = IRequestHandlerWithNext;
 

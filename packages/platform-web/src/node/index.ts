@@ -9,7 +9,7 @@ import {
   getMiddlewaresBeforeDevMiddlewares,
   getMainPlugin
 } from './features';
-import './types/shuvi-service';
+import './shuvi-node-extensions';
 import { resolvePkgFile } from './paths';
 
 const platform: IPlatform = async (
@@ -32,8 +32,7 @@ const platform: IPlatform = async (
   return {
     types: [
       resolvePkgFile('shuvi-env.d.ts'),
-      resolvePkgFile('shuvi-image.d.ts'),
-      resolvePkgFile('lib/node/types/shuvi-service.d.ts')
+      resolvePkgFile('shuvi-image.d.ts')
     ],
     plugins: [
       ...SharedPlugins,

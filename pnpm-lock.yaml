@@ -510,6 +510,12 @@ importers:
   test/fixtures/css:
     specifiers: {}
 
+  test/fixtures/dll:
+    specifiers:
+      shuvi: workspace:*
+    dependencies:
+      shuvi: link:../../../packages/shuvi
+
   test/fixtures/dynamic:
     specifiers: {}
 

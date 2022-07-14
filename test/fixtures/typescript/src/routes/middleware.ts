@@ -1,12 +1,6 @@
-// FIXME: `RuntimeServer` export
-/* import type { RuntimeServer } from '@shuvi/runtime';
- */
+import { MiddlewareHandler } from '@shuvi/runtime';
 
-const middleware /* : RuntimeServer.IRequestHandlerWithNext */ = (
-  req,
-  res,
-  next
-) => {
+const middleware: MiddlewareHandler = (req, res, next) => {
   if (req.query.middleware) {
     return res.end('middleware success');
   }

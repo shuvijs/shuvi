@@ -1,8 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import {
   createSyncHook,
-  createAsyncParallelHook,
-  createAsyncSeriesWaterfallHook
+  createSyncWaterfallHook,
+  createAsyncParallelHook
 } from '@shuvi/hook';
 import { IAppContext } from '@shuvi/platform-shared/shared';
 import { IServerMiddleware } from '@shuvi/service';
@@ -23,7 +23,8 @@ const getPageData = createAsyncParallelHook<
   IAppContext,
   Record<string, unknown>
 >();
-const handlePageRequest = createAsyncSeriesWaterfallHook<IHandlePageRequest>();
+const handlePageRequest = createSyncWaterfallHook<IHandlePageRequest>();
+// todo: change to AsyncSeries
 const modifyHtml = createAsyncParallelHook<IHtmlDocument, IAppContext>();
 
 export const extendedHooks = {

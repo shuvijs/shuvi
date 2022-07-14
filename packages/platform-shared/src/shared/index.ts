@@ -11,6 +11,12 @@ export type { Application } from './application';
 
 export {
   IAppModule,
+  // fix createRuntimePlugin is not portable begin
+  IPluginInstance,
+  BuiltInRuntimePluginHooks,
+  CustomRuntimePluginHooks,
+  RuntimePluginHooks,
+  // fix createRuntimePlugin is not portable end
   createRuntimePlugin,
   RuntimePluginInstance
 } from './lifecycle';

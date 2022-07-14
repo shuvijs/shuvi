@@ -1,13 +1,16 @@
-import { HandlePageRequestFunction } from '@shuvi/runtime/server';
+import {
+  GetPageDataFunction,
+  HandlePageRequestFunction
+} from '@shuvi/runtime/server';
 
-export const getPageData = () => {
+// fixme: GetPageDataFunction is any
+export const getPageData: GetPageDataFunction = () => {
   return {};
 };
 
 export const handlePageRequest: HandlePageRequestFunction =
   originalHandlePageRequest => {
     return async (req, res) => {
-      // FIXME: 类型有问题 不能build了 renderToHtml的类型是unknown
-      await (originalHandlePageRequest as Function)(req, res);
+      await originalHandlePageRequest(req, res);
     };
   };
