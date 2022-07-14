@@ -103,14 +103,11 @@ const plugin = createPlugin({
     const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
       content: async () => {
-        let sort: boolean;
         let routes: IMiddlewareRouteConfig[];
         const hasConfigRoutes = Array.isArray(middlewareRoutes);
         if (hasConfigRoutes) {
-          sort = false;
           routes = middlewareRoutes;
         } else {
-          sort = true;
           const { routes: _routes, warnings } = await getMiddlewareRoutes(
             paths.routesDir
           );
@@ -122,8 +119,7 @@ const plugin = createPlugin({
 
         const extraRoutes = (await pluginRunner.addMiddlewareRoutes()).flat();
         return generateMiddlewareRoutesContent(extraRoutes.concat(routes), {
-          baseDir: paths.routesDir,
-          sort
+          baseDir: paths.routesDir
         });
       },
       dependencies: [paths.routesDir]

@@ -1,15 +1,9 @@
-import { rankRouteBranches } from '@shuvi/router';
 import { IApiRouteConfig } from '@shuvi/platform-shared/node';
 import { normalizePath } from '@shuvi/utils/lib/file';
 
 export { IApiRouteConfig };
 
 export function serializeApiRoutes(apiRoutes: IApiRouteConfig[]): string {
-  let rankApiRoutes = apiRoutes.map(
-    apiRoute => [apiRoute.path, apiRoute] as [string, typeof apiRoute]
-  );
-  rankApiRoutes = rankRouteBranches(rankApiRoutes);
-  apiRoutes = rankApiRoutes.map(apiRoute => apiRoute[1]);
   let res = '';
   for (let index = 0; index < apiRoutes.length; index++) {
     const { api, path } = apiRoutes[index];

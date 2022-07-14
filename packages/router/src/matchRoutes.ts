@@ -73,12 +73,6 @@ export function rankRouteBranches<T extends [string, ...any[]]>(
 
   const newBranches: T[] = [];
 
-  // console.log(
-  //   normalizedPaths
-  //     .map(parser => `${parser.path} -> ${JSON.stringify(parser.score)}`)
-  //     .join('\n')
-  // )
-
   normalizedPaths.forEach((branch, newBranchesIndex) => {
     const { index } = branch;
     newBranches[newBranchesIndex] = branches[index];

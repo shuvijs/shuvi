@@ -2,6 +2,13 @@ import fs from 'fs';
 import { join, extname, basename } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import invariant from '@shuvi/utils/lib/invariant';
+import {
+  IApiRouteConfig,
+  IMiddlewareRouteConfig,
+  IPageRouteConfig,
+  RouteConfigType
+} from './route';
+import { rankRouteBranches } from '../../shared/router';
 
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
 const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
@@ -204,4 +211,22 @@ supportFileTypes.forEach(fileType => {
   };
 });
 
-export { fileTypeChecker };
+function sortRoutes(routes: IApiRouteConfig[]): IApiRouteConfig[];
+function sortRoutes(routes: IMiddlewareRouteConfig[]): IMiddlewareRouteConfig[];
+function sortRoutes(routes: IPageRouteConfig[]): IPageRouteConfig[];
+function sortRoutes(routes: RouteConfigType[]) {
+  let rankRoutes = routes.map(route => {
+    return [route.path, route] as [string, RouteConfigType];
+  });
+  rankRoutes = rankRouteBranches(rankRoutes);
+
+  return rankRoutes.map(rankRoute => {
+    const rankRawRoute = rankRoute[1] as IPageRouteConfig;
+    if (rankRawRoute.children) {
+      rankRawRoute.children = sortRoutes(rankRawRoute.children);
+    }
+    return rankRoute[1];
+  });
+}
+
+export { fileTypeChecker, sortRoutes };
