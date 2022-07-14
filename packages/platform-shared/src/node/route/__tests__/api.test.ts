@@ -19,16 +19,16 @@ describe('api routes test', () => {
     expect(result).toMatchObject({
       routes: [
         {
-          path: '/api',
-          api: 'api/api.js'
-        },
-        {
           path: '/api/users/:id',
           api: 'api/users/[id]/api.js'
         },
         {
           path: '/api/users',
           api: 'api/users/api.js'
+        },
+        {
+          path: '/api',
+          api: 'api/api.js'
         }
       ],
       warnings: [],

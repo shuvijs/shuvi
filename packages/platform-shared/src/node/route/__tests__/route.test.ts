@@ -18,16 +18,16 @@ describe('filesystem routes', () => {
     expect(result).toMatchObject({
       routes: [
         {
+          component: 'b/b1/b2/page.js',
+          path: '/b/b1/b2'
+        },
+        {
           component: 'a/a1/page.js',
           path: '/a/a1'
         },
         {
           component: 'a/page.js',
           path: '/a'
-        },
-        {
-          component: 'b/b1/b2/page.js',
-          path: '/b/b1/b2'
         },
         {
           component: 'b/page.js',
@@ -41,11 +41,18 @@ describe('filesystem routes', () => {
 
   it('should handle layout', async () => {
     const result = await getFixturePageRoutes('layout');
-
     expect(result).toMatchObject({
       routes: [
         {
           children: [
+            {
+              path: '',
+              component: 'page.js'
+            },
+            {
+              component: 'a1/a2/page.js',
+              path: 'a1/a2'
+            },
             {
               children: [
                 {
@@ -69,14 +76,6 @@ describe('filesystem routes', () => {
               ],
               component: 'a/layout.js',
               path: 'a'
-            },
-            {
-              component: 'a1/a2/page.js',
-              path: 'a1/a2'
-            },
-            {
-              path: '',
-              component: 'page.js'
             }
           ],
           component: 'layout.js',
@@ -96,8 +95,20 @@ describe('filesystem routes', () => {
         {
           children: [
             {
+              component: 'f/[pid]/[id]/page.js',
+              path: 'f/:pid/:id'
+            },
+            {
+              component: 'g/[pid]/[id]/page.js',
+              path: 'g/:pid/:id'
+            },
+            {
               component: 'a/[id]/page.js',
               path: 'a/:id'
+            },
+            {
+              component: 'g/[pid]/page.js',
+              path: 'g/:pid'
             },
             {
               component: 'b/[[id]]/page.js',
@@ -124,18 +135,6 @@ describe('filesystem routes', () => {
               ],
               component: 'e/layout.js',
               path: 'e'
-            },
-            {
-              component: 'f/[pid]/[id]/page.js',
-              path: 'f/:pid/:id'
-            },
-            {
-              component: 'g/[pid]/[id]/page.js',
-              path: 'g/:pid/:id'
-            },
-            {
-              component: 'g/[pid]/page.js',
-              path: 'g/:pid'
             }
           ],
           component: 'layout.js',
