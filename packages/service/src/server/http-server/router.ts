@@ -57,7 +57,7 @@ class RouterImpl implements Router {
     );
 
     if (routePath === '*') {
-      routePath = '/:_(.*)';
+      routePath = '/*';
     }
     this._routes.push({ path: routePath, handler });
 
