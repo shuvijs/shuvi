@@ -17,7 +17,6 @@ import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/node';
 import generateResource from './generateResource';
 import { resolvePkgFile } from '../../paths';
-import { appRoutes } from './hooks';
 import { buildHtml } from './buildHtml';
 import { getMiddlewares } from '../middlewares';
 
@@ -32,9 +31,6 @@ export const getPlugin = (
   platformContext: IPlatformContext
 ): ResolvedPlugin => {
   const core = createPlugin({
-    setup: ({ addHooks }) => {
-      addHooks({ appRoutes });
-    },
     afterInit: async context => {
       const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
         await getRuntimeConfigFromConfig(context);
@@ -106,8 +102,8 @@ export const getPlugin = (
       });
     }
   });
+
   return {
-    core,
-    types: resolvePkgFile('lib/node/features/main/shuvi-app.d.ts')
+    core
   };
 };
