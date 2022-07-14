@@ -5,12 +5,14 @@
  *  import {} from '@shuvi/runtime/app'
  *
  */
-import { IAppModule } from '../shared/lifecycle';
+import { IAppModule as _IAppModule } from '../shared/lifecycle';
 
-export type InitFunction = IAppModule['init'];
+type AppModule = Required<_IAppModule>;
 
-export type AppComponentFunction = IAppModule['appComponent'];
+export type InitFunction = AppModule['init'];
 
-export type AppContextFunction = IAppModule['appContext'];
+export type AppComponentFunction = AppModule['appComponent'];
 
-export type DisposeFunction = IAppModule['dispose'];
+export type AppContextFunction = AppModule['appContext'];
+
+export type DisposeFunction = AppModule['dispose'];

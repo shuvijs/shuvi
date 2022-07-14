@@ -15,6 +15,5 @@
       "shuvi-test-utils": ["test/utils/index"],
       "shuvi-test-utils/*": ["test/utils/*"]
     }
-  },
-  "exclude": ["node_modules", "test/fixtures"]
+  }
 }

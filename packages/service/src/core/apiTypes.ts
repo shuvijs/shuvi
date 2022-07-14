@@ -52,9 +52,18 @@ export interface IPreset {
 }
 
 export interface IPaths {
+  // project root
   rootDir: string;
+
+  // dir to store output files
   buildDir: string;
+
+  // dir to store user source files
+  srcDir: string;
+
+  // dir to generate conventional routes
   routesDir: string;
+
   // dir to store shuvi's artifacts
   privateDir: string;
 
@@ -64,21 +73,13 @@ export interface IPaths {
   // dir to runtime libraries
   runtimeDir: string;
 
-  //resources file
+  // resources file
   resources: string;
 
-  //cache file
+  // cache file
   cacheDir: string;
 
-  // user src dir
-  srcDir: string;
-
-  // functional dirs
-  pagesDir: string;
-
-  // api dirs
-  apisDir: string;
-
+  // dir to store public assets
   publicDir: string;
 }
 
@@ -194,7 +195,7 @@ export interface NormalizedConfig
   };
 }
 
-export type IPluginContext = {
+export interface IPluginContext {
   mode: IShuviMode;
   paths: IPaths;
   config: NormalizedConfig;
@@ -206,4 +207,4 @@ export type IPluginContext = {
   resolveBuildFile(...paths: string[]): string;
   resolvePublicFile(...paths: string[]): string;
   getAssetPublicUrl(...paths: string[]): string;
-};
+}

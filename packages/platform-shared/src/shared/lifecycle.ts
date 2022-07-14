@@ -4,12 +4,13 @@ import {
   createHookManager,
   isPluginInstance,
   IPluginInstance,
-  IPluginHandlers
+  IPluginHandlers,
+  HookMap
 } from '@shuvi/hook';
 import { CustomRuntimePluginHooks } from '@shuvi/runtime';
 import { IAppContext } from './applicationTypes';
 
-type AppComponent = unknown;
+export type AppComponent = unknown;
 
 const init = createAsyncParallelHook<void>();
 const appContext = createAsyncSeriesWaterfallHook<IAppContext, void>();
@@ -26,33 +27,41 @@ const builtinRuntimePluginHooks = {
   dispose
 };
 
-type BuiltinRuntimePluginHooks = typeof builtinRuntimePluginHooks;
+export interface BuiltInRuntimePluginHooks extends HookMap {
+  init: typeof init;
+  appComponent: typeof appComponent;
+  appContext: typeof appContext;
+  dispose: typeof dispose;
+}
+
+export interface RuntimePluginHooks
+  extends BuiltInRuntimePluginHooks,
+    CustomRuntimePluginHooks {}
 
 export const getManager = () =>
-  createHookManager<BuiltinRuntimePluginHooks, void, CustomRuntimePluginHooks>(
+  createHookManager<BuiltInRuntimePluginHooks, void, CustomRuntimePluginHooks>(
     builtinRuntimePluginHooks,
     false
   );
 
 export const { createPlugin: createRuntimePlugin } = getManager();
 
+export type { IPluginInstance, CustomRuntimePluginHooks };
+
 export type PluginManager = ReturnType<typeof getManager>;
 
-export type RuntimePluginInstance = IPluginInstance<
-  BuiltinRuntimePluginHooks & CustomRuntimePluginHooks,
-  void
->;
+export type RuntimePluginInstance = IPluginInstance<RuntimePluginHooks, void>;
 
 export type IRuntimePluginConstructor = IPluginHandlers<
-  BuiltinRuntimePluginHooks & CustomRuntimePluginHooks,
+  RuntimePluginHooks,
   void
 >;
 
 export type IAppModule = {
-  init: IRuntimePluginConstructor['init'];
-  appContext: IRuntimePluginConstructor['appContext'];
-  appComponent: IRuntimePluginConstructor['appComponent'];
-  dispose: IRuntimePluginConstructor['dispose'];
+  init?: IRuntimePluginConstructor['init'];
+  appContext?: IRuntimePluginConstructor['appContext'];
+  appComponent?: IRuntimePluginConstructor['appComponent'];
+  dispose?: IRuntimePluginConstructor['dispose'];
 };
 
 type SerializedPluginOptions = string;

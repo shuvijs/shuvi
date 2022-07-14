@@ -4,35 +4,15 @@ import * as querystring from 'querystring';
 import * as cookie from 'cookie';
 const getRawBody = require('raw-body');
 import * as contentType from 'content-type';
-import { IURLParams, IURLQuery } from '@shuvi/platform-shared/shared';
 import { IResponse, IRequest } from '@shuvi/service';
+import {
+  IApiRequestHandler,
+  IApiReq,
+  IApiRes,
+  IApiResponse
+} from '../../../../shared';
 
-export interface IApiReq {
-  pathname: string;
-  query: IURLQuery;
-  params: IURLParams;
-  cookies: { [key: string]: string };
-  body?: { [key: string]: any };
-}
-
-export type IApiRequest = IRequest & IApiReq;
-
-type Send<T> = (body: T) => void;
-
-type IApiRes<T = any> = {
-  send: Send<T>;
-  json: Send<T>;
-  status: (statusCode: number) => IApiRes<T>;
-  redirect(url: string): IApiRes<T>;
-  redirect(status: number, url: string): IApiRes<T>;
-};
-
-export type IApiResponse<T = any> = IResponse & IApiRes<T>;
-
-export type IApiRequestHandler<T = any> = (
-  req: IApiRequest,
-  res: IApiResponse<T>
-) => void | Promise<void>;
+export { IApiRequestHandler };
 
 export async function apiRouteHandler(
   req: IRequest,
