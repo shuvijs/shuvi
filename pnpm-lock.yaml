@@ -525,6 +525,12 @@ importers:
     dependencies:
       shuvi: link:../../../packages/shuvi
 
+  test/fixtures/middleware-routes:
+    specifiers:
+      shuvi: workspace:*
+    dependencies:
+      shuvi: link:../../../packages/shuvi
+
   test/fixtures/plugin:
     specifiers:
       shuvi: workspace:*
@@ -554,12 +560,6 @@ importers:
       '@shuvi/shared': workspace:*
     dependencies:
       '@shuvi/shared': link:../../../packages/shared
-
-  test/fixtures/server-middleware:
-    specifiers:
-      shuvi: workspace:*
-    dependencies:
-      shuvi: link:../../../packages/shuvi
 
   test/fixtures/typescript:
     specifiers:
