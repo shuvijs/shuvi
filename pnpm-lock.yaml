@@ -1,7 +1,5 @@
 lockfileVersion: 5.4
 
-packageExtensionsChecksum: 3cdc335054fff6ab85d2eec91e0a2650
-
 importers:
 
   .:
@@ -148,6 +146,7 @@ importers:
       '@next/react-refresh-utils': 12.1.6_mrng46iweft73kaoehgasn3du4
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
+      '@shuvi/redox': 0.0.3
       '@shuvi/redox-react': 0.0.3_yxhokgxiioc7gcrimt4kebkwum
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
@@ -168,7 +167,6 @@ importers:
       react-refresh: 0.12.0
       use-sync-external-store: 1.1.0_react@18.1.0
     devDependencies:
-      '@shuvi/redox': 0.0.3
       '@testing-library/react': 10.0.2_ef5jwxihqo6n7gxfmzogljlgcm
       '@types/content-type': 1.1.5
       '@types/cookie': 0.4.1
@@ -386,6 +384,7 @@ importers:
       strip-ansi: 6.0.0
       style-loader: 2.0.0
       terser-webpack-plugin: 5.2.5
+      typescript: 4.7.4
       vm-browserify: 1.1.2
       webpack: 5.73.0
       webpack-bundle-analyzer: 4.3.0
@@ -426,7 +425,7 @@ importers:
       esbuild: 0.14.38
       esbuild-loader: 2.19.0_webpack@5.73.0
       file-loader: 6.2.0_webpack@5.73.0
-      fork-ts-checker-webpack-plugin: 6.0.8_webpack@5.73.0
+      fork-ts-checker-webpack-plugin: 6.0.8_3o2jfq6vfqxns3sz6wn2nnc3ei
       fs-extra: 9.0.1
       ignore-loader: 0.1.2
       loader-utils: 2.0.0
@@ -445,6 +444,7 @@ importers:
       strip-ansi: 6.0.0
       style-loader: 2.0.0_webpack@5.73.0
       terser-webpack-plugin: 5.2.5_4upc34oiflw3lduyjvrzpjntau
+      typescript: 4.7.4
       vm-browserify: 1.1.2
       webpack: 5.73.0_esbuild@0.14.38
       webpack-bundle-analyzer: 4.3.0
@@ -2833,6 +2833,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       immer: 9.0.6
+    dev: false
 
   /@shuvi/swc-darwin-arm64/0.0.1-pre.2:
     resolution: {integrity: sha512-nIKOtV6YngDp6QXyKtD1L0JpAmhdKUxgE9YatRWJSCtZ7xwAwV68sGusTLyExN01RUHeqGC0rWNYRqdAipdIkw==}
@@ -6217,7 +6218,7 @@ packages:
       - supports-color
     dev: false
 
-  /fork-ts-checker-webpack-plugin/6.0.8_webpack@5.73.0:
+  /fork-ts-checker-webpack-plugin/6.0.8_3o2jfq6vfqxns3sz6wn2nnc3ei:
     resolution: {integrity: sha512-2K6Ozamm6TSL5heFIwPhX5+VsOBiiKf9PzaPFS7kwzrILKX+jlN3DBQc5v/6YYZ2oKJyImg3bY0/uZc7cDbDYQ==}
     engines: {node: '>=10', yarn: '>=1.0.0'}
     peerDependencies:
@@ -6227,8 +6228,6 @@ packages:
       webpack: '>= 4'
     peerDependenciesMeta:
       eslint:
-        optional: true
-      typescript:
         optional: true
       vue-template-compiler:
         optional: true
@@ -6245,6 +6244,7 @@ packages:
       schema-utils: 2.7.0
       semver: 7.3.2
       tapable: 1.1.3
+      typescript: 4.7.4
       webpack: 5.73.0_esbuild@0.14.38
     dev: false
 
@@ -6784,6 +6784,7 @@ packages:
 
   /immer/9.0.6:
     resolution: {integrity: sha512-G95ivKpy+EvVAnAab4fVa4YGYn24J1SpEktnJX7JJ45Bd7xqME/SCplFzYFmTbrkwZbQ4xJK1xMTUYBkN6pWsQ==}
+    dev: false
 
   /immutable/4.0.0:
     resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
@@ -11070,7 +11071,6 @@ packages:
     resolution: {integrity: sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==}
     engines: {node: '>=4.2.0'}
     hasBin: true
-    dev: true
 
   /uglify-js/3.15.4:
     resolution: {integrity: sha512-vMOPGDuvXecPs34V74qDKk4iJ/SN4vL3Ow/23ixafENYvtrNvtbcgUeugTcUGRGsOF/5fU8/NYSL5Hyb3l1OJA==}
