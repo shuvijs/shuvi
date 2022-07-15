@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLoaderData, Link, Loader } from '@shuvi/runtime';
-import { sleep } from '../utils';
+import { sleep } from '../../utils';
 
 const One = () => {
   const data = useLoaderData<LoaderData>();
