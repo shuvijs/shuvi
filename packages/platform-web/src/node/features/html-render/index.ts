@@ -1,4 +1,6 @@
 import { createPlugin } from '@shuvi/service';
+import { resolvePkgFile } from '../../paths';
+import server from './server';
 
 export {
   getPageMiddleware,
@@ -27,5 +29,7 @@ const core = createPlugin({
 });
 
 export default {
-  core
+  core,
+  server,
+  types: resolvePkgFile('lib/node/features/html-render/shuvi-app.d.ts')
 };
