@@ -1,47 +1,43 @@
 const fs = require('fs');
 const { platform, arch } = require('os');
 const path = require('path');
-const { platformArchTriples } = require('@napi-rs/triples')
+const { platformArchTriples } = require('@napi-rs/triples');
 const ArchName = arch();
 const PlatformName = platform();
 
 let bindings;
 let loadError;
 
-const triples = platformArchTriples[PlatformName][ArchName]
+const triples = platformArchTriples[PlatformName][ArchName];
 for (const triple of triples) {
   try {
-    const swcSource = path.join(
-      __dirname,
-      '../../swc-source',
-    )
+    const swcSource = path.join(__dirname, '../../swc-source');
     const localFilePath = path.join(
       swcSource,
       `native/shuvi-swc.${triple.platformArchABI}.node`
-    )
+    );
     if (fs.existsSync(localFilePath)) {
-      console.log('Using locally built binary of shuvi-swc')
+      console.log('Using locally built binary of shuvi-swc');
       try {
-        bindings = require(localFilePath)
+        bindings = require(localFilePath);
       } catch (e) {
         if (e?.code !== 'MODULE_NOT_FOUND') {
-          loadError = e
+          loadError = e;
         }
       }
-      break
+      break;
+    } else {
+      bindings = require(`@shuvi/swc-${triple.platformArchABI}`);
     }
-    break
   } catch (e) {
-    bindings = require(`@shuvi/swc-${triple.platformArchABI}`)
+    loadError = e;
   }
 }
-
 
 if (!bindings) {
   if (loadError) {
     console.error(loadError);
   }
-
   console.error(`Failed to load SWC binary`);
   process.exit(1);
 } else {
