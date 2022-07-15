@@ -9,7 +9,7 @@ function installSWCNative() {
 
   var cwd = path.join(__dirname, '../packages/toolpack');
 
-  var stdout = execSync('pnpm run build-native', { cwd }).toString();
+  var stdout = execSync('pnpm run build-native --release', { cwd }).toString();
 
   console.log(stdout);
 }

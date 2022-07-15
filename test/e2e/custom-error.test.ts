@@ -16,7 +16,7 @@ function deleteFile() {
   let isRemove = false;
   if (files.length) {
     files.forEach(function (file) {
-      if (file.startsWith('page-1933')) {
+      if (file.startsWith('page-a6d1')) {
         // remove ctx.error page
         fs.unlinkSync(path.join(fileDir, file));
         isRemove = true;
