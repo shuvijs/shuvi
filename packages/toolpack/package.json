@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/toolpack",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -39,8 +39,8 @@
     "@napi-rs/cli": "1.2.1",
     "@napi-rs/triples": "1.0.3",
     "@parcel/css": "1.2.0",
-    "@shuvi/shared": "1.0.0-rc.0",
-    "@shuvi/utils": "1.0.0-rc.0",
+    "@shuvi/shared": "1.0.0-rc.1",
+    "@shuvi/utils": "1.0.0-rc.1",
     "babel-loader": "8.2.2",
     "babel-plugin-syntax-jsx": "6.18.0",
     "babel-plugin-transform-define": "2.0.0",

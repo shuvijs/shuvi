@@ -91,14 +91,14 @@ importers:
 
   packages/platform-shared:
     specifiers:
-      '@shuvi/hook': 1.0.0-rc.0
+      '@shuvi/hook': 1.0.0-rc.1
       '@shuvi/redox': 0.0.3
-      '@shuvi/router': 1.0.0-rc.0
-      '@shuvi/runtime': 1.0.0-rc.0
-      '@shuvi/service': 1.0.0-rc.0
-      '@shuvi/shared': 1.0.0-rc.0
-      '@shuvi/toolpack': 1.0.0-rc.0
-      '@shuvi/utils': 1.0.0-rc.0
+      '@shuvi/router': 1.0.0-rc.1
+      '@shuvi/runtime': 1.0.0-rc.1
+      '@shuvi/service': 1.0.0-rc.1
+      '@shuvi/shared': 1.0.0-rc.1
+      '@shuvi/toolpack': 1.0.0-rc.1
+      '@shuvi/utils': 1.0.0-rc.1
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
@@ -114,17 +114,17 @@ importers:
   packages/platform-web:
     specifiers:
       '@next/react-refresh-utils': 12.1.6
-      '@shuvi/hook': 1.0.0-rc.0
-      '@shuvi/platform-shared': 1.0.0-rc.0
+      '@shuvi/hook': 1.0.0-rc.1
+      '@shuvi/platform-shared': 1.0.0-rc.1
       '@shuvi/redox': 0.0.3
       '@shuvi/redox-react': 0.0.3
-      '@shuvi/router': 1.0.0-rc.0
-      '@shuvi/router-react': 1.0.0-rc.0
-      '@shuvi/runtime': 1.0.0-rc.0
-      '@shuvi/service': 1.0.0-rc.0
-      '@shuvi/shared': 1.0.0-rc.0
-      '@shuvi/toolpack': 1.0.0-rc.0
-      '@shuvi/utils': 1.0.0-rc.0
+      '@shuvi/router': 1.0.0-rc.1
+      '@shuvi/router-react': 1.0.0-rc.1
+      '@shuvi/runtime': 1.0.0-rc.1
+      '@shuvi/service': 1.0.0-rc.1
+      '@shuvi/shared': 1.0.0-rc.1
+      '@shuvi/toolpack': 1.0.0-rc.1
+      '@shuvi/utils': 1.0.0-rc.1
       '@testing-library/react': ^10.0.2
       '@types/content-type': ^1.1.5
       '@types/cookie': ^0.4.1
@@ -176,7 +176,7 @@ importers:
 
   packages/router:
     specifiers:
-      '@shuvi/utils': 1.0.0-rc.0
+      '@shuvi/utils': 1.0.0-rc.1
       query-string: 6.13.8
     dependencies:
       '@shuvi/utils': link:../utils
@@ -184,9 +184,9 @@ importers:
 
   packages/router-react:
     specifiers:
-      '@shuvi/platform-shared': 1.0.0-rc.0
-      '@shuvi/router': 1.0.0-rc.0
-      '@shuvi/utils': 1.0.0-rc.0
+      '@shuvi/platform-shared': 1.0.0-rc.1
+      '@shuvi/router': 1.0.0-rc.1
+      '@shuvi/utils': 1.0.0-rc.1
       '@types/prop-types': ^15.7.5
       '@types/react': ^18.0.9
       '@types/react-test-renderer': ^18.0.0
@@ -209,7 +209,7 @@ importers:
 
   packages/runtime:
     specifiers:
-      '@shuvi/hook': 1.0.0-rc.0
+      '@shuvi/hook': 1.0.0-rc.1
     dependencies:
       '@shuvi/hook': link:../hook
 
@@ -220,12 +220,12 @@ importers:
       '@babel/parser': ^7.14.7
       '@babel/traverse': ^7.14.7
       '@babel/types': 7.12.11
-      '@shuvi/hook': 1.0.0-rc.0
-      '@shuvi/router': 1.0.0-rc.0
-      '@shuvi/runtime': 1.0.0-rc.0
-      '@shuvi/shared': 1.0.0-rc.0
-      '@shuvi/toolpack': 1.0.0-rc.0
-      '@shuvi/utils': 1.0.0-rc.0
+      '@shuvi/hook': 1.0.0-rc.1
+      '@shuvi/router': 1.0.0-rc.1
+      '@shuvi/runtime': 1.0.0-rc.1
+      '@shuvi/shared': 1.0.0-rc.1
+      '@shuvi/toolpack': 1.0.0-rc.1
+      '@shuvi/utils': 1.0.0-rc.1
       '@types/babel__code-frame': ^7.0.3
       '@types/babel__generator': ^7.6.4
       '@types/babel__traverse': ^7.14.2
@@ -283,12 +283,12 @@ importers:
 
   packages/shuvi:
     specifiers:
-      '@shuvi/platform-shared': 1.0.0-rc.0
-      '@shuvi/platform-web': 1.0.0-rc.0
-      '@shuvi/service': 1.0.0-rc.0
-      '@shuvi/shared': 1.0.0-rc.0
-      '@shuvi/toolpack': 1.0.0-rc.0
-      '@shuvi/utils': 1.0.0-rc.0
+      '@shuvi/platform-shared': 1.0.0-rc.1
+      '@shuvi/platform-web': 1.0.0-rc.1
+      '@shuvi/service': 1.0.0-rc.1
+      '@shuvi/shared': 1.0.0-rc.1
+      '@shuvi/toolpack': 1.0.0-rc.1
+      '@shuvi/utils': 1.0.0-rc.1
       '@types/cross-spawn': 6.0.1
       '@types/dotenv': 8.2.0
       cli-highlight: ^2.1.9
@@ -332,7 +332,7 @@ importers:
       '@napi-rs/cli': 1.2.1
       '@napi-rs/triples': 1.0.3
       '@parcel/css': 1.2.0
-      '@shuvi/shared': 1.0.0-rc.0
+      '@shuvi/shared': 1.0.0-rc.1
       '@shuvi/swc-darwin-arm64': latest
       '@shuvi/swc-darwin-x64': latest
       '@shuvi/swc-linux-arm-gnueabihf': latest
@@ -343,7 +343,7 @@ importers:
       '@shuvi/swc-win32-arm64-msvc': latest
       '@shuvi/swc-win32-ia32-msvc': latest
       '@shuvi/swc-win32-x64-msvc': latest
-      '@shuvi/utils': 1.0.0-rc.0
+      '@shuvi/utils': 1.0.0-rc.1
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1
