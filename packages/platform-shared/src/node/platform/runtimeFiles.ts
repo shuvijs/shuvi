@@ -1,17 +1,11 @@
 import { IPluginContext } from '@shuvi/service';
 import { fileUtils } from '@shuvi/service/lib/project';
+import {
+  setRuntimeConfig,
+  setPublicRuntimeConfig
+} from '../../shared/shuvi-singleton-runtimeConfig';
 import { createProjectContext } from '../project/projectContext';
 import { getFilePresets } from '../project/file-presets';
-
-export const getRuntimeConfigFromConfig = async (
-  pluginContext: IPluginContext
-) => {
-  const { pluginRunner, config } = pluginContext;
-  return await pluginRunner.modifyRuntimeConfig({
-    public: config.publicRuntimeConfig || {},
-    server: config.runtimeConfig || {}
-  });
-};
 
 /**
  * A creator for `getPresetRuntimeFiles` which helps platforms to build a bunch of runtime files including
@@ -21,6 +15,7 @@ export const getRuntimeConfigFromConfig = async (
 export const getPresetRuntimeFilesCreator =
   (platformModule: string, polyfills: string[]) =>
   async (pluginContext: IPluginContext) => {
+    const { pluginRunner, config } = pluginContext;
     const getCandidates = (
       fileName: string,
       fallbackType: 'nullish' | 'noop' | 'noopFn'
@@ -31,14 +26,36 @@ export const getPresetRuntimeFilesCreator =
         fallbackType
       );
 
+    const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
+      await pluginRunner.modifyRuntimeConfig({
+        public: config.publicRuntimeConfig || {},
+        server: config.runtimeConfig || {}
+      });
+    const serverKeys = Object.keys(serverRuntimeConfig);
+    const publicKeys = Object.keys(publicRuntimeConfig);
+    for (let index = 0; index < serverKeys.length; index++) {
+      const key = serverKeys[index];
+      const hasSameKey = publicKeys.includes(key);
+      if (hasSameKey) {
+        console.warn(
+          `Warning: key "${key}" exist in both "runtimeConfig" and "publicRuntimeConfig". Please rename the key, or the value from "publicRuntimeConfig" will be applied.\n`
+        );
+        break;
+      }
+    }
+    if (serverKeys) {
+      setRuntimeConfig(serverRuntimeConfig);
+    }
+    if (publicKeys) {
+      setPublicRuntimeConfig(publicRuntimeConfig);
+    }
+
     const context = createProjectContext();
     context.userModule = {
       error: getCandidates('error', 'nullish'),
       app: getCandidates('app', 'noop')
     };
     context.platformModule = platformModule;
-    const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
-      await getRuntimeConfigFromConfig(pluginContext);
     context.runtimeConfig = {
       ...serverRuntimeConfig,
       ...publicRuntimeConfig
