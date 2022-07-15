@@ -1,4 +1,4 @@
-import { Defer } from '@shuvi/utils/lib/defer';
+import { Defer, createDefer } from '@shuvi/utils/lib/defer';
 import {
   IRouter,
   IRoute,
@@ -54,7 +54,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _pending: PathRecord | null = null;
   private _cancleHandler: (() => void) | null = null;
   private _ready: boolean = false;
-  private _readyDefer: Defer = Defer<void>();
+  private _readyDefer: Defer = createDefer<void>();
 
   private _listeners: Events<Listener> = createEvents();
   private _beforeEachs: Events<NavigationGuardHook> = createEvents();
@@ -150,7 +150,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   replaceRoutes(routes: RouteRecord[]) {
     if (this._ready) {
       this._ready = false;
-      this._readyDefer = Defer<void>();
+      this._readyDefer = createDefer<void>();
     } else {
       // do nothing
       // keep _readyDefer as it is, cause user might called router.ready()
