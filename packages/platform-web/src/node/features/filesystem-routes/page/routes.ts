@@ -61,12 +61,14 @@ export function normalizeRoutes(
   const res: IRouteConfig[] = [];
   for (let index = 0; index < routes.length; index++) {
     const route = { ...routes[index] } as IRouteConfig;
-    const pathWithSlash = /^\//.test(route.path) ? route.path : route.path;
-    const fullpath = pathWithSlash ? parentPath + pathWithSlash : parentPath;
-    route.id = genRouteId(fullpath);
+    const pathWithoutSlash = route.path.replace(/^\//, '').replace(/\/$/, '');
+    const fullpath = parentPath + '/' + pathWithoutSlash;
     if (route.component) {
       route.component = normalizePath(route.component, componentDir);
     }
+
+    // todo: add origin file to gen id
+    route.id = genRouteId(`${fullpath}@${route.component}`);
 
     if (route.children && route.children.length > 0) {
       route.children = normalizeRoutes(route.children, componentDir, fullpath);
