@@ -7,7 +7,7 @@ import {
   app as PlatformAppComponent
 } from '@shuvi/app/core/platform';
 import routes from '@shuvi/app/files/routes';
-import { getAppData } from '@shuvi/platform-shared/shared';
+import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
 import { createApp } from '../../app/client';
 
 const appData = getAppData();
