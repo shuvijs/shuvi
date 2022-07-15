@@ -67,22 +67,11 @@ pub struct TransformOptions {
     pub swc: swc::config::Options,
 
     #[serde(default)]
-    pub disable_next_ssg: bool,
-
-    #[serde(default)]
     pub disable_shuvi_dynamic: bool,
-
-    #[serde(default)]
-    pub disable_page_config: bool,
 
     #[serde(default)]
     pub flag: String,
 
-    #[serde(default)]
-    pub is_page_file: bool,
-
-    #[serde(default)]
-    pub is_development: bool,
 }
 
 pub fn custom_before_pass(opts: &TransformOptions) -> impl Fold {

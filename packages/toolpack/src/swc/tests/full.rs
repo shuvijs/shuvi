@@ -46,12 +46,8 @@ fn test(input: &Path, minify: bool) {
                     },
                     ..Default::default()
                 },
-                disable_next_ssg: false,
                 disable_shuvi_dynamic: false,
-                disable_page_config: false,
                 flag: "cssmodules".into(),
-                is_page_file: false,
-                is_development: true,
             };
 
             let options = options.patch(&fm);

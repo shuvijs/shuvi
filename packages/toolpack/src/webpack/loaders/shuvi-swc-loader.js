@@ -27,81 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 import { transform } from '../../utils/load-sources';
-
-function getSWCOptions({
-  filename,
-  isNode,
-  development,
-  dynamicImport,
-  disableShuviDynamic,
-  hasReactRefresh
-}) {
-  const isTSFile = filename.endsWith('.ts');
-  const isTypeScript = isTSFile || filename.endsWith('.tsx');
-
-  const jsc = {
-    parser: {
-      syntax: isTypeScript ? 'typescript' : 'ecmascript',
-      dynamicImport,
-      // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
-      [isTypeScript ? 'tsx' : 'jsx']: isTSFile ? false : true
-    },
-
-    transform: {
-      react: {
-        importSource: 'react',
-        runtime: 'automatic',
-        // runtime: 'classic',
-        pragma: 'React.createElement',
-        pragmaFrag: 'React.Fragment',
-        throwIfNamespace: true,
-        development,
-        useBuiltins: true,
-        refresh: hasReactRefresh
-      },
-      optimizer: {
-        simplify: false,
-        globals: {
-          typeofs: {
-            window: isNode ? 'undefined' : 'object'
-          },
-          envs: {
-            NODE_ENV: development ? '"development"' : '"production"'
-          }
-        }
-      },
-      regenerator: {
-        importPath: require.resolve('regenerator-runtime')
-      }
-    }
-  };
-
-  const isPageFile = true;
-
-  if (isNode) {
-    return {
-      jsc,
-      disableShuviDynamic,
-      isDevelopment: development,
-      isPageFile,
-      env: {
-        targets: {
-          // Targets the current version of Node.js
-          node: process.versions.node
-        }
-      }
-    };
-  } else {
-    // Matches default @babel/preset-env behavior
-    jsc.target = 'es5';
-    return {
-      disableShuviDynamic,
-      isDevelopment: development,
-      isPageFile,
-      jsc
-    };
-  }
-}
+import getSWCOptions from '../../utils/getSWCOptions';
 
 async function loaderTransform(source, inputSourceMap) {
   // Make the loader async
@@ -113,7 +39,9 @@ async function loaderTransform(source, inputSourceMap) {
     isNode,
     dynamicImport = true,
     hasReactRefresh,
-    disableShuviDynamic = false
+    disableShuviDynamic = false,
+    flag = '',
+    minify = false
   } = loaderOptions;
 
   const isDev = this.mode === 'development';
@@ -124,6 +52,7 @@ async function loaderTransform(source, inputSourceMap) {
     development: isDev,
     dynamicImport,
     disableShuviDynamic,
+    minify,
     hasReactRefresh:
       hasReactRefresh !== undefined ? hasReactRefresh : isDev && !isNode
   });

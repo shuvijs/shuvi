@@ -4,15 +4,15 @@ import { transform } from '@babel/core';
 function babel(code: string) {
   return transform(code, {
     filename: 'noop.js',
-    plugins: [[require.resolve('../loadable-plugin')]],
+    plugins: [[require.resolve('../dynamic-plugin')]],
     babelrc: false,
     configFile: false,
     sourceType: 'module',
-    compact: true,
+    compact: true
   })!.code;
 }
 
-describe('loadable-plugin', () => {
+describe('dynamic-plugin', () => {
   test('should work with dynamic import', () => {
     const output = babel(trim`
       import { dynamic } from '@shuvi/runtime'
