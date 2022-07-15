@@ -1,5 +1,5 @@
 import { useLoaderData, Loader } from '@shuvi/runtime';
-import { normalizeContextForSerialize } from '../utils';
+import { normalizeContextForSerialize } from '../../utils';
 
 function App() {
   const data = useLoaderData();
