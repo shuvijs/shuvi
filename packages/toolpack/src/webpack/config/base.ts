@@ -24,6 +24,7 @@ export interface BaseOptions {
   projectRoot: string;
 
   outputDir: string;
+  cacheDir: string;
 
   // src files need to be include
   include: string[];
