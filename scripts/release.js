@@ -18,16 +18,7 @@ const packages = fs
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 const isNeedHelp = args.help || args.h || args._[0] === 'help';
 
-const skippedPackages = [
-  'app',
-  'core',
-  'react-fs',
-  'runtime-core',
-  'runtime-react',
-  'types',
-  'plugin-use-exports',
-  'plugin-no-exports'
-];
+const skippedPackages = [];
 
 const versionIncrements = [
   'patch',
@@ -44,8 +35,6 @@ const dryRun = (bin, args, opts = {}) =>
   console.log(chalk.blue(`[dryrun] ${bin} ${args.join(' ')}`), opts);
 const runIfNotDry = isDryRun ? dryRun : run;
 const getPkgRoot = pkg => path.resolve(__dirname, '../packages/' + pkg);
-const getTestPkgRoot = pkg =>
-  path.resolve(__dirname, '../test/packages/' + pkg);
 const step = msg => console.log(chalk.cyan(msg));
 
 async function main() {
