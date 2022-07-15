@@ -81,19 +81,22 @@ export const getFileBuilder = (): FileBuilder => {
     fileOptions.push(...newFileOption);
   };
   // @ts-ignore
-  const createInstance = (fileOption: FileOption<any>) => {};
+  const createInstance = (fileOption: FileOption<any>) => {
+    const instance = {};
+  };
   // @ts-ignore
   const buildGraph = () => {};
 
   const build = async (dir: string = '/') => {
     // @ts-ignore
     const buildFile = async (id: string) => {};
+    const dispatchBuild = (...ids: string[]) => {};
     // @ts-ignore
     const ifDependenciesResolved = (id: string): boolean => {
       return false;
     };
   };
-  const watch = async () => {};
+  const watch = async (dir: string = '/') => {};
   const close = async () => {};
   const getContent = <T>(fileOption: FileOption<T>) => {
     return {} as T;
