@@ -68,19 +68,19 @@ describe('loadable-plugin', () => {
     );
   });
 
-  // test('should work with object options', async () => {
-  //   const output = await swc(trim`
-  //     import React from 'react';
-  //     import { dynamic } from '@shuvi/runtime'
+  test('should work with object options', async () => {
+    const output = await swc(trim`
+      import React from 'react';
+      import { dynamic } from '@shuvi/runtime'
 
-  //     dynamic({
-  //       loader: () => import("./component")
-  //     })
-  //   `);
-  //   expect(output).toMatchInlineSnapshot(
-  //     `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic({loader:()=>import(\\"./component\\"),webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]});"`
-  //   );
-  // });
+      dynamic({
+        loader: () => import("./component")
+      })
+    `);
+    expect(output).toMatchInlineSnapshot(
+      `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic({loader:()=>import(\\"./component\\")},{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]})"`
+    );
+  });
 
   test('should throw error when more than 2 arguments supplied', async () => {
     let error: any;
