@@ -2,7 +2,6 @@ import * as crypto from 'crypto';
 import webpack from 'webpack';
 import * as path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import { NAME } from '@shuvi/shared/lib/constants';
 import { resolve } from '@shuvi/utils/lib/resolve';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import { IWebpackHelpers } from '../types';
@@ -20,7 +19,7 @@ export interface BrowserOptions extends BaseOptions {
 export function createBrowserWebpackChain(
   options: BrowserOptions
 ): WebpackChain {
-  const { typescript, dev, publicPath, analyze } = options;
+  const { cacheDir, typescript, dev, publicPath, analyze } = options;
   const chain = baseWebpackChain(options);
   const useTypeScript = !!typescript?.useTypeScript;
 
@@ -50,11 +49,7 @@ export function createBrowserWebpackChain(
             configOverwrite: {
               compilerOptions: {
                 incremental: true,
-                tsBuildInfoFile: path.resolve(
-                  options.projectRoot,
-                  `.${NAME}/cache`,
-                  'tsconfig.tsbuildinfo'
-                )
+                tsBuildInfoFile: path.resolve(cacheDir, 'tsbuildinfo')
               }
             }
           },

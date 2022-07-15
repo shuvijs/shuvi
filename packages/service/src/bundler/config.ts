@@ -32,41 +32,48 @@ export function createWebpackConfig(
   const dev = mode === 'development';
   let chain: WebpackChain;
 
-  const parcelCss = !!config.experimental.parcelCss;
-
-  const include = [paths.appDir, paths.srcDir, ...(opts.include || [])];
-  const typescript = getTypeScriptInfo();
+  const name = opts.name;
+  const projectRoot = paths.rootDir;
   const outputDir = opts.outputDir
     ? `${paths.buildDir}/${opts.outputDir}`
     : paths.buildDir;
+  const cacheDir = paths.cacheDir;
+  const publicPath = assetPublicPath;
+  const env = config.env;
+  const include = [paths.appDir, paths.srcDir, ...(opts.include || [])];
+  const parcelCss = !!config.experimental.parcelCss;
+  const typescript = getTypeScriptInfo();
+
   if (opts.node) {
     chain = createNodeWebpackChain({
-      outputDir,
+      name,
       dev,
+      projectRoot,
+      outputDir,
+      cacheDir,
+      publicPath,
       parcelCss,
       typescript,
       include,
+      env,
       webpackHelpers,
-      buildManifestFilename: SERVER_BUILD_MANIFEST_PATH,
-      env: config.env,
-      name: opts.name,
-      projectRoot: paths.rootDir,
-      publicPath: assetPublicPath
+      buildManifestFilename: SERVER_BUILD_MANIFEST_PATH
     });
   } else {
     chain = createBrowserWebpackChain({
-      outputDir,
+      name,
       dev,
-      typescript,
+      projectRoot,
+      outputDir,
+      cacheDir,
+      publicPath,
       parcelCss,
+      typescript,
       include,
+      env,
       webpackHelpers,
-      env: config.env,
-      name: opts.name,
       analyze: config.analyze,
-      buildManifestFilename: CLIENT_BUILD_MANIFEST_PATH,
-      projectRoot: paths.rootDir,
-      publicPath: assetPublicPath
+      buildManifestFilename: CLIENT_BUILD_MANIFEST_PATH
     });
     chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
   }

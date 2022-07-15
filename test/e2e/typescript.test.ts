@@ -40,9 +40,7 @@ describe('TypesSript Suppport', () => {
 
   test('should enable incremental mode', async () => {
     expect(async () => {
-      await fse.readFile(
-        resolveFixture('typescript/.shuvi/cache/tsconfig.tsbuildinfo')
-      );
+      await fse.readFile(resolveFixture('typescript/.shuvi/cache/tsbuildinfo'));
     }).not.toThrow();
   });
 });
