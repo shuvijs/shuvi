@@ -575,12 +575,12 @@ importers:
 
   test/packages/plugin-no-exports:
     specifiers:
-      '@shuvi/hook': 0.0.1-pre.10
-      '@shuvi/platform-shared': 0.0.1-pre.10
+      '@shuvi/hook': workspace:*
+      '@shuvi/platform-shared': workspace:*
       '@shuvi/redox': 0.0.1-pre.4
       '@shuvi/redox-react': 0.0.1-pre.4
-      '@shuvi/service': 0.0.1-pre.10
-      '@shuvi/utils': 0.0.1-pre.10
+      '@shuvi/service': workspace:*
+      '@shuvi/utils': workspace:*
       '@types/react': ^16.9.43
       react: 16.8.0
       react-dom: 16.8.0
@@ -600,12 +600,12 @@ importers:
 
   test/packages/plugin-use-exports:
     specifiers:
-      '@shuvi/hook': 0.0.1-pre.10
-      '@shuvi/platform-shared': 0.0.1-pre.10
+      '@shuvi/hook': workspace:*
+      '@shuvi/platform-shared': workspace:*
       '@shuvi/redox': 0.0.1-pre.4
       '@shuvi/redox-react': 0.0.1-pre.4
-      '@shuvi/service': 0.0.1-pre.10
-      '@shuvi/utils': 0.0.1-pre.10
+      '@shuvi/service': workspace:*
+      '@shuvi/utils': workspace:*
       '@types/react': ^16.9.43
       react: 16.8.0
       react-dom: 16.8.0

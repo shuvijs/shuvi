@@ -43,10 +43,10 @@
   "dependencies": {
     "@shuvi/redox": "0.0.1-pre.4",
     "@shuvi/redox-react": "0.0.1-pre.4",
-    "@shuvi/hook": "0.0.1-pre.10",
-    "@shuvi/platform-shared": "0.0.1-pre.10",
-    "@shuvi/service": "0.0.1-pre.10",
-    "@shuvi/utils": "0.0.1-pre.10",
+    "@shuvi/hook": "workspace:*",
+    "@shuvi/platform-shared": "workspace:*",
+    "@shuvi/service": "workspace:*",
+    "@shuvi/utils": "workspace:*",
     "redux": "4.1.2"
   },
   "devDependencies": {

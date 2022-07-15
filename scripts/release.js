@@ -16,9 +16,6 @@ const skipBuild = args.skipBuild;
 const packages = fs
   .readdirSync(path.resolve(__dirname, '../packages'))
   .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
-const testPackages = fs
-  .readdirSync(path.resolve(__dirname, '../test/packages'))
-  .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
 const isNeedHelp = args.help || args.h || args._[0] === 'help';
 
 const skippedPackages = [
@@ -172,7 +169,6 @@ function updateVersions(version) {
   updatePackage(path.resolve(__dirname, '..'), version);
   // 2. update all packages
   packages.forEach(p => updatePackage(getPkgRoot(p), version));
-  testPackages.forEach(p => updatePackage(getTestPkgRoot(p), version));
 }
 
 function updatePackage(pkgRoot, version) {
