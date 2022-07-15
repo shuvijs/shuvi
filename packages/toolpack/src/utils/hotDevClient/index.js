@@ -350,6 +350,10 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
     // https://webpack.js.org/api/hot-module-replacement/#check
     let updatedModules = await module.hot.check(/* autoApply */ false);
 
+    if (!updatedModules) {
+      return;
+    }
+
     // if there is another updating, delay the update
     // multiple hotupdate occurs during import() will cause hmr error
     // so we delay the adjacent hotupdates

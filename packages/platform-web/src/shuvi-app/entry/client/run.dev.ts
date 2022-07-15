@@ -4,7 +4,7 @@ import {
   DEV_STYLE_PREPARE
 } from '@shuvi/shared/lib/constants';
 import initWebpackHMR from '../../dev/webpackHotDevClient';
-import { run } from './setup-app';
+import { run } from './app';
 
 async function init() {
   initWebpackHMR();
