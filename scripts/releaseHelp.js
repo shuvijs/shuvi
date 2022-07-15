@@ -1,5 +1,5 @@
 const help = `
-Usage: pnpm release [options]
+Usage: pnpm release [version] [options]
 
 Options:
    help, --help, -h             Get Help
@@ -7,8 +7,8 @@ Options:
    --tag <value>                Publish to npm store with tag version. e.g. --tag beta, --tag alpha...
    --pre <value>                Pre release. e.g. alpha, beta...
    --dry                        Dry run (skip build / skip test / dryrun commit / dryrun publish)
-   --skipTests                  Skip the tests
-   --skipBuild                  Skip the build
+   --skip-tests                  Skip the tests
+   --skip-build                  Skip the build
 
 Steps:
    Step 1                       Choose version (include patch / minor / major / custom and pre version)
