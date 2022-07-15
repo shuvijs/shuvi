@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { create as createTestRenderer, act as tAct } from 'react-test-renderer';
 import { Router, MemoryRouter, RouterView } from '..';
 import { createMockRouter } from './utils';
+import { createRoot } from 'react-dom/client';
 
 describe('RouterView', () => {
   let node;
@@ -138,11 +138,10 @@ describe('RouterView', () => {
     );
 
     act(() => {
-      ReactDOM.render(
+      createRoot(node).render(
         <Router router={router}>
           <RouterView />
-        </Router>,
-        node
+        </Router>
       );
     });
 

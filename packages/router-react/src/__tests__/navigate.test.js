@@ -3,9 +3,9 @@
  */
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { MemoryRouter as Router, useNavigate, RouterView } from '..';
+import { createRoot } from 'react-dom/client';
 
 describe('navigate', () => {
   let node;
@@ -41,7 +41,7 @@ describe('navigate', () => {
       }
 
       act(() => {
-        ReactDOM.render(
+        createRoot(node).render(
           <Router
             initialEntries={['/home']}
             routes={[
@@ -56,8 +56,7 @@ describe('navigate', () => {
             ]}
           >
             <RouterView />
-          </Router>,
-          node
+          </Router>
         );
       });
 
@@ -98,7 +97,7 @@ describe('navigate', () => {
       }
 
       act(() => {
-        ReactDOM.render(
+        createRoot(node).render(
           <Router
             initialEntries={['/home']}
             routes={[
@@ -113,8 +112,7 @@ describe('navigate', () => {
             ]}
           >
             <RouterView />
-          </Router>,
-          node
+          </Router>
         );
       });
 
