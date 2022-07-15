@@ -1,3 +1,14 @@
+# [1.0.0-rc.1](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.0...v1.0.0-rc.1) (2022-07-15)
+
+
+### Bug Fixes
+
+* missing peerDependencies ([ba0b92c](https://github.com/shuvijs/shuvi/commit/ba0b92c72ec2f716d03c7142b422e96c6c9791f4))
+* modifyRuntimeConfig be invoked multilple times ([02b13e4](https://github.com/shuvijs/shuvi/commit/02b13e4e8435106575b8bde49ad4833a6200cb9c))
+* release script ([92718d8](https://github.com/shuvijs/shuvi/commit/92718d8764ef515b865040516fea1ba6b08d8611))
+
+
+
 # 1.0.0-rc.0 (2022-07-15)
 
 
