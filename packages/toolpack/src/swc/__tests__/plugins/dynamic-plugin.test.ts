@@ -39,7 +39,7 @@ const swc = async (code: string) => {
   return transform(code, options)!;
 };
 
-describe('loadable-plugin', () => {
+describe('dynamic-plugin', () => {
   test('should work with dynamic import', async () => {
     const output = await swc(trim`
       import { dynamic } from '@shuvi/runtime'

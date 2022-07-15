@@ -94,7 +94,7 @@ export default (api: any, options: PresetOptions = {}): BabelPreset => {
         }
       ],
       require('@babel/plugin-syntax-dynamic-import'),
-      require('./plugins/loadable-plugin'),
+      require('./plugins/dynamic-plugin'),
       require('@babel/plugin-proposal-class-properties'),
       [
         require('@babel/plugin-proposal-object-rest-spread'),
