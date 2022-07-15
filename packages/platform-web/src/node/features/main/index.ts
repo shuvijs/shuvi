@@ -8,13 +8,8 @@ import {
 import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
 
 import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
-import {
-  setRuntimeConfig,
-  setPublicRuntimeConfig
-} from '@shuvi/platform-shared/shared/shuvi-singleton-runtimeConfig';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
-import { getRuntimeConfigFromConfig } from '@shuvi/platform-shared/node';
 import generateResource from './generateResource';
 import { resolvePkgFile } from '../../paths';
 import { buildHtml } from './buildHtml';
@@ -31,30 +26,6 @@ export const getPlugin = (
   platformContext: IPlatformContext
 ): ResolvedPlugin => {
   const core = createPlugin({
-    afterInit: async context => {
-      const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
-        await getRuntimeConfigFromConfig(context);
-
-      const serverKeys = Object.keys(serverRuntimeConfig);
-      const publicKeys = Object.keys(publicRuntimeConfig);
-      for (let index = 0; index < serverKeys.length; index++) {
-        const key = serverKeys[index];
-        const hasSameKey = publicKeys.includes(key);
-        if (hasSameKey) {
-          console.warn(
-            `Warning: key "${key}" exist in both "runtimeConfig" and "publicRuntimeConfig". Please rename the key, or the value from "publicRuntimeConfig" will be applied.\n`
-          );
-          break;
-        }
-      }
-
-      if (serverKeys) {
-        setRuntimeConfig(serverRuntimeConfig);
-      }
-      if (publicKeys) {
-        setPublicRuntimeConfig(publicRuntimeConfig);
-      }
-    },
     addExtraTarget: ({ createConfig }, context) => {
       const serverWebpackHelpers = webpackHelpers();
       const serverChain = createConfig({
