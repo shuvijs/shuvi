@@ -60,6 +60,7 @@
     "@next/react-refresh-utils": "12.1.6",
     "@shuvi/hook": "1.0.0-rc.0",
     "@shuvi/platform-shared": "1.0.0-rc.0",
+    "@shuvi/redox": "0.0.3",
     "@shuvi/redox-react": "0.0.3",
     "@shuvi/router": "1.0.0-rc.0",
     "@shuvi/router-react": "1.0.0-rc.0",

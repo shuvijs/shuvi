@@ -4,7 +4,6 @@ import {
   getFirstModuleExport,
   getUserCustomFileCandidates
 } from '@shuvi/service/lib/project/file-utils';
-import { resolvePkgFile } from '../../paths';
 import server from './server';
 
 const core = createPlugin({
@@ -32,6 +31,5 @@ const core = createPlugin({
 
 export default {
   core,
-  server,
-  types: resolvePkgFile('lib/node/features/custom-server/shuvi-app.d.ts')
+  server
 };

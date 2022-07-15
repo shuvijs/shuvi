@@ -1,4 +1,4 @@
-import { extendedHooks } from './hooks';
+import { extendedHooks } from './serverHooks';
 
 declare module '@shuvi/runtime' {
   export interface CustomAppContext {
