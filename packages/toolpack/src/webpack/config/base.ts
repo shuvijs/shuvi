@@ -75,7 +75,8 @@ export function baseWebpackChain({
   name,
   buildManifestFilename,
   publicPath = '/',
-  env = {}
+  env = {},
+  cacheDir
 }: BaseOptions): WebpackChain {
   const config = new WebpackChain();
 
@@ -242,9 +243,7 @@ export function baseWebpackChain({
     const SHUVI_VERSION = require(PACKAGE_JSON).version;
 
     return {
-      cacheDirectory: path.resolve(
-        `node_modules/.cache/webpack/${projectHash}`
-      ),
+      cacheDirectory: path.join(cacheDir, 'webpack', projectHash),
       type: 'filesystem',
       name: `${name.replace(/\//, '-')}-${config.get('mode')}`,
       version: `${SHUVI_VERSION}|${stringifiedEnvs}`
