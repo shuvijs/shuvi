@@ -9,8 +9,7 @@
   "author": "liximomo",
   "license": "MIT",
   "files": [
-    "lib",
-    "swc-source"
+    "lib"
   ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
