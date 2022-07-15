@@ -1,7 +1,6 @@
 // shuvi built-in entry
 // IMPORTANT: there files must be runned before any other codes
 import './setup-env';
-import './setup-app';
 
 // user entry
 import '@shuvi/app/core/entry';
