@@ -73,7 +73,7 @@ impl Fold for NextDynamicPatcher {
               handler
                 .struct_span_err(
                   identifier.span,
-                  "@shuvi/runtime requires at least one argument",
+                  "@shuvi/runtime dynamic requires at least one argument",
                 )
                 .emit()
             });
@@ -81,7 +81,7 @@ impl Fold for NextDynamicPatcher {
           } else if expr.args.len() > 2 {
             HANDLER.with(|handler| {
               handler
-                .struct_span_err(identifier.span, "@shuvi/runtime only accepts 2 arguments")
+                .struct_span_err(identifier.span, "@shuvi/runtime dynamic only accepts 2 arguments")
                 .emit()
             });
             return expr;
