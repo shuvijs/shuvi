@@ -16,7 +16,6 @@ importers:
       '@types/react-test-renderer': ^16.9.2
       '@types/rimraf': ^3.0.0
       '@types/send': ^0.14.5
-      '@types/testing-library__react': ^10.0.1
       '@types/webpack-env': 1.17.0
       chalk: ^4.1.0
       conventional-changelog-cli: ^2.0.31
@@ -57,7 +56,6 @@ importers:
       '@types/react-test-renderer': 16.9.2
       '@types/rimraf': 3.0.2
       '@types/send': 0.14.5
-      '@types/testing-library__react': 10.0.1
       '@types/webpack-env': 1.17.0
       chalk: 4.1.2
       conventional-changelog-cli: 2.2.2
@@ -127,7 +125,7 @@ importers:
       '@shuvi/shared': 0.0.1-pre.10
       '@shuvi/toolpack': 0.0.1-pre.10
       '@shuvi/utils': 0.0.1-pre.10
-      '@testing-library/react': ^10.0.2
+      '@testing-library/react': ^13.3.0
       '@types/content-type': ^1.1.5
       '@types/cookie': ^0.4.1
       '@types/ejs': ^3.1.0
@@ -169,7 +167,7 @@ importers:
       use-sync-external-store: 1.1.0_react@18.1.0
     devDependencies:
       '@shuvi/redox': 0.0.3
-      '@testing-library/react': 10.0.2_ef5jwxihqo6n7gxfmzogljlgcm
+      '@testing-library/react': 13.3.0_ef5jwxihqo6n7gxfmzogljlgcm
       '@types/content-type': 1.1.5
       '@types/cookie': 0.4.1
       '@types/ejs': 3.1.0
@@ -525,6 +523,12 @@ importers:
     dependencies:
       shuvi: link:../../../packages/shuvi
 
+  test/fixtures/middleware-routes:
+    specifiers:
+      shuvi: workspace:*
+    dependencies:
+      shuvi: link:../../../packages/shuvi
+
   test/fixtures/plugin:
     specifiers:
       shuvi: workspace:*
@@ -554,12 +558,6 @@ importers:
       '@shuvi/shared': workspace:*
     dependencies:
       '@shuvi/shared': link:../../../packages/shared
-
-  test/fixtures/server-middleware:
-    specifiers:
-      shuvi: workspace:*
-    dependencies:
-      shuvi: link:../../../packages/shuvi
 
   test/fixtures/typescript:
     specifiers:
@@ -2078,6 +2076,7 @@ packages:
     dependencies:
       core-js-pure: 3.6.5
       regenerator-runtime: 0.13.9
+    dev: false
 
   /@babel/runtime/7.12.5:
     resolution: {integrity: sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==}
@@ -2952,27 +2951,30 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
-  /@testing-library/dom/7.2.1:
-    resolution: {integrity: sha512-xIGoHlQ2ZiEL1dJIFKNmLDypzYF+4OJTTASRctl/aoIDaS5y/pRVHRigoqvPUV11mdJoR71IIgi/6UviMgyz4g==}
-    engines: {node: '>=10'}
+  /@testing-library/dom/8.16.0:
+    resolution: {integrity: sha512-uxF4zmnLHHDlmW4l+0WDjcgLVwCvH+OVLpD8Dfp+Bjfz85prwxWGbwXgJdLtkgjD0qfOzkJF9SmA6YZPsMYX4w==}
+    engines: {node: '>=12'}
     dependencies:
+      '@babel/code-frame': 7.16.7
       '@babel/runtime': 7.12.5
-      '@types/testing-library__dom': 7.0.1
-      aria-query: 4.0.2
-      dom-accessibility-api: 0.4.3
-      pretty-format: 25.3.0
+      '@types/aria-query': 4.2.2
+      aria-query: 5.0.0
+      chalk: 4.1.2
+      dom-accessibility-api: 0.5.14
+      lz-string: 1.4.4
+      pretty-format: 27.5.1
     dev: true
 
-  /@testing-library/react/10.0.2_ef5jwxihqo6n7gxfmzogljlgcm:
-    resolution: {integrity: sha512-YT6Mw0oJz7R6vlEkmo1FlUD+K15FeXApOB5Ffm9zooFVnrwkt00w18dUJFMOh1yRp9wTdVRonbor7o4PIpFCmA==}
-    engines: {node: '>=10'}
+  /@testing-library/react/13.3.0_ef5jwxihqo6n7gxfmzogljlgcm:
+    resolution: {integrity: sha512-DB79aA426+deFgGSjnf5grczDPiL4taK3hFaa+M5q7q20Kcve9eQottOG5kZ74KEr55v0tU2CQormSSDK87zYQ==}
+    engines: {node: '>=12'}
     peerDependencies:
-      react: '*'
-      react-dom: '*'
+      react: ^18.0.0
+      react-dom: ^18.0.0
     dependencies:
       '@babel/runtime': 7.12.5
-      '@testing-library/dom': 7.2.1
-      '@types/testing-library__react': 10.0.1
+      '@testing-library/dom': 8.16.0
+      '@types/react-dom': 18.0.5
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
     dev: true
@@ -2989,6 +2991,10 @@ packages:
 
   /@types/anymatch/1.3.1:
     resolution: {integrity: sha512-/+CRPXpBDpo2RK9C68N3b2cOvO0Cf5B9aPijHsoDQTHivnGSObdOF2BRQOYjojWTDy6nQvMjmqRXIxH55VjxxA==}
+    dev: true
+
+  /@types/aria-query/4.2.2:
+    resolution: {integrity: sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig==}
     dev: true
 
   /@types/babel__code-frame/7.0.3:
@@ -3363,20 +3369,6 @@ packages:
 
   /@types/tapable/1.0.4:
     resolution: {integrity: sha512-78AdXtlhpCHT0K3EytMpn4JNxaf5tbqbLcbIRoQIHzpTIyjpxLQKRoxU55ujBXAtg3Nl2h/XWvfDa9dsMOd0pQ==}
-    dev: true
-
-  /@types/testing-library__dom/7.0.1:
-    resolution: {integrity: sha512-WokGRksRJb3Dla6h02/0/NNHTkjsj4S8aJZiwMj/5/UL8VZ1iCe3H8SHzfpmBeH8Vp4SPRT8iC2o9kYULFhDIw==}
-    dependencies:
-      pretty-format: 25.3.0
-    dev: true
-
-  /@types/testing-library__react/10.0.1:
-    resolution: {integrity: sha512-RbDwmActAckbujLZeVO/daSfdL1pnjVqas25UueOkAY5r7vriavWf0Zqg7ghXMHa8ycD/kLkv8QOj31LmSYwww==}
-    dependencies:
-      '@types/react-dom': 18.0.5
-      '@types/testing-library__dom': 7.0.1
-      pretty-format: 25.3.0
     dev: true
 
   /@types/tough-cookie/4.0.2:
@@ -3799,12 +3791,9 @@ packages:
       sprintf-js: 1.0.3
     dev: true
 
-  /aria-query/4.0.2:
-    resolution: {integrity: sha512-S1G1V790fTaigUSM/Gd0NngzEfiMy9uTUfMyHhKhVyy4cH5O/eTuR01ydhGL0z4Za1PXFTRGH3qL8VhUQuEO5w==}
+  /aria-query/5.0.0:
+    resolution: {integrity: sha512-V+SM7AbUwJ+EBnB8+DXs0hPZHO0W6pqBcc0dW90OwtVG02PswOu/teuARoLQjdDOH+t9pJgGnW5/Qmouf3gPJg==}
     engines: {node: '>=6.0'}
-    dependencies:
-      '@babel/runtime': 7.12.5
-      '@babel/runtime-corejs3': 7.10.4
     dev: true
 
   /array-flatten/1.1.1:
@@ -4700,6 +4689,7 @@ packages:
   /core-js-pure/3.6.5:
     resolution: {integrity: sha512-lacdXOimsiD0QyNf9BC/mxivNJ/ybBGJXQFKzRekp1WTHoVUWsUHEn+2T8GJAzzIhyOuXA+gOxCVN3l+5PLPUA==}
     requiresBuild: true
+    dev: false
 
   /core-js/3.8.2:
     resolution: {integrity: sha512-FfApuSRgrR6G5s58casCBd9M2k+4ikuu4wbW6pJyYU7bd9zvFc9qf7vr5xmrZOhT9nn+8uwlH1oRR9jTnFoA3A==}
@@ -5279,8 +5269,8 @@ packages:
       path-type: 4.0.0
     dev: true
 
-  /dom-accessibility-api/0.4.3:
-    resolution: {integrity: sha512-JZ8iPuEHDQzq6q0k7PKMGbrIdsgBB7TRrtVOUm4nSMCExlg5qQG4KXWTH2k90yggjM4tTumRGwTKJSldMzKyLA==}
+  /dom-accessibility-api/0.5.14:
+    resolution: {integrity: sha512-NMt+m9zFMPZe0JcY9gN224Qvk6qLIdqex29clBvc/y75ZBX9YA9wNK3frsYvu2DI1xcCIwxwnX+TlsJ2DSOADg==}
     dev: true
 
   /dom-serializer/1.3.2:
@@ -8030,6 +8020,11 @@ packages:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
     dev: true
 
+  /lz-string/1.4.4:
+    resolution: {integrity: sha512-0ckx7ZHRPqb0oUm8zNr+90mtf9DQB60H1wMCjBtfi62Kl3a7JbHob6gA2bC+xRvZoOL+1hzUK8jeuEIQE8svEQ==}
+    hasBin: true
+    dev: true
+
   /make-dir/3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
@@ -9519,6 +9514,15 @@ packages:
       react-is: 16.13.0
     dev: true
 
+  /pretty-format/27.5.1:
+    resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    dependencies:
+      ansi-regex: 5.0.1
+      ansi-styles: 5.2.0
+      react-is: 17.0.2
+    dev: true
+
   /pretty-format/28.1.1:
     resolution: {integrity: sha512-wwJbVTGFHeucr5Jw2bQ9P+VYHyLdAqedFLEkdQUVaBF/eiidDwH5OpilINq4mEfhbCjLnirt6HTTDhv1HaTIQw==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
@@ -9767,6 +9771,10 @@ packages:
 
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+
+  /react-is/17.0.2:
+    resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
+    dev: true
 
   /react-is/18.1.0:
     resolution: {integrity: sha512-Fl7FuabXsJnV5Q1qIOQwx/sagGF18kogb4gpfcG4gjLBWO0WDiiz1ko/ExayuxE7InyQkBLkxRFG5oxY6Uu3Kg==}
