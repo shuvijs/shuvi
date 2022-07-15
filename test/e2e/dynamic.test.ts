@@ -32,16 +32,6 @@ describe('Dynamic', () => {
     expect(await page.$text('div')).toBe('Hello World');
   });
 
-  test("dynamic's fist argument could be object, import components by property loader", async () => {
-    page = await ctx.browser.page(ctx.url('/loader'), {
-      waitUntil: ['domcontentloaded'] // resolve before client-side render
-    });
-    const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
-
-    expect(appData.dynamicIds.includes('./src/components/hello.js')).toBe(true);
-    expect(await page.$text('div')).toBe('Hello World');
-  });
-
   test('should render even there are no physical chunk exists', async () => {
     page = await ctx.browser.page(ctx.url('/no-chunk'));
 
