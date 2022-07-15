@@ -3,7 +3,7 @@
  */
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { act } from 'react-dom/test-utils';
 import { MemoryRouter as Router, RouterView } from '..';
 
@@ -21,18 +21,19 @@ describe('when the same component is mounted by two different routes', () => {
 
   it('mounts only once', () => {
     let mountCount = 0;
-
+    let renderRoot;
     class Home extends React.Component {
       componentDidMount() {
+        console.log(111);
         mountCount += 1;
       }
       render() {
         return <h1>Home</h1>;
       }
     }
-
+    renderRoot = createRoot(node);
     act(() => {
-      ReactDOM.render(
+      renderRoot.render(
         <Router
           initialEntries={['/home']}
           routes={[
@@ -47,8 +48,7 @@ describe('when the same component is mounted by two different routes', () => {
           ]}
         >
           <RouterView />
-        </Router>,
-        node
+        </Router>
       );
     });
 
@@ -56,7 +56,7 @@ describe('when the same component is mounted by two different routes', () => {
     expect(mountCount).toBe(1);
 
     act(() => {
-      ReactDOM.render(
+      renderRoot.render(
         <Router
           initialEntries={['/another-home']}
           routes={[
@@ -71,8 +71,7 @@ describe('when the same component is mounted by two different routes', () => {
           ]}
         >
           <RouterView />
-        </Router>,
-        node
+        </Router>
       );
     });
 

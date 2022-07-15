@@ -23,10 +23,11 @@ describe('dynamic', () => {
     });
     const { container } = render(<App />);
     expect(container.innerHTML).toEqual('');
-    await act(async () => {
-      await waitFor(() => getByText(container, 'App'));
+
+    await waitFor(() => {
+      getByText(container, 'App');
+      expect(container.innerHTML).toEqual('<h1>App</h1>');
     });
-    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 
   test('object argument', async () => {
@@ -38,10 +39,10 @@ describe('dynamic', () => {
     });
     const { container } = render(<App />);
     expect(container.innerHTML).toEqual('');
-    await act(async () => {
-      await waitFor(() => getByText(container, 'App'));
+    await waitFor(() => {
+      getByText(container, 'App');
+      expect(container.innerHTML).toEqual('<h1>App</h1>');
     });
-    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 
   test('custom loading', async () => {
@@ -62,9 +63,9 @@ describe('dynamic', () => {
     );
     const { container } = render(<App />);
     expect(container.innerHTML).toEqual('<p>loading...</p>');
-    await act(async () => {
-      await waitFor(() => getByText(container, 'App'));
+    await waitFor(() => {
+      getByText(container, 'App');
+      expect(container.innerHTML).toEqual('<h1>App</h1>');
     });
-    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 });
