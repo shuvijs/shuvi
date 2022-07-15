@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/utils",
-  "version": "0.0.1-pre.10",
+  "version": "1.0.0-rc.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
