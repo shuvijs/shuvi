@@ -3,10 +3,10 @@
  */
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { Router, useNavigate, RouterView } from '..';
 import { createMockRouter } from './utils';
+import { createRoot } from 'react-dom/client';
 
 describe('navigate', () => {
   let node;
@@ -61,11 +61,10 @@ describe('navigate', () => {
       let spy = jest.spyOn(router, 'push');
 
       act(() => {
-        ReactDOM.render(
+        createRoot(node).render(
           <Router router={router}>
             <RouterView />
-          </Router>,
-          node
+          </Router>
         );
       });
 
@@ -121,11 +120,10 @@ describe('navigate', () => {
       let spy = jest.spyOn(router, 'replace');
 
       act(() => {
-        ReactDOM.render(
+        createRoot(node).render(
           <Router router={router}>
             <RouterView />
-          </Router>,
-          node
+          </Router>
         );
       });
 
