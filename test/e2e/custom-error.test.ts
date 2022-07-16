@@ -10,21 +10,24 @@ import {
 
 jest.setTimeout(5 * 60 * 1000);
 
-function deleteFile() {
-  const fileDir = resolveFixture('custom-error/dist/client/static/chunks');
-  const files = fs.readdirSync(fileDir);
-  let isRemove = false;
-  if (files.length) {
-    files.forEach(function (file) {
-      if (file.startsWith('page-1933')) {
-        // remove ctx.error page
-        fs.unlinkSync(path.join(fileDir, file));
-        isRemove = true;
+async function deleteFile() {
+  const manifest = await require(resolveFixture(
+    'custom-error/dist/build-manifest.client.json'
+  ));
+  const fileName = 'custom-error/src/routes/ctx-error';
+  const loadbleKeys = Object.keys(manifest.loadble);
+  for (let i = 0; i < loadbleKeys.length; i++) {
+    const key = loadbleKeys[i];
+    // remove ctx.error page
+    if (key.includes(fileName)) {
+      const realFile = manifest.loadble[key]['files'][0];
+      if (!realFile) {
+        throw new Error(`con't find webpack bundle file: ${fileName}`);
       }
-    });
-  }
-  if (!isRemove) {
-    throw new Error('file not exist');
+      const fileDir = resolveFixture('custom-error/dist/client/');
+      fs.unlinkSync(path.join(fileDir, realFile));
+      break;
+    }
   }
 }
 
@@ -311,7 +314,7 @@ describe('custom/error.js [prod]', () => {
     });
 
     test('ssr error should not overwrite by client errors', async () => {
-      deleteFile();
+      await deleteFile();
       result = await page.goto(ctx.url('/ctx-error?a=1'));
       expect(result.status()).toBe(502);
       await page.waitForSelector('#error-show-client');
@@ -418,7 +421,7 @@ describe('custom/error.js [prod]', () => {
     });
 
     test('spa route resolve error', async () => {
-      deleteFile();
+      await deleteFile();
       result = await page.goto(ctx.url('/ctx-error?a=1'));
       expect(result.status()).toBe(200);
       await page.waitForSelector('#error-show-client');
