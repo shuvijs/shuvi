@@ -3,7 +3,6 @@
  */
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import {
   MemoryRouter as Router,
@@ -11,6 +10,7 @@ import {
   useCurrentRoute,
   RouterView
 } from '..';
+import { createRoot } from 'react-dom/client';
 
 describe('navigate state', () => {
   let node;
@@ -48,7 +48,7 @@ describe('navigate state', () => {
       }
 
       act(() => {
-        ReactDOM.render(
+        createRoot(node).render(
           <Router
             initialEntries={['/home']}
             routes={[
@@ -57,8 +57,7 @@ describe('navigate state', () => {
             ]}
           >
             <RouterView />
-          </Router>,
-          node
+          </Router>
         );
       });
 
@@ -101,7 +100,7 @@ describe('navigate state', () => {
       }
 
       act(() => {
-        ReactDOM.render(
+        createRoot(node).render(
           <Router
             initialEntries={['/home']}
             routes={[
@@ -110,8 +109,7 @@ describe('navigate state', () => {
             ]}
           >
             <RouterView />
-          </Router>,
-          node
+          </Router>
         );
       });
 

@@ -3,13 +3,7 @@
  */
 
 import * as React from 'react';
-import {
-  getByText,
-  render,
-  waitFor,
-  cleanup,
-  act
-} from '@testing-library/react';
+import { getByText, render, waitFor, cleanup } from '@testing-library/react';
 import { wait } from 'shuvi-test-utils';
 import dynamic from '../dynamic';
 
@@ -23,10 +17,11 @@ describe('dynamic', () => {
     });
     const { container } = render(<App />);
     expect(container.innerHTML).toEqual('');
-    await act(async () => {
-      await waitFor(() => getByText(container, 'App'));
+
+    await waitFor(() => {
+      getByText(container, 'App');
+      expect(container.innerHTML).toEqual('<h1>App</h1>');
     });
-    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 
   test('object argument', async () => {
@@ -38,10 +33,10 @@ describe('dynamic', () => {
     });
     const { container } = render(<App />);
     expect(container.innerHTML).toEqual('');
-    await act(async () => {
-      await waitFor(() => getByText(container, 'App'));
+    await waitFor(() => {
+      getByText(container, 'App');
+      expect(container.innerHTML).toEqual('<h1>App</h1>');
     });
-    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 
   test('custom loading', async () => {
@@ -62,9 +57,9 @@ describe('dynamic', () => {
     );
     const { container } = render(<App />);
     expect(container.innerHTML).toEqual('<p>loading...</p>');
-    await act(async () => {
-      await waitFor(() => getByText(container, 'App'));
+    await waitFor(() => {
+      getByText(container, 'App');
+      expect(container.innerHTML).toEqual('<h1>App</h1>');
     });
-    expect(container.innerHTML).toEqual('<h1>App</h1>');
   });
 });
