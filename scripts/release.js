@@ -190,10 +190,15 @@ function updateDeps(pkg, depType, version) {
 }
 
 async function publishPackage(pkgName, version) {
-  if (skippedPackages.includes(pkgName)) {
+  const pkgRoot = getPkgRoot(pkgName);
+
+  if (
+    skippedPackages.includes(pkgName) ||
+    !fs.existsSync(path.join(pkgRoot, 'package.json'))
+  ) {
     return;
   }
-  const pkgRoot = getPkgRoot(pkgName);
+
   const pkgPath = path.resolve(pkgRoot, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
   if (pkg.private) {
