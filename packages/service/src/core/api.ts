@@ -154,6 +154,12 @@ class Api {
     });
 
     //## end init
+    const extendedConfig = runner.extendConfig(
+      this._config
+    ) as NormalizedConfig;
+    const newConfig = resolveConfig(extendedConfig, [this._userConfig]);
+    this._pluginContext.config = newConfig;
+    setContext(this._pluginContext);
     await runner.afterInit();
 
     // getPresetRuntimeFiles might call pluginRunner，so call it after

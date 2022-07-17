@@ -21,3 +21,9 @@ declare module '@shuvi/service/lib/resources' {
   export const clientManifest: IManifest;
   export const serverManifest: IManifest;
 }
+
+declare module '@shuvi/runtime' {
+  export interface CustomConfig {
+    ssr?: boolean;
+  }
+}

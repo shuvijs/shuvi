@@ -26,7 +26,6 @@ const DEFAUL_CONFIG_FILE_NAME = 'shuvi.config';
 const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'];
 
 export const createDefaultConfig: () => Config = () => ({
-  ssr: true,
   env: {},
   rootDir: process.cwd(),
   outputPath: 'dist',
@@ -114,9 +113,6 @@ export function resolveConfig(
 ): NormalizedConfig {
   const configs = [{}, config].concat(overrides || []);
   const resolvedConfig: NormalizedConfig = mergeConfig.apply(null, configs);
-  if (resolvedConfig.router.history === 'auto') {
-    resolvedConfig.router.history = resolvedConfig.ssr ? 'browser' : 'hash';
-  }
   return resolvedConfig;
 }
 
