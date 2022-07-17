@@ -1,1 +1,1 @@
-exports.version = '0.0.1-pre.4'
+exports.version = '1.0.0-rc.1';
