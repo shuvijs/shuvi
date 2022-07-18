@@ -9,6 +9,7 @@ import {
   RouteConfigType
 } from './route';
 import { rankRouteBranches } from '../../shared/router';
+import minimatch from 'minimatch';
 
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
 const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
@@ -226,6 +227,37 @@ function sortRoutes(routes: RouteConfigType[]) {
       rankRawRoute.children = sortRoutes(rankRawRoute.children);
     }
     return rankRoute[1];
+  });
+}
+
+export function ignoreRoutes(
+  ignoreRouteFiles: string[],
+  routes: IApiRouteConfig[]
+): IApiRouteConfig[];
+export function ignoreRoutes(
+  ignoreRouteFiles: string[],
+  routes: IMiddlewareRouteConfig[]
+): IMiddlewareRouteConfig[];
+export function ignoreRoutes(
+  ignoreRouteFiles: string[],
+  routes: IPageRouteConfig[]
+): IPageRouteConfig[];
+export function ignoreRoutes(
+  ignoreRouteFiles: string[],
+  routes: RouteConfigType[]
+) {
+  return routes.filter(route => {
+    const needIgnore = ignoreRouteFiles.some(pattern => {
+      return minimatch(route.path, pattern);
+    });
+    if (Array.isArray((route as IPageRouteConfig).children)) {
+      (route as IPageRouteConfig).children = ignoreRoutes(
+        ignoreRouteFiles,
+        (route as IPageRouteConfig).children as RouteConfigType[]
+      );
+    }
+
+    return !needIgnore;
   });
 }
 

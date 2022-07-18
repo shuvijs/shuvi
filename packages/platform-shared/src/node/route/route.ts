@@ -8,6 +8,7 @@ import {
 import {
   getAllowFilesAndDirs,
   hasAllowFiles,
+  ignoreRoutes,
   normalize,
   sortRoutes,
   SupportFileType
@@ -128,7 +129,10 @@ export const getRawRoutesFromDir = async (
   };
 };
 
-export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
+export const getPageRoutes = async (
+  dirname: string,
+  ignoredRouteFiles?: string[]
+): Promise<PageRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
@@ -179,13 +183,17 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
     return routes;
   };
 
-  const routes = sortRoutes(_getPageRoutes(rawRoutes, []));
+  let routes = sortRoutes(_getPageRoutes(rawRoutes, []));
 
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
     }
   });
+
+  if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
+    routes = ignoreRoutes(ignoredRouteFiles, routes);
+  }
 
   return {
     routes,
@@ -194,7 +202,10 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
   };
 };
 
-export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
+export const getApiRoutes = async (
+  dir: string,
+  ignoredRouteFiles?: string[]
+): Promise<ApiRoutes> => {
   const getConflictWaring = (
     rawRoute: RawRoute,
     conflictRawRoute: RawRoute
@@ -269,7 +280,12 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
     return routes;
   };
 
-  const routes = sortRoutes(_getApiRoutes(rawRoutes, [], ''));
+  let routes = sortRoutes(_getApiRoutes(rawRoutes, [], ''));
+
+  if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
+    routes = ignoreRoutes(ignoredRouteFiles, routes);
+  }
+
   const filterException = (e: RouteException) => e.type === 'api';
 
   return {
@@ -280,7 +296,8 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
 };
 
 export const getMiddlewareRoutes = async (
-  dirname: string
+  dirname: string,
+  ignoredRouteFiles?: string[]
 ): Promise<MiddlewareRoutes> => {
   const {
     routes: rawRoutes,
@@ -327,12 +344,16 @@ export const getMiddlewareRoutes = async (
     return routes;
   };
 
-  const routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
+  let routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
     }
   });
+
+  if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
+    routes = ignoreRoutes(ignoredRouteFiles, routes);
+  }
 
   const exceptionFilter = (e: RouteException) => e.type === 'middleware';
 
