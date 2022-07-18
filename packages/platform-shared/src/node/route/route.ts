@@ -88,7 +88,6 @@ export const getRawRoutesFromDir = async (
 
     for (const file of files) {
       const filepath = join(dirname, file);
-      const isDir = await isDirectory(filepath);
       const relativePath = relative(rootDirname, filepath);
 
       if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles?.length) {
@@ -100,6 +99,8 @@ export const getRawRoutesFromDir = async (
           continue;
         }
       }
+
+      const isDir = await isDirectory(filepath);
 
       if (isDir) {
         if (onlyHasDir) {
