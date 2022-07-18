@@ -1,16 +1,14 @@
 import fs from 'fs';
-import { join, extname, basename, relative } from 'path';
+import { join, extname, basename } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import invariant from '@shuvi/utils/lib/invariant';
 import {
   IApiRouteConfig,
   IMiddlewareRouteConfig,
   IPageRouteConfig,
-  RawRoute,
   RouteConfigType
 } from './route';
 import { rankRouteBranches } from '../../shared/router';
-import minimatch from 'minimatch';
 
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
 const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
