@@ -6,6 +6,7 @@ import {
   IApiRouteConfig,
   IMiddlewareRouteConfig,
   IPageRouteConfig,
+  RawRoute,
   RouteConfigType
 } from './route';
 import { rankRouteBranches } from '../../shared/router';
@@ -233,40 +234,21 @@ function sortRoutes(routes: RouteConfigType[]) {
 export function ignoreRoutes(
   dirname: string,
   ignoreRouteFiles: string[],
-  key: 'api',
-  routes: IApiRouteConfig[]
-): IApiRouteConfig[];
-export function ignoreRoutes(
-  dirname: string,
-  ignoreRouteFiles: string[],
-  key: 'middleware',
-  routes: IMiddlewareRouteConfig[]
-): IMiddlewareRouteConfig[];
-export function ignoreRoutes(
-  dirname: string,
-  ignoreRouteFiles: string[],
-  key: 'component',
-  routes: IPageRouteConfig[]
-): IPageRouteConfig[];
-export function ignoreRoutes(
-  dirname: string,
-  ignoreRouteFiles: string[],
-  key: 'middleware' | 'component' | 'api',
-  routes: RouteConfigType[]
-) {
+  routes: RawRoute[]
+): RawRoute[] {
   return routes.filter(route => {
-    const needIgnore = ignoreRouteFiles.some(pattern => {
-      const filepath = route[key as keyof RouteConfigType];
-      const relativePath = relative(dirname, filepath);
-      return minimatch(relativePath, pattern);
-    });
-    if (Array.isArray((route as IPageRouteConfig).children)) {
-      (route as IPageRouteConfig).children = ignoreRoutes(
-        dirname,
-        ignoreRouteFiles,
-        key as any,
-        (route as IPageRouteConfig).children as RouteConfigType[]
-      );
+    let needIgnore: boolean = false;
+
+    if (route.kind !== 'dir') {
+      needIgnore = ignoreRouteFiles.some(pattern => {
+        const { filepath } = route;
+        const relativePath = relative(dirname, filepath);
+        return minimatch(relativePath, pattern);
+      });
+    }
+
+    if (route.kind === 'dir' && route.children?.length) {
+      route.children = ignoreRoutes(dirname, ignoreRouteFiles, route.children);
     }
 
     return !needIgnore;

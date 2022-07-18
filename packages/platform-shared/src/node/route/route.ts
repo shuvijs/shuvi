@@ -26,7 +26,7 @@ interface RawFileRoute {
   filepath: string;
 }
 
-interface RawDirRoute {
+export interface RawDirRoute {
   kind: 'dir';
   filepath: string;
   segment: string;
@@ -34,7 +34,7 @@ interface RawDirRoute {
   children: (RawFileRoute | RawDirRoute)[];
 }
 
-type RawRoute = RawFileRoute | RawDirRoute;
+export type RawRoute = RawFileRoute | RawDirRoute;
 
 export interface RouteException {
   type: SupportFileType | 'dir';
@@ -57,7 +57,8 @@ export type RouteConfigType =
   | IMiddlewareRouteConfig;
 
 export const getRawRoutesFromDir = async (
-  dirname: string
+  dirname: string,
+  ignoreRouteFiles?: string[]
 ): Promise<RawRoutes> => {
   if (!(await isDirectory(dirname))) {
     return {
@@ -120,7 +121,11 @@ export const getRawRoutesFromDir = async (
     }
     return rawRoutes;
   };
-  const routes = await _getRawRoutesFromDir(dirname, [], '');
+  let routes = await _getRawRoutesFromDir(dirname, [], '');
+
+  if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles.length) {
+    routes = ignoreRoutes(dirname, ignoreRouteFiles, routes);
+  }
 
   return {
     routes,
@@ -137,7 +142,7 @@ export const getPageRoutes = async (
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname);
+  } = await getRawRoutesFromDir(dirname, ignoredRouteFiles);
 
   const _getPageRoutes = (
     rawRoutes: RawRoute[],
@@ -183,19 +188,13 @@ export const getPageRoutes = async (
     return routes;
   };
 
-  let routes = _getPageRoutes(rawRoutes, []);
+  let routes = sortRoutes(_getPageRoutes(rawRoutes, []));
 
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
     }
   });
-
-  if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
-    routes = ignoreRoutes(dirname, ignoredRouteFiles, 'component', routes);
-  }
-
-  routes = sortRoutes(routes);
 
   return {
     routes,
@@ -223,7 +222,7 @@ export const getApiRoutes = async (
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dir);
+  } = await getRawRoutesFromDir(dir, ignoredRouteFiles);
 
   const _getApiRoutes = (
     rawRoutes: RawRoute[],
@@ -282,13 +281,7 @@ export const getApiRoutes = async (
     return routes;
   };
 
-  let routes = _getApiRoutes(rawRoutes, [], '');
-
-  if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
-    routes = ignoreRoutes(dir, ignoredRouteFiles, 'api', routes);
-  }
-
-  routes = sortRoutes(routes);
+  const routes = sortRoutes(_getApiRoutes(rawRoutes, [], ''));
 
   const filterException = (e: RouteException) => e.type === 'api';
 
@@ -307,7 +300,7 @@ export const getMiddlewareRoutes = async (
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname);
+  } = await getRawRoutesFromDir(dirname, ignoredRouteFiles);
 
   const _getMiddlewareRoutes = (
     rawRoutes: RawRoute[],
@@ -348,19 +341,13 @@ export const getMiddlewareRoutes = async (
     return routes;
   };
 
-  let routes = _getMiddlewareRoutes(rawRoutes, [], '');
+  let routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
 
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
     }
   });
-
-  if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
-    routes = ignoreRoutes(dirname, ignoredRouteFiles, 'middleware', routes);
-  }
-
-  routes = sortRoutes(routes);
 
   const exceptionFilter = (e: RouteException) => e.type === 'middleware';
 
