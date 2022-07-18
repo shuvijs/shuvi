@@ -85,10 +85,10 @@
     "@shuvi/shared": "1.0.0-rc.1",
     "@shuvi/toolpack": "1.0.0-rc.1",
     "@shuvi/utils": "1.0.0-rc.1",
-    "minimatch": "^5.1.0",
+    "minimatch": "5.1.0",
     "redux": "4.1.2"
   },
   "devDependencies": {
-    "@types/minimatch": "^3.0.5"
+    "@types/minimatch": "3.0.5"
   }
 }

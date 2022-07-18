@@ -97,8 +97,8 @@ importers:
       '@shuvi/shared': 1.0.0-rc.1
       '@shuvi/toolpack': 1.0.0-rc.1
       '@shuvi/utils': 1.0.0-rc.1
-      '@types/minimatch': ^3.0.5
-      minimatch: ^5.1.0
+      '@types/minimatch': 3.0.5
+      minimatch: 5.1.0
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
