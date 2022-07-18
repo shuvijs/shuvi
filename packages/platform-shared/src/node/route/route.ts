@@ -1,4 +1,4 @@
-import { basename, extname, join, dirname } from 'path';
+import { basename, extname, join, dirname, relative } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import {
   IUserRouteConfig,
@@ -8,11 +8,11 @@ import {
 import {
   getAllowFilesAndDirs,
   hasAllowFiles,
-  ignoreRoutes,
   normalize,
   sortRoutes,
   SupportFileType
 } from './helpers';
+import minimatch from 'minimatch';
 
 export type IPageRouteConfig = IUserRouteConfig;
 
@@ -60,7 +60,8 @@ export const getRawRoutesFromDir = async (
   dirname: string,
   ignoreRouteFiles?: string[]
 ): Promise<RawRoutes> => {
-  if (!(await isDirectory(dirname))) {
+  const rootDirname = dirname;
+  if (!(await isDirectory(rootDirname))) {
     return {
       routes: [],
       warnings: [],
@@ -88,6 +89,7 @@ export const getRawRoutesFromDir = async (
     for (const file of files) {
       const filepath = join(dirname, file);
       const isDir = await isDirectory(filepath);
+      const relativePath = relative(rootDirname, filepath);
 
       if (isDir) {
         if (onlyHasDir) {
@@ -109,6 +111,17 @@ export const getRawRoutesFromDir = async (
 
         continue;
       }
+
+      if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles?.length) {
+        const needIgnore = ignoreRouteFiles.some(pattern => {
+          return minimatch(relativePath, pattern);
+        });
+
+        if (needIgnore) {
+          continue;
+        }
+      }
+
       const ext = extname(file);
       const type = basename(file, ext) as SupportFileType;
       rawRoutes.push({
@@ -123,9 +136,9 @@ export const getRawRoutesFromDir = async (
   };
   let routes = await _getRawRoutesFromDir(dirname, [], '');
 
-  if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles.length) {
-    routes = ignoreRoutes(dirname, ignoreRouteFiles, routes);
-  }
+  // if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles.length) {
+  //   routes = ignoreRoutes(dirname, ignoreRouteFiles, routes);
+  // }
 
   return {
     routes,
