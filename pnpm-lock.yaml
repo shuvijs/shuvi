@@ -331,16 +331,16 @@ importers:
       '@napi-rs/triples': 1.0.3
       '@parcel/css': 1.2.0
       '@shuvi/shared': 1.0.0-rc.1
-      '@shuvi/swc-darwin-arm64': latest
-      '@shuvi/swc-darwin-x64': latest
-      '@shuvi/swc-linux-arm-gnueabihf': latest
-      '@shuvi/swc-linux-arm64-gnu': latest
-      '@shuvi/swc-linux-arm64-musl': latest
-      '@shuvi/swc-linux-x64-gnu': latest
-      '@shuvi/swc-linux-x64-musl': latest
-      '@shuvi/swc-win32-arm64-msvc': latest
-      '@shuvi/swc-win32-ia32-msvc': latest
-      '@shuvi/swc-win32-x64-msvc': latest
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
       '@shuvi/utils': 1.0.0-rc.1
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
@@ -451,16 +451,16 @@ importers:
       webpack-sources: 2.2.0
       webpack-virtual-modules: 0.4.3
     optionalDependencies:
-      '@shuvi/swc-darwin-arm64': 0.0.1-pre.2
-      '@shuvi/swc-darwin-x64': 0.0.1-pre.2
-      '@shuvi/swc-linux-arm-gnueabihf': 0.0.1-pre.2
-      '@shuvi/swc-linux-arm64-gnu': 0.0.1-pre.2
-      '@shuvi/swc-linux-arm64-musl': 0.0.1-pre.2
-      '@shuvi/swc-linux-x64-gnu': 0.0.1-pre.2
-      '@shuvi/swc-linux-x64-musl': 0.0.1-pre.2
-      '@shuvi/swc-win32-arm64-msvc': 0.0.1-pre.2
-      '@shuvi/swc-win32-ia32-msvc': 0.0.1-pre.2
-      '@shuvi/swc-win32-x64-msvc': 0.0.1-pre.2
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
     devDependencies:
       '@types/babel__core': 7.1.19
       '@types/cross-spawn': 6.0.1
@@ -2834,8 +2834,8 @@ packages:
       immer: 9.0.6
     dev: false
 
-  /@shuvi/swc-darwin-arm64/0.0.1-pre.2:
-    resolution: {integrity: sha512-nIKOtV6YngDp6QXyKtD1L0JpAmhdKUxgE9YatRWJSCtZ7xwAwV68sGusTLyExN01RUHeqGC0rWNYRqdAipdIkw==}
+  /@shuvi/swc-darwin-arm64/1.0.0-rc.1:
+    resolution: {integrity: sha512-w5ZhiE/XXPgIkftPpIqcP9ZTe6X24ZwGfSP5Vu+q0kuYI42yANKmqsLX1kTpQxYkKskcaqyJutIDASZKsN6xzQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -2843,8 +2843,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-darwin-x64/0.0.1-pre.2:
-    resolution: {integrity: sha512-vby2QgXsvVbxG/aGuXFKqpIomlLUGfRZDeDDhp9ibM9ScpMyqPRdUFURdnE7M4HYaAN3mZGreqoqiTKedzJd5A==}
+  /@shuvi/swc-darwin-x64/1.0.0-rc.1:
+    resolution: {integrity: sha512-uBwoeiOGuCs/mPfFnKBoZM3lXvaVW87NQkE/1XUHL0bramheWek1x5Z9YygKdvltTuVI/urYEgH24ZF5RmPT6A==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -2852,8 +2852,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-arm-gnueabihf/0.0.1-pre.2:
-    resolution: {integrity: sha512-0cEUASkVSi1SpczUo0eiucpP0Dpjsm9mQrBpiS0NT7AjqM4qhhpBaC06FHncwTWgvWOMfWWm2WACgZ3A4bllHQ==}
+  /@shuvi/swc-linux-arm-gnueabihf/1.0.0-rc.1:
+    resolution: {integrity: sha512-wJ8JWDQ+AMtvlDHOt97ifi9+hp3UAwwEmLFqYlttEy/TwHlMSBq/3wgwuo6cRQrv99r2PtB8RfmFwGWmtel1uA==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
@@ -2861,8 +2861,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-arm64-gnu/0.0.1-pre.2:
-    resolution: {integrity: sha512-S6Ja/EOLd95m0dmKi+ywDZkd81p6UI7nZT4gWwrZhbhC5lhOuEj429UqHjdaogZcxaafmBWi4HXS+5sAayiuZA==}
+  /@shuvi/swc-linux-arm64-gnu/1.0.0-rc.1:
+    resolution: {integrity: sha512-6alur6KGaKdGhpHZFPBGe3ii6wR/785nBaJ5aBpluxjhzAlJtGjixkLgcXuJKsSSRQ73raHZu7B26vGYx8WlIg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -2870,8 +2870,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-arm64-musl/0.0.1-pre.2:
-    resolution: {integrity: sha512-cdgs+c8EJVlWBOd5VE5nF7/J47paM3d8LXmHIzUkKdaZiBA11M1GIvnhNDjG5Yr3K8AKuk0XA5lX2VhvW+ncxA==}
+  /@shuvi/swc-linux-arm64-musl/1.0.0-rc.1:
+    resolution: {integrity: sha512-vSTjBOr9pQWUxi55MEpa/VvrNZmUwckzjACZguxwbL0XF5xMOmoR8bab5Y3pTYyLZCdQzwSjILfZzTSHNsrZlA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -2879,8 +2879,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-x64-gnu/0.0.1-pre.2:
-    resolution: {integrity: sha512-UwLfIcuGs7LjWUwuzxI/Mm8/PWusLBVfSKpNGUuLYQEedNXtyekmoFAntSbaC6EUWn/loyZ75W3KmQ3LAs07Gg==}
+  /@shuvi/swc-linux-x64-gnu/1.0.0-rc.1:
+    resolution: {integrity: sha512-sqDDJJPoSQQtUM5G5FQF7vstHAcIFjLxWBDTL3enokY6EkayDmYxNGNm49zoqW5KAw/ik+WSl+5wfD1lYsA15A==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -2888,8 +2888,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-x64-musl/0.0.1-pre.2:
-    resolution: {integrity: sha512-Ii8e94og7677eV6AWDvGNATxlt/wS2U7B4rVjJeXxyk8XnjG9PDryeUfIeQ9s0TentB95nYgjKK1gotfynJrzw==}
+  /@shuvi/swc-linux-x64-musl/1.0.0-rc.1:
+    resolution: {integrity: sha512-dHMYdLvFU4nR67RGPQyV5yL7r72hGsIldKJlH1+/ZHxTyLdl8Q3oCVKoTukSRACgRZKWGIvCwkODMmBFvoPZDQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -2897,8 +2897,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-win32-arm64-msvc/0.0.1-pre.2:
-    resolution: {integrity: sha512-h+Zio+/IG88BidygfI6pNmoXvpTE18i9/H51Vqg7vYHeXGI9h+jlclWjs1D2ycmUosoYdMy9InWNxyowQefxGA==}
+  /@shuvi/swc-win32-arm64-msvc/1.0.0-rc.1:
+    resolution: {integrity: sha512-2YfvyJQqQ4LrWvjIqEVMm2ktI9fhg4ytDrD5pzjZmD7m4u8j43itFluJjpcMfNfXxON+iz4EvSF4G7KEism1zQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -2906,8 +2906,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-win32-ia32-msvc/0.0.1-pre.2:
-    resolution: {integrity: sha512-GZsHxWzdo6rKDmrsJkpSQsemCWm0vQ2DtleKh3WsT+jpa91RRTEnN1shfHmSXjk/QlvYIGvy7baEFa3Ar03OQw==}
+  /@shuvi/swc-win32-ia32-msvc/1.0.0-rc.1:
+    resolution: {integrity: sha512-gHJgXt9Tcrew9ETUjd5cUdHi16oTY3O/NqWfqeiKzOclx4XzYWfjk+Ws0uovWyuc1c8JFBAVD6yuuynH7zn40g==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -2915,8 +2915,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-win32-x64-msvc/0.0.1-pre.2:
-    resolution: {integrity: sha512-e8HSANwmbXho7c+3LGwLQb6CldNyZvPQgj/16oHhb5iZvkHfJPE9AYgyfxc/jl/G1Z98rmeelaZrL0+jZCDpog==}
+  /@shuvi/swc-win32-x64-msvc/1.0.0-rc.1:
+    resolution: {integrity: sha512-u3QM80vn/RTqHtTwItOERFMYBJxWhqskYOLMOIU6AiV+2hHu9Qy2opvmSy0SZIUEFPfP6icC+P4p2todf/QJbQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]

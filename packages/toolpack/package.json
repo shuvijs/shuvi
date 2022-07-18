@@ -83,16 +83,16 @@
     "webpack-virtual-modules": "0.4.3"
   },
   "optionalDependencies": {
-    "@shuvi/swc-darwin-arm64": "latest",
-    "@shuvi/swc-darwin-x64": "latest",
-    "@shuvi/swc-linux-arm-gnueabihf": "latest",
-    "@shuvi/swc-linux-arm64-gnu": "latest",
-    "@shuvi/swc-linux-arm64-musl": "latest",
-    "@shuvi/swc-linux-x64-gnu": "latest",
-    "@shuvi/swc-linux-x64-musl": "latest",
-    "@shuvi/swc-win32-arm64-msvc": "latest",
-    "@shuvi/swc-win32-ia32-msvc": "latest",
-    "@shuvi/swc-win32-x64-msvc": "latest"
+    "@shuvi/swc-darwin-arm64": "1.0.0-rc.1",
+    "@shuvi/swc-darwin-x64": "1.0.0-rc.1",
+    "@shuvi/swc-linux-arm-gnueabihf": "1.0.0-rc.1",
+    "@shuvi/swc-linux-arm64-gnu": "1.0.0-rc.1",
+    "@shuvi/swc-linux-arm64-musl": "1.0.0-rc.1",
+    "@shuvi/swc-linux-x64-gnu": "1.0.0-rc.1",
+    "@shuvi/swc-linux-x64-musl": "1.0.0-rc.1",
+    "@shuvi/swc-win32-arm64-msvc": "1.0.0-rc.1",
+    "@shuvi/swc-win32-ia32-msvc": "1.0.0-rc.1",
+    "@shuvi/swc-win32-x64-msvc": "1.0.0-rc.1"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.19",
