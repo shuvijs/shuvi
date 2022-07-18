@@ -1,7 +1,3 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as fse from 'fs-extra';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import Browser, { Page } from './browser';
 
 export { Browser, Page };
@@ -43,62 +39,6 @@ export async function check<T>(
   }
 
   throw new Error('CHECK TIMED OUT: ' + lastErr);
-}
-
-export function createCliTestProject(dir: string, cwd?: string) {
-  const _cwd = cwd || process.cwd();
-  const projectRoot = path.resolve(_cwd, dir);
-
-  const exist = (file: string) => {
-    return fs.existsSync(path.resolve(projectRoot, file));
-  };
-
-  const clear = (file: string) => {
-    return fse.removeSync(path.resolve(projectRoot, file));
-  };
-
-  const runShuviCommand = (
-    command: string,
-    args: string[] = [],
-    options?: SpawnOptionsWithoutStdio
-  ) => {
-    return new Promise<{ code: number; message: string }>((resolve, reject) => {
-      let output = '';
-      let err = '';
-      const s = spawn('pnpm --', ['shuvi', command, dir, ...args], {
-        ...options,
-        shell: true
-      });
-
-      s.stdout.on('data', data => {
-        output += data;
-      });
-
-      s.stderr.on('data', data => {
-        err += data;
-      });
-
-      s.on('exit', code => {
-        if (code === 0) {
-          resolve({
-            code,
-            message: output
-          });
-        } else {
-          reject({
-            code,
-            message: err
-          });
-        }
-      });
-    });
-  };
-
-  return {
-    exist,
-    clear,
-    run: runShuviCommand
-  };
 }
 
 export const getIframeTextContent = (page: Page) => {
