@@ -274,8 +274,7 @@ export function baseWebpackChain({
   if (dev) {
     // For webpack-dev-middleware usage
     config.watchOptions({
-      // timeout 300 will make hmr.test to failed, set to 350
-      aggregateTimeout: 350,
+      aggregateTimeout: 10,
       ignored: ['**/.git/**', '**/node_modules/**']
     });
     config.set('infrastructureLogging', {
