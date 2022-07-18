@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import { Defer } from '@shuvi/utils';
+import { createDefer } from '@shuvi/utils';
 import { effect, stop } from '@vue/reactivity';
 import { FileOptions, createFileInstance } from './file';
 import { queueJob, queuePostFlushCb } from './scheduler';
@@ -15,7 +15,7 @@ export function mount(
   dependencyMap: Map<string, DependencyInfo>,
   instances: Map<string, FileInternalInstance>
 ): Promise<FileInternalInstance> {
-  const defer = Defer<FileInternalInstance>();
+  const defer = createDefer<FileInternalInstance>();
   const instance = createFileInstance(options);
 
   const { id, content, name: fsPath, setupState } = instance;
@@ -71,7 +71,7 @@ export function mount(
   }
 
   instance.destroy = () => {
-    const destroyDefer = Defer<void>();
+    const destroyDefer = createDefer<void>();
     const { effects, update, unmounted, name: fsPath } = instance;
 
     fse.removeSync(fsPath);
