@@ -231,28 +231,4 @@ function sortRoutes(routes: RouteConfigType[]) {
   });
 }
 
-export function ignoreRoutes(
-  dirname: string,
-  ignoreRouteFiles: string[],
-  routes: RawRoute[]
-): RawRoute[] {
-  return routes.filter(route => {
-    let needIgnore: boolean = false;
-
-    if (route.kind !== 'dir') {
-      needIgnore = ignoreRouteFiles.some(pattern => {
-        const { filepath } = route;
-        const relativePath = relative(dirname, filepath);
-        return minimatch(relativePath, pattern);
-      });
-    }
-
-    if (route.kind === 'dir' && route.children?.length) {
-      route.children = ignoreRoutes(dirname, ignoreRouteFiles, route.children);
-    }
-
-    return !needIgnore;
-  });
-}
-
 export { fileTypeChecker, sortRoutes };
