@@ -1,4 +1,5 @@
 import { createPlugin } from '@shuvi/service';
+import path from 'path';
 import {
   getAllFiles,
   getFirstModuleExport,
@@ -16,7 +17,7 @@ const core = createPlugin({
       'noop'
     );
     const userServerFile = defineFile({
-      name: 'user/server.js',
+      name: path.join(paths.rootDir, 'user/server.js'),
       content: () => {
         return getFirstModuleExport(
           getAllFiles(serverCandidates),
