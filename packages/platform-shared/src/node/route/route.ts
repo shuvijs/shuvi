@@ -195,7 +195,7 @@ export const getPageRoutes = async (
     routes = ignoreRoutes(dirname, ignoredRouteFiles, 'component', routes);
   }
 
-  sortRoutes(routes);
+  routes = sortRoutes(routes);
 
   return {
     routes,
