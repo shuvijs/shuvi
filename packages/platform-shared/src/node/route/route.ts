@@ -183,7 +183,7 @@ export const getPageRoutes = async (
     return routes;
   };
 
-  let routes = sortRoutes(_getPageRoutes(rawRoutes, []));
+  let routes = _getPageRoutes(rawRoutes, []);
 
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
@@ -192,8 +192,10 @@ export const getPageRoutes = async (
   });
 
   if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
-    routes = ignoreRoutes(ignoredRouteFiles, routes);
+    routes = ignoreRoutes(dirname, ignoredRouteFiles, 'component', routes);
   }
+
+  sortRoutes(routes);
 
   return {
     routes,
@@ -280,11 +282,13 @@ export const getApiRoutes = async (
     return routes;
   };
 
-  let routes = sortRoutes(_getApiRoutes(rawRoutes, [], ''));
+  let routes = _getApiRoutes(rawRoutes, [], '');
 
   if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
-    routes = ignoreRoutes(ignoredRouteFiles, routes);
+    routes = ignoreRoutes(dir, ignoredRouteFiles, 'api', routes);
   }
+
+  routes = sortRoutes(routes);
 
   const filterException = (e: RouteException) => e.type === 'api';
 
@@ -344,7 +348,8 @@ export const getMiddlewareRoutes = async (
     return routes;
   };
 
-  let routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
+  let routes = _getMiddlewareRoutes(rawRoutes, [], '');
+
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
@@ -352,8 +357,10 @@ export const getMiddlewareRoutes = async (
   });
 
   if (Array.isArray(ignoredRouteFiles) && ignoredRouteFiles.length) {
-    routes = ignoreRoutes(ignoredRouteFiles, routes);
+    routes = ignoreRoutes(dirname, ignoredRouteFiles, 'middleware', routes);
   }
+
+  routes = sortRoutes(routes);
 
   const exceptionFilter = (e: RouteException) => e.type === 'middleware';
 

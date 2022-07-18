@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { join, extname, basename } from 'path';
+import { join, extname, basename, relative } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import invariant from '@shuvi/utils/lib/invariant';
 import {
@@ -231,28 +231,40 @@ function sortRoutes(routes: RouteConfigType[]) {
 }
 
 export function ignoreRoutes(
+  dirname: string,
   ignoreRouteFiles: string[],
+  key: 'api',
   routes: IApiRouteConfig[]
 ): IApiRouteConfig[];
 export function ignoreRoutes(
+  dirname: string,
   ignoreRouteFiles: string[],
+  key: 'middleware',
   routes: IMiddlewareRouteConfig[]
 ): IMiddlewareRouteConfig[];
 export function ignoreRoutes(
+  dirname: string,
   ignoreRouteFiles: string[],
+  key: 'component',
   routes: IPageRouteConfig[]
 ): IPageRouteConfig[];
 export function ignoreRoutes(
+  dirname: string,
   ignoreRouteFiles: string[],
+  key: 'middleware' | 'component' | 'api',
   routes: RouteConfigType[]
 ) {
   return routes.filter(route => {
     const needIgnore = ignoreRouteFiles.some(pattern => {
-      return minimatch(route.path, pattern);
+      const filepath = route[key as keyof RouteConfigType];
+      const relativePath = relative(dirname, filepath);
+      return minimatch(relativePath, pattern);
     });
     if (Array.isArray((route as IPageRouteConfig).children)) {
       (route as IPageRouteConfig).children = ignoreRoutes(
+        dirname,
         ignoreRouteFiles,
+        key as any,
         (route as IPageRouteConfig).children as RouteConfigType[]
       );
     }
