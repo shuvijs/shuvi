@@ -4,11 +4,11 @@ export interface Defer<T = void> {
   promise: Promise<T>;
 }
 
-export function Defer<T>(): Defer<T> {
-  let defer = ({
+export function createDefer<T>(): Defer<T> {
+  let defer = {
     resolve: null,
     reject: null
-  } as any) as Defer<T>;
+  } as any as Defer<T>;
 
   defer.promise = new Promise((resolve, reject) => {
     defer.resolve = resolve;
