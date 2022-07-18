@@ -44,13 +44,7 @@ describe('ignored route files test', () => {
     ]);
 
     expect(result).toMatchObject({
-      routes: [
-        {
-          api: 'c/c1/api.js',
-          path: '/c/c1'
-        },
-        { path: '/', api: 'api.js' }
-      ],
+      routes: [{ path: '/', api: 'api.js' }],
       warnings: [],
       errors: []
     });

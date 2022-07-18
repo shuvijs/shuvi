@@ -44,13 +44,7 @@ describe('ignored route files test', () => {
       'b/*'
     ]);
     expect(result).toMatchObject({
-      routes: [
-        {
-          middleware: 'c/c1/middleware.js',
-          path: '/c/c1/*'
-        },
-        { path: '/*', middleware: 'middleware.js' }
-      ],
+      routes: [{ path: '/*', middleware: 'middleware.js' }],
       warnings: [],
       errors: []
     });

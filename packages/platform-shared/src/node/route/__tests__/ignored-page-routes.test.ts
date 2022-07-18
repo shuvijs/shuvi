@@ -38,13 +38,7 @@ describe('ignored route files test', () => {
   it('should get correct result when ignore b/* and c/*', async () => {
     const result = await getFixturePageRoutes(fixtureName, ['c/*', 'b/*']);
     expect(result).toMatchObject({
-      routes: [
-        {
-          component: 'c/c1/page.js',
-          path: '/c/c1'
-        },
-        { path: '/', component: 'page.js' }
-      ],
+      routes: [{ path: '/', component: 'page.js' }],
       warnings: [],
       errors: []
     });

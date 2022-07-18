@@ -91,6 +91,16 @@ export const getRawRoutesFromDir = async (
       const isDir = await isDirectory(filepath);
       const relativePath = relative(rootDirname, filepath);
 
+      if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles?.length) {
+        const needIgnore = ignoreRouteFiles.some(pattern => {
+          return minimatch(relativePath, pattern);
+        });
+
+        if (needIgnore) {
+          continue;
+        }
+      }
+
       if (isDir) {
         if (onlyHasDir) {
           // only indent segment,routes was in same level.
@@ -110,16 +120,6 @@ export const getRawRoutesFromDir = async (
         rawRoutes.push(rawRoute);
 
         continue;
-      }
-
-      if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles?.length) {
-        const needIgnore = ignoreRouteFiles.some(pattern => {
-          return minimatch(relativePath, pattern);
-        });
-
-        if (needIgnore) {
-          continue;
-        }
       }
 
       const ext = extname(file);
