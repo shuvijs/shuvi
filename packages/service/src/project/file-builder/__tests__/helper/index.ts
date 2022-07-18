@@ -1,49 +1,36 @@
+import { execSync } from 'child_process';
 import { vol } from 'memfs';
-import * as fse from 'fs-extra';
+import * as fs from 'fs';
 import * as path from 'path';
 
 export function resetFs() {
   vol.reset();
 }
 
-export async function readFile(filepath: string) {
-  return fse.readFile(filepath, 'utf-8');
+export function readFileSync(filepath: string) {
+  return fs.readFileSync(filepath, 'utf-8');
 }
 
-export async function writeFile(filepath: string, data: any) {
-  await fse.writeFile(filepath, data, 'utf-8');
+export function writeFileSync(filepath: string, data: any) {
+  fs.writeFileSync(filepath, data, 'utf-8');
 }
 
-export async function recursiveReadDir(
-  dir: string,
-  {
-    rootDir = dir,
-    arr = []
-  }: {
-    rootDir?: string;
-    arr?: string[];
-  } = {}
-): Promise<string[]> {
-  const result = await fse.readdir(dir);
-
-  await Promise.all(
-    result.map(async (part: string) => {
-      const absolutePath = path.join(dir, part);
-      const pp = absolutePath.replace(rootDir, '');
-
-      const pathStat = await fse.stat(absolutePath);
-      if (pathStat.isDirectory()) {
-        await recursiveReadDir(absolutePath, { arr, rootDir });
-        return;
-      }
-
-      arr.push(pp);
-    })
-  );
-
-  return arr.sort();
+export function readDirSync(dir: string): string[] {
+  return fs.readdirSync(dir).sort();
 }
 
 export function sleep(timeout: number) {
   return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
+export function resolveFixture(...names: string[]) {
+  return path.resolve(__dirname, '..', 'fixtures', ...names);
+}
+
+export function copyDirectory(source: string, target: string) {
+  execSync(`cp -R ${source} ${target}`);
+}
+
+export function deleteDirectory(source: string) {
+  execSync(`rm -rf ${source}`);
 }
