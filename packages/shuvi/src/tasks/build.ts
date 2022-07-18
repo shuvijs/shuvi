@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import {
   getApi,
-  Config,
+  NormalizedConfig,
   IPluginContext,
   IPlatform,
   getBundler,
@@ -12,7 +12,7 @@ import {
 
 export interface IBuildOptions {
   cwd?: string;
-  config?: Config;
+  config: NormalizedConfig;
   platform?: IPlatform;
   target?: 'spa' | 'ssr';
 }

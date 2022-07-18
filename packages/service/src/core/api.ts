@@ -3,7 +3,6 @@ import { joinPath } from '@shuvi/utils/lib/string';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import {
-  Config,
   NormalizedConfig,
   IPaths,
   IShuviMode,
@@ -16,7 +15,6 @@ import {
 } from './apiTypes';
 import { defineFile, ProjectBuilder, FileOptions } from '../project';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
-import { resolveConfig } from './config';
 import {
   getManager,
   PluginManager,
@@ -33,7 +31,7 @@ const ServiceModes: IShuviMode[] = ['development', 'production'];
 interface IApiOPtions {
   cwd: string;
   mode: IShuviMode;
-  config?: Config;
+  config?: NormalizedConfig;
   phase: IPhase;
   platform?: IPlatform;
 }
@@ -48,7 +46,6 @@ class Api {
   private _cwd: string;
   private _mode: IShuviMode;
   private _phase: IPhase;
-  private _userConfig: Config;
   private _config!: NormalizedConfig;
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
@@ -66,7 +63,7 @@ class Api {
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._userConfig = config || {};
+    this._config = config!;
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder({
@@ -95,12 +92,10 @@ class Api {
   }
 
   async init() {
-    const config = (this._config = resolveConfig(this._userConfig));
-
     this._paths = getPaths({
       rootDir: this._cwd,
-      outputPath: config.outputPath,
-      publicDir: config.publicDir
+      outputPath: this._config.outputPath,
+      publicDir: this._config.publicDir
     });
     Object.freeze(this._config);
     Object.freeze(this._paths);
@@ -130,7 +125,7 @@ class Api {
       await this._initPlatform();
 
     // 2. init user plugins
-    const userPlugins = await getPlugins(this._cwd, config);
+    const userPlugins = await getPlugins(this._cwd, this._config);
     platformPlugins
       .concat(userPlugins)
       .forEach(plugin => this._applyPlugin(plugin));
@@ -154,12 +149,6 @@ class Api {
     });
 
     //## end init
-    const extendedConfig = runner.extendConfig(
-      this._config
-    ) as NormalizedConfig;
-    const newConfig = resolveConfig(extendedConfig, [this._userConfig]);
-    this._pluginContext.config = newConfig;
-    setContext(this._pluginContext);
     await runner.afterInit();
 
     // getPresetRuntimeFiles might call pluginRunner，so call it after

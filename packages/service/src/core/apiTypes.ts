@@ -10,7 +10,6 @@ import {
   ServerPluginInstance
 } from '../server';
 import { DevMiddleware } from '../server/middlewares/dev';
-import { CustomConfig } from '@shuvi/runtime';
 
 export interface IUserRouteConfig {
   children?: IUserRouteConfig[];
@@ -156,6 +155,8 @@ export interface IApiConfig {
 }
 
 export type IRuntimeConfig = Record<string, string>;
+
+export interface CustomConfig {}
 
 export interface Config extends CustomConfig {
   outputPath?: string;

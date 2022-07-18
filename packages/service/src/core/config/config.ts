@@ -26,6 +26,7 @@ const DEFAUL_CONFIG_FILE_NAME = 'shuvi.config';
 const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'];
 
 export const createDefaultConfig: () => Config = () => ({
+  ssr: true,
   env: {},
   rootDir: process.cwd(),
   outputPath: 'dist',

@@ -3,7 +3,6 @@ import FeatureHTMLRender from './html-render';
 import FeatureCustomServer from './custom-server';
 import FeatureModel from './model';
 import FilesystemRoutes from './filesystem-routes';
-import FeatureCustomConfig from './custom-config';
 
 export { buildHtml } from './main/buildHtml';
 
@@ -19,6 +18,5 @@ export const featurePlugins = [
   FilesystemRoutes,
   FeatureHTMLRender,
   FeatureCustomServer,
-  FeatureModel,
-  FeatureCustomConfig
+  FeatureModel
 ];
