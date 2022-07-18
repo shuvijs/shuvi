@@ -15,12 +15,9 @@ const getFixturePageRoutes = async (dirname: string) => {
 describe('filesystem routes', () => {
   it('should work when without-layout', async () => {
     const result = await getFixturePageRoutes('without-layout');
+    console.log(result);
     expect(result).toMatchObject({
       routes: [
-        {
-          component: 'b/b1/b2/page.js',
-          path: '/b/b1/b2'
-        },
         {
           component: 'a/a1/page.js',
           path: '/a/a1'
@@ -28,6 +25,10 @@ describe('filesystem routes', () => {
         {
           component: 'a/page.js',
           path: '/a'
+        },
+        {
+          component: 'b/b1/b2/page.js',
+          path: '/b/b1/b2'
         },
         {
           component: 'b/page.js',
