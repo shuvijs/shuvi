@@ -1,3 +1,5 @@
+// modified from https://github.com/vuejs/core/blob/8dcb6c7bbdd2905469e2bb11dfff27b58cc784b2/scripts/release.js
+
 const args = require('minimist')(process.argv.slice(2));
 const fs = require('fs');
 const path = require('path');
@@ -192,10 +194,7 @@ function updateDeps(pkg, depType, version) {
 async function publishPackage(pkgName, version) {
   const pkgRoot = getPkgRoot(pkgName);
 
-  if (
-    skippedPackages.includes(pkgName) ||
-    !fs.existsSync(path.join(pkgRoot, 'package.json'))
-  ) {
+  if (skippedPackages.includes(pkgName)) {
     return;
   }
 
@@ -218,14 +217,17 @@ async function publishPackage(pkgName, version) {
 
   step(`Publishing ${pkgName}...`);
   try {
-    await run(
-      'pnpm',
+    // note: use of yarn is intentional here as we rely on its publishing
+    // behavior.
+    await runIfNotDry(
+      'yarn',
       [
         'publish',
+        '--new-version',
+        version,
         ...(releaseTag ? ['--tag', releaseTag] : []),
         '--access',
-        'public',
-        ...(isDryRun ? ['--dry-run', '--no-git-checks'] : [])
+        'public'
       ],
       {
         cwd: pkgRoot,
