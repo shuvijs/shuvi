@@ -1,6 +1,6 @@
 import invariant from '@shuvi/utils/lib/invariant';
 import { createDefer, Defer } from '@shuvi/utils';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   watch as createWatcher,
@@ -103,57 +103,56 @@ export const getFileBuilder = <C extends {} = {}>(
     return dependencyMap.get(id) as DependencyInfo;
   };
 
-  const initFiles = (
+  const initFiles = async (
     fileOptions: FileOption<any, any>[],
     needWatch: boolean = false
   ) => {
-    fileOptions.forEach(currentFile => {
-      const { id, dependencies } = currentFile;
-      if (currentFile.name) {
-        // rootDir as well as Full path name would not be set until mount
-        currentFile.name = path.resolve(rootDir, currentFile.name);
-      }
-      // create instance
-      if (!files.get(id)) {
-        files.set(id, createInstance(currentFile));
-      }
-      // collect dependencies
-      const currentInfo = getDependencyInfoById(id);
-      if (dependencies && dependencies.length) {
-        dependencies.forEach(dependencyFile => {
-          if (typeof dependencyFile === 'string') {
-            // only collect watching info when needWatch
-            if (needWatch) {
-              const directories: string[] = [];
-              const files: string[] = [];
-              const missing: string[] = [];
-              if (fs.existsSync(dependencyFile)) {
-                if (fs.statSync(dependencyFile).isDirectory()) {
-                  directories.push(dependencyFile);
-                } else {
-                  files.push(dependencyFile);
+    await Promise.all(
+      fileOptions.map(async currentFile => {
+        const { id, dependencies } = currentFile;
+        if (currentFile.name) {
+          // rootDir as well as Full path name would not be set until mount
+          currentFile.name = path.resolve(rootDir, currentFile.name);
+        }
+        // create instance
+        if (!files.get(id)) {
+          files.set(id, createInstance(currentFile));
+        }
+        // collect dependencies
+        const currentInfo = getDependencyInfoById(id);
+        if (dependencies && dependencies.length) {
+          await Promise.all(
+            dependencies.map(async dependencyFile => {
+              if (typeof dependencyFile === 'string') {
+                // only collect watching info when needWatch
+                if (needWatch) {
+                  const directories: string[] = [];
+                  const files: string[] = [];
+                  const missing: string[] = [];
+                  if (await fs.pathExists(dependencyFile)) {
+                    if ((await fs.stat(dependencyFile)).isDirectory()) {
+                      directories.push(dependencyFile);
+                    } else {
+                      files.push(dependencyFile);
+                    }
+                  } else if (dependencyFile) {
+                    missing.push(dependencyFile);
+                  }
+                  watchMap.set(id, { directories, files, missing });
                 }
-              } else if (dependencyFile) {
-                missing.push(dependencyFile);
+              } else {
+                const dependencyId = dependencyFile.id;
+                const currentDependencies = currentInfo.dependencies;
+                currentDependencies.add(dependencyId);
+                const dependents =
+                  getDependencyInfoById(dependencyId).dependents;
+                dependents.add(id);
               }
-              watchMap.set(id, { directories, files, missing });
-            }
-          } else {
-            const dependencyId = dependencyFile.id;
-            const currentDependencies = currentInfo.dependencies;
-            currentDependencies.add(dependencyId);
-            /* if (!currentDependencies.includes(dependencyId)) {
-              currentDependencies.push(dependencyId);
-            } */
-            const dependents = getDependencyInfoById(dependencyId).dependents;
-            dependents.add(id);
-            /* if (!dependents.includes(id)) {
-              dependents.push(id);
-            } */
-          }
-        });
-      }
-    });
+            })
+          );
+        }
+      })
+    );
   };
 
   const addPendingFiles = (
@@ -221,15 +220,16 @@ export const getFileBuilder = <C extends {} = {}>(
       // iterate dependencies to collect pending files
       addPendingFiles(sources, pendingFiles);
     }
-    if (!pendingFiles.size) {
-      return;
-    }
     onBuildStartHandlers.forEach(handler => {
       handler();
     });
     pendingFiles.forEach(file => {
       runBuild(file, pendingFiles, defer);
     });
+    // if no pendingFiles, resolve directly
+    if (!pendingFiles.size) {
+      defer.resolve();
+    }
     await defer.promise;
     onBuildEndHandlers.forEach(handler => {
       handler();
@@ -263,12 +263,12 @@ export const getFileBuilder = <C extends {} = {}>(
 
   const build = async (dir: string = '/') => {
     rootDir = dir;
-    initFiles(fileOptions);
+    await initFiles(fileOptions);
     await buildOnce();
   };
   const watch = async (dir: string = '/') => {
     rootDir = dir;
-    initFiles(fileOptions, true);
+    await initFiles(fileOptions, true);
     await buildOnce();
     addWatchers();
   };

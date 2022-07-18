@@ -53,6 +53,19 @@ describe('fileBuilder build', () => {
       await close();
     });
 
+    test('should run onBuildStart and onBuildEnd after build', async () => {
+      const fileBuilder = getFileBuilder();
+      const { build, close, onBuildStart, onBuildEnd } = fileBuilder;
+      const onBuildStartHandler = jest.fn();
+      onBuildStart(onBuildStartHandler);
+      const onBuildCompleteHandler = jest.fn();
+      onBuildEnd(onBuildCompleteHandler);
+      await build();
+      expect(onBuildStartHandler).toBeCalledTimes(1);
+      expect(onBuildCompleteHandler).toBeCalledTimes(1);
+      await close();
+    });
+
     test('context should work', async () => {
       type Context = { hello: string };
       const context = { hello: 'world' };
