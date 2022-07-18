@@ -3,18 +3,18 @@ import {
   readFileSync,
   readDirSync,
   writeFileSync,
-  copyDirectory,
   resolveFixture,
-  deleteDirectory
+  copySync,
+  emptyDirSync
 } from './helper/index';
 import { reactive } from '@vue/reactivity';
 
 const prepare = () => {
-  copyDirectory(resolveFixture('_watch'), resolveFixture('watch'));
+  copySync(resolveFixture('_watch'), resolveFixture('watch'));
 };
 
 const cleanUp = () => {
-  deleteDirectory(resolveFixture('watch'));
+  emptyDirSync(resolveFixture('watch'));
 };
 
 describe('fileBuilder watch', () => {
@@ -32,8 +32,7 @@ describe('fileBuilder watch', () => {
   describe.skip('watch with reactive', () => {
     test('should update file after changing state', done => {
       const fileBuilder = getFileBuilder();
-      const { addFile, watch, getContent, close, onBuildComplete } =
-        fileBuilder;
+      const { addFile, watch, getContent, close, onBuildEnd } = fileBuilder;
       const state = reactive({ content: 'a' });
       const test = defineFile({
         name: 'test',
@@ -47,7 +46,7 @@ describe('fileBuilder watch', () => {
         expect(files).toEqual(['/test']);
         expect(readFileSync('/test')).toEqual('a');
         expect(getContent(test)).toEqual('a');
-        onBuildComplete(() => {
+        onBuildEnd(() => {
           expect(readFileSync('/test')).toEqual('b');
           expect(getContent(test)).toEqual('b');
           close().then(() => {
@@ -64,7 +63,7 @@ describe('fileBuilder watch', () => {
       const fileBuilder = getFileBuilder();
       const rootDir = resolveFixture('watch');
       const file = (name: string) => resolveFixture('watch', name);
-      const { addFile, getContent, watch, onBuild, onBuildComplete, close } =
+      const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
         fileBuilder;
       const src = file('src');
       const a = file('a');
@@ -105,14 +104,14 @@ describe('fileBuilder watch', () => {
         };
         checkCurrent();
 
-        const onBuildHandler = jest.fn(() => {
+        const onBuildStartHandler = jest.fn(() => {
           checkCurrent();
         });
 
-        onBuild(onBuildHandler);
+        onBuildStart(onBuildStartHandler);
 
-        onBuildComplete(() => {
-          expect(onBuildHandler).toBeCalledTimes(1);
+        onBuildEnd(() => {
+          expect(onBuildStartHandler).toBeCalledTimes(1);
           const newFiles = readDirSync(rootDir);
           expect(newFiles).toEqual(['a', 'b', 'c', 'src']);
           expect(readFileSync(a)).toEqual('aa');

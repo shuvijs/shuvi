@@ -49,19 +49,21 @@ export const defineFile: DefineFile = <T = string, C = any>(
 type EventHandler = () => void;
 type EventCanceler = () => void;
 
+const WATCH_AGGREGATE_TIMEOUT = 100;
+
 interface FileBuilder<C extends {}> {
-  addFile: (...newFileOption: FileOption<any>[]) => void;
+  addFile: (...newFileOption: FileOption<any, C>[]) => void;
   build: (dir?: string) => Promise<void>;
   watch: (dir?: string) => Promise<void>;
   close: () => Promise<void>;
   getContent: <T>(fileOption: FileOption<T>) => T;
-  onBuild: (eventHandler: EventHandler) => EventCanceler;
-  onBuildComplete: (eventHandler: EventHandler) => EventCanceler;
+  onBuildStart: (eventHandler: EventHandler) => EventCanceler;
+  onBuildEnd: (eventHandler: EventHandler) => EventCanceler;
 }
 
 export type DependencyInfo = {
-  dependencies: FileId[];
-  dependents: FileId[];
+  dependencies: Set<FileId>;
+  dependents: Set<FileId>;
 };
 
 export const getFileBuilder = <C extends {} = {}>(
@@ -76,10 +78,10 @@ export const getFileBuilder = <C extends {} = {}>(
   const files: Map<FileId, FileInternalInstance<any, any>> = new Map();
   let currentDefer: Defer;
 
-  const onBuildHandlers = new Set<EventHandler>();
-  const onBuildCompleteHandlers = new Set<EventHandler>();
+  const onBuildStartHandlers = new Set<EventHandler>();
+  const onBuildEndHandlers = new Set<EventHandler>();
 
-  const addFile = (...newFileOption: FileOption<any>[]) => {
+  const addFile = (...newFileOption: FileOption<any, C>[]) => {
     fileOptions.push(...newFileOption.map(option => ({ ...option })));
   };
   const createInstance = (
@@ -95,8 +97,8 @@ export const getFileBuilder = <C extends {} = {}>(
     const info = dependencyMap.get(id);
     if (info) return info;
     dependencyMap.set(id, {
-      dependencies: [],
-      dependents: []
+      dependencies: new Set(),
+      dependents: new Set()
     });
     return dependencyMap.get(id) as DependencyInfo;
   };
@@ -139,20 +141,25 @@ export const getFileBuilder = <C extends {} = {}>(
           } else {
             const dependencyId = dependencyFile.id;
             const currentDependencies = currentInfo.dependencies;
-            if (!currentDependencies.includes(dependencyId)) {
+            currentDependencies.add(dependencyId);
+            /* if (!currentDependencies.includes(dependencyId)) {
               currentDependencies.push(dependencyId);
-            }
+            } */
             const dependents = getDependencyInfoById(dependencyId).dependents;
-            if (!dependents.includes(id)) {
+            dependents.add(id);
+            /* if (!dependents.includes(id)) {
               dependents.push(id);
-            }
+            } */
           }
         });
       }
     });
   };
 
-  const addPendingFiles = (fileIds: string[], pendingFileList: Set<string>) => {
+  const addPendingFiles = (
+    fileIds: Set<FileId>,
+    pendingFileList: Set<string>
+  ) => {
     fileIds.forEach(id => {
       pendingFileList.add(id);
       const dependencyInfo = getDependencyInfoById(id);
@@ -167,7 +174,7 @@ export const getFileBuilder = <C extends {} = {}>(
   ): boolean => {
     const dependencyInfo = getDependencyInfoById(id);
     const { dependencies } = dependencyInfo;
-    if (!dependencies.length) return true;
+    if (!dependencies.size) return true;
     for (const dep of dependencies) {
       if (pendingFileList.has(dep)) {
         return false;
@@ -203,7 +210,7 @@ export const getFileBuilder = <C extends {} = {}>(
     });
   };
 
-  const buildOnce = async (sources?: FileId[]) => {
+  const buildOnce = async (sources?: Set<FileId>) => {
     const defer = createDefer<any>();
     currentDefer = defer;
     // files waiting to be built
@@ -217,14 +224,14 @@ export const getFileBuilder = <C extends {} = {}>(
     if (!pendingFiles.size) {
       return;
     }
-    onBuildHandlers.forEach(handler => {
+    onBuildStartHandlers.forEach(handler => {
       handler();
     });
     pendingFiles.forEach(file => {
       runBuild(file, pendingFiles, defer);
     });
     await defer.promise;
-    onBuildCompleteHandlers.forEach(handler => {
+    onBuildEndHandlers.forEach(handler => {
       handler();
     });
   };
@@ -242,7 +249,7 @@ export const getFileBuilder = <C extends {} = {}>(
   let currentTimer: NodeJS.Timeout | undefined;
   let currentChangedSources = new Set<FileId>();
   const buildOnceHandler = () => {
-    buildOnce(Array.from(currentChangedSources));
+    buildOnce(currentChangedSources);
     currentChangedSources.clear();
     currentTimer = undefined;
   };
@@ -251,7 +258,7 @@ export const getFileBuilder = <C extends {} = {}>(
     if (currentTimer) {
       clearTimeout(currentTimer);
     }
-    currentTimer = setTimeout(buildOnceHandler, 100);
+    currentTimer = setTimeout(buildOnceHandler, WATCH_AGGREGATE_TIMEOUT);
   };
 
   const build = async (dir: string = '/') => {
@@ -286,16 +293,16 @@ export const getFileBuilder = <C extends {} = {}>(
   const getContent = <T>(fileOption: FileOption<T>) => {
     return files.get(fileOption.id)?.fileContent;
   };
-  const onBuild = (eventHandler: EventHandler) => {
-    onBuildHandlers.add(eventHandler);
+  const onBuildStart = (eventHandler: EventHandler) => {
+    onBuildStartHandlers.add(eventHandler);
     return () => {
-      onBuildHandlers.delete(eventHandler);
+      onBuildStartHandlers.delete(eventHandler);
     };
   };
-  const onBuildComplete = (eventHandler: EventHandler) => {
-    onBuildCompleteHandlers.add(eventHandler);
+  const onBuildEnd = (eventHandler: EventHandler) => {
+    onBuildEndHandlers.add(eventHandler);
     return () => {
-      onBuildCompleteHandlers.delete(eventHandler);
+      onBuildEndHandlers.delete(eventHandler);
     };
   };
   return {
@@ -304,8 +311,8 @@ export const getFileBuilder = <C extends {} = {}>(
     watch,
     close,
     getContent,
-    onBuild,
-    onBuildComplete
+    onBuildStart,
+    onBuildEnd
   };
 };
 

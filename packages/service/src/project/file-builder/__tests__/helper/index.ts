@@ -1,7 +1,8 @@
-import { execSync } from 'child_process';
 import { vol } from 'memfs';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
+
+export { copySync, emptyDirSync } from 'fs-extra';
 
 export function resetFs() {
   vol.reset();
@@ -25,12 +26,4 @@ export function sleep(timeout: number) {
 
 export function resolveFixture(...names: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...names);
-}
-
-export function copyDirectory(source: string, target: string) {
-  execSync(`cp -R ${source} ${target}`);
-}
-
-export function deleteDirectory(source: string) {
-  execSync(`rm -rf ${source}`);
 }

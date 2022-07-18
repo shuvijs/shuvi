@@ -11,7 +11,7 @@ describe('fileBuilder build', () => {
   describe('build without dependencies, basic scene', () => {
     test('should create file and use getContent after build', async () => {
       const fileBuilder = getFileBuilder();
-      const { addFile, build, getContent, close, onBuild, onBuildComplete } =
+      const { addFile, build, getContent, close, onBuildStart, onBuildEnd } =
         fileBuilder;
       const a = defineFile({
         name: 'a',
@@ -33,15 +33,15 @@ describe('fileBuilder build', () => {
         }
       });
       addFile(a, b, v);
-      const onBuildHandler = jest.fn(() => {
+      const onBuildStartHandler = jest.fn(() => {
         const files = readDirSync('/');
         expect(files).toEqual([]);
       });
-      onBuild(onBuildHandler);
+      onBuildStart(onBuildStartHandler);
       const onBuildCompleteHandler = jest.fn();
-      onBuildComplete(onBuildCompleteHandler);
+      onBuildEnd(onBuildCompleteHandler);
       await build();
-      expect(onBuildHandler).toBeCalledTimes(1);
+      expect(onBuildStartHandler).toBeCalledTimes(1);
       expect(onBuildCompleteHandler).toBeCalledTimes(1);
       const files = readDirSync('/');
       expect(files).toEqual(['a', 'b']);
@@ -115,9 +115,9 @@ describe('fileBuilder build', () => {
     test('should create files in the order of dependencies', async () => {
       const logs: string[] = [];
       const fileBuilder = getFileBuilder();
-      const { addFile, build, onBuildComplete } = fileBuilder;
+      const { addFile, build, onBuildEnd } = fileBuilder;
       const onBuildCompleteCallBack = jest.fn();
-      onBuildComplete(onBuildCompleteCallBack);
+      onBuildEnd(onBuildCompleteCallBack);
       const A = defineFile({
         name: 'a',
         content() {
