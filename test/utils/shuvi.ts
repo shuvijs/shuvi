@@ -7,7 +7,7 @@ export async function build(options: IBuildOptions = {}) {
 }
 
 export function shuvi(
-  command: 'dev' | 'build' | 'serve',
+  command: 'dev' | 'build' | 'serve' | 'inspect' | string,
   args: string[],
   options: SpawnOptions = {}
 ): ChildProcess {
