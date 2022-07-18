@@ -34,7 +34,6 @@ export function connectHMR(options: {
 
   let timer = setInterval(function () {
     if (Date.now() - lastActivity > options.timeout) {
-      console.log('reConnect!');
       handleDisconnect();
     }
   }, options.timeout / 2);
@@ -57,7 +56,6 @@ export function connectHMR(options: {
   }
 
   function handleMessage(event: any) {
-    console.log({ lastActivity });
     lastActivity = Date.now();
 
     eventCallbacks.forEach(cb => {
