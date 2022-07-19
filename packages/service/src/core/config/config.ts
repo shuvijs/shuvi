@@ -43,15 +43,16 @@ export const createDefaultConfig: () => Config = () => ({
   apiConfig: {
     bodyParser: true
   },
+  conventionRoutes: {},
+  typescript: {
+    ignoreBuildErrors: false
+  },
   experimental: {
     parcelCss: false,
     loader: {
       sequential: false
     },
     preBundle: false
-  },
-  typescript: {
-    ignoreBuildErrors: false
   }
 });
 

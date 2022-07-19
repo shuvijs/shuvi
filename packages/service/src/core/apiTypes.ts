@@ -160,27 +160,26 @@ export interface CustomConfig {}
 
 export interface Config extends CustomConfig {
   outputPath?: string;
+  plugins?: IPluginConfig[];
+  presets?: IPresetConfig[];
+  proxy?: any;
   publicDir?: string;
   publicPath?: string;
-  env?: Record<string, string>;
-  router?: IRouterConfig;
-  routes?: IUserRouteConfig[]; // generate by files what under src/pages or user defined
-  middlewareRoutes?: IMiddlewareRouteConfig[];
-  apiRoutes?: IApiRouteConfig[]; // generate by files what under src/apis or user defined
-  ignoredRouteFiles?: string[];
-  apiConfig?: IApiConfig;
-  runtimeConfig?: IRuntimeConfig;
   publicRuntimeConfig?: IRuntimeConfig;
+  runtimeConfig?: IRuntimeConfig;
   typescript?: { ignoreBuildErrors?: boolean };
   /**
    * specifically target for `platform-web`
    */
-  target?: 'spa' | 'ssr';
   platform?: IPlatformConfig;
-  proxy?: any;
-  plugins?: IPluginConfig[];
-  presets?: IPresetConfig[];
-  analyze?: boolean;
+  target?: 'spa' | 'ssr';
+  router?: IRouterConfig;
+  routes?: IUserRouteConfig[]; // generate by files what under src/pages or user defined
+  middlewareRoutes?: IMiddlewareRouteConfig[];
+  apiRoutes?: IApiRouteConfig[]; // generate by files what under src/apis or user defined
+  conventionRoutes?: {
+    exclude?: string[];
+  };
   experimental?: {
     parcelCss?: boolean;
     preBundle?: boolean;
