@@ -19,7 +19,9 @@ export default (options = {}) => {
   devClient = connect({
     ...options,
     launchEditorEndpoint: DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
-    path: DEV_HOT_MIDDLEWARE_PATH
+    path: DEV_HOT_MIDDLEWARE_PATH,
+    location,
+    WebSocket
   });
 
   devClient.subscribeToHmrEvent((event: Event) => {

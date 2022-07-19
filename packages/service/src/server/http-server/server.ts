@@ -27,6 +27,7 @@ export class Server {
   port: number | undefined;
   private _server: http.Server | null = null;
   private _router: Router;
+  private _upgradeListener: ((...args: any[]) => void) | null = null;
 
   constructor() {
     this._router = this._setupRouter();
@@ -55,10 +56,14 @@ export class Server {
     this.port = port;
 
     const srv = (this._server = http.createServer(this.getRequestHandler()));
+
     await new Promise((resolve, reject) => {
       // This code catches EADDRINUSE error if the port is already in use
       srv.on('error', reject);
       srv.on('listening', resolve);
+      if (this._upgradeListener) {
+        srv.on('upgrade', this._upgradeListener);
+      }
       srv.listen(port, hostname);
     });
   }
@@ -79,6 +84,10 @@ export class Server {
         resolve();
       });
     });
+  }
+
+  onUpgrade(listener: (...args: any[]) => void) {
+    this._upgradeListener = listener;
   }
 
   private _setupRouter(): Router {

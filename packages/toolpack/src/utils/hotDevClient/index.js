@@ -29,6 +29,8 @@ import * as ErrorOverlay from 'react-error-overlay';
 import stripAnsi from 'strip-ansi';
 import formatWebpackMessages from '../formatWebpackMessages';
 import { getEventSourceWrapper } from './eventsource';
+import { connectHMR, addMessageListener, sendMessage } from './websocket';
+import { DEFAULT_TIMEOUT_MS } from '../../constants';
 
 // This alternative WebpackDevServer combines the functionality of:
 // https://github.com/webpack/webpack-dev-server/blob/webpack-1/client/index.js
@@ -88,9 +90,12 @@ export default function connect(options) {
     });
   }
 
-  getEventSourceWrapper(options).addMessageListener(event => {
+  connectHMR({ ...options, log: true });
+
+  addMessageListener(event => {
     // This is the heartbeat event
-    if (event.data === '\uD83D\uDC93') {
+    const obj = JSON.parse(event.data);
+    if (obj.action === 'pong') {
       return;
     }
     try {
@@ -99,6 +104,10 @@ export default function connect(options) {
       console.warn('Invalid HMR message: ' + event.data + '\n' + ex);
     }
   });
+
+  setInterval(() => {
+    sendMessage(JSON.stringify({ event: 'ping' }));
+  }, DEFAULT_TIMEOUT_MS / 2);
 
   return {
     subscribeToHmrEvent(handler) {
@@ -124,9 +133,16 @@ function clearOutdatedErrors() {
   }
 }
 
-function afterApplyUpdate() {
+let startLatency = undefined;
+
+function onFastRefresh() {
   tryDismissErrorOverlay();
-  console.log('[Fast Refresh] Done.');
+
+  if (startLatency) {
+    const endLatency = Date.now();
+    const latency = endLatency - startLatency;
+    console.log(`[Fast Refresh] done in ${latency}ms`);
+  }
 }
 
 // Successful compilation.
@@ -142,7 +158,7 @@ function handleSuccess() {
     tryApplyUpdates(function onHotUpdateSuccess() {
       // Only dismiss it when we're sure it's a hot update.
       // Otherwise it would flicker right before the reload.
-      afterApplyUpdate();
+      onFastRefresh();
     });
   }
 }
@@ -180,7 +196,7 @@ function handleWarnings(warnings) {
       // Only dismiss it when we're sure it's a hot update.
       // Otherwise it would flicker right before the reload.
       tryDismissErrorOverlay();
-      afterApplyUpdate();
+      onFastRefresh();
     });
   }
 }
@@ -224,8 +240,10 @@ function handleAvailableHash(hash) {
 // Handle messages from the server.
 function processMessage(e) {
   const obj = JSON.parse(e.data);
+
   switch (obj.action) {
     case 'building': {
+      startLatency = Date.now();
       console.log(
         '[Fast Refresh] bundle ' +
           (obj.name ? "'" + obj.name + "' " : '') +
@@ -250,8 +268,7 @@ function processMessage(e) {
         return handleWarnings(warnings);
       }
 
-      handleSuccess();
-      break;
+      return handleSuccess();
     }
     case 'warnings':
       handleWarnings(obj.data);
