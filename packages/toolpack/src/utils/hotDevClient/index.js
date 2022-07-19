@@ -141,13 +141,6 @@ function onFastRefresh() {
     const endLatency = Date.now();
     const latency = endLatency - startLatency;
     console.log(`[Fast Refresh] done in ${latency}ms`);
-    sendMessage(
-      JSON.stringify({
-        event: 'client-hmr-latency',
-        startTime: startLatency,
-        endTime: endLatency
-      })
-    );
   }
 }
 
@@ -266,31 +259,13 @@ function processMessage(e) {
       const { errors, warnings } = obj;
       const hasErrors = Boolean(errors && errors.length);
       if (hasErrors) {
-        sendMessage(
-          JSON.stringify({
-            event: 'client-error',
-            errorCount: errors.length
-          })
-        );
         return handleErrors(errors);
       }
 
       const hasWarnings = Boolean(warnings && warnings.length);
       if (hasWarnings) {
-        sendMessage(
-          JSON.stringify({
-            event: 'client-warning',
-            warningCount: warnings.length
-          })
-        );
         return handleWarnings(warnings);
       }
-
-      sendMessage(
-        JSON.stringify({
-          event: 'client-success'
-        })
-      );
 
       return handleSuccess();
     }
