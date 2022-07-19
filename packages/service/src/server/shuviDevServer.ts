@@ -33,7 +33,6 @@ const getPublicDirMiddleware = (
 };
 
 export class ShuviDevServer extends ShuviServer {
-  private _addedUpgradeListener: boolean = false;
   async init() {
     const { _serverContext: context, _server: server } = this;
 
@@ -73,17 +72,17 @@ export class ShuviDevServer extends ShuviServer {
 
     // setup upgrade listener eagerly when we can otherwise
     // it will be done on the first request via req.socket.server
-    this.setupWebSocketHandler(server, devMiddleware);
+    this._setupWebSocketHandler(server, devMiddleware);
   }
 
-  setupWebSocketHandler = (server: Server, devMiddleware: DevMiddleware) => {
-    if (!this._addedUpgradeListener) {
-      this._addedUpgradeListener = true;
-      server.onUpgrade((req, socket, head) => {
-        if (req.url?.startsWith(DEV_HOT_MIDDLEWARE_PATH)) {
-          devMiddleware.onHMR(req, socket, head);
-        }
-      });
-    }
+  private _setupWebSocketHandler = (
+    server: Server,
+    devMiddleware: DevMiddleware
+  ) => {
+    server.onUpgrade((req, socket, head) => {
+      if (req.url?.startsWith(DEV_HOT_MIDDLEWARE_PATH)) {
+        devMiddleware.onHMR(req, socket, head);
+      }
+    });
   };
 }
