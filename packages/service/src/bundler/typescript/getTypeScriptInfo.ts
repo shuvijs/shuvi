@@ -6,10 +6,15 @@ import { resolve } from '@shuvi/utils/lib/resolve';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { TsConfig, TypeScriptModule } from './types';
 
-interface PackageDep {
+export interface PackageDep {
   file: string;
   pkg: string;
 }
+
+export type CheckedDependenciesResult = {
+  resovled: Map<string, string>; // <pkg, resolvePath>
+  missing: PackageDep[];
+};
 
 const requiredPackages = [
   { file: 'typescript', pkg: 'typescript' },
@@ -17,49 +22,10 @@ const requiredPackages = [
   { file: '@types/node/index.d.ts', pkg: '@types/node' }
 ];
 
-function printMissingPackagesError(pkgs: PackageDep[]) {
-  const packagesHuman = pkgs
-    .map(
-      (p, index, { length }) =>
-        (index > 0
-          ? index === length - 1
-            ? length > 2
-              ? ', and '
-              : ' and '
-            : ', '
-          : '') + p.pkg
-    )
-    .join('');
-  const packagesCli = pkgs.map(p => p.pkg).join(' ');
-
-  console.error(
-    chalk.bold.red(
-      `It looks like you're trying to use TypeScript but do not have the required package(s) installed.`
-    )
-  );
-  console.error();
-  console.error(
-    chalk.bold(`Please install ${chalk.bold(packagesHuman)} by running:`)
-  );
-  console.error();
-  console.error(
-    `\t${chalk.bold.cyan('npm install --save-dev' + ' ' + packagesCli)}`
-  );
-  console.error();
-  console.error(
-    chalk.bold(
-      'If you are not trying to use TypeScript, please remove the ' +
-        chalk.cyan('tsconfig.json') +
-        ' file from your package root (and any TypeScript files).'
-    )
-  );
-  console.error();
-}
-
 function checkDependencies(
   dir: string,
   deps: PackageDep[]
-): Map<string, string> {
+): CheckedDependenciesResult {
   let resolutions = new Map<string, string>();
 
   const missingPackages = deps.filter(p => {
@@ -71,11 +37,10 @@ function checkDependencies(
     }
   });
 
-  if (missingPackages.length) {
-    printMissingPackagesError(missingPackages);
-  }
-
-  return resolutions;
+  return {
+    resovled: resolutions,
+    missing: missingPackages
+  };
 }
 
 export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {
@@ -87,11 +52,10 @@ export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {
   return typescriptFiles.length > 0;
 }
 
-export function getTypeScriptPath(projectDir: string): string | undefined {
-  let typeScriptPath: string | undefined;
-  const deps = checkDependencies(projectDir, requiredPackages);
-  typeScriptPath = deps.get('typescript');
-  return typeScriptPath;
+export function checkNecessarytDeps(
+  projectDir: string
+): CheckedDependenciesResult {
+  return checkDependencies(projectDir, requiredPackages);
 }
 
 export async function hasTsConfig(tsConfigPath: string): Promise<boolean> {
@@ -101,7 +65,8 @@ export async function hasTsConfig(tsConfigPath: string): Promise<boolean> {
     const tsConfig = await readFile(tsConfigPath, 'utf8').then(val =>
       val.trim()
     );
-    return tsConfig === '' || tsConfig === '{}';
+    const isEmpty = tsConfig === '' || tsConfig === '{}';
+    return !isEmpty;
   }
 
   return false;
