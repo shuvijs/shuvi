@@ -25,13 +25,13 @@ const prepareReq: IRequestHandlerWithNext = (req, res, next) => {
 export class Server {
   hostname: string | undefined;
   port: number | undefined;
-  server: http.Server;
+  private _server: http.Server | null = null;
   private _router: Router;
+  private _upgradeListener: ((...args: any[]) => void) | null = null;
 
   constructor() {
     this._router = this._setupRouter();
     this._handleRequest = this._handleRequest.bind(this);
-    this.server = http.createServer(this.getRequestHandler());
   }
 
   use(fn: IMiddlewareHandler): this;
@@ -46,27 +46,36 @@ export class Server {
   }
 
   async listen(port: number, hostname?: string): Promise<void> {
+    if (this._server) {
+      return;
+    }
+
     await this._checkPort(port);
 
     this.hostname = hostname;
     this.port = port;
 
+    const srv = (this._server = http.createServer(this.getRequestHandler()));
+
     await new Promise((resolve, reject) => {
       // This code catches EADDRINUSE error if the port is already in use
-      this.server.on('error', reject);
-      this.server.on('listening', resolve);
-      this.server.listen(port, hostname);
+      srv.on('error', reject);
+      srv.on('listening', resolve);
+      if (this._upgradeListener) {
+        srv.on('upgrade', this._upgradeListener);
+      }
+      srv.listen(port, hostname);
     });
   }
 
   close() {
     return new Promise<void>((resolve, reject) => {
-      if (!this.server) {
+      if (!this._server) {
         resolve();
         return;
       }
 
-      this.server.close(err => {
+      this._server.close(err => {
         if (err) {
           reject(err);
           return;
@@ -75,6 +84,10 @@ export class Server {
         resolve();
       });
     });
+  }
+
+  onUpgrade(listener: (...args: any[]) => void) {
+    this._upgradeListener = listener;
   }
 
   private _setupRouter(): Router {

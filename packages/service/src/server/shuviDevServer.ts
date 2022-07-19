@@ -92,7 +92,7 @@ export class ShuviDevServer extends ShuviServer {
           `Invalid IncomingMessage received, make sure http.createServer is being used to handle requests.`
         );
       } else {
-        server.server.on('upgrade', (req, socket, head) => {
+        server.onUpgrade((req, socket, head) => {
           let assetPrefix = (
             this._serverContext.getAssetPublicUrl() || ''
           ).replace(/^\/+/, '');
