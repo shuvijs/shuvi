@@ -28,7 +28,6 @@ export async function getDevMiddleware(
   const bundler = await getBundler(serverPluginContext);
   let compiler;
   let dynamicDll: DynamicDll | null = null;
-  let webpackHotMiddleware: WebpackHotMiddleware;
 
   if (serverPluginContext.config.experimental.preBundle) {
     dynamicDll = new DynamicDll({
@@ -56,7 +55,7 @@ export async function getDevMiddleware(
     writeToDisk: true
   });
 
-  webpackHotMiddleware = new WebpackHotMiddleware({
+  const webpackHotMiddleware = new WebpackHotMiddleware({
     compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!,
     path: DEV_HOT_MIDDLEWARE_PATH
   });
@@ -96,7 +95,7 @@ export async function getDevMiddleware(
 
   const onHMR = (req: IncomingMessage, _res: any, head: Buffer) => {
     wsServer.handleUpgrade(req, req.socket, head, client => {
-      webpackHotMiddleware?.onHMR(client);
+      webpackHotMiddleware.onHMR(client);
     });
   };
 
