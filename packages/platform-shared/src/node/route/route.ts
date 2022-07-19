@@ -139,13 +139,13 @@ export const getRawRoutesFromDir = async (
 
 export const getPageRoutes = async (
   dirname: string,
-  ignoredRouteFiles?: string[]
+  excludes?: string[]
 ): Promise<PageRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname, ignoredRouteFiles);
+  } = await getRawRoutesFromDir(dirname, excludes);
 
   const _getPageRoutes = (
     rawRoutes: RawRoute[],
@@ -198,7 +198,7 @@ export const getPageRoutes = async (
 
 export const getApiRoutes = async (
   dir: string,
-  ignoredRouteFiles?: string[]
+  excludes?: string[]
 ): Promise<ApiRoutes> => {
   const getConflictWaring = (
     rawRoute: RawRoute,
@@ -215,7 +215,7 @@ export const getApiRoutes = async (
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dir, ignoredRouteFiles);
+  } = await getRawRoutesFromDir(dir, excludes);
 
   const _getApiRoutes = (
     rawRoutes: RawRoute[],
@@ -270,13 +270,13 @@ export const getApiRoutes = async (
 
 export const getMiddlewareRoutes = async (
   dirname: string,
-  ignoredRouteFiles?: string[]
+  excludes?: string[]
 ): Promise<MiddlewareRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname, ignoredRouteFiles);
+  } = await getRawRoutesFromDir(dirname, excludes);
 
   const _getMiddlewareRoutes = (
     rawRoutes: RawRoute[],
