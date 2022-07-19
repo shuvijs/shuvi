@@ -8,11 +8,11 @@ import {
 import {
   getAllowFilesAndDirs,
   hasAllowFiles,
+  isIgnore,
   normalize,
   sortRoutes,
   SupportFileType
 } from './helpers';
-import minimatch from 'minimatch';
 
 export type IPageRouteConfig = IUserRouteConfig;
 
@@ -91,9 +91,7 @@ export const getRawRoutesFromDir = async (
       const relativePath = relative(rootDirname, filepath);
 
       if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles?.length) {
-        const needIgnore = ignoreRouteFiles.some(pattern => {
-          return minimatch(relativePath, pattern);
-        });
+        const needIgnore = isIgnore(ignoreRouteFiles, relativePath);
 
         if (needIgnore) {
           continue;
