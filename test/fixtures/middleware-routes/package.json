@@ -1,5 +1,5 @@
 {
-  "name": "fixture-server-middleware", 
+  "name": "fixture-server-middleware",
   "dependencies": {
     "shuvi": "workspace:*"
   }
