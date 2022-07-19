@@ -1,4 +1,5 @@
 import {
+  createSyncWaterfallHook,
   createAsyncSeriesWaterfallHook,
   createHookManager,
   createAsyncParallelHook,
@@ -19,8 +20,9 @@ import {
   AddRuntimeFileUtils,
   WebpackChainType
 } from './lifecycleTypes';
-import { IPluginContext } from './apiTypes';
+import { Config, IPluginContext } from './apiTypes';
 
+const extendConfig = createSyncWaterfallHook<Config>();
 const afterInit = createAsyncParallelHook<void>();
 const afterBuild = createAsyncParallelHook<void>();
 const afterDestroy = createAsyncParallelHook<void>();
@@ -55,6 +57,7 @@ const addRuntimeService = createAsyncParallelHook<
 >();
 
 const builtinPluginHooks = {
+  extendConfig,
   afterInit,
   afterBuild,
   afterDestroy,

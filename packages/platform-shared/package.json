@@ -12,7 +12,6 @@
   "files": [
     "lib",
     "esm",
-    "types",
     "template",
     "shuvi-app-extensions.d.ts"
   ],

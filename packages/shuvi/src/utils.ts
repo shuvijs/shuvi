@@ -1,11 +1,12 @@
 import { existsSync } from 'fs';
 import * as path from 'path';
 import { CommanderStatic } from 'commander';
-import { Config, IPlatform } from '@shuvi/service';
+import { Config, IPlatform, NormalizedConfig } from '@shuvi/service';
 import {
   loadConfig,
   mergeConfig,
-  getFullUserConfig
+  getFullUserConfig,
+  resolveConfig
 } from '@shuvi/service/lib/core/config';
 //@ts-ignore
 import pkgInfo from '../package.json';
@@ -43,11 +44,18 @@ export type OptionsKeyMap = Record<
   string | ((config: any, optionValue: any) => void)
 >;
 
+function extendConfig(config: Required<Config>): void {
+  config.ssr = 'ssr' in config ? config.ssr : true;
+  if (config.router.history === 'auto') {
+    config.router.history = config.ssr ? 'browser' : 'hash';
+  }
+}
+
 export async function getConfigFromCli(
   cwd: string,
   cliOptions: Record<string, any>,
   cliOptionsKeyMap: OptionsKeyMap = {}
-): Promise<Required<Config>> {
+): Promise<Required<NormalizedConfig>> {
   const configFilePath =
     cliOptions.config && path.resolve(cwd, cliOptions.config);
   const configFromFile = await loadConfig({
@@ -59,7 +67,9 @@ export async function getConfigFromCli(
     cliOptionsKeyMap
   );
   const configFromCli = mergeConfig(configFromFile, configFromCliOtherOptions);
-  return getFullUserConfig(configFromCli);
+  const userConfig = getFullUserConfig(configFromCli);
+  extendConfig(userConfig);
+  return resolveConfig(getFullUserConfig(configFromCli));
 }
 
 export function getConfigFromCliOtherOptions(

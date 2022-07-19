@@ -2,7 +2,7 @@ import { spawn, sync } from 'cross-spawn';
 import { SpawnOptions, ChildProcess, SpawnSyncReturns } from 'child_process';
 import { IBuildOptions, build as shuviBuild } from 'shuvi/lib/tasks/build';
 
-export async function build(options: IBuildOptions = {}) {
+export async function build(options: IBuildOptions) {
   return await shuviBuild(options);
 }
 

@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import {
   getApi,
-  Config,
+  NormalizedConfig,
   IPluginContext,
   IPlatform,
   getBundler,
@@ -12,7 +12,7 @@ import {
 
 export interface IBuildOptions {
   cwd?: string;
-  config?: Config;
+  config: NormalizedConfig;
   platform?: IPlatform;
   target?: 'spa' | 'ssr';
 }
@@ -62,7 +62,7 @@ export async function build(options: IBuildOptions) {
     ...options
   };
   // target `spa` is an alias for `web/react/spa`
-  const config = opts.config || {};
+  const config = opts.config;
   if (opts.target === 'spa') {
     config.platform = {
       name: 'web',
