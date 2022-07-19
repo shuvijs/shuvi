@@ -31,7 +31,7 @@ const ServiceModes: IShuviMode[] = ['development', 'production'];
 interface IApiOPtions {
   cwd: string;
   mode: IShuviMode;
-  config?: NormalizedConfig;
+  config: NormalizedConfig;
   phase: IPhase;
   platform?: IPlatform;
 }
@@ -63,7 +63,7 @@ class Api {
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._config = config!;
+    this._config = config;
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder({
@@ -329,7 +329,9 @@ class Api {
 
 export { Api };
 
-export async function getApi(options: Partial<IApiOPtions>): Promise<Api> {
+export async function getApi(
+  options: Partial<Omit<IApiOPtions, 'config'>> & Pick<IApiOPtions, 'config'>
+): Promise<Api> {
   const cwd = path.resolve(options.cwd || '.');
   let mode = options.mode;
   if (ServiceModes.includes((mode || process.env.NODE_ENV) as any)) {
