@@ -30,6 +30,7 @@ import stripAnsi from 'strip-ansi';
 import formatWebpackMessages from '../formatWebpackMessages';
 import { getEventSourceWrapper } from './eventsource';
 import { connectHMR, addMessageListener, sendMessage } from './websocket';
+import { DEFAULT_TIMEOUT_MS } from '../../constants';
 
 // This alternative WebpackDevServer combines the functionality of:
 // https://github.com/webpack/webpack-dev-server/blob/webpack-1/client/index.js
@@ -106,7 +107,7 @@ export default function connect(options) {
 
   setInterval(() => {
     sendMessage(JSON.stringify({ event: 'ping' }));
-  }, 2500);
+  }, DEFAULT_TIMEOUT_MS / 2);
 
   return {
     subscribeToHmrEvent(handler) {

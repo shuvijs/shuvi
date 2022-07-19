@@ -1,3 +1,5 @@
+import { DEFAULT_TIMEOUT_MS } from '../../constants';
+
 let source: any;
 const eventCallbacks: ((event: any) => void)[] = [];
 let lastActivity = Date.now();
@@ -27,7 +29,7 @@ export function connectHMR(options: {
   WebSocket: any;
 }) {
   if (!options.timeout) {
-    options.timeout = 5 * 1000;
+    options.timeout = DEFAULT_TIMEOUT_MS;
   }
 
   init();
