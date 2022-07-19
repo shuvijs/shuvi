@@ -90,7 +90,6 @@ importers:
       '@shuvi/toolpack': 1.0.0-rc.1
       '@shuvi/utils': 1.0.0-rc.1
       '@types/minimatch': 3.0.5
-      minimatch: 5.1.0
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
@@ -101,7 +100,6 @@ importers:
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
-      minimatch: 5.1.0
       redux: 4.1.2
     devDependencies:
       '@types/minimatch': 3.0.5
@@ -697,11 +695,13 @@ importers:
       '@shuvi/service': workspace:*
       '@shuvi/shared': workspace:*
       '@shuvi/utils': workspace:*
+      '@types/react-test-renderer': 16.9.2
       shuvi: workspace:*
     devDependencies:
       '@shuvi/service': link:../../packages/service
       '@shuvi/shared': link:../../packages/shared
       '@shuvi/utils': link:../../packages/utils
+      '@types/react-test-renderer': 16.9.2
       shuvi: link:../../packages/shuvi
 
 packages:
@@ -3152,6 +3152,12 @@ packages:
       redux: 4.1.2
     dev: false
 
+  /@types/react-test-renderer/16.9.2:
+    resolution: {integrity: sha512-4eJr1JFLIAlWhzDkBCkhrOIWOvOxcCAfQh+jiKg7l/nNZcCIL2MHl2dZhogIFKyHzedVWHaVP1Yydq/Ruu4agw==}
+    dependencies:
+      '@types/react': 18.0.9
+    dev: true
+
   /@types/react-test-renderer/18.0.0:
     resolution: {integrity: sha512-C7/5FBJ3g3sqUahguGi03O79b8afNeSD6T8/GU50oQrJCU0bVCCGQHaGKUbg2Ce8VQEEqTw8/HiS6lXHHdgkdQ==}
     dependencies:
@@ -3871,6 +3877,7 @@ packages:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
     dependencies:
       balanced-match: 1.0.0
+    dev: true
 
   /braces/3.0.2:
     resolution: {integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==}
@@ -7864,6 +7871,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       brace-expansion: 2.0.1
+    dev: true
 
   /minimist-options/4.1.0:
     resolution: {integrity: sha512-Q4r8ghd80yhO/0j1O3B2BjweX3fiHg9cdOwjJd2J76Q135c+NDxGCqdYKQ1SKBuFfgWbAUzBfvYjPUEeNgqN1A==}
