@@ -80,20 +80,7 @@ export class ShuviDevServer extends ShuviServer {
     if (!this._addedUpgradeListener) {
       this._addedUpgradeListener = true;
       server.onUpgrade((req, socket, head) => {
-        let assetPrefix = (
-          this._serverContext.getAssetPublicUrl() || ''
-        ).replace(/^\/+/, '');
-        // assetPrefix can be a proxy server with a url locally
-        // if so, it's needed to send these HMR requests with a rewritten url directly to /_next/webpack-hmr
-        // otherwise account for a path-like prefix when listening to socket events
-        if (assetPrefix.startsWith('http')) {
-          assetPrefix = '';
-        } else if (assetPrefix) {
-          assetPrefix = `/${assetPrefix}`;
-        }
-        if (
-          req.url?.startsWith(`${assetPrefix || ''}${DEV_HOT_MIDDLEWARE_PATH}`)
-        ) {
+        if (req.url?.startsWith(DEV_HOT_MIDDLEWARE_PATH)) {
           devMiddleware.onHMR(req, socket, head);
         }
       });
