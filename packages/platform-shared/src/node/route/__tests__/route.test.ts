@@ -1,9 +1,15 @@
 import { getFixturePath, normalizePath, normalizeWarnings } from './utils';
 import { getPageRoutes } from '../route';
 
-const getFixturePageRoutes = async (dirname: string) => {
+export const getFixturePageRoutes = async (
+  dirname: string,
+  ignoredRouteFiles?: string[]
+) => {
   const dir = getFixturePath(dirname);
-  const { routes, warnings, errors } = await getPageRoutes(dir);
+  const { routes, warnings, errors } = await getPageRoutes(
+    dir,
+    ignoredRouteFiles
+  );
 
   return {
     routes: normalizePath(routes, dir, 'component'),

@@ -9,6 +9,7 @@ import {
   RouteConfigType
 } from './route';
 import { rankRouteBranches } from '../../shared/router';
+import minimatch from 'minimatch';
 
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
 const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
@@ -228,5 +229,11 @@ function sortRoutes(routes: RouteConfigType[]) {
     return rankRoute[1];
   });
 }
+
+export const isIgnore = (ignoreRouteFiles: string[], path: string): boolean => {
+  return ignoreRouteFiles.some(pattern => {
+    return minimatch(path, pattern);
+  });
+};
 
 export { fileTypeChecker, sortRoutes };

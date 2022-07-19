@@ -1,9 +1,15 @@
 import { getApiRoutes } from '../route';
 import { getFixturePath, normalizePath, normalizeWarnings } from './utils';
 
-const getFixtureApiRoutes = async (dirname: string) => {
+export const getFixtureApiRoutes = async (
+  dirname: string,
+  ignoreRouteFiles?: string[]
+) => {
   const dir = getFixturePath(dirname);
-  const { routes, warnings, errors } = await getApiRoutes(dir);
+  const { routes, warnings, errors } = await getApiRoutes(
+    dir,
+    ignoreRouteFiles
+  );
 
   return {
     routes: normalizePath(routes, dir, 'api'),
