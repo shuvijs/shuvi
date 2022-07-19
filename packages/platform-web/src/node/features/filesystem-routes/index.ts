@@ -45,7 +45,12 @@ const plugin = createPlugin({
   },
   addRuntimeFile: async ({ defineFile }, context) => {
     const {
-      config: { routes: pageRoutes, middlewareRoutes, apiRoutes },
+      config: {
+        routes: pageRoutes,
+        middlewareRoutes,
+        apiRoutes,
+        ignoredRouteFiles
+      },
       paths,
       pluginRunner,
       phase
@@ -61,7 +66,8 @@ const plugin = createPlugin({
           routes = pageRoutes as IUserRouteConfig[];
         } else {
           const { routes: _routes, warnings } = await getPageRoutes(
-            paths.routesDir
+            paths.routesDir,
+            ignoredRouteFiles
           );
 
           if (isBuildPhase) {
@@ -88,13 +94,14 @@ const plugin = createPlugin({
     const apiRoutesFile = defineFile({
       name: 'apiRoutes.js',
       content: async () => {
-        let routes: IApiRouteConfig[] = [];
+        let routes: IApiRouteConfig[];
         const hasConfigRoutes = Array.isArray(apiRoutes);
         if (hasConfigRoutes) {
           routes = apiRoutes;
         } else {
           const { routes: _routes, warnings } = await getApiRoutes(
-            paths.routesDir
+            paths.routesDir,
+            ignoredRouteFiles
           );
 
           if (isBuildPhase) {
@@ -119,7 +126,8 @@ const plugin = createPlugin({
           routes = middlewareRoutes;
         } else {
           const { routes: _routes, warnings } = await getMiddlewareRoutes(
-            paths.routesDir
+            paths.routesDir,
+            ignoredRouteFiles
           );
           if (isBuildPhase) {
             warnings.forEach(warning => {

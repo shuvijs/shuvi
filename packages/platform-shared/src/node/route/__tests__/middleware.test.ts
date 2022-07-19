@@ -1,9 +1,15 @@
 import { getFixturePath, normalizeWarnings, normalizePath } from './utils';
 import { getMiddlewareRoutes } from '../route';
 
-const getFixtureMiddlewareRoutes = async (dirname: string) => {
+export const getFixtureMiddlewareRoutes = async (
+  dirname: string,
+  ignoredRouteFiles?: string[]
+) => {
   const dir = getFixturePath(dirname);
-  const { routes, warnings, errors } = await getMiddlewareRoutes(dir);
+  const { routes, warnings, errors } = await getMiddlewareRoutes(
+    dir,
+    ignoredRouteFiles
+  );
 
   return {
     routes: normalizePath(routes, dir, 'middleware'),
