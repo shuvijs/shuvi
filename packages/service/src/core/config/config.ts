@@ -114,9 +114,6 @@ export function resolveConfig(
 ): NormalizedConfig {
   const configs = [{}, config].concat(overrides || []);
   const resolvedConfig: NormalizedConfig = mergeConfig.apply(null, configs);
-  if (resolvedConfig.router.history === 'auto') {
-    resolvedConfig.router.history = resolvedConfig.ssr ? 'browser' : 'hash';
-  }
   return resolvedConfig;
 }
 

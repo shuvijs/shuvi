@@ -156,7 +156,9 @@ export interface IApiConfig {
 
 export type IRuntimeConfig = Record<string, string>;
 
-export interface Config {
+export interface CustomConfig {}
+
+export interface Config extends CustomConfig {
   outputPath?: string;
   publicDir?: string;
   publicPath?: string;
@@ -173,7 +175,6 @@ export interface Config {
   /**
    * specifically target for `platform-web`
    */
-  ssr?: boolean;
   target?: 'spa' | 'ssr';
   platform?: IPlatformConfig;
   proxy?: any;
