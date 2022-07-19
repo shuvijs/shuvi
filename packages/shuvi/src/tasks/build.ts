@@ -12,7 +12,7 @@ import {
 
 export interface IBuildOptions {
   cwd?: string;
-  config: NormalizedConfig;
+  config?: NormalizedConfig;
   platform?: IPlatform;
   target?: 'spa' | 'ssr';
 }
@@ -64,7 +64,7 @@ export async function build(options: IBuildOptions) {
   // target `spa` is an alias for `web/react/spa`
   const config = opts.config || {};
   if (opts.target === 'spa') {
-    config.platform = {
+    (config as any).platform = {
       name: 'web',
       framework: 'react',
       target: 'spa'
