@@ -165,6 +165,7 @@ export interface Config {
   routes?: IUserRouteConfig[]; // generate by files what under src/pages or user defined
   middlewareRoutes?: IMiddlewareRouteConfig[];
   apiRoutes?: IApiRouteConfig[]; // generate by files what under src/apis or user defined
+  ignoredRouteFiles?: string[];
   apiConfig?: IApiConfig;
   runtimeConfig?: IRuntimeConfig;
   publicRuntimeConfig?: IRuntimeConfig;

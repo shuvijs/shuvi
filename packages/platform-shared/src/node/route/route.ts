@@ -1,4 +1,4 @@
-import { basename, extname, join, dirname } from 'path';
+import { basename, extname, join, dirname, relative } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import {
   IUserRouteConfig,
@@ -8,6 +8,7 @@ import {
 import {
   getAllowFilesAndDirs,
   hasAllowFiles,
+  isIgnore,
   normalize,
   sortRoutes,
   SupportFileType
@@ -25,7 +26,7 @@ interface RawFileRoute {
   filepath: string;
 }
 
-interface RawDirRoute {
+export interface RawDirRoute {
   kind: 'dir';
   filepath: string;
   segment: string;
@@ -33,7 +34,7 @@ interface RawDirRoute {
   children: (RawFileRoute | RawDirRoute)[];
 }
 
-type RawRoute = RawFileRoute | RawDirRoute;
+export type RawRoute = RawFileRoute | RawDirRoute;
 
 export interface RouteException {
   type: SupportFileType | 'dir';
@@ -56,9 +57,11 @@ export type RouteConfigType =
   | IMiddlewareRouteConfig;
 
 export const getRawRoutesFromDir = async (
-  dirname: string
+  dirname: string,
+  ignoreRouteFiles?: string[]
 ): Promise<RawRoutes> => {
-  if (!(await isDirectory(dirname))) {
+  const rootDirname = dirname;
+  if (!(await isDirectory(rootDirname))) {
     return {
       routes: [],
       warnings: [],
@@ -85,6 +88,16 @@ export const getRawRoutesFromDir = async (
 
     for (const file of files) {
       const filepath = join(dirname, file);
+      const relativePath = relative(rootDirname, filepath);
+
+      if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles?.length) {
+        const needIgnore = isIgnore(ignoreRouteFiles, relativePath);
+
+        if (needIgnore) {
+          continue;
+        }
+      }
+
       const isDir = await isDirectory(filepath);
 
       if (isDir) {
@@ -107,6 +120,7 @@ export const getRawRoutesFromDir = async (
 
         continue;
       }
+
       const ext = extname(file);
       const type = basename(file, ext) as SupportFileType;
       rawRoutes.push({
@@ -119,7 +133,11 @@ export const getRawRoutesFromDir = async (
     }
     return rawRoutes;
   };
-  const routes = await _getRawRoutesFromDir(dirname, [], '');
+  let routes = await _getRawRoutesFromDir(dirname, [], '');
+
+  // if (Array.isArray(ignoreRouteFiles) && ignoreRouteFiles.length) {
+  //   routes = ignoreRoutes(dirname, ignoreRouteFiles, routes);
+  // }
 
   return {
     routes,
@@ -128,12 +146,15 @@ export const getRawRoutesFromDir = async (
   };
 };
 
-export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
+export const getPageRoutes = async (
+  dirname: string,
+  ignoredRouteFiles?: string[]
+): Promise<PageRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname);
+  } = await getRawRoutesFromDir(dirname, ignoredRouteFiles);
 
   const _getPageRoutes = (
     rawRoutes: RawRoute[],
@@ -179,7 +200,7 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
     return routes;
   };
 
-  const routes = sortRoutes(_getPageRoutes(rawRoutes, []));
+  let routes = sortRoutes(_getPageRoutes(rawRoutes, []));
 
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
@@ -194,7 +215,10 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
   };
 };
 
-export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
+export const getApiRoutes = async (
+  dir: string,
+  ignoredRouteFiles?: string[]
+): Promise<ApiRoutes> => {
   const getConflictWaring = (
     rawRoute: RawRoute,
     conflictRawRoute: RawRoute
@@ -210,7 +234,7 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dir);
+  } = await getRawRoutesFromDir(dir, ignoredRouteFiles);
 
   const _getApiRoutes = (
     rawRoutes: RawRoute[],
@@ -270,6 +294,7 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
   };
 
   const routes = sortRoutes(_getApiRoutes(rawRoutes, [], ''));
+
   const filterException = (e: RouteException) => e.type === 'api';
 
   return {
@@ -280,13 +305,14 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
 };
 
 export const getMiddlewareRoutes = async (
-  dirname: string
+  dirname: string,
+  ignoredRouteFiles?: string[]
 ): Promise<MiddlewareRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname);
+  } = await getRawRoutesFromDir(dirname, ignoredRouteFiles);
 
   const _getMiddlewareRoutes = (
     rawRoutes: RawRoute[],
@@ -327,7 +353,8 @@ export const getMiddlewareRoutes = async (
     return routes;
   };
 
-  const routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
+  let routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
+
   routes.forEach(route => {
     if (!route.path.startsWith('/')) {
       route.path = `/${route.path}`;
