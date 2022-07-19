@@ -9,7 +9,8 @@ export async function writeDefaultConfigurations(
   ts: TypeScriptModule,
   tsConfigPath: string,
   tsConfig: TsConfig,
-  paths: IPaths
+  paths: IPaths,
+  isFirstTimeSetup: boolean
 ) {
   const compilerOptions: any = {
     // These are suggested values and will be set when not present in the
@@ -166,6 +167,10 @@ export async function writeDefaultConfigurations(
     tsConfigPath,
     JSON.stringify(userTsConfig, null, 2).replace(/\n/g, os.EOL) + os.EOL
   );
+
+  if (isFirstTimeSetup) {
+    return;
+  }
 
   console.log(
     chalk.green(

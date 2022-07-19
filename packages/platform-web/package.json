@@ -82,6 +82,9 @@
     "use-sync-external-store": "1.1.0"
   },
   "devDependencies": {
+    "@types/react": "18.0.9",
+    "@types/react-dom": "18.0.6",
+    "@types/react-test-renderer": "18.0.0",
     "@shuvi/redox": "0.0.3",
     "@testing-library/react": "^13.2.0",
     "@types/content-type": "^1.1.5",
