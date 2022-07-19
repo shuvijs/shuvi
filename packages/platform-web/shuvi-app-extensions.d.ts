@@ -31,6 +31,6 @@ declare module '@shuvi/app/files/middlewareRoutes' {
   export default middlewareRoutes;
 }
 
-declare module '@shuvi/app/files/user/server' {
+declare module '@shuvi/app/user/server' {
   export {};
 }
