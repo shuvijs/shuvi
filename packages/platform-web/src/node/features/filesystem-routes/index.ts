@@ -49,7 +49,7 @@ const plugin = createPlugin({
         routes: pageRoutes,
         middlewareRoutes,
         apiRoutes,
-        ignoredRouteFiles
+        conventionRoutes
       },
       paths,
       pluginRunner,
@@ -67,7 +67,7 @@ const plugin = createPlugin({
         } else {
           const { routes: _routes, warnings } = await getPageRoutes(
             paths.routesDir,
-            ignoredRouteFiles
+            conventionRoutes.exclude
           );
 
           if (isBuildPhase) {
@@ -101,7 +101,7 @@ const plugin = createPlugin({
         } else {
           const { routes: _routes, warnings } = await getApiRoutes(
             paths.routesDir,
-            ignoredRouteFiles
+            conventionRoutes.exclude
           );
 
           if (isBuildPhase) {
@@ -127,7 +127,7 @@ const plugin = createPlugin({
         } else {
           const { routes: _routes, warnings } = await getMiddlewareRoutes(
             paths.routesDir,
-            ignoredRouteFiles
+            conventionRoutes.exclude
           );
           if (isBuildPhase) {
             warnings.forEach(warning => {
