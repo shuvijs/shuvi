@@ -1,10 +1,14 @@
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
-import { IRequestHandlerWithNext } from '../server/http-server';
+import { IRequestHandlerWithNext, Server } from '../server/http-server';
 import { isStaticFileExist, serveStatic } from './utils';
-import { getDevMiddleware } from './middlewares/dev/devMiddleware';
+import {
+  getDevMiddleware,
+  DevMiddleware
+} from './middlewares/dev/devMiddleware';
 import { IServerPluginContext } from './plugin';
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
+import { DEV_HOT_MIDDLEWARE_PATH } from '@shuvi/shared/lib/constants';
 
 const getPublicDirMiddleware = (
   cliContext: IServerPluginContext
@@ -65,5 +69,20 @@ export class ShuviDevServer extends ShuviServer {
     server.use(`${context.assetPublicPath}/:path(.*)`, publicDirMiddleware);
 
     await this._initMiddlewares();
+
+    // setup upgrade listener eagerly when we can otherwise
+    // it will be done on the first request via req.socket.server
+    this._setupWebSocketHandler(server, devMiddleware);
   }
+
+  private _setupWebSocketHandler = (
+    server: Server,
+    devMiddleware: DevMiddleware
+  ) => {
+    server.onUpgrade((req, socket, head) => {
+      if (req.url?.startsWith(DEV_HOT_MIDDLEWARE_PATH)) {
+        devMiddleware.onHMR(req, socket, head);
+      }
+    });
+  };
 }
