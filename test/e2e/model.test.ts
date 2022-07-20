@@ -26,6 +26,7 @@ describe('redox', () => {
     // @ts-ignore
     await page.$eval('#add-async', el => el.click());
     await new Promise(resolve => {
+      // FIXME: not reliable
       setTimeout(function () {
         return resolve(null);
       }, 150);
