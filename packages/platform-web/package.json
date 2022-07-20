@@ -80,6 +80,9 @@
     "react-refresh": "0.12.0",
     "use-sync-external-store": "1.1.0"
   },
+  "peerDependencies": {
+    "@shuvi/service": "1.0.0-rc.1"
+  },
   "devDependencies": {
     "@types/react": "18.0.9",
     "@types/react-dom": "18.0.6",
@@ -90,7 +93,6 @@
     "@types/cookie": "^0.4.1",
     "@types/ejs": "^3.1.0",
     "@types/raw-body": "^2.3.0",
-    "shuvi-test-utils": "workspace:*",
     "webpack": "5.73.0"
   }
 }

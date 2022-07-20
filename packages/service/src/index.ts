@@ -32,7 +32,5 @@ export {
   CorePluginConstructor,
   CorePluginInstance,
   getApi,
-  loadConfig,
-  defineConfig,
   createPlugin
 } from './core';

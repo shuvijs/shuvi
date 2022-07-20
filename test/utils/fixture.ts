@@ -1,7 +1,6 @@
 import * as path from 'path';
-import { loadConfig, NormalizedConfig } from '@shuvi/service';
-import { ShuviConfig } from 'shuvi';
-import { resolveConfig } from '@shuvi/service/lib/core/config';
+import { loadConfig, ShuviConfig } from 'shuvi';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 
 export function resolveFixture(...paths: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...paths);
@@ -10,9 +9,9 @@ export function resolveFixture(...paths: string[]) {
 export async function loadFixture(
   fixture: string,
   overrides: ShuviConfig = {}
-): Promise<NormalizedConfig> {
+): Promise<ShuviConfig> {
   const config = await loadConfig({
     rootDir: resolveFixture(fixture)
   });
-  return resolveConfig(config, [overrides]);
+  return deepmerge(config, overrides);
 }

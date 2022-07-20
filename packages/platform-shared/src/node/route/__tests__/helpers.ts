@@ -1,6 +1,6 @@
 import { parseDynamicPath } from '../helpers';
 
-describe('parse dynamic path', () => {
+describe('helpers/parseDynamicPath', () => {
   test('should work', async () => {
     expect(parseDynamicPath('/')).toBe('/');
     expect(parseDynamicPath('/sss')).toBe('/sss');

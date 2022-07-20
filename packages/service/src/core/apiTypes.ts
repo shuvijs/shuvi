@@ -89,14 +89,6 @@ export interface ResolvedPlugin {
   types?: string;
 }
 
-// todo: remove name, life framework and target up to config
-export interface IPlatformConfig {
-  name: string; // remove this
-  framework?: string;
-  target?: string; // remove this
-  [index: string]: any;
-}
-
 export type IPlatformContent = {
   types?: string | string[];
   plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
@@ -117,7 +109,6 @@ export type IPlatformContext = {
 };
 
 export type IPlatform = (
-  config: Omit<IPlatformConfig, 'name'>,
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
@@ -130,7 +121,6 @@ export interface InternalConfig {
   publicPath: string;
   analyze: boolean;
   typescript: { ignoreBuildErrors: boolean };
-  platform: IPlatformConfig;
   proxy?: IProxyConfig;
   experimental: {
     parcelCss: boolean;

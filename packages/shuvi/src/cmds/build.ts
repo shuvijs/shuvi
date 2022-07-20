@@ -12,7 +12,6 @@ const cliConfigMap: OptionsKeyMap = {
   target(config, optionValue) {
     if (optionValue === 'spa') {
       config.ssr = false;
-      config.platform = { name: 'web', framework: 'react', target: 'spa' };
     }
   }
 };

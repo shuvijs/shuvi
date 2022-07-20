@@ -24,7 +24,7 @@ import {
   Resources,
   CorePluginInstance
 } from './lifecycle';
-import { resolveConfig } from './config';
+import { getDefaultConfig, mergeConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import { ServerPluginInstance } from '../server';
@@ -79,7 +79,7 @@ class Api {
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._config = resolveConfig(config);
+    this._config = mergeConfig(getDefaultConfig(), config);
     this._presets = presets || [];
     this._plugins = plugins || [];
     this._pluginManager = getManager();
@@ -274,8 +274,7 @@ class Api {
         getPresetRuntimeFiles: () => []
       };
 
-    const platformConfig = this._config.platform;
-    const platformContent = await this._platform(platformConfig, {
+    const platformContent = await this._platform({
       serverPlugins: this._serverPlugins
     });
     const {

@@ -1,9 +1,8 @@
 export { ShuviMode, ShuviPhase } from './types';
-export { ShuviConfig } from './config';
+export { ShuviConfig, loadConfig, defineConfig } from './config';
 
 export {
   // api
-  defineConfig,
   createPlugin,
   createServerPlugin,
   // constants

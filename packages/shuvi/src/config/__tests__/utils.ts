@@ -1,6 +1,7 @@
 import * as path from 'path';
-import { Config } from '../../apiTypes';
-import { loadConfig, resolveConfig } from '../config';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import { ShuviConfig } from '../configTypes';
+import { loadConfig } from '../config';
 
 export function resolveFixture(name: string) {
   return path.join(__dirname, 'fixtures', name);
@@ -8,12 +9,12 @@ export function resolveFixture(name: string) {
 
 export async function loadFixture(
   name: string,
-  userConfig: Config = {},
+  userConfig: ShuviConfig = {},
   configFile?: string
 ) {
   const config = await loadConfig({
     rootDir: resolveFixture(name),
     filepath: configFile
   });
-  return resolveConfig(config, [userConfig]);
+  return deepmerge(config, userConfig);
 }
