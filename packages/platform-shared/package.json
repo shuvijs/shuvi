@@ -86,6 +86,9 @@
     "@shuvi/utils": "1.0.0-rc.1",
     "redux": "4.1.2"
   },
+  "peerDependencies": {
+    "@shuvi/service": "1.0.0-rc.1"
+  },
   "devDependencies": {
     "@types/minimatch": "3.0.5"
   }

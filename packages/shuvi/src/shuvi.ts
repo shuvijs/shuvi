@@ -4,7 +4,7 @@ import { ShuviMode, ShuviPhase } from './types';
 import { ShuviConfig, normalizeConfig } from './config';
 
 export function getPlatform(): IPlatform {
-  return platformWeb;
+  return platformWeb({ framework: 'react' });
 }
 
 export interface ShuviOption {
