@@ -1,4 +1,4 @@
-import { IRuntimeConfig } from '@shuvi/service/lib/core';
+import { IRuntimeConfig } from '../../shared';
 
 export interface UserModule {
   app: string | string[];

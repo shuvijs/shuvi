@@ -42,7 +42,6 @@ module.exports = {
   ],
 
   moduleNameMapper: {
-    '^shuvi-test-utils(/?.*)$': '<rootDir>/test/utils/$1',
     '^@shuvi/plugins/model$': '@shuvi/plugins/lib/model',
     '^@shuvi/plugins/model/(.*)': '@shuvi/plugins/lib/model/$1'
   }

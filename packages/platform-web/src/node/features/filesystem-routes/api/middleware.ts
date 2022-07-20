@@ -3,10 +3,11 @@ import { matchPathname } from '@shuvi/router';
 import { server } from '@shuvi/service/lib/resources';
 import { apiRouteHandler } from './apiRouteHandler';
 
-export function middleware(ctx: IServerPluginContext): IRequestHandlerWithNext {
+export function middleware(
+  _ctx: IServerPluginContext
+): IRequestHandlerWithNext {
   return async function (req, res, next) {
     const { apiRoutes } = server;
-    const commonApiConfig = ctx.config.apiConfig || {};
     let tempApiModule;
     for (const { path, api } of apiRoutes) {
       const match = matchPathname(path, req.pathname);
@@ -18,14 +19,9 @@ export function middleware(ctx: IServerPluginContext): IRequestHandlerWithNext {
     }
     if (tempApiModule) {
       try {
-        const { config: { apiConfig = {} } = {}, default: resolver } =
-          tempApiModule;
-        let overridesConfig = {
-          ...commonApiConfig,
-          ...apiConfig
-        };
+        const { config: { api } = {}, default: resolver } = tempApiModule;
 
-        await apiRouteHandler(req, res, resolver, overridesConfig);
+        await apiRouteHandler(req, res, resolver, api || { bodyParser: true });
       } catch (error) {
         next(error);
       }

@@ -1,6 +1,6 @@
 export {
   normalizeRoutes,
   generateRoutesContent,
-  IUserRouteConfig
+  IPageRouteConfig
 } from './routes';
 export * from './store';

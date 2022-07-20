@@ -1,19 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import {
-  getApi,
-  NormalizedConfig,
-  IPluginContext,
-  IPlatform,
-  getBundler,
-  BUILD_DEFAULT_DIR
-} from '@shuvi/service';
+import { IPluginContext, getBundler, BUILD_DEFAULT_DIR } from '@shuvi/service';
+import { ShuviConfig } from '../config';
+import { initShuvi } from '../shuvi';
 
 export interface IBuildOptions {
   cwd?: string;
-  config: NormalizedConfig;
-  platform?: IPlatform;
+  config: ShuviConfig;
   target?: 'spa' | 'ssr';
 }
 
@@ -61,20 +55,10 @@ export async function build(options: IBuildOptions) {
     ...defaultBuildOptions,
     ...options
   };
-  // target `spa` is an alias for `web/react/spa`
-  const config = opts.config;
-  if (opts.target === 'spa') {
-    config.platform = {
-      name: 'web',
-      framework: 'react',
-      target: 'spa'
-    };
-  }
-  const api = await getApi({
+  const api = await initShuvi({
     cwd: opts.cwd,
     mode: 'production',
     config: opts.config,
-    platform: opts.platform,
     phase: 'PHASE_PRODUCTION_BUILD'
   });
 

@@ -1,10 +1,10 @@
 import { basename, extname, join, dirname, sep } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import {
-  IUserRouteConfig,
+  IPageRouteConfig,
   IApiRouteConfig,
   IMiddlewareRouteConfig
-} from '@shuvi/service';
+} from '../../shared';
 import {
   getAllowFilesAndDirs,
   hasAllowFiles,
@@ -15,9 +15,7 @@ import {
 } from './helpers';
 import { matchFile, getFileMatcherPatterns } from './matchSpec';
 
-export type IPageRouteConfig = IUserRouteConfig;
-
-export type { IApiRouteConfig, IMiddlewareRouteConfig };
+export type { IPageRouteConfig, IApiRouteConfig, IMiddlewareRouteConfig };
 
 interface RawFileRoute {
   kind: 'file';

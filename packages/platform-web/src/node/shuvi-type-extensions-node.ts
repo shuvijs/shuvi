@@ -5,7 +5,8 @@ import {
   IMiddlewareRoutes
 } from '../shared';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-import { IViewServer } from './features/html-render';
+import { IViewServer } from '@shuvi/platform-web/node/features/html-render/index';
+import { PlatformWebCustomConfig } from './config';
 
 declare module '@shuvi/service/lib/resources' {
   export const server: {
@@ -23,7 +24,5 @@ declare module '@shuvi/service/lib/resources' {
 }
 
 declare module '@shuvi/service/lib/core/apiTypes' {
-  export interface CustomConfig {
-    ssr?: boolean;
-  }
+  interface CustomConfig extends PlatformWebCustomConfig {}
 }

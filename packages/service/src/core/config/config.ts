@@ -7,7 +7,7 @@ import {
   JS_EXT_RE
 } from '@shuvi/toolpack/lib/utils/bundle-require';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
-import { NormalizedConfig, Config } from '../apiTypes';
+import { InternalConfig, Config, NormalizedConfig } from '../apiTypes';
 import { DEFAULT_PUBLIC_PATH } from '../../constants';
 import { loadDotenvConfig } from './loadDotenvConfig';
 
@@ -25,10 +25,10 @@ export interface ResolveConfigOptions {
 const DEFAUL_CONFIG_FILE_NAME = 'shuvi.config';
 const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'];
 
-export const createDefaultConfig: () => Config = () => ({
-  ssr: true,
+export const createDefaultConfig: () => InternalConfig = () => ({
   env: {},
   rootDir: process.cwd(),
+  analyze: false,
   outputPath: 'dist',
   platform: {
     name: 'web',
@@ -37,21 +37,11 @@ export const createDefaultConfig: () => Config = () => ({
   },
   publicDir: 'public',
   publicPath: DEFAULT_PUBLIC_PATH,
-  router: {
-    history: 'auto'
-  },
-  apiConfig: {
-    bodyParser: true
-  },
-  conventionRoutes: {},
   typescript: {
     ignoreBuildErrors: false
   },
   experimental: {
     parcelCss: false,
-    loader: {
-      sequential: false
-    },
     preBundle: false
   }
 });
@@ -108,17 +98,12 @@ export async function loadConfig({
   return fileConfig;
 }
 
-/** resolve a full `Config` to be a `Config` */
+/** resolve a full `Config` to be a `NormalizedConfig` */
 export function resolveConfig(
   config: Config,
   overrides: Config[] = []
 ): NormalizedConfig {
-  const configs = [{}, config].concat(overrides || []);
+  const configs = [createDefaultConfig(), config].concat(overrides || []);
   const resolvedConfig: NormalizedConfig = mergeConfig.apply(null, configs);
   return resolvedConfig;
-}
-
-/** patch a userConfig to be a full `Config` */
-export function getFullUserConfig(config: Config = {}): Required<Config> {
-  return mergeConfig(createDefaultConfig(), config);
 }

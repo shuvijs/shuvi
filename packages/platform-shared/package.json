@@ -13,7 +13,7 @@
     "lib",
     "esm",
     "template",
-    "shuvi-app-extensions.d.ts"
+    "shuvi-type-extensions-runtime.d.ts"
   ],
   "exports": {
     "./shared": {
@@ -61,7 +61,7 @@
       "default": "./esm/shuvi-app/*.js"
     },
     "./template/*": "./template/*",
-    "./shuvi-app-extensions.d.ts": "./shuvi-app-extensions.d.ts"
+    "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts"
   },
   "scripts": {
     "dev": "run-p watch:*",

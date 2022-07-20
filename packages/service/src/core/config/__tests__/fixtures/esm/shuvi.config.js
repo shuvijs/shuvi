@@ -1,6 +1,5 @@
 import otherConfigs from './otherConfigs';
 export default {
-  ssr: true,
   env: {
     shouldBe123: process.env.test,
     shouldBeBar: process.env.foo,

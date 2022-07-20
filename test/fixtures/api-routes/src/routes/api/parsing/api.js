@@ -1,5 +1,5 @@
 export const config = {
-  apiConfig: {
+  api: {
     bodyParser: true
   }
 };

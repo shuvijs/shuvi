@@ -1,4 +1,4 @@
-/// <reference types="@shuvi/platform-shared/shuvi-app-extensions.d.ts" />
+/// <reference types="@shuvi/platform-shared/shuvi-type-extensions-runtime" />
 
 declare module '@shuvi/app/files/routes' {
   import { IRawPageRouteRecord } from '@shuvi/platform-shared/shared';

@@ -1,4 +1,4 @@
-import { IRuntimeConfig } from '@shuvi/service/lib/core';
+import { IRuntimeConfig } from './runtimeConfigTypes';
 
 let runtimeConfig: IRuntimeConfig | null;
 let publicRuntimeConfig: IRuntimeConfig | null;

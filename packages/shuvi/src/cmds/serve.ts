@@ -1,7 +1,8 @@
 import program from 'commander';
-import { getApi, createShuviServer } from '@shuvi/service';
-import { getPackageInfo } from '../utils';
-import { getProjectDir, getConfigFromCli, getPlatform } from '../utils';
+import { createShuviServer } from '@shuvi/service';
+import { getPackageInfo, getProjectDir } from '../utils';
+import { getConfigFromCli } from '../config';
+import { initShuvi } from '../shuvi';
 
 export default async function main(argv: string[]) {
   const pkgInfo = getPackageInfo();
@@ -17,12 +18,10 @@ export default async function main(argv: string[]) {
   const cwd = getProjectDir(program);
   const port = Number(program.port) || 3000;
   const host = program.host || 'localhost';
-  const config = await getConfigFromCli(cwd, program);
-  const platform = getPlatform(config.platform.name);
-  const api = await getApi({
+  const { plugins, presets, ...config } = await getConfigFromCli(cwd, program);
+  const api = await initShuvi({
     cwd,
-    config,
-    platform
+    config
   });
   const shuviApp = await createShuviServer({
     context: api.pluginContext,
