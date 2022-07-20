@@ -1,4 +1,5 @@
 import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { joinPath } from '@shuvi/utils/lib/string';
 import rimraf from 'rimraf';
 import * as path from 'path';
@@ -24,7 +25,7 @@ import {
   Resources,
   CorePluginInstance
 } from './lifecycle';
-import { getDefaultConfig, mergeConfig } from './config';
+import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import { ServerPluginInstance } from '../server';
@@ -79,7 +80,7 @@ class Api {
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._config = mergeConfig(getDefaultConfig(), config);
+    this._config = deepmerge(getDefaultConfig(), config);
     this._presets = presets || [];
     this._plugins = plugins || [];
     this._pluginManager = getManager();

@@ -6,7 +6,7 @@ import {
   JS_EXT_RE
 } from '@shuvi/toolpack/lib/utils/bundle-require';
 import { PlatformWebCustomConfig } from '@shuvi/platform-web';
-import { mergeConfig } from '@shuvi/service/lib/core/config';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import { ShuviConfig } from './configTypes';
 import { loadDotenvConfig } from './env';
@@ -31,7 +31,7 @@ function getDefaultPlatformConfig(): PlatformWebCustomConfig {
 }
 
 export function normalizeConfig(rawConfig: ShuviConfig): ShuviConfig {
-  const config = mergeConfig(getDefaultPlatformConfig(), rawConfig);
+  const config = deepmerge(getDefaultPlatformConfig(), rawConfig);
   if (config.router.history === 'auto') {
     config.router.history = config.ssr ? 'browser' : 'hash';
   }
