@@ -48,7 +48,7 @@ describe('dynamic-plugin', () => {
     `);
 
     expect(output).toMatchInlineSnapshot(
-      `"import{dynamic}from'@shuvi/runtime';dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]})"`
+      `"import{dynamic}from\\"@shuvi/runtime\\";dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")]})"`
     );
   });
 
@@ -64,7 +64,7 @@ describe('dynamic-plugin', () => {
     `);
 
     expect(output).toMatchInlineSnapshot(
-      `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic(async()=>{await wait(500);return()=>React.createElement('div',null,'123')},{})"`
+      `"import React from\\"react\\";import{dynamic}from\\"@shuvi/runtime\\";dynamic(async()=>{await wait(500);return()=>React.createElement(\\"div\\",null,\\"123\\")},{})"`
     );
   });
 
@@ -78,7 +78,7 @@ describe('dynamic-plugin', () => {
       })
     `);
     expect(output).toMatchInlineSnapshot(
-      `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic({loader:()=>import(\\"./component\\")},{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]})"`
+      `"import React from\\"react\\";import{dynamic}from\\"@shuvi/runtime\\";dynamic({loader:()=>import(\\"./component\\")},{webpack:()=>[require.resolveWeak(\\"./component\\")]})"`
     );
   });
 

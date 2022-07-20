@@ -42,16 +42,16 @@ const swc = async (code: string, { flag }: { flag: string } = { flag: '' }) => {
 describe('auto-css-modules', () => {
   test('css modules', async () => {
     expect(await swc(`import styles from 'a.css';`)).toEqual(
-      `import styles from'a.css?cssmodules'`
+      `import styles from\"a.css?cssmodules\"`
     );
     expect(await swc(`import styles from 'a.less';`)).toEqual(
-      `import styles from'a.less?cssmodules'`
+      `import styles from\"a.less?cssmodules\"`
     );
     expect(await swc(`import styles from 'a.scss';`)).toEqual(
-      `import styles from'a.scss?cssmodules'`
+      `import styles from\"a.scss?cssmodules\"`
     );
     expect(await swc(`import styles from 'a.sass';`)).toEqual(
-      `import styles from'a.sass?cssmodules'`
+      `import styles from\"a.sass?cssmodules\"`
     );
   });
 
@@ -60,16 +60,16 @@ describe('auto-css-modules', () => {
       await swc(`import styles from 'a.css';`, {
         flag: 'foo'
       })
-    ).toEqual(`import styles from'a.css?foo'`);
+    ).toEqual(`import styles from\"a.css?foo\"`);
   });
 
   test('no css modules', async () => {
-    expect(await swc(`import 'a.css';`)).toEqual(`import'a.css'`);
+    expect(await swc(`import 'a.css';`)).toEqual(`import\"a.css\"`);
   });
 
   test('do not infect non css imports', async () => {
-    expect(await swc(`import a from 'a';`)).toEqual(`import a from'a'`);
-    expect(await swc(`import a from 'a.js';`)).toEqual(`import a from'a.js'`);
-    expect(await swc(`import 'a';`)).toEqual(`import'a'`);
+    expect(await swc(`import a from 'a';`)).toEqual(`import a from\"a\"`);
+    expect(await swc(`import a from 'a.js';`)).toEqual(`import a from\"a.js\"`);
+    expect(await swc(`import 'a';`)).toEqual(`import\"a\"`);
   });
 });

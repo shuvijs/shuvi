@@ -74,7 +74,7 @@ describe('jsx-pragma', () => {
     );
 
     expect(output).toMatchInlineSnapshot(
-      `"\\"use strict\\";var _jsxRuntime=require(\\"react/jsx-runtime\\");var React=require('react');module.exports=function(){return(0,_jsxRuntime).jsx(\\"div\\",{children:\\"test2\\"})}"`
+      `"\\"use strict\\";Object.defineProperty(exports,\\"__esModule\\",{value:true});var _jsxRuntime=require(\\"react/jsx-runtime\\");var React=require(\\"react\\");module.exports=function(){return(0,_jsxRuntime.jsx)(\\"div\\",{children:\\"test2\\"})}"`
     );
   });
 });
