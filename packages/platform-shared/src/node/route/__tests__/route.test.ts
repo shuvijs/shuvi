@@ -41,6 +41,7 @@ describe('route/raw-route', () => {
     const result = await getRawRoutes('exclude', {
       exclude: ['ignore-dir', 'ignore-file/**/api.js']
     });
+    console.log(result);
 
     expect(pick(result.routes, 'filepath')).toMatchObject([
       {
