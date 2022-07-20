@@ -32,12 +32,12 @@ interface IWebpackHotMiddlewareOptions {
 
 export class WebpackHotMiddleware {
   _path: string;
-  eventStream: EventStream;
+  clientManager: ClientManager;
   latestStats: webpack.Stats | null;
   closed: boolean;
 
   constructor({ compiler, path }: IWebpackHotMiddlewareOptions) {
-    this.eventStream = new EventStream();
+    this.clientManager = new ClientManager();
     this.latestStats = null;
     this.closed = false;
     this._path = path;
@@ -49,7 +49,7 @@ export class WebpackHotMiddleware {
   onInvalid = () => {
     if (this.closed) return;
     this.latestStats = null;
-    this.eventStream.publish({ action: 'building' });
+    this.clientManager.publish({ action: 'building' });
   };
   onDone = (statsResult: webpack.Stats) => {
     if (this.closed) return;
@@ -59,13 +59,12 @@ export class WebpackHotMiddleware {
   };
   onHMR = (client: ws) => {
     if (this.closed) return;
-    this.eventStream.handler(client);
+    this.clientManager.add(client);
 
     if (this.latestStats) {
-      // Explicitly not passing in `log` fn as we don't want to log again on
-      // the server
       this.publishStats('sync', this.latestStats);
     }
+
     client.addEventListener('message', ({ data }) => {
       try {
         const parsedData = JSON.parse(
@@ -90,7 +89,7 @@ export class WebpackHotMiddleware {
       errors: true
     });
 
-    this.eventStream.publish({
+    this.clientManager.publish({
       action: action,
       hash: stats.hash,
       warnings: stats.warnings || [],
@@ -100,37 +99,31 @@ export class WebpackHotMiddleware {
 
   publish = (payload: any) => {
     if (this.closed) return;
-    this.eventStream.publish(payload);
+    this.clientManager.publish(payload);
   };
   close = () => {
     if (this.closed) return;
     // Can't remove compiler plugins, so we just set a flag and noop if closed
     // https://github.com/webpack/tapable/issues/32#issuecomment-350644466
     this.closed = true;
-    this.eventStream.close();
+    this.clientManager.close();
   };
 }
 
-class EventStream {
+class ClientManager {
   clients: Set<ws>;
   constructor() {
     this.clients = new Set();
   }
 
-  everyClient(fn: (client: ws) => void) {
-    for (const client of this.clients) {
-      fn(client);
-    }
-  }
-
   close() {
-    this.everyClient(client => {
+    this._everyClient(client => {
       client.close();
     });
     this.clients.clear();
   }
 
-  handler(client: ws) {
+  add(client: ws) {
     this.clients.add(client);
     client.addEventListener('close', () => {
       this.clients.delete(client);
@@ -138,8 +131,14 @@ class EventStream {
   }
 
   publish(payload: any) {
-    this.everyClient(client => {
+    this._everyClient(client => {
       client.send(JSON.stringify(payload));
     });
+  }
+
+  private _everyClient(fn: (client: ws) => void) {
+    for (const client of this.clients) {
+      fn(client);
+    }
   }
 }
