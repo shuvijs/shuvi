@@ -41,7 +41,6 @@ describe('route/raw-route', () => {
     const result = await getRawRoutes('exclude', {
       exclude: ['ignore-dir', 'ignore-file/**/api.js']
     });
-    console.log(result);
 
     expect(pick(result.routes, 'filepath')).toMatchObject([
       {
@@ -219,7 +218,7 @@ describe('route/page', () => {
     });
   });
 
-  it('show ignore empty page segment and has warnings case 1', async () => {
+  it('should ignore empty page segment and has warnings case 1', async () => {
     const result = await getFixturePageRoutes('warning-empty-page-segments');
     expect(result).toMatchObject({
       errors: [],
