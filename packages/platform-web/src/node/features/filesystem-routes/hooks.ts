@@ -1,10 +1,13 @@
 import { createAsyncParallelHook } from '@shuvi/hook';
-import { IUserRouteConfig, IMiddlewareRouteConfig } from '@shuvi/service';
+import {
+  IPageRouteConfig,
+  IMiddlewareRouteConfig
+} from '@shuvi/platform-shared/shared';
 
 export const addRoutes = createAsyncParallelHook<
   void,
   void,
-  IUserRouteConfig[]
+  IPageRouteConfig[]
 >();
 
 export const addMiddlewareRoutes = createAsyncParallelHook<

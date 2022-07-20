@@ -1,18 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
-import {
-  createPlugin,
-  IRouteConfig,
-  IUserRouteConfig,
-  IMiddlewareRouteConfig,
-  IApiRouteConfig
-} from '@shuvi/service';
+import { createPlugin } from '@shuvi/service';
 import {
   getPageRoutes,
   getApiRoutes,
-  getMiddlewareRoutes
+  getMiddlewareRoutes,
+  IPageRouteConfig,
+  IMiddlewareRouteConfig,
+  IApiRouteConfig
 } from '@shuvi/platform-shared/node';
+import { IPageRouteConfigWithId } from '@shuvi/platform-shared/shared';
 import { resolvePkgFile } from '../../paths';
 import { ifComponentHasLoader } from '../html-render/lib';
 import { addRoutes, addMiddlewareRoutes } from './hooks';
@@ -60,10 +58,10 @@ const plugin = createPlugin({
     const pageRoutesFile = defineFile({
       name: 'routes.js',
       content: async () => {
-        let routes: IUserRouteConfig[];
+        let routes: IPageRouteConfig[];
         const hasConfigRoutes = Array.isArray(pageRoutes);
         if (hasConfigRoutes) {
-          routes = pageRoutes as IUserRouteConfig[];
+          routes = pageRoutes as IPageRouteConfig[];
         } else {
           const { routes: _routes, warnings } = await getPageRoutes(
             paths.routesDir,
@@ -150,7 +148,7 @@ const plugin = createPlugin({
       content: async () => {
         const routes = getRoutes();
         const loaders: Record<string, string> = {};
-        const traverseRoutes = (routes: IRouteConfig[]) => {
+        const traverseRoutes = (routes: IPageRouteConfigWithId[]) => {
           routes.forEach(r => {
             const { component, id, children } = r;
             if (component && id) {

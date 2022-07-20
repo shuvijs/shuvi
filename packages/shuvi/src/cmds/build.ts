@@ -1,12 +1,7 @@
 import program from 'commander';
 import { build } from '../tasks/build';
-import { getPackageInfo } from '../utils';
-import {
-  getProjectDir,
-  getConfigFromCli,
-  getPlatform,
-  OptionsKeyMap
-} from '../utils';
+import { getPackageInfo, getProjectDir } from '../utils';
+import { OptionsKeyMap, getConfigFromCli } from '../config';
 
 const pkgInfo = getPackageInfo();
 
@@ -42,12 +37,10 @@ export default async function main(argv: string[]) {
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
   const config = await getConfigFromCli(cwd, program, cliConfigMap);
-  const platform = getPlatform(config.platform.name);
   try {
     await build({
       cwd,
-      config,
-      platform
+      config
     });
     console.log('Build successfully!');
   } catch (error) {

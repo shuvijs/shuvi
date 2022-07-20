@@ -1,7 +1,14 @@
+export { ShuviMode, ShuviPhase } from './types';
+export { ShuviConfig } from './config';
+
 export {
+  // api
   defineConfig,
-  Config,
   createPlugin,
-  createServerPlugin
+  createServerPlugin,
+  // constants
+  PHASE_PRODUCTION_BUILD,
+  PHASE_PRODUCTION_SERVER,
+  PHASE_DEVELOPMENT_SERVER,
+  PHASE_INSPECT_WEBPACK
 } from '@shuvi/service';
-import '@shuvi/platform-web/node/shuvi-node-extensions';

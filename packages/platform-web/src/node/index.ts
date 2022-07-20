@@ -1,3 +1,4 @@
+import './shuvi-type-extensions-node';
 import { IPlatform } from '@shuvi/service';
 import {
   SharedPlugins,
@@ -9,8 +10,9 @@ import {
   getMiddlewaresBeforeDevMiddlewares,
   getMainPlugin
 } from './features';
-import './shuvi-node-extensions';
 import { resolvePkgFile } from './paths';
+
+export { PlatformWebCustomConfig } from './config';
 
 const platform: IPlatform = async (
   { framework = 'react' } = {},

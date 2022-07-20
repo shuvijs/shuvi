@@ -1,6 +1,4 @@
-import { defineConfig } from 'shuvi';
-export default defineConfig({
-  ssr: true,
+export default {
   env: {
     shouldBe123: process.env.test,
     shouldBeBar: process.env.foo,
@@ -8,4 +6,4 @@ export default defineConfig({
     envLocalShouldBeTrue: process.env.envLocal,
     conflictEnvShouldBeDevelopmentLocal: process.env.conflictEnv
   }
-});
+};

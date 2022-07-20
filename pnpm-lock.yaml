@@ -136,6 +136,7 @@ importers:
       react-app-polyfill: 2.0.0
       react-dom: 18.1.0
       react-refresh: 0.12.0
+      shuvi-test-utils: workspace:*
       use-sync-external-store: 1.1.0
       webpack: 5.73.0
     dependencies:
@@ -171,6 +172,7 @@ importers:
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
       '@types/react-test-renderer': 18.0.0
+      shuvi-test-utils: link:../../test/utils
       webpack: 5.73.0
 
   packages/router:
@@ -245,6 +247,7 @@ importers:
       launch-editor: 2.2.1
       rimraf: ^3.0.2
       send: 0.17.1
+      shuvi-test-utils: workspace:*
       ws: 8.2.3
     dependencies:
       '@babel/code-frame': 7.16.0
@@ -280,6 +283,7 @@ importers:
       '@types/dotenv': 8.2.0
       '@types/ejs': 3.0.4
       '@types/ws': 8.2.0
+      shuvi-test-utils: link:../../test/utils
 
   packages/shared:
     specifiers: {}

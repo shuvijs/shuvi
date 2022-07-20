@@ -22,9 +22,7 @@ export async function apiRouteHandler(
 ): Promise<void> {
   try {
     const { bodyParser } = apiRoutesConfig || {};
-
     const { pathname, query, params } = req;
-
     const apiReq: IApiReq = {
       pathname,
       query,
@@ -49,7 +47,6 @@ export async function apiRouteHandler(
       redirect: (statusOrUrl: number | string, url?: string) =>
         redirect<IApiResponse>(res, statusOrUrl, url)
     };
-
     let wasPiped = false;
 
     if (process.env.NODE_ENV !== 'production') {

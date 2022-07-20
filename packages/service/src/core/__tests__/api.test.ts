@@ -1,13 +1,11 @@
 import { getApi } from '../api';
-import { Config, getFullUserConfig, resolveConfig } from '..';
+import { Config } from '..';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import { readFileSync } from 'fs';
 
 test('should has "production" be default mode', async () => {
-  const prodApi = await getApi({
-    config: resolveConfig(getFullUserConfig())
-  });
+  const prodApi = await getApi();
   expect(prodApi.mode).toBe('production');
 });
 
@@ -15,17 +13,14 @@ describe('plugins', () => {
   test('should work', async () => {
     let context: any;
     await getApi({
-      config: resolveConfig(
-        getFullUserConfig({
-          plugins: [
-            {
-              afterInit: cliContext => {
-                context = cliContext;
-              }
-            }
-          ]
-        })
-      )
+      plugins: [
+        {
+          afterInit: cliContext => {
+            context = cliContext;
+          }
+        }
+      ],
+      config: {}
     });
     expect(context!).toBeDefined();
     expect(context!.paths).toBeDefined();
@@ -36,18 +31,16 @@ describe('plugins', () => {
 
     const api = await getApi({
       cwd: path.join(__dirname, 'fixtures', 'dotenv'),
-      config: resolveConfig(
-        getFullUserConfig({
-          publicPath: '/test',
-          plugins: [
-            {
-              afterInit: api => {
-                config = api.config;
-              }
-            }
-          ]
-        })
-      )
+      config: {
+        publicPath: '/test'
+      },
+      plugins: [
+        {
+          afterInit: api => {
+            config = api.config;
+          }
+        }
+      ]
     });
     expect(config!.publicPath).toBe('/test');
     expect(api.cwd).toBe(path.join(__dirname, 'fixtures', 'dotenv'));
@@ -72,36 +65,32 @@ test('add App files, add App services', async () => {
   }
   const api = await getApi({
     cwd: path.join(__dirname, 'fixtures', 'rootDir'),
-    config: resolveConfig(
-      getFullUserConfig({
-        plugins: [
+    plugins: [
+      {
+        addRuntimeFile: () => [
           {
-            addRuntimeFile: () => [
-              {
-                id: 'fileA.js',
-                name: 'fileA.js',
-                content: () => 'test.js'
-              },
-              {
-                id: 'fileB.js',
-                name: '../fileB.js',
-                content: () => 'test.js'
-              },
-              {
-                id: 'fileC.js',
-                name: '/fileC.js',
-                content: () => 'test.js'
-              }
-            ],
-            addRuntimeService: () => ({
-              source: 'source',
-              exported: 'exported',
-              filepath: 'a.js'
-            })
+            id: 'fileA.js',
+            name: 'fileA.js',
+            content: () => 'test.js'
+          },
+          {
+            id: 'fileB.js',
+            name: '../fileB.js',
+            content: () => 'test.js'
+          },
+          {
+            id: 'fileC.js',
+            name: '/fileC.js',
+            content: () => 'test.js'
           }
-        ]
-      })
-    )
+        ],
+        addRuntimeService: () => ({
+          source: 'source',
+          exported: 'exported',
+          filepath: 'a.js'
+        })
+      }
+    ]
   });
   await api.buildApp();
   checkMatch([

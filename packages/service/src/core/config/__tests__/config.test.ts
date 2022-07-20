@@ -18,17 +18,15 @@ test('should work without config file', async () => {
 
 test('should load config', async () => {
   const config = await loadFixture('base');
-  expect(config.ssr).toBe(true);
+  expect(config.publicPath).toBe('/test');
 });
 
 test('should overwrite config with userConfig ', async () => {
   const config = await loadFixture('base', {
-    ssr: false,
     publicDir: './public-dir'
   });
 
   expect(config.publicDir).toBe('./public-dir');
-  expect(config.ssr).toBe(false);
 });
 
 test('should warn when customed configFile does not exist', async () => {
@@ -38,7 +36,6 @@ test('should warn when customed configFile does not exist', async () => {
   const config = await loadFixture(
     'base',
     {
-      ssr: false,
       publicDir: './'
     },
     'none-exist-file'
@@ -47,7 +44,6 @@ test('should warn when customed configFile does not exist', async () => {
   expect(warn).toHaveBeenCalledWith(
     expect.stringMatching(/Config file not found:/)
   );
-  expect(config.ssr).toBe(false);
   expect(config.publicDir).toBe('./');
 });
 

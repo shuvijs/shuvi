@@ -1,11 +1,14 @@
 import { createHash } from 'crypto';
-import { IUserRouteConfig, IRouteConfig } from '@shuvi/service';
+import {
+  IPageRouteConfig,
+  IPageRouteConfigWithId
+} from '@shuvi/platform-shared/shared';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { normalizePath } from '@shuvi/utils/lib/file';
 
-export { IUserRouteConfig };
+export { IPageRouteConfig };
 
-type RouteKeysWithoutChildren = keyof Omit<IUserRouteConfig, 'children'>;
+type RouteKeysWithoutChildren = keyof Omit<IPageRouteConfig, 'children'>;
 
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
@@ -14,7 +17,7 @@ function genRouteId(filepath: string) {
 /**
  * returns JSON string of IRawPageRouteRecord
  */
-export function serializeRoutes(routes: IRouteConfig[]): string {
+export function serializeRoutes(routes: IPageRouteConfigWithId[]): string {
   let res = '';
   for (let index = 0; index < routes.length; index++) {
     const { children: childRoutes, ...route } = routes[index];
@@ -54,13 +57,13 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
 }
 
 export function normalizeRoutes(
-  routes: (IUserRouteConfig | IUserRouteConfig)[],
+  routes: IPageRouteConfig[],
   componentDir: string,
   parentPath: string = ''
-): IRouteConfig[] {
-  const res: IRouteConfig[] = [];
+): IPageRouteConfigWithId[] {
+  const res: IPageRouteConfigWithId[] = [];
   for (let index = 0; index < routes.length; index++) {
-    const route = { ...routes[index] } as IRouteConfig;
+    const route = { ...routes[index] } as IPageRouteConfigWithId;
     const pathWithoutSlash = route.path.replace(/^\//, '').replace(/\/$/, '');
     const fullpath = parentPath + '/' + pathWithoutSlash;
     if (route.component) {
@@ -78,7 +81,9 @@ export function normalizeRoutes(
   return res;
 }
 
-export const generateRoutesContent = (routes: IRouteConfig[]): string => {
+export const generateRoutesContent = (
+  routes: IPageRouteConfigWithId[]
+): string => {
   const serialized = serializeRoutes(routes);
   return `export default ${serialized}`;
 };

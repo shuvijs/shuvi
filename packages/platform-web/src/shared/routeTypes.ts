@@ -30,7 +30,7 @@ export type IApiRequestHandler<T = any> = (
 ) => void | Promise<void>;
 
 export interface IApiConfig {
-  apiConfig?: {
+  api?: {
     bodyParser?:
       | {
           sizeLimit: number | string;

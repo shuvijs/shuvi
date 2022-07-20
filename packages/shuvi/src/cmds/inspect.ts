@@ -2,10 +2,10 @@ import { inspect } from 'util';
 import program from 'commander';
 import { highlight } from 'cli-highlight';
 import chalk from '@shuvi/utils/lib/chalk';
-import { getApi } from '@shuvi/service';
 import { getBundler } from '@shuvi/service/lib/bundler/bundler';
-import { getProjectDir, getConfigFromCli, getPlatform } from '../utils';
-import { getPackageInfo } from '../utils';
+import { getPackageInfo, getProjectDir } from '../utils';
+import { getConfigFromCli } from '../config';
+import { initShuvi } from '../shuvi';
 
 export default async function main(argv: string[]) {
   const pkgInfo = getPackageInfo();
@@ -28,11 +28,9 @@ export default async function main(argv: string[]) {
     NODE_ENV: mode
   });
   const config = await getConfigFromCli(cwd, program);
-  const platform = getPlatform(config.platform.name);
-  const api = await getApi({
+  const api = await initShuvi({
     cwd,
     config,
-    platform,
     mode,
     phase: 'PHASE_INSPECT_WEBPACK'
   });

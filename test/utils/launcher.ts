@@ -1,7 +1,7 @@
 import * as qs from 'querystring';
-import { Config } from '@shuvi/service';
-import { getApi, createShuviServer, IShuviServer } from '@shuvi/service';
-import { getPlatform } from 'shuvi/lib/utils';
+import { createShuviServer, IShuviServer } from '@shuvi/service';
+import { ShuviConfig } from 'shuvi/lib';
+import { initShuvi } from 'shuvi/lib/shuvi';
 import { loadFixture, resolveFixture } from './fixture';
 import { shuviSync, shuvi, build } from './shuvi';
 import { findPort } from './findPort';
@@ -43,7 +43,7 @@ async function createTestContext(app: IShuviServer): Promise<AppCtx> {
 
 export function buildFixture(
   fixture: string,
-  configOverrides: Config = {},
+  configOverrides: ShuviConfig = {},
   spawnOptions: SpawnOptions = {}
 ) {
   return shuviSync(
@@ -59,11 +59,10 @@ export function buildFixture(
 
 export async function launchFixtureAtCurrentProcess(
   name: string,
-  overrides: Config = {}
+  overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const platform = getPlatform(config.platform.name);
-  const api = await getApi({ cwd: resolveFixture(name), config, platform });
+  const api = await initShuvi({ cwd: resolveFixture(name), config });
   await api.buildApp();
   const shuviApp = await createShuviServer({
     context: api.pluginContext,
@@ -75,14 +74,12 @@ export async function launchFixtureAtCurrentProcess(
 
 export async function serveFixtureAtCurrentProcess(
   name: string,
-  overrides: Config = {}
+  overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const platform = getPlatform(config.platform.name);
   const api = await build({
     cwd: resolveFixture(name),
-    config,
-    platform
+    config
   });
   const shuviApp = await createShuviServer({
     context: api.pluginContext,
@@ -100,7 +97,7 @@ async function launchShuvi(
   projectPath: string,
   port: number,
   isDev: boolean,
-  configOverrides: Config,
+  configOverrides: ShuviConfig,
   envOverrides: Partial<NodeJS.ProcessEnv>,
   handleStdoutStderr: IHandleStdoutStderr
 ): Promise<ChildProcess> {
@@ -175,7 +172,7 @@ async function launchShuvi(
 
 export async function launchFixture(
   name: string,
-  configOverrides: Config = {},
+  configOverrides: ShuviConfig = {},
   envOverrides: Partial<NodeJS.ProcessEnv> = {},
   isDev: boolean = true,
   handleStdoutStderr: IHandleStdoutStderr = {}
@@ -214,7 +211,7 @@ export async function launchFixture(
 
 export async function serveFixture(
   name: string,
-  configOverrides: Config = {},
+  configOverrides: ShuviConfig = {},
   envOverrides: Partial<NodeJS.ProcessEnv> = {},
   handleStdoutStderr: IHandleStdoutStderr = {}
 ): Promise<AppCtx> {

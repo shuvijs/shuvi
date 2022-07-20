@@ -8,6 +8,7 @@ export { errorModel } from './models/error';
 
 export * from './applicationTypes';
 export type { Application } from './application';
+export type { IRuntimeConfig } from './runtimeConfigTypes';
 
 export {
   IAppModule,

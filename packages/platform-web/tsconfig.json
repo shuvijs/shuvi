@@ -3,5 +3,5 @@
   "compilerOptions": {
     "esModuleInterop": true
   },
-  "include": ["src", "shuvi-app-extensions.d.ts"]
+  "include": ["src", "shuvi-type-extensions-runtime.d.ts"]
 }

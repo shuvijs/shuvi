@@ -7,6 +7,6 @@
     "rootDir": "./src",
     "outDir": "esm"
   },
-  "files": ["./shuvi-app-extensions"],
+  "files": ["./shuvi-type-extensions-runtime.d.ts"],
   "include": ["src/shuvi-app", "src/shared"]
 }

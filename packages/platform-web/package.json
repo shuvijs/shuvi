@@ -14,7 +14,7 @@
   "files": [
     "lib",
     "esm",
-    "shuvi-app-extensions.d.ts"
+    "shuvi-type-extensions-runtime.d.ts"
   ],
   "exports": {
     ".": {
@@ -41,7 +41,7 @@
         "./esm/shuvi-app/*.jsx"
       ]
     },
-    "./shuvi-app-extensions.d.ts": "./shuvi-app-extensions.d.ts"
+    "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts"
   },
   "scripts": {
     "dev": "run-p watch:*",
@@ -90,6 +90,7 @@
     "@types/cookie": "^0.4.1",
     "@types/ejs": "^3.1.0",
     "@types/raw-body": "^2.3.0",
+    "shuvi-test-utils": "workspace:*",
     "webpack": "5.73.0"
   }
 }
