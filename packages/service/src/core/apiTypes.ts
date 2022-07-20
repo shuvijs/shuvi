@@ -112,7 +112,7 @@ export type IPlatform = (
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
-export interface CustomConfig {}
+export interface CustomConfig extends ShuviService.CustomConfig {}
 
 export interface InternalConfig {
   env: Record<string, string>;

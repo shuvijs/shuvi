@@ -19,9 +19,14 @@ export function middleware(
     }
     if (tempApiModule) {
       try {
-        const { config: { api } = {}, default: resolver } = tempApiModule;
+        const { config, default: resolver } = tempApiModule;
 
-        await apiRouteHandler(req, res, resolver, api || { bodyParser: true });
+        await apiRouteHandler(
+          req,
+          res,
+          resolver,
+          config?.api || { bodyParser: true }
+        );
       } catch (error) {
         next(error);
       }

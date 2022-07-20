@@ -1,4 +1,3 @@
-import './shuvi-type-extensions-node';
 import { IPlatform } from '@shuvi/service';
 import {
   SharedPlugins,
@@ -12,7 +11,7 @@ import {
 } from './features';
 import { resolvePkgFile } from './paths';
 
-export { PlatformWebCustomConfig } from './config';
+export { PlatformWebCustomConfig } from '../shared/configTypes';
 
 const platform =
   ({ framework = 'react' } = {}): IPlatform =>
