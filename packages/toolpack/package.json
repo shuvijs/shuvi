@@ -15,7 +15,7 @@
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
     "build": "tsc -p tsconfig.build.json",
-    "build-native": "napi build --platform --cargo-cwd /src/swc ./swc-source/native",
+    "build-native": "napi build --platform --cargo-name next_swc_napi --features plugin --cargo-cwd /src/swc ./swc-source/native",
     "publish-native": "node scripts/publish-native.js"
   },
   "engines": {
@@ -35,8 +35,8 @@
     "@babel/preset-react": "7.10.1",
     "@babel/preset-typescript": "7.12.7",
     "@babel/runtime": "7.12.5",
-    "@napi-rs/cli": "1.2.1",
-    "@napi-rs/triples": "1.0.3",
+    "@napi-rs/cli": "2.4.4",
+    "@napi-rs/triples": "1.1.0",
     "@parcel/css": "1.2.0",
     "@shuvi/shared": "1.0.0-rc.1",
     "@shuvi/utils": "1.0.0-rc.1",

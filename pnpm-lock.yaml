@@ -327,8 +327,8 @@ importers:
       '@babel/preset-react': 7.10.1
       '@babel/preset-typescript': 7.12.7
       '@babel/runtime': 7.12.5
-      '@napi-rs/cli': 1.2.1
-      '@napi-rs/triples': 1.0.3
+      '@napi-rs/cli': 2.4.4
+      '@napi-rs/triples': 1.1.0
       '@parcel/css': 1.2.0
       '@shuvi/shared': 1.0.0-rc.1
       '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
@@ -404,8 +404,8 @@ importers:
       '@babel/preset-react': 7.10.1_@babel+core@7.12.10
       '@babel/preset-typescript': 7.12.7_@babel+core@7.12.10
       '@babel/runtime': 7.12.5
-      '@napi-rs/cli': 1.2.1
-      '@napi-rs/triples': 1.0.3
+      '@napi-rs/cli': 2.4.4
+      '@napi-rs/triples': 1.1.0
       '@parcel/css': 1.2.0
       '@shuvi/shared': link:../shared
       '@shuvi/utils': link:../utils
@@ -2639,14 +2639,14 @@ packages:
       read-yaml-file: 1.1.0
     dev: true
 
-  /@napi-rs/cli/1.2.1:
-    resolution: {integrity: sha512-7FoYn1JSK5rTIG9KcKfYnZL/O0UjUMMuzZCXd//bJdkLw0Xx9EqQJs1X/Mg4KqywJYb79LDfxRMiJRSukPGDNw==}
+  /@napi-rs/cli/2.4.4:
+    resolution: {integrity: sha512-f+tvwCv1ka24dBqI2DgBhR7Oxl3DKHOp4onxLXwyBFt6iCADnr3YZIr1/2Iq5r3uqxFgaf01bfPsRQZPkEp0kQ==}
     engines: {node: '>= 10'}
     hasBin: true
     dev: false
 
-  /@napi-rs/triples/1.0.3:
-    resolution: {integrity: sha512-jDJTpta+P4p1NZTFVLHJ/TLFVYVcOqv6l8xwOeBKNPMgY/zDYH/YH7SJbvrr/h1RcS9GzbPcLKGzpuK9cV56UA==}
+  /@napi-rs/triples/1.1.0:
+    resolution: {integrity: sha512-XQr74QaLeMiqhStEhLn1im9EOMnkypp7MZOwQhGzqp2Weu5eQJbpPxWxixxlYRKWPOmJjsk6qYfYH9kq43yc2w==}
     dev: false
 
   /@next/react-refresh-utils/12.1.6_mrng46iweft73kaoehgasn3du4:
