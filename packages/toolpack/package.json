@@ -15,7 +15,7 @@
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
     "build": "tsc -p tsconfig.build.json",
-    "build-native": "napi build --platform --cargo-name next_swc_napi --features plugin --cargo-cwd /src/swc ./swc-source/native",
+    "build-native": "napi build --platform --cargo-name next_swc_napi --features plugin --cargo-cwd /swc ./swc-source/native",
     "publish-native": "node scripts/publish-native.js"
   },
   "engines": {

@@ -1,5 +1,5 @@
 // @ts-ignore
-import { transform } from '../../utils/load-sources';
+import { transform } from '../../src/utils/load-sources';
 
 export default async function swcTransform(
   inputSource: string,
