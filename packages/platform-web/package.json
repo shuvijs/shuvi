@@ -14,6 +14,7 @@
   "files": [
     "lib",
     "esm",
+    "shuvi-type-extensions-node.d.ts",
     "shuvi-type-extensions-runtime.d.ts"
   ],
   "exports": {
@@ -40,6 +41,10 @@
         "./esm/shuvi-app/*.js",
         "./esm/shuvi-app/*.jsx"
       ]
+    },
+    "./shuvi-type-extensions-node": {
+      "types": "./shuvi-type-extensions-node.d.js",
+      "default": "./shuvi-type-extensions-node.js"
     },
     "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts"
   },

@@ -1,3 +1,5 @@
+export * from './namespace';
+
 export * from './constants';
 
 export { getBundler } from './bundler';
