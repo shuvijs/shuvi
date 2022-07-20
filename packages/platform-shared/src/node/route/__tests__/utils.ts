@@ -35,7 +35,7 @@ export const normalizeWarnings = (warnings: RouteException[], dir: string) => {
   return warnings.map(warning => {
     return {
       ...warning,
-      msg: warning.msg.replace(dir + '/', '')
+      msg: toUnixPath(warning.msg).replace(dir + '/', '')
     };
   });
 };
