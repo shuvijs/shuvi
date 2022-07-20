@@ -1,6 +1,5 @@
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { InternalConfig } from '../apiTypes';
-import { DEFAULT_PUBLIC_PATH } from '../../constants';
+import { InternalConfig } from './apiTypes';
+import { DEFAULT_PUBLIC_PATH } from '../constants';
 
 export const getDefaultConfig: () => InternalConfig = () => ({
   env: {},
@@ -17,7 +16,3 @@ export const getDefaultConfig: () => InternalConfig = () => ({
     preBundle: false
   }
 });
-
-export function mergeConfig(...configs: any[]): any {
-  return deepmerge(...configs);
-}
