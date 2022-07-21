@@ -8,32 +8,29 @@ import {
   BUILD_SERVER_FILE_SERVER,
   IPluginContext
 } from '@shuvi/service';
+import { urlToRequest } from '@shuvi/service/lib/project/file-utils';
 
 const generateResources = (context: IPluginContext) => {
   const { resolveUserFile } = context;
   const { buildDir } = context.paths;
-  const serverManifestPath = path.join(
-    buildDir,
-    BUILD_SERVER_DIR,
-    SERVER_BUILD_MANIFEST_PATH
+  const clientManifestRequest = urlToRequest(
+    path.join(buildDir, BUILD_DEFAULT_DIR, CLIENT_BUILD_MANIFEST_PATH)
   );
-
+  const serverManifestRequest = urlToRequest(
+    path.join(buildDir, BUILD_SERVER_DIR, SERVER_BUILD_MANIFEST_PATH)
+  );
+  const serverModuleDir = path.join(buildDir, BUILD_SERVER_DIR);
   const result: [string, string | undefined][] = [];
 
-  result.push([
-    'clientManifest',
-    path.join(buildDir, BUILD_DEFAULT_DIR, CLIENT_BUILD_MANIFEST_PATH)
-  ]);
-  result.push(['serverManifest', serverManifestPath]);
+  result.push(['clientManifest', clientManifestRequest]);
+  result.push(['serverManifest', serverManifestRequest]);
 
   result.push([
     `server = function() {
-    var path = require('path');
-    return require(path.join(
-      '${buildDir}',
-      '${BUILD_SERVER_DIR}',
-      require('${serverManifestPath}')['bundles']['${BUILD_SERVER_FILE_SERVER}']
-    ))
+    const path = require('path');
+    const relativeModulePath = require('${serverManifestRequest}')['bundles']['${BUILD_SERVER_FILE_SERVER}'];
+    const modulePath = require.resolve(path.join("${serverModuleDir}", relativeModulePath));
+    return require(modulePath)
   }`,
     undefined
   ]);

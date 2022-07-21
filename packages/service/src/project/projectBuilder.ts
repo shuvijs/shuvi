@@ -2,7 +2,7 @@ import * as path from 'path';
 import invariant from '@shuvi/utils/lib/invariant';
 import { getFileManager, FileManager, FileOptionsBase } from './file-manager';
 import { getFilePresets } from './file-presets';
-import { getExportsFromObject, getContentProxyObj } from './file-utils';
+import { getExportsFromObject } from './file-utils';
 import { RuntimePluginConfig } from '../core';
 import { ProjectContext, createProjectContext } from './projectContext';
 
@@ -116,29 +116,7 @@ class ProjectBuilder {
 
   addResources(key: string, requireStr?: string): void {
     const services = this._projectContext.resources;
-    const filepath = 'resources/index.js';
-    const service = services.get(filepath);
-    if (service) {
-      service.set(key, requireStr);
-    } else {
-      const service: Map<string, string | undefined> = new Map();
-      service.set(key, requireStr);
-      services.set(filepath, service);
-      this.addFile({
-        name: filepath,
-        content: (context: ProjectContext) => {
-          const proxyObj: { [key: string]: string | undefined } = {};
-          const service = context.resources.get(filepath);
-          if (!service) {
-            return null;
-          }
-          for (const [k, r] of service) {
-            proxyObj[k] = r;
-          }
-          return getContentProxyObj(proxyObj);
-        }
-      });
-    }
+    services.set(key, requireStr);
   }
 
   /**
