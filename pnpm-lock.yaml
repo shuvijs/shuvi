@@ -2507,8 +2507,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.13
     dev: true
 
-  /@napi-rs/cli/1.2.1:
-    resolution: {integrity: sha512-7FoYn1JSK5rTIG9KcKfYnZL/O0UjUMMuzZCXd//bJdkLw0Xx9EqQJs1X/Mg4KqywJYb79LDfxRMiJRSukPGDNw==}
+  /@napi-rs/cli/2.4.4:
+    resolution: {integrity: sha512-f+tvwCv1ka24dBqI2DgBhR7Oxl3DKHOp4onxLXwyBFt6iCADnr3YZIr1/2Iq5r3uqxFgaf01bfPsRQZPkEp0kQ==}
     engines: {node: '>= 10'}
     hasBin: true
     dev: false
