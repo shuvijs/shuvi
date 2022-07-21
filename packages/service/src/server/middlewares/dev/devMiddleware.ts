@@ -8,7 +8,7 @@ import {
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import { DynamicDll } from '@shuvi/toolpack/lib/webpack';
-import WebpackDevMiddleware from './shuvi-dev-middleware';
+import ShuviDevMiddleware from './shuvi-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -39,7 +39,7 @@ export async function getDevMiddleware(
   }
 
   compiler = await bundler.getWebpackCompiler(dynamicDll);
-  // watch before pass compiler to WebpackDevMiddleware
+  // watch before pass compiler to ShuviDevMiddleware
   bundler.watch({
     onErrors(errors) {
       send('errors', errors);
@@ -49,8 +49,8 @@ export async function getDevMiddleware(
     }
   });
 
-  // webpackDevMiddleware make first compiler build assets as static sources
-  const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
+  // ShuviDevMiddleware make first compiler build assets as static sources
+  const shuviDevMiddleware = ShuviDevMiddleware(compiler as any, {
     publicPath: serverPluginContext.assetPublicPath
   });
 
@@ -61,7 +61,7 @@ export async function getDevMiddleware(
 
   const apply = (server: Server) => {
     const targetServer = server;
-    targetServer.use(webpackDevMiddleware);
+    targetServer.use(shuviDevMiddleware);
     targetServer.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );
@@ -76,7 +76,7 @@ export async function getDevMiddleware(
 
   const invalidate = () => {
     return new Promise(resolve => {
-      webpackDevMiddleware.invalidate(resolve);
+      shuviDevMiddleware.invalidate(resolve);
     });
   };
 
@@ -85,10 +85,10 @@ export async function getDevMiddleware(
       // private api
       // we know that there must be a rebuild so it's safe to do this
       // @ts-ignore
-      webpackDevMiddleware.context.state = false;
+      shuviDevMiddleware.context.state = false;
     }
     return new Promise(resolve => {
-      webpackDevMiddleware.waitUntilValid(resolve);
+      shuviDevMiddleware.waitUntilValid(resolve);
     });
   };
 

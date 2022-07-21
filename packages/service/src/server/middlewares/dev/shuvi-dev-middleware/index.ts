@@ -11,7 +11,7 @@ import {
   IShuviDevMiddleware
 } from './types';
 
-export default function shuviDevMiddleware(
+export default function ShuviDevMiddleware(
   compiler: MultiCompiler,
   options: IOptions
 ): IShuviDevMiddleware & IRequestHandlerWithNext {
