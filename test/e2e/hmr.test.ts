@@ -130,7 +130,7 @@ describe('Hot Module Reloading', () => {
         // error box content
         await check(
           () => getIframeTextContent(page),
-          t => /Error: error/.test(t)
+          t => /Error:/.test(t)
         );
 
         // add the original content

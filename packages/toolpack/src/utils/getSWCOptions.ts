@@ -59,27 +59,25 @@ export default function getSWCOptions({
     }
   };
 
+  const swcOptions = {
+    jsc,
+    disableShuviDynamic,
+    minify,
+    flag,
+    isServer: isNode
+  };
+
   if (isNode) {
-    return {
-      jsc,
-      disableShuviDynamic,
-      minify,
-      flag,
-      env: {
-        targets: {
-          // Targets the current version of Node.js
-          node: process.versions.node
-        }
+    // @ts-ignore
+    swcOptions.env = {
+      targets: {
+        // Targets the current version of Node.js
+        node: process.versions.node
       }
     };
   } else {
     // Matches default @babel/preset-env behavior
     (jsc as typeof jsc & { target: string }).target = 'es5';
-    return {
-      disableShuviDynamic,
-      minify,
-      flag,
-      jsc
-    };
   }
+  return swcOptions;
 }
