@@ -20,8 +20,8 @@ export function getPaths(opts: IPathsOpts): IPaths {
     routesDir: srcChildDir('routes'),
     privateDir: toAbsolute(`.${NAME}`),
     appDir: toAbsolute(`.${NAME}/app`),
+    resources: toAbsolute(`.${NAME}/app/resources.js`),
     runtimeDir: toAbsolute(`.${NAME}/runtime`),
-    resources: toAbsolute(`.${NAME}/resources/index.js`),
     cacheDir: toAbsolute(`.${NAME}/cache`),
     buildDir: toAbsolute(outputPath),
     publicDir: toAbsolute(publicDir)
