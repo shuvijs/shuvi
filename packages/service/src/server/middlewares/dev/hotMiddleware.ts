@@ -23,7 +23,7 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import type webpack from '@shuvi/toolpack/lib/webpack';
-import { IRequestHandlerWithNext, IResponse } from '../../http-server';
+import type ws from 'ws';
 
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
@@ -32,12 +32,12 @@ interface IWebpackHotMiddlewareOptions {
 
 export class WebpackHotMiddleware {
   _path: string;
-  eventStream: EventStream;
+  clientManager: ClientManager;
   latestStats: webpack.Stats | null;
   closed: boolean;
 
   constructor({ compiler, path }: IWebpackHotMiddlewareOptions) {
-    this.eventStream = new EventStream();
+    this.clientManager = new ClientManager();
     this.latestStats = null;
     this.closed = false;
     this._path = path;
@@ -49,7 +49,7 @@ export class WebpackHotMiddleware {
   onInvalid = () => {
     if (this.closed) return;
     this.latestStats = null;
-    this.eventStream.publish({ action: 'building' });
+    this.clientManager.publish({ action: 'building' });
   };
   onDone = (statsResult: webpack.Stats) => {
     if (this.closed) return;
@@ -57,15 +57,28 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
   };
-  middleware: IRequestHandlerWithNext = (req, res, next) => {
-    if (this.closed) return next();
-    if (!req.url?.startsWith(this._path)) return next();
-    this.eventStream.handler(req, res, next);
+  onHMR = (client: ws) => {
+    if (this.closed) return;
+    this.clientManager.add(client);
+
     if (this.latestStats) {
-      // Explicitly not passing in `log` fn as we don't want to log again on
-      // the server
       this.publishStats('sync', this.latestStats);
     }
+
+    client.addEventListener('message', ({ data }) => {
+      try {
+        const parsedData = JSON.parse(
+          typeof data !== 'string' ? data.toString() : data
+        );
+        if (parsedData.event === 'ping') {
+          client.send(
+            JSON.stringify({
+              event: 'pong'
+            })
+          );
+        }
+      } catch (_) {}
+    });
   };
 
   publishStats = (action: string, statsResult: webpack.Stats) => {
@@ -76,7 +89,7 @@ export class WebpackHotMiddleware {
       errors: true
     });
 
-    this.eventStream.publish({
+    this.clientManager.publish({
       action: action,
       hash: stats.hash,
       warnings: stats.warnings || [],
@@ -86,76 +99,46 @@ export class WebpackHotMiddleware {
 
   publish = (payload: any) => {
     if (this.closed) return;
-    this.eventStream.publish(payload);
+    this.clientManager.publish(payload);
   };
   close = () => {
     if (this.closed) return;
     // Can't remove compiler plugins, so we just set a flag and noop if closed
     // https://github.com/webpack/tapable/issues/32#issuecomment-350644466
     this.closed = true;
-    this.eventStream.close();
+    this.clientManager.close();
   };
 }
 
-class EventStream {
-  clients: Set<IResponse>;
-  interval: NodeJS.Timeout;
+class ClientManager {
+  clients: Set<ws>;
   constructor() {
     this.clients = new Set();
-
-    this.interval = setInterval(this.heartbeatTick, 2500).unref();
-  }
-
-  heartbeatTick = () => {
-    this.everyClient(client => {
-      client.write('data: \uD83D\uDC93\n\n');
-    });
-  };
-
-  everyClient(fn: (client: IResponse) => void) {
-    for (const client of this.clients) {
-      fn(client);
-    }
   }
 
   close() {
-    clearInterval(this.interval);
-    this.everyClient(client => {
-      if (!client.finished || !client.writableEnded) client.end();
+    this._everyClient(client => {
+      client.close();
     });
     this.clients.clear();
   }
 
-  handler: IRequestHandlerWithNext = (req, res, next) => {
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'text/event-stream;charset=utf-8',
-      'Cache-Control': 'no-cache, no-transform',
-      // While behind nginx, event stream should not be buffered:
-      // http://nginx.org/docs/http/ngx_http_proxy_module.html#proxy_buffering
-      'X-Accel-Buffering': 'no'
-    };
-
-    const isHttp1 = !(parseInt(req.httpVersion) >= 2);
-    if (isHttp1) {
-      req.socket.setKeepAlive(true);
-      Object.assign(headers, {
-        Connection: 'keep-alive'
-      });
-    }
-
-    res.writeHead(200, headers);
-    res.write('\n');
-    this.clients.add(res);
-    req.on('close', () => {
-      if (!res.finished || !res.writableEnded) res.end();
-      this.clients.delete(res);
+  add(client: ws) {
+    this.clients.add(client);
+    client.addEventListener('close', () => {
+      this.clients.delete(client);
     });
-  };
+  }
 
   publish(payload: any) {
-    this.everyClient(client => {
-      client.write('data: ' + JSON.stringify(payload) + '\n\n');
+    this._everyClient(client => {
+      client.send(JSON.stringify(payload));
     });
+  }
+
+  private _everyClient(fn: (client: ws) => void) {
+    for (const client of this.clients) {
+      fn(client);
+    }
   }
 }

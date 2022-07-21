@@ -1,18 +1,90 @@
-import { getFixturePath, normalizePath, normalizeWarnings } from './utils';
-import { getPageRoutes } from '../route';
+import { getFixturePath, normalizeWarnings, normalizePath } from './utils';
+import {
+  getRawRoutesFromDir,
+  getMiddlewareRoutes,
+  getPageRoutes,
+  getApiRoutes
+} from '../route';
 
-const getFixturePageRoutes = async (dirname: string) => {
-  const dir = getFixturePath(dirname);
-  const { routes, warnings, errors } = await getPageRoutes(dir);
+describe('route/raw-route', () => {
+  const getRawRoutes = async (
+    dirname: string,
+    { exclude }: { exclude?: string[] } = {}
+  ) => {
+    const dir = getFixturePath(dirname);
+    const { routes, warnings, errors } = await getRawRoutesFromDir(
+      dir,
+      exclude
+    );
 
-  return {
-    routes: normalizePath(routes, dir, 'component'),
-    warnings: normalizeWarnings(warnings, dir),
-    errors: normalizeWarnings(errors, dir)
+    return {
+      routes: normalizePath(routes, dir, 'filepath'),
+      warnings,
+      errors
+    };
   };
-};
 
-describe('filesystem routes', () => {
+  const pick = (items: any[], key: string): any[] => {
+    return items.map(item => {
+      return {
+        [key]: item[key],
+        ...(item.children
+          ? {
+              children: pick(item.children, key)
+            }
+          : {})
+      };
+    });
+  };
+
+  it('should get raw routes from dir', async () => {
+    const result = await getRawRoutes('exclude', {
+      exclude: ['ignore-dir', 'ignore-file/**/api.js']
+    });
+
+    expect(pick(result.routes, 'filepath')).toMatchObject([
+      {
+        filepath: 'foo/',
+        children: [
+          {
+            filepath: 'foo/page.js'
+          }
+        ]
+      },
+      {
+        filepath: 'ignore-file/',
+        children: [
+          {
+            filepath: 'ignore-file/nested/',
+            children: [
+              {
+                filepath: 'ignore-file/nested/page.js'
+              }
+            ]
+          },
+          {
+            filepath: 'ignore-file/page.js'
+          }
+        ]
+      },
+      {
+        filepath: 'page.js'
+      }
+    ]);
+  });
+});
+
+describe('route/page', () => {
+  const getFixturePageRoutes = async (dirname: string) => {
+    const dir = getFixturePath(dirname);
+    const { routes, warnings, errors } = await getPageRoutes(dir);
+
+    return {
+      routes: normalizePath(routes, dir, 'component'),
+      warnings: normalizeWarnings(warnings, dir),
+      errors: normalizeWarnings(errors, dir)
+    };
+  };
   it('should work when without-layout', async () => {
     const result = await getFixturePageRoutes('without-layout');
     expect(result).toMatchObject({
@@ -153,8 +225,8 @@ describe('filesystem routes', () => {
       routes: [],
       warnings: [
         {
-          msg: 'a is empty dir!',
-          type: 'dir'
+          type: 'dir',
+          msg: 'a/ is empty dir!'
         }
       ]
     });
@@ -173,7 +245,7 @@ describe('filesystem routes', () => {
       warnings: [
         {
           type: 'dir',
-          msg: 'b is empty dir!'
+          msg: 'b/ is empty dir!'
         }
       ]
     });
@@ -214,6 +286,113 @@ describe('filesystem routes', () => {
       ],
       errors: [],
       warnings: []
+    });
+  });
+});
+
+describe('route/api', () => {
+  const getFixtureApiRoutes = async (dirname: string) => {
+    const dir = getFixturePath(dirname);
+    const { routes, warnings, errors } = await getApiRoutes(dir);
+
+    return {
+      routes: normalizePath(routes, dir, 'api'),
+      warnings: normalizeWarnings(warnings, dir),
+      errors: normalizeWarnings(errors, dir)
+    };
+  };
+  it('should get correct api routes', async () => {
+    const result = await getFixtureApiRoutes('api');
+
+    expect(result).toMatchObject({
+      routes: [
+        {
+          path: '/api/users/:id',
+          api: 'api/users/[id]/api.js'
+        },
+        {
+          path: '/api/users',
+          api: 'api/users/api.js'
+        },
+        {
+          path: '/api',
+          api: 'api/api.js'
+        }
+      ],
+      warnings: [],
+      errors: []
+    });
+  });
+
+  it('should get warnings and dont generate apis when conflicted', async () => {
+    const result = await getFixtureApiRoutes('api-conflict');
+    expect(result).toMatchObject({
+      routes: [],
+      warnings: [
+        {
+          type: 'api',
+          msg: 'Find both layout.js and api.js in "a"!, only "layout.js" is used.'
+        },
+        {
+          type: 'api',
+          msg: 'Find both layout.js and api.js in "b"!, only "layout.js" is used.'
+        }
+      ],
+      errors: []
+    });
+  });
+});
+
+describe('route/middleware', () => {
+  const getFixtureMiddlewareRoutes = async (dirname: string) => {
+    const dir = getFixturePath(dirname);
+    const { routes, warnings, errors } = await getMiddlewareRoutes(dir);
+
+    return {
+      routes: normalizePath(routes, dir, 'middleware'),
+      warnings: normalizeWarnings(warnings, dir),
+      errors: normalizeWarnings(errors, dir)
+    };
+  };
+
+  describe('middleware routes test', () => {
+    it('should get correct middlewares', async () => {
+      const result = await getFixtureMiddlewareRoutes('middlewares');
+      expect(result).toMatchObject({
+        routes: [
+          {
+            path: '/b/b1/*',
+            middleware: 'b/b1/middleware.js'
+          },
+          {
+            path: '/b/b2/*',
+            middleware: 'b/b2/middleware.js'
+          },
+          {
+            path: '/a/*',
+            middleware: 'a/middleware.js'
+          },
+          {
+            path: '/b/*',
+            middleware: 'b/middleware.js'
+          },
+          {
+            path: '/*',
+            middleware: 'middleware.js'
+          }
+        ],
+        warnings: [],
+        errors: []
+      });
+    });
+
+    it('should get empty array when has not middleware', async () => {
+      const result = await getFixtureMiddlewareRoutes('layout');
+      expect(result).toMatchObject({
+        errors: [],
+        warnings: [],
+        routes: []
+      });
     });
   });
 });

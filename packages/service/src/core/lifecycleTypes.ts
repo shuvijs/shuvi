@@ -4,17 +4,17 @@ import webpack, { Configuration } from '@shuvi/toolpack/lib/webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 import { defineFile, FileOptions } from '../project';
 import { IWebpackConfigOptions } from '../bundler/config';
-import { IShuviMode } from './apiTypes';
+import { IServiceMode } from './apiTypes';
 
 export type ExtraTargetAssistant = {
   createConfig(options: IWebpackConfigOptions): WebpackChain;
-  mode: IShuviMode;
+  mode: IServiceMode;
   webpack: typeof webpack;
 };
 
 export type ConfigWebpackAssistant = {
   name: string;
-  mode: IShuviMode;
+  mode: IServiceMode;
   webpack: typeof webpack;
   /**
    * require webpack interal module

@@ -1,13 +1,16 @@
 import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { joinPath } from '@shuvi/utils/lib/string';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import {
   Config,
   NormalizedConfig,
+  IPluginConfig,
+  IPresetConfig,
   IPaths,
-  IShuviMode,
-  IPhase,
+  IServiceMode,
+  IServicePhase,
   IPlatform,
   IPlatformContent,
   IPluginContext,
@@ -16,26 +19,28 @@ import {
 } from './apiTypes';
 import { defineFile, ProjectBuilder, FileOptions } from '../project';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
-import { resolveConfig } from './config';
 import {
   getManager,
   PluginManager,
   Resources,
   CorePluginInstance
 } from './lifecycle';
+import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import { ServerPluginInstance } from '../server';
 import { _setResourceEnv } from '../resources';
 
-const ServiceModes: IShuviMode[] = ['development', 'production'];
+const ServiceModes: IServiceMode[] = ['development', 'production'];
 
 interface IApiOPtions {
   cwd: string;
-  mode: IShuviMode;
+  mode: IServiceMode;
+  phase: IServicePhase;
   config?: Config;
-  phase: IPhase;
   platform?: IPlatform;
+  plugins?: IPluginConfig[];
+  presets?: IPresetConfig[];
 }
 
 interface ServerConfigs {
@@ -46,10 +51,11 @@ interface ServerConfigs {
 
 class Api {
   private _cwd: string;
-  private _mode: IShuviMode;
-  private _phase: IPhase;
-  private _userConfig: Config;
+  private _mode: IServiceMode;
+  private _phase: IServicePhase;
   private _config!: NormalizedConfig;
+  private _plugins: IPluginConfig[];
+  private _presets: IPresetConfig[];
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
   private _platform?: IPlatform;
@@ -61,12 +67,22 @@ class Api {
   /** will be included by @shuvi/swc-loader */
   private _runtimePluginDirs: string[] = [];
 
-  constructor({ cwd, mode, config, phase, platform }: IApiOPtions) {
+  constructor({
+    cwd,
+    mode,
+    config = {},
+    presets,
+    plugins,
+    phase,
+    platform
+  }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._userConfig = config || {};
+    this._config = deepmerge(getDefaultConfig(), config);
+    this._presets = presets || [];
+    this._plugins = plugins || [];
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder({
@@ -95,12 +111,10 @@ class Api {
   }
 
   async init() {
-    const config = (this._config = resolveConfig(this._userConfig));
-
     this._paths = getPaths({
       rootDir: this._cwd,
-      outputPath: config.outputPath,
-      publicDir: config.publicDir
+      outputPath: this._config.outputPath,
+      publicDir: this._config.publicDir
     });
     Object.freeze(this._config);
     Object.freeze(this._paths);
@@ -130,7 +144,10 @@ class Api {
       await this._initPlatform();
 
     // 2. init user plugins
-    const userPlugins = await getPlugins(this._cwd, config);
+    const userPlugins = await getPlugins(this._cwd, {
+      presets: this._presets,
+      plugins: this._plugins
+    });
     platformPlugins
       .concat(userPlugins)
       .forEach(plugin => this._applyPlugin(plugin));
@@ -258,8 +275,7 @@ class Api {
         getPresetRuntimeFiles: () => []
       };
 
-    const platformConfig = this._config.platform;
-    const platformContent = await this._platform(platformConfig, {
+    const platformContent = await this._platform({
       serverPlugins: this._serverPlugins
     });
     const {
@@ -334,11 +350,11 @@ class Api {
 
 export { Api };
 
-export async function getApi(options: Partial<IApiOPtions>): Promise<Api> {
+export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
   const cwd = path.resolve(options.cwd || '.');
   let mode = options.mode;
   if (ServiceModes.includes((mode || process.env.NODE_ENV) as any)) {
-    mode = (mode || process.env.NODE_ENV) as IShuviMode;
+    mode = (mode || process.env.NODE_ENV) as IServiceMode;
   } else {
     mode = 'production';
   }
@@ -357,7 +373,9 @@ export async function getApi(options: Partial<IApiOPtions>): Promise<Api> {
     mode,
     phase,
     config: options.config,
-    platform: options.platform
+    platform: options.platform,
+    presets: options.presets,
+    plugins: options.plugins
   });
 
   await api.init();

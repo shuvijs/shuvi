@@ -1,5 +1,5 @@
 {
-  "name": "shuvi-test",
+  "name": "shuvi-test-utils",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
     "@shuvi/service": "workspace:*",
     "@shuvi/shared": "workspace:*",
     "@shuvi/utils": "workspace:*",
+    "@types/react-test-renderer": "16.9.2",
     "shuvi": "workspace:*"
   }
 }

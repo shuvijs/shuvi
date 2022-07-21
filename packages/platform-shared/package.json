@@ -12,9 +12,9 @@
   "files": [
     "lib",
     "esm",
-    "types",
     "template",
-    "shuvi-app-extensions.d.ts"
+    "shuvi-type-extensions-node.d.js",
+    "shuvi-type-extensions-runtime.d.ts"
   ],
   "exports": {
     "./shared": {
@@ -62,7 +62,11 @@
       "default": "./esm/shuvi-app/*.js"
     },
     "./template/*": "./template/*",
-    "./shuvi-app-extensions.d.ts": "./shuvi-app-extensions.d.ts"
+    "./shuvi-type-extensions-node": {
+      "types": "./shuvi-type-extensions-node.d.js",
+      "default": "./shuvi-type-extensions-node.js"
+    },
+    "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts"
   },
   "scripts": {
     "dev": "run-p watch:*",
@@ -77,14 +81,20 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "redux": "4.1.2",
-    "@shuvi/redox": "0.0.3",
     "@shuvi/hook": "1.0.0-rc.1",
-    "@shuvi/service": "1.0.0-rc.1",
-    "@shuvi/toolpack": "1.0.0-rc.1",
+    "@shuvi/redox": "0.0.3",
     "@shuvi/router": "1.0.0-rc.1",
     "@shuvi/runtime": "1.0.0-rc.1",
+    "@shuvi/service": "1.0.0-rc.1",
     "@shuvi/shared": "1.0.0-rc.1",
-    "@shuvi/utils": "1.0.0-rc.1"
+    "@shuvi/toolpack": "1.0.0-rc.1",
+    "@shuvi/utils": "1.0.0-rc.1",
+    "redux": "4.1.2"
+  },
+  "peerDependencies": {
+    "@shuvi/service": "1.0.0-rc.1"
+  },
+  "devDependencies": {
+    "@types/minimatch": "3.0.5"
   }
 }

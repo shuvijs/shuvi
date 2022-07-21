@@ -1,4 +1,4 @@
-import { HookMap } from '@shuvi/hook'
+import { HookMap } from '@shuvi/hook';
 
 export interface CustomAppContext {}
 

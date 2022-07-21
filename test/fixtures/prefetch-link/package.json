@@ -1,4 +1,11 @@
 {
   "name": "fixture-prefetch-link",
-  "dependencies": {}
+  "dependencies": {
+    "shuvi": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "18.0.6",
+    "@types/react": "18.0.9",
+    "@types/react-dom": "18.0.6"
+  }
 }

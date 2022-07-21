@@ -2,12 +2,7 @@ import fs from 'fs';
 import { join, extname, basename } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import invariant from '@shuvi/utils/lib/invariant';
-import {
-  IApiRouteConfig,
-  IMiddlewareRouteConfig,
-  IPageRouteConfig,
-  RouteConfigType
-} from './route';
+import { RouteConfigType } from './route';
 import { rankRouteBranches } from '../../shared/router';
 
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
@@ -25,27 +20,12 @@ export type SupportFileType = GetArrayElementType<typeof supportFileTypes>;
 type CapName = Capitalize<SupportFileType>;
 type FileTypeChecker = Record<`is${CapName}`, (filename: string) => boolean>;
 
-export function normalizeFilePath(filepath: string) {
-  const res = filepath
-    // Remove the file extension from the end
-    .replace(/\.\w+$/, '')
-    // Convert to unix path
-    .replace(/\\/g, '/');
-
-  return res.charAt(0) !== '/' ? '/' + res : res;
-}
-
 export function parseDynamicPath(normalizedRoute: string): string {
-  invariant(
-    normalizedRoute.length >= 1,
-    'parseDynamicPath param normalizedRoute length should not >= 1'
-  );
   invariant(
     !checkSpecialRegexChars(normalizedRoute),
     'filePath should not be special regex chars: |\\{}()^$+*?'
   );
   return normalizedRoute
-    .slice(1)
     .split('/')
     .map(segment => {
       let result = '';
@@ -61,9 +41,9 @@ export function parseDynamicPath(normalizedRoute: string): string {
           return parseMatchRepeat(matchArr[0], false);
         }
       );
-      return `/${result}`;
+      return `${result}`;
     })
-    .join('');
+    .join('/');
 }
 
 function parseMatchRepeat(param: string, optional: boolean): string {
@@ -83,8 +63,14 @@ function checkSpecialRegexChars(string: string): boolean {
 }
 
 export function normalizeRoutePath(rawPath: string) {
+  let routePath = rawPath
+    // Remove the file extension from the end
+    .replace(/\.\w+$/, '')
+    // Convert to unix path
+    .replace(/\\/g, '/');
+
   // /xxxx/index -> /xxxx/
-  let routePath = rawPath.replace(/\/index$/, '/');
+  routePath = rawPath.replace(/\/index$/, '/');
 
   // remove the last slash
   // e.g. /abc/ -> /abc
@@ -97,15 +83,23 @@ export function normalizeRoutePath(rawPath: string) {
   return routePath;
 }
 
-export const normalize = (path: string) => {
-  const result = normalizeRoutePath(normalizeFilePath(path));
-
-  if (result === '/') {
-    return result;
+export function combineComponents(fisrt: string, sec: string) {
+  if (fisrt === '' || sec === '') {
+    return `${fisrt}${sec}`;
   }
 
-  return result.replace(/^\//, '');
-};
+  if (fisrt.endsWith('/')) {
+    if (sec.startsWith('/')) {
+      return `${fisrt}${sec.slice(1)}`;
+    } else {
+      return `${fisrt}${sec}`;
+    }
+  } else if (sec.startsWith('/')) {
+    return `${fisrt}${sec}`;
+  } else {
+    return `${fisrt}/${sec}`;
+  }
+}
 
 export const isRouteFile = (file: string): boolean => {
   return Object.keys(fileTypeChecker).some(key => {
@@ -211,21 +205,20 @@ supportFileTypes.forEach(fileType => {
   };
 });
 
-function sortRoutes(routes: IApiRouteConfig[]): IApiRouteConfig[];
-function sortRoutes(routes: IMiddlewareRouteConfig[]): IMiddlewareRouteConfig[];
-function sortRoutes(routes: IPageRouteConfig[]): IPageRouteConfig[];
-function sortRoutes(routes: RouteConfigType[]) {
+function sortRoutes<T extends { path: string; children?: T[] }>(
+  routes: T[]
+): T[] {
   let rankRoutes = routes.map(route => {
     return [route.path, route] as [string, RouteConfigType];
   });
   rankRoutes = rankRouteBranches(rankRoutes);
 
   return rankRoutes.map(rankRoute => {
-    const rankRawRoute = rankRoute[1] as IPageRouteConfig;
+    const rankRawRoute = rankRoute[1] as T;
     if (rankRawRoute.children) {
-      rankRawRoute.children = sortRoutes(rankRawRoute.children);
+      rankRawRoute.children = sortRoutes(rankRawRoute.children) as any[];
     }
-    return rankRoute[1];
+    return rankRoute[1] as T;
   });
 }
 

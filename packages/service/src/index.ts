@@ -1,3 +1,5 @@
+export * from './namespace';
+
 export * from './constants';
 
 export { getBundler } from './bundler';
@@ -21,18 +23,16 @@ export {
   Api,
   IPaths,
   Config,
+  IServicePhase,
+  IServiceMode,
+  IPluginConfig,
+  IPresetConfig,
   NormalizedConfig,
   IPluginContext,
   IPlatform,
   IPlatformContent,
-  IUserRouteConfig,
-  IRouteConfig,
-  IApiRouteConfig,
-  IMiddlewareRouteConfig,
   CorePluginConstructor,
   CorePluginInstance,
   getApi,
-  loadConfig,
-  defineConfig,
   createPlugin
 } from './core';

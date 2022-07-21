@@ -1,39 +1,37 @@
-import { basename, extname, join, dirname } from 'path';
+import { basename, extname, join, dirname, sep } from 'path';
 import { isDirectory } from '@shuvi/utils/lib/file';
 import {
-  IUserRouteConfig,
+  IPageRouteConfig,
   IApiRouteConfig,
   IMiddlewareRouteConfig
-} from '@shuvi/service';
+} from '../../shared';
 import {
   getAllowFilesAndDirs,
   hasAllowFiles,
-  normalize,
+  normalizeRoutePath,
+  combineComponents,
   sortRoutes,
   SupportFileType
 } from './helpers';
+import { matchFile, getFileMatcherPatterns } from './matchSpec';
 
-export type IPageRouteConfig = IUserRouteConfig;
-
-export type { IApiRouteConfig, IMiddlewareRouteConfig };
+export type { IPageRouteConfig, IApiRouteConfig, IMiddlewareRouteConfig };
 
 interface RawFileRoute {
   kind: 'file';
   type: SupportFileType;
-  name: string;
-  segment: string;
   filepath: string;
+  segment: string;
 }
 
-interface RawDirRoute {
+export interface RawDirRoute {
   kind: 'dir';
   filepath: string;
   segment: string;
-  parentSegment: string;
   children: (RawFileRoute | RawDirRoute)[];
 }
 
-type RawRoute = RawFileRoute | RawDirRoute;
+export type RawRoute = RawFileRoute | RawDirRoute;
 
 export interface RouteException {
   type: SupportFileType | 'dir';
@@ -56,9 +54,11 @@ export type RouteConfigType =
   | IMiddlewareRouteConfig;
 
 export const getRawRoutesFromDir = async (
-  dirname: string
+  dirname: string,
+  excludes?: string[]
 ): Promise<RawRoutes> => {
-  if (!(await isDirectory(dirname))) {
+  const rootDirname = dirname;
+  if (!(await isDirectory(rootDirname))) {
     return {
       routes: [],
       warnings: [],
@@ -68,10 +68,12 @@ export const getRawRoutesFromDir = async (
 
   const warnings: RouteException[] = [];
   const errors: RouteException[] = [];
-  const _getRawRoutesFromDir = async (
+  const routes: RawRoute[] = [];
+  const patterns = getFileMatcherPatterns(rootDirname, excludes);
+  const visitDirectory = async (
     dirname: string,
-    rawRoutes: RawRoute[],
-    segment: string
+    routes: RawRoute[],
+    parentDir: string
   ) => {
     const files = await getAllowFilesAndDirs(dirname);
     const onlyHasDir = !hasAllowFiles(files);
@@ -84,42 +86,47 @@ export const getRawRoutesFromDir = async (
     }
 
     for (const file of files) {
-      const filepath = join(dirname, file);
+      let filepath = join(dirname, file);
       const isDir = await isDirectory(filepath);
+      if (isDir) {
+        // transform '/foo' to '/foo/' if `foo` is a dir,
+        // this is required for matchFile to wrok properly
+        filepath = join(filepath, sep);
+      }
 
+      if (!matchFile(filepath, patterns, false)) {
+        continue;
+      }
+
+      const segment = parentDir === '' ? '/' : normalizeRoutePath(parentDir);
       if (isDir) {
         if (onlyHasDir) {
           // only indent segment,routes was in same level.
-          await _getRawRoutesFromDir(filepath, rawRoutes, `${segment}/${file}`);
-          continue;
+          await visitDirectory(filepath, routes, `${parentDir}/${file}`);
+        } else {
+          const route: RawDirRoute = {
+            kind: 'dir',
+            filepath,
+            segment: segment,
+            children: []
+          };
+          routes.push(route);
+          await visitDirectory(filepath, route.children, file);
         }
-
-        const rawRoute: RawDirRoute = {
-          kind: 'dir',
+      } else {
+        const ext = extname(file);
+        const type = basename(file, ext) as SupportFileType;
+        routes.push({
+          kind: 'file',
+          segment: segment,
           filepath,
-          segment: normalize(file).replace(/^\//, ''),
-          parentSegment: normalize(segment).replace(/^\//, ''),
-          children: []
-        };
-
-        await _getRawRoutesFromDir(filepath, rawRoute.children, file);
-        rawRoutes.push(rawRoute);
-
-        continue;
+          type
+        });
       }
-      const ext = extname(file);
-      const type = basename(file, ext) as SupportFileType;
-      rawRoutes.push({
-        kind: 'file',
-        name: file,
-        segment: normalize(segment),
-        filepath,
-        type
-      });
     }
-    return rawRoutes;
   };
-  const routes = await _getRawRoutesFromDir(dirname, [], '');
+
+  await visitDirectory(rootDirname, routes, '');
 
   return {
     routes,
@@ -128,17 +135,20 @@ export const getRawRoutesFromDir = async (
   };
 };
 
-export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
+export const getPageRoutes = async (
+  dirname: string,
+  excludes?: string[]
+): Promise<PageRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname);
+  } = await getRawRoutesFromDir(dirname, excludes);
 
   const _getPageRoutes = (
     rawRoutes: RawRoute[],
     routes: IPageRouteConfig[],
-    segment = ''
+    parentSegment = ''
   ) => {
     const layoutRoute = rawRoutes.some(
       route => route.kind === 'file' && route.type === 'layout'
@@ -152,10 +162,10 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
     for (const rawRoute of rawRoutes) {
       if (rawRoute.kind === 'dir') {
         const workRoutes = layoutRoute ? route.children! : routes;
-        const preSegment = layoutRoute
+        const nextSegment = layoutRoute
           ? ''
-          : `${segment}${rawRoute.parentSegment}/`;
-        _getPageRoutes(rawRoute.children, workRoutes, preSegment);
+          : combineComponents(parentSegment, rawRoute.segment);
+        _getPageRoutes(rawRoute.children, workRoutes, nextSegment);
       } else if (rawRoute.type === 'page' || rawRoute.type === 'layout') {
         if (rawRoute.type === 'page' && layoutRoute) {
           route.children!.push({
@@ -163,12 +173,8 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
             component: rawRoute.filepath
           });
         } else {
-          let prefix = segment;
-          let suffix = rawRoute.segment;
-
           route.component = rawRoute.filepath;
-          route.path = `${prefix}${suffix}`;
-
+          route.path = combineComponents(parentSegment, rawRoute.segment);
           routes.push({
             ...route
           });
@@ -181,12 +187,6 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
 
   const routes = sortRoutes(_getPageRoutes(rawRoutes, []));
 
-  routes.forEach(route => {
-    if (!route.path.startsWith('/')) {
-      route.path = `/${route.path}`;
-    }
-  });
-
   return {
     routes,
     warnings,
@@ -194,7 +194,10 @@ export const getPageRoutes = async (dirname: string): Promise<PageRoutes> => {
   };
 };
 
-export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
+export const getApiRoutes = async (
+  dir: string,
+  excludes?: string[]
+): Promise<ApiRoutes> => {
   const getConflictWaring = (
     rawRoute: RawRoute,
     conflictRawRoute: RawRoute
@@ -210,12 +213,12 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dir);
+  } = await getRawRoutesFromDir(dir, excludes);
 
   const _getApiRoutes = (
     rawRoutes: RawRoute[],
     routes: IApiRouteConfig[],
-    prefix: string = ''
+    parentSegment: string = ''
   ) => {
     const page = rawRoutes.find(
       route => route.kind === 'file' && route.type === 'page'
@@ -228,42 +231,26 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
     );
 
     for (let rawRoute of allowedRoutes) {
-      prefix = prefix === '/' ? '' : prefix;
-
+      const currentPath = combineComponents(parentSegment, rawRoute.segment);
       if (rawRoute.kind === 'dir') {
-        _getApiRoutes(
-          rawRoute.children,
-          routes,
-          prefix + '/' + rawRoute.parentSegment
-        );
-        continue;
-      }
-      if (rawRoute.type === 'api') {
+        _getApiRoutes(rawRoute.children, routes, currentPath);
+      } else if (rawRoute.type === 'api') {
         if (layout) {
           warnings.push({
             type: 'api',
             msg: getConflictWaring(rawRoute, layout)
           });
-          continue;
-        }
-
-        if (page) {
+        } else if (page) {
           warnings.push({
             type: 'api',
             msg: getConflictWaring(rawRoute, page)
           });
-          continue;
+        } else {
+          routes.push({
+            path: currentPath,
+            api: rawRoute.filepath
+          });
         }
-
-        let path = prefix + '/' + rawRoute.segment;
-        if (path === '//') {
-          path = '/';
-        }
-
-        routes.push({
-          path,
-          api: rawRoute.filepath
-        });
       }
     }
     return routes;
@@ -280,45 +267,30 @@ export const getApiRoutes = async (dir: string): Promise<ApiRoutes> => {
 };
 
 export const getMiddlewareRoutes = async (
-  dirname: string
+  dirname: string,
+  excludes?: string[]
 ): Promise<MiddlewareRoutes> => {
   const {
     routes: rawRoutes,
     warnings,
     errors
-  } = await getRawRoutesFromDir(dirname);
+  } = await getRawRoutesFromDir(dirname, excludes);
 
   const _getMiddlewareRoutes = (
     rawRoutes: RawRoute[],
     routes: IMiddlewareRouteConfig[],
-    segment: string
+    parentSegment: string
   ) => {
-    segment = segment === '/' ? '' : segment;
-
     for (const rawRoute of rawRoutes) {
+      const currentPath = combineComponents(parentSegment, rawRoute.segment);
       if (rawRoute.kind === 'dir') {
-        _getMiddlewareRoutes(
-          rawRoute.children,
-          routes,
-          segment + '/' + rawRoute.parentSegment
-        );
-        continue;
-      }
-
-      if (rawRoute.type === 'middleware') {
-        let path = segment + '/' + rawRoute.segment;
-        let catchAllOp = '/*';
-
-        if (path === '//') {
-          path = '/';
-        }
-
-        if (path === '/') {
-          catchAllOp = catchAllOp.slice(1);
-        }
-
+        _getMiddlewareRoutes(rawRoute.children, routes, currentPath);
+      } else if (rawRoute.type === 'middleware') {
         routes.push({
-          path: path + catchAllOp,
+          // catch all
+          path: currentPath.endsWith('/')
+            ? `${currentPath}*`
+            : `${currentPath}/*`,
           middleware: rawRoute.filepath
         });
       }
@@ -328,12 +300,6 @@ export const getMiddlewareRoutes = async (
   };
 
   const routes = sortRoutes(_getMiddlewareRoutes(rawRoutes, [], ''));
-  routes.forEach(route => {
-    if (!route.path.startsWith('/')) {
-      route.path = `/${route.path}`;
-    }
-  });
-
   const exceptionFilter = (e: RouteException) => e.type === 'middleware';
 
   return {

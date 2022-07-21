@@ -11,40 +11,11 @@ import {
 } from '../server';
 import { DevMiddleware } from '../server/middlewares/dev';
 
-export interface IUserRouteConfig {
-  children?: IUserRouteConfig[];
-  name?: string;
-  component?: string;
-  redirect?: string;
-  path: string;
-  fullPath?: string;
-}
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends {} ? Partial<T[P]> : T[P];
+};
 
-export interface IRouteConfig extends IUserRouteConfig {
-  id: string;
-  children?: IRouteConfig[];
-}
-
-export interface IApiRouteConfig {
-  path: string;
-  api: string;
-}
-
-export interface IMiddlewareRouteConfig {
-  path: string;
-  middleware: string;
-}
-
-export type IRouterHistoryMode = 'browser' | 'hash' | 'auto' | 'memory';
-
-export type IShuviMode = 'development' | 'production';
-
-export interface IPresetSpec {
-  (options: any): {
-    presets?: Config['presets'];
-    plugins?: Config['plugins'];
-  };
-}
+export type IServiceMode = 'development' | 'production';
 
 export interface IPreset {
   id: string;
@@ -88,11 +59,19 @@ export type IPluginConfig =
   | CorePluginConstructor
   | CorePluginInstance
   | [string, any?];
+
 export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
 
-export declare type IPhase =
+export interface IPresetSpec {
+  (options: any): {
+    presets?: IPresetConfig[];
+    plugins?: IPluginConfig[];
+  };
+}
+
+export declare type IServicePhase =
   | 'PHASE_PRODUCTION_BUILD'
   | 'PHASE_PRODUCTION_SERVER'
   | 'PHASE_DEVELOPMENT_SERVER'
@@ -108,13 +87,6 @@ export interface ResolvedPlugin {
   server?: ServerPluginInstance; // instance
   runtime?: RuntimePluginConfig;
   types?: string;
-}
-
-export interface IPlatformConfig {
-  name: string;
-  framework?: string;
-  target?: string;
-  [index: string]: any;
 }
 
 export type IPlatformContent = {
@@ -137,69 +109,38 @@ export type IPlatformContext = {
 };
 
 export type IPlatform = (
-  config: Omit<IPlatformConfig, 'name'>,
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
-export interface IRouterConfig {
-  history?: IRouterHistoryMode;
-}
+export interface CustomConfig extends ShuviService.CustomConfig {}
 
-export interface IApiConfig {
-  /**
-   * The byte limit of the body. This is the number of bytes or any string
-   * format supported by `bytes`, for example `1000`, `'500kb'` or `'3mb'`
-   * default is 1mb.
-   */
-  bodyParser?: { sizeLimit: number | string } | boolean;
-}
-
-export type IRuntimeConfig = Record<string, string>;
-
-export interface Config {
-  outputPath?: string;
-  publicDir?: string;
-  publicPath?: string;
-  env?: Record<string, string>;
-  router?: IRouterConfig;
-  routes?: IUserRouteConfig[]; // generate by files what under src/pages or user defined
-  middlewareRoutes?: IMiddlewareRouteConfig[];
-  apiRoutes?: IApiRouteConfig[]; // generate by files what under src/apis or user defined
-  apiConfig?: IApiConfig;
-  runtimeConfig?: IRuntimeConfig;
-  publicRuntimeConfig?: IRuntimeConfig;
-  typescript?: { ignoreBuildErrors?: boolean };
-  /**
-   * specifically target for `platform-web`
-   */
-  ssr?: boolean;
-  target?: 'spa' | 'ssr';
-  platform?: IPlatformConfig;
-  proxy?: any;
-  plugins?: IPluginConfig[];
-  presets?: IPresetConfig[];
-  analyze?: boolean;
-  experimental?: {
-    parcelCss?: boolean;
-    preBundle?: boolean;
-  };
-}
-
-export interface NormalizedConfig
-  extends Omit<Required<Config>, 'router' | 'apiConfig' | 'experimental'> {
-  router: Required<IRouterConfig>;
-  apiConfig: Required<IApiConfig>;
+export interface InternalConfig {
+  env: Record<string, string>;
+  outputPath: string;
+  publicDir: string;
+  publicPath: string;
+  analyze: boolean;
+  typescript: { ignoreBuildErrors: boolean };
+  proxy?: IProxyConfig;
   experimental: {
     parcelCss: boolean;
     preBundle: boolean;
   };
 }
 
+export type IProxyConfig = any;
+
+export interface Config
+  extends DeepPartial<InternalConfig>,
+    DeepPartial<CustomConfig> {}
+
+export interface NormalizedConfig extends InternalConfig, CustomConfig {}
+
 export interface IPluginContext {
-  mode: IShuviMode;
+  mode: IServiceMode;
   paths: IPaths;
   config: NormalizedConfig;
-  phase: IPhase;
+  phase: IServicePhase;
   pluginRunner: PluginRunner;
   assetPublicPath: string;
   resolveAppFile(...paths: string[]): string;

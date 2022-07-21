@@ -9,41 +9,41 @@ import {
   getMiddlewaresBeforeDevMiddlewares,
   getMainPlugin
 } from './features';
-import './shuvi-node-extensions';
 import { resolvePkgFile } from './paths';
 
-const platform: IPlatform = async (
-  { framework = 'react' } = {},
-  platformContext
-) => {
-  const mainPlugin = getMainPlugin(platformContext);
+export { PlatformWebCustomConfig } from '../shared/configTypes';
 
-  const platformFramework = require(`./targets/${framework}`).default;
-  const platformFrameworkContent = await platformFramework();
+const platform =
+  ({ framework = 'react' } = {}): IPlatform =>
+  async platformContext => {
+    const mainPlugin = getMainPlugin(platformContext);
 
-  const platformModule = platformFrameworkContent.platformModule as string;
-  const polyfills = platformFrameworkContent.polyfills as string[];
+    const platformFramework = require(`./targets/${framework}`).default;
+    const platformFrameworkContent = await platformFramework();
 
-  const getPresetRuntimeFiles = getPresetRuntimeFilesCreator(
-    platformModule,
-    polyfills
-  );
+    const platformModule = platformFrameworkContent.platformModule as string;
+    const polyfills = platformFrameworkContent.polyfills as string[];
 
-  return {
-    types: [
-      resolvePkgFile('shuvi-env.d.ts'),
-      resolvePkgFile('shuvi-image.d.ts')
-    ],
-    plugins: [
-      ...SharedPlugins,
-      mainPlugin,
-      ...featurePlugins,
-      ...platformFrameworkContent.plugins
-    ],
-    getPresetRuntimeFiles,
-    getMiddlewares,
-    getMiddlewaresBeforeDevMiddlewares
+    const getPresetRuntimeFiles = getPresetRuntimeFilesCreator(
+      platformModule,
+      polyfills
+    );
+
+    return {
+      types: [
+        resolvePkgFile('shuvi-env.d.ts'),
+        resolvePkgFile('shuvi-image.d.ts')
+      ],
+      plugins: [
+        ...SharedPlugins,
+        mainPlugin,
+        ...featurePlugins,
+        ...platformFrameworkContent.plugins
+      ],
+      getPresetRuntimeFiles,
+      getMiddlewares,
+      getMiddlewaresBeforeDevMiddlewares
+    };
   };
-};
 
 export default platform;

@@ -1,8 +1,9 @@
-import { IRuntimeConfig } from '@shuvi/service/lib/core';
+import { IRuntimeConfig } from '../../shared';
 
 export interface UserModule {
   app: string | string[];
   error: string | string[];
+  server: string | string[];
 }
 
 export interface ProjectContext {
@@ -21,7 +22,8 @@ export const createProjectContext = (): ProjectContext => {
     platformModule: '',
     userModule: {
       app: '',
-      error: ''
+      error: '',
+      server: ''
     }
   };
 };

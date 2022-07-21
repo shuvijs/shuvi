@@ -3,9 +3,10 @@
   "compilerOptions": {
     "lib": ["esnext", "DOM"],
     "esModuleInterop": true,
+    "outDir": "lib",
     "module": "commonjs",
-    "rootDir": "./src",
-    "outDir": "lib"
+    "rootDir": "./src"
   },
+  "files": ["./shuvi-type-extensions-node.d.ts"],
   "include": ["src/node"]
 }
