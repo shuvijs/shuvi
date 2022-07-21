@@ -79,6 +79,7 @@ jobs:
 
       - name: Run e2e tests
         run: pnpm test:e2e
+
   unit-test-windows:
     runs-on: windows-latest
     steps:
