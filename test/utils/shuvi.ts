@@ -19,6 +19,7 @@ export function shuvi(
   const p = spawn('node', [cliAgent, shuviCmd, ...args], {
     ...options,
     env: {
+      ...process.env,
       NODE_ENV: isDev ? 'development' : 'production',
       ...options.env,
       // forbid to overwrite PATH
@@ -42,6 +43,7 @@ export function shuviSync(
     ...options,
     encoding: 'utf8',
     env: {
+      ...process.env,
       NODE_ENV: isDev ? 'development' : 'production',
       ...options.env,
       // forbid to overwrite PATH
