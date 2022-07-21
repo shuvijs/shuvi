@@ -2,24 +2,22 @@ import * as path from 'path';
 import * as mime from 'mime-types';
 
 import getFilenameFromUrl from './utils/getFilenameFromUrl';
-import handleRangeHeaders from './utils/handleRangeHeaders';
 import ready from './utils/ready';
 import {
   IContext,
   IRequest,
-  IExtendedResponse,
+  IResponse,
   IRequestHandlerWithNext
 } from './types';
 
 export default function wrapper(context: IContext): IRequestHandlerWithNext {
   return async function middleware(
     req: IRequest,
-    res: IExtendedResponse,
+    res: IResponse,
     next: (err?: any) => void
   ) {
     const acceptedMethods = ['GET', 'HEAD'];
 
-    res.locals = {};
     if (!acceptedMethods.includes(req.method!)) {
       return await goNext();
     }
@@ -29,7 +27,6 @@ export default function wrapper(context: IContext): IRequestHandlerWithNext {
     async function goNext() {
       return new Promise(resolve => {
         ready(context, () => {
-          res.locals.webpack = { devMiddleware: context };
           resolve(next());
         });
       });
@@ -63,9 +60,6 @@ export default function wrapper(context: IContext): IRequestHandlerWithNext {
           res.setHeader('Content-Type', contentType);
         }
       }
-
-      // Buffer
-      content = handleRangeHeaders(content, req, res);
 
       res.setHeader('Content-Length', content.length);
 

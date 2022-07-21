@@ -12,11 +12,14 @@ import {
   IRequestHandlerWithNext
 } from '../../../http-server/serverTypes';
 
-export { MultiCompiler, MultiStats, Stats, IRequest, IRequestHandlerWithNext };
-
-export interface IExtendedResponse extends IResponse {
-  locals?: any;
-}
+export {
+  MultiCompiler,
+  MultiStats,
+  Stats,
+  IRequest,
+  IResponse,
+  IRequestHandlerWithNext
+};
 
 export type ICallback = (stats?: MultiStats | Stats) => void;
 

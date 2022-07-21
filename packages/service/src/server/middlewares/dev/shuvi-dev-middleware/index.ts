@@ -41,7 +41,7 @@ export default function shuviDevMiddleware(
     }
   );
 
-  const instance: any = middleware(context);
+  const instance = middleware(context) as any;
 
   instance.waitUntilValid = (callback = () => {}) => {
     ready(context, callback);
