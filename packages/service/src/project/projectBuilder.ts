@@ -145,6 +145,7 @@ class ProjectBuilder {
    * default path is the root path
    */
   addFile(options: FileOptionsBase): void {
+    checkFilepath(options.name);
     this._fileManager.addFile(options);
   }
 
