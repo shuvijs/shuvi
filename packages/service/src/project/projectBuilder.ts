@@ -1,4 +1,5 @@
 import * as path from 'path';
+import invariant from '@shuvi/utils/lib/invariant';
 import { getFileManager, FileManager, FileOptionsBase } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { getExportsFromObject, getContentProxyObj } from './file-utils';
@@ -7,6 +8,21 @@ import { ProjectContext, createProjectContext } from './projectContext';
 
 interface ProjectBuilderOptions {
   static?: boolean;
+}
+
+function checkFilepath(filepath: string): string {
+  invariant(
+    !path.isAbsolute(filepath),
+    `Path must be a relative path without any "./" and "../". Received "${filepath}"`
+  );
+
+  const components = filepath.replace(/\\/g, '/').split('/');
+  invariant(
+    !components.some(x => x === '.' || x === '..'),
+    `Path cannot contain "./" or "../". Received "${filepath}"`
+  );
+
+  return filepath;
 }
 
 const isTruthy = (value: unknown, recursive = true): boolean => {
@@ -63,7 +79,7 @@ class ProjectBuilder {
     filepath: string = 'index.ts'
   ): void {
     const services = this._projectContext.runtimeServices;
-    filepath = path.join('runtime', path.resolve('/', filepath));
+    filepath = path.join('runtime', checkFilepath(filepath));
     const service = services.get(filepath);
     if (service) {
       const targetSource = service.get(source);
@@ -100,7 +116,7 @@ class ProjectBuilder {
 
   addResources(key: string, requireStr?: string): void {
     const services = this._projectContext.resources;
-    const filepath = path.join('resources', path.resolve('/', 'index.js'));
+    const filepath = 'resources/index.js';
     const service = services.get(filepath);
     if (service) {
       service.set(key, requireStr);
