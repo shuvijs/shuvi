@@ -197,8 +197,7 @@ class Api {
   }
 
   addRuntimeFile(options: FileOptions): void {
-    // modify options.name to make addAppFile root as .shuvi/app/files/
-    options.name = path.join('app', 'files', path.resolve('/', options.name));
+    options.name = path.join('app', 'files', options.name);
     this._projectBuilder.addFile(options);
   }
 
