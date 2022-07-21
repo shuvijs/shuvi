@@ -7,7 +7,8 @@ import {
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
-import { WebpackDevMiddleware, DynamicDll } from '@shuvi/toolpack/lib/webpack';
+import { DynamicDll } from '@shuvi/toolpack/lib/webpack';
+import WebpackDevMiddleware from './shuvi-dev-middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -50,9 +51,7 @@ export async function getDevMiddleware(
 
   // webpackDevMiddleware make first compiler build assets as static sources
   const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
-    stats: false, // disable stats on server
-    publicPath: serverPluginContext.assetPublicPath,
-    writeToDisk: true
+    publicPath: serverPluginContext.assetPublicPath
   });
 
   const webpackHotMiddleware = new WebpackHotMiddleware({
