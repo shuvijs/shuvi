@@ -92,12 +92,7 @@ describe('shuvi/inspect', () => {
   it('should be log webpack config correctly', async () => {
     try {
       const project = createTestCtx('test/fixtures/inspect');
-      const { message } = await project.run('inspect', [], {
-        env: {
-          ...process.env,
-          __DISABLE_HIGHLIGHT__: 'true'
-        }
-      });
+      const { message } = await project.run('inspect', []);
       expect(message).toMatch(`mode: 'development'`);
       expect(message).toMatch(`name: 'shuvi/server'`);
       expect(message).toMatch(`name: 'shuvi/client'`);
@@ -111,12 +106,7 @@ describe('shuvi/inspect', () => {
 
   it('can specify --mode', async () => {
     const project = createTestCtx('shuvi-cli');
-    const { message } = await project.run('inspect', ['--mode=production'], {
-      env: {
-        ...process.env,
-        __DISABLE_HIGHLIGHT__: 'true'
-      }
-    });
+    const { message } = await project.run('inspect', ['--mode=production']);
     expect(message).toMatch(`mode: 'production'`);
     expect(message).toMatch(`name: 'shuvi/server'`);
     expect(message).toMatch(`name: 'shuvi/client'`);
@@ -124,27 +114,16 @@ describe('shuvi/inspect', () => {
 
   it('can specify --verbose', async () => {
     const project = createTestCtx('shuvi-cli');
-    const { message } = await project.run('inspect', ['--verbose'], {
-      env: {
-        ...process.env,
-        __DISABLE_HIGHLIGHT__: 'true'
-      }
-    });
+    const { message } = await project.run('inspect', ['--verbose']);
     expect(message).toMatch(
       `definitions: { 'process.env.NODE_ENV': '"development"'`
     );
 
     const project2 = createTestCtx('shuvi-cli');
-    const { message: message2 } = await project2.run(
-      'inspect',
-      ['--mode=production', '--verbose'],
-      {
-        env: {
-          ...process.env,
-          __DISABLE_HIGHLIGHT__: 'true'
-        }
-      }
-    );
+    const { message: message2 } = await project2.run('inspect', [
+      '--mode=production',
+      '--verbose'
+    ]);
     expect(message2).toMatch(
       `definitions: { 'process.env.NODE_ENV': '"production"'`
     );

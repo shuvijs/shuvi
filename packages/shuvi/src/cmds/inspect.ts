@@ -1,6 +1,5 @@
 import { inspect } from 'util';
 import program from 'commander';
-import { highlight } from 'cli-highlight';
 import chalk from '@shuvi/utils/lib/chalk';
 import { getBundler } from '@shuvi/service/lib/bundler/bundler';
 import { getPackageInfo, getProjectDir } from '../utils';
@@ -44,10 +43,6 @@ export default async function main(argv: string[]) {
   configs.forEach(({ name, config }) => {
     console.log(chalk.cyan.bold(`${name} webpack config`));
     const configString = inspect(config, { depth: program.verbose ? 10 : 2 });
-    if (process.env.__DISABLE_HIGHLIGHT__ === 'true') {
-      console.log(configString);
-    } else {
-      console.log(highlight(configString, { language: 'js' }));
-    }
+    console.log(configString);
   });
 }
