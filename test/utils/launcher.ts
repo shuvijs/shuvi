@@ -128,8 +128,10 @@ async function launchShuvi(
 
       shuviProcess = spawn('node', [NODE_SERVER_SOURCE], {
         env: {
+          ...process.env,
           ...spawnOptions.env,
-          PORT: String(port)
+          PORT: String(port),
+          PATH: process.env.PATH
         }
       } as SpawnOptions);
     } else {
