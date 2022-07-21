@@ -5,7 +5,7 @@ edition = "2018"
 include = ["Cargo.toml", "src/**/*.rs"]
 license = "Apache-2.0"
 name = "styled_components"
-repository = "https://github.com/vercel/next.js.git"
+repository = "https://github.com/vercel/shuvi.js.git"
 version = "0.36.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

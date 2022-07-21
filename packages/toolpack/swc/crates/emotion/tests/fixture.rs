@@ -17,7 +17,7 @@ fn ts_syntax() -> Syntax {
 }
 
 #[fixture("tests/fixture/*/input.tsx")]
-fn next_emotion_fixture(input: PathBuf) {
+fn shuvi_emotion_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.ts");
     test_fixture(
         ts_syntax(),

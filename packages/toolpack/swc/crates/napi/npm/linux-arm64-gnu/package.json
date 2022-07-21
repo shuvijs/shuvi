@@ -1,5 +1,5 @@
 {
-  "name": "@next/swc-linux-arm64-gnu",
+  "name": "@shuvi/swc-linux-arm64-gnu",
   "version": "0.0.0",
   "os": [
     "linux"
@@ -10,9 +10,9 @@
   "libc": [
     "glibc"
   ],
-  "main": "next-swc.linux-arm64-gnu.node",
+  "main": "shuvi-swc.linux-arm64-gnu.node",
   "files": [
-    "next-swc.linux-arm64-gnu.node"
+    "shuvi-swc.linux-arm64-gnu.node"
   ],
   "libc": ["glibc"],
   "license": "MIT",

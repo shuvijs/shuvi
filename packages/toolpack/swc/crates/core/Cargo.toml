@@ -1,6 +1,6 @@
 [package]
 edition = "2018"
-name = "next-swc"
+name = "shuvi-swc"
 version = "0.0.0"
 publish = false
 

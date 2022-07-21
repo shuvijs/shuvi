@@ -160,7 +160,7 @@ pub fn init_crash_reporter(cx: CallContext) -> napi::Result<JsExternal> {
     cx.env.create_external(guard_cell, None)
 }
 
-/// Initialize crash reporter to collect unexpected native next-swc crashes.
+/// Initialize crash reporter to collect unexpected native shuvi-swc crashes.
 #[cfg(all(
     not(target_arch = "wasm32"),
     not(all(target_os = "windows", target_arch = "aarch64")),
@@ -168,10 +168,10 @@ pub fn init_crash_reporter(cx: CallContext) -> napi::Result<JsExternal> {
 ))]
 #[js_function(1)]
 pub fn init_crash_reporter(cx: CallContext) -> napi::Result<JsExternal> {
-    // Attempts to follow https://nextjs.org/telemetry's debug behavior.
+    // Attempts to follow https://shuvijs.org/telemetry's debug behavior.
     // However, this is techinically not identical to the behavior of the telemetry
     // itself as sentry's debug option does not provides full payuload output.
-    let debug = env::var("NEXT_TELEMETRY_DEBUG").map_or_else(|_| false, |v| v == "1");
+    let debug = env::var("shuvi_TELEMETRY_DEBUG").map_or_else(|_| false, |v| v == "1");
 
     let guard = {
         #[cfg(feature = "sentry_native_tls")]

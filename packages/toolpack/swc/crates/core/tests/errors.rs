@@ -1,4 +1,4 @@
-use next_swc::{
+use shuvi_swc::{
     disallow_re_export_all_in_page::disallow_re_export_all_in_page, 
     shuvi_dynamic::shuvi_dynamic,
 };

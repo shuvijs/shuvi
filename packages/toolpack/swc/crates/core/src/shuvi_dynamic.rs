@@ -246,7 +246,6 @@ impl Fold for ShuviDynamicPatcher {
                         }
                     }
                     // Don't need to strip the `loader` argument if suspense is true
-                    // See https://github.com/vercel/next.js/issues/36636 for background
                     if has_ssr_false && !has_suspense && self.is_server {
                         expr.args[0] = Lit::Null(Null { span: DUMMY_SP }).as_arg();
                     }

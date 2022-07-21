@@ -48,7 +48,7 @@ struct TranspileCssProp {
 }
 
 impl TranspileCssProp {
-    fn next_styled_idx(&mut self, key: JsWord) -> usize {
+    fn shuvi_styled_idx(&mut self, key: JsWord) -> usize {
         let idx = self.styled_idx.entry(key).or_insert(0);
         *idx += 1;
         *idx
@@ -97,7 +97,7 @@ impl VisitMut for TranspileCssProp {
                     let id_sym = id_sym.trim_end_matches(char::is_numeric);
 
                     let id_sym = JsWord::from(id_sym);
-                    let styled_idx = self.next_styled_idx(id_sym.clone());
+                    let styled_idx = self.shuvi_styled_idx(id_sym.clone());
                     let id = quote_ident!(
                         elem.opening.name.span(),
                         append_if_gt_one(&format!("_Styled{}", id_sym), styled_idx)

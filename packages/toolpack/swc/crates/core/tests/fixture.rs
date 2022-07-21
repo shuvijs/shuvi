@@ -1,4 +1,4 @@
-use next_swc::{
+use shuvi_swc::{
     shuvi_dynamic::shuvi_dynamic,
     react_remove_properties::remove_properties,
     remove_console::remove_console,
@@ -94,7 +94,7 @@ fn remove_console_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
     test_fixture(
         syntax(),
-        &|_tr| remove_console(next_swc::remove_console::Config::All(true)),
+        &|_tr| remove_console(shuvi_swc::remove_console::Config::All(true)),
         &input,
         &output,
     );
@@ -105,7 +105,7 @@ fn react_remove_properties_default_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
     test_fixture(
         syntax(),
-        &|_tr| remove_properties(next_swc::react_remove_properties::Config::All(true)),
+        &|_tr| remove_properties(shuvi_swc::react_remove_properties::Config::All(true)),
         &input,
         &output,
     );
@@ -117,8 +117,8 @@ fn react_remove_properties_custom_fixture(input: PathBuf) {
     test_fixture(
         syntax(),
         &|_tr| {
-            remove_properties(next_swc::react_remove_properties::Config::WithOptions(
-                next_swc::react_remove_properties::Options {
+            remove_properties(shuvi_swc::react_remove_properties::Config::WithOptions(
+                shuvi_swc::react_remove_properties::Options {
                     properties: vec!["^data-custom$".into()],
                 },
             ))

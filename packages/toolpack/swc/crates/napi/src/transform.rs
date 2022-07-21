@@ -33,7 +33,7 @@ use crate::{
 use anyhow::{anyhow, bail, Context as _};
 use fxhash::FxHashSet;
 use napi::{CallContext, Env, JsBoolean, JsBuffer, JsObject, JsString, JsUnknown, Status, Task};
-use next_swc::{custom_before_pass, TransformOptions};
+use shuvi_swc::{custom_before_pass, TransformOptions};
 use std::fs::read_to_string;
 use std::{
     cell::RefCell,
@@ -207,7 +207,7 @@ pub fn transform_sync(cx: CallContext) -> napi::Result<JsObject> {
 
 #[test]
 fn test_deser() {
-    const JSON_STR: &str = r#"{"jsc":{"parser":{"syntax":"ecmascript","dynamicImport":true,"jsx":true},"transform":{"react":{"runtime":"automatic","pragma":"React.createElement","pragmaFrag":"React.Fragment","throwIfNamespace":true,"development":false,"useBuiltins":true}},"target":"es5"},"filename":"/Users/timneutkens/projects/next.js/packages/next/dist/client/next.js","sourceMaps":false,"sourceFileName":"/Users/timneutkens/projects/next.js/packages/next/dist/client/next.js"}"#;
+    const JSON_STR: &str = r#"{"jsc":{"parser":{"syntax":"ecmascript","dynamicImport":true,"jsx":true},"transform":{"react":{"runtime":"automatic","pragma":"React.createElement","pragmaFrag":"React.Fragment","throwIfNamespace":true,"development":false,"useBuiltins":true}},"target":"es5"},"filename":"/Users/timneutkens/projects/shuvi.js/packages/shuvi/dist/client/shuvi.js","sourceMaps":false,"sourceFileName":"/Users/timneutkens/projects/shuvi.js/packages/shuvi/dist/client/shuvi.js"}"#;
 
     let tr: TransformOptions = serde_json::from_str(JSON_STR).unwrap();
 
@@ -216,7 +216,7 @@ fn test_deser() {
 
 #[test]
 fn test_deserialize_transform_regenerator() {
-    const JSON_STR: &str = r#"{"jsc":{"parser":{"syntax":"ecmascript","dynamicImport":true,"jsx":true},"transform":{ "regenerator": { "importPath": "foo" }, "react":{"runtime":"automatic","pragma":"React.createElement","pragmaFrag":"React.Fragment","throwIfNamespace":true,"development":false,"useBuiltins":true}},"target":"es5"},"filename":"/Users/timneutkens/projects/next.js/packages/next/dist/client/next.js","sourceMaps":false,"sourceFileName":"/Users/timneutkens/projects/next.js/packages/next/dist/client/next.js"}"#;
+    const JSON_STR: &str = r#"{"jsc":{"parser":{"syntax":"ecmascript","dynamicImport":true,"jsx":true},"transform":{ "regenerator": { "importPath": "foo" }, "react":{"runtime":"automatic","pragma":"React.createElement","pragmaFrag":"React.Fragment","throwIfNamespace":true,"development":false,"useBuiltins":true}},"target":"es5"},"filename":"/Users/timneutkens/projects/shuvi.js/packages/shuvi/dist/client/shuvi.js","sourceMaps":false,"sourceFileName":"/Users/timneutkens/projects/shuvi.js/packages/shuvi/dist/client/shuvi.js"}"#;
 
     let tr: TransformOptions = serde_json::from_str(JSON_STR).unwrap();
 

@@ -1,5 +1,5 @@
 {
-  "name": "@next/swc-darwin-x64",
+  "name": "@shuvi/swc-darwin-x64",
   "version": "0.0.0",
   "os": [
     "darwin"
@@ -7,9 +7,9 @@
   "cpu": [
     "x64"
   ],
-  "main": "next-swc.darwin-x64.node",
+  "main": "shuvi-swc.darwin-x64.node",
   "files": [
-    "next-swc.darwin-x64.node"
+    "shuvi-swc.darwin-x64.node"
   ],
   "license": "MIT",
   "engines": {

@@ -1,5 +1,5 @@
 {
-  "name": "@next/swc-win32-arm64-msvc",
+  "name": "@shuvi/swc-win32-arm64-msvc",
   "version": "0.0.0",
   "os": [
     "win32"
@@ -7,9 +7,9 @@
   "cpu": [
     "arm64"
   ],
-  "main": "next-swc.win32-arm64-msvc.node",
+  "main": "shuvi-swc.win32-arm64-msvc.node",
   "files": [
-    "next-swc.win32-arm64-msvc.node"
+    "shuvi-swc.win32-arm64-msvc.node"
   ],
   "license": "MIT",
   "engines": {

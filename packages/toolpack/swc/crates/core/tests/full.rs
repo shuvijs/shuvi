@@ -1,4 +1,4 @@
-use next_swc::{custom_before_pass, TransformOptions};
+use shuvi_swc::{custom_before_pass, TransformOptions};
 use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
 use swc::Compiler;

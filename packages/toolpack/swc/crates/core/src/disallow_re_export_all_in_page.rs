@@ -17,7 +17,7 @@ impl Fold for DisallowReExportAllInPage {
           handler
             .struct_span_err(
               e.span,
-              "Using `export * from '...'` in a page is disallowed. Please use `export { default } from '...'` instead.\nRead more: https://nextjs.org/docs/messages/export-all-in-page",
+              "Using `export * from '...'` in a page is disallowed. Please use `export { default } from '...'` instead.",
             )
             .emit()
         });

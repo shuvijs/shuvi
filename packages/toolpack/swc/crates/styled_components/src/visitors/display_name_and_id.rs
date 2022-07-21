@@ -88,7 +88,7 @@ impl DisplayNameAndId {
         }
     }
 
-    fn next_id(&mut self) -> usize {
+    fn shuvi_id(&mut self) -> usize {
         let ret = self.component_id;
         self.component_id += 1;
         ret
@@ -98,7 +98,7 @@ impl DisplayNameAndId {
         // Prefix the identifier with a character because CSS classes cannot start with
         // a number
 
-        let next_id = self.next_id();
+        let shuvi_id = self.shuvi_id();
 
         let hash = {
             let base = self.src_file_hash;
@@ -111,7 +111,7 @@ impl DisplayNameAndId {
             a ^ b ^ c ^ d
         };
 
-        format!("{}sc-{:x}-{}", self.config.use_namespace(), hash, next_id)
+        format!("{}sc-{:x}-{}", self.config.use_namespace(), hash, shuvi_id)
     }
 
     fn add_config(
