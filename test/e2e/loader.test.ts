@@ -28,7 +28,12 @@ describe('loader', () => {
       page = await ctx.browser.page(ctx.url('/'));
       const logs: string[] = [];
       const errors: string[] = [];
-      page.on('console', msg => logs.push(msg.text()));
+      page.on('console', msg => {
+        const text = msg.text();
+        if (text !== '[HMR] connected') {
+          logs.push(text);
+        }
+      });
       page.on('pageerror', (error: { message: string }) =>
         errors.push(error.message)
       );
