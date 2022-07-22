@@ -38,7 +38,6 @@ describe('loader', () => {
         errors.push(error.message)
       );
       expect(await page.$text('p')).toBe('world');
-      // FIXME: not reliable
       expect(logs.length).toBe(0);
       expect(errors.length).toBe(0);
     });

@@ -24,7 +24,6 @@ describe('redox', () => {
     await page.goto(ctx.url('/'));
     await page.waitForSelector('#step');
 
-    // FIXME: not reliable
     page.$eval('#add-async', el => (el as any).click());
 
     const result = await page.evaluate(
