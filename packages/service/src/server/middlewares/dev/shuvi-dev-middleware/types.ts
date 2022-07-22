@@ -1,6 +1,4 @@
-import { statSync, readFileSync } from 'fs';
 import type {
-  Compiler,
   MultiCompiler,
   MultiStats,
   Stats
@@ -36,12 +34,6 @@ export interface IContext {
   options: IOptions;
   compiler: MultiCompiler;
   watching: MultiWatching | undefined;
-  outputFileSystem:
-    | (Compiler['outputFileSystem'] & {
-        statSync: typeof statSync;
-        readFileSync: typeof readFileSync;
-      })
-    | undefined;
 }
 
 export interface IShuviDevMiddleware {

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as mime from 'mime-types';
+import * as fs from 'fs';
 
 import getFilenameFromUrl from './utils/getFilenameFromUrl';
 import ready from './utils/ready';
@@ -42,7 +43,7 @@ export default function wrapper(context: IContext): IRequestHandlerWithNext {
       }
 
       try {
-        content = context.outputFileSystem!.readFileSync(filename);
+        content = fs.readFileSync(filename);
       } catch (_ignoreError) {
         await goNext();
         return;

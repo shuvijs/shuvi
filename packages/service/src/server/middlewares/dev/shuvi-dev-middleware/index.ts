@@ -1,7 +1,6 @@
 import middleware from './middleware';
 import setupHooks from './utils/setupHooks';
 import setupWriteToDisk from './utils/setupWriteToDisk';
-import setupOutputFileSystem from './utils/setupOutputFileSystem';
 import ready from './utils/ready';
 import {
   MultiCompiler,
@@ -21,13 +20,11 @@ export default function ShuviDevMiddleware(
     callbacks: [],
     options,
     compiler,
-    watching: undefined,
-    outputFileSystem: undefined
+    watching: undefined
   };
 
   setupHooks(context);
   setupWriteToDisk(context);
-  setupOutputFileSystem(context);
 
   // Start watching
   context.watching = context.compiler.watch(
