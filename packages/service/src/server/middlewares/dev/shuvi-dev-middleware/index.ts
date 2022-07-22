@@ -43,7 +43,10 @@ export default function ShuviDevMiddleware(
 
   const instance = middleware(context) as any;
 
-  instance.waitUntilValid = (callback = () => {}) => {
+  instance.waitUntilValid = (callback = () => {}, force: boolean) => {
+    if (force) {
+      context.state = false;
+    }
     ready(context, callback);
   };
   instance.invalidate = (callback = () => {}) => {
@@ -51,7 +54,6 @@ export default function ShuviDevMiddleware(
 
     context.watching?.invalidate();
   };
-  instance.context = context;
 
   return instance;
 }

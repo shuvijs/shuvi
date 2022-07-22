@@ -45,7 +45,7 @@ export interface IContext {
 }
 
 export interface IShuviDevMiddleware {
-  waitUntilValid(callback?: ICallback): void;
+  waitUntilValid(callback?: ICallback, force?: boolean): void;
   invalidate(callback?: ICallback): void;
   context?: IContext;
 }

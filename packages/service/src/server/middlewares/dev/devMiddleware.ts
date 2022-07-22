@@ -81,14 +81,8 @@ export async function getDevMiddleware(
   };
 
   const waitUntilValid = (force: boolean = false) => {
-    if (force) {
-      // private api
-      // we know that there must be a rebuild so it's safe to do this
-      // @ts-ignore
-      shuviDevMiddleware.context.state = false;
-    }
     return new Promise(resolve => {
-      shuviDevMiddleware.waitUntilValid(resolve);
+      shuviDevMiddleware.waitUntilValid(resolve, force);
     });
   };
 
