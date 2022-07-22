@@ -5,7 +5,6 @@ jest.setTimeout(5 * 60 * 1000);
 describe('loader', () => {
   let ctx: AppCtx;
   let page: Page;
-
   describe('ssr = true', () => {
     beforeAll(async () => {
       ctx = await launchFixture('loader');
@@ -26,16 +25,14 @@ describe('loader', () => {
 
     test('should not get loader data when hydrating at client side', async () => {
       page = await ctx.browser.page(ctx.url('/'));
-      const logs: string[] = [];
-      const errors: string[] = [];
-      page.on('console', msg => logs.push(msg.text()));
-      page.on('pageerror', (error: { message: string }) =>
-        errors.push(error.message)
-      );
+      page.waitForSelector('#loader-index');
       expect(await page.$text('p')).toBe('world');
-      // FIXME: not reliable
-      expect(logs.length).toBe(0);
-      expect(errors.length).toBe(0);
+
+      const onlyExeClient = await page.evaluate(() => {
+        return (window as any).__LOADER_RUNED__;
+      });
+
+      expect(onlyExeClient).toBeFalsy();
     });
 
     test('PageComponent should receive context object', async () => {

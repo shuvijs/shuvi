@@ -23,14 +23,29 @@ describe('redox', () => {
   test('async actions should worked', async () => {
     await page.goto(ctx.url('/'));
     await page.waitForSelector('#step');
-    // @ts-ignore
-    await page.$eval('#add-async', el => el.click());
-    await new Promise(resolve => {
-      // FIXME: not reliable
-      setTimeout(function () {
-        return resolve(null);
-      }, 150);
-    });
-    expect(await page.$text('#step')).toContain('3');
+
+    page.$eval('#add-async', el => (el as any).click());
+
+    const result = await page.evaluate(
+      () =>
+        new Promise(res => {
+          const target = document.getElementById('step')!;
+          const ob = new MutationObserver(mutations => {
+            const isCharacterData = mutations[0].type === 'characterData';
+            const isRightContent = mutations[0].target.textContent === '3';
+
+            res(isCharacterData && isRightContent);
+          });
+
+          ob.observe(target, {
+            childList: true,
+            characterData: true,
+            attributes: true,
+            subtree: true
+          });
+        })
+    );
+
+    expect(result).toBeTruthy();
   });
 });
