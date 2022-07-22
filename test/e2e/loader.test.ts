@@ -26,14 +26,13 @@ describe('loader', () => {
     test('should not get loader data when hydrating at client side', async () => {
       page = await ctx.browser.page(ctx.url('/'));
       page.waitForSelector('#loader-index');
-      console.log((global as any).__test_flag__);
       expect(await page.$text('p')).toBe('world');
 
       const onlyExeClient = await page.evaluate(() => {
-        return (window as any).__client_test_flag__;
+        return (window as any).__LOADER_RUNED__;
       });
 
-      expect(onlyExeClient).toBeTruthy();
+      expect(onlyExeClient).toBeFalsy();
     });
 
     test('PageComponent should receive context object', async () => {
