@@ -1,3 +1,4 @@
+import { IncomingMessage, ServerResponse } from 'http';
 import type {
   MultiCompiler,
   MultiStats,
@@ -5,8 +6,7 @@ import type {
 } from '@shuvi/toolpack/lib/webpack';
 
 import {
-  IRequest,
-  IResponse,
+  INextFunc,
   IRequestHandlerWithNext
 } from '../../../http-server/serverTypes';
 
@@ -14,9 +14,10 @@ export {
   MultiCompiler,
   MultiStats,
   Stats,
-  IRequest,
-  IResponse,
-  IRequestHandlerWithNext
+  IncomingMessage,
+  ServerResponse,
+  IRequestHandlerWithNext,
+  INextFunc
 };
 
 export type ICallback = (stats?: MultiStats | Stats) => void;
