@@ -1,4 +1,3 @@
-import middleware from './middleware';
 import setupHooks from './utils/setupHooks';
 import setupWriteToDisk from './utils/setupWriteToDisk';
 import ready from './utils/ready';
@@ -7,7 +6,9 @@ import {
   IContext,
   IOptions,
   IRequestHandlerWithNext,
-  IShuviDevMiddleware
+  IShuviDevMiddleware,
+  IRequest,
+  IResponse
 } from './types';
 
 export default function ShuviDevMiddleware(
@@ -38,7 +39,17 @@ export default function ShuviDevMiddleware(
     }
   );
 
-  const instance = middleware(context) as any;
+  const instance = async (
+    _req: IRequest,
+    _res: IResponse,
+    next: (err?: any) => void
+  ) => {
+    return await new Promise(resolve => {
+      ready(context, () => {
+        resolve(next());
+      });
+    });
+  };
 
   instance.waitUntilValid = (callback = () => {}, force: boolean) => {
     if (force) {
