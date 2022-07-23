@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "pnpm -r --stream --parallel run dev",
     "build": "pnpm -r run build",
-    "clean": "pnpm -r --parallel exec rm -rf node_modules lib esm shuvi-app && pnpm exec rm -rf node_modules",
+    "clean": "pnpm -r --parallel exec rm -rf lib esm shuvi-app && find ./ -name 'node_modules' -type d -exec rm -rf '{}' +",
     "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",
     "test": "pnpm test:unit && pnpm test:e2e",
