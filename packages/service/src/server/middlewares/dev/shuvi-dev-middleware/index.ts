@@ -8,14 +8,14 @@ import {
   IncomingMessage,
   ServerResponse,
   INextFunc,
-  IRequestHandlerWithNext,
+  IHandlerWithNext,
   IShuviDevMiddleware
 } from './types';
 
 export default function ShuviDevMiddleware(
   compiler: MultiCompiler,
   options: IOptions
-): IRequestHandlerWithNext & IShuviDevMiddleware {
+): IHandlerWithNext & IShuviDevMiddleware {
   const context: IContext = {
     state: false,
     stats: undefined,

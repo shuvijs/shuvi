@@ -5,10 +5,7 @@ import type {
   Stats
 } from '@shuvi/toolpack/lib/webpack';
 
-import {
-  INextFunc,
-  IRequestHandlerWithNext
-} from '../../../http-server/serverTypes';
+import { INextFunc } from '../../../http-server/serverTypes';
 
 export {
   MultiCompiler,
@@ -16,7 +13,6 @@ export {
   Stats,
   IncomingMessage,
   ServerResponse,
-  IRequestHandlerWithNext,
   INextFunc
 };
 
@@ -42,3 +38,9 @@ export interface IShuviDevMiddleware {
   invalidate(callback?: ICallback): void;
   context?: IContext;
 }
+
+export type IHandlerWithNext = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  next: INextFunc
+) => void;
