@@ -1,3 +1,5 @@
+> a fork of the [next-swc](https://github.com/vercel/next.js/tree/canary/packages/next-swc)
+
 ## Development Process
 
   1. install rust https://www.rust-lang.org/learn/get-started

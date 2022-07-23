@@ -60,9 +60,6 @@ pub struct TransformOptions {
     pub swc: swc::config::Options,
 
     #[serde(default)]
-    pub pages_dir: Option<PathBuf>,
-
-    #[serde(default)]
     pub is_page_file: bool,
 
     #[serde(default)]

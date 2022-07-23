@@ -51,7 +51,6 @@ fn test(input: &Path, minify: bool) {
                     },
                     ..Default::default()
                 },
-                pages_dir: None,
                 is_page_file: false,
                 is_development: true,
                 is_server: false,
