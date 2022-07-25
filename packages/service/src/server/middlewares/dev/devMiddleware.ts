@@ -13,7 +13,6 @@ import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../../../bundler';
 import { Server } from '../../http-server';
 import { IServerPluginContext } from '../../plugin';
-import { getAssetMiddleware } from '../getAssetMiddleware';
 
 const wsServer = new ws.Server({ noServer: true });
 export interface DevMiddleware {
@@ -30,7 +29,6 @@ export async function getDevMiddleware(
   const bundler = await getBundler(serverPluginContext);
   let compiler;
   let dynamicDll: DynamicDll | null = null;
-  const assetsMiddleware = getAssetMiddleware(serverPluginContext);
 
   if (serverPluginContext.config.experimental.preBundle) {
     dynamicDll = new DynamicDll({
@@ -64,10 +62,6 @@ export async function getDevMiddleware(
   const apply = (server: Server) => {
     const targetServer = server;
     targetServer.use(shuviDevMiddleware);
-    targetServer.use(
-      `${serverPluginContext.assetPublicPath}:path(.*)`,
-      assetsMiddleware
-    );
     targetServer.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );

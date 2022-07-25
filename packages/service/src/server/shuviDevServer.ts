@@ -12,7 +12,7 @@ import { DEV_HOT_MIDDLEWARE_PATH } from '@shuvi/shared/lib/constants';
 export class ShuviDevServer extends ShuviServer {
   async init() {
     const { _serverContext: context, _server: server } = this;
-    const publicDirMiddleware = getAssetMiddleware(context, true);
+    const assetsMiddleware = getAssetMiddleware(context, true);
     const devMiddleware = await getDevMiddleware(context);
     await devMiddleware.waitUntilValid();
     const proxy = [];
@@ -42,7 +42,7 @@ export class ShuviDevServer extends ShuviServer {
 
     // keep the order
     devMiddleware.apply(server);
-    server.use(`${context.assetPublicPath}/:path(.*)`, publicDirMiddleware);
+    server.use(`${context.assetPublicPath}/:path(.*)`, assetsMiddleware);
 
     await this._initMiddlewares();
 

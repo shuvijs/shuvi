@@ -5,27 +5,36 @@ import { isStaticFileExist, serveStatic } from '../utils';
 
 export const getAssetMiddleware = (
   cliContext: IServerPluginContext,
-  isDevPublic: boolean = false
+  isDev: boolean = false
 ): IRequestHandlerWithNext => {
   return async (req, res, next) => {
     let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
-    const assetAbsPath = isDevPublic
-      ? cliContext.resolvePublicFile(path)
-      : cliContext.resolveBuildFile(BUILD_DEFAULT_DIR, path);
 
-    if (!isStaticFileExist(assetAbsPath)) return next();
+    let assetAbsPaths = [cliContext.resolvePublicFile(path)];
 
-    let err = null;
-    try {
-      await serveStatic(req, res, assetAbsPath);
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        error.statusCode = 404;
+    if (isDev)
+      assetAbsPaths = [
+        ...assetAbsPaths,
+        cliContext.resolveBuildFile(BUILD_DEFAULT_DIR, path)
+      ];
+
+    for (const assetAbsPath of assetAbsPaths) {
+      if (!isStaticFileExist(assetAbsPath)) {
+        continue;
       }
-      err = error;
-    }
+      let err = null;
+      try {
+        return await serveStatic(req, res, assetAbsPath);
+      } catch (error: any) {
+        if (error.code === 'ENOENT') {
+          error.statusCode = 404;
+        }
+        err = error;
+      }
 
-    if (err) next(err);
+      if (err) next(err);
+    }
+    return next();
   };
 };
