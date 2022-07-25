@@ -1,5 +1,4 @@
 import setupHooks from './utils/setupHooks';
-import setupWriteToDisk from './utils/setupWriteToDisk';
 import ready from './utils/ready';
 import {
   MultiCompiler,
@@ -26,7 +25,6 @@ export default function ShuviDevMiddleware(
   };
 
   setupHooks(context);
-  setupWriteToDisk(context);
 
   // Start watching
   context.watching = context.compiler.watch(
