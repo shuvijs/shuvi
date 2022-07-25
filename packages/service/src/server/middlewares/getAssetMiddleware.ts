@@ -13,8 +13,9 @@ export const getAssetMiddleware = (
 
     let assetAbsPaths = [cliContext.resolveBuildFile(BUILD_DEFAULT_DIR, path)];
 
-    if (isDev)
+    if (isDev) {
       assetAbsPaths = [...assetAbsPaths, cliContext.resolvePublicFile(path)];
+    }
 
     for (const assetAbsPath of assetAbsPaths) {
       if (!isStaticFileExist(assetAbsPath)) {
