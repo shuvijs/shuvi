@@ -7,6 +7,7 @@ import {
   mkdirSync,
   rmdirSync,
   sleep
+  // getRunner
 } from './helper/index';
 import { reactive } from '@vue/reactivity';
 
@@ -18,6 +19,8 @@ const cleanUp = () => {
   rmdirSync(resolveFixture('watch'));
 };
 
+jest.setTimeout(10000); // 1 second
+
 /**
  * fileWatcher has a aggregating timeout of 300 ms
  * fileBuilder's watcher has a aggregating timeout of 10 ms
@@ -26,17 +29,49 @@ const cleanUp = () => {
 const BUILD_INTERVAL = 400;
 
 describe('fileBuilder watch', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     // copy fixtures/_watchers to fixtures/watchers
     prepare();
   });
 
-  afterAll(() => {
+  afterEach(() => {
     // delete fixtures/watchers
     cleanUp();
   });
   const rootDir = resolveFixture('watch');
   const file = (name: string) => resolveFixture('watch', name);
+
+  const matchFile = (matchArray: Array<[string, string]>) => {
+    matchArray.forEach(([path, content]) => {
+      expect(readFileSync(path)).toBe(content);
+    });
+  };
+
+  const getRunner = (arr: (() => void)[], cb?: () => void) => {
+    const functions = arr.map(fn => jest.fn(fn));
+    return () => {
+      const currentFunction = functions.shift();
+      if (currentFunction) {
+        currentFunction();
+        cb?.();
+        expect(currentFunction).toBeCalledTimes(1);
+      }
+    };
+  };
+
+  const src = file('src');
+  const srcA = file('src-a');
+  const srcB = file('src-b');
+  const srcC = file('src-c');
+  const srcD = file('src-d');
+  const srcE = file('src-e');
+  const a = file('a');
+  const b = file('b');
+  const c = file('c');
+  const d = file('d');
+  const e = file('e');
+  const f = file('f');
+
   /** TODO: reactive support */
   describe.skip('watch with reactive', () => {
     test('should update file after changing state', done => {
@@ -73,10 +108,6 @@ describe('fileBuilder watch', () => {
 
       const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
         fileBuilder;
-      const src = file('src');
-      const a = file('a');
-      const b = file('b');
-      const c = file('c');
       writeFileSync(src, 'a');
       const A = defineFile({
         name: 'a',
@@ -148,19 +179,14 @@ describe('fileBuilder watch', () => {
         const fileBuilder = getFileBuilder();
         const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
           fileBuilder;
-        const srcA = file('src-a');
-        const srcC = file('src-c');
-        const a = file('a');
-        const b = file('b');
-        const c = file('c');
-        const d = file('d');
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         const A = defineFile({
           name: 'a',
           async content() {
-            await sleep(500);
-            return readFileSync(srcA);
+            const result = readFileSync(srcA);
+            await sleep(1200);
+            return result;
           },
           dependencies: [srcA]
         });
@@ -192,44 +218,59 @@ describe('fileBuilder watch', () => {
           let onBuildStartCanceler: () => void;
           let onBuildEndCanceler: () => void;
           const logs: string[] = [];
-          const onBuildStartHandler = jest.fn(() => {
-            // 1st buildStart event: A and B should update
+
+          const start1 = () => {
+            // 1st buildStart event: A -> B should update
             logs.push('start a');
-            expect(readFileSync(a)).toBe('a');
-            expect(readFileSync(b)).toBe('ab');
+            matchFile([
+              [a, 'a'],
+              [b, 'ab']
+            ]);
+          };
+
+          const start2 = () => {
+            // 2nd buildStart event: C -> D should update
+            // A -> B should be still updating
+            logs.push('start c');
+            matchFile([
+              [a, 'a'],
+              [b, 'ab'],
+              [c, 'c'],
+              [d, 'cd']
+            ]);
+          };
+
+          const onBuildStartHandler = getRunner([start1, start2], () => {
             onBuildStartCanceler();
-            onBuildStart(() => {
-              // 2nd buildStart event: C and D should update
-              // A and B should be still updating
-              logs.push('start c');
-              expect(readFileSync(a)).toBe('a');
-              expect(readFileSync(b)).toBe('ab');
-              expect(readFileSync(c)).toBe('c');
-              expect(readFileSync(d)).toBe('cd');
-            });
+            onBuildStartCanceler = onBuildStart(onBuildStartHandler);
           });
-          const onBuildEndHandler = jest.fn(() => {
+
+          const end1 = () => {
             // 1st buildStart event: C and D should have been updated
             // but A and B should be still updating
             // because C and D are faster
             logs.push('end c');
-            expect(readFileSync(c)).toBe('cc');
-            expect(readFileSync(d)).toBe('ccd');
-            expect(readFileSync(a)).toBe('a');
-            expect(readFileSync(b)).toBe('ab');
-            if (onBuildEndCanceler) {
-              onBuildEndCanceler();
-              onBuildEnd(() => {
-                // 2nd buildEnd event: A and B should have been finally updated
-                logs.push('end a');
-                expect(readFileSync(a)).toBe('aa');
-                expect(readFileSync(b)).toBe('aab');
-                expect(onBuildStartHandler).toBeCalledTimes(1);
-                expect(onBuildEndHandler).toBeCalledTimes(1);
-                expect(logs).toEqual(['start a', 'start c', 'end c', 'end a']);
-                close().then(done);
-              });
-            }
+            matchFile([
+              [a, 'a'],
+              [b, 'ab'],
+              [c, 'cc'],
+              [d, 'ccd']
+            ]);
+          };
+
+          const end2 = () => {
+            logs.push('end a');
+            matchFile([
+              [a, 'aa'],
+              [b, 'aab']
+            ]);
+            expect(logs).toEqual(['start a', 'start c', 'end c', 'end a']);
+            close().then(done);
+          };
+
+          const onBuildEndHandler = getRunner([end1, end2], () => {
+            onBuildEndCanceler();
+            onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
           });
           onBuildStartCanceler = onBuildStart(onBuildStartHandler);
           onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
@@ -252,18 +293,14 @@ describe('fileBuilder watch', () => {
 
         const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
           fileBuilder;
-        const srcA = file('src-a');
-        const srcB = file('src-b');
-        const a = file('a');
-        const b = file('b');
-        const c = file('c');
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
         const A = defineFile({
           name: 'a',
           async content() {
+            const result = readFileSync(srcA);
             await sleep(500);
-            return readFileSync(srcA);
+            return result;
           },
           dependencies: [srcA]
         });
@@ -271,8 +308,9 @@ describe('fileBuilder watch', () => {
         const B = defineFile({
           name: 'b',
           async content() {
+            const result = readFileSync(srcB);
             await sleep(200);
-            return readFileSync(srcB);
+            return result;
           },
           dependencies: [srcB]
         });
@@ -344,23 +382,15 @@ describe('fileBuilder watch', () => {
         const fileBuilder = getFileBuilder();
         const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
           fileBuilder;
-        const srcA = file('src-a');
-        const srcC = file('src-c');
-        const srcE = file('src-e');
-        const a = file('a');
-        const b = file('b');
-        const c = file('c');
-        const d = file('d');
-        const e = file('e');
-        const f = file('f');
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         writeFileSync(srcE, 'e');
         const A = defineFile({
           name: 'a',
           async content() {
+            const result = readFileSync(srcA);
             await sleep(1000);
-            return readFileSync(srcA);
+            return result;
           },
           dependencies: [srcA]
         });
@@ -375,8 +405,9 @@ describe('fileBuilder watch', () => {
         const C = defineFile({
           name: 'c',
           async content() {
-            await sleep(1000);
-            return readFileSync(srcC);
+            const result = readFileSync(srcC);
+            await sleep(1400);
+            return result;
           },
           dependencies: [srcC]
         });
@@ -482,22 +513,15 @@ describe('fileBuilder watch', () => {
         const fileBuilder = getFileBuilder();
         const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
           fileBuilder;
-        const srcA = file('src-a');
-        const srcC = file('src-c');
-        const srcD = file('src-d');
-        const a = file('a');
-        const b = file('b');
-        const c = file('c');
-        const d = file('d');
-        const e = file('e');
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         writeFileSync(srcD, 'd');
         const A = defineFile({
           name: 'a',
           async content() {
+            const result = readFileSync(srcA);
             await sleep(1000);
-            return readFileSync(srcA);
+            return result;
           },
           dependencies: [srcA]
         });
@@ -512,8 +536,9 @@ describe('fileBuilder watch', () => {
         const C = defineFile({
           name: 'c',
           async content() {
+            const result = readFileSync(srcC);
             await sleep(500);
-            return readFileSync(srcC);
+            return result;
           },
           dependencies: [srcC]
         });
@@ -606,22 +631,15 @@ describe('fileBuilder watch', () => {
         const fileBuilder = getFileBuilder();
         const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
           fileBuilder;
-        const srcA = file('src-a');
-        const srcB = file('src-b');
-        const srcC = file('src-c');
-        const a = file('a');
-        const b = file('b');
-        const c = file('c');
-        const d = file('d');
-        const e = file('e');
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
         writeFileSync(srcC, 'c');
         const A = defineFile({
           name: 'a',
           async content() {
+            const result = readFileSync(srcA);
             await sleep(1000);
-            return readFileSync(srcA);
+            return result;
           },
           dependencies: [srcA]
         });
@@ -635,8 +653,9 @@ describe('fileBuilder watch', () => {
         const C = defineFile({
           name: 'c',
           async content() {
+            const result = readFileSync(srcC);
             await sleep(1000);
-            return readFileSync(srcC);
+            return result;
           },
           dependencies: [srcC]
         });
@@ -729,12 +748,6 @@ describe('fileBuilder watch', () => {
         const fileBuilder = getFileBuilder();
         const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
           fileBuilder;
-        const srcA = file('src-a');
-        const srcC = file('src-c');
-        const a = file('a');
-        const b = file('b');
-        const c = file('c');
-        const d = file('d');
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         const A = defineFile({
@@ -842,15 +855,780 @@ describe('fileBuilder watch', () => {
         });
       });
 
-      test.skip('this new update should merge with the awaiting update if its pending files have intersection with both current build and the awaiting update', () => {});
-      test.skip('this new update should merge with the awaiting update if its pending files have intersection with the awaiting update but have no intersection with current build', () => {});
+      test('this new update should merge with the awaiting update if its pending files have intersection with both current build and the awaiting update', done => {
+        /**
+         * In this test case, file dependency graph is as the following
+         * A -> D
+         * B -> D
+         * C -> D
+         *
+         * We will first trigger change of A. A -> D will update and is time consuming.
+         * Then we will trigger change of B. B's dependency graph intersects with A's so it should wait for A's done.
+         * Then, we will trigger change of C. C's dependency graph has intersection with A's and B's so it should merge with B.
+         */
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
+          fileBuilder;
+        writeFileSync(srcA, 'a');
+        writeFileSync(srcB, 'b');
+        writeFileSync(srcC, 'c');
+        const A = defineFile({
+          name: 'a',
+          async content() {
+            const result = readFileSync(srcA);
+            await sleep(1000);
+            return result;
+          },
+          dependencies: [srcA]
+        });
+
+        const B = defineFile({
+          name: 'b',
+          async content() {
+            const result = readFileSync(srcB);
+            return result;
+          },
+          dependencies: [srcB]
+        });
+
+        const C = defineFile({
+          name: 'c',
+          async content() {
+            const result = readFileSync(srcC);
+            return result;
+          },
+          dependencies: [srcC]
+        });
+        const D = defineFile({
+          name: 'd',
+          content() {
+            return getContent(A) + getContent(B) + getContent(C);
+          },
+          dependencies: [A, B, C]
+        });
+        addFile(A, B, C, D);
+        watch(rootDir).then(() => {
+          writeFileSync(srcA, 'aa');
+          setTimeout(() => {
+            writeFileSync(srcB, 'bb');
+            setTimeout(() => {
+              let onBuildEndCanceler: () => void;
+              const logs: string[] = [];
+              const onBuildStartHandler = jest.fn(() => {
+                // buildStart event: C -> D should update and merge with B -> D
+                logs.push('start bc');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'b'],
+                  [c, 'c'],
+                  [d, 'aabc']
+                ]);
+              });
+              const onBuildEndHandler = jest.fn(() => {
+                // 1st buildEnd event: A -> D should have been updated
+                logs.push('end a');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'b'],
+                  [c, 'c'],
+                  [d, 'aabc']
+                ]);
+                onBuildEndCanceler();
+                onBuildEndCanceler = onBuildEnd(() => {
+                  // 2nd buildEnd event: B,C -> D should have been updated
+                  logs.push('end bc');
+                  matchFile([
+                    [a, 'aa'],
+                    [b, 'bb'],
+                    [c, 'cc'],
+                    [d, 'aabbcc']
+                  ]);
+                  expect(logs).toEqual(['end a', 'start bc', 'end bc']);
+                  close().then(done);
+                });
+              });
+              onBuildStart(onBuildStartHandler);
+              onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              writeFileSync(srcC, 'cc');
+            }, BUILD_INTERVAL);
+          }, BUILD_INTERVAL);
+        });
+      });
+      test('this new update should merge with the awaiting update if its pending files have intersection with the awaiting update but have no intersection with current build', done => {
+        /**
+         * In this test case, file dependency graph is as the following
+         * A -> D
+         * B -> D
+         * B -> E
+         * C -> E
+         *
+         * We will first trigger change of A. A -> D will update and is time consuming.
+         * Then trigger change of B. B's dependency graph intersects with A's so it should wait for A's done.
+         * At this time, trigger change of C. C's dependency graph has no intersection with A's but has intersection with B's so it should merge with B.
+         */
+
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
+          fileBuilder;
+        writeFileSync(srcA, 'a');
+        writeFileSync(srcB, 'b');
+        writeFileSync(srcC, 'c');
+        const A = defineFile({
+          name: 'a',
+          async content() {
+            const result = readFileSync(srcA);
+            await sleep(1000);
+            return result;
+          },
+          dependencies: [srcA]
+        });
+        const B = defineFile({
+          name: 'b',
+          async content() {
+            return readFileSync(srcB);
+          },
+          dependencies: [srcB]
+        });
+        const C = defineFile({
+          name: 'c',
+          async content() {
+            const result = readFileSync(srcC);
+            await sleep(1000);
+            return result;
+          },
+          dependencies: [srcC]
+        });
+        const D = defineFile({
+          name: 'd',
+          async content() {
+            return getContent(A) + getContent(B);
+          },
+          dependencies: [A, B]
+        });
+        const E = defineFile({
+          name: 'e',
+          async content() {
+            return getContent(B) + getContent(C);
+          },
+          dependencies: [B, C]
+        });
+        addFile(A, B, C, D, E);
+        watch(rootDir).then(() => {
+          writeFileSync(srcA, 'aa');
+
+          setTimeout(() => {
+            writeFileSync(srcB, 'bb');
+
+            setTimeout(() => {
+              let onBuildEndCanceler: () => void;
+              const logs: string[] = [];
+              const onBuildStartHandler = jest.fn(() => {
+                // buildStart event: C -> E should update and merge with B -> [D, E]
+                logs.push('start bc');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'b'],
+                  [c, 'c'],
+                  [d, 'aab'],
+                  [e, 'bc']
+                ]);
+              });
+              const onBuildEndHandler = jest.fn(() => {
+                // 1st buildEnd event: A -> D should have been updated
+                logs.push('end a');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'b'],
+                  [c, 'c'],
+                  [d, 'aab'],
+                  [e, 'bc']
+                ]);
+                onBuildEndCanceler();
+                onBuildEndCanceler = onBuildEnd(() => {
+                  // 2nd buildEnd event: B and C should have been updated
+                  logs.push('end bc');
+                  matchFile([
+                    [a, 'aa'],
+                    [b, 'bb'],
+                    [c, 'cc'],
+                    [d, 'aabb'],
+                    [e, 'bbcc']
+                  ]);
+                  expect(logs).toEqual(['end a', 'start bc', 'end bc']);
+                  close().then(done);
+                });
+              });
+              onBuildStart(onBuildStartHandler);
+              onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              writeFileSync(srcC, 'cc');
+            }, BUILD_INTERVAL);
+          }, BUILD_INTERVAL);
+        });
+      });
     });
 
-    describe.skip('if multiple current builds is still running and multiple updates are waiting for them separately, now another new update comes', () => {
-      test('this new update should run immediately if its pending files have no intersection with all these build and updates', () => {});
-      test('this new update should merge with the specific awaiting update if its pending files have intersection with one awaiting update', () => {});
+    describe('if multiple current builds is still running and multiple updates are waiting for them separately, now another new update comes', () => {
+      test('this new update should run immediately if its pending files have no intersection with all these build and updates', done => {
+        /**
+         * In this test case, there are three independent file dependency path
+         * A -> B
+         * C -> D
+         * E -> F
+         *
+         * We will first trigger changes of A and C separately. Their updates will run immediately. Now there are two running builds.
+         * Then we will trigger change of A and C separately again. These two changes will be waiting. Now there are two running builds and two waiting builds.
+         * Then we will trigger change of E. E's dependency graph has no intersection with A's and C's so its update will run immediately.
+         */
 
-      test('this new update should merge with the multiple specific awaiting update if its pending files have intersection with one awaiting update', () => {});
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
+          fileBuilder;
+        writeFileSync(srcA, 'a');
+        writeFileSync(srcC, 'c');
+        writeFileSync(srcE, 'e');
+        const A = defineFile({
+          name: 'a',
+          async content() {
+            const result = readFileSync(srcA);
+            await sleep(1800);
+            return result;
+          },
+          dependencies: [srcA]
+        });
+        const B = defineFile({
+          name: 'b',
+          content() {
+            return getContent(A) + 'b';
+          },
+          dependencies: [A]
+        });
+
+        const C = defineFile({
+          name: 'c',
+          async content() {
+            const result = readFileSync(srcC);
+            await sleep(1800);
+            return result;
+          },
+          dependencies: [srcC]
+        });
+        const D = defineFile({
+          name: 'd',
+          content() {
+            return getContent(C) + 'd';
+          },
+          dependencies: [C]
+        });
+
+        const E = defineFile({
+          name: 'e',
+          async content() {
+            return readFileSync(srcE);
+          },
+          dependencies: [srcE]
+        });
+
+        const F = defineFile({
+          name: 'f',
+          content() {
+            return getContent(E) + 'f';
+          },
+          dependencies: [E]
+        });
+        addFile(A, B, C, D, E, F);
+        watch(rootDir).then(() => {
+          // a-1 will run immediately
+          writeFileSync(srcA, 'aa');
+
+          setTimeout(() => {
+            // c-1 will run immediately
+            writeFileSync(srcC, 'cc');
+
+            setTimeout(() => {
+              // a-2 will wait for change of a-1
+              writeFileSync(srcA, 'aaa');
+
+              setTimeout(() => {
+                // c-2 will wait for change of c-1
+                writeFileSync(srcC, 'ccc');
+
+                setTimeout(() => {
+                  let onBuildStartCanceler: () => void;
+                  let onBuildEndCanceler: () => void;
+                  const logs: string[] = [];
+
+                  const start1 = () => {
+                    logs.push('start e');
+                    matchFile([
+                      [a, 'a'],
+                      [b, 'ab'],
+                      [c, 'c'],
+                      [d, 'cd'],
+                      [e, 'e'],
+                      [f, 'ef']
+                    ]);
+                  };
+
+                  const start2 = () => {
+                    logs.push('start a-2');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'aab'],
+                      [c, 'c'],
+                      [d, 'cd'],
+                      [e, 'ee'],
+                      [f, 'eef']
+                    ]);
+                  };
+
+                  const start3 = () => {
+                    logs.push('start c-2');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'aab'],
+                      [c, 'cc'],
+                      [d, 'ccd'],
+                      [e, 'ee'],
+                      [f, 'eef']
+                    ]);
+                  };
+
+                  const end1 = () => {
+                    logs.push('end e');
+                    matchFile([
+                      [a, 'a'],
+                      [b, 'ab'],
+                      [c, 'c'],
+                      [d, 'cd'],
+                      [e, 'ee'],
+                      [f, 'eef']
+                    ]);
+                  };
+
+                  const end2 = () => {
+                    logs.push('end a-1');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'aab'],
+                      [c, 'c'],
+                      [d, 'cd'],
+                      [e, 'ee'],
+                      [f, 'eef']
+                    ]);
+                  };
+
+                  const end3 = () => {
+                    logs.push('end c-1');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'aab'],
+                      [c, 'cc'],
+                      [d, 'ccd'],
+                      [e, 'ee'],
+                      [f, 'eef']
+                    ]);
+                  };
+
+                  const end4 = () => {
+                    logs.push('end a-2');
+                    matchFile([
+                      [a, 'aaa'],
+                      [b, 'aaab'],
+                      [c, 'cc'],
+                      [d, 'ccd'],
+                      [e, 'ee'],
+                      [f, 'eef']
+                    ]);
+                  };
+
+                  const end5 = () => {
+                    logs.push('end c-2');
+                    matchFile([
+                      [a, 'aaa'],
+                      [b, 'aaab'],
+                      [c, 'ccc'],
+                      [d, 'cccd'],
+                      [e, 'ee'],
+                      [f, 'eef']
+                    ]);
+                    expect(logs).toEqual([
+                      'start e',
+                      'end e',
+                      'end a-1',
+                      'start a-2',
+                      'end c-1',
+                      'start c-2',
+                      'end a-2',
+                      'end c-2'
+                    ]);
+                    close().then(done);
+                  };
+
+                  const onBuildStartHandler = getRunner(
+                    [start1, start2, start3],
+                    () => {
+                      onBuildStartCanceler();
+                      onBuildStartCanceler = onBuildStart(onBuildStartHandler);
+                    }
+                  );
+
+                  const onBuildEndHandler = getRunner(
+                    [end1, end2, end3, end4, end5],
+                    () => {
+                      onBuildEndCanceler();
+                      onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                    }
+                  );
+
+                  onBuildStartCanceler = onBuildStart(onBuildStartHandler);
+                  onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+
+                  writeFileSync(srcE, 'ee');
+                }, BUILD_INTERVAL);
+              }, BUILD_INTERVAL);
+            }, BUILD_INTERVAL);
+          }, BUILD_INTERVAL);
+        });
+      });
+      test('this new update should merge with the specific awaiting update if its pending files have intersection with one awaiting update', done => {
+        /**
+         * In this test case, file dependency graph is as the following
+         * A -> B
+         * C -> E
+         * D -> E
+         *
+         * We will first trigger changes of A and C separately. Their updates will run immediately. Now there are two running builds.
+         * Then we will trigger change of A and C separately again. These two changes will be waiting. Now there are two running builds and two waiting builds.
+         *
+         * Then trigger change of D. D's dependency graph intersects with C's so it should merge with C.
+         */
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
+          fileBuilder;
+        writeFileSync(srcA, 'a');
+        writeFileSync(srcC, 'c');
+        writeFileSync(srcD, 'd');
+        const A = defineFile({
+          name: 'a',
+          async content() {
+            const result = readFileSync(srcA);
+            await sleep(2000);
+            return result;
+          },
+          dependencies: [srcA]
+        });
+        const B = defineFile({
+          name: 'b',
+          content() {
+            return getContent(A) + 'b';
+          },
+          dependencies: [A]
+        });
+
+        const C = defineFile({
+          name: 'c',
+          async content() {
+            const result = readFileSync(srcC);
+            await sleep(1400);
+            return result;
+          },
+          dependencies: [srcC]
+        });
+        const D = defineFile({
+          name: 'd',
+          async content() {
+            const result = readFileSync(srcD);
+            await sleep(200);
+            return result;
+          },
+          dependencies: [srcD]
+        });
+
+        const E = defineFile({
+          name: 'e',
+          async content() {
+            return getContent(C) + getContent(D);
+          },
+          dependencies: [C, D]
+        });
+        addFile(A, B, C, D, E);
+        watch(rootDir).then(() => {
+          // a-1 will run immediately
+          writeFileSync(srcA, 'aa');
+
+          setTimeout(() => {
+            // c-1 will run immediately
+            writeFileSync(srcC, 'cc');
+
+            setTimeout(() => {
+              // a-2 will be waiting
+              writeFileSync(srcA, 'aaa');
+
+              setTimeout(() => {
+                // c-2 will be waiting
+                writeFileSync(srcC, 'ccc');
+
+                setTimeout(() => {
+                  let onBuildStartCanceler: () => void;
+                  let onBuildEndCanceler: () => void;
+                  const logs: string[] = [];
+
+                  const start1 = () => {
+                    logs.push('start c-2');
+                    matchFile([
+                      [a, 'a'],
+                      [b, 'ab'],
+                      [c, 'cc'],
+                      [d, 'd'],
+                      [e, 'ccd']
+                    ]);
+                  };
+
+                  const start2 = () => {
+                    logs.push('start a-2');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'aab'],
+                      [c, 'cc'],
+                      [d, 'd'],
+                      [e, 'ccd']
+                    ]);
+                  };
+
+                  const end1 = () => {
+                    logs.push('end c-1');
+                    matchFile([
+                      [a, 'a'],
+                      [b, 'ab'],
+                      [c, 'cc'],
+                      [d, 'd'],
+                      [e, 'ccd']
+                    ]);
+                  };
+
+                  const end2 = () => {
+                    logs.push('end a-1');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'aab'],
+                      [c, 'cc'],
+                      [d, 'd'],
+                      [e, 'ccd']
+                    ]);
+                  };
+
+                  const end3 = () => {
+                    logs.push('end c-2');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'aab'],
+                      [c, 'ccc'],
+                      [d, 'dd'],
+                      [e, 'cccdd']
+                    ]);
+                  };
+
+                  const end4 = () => {
+                    logs.push('end a-2');
+                    matchFile([
+                      [a, 'aaa'],
+                      [b, 'aaab'],
+                      [c, 'ccc'],
+                      [d, 'dd'],
+                      [e, 'cccdd']
+                    ]);
+                    expect(logs).toEqual([
+                      'end c-1',
+                      'start c-2',
+                      'end a-1',
+                      'start a-2',
+                      'end c-2',
+                      'end a-2'
+                    ]);
+                    close().then(done);
+                  };
+
+                  const onBuildStartHandler = getRunner(
+                    [start1, start2],
+                    () => {
+                      onBuildStartCanceler();
+                      onBuildStartCanceler = onBuildStart(onBuildStartHandler);
+                    }
+                  );
+
+                  const onBuildEndHandler = getRunner(
+                    [end1, end2, end3, end4],
+                    () => {
+                      onBuildEndCanceler();
+                      onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                    }
+                  );
+
+                  onBuildStartCanceler = onBuildStart(onBuildStartHandler);
+                  onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+
+                  writeFileSync(srcD, 'dd');
+                }, BUILD_INTERVAL);
+              }, BUILD_INTERVAL);
+            }, BUILD_INTERVAL);
+          }, BUILD_INTERVAL);
+        });
+      });
+
+      test('this new update should merge with the multiple specific awaiting update if its pending files have intersection with one awaiting update', done => {
+        /**
+         * In this test case, file dependency graph is as the following
+         * A -> D
+         * B -> D
+         * B -> E
+         * C -> E
+         *
+         * We will first trigger changes of A and C separately. Their updates will run immediately. Now there are two running builds.
+         * Then we will trigger change of A and C separately again. These two changes will be waiting. Now there are two running builds and two waiting builds.
+         *
+         * Then we will trigger change of B. B's dependency graph intersects with A's and C's so it should merge with both A and C.
+         */
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
+          fileBuilder;
+        writeFileSync(srcA, 'a');
+        writeFileSync(srcB, 'b');
+        writeFileSync(srcC, 'c');
+        const A = defineFile({
+          name: 'a',
+          async content() {
+            const result = readFileSync(srcA);
+            await sleep(1800);
+            return result;
+          },
+          dependencies: [srcA]
+        });
+        const B = defineFile({
+          name: 'b',
+          async content() {
+            return readFileSync(srcB);
+          },
+          dependencies: [srcB]
+        });
+        const C = defineFile({
+          name: 'c',
+          async content() {
+            const result = readFileSync(srcC);
+            await sleep(1800);
+            return result;
+          },
+          dependencies: [srcC]
+        });
+        const D = defineFile({
+          name: 'd',
+          async content() {
+            return getContent(A) + getContent(B);
+          },
+          dependencies: [A, B]
+        });
+        const E = defineFile({
+          name: 'e',
+          async content() {
+            return getContent(B) + getContent(C);
+          },
+          dependencies: [B, C]
+        });
+        addFile(A, B, C, D, E);
+        watch(rootDir).then(() => {
+          // a-1 will run immediately
+          writeFileSync(srcA, 'aa');
+
+          setTimeout(() => {
+            // c-1 will run immediately
+            writeFileSync(srcC, 'cc');
+
+            setTimeout(() => {
+              // a-2 will be waiting
+              writeFileSync(srcA, 'aaa');
+
+              setTimeout(() => {
+                // c-2 will be waiting
+                writeFileSync(srcC, 'ccc');
+
+                setTimeout(() => {
+                  let onBuildStartCanceler: () => void;
+                  let onBuildEndCanceler: () => void;
+                  const logs: string[] = [];
+
+                  const start = () => {
+                    logs.push('start abc');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'b'],
+                      [c, 'cc'],
+                      [d, 'aab'],
+                      [e, 'bcc']
+                    ]);
+                  };
+
+                  const end1 = () => {
+                    logs.push('end a-1');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'b'],
+                      [c, 'c'],
+                      [d, 'aab'],
+                      [e, 'bc']
+                    ]);
+                  };
+
+                  const end2 = () => {
+                    logs.push('end c-1');
+                    matchFile([
+                      [a, 'aa'],
+                      [b, 'b'],
+                      [c, 'cc'],
+                      [d, 'aab'],
+                      [e, 'bcc']
+                    ]);
+                  };
+
+                  const end3 = () => {
+                    logs.push('end abc');
+                    matchFile([
+                      [a, 'aaa'],
+                      [b, 'bb'],
+                      [c, 'ccc'],
+                      [d, 'aaabb'],
+                      [e, 'bbccc']
+                    ]);
+                    expect(logs).toEqual([
+                      'end a-1',
+                      'end c-1',
+                      'start abc',
+                      'end abc'
+                    ]);
+                    close().then(done);
+                  };
+
+                  const onBuildStartHandler = getRunner([start], () => {
+                    onBuildStartCanceler();
+                    onBuildStartCanceler = onBuildStart(onBuildStartHandler);
+                  });
+
+                  const onBuildEndHandler = getRunner(
+                    [end1, end2, end3],
+                    () => {
+                      onBuildEndCanceler();
+                      onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                    }
+                  );
+
+                  onBuildStartCanceler = onBuildStart(onBuildStartHandler);
+                  onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+
+                  writeFileSync(srcB, 'bb');
+                }, BUILD_INTERVAL);
+              }, BUILD_INTERVAL);
+            }, BUILD_INTERVAL);
+          }, BUILD_INTERVAL);
+        });
+      });
     });
   });
 });

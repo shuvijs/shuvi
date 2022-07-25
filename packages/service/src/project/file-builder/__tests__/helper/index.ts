@@ -38,3 +38,14 @@ export function rmdirSync(dir: string) {
     fs.rmdirSync(dir);
   }
 }
+
+export const getRunner = (arr: Function[], cb: Function) => {
+  const functions = [...arr];
+  return () => {
+    const currentFunction = functions.shift();
+    if (currentFunction) {
+      currentFunction();
+      cb();
+    }
+  };
+};

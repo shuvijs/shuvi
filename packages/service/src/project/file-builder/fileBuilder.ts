@@ -190,8 +190,8 @@ export const getFileBuilder = <C extends {} = {}>(
       remain.fronts.add(front);
       const frontBuild = runningBuilds.get(front);
       if (frontBuild) {
-        frontBuild.rears.add(remain.id);
         frontBuild.rears.delete(drop.id);
+        frontBuild.rears.add(remain.id);
       }
     });
 
@@ -200,8 +200,8 @@ export const getFileBuilder = <C extends {} = {}>(
       remain.rears.add(rear);
       const rearBuild = awaitingBuilds.get(rear);
       if (rearBuild) {
-        rearBuild.fronts.add(remain.id);
         rearBuild.fronts.delete(drop.id);
+        rearBuild.fronts.add(remain.id);
       }
     });
     awaitingBuilds.delete(drop.id);
@@ -249,7 +249,6 @@ export const getFileBuilder = <C extends {} = {}>(
         mergeBuilds(buildInfo, awaitingBuild);
       }
     }
-
     // this update cannot run immediately
     if (buildInfo.fronts.size) {
       if (!awaitingBuilds.has(buildInfo.id)) {
