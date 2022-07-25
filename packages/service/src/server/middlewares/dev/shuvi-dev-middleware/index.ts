@@ -5,17 +5,17 @@ import {
   MultiCompiler,
   IContext,
   IOptions,
-  IncomingMessage,
-  ServerResponse,
+  IRequest,
+  IResponse,
   INextFunc,
-  IHandlerWithNext,
+  IRequestHandlerWithNext,
   IShuviDevMiddleware
 } from './types';
 
 export default function ShuviDevMiddleware(
   compiler: MultiCompiler,
   options: IOptions
-): IHandlerWithNext & IShuviDevMiddleware {
+): IRequestHandlerWithNext & IShuviDevMiddleware {
   const context: IContext = {
     state: false,
     stats: undefined,
@@ -40,11 +40,7 @@ export default function ShuviDevMiddleware(
     }
   );
 
-  const instance = async (
-    _req: IncomingMessage,
-    _res: ServerResponse,
-    next: INextFunc
-  ) => {
+  const instance = async (_req: IRequest, _res: IResponse, next: INextFunc) => {
     return await new Promise(resolve => {
       ready(context, () => {
         resolve(next());
