@@ -78,7 +78,6 @@
     "webpack": "5.73.0",
     "webpack-bundle-analyzer": "4.3.0",
     "webpack-chain": "6.5.1",
-    "webpack-dev-middleware": "4.1.0",
     "webpack-sources": "2.2.0",
     "webpack-virtual-modules": "0.4.3"
   },
@@ -100,7 +99,6 @@
     "@types/loader-utils": "2.0.1",
     "@types/mini-css-extract-plugin": "^1.2.2",
     "@types/webpack-bundle-analyzer": "^3.8.0",
-    "@types/webpack-dev-middleware": "5.0.2",
     "@swc/plugin-transform-imports": "0.8.4",
     "memfs": "^3.1.2"
   },
