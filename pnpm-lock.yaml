@@ -341,6 +341,7 @@ importers:
       '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
       '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
       '@shuvi/utils': 1.0.0-rc.1
+      '@swc/plugin-transform-imports': 0.8.4
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1
@@ -461,6 +462,7 @@ importers:
       '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
       '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
     devDependencies:
+      '@swc/plugin-transform-imports': 0.8.4
       '@types/babel__core': 7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1
@@ -2790,6 +2792,10 @@ packages:
     resolution: {integrity: sha512-BPS4ynJW/o92PUR4wgriz2Ud5gpST5vz6GQfMixEDK0Z8ZCUv2M7SkBLykH56T++Xs+8ln9zTGbOvNGIe02/jw==}
     dependencies:
       '@sinonjs/commons': 1.8.3
+    dev: true
+
+  /@swc/plugin-transform-imports/0.8.4:
+    resolution: {integrity: sha512-pgtEMq3wRC5ukZkphtEdbbZkVjCqBQm22AhA2u7puw0cvah1oKxgutkdBB4wFsgbddeCsrHE6yl+BQcsyI0GlQ==}
     dev: true
 
   /@szmarczak/http-timer/4.0.6:

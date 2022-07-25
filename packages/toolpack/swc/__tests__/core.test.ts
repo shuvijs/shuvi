@@ -396,4 +396,44 @@ describe('swc/core', () => {
       );
     });
   });
+
+  test('should support custom plugin', async () => {
+    const swc = async (code: string, swcPlugins: any[] = []) => {
+      const plugins = (swcPlugins ?? [])
+        .filter(Array.isArray)
+        .map(([name, options]) => [require.resolve(name), options]);
+
+      const jsc = {
+        experimental: {
+          plugins
+        }
+      };
+
+      const options = {
+        jsc
+      };
+
+      return transform(code, options)!;
+    };
+    const output = await swc(
+      `import { Grid, Row, Col as Col1 } from 'react-bootstrap';`,
+      [
+        [
+          '@swc/plugin-transform-imports',
+          {
+            'react-bootstrap': {
+              transform: 'react-bootstrap/lib/{{member}}'
+            }
+          }
+        ]
+      ]
+    );
+
+    expect(output).toMatchInlineSnapshot(`
+      "import Grid from \\"react-bootstrap/lib/Grid\\";
+      import Row from \\"react-bootstrap/lib/Row\\";
+      import Col1 from \\"react-bootstrap/lib/Col\\";
+      "
+    `);
+  });
 });

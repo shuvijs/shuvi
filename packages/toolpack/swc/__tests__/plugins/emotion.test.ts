@@ -8,7 +8,7 @@ const swc = async (code: string, emotion: Record<string, any> = {}) => {
   const isTypeScript = isTSFile || filename.endsWith('.tsx');
   const development = process.env.NODE_ENV === 'development';
   const jsc = {
-    target: 'es5',
+    target: 'es2021',
     parser: {
       syntax: isTypeScript ? 'typescript' : 'ecmascript',
       dynamicImport: false,
@@ -33,9 +33,9 @@ const swc = async (code: string, emotion: Record<string, any> = {}) => {
   const options = {
     emotion,
     filename,
+    sourceMaps: undefined,
     sourceFileName: filename,
     disableShuviDynamic: false,
-    minify: true,
     jsc
   };
 
@@ -43,41 +43,285 @@ const swc = async (code: string, emotion: Record<string, any> = {}) => {
 };
 
 describe('emotion', () => {
-  it('should transform JSX to use a local identifier', async () => {
-    const output = await swc(`const a = () => <a href="/">home</a>;`);
+  it('should transform with sourceMap', async () => {
+    const output = await swc(
+      `
+    import { css } from '@emotion/react'
+    import styled from '@emotion/styled'
 
-    // it should import _jsx
-    expect(output).toMatch(`import{jsx as _jsx}from\"react/jsx-runtime\"`);
-    // it should use that factory for all JSX:
-    expect(output).toMatch(`_jsx(\"a\",{href:\"`);
+    const unitNormal = '1rem'
+    const unitLarge = '2rem'
 
-    expect(output).toMatchInlineSnapshot(
-      `"import{jsx as _jsx}from\\"react/jsx-runtime\\";var a=function(){return _jsx(\\"a\\",{href:\\"/\\",children:\\"home\\"})}"`
+    const Example = styled.div\`
+      margin: \${unitNormal} \${unitLarge};
+    \`
+    export const Animated = styled.div\`
+      & code {
+        background-color: linen;
+      }
+      animation: \${({ animation }) => animation} 0.2s infinite ease-in-out alternate;
+    \`
+
+    const shadowBorder = ({ width = '1px', color }) =>
+      css\`
+        box-shadow: inset 0px 0px 0px \${width} \${color};
+      \`
+
+    const StyledInput = styled.input\`
+      \${shadowBorder({ color: 'red', width: '4px' })}
+    \`
+    `,
+      {
+        enabled: true,
+        sourceMap: true
+      }
     );
+
+    expect(output).toMatchInlineSnapshot(`
+      "import { css } from '@emotion/react';
+      import styled from '@emotion/styled';
+      const unitNormal = '1rem';
+      const unitLarge = '2rem';
+      const Example = /*#__PURE__*/ styled(\\"div\\", {
+          target: \\"e6j9wbm0\\"
+      })(\\"margin:\\", unitNormal, \\" \\", unitLarge, \\";\\");
+      export const Animated = /*#__PURE__*/ styled(\\"div\\", {
+          target: \\"e6j9wbm1\\"
+      })(\\"& code{background-color:linen;}animation:\\", ({ animation  })=>animation, \\" 0.2s infinite ease-in-out alternate;\\");
+      const shadowBorder = ({ width ='1px' , color  })=>/*#__PURE__*/ css(\\"box-shadow:inset 0px 0px 0px \\", width, \\" \\", color, \\";\\");
+      const StyledInput = /*#__PURE__*/ styled(\\"input\\", {
+          target: \\"e6j9wbm2\\"
+      })(shadowBorder({
+          color: 'red',
+          width: '4px'
+      }));
+      "
+    `);
   });
 
-  it('should support Fragment syntax', async () => {
-    const output = await swc(`const a = () => <>hello</>;`);
-
-    expect(output).toMatch(
-      `import{jsx as _jsx,Fragment as _Fragment}from\"react/jsx-runtime\"`
+  it('should support css in callback', async () => {
+    const output = await swc(
+      `import { css, Global } from '@emotion/react'
+    import styled from '@emotion/styled'
+    import { PureComponent } from 'react'
+    import ReactDOM from 'react-dom'
+    
+    const stylesInCallback = (props) =>
+      css({
+        color: 'red',
+        background: 'yellow',
+        width: \`\${props.scale * 100}px\`,
+      })
+    
+    const styles = css({
+      color: 'red',
+      width: '20px',
+    })
+    
+    const styles2 = css\`
+      color: red;
+      width: 20px;
+    \`
+    
+    const DivContainer = styled.div({
+      background: 'red',
+    })
+    
+    const DivContainer2 = styled.div\`
+      background: red;
+    \`
+    
+    const SpanContainer = styled('span')({
+      background: 'yellow',
+    })
+    
+    export const DivContainerExtended = styled(DivContainer)\`\`
+    export const DivContainerExtended2 = styled(DivContainer)({})
+    
+    const Container = styled('button')\`
+      background: red;
+      \${stylesInCallback}
+      \${() =>
+        css({
+          background: 'red',
+        })}
+      color: yellow;
+      font-size: 12px;
+    \`
+    
+    const Container2 = styled.div\`
+      background: red;
+    \`
+    
+    export class SimpleComponent extends PureComponent {
+      render() {
+        return (
+          <Container
+            css={css\`
+              color: hotpink;
+            \`}
+          >
+            <Global
+              styles={css\`
+                html,
+                body {
+                  padding: 3rem 1rem;
+                  margin: 0;
+                  background: papayawhip;
+                  min-height: 100%;
+                  font-family: Helvetica, Arial, sans-serif;
+                  font-size: 24px;
+                }
+              \`}
+            />
+            <span>hello</span>
+          </Container>
+        )
+      }
+    }
+    
+    ReactDOM.render(<SimpleComponent />, document.querySelector('#app'))
+    `,
+      {
+        enabled: true,
+        sourceMap: true
+      }
     );
 
-    expect(output).toMatchInlineSnapshot(
-      `"import{jsx as _jsx,Fragment as _Fragment}from\\"react/jsx-runtime\\";var a=function(){return _jsx(_Fragment,{children:\\"hello\\"})}"`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "import { jsx as _jsx, jsxs as _jsxs } from \\"react/jsx-runtime\\";
+      import { css, Global } from '@emotion/react';
+      import styled from '@emotion/styled';
+      import { PureComponent } from 'react';
+      import ReactDOM from 'react-dom';
+      const stylesInCallback = (props)=>/*#__PURE__*/ css({
+              color: 'red',
+              background: 'yellow',
+              width: \`\${props.scale * 100}px\`
+          });
+      const styles = /*#__PURE__*/ css({
+          color: 'red',
+          width: '20px'
+      });
+      const styles2 = /*#__PURE__*/ css(\\"color:red;width:20px;\\");
+      const DivContainer = /*#__PURE__*/ styled(\\"div\\", {
+          target: \\"e6j9wbm0\\"
+      })({
+          background: 'red'
+      });
+      const DivContainer2 = /*#__PURE__*/ styled(\\"div\\", {
+          target: \\"e6j9wbm1\\"
+      })(\\"background:red;\\");
+      const SpanContainer = /*#__PURE__*/ styled('span', {
+          target: \\"e6j9wbm2\\"
+      })({
+          background: 'yellow'
+      });
+      export const DivContainerExtended = /*#__PURE__*/ styled(DivContainer, {
+          target: \\"e6j9wbm3\\"
+      })();
+      export const DivContainerExtended2 = /*#__PURE__*/ styled(DivContainer, {
+          target: \\"e6j9wbm4\\"
+      })({});
+      const Container = /*#__PURE__*/ styled('button', {
+          target: \\"e6j9wbm5\\"
+      })(\\"background:red;\\", stylesInCallback, \\" \\", ()=>/*#__PURE__*/ css({
+              background: 'red'
+          }), \\"      color:yellow;font-size:12px;\\");
+      const Container2 = /*#__PURE__*/ styled(\\"div\\", {
+          target: \\"e6j9wbm6\\"
+      })(\\"background:red;\\");
+      export class SimpleComponent extends PureComponent {
+          render() {
+              return /*#__PURE__*/ _jsxs(Container, {
+                  css: /*#__PURE__*/ css(\\"color:hotpink;\\"),
+                  children: [
+                      /*#__PURE__*/ _jsx(Global, {
+                          styles: [
+                              css(\\"html,body{padding:3rem 1rem;margin:0;background:papayawhip;min-height:100%;font-family:Helvetica,Arial,sans-serif;font-size:24px;}\\")
+                          ]
+                      }),
+                      /*#__PURE__*/ _jsx(\\"span\\", {
+                          children: \\"hello\\"
+                      })
+                  ]
+              });
+          }
+      }
+      ReactDOM.render(/*#__PURE__*/ _jsx(SimpleComponent, {}), document.querySelector('#app'));
+      "
+    `);
   });
 
-  it('should support commonjs', async () => {
+  it('should support namespace import', async () => {
     const output = await swc(
       trim`
-        const React = require('react');
-        module.exports = () => <div>test2</div>;
-      `
+      import * as emotionReact from '@emotion/react'
+      import { PureComponent } from 'react'
+      import ReactDOM from 'react-dom'
+      
+      const stylesInCallback = (props) =>
+        emotionReact.css({
+          color: 'red',
+          background: 'yellow',
+          width: \`\${props.scale * 100}px\`,
+        })
+      
+      const styles = emotionReact.css({
+        color: 'red',
+        width: '20px',
+      })
+      
+      const styles2 = emotionReact.css\`
+        color: red;
+        width: 20px;
+      \`
+      
+      export class SimpleComponent extends PureComponent {
+        render() {
+          return (
+            <div className={styles}>
+              <span>hello</span>
+            </div>
+          )
+        }
+      }
+      
+      ReactDOM.render(<SimpleComponent />, document.querySelector('#app'))
+      `,
+      {
+        enabled: true,
+        sourceMap: true
+      }
     );
 
-    expect(output).toMatchInlineSnapshot(
-      `"\\"use strict\\";Object.defineProperty(exports,\\"__esModule\\",{value:true});var _jsxRuntime=require(\\"react/jsx-runtime\\");var React=require(\\"react\\");module.exports=function(){return(0,_jsxRuntime.jsx)(\\"div\\",{children:\\"test2\\"})}"`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from \\"react/jsx-runtime\\";
+      import * as emotionReact from '@emotion/react';
+      import { PureComponent } from 'react';
+      import ReactDOM from 'react-dom';
+      const stylesInCallback = (props)=>/*#__PURE__*/ emotionReact.css({
+              color: 'red',
+              background: 'yellow',
+              width: \`\${props.scale * 100}px\`
+          });
+      const styles = /*#__PURE__*/ emotionReact.css({
+          color: 'red',
+          width: '20px'
+      });
+      const styles2 = /*#__PURE__*/ emotionReact.css(\\"color:red;width:20px;\\");
+      export class SimpleComponent extends PureComponent {
+          render() {
+              return /*#__PURE__*/ _jsx(\\"div\\", {
+                  className: styles,
+                  children: /*#__PURE__*/ _jsx(\\"span\\", {
+                      children: \\"hello\\"
+                  })
+              });
+          }
+      }
+      ReactDOM.render(/*#__PURE__*/ _jsx(SimpleComponent, {}), document.querySelector('#app'));
+      "
+    `);
   });
 });

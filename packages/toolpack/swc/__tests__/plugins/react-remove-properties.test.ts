@@ -33,8 +33,6 @@ const swc = async (code: string, properties: string[] = []) => {
 
   const options = {
     reactRemoveProperties: { properties },
-    disableShuviDynamic: false,
-    minify: true,
     jsc
   };
 
@@ -54,16 +52,51 @@ describe('react remove properties', () => {
   it('should remove ^data-test properties by default', async () => {
     const output = await swc(str);
 
-    expect(output).toMatchInlineSnapshot(
-      `"import{jsx as _jsx}from\\"react/jsx-runtime\\";export default function Home(){return _jsx(\\"div\\",{\\"data-custom\\":\\"1a\\",children:_jsx(\\"div\\",{\\"data-custom\\":\\"2\\",children:_jsx(\\"h1\\",{nested:function(){return _jsx(\\"div\\",{children:\\"nested\\"})},children:\\"Hello World!\\"})})})}"`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from \\"react/jsx-runtime\\";
+      export default function Home() {
+          return /*#__PURE__*/ _jsx(\\"div\\", {
+              \\"data-custom\\": \\"1a\\",
+              children: /*#__PURE__*/ _jsx(\\"div\\", {
+                  \\"data-custom\\": \\"2\\",
+                  children: /*#__PURE__*/ _jsx(\\"h1\\", {
+                      nested: function() {
+                          return /*#__PURE__*/ _jsx(\\"div\\", {
+                              children: \\"nested\\"
+                          });
+                      },
+                      children: \\"Hello World!\\"
+                  })
+              })
+          });
+      };
+      "
+    `);
   });
 
   it('could support custom the properties', async () => {
     const output = await swc(str, ['^data-custom']);
 
-    expect(output).toMatchInlineSnapshot(
-      `"import{jsx as _jsx}from\\"react/jsx-runtime\\";export default function Home(){return _jsx(\\"div\\",{\\"data-test-id\\":\\"1\\",children:_jsx(\\"div\\",{children:_jsx(\\"h1\\",{\\"data-testid\\":\\"3\\",nested:function(){return _jsx(\\"div\\",{\\"data-testid\\":\\"4\\",children:\\"nested\\"})},children:\\"Hello World!\\"})})})}"`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from \\"react/jsx-runtime\\";
+      export default function Home() {
+          return /*#__PURE__*/ _jsx(\\"div\\", {
+              \\"data-test-id\\": \\"1\\",
+              children: /*#__PURE__*/ _jsx(\\"div\\", {
+                  children: /*#__PURE__*/ _jsx(\\"h1\\", {
+                      \\"data-testid\\": \\"3\\",
+                      nested: function() {
+                          return /*#__PURE__*/ _jsx(\\"div\\", {
+                              \\"data-testid\\": \\"4\\",
+                              children: \\"nested\\"
+                          });
+                      },
+                      children: \\"Hello World!\\"
+                  })
+              })
+          });
+      };
+      "
+    `);
   });
 });

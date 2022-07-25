@@ -5,39 +5,9 @@ const swc = async (
   code: string,
   modularizeImports: Record<string, any> = {}
 ) => {
-  const filename = 'noop.js';
-
-  const isTSFile = filename.endsWith('.ts');
-  const isTypeScript = isTSFile || filename.endsWith('.tsx');
-  const development = process.env.NODE_ENV === 'development';
-  const jsc = {
-    target: 'es2021',
-    parser: {
-      syntax: isTypeScript ? 'typescript' : 'ecmascript',
-      dynamicImport: false,
-      // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
-      [isTypeScript ? 'tsx' : 'jsx']: isTSFile ? false : true
-    },
-
-    transform: {
-      react: {
-        importSource: 'react',
-        runtime: 'automatic',
-        pragma: 'React.createElement',
-        pragmaFrag: 'React.Fragment',
-        throwIfNamespace: true,
-        development,
-        useBuiltins: true,
-        refresh: false
-      }
-    }
-  };
-
   const options = {
     modularizeImports,
-    disableShuviDynamic: false,
-    minify: true,
-    jsc
+    disableShuviDynamic: false
   };
 
   return transform(code, options)!;
@@ -54,9 +24,12 @@ describe('modularize imports', () => {
       }
     );
 
-    expect(output).toMatchInlineSnapshot(
-      `"import Grid from\\"react-bootstrap/lib/Grid\\";import Row from\\"react-bootstrap/lib/Row\\";import Col1 from\\"react-bootstrap/lib/Col\\""`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "import Grid from \\"react-bootstrap/lib/Grid\\";
+      import Row from \\"react-bootstrap/lib/Row\\";
+      import Col1 from \\"react-bootstrap/lib/Col\\";
+      "
+    `);
   });
 
   it('should support regex transform', async () => {
@@ -71,8 +44,12 @@ describe('modularize imports', () => {
       }
     );
 
-    expect(output).toMatchInlineSnapshot(
-      `"import MyModule from\\"my-library/MyModule\\";import App from\\"my-library/components/App\\";import Header from\\"my-library/components/App/Header\\";import Footer from\\"my-library/components/App/Footer\\""`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "import MyModule from \\"my-library/MyModule\\";
+      import App from \\"my-library/components/App\\";
+      import Header from \\"my-library/components/App/Header\\";
+      import Footer from \\"my-library/components/App/Footer\\";
+      "
+    `);
   });
 });

@@ -31,9 +31,7 @@ const swc = async (code: string) => {
   };
 
   const options = {
-    disableShuviDynamic: false,
     removeConsole: true,
-    minify: true,
     jsc
   };
 
@@ -46,7 +44,10 @@ describe('remove console', () => {
       `console.log("remove console test at top level");`
     );
 
-    expect(output).toMatchInlineSnapshot(`";"`);
+    expect(output).toMatchInlineSnapshot(`
+      ";
+      "
+    `);
   });
 
   it('should remove console in function', async () => {
@@ -57,8 +58,12 @@ describe('remove console', () => {
     }
     `);
 
-    expect(output).toMatchInlineSnapshot(
-      `"export function shouldRemove(){;;}"`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "export function shouldRemove() {
+          ;
+          ;
+      }
+      "
+    `);
   });
 });

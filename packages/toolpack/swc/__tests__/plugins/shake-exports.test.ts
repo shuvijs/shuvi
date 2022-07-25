@@ -2,38 +2,12 @@ import transform from '../swc-transform';
 import { trim } from 'shuvi-test-utils';
 
 const swc = async (code: string, ignore: string[] = []) => {
-  const filename = 'noop.js';
-
-  const isTSFile = filename.endsWith('.ts');
-  const isTypeScript = isTSFile || filename.endsWith('.tsx');
-  const development = process.env.NODE_ENV === 'development';
   const jsc = {
-    target: 'es2021',
-    parser: {
-      syntax: isTypeScript ? 'typescript' : 'ecmascript',
-      dynamicImport: false,
-      // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
-      [isTypeScript ? 'tsx' : 'jsx']: isTSFile ? false : true
-    },
-
-    transform: {
-      react: {
-        importSource: 'react',
-        runtime: 'automatic',
-        pragma: 'React.createElement',
-        pragmaFrag: 'React.Fragment',
-        throwIfNamespace: true,
-        development,
-        useBuiltins: true,
-        refresh: false
-      }
-    }
+    target: 'es2021'
   };
 
   const options = {
     shakeExports: { ignore },
-    disableShuviDynamic: false,
-    minify: true,
     jsc
   };
 
@@ -81,8 +55,15 @@ describe('shake exports', () => {
       ['loader', 'default']
     );
 
-    expect(output).toMatchInlineSnapshot(
-      `"let shouldBeKept=\\"should be kept\\";export const loader=async ctx=>{console.log(shouldBeKept)};export default function Page(){console.log(\\"should be not be remove\\")}"`
-    );
+    expect(output).toMatchInlineSnapshot(`
+      "let shouldBeKept = 'should be kept';
+      export const loader = async (ctx)=>{
+          console.log(shouldBeKept);
+      };
+      export default function Page() {
+          console.log('should be not be remove');
+      };
+      "
+    `);
   });
 });
