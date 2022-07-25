@@ -43,7 +43,7 @@ const swc = async (code: string, emotion: Record<string, any> = {}) => {
 };
 
 describe('emotion', () => {
-  it('should transform with sourceMap', async () => {
+  it('should support compress', async () => {
     const output = await swc(
       `
     import { css } from '@emotion/react'
