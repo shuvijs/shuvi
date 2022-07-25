@@ -11,13 +11,10 @@ export const getAssetMiddleware = (
     let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');
 
-    let assetAbsPaths = [cliContext.resolvePublicFile(path)];
+    let assetAbsPaths = [cliContext.resolveBuildFile(BUILD_DEFAULT_DIR, path)];
 
     if (isDev)
-      assetAbsPaths = [
-        ...assetAbsPaths,
-        cliContext.resolveBuildFile(BUILD_DEFAULT_DIR, path)
-      ];
+      assetAbsPaths = [...assetAbsPaths, cliContext.resolvePublicFile(path)];
 
     for (const assetAbsPath of assetAbsPaths) {
       if (!isStaticFileExist(assetAbsPath)) {
