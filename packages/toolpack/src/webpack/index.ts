@@ -1,8 +1,6 @@
 import { join, dirname } from 'path';
 import webpack from 'webpack';
 export { webpack as default };
-import WebpackDevMiddleware from 'webpack-dev-middleware';
-export { WebpackDevMiddleware };
 export { WebpackChain } from './config';
 export { DynamicDll } from './dynamic-dll';
 /**

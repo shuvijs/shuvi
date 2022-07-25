@@ -7,13 +7,35 @@ import {
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
-import { WebpackDevMiddleware, DynamicDll } from '@shuvi/toolpack/lib/webpack';
+import {
+  DynamicDll,
+  MultiStats,
+  MultiCompiler
+} from '@shuvi/toolpack/lib/webpack';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../../../bundler';
 import { Server } from '../../http-server';
 import { IServerPluginContext } from '../../plugin';
 
+type ICallback = (stats?: MultiStats) => void;
+
+type MultiWatching = ReturnType<MultiCompiler['watch']>;
+interface IContext {
+  state: boolean;
+  stats: MultiStats | undefined;
+  callbacks: ICallback[];
+  watching: MultiWatching | undefined;
+}
+
 const wsServer = new ws.Server({ noServer: true });
+
+function ready(context: IContext, callback: ICallback) {
+  if (context.state) {
+    return callback(context.stats);
+  }
+  context.callbacks.push(callback);
+}
+
 export interface DevMiddleware {
   apply(server?: Server): void;
   send(action: string, payload?: any): void;
@@ -26,6 +48,12 @@ export async function getDevMiddleware(
   serverPluginContext: IServerPluginContext
 ): Promise<DevMiddleware> {
   const bundler = await getBundler(serverPluginContext);
+  const context: IContext = {
+    state: false,
+    stats: undefined,
+    callbacks: [],
+    watching: undefined
+  };
   let compiler;
   let dynamicDll: DynamicDll | null = null;
 
@@ -38,7 +66,7 @@ export async function getDevMiddleware(
   }
 
   compiler = await bundler.getWebpackCompiler(dynamicDll);
-  // watch before pass compiler to WebpackDevMiddleware
+  // watch before pass compiler to ShuviDevMiddleware
   bundler.watch({
     onErrors(errors) {
       send('errors', errors);
@@ -48,12 +76,31 @@ export async function getDevMiddleware(
     }
   });
 
-  // webpackDevMiddleware make first compiler build assets as static sources
-  const webpackDevMiddleware = WebpackDevMiddleware(compiler as any, {
-    stats: false, // disable stats on server
-    publicPath: serverPluginContext.assetPublicPath,
-    writeToDisk: true
+  compiler.hooks.done.tap('shuvi-dev-middleware', stats => {
+    context.state = true;
+    context.stats = stats;
+
+    // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling
+    process.nextTick(() => {
+      const { callbacks } = context;
+      context.callbacks = [];
+
+      callbacks.forEach(callback => {
+        callback(stats);
+      });
+    });
   });
+
+  context.watching = compiler.watch(
+    compiler.compilers.map(
+      childCompiler => childCompiler.options.watchOptions || {}
+    ),
+    error => {
+      if (error) {
+        console.log(error);
+      }
+    }
+  );
 
   const webpackHotMiddleware = new WebpackHotMiddleware({
     compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!,
@@ -62,7 +109,6 @@ export async function getDevMiddleware(
 
   const apply = (server: Server) => {
     const targetServer = server;
-    targetServer.use(webpackDevMiddleware);
     targetServer.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );
@@ -77,19 +123,17 @@ export async function getDevMiddleware(
 
   const invalidate = () => {
     return new Promise(resolve => {
-      webpackDevMiddleware.invalidate(resolve);
+      ready(context, resolve);
+      context.watching?.invalidate();
     });
   };
 
   const waitUntilValid = (force: boolean = false) => {
     if (force) {
-      // private api
-      // we know that there must be a rebuild so it's safe to do this
-      // @ts-ignore
-      webpackDevMiddleware.context.state = false;
+      context.state = false;
     }
     return new Promise(resolve => {
-      webpackDevMiddleware.waitUntilValid(resolve);
+      ready(context, resolve);
     });
   };
 
