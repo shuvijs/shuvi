@@ -31,7 +31,7 @@ export const getAssetMiddleware = (
         err = error;
       }
 
-      if (err) next(err);
+      if (err) return next(err);
     }
     return next();
   };
