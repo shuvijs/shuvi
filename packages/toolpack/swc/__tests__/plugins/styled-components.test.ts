@@ -1,32 +1,12 @@
 import transform from '../swc-transform';
-import { trim } from 'shuvi-test-utils';
 
 const swc = async (code: string, styledComponents: any = {}) => {
   const filename = 'noop.js';
 
-  const isTSFile = filename.endsWith('.ts');
-  const isTypeScript = isTSFile || filename.endsWith('.tsx');
-  const development = true;
   const jsc = {
     target: 'es2021',
     parser: {
-      syntax: isTypeScript ? 'typescript' : 'ecmascript',
-      dynamicImport: false,
-      // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
-      [isTypeScript ? 'tsx' : 'jsx']: isTSFile ? false : true
-    },
-
-    transform: {
-      react: {
-        importSource: 'react',
-        runtime: 'automatic',
-        pragma: 'React.createElement',
-        pragmaFrag: 'React.Fragment',
-        throwIfNamespace: true,
-        development,
-        useBuiltins: true,
-        refresh: false
-      }
+      jsx: true
     }
   };
 
@@ -93,19 +73,12 @@ describe('styled components', () => {
   it('should use file name', async () => {
     const output = await swc(
       `
-    import styled from "styled-components";
+      import styled from "styled-components";
 
-    const TestNormal = styled.div\`
-      width: 100%;
-    \`
-    
-    const Test = styled_default.default.div\`
-      width: 100%;
-    \`
-    
-    const TestCallExpression = styled_default.default(Test)\`
-      height: 20px;
-    \`
+      const Test = styled.div\`color: red;\`;
+      const before = styled.div\`color: blue;\`;
+      styled.div\`\`;
+      export default styled.button\`\`;
     `,
       {
         displayName: true,
@@ -115,18 +88,22 @@ describe('styled components', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import styled from \\"styled-components\\";
-      const TestNormal = styled.div.withConfig({
-          displayName: \\"noop__TestNormal\\",
-          componentId: \\"sc-2c46dd28-0\\"
-      })\`
-            width: 100%;
-          \`;
-      const Test = styled_default.default.div\`
-            width: 100%;
-          \`;
-      const TestCallExpression = styled_default.default(Test)\`
-            height: 20px;
-          \`;
+      const Test = styled.div.withConfig({
+          displayName: \\"noop__Test\\",
+          componentId: \\"sc-162be455-0\\"
+      })\`color: red;\`;
+      const before = styled.div.withConfig({
+          displayName: \\"noop__before\\",
+          componentId: \\"sc-162be455-1\\"
+      })\`color: blue;\`;
+      styled.div.withConfig({
+          displayName: \\"noop\\",
+          componentId: \\"sc-162be455-2\\"
+      })\`\`;
+      export default styled.button.withConfig({
+          displayName: \\"noop\\",
+          componentId: \\"sc-162be455-3\\"
+      })\`\`;
       "
     `);
   });
@@ -491,129 +468,33 @@ describe('styled components', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "import { jsxDEV as _jsxDEV } from \\"react/jsx-dev-runtime\\";
-      import _styled from \\"styled-components\\";
-      const StaticString = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP, {
-              children: \\"A\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 2,
-              columnNumber: 33
-          }, this);
-      const StaticTemplate = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP2, {
-              children: \\"A\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 5,
-              columnNumber: 9
-          }, this);
-      const ObjectProp = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP3, {
-              children: \\"A\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 14,
-              columnNumber: 31
-          }, this);
-      const NoChildren = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP4, {}, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 16,
-              columnNumber: 31
-          }, this);
-      const CssHelperProp = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP5, {
-              children: \\"A\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 19,
-              columnNumber: 9
-          }, this);
+      "import _styled from \\"styled-components\\";
+      const StaticString = (p)=>/*#__PURE__*/ React.createElement(_StyledP, null, \\"A\\");
+      const StaticTemplate = (p)=>/*#__PURE__*/ React.createElement(_StyledP2, null, \\"A\\");
+      const ObjectProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP3, null, \\"A\\");
+      const NoChildren = (p)=>/*#__PURE__*/ React.createElement(_StyledP4, null);
+      const CssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP5, null, \\"A\\");
       /*
             * Dynamic prop
-            */ const CustomComp = (p)=>/*#__PURE__*/ _jsxDEV(_StyledParagraph, {
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 32,
-              columnNumber: 31
-          }, this);
-      const DynamicProp = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP6, {
-              $_css: props.cssText,
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 34,
-              columnNumber: 32
-          }, this);
-      const LocalInterpolation = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP7, {
-              $_css2: props.bg,
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 37,
-              columnNumber: 9
-          }, this);
-      const FuncInterpolation = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP8, {
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 47,
-              columnNumber: 9
-          }, this);
+            */ const CustomComp = (p)=>/*#__PURE__*/ React.createElement(_StyledParagraph, null, \\"H\\");
+      const DynamicProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP6, {
+              $_css: props.cssText
+          }, \\"H\\");
+      const LocalInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP7, {
+              $_css2: props.bg
+          }, \\"H\\");
+      const FuncInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP8, null, \\"H\\");
       const radius = 10;
-      const GlobalInterpolation = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP9, {
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 58,
-              columnNumber: 9
-          }, this);
-      const LocalCssHelperProp = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP10, {
-              $_css3: p.color,
-              children: \\"A\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 68,
-              columnNumber: 9
-          }, this);
-      const DynamicCssHelperProp = (p)=>/*#__PURE__*/ _jsxDEV(_StyledP11, {
-              children: \\"A\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 78,
-              columnNumber: 9
-          }, this);
-      const CustomCompWithDot = (p)=>/*#__PURE__*/ _jsxDEV(_StyledButtonGhost, {
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 87,
-              columnNumber: 38
-          }, this);
-      const NestedCompWithDot = (p)=>/*#__PURE__*/ _jsxDEV(_StyledButtonGhostNew, {
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 90,
-              columnNumber: 9
-          }, this);
-      const CustomCompWithDotLowerCase = (p)=>/*#__PURE__*/ _jsxDEV(_StyledButtonGhost2, {
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 94,
-              columnNumber: 9
-          }, this);
-      const CustomElement = (p)=>/*#__PURE__*/ _jsxDEV(_StyledButtonGhost3, {
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 97,
-              columnNumber: 34
-          }, this);
-      /* styled component defined after function it's used in */ const EarlyUsageComponent = (p)=>/*#__PURE__*/ _jsxDEV(_StyledThing, {}, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 101,
-              columnNumber: 40
-          }, this);
+      const GlobalInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP9, null, \\"H\\");
+      const LocalCssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP10, {
+              $_css3: p.color
+          }, \\"A\\");
+      const DynamicCssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP11, null, \\"A\\");
+      const CustomCompWithDot = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost, null, \\"H\\");
+      const NestedCompWithDot = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhostNew, null, \\"H\\");
+      const CustomCompWithDotLowerCase = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost2, null, \\"H\\");
+      const CustomElement = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost3, null, \\"H\\");
+      /* styled component defined after function it's used in */ const EarlyUsageComponent = (p)=>/*#__PURE__*/ React.createElement(_StyledThing, null);
       const Thing3 = styled.div\`
               color: blue;
             \`;
@@ -638,89 +519,55 @@ describe('styled components', () => {
       var _StyledThing = _styled(Thing3)\`color: red;\`;
       const ObjectInterpolation = (p)=>{
           const theme = useTheme();
-          return /*#__PURE__*/ _jsxDEV(_StyledP12, {
-              $_css4: theme.colors.red,
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 111,
-              columnNumber: 11
-          }, this);
+          return /*#__PURE__*/ React.createElement(_StyledP12, {
+              $_css4: theme.colors.red
+          }, \\"H\\");
       };
       const ObjectInterpolationCustomComponent = (p)=>{
           const theme = useTheme();
-          return /*#__PURE__*/ _jsxDEV(_StyledThing2, {
-              $_css5: theme.colors.red,
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 125,
-              columnNumber: 11
-          }, this);
+          return /*#__PURE__*/ React.createElement(_StyledThing2, {
+              $_css5: theme.colors.red
+          }, \\"H\\");
       };
       const ObjectInterpolationInKey = (p)=>{
           const theme = useTheme();
-          return /*#__PURE__*/ _jsxDEV(_StyledThing3, {
-              $_css6: theme.breakpoints.md,
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 139,
-              columnNumber: 11
-          }, this);
+          return /*#__PURE__*/ React.createElement(_StyledThing3, {
+              $_css6: theme.breakpoints.md
+          }, \\"H\\");
       };
       const ObjectFnInterpolationInKey = (p)=>{
           const theme = useTheme();
-          return /*#__PURE__*/ _jsxDEV(_StyledThing4, {
-              $_css7: theme.breakpoints.md(),
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 155,
-              columnNumber: 11
-          }, this);
+          return /*#__PURE__*/ React.createElement(_StyledThing4, {
+              $_css7: theme.breakpoints.md()
+          }, \\"H\\");
       };
       const ObjectFnSimpleInterpolationInKey = (p)=>{
           const foo = '@media screen and (max-width: 600px)';
-          return /*#__PURE__*/ _jsxDEV(_StyledThing5, {
-              $_css8: foo,
-              children: \\"H\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 171,
-              columnNumber: 11
-          }, this);
+          return /*#__PURE__*/ React.createElement(_StyledThing5, {
+              $_css8: foo
+          }, \\"H\\");
       };
       const ObjectPropMixedInputs = (p)=>{
           const color = 'red';
-          return /*#__PURE__*/ _jsxDEV(_StyledP13, {
+          return /*#__PURE__*/ React.createElement(_StyledP13, {
               $_css9: p.background,
               $_css10: color,
               $_css11: globalVar,
-              $_css12: getAfterValue(),
-              children: \\"A\\"
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 187,
-              columnNumber: 11
-          }, this);
+              $_css12: getAfterValue()
+          }, \\"A\\");
       };
       const ObjectPropWithSpread = ()=>{
           const css = {
               color: 'red'
           };
           const playing = true;
-          return /*#__PURE__*/ _jsxDEV(_StyledDiv, {
+          return /*#__PURE__*/ React.createElement(_StyledDiv, {
               $_css13: css,
               $_css14: playing ? {
                   opacity: 0,
                   bottom: '-100px'
               } : {}
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 206,
-              columnNumber: 11
-          }, this);
+          });
       };
       var _StyledP = _styled(\\"p\\")\`flex: 1;\`;
       var _StyledP2 = _styled(\\"p\\")\`
@@ -856,7 +703,20 @@ describe('styled components', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "import { jsxDEV as _jsxDEV } from \\"react/jsx-dev-runtime\\";
+      "function _extends() {
+          _extends = Object.assign || function(target) {
+              for(var i = 1; i < arguments.length; i++){
+                  var source = arguments[i];
+                  for(var key in source){
+                      if (Object.prototype.hasOwnProperty.call(source, key)) {
+                          target[key] = source[key];
+                      }
+                  }
+              }
+              return target;
+          };
+          return _extends.apply(this, arguments);
+      }
       import { styled } from '@material/ui';
       import s from 'styled-components';
       const Paragraph = s.p.withConfig({
@@ -865,13 +725,7 @@ describe('styled components', () => {
       })\`
               color: green;
             \`;
-      const Foo = (p)=>/*#__PURE__*/ _jsxDEV(Paragraph, {
-              ...p
-          }, void 0, false, {
-              fileName: \\"noop.js\\",
-              lineNumber: 9,
-              columnNumber: 24
-          }, this);
+      const Foo = (p)=>/*#__PURE__*/ React.createElement(Paragraph, _extends({}, p));
       const TestNormal = styled(Foo)({
           color: red
       });

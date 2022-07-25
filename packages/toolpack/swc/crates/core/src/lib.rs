@@ -32,7 +32,7 @@ DEALINGS IN THE SOFTWARE.
 use auto_cjs::contains_cjs;
 use either::Either;
 use serde::Deserialize;
-use std::{path::PathBuf, sync::Arc};
+use std::{sync::Arc};
 use swc::config::ModuleConfig;
 use swc_common::comments::Comments;
 use swc_common::{self, chain};
