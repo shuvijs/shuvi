@@ -12,7 +12,6 @@ node_modules
 # workspace
 .vscode/
 .idea/
-.history/
 
 
 # build output
@@ -22,6 +21,7 @@ packages/*/esm/
 
 test/packages/*/lib/
 test/packages/*/esm/
+.swc
 
 test/fixtures/**/dist/
 test/fixtures/**/.shuvi/

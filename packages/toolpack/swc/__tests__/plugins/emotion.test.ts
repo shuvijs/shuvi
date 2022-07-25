@@ -1,5 +1,4 @@
 import transform from '../swc-transform';
-import { trim } from 'shuvi-test-utils';
 
 const swc = async (code: string, emotion: Record<string, any> = {}) => {
   const filename = 'noop.js';
@@ -33,7 +32,7 @@ const swc = async (code: string, emotion: Record<string, any> = {}) => {
   const options = {
     emotion,
     filename,
-    sourceMaps: undefined,
+    sourceMaps: false,
     sourceFileName: filename,
     disableShuviDynamic: false,
     jsc
@@ -73,7 +72,8 @@ describe('emotion', () => {
     `,
       {
         enabled: true,
-        sourceMap: true
+        sourceMap: true,
+        autoLabel: true
       }
     );
 
@@ -83,14 +83,17 @@ describe('emotion', () => {
       const unitNormal = '1rem';
       const unitLarge = '2rem';
       const Example = /*#__PURE__*/ styled(\\"div\\", {
-          target: \\"e6j9wbm0\\"
+          target: \\"e6j9wbm0\\",
+          label: \\"Example\\"
       })(\\"margin:\\", unitNormal, \\" \\", unitLarge, \\";\\");
       export const Animated = /*#__PURE__*/ styled(\\"div\\", {
-          target: \\"e6j9wbm1\\"
+          target: \\"e6j9wbm1\\",
+          label: \\"Animated\\"
       })(\\"& code{background-color:linen;}animation:\\", ({ animation  })=>animation, \\" 0.2s infinite ease-in-out alternate;\\");
-      const shadowBorder = ({ width ='1px' , color  })=>/*#__PURE__*/ css(\\"box-shadow:inset 0px 0px 0px \\", width, \\" \\", color, \\";\\");
+      const shadowBorder = ({ width ='1px' , color  })=>/*#__PURE__*/ css(\\"box-shadow:inset 0px 0px 0px \\", width, \\" \\", color, \\";\\", \\"shadowBorder\\");
       const StyledInput = /*#__PURE__*/ styled(\\"input\\", {
-          target: \\"e6j9wbm2\\"
+          target: \\"e6j9wbm2\\",
+          label: \\"StyledInput\\"
       })(shadowBorder({
           color: 'red',
           width: '4px'
@@ -184,7 +187,8 @@ describe('emotion', () => {
     `,
       {
         enabled: true,
-        sourceMap: true
+        sourceMap: true,
+        autoLabel: true
       }
     );
 
@@ -198,43 +202,50 @@ describe('emotion', () => {
               color: 'red',
               background: 'yellow',
               width: \`\${props.scale * 100}px\`
-          });
+          }, \\"label:stylesInCallback\\");
       const styles = /*#__PURE__*/ css({
           color: 'red',
           width: '20px'
-      });
-      const styles2 = /*#__PURE__*/ css(\\"color:red;width:20px;\\");
+      }, \\"label:styles\\");
+      const styles2 = /*#__PURE__*/ css(\\"color:red;width:20px;\\", \\"styles2\\");
       const DivContainer = /*#__PURE__*/ styled(\\"div\\", {
-          target: \\"e6j9wbm0\\"
+          target: \\"e6j9wbm0\\",
+          label: \\"DivContainer\\"
       })({
           background: 'red'
       });
       const DivContainer2 = /*#__PURE__*/ styled(\\"div\\", {
-          target: \\"e6j9wbm1\\"
+          target: \\"e6j9wbm1\\",
+          label: \\"DivContainer2\\"
       })(\\"background:red;\\");
       const SpanContainer = /*#__PURE__*/ styled('span', {
-          target: \\"e6j9wbm2\\"
+          target: \\"e6j9wbm2\\",
+          label: \\"SpanContainer\\"
       })({
           background: 'yellow'
       });
       export const DivContainerExtended = /*#__PURE__*/ styled(DivContainer, {
-          target: \\"e6j9wbm3\\"
+          target: \\"e6j9wbm3\\",
+          label: \\"DivContainerExtended\\"
       })();
       export const DivContainerExtended2 = /*#__PURE__*/ styled(DivContainer, {
-          target: \\"e6j9wbm4\\"
+          target: \\"e6j9wbm4\\",
+          label: \\"DivContainerExtended2\\"
       })({});
       const Container = /*#__PURE__*/ styled('button', {
-          target: \\"e6j9wbm5\\"
+          target: \\"e6j9wbm5\\",
+          label: \\"Container\\"
       })(\\"background:red;\\", stylesInCallback, \\" \\", ()=>/*#__PURE__*/ css({
               background: 'red'
-          }), \\"      color:yellow;font-size:12px;\\");
+          }, \\"label:Container\\"), \\"      color:yellow;font-size:12px;\\");
       const Container2 = /*#__PURE__*/ styled(\\"div\\", {
-          target: \\"e6j9wbm6\\"
+          target: \\"e6j9wbm6\\",
+          label: \\"Container2\\"
       })(\\"background:red;\\");
       export class SimpleComponent extends PureComponent {
           render() {
               return /*#__PURE__*/ _jsxs(Container, {
-                  css: /*#__PURE__*/ css(\\"color:hotpink;\\"),
+                  css: /*#__PURE__*/ css(\\"color:hotpink;\\", \\"Container2\\"),
                   children: [
                       /*#__PURE__*/ _jsx(Global, {
                           styles: [
@@ -255,7 +266,7 @@ describe('emotion', () => {
 
   it('should support namespace import', async () => {
     const output = await swc(
-      trim`
+      `
       import * as emotionReact from '@emotion/react'
       import { PureComponent } from 'react'
       import ReactDOM from 'react-dom'
@@ -291,7 +302,8 @@ describe('emotion', () => {
       `,
       {
         enabled: true,
-        sourceMap: true
+        sourceMap: true,
+        autoLabel: true
       }
     );
 
@@ -304,12 +316,12 @@ describe('emotion', () => {
               color: 'red',
               background: 'yellow',
               width: \`\${props.scale * 100}px\`
-          });
+          }, \\"label:stylesInCallback\\");
       const styles = /*#__PURE__*/ emotionReact.css({
           color: 'red',
           width: '20px'
-      });
-      const styles2 = /*#__PURE__*/ emotionReact.css(\\"color:red;width:20px;\\");
+      }, \\"label:styles\\");
+      const styles2 = /*#__PURE__*/ emotionReact.css(\\"color:red;width:20px;\\", \\"label:styles2\\");
       export class SimpleComponent extends PureComponent {
           render() {
               return /*#__PURE__*/ _jsx(\\"div\\", {
