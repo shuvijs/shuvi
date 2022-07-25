@@ -1,5 +1,7 @@
-import { join } from 'path';
+import { join, sep } from 'path';
 import { RouteException } from '../route';
+
+const toUnixPath = (filePath: string) => filePath.split(sep).join('/');
 
 export const getFixturePath = (
   fixturePath: string,
@@ -13,6 +15,7 @@ export const normalizePath = (
   dir: string,
   key: string
 ): any[] => {
+  dir = toUnixPath(dir);
   return routes.map(route => {
     if (route.children) {
       route.children = normalizePath(route.children, dir, key);
@@ -22,8 +25,8 @@ export const normalizePath = (
     return {
       ...route,
       [key]: Array.isArray(value)
-        ? value.map(a => a.replace(dir + '/', ''))
-        : value.replace(dir + '/', '')
+        ? value.map(a => toUnixPath(a).replace(dir + '/', ''))
+        : toUnixPath(value).replace(dir + '/', '')
     };
   });
 };
@@ -32,7 +35,7 @@ export const normalizeWarnings = (warnings: RouteException[], dir: string) => {
   return warnings.map(warning => {
     return {
       ...warning,
-      msg: warning.msg.replace(dir + '/', '')
+      msg: toUnixPath(warning.msg).replace(dir + '/', '')
     };
   });
 };

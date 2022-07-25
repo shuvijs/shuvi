@@ -11,7 +11,7 @@ export interface ProjectContext {
    * }
    */
   runtimeServices: Map<string, Map<string, Set<string>>>;
-  resources: Map<string, Map<string, string | undefined>>;
+  resources: Map<string, string | undefined>;
   runtimePlugins: RuntimePluginConfig[];
   typeDeclarationFiles: string[];
 }

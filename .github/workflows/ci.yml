@@ -21,7 +21,13 @@ concurrency:
 
 jobs:
   unit-test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    name: Unit Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 
@@ -51,7 +57,13 @@ jobs:
         run: pnpm test:unit
 
   e2e-test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    name: E2E Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 
