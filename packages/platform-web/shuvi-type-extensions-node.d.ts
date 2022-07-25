@@ -8,6 +8,10 @@ import {
   IServerModule,
   PlatformWebCustomConfig
 } from './esm/shared/index';
+import {
+  addRoutes,
+  addMiddlewareRoutes
+} from './src/node/features/filesystem-routes/hooks';
 
 export {};
 
@@ -35,6 +39,11 @@ declare global {
       middlewareRoutes?: PlatformWebCustomConfig['middlewareRoutes'];
       apiRoutes?: PlatformWebCustomConfig['apiRoutes'];
       conventionRoutes: PlatformWebCustomConfig['conventionRoutes'];
+    }
+    interface CustomCorePluginHooks {
+      addRoutes: typeof addRoutes;
+      addMiddlewareRoutes: typeof addMiddlewareRoutes;
+      // addAPIRoutes: typeof addAPIRoutes;
     }
   }
 }
