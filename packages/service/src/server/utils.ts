@@ -26,7 +26,7 @@ export function serveStatic(
         reject(err);
       })
       .on('error', reject)
-      .pipe(res)
+      .pipe<any>(res)
       .on('finish', resolve);
   });
 }
