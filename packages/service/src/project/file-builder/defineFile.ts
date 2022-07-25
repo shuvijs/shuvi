@@ -6,6 +6,6 @@ export const defineFile: DefineFile = <T = string, C = any>(
 ) => {
   return {
     ...fileOption,
-    id: fileOption.name || uuid()
+    id: uuid()
   };
 };

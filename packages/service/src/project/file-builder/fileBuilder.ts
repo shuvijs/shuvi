@@ -355,6 +355,11 @@ export const getFileBuilder = <C extends {} = {}>(
       }
     });
     files.clear();
+    onBuildStartHandlers.clear();
+    onBuildEndHandlers.clear();
+    dependencyMap.clear();
+    runningBuilds.clear();
+    awaitingBuilds.clear();
   };
   const getContent = <T>(fileOption: FileOption<T>) => {
     return files.get(fileOption.id)?.fileContent;

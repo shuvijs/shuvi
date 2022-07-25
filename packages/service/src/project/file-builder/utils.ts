@@ -7,6 +7,10 @@ export const uuid = () => {
 };
 
 export const ifIntersect = <T>(setA: Set<T>, setB: Set<T>) => {
-  const merged = new Set([...Array.from(setA), ...Array.from(setB)]);
-  return merged.size !== setA.size + setB.size;
+  for (const ele of setA) {
+    if (setB.has(ele)) {
+      return true;
+    }
+  }
+  return false;
 };

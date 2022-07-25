@@ -9,7 +9,6 @@ import {
   sleep
   // getRunner
 } from './helper/index';
-import { reactive } from '@vue/reactivity';
 
 const prepare = () => {
   mkdirSync(resolveFixture('watch'));
@@ -19,7 +18,7 @@ const cleanUp = () => {
   rmdirSync(resolveFixture('watch'));
 };
 
-jest.setTimeout(10000); // 1 second
+jest.setTimeout(10 * 1000); // 1 second
 
 /**
  * fileWatcher has a aggregating timeout of 300 ms
@@ -39,6 +38,7 @@ describe('fileBuilder watch', () => {
     cleanUp();
   });
   const rootDir = resolveFixture('watch');
+
   const file = (name: string) => resolveFixture('watch', name);
 
   const matchFile = (matchArray: Array<[string, string]>) => {
@@ -72,36 +72,6 @@ describe('fileBuilder watch', () => {
   const e = file('e');
   const f = file('f');
 
-  /** TODO: reactive support */
-  describe.skip('watch with reactive', () => {
-    test('should update file after changing state', done => {
-      const fileBuilder = getFileBuilder();
-      const { addFile, watch, getContent, close, onBuildEnd } = fileBuilder;
-      const state = reactive({ content: 'a' });
-      const test = defineFile({
-        name: 'test',
-        content() {
-          return state.content;
-        }
-      });
-      addFile(test);
-      watch().then(() => {
-        const files = readDirSync('/');
-        expect(files).toEqual(['/test']);
-        expect(readFileSync('/test')).toEqual('a');
-        expect(getContent(test)).toEqual('a');
-        onBuildEnd(() => {
-          expect(readFileSync('/test')).toEqual('b');
-          expect(getContent(test)).toEqual('b');
-          close().then(() => {
-            done();
-          });
-        });
-        state.content = 'b';
-      });
-    });
-  });
-
   describe('watch with dependencies', () => {
     test('should update file by the order of dependencies after one updates', done => {
       const fileBuilder = getFileBuilder();
@@ -120,7 +90,7 @@ describe('fileBuilder watch', () => {
       const B = defineFile({
         name: 'b',
         content() {
-          return getContent(A) + ' b';
+          return getContent(A) + 'b';
         },
         dependencies: [A]
       });
@@ -128,7 +98,7 @@ describe('fileBuilder watch', () => {
       const C = defineFile({
         name: 'c',
         content() {
-          return getContent(B) + ' c';
+          return getContent(B) + 'c';
         },
         dependencies: [B]
       });
@@ -137,9 +107,11 @@ describe('fileBuilder watch', () => {
         const checkCurrent = () => {
           const files = readDirSync(rootDir);
           expect(files).toEqual(['a', 'b', 'c', 'src']);
-          expect(readFileSync(a)).toEqual('a');
-          expect(readFileSync(b)).toEqual('a b');
-          expect(readFileSync(c)).toEqual('a b c');
+          matchFile([
+            [a, 'a'],
+            [b, 'ab'],
+            [c, 'abc']
+          ]);
         };
         checkCurrent();
 
@@ -153,221 +125,19 @@ describe('fileBuilder watch', () => {
           expect(onBuildStartHandler).toBeCalledTimes(1);
           const newFiles = readDirSync(rootDir);
           expect(newFiles).toEqual(['a', 'b', 'c', 'src']);
-          expect(readFileSync(a)).toEqual('aa');
-          expect(readFileSync(b)).toEqual('aa b');
-          expect(readFileSync(c)).toEqual('aa b c');
+          matchFile([
+            [a, 'aa'],
+            [b, 'aab'],
+            [c, 'aabc']
+          ]);
           close().then(done);
         });
         writeFileSync(src, 'aa');
       });
     });
-
-    test('if current build is still running, another update should wait for it', () => {});
   });
 
   describe('watch with dependencies and frequent updates', () => {
-    describe('if current build is still running, another new update comes', () => {
-      test('this new update should run immediately if its pending files have no intersection with current build', done => {
-        /**
-         * In this test case, there are two independent file dependency path
-         * A -> B
-         * C -> D
-         *
-         * We will first trigger changes of A. Its update will run immediately.
-         * Then we will trigger change of C. C's dependency graph has no intersection with A's so its update will run immediately.
-         */
-        const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
-        writeFileSync(srcA, 'a');
-        writeFileSync(srcC, 'c');
-        const A = defineFile({
-          name: 'a',
-          async content() {
-            const result = readFileSync(srcA);
-            await sleep(1200);
-            return result;
-          },
-          dependencies: [srcA]
-        });
-
-        const B = defineFile({
-          name: 'b',
-          content() {
-            return getContent(A) + 'b';
-          },
-          dependencies: [A]
-        });
-
-        const C = defineFile({
-          name: 'c',
-          async content() {
-            return readFileSync(srcC);
-          },
-          dependencies: [srcC]
-        });
-        const D = defineFile({
-          name: 'd',
-          content() {
-            return getContent(C) + 'd';
-          },
-          dependencies: [C]
-        });
-        addFile(A, B, C, D);
-        watch(rootDir).then(() => {
-          let onBuildStartCanceler: () => void;
-          let onBuildEndCanceler: () => void;
-          const logs: string[] = [];
-
-          const start1 = () => {
-            // 1st buildStart event: A -> B should update
-            logs.push('start a');
-            matchFile([
-              [a, 'a'],
-              [b, 'ab']
-            ]);
-          };
-
-          const start2 = () => {
-            // 2nd buildStart event: C -> D should update
-            // A -> B should be still updating
-            logs.push('start c');
-            matchFile([
-              [a, 'a'],
-              [b, 'ab'],
-              [c, 'c'],
-              [d, 'cd']
-            ]);
-          };
-
-          const onBuildStartHandler = getRunner([start1, start2], () => {
-            onBuildStartCanceler();
-            onBuildStartCanceler = onBuildStart(onBuildStartHandler);
-          });
-
-          const end1 = () => {
-            // 1st buildStart event: C and D should have been updated
-            // but A and B should be still updating
-            // because C and D are faster
-            logs.push('end c');
-            matchFile([
-              [a, 'a'],
-              [b, 'ab'],
-              [c, 'cc'],
-              [d, 'ccd']
-            ]);
-          };
-
-          const end2 = () => {
-            logs.push('end a');
-            matchFile([
-              [a, 'aa'],
-              [b, 'aab']
-            ]);
-            expect(logs).toEqual(['start a', 'start c', 'end c', 'end a']);
-            close().then(done);
-          };
-
-          const onBuildEndHandler = getRunner([end1, end2], () => {
-            onBuildEndCanceler();
-            onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
-          });
-          onBuildStartCanceler = onBuildStart(onBuildStartHandler);
-          onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
-          writeFileSync(srcA, 'aa');
-          setTimeout(() => {
-            writeFileSync(srcC, 'cc');
-          }, BUILD_INTERVAL);
-        });
-      });
-      test('this new update should wait for current build if its pending files have intersection with current build', done => {
-        /**
-         * In this test case, there is one file dependency path
-         * A -> C
-         * B -> C
-         *
-         * We will first trigger changes of A. Its update will run immediately.
-         * Then we will trigger change of B. B's dependency graph intersects with A's so it should wait for A's done.
-         */
-        const fileBuilder = getFileBuilder();
-
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
-        writeFileSync(srcA, 'a');
-        writeFileSync(srcB, 'b');
-        const A = defineFile({
-          name: 'a',
-          async content() {
-            const result = readFileSync(srcA);
-            await sleep(500);
-            return result;
-          },
-          dependencies: [srcA]
-        });
-
-        const B = defineFile({
-          name: 'b',
-          async content() {
-            const result = readFileSync(srcB);
-            await sleep(200);
-            return result;
-          },
-          dependencies: [srcB]
-        });
-
-        const C = defineFile({
-          name: 'c',
-          content() {
-            return getContent(A) + getContent(B);
-          },
-          dependencies: [A, B]
-        });
-        addFile(A, B, C);
-        watch(rootDir).then(() => {
-          let onBuildStartCanceler: () => void;
-          let onBuildEndCanceler: () => void;
-          const logs: string[] = [];
-          const onBuildStartHandler = jest.fn(() => {
-            // 1st buildStart event: A and C should update
-            logs.push('start a');
-            expect(readFileSync(a)).toBe('a');
-            expect(readFileSync(b)).toBe('b');
-            expect(readFileSync(c)).toBe('ab');
-            onBuildStartCanceler();
-            onBuildStart(() => {
-              // 2nd buildStart event: B and C should update
-              logs.push('start b');
-              expect(readFileSync(a)).toBe('aa');
-              expect(readFileSync(c)).toBe('aab');
-            });
-          });
-          const onBuildEndHandler = jest.fn(() => {
-            // 1st buildEnd event: A and C should have been updated
-            logs.push('end a');
-            expect(readFileSync(a)).toBe('aa');
-            expect(readFileSync(c)).toBe('aab');
-            expect(readFileSync(b)).toBe('b');
-            onBuildEndCanceler();
-            onBuildEnd(() => {
-              logs.push('end b');
-              // 2nd buildEnd event: B and C should have been updated
-              expect(readFileSync(b)).toBe('bb');
-              expect(readFileSync(c)).toBe('aabb');
-              expect(onBuildStartHandler).toBeCalledTimes(1);
-              expect(onBuildEndHandler).toBeCalledTimes(1);
-              expect(logs).toEqual(['start a', 'end a', 'start b', 'end b']);
-              close().then(done);
-            });
-          });
-          onBuildStartCanceler = onBuildStart(onBuildStartHandler);
-          onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
-          writeFileSync(srcA, 'aa');
-          setTimeout(() => {
-            writeFileSync(srcB, 'bb');
-          }, BUILD_INTERVAL);
-        });
-      });
-    });
     describe('if multiple current builds are still running, another new update comes', () => {
       test('this new update should run immediately if its pending files have no intersection with all current builds', done => {
         /**
@@ -406,7 +176,7 @@ describe('fileBuilder watch', () => {
           name: 'c',
           async content() {
             const result = readFileSync(srcC);
-            await sleep(1400);
+            await sleep(700);
             return result;
           },
           dependencies: [srcC]
@@ -436,62 +206,75 @@ describe('fileBuilder watch', () => {
         });
         addFile(A, B, C, D, E, F);
         watch(rootDir).then(() => {
-          expect(readFileSync(a)).toBe('a');
-          expect(readFileSync(b)).toBe('ab');
-          expect(readFileSync(c)).toBe('c');
-          expect(readFileSync(d)).toBe('cd');
-          expect(readFileSync(e)).toBe('e');
-          expect(readFileSync(f)).toBe('ef');
+          matchFile([
+            [a, 'a'],
+            [b, 'ab'],
+            [c, 'c'],
+            [d, 'cd'],
+            [e, 'e'],
+            [f, 'ef']
+          ]);
           const logs: string[] = [];
           writeFileSync(srcA, 'aa');
           setTimeout(() => {
             writeFileSync(srcC, 'cc');
             setTimeout(() => {
               // At this time, there should be 2 running builds: A -> B and C -> D
-              const onBuildStartHandler = jest.fn(() => {
+
+              const start = () => {
                 // buildStart event: E -> F should update
                 // A and C should be still updating
                 logs.push('start e');
-                expect(readFileSync(a)).toBe('a');
-                expect(readFileSync(b)).toBe('ab');
-                expect(readFileSync(c)).toBe('c');
-                expect(readFileSync(d)).toBe('cd');
-                expect(readFileSync(e)).toBe('e');
-                expect(readFileSync(f)).toBe('ef');
-              });
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [c, 'c'],
+                  [d, 'cd'],
+                  [e, 'e'],
+                  [f, 'ef']
+                ]);
+              };
+              const onBuildStartHandler = getRunner([start]);
+
               let onBuildEndCanceler: () => void;
-              const onBuildEndHandler = jest.fn(() => {
+
+              const end1 = () => {
                 // 1st buildEnd event: E -> F updated
                 logs.push('end e');
-                expect(readFileSync(a)).toBe('a');
-                expect(readFileSync(b)).toBe('ab');
-                expect(readFileSync(c)).toBe('c');
-                expect(readFileSync(d)).toBe('cd');
-                expect(readFileSync(e)).toBe('ee');
-                expect(readFileSync(f)).toBe('eef');
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [c, 'c'],
+                  [d, 'cd'],
+                  [e, 'ee'],
+                  [f, 'eef']
+                ]);
+              };
+
+              const end2 = () => {
+                // 2nd buildEnd event: A -> B updated
+                logs.push('end a');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'aab'],
+                  [c, 'c'],
+                  [d, 'cd']
+                ]);
+              };
+
+              const end3 = () => {
+                // 3rd buildEnd event: C -> D updated
+                logs.push('end c');
+                matchFile([
+                  [c, 'cc'],
+                  [d, 'ccd']
+                ]);
+                expect(logs).toEqual(['start e', 'end e', 'end a', 'end c']);
+                close().then(done);
+              };
+              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
                 onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(() => {
-                  // 2nd buildEnd event: A -> B updated
-                  logs.push('end a');
-                  expect(readFileSync(a)).toBe('aa');
-                  expect(readFileSync(b)).toBe('aab');
-                  expect(readFileSync(c)).toBe('c');
-                  expect(readFileSync(d)).toBe('cd');
-                  onBuildEndCanceler();
-                  onBuildEnd(() => {
-                    // 3rd buildEnd event: C -> D updated
-                    logs.push('end c');
-                    expect(readFileSync(c)).toBe('cc');
-                    expect(readFileSync(d)).toBe('ccd');
-                    expect(logs).toEqual([
-                      'start e',
-                      'end e',
-                      'end a',
-                      'end c'
-                    ]);
-                    close().then(done);
-                  });
-                });
+                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               });
               onBuildStart(onBuildStartHandler);
               onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
@@ -564,51 +347,60 @@ describe('fileBuilder watch', () => {
           setTimeout(() => {
             writeFileSync(srcC, 'cc');
             setTimeout(() => {
-              const onBuildStartHandler = jest.fn(() => {
+              const start = () => {
                 // buildStart event: D -> E should update
                 // At this time, C -> E should have been updated,
                 // but A -> B should be still updating
                 logs.push('start d');
-                expect(readFileSync(a)).toBe('a');
-                expect(readFileSync(b)).toBe('ab');
-                expect(readFileSync(c)).toBe('cc');
-                expect(readFileSync(d)).toBe('d');
-                expect(readFileSync(e)).toBe('ccd');
-              });
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [c, 'cc'],
+                  [d, 'd'],
+                  [e, 'ccd']
+                ]);
+              };
+
+              const onBuildStartHandler = getRunner([start]);
+
               let onBuildEndCanceler: () => void;
-              const onBuildEndHandler = jest.fn(() => {
+
+              const end1 = () => {
                 // 1st buildEnd event: C -> E updated
                 logs.push('end c');
-                expect(readFileSync(a)).toBe('a');
-                expect(readFileSync(b)).toBe('ab');
-                expect(readFileSync(c)).toBe('cc');
-                expect(readFileSync(d)).toBe('d');
-                expect(readFileSync(e)).toBe('ccd');
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [c, 'cc'],
+                  [d, 'd'],
+                  [e, 'ccd']
+                ]);
+              };
 
+              const end2 = () => {
+                // 2nd buildEnd event: D -> E updated
+                logs.push('end d');
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [d, 'dd'],
+                  [e, 'ccdd']
+                ]);
+              };
+
+              const end3 = () => {
+                // 3rd buildEnd event: A -> B updated
+                logs.push('end a');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'aab']
+                ]);
+                expect(logs).toEqual(['end c', 'start d', 'end d', 'end a']);
+                close().then(done);
+              };
+              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
                 onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(() => {
-                  // 2nd buildEnd event: D -> E updated
-                  logs.push('end d');
-                  expect(readFileSync(a)).toBe('a');
-                  expect(readFileSync(b)).toBe('ab');
-                  expect(readFileSync(d)).toBe('dd');
-                  expect(readFileSync(e)).toBe('ccdd');
-
-                  onBuildEndCanceler();
-                  onBuildEnd(() => {
-                    // 3rd buildEnd event: A -> B updated
-                    logs.push('end a');
-                    expect(readFileSync(a)).toBe('aa');
-                    expect(readFileSync(b)).toBe('aab');
-                    expect(logs).toEqual([
-                      'end c',
-                      'start d',
-                      'end d',
-                      'end a'
-                    ]);
-                    close().then(done);
-                  });
-                });
+                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               });
               onBuildStart(onBuildStartHandler);
               onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
@@ -680,50 +472,61 @@ describe('fileBuilder watch', () => {
             writeFileSync(srcC, 'cc');
             setTimeout(() => {
               const logs: string[] = [];
-              const onBuildStartHandler = jest.fn(() => {
+
+              const start = () => {
                 // buildStart event: B -> D and B -> E should update
                 // At this time, A -> D and C -> E should have been updated
                 logs.push('start b');
-                expect(readFileSync(a)).toBe('aa');
-                expect(readFileSync(b)).toBe('b');
-                expect(readFileSync(c)).toBe('cc');
-                expect(readFileSync(d)).toBe('aab');
-                expect(readFileSync(e)).toBe('bcc');
-              });
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'b'],
+                  [c, 'cc'],
+                  [d, 'aab'],
+                  [e, 'bcc']
+                ]);
+              };
+
+              const onBuildStartHandler = getRunner([start]);
+
               let onBuildEndCanceler: () => void;
-              const onBuildEndHandler = jest.fn(() => {
+
+              const end1 = () => {
                 // 1st buildEnd event: A -> D updated
                 logs.push('end a');
-                expect(readFileSync(a)).toBe('aa');
-                expect(readFileSync(b)).toBe('b');
-                expect(readFileSync(c)).toBe('c');
-                expect(readFileSync(d)).toBe('aab');
-                expect(readFileSync(e)).toBe('bc');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'b'],
+                  [c, 'c'],
+                  [d, 'aab'],
+                  [e, 'bc']
+                ]);
+              };
 
+              const end2 = () => {
+                // 2nd buildEnd event: C -> E updated
+                logs.push('end c');
+                matchFile([
+                  [b, 'b'],
+                  [c, 'cc'],
+                  [e, 'bcc']
+                ]);
+              };
+
+              const end3 = () => {
+                // 3rd buildEnd event: B -> D and B -> E updated
+                logs.push('end b');
+                matchFile([
+                  [b, 'bb'],
+                  [d, 'aabb'],
+                  [e, 'bbcc']
+                ]);
+                expect(logs).toEqual(['end a', 'end c', 'start b', 'end b']);
+                close().then(done);
+              };
+
+              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
                 onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(() => {
-                  // 2nd buildEnd event: C -> E updated
-                  logs.push('end c');
-                  expect(readFileSync(b)).toBe('b');
-                  expect(readFileSync(c)).toBe('cc');
-                  expect(readFileSync(e)).toBe('bcc');
-
-                  onBuildEndCanceler();
-                  onBuildEnd(() => {
-                    // 3rd buildEnd event: B -> D and B -> E updated
-                    logs.push('end b');
-                    expect(readFileSync(b)).toBe('bb');
-                    expect(readFileSync(d)).toBe('aabb');
-                    expect(readFileSync(e)).toBe('bbcc');
-                    expect(logs).toEqual([
-                      'end a',
-                      'end c',
-                      'start b',
-                      'end b'
-                    ]);
-                    close().then(done);
-                  });
-                });
+                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               });
               onBuildStart(onBuildStartHandler);
               onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
@@ -793,58 +596,80 @@ describe('fileBuilder watch', () => {
               let onBuildStartCanceler: () => void;
               let onBuildEndCanceler: () => void;
               const logs: string[] = [];
-              const onBuildStartHandler = jest.fn(() => {
+
+              const start1 = () => {
                 // 1st buildStart event: C -> D should update
                 // At this time, A -> B should be still updating and there is one update waiting for it
                 logs.push('start c');
-                expect(readFileSync(a)).toBe('a');
-                expect(readFileSync(b)).toBe('ab');
-                expect(readFileSync(c)).toBe('c');
-                expect(readFileSync(d)).toBe('cd');
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [c, 'c'],
+                  [d, 'cd']
+                ]);
+              };
+
+              const start2 = () => {
+                // 2nd buildStart event: A -> B which has been waiting should update
+                // At this time, the former A -> B should updated
+                logs.push('start a-2');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'aab'],
+                  [c, 'cc'],
+                  [d, 'ccd']
+                ]);
+              };
+
+              const onBuildStartHandler = getRunner([start1, start2], () => {
                 onBuildStartCanceler();
-                onBuildStart(() => {
-                  // 2nd buildStart event: A -> B which has been waiting should update
-                  // At this time, the former A -> B should updated
-                  logs.push('start a-2');
-                  expect(readFileSync(a)).toBe('aa');
-                  expect(readFileSync(b)).toBe('aab');
-                  expect(readFileSync(c)).toBe('cc');
-                  expect(readFileSync(d)).toBe('ccd');
-                });
+                onBuildStartCanceler = onBuildStart(onBuildStartHandler);
               });
-              const onBuildEndHandler = jest.fn(() => {
+
+              const end1 = () => {
                 // 1st buildEnd event: C -> D should have been updated
                 logs.push('end c');
-                expect(readFileSync(a)).toBe('a');
-                expect(readFileSync(b)).toBe('ab');
-                expect(readFileSync(c)).toBe('cc');
-                expect(readFileSync(d)).toBe('ccd');
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [c, 'cc'],
+                  [d, 'ccd']
+                ]);
+              };
+
+              const end2 = () => {
+                // 2nd buildEnd event: A -> B should have been updated
+                logs.push('end a-1');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'aab'],
+                  [c, 'cc'],
+                  [d, 'ccd']
+                ]);
+              };
+
+              const end3 = () => {
+                // 3rd buildEnd event: A -> B should have been updated
+                logs.push('end a-2');
+                matchFile([
+                  [a, 'aaa'],
+                  [b, 'aaab'],
+                  [c, 'cc'],
+                  [d, 'ccd']
+                ]);
+                expect(logs).toEqual([
+                  'start c',
+                  'end c',
+                  'end a-1',
+                  'start a-2',
+                  'end a-2'
+                ]);
+                close().then(done);
+              };
+
+              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
                 onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(() => {
-                  logs.push('end a-1');
-                  // 2nd buildEnd event: A -> B should have been updated
-                  expect(readFileSync(a)).toBe('aa');
-                  expect(readFileSync(b)).toBe('aab');
-                  expect(readFileSync(c)).toBe('cc');
-                  expect(readFileSync(d)).toBe('ccd');
-                  onBuildEndCanceler();
-                  onBuildEnd(() => {
-                    logs.push('end a-2');
-                    // 2nd buildEnd event: A -> B should have been updated
-                    expect(readFileSync(a)).toBe('aaa');
-                    expect(readFileSync(b)).toBe('aaab');
-                    expect(readFileSync(c)).toBe('cc');
-                    expect(readFileSync(d)).toBe('ccd');
-                    expect(logs).toEqual([
-                      'start c',
-                      'end c',
-                      'end a-1',
-                      'start a-2',
-                      'end a-2'
-                    ]);
-                    close().then(done);
-                  });
-                });
+                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               });
               onBuildStartCanceler = onBuildStart(onBuildStartHandler);
               onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
@@ -914,7 +739,8 @@ describe('fileBuilder watch', () => {
             setTimeout(() => {
               let onBuildEndCanceler: () => void;
               const logs: string[] = [];
-              const onBuildStartHandler = jest.fn(() => {
+
+              const start = () => {
                 // buildStart event: C -> D should update and merge with B -> D
                 logs.push('start bc');
                 matchFile([
@@ -923,8 +749,11 @@ describe('fileBuilder watch', () => {
                   [c, 'c'],
                   [d, 'aabc']
                 ]);
-              });
-              const onBuildEndHandler = jest.fn(() => {
+              };
+
+              const onBuildStartHandler = getRunner([start]);
+
+              const end1 = () => {
                 // 1st buildEnd event: A -> D should have been updated
                 logs.push('end a');
                 matchFile([
@@ -933,19 +762,24 @@ describe('fileBuilder watch', () => {
                   [c, 'c'],
                   [d, 'aabc']
                 ]);
+              };
+
+              const end2 = () => {
+                // 2nd buildEnd event: B,C -> D should have been updated
+                logs.push('end bc');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'bb'],
+                  [c, 'cc'],
+                  [d, 'aabbcc']
+                ]);
+                expect(logs).toEqual(['end a', 'start bc', 'end bc']);
+                close().then(done);
+              };
+
+              const onBuildEndHandler = getRunner([end1, end2], () => {
                 onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(() => {
-                  // 2nd buildEnd event: B,C -> D should have been updated
-                  logs.push('end bc');
-                  matchFile([
-                    [a, 'aa'],
-                    [b, 'bb'],
-                    [c, 'cc'],
-                    [d, 'aabbcc']
-                  ]);
-                  expect(logs).toEqual(['end a', 'start bc', 'end bc']);
-                  close().then(done);
-                });
+                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               });
               onBuildStart(onBuildStartHandler);
               onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
@@ -1022,7 +856,7 @@ describe('fileBuilder watch', () => {
             setTimeout(() => {
               let onBuildEndCanceler: () => void;
               const logs: string[] = [];
-              const onBuildStartHandler = jest.fn(() => {
+              const start = () => {
                 // buildStart event: C -> E should update and merge with B -> [D, E]
                 logs.push('start bc');
                 matchFile([
@@ -1032,8 +866,10 @@ describe('fileBuilder watch', () => {
                   [d, 'aab'],
                   [e, 'bc']
                 ]);
-              });
-              const onBuildEndHandler = jest.fn(() => {
+              };
+              const onBuildStartHandler = getRunner([start]);
+
+              const end1 = () => {
                 // 1st buildEnd event: A -> D should have been updated
                 logs.push('end a');
                 matchFile([
@@ -1043,21 +879,27 @@ describe('fileBuilder watch', () => {
                   [d, 'aab'],
                   [e, 'bc']
                 ]);
+              };
+
+              const end2 = () => {
+                // 2nd buildEnd event: B and C should have been updated
+                logs.push('end bc');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'bb'],
+                  [c, 'cc'],
+                  [d, 'aabb'],
+                  [e, 'bbcc']
+                ]);
+                expect(logs).toEqual(['end a', 'start bc', 'end bc']);
+                close().then(done);
+              };
+
+              const onBuildEndHandler = getRunner([end1, end2], () => {
                 onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(() => {
-                  // 2nd buildEnd event: B and C should have been updated
-                  logs.push('end bc');
-                  matchFile([
-                    [a, 'aa'],
-                    [b, 'bb'],
-                    [c, 'cc'],
-                    [d, 'aabb'],
-                    [e, 'bbcc']
-                  ]);
-                  expect(logs).toEqual(['end a', 'start bc', 'end bc']);
-                  close().then(done);
-                });
+                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               });
+
               onBuildStart(onBuildStartHandler);
               onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               writeFileSync(srcC, 'cc');
@@ -1067,7 +909,7 @@ describe('fileBuilder watch', () => {
       });
     });
 
-    describe('if multiple current builds is still running and multiple updates are waiting for them separately, now another new update comes', () => {
+    describe('if multiple current builds are still running and multiple updates are waiting for them separately, now another new update comes', () => {
       test('this new update should run immediately if its pending files have no intersection with all these build and updates', done => {
         /**
          * In this test case, there are three independent file dependency path
@@ -1338,7 +1180,7 @@ describe('fileBuilder watch', () => {
           name: 'd',
           async content() {
             const result = readFileSync(srcD);
-            await sleep(200);
+            await sleep(100);
             return result;
           },
           dependencies: [srcD]
@@ -1390,7 +1232,7 @@ describe('fileBuilder watch', () => {
                       [a, 'aa'],
                       [b, 'aab'],
                       [c, 'cc'],
-                      [d, 'd'],
+                      [d, 'dd'],
                       [e, 'ccd']
                     ]);
                   };
@@ -1407,12 +1249,13 @@ describe('fileBuilder watch', () => {
                   };
 
                   const end2 = () => {
+                    // time: 1900ms, d has been updated
                     logs.push('end a-1');
                     matchFile([
                       [a, 'aa'],
                       [b, 'aab'],
                       [c, 'cc'],
-                      [d, 'd'],
+                      [d, 'dd'],
                       [e, 'ccd']
                     ]);
                   };
