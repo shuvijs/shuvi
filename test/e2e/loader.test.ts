@@ -80,7 +80,6 @@ describe('loader', () => {
         page = await ctx.browser.page(
           ctx.url('/context/redirect', { target: '/context/static' })
         );
-        await page.waitForSelector('#page-context-static');
         expect(await page.$text('#page-context-static')).toBe('Static Page');
       });
 
