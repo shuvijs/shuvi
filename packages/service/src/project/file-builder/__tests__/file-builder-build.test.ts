@@ -1,4 +1,4 @@
-import { getFileBuilder, defineFile } from '../index';
+import { getFileBuilder, defineFile } from '..';
 import { resetFs, sleep, readDirSync, readFileSync } from './helper';
 
 jest.mock('fs');

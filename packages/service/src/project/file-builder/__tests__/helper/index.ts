@@ -27,3 +27,25 @@ export function sleep(timeout: number) {
 export function resolveFixture(...names: string[]) {
   return path.resolve(__dirname, '..', 'fixtures', ...names);
 }
+
+export function mkdirSync(dir: string) {
+  fs.mkdirpSync(dir);
+}
+
+export function rmdirSync(dir: string) {
+  if (fs.existsSync(dir)) {
+    fs.emptyDirSync(dir);
+    fs.rmdirSync(dir);
+  }
+}
+
+export const getRunner = (arr: Function[], cb: Function) => {
+  const functions = [...arr];
+  return () => {
+    const currentFunction = functions.shift();
+    if (currentFunction) {
+      currentFunction();
+      cb();
+    }
+  };
+};
