@@ -7,22 +7,18 @@ import {
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
-import {
-  DynamicDll,
-  MultiStats,
-  MultiCompiler
-} from '@shuvi/toolpack/lib/webpack';
+import { DynamicDll, MultiCompiler } from '@shuvi/toolpack/lib/webpack';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { getBundler } from '../../../bundler';
 import { Server } from '../../http-server';
 import { IServerPluginContext } from '../../plugin';
 
-type ICallback = (stats?: MultiStats) => void;
+type ICallback = () => void;
 
 type MultiWatching = ReturnType<MultiCompiler['watch']>;
+
 interface IContext {
   state: boolean;
-  stats: MultiStats | undefined;
   callbacks: ICallback[];
   watching: MultiWatching | undefined;
 }
@@ -31,7 +27,7 @@ const wsServer = new ws.Server({ noServer: true });
 
 function ready(context: IContext, callback: ICallback) {
   if (context.state) {
-    return callback(context.stats);
+    return callback();
   }
   context.callbacks.push(callback);
 }
@@ -50,7 +46,6 @@ export async function getDevMiddleware(
   const bundler = await getBundler(serverPluginContext);
   const context: IContext = {
     state: false,
-    stats: undefined,
     callbacks: [],
     watching: undefined
   };
@@ -76,9 +71,8 @@ export async function getDevMiddleware(
     }
   });
 
-  compiler.hooks.done.tap('shuvi-dev-middleware', stats => {
+  compiler.hooks.done.tap('shuvi-dev-middleware', () => {
     context.state = true;
-    context.stats = stats;
 
     // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling
     process.nextTick(() => {
@@ -86,7 +80,7 @@ export async function getDevMiddleware(
       context.callbacks = [];
 
       callbacks.forEach(callback => {
-        callback(stats);
+        callback();
       });
     });
   });
@@ -122,7 +116,7 @@ export async function getDevMiddleware(
   };
 
   const invalidate = () => {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       ready(context, resolve);
       context.watching?.invalidate();
     });
@@ -132,7 +126,7 @@ export async function getDevMiddleware(
     if (force) {
       context.state = false;
     }
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       ready(context, resolve);
     });
   };
