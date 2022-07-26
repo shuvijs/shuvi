@@ -112,6 +112,9 @@ export type IPlatform = (
   context: IPlatformContext
 ) => Promise<IPlatformContent> | IPlatformContent;
 
+export interface CustomCorePluginHooks
+  extends ShuviService.CustomCorePluginHooks {}
+
 export interface CustomConfig extends ShuviService.CustomConfig {}
 
 export interface InternalConfig {
