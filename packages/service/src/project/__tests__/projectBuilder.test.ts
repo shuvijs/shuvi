@@ -44,7 +44,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['runtime/index.ts', 'export * from "something to export"'],
+      ['app/runtime/index.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"']
     ]);
   });
@@ -60,7 +60,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['runtime/index.ts', 'export * from "something to export"'],
+      ['app/runtime/index.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"']
     ]);
 
@@ -71,7 +71,7 @@ describe('projectBuilder', () => {
 
     checkMatch([
       [
-        'runtime/index.ts',
+        'app/runtime/index.ts',
         'export * from "something to export"\nexport * from "export2"'
       ],
       ['test.js', 'export default () => "test page"']
@@ -93,7 +93,7 @@ describe('projectBuilder', () => {
     await app.build(BUILD_DIR);
 
     checkMatch([
-      ['runtime/index.ts', 'export * from "something to export"'],
+      ['app/runtime/index.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"']
     ]);
   });
@@ -109,10 +109,10 @@ describe('projectBuilder', () => {
       await app.build(BUILD_DIR);
 
       checkMatch([
-        ['runtime/a.js', 'export exported from "source"'],
-        ['runtime/a.ts', 'export exported from "source"'],
+        ['app/runtime/a.js', 'export exported from "source"'],
+        ['app/runtime/a.ts', 'export exported from "source"'],
         [
-          'runtime/b.js',
+          'app/runtime/b.js',
           [
             'export exported0 from "source"',
             'export exported1 from "source"'
@@ -126,7 +126,7 @@ describe('projectBuilder', () => {
 
       checkMatch([
         [
-          'runtime/b.js',
+          'app/runtime/b.js',
           [
             'export exported0 from "source"',
             'export exported1 from "source"',
