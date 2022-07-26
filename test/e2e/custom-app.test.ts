@@ -36,9 +36,14 @@ describe('custom/app.js', () => {
 
   it('should get correct log', async () => {
     const logSpy = jest.spyOn(console, 'log');
-    page = await ctx.browser.page(ctx.url('/'));
+    let logs = '';
+    logSpy.mockImplementation((...args) => {
+      logs += args.filter(a => typeof a === 'string').join('');
+    });
 
-    expect(logSpy).toHaveBeenNthCalledWith(1, 'init\n');
-    expect(logSpy).toHaveBeenNthCalledWith(2, 'dispose\n');
+    page = await ctx.browser.page(ctx.url('/'));
+    expect(logs).toMatch('init\ndispose\n');
+
+    logSpy.mockRestore();
   });
 });
