@@ -33,6 +33,7 @@ export {
   IPlatformContent,
   CorePluginConstructor,
   CorePluginInstance,
+  CustomAppContext,
   getApi,
   createPlugin
 } from './core';

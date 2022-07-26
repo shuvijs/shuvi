@@ -115,6 +115,11 @@ export type IPlatform = (
 export interface CustomCorePluginHooks
   extends ShuviService.CustomCorePluginHooks {}
 
+export interface CustomServerPluginHooks
+  extends ShuviService.CustomServerPluginHooks {}
+
+export interface CustomAppContext extends ShuviService.CustomAppContext {}
+
 export interface CustomConfig extends ShuviService.CustomConfig {}
 
 export interface InternalConfig {

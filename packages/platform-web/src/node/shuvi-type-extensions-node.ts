@@ -7,12 +7,13 @@ import {
   IServerModule,
   PlatformWebCustomConfig
 } from '../shared/index';
+import type { IStoreManager } from '@shuvi/redox';
 import { IViewServer } from './features/html-render/index';
 import {
   addRoutes,
   addMiddlewareRoutes
 } from './features/filesystem-routes/hooks';
-
+import { extendedHooks } from './features/html-render/serverHooks';
 export {};
 
 declare module '@shuvi/service/lib/resources' {
@@ -40,10 +41,19 @@ declare global {
       apiRoutes?: PlatformWebCustomConfig['apiRoutes'];
       conventionRoutes: PlatformWebCustomConfig['conventionRoutes'];
     }
+    interface CustomAppContext {
+      pageData?: any;
+      storeManager?: IStoreManager;
+    }
     interface CustomCorePluginHooks {
       addRoutes: typeof addRoutes;
       addMiddlewareRoutes: typeof addMiddlewareRoutes;
       // addAPIRoutes: typeof addAPIRoutes;
+    }
+    interface CustomServerPluginHooks {
+      getPageData: typeof extendedHooks.getPageData;
+      handlePageRequest: typeof extendedHooks.handlePageRequest;
+      modifyHtml: typeof extendedHooks.modifyHtml;
     }
   }
 }
