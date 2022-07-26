@@ -14,9 +14,7 @@
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
-    "build": "tsc -p tsconfig.build.json",
-    "build-native": "napi build --platform --cargo-name shuvi_swc_napi --features plugin --cargo-cwd /swc ./swc-source/native",
-    "publish-native": "node scripts/publish-native.js"
+    "build": "tsc -p tsconfig.build.json"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -35,7 +33,6 @@
     "@babel/preset-react": "7.10.1",
     "@babel/preset-typescript": "7.12.7",
     "@babel/runtime": "7.12.5",
-    "@napi-rs/cli": "2.4.4",
     "@napi-rs/triples": "1.1.0",
     "@parcel/css": "1.2.0",
     "@shuvi/shared": "1.0.0-rc.1",
@@ -99,23 +96,6 @@
     "@types/loader-utils": "2.0.1",
     "@types/mini-css-extract-plugin": "^1.2.2",
     "@types/webpack-bundle-analyzer": "^3.8.0",
-    "@swc/plugin-transform-imports": "0.8.4",
     "memfs": "^3.1.2"
-  },
-  "napi": {
-    "name": "shuvi-swc",
-    "triples": {
-      "defaults": true,
-      "additional": [
-        "i686-pc-windows-msvc",
-        "aarch64-unknown-linux-gnu",
-        "armv7-unknown-linux-gnueabihf",
-        "aarch64-apple-darwin",
-        "x86_64-unknown-freebsd",
-        "x86_64-unknown-linux-musl",
-        "aarch64-unknown-linux-musl",
-        "aarch64-pc-windows-msvc"
-      ]
-    }
   }
 }
