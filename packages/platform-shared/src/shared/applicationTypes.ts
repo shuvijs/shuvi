@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 import { IStoreManager } from '@shuvi/redox';
-import { CustomAppContext } from '@shuvi/runtime';
+import { CustomAppContext } from '@shuvi/service';
 import { IRouter } from './routerTypes';
 import { IPluginList } from './lifecycle';
 

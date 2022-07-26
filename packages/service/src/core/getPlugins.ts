@@ -84,6 +84,7 @@ export function resolvePlugin(
     } catch {}
 
     try {
+      console.log('===============', serverPluginPath);
       if (serverPluginPath) {
         const server = getPluginInstance(serverPluginPath, pluginOptions);
         if (server) {
