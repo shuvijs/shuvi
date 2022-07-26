@@ -7,6 +7,5 @@
     "module": "commonjs",
     "rootDir": "./src"
   },
-  "files": ["./shuvi-type-extensions-node.d.ts"],
   "include": ["src/node"]
 }

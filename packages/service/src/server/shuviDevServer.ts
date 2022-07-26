@@ -51,6 +51,7 @@ export class ShuviDevServer extends ShuviServer {
     this._setupWebSocketHandler(server, devMiddleware);
   }
 
+  // todo: move into devMiddleware?
   private _setupWebSocketHandler = (
     server: Server,
     devMiddleware: DevMiddleware
