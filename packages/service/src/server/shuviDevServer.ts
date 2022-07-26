@@ -1,42 +1,18 @@
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
-import { IRequestHandlerWithNext, Server } from '../server/http-server';
-import { isStaticFileExist, serveStatic } from './utils';
+import { Server } from '../server/http-server';
 import {
   getDevMiddleware,
   DevMiddleware
 } from './middlewares/dev/devMiddleware';
-import { IServerPluginContext } from './plugin';
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
+import { getAssetMiddleware } from './middlewares/getAssetMiddleware';
 import { DEV_HOT_MIDDLEWARE_PATH } from '@shuvi/shared/lib/constants';
-
-const getPublicDirMiddleware = (
-  cliContext: IServerPluginContext
-): IRequestHandlerWithNext => {
-  return async (req, res, next) => {
-    let { path = '' } = req.params || {};
-    if (Array.isArray(path)) path = path.join('/');
-    const assetAbsPath = cliContext.resolvePublicFile(path);
-    if (!isStaticFileExist(assetAbsPath)) return next();
-
-    let err = null;
-    try {
-      await serveStatic(req, res, assetAbsPath);
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        error.statusCode = 404;
-      }
-      err = error;
-    }
-    if (err) next(err);
-  };
-};
 
 export class ShuviDevServer extends ShuviServer {
   async init() {
     const { _serverContext: context, _server: server } = this;
-
-    const publicDirMiddleware = getPublicDirMiddleware(context);
+    const assetsMiddleware = getAssetMiddleware(context, true);
     const devMiddleware = await getDevMiddleware(context);
     await devMiddleware.waitUntilValid();
     const proxy = [];
@@ -66,7 +42,7 @@ export class ShuviDevServer extends ShuviServer {
 
     // keep the order
     devMiddleware.apply(server);
-    server.use(`${context.assetPublicPath}/:path(.*)`, publicDirMiddleware);
+    server.use(`${context.assetPublicPath}/:path(.*)`, assetsMiddleware);
 
     await this._initMiddlewares();
 
