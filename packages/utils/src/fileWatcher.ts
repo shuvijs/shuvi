@@ -12,6 +12,7 @@ export interface WatchOptions {
   files?: string[];
   directories?: string[];
   missing?: string[];
+  startTime?: number;
 }
 
 export type WatchCallback = (event: WatchEvent) => void;
@@ -30,7 +31,7 @@ const options = {
 };
 
 export function watch(
-  { files, directories, missing }: WatchOptions,
+  { files, directories, missing, startTime = Date.now() }: WatchOptions,
   cb: WatchCallback
 ): () => void {
   const wp = new Watchpack(options);
@@ -50,7 +51,7 @@ export function watch(
       }
     });
   });
-  wp.watch({ files, directories, missing });
+  wp.watch({ files, directories, missing, startTime });
 
   return () => {
     wp.close();
