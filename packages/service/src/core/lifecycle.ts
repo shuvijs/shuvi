@@ -6,7 +6,6 @@ import {
   IPluginInstance,
   IPluginHandlers
 } from '@shuvi/hook';
-import { CustomCorePluginHooks } from '@shuvi/runtime';
 
 import { FileOptions } from '../project';
 import {
@@ -20,7 +19,7 @@ import {
   AddRuntimeFileUtils,
   WebpackChainType
 } from './lifecycleTypes';
-import { Config, IPluginContext } from './apiTypes';
+import { Config, IPluginContext, CustomCorePluginHooks } from './apiTypes';
 
 const extendConfig = createSyncWaterfallHook<Config>();
 const afterInit = createAsyncParallelHook<void>();
