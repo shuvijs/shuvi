@@ -26,8 +26,8 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-import { transform } from '../../utils/load-sources';
-import getSWCOptions from '../../utils/getSWCOptions';
+import { transform } from '../../swc/load-sources';
+import getSWCOptions from '../../swc/getSWCOptions';
 
 async function loaderTransform(source, inputSourceMap) {
   // Make the loader async

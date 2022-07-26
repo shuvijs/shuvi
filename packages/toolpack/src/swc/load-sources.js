@@ -11,10 +11,10 @@ let loadError;
 const triples = platformArchTriples[PlatformName][ArchName];
 for (const triple of triples) {
   try {
-    const swcSource = path.join(__dirname, '../../swc-source');
+    const swcSource = path.join(__dirname, '../../swc-source/native');
     const localFilePath = path.join(
       swcSource,
-      `native/shuvi-swc.${triple.platformArchABI}.node`
+      `shuvi-swc.${triple.platformArchABI}.node`
     );
     if (fs.existsSync(localFilePath)) {
       console.log('Using locally built binary of shuvi-swc');
