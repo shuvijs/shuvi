@@ -132,7 +132,6 @@ export class WebpackHotMiddleware {
   }
 
   private handleInactiveModule(): void {
-    console.log({ modulesActivity });
     for (const [id, lastActivity] of modulesActivity) {
       if (lastActivity && Date.now() - lastActivity > MAX_INACTIVE_AGE_MS) {
         ModuleReplacePlugin.replaceModule(id);
