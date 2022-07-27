@@ -118,8 +118,6 @@ export interface CustomCorePluginHooks
 export interface CustomServerPluginHooks
   extends ShuviService.CustomServerPluginHooks {}
 
-export interface CustomAppContext extends ShuviService.CustomAppContext {}
-
 export interface CustomConfig extends ShuviService.CustomConfig {}
 
 export interface InternalConfig {

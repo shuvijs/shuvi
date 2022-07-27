@@ -7,7 +7,6 @@ import {
   IServerModule,
   PlatformWebCustomConfig
 } from '../shared/index';
-import type { IStoreManager } from '@shuvi/redox';
 import { IViewServer } from './features/html-render/index';
 import {
   addRoutes,
@@ -40,10 +39,6 @@ declare global {
       middlewareRoutes?: PlatformWebCustomConfig['middlewareRoutes'];
       apiRoutes?: PlatformWebCustomConfig['apiRoutes'];
       conventionRoutes: PlatformWebCustomConfig['conventionRoutes'];
-    }
-    interface CustomAppContext {
-      pageData?: any;
-      storeManager?: IStoreManager;
     }
     interface CustomCorePluginHooks {
       addRoutes: typeof addRoutes;

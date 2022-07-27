@@ -156,7 +156,6 @@ describe('resolve plugin', () => {
         options
       ]);
       expect(plugin.core).toBeUndefined();
-      console.log(plugin);
       expect(isPluginInstance(plugin.server)).toBe(true);
       expect(plugin.runtime).toHaveProperty('plugin');
       expect(plugin.runtime?.options).toBe(options);
