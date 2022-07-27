@@ -79,7 +79,7 @@ class ProjectBuilder {
     filepath: string = 'index.ts'
   ): void {
     const services = this._projectContext.runtimeServices;
-    filepath = path.join('runtime', checkFilepath(filepath));
+    filepath = path.join('app', 'runtime', checkFilepath(filepath));
     const service = services.get(filepath);
     if (service) {
       const targetSource = service.get(source);
