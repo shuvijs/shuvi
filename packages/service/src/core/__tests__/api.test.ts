@@ -97,7 +97,7 @@ test('add App files, add App services', async () => {
     ['app/files/fileA.js', 'test.js'],
     ['app/files/fileC.js', 'test.js'],
     ['app/files/fileC.js', 'test.js'],
-    ['runtime/a.js', 'export exported from "source"']
+    ['app/runtime/a.js', 'export exported from "source"']
   ]);
   await api.destory();
   rimraf.sync(shuviDir);
