@@ -351,6 +351,7 @@ importers:
       '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
       '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
       '@shuvi/utils': 1.0.0-rc.1
+      '@swc/helpers': 0.4.3
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1
@@ -415,6 +416,7 @@ importers:
       '@parcel/css': 1.2.0
       '@shuvi/shared': link:../shared
       '@shuvi/utils': link:../utils
+      '@swc/helpers': 0.4.3
       babel-loader: 8.2.2_l6ngmbe7b6ga4kryp525ffkrna
       babel-plugin-syntax-jsx: 6.18.0
       babel-plugin-transform-define: 2.0.0
@@ -2840,6 +2842,12 @@ packages:
     dependencies:
       '@sinonjs/commons': 1.8.3
     dev: true
+
+  /@swc/helpers/0.4.3:
+    resolution: {integrity: sha512-6JrF+fdUK2zbGpJIlN7G3v966PQjyx/dPt1T9km2wj+EUBqgrxCk3uX4Kct16MIm9gGxfKRcfax2hVf5jvlTzA==}
+    dependencies:
+      tslib: 2.4.0
+    dev: false
 
   /@swc/plugin-transform-imports/0.8.4:
     resolution: {integrity: sha512-pgtEMq3wRC5ukZkphtEdbbZkVjCqBQm22AhA2u7puw0cvah1oKxgutkdBB4wFsgbddeCsrHE6yl+BQcsyI0GlQ==}
@@ -10428,6 +10436,10 @@ packages:
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
+
+  /tslib/2.4.0:
+    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
+    dev: false
 
   /tsscmp/1.0.6:
     resolution: {integrity: sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==}

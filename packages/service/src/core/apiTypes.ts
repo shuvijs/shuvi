@@ -125,9 +125,62 @@ export interface InternalConfig {
   analyze: boolean;
   typescript: { ignoreBuildErrors: boolean };
   proxy?: IProxyConfig;
+  compiler?: {
+    reactRemoveProperties?:
+      | boolean
+      | {
+          properties?: string[];
+        };
+    removeConsole?:
+      | boolean
+      | {
+          exclude?: string[];
+        };
+    styledComponents?:
+      | boolean
+      | {
+          /**
+           * Enabled by default in development, disabled in production to reduce file size,
+           * setting this will override the default for all environments.
+           */
+          displayName?: boolean;
+          topLevelImportPaths?: string[];
+          ssr?: boolean;
+          fileName?: boolean;
+          meaninglessFileNames?: string[];
+          minify?: boolean;
+          transpileTemplateLiterals?: boolean;
+          namespace?: string;
+          pure?: boolean;
+          cssProp?: boolean;
+        };
+    emotion?:
+      | boolean
+      | {
+          sourceMap?: boolean;
+          autoLabel?: 'dev-only' | 'always' | 'never';
+          labelFormat?: string;
+        };
+    disableShuviDynamic?: boolean;
+    autoCssModuleFlag?: string;
+    experimentalDecorators?: boolean;
+    emitDecoratorMetadata?: boolean;
+    useDefineForClassFields?: boolean;
+    jsxImportSource?: string;
+  };
   experimental: {
     parcelCss: boolean;
     preBundle: boolean;
+    // browsersListForSwc?: boolean;
+    modularizeImports?: Record<
+      string,
+      {
+        transform: string;
+        preventFullImport?: boolean;
+        skipDefaultConversion?: boolean;
+      }
+    >;
+    swcPlugins?: Array<[string, Record<string, unknown>]>;
   };
 }
 

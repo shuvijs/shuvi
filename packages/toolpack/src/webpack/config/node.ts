@@ -42,7 +42,7 @@ export function createNodeWebpackChain(options: NodeOptions): WebpackChain {
     .use('shuvi-swc-loader')
     .tap(options => ({
       ...options,
-      isNode: true
+      isServer: true
     }));
 
   chain.plugin('private/build-manifest').tap(([options]) => [
