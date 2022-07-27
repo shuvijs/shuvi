@@ -3,6 +3,9 @@ import {
   DEV_HOT_MIDDLEWARE_PATH,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT
 } from '@shuvi/shared/lib/constants';
+import { matchRoutes } from '@shuvi/router';
+import { getRoutes } from '@shuvi/app/core/platform';
+import routes from '@shuvi/app/files/routes';
 
 interface Event {
   action: string;
@@ -21,7 +24,8 @@ export default (options = {}) => {
     launchEditorEndpoint: DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
     path: DEV_HOT_MIDDLEWARE_PATH,
     location,
-    WebSocket
+    WebSocket,
+    matchRoutes: matchRoutes(getRoutes(routes), location)
   });
 
   devClient.subscribeToHmrEvent((event: Event) => {

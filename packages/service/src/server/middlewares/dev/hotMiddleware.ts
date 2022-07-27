@@ -24,7 +24,18 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
+import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
+import { IRouteMatch } from '@shuvi/router';
 
+import {
+  MAX_INACTIVE_AGE_MS,
+  DEFAULT_TIMEOUT_MS
+} from '@shuvi/toolpack/lib/constants';
+
+type modulePath = string;
+type lastActivity = number;
+
+const modulesActivity = new Map<modulePath, lastActivity>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
@@ -35,6 +46,9 @@ export class WebpackHotMiddleware {
   clientManager: ClientManager;
   latestStats: webpack.Stats | null;
   closed: boolean;
+  protected timer: NodeJS.Timer = setInterval(() => {
+    this.handleInactiveModule();
+  }, DEFAULT_TIMEOUT_MS + 1000);
 
   constructor({ compiler, path }: IWebpackHotMiddlewareOptions) {
     this.clientManager = new ClientManager();
@@ -71,6 +85,7 @@ export class WebpackHotMiddleware {
           typeof data !== 'string' ? data.toString() : data
         );
         if (parsedData.event === 'ping') {
+          this.handlePing(parsedData.page);
           client.send(
             JSON.stringify({
               event: 'pong'
@@ -101,6 +116,7 @@ export class WebpackHotMiddleware {
     if (this.closed) return;
     this.clientManager.publish(payload);
   };
+
   close = () => {
     if (this.closed) return;
     // Can't remove compiler plugins, so we just set a flag and noop if closed
@@ -108,6 +124,22 @@ export class WebpackHotMiddleware {
     this.closed = true;
     this.clientManager.close();
   };
+
+  private handlePing(page: IRouteMatch[]): void {
+    for (const { route } of page) {
+      modulesActivity.set(route.__componentSourceWithAffix__!, Date.now());
+    }
+  }
+
+  private handleInactiveModule(): void {
+    console.log({ modulesActivity });
+    for (const [id, lastActivity] of modulesActivity) {
+      if (lastActivity && Date.now() - lastActivity > MAX_INACTIVE_AGE_MS) {
+        ModuleReplacePlugin.replaceModule(id);
+        modulesActivity.delete(id);
+      }
+    }
+  }
 }
 
 class ClientManager {
