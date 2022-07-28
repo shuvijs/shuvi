@@ -2,12 +2,17 @@ on:
   push:
     branches: [feat-0719-nextSwc]
     # paths:
-      # - "packages/compiler/scripts/version.js"
+    # - "packages/compiler/scripts/version.js"
 
-name: Release binary
+name: Test and Release SWC binary
+
+env:
+  NAPI_CLI_VERSION: 2.7.0
+  TURBO_VERSION: 1.3.4
+  RUST_TOOLCHAIN: nightly-2022-02-23
+  PNPM_VERSION: 7.5.2
 
 jobs:
-
   test-unit:
     name: Unit Test Native Code
     runs-on: ubuntu-18.04
@@ -22,7 +27,7 @@ jobs:
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2022-02-23
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
           profile: minimal
       - run: cd packages/compiler && cargo test
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
@@ -31,8 +36,7 @@ jobs:
     name: publish release
     runs-on: ubuntu-latest
     needs:
-      - build-in-native
-      - build-in-docker
+      - build-native
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
@@ -57,515 +61,202 @@ jobs:
         with:
           name: shuvi-swc-binaries
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
+      # - name: Install pnpm
+      #   uses: pnpm/action-setup@v2.1.0
+      #   with:
+      #     version: ${{ env.PNPM_VERSION }}
 
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      - run: pnpm install
+      # - run: pnpm install
       - run: node ./packages/compiler/scripts/publish-native.js $GITHUB_REF
 
-  build-in-docker:
-    name: build swc binaries in docker
-    runs-on: ubuntu-latest
-    needs:
-      - build-windows-i686
-      - build-windows-aarch64
-      - build-linux-musl
-      - build-linux-arm7
-      - build-linux-aarch64
-      - build-linux-aarch64-musl
-    steps:
-      - run: exit 0
-
   # Build binaries for publishing
-  build-in-native:
-    # Build the matrix
-    # Can be understood as a for loop
+  build-native:
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-18.04, macos-latest, windows-latest]
-        description: [default]
-        include:
-          - os: ubuntu-18.04
-            target: x86_64-unknown-linux-gnu
-            name: linux-x64-gnu
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            name: win32-x64-msvc
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            name: darwin-x64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            name: darwin-arm64
-            description: m1
-
-    name: shuvi-swc - ${{ matrix.os }} - ${{ matrix.target }} - node@14
-    runs-on: ${{ matrix.os }}
+        settings:
+          # pnpm is aliased here temporarily until the build docker
+          # image is updated past Node.js v14.19 (current 14.18.1)
+          - host: macos-latest
+            target: 'x86_64-apple-darwin'
+            build: |
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
+              turbo run build-native --cache-dir=".turbo" -- --release
+              strip -x packages/compiler/native/shuvi-swc.*.node
+          - host: windows-latest
+            build: |
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
+              turbo run build-native --cache-dir=".turbo" -- --release
+            target: 'x86_64-pc-windows-msvc'
+          - host: windows-latest
+            build: |
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
+              turbo run build-native-no-plugin --cache-dir=".turbo" -- --release --target i686-pc-windows-msvc
+            target: 'i686-pc-windows-msvc'
+          - host: ubuntu-latest
+            target: 'x86_64-unknown-linux-gnu'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
+            build: >-
+              set -e &&
+              rustup toolchain install "${RUST_TOOLCHAIN}" &&
+              rustup default "${RUST_TOOLCHAIN}" &&
+              rustup target add x86_64-unknown-linux-gnu &&
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target x86_64-unknown-linux-gnu &&
+              strip packages/compiler/native/shuvi-swc.*.node
+          - host: ubuntu-latest
+            target: 'x86_64-unknown-linux-musl'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
+            build: >-
+              set -e &&
+              rustup toolchain install "${RUST_TOOLCHAIN}" &&
+              rustup default "${RUST_TOOLCHAIN}" &&
+              rustup target add x86_64-unknown-linux-musl &&
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target x86_64-unknown-linux-musl &&
+              strip packages/compiler/native/shuvi-swc.*.node
+          - host: macos-latest
+            target: 'aarch64-apple-darwin'
+            build: |
+              sudo rm -Rf /Library/Developer/CommandLineTools/SDKs/*;
+              export CC=$(xcrun -f clang);
+              export CXX=$(xcrun -f clang++);
+              SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
+              export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-apple-darwin
+              strip -x packages/compiler/native/shuvi-swc.*.node
+          - host: ubuntu-latest
+            target: 'aarch64-unknown-linux-gnu'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian-aarch64
+            build: >-
+              set -e &&
+              rustup toolchain install "${RUST_TOOLCHAIN}" &&
+              rustup default "${RUST_TOOLCHAIN}" &&
+              rustup target add aarch64-unknown-linux-gnu &&
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi &&
+              export CC_aarch64_unknown_linux_gnu=/usr/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu-gcc &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-unknown-linux-gnu &&
+              llvm-strip -x packages/compiler/native/shuvi-swc.*.node
+          - host: ubuntu-18.04
+            target: 'armv7-unknown-linux-gnueabihf'
+            setup: |
+              sudo apt-get update
+              sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
+            build: |
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
+              turbo run build-native-no-plugin --cache-dir=".turbo" -- --release --target armv7-unknown-linux-gnueabihf
+              arm-linux-gnueabihf-strip packages/compiler/native/shuvi-swc.*.node
+          - host: ubuntu-latest
+            target: 'aarch64-unknown-linux-musl'
+            docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
+            build: >-
+              set -e &&
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi &&
+              rustup toolchain install "${RUST_TOOLCHAIN}" &&
+              rustup default "${RUST_TOOLCHAIN}" &&
+              rustup target add aarch64-unknown-linux-musl &&
+              turbo run build-native --cache-dir=".turbo" -- --release --target aarch64-unknown-linux-musl &&
+              llvm-strip -x packages/compiler/native/shuvi-swc.*.node
+          - host: windows-latest
+            target: 'aarch64-pc-windows-msvc'
+            build: |
+              npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
+              turbo run build-native-no-plugin --cache-dir=".turbo" -- --release --target aarch64-pc-windows-msvc --cargo-flags=--no-default-features
+    if: ${{ needs.build.outputs.isRelease == 'true' }}
     needs:
       - test-unit
-
+    name: stable - ${{ matrix.settings.target }} - node@16
+    runs-on: ${{ matrix.settings.host }}
     steps:
       # https://github.com/actions/virtual-environments/issues/1187
       - name: tune linux network
         run: sudo ethtool -K eth0 tx off rx off
-        if: ${{ matrix.os == 'ubuntu-18.04' }}
+        if: ${{ matrix.settings.host == 'ubuntu-18.04' }}
+      - name: tune linux network
+        run: sudo ethtool -K eth0 tx off rx off
+        if: ${{ matrix.settings.host == 'ubuntu-latest' }}
       - name: tune windows network
         run: Disable-NetAdapterChecksumOffload -Name * -TcpIPv4 -UdpIPv4 -TcpIPv6 -UdpIPv6
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ matrix.settings.host == 'windows-latest' }}
       - name: tune mac network
         run: sudo sysctl -w net.link.generic.system.hwcksum_tx=0 && sudo sysctl -w net.link.generic.system.hwcksum_rx=0
-        if: ${{ matrix.os == 'macos-latest' }}
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
-
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-          check-latest: true
-
+        if: ${{ matrix.settings.host == 'macos-latest' }}
       # we use checkout here instead of the build cache since
       # it can fail to restore in different OS'
-      - uses: actions/checkout@v2
-
-      # since the repo's dependencies aren't installed we need
-      # to install napi globally
-      - run: npm i -g @napi-rs/cli@2.4.4
-
-      # install rust for different os
-      - name: Install
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly-2022-02-23
-          target: ${{ matrix.target }}
-
-      # path: need cached path
-      # key: create when cached, recached if changed
-      # v1: only dir
-      # v2: can support single file
-      - name: Cache cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: stable-${{ matrix.os }}-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache cargo index
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/git
-          key: stable-${{ matrix.os }}-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
-        with:
-          path: packages/compiler/native/shuvi-swc.${{ matrix.name }}.node
-          key: shuvi-swc-nightly-2022-02-23-${{ matrix.target }}-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
-
-      # This seems to be mac os cross-compilation m1 mac os
-      - name: Cross build aarch64 setup
-        if: ${{ matrix.target == 'aarch64-apple-darwin' }}
-        run: |
-          sudo rm -Rf /Library/Developer/CommandLineTools/SDKs/*;
-          export CC=$(xcrun -f clang);
-          export CXX=$(xcrun -f clang++);
-          SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
-          export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
+      - uses: actions/checkout@v3
       # We use restore-key to pick latest cache.
       # We will not get exact match, but doc says
       # "If there are multiple partial matches for a restore key, the action returns the most recently created cache."
       # So we get latest cache
       - name: Cache built files
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./packages/compiler/target
-          key: shuvi-swc-cargo-cache-${{ matrix.os }}--${{ hashFiles('**/Cargo.lock') }}
+          key: shuvi-swc-cargo-cache-${{ matrix.settings.target }}--${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            shuvi-swc-cargo-cache-${{ matrix.os }}
-
-      # actions/cache@v2: cache-hit Boolean value indicating that an exact match of the key was found.
-      # This means recompile if there is no cache hit
-      - name: 'Build'
-        if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: pnpm -- build-native --release --target ${{ matrix.target }}
-        env:
-          MACOSX_DEPLOYMENT_TARGET: '10.13'
-        working-directory: packages/compiler
-
-      # https://github.com/marketplace/actions/upload-a-build-artifact
-      # upload file to this path
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2.2.4
+            shuvi-swc-cargo-cache-${{ matrix.settings.target }}
+      - name: Turbo Cache
+        id: turbo-cache
+        uses: actions/cache@v3
         with:
-          name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.${{ matrix.name }}.node
-          retention-days: 1
-
-      - name: Clear the cargo caches
-        run: |
-          cargo install cargo-cache --no-default-features --features ci-autoclean
-          cargo-cache
-
-  build-windows-i686:
-    name: shuvi-swc - windows-i686 - node@14
-    runs-on: windows-latest
-    needs:
-      - test-unit
-    env:
-      CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 32
-      CARGO_PROFILE_RELEASE_LTO: 'false'
-    steps:
-      - name: Install node x86
-        run: |
-          choco install nodejs-lts --x86 -y --force
-          refreshenv
-
-      - name: Set 32bit Node.js path
-        run: |
-          echo "C:\\Program Files (x86)\\nodejs" >> $GITHUB_PATH
-        shell: bash
-
-      - name: Node.js arch
-        run: node -e "console.log(process.arch)"
-
-      # we use checkout here instead of the build cache since
-      # it can fail to restore in different OS'
-      - uses: actions/checkout@v2
-
-      # since the repo's dependencies aren't installed we need
-      # to install napi globally
-      - run: npm i -g @napi-rs/cli@2.4.4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly-2022-02-23
-          override: true
-          target: i686-pc-windows-msvc
-
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
-        with:
-          path: packages/compiler/native/shuvi-swc.win32-ia32-msvc.node
-          key: shuvi-swc-nightly-2022-02-23-win32-ia32-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
-
-      - name: Build
-        if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        shell: bash
-        run: pnpm -- build-native --release --target i686-pc-windows-msvc
-        working-directory: packages/compiler
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.win32-ia32-msvc.node
-          retention-days: 1
-
-  build-windows-aarch64:
-    name: shuvi-swc - windows-aarch64 - node@14
-    runs-on: windows-latest
-    needs:
-      - test-unit
-    steps:
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
+          path: .turbo
+          key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ matrix.settings.target }}-${{ needs.build.outputs.weekNum }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ github.job }}-${{ github.ref_name }}-${{ matrix.settings.target }}
+            turbo-${{ github.job }}-${{ github.ref_name }}-${{ matrix.settings.target }}-${{ needs.build.outputs.weekNum }}-
+            turbo-${{ github.job }}-canary-${{ matrix.settings.target }}-${{ needs.build.outputs.weekNum }}-
 
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
+        if: ${{ !matrix.settings.docker }}
         with:
-          node-version: 14
+          node-version: 16
+          check-latest: true
 
-      # we use checkout here instead of the build cache since
-      # it can fail to restore in different OS'
-      - uses: actions/checkout@v2
-
-      # since the repo's dependencies aren't installed we need
-      # to install napi globally
-      - run: npm i -g @napi-rs/cli@2.4.4
-
-      - name: Install Rust
+      - name: Install
         uses: actions-rs/toolchain@v1
+        if: ${{ !matrix.settings.docker }}
         with:
           profile: minimal
-          toolchain: nightly-2022-02-23
           override: true
-          target: aarch64-pc-windows-msvc
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          target: ${{ matrix.settings.target }}
 
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
+      - name: Cache cargo registry
+        uses: actions/cache@v3
         with:
-          path: packages/compiler/native/shuvi-swc.win32-arm64-msvc.node
-          key: shuvi-swc-nightly-2022-02-23-win32-arm64-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          path: ~/.cargo/registry
+          key: ${{ matrix.settings.target }}-cargo-registry
 
-      - name: Build
-        if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ matrix.settings.target }}-cargo-index
+
+      - name: Setup toolchain
+        run: ${{ matrix.settings.setup }}
+        if: ${{ matrix.settings.setup }}
         shell: bash
-        run: pnpm -- build-native --release --target aarch64-pc-windows-msvc
-        working-directory: packages/compiler
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Build in docker
+        uses: addnab/docker-run-action@v3
+        if: ${{ matrix.settings.docker }}
         with:
-          name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.win32-arm64-msvc.node
-          retention-days: 1
-
-  build-linux-musl:
-    name: shuvi-swc - linux-musl - node@lts
-    runs-on: ubuntu-latest
-    needs:
-      - test-unit
-    steps:
-      # we use checkout here instead of the build cache since
-      # it can fail to restore in different OS'
-      - uses: actions/checkout@v2
-
-      - name: Login to registry
-        run: |
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY_URL
-        env:
-          DOCKER_REGISTRY_URL: ghcr.io
-          DOCKER_USERNAME: ${{ github.actor }}
-          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            target/
-          key: linux-musl-publish-integration
-
-      - name: Pull docker image
-        run: |
-          docker pull ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
-          docker tag ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine builder
-
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
-        with:
-          path: packages/compiler/native/shuvi-swc.linux-x64-musl.node
-          key: shuvi-swc-nightly-2022-02-23-linux-x64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          image: ${{ matrix.settings.docker }}
+          options: -e RUST_TOOLCHAIN=${{ env.RUST_TOOLCHAIN }} -e NAPI_CLI_VERSION=${{ env.NAPI_CLI_VERSION }} -e TURBO_VERSION=${{ env.TURBO_VERSION }} -v ${{ env.HOME }}/.cargo/git:/root/.cargo/git -v ${{ env.HOME }}/.cargo/registry:/root/.cargo/registry -v ${{ github.workspace }}:/build -w /build
+          run: ${{ matrix.settings.build }}
 
       - name: 'Build'
-        if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: |
-          docker run --rm -v ~/.cargo/git:/root/.cargo/git -v ~/.cargo/registry:/root/.cargo/registry -v $(pwd)/packages/compiler:/build -w /build builder sh -c "npm i -g @napi-rs/cli@2.4.4 && pnpm -- build-native --release --target x86_64-unknown-linux-musl"
+        run: ${{ matrix.settings.build }}
+        if: ${{ !matrix.settings.docker }}
+        shell: bash
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.linux-x64-musl.node
-          retention-days: 1
-
-  build-linux-aarch64:
-    name: shuvi-swc - aarch64-unknown-linux-gnu - node@14
-    runs-on: ubuntu-18.04
-    needs:
-      - test-unit
-    steps:
-      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
-
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      # we use checkout here instead of the build cache since
-      # it can fail to restore in different OS'
-      - uses: actions/checkout@v2
-
-      # since the repo's dependencies aren't installed we need
-      # to install napi globally
-      - run: npm i -g @napi-rs/cli@2.4.4
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly-2022-02-23
-          override: true
-          target: aarch64-unknown-linux-gnu
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            target/
-          key: aarch64-linux-gnu-publish-integration
-
-      - name: Install cross compile toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu -y
-
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
-        with:
-          path: packages/compiler/native/shuvi-swc.linux-arm64-gnu.node
-          key: shuvi-swc-nightly-2022-02-23-linux-arm64-gnu-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
-
-      - name: Cross build aarch64
-        if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: pnpm -- build-native --release --target aarch64-unknown-linux-gnu
-        working-directory: packages/compiler
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.linux-arm64-gnu.node
-          retention-days: 1
-
-  build-linux-aarch64-musl:
-    name: shuvi-swc - aarch64-unknown-linux-musl - node@14
-    runs-on: ubuntu-18.04
-    needs:
-      - test-unit
-    steps:
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
-
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      # we use checkout here instead of the build cache since
-      # it can fail to restore in different OS'
-      - uses: actions/checkout@v2
-
-      # since the repo's dependencies aren't installed we need
-      # to install napi globally
-      - run: npm i -g @napi-rs/cli@2.4.4
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly-2022-02-23
-          override: true
-          target: aarch64-unknown-linux-musl
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            target/
-          key: aarch64-linux-musl-publish-integration
-
-      - name: Install cross compile toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install gcc-aarch64-linux-gnu -y
-
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
-        with:
-          path: packages/compiler/native/shuvi-swc.linux-arm64-musl.node
-          key: shuvi-swc-nightly-2022-02-23-linux-arm64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
-
-      - name: Cross build aarch64
-        if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: pnpm -- build-native --release --target aarch64-unknown-linux-musl
-        working-directory: packages/compiler
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.linux-arm64-musl.node
-          retention-days: 1
-
-  build-linux-arm7:
-    name: shuvi-swc - arm7-unknown-linux-gnu - node@14
-    runs-on: ubuntu-18.04
-    needs:
-      - test-unit
-    steps:
-      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.1.5
-
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      # we use checkout here instead of the build cache since
-      # it can fail to restore in different OS'
-      - uses: actions/checkout@v2
-
-      # since the repo's dependencies aren't installed we need
-      # to install napi globally
-      - run: npm i -g @napi-rs/cli@2.4.4
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly-2022-02-23
-          override: true
-          target: armv7-unknown-linux-gnueabihf
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            target/
-          key: arm7-linux-gnu-publish-integration
-
-      - name: Install cross compile toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install gcc-arm-linux-gnueabihf -y
-
-      - name: Cache native binary
-        id: binary-cache
-        uses: actions/cache@v2
-        with:
-          path: packages/compiler/native/shuvi-swc.linux-arm-gnueabihf.node
-          key: shuvi-swc-nightly-2022-02-23-linux-arm-gnueabihf-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
-
-      - name: Cross build aarch64
-        if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
-        run: pnpm -- build-native --release --target armv7-unknown-linux-gnueabihf
-        working-directory: packages/compiler
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.linux-arm-gnueabihf.node
+          path: packages/compiler/native/shuvi-swc.*.node
           retention-days: 1

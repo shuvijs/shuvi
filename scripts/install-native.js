@@ -7,9 +7,12 @@ function installSWCNative() {
     return;
   }
 
-  var cwd = path.join(__dirname, '../packages/compiler');
+  var cwd = path.join(__dirname, '../');
 
-  var stdout = execSync('pnpm run build-native --release', { cwd }).toString();
+  var stdout = execSync(
+    'turbo run build-native --cache-dir=".turbo" -- --release',
+    { cwd }
+  ).toString();
 
   console.log(stdout);
 

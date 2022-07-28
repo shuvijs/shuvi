@@ -3,7 +3,8 @@
   "version": "1.0.0-rc.2",
   "private": true,
   "scripts": {
-    "build-native": "napi build --platform --cargo-name shuvi_swc_napi --features plugin --cargo-cwd / ./native",
+    "build-native": "napi build --platform --cargo-name shuvi_swc_napi --cargo-name shuvi_swc_napi native --features plugin",
+    "build-native-no-plugin": "napi build --platform -p shuvi-swc-napi --cargo-name shuvi_swc_napi native",
     "publish-native": "node scripts/publish-native.js"
   },
   "dependencies": {

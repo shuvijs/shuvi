@@ -22,6 +22,7 @@ packages/*/esm/
 test/packages/*/lib/
 test/packages/*/esm/
 .swc
+.turbo/
 
 test/fixtures/**/dist/
 test/fixtures/**/.shuvi/
