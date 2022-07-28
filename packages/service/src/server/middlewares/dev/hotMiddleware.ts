@@ -148,10 +148,13 @@ export class WebpackHotMiddleware {
   }
 
   private handleInactiveModule(): void {
-    for (const [id, { absolutePath, lastActivity }] of modulesActivity) {
+    for (const [
+      modulePath,
+      { absolutePath, lastActivity }
+    ] of modulesActivity) {
       if (lastActivity && Date.now() - lastActivity > MAX_INACTIVE_AGE_MS) {
         ModuleReplacePlugin.replaceModule(absolutePath);
-        modulesActivity.delete(id);
+        modulesActivity.delete(modulePath);
       }
     }
   }
