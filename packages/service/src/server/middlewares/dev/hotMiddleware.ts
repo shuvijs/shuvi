@@ -125,7 +125,8 @@ export class WebpackHotMiddleware {
     this.clientManager.close();
   };
 
-  private handlePing(page: IRouteMatch[]): void {
+  private handlePing(page: IRouteMatch[] | null): void {
+    if (!page) return; //error page
     for (const { route } of page) {
       modulesActivity.set(route.__componentSourceWithAffix__!, Date.now());
     }
