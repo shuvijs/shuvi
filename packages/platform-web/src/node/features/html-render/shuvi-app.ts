@@ -1,5 +1,6 @@
+// it's necessary. we need to turn it into a module
 export {};
-// todo: node env type augmentations should use global ShuviService namespace
+
 declare module '@shuvi/runtime' {
   export interface CustomAppContext {
     pageData?: any;
