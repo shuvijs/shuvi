@@ -33,9 +33,9 @@ import {
 } from '@shuvi/toolpack/lib/constants';
 
 type modulePath = string;
-type lastActivity = number;
+type moduleActivity = { absolutePath: string; lastActivity: number };
 
-const modulesActivity = new Map<modulePath, lastActivity>();
+const modulesActivity = new Map<modulePath, moduleActivity>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
@@ -92,6 +92,9 @@ export class WebpackHotMiddleware {
             })
           );
         }
+        if (parsedData.event === 'routesUpdate') {
+          this.updateModuleActivity(parsedData.currentRoutes);
+        }
       } catch (_) {}
     });
   };
@@ -125,17 +128,29 @@ export class WebpackHotMiddleware {
     this.clientManager.close();
   };
 
-  private handlePing(page: IRouteMatch[] | null): void {
-    if (!page) return; //error page
-    for (const { route } of page) {
-      modulesActivity.set(route.__componentSourceWithAffix__!, Date.now());
+  private updateModuleActivity(matchRoutes: IRouteMatch[] | []): void {
+    if (matchRoutes.length < 1) return; //error page
+
+    for (const { route, pathname } of matchRoutes) {
+      modulesActivity.set(pathname, {
+        absolutePath: route.__componentSourceWithAffix__!,
+        lastActivity: Date.now()
+      });
     }
   }
 
+  private handlePing(page: string | null): void {
+    if (!page || !modulesActivity.has(page)) return; //error page
+    modulesActivity.set(page, {
+      ...modulesActivity.get(page)!,
+      lastActivity: Date.now()
+    });
+  }
+
   private handleInactiveModule(): void {
-    for (const [id, lastActivity] of modulesActivity) {
+    for (const [id, { absolutePath, lastActivity }] of modulesActivity) {
       if (lastActivity && Date.now() - lastActivity > MAX_INACTIVE_AGE_MS) {
-        ModuleReplacePlugin.replaceModule(id);
+        ModuleReplacePlugin.replaceModule(absolutePath);
         modulesActivity.delete(id);
       }
     }

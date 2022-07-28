@@ -9,6 +9,7 @@ import {
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
 import { createApp } from '../../app/client';
+import { sendMessage } from '@shuvi/toolpack/lib/utils/hotDevClient/websocket';
 
 const appData = getAppData();
 
@@ -33,6 +34,15 @@ const run = async () => {
 };
 
 export { run };
+
+app.router.afterEach(() => {
+  sendMessage(
+    JSON.stringify({
+      event: 'routesUpdate',
+      currentRoutes: app.router.current.matches
+    })
+  );
+});
 
 if (module.hot) {
   const handleHotUpdate = async () => {

@@ -106,7 +106,9 @@ export default function connect(options) {
   });
 
   setInterval(() => {
-    sendMessage(JSON.stringify({ event: 'ping', page: options.matchRoutes }));
+    sendMessage(
+      JSON.stringify({ event: 'ping', page: options.location.pathname })
+    );
   }, DEFAULT_TIMEOUT_MS / 2);
 
   return {
