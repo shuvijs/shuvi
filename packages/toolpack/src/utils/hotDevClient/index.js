@@ -112,6 +112,9 @@ export default function connect(options) {
   }, DEFAULT_TIMEOUT_MS / 2);
 
   return {
+    sendMessage(data) {
+      sendMessage(data);
+    },
     subscribeToHmrEvent(handler) {
       customHmrEventHandler = handler;
     },

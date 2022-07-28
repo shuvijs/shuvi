@@ -9,7 +9,12 @@ import {
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
 import { createApp } from '../../app/client';
-import { sendMessage } from '@shuvi/toolpack/lib/utils/hotDevClient/websocket';
+
+type devClient = {
+  sendMessage: (data: any) => void;
+  subscribeToHmrEvent?: (handler: any) => void;
+  reportRuntimeError?: (err: any) => void;
+};
 
 const appData = getAppData();
 
@@ -28,21 +33,24 @@ const render = () => {
   });
 };
 
-const run = async () => {
+const run = async (devClient?: devClient) => {
   await app.init();
   render();
+
+  if (devClient) {
+    app.router.afterEach(() => {
+      console.log(app.router.current, app.router);
+      devClient.sendMessage(
+        JSON.stringify({
+          event: 'routesUpdate',
+          currentRoutes: app.router.current.matches
+        })
+      );
+    });
+  }
 };
 
 export { run };
-
-app.router.afterEach(() => {
-  sendMessage(
-    JSON.stringify({
-      event: 'routesUpdate',
-      currentRoutes: app.router.current.matches
-    })
-  );
-});
 
 if (module.hot) {
   const handleHotUpdate = async () => {
