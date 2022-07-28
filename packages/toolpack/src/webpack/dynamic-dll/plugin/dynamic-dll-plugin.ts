@@ -16,8 +16,6 @@ export interface DynamicDLLPluginOptions {
   shareScope?: string;
 }
 
-// todo:
-
 const PLUGIN_NAME = 'DLLBuildDeps';
 
 export class DynamicDLLPlugin {

@@ -59,7 +59,7 @@ export function getConfig({
   config.optimization.merge({
     emitOnErrors: true,
     checkWasmTypes: false,
-    // TODO: need to use DefinePlugin to set process.env.NODE_ENV
+    // need to use DefinePlugin to set process.env.NODE_ENV
     nodeEnv: false,
     runtimeChunk: false,
     minimize: false,
