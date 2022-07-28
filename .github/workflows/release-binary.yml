@@ -22,7 +22,7 @@ jobs:
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2021-08-12
+          toolchain: nightly-2022-02-23
           profile: minimal
       - run: cd packages/compiler && cargo test
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
@@ -143,7 +143,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-08-12
+          toolchain: nightly-2022-02-23
           target: ${{ matrix.target }}
 
       # path: need cached path
@@ -167,7 +167,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: packages/compiler/native/shuvi-swc.${{ matrix.name }}.node
-          key: shuvi-swc-nightly-2021-08-12-${{ matrix.target }}-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          key: shuvi-swc-nightly-2022-02-23-${{ matrix.target }}-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       # This seems to be mac os cross-compilation m1 mac os
       - name: Cross build aarch64 setup
@@ -252,7 +252,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-08-12
+          toolchain: nightly-2022-02-23
           override: true
           target: i686-pc-windows-msvc
 
@@ -261,7 +261,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: packages/compiler/native/shuvi-swc.win32-ia32-msvc.node
-          key: shuvi-swc-nightly-2021-08-12-win32-ia32-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          key: shuvi-swc-nightly-2022-02-23-win32-ia32-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Build
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
@@ -304,7 +304,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-08-12
+          toolchain: nightly-2022-02-23
           override: true
           target: aarch64-pc-windows-msvc
 
@@ -313,7 +313,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: packages/compiler/native/shuvi-swc.win32-arm64-msvc.node
-          key: shuvi-swc-nightly-2021-08-12-win32-arm64-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          key: shuvi-swc-nightly-2022-02-23-win32-arm64-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Build
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
@@ -363,7 +363,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: packages/compiler/native/shuvi-swc.linux-x64-musl.node
-          key: shuvi-swc-nightly-2021-08-12-linux-x64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          key: shuvi-swc-nightly-2022-02-23-linux-x64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: 'Build'
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
@@ -407,7 +407,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-08-12
+          toolchain: nightly-2022-02-23
           override: true
           target: aarch64-unknown-linux-gnu
 
@@ -428,7 +428,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: packages/compiler/native/shuvi-swc.linux-arm64-gnu.node
-          key: shuvi-swc-nightly-2021-08-12-linux-arm64-gnu-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          key: shuvi-swc-nightly-2022-02-23-linux-arm64-gnu-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
@@ -470,7 +470,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-08-12
+          toolchain: nightly-2022-02-23
           override: true
           target: aarch64-unknown-linux-musl
 
@@ -491,7 +491,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: packages/compiler/native/shuvi-swc.linux-arm64-musl.node
-          key: shuvi-swc-nightly-2021-08-12-linux-arm64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          key: shuvi-swc-nightly-2022-02-23-linux-arm64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
@@ -535,7 +535,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-08-12
+          toolchain: nightly-2022-02-23
           override: true
           target: armv7-unknown-linux-gnueabihf
 
@@ -556,7 +556,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: packages/compiler/native/shuvi-swc.linux-arm-gnueabihf.node
-          key: shuvi-swc-nightly-2021-08-12-linux-arm-gnueabihf-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
+          key: shuvi-swc-nightly-2022-02-23-linux-arm-gnueabihf-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
