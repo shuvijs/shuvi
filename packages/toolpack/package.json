@@ -97,6 +97,7 @@
     "@types/loader-utils": "2.0.1",
     "@types/mini-css-extract-plugin": "^1.2.2",
     "@types/webpack-bundle-analyzer": "^3.8.0",
+    "@swc/plugin-transform-imports": "0.8.4",
     "memfs": "^3.1.2"
   }
 }

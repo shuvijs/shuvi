@@ -9,9 +9,6 @@
   "dependencies": {
     "@napi-rs/cli": "2.4.4"
   },
-  "devDependencies": {
-    "@swc/plugin-transform-imports": "0.8.4"
-  },
   "napi": {
     "name": "shuvi-swc",
     "triples": {
