@@ -39,7 +39,6 @@ const run = async (devClient?: devClient) => {
 
   if (devClient) {
     app.router.afterEach(() => {
-      console.log(app.router.current, app.router);
       devClient.sendMessage(
         JSON.stringify({
           event: 'routesUpdate',
