@@ -1,1 +1,1 @@
-import styles from 'a.css?foo';
+import styles from "a.css?foo";

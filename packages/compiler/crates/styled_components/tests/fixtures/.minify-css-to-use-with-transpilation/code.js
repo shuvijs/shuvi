@@ -5,7 +5,7 @@ const Simple = styled.div`
 `;
 
 const Interpolation = styled.div`
-  content: '  ${props => props.text}  ';
+  content: "  ${props => props.text}  ";
 `;
 
 const SpecialCharacters = styled.div`
@@ -15,7 +15,7 @@ const SpecialCharacters = styled.div`
 const Comment = styled.div`
   // comment
   color: red;
-`;
+`
 
 const Parens = styled.div`
   &:hover {

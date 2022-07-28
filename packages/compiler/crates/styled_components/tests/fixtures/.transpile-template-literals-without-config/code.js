@@ -8,6 +8,4 @@ const NamedWithInterpolation = styled.div`
   color: ${color => props.color};
 `;
 
-const Wrapped = styled(Inner)`
-  color: red;
-`;
+const Wrapped = styled(Inner)`color: red;`;

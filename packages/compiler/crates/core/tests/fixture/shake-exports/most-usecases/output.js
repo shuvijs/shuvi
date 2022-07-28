@@ -1,6 +1,6 @@
 let shouldBeKept = 'should be kept';
 export async function keep() {
-  console.log(shouldBeKept);
+    console.log(shouldBeKept);
 }
 export let keep1 = 'should be kept';
 export let keep2 = 'should be kept';

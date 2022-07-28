@@ -5,7 +5,7 @@ const Simple = styled.div`
 `;
 
 const Interpolation = styled.div`
-  content: 'https://test.com/${props => props.endpoint}';
+  content: "https://test.com/${props => props.endpoint}";
 `;
 
 const SpecialCharacters = styled.div`

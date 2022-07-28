@@ -1,7 +1,7 @@
 // @flow
-import React from 'react';
-import Card from '../../shared/components/Card';
-import config from '../../../config';
+import React from 'react'
+import Card from '../../shared/components/Card'
+import config from '../../../config'
 
 export default () => (
   <div
@@ -18,4 +18,4 @@ export default () => (
       </p>
     </Card>
   </div>
-);
+)
