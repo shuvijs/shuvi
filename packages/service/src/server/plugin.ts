@@ -5,8 +5,8 @@ import {
   IPluginHandlers,
   HookMap
 } from '@shuvi/hook';
-import { CustomServerPluginHooks } from '@shuvi/runtime';
 import { IPluginContext } from '../core';
+import { CustomServerPluginHooks } from './pluginTypes';
 
 export * from './pluginTypes';
 

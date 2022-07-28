@@ -10,6 +10,12 @@ export type InitRedox = (params: {
   ctx: IAppContext;
 }) => IStoreManager;
 
+declare module '@shuvi/runtime' {
+  export interface CustomAppContext {
+    storeManager?: IStoreManager;
+  }
+}
+
 let currentStoreManager: IStoreManager;
 
 const isServer = typeof window === 'undefined';
@@ -32,7 +38,7 @@ const initStore: InitRedox = ({ initialState, ctx }) => {
   }
   // for client is singleton, just init once
   if (currentStoreManager) {
-    return createStoreInstance();
+    return currentStoreManager;
   }
 
   currentStoreManager = createStoreInstance();

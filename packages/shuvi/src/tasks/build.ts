@@ -21,7 +21,6 @@ async function bundle(context: IPluginContext) {
   });
   const result = await bundler.build();
   const messages = formatWebpackMessages(result);
-
   // If errors exist, only show errors.
   if (messages.errors.length) {
     // Only keep the first error. Others are often indicative

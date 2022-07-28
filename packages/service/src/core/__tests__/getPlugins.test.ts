@@ -11,9 +11,11 @@ import { IPluginConfig, IPresetConfig } from '../apiTypes';
 import { resolvePlugin, resolvePresets, getPlugins } from '../getPlugins';
 import { resolvePreset, getManager as getRuntimePluginManger } from './utils';
 
-declare module '@shuvi/runtime' {
-  interface CustomServerPluginHooks {
-    test: SyncHook;
+declare global {
+  namespace ShuviService {
+    interface CustomServerPluginHooks {
+      test: SyncHook;
+    }
   }
 }
 
