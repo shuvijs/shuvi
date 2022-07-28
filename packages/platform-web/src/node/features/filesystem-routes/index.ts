@@ -11,7 +11,6 @@ import {
   IApiRouteConfig
 } from '@shuvi/platform-shared/node';
 import { IPageRouteConfigWithId } from '@shuvi/platform-shared/shared';
-import { resolvePkgFile } from '../../paths';
 import { ifComponentHasLoader } from '../html-render/lib';
 import { addRoutes, addMiddlewareRoutes } from './hooks';
 import {
@@ -201,6 +200,5 @@ const plugin = createPlugin({
 });
 
 export default {
-  core: plugin,
-  types: resolvePkgFile('lib/node/features/filesystem-routes/shuvi-app.d.ts')
+  core: plugin
 };
