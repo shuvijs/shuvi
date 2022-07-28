@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [release/*]
-    paths:
-      - "packages/toolpack/scripts/version.js"
+    branches: [feat-0719-nextSwc]
+    # paths:
+      # - "packages/compiler/scripts/version.js"
 
 name: Release binary
 
@@ -24,7 +24,7 @@ jobs:
         with:
           toolchain: nightly-2021-08-12
           profile: minimal
-      - run: cd packages/toolpack/src/swc && cargo test
+      - run: cd packages/compiler && cargo test
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
 
   release:
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native
+          path: packages/compiler/native
 
       - uses: geekyeggo/delete-artifact@v1
         with:
@@ -64,7 +64,7 @@ jobs:
 
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run: pnpm install
-      - run: node ./packages/toolpack/scripts/publish-native.js $GITHUB_REF
+      - run: node ./packages/compiler/scripts/publish-native.js $GITHUB_REF
 
   build-in-docker:
     name: build swc binaries in docker
@@ -136,7 +136,7 @@ jobs:
 
       # since the repo's dependencies aren't installed we need
       # to install napi globally
-      - run: npm i -g @napi-rs/cli@1.2.1
+      - run: npm i -g @napi-rs/cli@2.4.4
 
       # install rust for different os
       - name: Install
@@ -166,8 +166,8 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/swc-source/native/shuvi-swc.${{ matrix.name }}.node
-          key: shuvi-swc-nightly-2021-08-12-${{ matrix.target }}-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/toolpack/src/swc/**') }}
+          path: packages/compiler/native/shuvi-swc.${{ matrix.name }}.node
+          key: shuvi-swc-nightly-2021-08-12-${{ matrix.target }}-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       # This seems to be mac os cross-compilation m1 mac os
       - name: Cross build aarch64 setup
@@ -185,7 +185,7 @@ jobs:
       - name: Cache built files
         uses: actions/cache@v2
         with:
-          path: ./packages/toolpack/src/swc/target
+          path: ./packages/compiler/target
           key: shuvi-swc-cargo-cache-${{ matrix.os }}--${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             shuvi-swc-cargo-cache-${{ matrix.os }}
@@ -197,7 +197,7 @@ jobs:
         run: pnpm -- build-native --release --target ${{ matrix.target }}
         env:
           MACOSX_DEPLOYMENT_TARGET: '10.13'
-        working-directory: packages/toolpack
+        working-directory: packages/compiler
 
       # https://github.com/marketplace/actions/upload-a-build-artifact
       # upload file to this path
@@ -205,7 +205,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native/shuvi-swc.${{ matrix.name }}.node
+          path: packages/compiler/native/shuvi-swc.${{ matrix.name }}.node
           retention-days: 1
 
       - name: Clear the cargo caches
@@ -241,7 +241,7 @@ jobs:
 
       # since the repo's dependencies aren't installed we need
       # to install napi globally
-      - run: npm i -g @napi-rs/cli@1.2.1
+      - run: npm i -g @napi-rs/cli@2.4.4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2.1.0
@@ -260,20 +260,20 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/swc-source/native/shuvi-swc.win32-ia32-msvc.node
-          key: shuvi-swc-nightly-2021-08-12-win32-ia32-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/toolpack/src/swc/**') }}
+          path: packages/compiler/native/shuvi-swc.win32-ia32-msvc.node
+          key: shuvi-swc-nightly-2021-08-12-win32-ia32-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Build
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         shell: bash
         run: pnpm -- build-native --release --target i686-pc-windows-msvc
-        working-directory: packages/toolpack
+        working-directory: packages/compiler
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native/shuvi-swc.win32-ia32-msvc.node
+          path: packages/compiler/native/shuvi-swc.win32-ia32-msvc.node
           retention-days: 1
 
   build-windows-aarch64:
@@ -298,7 +298,7 @@ jobs:
 
       # since the repo's dependencies aren't installed we need
       # to install napi globally
-      - run: npm i -g @napi-rs/cli@1.2.1
+      - run: npm i -g @napi-rs/cli@2.4.4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -312,20 +312,20 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/swc-source/native/shuvi-swc.win32-arm64-msvc.node
-          key: shuvi-swc-nightly-2021-08-12-win32-arm64-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/toolpack/src/swc/**') }}
+          path: packages/compiler/native/shuvi-swc.win32-arm64-msvc.node
+          key: shuvi-swc-nightly-2021-08-12-win32-arm64-msvc-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Build
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         shell: bash
         run: pnpm -- build-native --release --target aarch64-pc-windows-msvc
-        working-directory: packages/toolpack
+        working-directory: packages/compiler
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native/shuvi-swc.win32-arm64-msvc.node
+          path: packages/compiler/native/shuvi-swc.win32-arm64-msvc.node
           retention-days: 1
 
   build-linux-musl:
@@ -362,19 +362,19 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-x64-musl.node
-          key: shuvi-swc-nightly-2021-08-12-linux-x64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/toolpack/src/swc/**') }}
+          path: packages/compiler/native/shuvi-swc.linux-x64-musl.node
+          key: shuvi-swc-nightly-2021-08-12-linux-x64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: 'Build'
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         run: |
-          docker run --rm -v ~/.cargo/git:/root/.cargo/git -v ~/.cargo/registry:/root/.cargo/registry -v $(pwd)/packages/toolpack:/build -w /build builder sh -c "npm i -g @napi-rs/cli@1.2.1 && pnpm -- build-native --release --target x86_64-unknown-linux-musl"
+          docker run --rm -v ~/.cargo/git:/root/.cargo/git -v ~/.cargo/registry:/root/.cargo/registry -v $(pwd)/packages/compiler:/build -w /build builder sh -c "npm i -g @napi-rs/cli@2.4.4 && pnpm -- build-native --release --target x86_64-unknown-linux-musl"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-x64-musl.node
+          path: packages/compiler/native/shuvi-swc.linux-x64-musl.node
           retention-days: 1
 
   build-linux-aarch64:
@@ -401,7 +401,7 @@ jobs:
 
       # since the repo's dependencies aren't installed we need
       # to install napi globally
-      - run: npm i -g @napi-rs/cli@1.2.1
+      - run: npm i -g @napi-rs/cli@2.4.4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -427,19 +427,19 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm64-gnu.node
-          key: shuvi-swc-nightly-2021-08-12-linux-arm64-gnu-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/toolpack/src/swc/**') }}
+          path: packages/compiler/native/shuvi-swc.linux-arm64-gnu.node
+          key: shuvi-swc-nightly-2021-08-12-linux-arm64-gnu-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         run: pnpm -- build-native --release --target aarch64-unknown-linux-gnu
-        working-directory: packages/toolpack
+        working-directory: packages/compiler
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm64-gnu.node
+          path: packages/compiler/native/shuvi-swc.linux-arm64-gnu.node
           retention-days: 1
 
   build-linux-aarch64-musl:
@@ -464,7 +464,7 @@ jobs:
 
       # since the repo's dependencies aren't installed we need
       # to install napi globally
-      - run: npm i -g @napi-rs/cli@1.2.1
+      - run: npm i -g @napi-rs/cli@2.4.4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -490,19 +490,19 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm64-musl.node
-          key: shuvi-swc-nightly-2021-08-12-linux-arm64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/toolpack/src/swc/**') }}
+          path: packages/compiler/native/shuvi-swc.linux-arm64-musl.node
+          key: shuvi-swc-nightly-2021-08-12-linux-arm64-musl-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         run: pnpm -- build-native --release --target aarch64-unknown-linux-musl
-        working-directory: packages/toolpack
+        working-directory: packages/compiler
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm64-musl.node
+          path: packages/compiler/native/shuvi-swc.linux-arm64-musl.node
           retention-days: 1
 
   build-linux-arm7:
@@ -529,7 +529,7 @@ jobs:
 
       # since the repo's dependencies aren't installed we need
       # to install napi globally
-      - run: npm i -g @napi-rs/cli@1.2.1
+      - run: npm i -g @napi-rs/cli@2.4.4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -555,17 +555,17 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm-gnueabihf.node
-          key: shuvi-swc-nightly-2021-08-12-linux-arm-gnueabihf-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/toolpack/src/swc/**') }}
+          path: packages/compiler/native/shuvi-swc.linux-arm-gnueabihf.node
+          key: shuvi-swc-nightly-2021-08-12-linux-arm-gnueabihf-${{ hashFiles('.github/workflows/swc_binary_deploy.yml', 'packages/compiler/**') }}
 
       - name: Cross build aarch64
         if: ${{ steps.binary-cache.outputs.cache-hit != 'true' }}
         run: pnpm -- build-native --release --target armv7-unknown-linux-gnueabihf
-        working-directory: packages/toolpack
+        working-directory: packages/compiler
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/toolpack/swc-source/native/shuvi-swc.linux-arm-gnueabihf.node
+          path: packages/compiler/native/shuvi-swc.linux-arm-gnueabihf.node
           retention-days: 1
