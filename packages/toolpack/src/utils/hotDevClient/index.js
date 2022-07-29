@@ -105,6 +105,10 @@ export default function connect(options) {
     }
   });
 
+  setInterval(() => {
+    sendMessage(JSON.stringify({ event: 'ping' }));
+  }, DEFAULT_TIMEOUT_MS / 2);
+
   return {
     sendMessage(data) {
       sendMessage(data);

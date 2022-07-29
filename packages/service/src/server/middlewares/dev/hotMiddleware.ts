@@ -85,12 +85,15 @@ export class WebpackHotMiddleware {
           typeof data !== 'string' ? data.toString() : data
         );
         if (parsedData.event === 'ping') {
-          this.handlePing(parsedData.currentRoutes);
           client.send(
             JSON.stringify({
               event: 'pong'
             })
           );
+        }
+
+        if (parsedData.event === 'routesUpdate') {
+          this.updateModuleActivity(parsedData.currentRoutes);
         }
       } catch (_) {}
     });
@@ -125,7 +128,7 @@ export class WebpackHotMiddleware {
     this.clientManager.close();
   };
 
-  private handlePing(matchRoutes: IRouteMatch[] | []): void {
+  private updateModuleActivity(matchRoutes: IRouteMatch[] | []): void {
     if (matchRoutes.length < 1) return; //error page
     for (const {
       route: { __componentSourceWithAffix__ }

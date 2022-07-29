@@ -42,7 +42,7 @@ const run = async (devClient?: devClient) => {
     setInterval(() => {
       devClient.sendMessage(
         JSON.stringify({
-          event: 'ping',
+          event: 'routesUpdate',
           currentRoutes: app.router.current.matches
         })
       );
