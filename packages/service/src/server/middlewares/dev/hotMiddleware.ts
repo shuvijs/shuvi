@@ -33,9 +33,9 @@ import {
 } from '@shuvi/toolpack/lib/constants';
 
 type modulePath = string;
-type moduleActivity = { absolutePath: string; lastActivity: number };
+type lastActivity = number;
 
-const modulesActivity = new Map<modulePath, moduleActivity>();
+const modulesActivity = new Map<modulePath, lastActivity>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
@@ -85,15 +85,12 @@ export class WebpackHotMiddleware {
           typeof data !== 'string' ? data.toString() : data
         );
         if (parsedData.event === 'ping') {
-          this.handlePing(parsedData.page);
+          this.handlePing(parsedData.currentRoutes);
           client.send(
             JSON.stringify({
               event: 'pong'
             })
           );
-        }
-        if (parsedData.event === 'routesUpdate') {
-          this.updateModuleActivity(parsedData.currentRoutes);
         }
       } catch (_) {}
     });
@@ -128,32 +125,19 @@ export class WebpackHotMiddleware {
     this.clientManager.close();
   };
 
-  private updateModuleActivity(matchRoutes: IRouteMatch[] | []): void {
+  private handlePing(matchRoutes: IRouteMatch[] | []): void {
     if (matchRoutes.length < 1) return; //error page
-
-    for (const { route, pathname } of matchRoutes) {
-      modulesActivity.set(pathname, {
-        absolutePath: route.__componentSourceWithAffix__!,
-        lastActivity: Date.now()
-      });
+    for (const {
+      route: { __componentSourceWithAffix__ }
+    } of matchRoutes) {
+      modulesActivity.set(__componentSourceWithAffix__!, Date.now());
     }
   }
 
-  private handlePing(page: string | null): void {
-    if (!page || !modulesActivity.has(page)) return; //error page
-    modulesActivity.set(page, {
-      ...modulesActivity.get(page)!,
-      lastActivity: Date.now()
-    });
-  }
-
   private handleInactiveModule(): void {
-    for (const [
-      modulePath,
-      { absolutePath, lastActivity }
-    ] of modulesActivity) {
+    for (const [modulePath, lastActivity] of modulesActivity) {
       if (lastActivity && Date.now() - lastActivity > MAX_INACTIVE_AGE_MS) {
-        ModuleReplacePlugin.replaceModule(absolutePath);
+        ModuleReplacePlugin.replaceModule(modulePath);
         modulesActivity.delete(modulePath);
       }
     }

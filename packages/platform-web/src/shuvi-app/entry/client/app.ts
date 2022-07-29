@@ -9,6 +9,7 @@ import {
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
 import { createApp } from '../../app/client';
+import { DEFAULT_TIMEOUT_MS } from '@shuvi/toolpack/lib/constants';
 
 type devClient = {
   sendMessage: (data: any) => void;
@@ -38,14 +39,14 @@ const run = async (devClient?: devClient) => {
   render();
 
   if (devClient) {
-    app.router.afterEach(() => {
+    setInterval(() => {
       devClient.sendMessage(
         JSON.stringify({
-          event: 'routesUpdate',
+          event: 'ping',
           currentRoutes: app.router.current.matches
         })
       );
-    });
+    }, DEFAULT_TIMEOUT_MS / 2);
   }
 };
 
