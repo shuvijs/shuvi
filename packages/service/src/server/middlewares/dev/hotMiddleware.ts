@@ -39,10 +39,12 @@ const modulesActivity = new Map<modulePath, lastActivity>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
+  disposeInactivePage: boolean;
 }
 
 export class WebpackHotMiddleware {
   _path: string;
+  _disposeInactivePage: boolean;
   clientManager: ClientManager;
   latestStats: webpack.Stats | null;
   closed: boolean;
@@ -50,11 +52,16 @@ export class WebpackHotMiddleware {
     this.handleInactiveModule();
   }, DEFAULT_TIMEOUT_MS + 1000);
 
-  constructor({ compiler, path }: IWebpackHotMiddlewareOptions) {
+  constructor({
+    compiler,
+    path,
+    disposeInactivePage
+  }: IWebpackHotMiddlewareOptions) {
     this.clientManager = new ClientManager();
     this.latestStats = null;
     this.closed = false;
     this._path = path;
+    this._disposeInactivePage = disposeInactivePage;
 
     compiler.hooks.invalid.tap('webpack-hot-middleware', this.onInvalid);
     compiler.hooks.done.tap('webpack-hot-middleware', this.onDone);
@@ -139,7 +146,11 @@ export class WebpackHotMiddleware {
 
   private handleInactiveModule(): void {
     for (const [modulePath, lastActivity] of modulesActivity) {
-      if (lastActivity && Date.now() - lastActivity > MAX_INACTIVE_AGE_MS) {
+      if (
+        this._disposeInactivePage &&
+        lastActivity &&
+        Date.now() - lastActivity > MAX_INACTIVE_AGE_MS
+      ) {
         ModuleReplacePlugin.replaceModule(modulePath);
         modulesActivity.delete(modulePath);
       }
