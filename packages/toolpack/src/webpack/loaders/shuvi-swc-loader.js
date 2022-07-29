@@ -26,6 +26,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+import querystring from 'querystring';
 import { transform } from '../../swc/load-sources';
 import getLoaderSWCOptions from '../../swc/getLoaderSWCOptions';
 
@@ -49,6 +50,19 @@ async function loaderTransform(source, inputSourceMap) {
 
   const isPageFile = ISPAGEFILEEREG.test(filename);
 
+  let keep = [];
+
+  if (isPageFile && this.resourceQuery) {
+    const query = querystring.parse(this.resourceQuery.slice(1));
+    if (query.keep) {
+      if (Array.isArray(query.keep)) {
+        keep = query.keep;
+      } else {
+        keep.push(query.keep);
+      }
+    }
+  }
+
   const isDevelopment = this.mode === 'development';
 
   const swcOptions = getLoaderSWCOptions({
@@ -64,7 +78,8 @@ async function loaderTransform(source, inputSourceMap) {
     experimental,
     compiler,
     supportedBrowsers,
-    swcCacheDir
+    swcCacheDir,
+    keep
   });
 
   const programmaticOptions = {

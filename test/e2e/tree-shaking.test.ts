@@ -69,11 +69,10 @@ describe('Tree Shaking', () => {
     expect(fileContent).not.toMatch(consoleDepaSymbol);
   });
 
-  test('should only keep route page default and loader', async () => {
+  test('route page should only keep default and remove loader', async () => {
     const fileContent = getFileContent(manifest, 'export-other');
-    expect(fileContent).toMatch('otherPage-symbol');
-    // FIXME: loader need to be remove
-    // expect(fileContent).not.toMatch('ExportOther-symbol');
+    expect(fileContent).toMatch('ExportOther-symbol');
+    expect(fileContent).not.toMatch('loader-symbol');
     expect(fileContent).not.toMatch(otherSymbol);
   });
 });

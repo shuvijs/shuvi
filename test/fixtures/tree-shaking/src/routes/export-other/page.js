@@ -2,17 +2,15 @@ import { useLoaderData } from '@shuvi/runtime';
 
 export default function ExportOther() {
   const data = useLoaderData();
-  return <div>ExportOther-symbol {data.otherPage}</div>;
+  return <div>ExportOther-symbol {data.loader}</div>;
 }
 
-export const loader = async () => {
+export const loader = async ctx => {
   return {
-    otherPage: 'otherPage-symbol'
+    loader: 'loader-symbol'
   };
 };
 
-const other = function () {
+export const other = function () {
   console.log('other-symbol');
 };
-
-export { other };

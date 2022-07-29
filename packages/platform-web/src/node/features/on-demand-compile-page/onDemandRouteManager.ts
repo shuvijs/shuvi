@@ -84,9 +84,9 @@ export default class OnDemandRouteManager {
     const matchedRoutes = matchRoutes(getRoutes(), pathname) || [];
 
     const modulesToActivate = matchedRoutes
-      .map(({ route: { component } }) =>
-        component ? `${component}?${ROUTE_RESOURCE_QUERYSTRING}` : ''
-      )
+      .map(({ route: { component } }) => {
+        return component ? `${component}?${ROUTE_RESOURCE_QUERYSTRING}` : '';
+      })
       .filter(Boolean);
 
     return this._activateModules(modulesToActivate);

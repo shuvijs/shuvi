@@ -11,6 +11,7 @@ export type LoaderSWCOptions = {
   experimental: Obj;
   compiler: Obj;
   swcCacheDir: string;
+  keep: string[];
 };
 
 export function getParserOptions({
@@ -35,8 +36,6 @@ export function getParserOptions({
   };
 }
 
-const PAGESHAKEEXPORTS = { ignore: ['loader', 'default'] };
-
 function getBaseSWCOptions({
   filename,
   isPageFile,
@@ -46,7 +45,8 @@ function getBaseSWCOptions({
   isServer,
   experimental,
   compiler,
-  swcCacheDir
+  swcCacheDir,
+  keep
 }: Omit<LoaderSWCOptions, 'supportedBrowsers'>) {
   const parserConfig = getParserOptions({ filename, compiler });
   const enableDecorators = Boolean(compiler?.experimentalDecorators);
@@ -102,7 +102,7 @@ function getBaseSWCOptions({
     isDevelopment: development,
     isServer,
     isPageFile,
-    shakeExports: isPageFile ? PAGESHAKEEXPORTS : null,
+    shakeExports: keep.length > 0 ? { ignore: keep } : null,
     disableShuviDynamic: compiler?.disableShuviDynamic || false,
     flag: compiler?.autoCssModuleFlag || '',
     sourceMaps: undefined,
@@ -168,7 +168,8 @@ export default function getLoaderSWCOptions({
   experimental,
   compiler,
   supportedBrowsers,
-  swcCacheDir
+  swcCacheDir,
+  keep
 }: // This is not passed yet as "paths" resolving is handled by webpack currently.
 LoaderSWCOptions) {
   let baseOptions = getBaseSWCOptions({
@@ -180,7 +181,8 @@ LoaderSWCOptions) {
     hasReactRefresh,
     experimental,
     compiler,
-    swcCacheDir
+    swcCacheDir,
+    keep
   });
 
   if (isServer) {
