@@ -15,5 +15,5 @@ export const getDefaultConfig: () => InternalConfig = () => ({
     parcelCss: false,
     preBundle: false
   },
-  disposeInactivePage: true
+  disposeInactivePage: process.env.NODE_ENV === 'test' ? false : true
 });
