@@ -1,3 +1,30 @@
+# [1.0.0-rc.2](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.1...v1.0.0-rc.2) (2022-07-29)
+
+
+### Bug Fixes
+
+* defineConfig typing ([734b68f](https://github.com/shuvijs/shuvi/commit/734b68f643bb67754b2a6258438f1510ff09821d))
+* fix some non-reliable e2e test ([df43c44](https://github.com/shuvijs/shuvi/commit/df43c44adcbd773aa50f46cb65bc3390d5a7329c))
+* load redox esm module ([ade0c60](https://github.com/shuvijs/shuvi/commit/ade0c602335a6fe8992542f8bef735eca85a6625))
+* only show typescript setup log when it's necessary ([4247f7d](https://github.com/shuvijs/shuvi/commit/4247f7d5760b3bb427f19ffb43e1689aab67f23f))
+* path resolve in windows ([9881467](https://github.com/shuvijs/shuvi/commit/988146797f5c994fb228c6a5486915d47facbdbd))
+* path resolve in windows ([a3e9a7a](https://github.com/shuvijs/shuvi/commit/a3e9a7a4686035a5053a6aeb1825996fb24b6e3b))
+* pnpm dev ([0d01c27](https://github.com/shuvijs/shuvi/commit/0d01c27fef5edb761cbfd29996f377f87bd1a330))
+* release script ([e82a141](https://github.com/shuvijs/shuvi/commit/e82a1415fa64bfd135c38724bb6d26cf2a76a80f))
+* release script ([43de48d](https://github.com/shuvijs/shuvi/commit/43de48df4891b6590239b3b5a0657a77a7e78c97))
+* remove local build from npm pkg ([ee525b6](https://github.com/shuvijs/shuvi/commit/ee525b6a9153bd6b04b6fd49c7c09df4867da5c4))
+* remove react warning from unit tests ([be81a23](https://github.com/shuvijs/shuvi/commit/be81a2385a1f156a4310ea87a7b8bbb5e75a2607))
+* unstable test ([3f729ef](https://github.com/shuvijs/shuvi/commit/3f729ef6e61ff3b795ec2f5f072029451c3d694a))
+
+
+### Features
+
+* **fileBuilder:** batch update ([9d07708](https://github.com/shuvijs/shuvi/commit/9d07708856cecd0ef2147089556bc855b65e9af7))
+* route files ([6ebfba0](https://github.com/shuvijs/shuvi/commit/6ebfba04c9e6add7ad07680cce0ecc8f58df927b))
+* upgrade to webSocket ([32f6ac8](https://github.com/shuvijs/shuvi/commit/32f6ac8b6ff53e1865270b221babadf8f3faedc7))
+
+
+
 # [1.0.0-rc.1](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.0...v1.0.0-rc.1) (2022-07-15)
 
 
