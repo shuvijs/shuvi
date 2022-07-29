@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-web",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.3",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -62,17 +62,17 @@
   },
   "dependencies": {
     "@next/react-refresh-utils": "12.1.6",
-    "@shuvi/hook": "1.0.0-rc.1",
-    "@shuvi/platform-shared": "1.0.0-rc.1",
+    "@shuvi/hook": "1.0.0-rc.3",
+    "@shuvi/platform-shared": "1.0.0-rc.3",
     "@shuvi/redox": "0.0.3",
     "@shuvi/redox-react": "0.0.3",
-    "@shuvi/router": "1.0.0-rc.1",
-    "@shuvi/router-react": "1.0.0-rc.1",
-    "@shuvi/runtime": "1.0.0-rc.1",
-    "@shuvi/service": "1.0.0-rc.1",
-    "@shuvi/shared": "1.0.0-rc.1",
-    "@shuvi/toolpack": "1.0.0-rc.1",
-    "@shuvi/utils": "1.0.0-rc.1",
+    "@shuvi/router": "1.0.0-rc.3",
+    "@shuvi/router-react": "1.0.0-rc.3",
+    "@shuvi/runtime": "1.0.0-rc.3",
+    "@shuvi/service": "1.0.0-rc.3",
+    "@shuvi/shared": "1.0.0-rc.3",
+    "@shuvi/toolpack": "1.0.0-rc.3",
+    "@shuvi/utils": "1.0.0-rc.3",
     "content-type": "1.0.4",
     "cookie": "0.4.1",
     "ejs": "3.1.5",
@@ -86,7 +86,7 @@
     "use-sync-external-store": "1.1.0"
   },
   "peerDependencies": {
-    "@shuvi/service": "1.0.0-rc.1"
+    "@shuvi/service": "1.0.0-rc.3"
   },
   "devDependencies": {
     "@types/react": "18.0.9",
