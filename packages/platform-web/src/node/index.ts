@@ -4,10 +4,9 @@ import {
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/node';
 import {
-  featurePlugins,
+  getPlugins,
   getMiddlewares,
-  getMiddlewaresBeforeDevMiddlewares,
-  getMainPlugin
+  getMiddlewaresBeforeDevMiddlewares
 } from './features';
 import { resolvePkgFile } from './paths';
 
@@ -16,8 +15,6 @@ export { PlatformWebCustomConfig } from '../shared/configTypes';
 const platform =
   ({ framework = 'react' } = {}): IPlatform =>
   async platformContext => {
-    const mainPlugin = getMainPlugin(platformContext);
-
     const platformFramework = require(`./targets/${framework}`).default;
     const platformFrameworkContent = await platformFramework();
 
@@ -36,8 +33,7 @@ const platform =
       ],
       plugins: [
         ...SharedPlugins,
-        mainPlugin,
-        ...featurePlugins,
+        ...getPlugins(platformContext),
         ...platformFrameworkContent.plugins
       ],
       getPresetRuntimeFiles,

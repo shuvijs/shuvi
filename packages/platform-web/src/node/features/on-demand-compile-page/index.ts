@@ -6,7 +6,7 @@ import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 
 const dumbRouteComponent = require.resolve('./emptyComponent');
 
-export default createPlugin({
+const plugin = createPlugin({
   configWebpack(config, _, ctx) {
     if (ctx.mode === 'development') {
       config.plugin('private/module-replace-plugin').use(ModuleReplacePlugin, [
@@ -31,5 +31,9 @@ export default createPlugin({
     return config;
   }
 });
+
+export default {
+  core: plugin
+};
 
 export { default as OnDemandRouteManager } from './onDemandRouteManager';

@@ -21,7 +21,7 @@ export class Application {
 
   constructor(options: IApplicationOptions) {
     this._router = options.router;
-    this._context = {};
+    this._context = {} as IAppContext;
     this._storeManager = redox({ initialState: options.initialState });
     this._error = this._storeManager.get(errorModel);
     this._appComponent = options.AppComponent;
