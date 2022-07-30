@@ -12,9 +12,12 @@
     "**/shuvi-app/entry/client/**"
   ],
   "files": [
-    "lib",
     "esm",
+    "lib",
+    "shuvi-env.d.ts",
+    "shuvi-image.d.ts",
     "shuvi-type-extensions-node.d.ts",
+    "shuvi-type-extensions-node.js",
     "shuvi-type-extensions-runtime.d.ts"
   ],
   "exports": {
