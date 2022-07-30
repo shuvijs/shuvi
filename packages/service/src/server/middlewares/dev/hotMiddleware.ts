@@ -28,14 +28,21 @@ import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-repl
 import { IRouteMatch } from '@shuvi/router';
 
 import {
-  MAX_INACTIVE_AGE_MS,
-  DEFAULT_TIMEOUT_MS
+  DEFAULT_TIMEOUT_MS,
+  BASE_MAX_INACTIVE_AGE_MS
 } from '@shuvi/toolpack/lib/constants';
 
 type modulePath = string;
+type route = string;
 type lastActivity = number;
 
-const modulesActivity = new Map<modulePath, lastActivity>();
+type moduleActivity = {
+  routes: Map<route, lastActivity>;
+  timeout: number;
+  disposeNum: number;
+};
+
+const modulesActivity = new Map<modulePath, moduleActivity>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
@@ -137,24 +144,44 @@ export class WebpackHotMiddleware {
 
   private updateModuleActivity(matchRoutes: IRouteMatch[] | []): void {
     if (matchRoutes.length < 1) return; //error page
+
     for (const {
-      route: { __componentSourceWithAffix__ }
+      route: { __componentSourceWithAffix__ },
+      pathname
     } of matchRoutes) {
-      modulesActivity.set(__componentSourceWithAffix__!, Date.now());
+      const moduleActivity = modulesActivity.get(pathname);
+      if (moduleActivity) {
+        moduleActivity.routes.set(__componentSourceWithAffix__!, Date.now());
+      } else {
+        modulesActivity.set(pathname, {
+          routes: new Map([[__componentSourceWithAffix__!, Date.now()]]),
+          timeout: BASE_MAX_INACTIVE_AGE_MS,
+          disposeNum: 0
+        });
+      }
     }
   }
 
   private handleInactiveModule(): void {
-    for (const [modulePath, lastActivity] of modulesActivity) {
-      if (
-        this._disposeInactivePage &&
-        lastActivity &&
-        Date.now() - lastActivity > MAX_INACTIVE_AGE_MS
-      ) {
-        ModuleReplacePlugin.replaceModule(modulePath);
-        modulesActivity.delete(modulePath);
+    for (const moduleActivity of modulesActivity.values()) {
+      for (const [route, lastActivity] of moduleActivity.routes) {
+        if (
+          this._disposeInactivePage &&
+          lastActivity &&
+          Date.now() - lastActivity > moduleActivity.timeout
+        ) {
+          ModuleReplacePlugin.replaceModule(route);
+          moduleActivity.timeout = this.handleTimeout(
+            ++moduleActivity.disposeNum
+          );
+          moduleActivity.routes.delete(route);
+        }
       }
     }
+  }
+
+  private handleTimeout(disposeNum: number): number {
+    return (1 + disposeNum) * BASE_MAX_INACTIVE_AGE_MS;
   }
 }
 
