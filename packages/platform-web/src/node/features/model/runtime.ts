@@ -10,13 +10,7 @@ export type InitRedox = (params: {
   ctx: IAppContext;
 }) => IStoreManager;
 
-declare module '@shuvi/runtime' {
-  export interface CustomAppContext {
-    storeManager?: IStoreManager;
-  }
-}
-
-let currentStoreManager: IStoreManager;
+let currentStore: IStoreManager;
 
 const isServer = typeof window === 'undefined';
 
@@ -36,31 +30,25 @@ const initStore: InitRedox = ({ initialState, ctx }) => {
   if (isServer) {
     return createStoreInstance();
   }
+
   // for client is singleton, just init once
-  if (currentStoreManager) {
-    return currentStoreManager;
+  if (!currentStore) {
+    currentStore = createStoreInstance();
   }
 
-  currentStoreManager = createStoreInstance();
-
-  return currentStoreManager;
+  return currentStore;
 };
 
 export default createRuntimePlugin({
   appContext: ctx => {
-    if (!ctx.storeManager) {
-      let initialState = {};
-      if (!isServer) {
-        initialState = getPageData('redox');
-      }
-      if (ctx.pageData && ctx.pageData.redox) {
-        initialState = ctx.pageData.redox;
-      }
-      ctx.storeManager = initStore({
-        ctx,
-        initialState
-      });
+    let initialState = {};
+    if (!isServer) {
+      initialState = getPageData('shuviInitialState', {});
     }
+    ctx.store = initStore({
+      ctx,
+      initialState
+    });
     return ctx;
   }
 });

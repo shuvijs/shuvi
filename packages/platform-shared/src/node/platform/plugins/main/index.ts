@@ -27,6 +27,5 @@ const core = createPlugin({
 });
 
 export default {
-  core,
-  types: resolvePkgFile('lib/node/platform/plugins/main/shuvi-app.d.ts')
+  core
 };
