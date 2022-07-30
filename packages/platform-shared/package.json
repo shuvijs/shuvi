@@ -10,10 +10,11 @@
   "license": "MIT",
   "sideEffects": false,
   "files": [
-    "lib",
     "esm",
+    "lib",
     "template",
     "shuvi-type-extensions-node.d.js",
+    "shuvi-type-extensions-node.js",
     "shuvi-type-extensions-runtime.d.ts"
   ],
   "exports": {
