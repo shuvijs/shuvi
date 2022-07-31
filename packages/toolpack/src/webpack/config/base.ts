@@ -41,6 +41,8 @@ export interface BaseOptions {
   env?: {
     [x: string]: string | undefined;
   };
+  experimental?: Record<string, any>;
+  compiler?: Record<string, any>;
 }
 
 const terserOptions = {
@@ -69,6 +71,8 @@ export function baseWebpackChain({
   dev,
   outputDir,
   parcelCss,
+  experimental,
+  compiler,
   projectRoot,
   include,
   typescript,
@@ -171,8 +175,17 @@ export function baseWebpackChain({
     .use('shuvi-swc-loader')
     .loader('@shuvi/shuvi-swc-loader')
     .options({
-      isNode: false
+      isServer: false,
+      experimental,
+      compiler,
+      supportedBrowsers: false,
+      swcCacheDir: path.join(cacheDir, 'swc')
     });
+
+  config.resolve.alias.set(
+    '@swc/helpers',
+    path.dirname(require.resolve(`@swc/helpers/package.json`))
+  );
 
   mainRule
     .oneOf('media')

@@ -31,10 +31,10 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.js1": [
+    "*.js": [
       "prettier --write"
     ],
-    "*.ts?(x)1": [
+    "*.ts?(x)": [
       "prettier --parser=typescript --write"
     ]
   },
