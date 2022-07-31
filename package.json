@@ -31,10 +31,10 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.js": [
+    "*.js1": [
       "prettier --write"
     ],
-    "*.ts?(x)": [
+    "*.ts?(x)1": [
       "prettier --parser=typescript --write"
     ]
   },
@@ -75,6 +75,7 @@
     "typedoc": "^0.22.16",
     "typedoc-plugin-markdown": "^3.12.1",
     "typedoc-plugin-missing-exports": "^0.22.6",
+    "turbo": "1.3.4",
     "typescript": "4.7.4"
   }
 }
