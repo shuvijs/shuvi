@@ -3,6 +3,7 @@ import { DEFAULT_TIMEOUT_MS } from '../../constants';
 let source: any;
 const eventCallbacks: ((event: any) => void)[] = [];
 let lastActivity = Date.now();
+let initDataBeforeWsOnline: any[] = [];
 
 function getSocketProtocol(protocol: string): string {
   return protocol === 'http:' ? 'ws' : 'wss';
@@ -13,7 +14,10 @@ export function addMessageListener(cb: (event: any) => void) {
 }
 
 export function sendMessage(data: any) {
-  if (!source || source.readyState !== source.OPEN) return;
+  if (!source || source.readyState !== source.OPEN) {
+    initDataBeforeWsOnline.push(data);
+    return;
+  }
   return source.send(data);
 }
 
@@ -53,7 +57,15 @@ export function connectHMR(options: {
   }
 
   function handleOnline() {
+    if (initDataBeforeWsOnline.length !== 0) {
+      initDataBeforeWsOnline.forEach(data => {
+        sendMessage(data);
+      });
+      initDataBeforeWsOnline = [];
+    }
+
     if (options.log) console.log('[HMR] connected');
+
     lastActivity = Date.now();
   }
 
