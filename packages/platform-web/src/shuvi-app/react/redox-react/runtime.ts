@@ -3,7 +3,7 @@ import { createRuntimePlugin } from '@shuvi/platform-shared/shared';
 import { RedoxWrapper } from './RedoxWrapper';
 
 declare module '@shuvi/runtime' {
-  export interface CustomAppContext {
+  interface CustomAppContext {
     store: IStoreManager;
   }
 }

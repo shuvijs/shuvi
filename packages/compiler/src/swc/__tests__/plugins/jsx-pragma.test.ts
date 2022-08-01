@@ -1,5 +1,4 @@
 import transform from '../swc-transform';
-import { trim } from 'shuvi-test-utils';
 
 const swc = async (code: string) => {
   const filename = 'noop.js';
@@ -67,7 +66,7 @@ describe('jsx-pragma', () => {
 
   it('should support commonjs', async () => {
     const output = await swc(
-      trim`
+      `
         const React = require('react');
         module.exports = () => <div>test2</div>;
       `

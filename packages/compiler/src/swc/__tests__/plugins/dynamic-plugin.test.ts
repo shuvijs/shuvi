@@ -1,5 +1,4 @@
 import transform from '../swc-transform';
-import { trim } from 'shuvi-test-utils';
 
 const swc = async (
   code: string,
@@ -54,7 +53,7 @@ describe('dynamic-plugin', () => {
     const isServer = false;
     test('should work with dynamic import', async () => {
       const output = await swc(
-        trim`
+        `
         import { dynamic } from '@shuvi/runtime'
   
         dynamic(() => import("./component"),{})
@@ -71,7 +70,7 @@ describe('dynamic-plugin', () => {
 
     test('dynamic import could be disabled', async () => {
       const output = await swc(
-        trim`
+        `
         import { dynamic } from '@shuvi/runtime'
   
         dynamic(() => import("./component"),{})
@@ -89,7 +88,7 @@ describe('dynamic-plugin', () => {
 
     test('should work with async function', async () => {
       const output = await swc(
-        trim`
+        `
         import React from 'react';
         import { dynamic } from '@shuvi/runtime'
   
@@ -110,7 +109,7 @@ describe('dynamic-plugin', () => {
 
     test('should work with object options', async () => {
       const output = await swc(
-        trim`
+        `
         import React from 'react';
         import { dynamic } from '@shuvi/runtime'
   
@@ -132,7 +131,7 @@ describe('dynamic-plugin', () => {
     const isServer = true;
     test('should work with dynamic import', async () => {
       const output = await swc(
-        trim`
+        `
         import { dynamic } from '@shuvi/runtime'
   
         dynamic(() => import("./component"),{})
@@ -149,7 +148,7 @@ describe('dynamic-plugin', () => {
 
     test('should work with async function', async () => {
       const output = await swc(
-        trim`
+        `
         import React from 'react';
         import { dynamic } from '@shuvi/runtime'
   
@@ -170,7 +169,7 @@ describe('dynamic-plugin', () => {
 
     test('should work with object options', async () => {
       const output = await swc(
-        trim`
+        `
         import React from 'react';
         import { dynamic } from '@shuvi/runtime'
   
@@ -192,7 +191,7 @@ describe('dynamic-plugin', () => {
     let error: any;
     try {
       await swc(
-        trim`
+        `
         import { dynamic } from '@shuvi/runtime'
 
         dynamic(() => import('./component'), {}, {})

@@ -1,5 +1,4 @@
 import transform from '../swc-transform';
-import { trim } from 'shuvi-test-utils';
 
 const swc = async (
   code: string,

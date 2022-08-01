@@ -104,7 +104,7 @@ function getBaseSWCOptions({
     isPageFile,
     shakeExports: keep.length > 0 ? { ignore: keep } : null,
     disableShuviDynamic: compiler?.disableShuviDynamic || false,
-    flag: compiler?.autoCssModuleFlag || '',
+    cssModuleFlag: 'cssmodules',
     sourceMaps: undefined,
     styledComponents: getStyledComponentsOptions(compiler, development),
     removeConsole: compiler?.removeConsole,

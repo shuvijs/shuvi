@@ -2,16 +2,16 @@ use swc_atoms::JsWord;
 use swc_ecmascript::ast::{ImportDecl, ImportSpecifier};
 use swc_ecmascript::visit::Fold;
 
-pub fn auto_css_module(flag: String) -> impl Fold {
+pub fn auto_css_module(css_module_flag: String) -> impl Fold {
     AutoCssModule {
-        flag,
+        css_module_flag,
         has_specifier: false,
     }
 }
 
 #[derive(Debug)]
 struct AutoCssModule {
-    flag: String,
+    css_module_flag: String,
     has_specifier: bool,
 }
 
@@ -37,10 +37,10 @@ impl Fold for AutoCssModule {
                 } else {
                     "?".to_owned()
                 };
-                let flag: &str = if self.flag.is_empty() || self.flag.len() == 0 {
+                let flag: &str = if self.css_module_flag.is_empty() || self.css_module_flag.len() == 0 {
                     "cssmodules"
                 } else {
-                    &self.flag
+                    &self.css_module_flag
                 };
                 let extra = sign + flag;
                 cloned_decl.src.value = JsWord::from(cloned_decl.src.value.to_string() + &extra);

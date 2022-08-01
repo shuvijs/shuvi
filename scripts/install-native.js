@@ -11,13 +11,13 @@ function installSWCNative() {
   var cwd = path.join(__dirname, '../');
 
   var stdout = execSync(
-    'turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release',
+    'turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release',
     { cwd }
   ).toString();
 
   console.log(stdout);
 
-  const swcSourceDir = path.join(__dirname, '../packages/toolpack/swc-source');
+  const swcSourceDir = path.join(__dirname, '../packages/compiler/swc-source');
 
   if (fs.existsSync(swcSourceDir)) {
     execSync(`rm -r ${swcSourceDir}`, { cwd });
@@ -26,7 +26,7 @@ function installSWCNative() {
   execSync(
     `ln -sf ${path.join(
       __dirname,
-      '../packages/compiler/native'
+      '../packages/compiler-swc/native'
     )} ${swcSourceDir}`,
     { cwd }
   );

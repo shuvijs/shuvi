@@ -4,7 +4,6 @@ const path = require('path');
 const { platformArchTriples } = require('@napi-rs/triples');
 const ArchName = arch();
 const PlatformName = platform();
-
 let bindings;
 let loadError;
 

@@ -72,7 +72,7 @@ pub struct TransformOptions {
     pub disable_shuvi_dynamic: bool,
 
     #[serde(default)]
-    pub flag: String,
+    pub css_module_flag: String,
 
     #[serde(default)]
     pub styled_components: Option<styled_components::Config>,
@@ -101,7 +101,7 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
 ) -> impl Fold + 'a {
 
     chain!(
-        auto_css_module::auto_css_module(opts.flag.clone()),
+        auto_css_module::auto_css_module(opts.css_module_flag.clone()),
         disallow_re_export_all_in_page::disallow_re_export_all_in_page(opts.is_page_file),
         hook_optimizer::hook_optimizer(),
         shuvi_dynamic::shuvi_dynamic(

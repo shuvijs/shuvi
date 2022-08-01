@@ -1,5 +1,4 @@
 import transform from '../swc-transform';
-import { trim } from 'shuvi-test-utils';
 
 const swc = async (code: string) => {
   const options = {};
@@ -10,7 +9,7 @@ const swc = async (code: string) => {
 describe('optimize-hook-destructuring', () => {
   it('should transform Array-destructured hook return values use object destructuring', async () => {
     const output = await swc(
-      trim`
+      `
         import { useState } from 'react';
         const [count, setCount] = useState(0);
       `
@@ -25,7 +24,7 @@ describe('optimize-hook-destructuring', () => {
 
   it('should be able to ignore some Array-destructured hook return values', async () => {
     const output = await swc(
-      trim`
+      `
         import { useState } from 'react';
         const [, setCount] = useState(0);
       `

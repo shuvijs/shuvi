@@ -1,8 +1,11 @@
 import transform from '../swc-transform';
 
-const swc = async (code: string, { flag }: { flag: string } = { flag: '' }) => {
+const swc = async (
+  code: string,
+  { cssModuleFlag }: { cssModuleFlag: string } = { cssModuleFlag: '' }
+) => {
   const options = {
-    flag
+    cssModuleFlag
   };
 
   return transform(code, options)!;
@@ -31,7 +34,7 @@ describe('auto-css-modules', () => {
   test('css modules with flag', async () => {
     expect(
       await swc(`import styles from 'a.css';`, {
-        flag: 'foo'
+        cssModuleFlag: 'foo'
       })
     ).toMatchInlineSnapshot(`
       "import styles from \\"a.css?foo\\";
