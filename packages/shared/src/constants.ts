@@ -24,6 +24,8 @@ export const DEV_HOT_LAUNCH_EDITOR_ENDPOINT = `${DEV_ONLY_ASSETS_PREFIX}/develop
 
 export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;
 
+export const ACTIVATE_PAGE_PATH = '/__shuvi/dev/compile-page';
+
 export const ROUTE_NOT_FOUND_NAME = `404`;
 
 export const SHUVI_ERROR = {

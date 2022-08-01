@@ -1,5 +1,6 @@
 import { matchRoutes } from '@shuvi/router';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
+import { ACTIVATE_PAGE_PATH } from '@shuvi/shared/lib/constants';
 import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
@@ -56,7 +57,7 @@ export default class OnDemandRouteManager {
   }
 
   ensureRoutesMiddleware(): IRequestHandlerWithNext {
-    return async (req, _res, next) => {
+    return async (req, res, next) => {
       const accept = req.headers['accept'];
       if (req.method !== 'GET') {
         return next();
@@ -68,13 +69,17 @@ export default class OnDemandRouteManager {
         return next();
       }
 
+      if (!req.pathname.startsWith(ACTIVATE_PAGE_PATH)) {
+        return next();
+      }
       let err = null;
       try {
-        await this.ensureRoutes(req.pathname || '/');
+        await this.ensureRoutes(`${req.query['path']}` || '/');
+        res.end();
       } catch (error) {
         err = error;
       }
-      next(err);
+      if (err) next(err);
     };
   }
 
