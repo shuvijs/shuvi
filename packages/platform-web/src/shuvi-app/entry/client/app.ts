@@ -1,6 +1,6 @@
 import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
 // renderer must be imported before application
-// we need to init init renderer before import AppComponent
+// we need to init renderer before import AppComponent
 import {
   view,
   getRoutes,
@@ -9,13 +9,6 @@ import {
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
 import { createApp } from '../../app/client';
-import { DEFAULT_TIMEOUT_MS } from '@shuvi/toolpack/lib/constants';
-
-type devClient = {
-  sendMessage: (data: any) => void;
-  subscribeToHmrEvent?: (handler: any) => void;
-  reportRuntimeError?: (err: any) => void;
-};
 
 const appData = getAppData();
 
@@ -34,27 +27,12 @@ const render = () => {
   });
 };
 
-const run = async (devClient?: devClient) => {
+const run = async () => {
   await app.init();
   render();
-
-  if (devClient) {
-    setInterval(() => {
-      devClient.sendMessage(
-        JSON.stringify({
-          event: 'routesUpdate',
-          currentRoutes: app.router.current.matches.map(
-            ({ route: { __componentSourceWithAffix__ } }) =>
-              __componentSourceWithAffix__
-          ),
-          page: location.pathname
-        })
-      );
-    }, DEFAULT_TIMEOUT_MS / 2);
-  }
 };
 
-export { run };
+export { run, app };
 
 if (module.hot) {
   const handleHotUpdate = async () => {

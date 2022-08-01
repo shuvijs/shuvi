@@ -24,6 +24,8 @@ import { CreateAppClient } from '../../shared';
 
 let app: Application;
 
+export { Application };
+
 export const createApp: CreateAppClient = ({
   routes,
   appData,
