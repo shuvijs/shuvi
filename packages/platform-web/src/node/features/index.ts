@@ -4,6 +4,7 @@ import { getPlugin as getHTMLRenderPlugin } from './html-render';
 import FeatureCustomServer from './custom-server';
 import FeatureModel from './model';
 import FilesystemRoutes from './filesystem-routes';
+import FeatureWebpackWatchWaitForFileBuilder from './webpack-watch-wait-for-file-builder';
 
 export { buildHtml } from './html-render/lib/buildHtml';
 
@@ -19,5 +20,6 @@ export const getPlugins = (
   FeatureOnDemanCompilePage,
   FilesystemRoutes,
   FeatureCustomServer,
-  FeatureModel
+  FeatureModel,
+  FeatureWebpackWatchWaitForFileBuilder
 ];
