@@ -57,7 +57,7 @@ fn test(input: &Path, minify: bool) {
                 disable_shuvi_dynamic: false,
                 styled_components: Some(assert_json("{}")),
                 remove_console: None,
-                flag: String::from("").into(),
+                css_module_flag: String::from("").into(),
                 react_remove_properties: None,
                 shake_exports: None,
                 emotion: Some(assert_json("{}")),

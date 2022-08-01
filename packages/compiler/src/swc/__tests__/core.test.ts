@@ -1,5 +1,4 @@
 import transform from './swc-transform';
-import { trim } from 'shuvi-test-utils';
 
 const swc = async (
   code: string,
@@ -98,7 +97,7 @@ describe('swc/core', () => {
     const isNode = true;
 
     test('basic app', async () => {
-      const output = await swc(trim(BASIC_APP), { esm: true, isNode });
+      const output = await swc(BASIC_APP, { esm: true, isNode });
 
       // Do not convert arrow function
       expect(output).toContain('const App=()=>{');
@@ -120,7 +119,7 @@ describe('swc/core', () => {
     });
 
     test('basic app without esm', async () => {
-      const output = await swc(trim(BASIC_APP), { esm: false, isNode });
+      const output = await swc(BASIC_APP, { esm: false, isNode });
 
       // use strict
       expect(output).toMatch(/^"use strict"/);
@@ -177,7 +176,7 @@ describe('swc/core', () => {
     const isNode = false;
 
     test('basic app', async () => {
-      const output = await swc(trim(BASIC_APP), { esm: true, isNode });
+      const output = await swc(BASIC_APP, { esm: true, isNode });
 
       // Global css and css modules
       expect(output).toMatch(/import styles from\"a\.css\?cssmodules\"/);
@@ -201,7 +200,7 @@ describe('swc/core', () => {
     });
 
     test('basic app without esm', async () => {
-      const output = await swc(trim(BASIC_APP), { esm: false, isNode });
+      const output = await swc(BASIC_APP, { esm: false, isNode });
 
       // use strict
       expect(output).toMatch(/^"use strict"/);

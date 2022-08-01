@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import querystring from 'querystring';
 import {
   IPageRouteConfig,
   IPageRouteConfigWithId
@@ -13,6 +14,8 @@ type RouteKeysWithoutChildren = keyof Omit<IPageRouteConfig, 'children'>;
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
+
+const KEEP_SYMBOL = querystring.stringify({ keep: ['default'] });
 
 /**
  * returns JSON string of IRawPageRouteRecord
@@ -30,7 +33,7 @@ export function serializeRoutes(routes: IPageRouteConfigWithId[]): string {
       if (key === 'component') {
         const { component } = route;
         const componentSource = component;
-        const componentSourceWithAffix = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
+        const componentSourceWithAffix = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}&${KEEP_SYMBOL}`;
         // `webpackExports` works with production and optimization.minimize, check compiled dist
         strRoute +=
           `__componentSourceWithAffix__: "${componentSourceWithAffix}",

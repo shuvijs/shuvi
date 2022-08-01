@@ -1,3 +1,2 @@
 shuvi-swc.*.node
-target
-crates/*/target
+swc-source
