@@ -3,7 +3,7 @@ import {
   CorePluginInstance,
   PluginRunner
 } from './lifecycle';
-import { FileOptions } from '../project';
+import { FileBuilder, FileOption } from '../project';
 import {
   IServerMiddleware,
   IServerPluginContext,
@@ -94,7 +94,7 @@ export type IPlatformContent = {
   plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
   getPresetRuntimeFiles: (
     context: IPluginContext
-  ) => FileOptions[] | Promise<FileOptions[]>;
+  ) => FileOption<any>[] | Promise<FileOption<any>[]>;
   getMiddlewares?: (
     context: IServerPluginContext
   ) => IServerMiddleware | IServerMiddleware[];
@@ -206,4 +206,6 @@ export interface IPluginContext {
   resolveBuildFile(...paths: string[]): string;
   resolvePublicFile(...paths: string[]): string;
   getAssetPublicUrl(...paths: string[]): string;
+  onBuildStart: FileBuilder<any>['onBuildStart'];
+  onBuildEnd: FileBuilder<any>['onBuildEnd'];
 }

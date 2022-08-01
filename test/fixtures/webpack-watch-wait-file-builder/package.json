@@ -1,0 +1,6 @@
+{
+  "name": "fixture-webpack-watch-wait-file-builder",
+  "dependencies": {
+    "shuvi": "workspace:*"
+  }
+}

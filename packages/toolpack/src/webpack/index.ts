@@ -81,6 +81,7 @@ export {
   NormalModuleReplacementPlugin,
   MultiCompiler,
   Parser,
+  Plugin,
   PrefetchPlugin,
   ProgressPlugin,
   ProvidePlugin,

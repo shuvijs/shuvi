@@ -2,6 +2,7 @@ import * as path from 'path';
 import { removeSync } from 'fs-extra';
 import { readFileSync, existsSync } from 'fs';
 import { ProjectBuilder } from '../projectBuilder';
+import { defineFile } from '../file-builder';
 import { wait } from 'shuvi-test-utils';
 
 type TestRule = [string, string | RegExp];
@@ -35,10 +36,12 @@ afterEach(async () => {
 
 describe('projectBuilder', () => {
   test('should work', async () => {
-    app.addFile({
-      name: 'test.js',
-      content: () => 'export default () => "test page"'
-    });
+    app.addFile(
+      defineFile({
+        name: 'test.js',
+        content: () => 'export default () => "test page"'
+      })
+    );
     app.addRuntimeService('something to export', '*');
 
     await app.build(BUILD_DIR);
@@ -47,46 +50,16 @@ describe('projectBuilder', () => {
       ['app/runtime/index.ts', 'export * from "something to export"'],
       ['test.js', 'export default () => "test page"']
     ]);
-  });
-
-  test('should reactive to state change', async () => {
-    app.addFile({
-      name: 'test.js',
-      content: () => 'export default () => "test page"'
-    });
-
-    app.addRuntimeService('something to export', '*');
-
-    await app.build(BUILD_DIR);
-
-    checkMatch([
-      ['app/runtime/index.ts', 'export * from "something to export"'],
-      ['test.js', 'export default () => "test page"']
-    ]);
-
-    // Change modules and content
-    app.addRuntimeService('export2', '*');
-
-    await wait(0);
-
-    checkMatch([
-      [
-        'app/runtime/index.ts',
-        'export * from "something to export"\nexport * from "export2"'
-      ],
-      ['test.js', 'export default () => "test page"']
-    ]);
-
-    await app.stopBuild();
-    expect(existsSync(resolveBuildFile('index.js'))).toBe(false);
   });
 
   test('build once', async () => {
-    app = new ProjectBuilder({ static: true });
-    app.addFile({
-      name: 'test.js',
-      content: () => 'export default () => "test page"'
-    });
+    app = new ProjectBuilder();
+    app.addFile(
+      defineFile({
+        name: 'test.js',
+        content: () => 'export default () => "test page"'
+      })
+    );
 
     app.addRuntimeService('something to export', '*');
 
@@ -100,13 +73,13 @@ describe('projectBuilder', () => {
 
   describe('addRuntimeService', () => {
     test('should work', async () => {
-      app = new ProjectBuilder({ static: false });
+      app = new ProjectBuilder();
       app.addRuntimeService('source', 'exported', 'a.js');
       app.addRuntimeService('source', 'exported', 'a.ts');
       app.addRuntimeService('source', 'exported0', 'b.js');
       app.addRuntimeService('source', 'exported1', 'b.js');
 
-      await app.build(BUILD_DIR);
+      await app.watch(BUILD_DIR);
 
       checkMatch([
         ['app/runtime/a.js', 'export exported from "source"'],
@@ -116,21 +89,6 @@ describe('projectBuilder', () => {
           [
             'export exported0 from "source"',
             'export exported1 from "source"'
-          ].join('\n')
-        ]
-      ]);
-
-      app.addRuntimeService('source', 'exported2', 'b.js');
-
-      await wait(0);
-
-      checkMatch([
-        [
-          'app/runtime/b.js',
-          [
-            'export exported0 from "source"',
-            'export exported1 from "source"',
-            'export exported2 from "source"'
           ].join('\n')
         ]
       ]);

@@ -12,6 +12,7 @@ export interface WatchOptions {
   files?: string[];
   directories?: string[];
   missing?: string[];
+  aggregateTimeout?: number;
   startTime?: number;
 }
 
@@ -31,10 +32,20 @@ const options = {
 };
 
 export function watch(
-  { files, directories, missing, startTime = Date.now() }: WatchOptions,
+  {
+    files,
+    directories,
+    missing,
+    aggregateTimeout,
+    startTime = Date.now()
+  }: WatchOptions,
   cb: WatchCallback
 ): () => void {
-  const wp = new Watchpack(options);
+  const watchPackOptions = { ...options };
+  if (aggregateTimeout !== undefined) {
+    watchPackOptions.aggregateTimeout = aggregateTimeout;
+  }
+  const wp = new Watchpack(watchPackOptions);
   wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
     const knownFiles = wp.getTimeInfoEntries();
     cb({

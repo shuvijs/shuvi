@@ -6,10 +6,14 @@ import {
   check,
   getIframeTextContent
 } from '../utils';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, renameSync, existsSync } from 'fs';
 
 function resolvePagePath(page: string) {
   return resolveFixture('basic/src/routes/hmr/' + page, 'page.js');
+}
+
+function resolveRoutePath(routeName: string) {
+  return resolveFixture('basic/src/routes/hmr/' + routeName);
 }
 
 jest.setTimeout(5 * 60 * 1000);
@@ -25,42 +29,41 @@ describe('Hot Module Reloading', () => {
     await ctx.close();
   });
 
-  // TO FIX: need refactor project-builder
-  // test('should work when delete a page and add it back', async () => {
-  //   const pagePath = resolvePagePath('one.js');
-  //   const newPagePath = resolvePagePath('new-one.js');
+  test('should work when delete a page and add it back', async () => {
+    const routePath = resolveRoutePath('one');
+    const newRoutePath = resolveRoutePath('new-one');
 
-  //   try {
-  //     page = await ctx.browser.page(ctx.url('/hmr/one'));
+    try {
+      page = await ctx.browser.page(ctx.url('/hmr/one'));
 
-  //     expect(await page.$text('[data-test-id="hmr-one"]')).toBe(
-  //       'This is the one page'
-  //     );
+      expect(await page.$text('[data-test-id="hmr-one"]')).toBe(
+        'This is the one page'
+      );
 
-  //     // Rename the file to mimic a deleted page
-  //     renameSync(pagePath, newPagePath);
+      // Rename the file to mimic a deleted page
+      renameSync(routePath, newRoutePath);
 
-  //     await check(
-  //       () => page.$text('#__APP'),
-  //       t => /This page could not be found/.test(t)
-  //     );
+      await check(
+        () => page.$text('#__APP'),
+        t => /This page could not be found/.test(t)
+      );
 
-  //     // Rename the file back to the original filename
-  //     renameSync(newPagePath, pagePath);
+      // Rename the file back to the original filename
+      renameSync(newRoutePath, routePath);
 
-  //     // wait until the page comes back
-  //     await check(
-  //       () => page.$text('[data-test-id="hmr-one"]'),
-  //       t => /This is the one page/.test(t)
-  //     );
-  //   } finally {
-  //     await page.close();
+      // wait until the page comes back
+      await check(
+        () => page.$text('[data-test-id="hmr-one"]'),
+        t => /This is the one page/.test(t)
+      );
+    } finally {
+      await page.close();
 
-  //     if (existsSync(newPagePath)) {
-  //       renameSync(newPagePath, pagePath);
-  //     }
-  //   }
-  // });
+      if (existsSync(newRoutePath)) {
+        renameSync(newRoutePath, routePath);
+      }
+    }
+  });
 
   describe('editing a page', () => {
     test('should detect the changes and display it', async () => {
