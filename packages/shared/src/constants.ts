@@ -3,7 +3,7 @@ export const NAME = 'shuvi';
 
 export const DEV_ONLY_ASSETS_PREFIX = `/_${NAME}`;
 
-export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route&keep=default`;
+export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route`;
 
 export const PUBLIC_ENV_PREFIX = 'SHUVI_PUBLIC_';
 
