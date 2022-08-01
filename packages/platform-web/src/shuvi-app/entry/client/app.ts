@@ -9,6 +9,13 @@ import {
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
 import { createApp } from '../../app/client';
+import { DEFAULT_TIMEOUT_MS } from '@shuvi/toolpack/lib/constants';
+
+type devClient = {
+  sendMessage: (data: any) => void;
+  subscribeToHmrEvent?: (handler: any) => void;
+  reportRuntimeError?: (err: any) => void;
+};
 
 const appData = getAppData();
 
@@ -27,9 +34,24 @@ const render = () => {
   });
 };
 
-const run = async () => {
+const run = async (devClient?: devClient) => {
   await app.init();
   render();
+
+  if (devClient) {
+    setInterval(() => {
+      devClient.sendMessage(
+        JSON.stringify({
+          event: 'routesUpdate',
+          currentRoutes: app.router.current.matches.map(
+            ({ route: { __componentSourceWithAffix__ } }) =>
+              __componentSourceWithAffix__
+          ),
+          page: location.pathname
+        })
+      );
+    }, DEFAULT_TIMEOUT_MS / 2);
+  }
 };
 
 export { run };

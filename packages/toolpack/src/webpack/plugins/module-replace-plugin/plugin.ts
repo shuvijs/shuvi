@@ -130,6 +130,18 @@ export default class ModuleReplacePlugin implements Plugin {
     });
   }
 
+  static replaceModule(id: string): false | void {
+    const moduleInfos = getKnownModules(id);
+
+    if (moduleInfos.length < 1) {
+      return false;
+    }
+
+    moduleInfos.forEach(moduleInfo => {
+      moduleInfo.action = ModuleAction.REPLACE;
+    });
+  }
+
   constructor(options: Partial<ModuleReplacePluginOptions>) {
     this._options = {
       modules: [],
