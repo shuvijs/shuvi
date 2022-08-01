@@ -25,11 +25,11 @@
 import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { IRouteMatch } from '@shuvi/router';
 
 import {
   DEFAULT_TIMEOUT_MS,
-  BASE_MAX_INACTIVE_AGE_MS
+  BASE_MAX_INACTIVE_AGE_MS,
+  DEFAULT_PAGE_BUFFER_SIZE
 } from '@shuvi/toolpack/lib/constants';
 
 type modulePath = string;
@@ -40,10 +40,12 @@ type moduleActivity = {
   routes: Set<route>;
   timeout: number;
   disposeNum: number;
+  lastActivity: number;
 };
 
 const modulesActivity = new Map<modulePath, moduleActivity>();
 const routesActivity = new Map<route, lastActivity>();
+const activePages = new Set<modulePath>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
@@ -143,46 +145,52 @@ export class WebpackHotMiddleware {
     this.clientManager.close();
   };
 
-  private updateModuleActivity(
-    matchRoutes: IRouteMatch[] | [],
-    page: string
-  ): void {
+  private updateModuleActivity(matchRoutes: string[] | [], page: string): void {
     if (matchRoutes.length < 1 || !page) return; //error page
 
-    for (const {
-      route: { __componentSourceWithAffix__ }
-    } of matchRoutes) {
-      const moduleActivity = modulesActivity.get(page);
+    activePages.add(page);
 
-      if (moduleActivity) {
-        moduleActivity.routes.add(__componentSourceWithAffix__!);
-      } else {
-        modulesActivity.set(page, {
-          routes: new Set([__componentSourceWithAffix__!]),
-          timeout: BASE_MAX_INACTIVE_AGE_MS,
-          disposeNum: 0
-        });
+    const moduleActivity = modulesActivity.get(page);
+
+    if (!!moduleActivity) {
+      for (const route of matchRoutes) {
+        moduleActivity.routes.add(route);
+        moduleActivity.lastActivity = Date.now();
+        routesActivity.set(route, Date.now());
       }
-
-      routesActivity.set(__componentSourceWithAffix__!, Date.now());
+    } else {
+      modulesActivity.set(page, {
+        routes: new Set(matchRoutes),
+        timeout: BASE_MAX_INACTIVE_AGE_MS,
+        disposeNum: 0,
+        lastActivity: Date.now()
+      });
     }
   }
 
   private handleInactiveModule(): void {
-    for (const moduleActivity of modulesActivity.values()) {
-      for (const route of moduleActivity.routes) {
-        if (
-          this._disposeInactivePage &&
-          routesActivity.get(route) &&
-          Date.now() - routesActivity.get(route)! > moduleActivity.timeout
-        ) {
-          ModuleReplacePlugin.replaceModule(route);
-          moduleActivity.timeout = this.handleTimeout(
-            ++moduleActivity.disposeNum
-          );
-          moduleActivity.routes.delete(route);
-          routesActivity.delete(route);
+    if (!this._disposeInactivePage) return; // can be set false by user
+
+    if (activePages.size <= DEFAULT_PAGE_BUFFER_SIZE) return; // buffer page
+
+    for (const [page, moduleActivity] of modulesActivity) {
+      if (Date.now() - moduleActivity.lastActivity > moduleActivity.timeout) {
+        activePages.delete(page);
+
+        for (const route of moduleActivity.routes) {
+          if (
+            routesActivity.get(route) &&
+            Date.now() - routesActivity.get(route)! > moduleActivity.timeout
+          ) {
+            ModuleReplacePlugin.replaceModule(route);
+            moduleActivity.routes.delete(route);
+            routesActivity.delete(route);
+          }
         }
+
+        moduleActivity.timeout = this.handleTimeout(
+          ++moduleActivity.disposeNum
+        );
       }
     }
   }

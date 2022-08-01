@@ -43,7 +43,10 @@ const run = async (devClient?: devClient) => {
       devClient.sendMessage(
         JSON.stringify({
           event: 'routesUpdate',
-          currentRoutes: app.router.current.matches,
+          currentRoutes: app.router.current.matches.map(
+            ({ route: { __componentSourceWithAffix__ } }) =>
+              __componentSourceWithAffix__
+          ),
           page: location.pathname
         })
       );
