@@ -1,5 +1,5 @@
 var useState = require('react').useState;
-exports.e = function Commonjs() {
+module.exports.e = function Commonjs() {
   const [index, setIndex] = useState(0);
   return (
     <div>

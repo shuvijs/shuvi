@@ -1,0 +1,10 @@
+{
+  "name": "compiler", 
+  "dependencies": {
+    "shuvi": "workspace:*",
+    "styled-components": "5.3.5",
+    "@emotion/react": "11.9.3",
+    "@emotion/styled": "11.9.3",
+    "@swc/plugin-transform-imports": "0.8.4"
+  }
+}

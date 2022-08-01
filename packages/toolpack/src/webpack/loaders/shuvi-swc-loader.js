@@ -26,35 +26,60 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-import { transform } from '../../utils/load-sources';
-import getSWCOptions from '../../utils/getSWCOptions';
+import querystring from 'querystring';
+import { transform } from '../../swc/load-sources';
+import getLoaderSWCOptions from '../../swc/getLoaderSWCOptions';
+
+const ISPAGEFILEEREG = /routes\/.*page\.[jtsx]{2,3}$/;
 
 async function loaderTransform(source, inputSourceMap) {
   // Make the loader async
   const filename = this.resourcePath;
 
-  let loaderOptions = (this.getOptions && this.getOptions()) || {};
+  let loaderOptions = this.getOptions() || {};
 
   const {
-    isNode,
-    dynamicImport = true,
+    isServer,
+    experimental,
+    compiler,
+    supportedBrowsers,
+    swcCacheDir,
     hasReactRefresh,
-    disableShuviDynamic = false,
-    flag = '',
     minify = false
   } = loaderOptions;
 
-  const isDev = this.mode === 'development';
+  const isPageFile = ISPAGEFILEEREG.test(filename);
 
-  const swcOptions = getSWCOptions({
+  let keep = [];
+
+  if (isPageFile && this.resourceQuery) {
+    const query = querystring.parse(this.resourceQuery.slice(1));
+    if (query.keep) {
+      if (Array.isArray(query.keep)) {
+        keep = query.keep;
+      } else {
+        keep.push(query.keep);
+      }
+    }
+  }
+
+  const isDevelopment = this.mode === 'development';
+
+  const swcOptions = getLoaderSWCOptions({
     filename,
-    isNode,
-    development: isDev,
-    dynamicImport,
-    disableShuviDynamic,
+    isServer,
+    isPageFile,
     minify,
+    development: this.mode === 'development',
     hasReactRefresh:
-      hasReactRefresh !== undefined ? hasReactRefresh : isDev && !isNode
+      hasReactRefresh !== undefined
+        ? hasReactRefresh
+        : isDevelopment && !isServer,
+    experimental,
+    compiler,
+    supportedBrowsers,
+    swcCacheDir,
+    keep
   });
 
   const programmaticOptions = {

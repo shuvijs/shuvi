@@ -111,11 +111,11 @@ describe('swc/core', () => {
       expect(output).toMatch(/return _jsx\(.*?\)/);
 
       // Global css and css modules
-      expect(output).toMatch(/import styles from'a.css\?cssmodules'/);
-      expect(output).toMatch(/import'global.css'/);
+      expect(output).toMatch(/import styles from\"a\.css\?cssmodules\"/);
+      expect(output).toMatch(/import\"global\.css\"/);
 
       expect(output).toMatchInlineSnapshot(
-        `"import{jsx as _jsx}from\\"react/jsx-runtime\\";import{useState}from'react';import styles from'a.css?cssmodules';import'global.css';const App=()=>{const{0:count,1:setCount}=useState(0);return _jsx(\\"div\\",{children:count})};export default App"`
+        `"import{jsx as _jsx}from\\"react/jsx-runtime\\";import{useState}from\\"react\\";import styles from\\"a.css?cssmodules\\";import\\"global.css\\";const App=()=>{const{0:count,1:setCount}=useState(0);return _jsx(\\"div\\",{children:count})};export default App"`
       );
     });
 
@@ -137,19 +137,21 @@ describe('swc/core', () => {
 
       // Destructure array as object
       expect(output).toContain(
-        'const{0:count,1:setCount}=(0,_react).useState(0);'
+        'const{0:count,1:setCount}=(0,_react.useState)(0);'
       );
 
       // require _jsx
-      expect(output).toContain('var _jsxRuntime=require("react/jsx-runtime")');
-      expect(output).toMatch(/return\(0,_jsxRuntime\)\.jsx\(.*?\)/);
+      expect(output).toContain(
+        'const _jsxRuntime=require("react/jsx-runtime");'
+      );
+      expect(output).toMatch(/return\(0,_jsxRuntime\.jsx\)\(.*/);
 
       // Global css and css modules
       expect(output).toContain('require("global.css");');
       expect(output).toContain('require("a.css?cssmodules")');
 
       // Exports
-      expect(output).toMatch(/var _default=App;exports.default=_default$/);
+      expect(output).toMatch(/var _default=App$/);
     });
 
     describe('replace constants', () => {
@@ -157,14 +159,16 @@ describe('swc/core', () => {
         const code = await swc(`typeof window !== 'undefined';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`"\\"undefined\\"!=='undefined'"`);
+        expect(code).toMatchInlineSnapshot(
+          `"\\"undefined\\"!==\\"undefined\\""`
+        );
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window !== 'object';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`"\\"undefined\\"!=='object'"`);
+        expect(code).toMatchInlineSnapshot(`"\\"undefined\\"!==\\"object\\""`);
       });
     });
   });
@@ -176,8 +180,8 @@ describe('swc/core', () => {
       const output = await swc(trim(BASIC_APP), { esm: true, isNode });
 
       // Global css and css modules
-      expect(output).toMatch(/import styles from'a.css\?cssmodules'/);
-      expect(output).toMatch(/import'global.css'/);
+      expect(output).toMatch(/import styles from\"a\.css\?cssmodules\"/);
+      expect(output).toMatch(/import\"global\.css\"/);
 
       // import _jsx
       expect(output).toContain('import{jsx as _jsx}from"react/jsx-runtime"');
@@ -192,7 +196,7 @@ describe('swc/core', () => {
       );
 
       expect(output).toMatchInlineSnapshot(
-        `"import{jsx as _jsx}from\\"react/jsx-runtime\\";import{useState}from'react';import styles from'a.css?cssmodules';import'global.css';var App=function(){var ref=useState(0),count=ref[0],setCount=ref[1];return _jsx(\\"div\\",{children:count})};export default App"`
+        `"import{jsx as _jsx}from\\"react/jsx-runtime\\";import{useState}from\\"react\\";import styles from\\"a.css?cssmodules\\";import\\"global.css\\";var App=function(){var ref=useState(0),count=ref[0],setCount=ref[1];return _jsx(\\"div\\",{children:count})};export default App"`
       );
     });
 
@@ -217,11 +221,11 @@ describe('swc/core', () => {
 
       // Array to Object destructure and map array to individual variable
       expect(output).toContain(
-        'var ref=(0,_react).useState(0),count=ref[0],setCount=ref[1];'
+        'var ref=(0,_react.useState)(0),count=ref[0],setCount=ref[1]'
       );
 
       // export default
-      expect(output).toMatch(/exports\.default=_default$/);
+      expect(output).toMatch(/var _default=App$/);
     });
 
     describe('replace constants', () => {
@@ -240,7 +244,7 @@ describe('swc/core', () => {
           { isNode }
         );
         expect(code).toMatchInlineSnapshot(
-          `"function a(){console.log(\\"object\\"==='undefined')}"`
+          `"function a(){console.log(\\"object\\"===\\"undefined\\")}"`
         );
       });
 
@@ -248,28 +252,28 @@ describe('swc/core', () => {
         const code = await swc(`typeof window === 'undefined';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`"\\"object\\"==='undefined'"`);
+        expect(code).toMatchInlineSnapshot(`"\\"object\\"===\\"undefined\\""`);
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window === 'object';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`"\\"object\\"==='object'"`);
+        expect(code).toMatchInlineSnapshot(`"\\"object\\"===\\"object\\""`);
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window !== 'undefined';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`"\\"object\\"!=='undefined'"`);
+        expect(code).toMatchInlineSnapshot(`"\\"object\\"!==\\"undefined\\""`);
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window !== 'object';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`"\\"object\\"!=='object'"`);
+        expect(code).toMatchInlineSnapshot(`"\\"object\\"!==\\"object\\""`);
       });
     });
   });
@@ -331,7 +335,7 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var hello;export default function(){return(hello===null||hello===void 0?void 0:hello.world)?'something':'nothing'}"`
+        `"var hello;export default function(){return(hello===null||hello===void 0?void 0:hello.world)?\\"something\\":\\"nothing\\"}"`
       );
     });
 
@@ -344,7 +348,7 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var hello;export default function(){return(hello===null||hello===void 0?void 0:hello.world)?'something':'nothing'}"`
+        `"var hello;export default function(){return(hello===null||hello===void 0?void 0:hello.world)?\\"something\\":\\"nothing\\"}"`
       );
     });
 
@@ -366,7 +370,7 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var res={status:0,nullVal:null,statusText:''};var _status;var status=(_status=res.status)!==null&&_status!==void 0?_status:999;var _nullVal;var nullVal=(_nullVal=res.nullVal)!==null&&_nullVal!==void 0?_nullVal:'another';var _nullVal1;var statusText=(_nullVal1=res.nullVal)!==null&&_nullVal1!==void 0?_nullVal1:'not found';export default function(){return'hello'}"`
+        `"var res={status:0,nullVal:null,statusText:\\"\\"};var _status;var status=(_status=res.status)!==null&&_status!==void 0?_status:999;var _nullVal;var nullVal=(_nullVal=res.nullVal)!==null&&_nullVal!==void 0?_nullVal:\\"another\\";var _nullVal1;var statusText=(_nullVal1=res.nullVal)!==null&&_nullVal1!==void 0?_nullVal1:\\"not found\\";export default function(){return\\"hello\\"}"`
       );
     });
 
@@ -388,8 +392,48 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var res={status:0,nullVal:null,statusText:''};var _status;var status=(_status=res.status)!==null&&_status!==void 0?_status:999;var _nullVal;var nullVal=(_nullVal=res.nullVal)!==null&&_nullVal!==void 0?_nullVal:'another';var _nullVal1;var statusText=(_nullVal1=res.nullVal)!==null&&_nullVal1!==void 0?_nullVal1:'not found';export default function(){return'hello'}"`
+        `"var res={status:0,nullVal:null,statusText:\\"\\"};var _status;var status=(_status=res.status)!==null&&_status!==void 0?_status:999;var _nullVal;var nullVal=(_nullVal=res.nullVal)!==null&&_nullVal!==void 0?_nullVal:\\"another\\";var _nullVal1;var statusText=(_nullVal1=res.nullVal)!==null&&_nullVal1!==void 0?_nullVal1:\\"not found\\";export default function(){return\\"hello\\"}"`
       );
     });
+  });
+
+  test('should support custom plugin', async () => {
+    const swc = async (code: string, swcPlugins: any[] = []) => {
+      const plugins = (swcPlugins ?? [])
+        .filter(Array.isArray)
+        .map(([name, options]) => [require.resolve(name), options]);
+
+      const jsc = {
+        experimental: {
+          plugins
+        }
+      };
+
+      const options = {
+        jsc
+      };
+
+      return transform(code, options)!;
+    };
+    const output = await swc(
+      `import { Grid, Row, Col as Col1 } from 'react-bootstrap';`,
+      [
+        [
+          '@swc/plugin-transform-imports',
+          {
+            'react-bootstrap': {
+              transform: 'react-bootstrap/lib/{{member}}'
+            }
+          }
+        ]
+      ]
+    );
+
+    expect(output).toMatchInlineSnapshot(`
+      "import Grid from \\"react-bootstrap/lib/Grid\\";
+      import Row from \\"react-bootstrap/lib/Row\\";
+      import Col1 from \\"react-bootstrap/lib/Col\\";
+      "
+    `);
   });
 });

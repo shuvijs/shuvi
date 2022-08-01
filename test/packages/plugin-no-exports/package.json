@@ -1,6 +1,5 @@
 {
   "name": "shuvi-test-plugin-no-exports",
-  "private": "true",
   "version": "0.0.1-pre.10",
   "repository": {
     "type": "git",

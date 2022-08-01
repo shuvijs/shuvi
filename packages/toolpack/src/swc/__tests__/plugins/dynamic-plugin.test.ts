@@ -1,7 +1,16 @@
 import transform from '../swc-transform';
 import { trim } from 'shuvi-test-utils';
 
-const swc = async (code: string) => {
+const swc = async (
+  code: string,
+  {
+    isServer = false,
+    disableShuviDynamic = false
+  }: {
+    isServer: boolean;
+    disableShuviDynamic?: boolean;
+  }
+) => {
   const filename = 'noop.js';
 
   const isTSFile = filename.endsWith('.ts');
@@ -31,7 +40,8 @@ const swc = async (code: string) => {
   };
 
   const options = {
-    disableShuviDynamic: false,
+    isServer,
+    disableShuviDynamic,
     minify: true,
     jsc
   };
@@ -40,56 +50,157 @@ const swc = async (code: string) => {
 };
 
 describe('dynamic-plugin', () => {
-  test('should work with dynamic import', async () => {
-    const output = await swc(trim`
-      import { dynamic } from '@shuvi/runtime'
+  describe('client', () => {
+    const isServer = false;
+    test('should work with dynamic import', async () => {
+      const output = await swc(
+        trim`
+        import { dynamic } from '@shuvi/runtime'
+  
+        dynamic(() => import("./component"),{})
+      `,
+        {
+          isServer
+        }
+      );
 
-      dynamic(() => import("./component"),{})
-    `);
+      expect(output).toMatchInlineSnapshot(
+        `"import{dynamic}from\\"@shuvi/runtime\\";dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")]})"`
+      );
+    });
 
-    expect(output).toMatchInlineSnapshot(
-      `"import{dynamic}from'@shuvi/runtime';dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]})"`
-    );
+    test('dynamic import could be disabled', async () => {
+      const output = await swc(
+        trim`
+        import { dynamic } from '@shuvi/runtime'
+  
+        dynamic(() => import("./component"),{})
+      `,
+        {
+          isServer,
+          disableShuviDynamic: true
+        }
+      );
+
+      expect(output).toMatchInlineSnapshot(
+        `"import{dynamic}from\\"@shuvi/runtime\\";dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolve(\\"./component\\")]})"`
+      );
+    });
+
+    test('should work with async function', async () => {
+      const output = await swc(
+        trim`
+        import React from 'react';
+        import { dynamic } from '@shuvi/runtime'
+  
+        dynamic(async () => {
+          await wait(500);
+          return () => React.createElement('div', null, '123')
+        }, {})
+      `,
+        {
+          isServer
+        }
+      );
+
+      expect(output).toMatchInlineSnapshot(
+        `"import React from\\"react\\";import{dynamic}from\\"@shuvi/runtime\\";dynamic(async()=>{await wait(500);return()=>React.createElement(\\"div\\",null,\\"123\\")},{})"`
+      );
+    });
+
+    test('should work with object options', async () => {
+      const output = await swc(
+        trim`
+        import React from 'react';
+        import { dynamic } from '@shuvi/runtime'
+  
+        dynamic({
+          loader: () => import("./component")
+        })
+      `,
+        {
+          isServer
+        }
+      );
+      expect(output).toMatchInlineSnapshot(
+        `"import React from\\"react\\";import{dynamic}from\\"@shuvi/runtime\\";dynamic({loader:()=>import(\\"./component\\")},{webpack:()=>[require.resolveWeak(\\"./component\\")]})"`
+      );
+    });
   });
 
-  test('should work with async function', async () => {
-    const output = await swc(trim`
-      import React from 'react';
-      import { dynamic } from '@shuvi/runtime'
+  describe('server', () => {
+    const isServer = true;
+    test('should work with dynamic import', async () => {
+      const output = await swc(
+        trim`
+        import { dynamic } from '@shuvi/runtime'
+  
+        dynamic(() => import("./component"),{})
+      `,
+        {
+          isServer
+        }
+      );
 
-      dynamic(async () => {
-        await wait(500);
-        return () => React.createElement('div', null, '123')
-      }, {})
-    `);
+      expect(output).toMatchInlineSnapshot(
+        `"import{dynamic}from\\"@shuvi/runtime\\";dynamic(()=>import(\\"./component\\"),{modules:[\\"./component\\"]})"`
+      );
+    });
 
-    expect(output).toMatchInlineSnapshot(
-      `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic(async()=>{await wait(500);return()=>React.createElement('div',null,'123')},{})"`
-    );
-  });
+    test('should work with async function', async () => {
+      const output = await swc(
+        trim`
+        import React from 'react';
+        import { dynamic } from '@shuvi/runtime'
+  
+        dynamic(async () => {
+          await wait(500);
+          return () => React.createElement('div', null, '123')
+        }, {})
+      `,
+        {
+          isServer
+        }
+      );
 
-  test('should work with object options', async () => {
-    const output = await swc(trim`
-      import React from 'react';
-      import { dynamic } from '@shuvi/runtime'
+      expect(output).toMatchInlineSnapshot(
+        `"import React from\\"react\\";import{dynamic}from\\"@shuvi/runtime\\";dynamic(async()=>{await wait(500);return()=>React.createElement(\\"div\\",null,\\"123\\")},{})"`
+      );
+    });
 
-      dynamic({
-        loader: () => import("./component")
-      })
-    `);
-    expect(output).toMatchInlineSnapshot(
-      `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic({loader:()=>import(\\"./component\\")},{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]})"`
-    );
+    test('should work with object options', async () => {
+      const output = await swc(
+        trim`
+        import React from 'react';
+        import { dynamic } from '@shuvi/runtime'
+  
+        dynamic({
+          loader: () => import("./component")
+        })
+      `,
+        {
+          isServer
+        }
+      );
+      expect(output).toMatchInlineSnapshot(
+        `"import React from\\"react\\";import{dynamic}from\\"@shuvi/runtime\\";dynamic({loader:()=>import(\\"./component\\")},{modules:[\\"./component\\"]})"`
+      );
+    });
   });
 
   test('should throw error when more than 2 arguments supplied', async () => {
     let error: any;
     try {
-      await swc(trim`
+      await swc(
+        trim`
         import { dynamic } from '@shuvi/runtime'
 
         dynamic(() => import('./component'), {}, {})
-      `);
+      `,
+        {
+          isServer: false
+        }
+      );
     } catch (e) {
       error = e;
     }
