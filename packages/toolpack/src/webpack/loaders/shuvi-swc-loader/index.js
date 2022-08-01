@@ -27,8 +27,8 @@ DEALINGS IN THE SOFTWARE.
 */
 
 import querystring from 'querystring';
-import { transform } from '../../swc/load-sources';
-import getLoaderSWCOptions from '../../swc/getLoaderSWCOptions';
+import { transform } from './load-sources';
+import getLoaderSWCOptions from './getLoaderSWCOptions';
 
 const ISPAGEFILEEREG = /routes\/.*page\.[jtsx]{2,3}$/;
 

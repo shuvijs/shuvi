@@ -154,7 +154,6 @@ interface Compiler {
         labelFormat?: string;
       };
   disableShuviDynamic?: boolean;
-  autoCssModuleFlag?: string;
   experimentalDecorators?: boolean;
   emitDecoratorMetadata?: boolean;
   useDefineForClassFields?: boolean;
