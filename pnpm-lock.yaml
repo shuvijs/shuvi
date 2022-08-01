@@ -84,6 +84,36 @@ importers:
 
   packages/compiler:
     specifiers:
+      '@napi-rs/triples': 1.1.0
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
+      '@swc/plugin-transform-imports': 0.8.4
+    dependencies:
+      '@napi-rs/triples': 1.1.0
+    optionalDependencies:
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
+    devDependencies:
+      '@swc/plugin-transform-imports': 0.8.4
+
+  packages/compiler-swc:
+    specifiers:
       '@napi-rs/cli': 2.4.4
     dependencies:
       '@napi-rs/cli': 2.4.4
@@ -336,22 +366,11 @@ importers:
       '@babel/preset-react': 7.10.1
       '@babel/preset-typescript': 7.12.7
       '@babel/runtime': 7.12.5
-      '@napi-rs/triples': 1.1.0
       '@parcel/css': 1.2.0
+      '@shuvi/compiler': 1.0.0-rc.3
       '@shuvi/shared': 1.0.0-rc.3
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
       '@shuvi/utils': 1.0.0-rc.3
       '@swc/helpers': 0.4.3
-      '@swc/plugin-transform-imports': 0.8.4
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1
@@ -412,8 +431,8 @@ importers:
       '@babel/preset-react': 7.10.1_@babel+core@7.12.10
       '@babel/preset-typescript': 7.12.7_@babel+core@7.12.10
       '@babel/runtime': 7.12.5
-      '@napi-rs/triples': 1.1.0
       '@parcel/css': 1.2.0
+      '@shuvi/compiler': link:../compiler
       '@shuvi/shared': link:../shared
       '@shuvi/utils': link:../utils
       '@swc/helpers': 0.4.3
@@ -457,19 +476,7 @@ importers:
       webpack-chain: 6.5.1
       webpack-sources: 2.2.0
       webpack-virtual-modules: 0.4.3
-    optionalDependencies:
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
     devDependencies:
-      '@swc/plugin-transform-imports': 0.8.4
       '@types/babel__core': 7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1

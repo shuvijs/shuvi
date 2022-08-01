@@ -25,12 +25,13 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
-
 import querystring from 'querystring';
-import { transform } from './load-sources';
+import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
+import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
+import { transform } from '@shuvi/compiler/swc';
 import getLoaderSWCOptions from './getLoaderSWCOptions';
 
-const ISPAGEFILEEREG = /routes\/.*page\.[jtsx]{2,3}$/;
+const IS_PAGE_FILE = RegExp(escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`));
 
 async function loaderTransform(source, inputSourceMap) {
   // Make the loader async
@@ -48,7 +49,7 @@ async function loaderTransform(source, inputSourceMap) {
     minify = false
   } = loaderOptions;
 
-  const isPageFile = ISPAGEFILEEREG.test(filename);
+  const isPageFile = IS_PAGE_FILE.test(filename);
 
   let keep = [];
 
