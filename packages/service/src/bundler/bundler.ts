@@ -172,6 +172,8 @@ class WebpackBundler {
     let isInvalid = true;
 
     const _log = (...args: string[]) => console.log(`[${name}]`, ...args);
+    const _error = (...args: string[]) => console.error(`[${name}]`, ...args);
+    const _warn = (...args: string[]) => console.warn(`[${name}]`, ...args);
     compiler.hooks.invalid.tap(`invalid`, () => {
       tsMessagesPromise = undefined;
       isInvalid = true;
@@ -280,15 +282,15 @@ class WebpackBundler {
         if (messages.errors.length > 1) {
           messages.errors.length = 1;
         }
-        _log('Failed to compile.\n');
-        _log(messages.errors.join('\n\n'));
+        _error('Failed to compile.\n');
+        _error(messages.errors.join('\n\n'));
         return;
       }
 
       // Show warnings if no errors were found.
       if (messages.warnings?.length) {
-        _log('Compiled with warnings.\n');
-        _log(messages.warnings.join('\n\n'));
+        _warn('Compiled with warnings.\n');
+        _warn(messages.warnings.join('\n\n'));
       }
     });
   }
