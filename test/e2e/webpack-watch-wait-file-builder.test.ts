@@ -27,28 +27,11 @@ describe('webpack watching should wait for fileBuilder', () => {
         });
         page = await ctx.browser.page(ctx.url('/'));
         expect(await page.$text('#__APP')).toBe('Index Page sample');
-        const logSpy = jest.spyOn(console, 'log');
         const errorSpy = jest.spyOn(console, 'error');
         renameSync(filePath, newFilePath);
         await check(
           () => page.$text('#__APP'),
           t => /Index Page not exist/.test(t)
-        );
-        expect(logSpy).toHaveBeenNthCalledWith(
-          1,
-          expect.stringContaining('plugin onBuildStart')
-        );
-        expect(logSpy).toHaveBeenNthCalledWith(
-          2,
-          expect.stringMatching(/\[shuvi\/.+\] Compiling/)
-        );
-        expect(logSpy).toHaveBeenNthCalledWith(
-          3,
-          expect.stringMatching(/\[shuvi\/.+\] Compiling/)
-        );
-        expect(logSpy).toHaveBeenNthCalledWith(
-          4,
-          expect.stringContaining('plugin onBuildEnd')
         );
         expect(errorSpy).not.toHaveBeenCalled();
         renameSync(newFilePath, filePath);
