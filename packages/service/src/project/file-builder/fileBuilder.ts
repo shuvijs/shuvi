@@ -16,7 +16,16 @@ import type {
   DependencyInfo
 } from './types';
 
-type EventHandler = () => void;
+type OnBuildStartEvent = {
+  buildStatus: Defer['status'];
+};
+
+type OnBuildEndEvent = {
+  buildStatus: Defer['status'];
+};
+
+type OnBuildStartHandler = (event: OnBuildStartEvent) => void;
+type OnBuildEndHandler = (event: OnBuildEndEvent) => void;
 type EventCanceler = () => void;
 
 export interface FileBuilder<C extends {}> {
@@ -25,8 +34,8 @@ export interface FileBuilder<C extends {}> {
   watch: (dir?: string) => Promise<void>;
   close: () => Promise<void>;
   getContent: <T>(fileOption: FileOption<T>) => T;
-  onBuildStart: (eventHandler: EventHandler) => EventCanceler;
-  onBuildEnd: (eventHandler: EventHandler) => EventCanceler;
+  onBuildStart: (eventHandler: OnBuildStartHandler) => EventCanceler;
+  onBuildEnd: (eventHandler: OnBuildEndHandler) => EventCanceler;
 }
 
 export const getFileBuilder = <C extends {} = {}>(
@@ -41,8 +50,8 @@ export const getFileBuilder = <C extends {} = {}>(
   const files: Map<FileId, FileInternalInstance<any, any>> = new Map();
   let currentDefer: Defer; // mark current defer for closing
 
-  const onBuildStartHandlers = new Set<EventHandler>();
-  const onBuildEndHandlers = new Set<EventHandler>();
+  const onBuildStartHandlers = new Set<OnBuildStartHandler>();
+  const onBuildEndHandlers = new Set<OnBuildEndHandler>();
 
   const addFile = (...newFileOption: FileOption<any, C>[]) => {
     fileOptions.push(...newFileOption.map(option => ({ ...option })));
@@ -210,17 +219,6 @@ export const getFileBuilder = <C extends {} = {}>(
     awaitingBuilds.delete(drop.id);
   };
 
-  /* const prepareBuildOnce = (sources?: Set<FileId>) => {
-    const pendingFiles: Set<FileId> = sources
-      ? new Set()
-      : new Set(files.keys());
-    if (sources) {
-      // iterate dependencies to collect pending files
-      addPendingFiles(sources, pendingFiles);
-    }
-    return pendingFiles
-  } */
-
   const getPendingFiles = (sources?: Set<FileId>) => {
     const pendingFiles: Set<FileId> = sources
       ? new Set()
@@ -277,7 +275,7 @@ export const getFileBuilder = <C extends {} = {}>(
     currentDefer = defer;
     const pendingFiles = buildInfo.files;
     Array.from(onBuildStartHandlers).forEach(handler => {
-      handler();
+      handler({ buildStatus: currentDefer.status });
     });
     pendingFiles.forEach(file => {
       runBuildSingleFile(file, pendingFiles, defer);
@@ -288,7 +286,7 @@ export const getFileBuilder = <C extends {} = {}>(
     }
     await defer.promise;
     Array.from(onBuildEndHandlers).forEach(handler => {
-      handler();
+      handler({ buildStatus: currentDefer.status });
     });
 
     // clear from runningBuilds and trigger next buildOnce
@@ -307,10 +305,13 @@ export const getFileBuilder = <C extends {} = {}>(
 
   const addWatchers = () => {
     for (const [id, watchOptions] of watchMap.entries()) {
-      const canceler = createWatcher(watchOptions, () => {
-        // currently handler has no params
-        watcherHandler(id);
-      });
+      const canceler = createWatcher(
+        { ...watchOptions, aggregateTimeout: 0 },
+        () => {
+          // currently handler has no params
+          watcherHandler(id);
+        }
+      );
       watcherCancelers.push(canceler);
     }
   };
@@ -367,13 +368,13 @@ export const getFileBuilder = <C extends {} = {}>(
   const getContent = <T>(fileOption: FileOption<T>) => {
     return files.get(fileOption.id)?.fileContent;
   };
-  const onBuildStart = (eventHandler: EventHandler) => {
+  const onBuildStart = (eventHandler: OnBuildStartHandler) => {
     onBuildStartHandlers.add(eventHandler);
     return () => {
       onBuildStartHandlers.delete(eventHandler);
     };
   };
-  const onBuildEnd = (eventHandler: EventHandler) => {
+  const onBuildEnd = (eventHandler: OnBuildEndHandler) => {
     onBuildEndHandlers.add(eventHandler);
     return () => {
       onBuildEndHandlers.delete(eventHandler);

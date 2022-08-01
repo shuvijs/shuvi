@@ -130,7 +130,9 @@ class Api {
       resolveAppFile: this.resolveAppFile.bind(this),
       resolveUserFile: this.resolveUserFile.bind(this),
       resolveBuildFile: this.resolveBuildFile.bind(this),
-      resolvePublicFile: this.resolvePublicFile.bind(this)
+      resolvePublicFile: this.resolvePublicFile.bind(this),
+      onBuildStart: this._projectBuilder.onBuildStart,
+      onBuildEnd: this._projectBuilder.onBuildEnd
     };
 
     const { runner, setContext, createPlugin, usePlugin } = this._pluginManager;
@@ -322,7 +324,7 @@ class Api {
     const runner = this._pluginManager.runner;
     const addRuntimeFileUtils = {
       defineFile,
-      getContent: this._projectBuilder.getContentGetter()
+      getContent: this._projectBuilder.getContent
     };
     const [appRuntimeFiles, runtimeServices] = await Promise.all([
       (await runner.addRuntimeFile(addRuntimeFileUtils)).flat(),

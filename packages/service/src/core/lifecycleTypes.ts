@@ -2,7 +2,7 @@ import { RequestListener } from 'http';
 import { WebpackChain } from '@shuvi/toolpack/lib/webpack';
 import webpack, { Configuration } from '@shuvi/toolpack/lib/webpack';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
-import { defineFile, FileOption } from '../project';
+import { defineFile, FileBuilder } from '../project';
 import { IWebpackConfigOptions } from '../bundler/config';
 import { IServiceMode } from './apiTypes';
 
@@ -57,7 +57,7 @@ export type Resources = [string, string | undefined];
 
 export type AddRuntimeFileUtils = {
   defineFile: typeof defineFile;
-  getContent: <T>(fileOption: FileOption<T>) => T;
+  getContent: FileBuilder<any>['getContent'];
 };
 
 export interface WebpackChainType extends WebpackChain {}

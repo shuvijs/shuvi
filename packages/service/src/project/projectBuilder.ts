@@ -144,8 +144,16 @@ class ProjectBuilder {
     await this._fileBuilder.close();
   }
 
-  getContentGetter() {
+  get getContent() {
     return this._fileBuilder.getContent;
+  }
+
+  get onBuildStart() {
+    return this._fileBuilder.onBuildStart;
+  }
+
+  get onBuildEnd() {
+    return this._fileBuilder.onBuildEnd;
   }
 }
 
