@@ -25,12 +25,12 @@ SOFTWARE.
 // This file is based on https://github.com/facebook/create-react-app/blob/v1.1.4/packages/react-dev-utils/webpackHotDevClient.js
 // It's been edited to rely on webpack-hot-middleware.
 
+// @ts-nocheck
 import * as ErrorOverlay from 'react-error-overlay';
 import stripAnsi from 'strip-ansi';
-import formatWebpackMessages from '../formatWebpackMessages';
-import { getEventSourceWrapper } from './eventsource';
+import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
+import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/esm/constants';
 import { connectHMR, addMessageListener, sendMessage } from './websocket';
-import { DEFAULT_TIMEOUT_MS } from '../../constants';
 
 // This alternative WebpackDevServer combines the functionality of:
 // https://github.com/webpack/webpack-dev-server/blob/webpack-1/client/index.js
@@ -46,15 +46,25 @@ import { DEFAULT_TIMEOUT_MS } from '../../constants';
 // https://github.com/facebook/create-react-app/blob/25184c4e91ebabd16fe1cde3d8630830e4a36a01/packages/react-dev-utils/webpackHotDevClient.js
 
 let hadRuntimeError = false;
-let customHmrEventHandler;
+let customHmrEventHandler: any;
 
-export default function connect(options) {
+export type HotDevClient = {
+  sendMessage: (data: any) => void;
+  subscribeToHmrEvent: (handler: any) => void;
+  reportRuntimeError: (err: any) => void;
+};
+
+export default function connect(options: {
+  launchEditorEndpoint: string;
+  path: string;
+  location: Location;
+}): HotDevClient {
   // Open stack traces in an editor.
   ErrorOverlay.setEditorHandler(function editorHandler({
     fileName,
     lineNumber,
     colNumber
-  }) {
+  }: any) {
     // Resolve invalid paths coming from react-error-overlay
     const resolvedFilename = fileName.replace(
       /^webpack:\/\/[^/]+/ /* webpack://namaspcae/resourcepath */,
@@ -107,7 +117,7 @@ export default function connect(options) {
 
   setInterval(() => {
     sendMessage(JSON.stringify({ event: 'ping' }));
-  }, DEFAULT_TIMEOUT_MS / 2);
+  }, DEV_SOCKET_TIMEOUT_MS / 2);
 
   return {
     sendMessage(data) {

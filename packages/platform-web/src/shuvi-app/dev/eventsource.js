@@ -10,7 +10,7 @@ function EventSourceWrapper(options) {
   }
 
   init();
-  var timer = setInterval(function() {
+  var timer = setInterval(function () {
     if (new Date() - lastActivity > options.timeout) {
       handleDisconnect();
     }
@@ -24,7 +24,7 @@ function EventSourceWrapper(options) {
   }
 
   function handleOnline() {
-    if (options.log) console.log("[HMR] connected");
+    if (options.log) console.log('[HMR] connected');
     lastActivity = new Date();
   }
 
@@ -33,7 +33,7 @@ function EventSourceWrapper(options) {
     for (var i = 0; i < listeners.length; i++) {
       listeners[i](event);
     }
-    if (event.data.indexOf("action") !== -1) {
+    if (event.data.indexOf('action') !== -1) {
       eventCallbacks.forEach(cb => cb(event));
     }
   }
@@ -49,7 +49,7 @@ function EventSourceWrapper(options) {
       clearTimeout(timer);
       source.close();
     },
-    addMessageListener: function(fn) {
+    addMessageListener: function (fn) {
       listeners.push(fn);
     }
   };

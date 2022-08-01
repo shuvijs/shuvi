@@ -1,5 +1,3 @@
-import { DEFAULT_TIMEOUT_MS } from '../../constants';
-
 let source: any;
 const eventCallbacks: ((event: any) => void)[] = [];
 let lastActivity = Date.now();
@@ -21,6 +19,12 @@ export function sendMessage(data: any) {
   return source.send(data);
 }
 
+export type HotDevClient = {
+  sendMessage: (data: any) => void;
+  subscribeToHmrEvent?: (handler: any) => void;
+  reportRuntimeError?: (err: any) => void;
+};
+
 export function connectHMR(options: {
   path: string;
   timeout: number;
@@ -30,10 +34,9 @@ export function connectHMR(options: {
     hostname: string;
     port?: string;
   };
-  WebSocket: any;
 }) {
   if (!options.timeout) {
-    options.timeout = DEFAULT_TIMEOUT_MS;
+    options.timeout = 5000;
   }
 
   init();
@@ -50,7 +53,7 @@ export function connectHMR(options: {
     protocol = getSocketProtocol(protocol);
     let url = `${protocol}://${hostname}:${port}`;
 
-    source = new options.WebSocket(`${url}${options.path}`);
+    source = new WebSocket(`${url}${options.path}`);
     source.onopen = handleOnline;
     source.onerror = handleDisconnect;
     source.onmessage = handleMessage;

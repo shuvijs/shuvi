@@ -25,12 +25,7 @@
 import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-
-import {
-  DEFAULT_TIMEOUT_MS,
-  BASE_MAX_INACTIVE_AGE_MS,
-  DEFAULT_PAGE_BUFFER_SIZE
-} from '@shuvi/toolpack/lib/constants';
+import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/lib/constants';
 
 type modulePath = string;
 type route = string;
@@ -52,15 +47,18 @@ interface IWebpackHotMiddlewareOptions {
   disposeInactivePage: boolean;
 }
 
+const DEFAULT_PAGE_BUFFER_SIZE = 2;
+const BASE_INACTIVE_TIMEOUT = 25 * 1000;
+
 export class WebpackHotMiddleware {
   _path: string;
   _disposeInactivePage: boolean;
   clientManager: ClientManager;
   latestStats: webpack.Stats | null;
   closed: boolean;
-  protected timer: NodeJS.Timer = setInterval(() => {
+  timer: NodeJS.Timer = setInterval(() => {
     this.handleInactiveModule();
-  }, DEFAULT_TIMEOUT_MS + 1000);
+  }, DEV_SOCKET_TIMEOUT_MS + 1000);
 
   constructor({
     compiler,
@@ -109,7 +107,7 @@ export class WebpackHotMiddleware {
           );
         }
 
-        if (parsedData.event === 'routesUpdate') {
+        if (parsedData.event === 'updatePageStatus') {
           this.updateModuleActivity(parsedData.currentRoutes, parsedData.page);
         }
       } catch (_) {}
@@ -161,7 +159,7 @@ export class WebpackHotMiddleware {
     } else {
       modulesActivity.set(page, {
         routes: new Set(matchRoutes),
-        timeout: BASE_MAX_INACTIVE_AGE_MS,
+        timeout: BASE_INACTIVE_TIMEOUT,
         disposeNum: 0,
         lastActivity: Date.now()
       });
@@ -196,7 +194,7 @@ export class WebpackHotMiddleware {
   }
 
   private handleTimeout(disposeNum: number): number {
-    return (1 + disposeNum) * BASE_MAX_INACTIVE_AGE_MS;
+    return (1 + disposeNum) * BASE_INACTIVE_TIMEOUT;
   }
 }
 
