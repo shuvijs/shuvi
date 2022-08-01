@@ -49,11 +49,13 @@ async function loaderTransform(source, inputSourceMap) {
     minify = false
   } = loaderOptions;
 
-  const isPageFile = IS_PAGE_FILE.test(filename);
+  const isPageFile = !!(
+    this.resourceQuery && IS_PAGE_FILE.test(this.resourceQuery)
+  );
 
   let keep = [];
 
-  if (isPageFile && this.resourceQuery) {
+  if (isPageFile) {
     const query = querystring.parse(this.resourceQuery.slice(1));
     if (query.keep) {
       if (Array.isArray(query.keep)) {
