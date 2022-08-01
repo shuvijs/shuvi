@@ -1,0 +1,6 @@
+
+  x @shuvi/runtime dynamic options must be an object literal
+   ,-[input.js:4:1]
+ 4 | const DynamicComponentWithCustomLoading = dynamic(
+   :                                           ^^^^^^^
+   `----
