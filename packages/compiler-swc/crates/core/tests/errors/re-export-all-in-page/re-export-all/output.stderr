@@ -1,0 +1,6 @@
+
+  x Using `export * from '...'` in a page is disallowed. Please use `export { default } from '...'` instead.
+   ,-[input.js:1:1]
+ 1 | export * from './other-page'
+   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
