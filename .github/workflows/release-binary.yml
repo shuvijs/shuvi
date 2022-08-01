@@ -1,8 +1,6 @@
 on:
   push:
     branches: [release/*]
-    paths:
-      - 'packages/compiler/scripts/version.js'
 
 name: Test and Release SWC binary
 

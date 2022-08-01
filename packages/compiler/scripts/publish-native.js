@@ -6,7 +6,7 @@ const { execSync } = require('child_process');
 
 (function () {
   try {
-    const version = require('./version').version;
+    const version = require(path.join(__dirname, '../package.json')).version;
 
     // Copy binaries to package folders, update version, and publish
     let binarySourcesDir = path.join(__dirname, '../native');
