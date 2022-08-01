@@ -97,6 +97,7 @@ export async function getDevMiddleware(
   );
 
   const webpackHotMiddleware = new WebpackHotMiddleware({
+    disposeInactivePage: serverPluginContext.config.disposeInactivePage,
     compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!,
     path: DEV_HOT_MIDDLEWARE_PATH
   });

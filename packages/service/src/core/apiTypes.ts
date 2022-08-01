@@ -170,6 +170,7 @@ export interface InternalConfig {
   typescript: { ignoreBuildErrors: boolean };
   proxy?: IProxyConfig;
   compiler?: Compiler;
+  disposeInactivePage: boolean;
   experimental: {
     parcelCss: boolean;
     preBundle: boolean;

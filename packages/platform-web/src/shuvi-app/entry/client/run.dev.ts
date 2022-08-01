@@ -7,7 +7,7 @@ import initWebpackHMR from '../../dev/webpackHotDevClient';
 import { run } from './app';
 
 async function init() {
-  initWebpackHMR();
+  const devClient = initWebpackHMR();
   // reduce FOUC caused by style-loader
   const styleReady = new Promise<void>(resolve => {
     (window.requestAnimationFrame || setTimeout)(async () => {
@@ -20,6 +20,8 @@ async function init() {
   });
 
   await styleReady!;
+
+  return devClient;
 }
 
-init().then(run);
+init().then(devClient => run(devClient));
