@@ -43,7 +43,8 @@ const run = async (devClient?: devClient) => {
       devClient.sendMessage(
         JSON.stringify({
           event: 'routesUpdate',
-          currentRoutes: app.router.current.matches
+          currentRoutes: app.router.current.matches,
+          page: location.pathname
         })
       );
     }, DEFAULT_TIMEOUT_MS / 2);

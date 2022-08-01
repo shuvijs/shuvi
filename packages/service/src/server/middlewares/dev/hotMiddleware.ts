@@ -37,12 +37,13 @@ type route = string;
 type lastActivity = number;
 
 type moduleActivity = {
-  routes: Map<route, lastActivity>;
+  routes: Set<route>;
   timeout: number;
   disposeNum: number;
 };
 
 const modulesActivity = new Map<modulePath, moduleActivity>();
+const routesActivity = new Map<route, lastActivity>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
@@ -107,7 +108,7 @@ export class WebpackHotMiddleware {
         }
 
         if (parsedData.event === 'routesUpdate') {
-          this.updateModuleActivity(parsedData.currentRoutes);
+          this.updateModuleActivity(parsedData.currentRoutes, parsedData.page);
         }
       } catch (_) {}
     });
@@ -142,39 +143,45 @@ export class WebpackHotMiddleware {
     this.clientManager.close();
   };
 
-  private updateModuleActivity(matchRoutes: IRouteMatch[] | []): void {
-    if (matchRoutes.length < 1) return; //error page
+  private updateModuleActivity(
+    matchRoutes: IRouteMatch[] | [],
+    page: string
+  ): void {
+    if (matchRoutes.length < 1 || !page) return; //error page
 
     for (const {
-      route: { __componentSourceWithAffix__ },
-      pathname
+      route: { __componentSourceWithAffix__ }
     } of matchRoutes) {
-      const moduleActivity = modulesActivity.get(pathname);
+      const moduleActivity = modulesActivity.get(page);
+
       if (moduleActivity) {
-        moduleActivity.routes.set(__componentSourceWithAffix__!, Date.now());
+        moduleActivity.routes.add(__componentSourceWithAffix__!);
       } else {
-        modulesActivity.set(pathname, {
-          routes: new Map([[__componentSourceWithAffix__!, Date.now()]]),
+        modulesActivity.set(page, {
+          routes: new Set([__componentSourceWithAffix__!]),
           timeout: BASE_MAX_INACTIVE_AGE_MS,
           disposeNum: 0
         });
       }
+
+      routesActivity.set(__componentSourceWithAffix__!, Date.now());
     }
   }
 
   private handleInactiveModule(): void {
     for (const moduleActivity of modulesActivity.values()) {
-      for (const [route, lastActivity] of moduleActivity.routes) {
+      for (const route of moduleActivity.routes) {
         if (
           this._disposeInactivePage &&
-          lastActivity &&
-          Date.now() - lastActivity > moduleActivity.timeout
+          routesActivity.get(route) &&
+          Date.now() - routesActivity.get(route)! > moduleActivity.timeout
         ) {
           ModuleReplacePlugin.replaceModule(route);
           moduleActivity.timeout = this.handleTimeout(
             ++moduleActivity.disposeNum
           );
           moduleActivity.routes.delete(route);
+          routesActivity.delete(route);
         }
       }
     }
