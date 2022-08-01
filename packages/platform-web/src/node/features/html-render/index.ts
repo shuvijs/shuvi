@@ -6,7 +6,10 @@ import {
   createPlugin
 } from '@shuvi/service';
 import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
-import { BUNDLER_TARGET_SERVER } from '@shuvi/shared/lib/constants';
+import {
+  BUNDLER_DEFAULT_TARGET,
+  BUNDLER_TARGET_SERVER
+} from '@shuvi/shared/lib/constants';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { resolvePkgFile } from '../../paths';
@@ -34,15 +37,17 @@ export const getPlugin = (
   platformContext: IPlatformContext
 ): ResolvedPlugin => {
   const core = createPlugin({
-    configWebpack: chain => {
-      chain.merge({
-        entry: {
-          [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill'],
-          [BUILD_CLIENT_RUNTIME_MAIN]: [
-            resolvePkgFile('esm/shuvi-app/entry/client')
-          ]
-        }
-      });
+    configWebpack: (chain, { name }) => {
+      if (name === BUNDLER_DEFAULT_TARGET) {
+        chain.merge({
+          entry: {
+            [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill'],
+            [BUILD_CLIENT_RUNTIME_MAIN]: [
+              resolvePkgFile('esm/shuvi-app/entry/client')
+            ]
+          }
+        });
+      }
       return chain;
     },
     addExtraTarget: ({ createConfig }, context) => {
