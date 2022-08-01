@@ -1,7 +1,7 @@
 {
   "name": "shuvi",
   "private": true,
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.2",
   "workspaces": [
     "packages/*"
   ],
@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "pnpm -r --stream --parallel run dev",
     "build": "pnpm -r run build",
-    "clean": "pnpm -r --parallel exec rm -rf lib esm shuvi-app && find ./ -name 'node_modules' -type d -exec rm -rf '{}' +",
+    "clean": "pnpm -r --parallel exec rimraf node_modules lib esm shuvi-app && pnpm exec rimraf node_modules",
     "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",
     "test": "pnpm test:unit && pnpm test:e2e",
