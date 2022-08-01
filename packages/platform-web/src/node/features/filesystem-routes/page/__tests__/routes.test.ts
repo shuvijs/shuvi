@@ -23,32 +23,32 @@ describe('serializeRoutes', () => {
   test('should work', () => {
     expect(serializeRoutes(routes)).toMatchInlineSnapshot(`
       "[{path: \\"/\\",
-      __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
+      __componentSourceWithAffix__: \\"Foo?shuvi-route&keep=default\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
         /* webpackChunkName: \\"page-0042\\" */
         /* webpackExports: \\"default\\" */
-        \\"Foo?shuvi-route\\"),
-      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
+        \\"Foo?shuvi-route&keep=default\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route&keep=default\\")],
       id: \\"0042\\",
       },
       {path: \\"/nested\\",
-      __componentSourceWithAffix__: \\"Foo?shuvi-route\\",
+      __componentSourceWithAffix__: \\"Foo?shuvi-route&keep=default\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
         /* webpackChunkName: \\"page-0c46\\" */
         /* webpackExports: \\"default\\" */
-        \\"Foo?shuvi-route\\"),
-      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
+        \\"Foo?shuvi-route&keep=default\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route&keep=default\\")],
       id: \\"0c46\\",
       children: [{path: \\"/a\\",
-      __componentSourceWithAffix__: \\"Bar?shuvi-route\\",
+      __componentSourceWithAffix__: \\"Bar?shuvi-route&keep=default\\",
       __componentSource__: \\"Bar\\",
       __import__: () => import(
         /* webpackChunkName: \\"page-f571\\" */
         /* webpackExports: \\"default\\" */
-        \\"Bar?shuvi-route\\"),
-      __resolveWeak__: () => [require.resolveWeak(\\"Bar?shuvi-route\\")],
+        \\"Bar?shuvi-route&keep=default\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Bar?shuvi-route&keep=default\\")],
       id: \\"f571\\",
       },
       ],

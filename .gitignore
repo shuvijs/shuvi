@@ -12,7 +12,8 @@ node_modules
 # workspace
 .vscode/
 .idea/
-.history/
+.swc
+.turbo
 
 
 # build output

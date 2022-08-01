@@ -1,0 +1,22 @@
+{
+  "name": "@shuvi/swc-linux-x64-musl",
+  "version": "0.0.0",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "libc": [
+    "musl"
+  ],
+  "main": "shuvi-swc.linux-x64-musl.node",
+  "files": [
+    "shuvi-swc.linux-x64-musl.node"
+  ],
+  "libc": ["musl"],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
