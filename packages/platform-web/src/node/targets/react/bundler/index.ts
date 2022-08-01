@@ -47,6 +47,11 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     resolveLocal('react', 'jsx-runtime')
   ]);
   // @ts-ignore
+  config.resolve.alias.set('react/jsx-dev-runtime$', [
+    resolveUser('react/jsx-dev-runtime'),
+    resolveLocal('react', 'jsx-dev-runtime')
+  ]);
+  // @ts-ignore
   config.resolve.alias.set('react-dom$', [
     resolveUser('react-dom'),
     resolveLocal('react-dom')
