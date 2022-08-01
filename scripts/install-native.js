@@ -11,7 +11,7 @@ function installSWCNative() {
   var cwd = path.join(__dirname, '../');
 
   var stdout = execSync(
-    'turbo run build-native --cache-dir=".turbo" -- --release',
+    'turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release',
     { cwd }
   ).toString();
 
