@@ -1,10 +1,8 @@
 import { matchRoutes } from '@shuvi/router';
-import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { clientManifest } from '@shuvi/service/lib/resources';
+import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { getRoutes } from '../filesystem-routes/index';
 
 function acceptsHtml(
   header: string,
@@ -81,11 +79,12 @@ export default class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const matchedRoutes = matchRoutes(getRoutes(), pathname) || [];
+    const matchedRoutes = matchRoutes(server.pageRoutes, pathname) || [];
 
     const modulesToActivate = matchedRoutes
-      .map(({ route: { component } }) =>
-        component ? `${component}?${ROUTE_RESOURCE_QUERYSTRING}` : ''
+      .map(
+        ({ route: { __componentSourceWithAffix__ } }) =>
+          __componentSourceWithAffix__
       )
       .filter(Boolean);
 

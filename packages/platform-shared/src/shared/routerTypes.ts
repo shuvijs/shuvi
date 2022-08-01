@@ -18,7 +18,6 @@ export interface IRawPageRouteRecord extends IRouteRecord {
   path: string;
   component?: any;
   children?: IRawPageRouteRecord[];
-  fullPath: string;
   __componentSource__: string;
   __componentSourceWithAffix__: string;
   __import__: () => Promise<any>;
@@ -41,7 +40,6 @@ export interface IPageRouteConfig {
   component?: string;
   redirect?: string;
   path: string;
-  fullPath?: string;
 }
 
 export interface IPageRouteConfigWithId extends IPageRouteConfig {
