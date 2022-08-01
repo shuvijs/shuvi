@@ -3,6 +3,8 @@ import { RedoxWrapper } from './RedoxWrapper';
 
 export default createRuntimePlugin({
   appComponent: async (App, appContext) => {
-    return RedoxWrapper(App, { storeManager: appContext.store });
+    return RedoxWrapper(App, {
+      storeManager: appContext.store
+    });
   }
 });

@@ -1,4 +1,4 @@
-// exported by @shuvi/runtme
+// exported by @shuvi/runtime
 
 import { IRequestHandlerWithNext } from '@shuvi/service';
 
