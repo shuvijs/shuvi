@@ -1,20 +1,13 @@
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http';
-import { UrlWithParsedQuery } from 'url';
 import { IParams, ParsedQuery as IQuery } from '@shuvi/router';
 
-export interface IIncomingMessage extends IncomingMessage {
-  url: string;
-  parsedUrl: UrlWithParsedQuery;
-  originalUrl?: IncomingMessage['url'];
-  [x: string]: any;
-}
-
-export interface IRequest extends IIncomingMessage {
+export interface IRequest extends IncomingMessage {
   url: string;
   pathname: string;
   query: IQuery;
   params: IParams;
   headers: IncomingHttpHeaders;
+  [x: string]: any;
 }
 
 export interface IResponse extends ServerResponse {}
