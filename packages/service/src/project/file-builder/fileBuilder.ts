@@ -19,7 +19,7 @@ import type {
 type EventHandler = () => void;
 type EventCanceler = () => void;
 
-interface FileBuilder<C extends {}> {
+export interface FileBuilder<C extends {}> {
   addFile: (...newFileOption: FileOption<any, C>[]) => void;
   build: (dir?: string) => Promise<void>;
   watch: (dir?: string) => Promise<void>;
@@ -159,6 +159,9 @@ export const getFileBuilder = <C extends {} = {}>(
     const fileContent = await current.content(context, current.fileContent);
     current.fileContent = fileContent;
     if (!current.virtual) {
+      const filePath = current.name as string;
+      const dir = path.dirname(filePath);
+      fs.ensureDirSync(dir);
       fs.writeFileSync(current.name as string, fileContent, 'utf-8');
     }
     pendingFileList.delete(id);

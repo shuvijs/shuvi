@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {
   defineFile as originalDefineFile,
-  FileOptions,
-  DefineFileOption
+  FileOption,
+  FileOptionWithoutId
 } from '@shuvi/service/lib/project';
 import { ProjectContext } from '../projectContext';
 
@@ -17,10 +17,10 @@ const getAllFiles = (
   context: ProjectContext,
   dirPath: string,
   parent: string = '',
-  fileList: FileOptions[] = []
-): FileOptions[] => {
+  fileList: FileOption<any>[] = []
+): FileOption<any>[] => {
   const files = fs.readdirSync(dirPath);
-  let currentFileList: FileOptions[] = fileList;
+  let currentFileList: FileOption<any>[] = fileList;
   files.forEach((file: string) => {
     const filepath = path.join(dirPath, file);
     const name = path.join(parent, file.replace(EXT_REGEXP, ''));
@@ -41,8 +41,9 @@ const getAllFiles = (
   return currentFileList;
 };
 
-export function getFilePresets(context: ProjectContext): FileOptions[] {
+export function getFilePresets(context: ProjectContext): FileOption<any>[] {
   return getAllFiles(context, path.join(__dirname, 'files'));
 }
 
-export const defineFile = (options: Omit<DefineFileOption, 'name'>) => options;
+export const defineFile = (options: Omit<FileOptionWithoutId, 'name'>) =>
+  options;

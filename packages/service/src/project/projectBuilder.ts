@@ -1,14 +1,15 @@
 import * as path from 'path';
 import invariant from '@shuvi/utils/lib/invariant';
-import { getFileManager, FileManager, FileOptionsBase } from './file-manager';
 import { getFilePresets } from './file-presets';
 import { getExportsFromObject } from './file-utils';
 import { RuntimePluginConfig } from '../core';
 import { ProjectContext, createProjectContext } from './projectContext';
-
-interface ProjectBuilderOptions {
-  static?: boolean;
-}
+import {
+  getFileBuilder,
+  defineFile,
+  FileBuilder,
+  FileOption
+} from './file-builder';
 
 function checkFilepath(filepath: string): string {
   invariant(
@@ -50,18 +51,17 @@ const isTruthy = (value: unknown, recursive = true): boolean => {
 
 class ProjectBuilder {
   private _projectContext: ProjectContext;
-  private _fileManager: FileManager;
-  private _internalFiles: FileOptionsBase[];
+  private _fileBuilder: FileBuilder<ProjectContext>;
+  private _internalFiles: FileOption<any, any>[];
 
-  constructor(option: ProjectBuilderOptions = {}) {
+  constructor() {
     this._projectContext = createProjectContext();
-    this._fileManager = getFileManager({
-      watch: !option.static,
-      context: this._projectContext
-    });
+
+    this._fileBuilder = getFileBuilder(this._projectContext);
     this._internalFiles = getFilePresets();
-    this._internalFiles.forEach((file: FileOptionsBase) => {
-      this._fileManager.addFile(file);
+    this._internalFiles.forEach(file => {
+      //this._fileManager.addFile(file);
+      this._fileBuilder.addFile(file);
     });
   }
 
@@ -96,21 +96,23 @@ class ProjectBuilder {
       const service: Map<string, Set<string>> = new Map();
       service.set(source, exportedSet);
       services.set(filepath, service);
-      this.addFile({
-        name: filepath,
-        content: (context: ProjectContext) => {
-          const exportsConfig: { [key: string]: string[] } = {};
-          const service = context.runtimeServices.get(filepath);
-          if (!service) {
-            return null;
-          }
+      this.addFile(
+        defineFile({
+          name: filepath,
+          content: (context: ProjectContext) => {
+            const exportsConfig: { [key: string]: string[] } = {};
+            const service = context.runtimeServices.get(filepath);
+            if (!service) {
+              return null;
+            }
 
-          for (const [s, e] of service) {
-            exportsConfig[s] = Array.from(e);
+            for (const [s, e] of service) {
+              exportsConfig[s] = Array.from(e);
+            }
+            return getExportsFromObject(exportsConfig);
           }
-          return getExportsFromObject(exportsConfig);
-        }
-      });
+        })
+      );
     }
   }
 
@@ -122,25 +124,28 @@ class ProjectBuilder {
   /**
    * default path is the root path
    */
-  addFile(options: FileOptionsBase): void {
-    checkFilepath(options.name);
-    this._fileManager.addFile(options);
+  addFile(option: FileOption<any, any>): void {
+    if (option.name) {
+      checkFilepath(option.name);
+    }
+    //this._fileManager.addFile(options);
+    this._fileBuilder.addFile(option);
   }
 
-  /**
-   * There is no longer `buildOnce` method.
-   * Continuous building or static building will rely on `static` value of `ProjectBuilderOptions`
-   */
   async build(dir: string): Promise<void> {
-    await this._fileManager.mount(dir);
+    await this._fileBuilder.build(dir);
+  }
+
+  async watch(dir: string): Promise<void> {
+    await this._fileBuilder.watch(dir);
   }
 
   async stopBuild(): Promise<void> {
-    await this._fileManager.unmount();
+    await this._fileBuilder.close();
   }
 
   getContentGetter() {
-    return this._fileManager.getContent;
+    return this._fileBuilder.getContent;
   }
 }
 

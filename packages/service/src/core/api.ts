@@ -17,7 +17,7 @@ import {
   RuntimePluginConfig,
   ResolvedPlugin
 } from './apiTypes';
-import { defineFile, ProjectBuilder, FileOptions } from '../project';
+import { defineFile, ProjectBuilder, FileOption } from '../project';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
 import {
   getManager,
@@ -85,9 +85,7 @@ class Api {
     this._plugins = plugins || [];
     this._pluginManager = getManager();
     this._pluginManager.clear();
-    this._projectBuilder = new ProjectBuilder({
-      static: this._mode === 'production'
-    });
+    this._projectBuilder = new ProjectBuilder();
   }
 
   get cwd() {
@@ -193,16 +191,22 @@ class Api {
 
   async buildApp(): Promise<void> {
     await Promise.all([this._removeLastArtifacts(), this._initArtifacts()]);
-    await this._projectBuilder.build(this._paths.privateDir);
+    if (this.mode === 'production') {
+      await this._projectBuilder.build(this._paths.privateDir);
+    } else {
+      await this._projectBuilder.watch(this._paths.privateDir);
+    }
   }
 
-  addRuntimeFile(options: FileOptions): void {
-    options.name = path.join('app', 'files', options.name);
-    this._projectBuilder.addFile(options);
+  addRuntimeFile(option: FileOption<any>): void {
+    if (option.name) {
+      option.name = path.join('app', 'files', option.name);
+    }
+    this._projectBuilder.addFile(option);
   }
 
-  addInternalRuntimeFile(options: FileOptions): void {
-    this._projectBuilder.addFile(options);
+  addInternalRuntimeFile(option: FileOption<any>): void {
+    this._projectBuilder.addFile(option);
   }
 
   addRuntimePlugin(plugin: RuntimePluginConfig): void {
@@ -266,7 +270,7 @@ class Api {
 
   private async _initPlatform(): Promise<{
     plugins: ResolvedPlugin[];
-    getPresetRuntimeFiles: () => Promise<FileOptions[]> | FileOptions[];
+    getPresetRuntimeFiles: () => Promise<FileOption<any>[]> | FileOption<any>[];
   }> {
     if (!this._platform)
       return {

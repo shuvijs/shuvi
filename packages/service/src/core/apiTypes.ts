@@ -3,7 +3,7 @@ import {
   CorePluginInstance,
   PluginRunner
 } from './lifecycle';
-import { FileOptions } from '../project';
+import { FileOption } from '../project';
 import {
   IServerMiddleware,
   IServerPluginContext,
@@ -94,7 +94,7 @@ export type IPlatformContent = {
   plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
   getPresetRuntimeFiles: (
     context: IPluginContext
-  ) => FileOptions[] | Promise<FileOptions[]>;
+  ) => FileOption<any>[] | Promise<FileOption<any>[]>;
   getMiddlewares?: (
     context: IServerPluginContext
   ) => IServerMiddleware | IServerMiddleware[];
