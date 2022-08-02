@@ -3,11 +3,11 @@ import {
   DEV_STYLE_HIDE_FOUC,
   DEV_STYLE_PREPARE
 } from '@shuvi/shared/lib/constants';
-import initWebpackHMR from '../../dev/webpackHotDevClient';
-import { run } from './app';
+import { initHMRAndDevClient } from '../../dev';
+import { run, app } from './app';
 
 async function init() {
-  initWebpackHMR();
+  initHMRAndDevClient(app);
   // reduce FOUC caused by style-loader
   const styleReady = new Promise<void>(resolve => {
     (window.requestAnimationFrame || setTimeout)(async () => {
@@ -22,4 +22,4 @@ async function init() {
   await styleReady!;
 }
 
-init().then(run);
+init().then(() => run());

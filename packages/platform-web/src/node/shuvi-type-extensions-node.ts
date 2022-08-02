@@ -1,5 +1,5 @@
 import '@shuvi/platform-shared/shuvi-type-extensions-node';
-import { IRawPageRouteRecord } from '@shuvi/platform-shared/shared';
+import { IPageRouteRecord } from '@shuvi/platform-shared/shared';
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import {
   IMiddlewareRoutes,
@@ -19,7 +19,7 @@ export {};
 declare module '@shuvi/service/lib/resources' {
   export const server: {
     server: IServerModule;
-    pageRoutes: IRawPageRouteRecord[];
+    pageRoutes: IPageRouteRecord[];
     apiRoutes: IApiRoutes;
     middlewareRoutes: IMiddlewareRoutes;
     application: {

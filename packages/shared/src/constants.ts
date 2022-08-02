@@ -3,7 +3,7 @@ export const NAME = 'shuvi';
 
 export const DEV_ONLY_ASSETS_PREFIX = `/_${NAME}`;
 
-export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route&keep=default`;
+export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route`;
 
 export const PUBLIC_ENV_PREFIX = 'SHUVI_PUBLIC_';
 
@@ -21,6 +21,8 @@ export const DEV_STYLE_PREPARE = '__shuvi_style_prepare';
 export const DEV_HOT_MIDDLEWARE_PATH = `${DEV_ONLY_ASSETS_PREFIX}/webpack-hmr`;
 
 export const DEV_HOT_LAUNCH_EDITOR_ENDPOINT = `${DEV_ONLY_ASSETS_PREFIX}/development/open-stack-frame-in-editor`;
+
+export const DEV_SOCKET_TIMEOUT_MS = 5000;
 
 export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;
 

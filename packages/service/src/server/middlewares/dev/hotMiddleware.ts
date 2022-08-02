@@ -24,23 +24,52 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
+import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
+import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/lib/constants';
 
+type modulePath = string;
+type route = string;
+type lastActivity = number;
+
+type moduleActivity = {
+  routes: Set<route>;
+  timeout: number;
+  disposeNum: number;
+  lastActivity: number;
+};
+
+const modulesActivity = new Map<modulePath, moduleActivity>();
+const routesActivity = new Map<route, lastActivity>();
+const activePages = new Set<modulePath>();
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
   path: string;
+  disposeInactivePage: boolean;
 }
+
+const DEFAULT_PAGE_BUFFER_SIZE = 2;
+const BASE_INACTIVE_TIMEOUT = 25 * 1000;
 
 export class WebpackHotMiddleware {
   _path: string;
+  _disposeInactivePage: boolean;
   clientManager: ClientManager;
   latestStats: webpack.Stats | null;
   closed: boolean;
+  timer: NodeJS.Timer = setInterval(() => {
+    this.handleInactiveModule();
+  }, DEV_SOCKET_TIMEOUT_MS + 1000);
 
-  constructor({ compiler, path }: IWebpackHotMiddlewareOptions) {
+  constructor({
+    compiler,
+    path,
+    disposeInactivePage
+  }: IWebpackHotMiddlewareOptions) {
     this.clientManager = new ClientManager();
     this.latestStats = null;
     this.closed = false;
     this._path = path;
+    this._disposeInactivePage = disposeInactivePage;
 
     compiler.hooks.invalid.tap('webpack-hot-middleware', this.onInvalid);
     compiler.hooks.done.tap('webpack-hot-middleware', this.onDone);
@@ -77,6 +106,10 @@ export class WebpackHotMiddleware {
             })
           );
         }
+
+        if (parsedData.event === 'updatePageStatus') {
+          this.updateModuleActivity(parsedData.currentRoutes, parsedData.page);
+        }
       } catch (_) {}
     });
   };
@@ -101,6 +134,7 @@ export class WebpackHotMiddleware {
     if (this.closed) return;
     this.clientManager.publish(payload);
   };
+
   close = () => {
     if (this.closed) return;
     // Can't remove compiler plugins, so we just set a flag and noop if closed
@@ -108,6 +142,60 @@ export class WebpackHotMiddleware {
     this.closed = true;
     this.clientManager.close();
   };
+
+  private updateModuleActivity(matchRoutes: string[] | [], page: string): void {
+    if (matchRoutes.length < 1 || !page) return; //error page
+
+    activePages.add(page);
+
+    const moduleActivity = modulesActivity.get(page);
+
+    if (!!moduleActivity) {
+      for (const route of matchRoutes) {
+        moduleActivity.routes.add(route);
+        moduleActivity.lastActivity = Date.now();
+        routesActivity.set(route, Date.now());
+      }
+    } else {
+      modulesActivity.set(page, {
+        routes: new Set(matchRoutes),
+        timeout: BASE_INACTIVE_TIMEOUT,
+        disposeNum: 0,
+        lastActivity: Date.now()
+      });
+    }
+  }
+
+  private handleInactiveModule(): void {
+    if (!this._disposeInactivePage) return; // can be set false by user
+
+    if (activePages.size <= DEFAULT_PAGE_BUFFER_SIZE) return; // buffer page
+
+    for (const [page, moduleActivity] of modulesActivity) {
+      if (Date.now() - moduleActivity.lastActivity > moduleActivity.timeout) {
+        activePages.delete(page);
+
+        for (const route of moduleActivity.routes) {
+          if (
+            routesActivity.get(route) &&
+            Date.now() - routesActivity.get(route)! > moduleActivity.timeout
+          ) {
+            ModuleReplacePlugin.replaceModule(route);
+            moduleActivity.routes.delete(route);
+            routesActivity.delete(route);
+          }
+        }
+
+        moduleActivity.timeout = this.handleTimeout(
+          ++moduleActivity.disposeNum
+        );
+      }
+    }
+  }
+
+  private handleTimeout(disposeNum: number): number {
+    return (1 + disposeNum) * BASE_INACTIVE_TIMEOUT;
+  }
 }
 
 class ClientManager {

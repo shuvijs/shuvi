@@ -84,6 +84,36 @@ importers:
 
   packages/compiler:
     specifiers:
+      '@napi-rs/triples': 1.1.0
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
+      '@swc/plugin-transform-imports': 0.8.4
+    dependencies:
+      '@napi-rs/triples': 1.1.0
+    optionalDependencies:
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
+    devDependencies:
+      '@swc/plugin-transform-imports': 0.8.4
+
+  packages/compiler-swc:
+    specifiers:
       '@napi-rs/cli': 2.4.4
     dependencies:
       '@napi-rs/cli': 2.4.4
@@ -147,7 +177,9 @@ importers:
       react: 18.1.0
       react-app-polyfill: 2.0.0
       react-dom: 18.1.0
+      react-error-overlay: 6.0.8
       react-refresh: 0.12.0
+      strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0
       webpack: 5.73.0
     dependencies:
@@ -172,7 +204,9 @@ importers:
       react: 18.1.0
       react-app-polyfill: 2.0.0
       react-dom: 18.1.0_react@18.1.0
+      react-error-overlay: 6.0.8
       react-refresh: 0.12.0
+      strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0_react@18.1.0
     devDependencies:
       '@testing-library/react': 13.3.0_ef5jwxihqo6n7gxfmzogljlgcm
@@ -336,22 +370,11 @@ importers:
       '@babel/preset-react': 7.10.1
       '@babel/preset-typescript': 7.12.7
       '@babel/runtime': 7.12.5
-      '@napi-rs/triples': 1.1.0
       '@parcel/css': 1.2.0
+      '@shuvi/compiler': 1.0.0-rc.3
       '@shuvi/shared': 1.0.0-rc.3
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
       '@shuvi/utils': 1.0.0-rc.3
       '@swc/helpers': 0.4.3
-      '@swc/plugin-transform-imports': 0.8.4
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1
@@ -384,11 +407,9 @@ importers:
       postcss-loader: 4.1.0
       postcss-preset-env: 6.7.0
       process: 0.11.10
-      react-error-overlay: 6.0.8
       regenerator-runtime: ^0.13.9
       sass-loader: 10.1.0
       stream-browserify: 3.0.0
-      strip-ansi: 6.0.0
       style-loader: 2.0.0
       terser-webpack-plugin: 5.2.5
       typescript: 4.7.4
@@ -412,8 +433,8 @@ importers:
       '@babel/preset-react': 7.10.1_@babel+core@7.12.10
       '@babel/preset-typescript': 7.12.7_@babel+core@7.12.10
       '@babel/runtime': 7.12.5
-      '@napi-rs/triples': 1.1.0
       '@parcel/css': 1.2.0
+      '@shuvi/compiler': link:../compiler
       '@shuvi/shared': link:../shared
       '@shuvi/utils': link:../utils
       '@swc/helpers': 0.4.3
@@ -443,11 +464,9 @@ importers:
       postcss-loader: 4.1.0_xlbkvbrjrlwfh2nvvljerexate
       postcss-preset-env: 6.7.0
       process: 0.11.10
-      react-error-overlay: 6.0.8
       regenerator-runtime: 0.13.9
       sass-loader: 10.1.0_webpack@5.73.0
       stream-browserify: 3.0.0
-      strip-ansi: 6.0.0
       style-loader: 2.0.0_webpack@5.73.0
       terser-webpack-plugin: 5.2.5_4upc34oiflw3lduyjvrzpjntau
       typescript: 4.7.4
@@ -457,19 +476,7 @@ importers:
       webpack-chain: 6.5.1
       webpack-sources: 2.2.0
       webpack-virtual-modules: 0.4.3
-    optionalDependencies:
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.1
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.1
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.1
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.1
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.1
     devDependencies:
-      '@swc/plugin-transform-imports': 0.8.4
       '@types/babel__core': 7.1.19
       '@types/cross-spawn': 6.0.1
       '@types/loader-utils': 2.0.1
@@ -3821,6 +3828,7 @@ packages:
   /ansi-regex/5.0.0:
     resolution: {integrity: sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==}
     engines: {node: '>=8'}
+    dev: true
 
   /ansi-regex/5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -6496,7 +6504,6 @@ packages:
 
   /graceful-fs/4.2.10:
     resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
-    dev: false
 
   /graceful-fs/4.2.9:
     resolution: {integrity: sha512-NtNxqUcXgpW2iMrfqSfR73Glt39K+BLwWsPs94yR63v45T0Wbej7eRmL5cWfwEgqXnmjQp3zaJTshdRW/qC2ZQ==}
@@ -7622,7 +7629,7 @@ packages:
     dependencies:
       universalify: 1.0.0
     optionalDependencies:
-      graceful-fs: 4.2.9
+      graceful-fs: 4.2.10
 
   /jsonparse/1.3.1:
     resolution: {integrity: sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==}
@@ -10310,7 +10317,7 @@ packages:
     resolution: {integrity: sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==}
     engines: {node: '>=8'}
     dependencies:
-      ansi-regex: 5.0.0
+      ansi-regex: 5.0.1
     dev: false
 
   /strip-ansi/6.0.1:
@@ -11247,6 +11254,7 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
+    dev: false
 
   /whatwg-encoding/2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}

@@ -1,6 +1,6 @@
 import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
 // renderer must be imported before application
-// we need to init init renderer before import AppComponent
+// we need to init renderer before import AppComponent
 import {
   view,
   getRoutes,
@@ -32,7 +32,7 @@ const run = async () => {
   render();
 };
 
-export { run };
+export { run, app };
 
 if (module.hot) {
   const handleHotUpdate = async () => {

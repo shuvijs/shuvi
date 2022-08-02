@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import querystring from 'querystring';
 import {
   IPageRouteConfig,
   IPageRouteConfigWithId
@@ -14,10 +15,15 @@ function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
 
+const KEEP_SYMBOL = querystring.stringify({ keep: ['default'] });
+
 /**
- * returns JSON string of IRawPageRouteRecord
+ * returns JSON string of IPageRouteConfigWithId
  */
-export function serializeRoutes(routes: IPageRouteConfigWithId[]): string {
+export function serializeRoutes(
+  routes: IPageRouteConfigWithId[],
+  isServer: boolean
+): string {
   let res = '';
   for (let index = 0; index < routes.length; index++) {
     const { children: childRoutes, ...route } = routes[index];
@@ -30,16 +36,19 @@ export function serializeRoutes(routes: IPageRouteConfigWithId[]): string {
       if (key === 'component') {
         const { component } = route;
         const componentSource = component;
-        const componentSourceWithAffix = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
+        const componentRequest = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}&${KEEP_SYMBOL}`;
         // `webpackExports` works with production and optimization.minimize, check compiled dist
-        strRoute +=
-          `__componentSourceWithAffix__: "${componentSourceWithAffix}",
-__componentSource__: "${componentSource}",
+        if (isServer) {
+          strRoute += `__componentRawRequest__: "${componentRequest}",\n`;
+          strRoute += `__componentSource__: "${componentSource}",\n`;
+        }
+
+        strRoute += `
 __import__: () => import(
   /* webpackChunkName: "page-${id}" */
   /* webpackExports: "default" */
-  "${componentSourceWithAffix}"),
-__resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.trim();
+  "${componentRequest}"),
+__resolveWeak__: () => [require.resolveWeak("${componentRequest}")]`.trim();
       } else {
         strRoute += `${key}: ${JSON.stringify(route[key])}`;
       }
@@ -47,7 +56,7 @@ __resolveWeak__: () => [require.resolveWeak("${componentSourceWithAffix}")]`.tri
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializeRoutes(childRoutes)},\n`;
+      strRoute += `children: ${serializeRoutes(childRoutes, isServer)},\n`;
     }
 
     res += `{${strRoute}},\n`;
@@ -84,6 +93,18 @@ export function normalizeRoutes(
 export const generateRoutesContent = (
   routes: IPageRouteConfigWithId[]
 ): string => {
-  const serialized = serializeRoutes(routes);
-  return `export default ${serialized}`;
+  const serverRoutes = serializeRoutes(routes, true);
+  const clientRoutes = serializeRoutes(routes, false);
+
+  return `
+let routes;
+
+if (typeof windows === 'undefined') {
+  routes = ${serverRoutes}
+} else {
+  routes = ${clientRoutes}
+}
+
+export default routes
+`;
 };

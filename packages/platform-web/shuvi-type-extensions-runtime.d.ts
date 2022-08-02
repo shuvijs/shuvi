@@ -1,8 +1,8 @@
 /// <reference types="@shuvi/platform-shared/shuvi-type-extensions-runtime" />
 
 declare module '@shuvi/app/files/routes' {
-  import { IRawPageRouteRecord } from '@shuvi/platform-shared/shared';
-  declare const routes: IRawPageRouteRecord[];
+  import { IPageRouteRecord } from '@shuvi/platform-shared/shared';
+  declare const routes: IPageRouteRecord[];
   export default routes;
 }
 

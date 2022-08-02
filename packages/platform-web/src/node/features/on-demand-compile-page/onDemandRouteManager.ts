@@ -87,11 +87,8 @@ export default class OnDemandRouteManager {
     const matchedRoutes = matchRoutes(server.pageRoutes, pathname) || [];
 
     const modulesToActivate = matchedRoutes
-      .map(
-        ({ route: { __componentSourceWithAffix__ } }) =>
-          __componentSourceWithAffix__
-      )
-      .filter(Boolean);
+      .map(({ route: { __componentRawRequest__ } }) => __componentRawRequest__)
+      .filter(Boolean) as string[];
 
     return this._activateModules(modulesToActivate);
   }

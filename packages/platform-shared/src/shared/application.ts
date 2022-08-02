@@ -2,7 +2,7 @@ import { getManager, PluginManager } from './lifecycle';
 import { initPlugins } from './lifecycle';
 import { Store, redox } from '@shuvi/redox';
 import { ErrorModel, errorModel } from './models/error';
-import { IRouter } from './routerTypes';
+import { IRouter, IPageRouteRecord } from './routerTypes';
 import {
   IStoreManager,
   IApplication,
@@ -13,7 +13,7 @@ import {
 
 export class Application {
   private _error: Store<ErrorModel>;
-  private _router: IRouter;
+  private _router: IRouter<IPageRouteRecord>;
   private _appComponent: any;
   private _pluginManager: PluginManager;
   private _context: IAppContext;
