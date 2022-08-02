@@ -1,20 +1,16 @@
-import {
-  IPageRouteRecord,
-  IRawPageRouteRecord
-} from '@shuvi/platform-shared/shared';
+import { IPageRouteRecord } from '@shuvi/platform-shared/shared';
 import { loadRouteComponent } from './loadRouteComponent';
 
 export default function getRoutes(
-  routes: IRawPageRouteRecord[]
+  routes: IPageRouteRecord[]
 ): IPageRouteRecord[] {
   const getRoutesWithRequire = (
-    routes: IRawPageRouteRecord[]
+    routes: IPageRouteRecord[]
   ): IPageRouteRecord[] =>
     routes.map(x => {
-      const originalRoute: IRawPageRouteRecord = { ...x };
+      const originalRoute: IPageRouteRecord = { ...x };
       const {
-        __componentSource__,
-        __componentSourceWithAffix__,
+        __componentRawRequest__,
         __import__,
         __resolveWeak__,
         children,
@@ -24,13 +20,15 @@ export default function getRoutes(
       if (children) {
         route.children = getRoutesWithRequire(children);
       }
-      if (__componentSourceWithAffix__ && __import__) {
+      if (__import__) {
         route.component = loadRouteComponent(__import__, {
           webpack: __resolveWeak__,
-          modules: [__componentSourceWithAffix__]
+          ...(__componentRawRequest__ && {
+            modules: [__componentRawRequest__]
+          })
         });
       }
-      return { __componentSourceWithAffix__, __resolveWeak__, ...route };
+      return { __componentRawRequest__, __resolveWeak__, ...route };
     });
   const routesWithRequire = getRoutesWithRequire(routes || []);
   return routesWithRequire;

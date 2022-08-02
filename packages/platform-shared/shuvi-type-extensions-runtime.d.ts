@@ -8,14 +8,10 @@ declare module '@shuvi/app/core/error' {
 }
 
 declare module '@shuvi/app/core/platform' {
-  import {
-    IPageRouteRecord,
-    IRawPageRouteRecord,
-    IViewClient
-  } from '@shuvi/platform-shared/shared';
+  import { IPageRouteRecord, IViewClient } from '@shuvi/platform-shared/shared';
 
   export interface IGetRoutes {
-    (routes: IRawPageRouteRecord[]): IPageRouteRecord[];
+    (routes: IPageRouteRecord[]): IPageRouteRecord[];
   }
 
   export const getRoutes: IGetRoutes;

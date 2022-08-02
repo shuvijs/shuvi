@@ -29,8 +29,7 @@ export const initHMRAndDevClient = (app: Application) => {
       JSON.stringify({
         event: 'updatePageStatus',
         currentRoutes: app.router.current.matches.map(
-          ({ route: { __componentSourceWithAffix__ } }) =>
-            __componentSourceWithAffix__
+          ({ route: { __componentRawRequest__ } }) => __componentRawRequest__
         ),
         page: location.pathname
       })

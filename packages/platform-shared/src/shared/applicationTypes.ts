@@ -1,7 +1,7 @@
 import type { IncomingMessage } from 'http';
 import { IStoreManager } from '@shuvi/redox';
 import { CustomAppContext } from '@shuvi/runtime';
-import { IRouter } from './routerTypes';
+import { IRouter, IPageRouteRecord } from './routerTypes';
 import { IPluginList } from './lifecycle';
 
 export type IRequest = IncomingMessage & {
@@ -40,7 +40,7 @@ export interface IErrorManager {
 
 export interface IApplication {
   readonly context: IAppContext;
-  readonly router: IRouter;
+  readonly router: IRouter<IPageRouteRecord>;
   readonly appComponent: any;
   readonly error: IErrorManager;
   readonly storeManager: IStoreManager;

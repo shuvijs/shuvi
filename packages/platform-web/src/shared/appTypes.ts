@@ -1,6 +1,6 @@
 import {
   IRequest,
-  IRawPageRouteRecord,
+  IPageRouteRecord,
   IAppData,
   IAppState
 } from '@shuvi/platform-shared/shared';
@@ -12,7 +12,7 @@ export interface CreateAppServer {
 
 export interface CreateAppClient {
   (options: {
-    routes: IRawPageRouteRecord[];
+    routes: IPageRouteRecord[];
     appComponent: any;
     appData: IAppData<any, IAppState>;
   }): Application;
