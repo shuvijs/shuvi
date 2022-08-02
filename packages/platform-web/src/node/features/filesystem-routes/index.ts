@@ -3,6 +3,7 @@ import * as path from 'path';
 import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 import { createPlugin } from '@shuvi/service';
 import {
+  getRawRoutesFromDir,
   getPageRoutes,
   getApiRoutes,
   getMiddlewareRoutes,
@@ -40,7 +41,7 @@ const plugin = createPlugin({
   setup: ({ addHooks }) => {
     addHooks({ addRoutes, addMiddlewareRoutes });
   },
-  addRuntimeFile: async ({ defineFile }, context) => {
+  addRuntimeFile: async ({ defineFile, getContent }, context) => {
     const {
       config: {
         routes: pageRoutes,
@@ -54,6 +55,19 @@ const plugin = createPlugin({
     } = context;
     const isBuildPhase = phase === 'PHASE_PRODUCTION_BUILD';
 
+    const rawRoutes = defineFile({
+      name: 'virtual-raw-routes.js',
+      virtual: true,
+      content: async () => {
+        const rawRoutes = await getRawRoutesFromDir(
+          paths.routesDir,
+          conventionRoutes.exclude
+        );
+        return rawRoutes;
+      },
+      dependencies: [paths.routesDir]
+    });
+
     const pageRoutesFile = defineFile({
       name: 'routes.js',
       content: async () => {
@@ -63,7 +77,7 @@ const plugin = createPlugin({
           routes = pageRoutes as IPageRouteConfig[];
         } else {
           const { routes: _routes, warnings } = await getPageRoutes(
-            paths.routesDir,
+            getContent(rawRoutes),
             conventionRoutes.exclude
           );
 
@@ -85,7 +99,7 @@ const plugin = createPlugin({
         setRoutes(normalizedRoutes);
         return generatePageRoutesContent(normalizedRoutes);
       },
-      dependencies: [paths.routesDir]
+      dependencies: [rawRoutes]
     });
 
     const apiRoutesFile = defineFile({
@@ -97,7 +111,7 @@ const plugin = createPlugin({
           routes = apiRoutes;
         } else {
           const { routes: _routes, warnings } = await getApiRoutes(
-            paths.routesDir,
+            getContent(rawRoutes),
             conventionRoutes.exclude
           );
 
@@ -112,7 +126,7 @@ const plugin = createPlugin({
 
         return generateApiRoutesContent(routes, paths.routesDir);
       },
-      dependencies: [paths.routesDir]
+      dependencies: [rawRoutes]
     });
     const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
@@ -123,7 +137,7 @@ const plugin = createPlugin({
           routes = middlewareRoutes;
         } else {
           const { routes: _routes, warnings } = await getMiddlewareRoutes(
-            paths.routesDir,
+            getContent(rawRoutes),
             conventionRoutes.exclude
           );
           if (isBuildPhase) {
@@ -139,7 +153,7 @@ const plugin = createPlugin({
           baseDir: paths.routesDir
         });
       },
-      dependencies: [paths.routesDir]
+      dependencies: [rawRoutes]
     });
 
     const loadersFile = defineFile({
@@ -190,6 +204,7 @@ const plugin = createPlugin({
     });
 
     return [
+      rawRoutes,
       pageRoutesFile,
       apiRoutesFile,
       middlewareRoutesFile,
