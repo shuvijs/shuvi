@@ -15,12 +15,17 @@ const pre =
 const isDryRun = args.dry;
 const skipTests = args.skipTests;
 const skipBuild = args.skipBuild;
+
+const ingoredPackages = ['compiler-swc'];
+const skippedPackages = [];
+
 const packages = fs
   .readdirSync(path.resolve(__dirname, '../packages'))
-  .filter(p => !p.endsWith('.ts') && !p.startsWith('.'));
+  .filter(
+    p =>
+      !ingoredPackages.includes(p) && !p.endsWith('.ts') && !p.startsWith('.')
+  );
 const isNeedHelp = args.help || args.h || args._[0] === 'help';
-
-const skippedPackages = [];
 
 const versionIncrements = [
   'patch',
