@@ -142,21 +142,6 @@ export const getFileBuilder = <C extends {} = {}>(
     });
   };
 
-  const ifDependenciesMounted = (
-    id: string,
-    pendingFileList: Set<FileId>
-  ): boolean => {
-    const dependencyInfo = getDependencyInfoById(id);
-    const { dependencies } = dependencyInfo;
-    if (!dependencies.size) return true;
-    for (const dep of dependencies) {
-      if (pendingFileList.has(dep)) {
-        return false;
-      }
-    }
-    return true;
-  };
-
   type BuildConditions = {
     shouldExecute: boolean;
     shouldSkip: boolean;
@@ -181,16 +166,18 @@ export const getFileBuilder = <C extends {} = {}>(
     let allNoChange = true;
     for (const dep of dependencies) {
       const status = pendingFilesInfo.filesStatusMap.get(dep);
-      invariant(status);
-      const { updated, noChange } = status;
-      if (!updated) {
-        return {
-          shouldExecute: false,
-          shouldSkip: false
-        };
-      }
-      if (!noChange) {
-        allNoChange = false;
+      // if status is undefined, this dep is not included in this build.
+      if (status) {
+        const { updated, noChange } = status;
+        if (!updated) {
+          return {
+            shouldExecute: false,
+            shouldSkip: false
+          };
+        }
+        if (!noChange) {
+          allNoChange = false;
+        }
       }
     }
     return {
@@ -204,10 +191,6 @@ export const getFileBuilder = <C extends {} = {}>(
     pendingFilesInfo: FilesInfo,
     defer: Defer
   ) => {
-    // do nothing if dependencies have not been resolved
-    if (!ifDependenciesMounted(id, pendingFilesInfo.files)) {
-      return;
-    }
     let { shouldExecute, shouldSkip } = getCurrentConditions(
       id,
       pendingFilesInfo
