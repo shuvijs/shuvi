@@ -177,6 +177,7 @@ importers:
       react: 18.1.0
       react-app-polyfill: 2.0.0
       react-dom: 18.1.0
+      react-error-overlay: 6.0.8
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0
@@ -203,6 +204,7 @@ importers:
       react: 18.1.0
       react-app-polyfill: 2.0.0
       react-dom: 18.1.0_react@18.1.0
+      react-error-overlay: 6.0.8
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0_react@18.1.0
@@ -405,7 +407,6 @@ importers:
       postcss-loader: 4.1.0
       postcss-preset-env: 6.7.0
       process: 0.11.10
-      react-error-overlay: 6.0.8
       regenerator-runtime: ^0.13.9
       sass-loader: 10.1.0
       stream-browserify: 3.0.0
@@ -463,7 +464,6 @@ importers:
       postcss-loader: 4.1.0_xlbkvbrjrlwfh2nvvljerexate
       postcss-preset-env: 6.7.0
       process: 0.11.10
-      react-error-overlay: 6.0.8
       regenerator-runtime: 0.13.9
       sass-loader: 10.1.0_webpack@5.73.0
       stream-browserify: 3.0.0
