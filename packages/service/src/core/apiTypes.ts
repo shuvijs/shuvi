@@ -117,7 +117,7 @@ export interface CustomCorePluginHooks
 
 export interface CustomConfig extends ShuviService.CustomConfig {}
 
-interface Compiler {
+export interface CompilerConfig {
   reactRemoveProperties?:
     | boolean
     | {
@@ -168,7 +168,7 @@ export interface InternalConfig {
   analyze: boolean;
   typescript: { ignoreBuildErrors: boolean };
   proxy?: IProxyConfig;
-  compiler?: Compiler;
+  compiler?: CompilerConfig;
   disposeInactivePage: boolean;
   experimental: {
     parcelCss: boolean;
