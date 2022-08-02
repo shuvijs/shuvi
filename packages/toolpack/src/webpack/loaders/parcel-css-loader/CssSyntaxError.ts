@@ -1,4 +1,13 @@
-function showSourceCode(source, lineNo, columnNo) {
+export interface ICssSyntaxError {
+  source: string;
+  fileName: string;
+  loc: {
+    line: number;
+    column: number;
+  };
+}
+
+function showSourceCode(source: string, lineNo: number, columnNo: number) {
   if (!source) return '';
 
   let lines = source.split(/\r?\n/);
@@ -24,8 +33,8 @@ function showSourceCode(source, lineNo, columnNo) {
 }
 
 export default class CssSyntaxError extends Error {
-  constructor(error) {
-    super(error);
+  constructor(error: ICssSyntaxError) {
+    super();
 
     const { source, fileName, loc } = error;
     const { line, column } = loc;
@@ -41,6 +50,7 @@ export default class CssSyntaxError extends Error {
     this.message += `\n${showSourceCode(source, line, column)}\n`;
 
     // We don't need stack https://github.com/postcss/postcss/blob/master/docs/guidelines/runner.md#31-dont-show-js-stack-for-csssyntaxerror
+    // @ts-ignore
     this.stack = false;
   }
 }

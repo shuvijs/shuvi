@@ -5,21 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
+import chalk from '@shuvi/utils/lib/chalk';
 
-const chalk = require('@shuvi/utils/lib/chalk').default;
+interface StatsError {
+  moduleName?: string;
+  file?: string;
+  message?: string;
+}
+
 const friendlySyntaxErrorLabel = 'Syntax error:';
 
-function isLikelyASyntaxError(message) {
+function isLikelyASyntaxError(message: string) {
   return message.indexOf(friendlySyntaxErrorLabel) !== -1;
 }
 
 // Cleans up webpack error messages.
-function formatMessage(message, isError) {
-  message =
-    (message.moduleName ? message.moduleName + '\n' : '') +
-    (message.file ? message.file + '\n' : '') +
-    message.message;
+function formatMessage(stats: StatsError, isError: boolean) {
+  let message =
+    (stats.moduleName ? stats.moduleName + '\n' : '') +
+    (stats.file ? stats.file + '\n' : '') +
+    stats.message;
 
   let lines = message.split('\n');
 
@@ -110,11 +115,14 @@ function formatMessage(message, isError) {
   return message.trim();
 }
 
-function formatWebpackMessages(json) {
-  const formattedErrors = json.errors.map(function (message) {
+function formatWebpackMessages(json: {
+  warnings?: StatsError[];
+  errors?: StatsError[];
+}) {
+  const formattedErrors = (json.errors || []).map(function (message) {
     return formatMessage(message, true);
   });
-  const formattedWarnings = json.warnings.map(function (message) {
+  const formattedWarnings = (json.warnings || []).map(function (message) {
     return formatMessage(message, false);
   });
   const result = { errors: formattedErrors, warnings: formattedWarnings };
