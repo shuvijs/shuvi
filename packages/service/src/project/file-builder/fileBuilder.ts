@@ -13,7 +13,9 @@ import type {
   FileOption,
   FileInternalInstance,
   BuildInfo,
-  DependencyInfo
+  DependencyInfo,
+  FileStatus,
+  FilesInfo
 } from './types';
 
 type OnBuildStartEvent = {
@@ -22,6 +24,7 @@ type OnBuildStartEvent = {
 
 type OnBuildEndEvent = {
   buildStatus: Defer['status'];
+  noChange: boolean;
 };
 
 type OnBuildStartHandler = (event: OnBuildStartEvent) => void;
@@ -139,48 +142,90 @@ export const getFileBuilder = <C extends {} = {}>(
     });
   };
 
-  const ifDependenciesMounted = (
+  type BuildConditions = {
+    shouldExecute: boolean;
+    shouldSkip: boolean;
+  };
+  /**
+   * get conditions if it is OK to execute content or to skip
+   */
+  const getCurrentConditions = (
     id: string,
-    pendingFileList: Set<FileId>
-  ): boolean => {
+    pendingFilesInfo: FilesInfo
+  ): BuildConditions => {
     const dependencyInfo = getDependencyInfoById(id);
     const { dependencies } = dependencyInfo;
-    if (!dependencies.size) return true;
+
+    // if no dependencies, just go to execute
+    if (!dependencies.size) {
+      return {
+        shouldExecute: true,
+        shouldSkip: false
+      };
+    }
+    let allNoChange = true;
     for (const dep of dependencies) {
-      if (pendingFileList.has(dep)) {
-        return false;
+      const status = pendingFilesInfo.filesStatusMap.get(dep);
+      // if status is undefined, this dep is not included in this build.
+      if (status) {
+        const { updated, noChange } = status;
+        if (!updated) {
+          return {
+            shouldExecute: false,
+            shouldSkip: false
+          };
+        }
+        if (!noChange) {
+          allNoChange = false;
+        }
       }
     }
-    return true;
+    return {
+      shouldExecute: true,
+      shouldSkip: allNoChange
+    };
   };
 
   const runBuildSingleFile = async (
     id: string,
-    pendingFileList: Set<FileId>,
+    pendingFilesInfo: FilesInfo,
     defer: Defer
   ) => {
-    // do nothing if dependencies have not been resolved
-    if (!ifDependenciesMounted(id, pendingFileList)) {
+    let { shouldExecute, shouldSkip } = getCurrentConditions(
+      id,
+      pendingFilesInfo
+    );
+    if (!shouldExecute) {
       return;
     }
-    const current = files.get(id);
-    invariant(current);
-    const fileContent = await current.content(context, current.fileContent);
-    current.fileContent = fileContent;
-    if (!current.virtual) {
-      const filePath = current.name as string;
-      const dir = path.dirname(filePath);
-      fs.ensureDirSync(dir);
-      fs.writeFileSync(current.name as string, fileContent, 'utf-8');
+    if (!shouldSkip) {
+      const current = files.get(id);
+      invariant(current);
+      const fileContent = await current.content(context, current.fileContent);
+      if (fileContent === current.fileContent) {
+        shouldSkip = true;
+      } else {
+        current.fileContent = fileContent;
+      }
+      if (!current.virtual) {
+        const filePath = current.name as string;
+        const dir = path.dirname(filePath);
+        fs.ensureDirSync(dir);
+        fs.writeFileSync(current.name as string, fileContent, 'utf-8');
+      }
     }
-    pendingFileList.delete(id);
-    if (pendingFileList.size === 0) {
+    const currentStatus = pendingFilesInfo.filesStatusMap.get(id);
+    invariant(currentStatus);
+    currentStatus.updated = true;
+    currentStatus.noChange = shouldSkip;
+    pendingFilesInfo.files.delete(id);
+    if (pendingFilesInfo.files.size === 0) {
       defer.resolve();
     }
     const dependencyInfo = getDependencyInfoById(id);
     const { dependents } = dependencyInfo;
     dependents.forEach(dep => {
-      runBuildSingleFile(dep, pendingFileList, defer);
+      runBuildSingleFile(dep, pendingFilesInfo, defer);
     });
   };
 
@@ -277,16 +322,32 @@ export const getFileBuilder = <C extends {} = {}>(
     Array.from(onBuildStartHandlers).forEach(handler => {
       handler({ buildStatus: currentDefer.status });
     });
+    const filesStatusMap = new Map<FileId, FileStatus>();
+    buildInfo.files.forEach(file => {
+      filesStatusMap.set(file, { updated: false });
+    });
+    const pendingFilesInfo: FilesInfo = {
+      filesStatusMap,
+      files: buildInfo.files
+    };
+    // const pendingFilesInfo =
     pendingFiles.forEach(file => {
-      runBuildSingleFile(file, pendingFiles, defer);
+      runBuildSingleFile(file, pendingFilesInfo, defer);
     });
     // if no pendingFiles, resolve directly
     if (!pendingFiles.size) {
       defer.resolve();
     }
     await defer.promise;
+    let noChange = true;
+    for (const [, fileStatus] of pendingFilesInfo.filesStatusMap) {
+      if (!fileStatus.noChange) {
+        noChange = false;
+        break;
+      }
+    }
     Array.from(onBuildEndHandlers).forEach(handler => {
-      handler({ buildStatus: currentDefer.status });
+      handler({ buildStatus: currentDefer.status, noChange });
     });
 
     // clear from runningBuilds and trigger next buildOnce
