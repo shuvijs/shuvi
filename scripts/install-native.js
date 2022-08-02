@@ -16,20 +16,6 @@ function installSWCNative() {
   ).toString();
 
   console.log(stdout);
-
-  const swcSourceDir = path.join(__dirname, '../packages/compiler/swc-source');
-
-  if (fs.existsSync(swcSourceDir)) {
-    execSync(`rm -r ${swcSourceDir}`, { cwd });
-  }
-
-  execSync(
-    `ln -sf ${path.join(
-      __dirname,
-      '../packages/compiler-swc/native'
-    )} ${swcSourceDir}`,
-    { cwd }
-  );
 }
 
 installSWCNative();
