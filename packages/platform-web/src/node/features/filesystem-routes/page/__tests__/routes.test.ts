@@ -20,10 +20,12 @@ describe('serializeRoutes', () => {
       ]
     }
   ];
-  test('should work', () => {
-    expect(serializeRoutes(routes)).toMatchInlineSnapshot(`
+
+  test('should output full content when is server', () => {
+    const content = serializeRoutes(routes, true);
+    expect(content).toMatchInlineSnapshot(`
       "[{path: \\"/\\",
-      __componentSourceWithAffix__: \\"Foo?shuvi-route&keep=default\\",
+      __componentRawRequest__: \\"Foo?shuvi-route&keep=default\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
         /* webpackChunkName: \\"page-0042\\" */
@@ -33,7 +35,7 @@ describe('serializeRoutes', () => {
       id: \\"0042\\",
       },
       {path: \\"/nested\\",
-      __componentSourceWithAffix__: \\"Foo?shuvi-route&keep=default\\",
+      __componentRawRequest__: \\"Foo?shuvi-route&keep=default\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
         /* webpackChunkName: \\"page-0c46\\" */
@@ -42,7 +44,7 @@ describe('serializeRoutes', () => {
       __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route&keep=default\\")],
       id: \\"0c46\\",
       children: [{path: \\"/a\\",
-      __componentSourceWithAffix__: \\"Bar?shuvi-route&keep=default\\",
+      __componentRawRequest__: \\"Bar?shuvi-route&keep=default\\",
       __componentSource__: \\"Bar\\",
       __import__: () => import(
         /* webpackChunkName: \\"page-f571\\" */
@@ -55,6 +57,42 @@ describe('serializeRoutes', () => {
       },
       ]"
     `);
+    expect(content).toMatch('__componentSource__');
+    expect(content).toMatch('__componentRawRequest__');
+  });
+
+  test('should output full content when is client', () => {
+    const content = serializeRoutes(routes, false);
+    expect(content).toMatchInlineSnapshot(`
+      "[{path: \\"/\\",
+      __import__: () => import(
+        /* webpackChunkName: \\"page-0042\\" */
+        /* webpackExports: \\"default\\" */
+        \\"Foo?shuvi-route&keep=default\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route&keep=default\\")],
+      id: \\"0042\\",
+      },
+      {path: \\"/nested\\",
+      __import__: () => import(
+        /* webpackChunkName: \\"page-0c46\\" */
+        /* webpackExports: \\"default\\" */
+        \\"Foo?shuvi-route&keep=default\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route&keep=default\\")],
+      id: \\"0c46\\",
+      children: [{path: \\"/a\\",
+      __import__: () => import(
+        /* webpackChunkName: \\"page-f571\\" */
+        /* webpackExports: \\"default\\" */
+        \\"Bar?shuvi-route&keep=default\\"),
+      __resolveWeak__: () => [require.resolveWeak(\\"Bar?shuvi-route&keep=default\\")],
+      id: \\"f571\\",
+      },
+      ],
+      },
+      ]"
+    `);
+    expect(content).not.toMatch('__componentSource__');
+    expect(content).not.toMatch('__componentRawRequest__');
   });
 });
 

@@ -19,9 +19,6 @@ export type IRouteRecord<Element = any, ExtendedTypes = {}> = {
   props?: IRouteComponentProps;
   path: string;
   filepath?: string;
-  id?: string;
-  __componentSourceWithAffix__?: string;
-  __resolveWeak__?: () => any;
 } & ExtendedTypes;
 
 export type NavigationGuardNextCallback = () => any;
@@ -102,7 +99,7 @@ export interface IRouter<
   resolve: History['resolve'];
   forward(): void;
   ready: Promise<any>;
-  routes: IRouteRecord[];
+  routes: RouteRecord[];
   match(to: PathRecord): Array<IRouteMatch<RouteRecord>>;
 
   init: () => IRouter<RouteRecord>;
