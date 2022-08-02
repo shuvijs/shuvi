@@ -1474,4 +1474,261 @@ describe('fileBuilder watch', () => {
       });
     });
   });
+
+  describe('watch with dependencies and skip build', () => {
+    describe('during once build while watching', () => {
+      test('a file should notify all its dependents that they can skip build if its content has no change', done => {
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        writeFileSync(src, 'a');
+
+        const contentA = jest.fn((_, oldContent: string) => {
+          if (oldContent) {
+            return oldContent;
+          }
+          return readFileSync(src);
+        });
+
+        const contentB = jest.fn(() => {
+          return getContent(A) + 'b';
+        });
+
+        const contentC = jest.fn(() => {
+          return getContent(A) + 'c';
+        });
+
+        const A = defineFile({
+          name: 'a',
+          content: contentA,
+          dependencies: [src]
+        });
+
+        const B = defineFile({
+          name: 'b',
+          content: contentB,
+          dependencies: [A]
+        });
+
+        const C = defineFile({
+          name: 'c',
+          content: contentC,
+          dependencies: [A]
+        });
+        addFile(A, B, C);
+        watch(rootDir).then(() => {
+          const check = () => {
+            matchFile([
+              [a, 'a'],
+              [b, 'ab'],
+              [c, 'ac']
+            ]);
+          };
+          check();
+          expect(contentA).toBeCalledTimes(1);
+          expect(contentB).toBeCalledTimes(1);
+          expect(contentC).toBeCalledTimes(1);
+          onBuildEnd(({ noChange }) => {
+            expect(contentA).toBeCalledTimes(2);
+            expect(contentB).toBeCalledTimes(1);
+            expect(contentC).toBeCalledTimes(1);
+            expect(noChange).toBe(true);
+            check();
+            close().then(done);
+          });
+          writeFileSync(src, 'aa');
+        });
+      });
+      test('a file should notify its dependents that they can skip build if itself skip build', done => {
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        writeFileSync(src, 'a');
+
+        const contentA = jest.fn(() => {
+          return 'a';
+        });
+
+        const contentB = jest.fn(() => {
+          return getContent(A) + 'b';
+        });
+
+        const contentC = jest.fn(() => {
+          return getContent(B) + 'c';
+        });
+
+        const contentD = jest.fn(() => {
+          return getContent(B) + 'd';
+        });
+
+        const A = defineFile({
+          name: 'a',
+          content: contentA,
+          dependencies: [src]
+        });
+
+        const B = defineFile({
+          name: 'b',
+          content: contentB,
+          dependencies: [A]
+        });
+
+        const C = defineFile({
+          name: 'c',
+          content: contentC,
+          dependencies: [B]
+        });
+        const D = defineFile({
+          name: 'd',
+          content: contentD,
+          dependencies: [B]
+        });
+        addFile(A, B, C, D);
+        watch(rootDir).then(() => {
+          const check = () => {
+            matchFile([
+              [a, 'a'],
+              [b, 'ab'],
+              [c, 'abc'],
+              [d, 'abd']
+            ]);
+          };
+          check();
+          expect(contentA).toBeCalledTimes(1);
+          expect(contentB).toBeCalledTimes(1);
+          expect(contentC).toBeCalledTimes(1);
+          expect(contentD).toBeCalledTimes(1);
+          onBuildEnd(({ noChange }) => {
+            expect(contentA).toBeCalledTimes(2);
+            expect(contentB).toBeCalledTimes(1);
+            expect(contentC).toBeCalledTimes(1);
+            expect(contentD).toBeCalledTimes(1);
+            expect(noChange).toBe(true);
+            check();
+            close().then(done);
+          });
+          writeFileSync(src, 'aa');
+        });
+      });
+      test('a file should skip build if all its dependencies notify it to skip build', done => {
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        writeFileSync(srcA, 'a');
+        writeFileSync(srcB, 'b');
+
+        const contentA = jest.fn(() => {
+          return 'a';
+        });
+
+        const contentB = jest.fn(() => {
+          return 'b';
+        });
+
+        const contentC = jest.fn(() => {
+          return getContent(A) + getContent(B);
+        });
+
+        const A = defineFile({
+          name: 'a',
+          content: contentA,
+          dependencies: [srcA]
+        });
+
+        const B = defineFile({
+          name: 'b',
+          content: contentB,
+          dependencies: [srcB]
+        });
+
+        const C = defineFile({
+          name: 'c',
+          content: contentC,
+          dependencies: [A, B]
+        });
+        addFile(A, B, C);
+        watch(rootDir).then(() => {
+          const check = () => {
+            matchFile([
+              [a, 'a'],
+              [b, 'b'],
+              [c, 'ab']
+            ]);
+          };
+          check();
+          expect(contentA).toBeCalledTimes(1);
+          expect(contentB).toBeCalledTimes(1);
+          expect(contentC).toBeCalledTimes(1);
+          onBuildEnd(({ noChange }) => {
+            expect(contentA).toBeCalledTimes(2);
+            expect(contentB).toBeCalledTimes(2);
+            expect(contentC).toBeCalledTimes(1);
+            expect(noChange).toBe(true);
+            check();
+            close().then(done);
+          });
+          writeFileSync(srcA, 'aa');
+          writeFileSync(srcB, 'bb');
+        });
+      });
+      test('a file should not skip build if not all its dependencies notify it to skip build', done => {
+        const fileBuilder = getFileBuilder();
+        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        writeFileSync(srcA, 'a');
+        writeFileSync(srcB, 'b');
+
+        const contentA = jest.fn(() => {
+          return 'a';
+        });
+
+        const contentB = jest.fn(() => {
+          return readFileSync(srcB);
+        });
+
+        const contentC = jest.fn(() => {
+          return getContent(A) + getContent(B);
+        });
+
+        const A = defineFile({
+          name: 'a',
+          content: contentA,
+          dependencies: [srcA]
+        });
+
+        const B = defineFile({
+          name: 'b',
+          content: contentB,
+          dependencies: [srcB]
+        });
+
+        const C = defineFile({
+          name: 'c',
+          content: contentC,
+          dependencies: [A, B]
+        });
+        addFile(A, B, C);
+        watch(rootDir).then(() => {
+          matchFile([
+            [a, 'a'],
+            [b, 'b'],
+            [c, 'ab']
+          ]);
+          expect(contentA).toBeCalledTimes(1);
+          expect(contentB).toBeCalledTimes(1);
+          expect(contentC).toBeCalledTimes(1);
+          onBuildEnd(({ noChange }) => {
+            matchFile([
+              [a, 'a'],
+              [b, 'bb'],
+              [c, 'abb']
+            ]);
+            expect(noChange).toBe(false);
+            expect(contentA).toBeCalledTimes(2);
+            expect(contentB).toBeCalledTimes(2);
+            expect(contentC).toBeCalledTimes(2);
+            close().then(done);
+          });
+          writeFileSync(srcA, 'aa');
+          writeFileSync(srcB, 'bb');
+        });
+      });
+    });
+  });
 });
