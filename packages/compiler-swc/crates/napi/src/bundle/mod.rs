@@ -134,7 +134,7 @@ impl Task for BundleTask {
     }
 
     fn resolve(self, env: napi::Env, output: Self::Output) -> napi::Result<Self::JsValue> {
-        complete_output(&env, output, Default::default())
+        complete_output(&env, output)
     }
 }
 

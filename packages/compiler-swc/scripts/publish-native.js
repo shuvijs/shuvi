@@ -29,6 +29,15 @@ const { execSync } = require('child_process');
         let pkg = JSON.parse(
           readFileSync(path.join(nativePackagesDir, platform, 'package.json'))
         );
+        const allPublishVersions = JSON.parse(
+          execSync(`npm show ${pkg.name} versions --json`).toString()
+        );
+        if (allPublishVersions.includes(version)) {
+          console.log(
+            `${pkg.name}@${version} has been published, the publish step will ignore ! `
+          );
+          continue;
+        }
         pkg.version = version;
         writeFileSync(
           path.join(nativePackagesDir, platform, 'package.json'),
