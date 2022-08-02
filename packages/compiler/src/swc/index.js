@@ -10,7 +10,7 @@ let loadError;
 const triples = platformArchTriples[PlatformName][ArchName];
 for (const triple of triples) {
   try {
-    const swcSource = path.join(__dirname, '../../swc-source');
+    const swcSource = path.join(__dirname, '../../../compiler-swc/native');
     const localFilePath = path.join(
       swcSource,
       `shuvi-swc.${triple.platformArchABI}.node`
