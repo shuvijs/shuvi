@@ -130,7 +130,9 @@ export function baseWebpackChain({
     hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
-    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm'
+    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
+    hashFunction: 'xxhash64',
+    hashDigestLength: 16
   });
 
   // Support for NODE_PATH
@@ -288,7 +290,7 @@ export function baseWebpackChain({
     // For webpack-dev-middleware usage
     config.watchOptions({
       aggregateTimeout: 50,
-      ignored: ['**/.git/**', '**/node_modules/**']
+      ignored: ['**/.git/**']
     });
     config.set('infrastructureLogging', {
       level: 'none'
