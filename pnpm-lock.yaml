@@ -114,9 +114,9 @@ importers:
 
   packages/compiler-swc:
     specifiers:
-      '@napi-rs/cli': 2.4.4
+      '@napi-rs/cli': 2.10.3
     dependencies:
-      '@napi-rs/cli': 2.4.4
+      '@napi-rs/cli': 2.10.3
 
   packages/hook:
     specifiers: {}
@@ -2773,8 +2773,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.13
     dev: true
 
-  /@napi-rs/cli/2.4.4:
-    resolution: {integrity: sha512-f+tvwCv1ka24dBqI2DgBhR7Oxl3DKHOp4onxLXwyBFt6iCADnr3YZIr1/2Iq5r3uqxFgaf01bfPsRQZPkEp0kQ==}
+  /@napi-rs/cli/2.10.3:
+    resolution: {integrity: sha512-J/3zqDX1VLhzl9RNpthAcCSLPaute7J7ImaP926xjJXAcfZmUM6QjJBCrvdMa3aGEfQ3TqDwidUnLj71JHW8QQ==}
     engines: {node: '>= 10'}
     hasBin: true
     dev: false
@@ -11254,7 +11254,6 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
-    dev: false
 
   /whatwg-encoding/2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
