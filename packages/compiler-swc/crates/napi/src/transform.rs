@@ -31,15 +31,12 @@ use crate::{
     util::{deserialize_json, CtxtExt, MapErr},
 };
 use anyhow::{anyhow, bail, Context as _};
-use fxhash::FxHashSet;
 use napi::{CallContext, Env, JsBoolean, JsBuffer, JsObject, JsString, JsUnknown, Status, Task};
 use shuvi_swc::{custom_before_pass, TransformOptions};
 use std::fs::read_to_string;
 use std::{
-    cell::RefCell,
     convert::TryFrom,
     panic::{catch_unwind, AssertUnwindSafe},
-    rc::Rc,
     sync::Arc,
 };
 use swc::{try_with_handler, Compiler, TransformOutput};
@@ -62,11 +59,10 @@ pub struct TransformTask {
 }
 
 impl Task for TransformTask {
-    type Output = (TransformOutput, FxHashSet<String>);
+    type Output = TransformOutput;
     type JsValue = JsObject;
 
     fn compute(&mut self) -> napi::Result<Self::Output> {
-        let eliminated_packages: Rc<RefCell<fxhash::FxHashSet<String>>> = Default::default();
         let res = catch_unwind(AssertUnwindSafe(|| {
             try_with_handler(
                 self.c.cm.clone(),
@@ -134,9 +130,7 @@ impl Task for TransformTask {
         });
 
         match res {
-            Ok(res) => res
-                .map(|o| (o, eliminated_packages.replace(Default::default())))
-                .convert_err(),
+            Ok(res) => res.convert_err(),
             Err(err) => Err(napi::Error::new(
                 Status::GenericFailure,
                 format!("{:?}", err),
@@ -147,9 +141,9 @@ impl Task for TransformTask {
     fn resolve(
         self,
         env: Env,
-        (output, eliminated_packages): Self::Output,
+        output: Self::Output,
     ) -> napi::Result<Self::JsValue> {
-        complete_output(&env, output, eliminated_packages)
+        complete_output(&env, output)
     }
 }
 

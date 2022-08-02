@@ -5,7 +5,7 @@ on:
 name: Test and Release SWC binary
 
 env:
-  NAPI_CLI_VERSION: 2.4.4
+  NAPI_CLI_VERSION: 2.10.3
   TURBO_VERSION: 1.3.4
   RUST_TOOLCHAIN: nightly-2022-02-23
   PNPM_VERSION: 7.5.2
@@ -27,7 +27,7 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
           profile: minimal
-      - run: cd packages/compiler && cargo test
+      - run: cd packages/compiler-swc && cargo test
         if: ${{ steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
 
   release:
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: shuvi-swc-binaries
-          path: packages/compiler/native
+          path: packages/compiler-swc/native
 
       - uses: geekyeggo/delete-artifact@v1
         with:
@@ -66,7 +66,7 @@ jobs:
 
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       # - run: pnpm install
-      - run: node ./packages/compiler/scripts/publish-native.js $GITHUB_REF
+      - run: node ./packages/compiler-swc/scripts/publish-native.js $GITHUB_REF
 
   # Build binaries for publishing
   build-native:
@@ -80,17 +80,17 @@ jobs:
             target: 'x86_64-apple-darwin'
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
-              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release
-              strip -x packages/compiler/native/shuvi-swc.*.node
+              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release
+              strip -x packages/compiler-swc/native/shuvi-swc.*.node
           - host: windows-latest
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
-              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release
+              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release
             target: 'x86_64-pc-windows-msvc'
           - host: windows-latest
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
-              turbo run build-native-no-plugin --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target i686-pc-windows-msvc
+              turbo run build-native-no-plugin --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target i686-pc-windows-msvc
             target: 'i686-pc-windows-msvc'
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-gnu'
@@ -101,8 +101,8 @@ jobs:
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add x86_64-unknown-linux-gnu &&
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi &&
-              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target x86_64-unknown-linux-gnu &&
-              strip packages/compiler/native/shuvi-swc.*.node
+              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target x86_64-unknown-linux-gnu &&
+              strip packages/compiler-swc/native/shuvi-swc.*.node
           - host: ubuntu-latest
             target: 'x86_64-unknown-linux-musl'
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
@@ -112,8 +112,8 @@ jobs:
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add x86_64-unknown-linux-musl &&
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi &&
-              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target x86_64-unknown-linux-musl &&
-              strip packages/compiler/native/shuvi-swc.*.node
+              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target x86_64-unknown-linux-musl &&
+              strip packages/compiler-swc/native/shuvi-swc.*.node
           - host: macos-latest
             target: 'aarch64-apple-darwin'
             build: |
@@ -123,8 +123,8 @@ jobs:
               SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
               export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
-              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target aarch64-apple-darwin
-              strip -x packages/compiler/native/shuvi-swc.*.node
+              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target aarch64-apple-darwin
+              strip -x packages/compiler-swc/native/shuvi-swc.*.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-gnu'
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian-aarch64
@@ -135,8 +135,8 @@ jobs:
               rustup target add aarch64-unknown-linux-gnu &&
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi &&
               export CC_aarch64_unknown_linux_gnu=/usr/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu-gcc &&
-              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target aarch64-unknown-linux-gnu &&
-              llvm-strip -x packages/compiler/native/shuvi-swc.*.node
+              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target aarch64-unknown-linux-gnu &&
+              llvm-strip -x packages/compiler-swc/native/shuvi-swc.*.node
           - host: ubuntu-18.04
             target: 'armv7-unknown-linux-gnueabihf'
             setup: |
@@ -144,8 +144,8 @@ jobs:
               sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" && if [ ! -f $(dirname $(which yarn))/pnpm ]; then ln -s $(which yarn) $(dirname $(which yarn))/pnpm;fi
-              turbo run build-native-no-plugin --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target armv7-unknown-linux-gnueabihf
-              arm-linux-gnueabihf-strip packages/compiler/native/shuvi-swc.*.node
+              turbo run build-native-no-plugin --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target armv7-unknown-linux-gnueabihf
+              arm-linux-gnueabihf-strip packages/compiler-swc/native/shuvi-swc.*.node
           - host: ubuntu-latest
             target: 'aarch64-unknown-linux-musl'
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
@@ -155,13 +155,13 @@ jobs:
               rustup toolchain install "${RUST_TOOLCHAIN}" &&
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add aarch64-unknown-linux-musl &&
-              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target aarch64-unknown-linux-musl &&
-              llvm-strip -x packages/compiler/native/shuvi-swc.*.node
+              turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target aarch64-unknown-linux-musl &&
+              llvm-strip -x packages/compiler-swc/native/shuvi-swc.*.node
           - host: windows-latest
             target: 'aarch64-pc-windows-msvc'
             build: |
               npm i -g "@napi-rs/cli@${NAPI_CLI_VERSION}" "turbo@${TURBO_VERSION}" "pnpm@${PNPM_VERSION}"
-              turbo run build-native-no-plugin --cache-dir=".turbo" --filter=@shuvi/compiler -- --release --target aarch64-pc-windows-msvc --cargo-flags=--no-default-features
+              turbo run build-native-no-plugin --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release --target aarch64-pc-windows-msvc --cargo-flags=--no-default-features
     needs:
       - test-unit
     name: stable - ${{ matrix.settings.target }} - node@16
@@ -190,7 +190,7 @@ jobs:
       - name: Cache built files
         uses: actions/cache@v3
         with:
-          path: ./packages/compiler/target
+          path: ./packages/compiler-swc/target
           key: shuvi-swc-cargo-cache-${{ matrix.settings.target }}--${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             shuvi-swc-cargo-cache-${{ matrix.settings.target }}
@@ -255,5 +255,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: shuvi-swc-binaries
-          path: packages/compiler/native/shuvi-swc.*.node
+          path: packages/compiler-swc/native/shuvi-swc.*.node
           retention-days: 1

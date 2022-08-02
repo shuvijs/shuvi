@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/compiler-swc",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.1",
   "private": true,
   "scripts": {
     "build-native": "napi build --platform --cargo-name shuvi_swc_napi --cargo-name shuvi_swc_napi native --features plugin",
@@ -8,7 +8,7 @@
     "publish-native": "node scripts/publish-native.js"
   },
   "dependencies": {
-    "@napi-rs/cli": "2.4.4"
+    "@napi-rs/cli": "2.10.3"
   },
   "napi": {
     "name": "shuvi-swc",
