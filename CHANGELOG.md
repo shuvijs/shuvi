@@ -1,3 +1,25 @@
+# [1.0.0-rc.4](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.3...v1.0.0-rc.4) (2022-08-02)
+
+
+### Bug Fixes
+
+* build error ([#384](https://github.com/shuvijs/shuvi/issues/384)) ([419dd53](https://github.com/shuvijs/shuvi/commit/419dd53d61cdbaef7afdb9b20ead3ee1ed019767))
+* get routes from server module ([c488f9c](https://github.com/shuvijs/shuvi/commit/c488f9cd7ce2c989980c95207d45fe80df9b5e20))
+* missing files of some pkgs ([913d29e](https://github.com/shuvijs/shuvi/commit/913d29e42b8cb6d5c9987cc40f8eb6a2f4590010))
+* only add entry to client target ([b2cbc96](https://github.com/shuvijs/shuvi/commit/b2cbc9654304409d748f25aa4b95b61d8719c6bd))
+* react/jsx-dev-runtime not found ([ac931ee](https://github.com/shuvijs/shuvi/commit/ac931ee16d3fce44a4192984d7198c645b67de3e))
+
+
+### Features
+
+* **fileBuilder:** file update should be skipped if content has no change ([b8801e6](https://github.com/shuvijs/shuvi/commit/b8801e665f5687f193b818436b2d223036107854))
+* remove inactive pages from hmr ([99fa6a3](https://github.com/shuvijs/shuvi/commit/99fa6a31e56d71ec938e0e37da1d521aec9a2b4d))
+* remove moduleinfo from client ([1e744e0](https://github.com/shuvijs/shuvi/commit/1e744e02f4608a70e5b31a43825d67aad01d20d0))
+* update swc ([233a498](https://github.com/shuvijs/shuvi/commit/233a4988b55ebff00f9160ab063eff48abc779f2))
+* use new file manage ([1a8231c](https://github.com/shuvijs/shuvi/commit/1a8231c526e4b888b4cf52cba8ce363cb722a47b))
+
+
+
 # [1.0.0-rc.3](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.1...v1.0.0-rc.3) (2022-07-29)
 
 
