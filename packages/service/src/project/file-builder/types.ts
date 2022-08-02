@@ -50,3 +50,13 @@ export type BuildInfo = {
   fronts: Set<string>;
   rears: Set<string>;
 };
+
+export type FileStatus = {
+  updated: boolean;
+  noChange?: boolean;
+};
+
+export type FilesInfo = {
+  filesStatusMap: Map<FileId, FileStatus>;
+  files: Set<FileId>;
+};
