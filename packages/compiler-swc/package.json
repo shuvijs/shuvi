@@ -8,7 +8,7 @@
     "publish-native": "node scripts/publish-native.js"
   },
   "dependencies": {
-    "@napi-rs/cli": "2.4.4"
+    "@napi-rs/cli": "2.10.3"
   },
   "napi": {
     "name": "shuvi-swc",
