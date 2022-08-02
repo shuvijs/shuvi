@@ -1,7 +1,7 @@
 {
   "name": "shuvi",
   "private": true,
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.4",
   "workspaces": [
     "packages/*"
   ],
