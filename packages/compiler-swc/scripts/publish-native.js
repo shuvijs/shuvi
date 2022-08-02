@@ -39,7 +39,6 @@ const { execSync } = require('child_process');
           continue;
         }
         pkg.version = version;
-        return;
         writeFileSync(
           path.join(nativePackagesDir, platform, 'package.json'),
           JSON.stringify(pkg, null, 2)

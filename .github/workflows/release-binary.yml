@@ -1,7 +1,6 @@
 on:
   push:
-    # branches: [release/*]
-    branches: [feat-0801-swcFlow]
+    branches: [release/*]
 
 name: Test and Release SWC binary
 
