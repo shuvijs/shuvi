@@ -1,4 +1,4 @@
-import { readFile, pathExists } from 'fs-extra';
+import { readFile, pathExists, stat as fileStat } from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import chalk from '@shuvi/utils/lib/chalk';
@@ -44,6 +44,15 @@ function checkDependencies(
 }
 
 export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {
+  try {
+    const stats = await fileStat(projectDir);
+    if (!stats.isDirectory()) {
+      return false;
+    }
+  } catch (error) {
+    return false;
+  }
+
   const typescriptFiles = await recursiveReadDir(projectDir, {
     filter: /.*\.(ts|tsx)$/,
     ignore: /(\.shuvi)|(node_modules|.*\.d\.ts)/

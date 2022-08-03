@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { IPluginContext, getBundler, BUILD_DEFAULT_DIR } from '@shuvi/service';
+import { IPluginContext, BUILD_DEFAULT_DIR, Bunlder } from '@shuvi/service';
 import { ShuviConfig } from '../config';
 import { initShuvi } from '../shuvi';
 
@@ -15,10 +15,7 @@ const defaultBuildOptions = {
   target: 'ssr'
 } as const;
 
-async function bundle(context: IPluginContext) {
-  const bundler = await getBundler(context, {
-    ignoreTypeScriptErrors: context.config.typescript.ignoreBuildErrors
-  });
+async function bundle(bundler: Bunlder) {
   const result = await bundler.build();
   const messages = formatWebpackMessages(result);
   // If errors exist, only show errors.
@@ -73,8 +70,9 @@ export async function build(options: IBuildOptions) {
   // Merge with the public folder
   copyPublicFolder(pluginContext);
 
+  const bundler = await api.getBundler();
   // transpile the application
-  await bundle(pluginContext);
+  await bundle(bundler);
   await pluginContext.pluginRunner.afterBuild();
   return api;
 }

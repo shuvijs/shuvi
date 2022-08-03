@@ -3,6 +3,8 @@ import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { joinPath } from '@shuvi/utils/lib/string';
 import rimraf from 'rimraf';
 import * as path from 'path';
+import { defineFile, ProjectBuilder, FileOption } from '../project';
+import { getBundler, Bunlder } from '../bundler';
 import {
   Config,
   NormalizedConfig,
@@ -17,7 +19,6 @@ import {
   RuntimePluginConfig,
   ResolvedPlugin
 } from './apiTypes';
-import { defineFile, ProjectBuilder, FileOption } from '../project';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
 import {
   getManager,
@@ -58,11 +59,14 @@ class Api {
   private _presets: IPresetConfig[];
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
+  private _bundler!: Bunlder;
   private _platform?: IPlatform;
   private _serverPlugins: ServerPluginInstance[] = [];
   private _pluginManager: PluginManager;
   private _pluginContext!: IPluginContext;
   private _serverConfigs!: ServerConfigs;
+
+  private _inited: boolean = false;
 
   /** will be included by @shuvi/swc-loader */
   private _runtimePluginDirs: string[] = [];
@@ -109,6 +113,10 @@ class Api {
   }
 
   async init() {
+    if (this._inited) {
+      return;
+    }
+
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: this._config.outputPath,
@@ -179,6 +187,25 @@ class Api {
     platformPresetRuntimeFiles.forEach(file => {
       this.addInternalRuntimeFile(file);
     });
+
+    this._inited = true;
+  }
+
+  async getBundler(): Promise<Bunlder> {
+    if (!this._inited) {
+      throw new Error('call init() first');
+    }
+
+    if (!this._bundler) {
+      this._bundler = await getBundler(this.pluginContext, {
+        ignoreTypeScriptErrors:
+          this.mode === 'development'
+            ? false
+            : this._config.typescript.ignoreBuildErrors
+      });
+    }
+
+    return this._bundler;
   }
 
   get assetPublicPath(): string {

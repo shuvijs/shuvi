@@ -9,7 +9,7 @@ import {
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
 import { DynamicDll, MultiCompiler } from '@shuvi/toolpack/lib/webpack';
 import { WebpackHotMiddleware } from './hotMiddleware';
-import { getBundler } from '../../../bundler';
+import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
 import { IServerPluginContext } from '../../plugin';
 
@@ -41,9 +41,9 @@ export interface DevMiddleware {
 }
 
 export async function getDevMiddleware(
+  bundler: Bunlder,
   serverPluginContext: IServerPluginContext
 ): Promise<DevMiddleware> {
-  const bundler = await getBundler(serverPluginContext);
   const context: IContext = {
     state: false,
     callbacks: [],

@@ -7,6 +7,10 @@ export const getManager = () => createHookManager({ test }, false);
 
 export const { createPlugin } = getManager();
 
+export function resolveFxiture(name: string) {
+  return path.join(__dirname, 'fixtures', name);
+}
+
 export function resolvePlugin(name: string) {
   return path.join(__dirname, 'fixtures', 'plugins', name);
 }
