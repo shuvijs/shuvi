@@ -56,7 +56,7 @@ describe('apiRoutes development', () => {
 
   test('should return data when catch-all', async () => {
     const res = await got.get(ctx.url('/api/users/1'));
-    expect(JSON.parse(res.body)).toEqual({ slug: ['1'] });
+    expect(JSON.parse(res.body)).toEqual({ '*': '1' });
   });
 
   // test('should return redirect when catch-all with index and trailing slash', async () => {

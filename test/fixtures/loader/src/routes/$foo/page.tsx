@@ -7,6 +7,7 @@ function App() {
 }
 
 export const loader: Loader = async ctx => {
+  // console.log(ctx.params['*'])
   return normalizeContextForSerialize(ctx);
 };
 
