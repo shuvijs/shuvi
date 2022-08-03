@@ -127,14 +127,14 @@ async function main() {
     console.log(`(skipped)`);
   }
 
-  // run tests before release
-  step('\nRunning tests...');
-  if (!skipTests && !isDryRun) {
-    await run(bin('jest'), ['--clearCache']);
-    await run('pnpm', ['test', '--bail']);
-  } else {
-    console.log(`(skipped)`);
-  }
+  // // run tests before release
+  // step('\nRunning tests...');
+  // if (!skipTests && !isDryRun) {
+  //   await run(bin('jest'), ['--clearCache']);
+  //   await run('pnpm', ['test', '--bail']);
+  // } else {
+  //   console.log(`(skipped)`);
+  // }
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
   const stashName = `stash_release/swc@${targetVersion}`;
@@ -193,6 +193,12 @@ async function main() {
 }
 
 function updateVersions(version) {
+  // 1. update swc package.json
+  const pkgPath = path.resolve(compilerSwcPath, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+  pkg.version = version;
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+  // 2. update all packages
   packages.forEach(p => updatePackage(getPkgRoot(p), version));
 }
 
