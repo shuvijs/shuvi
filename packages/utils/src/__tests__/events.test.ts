@@ -1,4 +1,4 @@
-import emitter from '../eventEmitter';
+import { createEvents } from '../events';
 
 let counter: number;
 const increment = () => {
@@ -12,7 +12,7 @@ describe('eventEmitter', () => {
 
   describe('on', () => {
     test('normal', () => {
-      const eventEmitter = emitter();
+      const eventEmitter = createEvents();
 
       eventEmitter.on('add', increment);
       eventEmitter.on('add', increment);
@@ -28,7 +28,7 @@ describe('eventEmitter', () => {
     });
 
     test('complex', () => {
-      const eventEmitter = emitter();
+      const eventEmitter = createEvents();
 
       eventEmitter.on('add', increment);
       eventEmitter.on('add1', increment);
@@ -47,11 +47,11 @@ describe('eventEmitter', () => {
 
   describe('off', () => {
     test('normal', () => {
-      const eventEmitter = emitter();
+      const eventEmitter = createEvents();
+      const off = eventEmitter.on('add', increment);
       eventEmitter.on('add', increment);
       eventEmitter.on('add', increment);
-      eventEmitter.on('add', increment);
-      eventEmitter.off('add', increment);
+      off();
 
       eventEmitter.emit('add');
       expect(counter).toBe(2);
@@ -61,12 +61,12 @@ describe('eventEmitter', () => {
     });
 
     test('complex', () => {
-      const eventEmitter = emitter();
+      const eventEmitter = createEvents();
+      const off = eventEmitter.on('add', increment);
+      const off1 = eventEmitter.on('add1', increment);
+      const off2 = eventEmitter.on('add2', increment);
       eventEmitter.on('add', increment);
-      eventEmitter.on('add1', increment);
-      eventEmitter.on('add2', increment);
-      eventEmitter.on('add', increment);
-      eventEmitter.off('add', increment);
+      off();
 
       eventEmitter.emit('add');
 
@@ -76,10 +76,10 @@ describe('eventEmitter', () => {
 
       expect(counter).toBe(2);
 
-      eventEmitter.off('add1', increment);
-      eventEmitter.off('add2', increment);
-      eventEmitter.emit('add2');
+      off1();
+      off2();
 
+      eventEmitter.emit('add2');
       expect(counter).toBe(2);
     });
   });

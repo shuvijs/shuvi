@@ -138,9 +138,7 @@ class Api {
       resolveAppFile: this.resolveAppFile.bind(this),
       resolveUserFile: this.resolveUserFile.bind(this),
       resolveBuildFile: this.resolveBuildFile.bind(this),
-      resolvePublicFile: this.resolvePublicFile.bind(this),
-      onBuildStart: this._projectBuilder.onBuildStart,
-      onBuildEnd: this._projectBuilder.onBuildEnd
+      resolvePublicFile: this.resolvePublicFile.bind(this)
     };
 
     const { runner, setContext, createPlugin, usePlugin } = this._pluginManager;
@@ -197,11 +195,20 @@ class Api {
     }
 
     if (!this._bundler) {
-      this._bundler = await getBundler(this.pluginContext, {
-        ignoreTypeScriptErrors:
-          this.mode === 'development'
-            ? false
-            : this._config.typescript.ignoreBuildErrors
+      this._bundler = await getBundler(this.pluginContext);
+    }
+
+    if (this.mode === 'development') {
+      this._projectBuilder.onBuildStart(() => {
+        this._bundler.watching.suspend();
+      });
+      this._projectBuilder.onBuildEnd(({ buildStatus }) => {
+        if (buildStatus === 'fulfilled') {
+          setTimeout(() => {
+            this._bundler.watching.resume();
+            // FIXME: timeout for resuming need further investigation
+          }, 100);
+        }
       });
     }
 

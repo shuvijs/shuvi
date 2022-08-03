@@ -1,4 +1,3 @@
-import * as path from 'path';
 import ws from 'ws';
 import { IncomingMessage } from 'http';
 import {
@@ -7,7 +6,6 @@ import {
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
 import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
-import { DynamicDll, MultiCompiler } from '@shuvi/toolpack/lib/webpack';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -15,12 +13,9 @@ import { IServerPluginContext } from '../../plugin';
 
 type ICallback = () => void;
 
-type MultiWatching = ReturnType<MultiCompiler['watch']>;
-
 interface IContext {
   state: boolean;
   callbacks: ICallback[];
-  watching: MultiWatching | undefined;
 }
 
 const wsServer = new ws.Server({ noServer: true });
@@ -46,50 +41,25 @@ export async function getDevMiddleware(
 ): Promise<DevMiddleware> {
   const context: IContext = {
     state: false,
-    callbacks: [],
-    watching: undefined
+    callbacks: []
   };
-  let compiler;
-  let dynamicDll: DynamicDll | null = null;
-
-  if (serverPluginContext.config.experimental.preBundle) {
-    dynamicDll = new DynamicDll({
-      cacheDir: path.join(serverPluginContext.paths.cacheDir, 'dll'),
-      rootDir: serverPluginContext.paths.rootDir,
-      exclude: [/react-refresh/]
-    });
-  }
-
-  compiler = await bundler.getWebpackCompiler(dynamicDll);
-  // watch before pass compiler to ShuviDevMiddleware
-  bundler.watchBuild({
-    onErrors(errors) {
-      send('errors', errors);
-    },
-    onWarns(warns) {
-      send('warns', warns);
-    },
-    onFinish() {
-      context.state = true;
-
-      const { callbacks } = context;
-      context.callbacks = [];
-      callbacks.forEach(callback => {
-        callback();
-      });
-    }
+  // listen before watch
+  bundler.onTypeCheckingDone(({ errors, warnings }) => {
+    send('errors', errors);
+    send('warns', warnings);
   });
+  bundler.onBuildDone(({ errors, warnings }) => {
+    send('errors', errors);
+    send('warns', warnings);
 
-  context.watching = compiler.watch(
-    compiler.compilers.map(
-      childCompiler => childCompiler.options.watchOptions || {}
-    ),
-    error => {
-      if (error) {
-        console.log(error);
-      }
-    }
-  );
+    context.state = true;
+    const { callbacks } = context;
+    context.callbacks = [];
+    callbacks.forEach(callback => {
+      callback();
+    });
+  });
+  bundler.watch();
 
   const webpackHotMiddleware = new WebpackHotMiddleware({
     disposeInactivePage: serverPluginContext.config.disposeInactivePage,
@@ -102,9 +72,7 @@ export async function getDevMiddleware(
     targetServer.use(
       createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
     );
-    if (dynamicDll) {
-      targetServer.use(dynamicDll.middleware);
-    }
+    bundler.applyDevMiddlewares(server);
   };
 
   const send = (action: string, payload?: any) => {
@@ -114,7 +82,7 @@ export async function getDevMiddleware(
   const invalidate = () => {
     return new Promise<void>(resolve => {
       ready(context, resolve);
-      context.watching?.invalidate();
+      bundler.watching.invalidate();
     });
   };
 

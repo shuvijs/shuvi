@@ -132,8 +132,8 @@ export {
 /**
  * resolve webpack module for not shuvi plugin
  */
-const webpackPath = join(
+const webpackResolveContext = join(
   dirname(require.resolve('webpack/package.json')),
   '../'
 );
-export { webpackPath };
+export { webpackResolveContext };
