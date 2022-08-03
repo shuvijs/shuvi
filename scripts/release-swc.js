@@ -111,21 +111,21 @@ async function main() {
   step('\nUpdating cross dependencies...');
   updateVersions(targetVersion);
 
-  // clean all package
-  step('\nClean all package...');
-  await run(`pnpm`, ['clean']);
+  // // clean all package
+  // step('\nClean all package...');
+  // await run(`pnpm`, ['clean']);
 
-  // install all packages and update pnpm-lock.yaml
-  step('\nUpdating lockfile...');
-  await run(`pnpm`, ['install']);
+  // // install all packages and update pnpm-lock.yaml
+  // step('\nUpdating lockfile...');
+  // await run(`pnpm`, ['install']);
 
-  // build all packages with types
-  step('\nBuilding all packages...');
-  if (!skipBuild && !isDryRun) {
-    await run('pnpm', ['build']);
-  } else {
-    console.log(`(skipped)`);
-  }
+  // // build all packages with types
+  // step('\nBuilding all packages...');
+  // if (!skipBuild && !isDryRun) {
+  //   await run('pnpm', ['build']);
+  // } else {
+  //   console.log(`(skipped)`);
+  // }
 
   // // run tests before release
   // step('\nRunning tests...');
@@ -137,19 +137,17 @@ async function main() {
   // }
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
-  const stashName = `stash_release/swc@${targetVersion}`;
   const publishBranchName = `release/swc-v${targetVersion}`;
 
   if (stdout) {
     step('\nCommitting changes...');
-    await runIfNotDry('git', ['stash', 'push', '-m', stashName], {
+    await runIfNotDry('git', ['stash'], {
       stdio: 'pipe'
     });
     await runIfNotDry('git', ['checkout', '-b', publishBranchName], {
       stdio: 'pipe'
     });
-    await runIfNotDry('git', ['stash', 'apply', stashName], { stdio: 'pipe' });
-    await runIfNotDry('git', ['stash', 'drop', stashName], { stdio: 'pipe' });
+    await runIfNotDry('git', ['stash', 'pop'], { stdio: 'pipe' });
     await runIfNotDry('git', ['add', '-A']);
     await runIfNotDry('git', [
       'commit',
