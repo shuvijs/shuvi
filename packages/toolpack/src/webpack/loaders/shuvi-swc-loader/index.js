@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 import querystring from 'querystring';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
-import { transform } from '@shuvi/compiler/swc';
+import { transform } from '@shuvi/compiler';
 import getLoaderSWCOptions from './getLoaderSWCOptions';
 
 const IS_PAGE_FILE = RegExp(escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`));
