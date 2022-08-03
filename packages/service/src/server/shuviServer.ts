@@ -16,7 +16,7 @@ export abstract class ShuviServer implements IShuviServer {
   protected _serverContext: IServerPluginContext;
   protected _options: ShuviServerOptions;
 
-  constructor(cliContext: IPluginContext, options: ShuviServerOptions) {
+  constructor(corePluginContext: IPluginContext, options: ShuviServerOptions) {
     this._pluginManager = getManager();
     this._server = new Server();
     this._options = options;
@@ -24,7 +24,7 @@ export abstract class ShuviServer implements IShuviServer {
     this._serverContext = initServerPlugins(
       this._pluginManager,
       serverPlugins,
-      cliContext
+      corePluginContext
     );
   }
 

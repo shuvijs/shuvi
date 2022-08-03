@@ -13,14 +13,10 @@ describe('plugin', () => {
     });
     const page = await ctx.browser.page(ctx.url('/'));
     const consoleResult = consoleSpy.mock.calls.join('');
-    expect(consoleResult).toBe(
-      [
-        'plugin-use-exports core',
-        'plugin-use-exports server',
-        'plugin-use-exports runtime',
-        ''
-      ].join('\n')
-    );
+    expect(consoleResult).toMatch('plugin-use-exports core');
+    expect(consoleResult).toMatch('plugin-use-exports server');
+    expect(consoleResult).toMatch('plugin-use-exports runtime');
+
     await page.close();
     await ctx.close();
   });
@@ -35,7 +31,7 @@ describe('plugin', () => {
     });
     const page = await ctx.browser.page(ctx.url('/'));
     const consoleResult = consoleSpy.mock.calls.join('');
-    expect(consoleResult).toBe(['plugin-no-exports core', ''].join('\n'));
+    expect(consoleResult).toMatch('plugin-no-exports core');
     await page.close();
     await ctx.close();
   });

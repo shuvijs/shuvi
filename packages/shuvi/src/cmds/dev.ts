@@ -25,9 +25,11 @@ export default async function main(argv: string[]) {
     config
   });
   await api.buildApp();
+  const bundler = await api.getBundler();
   const shuviApp = await createShuviServer({
     context: api.pluginContext,
     dev: true,
+    bundler,
     ...api.serverConfigs
   });
   try {

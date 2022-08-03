@@ -1,7 +1,7 @@
 import { inspect } from 'util';
 import program from 'commander';
 import chalk from '@shuvi/utils/lib/chalk';
-import { getBundler } from '@shuvi/service/lib/bundler/bundler';
+import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { getPackageInfo, getProjectDir } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
@@ -26,7 +26,12 @@ export default async function main(argv: string[]) {
   Object.assign(process.env, {
     NODE_ENV: mode
   });
-  const config = await getConfigFromCli(cwd, program);
+  let config = await getConfigFromCli(cwd, program);
+  config = deepmerge(config, {
+    typescript: {
+      ignoreBuildErrors: true
+    }
+  });
   const api = await initShuvi({
     cwd,
     config,
@@ -34,11 +39,8 @@ export default async function main(argv: string[]) {
     phase: 'PHASE_INSPECT_WEBPACK'
   });
   await api.init();
-  const bundler = await getBundler(api.pluginContext, {
-    ignoreTypeScriptErrors: true
-  });
-
-  const configs = await bundler.resolveWebpackConfig();
+  const bundler = await api.getBundler();
+  const configs = await bundler.resolveTargetConfig();
 
   configs.forEach(({ name, config }) => {
     console.log(chalk.cyan.bold(`${name} webpack config`));

@@ -1,6 +1,7 @@
 import { RequestListener } from 'http';
-import { ServerPluginInstance } from '.';
+import { ServerPluginInstance } from './plugin';
 import { IPlatformContent } from '../core';
+import { Bunlder } from '../bundler';
 import { Server } from '../server/http-server';
 import { DevMiddleware } from './middlewares/dev/devMiddleware';
 
@@ -16,4 +17,8 @@ export interface ShuviServerOptions {
   serverPlugins: ServerPluginInstance[];
   getMiddlewares?: IPlatformContent['getMiddlewares'];
   getMiddlewaresBeforeDevMiddlewares?: IPlatformContent['getMiddlewaresBeforeDevMiddlewares'];
+}
+
+export interface ShuviDevServerOptions extends ShuviServerOptions {
+  bundler: Bunlder;
 }

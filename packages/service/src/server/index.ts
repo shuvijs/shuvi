@@ -1,5 +1,6 @@
 import { IPluginContext } from '../core';
 import { IShuviServer, ShuviServerOptions } from './shuviServerTypes';
+import { Bunlder } from '../bundler';
 
 export * from './http-server';
 
@@ -7,10 +8,20 @@ export * from './plugin';
 
 export * from './shuviServerTypes';
 
-export interface CreateShuviServerOptions extends ShuviServerOptions {
+export interface CreateShuviDevServerOptions extends ShuviServerOptions {
   context: IPluginContext;
-  dev?: boolean;
+  bundler: Bunlder;
+  dev: true;
 }
+
+export interface CreateShuviProdServerOptions extends ShuviServerOptions {
+  context: IPluginContext;
+  dev?: false;
+}
+
+export type CreateShuviServerOptions =
+  | CreateShuviDevServerOptions
+  | CreateShuviProdServerOptions;
 
 export async function createShuviServer({
   context,
