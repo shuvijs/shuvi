@@ -1,3 +1,3 @@
 export default {
-  plugins: ['./plugin/fileBuilder', './plugin/disableWebpackPlugin']
+  plugins: ['./plugin/fileBuilder']
 };

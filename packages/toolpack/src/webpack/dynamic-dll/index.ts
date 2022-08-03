@@ -18,7 +18,11 @@ import { checkNotInNodeModules } from './helper/check-not-in-node-modules';
 
 type IResolveWebpackModule = <T extends string>(
   path: T
-) => T extends `webpack/${infer R}` ? any : never;
+) => T extends `webpack`
+  ? typeof webpackType
+  : T extends `webpack/${infer R}`
+  ? any
+  : never;
 interface IOpts {
   cwd?: string;
   rootDir: string;
@@ -29,6 +33,35 @@ interface IOpts {
   shared?: ShareConfig;
   externals?: Configuration['externals'];
   esmFullSpecific?: Boolean;
+}
+
+function makeAsyncEntry(entry: any) {
+  const asyncEntry: Record<string, string> = {};
+  const virtualModules: Record<string, string> = {};
+  const entryObject = (
+    isString(entry) || isArray(entry)
+      ? { main: ([] as any).concat(entry) }
+      : entry
+  ) as Record<string, string[]>;
+
+  for (const key of Object.keys(entryObject)) {
+    const virtualPath = `./dynamic-dll-virtual-entry/${key}.js`;
+    const virtualContent: string[] = [];
+    const entryFiles = isArray(entryObject[key])
+      ? entryObject[key]
+      : ([entryObject[key]] as unknown as string[]);
+    for (let entry of entryFiles) {
+      invariant(isString(entry), 'wepback entry must be a string');
+      virtualContent.push(`import('${entry}');`);
+    }
+    virtualModules[virtualPath] = virtualContent.join('\n');
+    asyncEntry[key] = virtualPath;
+  }
+
+  return {
+    asyncEntry,
+    virtualModules
+  };
 }
 
 export class DynamicDll {
@@ -129,13 +162,13 @@ export class DynamicDll {
   };
 
   modifyWebpackChain = (chain: WebpackChain): WebpackChain => {
-    const webpack = this._resolveWebpackModule('webpack') as typeof webpackType;
+    const webpack = this._resolveWebpackModule('webpack');
     const entries = chain.entryPoints.entries();
     const entry = Object.keys(entries).reduce((acc, name) => {
       acc[name] = entries[name].values();
       return acc;
     }, {} as Record<string, string[]>);
-    const { asyncEntry, virtualModules } = this._makeAsyncEntry(entry);
+    const { asyncEntry, virtualModules } = makeAsyncEntry(entry);
     chain.entryPoints.clear();
     chain.merge({
       entry: asyncEntry
@@ -151,7 +184,7 @@ export class DynamicDll {
   };
 
   modifyWebpack = (config: Configuration): Configuration => {
-    const { asyncEntry, virtualModules } = this._makeAsyncEntry(config.entry);
+    const { asyncEntry, virtualModules } = makeAsyncEntry(config.entry);
 
     config.entry = asyncEntry;
     const webpack = this._resolveWebpackModule('webpack') as typeof webpackType;
@@ -175,35 +208,6 @@ export class DynamicDll {
       esmFullSpecific: this._opts.esmFullSpecific,
       force: process.env.DLL_FORCE_BUILD === 'true'
     });
-  }
-
-  private _makeAsyncEntry(entry: any) {
-    const asyncEntry: Record<string, string> = {};
-    const virtualModules: Record<string, string> = {};
-    const entryObject = (
-      isString(entry) || isArray(entry)
-        ? { main: ([] as any).concat(entry) }
-        : entry
-    ) as Record<string, string[]>;
-
-    for (const key of Object.keys(entryObject)) {
-      const virtualPath = `./dynamic-dll-virtual-entry/${key}.js`;
-      const virtualContent: string[] = [];
-      const entryFiles = isArray(entryObject[key])
-        ? entryObject[key]
-        : ([entryObject[key]] as unknown as string[]);
-      for (let entry of entryFiles) {
-        invariant(isString(entry), 'wepback entry must be a string');
-        virtualContent.push(`import('${entry}');`);
-      }
-      virtualModules[virtualPath] = virtualContent.join('\n');
-      asyncEntry[key] = virtualPath;
-    }
-
-    return {
-      asyncEntry,
-      virtualModules
-    };
   }
 
   private _getMFconfig() {
