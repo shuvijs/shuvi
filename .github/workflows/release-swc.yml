@@ -1,6 +1,7 @@
 on:
-  push:
-    branches: [release/swc-*]
+  pull_request_target:
+    branches:
+      - release/swc-*
 
 name: Test and Release SWC binary
 
