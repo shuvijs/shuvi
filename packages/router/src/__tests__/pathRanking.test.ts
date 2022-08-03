@@ -1,11 +1,8 @@
 // fork by vue router 4
-import { tokenizePath } from '../pathTokenizer'
-import {
-  tokensToParser,
-  comparePathParserScore,
-} from '../pathParserRanker'
+import { tokenizePath } from '../pathTokenizer';
+import { tokensToParser, comparePathParserScore } from '../pathParserRanker';
 
-type PathParserOptions = Parameters<typeof tokensToParser>[1]
+type PathParserOptions = Parameters<typeof tokensToParser>[1];
 
 describe('Path ranking', () => {
   describe('comparePathParser', () => {
@@ -29,55 +26,55 @@ describe('Path ranking', () => {
           // @ts-ignore
           parse: v => v,
           keys: [],
-          index: 1,
+          index: 1
         }
-      )
+      );
     }
 
     it('same length', () => {
-      expect(compare([[2]], [[3]])).toEqual(1)
-      expect(compare([[2]], [[2]])).toEqual(-1)
-      expect(compare([[4]], [[3]])).toEqual(-1)
-    })
+      expect(compare([[2]], [[3]])).toEqual(1);
+      expect(compare([[2]], [[2]])).toEqual(-1);
+      expect(compare([[4]], [[3]])).toEqual(-1);
+    });
     it('longer', () => {
-      expect(compare([[2]], [[3, 1]])).toEqual(1)
+      expect(compare([[2]], [[3, 1]])).toEqual(1);
       // NOTE: we are assuming we never pass end: false
-      expect(compare([[3]], [[3, 1]])).toEqual(1)
-      expect(compare([[1, 3]], [[2]])).toEqual(1)
-      expect(compare([[4]], [[3]])).toEqual(-1)
-      expect(compare([], [[3]])).toEqual(1)
-    })
-  })
+      expect(compare([[3]], [[3, 1]])).toEqual(1);
+      expect(compare([[1, 3]], [[2]])).toEqual(1);
+      expect(compare([[4]], [[3]])).toEqual(-1);
+      expect(compare([], [[3]])).toEqual(1);
+    });
+  });
 
   const possibleOptions: PathParserOptions[] = [
     undefined,
     { strict: true, sensitive: false },
     { strict: false, sensitive: true },
-    { strict: true, sensitive: true },
-  ]
+    { strict: true, sensitive: true }
+  ];
 
   function joinScore(score: number[][]): string {
-    return score.map(s => `[${s.join(', ')}]`).join(' ')
+    return score.map(s => `[${s.join(', ')}]`).join(' ');
   }
 
   function checkPathOrder(paths: Array<string | [string, PathParserOptions]>) {
     const normalizedPaths = paths.map((pathOrArray, index) => {
-      let path: string
-      let options: PathParserOptions
+      let path: string;
+      let options: PathParserOptions;
       if (typeof pathOrArray === 'string') {
-        path = pathOrArray
+        path = pathOrArray;
       } else {
-        path = pathOrArray[0]
-        options = pathOrArray[1]
+        path = pathOrArray[0];
+        options = pathOrArray[1];
       }
 
       return {
         id: path + (options ? JSON.stringify(options) : ''),
         path,
         options,
-        index,
-      }
-    })
+        index
+      };
+    });
 
     // reverse the array to force some reordering
     const parsers = normalizedPaths
@@ -86,38 +83,38 @@ describe('Path ranking', () => {
       .map(({ id, path, options, index }) => ({
         ...tokensToParser(tokenizePath(path), options),
         id,
-        index,
-      }))
+        index
+      }));
 
-    parsers.sort((a, b) => comparePathParserScore(a, b))
+    parsers.sort((a, b) => comparePathParserScore(a, b));
 
     for (let i = 0; i < parsers.length - 1; i++) {
-      const a = parsers[i]
-      const b = parsers[i + 1]
+      const a = parsers[i];
+      const b = parsers[i + 1];
 
       try {
-        expect(a.score).not.toEqual(b.score)
+        expect(a.score).not.toEqual(b.score);
       } catch (err) {
         console.warn(
           'Different routes should not have the same score:\n' +
             `${a.id} -> ${joinScore(a.score)}\n${b.id} -> ${joinScore(b.score)}`
-        )
+        );
 
-        throw err
+        throw err;
       }
     }
 
     try {
       expect(parsers.map(parser => parser.id)).toEqual(
         normalizedPaths.map(path => path.id)
-      )
+      );
     } catch (err) {
       console.warn(
         parsers
           .map(parser => `${parser.id} -> ${joinScore(parser.score)}`)
           .join('\n')
-      )
-      throw err
+      );
+      throw err;
     }
   }
 
@@ -125,9 +122,9 @@ describe('Path ranking', () => {
     checkPathOrder([
       '/a/b/c',
       '/a/b',
+      '/a',
       '/a/:b/c',
       '/a/:b',
-      '/a',
       '/a-:b-:c',
       '/a-:b',
       '/a-:w(.*)',
@@ -137,98 +134,98 @@ describe('Path ranking', () => {
       '/:a/-:b',
       '/:a/:b',
       '/:w',
-      '/:w+',
-    ])
-  })
+      '/:w+'
+    ]);
+  });
 
   it('puts the slash before optional parameters', () => {
     possibleOptions.forEach(options => {
-      checkPathOrder(['/', ['/:a?', options]])
-      checkPathOrder(['/', ['/:a*', options]])
-      checkPathOrder(['/', ['/:a(\\d+)?', options]])
-      checkPathOrder(['/', ['/:a(\\d+)*', options]])
-    })
-  })
+      checkPathOrder(['/', ['/:a?', options]]);
+      checkPathOrder(['/', ['/:a*', options]]);
+      checkPathOrder(['/', ['/:a(\\d+)?', options]]);
+      checkPathOrder(['/', ['/:a(\\d+)*', options]]);
+    });
+  });
 
   it('sensitive should go before non sensitive', () => {
     checkPathOrder([
       ['/Home', { sensitive: true }],
-      ['/home', {}],
-    ])
+      ['/home', {}]
+    ]);
     checkPathOrder([
       ['/:w', { sensitive: true }],
-      ['/:w', {}],
-    ])
-  })
+      ['/:w', {}]
+    ]);
+  });
 
   it('strict should go before non strict', () => {
     checkPathOrder([
       ['/home', { strict: true }],
-      ['/home', {}],
-    ])
-  })
+      ['/home', {}]
+    ]);
+  });
 
   it('orders repeatable and optional', () => {
     possibleOptions.forEach(options => {
-      checkPathOrder(['/:w', ['/:w?', options]])
-      checkPathOrder(['/:w?', ['/:w+', options]])
-      checkPathOrder(['/:w+', ['/:w*', options]])
-      checkPathOrder(['/:w+', ['/:w(.*)', options]])
-    })
-  })
+      checkPathOrder(['/:w', ['/:w?', options]]);
+      checkPathOrder(['/:w?', ['/:w+', options]]);
+      checkPathOrder(['/:w+', ['/:w*', options]]);
+      checkPathOrder(['/:w+', ['/:w(.*)', options]]);
+    });
+  });
 
   it('orders static before params', () => {
     possibleOptions.forEach(options => {
-      checkPathOrder(['/a', ['/:id', options]])
-    })
-  })
+      checkPathOrder(['/a', ['/:id', options]]);
+    });
+  });
 
   it('empty path before slash', () => {
     possibleOptions.forEach(options => {
-      checkPathOrder(['', ['/', options]])
-    })
-  })
+      checkPathOrder(['', ['/', options]]);
+    });
+  });
 
   it('works with long paths', () => {
-    checkPathOrder(['/a/b/c/d/e', '/:k/b/c/d/e', '/:k/b/c/d/:j'])
-  })
+    checkPathOrder(['/a/b/c/d/e', '/:k/b/c/d/e', '/:k/b/c/d/:j']);
+  });
 
   it('prioritizes custom regex', () => {
-    checkPathOrder(['/:a(\\d+)', '/:a', '/:a(.*)'])
-    checkPathOrder(['/b-:a(\\d+)', '/b-:a', '/b-:a(.*)'])
-  })
+    checkPathOrder(['/:a(\\d+)', '/:a', '/:a(.*)']);
+    checkPathOrder(['/b-:a(\\d+)', '/b-:a', '/b-:a(.*)']);
+  });
 
   it('prioritizes ending slashes', () => {
     checkPathOrder([
       // no strict
       '/a/',
-      '/a',
-    ])
+      '/a'
+    ]);
     checkPathOrder([
       // no strict
       '/a/b/',
-      '/a/b',
-    ])
+      '/a/b'
+    ]);
 
-    checkPathOrder([['/a/', { strict: true }], '/a/'])
-    checkPathOrder([['/a', { strict: true }], '/a'])
-  })
+    checkPathOrder([['/a/', { strict: true }], '/a/']);
+    checkPathOrder([['/a', { strict: true }], '/a']);
+  });
 
   it('puts the wildcard at the end', () => {
     possibleOptions.forEach(options => {
-      checkPathOrder([['', options], '/:rest(.*)'])
-      checkPathOrder([['/', options], '/:rest(.*)'])
-      checkPathOrder([['/ab', options], '/:rest(.*)'])
-      checkPathOrder([['/:a', options], '/:rest(.*)'])
-      checkPathOrder([['/:a?', options], '/:rest(.*)'])
-      checkPathOrder([['/:a+', options], '/:rest(.*)'])
-      checkPathOrder([['/:a*', options], '/:rest(.*)'])
-      checkPathOrder([['/:a(\\d+)', options], '/:rest(.*)'])
-      checkPathOrder([['/:a(\\d+)?', options], '/:rest(.*)'])
-      checkPathOrder([['/:a(\\d+)+', options], '/:rest(.*)'])
-      checkPathOrder([['/:a(\\d+)*', options], '/:rest(.*)'])
-    })
-  })
+      checkPathOrder([['', options], '/:rest(.*)']);
+      checkPathOrder([['/', options], '/:rest(.*)']);
+      checkPathOrder([['/ab', options], '/:rest(.*)']);
+      checkPathOrder([['/:a', options], '/:rest(.*)']);
+      checkPathOrder([['/:a?', options], '/:rest(.*)']);
+      checkPathOrder([['/:a+', options], '/:rest(.*)']);
+      checkPathOrder([['/:a*', options], '/:rest(.*)']);
+      checkPathOrder([['/:a(\\d+)', options], '/:rest(.*)']);
+      checkPathOrder([['/:a(\\d+)?', options], '/:rest(.*)']);
+      checkPathOrder([['/:a(\\d+)+', options], '/:rest(.*)']);
+      checkPathOrder([['/:a(\\d+)*', options], '/:rest(.*)']);
+    });
+  });
 
   it('handles sub segments', () => {
     checkPathOrder([
@@ -237,30 +234,30 @@ describe('Path ranking', () => {
       '/a/_:b(\\d)other',
       '/a/_:b(\\d)?other',
       '/a/_:b-other', // the _ is escaped but b can be also letters
-      '/a/a_:b',
-    ])
-  })
+      '/a/a_:b'
+    ]);
+  });
 
   it('handles repeatable and optional in sub segments', () => {
     checkPathOrder([
       '/a/_:b-other',
       '/a/_:b?-other',
       '/a/_:b+-other',
-      '/a/_:b*-other',
-    ])
+      '/a/_:b*-other'
+    ]);
     checkPathOrder([
       '/a/_:b(\\d)-other',
       '/a/_:b(\\d)?-other',
       '/a/_:b(\\d)+-other',
-      '/a/_:b(\\d)*-other',
-    ])
-  })
+      '/a/_:b(\\d)*-other'
+    ]);
+  });
 
   it('ending slashes less than params', () => {
     checkPathOrder([
       ['/a/b', { strict: false }],
       ['/a/:b', { strict: true }],
-      ['/a/:b/', { strict: true }],
-    ])
-  })
-})
+      ['/a/:b/', { strict: true }]
+    ]);
+  });
+});

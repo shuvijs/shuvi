@@ -204,7 +204,7 @@ describe('loader', () => {
     afterAll(async () => {
       await ctx.close();
     });
-    test(' when initial rendering, all loaders should run', async () => {
+    test('when initial rendering, all loaders should run', async () => {
       page = await ctx.browser.page(ctx.url('/loader-run/foo/a'));
       expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
       expect(await page.$text('[data-test-id="time-foo"]')).toBe('0');
