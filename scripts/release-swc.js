@@ -48,18 +48,13 @@ const getPkgRoot = pkg => path.resolve(__dirname, '../packages/' + pkg);
 const step = msg => console.log(chalk.cyan(msg));
 
 async function main() {
-  let { stdout: currentBranch } = await run('git', ['branch'], {
-    stdio: 'pipe'
-  });
-  const currentBranchSymbol = '* ';
-  currentBranch = currentBranch
-    .split('\n')
-    .filter(branch => branch.startsWith(currentBranchSymbol));
-  if (!currentBranch.length) {
-    console.log(chalk.red(`get current branch name error!`));
-  }
-
-  currentBranch = currentBranch[0].slice(2);
+  let { stdout: currentBranch } = await run(
+    'git',
+    ['branch', '--show-current'],
+    {
+      stdio: 'pipe'
+    }
+  );
   if (currentBranch !== processBranchName) {
     console.error(
       chalk.red(
@@ -142,11 +137,11 @@ async function main() {
   }
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
+  const stashName = `stash_release/swc@${targetVersion}`;
+  const publishBranchName = `release/swc-v${targetVersion}`;
 
   if (stdout) {
     step('\nCommitting changes...');
-    const stashName = `stash_release/swc@${targetVersion}`;
-    const publishBranchName = `release/swc-v${targetVersion}`;
     await runIfNotDry('git', ['stash', 'push', '-m', stashName], {
       stdio: 'pipe'
     });
@@ -167,19 +162,37 @@ async function main() {
 
   // push to GitHub
   step('\nPushing to GitHub...');
-  // await runIfNotDry('git', ['tag', `v${targetVersion}`]);
-  // await runIfNotDry('git', ['push', 'origin', `refs/tags/v${targetVersion}`]);
   await runIfNotDry('git', ['push', 'origin', publishBranchName]);
 
   if (isDryRun) {
     console.log(`\nDry run finished - run git diff to see package changes.`);
   }
 
-  console.log();
+  let { stdout: originRemote } = await run(
+    'git',
+    ['ls-remote', '--get-url', 'origin'],
+    {
+      stdio: 'pipe'
+    }
+  );
+
+  originRemote = originRemote
+    .replace('git@github.com:', '')
+    .replace('.git', '')
+    .replace('/', ':');
+
+  const url = new URL(
+    `https://github.com/shuvijs/shuvi/compare/${processBranchName}...${originRemote}:${publishBranchName}`
+  );
+  url.searchParams.set('quick_pull', 1);
+  url.searchParams.set('title', publishBranchName);
+
+  console.log('click me : ==> ', chalk.underline.bold(url.toString()), '<==');
+
+  console.log('');
 }
 
 function updateVersions(version) {
-  // 1. update compiler packages
   packages.forEach(p => updatePackage(getPkgRoot(p), version));
 }
 
@@ -208,12 +221,6 @@ function updateDeps(pkg, depType, version) {
   });
 }
 
-main()
-  .catch(err => {
-    console.error(err);
-  })
-  .finally(() => {
-    await runIfNotDry('git', ['checkout', processBranchName], {
-      stdio: 'pipe'
-    });
-  });
+main().catch(err => {
+  console.error(err);
+});
