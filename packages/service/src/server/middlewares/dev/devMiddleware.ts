@@ -62,27 +62,22 @@ export async function getDevMiddleware(
 
   compiler = await bundler.getWebpackCompiler(dynamicDll);
   // watch before pass compiler to ShuviDevMiddleware
-  bundler.watch({
+  bundler.watchBuild({
     onErrors(errors) {
       send('errors', errors);
     },
     onWarns(warns) {
       send('warns', warns);
-    }
-  });
+    },
+    onFinish() {
+      context.state = true;
 
-  compiler.hooks.done.tap('shuvi-dev-middleware', () => {
-    context.state = true;
-
-    // Do the stuff in nextTick, because bundle may be invalidated if a change happened while compiling
-    process.nextTick(() => {
       const { callbacks } = context;
       context.callbacks = [];
-
       callbacks.forEach(callback => {
         callback();
       });
-    });
+    }
   });
 
   context.watching = compiler.watch(

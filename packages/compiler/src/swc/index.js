@@ -43,7 +43,7 @@ if (!bindings) {
   loadError = null;
 }
 
-async function transform(src, options) {
+export async function transform(src, options) {
   const isModule = typeof src !== 'string' && !Buffer.isBuffer(src);
   options = options || {};
 
@@ -58,7 +58,7 @@ async function transform(src, options) {
   );
 }
 
-function transformSync(src, options) {
+export function transformSync(src, options) {
   const isModule = typeof src !== 'string' && !Buffer.isBuffer(src);
   options = options || {};
 
@@ -88,6 +88,3 @@ export function minifySync(src, opts) {
 export async function bundle(options) {
   return bindings.bundle(toBuffer(options));
 }
-
-module.exports.transform = transform;
-module.exports.transformSync = transformSync;

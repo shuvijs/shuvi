@@ -33,6 +33,7 @@ interface WatchTargetOptions {
   typeChecking?: boolean;
   onErrors?(errors: CompilerErr[]): void;
   onWarns?(warns: CompilerErr[]): void;
+  onFinish?(): void;
 }
 
 export interface NormalizedBundlerOptions {
@@ -49,11 +50,15 @@ const logger = Logger('shuvi:bundler');
 
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
+export type BuildEndCb = () => any;
+
 class WebpackBundler {
   private _cliContext: IPluginContext;
   private _compiler: WebapckMultiCompiler | null = null;
   private _options: NormalizedBundlerOptions;
   private _targets: Target[] = [];
+  private _finishedCbs: BuildEndCb[] = [];
+  private _finishedNum = 0;
 
   constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
     this._options = options;
@@ -125,20 +130,22 @@ class WebpackBundler {
     return this._compiler.compilers.find(compiler => compiler.name === name);
   }
 
-  watch(options: WatchTargetOptions) {
+  watchBuild(options: WatchTargetOptions) {
     if (!this._compiler) {
-      console.warn('please create compiler before watch');
-      return;
+      throw new Error('please create compiler before watch');
     }
 
+    if (options.onFinish) {
+      this._finishedCbs.push(options.onFinish);
+    }
     this._targets.forEach(({ name }) => {
       if (name === BUNDLER_DEFAULT_TARGET) {
-        this._watchTarget(name, {
+        this._setupListenersForTarget(name, {
           ...options,
           typeChecking: true
         });
       } else {
-        this._watchTarget(name, {
+        this._setupListenersForTarget(name, {
           typeChecking: false,
           onErrors(errros) {
             console.log(errros[0]);
@@ -160,11 +167,21 @@ class WebpackBundler {
     return await this._getTargets();
   }
 
+  private _tryResolveOnFinish(_name: string) {
+    if (this._targets.length === ++this._finishedNum) {
+      this._finishedNum = 0;
+      this._finishedCbs.forEach(cb => cb());
+    }
+  }
+
   private _createConfig(options: IWebpackConfigOptions) {
     return createWebpackConfig(this._cliContext, options);
   }
 
-  private _watchTarget(name: string, options: WatchTargetOptions = {}) {
+  private _setupListenersForTarget(
+    name: string,
+    options: WatchTargetOptions = {}
+  ) {
     const compiler = this.getSubCompiler(name)!;
     let isFirstSuccessfulCompile = true;
     let tsMessagesPromise: Promise<CompilerDiagnostics> | undefined;
@@ -292,10 +309,12 @@ class WebpackBundler {
         _warn('Compiled with warnings.\n');
         _warn(messages.warnings.join('\n\n'));
       }
+
+      this._tryResolveOnFinish(name);
     });
   }
 
-  private initDefaultBuildTarget(): TargetChain[] {
+  private _initDefaultBuildTarget(): TargetChain[] {
     const defaultWebpackHelpers = webpackHelpers();
     const defaultChain = createWebpackConfig(this._cliContext, {
       name: BUNDLER_DEFAULT_TARGET,
@@ -311,11 +330,12 @@ class WebpackBundler {
       }
     ];
   }
+
   private async _getTargets(): Promise<Target[]> {
     const targets: Target[] = [];
     const defaultWebpackHelpers = webpackHelpers();
     // get base config
-    const buildTargets = this.initDefaultBuildTarget();
+    const buildTargets = this._initDefaultBuildTarget();
     const extraTargets = (
       await this._cliContext.pluginRunner.addExtraTarget({
         createConfig: this._createConfig.bind(this),

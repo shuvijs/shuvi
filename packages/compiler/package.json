@@ -1,19 +1,15 @@
 {
   "name": "@shuvi/compiler",
   "version": "1.0.0-rc.4",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
     "build": "tsc -p tsconfig.build.json"
-  },
-  "files": [
-    "lib"
-  ],
-  "exports": {
-    "./swc": {
-      "default": "./lib/swc/index.js",
-      "types": "./lib/swc/index.d.ts"
-    }
   },
   "optionalDependencies": {
     "@shuvi/swc-darwin-arm64": "1.0.0-rc.2",

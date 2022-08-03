@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "./src",
     "module": "commonjs"
   },
-  "exclude": ["**/__tests__"]
+  "include": ["src"]
 }
