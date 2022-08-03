@@ -52,7 +52,17 @@ const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
 export type BuildEndCb = () => any;
 
-class WebpackBundler {
+export interface Bunlder {
+  watchBuild(options: WatchTargetOptions): void;
+  build(): Promise<BundlerResult>;
+  getWebpackCompiler(
+    dynamicDll?: DynamicDll | null
+  ): Promise<WebapckMultiCompiler>;
+  getSubCompiler(name: string): WebapckCompiler | undefined;
+  resolveTargetConfig(): Promise<Target[]>;
+}
+
+class WebpackBundler implements Bunlder {
   private _cliContext: IPluginContext;
   private _compiler: WebapckMultiCompiler | null = null;
   private _options: NormalizedBundlerOptions;
@@ -163,7 +173,7 @@ class WebpackBundler {
     return runCompiler(compiler);
   }
 
-  public async resolveWebpackConfig(): Promise<Target[]> {
+  public async resolveTargetConfig(): Promise<Target[]> {
     return await this._getTargets();
   }
 
@@ -376,7 +386,7 @@ class WebpackBundler {
 export async function getBundler(
   ctx: IPluginContext,
   options: BundlerOptions = {}
-) {
+): Promise<Bunlder> {
   await setupTypeScript(ctx.paths);
   return new WebpackBundler({ ...defaultBundleOptions, ...options }, ctx);
 }

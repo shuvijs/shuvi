@@ -1,19 +1,31 @@
+import { DEV_HOT_MIDDLEWARE_PATH } from '@shuvi/shared/lib/constants';
+import { Bunlder } from '../bundler';
+import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
-import { Server } from '../server/http-server';
 import {
   getDevMiddleware,
   DevMiddleware
 } from './middlewares/dev/devMiddleware';
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
 import { getAssetMiddleware } from './middlewares/getAssetMiddleware';
-import { DEV_HOT_MIDDLEWARE_PATH } from '@shuvi/shared/lib/constants';
+import { ShuviDevServerOptions } from './shuviServerTypes';
 
 export class ShuviDevServer extends ShuviServer {
+  private _bundler: Bunlder;
+
+  constructor(
+    corePluginContext: any,
+    { bundler, ...options }: ShuviDevServerOptions
+  ) {
+    super(corePluginContext, options);
+    this._bundler = bundler;
+  }
+
   async init() {
     const { _serverContext: context, _server: server } = this;
     const assetsMiddleware = getAssetMiddleware(context, true);
-    const devMiddleware = await getDevMiddleware(context);
+    const devMiddleware = await getDevMiddleware(this._bundler, context);
     await devMiddleware.waitUntilValid();
     const proxy = [];
     let proxyFromConfig = context.config.proxy;

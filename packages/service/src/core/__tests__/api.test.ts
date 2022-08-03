@@ -3,9 +3,12 @@ import { Config } from '..';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import { readFileSync } from 'fs';
+import { resolveFxiture } from './utils';
 
 test('should has "production" be default mode', async () => {
-  const prodApi = await getApi();
+  const prodApi = await getApi({
+    cwd: resolveFxiture('basic')
+  });
   expect(prodApi.mode).toBe('production');
 });
 
@@ -13,6 +16,7 @@ describe('plugins', () => {
   test('should work', async () => {
     let context: any;
     await getApi({
+      cwd: resolveFxiture('basic'),
       plugins: [
         {
           afterInit: cliContext => {
@@ -30,7 +34,7 @@ describe('plugins', () => {
     let config: Config;
 
     const api = await getApi({
-      cwd: path.join(__dirname, 'fixtures', 'dotenv'),
+      cwd: resolveFxiture('dotenv'),
       config: {
         publicPath: '/test'
       },
