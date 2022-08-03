@@ -143,8 +143,6 @@ async function main() {
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
 
-  return;
-
   if (stdout) {
     step('\nCommitting changes...');
     const stashName = `stash_release/swc@${targetVersion}`;
@@ -156,6 +154,7 @@ async function main() {
       stdio: 'pipe'
     });
     await runIfNotDry('git', ['stash', 'apply', stashName], { stdio: 'pipe' });
+    await runIfNotDry('git', ['stash', 'drop', stashName], { stdio: 'pipe' });
     await runIfNotDry('git', ['add', '-A']);
     await runIfNotDry('git', [
       'commit',
