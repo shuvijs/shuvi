@@ -16,7 +16,7 @@ env:
 
 jobs:
   check-branch-name:
-    if: startsWith(github.head_ref, 'release/swc')
+    if: startsWith(github.head_ref, 'release/swc') && github.event.pull_request.head.repo.id  == github.event.pull_request.base.repo.id
     runs-on: ubuntu-18.04
     steps:
       - run: echo "The head of this PR starts with 'release/swc'"
