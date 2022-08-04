@@ -20,14 +20,5 @@ module.exports = createPlugin({
       },
       dependencies: [sample]
     });
-  },
-  afterInit: context => {
-    context.onBuildStart(() => {
-      console.log('plugin onBuildStart');
-    });
-
-    context.onBuildEnd(() => {
-      console.log('plugin onBuildEnd');
-    });
   }
 });
