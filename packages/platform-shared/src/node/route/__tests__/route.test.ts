@@ -90,20 +90,20 @@ describe('route/page', () => {
     expect(result).toMatchObject({
       routes: [
         {
-          component: 'b/page.js',
-          path: '/b'
-        },
-        {
           component: 'b/b1/b2/page.js',
           path: '/b/b1/b2'
+        },
+        {
+          component: 'a/a1/page.js',
+          path: '/a/a1'
         },
         {
           component: 'a/page.js',
           path: '/a'
         },
         {
-          component: 'a/a1/page.js',
-          path: '/a/a1'
+          component: 'b/page.js',
+          path: '/b'
         }
       ],
       warnings: [],

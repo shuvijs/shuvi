@@ -438,15 +438,32 @@ describe('apiRoutes development', () => {
     });
   });
 
-  test('should return data part dynamic optional nested route', async () => {
-    const res = await got(ctx.url('/api/user/part-id/part-1/more'));
+  test('should return data matched with higher priority route', async () => {
+    const res = await got(
+      ctx.url('/api/traveling/random-comment/specific-comment')
+    );
     expect(JSON.parse(res.body)).toEqual({
       params: {
-        other: ['1', 'more'],
-        part: 'id',
-        post: 'user'
+        comment: 'random-comment',
+        post: 'traveling'
       },
       query: {}
+    });
+  });
+
+  test('should return data matched with splat route', async () => {
+    const res = await got(
+      ctx.url('/api/traveling/random-comment/specific-comment/more/info?lng=en')
+    );
+    expect(JSON.parse(res.body)).toEqual({
+      params: {
+        '*': 'specific-comment/more/info',
+        comment: 'random-comment',
+        post: 'traveling'
+      },
+      query: {
+        lng: 'en'
+      }
     });
   });
 

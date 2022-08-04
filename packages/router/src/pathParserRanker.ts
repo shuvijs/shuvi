@@ -403,8 +403,8 @@ export function comparePathParserScore(
   if (lengthDiff) {
     // if a.length less than b.length, but b[i] < a[i - 1], a comes first
     if (bScore.length > aScore.length)
-      return aScore[i - 1] >= bScore[i] ? -1 : 1;
-    // if a.length higher than b.length, but a[i] < b[i - 1], b comes first
+      return aScore[i - 1] > bScore[i] ? -1 : 1;
+    // if a.length bigger than b.length, but a[i] < b[i - 1], b comes first
     return aScore[i] < bScore[i - 1] ? 1 : -1;
   }
   // this is the ternary version
