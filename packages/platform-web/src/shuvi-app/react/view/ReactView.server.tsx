@@ -15,8 +15,6 @@ export class ReactServerView implements IReactServerView {
     manifest,
     getAssetPublicUrl
   }) => {
-    await Loadable.preloadAll();
-
     const {
       storeManager,
       router,
@@ -24,6 +22,7 @@ export class ReactServerView implements IReactServerView {
       appComponent: AppComponent
     } = app;
     await router.ready;
+    await Loadable.preloadAll();
 
     // todo: move these into renderer
     let { pathname, matches, redirected } = router.current;

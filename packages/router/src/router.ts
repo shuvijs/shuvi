@@ -46,6 +46,10 @@ interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   basename?: string;
 }
 
+type Error = {
+  type: 'redirected';
+};
+
 class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _basename: string;
   private _history: History;
@@ -212,15 +216,17 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       this._pending = null;
     };
 
-    const abort = () => {
+    const abort = (error?: Error) => {
       this._cancleHandler = null;
 
       onAbort && onAbort();
 
       // fire ready cbs once
       if (!this._ready) {
-        this._ready = true;
-        this._readyDefer.resolve();
+        if (error && error.type !== 'redirected') {
+          this._ready = true;
+          this._readyDefer.resolve();
+        }
       }
     };
     this._pending = to;
@@ -244,7 +250,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
             typeof to === 'string' ||
             (typeof to === 'object' && typeof to.path === 'string')
           ) {
-            abort();
+            abort({ type: 'redirected' });
             if (typeof to === 'object') {
               if (to.replace) {
                 this.replace(to.path);
