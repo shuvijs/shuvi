@@ -160,7 +160,11 @@ async function main() {
 
   // push to GitHub
   step('\nPushing to GitHub...');
-  await runIfNotDry('git', ['push', 'origin', publishBranchName]);
+  await runIfNotDry('git', [
+    'push',
+    'origin',
+    `${publishBranchName}:${publishBranchName}`
+  ]);
 
   if (isDryRun) {
     console.log(`\nDry run finished - run git diff to see package changes.`);

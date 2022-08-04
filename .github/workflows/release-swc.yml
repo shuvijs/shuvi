@@ -1,7 +1,10 @@
 on:
-  pull_request_target:
+  pull_request:
     branches:
-      - release/swc-*
+      - main
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'packages/compiler-swc/package.json'
 
 name: Test and Release SWC binary
 
@@ -12,10 +15,17 @@ env:
   PNPM_VERSION: 7.5.2
 
 jobs:
+  check-branch-name:
+    if: startsWith(github.head_ref, 'release/swc')
+    runs-on: ubuntu-18.04
+    steps:
+      - run: echo "The head of this PR starts with 'release/swc'"
+
   test-unit:
     name: Unit Test Native Code
     runs-on: ubuntu-18.04
-
+    needs:
+      - check-branch-name
     steps:
       - uses: actions/checkout@v2
         with:
