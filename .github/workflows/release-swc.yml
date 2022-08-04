@@ -19,7 +19,7 @@ jobs:
     if: startsWith(github.head_ref, 'release/swc')
     runs-on: ubuntu-18.04
     steps:
-      - run: echo "The head of this PR starts with 'release/swc'"
+      - run: echo "The head of this PR starts with 'release/swc'" {{ github.repository_owner }} {{ github.event.pull_request.head.repo.id }} {{ github.event.pull_request.base.repo.id }}
 
   test-unit:
     name: Unit Test Native Code
