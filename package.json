@@ -27,6 +27,7 @@
     "postinstall": "node scripts/install-native.js",
     "docs": "node scripts/typedoc-to-markdown.js",
     "release": "node scripts/release.js",
+    "release-swc": "node scripts/release-swc.js",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "prepare": "husky install"
   },
