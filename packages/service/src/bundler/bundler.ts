@@ -439,7 +439,7 @@ export async function getBundler(ctx: IPluginContext): Promise<Bunlder> {
   await setupTypeScript(ctx.paths);
   const options = { ...defaultBundleOptions };
   if (ctx.mode !== 'development') {
-    options.preBundle = true;
+    options.preBundle = false;
   }
   const bundler = new WebpackBundler(options, ctx);
   await bundler.init();
