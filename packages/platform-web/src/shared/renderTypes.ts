@@ -6,12 +6,12 @@ import {
   IAppData
 } from '@shuvi/platform-shared/shared';
 
-export type IRenderDocumentOptions = {
+export type IRenderViewOptions = {
   app: IApplication;
   req?: IRequest;
 };
 
-export interface IRenderOptions extends IRenderDocumentOptions {}
+export interface IRenderOptions extends IRenderViewOptions {}
 
 export interface IView<
   RenderOption extends IRenderOptions = any,
