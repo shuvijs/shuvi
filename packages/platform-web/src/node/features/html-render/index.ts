@@ -85,7 +85,7 @@ export const getPlugin = (
         exported: '*'
       },
       {
-        source: resolvePkgFile('esm/shuvi-app/shuvi-runtime-server'),
+        source: resolvePkgFile('lib/node/shuvi-runtime-server'),
         filepath: 'server.ts',
         exported: '*'
       }

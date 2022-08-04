@@ -1,45 +1,7 @@
 import { IRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
-import { Response, isResponse, text } from '@shuvi/platform-shared/shared';
-import { Renderer, IHtmlDocument } from './renderer';
-import { tag } from './renderer/htmlTag';
-
-function addEssentialTagsIfMissing(document: IHtmlDocument): IHtmlDocument {
-  let hasMetaCharset = false;
-  let hasMetaViewport = false;
-
-  for (const { tagName, attrs } of document.headTags) {
-    if (hasMetaCharset && hasMetaViewport) {
-      break;
-    }
-
-    if (tagName === 'meta') {
-      if (attrs.charset) {
-        hasMetaCharset = true;
-      } else if (attrs.name === 'viewport') {
-        hasMetaViewport = true;
-      }
-    }
-  }
-
-  if (!hasMetaCharset) {
-    document.headTags.unshift(
-      tag('meta', {
-        charset: 'utf-8'
-      })
-    );
-  }
-  if (!hasMetaViewport) {
-    document.headTags.unshift(
-      tag('meta', {
-        name: 'viewport',
-        content: 'width=device-width,minimum-scale=1,initial-scale=1'
-      })
-    );
-  }
-
-  return document;
-}
+import { Response } from '@shuvi/platform-shared/shared';
+import { Renderer } from './renderer';
 
 export async function renderToHTML({
   req,
@@ -58,24 +20,11 @@ export async function renderToHTML({
 
   try {
     await app.init();
-    const publicApp = app.getPublicAPI();
-    let doc = await renderer.renderDocument({
-      app: publicApp,
-      req
+    result = await renderer.renderView({
+      req,
+      app: app.getPublicAPI(),
+      ssr: serverPluginContext.config.ssr
     });
-
-    if (isResponse(doc)) {
-      result = doc;
-    } else {
-      addEssentialTagsIfMissing(doc);
-      await serverPluginContext.serverPluginRunner.modifyHtml(doc, app.context);
-      const htmlStr = renderer.renderDocumentToString(doc);
-      const appError = app.error.getError;
-      result = text(htmlStr, {
-        status:
-          appError && typeof appError.code !== 'undefined' ? appError.code : 200
-      });
-    }
   } finally {
     await app.dispose();
   }
