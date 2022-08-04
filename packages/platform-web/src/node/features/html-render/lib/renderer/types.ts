@@ -1,4 +1,9 @@
-import { IApplication, IRequest } from '@shuvi/platform-shared/shared';
+import {
+  IApplication,
+  IRequest,
+  Response
+} from '@shuvi/platform-shared/shared';
+import { IServerPluginContext } from '@shuvi/service';
 import {
   IHtmlAttrs,
   IHtmlTag,
@@ -8,7 +13,6 @@ import {
   IViewServer,
   IRenderAppServerResult
 } from '../../../../../shared';
-import { IServerPluginContext } from '@shuvi/service';
 
 export { IHtmlAttrs, IHtmlTag, IApplication };
 
@@ -16,10 +20,16 @@ export interface IRendererConstructorOptions {
   serverPluginContext: IServerPluginContext;
 }
 
-export type IRenderDocumentOptions = {
+export type IRenderViewOptions = {
   app: IApplication;
   req: IRequest;
+  ssr: boolean;
 };
+
+export type IRenderDocumentResult =
+  | Promise<IHtmlDocument | Response>
+  | IHtmlDocument
+  | Response;
 
 export interface IHtmlDocument {
   htmlAttrs: IHtmlAttrs;
@@ -30,7 +40,7 @@ export interface IHtmlDocument {
   scriptTags: IHtmlTag<'script'>[];
 }
 
-export interface IRenderOptions extends IRenderDocumentOptions {}
+export interface IRenderOptions extends IRenderViewOptions {}
 
 export {
   IRenderAppServerResult,

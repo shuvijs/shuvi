@@ -1,13 +1,12 @@
 import { BaseRenderer, AppData } from './base';
-import { IRenderDocumentOptions, IHtmlDocument } from './types';
+import { IRenderViewOptions, IHtmlDocument } from './types';
 
 export class SpaRenderer extends BaseRenderer {
-  renderDocument({ app }: IRenderDocumentOptions) {
+  renderDocument({ app }: IRenderViewOptions) {
     const assets = this._getMainAssetTags();
-    const serverPluginContext = this._serverPluginContext;
     const appData: AppData = {
+      ssr: false,
       pageData: {},
-      ssr: serverPluginContext.config.ssr,
       loadersData: {}
     };
     const document: IHtmlDocument = {

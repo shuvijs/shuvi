@@ -4,10 +4,10 @@ import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer, AppData } from './base';
 import { tag } from './htmlTag';
-import { IHtmlDocument, IRenderDocumentOptions } from './types';
+import { IHtmlDocument, IRenderViewOptions } from './types';
 
 export class SsrRenderer extends BaseRenderer {
-  async renderDocument({ app, req }: IRenderDocumentOptions) {
+  async renderDocument({ app, req }: IRenderViewOptions) {
     const { router, context } = app;
 
     const serverPluginContext = this._serverPluginContext;
@@ -36,8 +36,8 @@ export class SsrRenderer extends BaseRenderer {
     }, {}) as IData;
     const appData: AppData = {
       ...result.appData,
-      pageData,
-      ssr: serverPluginContext.config.ssr
+      ssr: true,
+      pageData
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 

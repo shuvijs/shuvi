@@ -1,4 +1,4 @@
-import { IAppData, Response } from '@shuvi/platform-shared/shared';
+import { IAppData } from '@shuvi/platform-shared/shared';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
   BUILD_CLIENT_RUNTIME_MAIN,
@@ -14,8 +14,12 @@ import {
 import { clientManifest } from '@shuvi/service/lib/resources';
 import generateFilesByRoutId from '../generateFilesByRoutId';
 import { tag } from './htmlTag';
-import { IHtmlDocument, IHtmlTag, IApplication } from './types';
-import { IRendererConstructorOptions, IRenderDocumentOptions } from './types';
+import { IHtmlTag, IApplication } from './types';
+import {
+  IRendererConstructorOptions,
+  IRenderViewOptions,
+  IRenderDocumentResult
+} from './types';
 
 export type AppData = Omit<IAppData, 'filesByRoutId' | 'publicPath'>;
 
@@ -30,10 +34,7 @@ export abstract class BaseRenderer {
   abstract renderDocument({
     app,
     req
-  }: IRenderDocumentOptions):
-    | Promise<IHtmlDocument | Response>
-    | IHtmlDocument
-    | Response;
+  }: IRenderViewOptions): IRenderDocumentResult;
 
   protected _getMainAssetTags(): {
     styles: IHtmlTag<any>[];
