@@ -3,7 +3,7 @@ import {
   CorePluginInstance,
   PluginRunner
 } from './lifecycle';
-import { FileBuilder, FileOption } from '../project';
+import { FileOption } from '../project';
 import {
   IServerMiddleware,
   IServerPluginContext,
@@ -206,6 +206,4 @@ export interface IPluginContext {
   resolveBuildFile(...paths: string[]): string;
   resolvePublicFile(...paths: string[]): string;
   getAssetPublicUrl(...paths: string[]): string;
-  onBuildStart: FileBuilder<any>['onBuildStart'];
-  onBuildEnd: FileBuilder<any>['onBuildEnd'];
 }
