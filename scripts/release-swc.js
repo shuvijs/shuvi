@@ -17,8 +17,6 @@ const pre =
   args.pre ||
   (semver.prerelease(currentVersion) && semver.prerelease(currentVersion)[0]);
 const isDryRun = args.dry;
-const skipTests = args.skipTests;
-const skipBuild = args.skipBuild;
 const processBranchName = 'main';
 const updatePackages = ['compiler'];
 
@@ -108,31 +106,6 @@ async function main() {
   // update all package versions and inter-dependencies
   step('\nUpdating cross dependencies...');
   updateVersions(targetVersion);
-
-  // clean all package
-  step('\nClean all package...');
-  await run(`pnpm`, ['clean']);
-
-  // install all packages and update pnpm-lock.yaml
-  step('\nUpdating lockfile...');
-  await run(`pnpm`, ['install']);
-
-  // build all packages with types
-  step('\nBuilding all packages...');
-  if (!skipBuild && !isDryRun) {
-    await run('pnpm', ['build']);
-  } else {
-    console.log(`(skipped)`);
-  }
-
-  // run tests before release
-  step('\nRunning tests...');
-  if (!skipTests && !isDryRun) {
-    await run(bin('jest'), ['--clearCache']);
-    await run('pnpm', ['test', '--bail']);
-  } else {
-    console.log(`(skipped)`);
-  }
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
   const publishBranchName = `release/swc-v${targetVersion}`;
