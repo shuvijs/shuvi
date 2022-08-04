@@ -20,14 +20,12 @@ const isDryRun = args.dry;
 const skipTests = args.skipTests;
 const skipBuild = args.skipBuild;
 const processBranchName = 'main';
-const includesPackages = ['compiler'];
-const skippedPackages = [];
+const updatePackages = ['compiler'];
 
 const packages = fs
   .readdirSync(path.resolve(__dirname, '../packages'))
   .filter(
-    p =>
-      includesPackages.includes(p) && !p.endsWith('.ts') && !p.startsWith('.')
+    p => updatePackages.includes(p) && !p.endsWith('.ts') && !p.startsWith('.')
   );
 
 const versionIncrements = [
@@ -61,7 +59,7 @@ async function main() {
         `You should run the scripts on branch ${processBranchName}, but now is ${currentBranch}!`
       )
     );
-    // return;
+    return;
   }
 
   let targetVersion = args._[0];
@@ -111,30 +109,30 @@ async function main() {
   step('\nUpdating cross dependencies...');
   updateVersions(targetVersion);
 
-  // // clean all package
-  // step('\nClean all package...');
-  // await run(`pnpm`, ['clean']);
+  // clean all package
+  step('\nClean all package...');
+  await run(`pnpm`, ['clean']);
 
-  // // install all packages and update pnpm-lock.yaml
-  // step('\nUpdating lockfile...');
-  // await run(`pnpm`, ['install']);
+  // install all packages and update pnpm-lock.yaml
+  step('\nUpdating lockfile...');
+  await run(`pnpm`, ['install']);
 
-  // // build all packages with types
-  // step('\nBuilding all packages...');
-  // if (!skipBuild && !isDryRun) {
-  //   await run('pnpm', ['build']);
-  // } else {
-  //   console.log(`(skipped)`);
-  // }
+  // build all packages with types
+  step('\nBuilding all packages...');
+  if (!skipBuild && !isDryRun) {
+    await run('pnpm', ['build']);
+  } else {
+    console.log(`(skipped)`);
+  }
 
-  // // run tests before release
-  // step('\nRunning tests...');
-  // if (!skipTests && !isDryRun) {
-  //   await run(bin('jest'), ['--clearCache']);
-  //   await run('pnpm', ['test', '--bail']);
-  // } else {
-  //   console.log(`(skipped)`);
-  // }
+  // run tests before release
+  step('\nRunning tests...');
+  if (!skipTests && !isDryRun) {
+    await run(bin('jest'), ['--clearCache']);
+    await run('pnpm', ['test', '--bail']);
+  } else {
+    console.log(`(skipped)`);
+  }
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
   const publishBranchName = `release/swc-v${targetVersion}`;
