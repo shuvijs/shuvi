@@ -98,17 +98,6 @@ importers:
       '@swc/plugin-transform-imports': 0.8.4
     dependencies:
       '@napi-rs/triples': 1.1.0
-    optionalDependencies:
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.2
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.2
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.2
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.2
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.2
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.2
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.2
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.2
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.2
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.2
     devDependencies:
       '@swc/plugin-transform-imports': 0.8.4
 
@@ -2946,96 +2935,6 @@ packages:
     dependencies:
       immer: 9.0.6
     dev: false
-
-  /@shuvi/swc-darwin-arm64/1.0.0-rc.2:
-    resolution: {integrity: sha512-wEMu13iNAx14matzprLXlyHAUho44NXzjseCdkpOIHmoOADwx04R/TZvsIUKKNVKvI/5hS/gNJ5Rd3tfXUOiqw==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-darwin-x64/1.0.0-rc.2:
-    resolution: {integrity: sha512-WSgQNvEvhf/e5smFB9ylxsvuWsoG0h/AO3kipMGkxFoXlGp0MfQVwlhCIr41w25N0neiM/6jVLr7yUDrnL1cCQ==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-linux-arm-gnueabihf/1.0.0-rc.2:
-    resolution: {integrity: sha512-gLTUZXnVu7c6nOxEx02+AozSNRpt894Lyw7JWUAAqLjGU6/WONL/2hIfPdaCk1hbVfSGk+nOHWCn4Cp+AdIuFw==}
-    engines: {node: '>= 10'}
-    cpu: [arm]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-linux-arm64-gnu/1.0.0-rc.2:
-    resolution: {integrity: sha512-9p5uSJGfcHRqJILF2pAJmRgplLd3BFEjBaVwQBJyThev/iJ3QjktlbnmtMfsf9+kLY+idatqmyaHlgJ5g6xEVg==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-linux-arm64-musl/1.0.0-rc.2:
-    resolution: {integrity: sha512-+ihxKCAht9AaTd9T3/Qm1BcRWFqSEWXVINmkC8dvIAskZxgmbQoTFeuZRqgzO405rD38sRaG1TCR1QJzVwA42Q==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-linux-x64-gnu/1.0.0-rc.2:
-    resolution: {integrity: sha512-CqUhlfcqk9czQYjX50dk/2tB7e21/+W33/IGQhzx75T5HCWc/Gld5mAfYypQB2qAbC1KDcOsFxwNR9RPJa/7iQ==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-linux-x64-musl/1.0.0-rc.2:
-    resolution: {integrity: sha512-EcvqdJej5oCdSuyav6RDvTp/Uj/KDB3jkTpn8KPTHZy4ZKUTQ8I+0lppOMrvH81DAWcebYWNTcB8ZVX6QjEu7g==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-win32-arm64-msvc/1.0.0-rc.2:
-    resolution: {integrity: sha512-FS7pGGPBgbULLM5bXlFzVsc553jZR8FR0xLMg4So6c/X/PWx7gMijSsKYfeQ9YXSlLvmL3nD4799GJRhYiqHvw==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [win32]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-win32-ia32-msvc/1.0.0-rc.2:
-    resolution: {integrity: sha512-XypvQebS6GADwUuhP/kDbvt4tvLffCWdJ4W9YQFMFlr1r84Gbf3/BnJyA2FxDutPu57IbqlsFho6UHe7/POd+w==}
-    engines: {node: '>= 10'}
-    cpu: [ia32]
-    os: [win32]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@shuvi/swc-win32-x64-msvc/1.0.0-rc.2:
-    resolution: {integrity: sha512-aa8PcW+e/V+0oi2Q8HF9otHrZ+5zn1+uQwGv0TuP0gV/7mJWsFXUjjeTGFJvU/b3wOAbIM75Sl0J0uGlTm1hGA==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: false
-    optional: true
 
   /@sinclair/typebox/0.23.5:
     resolution: {integrity: sha512-AFBVi/iT4g20DHoujvMH1aEDn8fGJh4xsRGCP6d8RpLPMqsNPvW01Jcn0QysXTsg++/xj25NmJsGyH9xug/wKg==}
@@ -11258,7 +11157,6 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
-    dev: false
 
   /whatwg-encoding/2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}

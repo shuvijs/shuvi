@@ -125,14 +125,14 @@ async function main() {
     console.log(`(skipped)`);
   }
 
-  // run tests before release
-  step('\nRunning tests...');
-  if (!skipTests && !isDryRun) {
-    await run(bin('jest'), ['--clearCache']);
-    await run('pnpm', ['test', '--bail']);
-  } else {
-    console.log(`(skipped)`);
-  }
+  // // run tests before release
+  // step('\nRunning tests...');
+  // if (!skipTests && !isDryRun) {
+  //   await run(bin('jest'), ['--clearCache']);
+  //   await run('pnpm', ['test', '--bail']);
+  // } else {
+  //   console.log(`(skipped)`);
+  // }
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
   const publishBranchName = `release/swc-v${targetVersion}`;
