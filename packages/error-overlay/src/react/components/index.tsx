@@ -1,2 +1,4 @@
-export { Overlay } from './Overlay';
-export { ShadowPortal } from './ShadowPortal';
+export * from './Dialog';
+export * from './Overlay';
+export * from './Terminal';
+export * from './ShadowPortal';
