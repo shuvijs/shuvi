@@ -200,20 +200,29 @@ describe('Path parser', () => {
     });
 
     describe('match *', () => {
-      it('could work without /', () => {
-        matchParams('*', '/a/b/c', { '*': 'a/b/c' });
-        matchParams('/a*', '/a/b/c/', { '*': 'b/c/' });
-        matchParams('/:a/:b-*', '/a/b-/c', { a: 'a', b: 'b', '*': 'c' });
-      });
-
       it('allow trailingSlash', () => {
+        matchParams('/*', '/a', { '*': 'a' });
+        matchParams('/*', '/a/', { '*': 'a/' });
         matchParams('/a/*', '/a', { '*': '' });
         matchParams('/a/*', '/a/', { '*': '' });
-        matchParams('/a/*', '/a/b/', { '*': 'b/' });
+        matchParams('/a/*', '/a/bb', { '*': 'bb' });
+        matchParams('/a/*', '/a/bb/', { '*': 'bb/' });
+        matchParams('/a/*', '/a/bb/ccc', { '*': 'bb/ccc' });
+        matchParams('/a/*', '/a/bb/ccc/', { '*': 'bb/ccc/' });
+      });
+
+      it('could work without /', () => {
+        matchParams('*', '/a', { '*': 'a' });
+        matchParams('*', '/a/b', { '*': 'a/b' });
       });
 
       it('no trailingSlash when strict is true', () => {
+        matchParams('/a/*', '/a', { '*': '' }, { strict: true });
         matchParams('/a/*', '/a/', null, { strict: true });
+        matchParams('/a/*', '/a/bb', { '*': 'bb' }, { strict: true });
+        matchParams('/a/*', '/a/bb/', null, { strict: true });
+        matchParams('/a/*', '/a/bb/ccc', { '*': 'bb/ccc' }, { strict: true });
+        matchParams('/a/*', '/a/bb/ccc/', null, { strict: true });
       });
 
       it("* should be a static char when it's position is not last", () => {
