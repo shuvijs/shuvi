@@ -89,17 +89,17 @@ describe('path matching', () => {
       { path: '/groups/main/users/me' },
       { path: '/groups/:groupId/users/me' },
       { path: '/groups/:groupId/users/:userId' },
-      { path: '/groups/:groupId/users/*' },
+      { path: '/groups/:groupId/users/:_other(.*)' },
       { path: '/groups/main/users' },
       { path: '/groups/:groupId/users' },
       { path: '/groups/main' },
       { path: '/groups/:groupId' },
       { path: '/groups' },
-      { path: '/files/*' },
+      { path: '/files/:_other(.*)' },
       { path: '/files' },
       { path: '/:one/:two/:three/:four/:five' },
       { path: '/' },
-      { path: '/*' }
+      { path: '/:_other(.*)' }
     ];
 
     expect(pickPaths(routes, '/groups/main/users/me')).toEqual([
@@ -112,7 +112,7 @@ describe('path matching', () => {
       '/groups/:groupId/users/:userId'
     ]);
     expect(pickPaths(routes, '/groups/main/users/a/b')).toEqual([
-      '/groups/:groupId/users/*'
+      '/groups/:groupId/users/:_other(.*)'
     ]);
     expect(pickPaths(routes, '/groups/main/users')).toEqual([
       '/groups/main/users'
@@ -123,13 +123,15 @@ describe('path matching', () => {
     expect(pickPaths(routes, '/groups/main')).toEqual(['/groups/main']);
     expect(pickPaths(routes, '/groups/123')).toEqual(['/groups/:groupId']);
     expect(pickPaths(routes, '/groups')).toEqual(['/groups']);
-    expect(pickPaths(routes, '/files/some/long/path')).toEqual(['/files/*']);
+    expect(pickPaths(routes, '/files/some/long/path')).toEqual([
+      '/files/:_other(.*)'
+    ]);
     expect(pickPaths(routes, '/files')).toEqual(['/files']);
     expect(pickPaths(routes, '/one/two/three/four/five')).toEqual([
       '/:one/:two/:three/:four/:five'
     ]);
     expect(pickPaths(routes, '/')).toEqual(['/']);
-    expect(pickPaths(routes, '/no/where')).toEqual(['/*']);
+    expect(pickPaths(routes, '/no/where')).toEqual(['/:_other(.*)']);
   });
 
   test('precedence of a bunch of routes in a nested route config', () => {

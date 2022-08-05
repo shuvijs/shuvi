@@ -122,9 +122,9 @@ describe('Path ranking', () => {
     checkPathOrder([
       '/a/b/c',
       '/a/b',
-      '/a',
       '/a/:b/c',
       '/a/:b',
+      '/a',
       '/a-:b-:c',
       '/a-:b',
       '/a-:w(.*)',

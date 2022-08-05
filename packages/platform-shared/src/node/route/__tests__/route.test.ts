@@ -90,20 +90,20 @@ describe('route/page', () => {
     expect(result).toMatchObject({
       routes: [
         {
-          component: 'b/page.js',
-          path: '/b'
-        },
-        {
           component: 'b/b1/b2/page.js',
           path: '/b/b1/b2'
+        },
+        {
+          component: 'a/a1/page.js',
+          path: '/a/a1'
         },
         {
           component: 'a/page.js',
           path: '/a'
         },
         {
-          component: 'a/a1/page.js',
-          path: '/a/a1'
+          component: 'b/page.js',
+          path: '/b'
         }
       ],
       warnings: [],
@@ -168,22 +168,12 @@ describe('route/page', () => {
         {
           children: [
             {
-              component: 'b/page.js',
-              path: 'b'
-            },
-            {
-              children: [
-                {
-                  component: 'c/$id/page.js',
-                  path: ':id'
-                }
-              ],
-              component: 'c/layout.js',
-              path: 'c'
-            },
-            {
               component: 'd/$pid/$id/page.js',
               path: 'd/:pid/:id'
+            },
+            {
+              component: 'e/$pid/$/page.js',
+              path: 'e/:pid/*'
             },
             {
               component: 'a/$id/page.js',
@@ -198,8 +188,18 @@ describe('route/page', () => {
               path: 'e/:pid'
             },
             {
-              component: 'e/$pid/$/page.js',
-              path: 'e/:pid/*'
+              component: 'b/page.js',
+              path: 'b'
+            },
+            {
+              children: [
+                {
+                  component: 'c/$id/page.js',
+                  path: ':id'
+                }
+              ],
+              component: 'c/layout.js',
+              path: 'c'
             }
           ],
           component: 'layout.js',
@@ -300,12 +300,12 @@ describe('route/api', () => {
     expect(result).toMatchObject({
       routes: [
         {
-          path: '/api/users',
-          api: 'api/users/api.js'
-        },
-        {
           path: '/api/users/:id',
           api: 'api/users/$id/api.js'
+        },
+        {
+          path: '/api/users',
+          api: 'api/users/api.js'
         },
         {
           path: '/api',
