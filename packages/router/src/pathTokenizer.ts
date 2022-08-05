@@ -2,7 +2,8 @@
 export const enum TokenType {
   Static,
   Param,
-  Group
+  Group,
+  CatchAll
 }
 
 const enum TokenizerState {
@@ -31,7 +32,13 @@ interface TokenGroup {
   value: Exclude<Token, TokenGroup>[];
 }
 
-export type Token = TokenStatic | TokenParam | TokenGroup;
+export interface TokenCatchAll {
+  type: TokenType.CatchAll;
+  value: string;
+  regexp: string;
+}
+
+export type Token = TokenStatic | TokenParam | TokenCatchAll | TokenGroup;
 
 const ROOT_TOKEN: Token = {
   type: TokenType.Static,
