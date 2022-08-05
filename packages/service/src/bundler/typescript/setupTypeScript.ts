@@ -1,7 +1,9 @@
 import * as path from 'path';
 import chalk from '@shuvi/utils/lib/chalk';
 import fs from 'fs-extra';
+import { Error } from '../../error';
 import { IPaths } from '../../core/apiTypes';
+import { getPkgManager } from '../helper/getPkgManager';
 import { TypeScriptModule, TsCompilerOptions } from './types';
 import { writeDefaultConfigurations } from './configTypeScript';
 import {
@@ -28,7 +30,8 @@ let tsConfigPath: string | undefined;
 let tsCompilerOptions: TsCompilerOptions;
 let resolvedBaseUrl: string | undefined;
 
-function printMissingPackagesError(pkgs: PackageDep[]) {
+function missingPackagesError(dir: string, pkgs: PackageDep[]) {
+  const packageManager = getPkgManager(dir);
   const packagesHuman = pkgs
     .map(
       (p, index, { length }) =>
@@ -43,35 +46,38 @@ function printMissingPackagesError(pkgs: PackageDep[]) {
     .join('');
   const packagesCli = pkgs.map(p => p.pkg).join(' ');
 
-  console.error(
-    chalk.bold.red(
-      `It looks like you're trying to use TypeScript but do not have the required package(s) installed.`
-    )
-  );
-  console.error();
-  console.error(
-    chalk.bold(`Please install ${chalk.bold(packagesHuman)} by running:`)
-  );
-  console.error();
-  console.error(
-    `\t${chalk.bold.cyan('npm install --save-dev' + ' ' + packagesCli)}`
-  );
-  console.error();
-  console.error(
+  const removalMsg =
+    '\n\n' +
     chalk.bold(
       'If you are not trying to use TypeScript, please remove the ' +
         chalk.cyan('tsconfig.json') +
-        ' file from your package root (and any TypeScript files).'
-    )
+        ' file from your package root (and any TypeScript files in your pages directory).'
+    );
+
+  throw Error.Fatal(
+    chalk.bold.red(
+      `It looks like you're trying to use TypeScript but do not have the required package(s) installed.`
+    ) +
+      '\n\n' +
+      chalk.bold(`Please install ${chalk.bold(packagesHuman)} by running:`) +
+      '\n\n' +
+      `\t${chalk.bold.cyan(
+        (packageManager === 'yarn'
+          ? 'yarn add --dev'
+          : packageManager === 'pnpm'
+          ? 'pnpm install --save-dev'
+          : 'npm install --save-dev') +
+          ' ' +
+          packagesCli
+      )}` +
+      removalMsg +
+      '\n'
   );
-  console.error();
 }
 
 export function getTypeScriptInfo(): TypeScriptInfo {
   if (!hasSetup) {
-    var stack = new Error().stack;
-    console.log('getTypeScriptInfo', stack);
-    throw new Error(
+    throw Error.Fatal(
       "please call 'setupTypeScript' before calling 'getTypeScriptInfo'"
     );
   }
@@ -97,8 +103,7 @@ export async function setupTypeScript(paths: IPaths) {
   if (useTypeScript) {
     const deps = checkNecessarytDeps(projectDir);
     if (deps.missing.length > 0) {
-      printMissingPackagesError(deps.missing);
-      process.exit(-1);
+      missingPackagesError(projectDir, deps.missing);
     }
 
     typeScriptPath = deps.resovled.get('typescript');

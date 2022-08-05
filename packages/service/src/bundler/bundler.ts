@@ -15,10 +15,11 @@ import webpack, {
   webpackResolveContext
 } from '@shuvi/toolpack/lib/webpack';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
+import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { Server, IMiddlewareHandler } from '../server';
 import { IPluginContext } from '../core';
+import { isFatalError } from '../error';
 import { Target, TargetChain } from '../core/lifecycle';
-import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
 import { BUILD_DEFAULT_DIR } from '../constants';
@@ -436,16 +437,25 @@ class WebpackBundler implements Bunlder {
 }
 
 export async function getBundler(ctx: IPluginContext): Promise<Bunlder> {
-  await setupTypeScript(ctx.paths);
-  const options = {
-    ...defaultBundleOptions,
-    preBundle: ctx.config.experimental.preBundle,
-    ignoreTypeScriptErrors: ctx.config.typescript.ignoreBuildErrors
-  };
-  if (ctx.mode !== 'development') {
-    options.preBundle = false;
+  try {
+    await setupTypeScript(ctx.paths);
+    const options = {
+      ...defaultBundleOptions,
+      preBundle: ctx.config.experimental.preBundle,
+      ignoreTypeScriptErrors: ctx.config.typescript.ignoreBuildErrors
+    };
+    if (ctx.mode !== 'development') {
+      options.preBundle = false;
+    }
+    const bundler = new WebpackBundler(options, ctx);
+    await bundler.init();
+    return bundler;
+  } catch (err: any) {
+    if (isFatalError(err)) {
+      console.error(err.message);
+      process.exit(1);
+    }
+
+    throw err;
   }
-  const bundler = new WebpackBundler(options, ctx);
-  await bundler.init();
-  return bundler;
 }

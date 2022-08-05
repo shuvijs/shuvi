@@ -5,6 +5,10 @@ import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOption } from '../project';
 import { getBundler, Bunlder } from '../bundler';
+import { DEFAULT_PUBLIC_PATH } from '../constants';
+import { ServerPluginInstance } from '../server';
+import { _setResourceEnv } from '../resources';
+import { isFatalError } from '../error';
 import {
   Config,
   NormalizedConfig,
@@ -19,7 +23,6 @@ import {
   RuntimePluginConfig,
   ResolvedPlugin
 } from './apiTypes';
-import { DEFAULT_PUBLIC_PATH } from '../constants';
 import {
   getManager,
   PluginManager,
@@ -29,8 +32,6 @@ import {
 import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
-import { ServerPluginInstance } from '../server';
-import { _setResourceEnv } from '../resources';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
 
@@ -417,6 +418,16 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     plugins: options.plugins
   });
 
-  await api.init();
+  try {
+    await api.init();
+  } catch (err: any) {
+    if (isFatalError(err)) {
+      console.error(err.message);
+      process.exit(1);
+    }
+
+    throw err;
+  }
+
   return api;
 }
