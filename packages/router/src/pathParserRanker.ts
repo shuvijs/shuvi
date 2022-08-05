@@ -1,4 +1,4 @@
-import { Token, TokenType, TokenParam } from './pathTokenizer';
+import { Token, TokenType, TokenCatchAll } from './pathTokenizer';
 
 type PathParams = Record<string, string | string[]>;
 
@@ -87,17 +87,15 @@ const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
   end: true
 };
 
-const WILDCARD_TOKEN: TokenParam = {
-  type: TokenType.Param,
+const CATCHALL_TOKEN: TokenCatchAll = {
+  type: TokenType.CatchAll,
   value: '*',
-  regexp: '.*',
-  repeatable: true,
-  optional: true
+  regexp: '(?:/((?:.*?)(?:/(?:.*?))*))?$'
 };
 
-const WILDCARD_TOKEN_STRICT: TokenParam = {
-  ...WILDCARD_TOKEN,
-  regexp: '.{1}'
+const CATCHALL_TOKEN_STRICT: TokenCatchAll = {
+  ...CATCHALL_TOKEN,
+  regexp: '(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?$'
 };
 
 // Scoring values used in tokensToParser
@@ -110,6 +108,7 @@ const enum PathScore {
   Dynamic = 2 * _multiplier, // /:someId
   BonusCustomRegExp = 1 * _multiplier, // /:someId(\\d+)
   BonusWildcard = -4 * _multiplier - BonusCustomRegExp, // /:namedWildcard(.*) we remove the bonus added by the custom regexp
+  BonusCallAll = -4.1 * _multiplier, // /* slightly lower than BonusWildcard
   BonusRepeatable = -2 * _multiplier, // /:w+ or /:w*
   BonusOptional = -0.8 * _multiplier, // /:w? or /:w*
   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
@@ -136,22 +135,25 @@ export function tokensToParser(
   /**
    * end with *, eg: /* /a* /a/*
    */
-  let wildcardToken = WILDCARD_TOKEN;
+  let catchAllToken = CATCHALL_TOKEN;
   if (options.strict) {
-    wildcardToken = WILDCARD_TOKEN_STRICT;
+    catchAllToken = CATCHALL_TOKEN_STRICT;
   }
+  let hasCatchall = false;
   const lastTokenGroup = segments[segments.length - 1];
   if (lastTokenGroup) {
     const lastToken = lastTokenGroup[lastTokenGroup.length - 1];
     if (lastToken) {
       if (lastToken.type === TokenType.Static) {
-        if (lastToken.value === wildcardToken.value) {
+        if (lastToken.value === catchAllToken.value) {
+          hasCatchall = true;
           lastTokenGroup.pop();
-          if (!lastTokenGroup.length) {
+          if (lastTokenGroup.length === 0) {
             segments.pop();
           }
-          segments.push([wildcardToken]);
-        } else if (lastToken.value.endsWith(wildcardToken.value)) {
+          segments.push([catchAllToken]);
+        } else if (lastToken.value.endsWith(catchAllToken.value)) {
+          hasCatchall = true;
           console.warn(
             `Route path "${lastToken.value}" will be treated as if it were ` +
               `"${lastToken.value.replace(
@@ -165,7 +167,7 @@ export function tokensToParser(
               )}".`
           );
           lastToken.value = lastToken.value.slice(0, -1);
-          segments.push([wildcardToken]);
+          segments.push([catchAllToken]);
         }
       }
     }
@@ -240,13 +242,25 @@ export function tokensToParser(
         if (optional) subSegmentScore += PathScore.BonusOptional;
         if (repeatable) subSegmentScore += PathScore.BonusRepeatable;
         if (re === '.*') subSegmentScore += PathScore.BonusWildcard;
+      } else if (token.type === TokenType.CatchAll) {
+        const { value, regexp } = token;
+        keys.push({
+          name: value,
+          repeatable: false,
+          optional: false
+        });
+        pattern += regexp;
+        subSegmentScore += PathScore.Dynamic;
+        subSegmentScore += PathScore.BonusCallAll;
       }
 
       segmentScores.push(subSegmentScore);
     }
 
     // an empty array like /home/ -> [[{home}], []]
-    // if (!segment.length) pattern += '/'
+    // if (!segment.length) {
+    //   pattern += '/'
+    // }
 
     score.push(segmentScores);
   }
@@ -257,12 +271,16 @@ export function tokensToParser(
     score[i][score[i].length - 1] += PathScore.BonusStrict;
   }
 
-  // TODO: dev only warn double trailing slash
-  if (!options.strict) pattern += '/*?';
+  if (hasCatchall) {
+    // do nothing
+  } else {
+    // TODO: dev only warn double trailing slash
+    if (!options.strict) pattern += '/*?';
 
-  if (options.end) pattern += '$';
-  // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_something_else
-  else if (options.strict) pattern += '(?:/*|$)';
+    if (options.end) pattern += '$';
+    // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_something_else
+    else if (options.strict) pattern += '(?:/*|$)';
+  }
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i');
 
@@ -275,7 +293,12 @@ export function tokensToParser(
     for (let i = 1; i < match.length; i++) {
       const value: string = match[i] || '';
       const key = keys[i - 1];
-      if (key.repeatable && key.name !== wildcardToken.value) {
+      if (key.name === catchAllToken.value) {
+        params[key.name] = value;
+        break;
+      }
+
+      if (key.repeatable) {
         params[key.name] = value ? value.split('/') : [];
       } else {
         params[key.name] = value;
