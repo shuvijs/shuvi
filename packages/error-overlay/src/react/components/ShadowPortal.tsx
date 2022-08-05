@@ -1,6 +1,3 @@
-// This file is a modified version of the Next.js that can be found here:
-// https://github.com/vercel/next.js/blob/canary/packages/react-dev-overlay/src/internal/components/ShadowPortal.tsx
-
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
