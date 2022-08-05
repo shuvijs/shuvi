@@ -122,9 +122,13 @@ importers:
     specifiers:
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
+      anser: 1.4.9
+      html-entities: 2.3.2
       react: 18.1.0
       react-dom: 18.1.0
     dependencies:
+      anser: 1.4.9
+      html-entities: 2.3.2
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
     devDependencies:
@@ -3819,6 +3823,10 @@ packages:
       uri-js: 4.4.1
     dev: false
 
+  /anser/1.4.9:
+    resolution: {integrity: sha512-AI+BjTeGt2+WFk4eWcqbQ7snZpDBt8SaLlj0RT2h5xfdWaiy51OjYvqwMrNzJLGy8iOAL6nKDITWO+rd4MkYEA==}
+    dev: false
+
   /ansi-colors/4.1.1:
     resolution: {integrity: sha512-JoX0apGbHaUJBNl6yF+p6JAFYZ666/hhCGKN5t9QFjbJQKUU/g8MNbFDbvfrgKXvI1QpZplPOnwIo99lX/AAmA==}
     engines: {node: '>=6'}
@@ -6642,6 +6650,10 @@ packages:
     dependencies:
       whatwg-encoding: 2.0.0
     dev: true
+
+  /html-entities/2.3.2:
+    resolution: {integrity: sha512-c3Ab/url5ksaT0WyleslpBEthOzWhrjQbg75y7XUsfSzi3Dgzt0l8w5e7DylRn15MTlMMD58dTfzddNS2kcAjQ==}
+    dev: false
 
   /html-escaper/2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
