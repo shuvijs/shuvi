@@ -118,6 +118,19 @@ importers:
     dependencies:
       '@napi-rs/cli': 2.10.3
 
+  packages/error-overlay:
+    specifiers:
+      '@types/react': 18.0.9
+      '@types/react-dom': 18.0.6
+      react: 18.1.0
+      react-dom: 18.1.0
+    dependencies:
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+    devDependencies:
+      '@types/react': 18.0.9
+      '@types/react-dom': 18.0.6
+
   packages/hook:
     specifiers: {}
 
