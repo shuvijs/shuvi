@@ -118,6 +118,19 @@ importers:
     dependencies:
       '@napi-rs/cli': 2.10.3
 
+  packages/error-overlay:
+    specifiers:
+      '@types/react': 18.0.9
+      '@types/react-dom': 18.0.6
+      react: 18.1.0
+      react-dom: 18.1.0
+    dependencies:
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+    devDependencies:
+      '@types/react': 18.0.9
+      '@types/react-dom': 18.0.6
+
   packages/hook:
     specifiers: {}
 
@@ -11252,7 +11265,6 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
-    dev: false
 
   /whatwg-encoding/2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
