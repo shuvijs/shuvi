@@ -17,7 +17,9 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "anser": "1.4.9",
-    "html-entities": "2.3.2"
+    "html-entities": "2.3.2",
+    "stacktrace-parser": "0.1.10",
+    "strip-ansi": "6.0.1"
   },
   "devDependencies": {
     "@types/react": "18.0.9",

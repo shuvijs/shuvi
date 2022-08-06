@@ -4,7 +4,7 @@ import { lock, unlock } from './body-locker';
 export type OverlayProps = {
   className?: string;
   fixed?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 const Overlay: React.FC<OverlayProps> = function Overlay({

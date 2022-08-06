@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "lib": ["esnext", "dom"],
-    "esModuleInterop": false,
     "outDir": "lib",
-    "module": "esnext"
+    "module": "esnext",
+    "esModuleInterop": true
   },
   "include": ["src"]
 }

@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "lib": ["dom"]
   },
   "include": ["src/**/*.ts", "src/index.ts"]
