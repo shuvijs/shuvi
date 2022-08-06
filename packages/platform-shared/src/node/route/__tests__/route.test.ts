@@ -161,52 +161,45 @@ describe('route/page', () => {
 
   it('should handle dynamic path', async () => {
     const result = await getFixturePageRoutes('dynamic-path');
+    result.routes.forEach(route => console.log(route));
 
     expect(result).toMatchObject({
       routes: [
         {
           children: [
             {
-              component: 'f/[pid]/[id]/page.js',
-              path: 'f/:pid/:id'
+              component: 'd/$pid/$id/page.js',
+              path: 'd/:pid/:id'
             },
             {
-              component: 'g/[pid]/[id]/page.js',
-              path: 'g/:pid/:id'
+              component: 'e/$pid/$/page.js',
+              path: 'e/:pid/*'
             },
             {
-              component: 'a/[id]/page.js',
+              component: 'a/$id/page.js',
               path: 'a/:id'
             },
             {
-              component: 'g/[pid]/page.js',
-              path: 'g/:pid'
+              component: 'b/$id/page.js',
+              path: 'b/:id'
             },
             {
-              component: 'b/[[id]]/page.js',
-              path: 'b/:id?'
+              component: 'e/$pid/page.js',
+              path: 'e/:pid'
             },
             {
-              component: 'c/[...id]/page.js',
-              path: 'c/:id+'
-            },
-            {
-              component: 'd/[[...id]]/page.js',
-              path: 'd/:id*'
-            },
-            {
-              component: 'd/page.js',
-              path: 'd'
+              component: 'b/page.js',
+              path: 'b'
             },
             {
               children: [
                 {
-                  component: 'e/[id]/page.js',
+                  component: 'c/$id/page.js',
                   path: ':id'
                 }
               ],
-              component: 'e/layout.js',
-              path: 'e'
+              component: 'c/layout.js',
+              path: 'c'
             }
           ],
           component: 'layout.js',
@@ -308,7 +301,7 @@ describe('route/api', () => {
       routes: [
         {
           path: '/api/users/:id',
-          api: 'api/users/[id]/api.js'
+          api: 'api/users/$id/api.js'
         },
         {
           path: '/api/users',

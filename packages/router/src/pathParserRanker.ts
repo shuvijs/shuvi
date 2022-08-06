@@ -424,7 +424,9 @@ export function comparePathParserScore(
 
   // if a and b share the same score entries but b has more, sort b first
   const lengthDiff = bScore.length - aScore.length;
-  if (lengthDiff) return lengthDiff;
+  if (lengthDiff) {
+    return lengthDiff;
+  }
   // this is the ternary version
   // return aScore.length < bScore.length
   //   ? 1
