@@ -3,10 +3,10 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
-  DialogHeader,
-  Overlay,
-  Terminal
-} from '../components';
+  DialogHeader
+} from '../components/Dialog';
+import { Overlay } from '../components/Overlay';
+import { Terminal } from '../components/Terminal';
 import { noop as css } from '../helpers/noop-template';
 
 export type BuildErrorProps = { error: string };
