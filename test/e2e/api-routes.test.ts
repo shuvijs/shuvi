@@ -56,7 +56,7 @@ describe('apiRoutes development', () => {
 
   test('should return data when catch-all', async () => {
     const res = await got.get(ctx.url('/api/users/1'));
-    expect(JSON.parse(res.body)).toEqual({ '*': '1' });
+    expect(JSON.parse(res.body)).toEqual({ slug: ['1'] });
   });
 
   // test('should return redirect when catch-all with index and trailing slash', async () => {
@@ -71,16 +71,12 @@ describe('apiRoutes development', () => {
 
   test('should return data when catch-all with index and trailing slash', async () => {
     const res = await got.get(ctx.url('/api/users/'));
-    expect(JSON.parse(res.body)).toEqual({
-      '*': ''
-    });
+    expect(JSON.parse(res.body)).toEqual({});
   });
 
   test('should return data when catch-all with index and no trailing slash', async () => {
     const res = await got.get(ctx.url('/api/users'));
-    expect(JSON.parse(res.body)).toEqual({
-      '*': ''
-    });
+    expect(JSON.parse(res.body)).toEqual({});
   });
 
   test('should set cors headers when adding cors middleware', async () => {
@@ -374,8 +370,7 @@ describe('apiRoutes development', () => {
     const res = await got(ctx.url('/api/post-1'));
     expect(JSON.parse(res.body)).toEqual({
       params: {
-        post: 'post-1',
-        '*': ''
+        post: 'post-1'
       },
       query: {}
     });
@@ -385,8 +380,7 @@ describe('apiRoutes development', () => {
     const res = await got(ctx.url('/api/post-1?val=1'));
     expect(JSON.parse(res.body)).toEqual({
       params: {
-        post: 'post-1',
-        '*': ''
+        post: 'post-1'
       },
       query: {
         val: '1'
@@ -399,8 +393,7 @@ describe('apiRoutes development', () => {
     const json = await JSON.parse(res.body);
     expect(json).toEqual({
       params: {
-        post: 'post-1',
-        '*': ''
+        post: 'post-1'
       },
       query: {
         val: '1'
@@ -449,7 +442,8 @@ describe('apiRoutes development', () => {
     const res = await got(ctx.url('/api/user/part-id/part-1/more'));
     expect(JSON.parse(res.body)).toEqual({
       params: {
-        '*': 'part-id/part-1/more',
+        other: ['1', 'more'],
+        part: 'id',
         post: 'user'
       },
       query: {}
