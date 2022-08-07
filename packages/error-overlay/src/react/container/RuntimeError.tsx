@@ -1,10 +1,5 @@
 import * as React from 'react';
-import {
-  TYPE_UNHANDLED_ERROR,
-  TYPE_UNHANDLED_REJECTION,
-  UnhandledError,
-  UnhandledRejection
-} from '../errorTypeHandler';
+import { UnhandledError, UnhandledRejection } from '../errorTypeHandler';
 import {
   Dialog,
   DialogBody,
@@ -19,8 +14,11 @@ import { getErrorSource } from '../helpers/nodeStackFrames';
 import { noop as css } from '../helpers/noop-template';
 import { CloseIcon, WarningIcon } from '../components/Icons';
 import { Errors } from '../components/Errors';
-
-import { SERVER_TYPE_ERROR } from '../constants';
+import {
+  SERVER_TYPE_ERROR,
+  TYPE_UNHANDLED_ERROR,
+  TYPE_UNHANDLED_REJECTION
+} from '../constants';
 
 export type SupportedErrorEvent = {
   id: number;
