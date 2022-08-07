@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { styles as codeFrame } from '../components/CodeFrame';
 import { styles as dialog } from '../components/Dialog';
 import { styles as NavigationBar } from '../components/NavigationBar';
 import { styles as overlay } from '../components/Overlay';
@@ -19,7 +18,6 @@ export function ComponentStyles() {
         ${toast}
         ${dialog}
         ${NavigationBar}
-        ${codeFrame}
         ${terminal}
         ${errors}
         

@@ -11,20 +11,6 @@ import { noop as css } from '../helpers/noop-template';
 
 export type BuildErrorProps = { error: string };
 
-const style = {
-  header: {
-    lineHeight: '1.5',
-    margin: 0,
-    padding: 0
-  },
-  footer: {
-    marginTop: '8px'
-  },
-  footerText: {
-    color: '#757575'
-  }
-} as const;
-
 export const BuildError: React.FC<BuildErrorProps> = function BuildError({
   error
 }) {
@@ -38,13 +24,13 @@ export const BuildError: React.FC<BuildErrorProps> = function BuildError({
         aria-describedby="build_error_desc"
       >
         <DialogContent>
-          <DialogHeader>
-            <h4 style={style.header}>Failed to compile</h4>
+          <DialogHeader className="container-build-error-header">
+            <h4>Failed to compile</h4>
           </DialogHeader>
           <DialogBody className="container-build-error-body">
             <Terminal content={error} />
             <footer>
-              <small style={style.footerText}>
+              <small>
                 This error occurred during the build process and can only be
                 dismissed by fixing the error.
               </small>
