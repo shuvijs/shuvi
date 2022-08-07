@@ -4,6 +4,11 @@ import * as ErrorTypeHandler from './errorTypeHandler';
 import { ShadowPortal } from './components/ShadowPortal';
 import { BuildError } from './container/BuildError';
 import { RuntimeError, SupportedErrorEvent } from './container/RuntimeError';
+import {
+  TYPE_BUILD_ERROR,
+  TYPE_UNHANDLED_ERROR,
+  TYPE_UNHANDLED_REJECTION
+} from './constants';
 
 import { Base } from './styles/Base';
 import { ComponentStyles } from './styles/ComponentStyles';
@@ -20,17 +25,11 @@ function reducer(
   ev: ErrorTypeHandler.ErrorTypeEvent
 ): OverlayState {
   switch (ev.type) {
-    case ErrorTypeHandler.TYPE_BUILD_OK: {
-      return { ...state, buildError: null };
-    }
-    case ErrorTypeHandler.TYPE_BUILD_ERROR: {
+    case TYPE_BUILD_ERROR: {
       return { ...state, buildError: ev.message };
     }
-    case ErrorTypeHandler.TYPE_REFRESH: {
-      return { ...state, buildError: null, errors: [] };
-    }
-    case ErrorTypeHandler.TYPE_UNHANDLED_ERROR:
-    case ErrorTypeHandler.TYPE_UNHANDLED_REJECTION: {
+    case TYPE_UNHANDLED_ERROR:
+    case TYPE_UNHANDLED_REJECTION: {
       return {
         ...state,
         nextId: state.nextId + 1,
