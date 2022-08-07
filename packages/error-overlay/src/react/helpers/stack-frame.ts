@@ -58,16 +58,11 @@ export function getOriginalStackFrame(
 
     const controller = new AbortController();
     const tm = setTimeout(() => controller.abort(), 3000);
-    //TODO: how to modify frame from middleware
+    //TODO: how to modify the frame from middleware
     const res = await self
-      .fetch(
-        `${
-          process.env.__NEXT_ROUTER_BASEPATH || ''
-        }/__shuvi_original-stack-frame?${params.toString()}`,
-        {
-          signal: controller.signal
-        }
-      )
+      .fetch(`/__shuvi_original-stack-frame?${params.toString()}`, {
+        signal: controller.signal
+      })
       .finally(() => {
         clearTimeout(tm);
       });
