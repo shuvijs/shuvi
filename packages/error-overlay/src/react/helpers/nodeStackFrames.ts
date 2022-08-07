@@ -1,4 +1,9 @@
 import { parse, StackFrame } from 'stacktrace-parser';
+import { SERVER_TYPE_ERROR } from '../constants';
+
+const symbolError = Symbol('ShuviError');
+
+type ErrorType = 'server';
 
 export function getFilesystemFrame(frame: StackFrame): StackFrame {
   const f: StackFrame = { ...frame };
@@ -19,15 +24,16 @@ export function getFilesystemFrame(frame: StackFrame): StackFrame {
   return f;
 }
 
-const symbolError = Symbol('ShuviError');
-
-export function getErrorSource(error: Error): 'server' | 'edge-server' | null {
-  return (error as any)[symbolError] || null;
+export function decorateServerError(error: Error) {
+  Object.defineProperty(error, symbolError, {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: SERVER_TYPE_ERROR
+  });
 }
 
-type ErrorType = 'edge-server' | 'server';
-
-export function getServerError(error: Error, type: ErrorType): Error {
+export function getServerError(error: Error): Error {
   let n: Error;
   try {
     throw new Error(error.message);
@@ -58,15 +64,10 @@ export function getServerError(error: Error, type: ErrorType): Error {
     n.stack = error.stack;
   }
 
-  decorateServerError(n, type);
+  decorateServerError(n);
   return n;
 }
 
-export function decorateServerError(error: Error, type: ErrorType) {
-  Object.defineProperty(error, symbolError, {
-    writable: false,
-    enumerable: false,
-    configurable: false,
-    value: type
-  });
+export function getErrorSource(error: Error): ErrorType | null {
+  return (error as any)[symbolError] || null;
 }

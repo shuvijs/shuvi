@@ -35,7 +35,7 @@ export type OriginalStackFrame =
 
 export function getOriginalStackFrames(
   frames: StackFrame[],
-  type: 'server' | 'edge-server' | null,
+  type: 'server' | null,
   errorMessage: string
 ) {
   return Promise.all(
@@ -45,13 +45,12 @@ export function getOriginalStackFrames(
 
 export function getOriginalStackFrame(
   source: StackFrame,
-  type: 'server' | 'edge-server' | null,
+  type: 'server' | null,
   errorMessage: string
 ): Promise<OriginalStackFrame> {
   async function _getOriginalStackFrame(): Promise<OriginalStackFrame> {
     const params = new URLSearchParams();
     params.append('isServer', String(type === 'server'));
-    params.append('isEdgeServer', String(type === 'edge-server'));
     params.append('errorMessage', errorMessage);
     for (const key in source) {
       params.append(key, ((source as any)[key] ?? '').toString());
@@ -59,6 +58,7 @@ export function getOriginalStackFrame(
 
     const controller = new AbortController();
     const tm = setTimeout(() => controller.abort(), 3000);
+    //TODO: how to modify frame from middleware
     const res = await self
       .fetch(
         `${
