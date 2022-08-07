@@ -18,7 +18,10 @@ import { getErrorByType, ReadyRuntimeError } from '../helpers/getErrorByType';
 import { getErrorSource } from '../helpers/nodeStackFrames';
 import { noop as css } from '../helpers/noop-template';
 import { CloseIcon } from '../components/CloseIcon';
+import { WarningIcon } from '../components/WarningIcon';
 import { Errors } from '../components/Errors';
+
+import { SERVER_TYPE_ERROR } from '../constants';
 
 export type SupportedErrorEvent = {
   id: number;
@@ -41,35 +44,6 @@ function getErrorSignature(ev: SupportedErrorEvent): string {
 
   return '';
 }
-
-const HotlinkedText: React.FC<{
-  text: string;
-}> = function HotlinkedText(props) {
-  const { text } = props;
-
-  const linkRegex = /https?:\/\/[^\s/$.?#].[^\s"]*/i;
-  return (
-    <>
-      {linkRegex.test(text)
-        ? text.split(' ').map((word, index, array) => {
-            if (linkRegex.test(word)) {
-              return (
-                <React.Fragment key={`link-${index}`}>
-                  <a href={word}>{word}</a>
-                  {index === array.length - 1 ? '' : ' '}
-                </React.Fragment>
-              );
-            }
-            return index === array.length - 1 ? (
-              <React.Fragment key={`text-${index}`}>{word}</React.Fragment>
-            ) : (
-              <React.Fragment key={`text-${index}`}>{word} </React.Fragment>
-            );
-          })
-        : text}
-    </>
-  );
-};
 
 export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
   errors
@@ -118,19 +92,14 @@ export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
     }
     let mounted = true;
 
-    getErrorByType(nextError).then(
-      resolved => {
-        // We don't care if the desired error changed while we were resolving,
-        // thus we're not tracking it using a ref. Once the work has been done,
-        // we'll store it.
-        if (mounted) {
-          setLookups(m => ({ ...m, [resolved.id]: resolved }));
-        }
-      },
-      () => {
-        // TODO: handle this, though an edge case
+    getErrorByType(nextError).then(resolved => {
+      // We don't care if the desired error changed while we were resolving,
+      // thus we're not tracking it using a ref. Once the work has been done,
+      // we'll store it.
+      if (mounted) {
+        setLookups(m => ({ ...m, [resolved.id]: resolved }));
       }
-    );
+    });
 
     return () => {
       mounted = false;
@@ -158,16 +127,6 @@ export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
     [activeIdx, readyErrors]
   );
 
-  // Reset component state when there are no errors to be displayed.
-  // This should never happen, but lets handle it.
-  React.useEffect(() => {
-    if (errors.length < 1) {
-      setLookups({});
-      setDisplayState('hidden');
-      setActiveIndex(0);
-    }
-  }, [errors.length]);
-
   const minimize = React.useCallback((e?: MouseEvent | TouchEvent) => {
     e?.preventDefault();
     setDisplayState('minimized');
@@ -184,17 +143,11 @@ export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
     []
   );
 
-  // This component shouldn't be rendered with no errors, but if it is, let's
-  // handle it gracefully by rendering nothing.
-  if (errors.length < 1 || activeError == null) {
-    return null;
-  }
-
   if (isLoading) {
     return <Overlay />;
   }
 
-  if (displayState === 'hidden') {
+  if (errors.length < 1 || activeError == null || displayState === 'hidden') {
     return null;
   }
 
@@ -202,21 +155,7 @@ export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
     return (
       <Toast className="shuvi-toast-errors-parent" onClick={fullscreen}>
         <div className="shuvi-toast-errors">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
+          <WarningIcon />
           <span>
             {readyErrors.length} error{readyErrors.length > 1 ? 's' : ''}
           </span>
@@ -237,9 +176,7 @@ export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
     );
   }
 
-  const isServerError = ['server', 'edge-server'].includes(
-    getErrorSource(activeError.error) || ''
-  );
+  const isServerError = getErrorSource(activeError.error) === SERVER_TYPE_ERROR;
 
   return (
     <Overlay>
@@ -258,16 +195,17 @@ export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
             >
               <small>
                 <span>{activeIdx + 1}</span> of{' '}
-                <span>{readyErrors.length}</span> unhandled error
+                <span>{readyErrors.length}</span> runtime error
                 {readyErrors.length < 2 ? '' : 's'}
               </small>
             </NavigationBar>
             <h1 id="shuvi__container_errors_label">
-              {isServerError ? 'Server Error' : 'Unhandled Runtime Error'}
+              {isServerError
+                ? 'Server Runtime Error'
+                : 'Unhandled Runtime Error'}
             </h1>
             <p id="shuvi__container_errors_desc">
-              {activeError.error.name}:{' '}
-              <HotlinkedText text={activeError.error.message} />
+              {activeError.error.name}: {activeError.error.message}
             </p>
             {isServerError ? (
               <div>

@@ -19,6 +19,8 @@ const CallStackFrame: React.FC<{
     for (const key in f) {
       params.append(key, ((f as any)[key] ?? '').toString());
     }
+
+    //TODO: how to handle launch editor from middleware
   }, [hasSource, f]);
 
   return (

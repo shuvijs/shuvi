@@ -47,7 +47,6 @@ export const CodeFrame: React.FC<CodeFrameProps> = function CodeFrame({
     }
   }, [stackFrame]);
 
-  // TODO: make the caret absolute
   return (
     <div shuvi-codeframe>
       <div>
