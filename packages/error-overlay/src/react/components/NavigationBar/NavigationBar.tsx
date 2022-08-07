@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CloseIcon } from '../CloseIcon';
+import { CloseIcon, ArrowLeftIcon, ArrowRightIcon } from '../Icons';
 
 export type NavigationBarProps = {
   className?: string;
@@ -108,19 +108,7 @@ const NavigationBar: React.FC<NavigationBarProps> = function NavigationBar({
           aria-disabled={previous == null ? true : undefined}
           onClick={previous ?? undefined}
         >
-          <svg
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6.99996 1.16666L1.16663 6.99999L6.99996 12.8333M12.8333 6.99999H1.99996H12.8333Z"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ArrowLeftIcon />
         </button>
         <button
           ref={buttonRight}
@@ -129,19 +117,7 @@ const NavigationBar: React.FC<NavigationBarProps> = function NavigationBar({
           aria-disabled={next == null ? true : undefined}
           onClick={next ?? undefined}
         >
-          <svg
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6.99996 1.16666L12.8333 6.99999L6.99996 12.8333M1.16663 6.99999H12H1.16663Z"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ArrowRightIcon />
         </button>
         &nbsp;
         {children}

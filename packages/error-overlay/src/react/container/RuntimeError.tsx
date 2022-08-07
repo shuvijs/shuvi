@@ -17,8 +17,7 @@ import { Toast } from '../components/Toast';
 import { getErrorByType, ReadyRuntimeError } from '../helpers/getErrorByType';
 import { getErrorSource } from '../helpers/nodeStackFrames';
 import { noop as css } from '../helpers/noop-template';
-import { CloseIcon } from '../components/CloseIcon';
-import { WarningIcon } from '../components/WarningIcon';
+import { CloseIcon, WarningIcon } from '../components/Icons';
 import { Errors } from '../components/Errors';
 
 import { SERVER_TYPE_ERROR } from '../constants';
