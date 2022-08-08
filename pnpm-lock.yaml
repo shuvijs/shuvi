@@ -578,6 +578,14 @@ importers:
   test/fixtures/dynamic:
     specifiers: {}
 
+  test/fixtures/error-overlay:
+    specifiers:
+      '@shuvi/error-overlay': workspace:*
+      shuvi: workspace:*
+    dependencies:
+      '@shuvi/error-overlay': link:../../../packages/error-overlay
+      shuvi: link:../../../packages/shuvi
+
   test/fixtures/file-type:
     specifiers:
       '@types/node': 18.0.6
@@ -3003,6 +3011,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -3012,6 +3021,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
@@ -3021,6 +3031,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -3030,6 +3041,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
