@@ -4,12 +4,12 @@ import type { IStoreManager } from '@shuvi/redox';
 
 export const RedoxWrapper = (
   App: any,
-  appContext: { storeManager: IStoreManager }
+  appContext: { store: IStoreManager }
 ) => {
-  function RedoxAppWrapper(appProps: any) {
+  function RedoxAppWrapper() {
     return (
-      <RedoxRoot storeManager={appContext.storeManager}>
-        <App {...appProps} />
+      <RedoxRoot storeManager={appContext.store}>
+        <App />
       </RedoxRoot>
     );
   }

@@ -17,13 +17,13 @@ export class Application {
   private _appComponent: any;
   private _pluginManager: PluginManager;
   private _context: IAppContext;
-  private _storeManager: IStoreManager;
+  private _store: IStoreManager;
 
   constructor(options: IApplicationOptions) {
     this._router = options.router;
     this._context = {} as IAppContext;
-    this._storeManager = redox({ initialState: options.initialState });
-    this._error = this._storeManager.get(errorModel);
+    this._store = redox({ initialState: options.initialState });
+    this._error = this._store.get(errorModel);
     this._appComponent = options.AppComponent;
     this._pluginManager = getManager();
 
@@ -57,8 +57,8 @@ export class Application {
     this._router.init();
   }
 
-  get storeManager() {
-    return this._storeManager;
+  get store() {
+    return this._store;
   }
 
   async updateComponents({ AppComponent }: IRerenderConfig = {}) {
@@ -94,7 +94,7 @@ export class Application {
       context: this._context,
       router: this._router,
       appComponent: this._appComponent,
-      storeManager: this._storeManager,
+      store: this._store,
       error: this._error
     };
   }

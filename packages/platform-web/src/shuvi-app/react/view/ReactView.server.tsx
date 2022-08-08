@@ -17,12 +17,7 @@ export class ReactServerView implements IReactServerView {
   }) => {
     await Loadable.preloadAll();
 
-    const {
-      storeManager,
-      router,
-      error: appError,
-      appComponent: AppComponent
-    } = app;
+    const { router, error: appError, appComponent: AppComponent } = app;
     await router.ready;
 
     // todo: move these into renderer
@@ -107,8 +102,6 @@ export class ReactServerView implements IReactServerView {
     if (dynamicImportIdSet.size) {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
-
-    appData.appState = storeManager.getState();
 
     return {
       appData,
