@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { noop as css } from '../helpers/noop-template';
 
 export function Base() {

@@ -12,7 +12,7 @@ export const ShadowPortal: React.FC<ShadowPortalProps> = function Portal({
   let shadowNode = React.useRef<ShadowRoot | null>(null);
   let [, forceUpdate] = React.useState<{} | undefined>();
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     portalNode.current = document.createElement('shuvi-portal');
     shadowNode.current = portalNode.current.attachShadow({ mode: 'open' });
     document.body.appendChild(portalNode.current);
@@ -24,5 +24,9 @@ export const ShadowPortal: React.FC<ShadowPortalProps> = function Portal({
     };
   }, []);
 
-  return createPortal(children, shadowNode.current as any);
+  return shadowNode.current ? (
+    createPortal(children, shadowNode.current as any)
+  ) : (
+    <span />
+  );
 };
