@@ -5,7 +5,7 @@ import {
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
-import { createLaunchEditorMiddleware } from '@shuvi/error-overlay/lib/middleware';
+import { launchEditorMiddleware } from '@shuvi/error-overlay/lib/middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -70,7 +70,7 @@ export async function getDevMiddleware(
   const apply = (server: Server) => {
     const targetServer = server;
     targetServer.use(
-      createLaunchEditorMiddleware(
+      launchEditorMiddleware(
         DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
         serverPluginContext.paths.rootDir
       )
