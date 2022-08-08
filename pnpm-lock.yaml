@@ -119,16 +119,17 @@ importers:
 
   packages/error-overlay:
     specifiers:
+      '@rollup/plugin-commonjs': 22.0.2
+      '@rollup/plugin-node-resolve': 13.3.0
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
-      '@types/rollup': ^0.54.0
       anser: 1.4.9
       html-entities: 2.3.2
       launch-editor: 2.2.1
-      rollup: ^2.77.2
-      rollup-plugin-commonjs: ^10.1.0
-      rollup-plugin-node-resolve: ^5.2.0
-      rollup-plugin-typescript2: ^0.32.1
+      react: 18.2.0
+      react-dom: 18.2.0
+      rollup: 2.77.2
+      rollup-plugin-typescript2: 0.32.1
       stacktrace-parser: 0.1.10
       strip-ansi: 6.0.1
       tslib: ^2.4.0
@@ -136,16 +137,17 @@ importers:
       anser: 1.4.9
       html-entities: 2.3.2
       launch-editor: 2.2.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       stacktrace-parser: 0.1.10
       strip-ansi: 6.0.1
       tslib: 2.4.0
     devDependencies:
+      '@rollup/plugin-commonjs': 22.0.2_rollup@2.77.2
+      '@rollup/plugin-node-resolve': 13.3.0_rollup@2.77.2
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
-      '@types/rollup': 0.54.0
       rollup: 2.77.2
-      rollup-plugin-commonjs: 10.1.0_rollup@2.77.2
-      rollup-plugin-node-resolve: 5.2.0_rollup@2.77.2
       rollup-plugin-typescript2: 0.32.1_rollup@2.77.2
 
   packages/hook:
@@ -3588,6 +3590,58 @@ packages:
       }
     dev: false
 
+  /@rollup/plugin-commonjs/22.0.2_rollup@2.77.2:
+    resolution:
+      {
+        integrity: sha512-//NdP6iIwPbMTcazYsiBMbJW7gfmpHom33u1beiIoHDEM0Q9clvtQB1T0efvMqHeKsGohiHo97BCPCkBXdscwg==
+      }
+    engines: { node: '>= 12.0.0' }
+    peerDependencies:
+      rollup: ^2.68.0
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.77.2
+      commondir: 1.0.1
+      estree-walker: 2.0.2
+      glob: 7.2.0
+      is-reference: 1.2.1
+      magic-string: 0.25.9
+      resolve: 1.22.1
+      rollup: 2.77.2
+    dev: true
+
+  /@rollup/plugin-node-resolve/13.3.0_rollup@2.77.2:
+    resolution:
+      {
+        integrity: sha512-Lus8rbUo1eEcnS4yTFKLZrVumLPY+YayBdWXgFSHYhTT2iJbMhoaaBL3xl5NCdeRytErGr8tZ0L71BMRmnlwSw==
+      }
+    engines: { node: '>= 10.0.0' }
+    peerDependencies:
+      rollup: ^2.42.0
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.77.2
+      '@types/resolve': 1.17.1
+      deepmerge: 4.2.2
+      is-builtin-module: 3.2.0
+      is-module: 1.0.0
+      resolve: 1.22.1
+      rollup: 2.77.2
+    dev: true
+
+  /@rollup/pluginutils/3.1.0_rollup@2.77.2:
+    resolution:
+      {
+        integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==
+      }
+    engines: { node: '>= 8.0.0' }
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.3.0
+      rollup: 2.77.2
+    dev: true
+
   /@rollup/pluginutils/4.2.1:
     resolution:
       {
@@ -4073,6 +4127,13 @@ packages:
     dependencies:
       '@types/estree': 0.0.51
       '@types/json-schema': 7.0.9
+
+  /@types/estree/0.0.39:
+    resolution:
+      {
+        integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
+      }
+    dev: true
 
   /@types/estree/0.0.51:
     resolution:
@@ -9192,6 +9253,16 @@ packages:
     dependencies:
       binary-extensions: 2.0.0
 
+  /is-builtin-module/3.2.0:
+    resolution:
+      {
+        integrity: sha512-phDA4oSGt7vl1n5tJvTWooWWAsXLY+2xCnxNqvKhGEzujg+A43wPlPOyDg3C8XQHN+6k/JTQWJ/j0dQh/qr+Hw==
+      }
+    engines: { node: '>=6' }
+    dependencies:
+      builtin-modules: 3.3.0
+    dev: true
+
   /is-callable/1.1.5:
     resolution:
       {
@@ -12823,6 +12894,19 @@ packages:
       react: 18.1.0
       scheduler: 0.22.0
 
+  /react-dom/18.2.0_react@18.2.0:
+    resolution:
+      {
+        integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
+      }
+    peerDependencies:
+      react: ^18.2.0
+    dependencies:
+      loose-envify: 1.4.0
+      react: 18.2.0
+      scheduler: 0.23.0
+    dev: false
+
   /react-error-overlay/6.0.8:
     resolution:
       {
@@ -12931,6 +13015,7 @@ packages:
     engines: { node: '>=0.10.0' }
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /read-pkg-up/3.0.0:
     resolution:
@@ -13410,6 +13495,15 @@ packages:
       }
     dependencies:
       loose-envify: 1.4.0
+
+  /scheduler/0.23.0:
+    resolution:
+      {
+        integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==
+      }
+    dependencies:
+      loose-envify: 1.4.0
+    dev: false
 
   /schema-utils/2.7.0:
     resolution:
