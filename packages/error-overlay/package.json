@@ -3,7 +3,9 @@
   "version": "1.0.0-rc.4",
   "main": "lib/index.js",
   "files": [
-    "lib"
+    "lib",
+    "esm",
+    "umd"
   ],
   "scripts": {
     "dev": "run-p watch:*",
