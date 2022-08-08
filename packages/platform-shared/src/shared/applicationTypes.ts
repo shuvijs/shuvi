@@ -43,7 +43,7 @@ export interface IApplication {
   readonly router: IRouter<IPageRouteRecord>;
   readonly appComponent: any;
   readonly error: IErrorManager;
-  readonly storeManager: IStoreManager;
+  readonly store: IStoreManager;
 }
 
 export interface IApplicationOptions {

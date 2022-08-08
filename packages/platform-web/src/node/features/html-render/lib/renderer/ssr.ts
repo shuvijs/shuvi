@@ -8,7 +8,7 @@ import { IHtmlDocument, IRenderViewOptions } from './types';
 
 export class SsrRenderer extends BaseRenderer {
   async renderDocument({ app, req }: IRenderViewOptions) {
-    const { router, context } = app;
+    const { store, router, context } = app;
 
     const serverPluginContext = this._serverPluginContext;
     const { view } = server;
@@ -37,6 +37,7 @@ export class SsrRenderer extends BaseRenderer {
     const appData: AppData = {
       ...result.appData,
       ssr: true,
+      appState: store.getState(),
       pageData
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};

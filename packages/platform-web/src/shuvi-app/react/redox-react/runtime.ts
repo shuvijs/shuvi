@@ -11,7 +11,7 @@ declare module '@shuvi/runtime' {
 export default createRuntimePlugin({
   appComponent: async (App, appContext) => {
     return RedoxWrapper(App, {
-      storeManager: appContext.store
+      store: appContext.store
     });
   }
 });

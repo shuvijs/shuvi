@@ -19,7 +19,7 @@ export class ReactClientView implements IReactClientView {
   }) => {
     const { _isInitialRender: isInitialRender } = this;
     const { router, appComponent: AppComponent, error } = app;
-    let { ssr, appProps, dynamicIds } = appData;
+    let { ssr, dynamicIds } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
       (window as any).__SHUVI.router = router;
@@ -46,7 +46,7 @@ export class ReactClientView implements IReactClientView {
       <Router router={router}>
         <AppContainer app={app}>
           <HeadManagerContext.Provider value={headManager.updateHead}>
-            <TypedAppComponent {...appProps} />
+            <TypedAppComponent />
           </HeadManagerContext.Provider>
         </AppContainer>
       </Router>
