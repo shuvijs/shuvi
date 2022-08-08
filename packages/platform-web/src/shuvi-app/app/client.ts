@@ -58,7 +58,7 @@ export const createApp: CreateAppClient = ({
   const hasHydrateData = Object.keys(loadersData).length > 0;
   const loaderManager = getLoaderManager();
   let shouldHydrate = ssr && hasHydrateData;
-  let hasServerError = app.error.hasError;
+  let hasServerError = !!app.error;
 
   router.beforeResolve(async (to, from, next) => {
     if (shouldHydrate) {
@@ -73,7 +73,7 @@ export const createApp: CreateAppClient = ({
     }
 
     if (!to.matches.length) {
-      app.error.error(SHUVI_ERROR.PAGE_NOT_FOUND);
+      app.setError(SHUVI_ERROR.PAGE_NOT_FOUND);
       next();
       return;
     }
@@ -128,7 +128,7 @@ export const createApp: CreateAppClient = ({
       }
 
       if (isResponse(error) && error.status >= 400 && error.status < 600) {
-        app.error.error({
+        app.setError({
           code: error.status,
           message: error.data
         });
@@ -136,7 +136,7 @@ export const createApp: CreateAppClient = ({
         return;
       }
 
-      app.error.error({
+      app.setError({
         code: SHUVI_ERROR.APP_ERROR.code,
         message:
           error.message || isPreloadError ? 'Preload Error' : 'Loader Error'
@@ -146,7 +146,7 @@ export const createApp: CreateAppClient = ({
     }
 
     next(() => {
-      app.error.clear();
+      app.clearError();
     });
   });
 

@@ -45,7 +45,7 @@ export const createApp: CreateAppServer = options => {
         }
 
         if (isResponse(error) && error.status >= 400 && error.status < 600) {
-          app.error.error({
+          app.setError({
             code: error.status,
             message: error.data
           });
@@ -53,7 +53,7 @@ export const createApp: CreateAppServer = options => {
           return;
         }
 
-        app.error.error({
+        app.setError({
           message: error.message || 'Loader Error'
         });
         next();

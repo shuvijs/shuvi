@@ -31,19 +31,14 @@ export type IAppState = {
   error?: IErrorState;
 };
 
-export interface IErrorManager {
-  getError: IError | undefined;
-  error: (err: IError) => void;
-  clear: () => void;
-  hasError: boolean;
-}
-
 export interface IApplication {
   readonly context: IAppContext;
   readonly router: IRouter<IPageRouteRecord>;
   readonly appComponent: any;
-  readonly error: IErrorManager;
   readonly store: IStoreManager;
+  readonly error: IError | undefined;
+  setError(err: IError): void;
+  clearError(): void;
 }
 
 export interface IApplicationOptions {

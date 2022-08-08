@@ -17,14 +17,14 @@ export class ReactServerView implements IReactServerView {
   }) => {
     await Loadable.preloadAll();
 
-    const { router, error: appError, appComponent: AppComponent } = app;
+    const { router, appComponent: AppComponent, setError: setAppError } = app;
     await router.ready;
 
     // todo: move these into renderer
     let { pathname, matches, redirected } = router.current;
     // handler no matches
     if (!matches.length) {
-      appError.error(SHUVI_ERROR.PAGE_NOT_FOUND);
+      setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
     }
 
     if (redirected) {

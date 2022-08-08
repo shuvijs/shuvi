@@ -80,10 +80,8 @@ export class Renderer {
         app.context
       );
       const htmlStr = this._renderDocumentToString(doc);
-      const appError = app.error.getError;
       result = text(htmlStr, {
-        status:
-          appError && typeof appError.code !== 'undefined' ? appError.code : 200
+        status: app.error?.code ?? 200
       });
     }
 

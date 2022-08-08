@@ -18,7 +18,7 @@ export class ReactClientView implements IReactClientView {
     appData
   }) => {
     const { _isInitialRender: isInitialRender } = this;
-    const { router, appComponent: AppComponent, error } = app;
+    const { router, appComponent: AppComponent, setError: setAppError } = app;
     let { ssr, dynamicIds } = appData;
     // For e2e test
     if ((window as any).__SHUVI) {
@@ -38,7 +38,7 @@ export class ReactClientView implements IReactClientView {
 
       if (!matches.length) {
         // no handler no matches
-        error.error(SHUVI_ERROR.PAGE_NOT_FOUND);
+        setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
       }
     }
 
