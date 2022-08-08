@@ -5,7 +5,7 @@ import {
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH
 } from '@shuvi/shared/lib/constants';
-import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
+import { createLaunchEditorMiddleware } from '@shuvi/error-overlay/lib/middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';

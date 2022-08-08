@@ -1,5 +1,6 @@
 import launchEditor from 'launch-editor';
-import { IRequestHandlerWithNext } from '../../http-server';
+import { IncomingMessage, ServerResponse } from 'http';
+import url from 'url';
 
 function getSourcePath(source: string) {
   // Webpack prefixes certain source paths with this path
@@ -23,12 +24,14 @@ function getSourcePath(source: string) {
   return source;
 }
 
-export function createLaunchEditorMiddleware(
-  launchEditorEndpoint: string
-): IRequestHandlerWithNext {
-  return function launchEditorMiddleware(req, res, next) {
-    if (req.url.startsWith(launchEditorEndpoint)) {
-      const { query } = req;
+export function createLaunchEditorMiddleware(launchEditorEndpoint: string) {
+  return function launchEditorMiddleware(
+    req: IncomingMessage,
+    res: ServerResponse,
+    next: Function
+  ) {
+    if (req.url!.startsWith(launchEditorEndpoint)) {
+      const { query } = url.parse(req.url!, true);
       const lineNumber = parseInt(query.lineNumber as string, 10) || 1;
       const colNumber = parseInt(query.colNumber as string, 10) || 1;
       launchEditor(

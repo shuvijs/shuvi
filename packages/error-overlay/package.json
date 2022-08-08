@@ -6,7 +6,10 @@
     "lib"
   ],
   "scripts": {
-    "dev": "tsc -p tsconfig.build.json -w",
+    "dev": "run-p watch:*",
+    "watch:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib -w",
+    "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
+    "watch:umd": "tsc -p tsconfig.build.json -m umd --outDir umd -w",
     "prebuild": "rimraf lib",
     "build": "run-p build:*",
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib",
@@ -22,7 +25,8 @@
     "anser": "1.4.9",
     "html-entities": "2.3.2",
     "stacktrace-parser": "0.1.10",
-    "strip-ansi": "6.0.1"
+    "strip-ansi": "6.0.1",
+    "launch-editor": "2.2.1"
   },
   "devDependencies": {
     "@types/react": "18.0.9",
