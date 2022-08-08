@@ -9,7 +9,7 @@
     "dev": "run-p watch:*",
     "watch:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib -w",
     "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
-    "watch:umd": "tsc -p tsconfig.build.json -m umd --outDir umd -w",
+    "watch:umd": "rollup -c rollup.config.js -w",
     "prebuild": "rimraf lib",
     "build": "run-p build:*",
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib",
