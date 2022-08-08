@@ -1,7 +1,7 @@
 import { noop as css } from '../../helpers/noop-template';
 
 const styles = css`
-  [shuvi-dialog] {
+  [data-dialog] {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -17,41 +17,41 @@ const styles = css`
   }
 
   @media (max-height: 812px) {
-    [dialog-overlay] {
+    [data-dialog-overlay] {
       max-height: calc(100% - 15px);
     }
   }
 
   @media (min-width: 576px) {
-    [dialog] {
+    [data-dialog] {
       max-width: 540px;
       box-shadow: 0 var(--size-gap) var(--size-gap-quad) rgba(0, 0, 0, 0.25);
     }
   }
 
   @media (min-width: 768px) {
-    [dialog] {
+    [data-dialog] {
       max-width: 720px;
     }
   }
 
   @media (min-width: 992px) {
-    [dialog] {
+    [data-dialog] {
       max-width: 960px;
     }
   }
 
-  [dialog-banner] {
+  [data-dialog-banner] {
     position: relative;
   }
-  [dialog-banner].banner-warning {
+  [data-dialog-banner].banner-warning {
     border-color: var(--color-ansi-yellow);
   }
-  [dialog-banner].banner-error {
+  [data-dialog-banner].banner-error {
     border-color: var(--color-ansi-red);
   }
 
-  [dialog-banner]::after {
+  [data-dialog-banner]::after {
     z-index: 2;
     content: '';
     position: absolute;
@@ -67,7 +67,7 @@ const styles = css`
     border-bottom-color: transparent;
   }
 
-  [dialog-content] {
+  [data-dialog-content] {
     overflow-y: auto;
     border: none;
     margin: 0;
@@ -78,11 +78,11 @@ const styles = css`
     display: flex;
     flex-direction: column;
   }
-  [dialog-content] > [dialog-header] {
+  [data-dialog-content] > [data-dialog-header] {
     flex-shrink: 0;
     margin-bottom: var(--size-gap-double);
   }
-  [dialog-content] > [dialog-body] {
+  [data-dialog-content] > [data-dialog-body] {
     position: relative;
     flex: 1 1 auto;
   }

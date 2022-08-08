@@ -10,7 +10,7 @@ const DialogContent: React.FC<DialogContentProps> = function DialogContent({
   className
 }) {
   return (
-    <div dialog-content className={className}>
+    <div data-dialog-content className={className}>
       {children}
     </div>
   );

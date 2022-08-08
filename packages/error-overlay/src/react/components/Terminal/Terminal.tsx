@@ -15,7 +15,7 @@ export const Terminal: React.FC<TerminalProps> = function Terminal({
   }, [content]);
 
   return (
-    <div shuvi-terminal>
+    <div data-terminal>
       <pre>
         {decoded.map((entry, index) => (
           <span

@@ -1,14 +1,14 @@
 import { noop as css } from '../../helpers/noop-template';
 
 const styles = css`
-  [dialog-left-right] {
+  [data-nav-bar] {
     display: flex;
     flex-direction: row;
     align-content: center;
     align-items: center;
     justify-content: space-between;
   }
-  [dialog-left-right] > nav > button {
+  [data-nav-bar] > nav > button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -22,28 +22,28 @@ const styles = css`
     cursor: pointer;
     transition: background-color 0.25s ease;
   }
-  [dialog-left-right] > nav > button > svg {
+  [data-nav-bar] > nav > button > svg {
     width: auto;
     height: calc(var(--size-gap) + var(--size-gap-half));
   }
-  [dialog-left-right] > nav > button:hover {
+  [data-nav-bar] > nav > button:hover {
     background-color: rgba(255, 85, 85, 0.2);
   }
-  [dialog-left-right] > nav > button:disabled {
+  [data-nav-bar] > nav > button:disabled {
     background-color: rgba(255, 85, 85, 0.1);
     color: rgba(255, 85, 85, 0.4);
     cursor: not-allowed;
   }
 
-  [dialog-left-right] > nav > button:first-of-type {
+  [data-nav-bar] > nav > button:first-of-type {
     border-radius: var(--size-gap-half) 0 0 var(--size-gap-half);
     margin-right: 1px;
   }
-  [dialog-left-right] > nav > button:last-of-type {
+  [data-nav-bar] > nav > button:last-of-type {
     border-radius: 0 var(--size-gap-half) var(--size-gap-half) 0;
   }
 
-  [dialog-left-right] > button:last-of-type {
+  [data-nav-bar] > button:last-of-type {
     border: 0;
     padding: 0;
 
@@ -53,7 +53,7 @@ const styles = css`
     opacity: 0.4;
     transition: opacity 0.25s ease;
   }
-  [dialog-left-right] > button:last-of-type:hover {
+  [data-nav-bar] > button:last-of-type:hover {
     opacity: 0.7;
   }
 `;

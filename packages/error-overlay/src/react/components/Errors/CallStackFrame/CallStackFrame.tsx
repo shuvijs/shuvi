@@ -27,8 +27,8 @@ export const CallStackFrame: React.FC<{
   }, [hasSource, f]);
 
   return (
-    <div shuvi-call-stack-frame>
-      <h6 shuvi-frame-expanded={Boolean(frame.expanded)}>{f.methodName}</h6>
+    <div data-call-stack-frame>
+      <h6 data-frame-expanded={Boolean(frame.expanded)}>{f.methodName}</h6>
       <div
         data-has-source={hasSource ? 'true' : undefined}
         tabIndex={hasSource ? 10 : undefined}

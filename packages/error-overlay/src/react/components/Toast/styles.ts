@@ -1,7 +1,7 @@
 import { noop as css } from '../../helpers/noop-template';
 
 const styles = css`
-  [shuvi-toast] {
+  [data-toast] {
     position: fixed;
     bottom: var(--size-gap-double);
     left: var(--size-gap-double);
@@ -10,13 +10,13 @@ const styles = css`
   }
 
   @media (max-width: 440px) {
-    [shuvi-toast] {
+    [data-toast] {
       max-width: 90vw;
       left: 5vw;
     }
   }
 
-  [shuvi-toast-wrapper] {
+  [data-toast-wrapper] {
     padding: 16px;
     border-radius: var(--size-gap-half);
     font-weight: 500;

@@ -99,7 +99,7 @@ const NavigationBar: React.FC<NavigationBarProps> = function NavigationBar({
   }, [nav, next, previous]);
 
   return (
-    <div dialog-left-right className={className}>
+    <div data-nav-bar className={className}>
       <nav ref={onNav}>
         <button
           ref={buttonLeft}
@@ -124,7 +124,6 @@ const NavigationBar: React.FC<NavigationBarProps> = function NavigationBar({
       </nav>
       {close ? (
         <button
-          errors-dialog-left-right-close-button
           ref={buttonClose}
           type="button"
           onClick={close}

@@ -20,8 +20,11 @@ const Overlay: React.FC<OverlayProps> = function Overlay({
   }, []);
 
   return (
-    <div dialog-overlay className={className}>
-      <div dialog-backdrop dialog-backdrop-fixed={fixed ? true : undefined} />
+    <div data-dialog-overlay className={className}>
+      <div
+        data-dialog-backdrop
+        data-dialog-backdrop-fixed={fixed ? true : undefined}
+      />
       {children}
     </div>
   );

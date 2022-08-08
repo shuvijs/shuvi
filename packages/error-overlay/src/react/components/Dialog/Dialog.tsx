@@ -57,14 +57,14 @@ const Dialog: React.FC<DialogProps> = function Dialog({
   return (
     <div
       ref={onDialog}
-      shuvi-dialog
+      data-dialog
       tabIndex={-1}
       role="dialog"
       aria-labelledby={props['aria-labelledby']}
       aria-describedby={props['aria-describedby']}
       aria-modal="true"
     >
-      <div dialog-banner className={`banner-${type}`} />
+      <div data-dialog-banner className={`banner-${type}`} />
       {children}
     </div>
   );

@@ -12,8 +12,8 @@ export const Toast: React.FC<ToastProps> = function Toast({
   className
 }) {
   return (
-    <div shuvi-toast onClick={onClick} className={className}>
-      <div shuvi-toast-wrapper>{children}</div>
+    <div data-toast onClick={onClick} className={className}>
+      <div data-toast-wrapper>{children}</div>
     </div>
   );
 };

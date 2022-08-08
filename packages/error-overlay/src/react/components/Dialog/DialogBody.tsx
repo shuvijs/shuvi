@@ -10,7 +10,7 @@ const DialogBody: React.FC<DialogBodyProps> = function DialogBody({
   className
 }) {
   return (
-    <div dialog-body className={className}>
+    <div data-dialog-body className={className}>
       {children}
     </div>
   );

@@ -88,7 +88,7 @@ const Errors: React.FC<ErrorsProps> = function Errors({ error }) {
         <React.Fragment>
           <button
             tabIndex={10}
-            shuvi-data-runtime-error-collapsed-action
+            data-runtime-error-collapsed-action
             type="button"
             onClick={toggleAll}
           >

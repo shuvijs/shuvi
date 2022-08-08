@@ -10,7 +10,7 @@ const DialogHeader: React.FC<DialogHeaderProps> = function DialogHeader({
   className
 }) {
   return (
-    <div dialog-header className={className}>
+    <div data-dialog-header className={className}>
       {children}
     </div>
   );

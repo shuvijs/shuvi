@@ -50,7 +50,7 @@ export const CodeFrame: React.FC<CodeFrameProps> = function CodeFrame({
   }, [stackFrame]);
 
   return (
-    <div shuvi-codeframe>
+    <div data-codeframe>
       <div>
         <p
           role="link"
