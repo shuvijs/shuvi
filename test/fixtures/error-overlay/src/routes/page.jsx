@@ -1,5 +1,5 @@
-import { ReactDevOverlay } from '@shuvi/error-overlay';
+import { ErrorOverlay } from '@shuvi/error-overlay';
 
 export default function Build() {
-  return <ReactDevOverlay />;
+  return <ErrorOverlay />;
 }
