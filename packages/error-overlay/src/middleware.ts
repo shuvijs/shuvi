@@ -1,6 +1,7 @@
 import launchEditor from 'launch-editor';
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'url';
+import path from 'path';
 
 function getSourcePath(source: string) {
   // Webpack prefixes certain source paths with this path
@@ -24,7 +25,10 @@ function getSourcePath(source: string) {
   return source;
 }
 
-export function createLaunchEditorMiddleware(launchEditorEndpoint: string) {
+export function createLaunchEditorMiddleware(
+  launchEditorEndpoint: string,
+  rootDir: string
+) {
   return function launchEditorMiddleware(
     req: IncomingMessage,
     res: ServerResponse,
@@ -34,9 +38,21 @@ export function createLaunchEditorMiddleware(launchEditorEndpoint: string) {
       const { query } = url.parse(req.url!, true);
       const lineNumber = parseInt(query.lineNumber as string, 10) || 1;
       const colNumber = parseInt(query.colNumber as string, 10) || 1;
-      launchEditor(
-        getSourcePath(`${query.fileName}:${lineNumber}:${colNumber}`)
+      const frameFile = query.fileName?.toString() || null;
+
+      if (frameFile == null) {
+        res.statusCode = 400;
+        res.write('Bad Request');
+        res.end();
+        return;
+      }
+
+      const filePath = path.resolve(
+        rootDir,
+        getSourcePath(`${frameFile}:${lineNumber}:${colNumber}`)
       );
+
+      launchEditor(filePath);
       res.end();
       return;
     } else {

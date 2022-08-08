@@ -70,7 +70,10 @@ export async function getDevMiddleware(
   const apply = (server: Server) => {
     const targetServer = server;
     targetServer.use(
-      createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
+      createLaunchEditorMiddleware(
+        DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
+        serverPluginContext.paths.rootDir
+      )
     );
     bundler.applyDevMiddlewares(server);
   };
