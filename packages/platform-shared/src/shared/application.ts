@@ -8,7 +8,8 @@ import {
   IApplication,
   IAppContext,
   IApplicationOptions,
-  IRerenderConfig
+  IRerenderConfig,
+  IError
 } from './applicationTypes';
 
 export class Application {
@@ -47,7 +48,15 @@ export class Application {
   }
 
   get error() {
-    return this._error;
+    return this._error.errorObject;
+  }
+
+  setError(err: IError) {
+    this._error.set(err);
+  }
+
+  clearError() {
+    this._error.clear();
   }
 
   async init() {
@@ -90,12 +99,21 @@ export class Application {
   }
 
   getPublicAPI(): IApplication {
+    const self = this;
     return {
-      context: this._context,
-      router: this._router,
-      appComponent: this._appComponent,
-      store: this._store,
-      error: this._error
+      context: self._context,
+      router: self._router,
+      appComponent: self._appComponent,
+      store: self._store,
+      get error() {
+        return self.error;
+      },
+      setError(err) {
+        self.setError(err);
+      },
+      clearError() {
+        self.clearError();
+      }
     };
   }
 }

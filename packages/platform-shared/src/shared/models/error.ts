@@ -18,7 +18,7 @@ export const errorModel = defineModel({
     }
   },
   actions: {
-    error(payload?: IError) {
+    set(payload?: IError) {
       this.setError(payload || SHUVI_ERROR.APP_ERROR);
     },
     clear() {
@@ -28,7 +28,7 @@ export const errorModel = defineModel({
     }
   },
   views: {
-    getError() {
+    errorObject() {
       return this.error;
     },
     hasError() {

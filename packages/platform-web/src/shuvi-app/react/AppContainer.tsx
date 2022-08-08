@@ -23,12 +23,11 @@ function ErrorGuard({ children = null }: React.PropsWithChildren<{}>) {
 }
 
 export default function AppContainer({
-  children,
-  app
-}: {
+  app,
+  children
+}: React.PropsWithChildren<{
   app: IApplication;
-  children: React.ReactElement;
-}) {
+}>) {
   return (
     <ErrorBoundary>
       <AppProvider app={app}>
