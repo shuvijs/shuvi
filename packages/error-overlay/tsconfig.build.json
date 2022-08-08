@@ -2,9 +2,12 @@
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "lib": ["esnext", "dom"],
-    "module": "esnext",
+    "module": "ESNext",
     "esModuleInterop": true,
-    "jsx": "react-jsx"
+    "jsx": "react",
+    "noEmitOnError": false
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
