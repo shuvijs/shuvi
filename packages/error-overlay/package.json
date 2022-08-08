@@ -8,7 +8,10 @@
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "run-p build:*",
+    "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib",
+    "build:ems": "tsc -p tsconfig.build.json -m esnext --outDir esm",
+    "build:umd": "tsc -p tsconfig.build.json -m umd --outDir umd"
   },
   "engines": {
     "node": ">= 12.0.0"
