@@ -1,35 +1,27 @@
 import { useMatchedRoute } from '@shuvi/router-react';
-import {
-  IPageRouteRecord,
-  getLoaderManager
-} from '@shuvi/platform-shared/shared';
-import { useRef, useEffect, useReducer } from 'react';
+import { IPageRouteRecord, loaderModel } from '@shuvi/platform-shared/shared';
+import { useSharedModel } from './store';
 
 export const noLoaderMessage =
   'Warning: no loader found. Please make sure the page component where `useLoaderData` is called has a `loader` export.';
 
 export const useLoaderData = <T = any>(): T => {
   const currentMatch = useMatchedRoute<IPageRouteRecord>();
-  const loaderManager = getLoaderManager();
-  const id = currentMatch.route?.id as string;
-  const data = loaderManager.getData(id);
-  if (data === null) {
+  const id = currentMatch.route!.id;
+  const [loader] = useSharedModel(
+    loaderModel,
+    s => {
+      return {
+        hasLoader: Object.prototype.hasOwnProperty.call(s.dataByRouteId, id),
+        data: s.dataByRouteId[id]
+      };
+    },
+    [id]
+  );
+
+  if (!loader.hasLoader) {
     throw Error(noLoaderMessage);
   }
 
-  const dataRef = useRef(data);
-  const [_, forceUpdate] = useReducer(state => state * -1, 1);
-  useEffect(() => {
-    const cancel = loaderManager.subscribe(() => {
-      const newData = loaderManager.getData(id);
-      if (newData !== data) {
-        dataRef.current = newData;
-        forceUpdate();
-      }
-    });
-
-    return cancel;
-  }, []);
-
-  return dataRef.current;
+  return loader.data;
 };

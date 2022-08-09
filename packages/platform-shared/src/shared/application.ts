@@ -2,6 +2,7 @@ import { getManager, PluginManager } from './lifecycle';
 import { initPlugins } from './lifecycle';
 import { Store, redox } from '@shuvi/redox';
 import { ErrorModel, errorModel } from './models/error';
+import { LoaderModel, loaderModel } from './models/loader';
 import { IRouter, IPageRouteRecord } from './routerTypes';
 import {
   IStoreManager,
@@ -13,18 +14,20 @@ import {
 } from './applicationTypes';
 
 export class Application {
-  private _error: Store<ErrorModel>;
   private _router: IRouter<IPageRouteRecord>;
   private _appComponent: any;
   private _pluginManager: PluginManager;
   private _context: IAppContext;
   private _store: IStoreManager;
+  private _error: Store<ErrorModel>;
+  private _loader: Store<LoaderModel>;
 
   constructor(options: IApplicationOptions) {
     this._router = options.router;
     this._context = {} as IAppContext;
     this._store = redox({ initialState: options.initialState });
     this._error = this._store.get(errorModel);
+    this._loader = this._store.get(loaderModel);
     this._appComponent = options.AppComponent;
     this._pluginManager = getManager();
 
@@ -57,6 +60,14 @@ export class Application {
 
   clearError() {
     this._error.clear();
+  }
+
+  getLoadersData() {
+    return this._loader.getAllData;
+  }
+
+  setLoadersData(datas: Record<string, any>) {
+    this._loader.setDatas(datas);
   }
 
   async init() {
@@ -113,6 +124,12 @@ export class Application {
       },
       clearError() {
         self.clearError();
+      },
+      getLoadersData() {
+        return self.getLoadersData();
+      },
+      setLoadersData(datas: Record<string, any>) {
+        self.setLoadersData(datas);
       }
     };
   }

@@ -4,8 +4,7 @@ import {
   runLoaders,
   getRouteMatchesWithInvalidLoader,
   isResponse,
-  isRedirect,
-  getLoaderManager
+  isRedirect
 } from '@shuvi/platform-shared/shared';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import application, {
@@ -25,8 +24,6 @@ export const createApp: CreateAppServer = options => {
     routes: getRoutes(routes)
   }) as IRouter;
   let app: Application;
-  const loaderManager = getLoaderManager();
-
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
@@ -37,7 +34,7 @@ export const createApp: CreateAppServer = options => {
           query: to.query,
           getAppContext: () => app.context
         });
-        loaderManager.setDatas(loaderResult);
+        app.setLoadersData(loaderResult);
       } catch (error: any) {
         if (isRedirect(error)) {
           next(error.headers.get('Location')!);

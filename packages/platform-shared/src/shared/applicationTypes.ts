@@ -39,6 +39,8 @@ export interface IApplication {
   readonly error: IError | undefined;
   setError(err: IError): void;
   clearError(): void;
+  getLoadersData(): Record<string, any>;
+  setLoadersData(datas: Record<string, any>): void;
 }
 
 export interface IApplicationOptions {
