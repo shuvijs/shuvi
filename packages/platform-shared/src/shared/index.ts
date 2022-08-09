@@ -5,6 +5,7 @@ export * from './router';
 export * from './response';
 export * from './loader';
 export { errorModel } from './models/error';
+export { loaderModel } from './models/loader';
 
 export * from './applicationTypes';
 export type { Application } from './application';

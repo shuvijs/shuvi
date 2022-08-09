@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
-import { getLoaderManager, redirect } from '@shuvi/platform-shared/shared';
+import { redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
 import { IHtmlTag } from '../../../shared';
@@ -31,10 +31,6 @@ export class ReactServerView implements IReactServerView {
       return redirect(pathname);
     }
 
-    // todo: move loader into app, avoid using global module
-    const loaderManager = getLoaderManager();
-    const loadersData = await loaderManager.getAllData();
-
     const loadableModules: string[] = [];
     let htmlContent: string;
     let head: IHtmlTag[];
@@ -54,7 +50,6 @@ export class ReactServerView implements IReactServerView {
     try {
       htmlContent = renderToString(RootApp);
     } finally {
-      loaderManager.clearAllData();
       head = Head.rewind() || [];
     }
 
@@ -96,8 +91,7 @@ export class ReactServerView implements IReactServerView {
       }
     }
     const appData: IReactAppData = {
-      dynamicIds: [...dynamicImportIdSet],
-      loadersData
+      dynamicIds: [...dynamicImportIdSet]
     };
     if (dynamicImportIdSet.size) {
       appData.dynamicIds = Array.from(dynamicImportIdSet);

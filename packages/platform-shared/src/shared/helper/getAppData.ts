@@ -8,11 +8,10 @@ export type IData = {
 export type IAppData<Data = {}, appState = any> = {
   ssr: boolean;
   runtimeConfig?: Record<string, string>;
+  appState?: appState;
   pageData?: {
     [key: string]: any;
   };
-  loadersData?: { [x: string]: any };
-  appState?: appState;
   filesByRoutId: Record<string, string[]>;
   publicPath: string;
 } & {
@@ -39,7 +38,6 @@ export function getAppData(): IAppData {
     return {
       ssr: false,
       pageData: {},
-      loadersData: {},
       filesByRoutId: {},
       publicPath: ''
     };

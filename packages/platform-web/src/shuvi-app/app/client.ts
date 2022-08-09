@@ -3,7 +3,6 @@ import {
   runPreload,
   runLoaders,
   getRouteMatchesWithInvalidLoader,
-  getLoaderManager,
   isRedirect,
   isResponse,
   LoaderDataRecord
@@ -36,7 +35,7 @@ export const createApp: CreateAppClient = ({
     return app;
   }
 
-  const { loadersData = {}, appState, ssr } = appData;
+  const { appState, ssr } = appData;
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory();
@@ -55,15 +54,15 @@ export const createApp: CreateAppClient = ({
     router
   });
 
+  const loadersData = app.getLoadersData();
   const hasHydrateData = Object.keys(loadersData).length > 0;
-  const loaderManager = getLoaderManager();
   let shouldHydrate = ssr && hasHydrateData;
   let hasServerError = !!app.error;
 
   router.beforeResolve(async (to, from, next) => {
     if (shouldHydrate) {
       shouldHydrate = false;
-      loaderManager.setDatas(loadersData);
+      app.setLoadersData(loadersData);
       return next();
     }
 
@@ -120,7 +119,7 @@ export const createApp: CreateAppClient = ({
             });
         }
       );
-      loaderManager.setDatas(loaderDatas);
+      app.setLoadersData(loaderDatas);
     } catch (error: any) {
       if (isRedirect(error)) {
         next(error.headers.get('Location')!);
