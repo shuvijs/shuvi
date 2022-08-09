@@ -5,10 +5,12 @@ import { ShadowPortal } from './components/ShadowPortal';
 import { BuildError } from './container/BuildError';
 import { RuntimeError, SupportedErrorEvent } from './container/RuntimeError';
 import {
+  TYPE_BUILD_OK,
+  TYPE_REFRESH,
   TYPE_BUILD_ERROR,
   TYPE_UNHANDLED_ERROR,
   TYPE_UNHANDLED_REJECTION
-} from './constants';
+} from '../constants';
 
 import { Base } from './styles/Base';
 import { ComponentStyles } from './styles/ComponentStyles';
@@ -25,6 +27,12 @@ function reducer(
   ev: ErrorTypeHandler.ErrorTypeEvent
 ): OverlayState {
   switch (ev.type) {
+    case TYPE_BUILD_OK: {
+      return { ...state, buildError: null };
+    }
+    case TYPE_REFRESH: {
+      return { ...state, buildError: null, errors: [] };
+    }
     case TYPE_BUILD_ERROR: {
       return { ...state, buildError: ev.message };
     }
@@ -75,6 +83,8 @@ const ReactDevOverlay: React.FunctionComponent = function ReactDevOverlay({
   const hasRuntimeErrors = Boolean(state.errors.length);
 
   const isMounted = hasBuildError || hasRuntimeErrors;
+
+  console.log({ isMounted, hasBuildError, state });
 
   return (
     <React.Fragment>

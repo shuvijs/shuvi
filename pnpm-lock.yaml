@@ -193,6 +193,7 @@ importers:
   packages/platform-web:
     specifiers:
       '@next/react-refresh-utils': 12.1.6
+      '@shuvi/error-overlay': 1.0.0-rc.4
       '@shuvi/hook': 1.0.0-rc.5
       '@shuvi/platform-shared': 1.0.0-rc.5
       '@shuvi/redox': 0.0.3
@@ -228,6 +229,7 @@ importers:
       webpack: 5.73.0
     dependencies:
       '@next/react-refresh-utils': 12.1.6_mrng46iweft73kaoehgasn3du4
+      '@shuvi/error-overlay': link:../error-overlay
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/redox': 0.0.3

@@ -4,8 +4,10 @@ import {
   TYPE_UNHANDLED_ERROR,
   TYPE_UNHANDLED_REJECTION,
   TYPE_BUILD_ERROR,
+  TYPE_BUILD_OK,
+  TYPE_REFRESH,
   STACK_TRACE_LIMIT
-} from './view/constants';
+} from './constants';
 
 let isRegistered = false;
 let stackTraceLimit: number | undefined = undefined;
@@ -75,10 +77,18 @@ function unregister() {
   window.removeEventListener('unhandledrejection', onUnhandledRejection);
 }
 
+function onBuildOk() {
+  errorTypeHandler.emit({ type: TYPE_BUILD_OK });
+}
+
 function onBuildError(message: string) {
   errorTypeHandler.emit({ type: TYPE_BUILD_ERROR, message });
 }
 
+function onRefresh() {
+  errorTypeHandler.emit({ type: TYPE_REFRESH });
+}
+
 export { getErrorByType } from './view/helpers/getErrorByType';
 export { getServerError } from './view/helpers/nodeStackFrames';
-export { onBuildError, register, unregister };
+export { onBuildError, onBuildOk, onRefresh, register, unregister };

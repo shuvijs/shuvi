@@ -1,10 +1,14 @@
 import { StackFrame } from 'stacktrace-parser';
 import {
+  TYPE_BUILD_OK,
+  TYPE_REFRESH,
   TYPE_BUILD_ERROR,
   TYPE_UNHANDLED_ERROR,
   TYPE_UNHANDLED_REJECTION
-} from './constants';
+} from '../constants';
 
+export type BuildOk = { type: typeof TYPE_BUILD_OK };
+export type FastRefresh = { type: typeof TYPE_REFRESH };
 export type BuildError = {
   type: typeof TYPE_BUILD_ERROR;
   message: string;
@@ -20,7 +24,12 @@ export type UnhandledRejection = {
   reason: Error;
   frames: StackFrame[];
 };
-export type ErrorTypeEvent = BuildError | UnhandledError | UnhandledRejection;
+export type ErrorTypeEvent =
+  | BuildOk
+  | FastRefresh
+  | BuildError
+  | UnhandledError
+  | UnhandledRejection;
 
 export type ErrorTypeEventHandler = (ev: ErrorTypeEvent) => void;
 
