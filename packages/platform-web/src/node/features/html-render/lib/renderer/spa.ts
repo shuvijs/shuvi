@@ -6,8 +6,7 @@ export class SpaRenderer extends BaseRenderer {
     const assets = this._getMainAssetTags();
     const appData: AppData = {
       ssr: false,
-      pageData: {},
-      loadersData: {}
+      pageData: {}
     };
     const document: IHtmlDocument = {
       htmlAttrs: {},
