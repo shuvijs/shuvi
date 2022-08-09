@@ -122,6 +122,7 @@ importers:
       '@babel/code-frame': 7.14.5
       '@rollup/plugin-commonjs': 22.0.2
       '@rollup/plugin-node-resolve': 13.3.0
+      '@shuvi/shared': 1.0.0-rc.4
       '@shuvi/toolpack': 1.0.0-rc.4
       '@types/babel__code-frame': 7.0.3
       '@types/react': 18.0.9
@@ -140,6 +141,7 @@ importers:
       tslib: 2.4.0
     dependencies:
       '@babel/code-frame': 7.14.5
+      '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
       anser: 1.4.9
       data-uri-to-buffer: 3.0.1

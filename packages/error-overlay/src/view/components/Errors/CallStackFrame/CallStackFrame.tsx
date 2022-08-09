@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StackFrame } from 'stacktrace-parser';
+import { DEV_HOT_LAUNCH_EDITOR_ENDPOINT } from '@shuvi/shared/esm/constants';
 
 import { ExternalLinkIcon } from '../../Icons';
 import {
@@ -23,7 +24,12 @@ export const CallStackFrame: React.FC<{
       params.append(key, ((f as any)[key] ?? '').toString());
     }
 
-    //TODO: how to handle launch editor from middleware
+    fetch(`${DEV_HOT_LAUNCH_EDITOR_ENDPOINT}?${params.toString()}`).then(
+      () => {},
+      () => {
+        console.error('There was an issue opening this code in your editor.');
+      }
+    );
   }, [hasSource, f]);
 
   return (

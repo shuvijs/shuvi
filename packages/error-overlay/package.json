@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@shuvi/toolpack": "1.0.0-rc.4",
+    "@shuvi/shared": "1.0.0-rc.4",
     "@babel/code-frame": "7.14.5",
     "anser": "1.4.9",
     "html-entities": "2.3.2",

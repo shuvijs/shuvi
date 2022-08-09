@@ -2,6 +2,7 @@ import Anser from 'anser';
 import * as React from 'react';
 import { StackFrame } from 'stacktrace-parser';
 import stripAnsi from 'strip-ansi';
+import { DEV_HOT_LAUNCH_EDITOR_ENDPOINT } from '@shuvi/shared/esm/constants';
 
 import { ExternalLinkIcon } from '../../Icons';
 import { getFrameSource } from '../../../helpers/stack-frame';
@@ -47,6 +48,13 @@ export const CodeFrame: React.FC<CodeFrameProps> = function CodeFrame({
     for (const key in stackFrame) {
       params.append(key, ((stackFrame as any)[key] ?? '').toString());
     }
+
+    fetch(`${DEV_HOT_LAUNCH_EDITOR_ENDPOINT}?${params.toString()}`).then(
+      () => {},
+      () => {
+        console.error('There was an issue opening this code in your editor.');
+      }
+    );
   }, [stackFrame]);
 
   return (
