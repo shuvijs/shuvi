@@ -56,13 +56,8 @@ function reducer(
   }
 }
 
-type ErrorType = 'runtime' | 'build';
-
-const ReactDevOverlay: React.FunctionComponent = function ReactDevOverlay({
-  preventDisplay
-}: {
+export const ErrorOverlay: React.FunctionComponent = function ErrorOverlay({}: {
   children?: React.ReactNode;
-  preventDisplay?: ErrorType[];
 }) {
   const [state, dispatch] = React.useReducer<
     React.Reducer<OverlayState, ErrorTypeHandler.ErrorTypeEvent>
@@ -84,8 +79,6 @@ const ReactDevOverlay: React.FunctionComponent = function ReactDevOverlay({
 
   const isMounted = hasBuildError || hasRuntimeErrors;
 
-  console.log({ isMounted, hasBuildError, state });
-
   return (
     <React.Fragment>
       {isMounted ? (
@@ -94,10 +87,7 @@ const ReactDevOverlay: React.FunctionComponent = function ReactDevOverlay({
           <Base />
           <ComponentStyles />
 
-          {shouldPreventDisplay(
-            hasBuildError ? 'build' : hasRuntimeErrors ? 'runtime' : null,
-            preventDisplay
-          ) ? null : hasBuildError ? (
+          {hasBuildError ? (
             <BuildError error={state.buildError!} />
           ) : hasRuntimeErrors ? (
             <RuntimeError errors={state.errors} />
@@ -107,15 +97,3 @@ const ReactDevOverlay: React.FunctionComponent = function ReactDevOverlay({
     </React.Fragment>
   );
 };
-
-const shouldPreventDisplay = (
-  errorType?: ErrorType | null,
-  preventType?: ErrorType[] | null
-) => {
-  if (!preventType || !errorType) {
-    return false;
-  }
-  return preventType.includes(errorType);
-};
-
-export default ReactDevOverlay;

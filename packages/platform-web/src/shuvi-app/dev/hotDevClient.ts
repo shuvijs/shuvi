@@ -181,6 +181,9 @@ function handleWarnings(warnings) {
 
 // Compilation with errors (e.g. syntax error or missing modules).
 function handleErrors(errors) {
+  if (!Boolean(errors && errors.length)) {
+    return;
+  }
   clearOutdatedErrors();
 
   isFirstCompilation = false;
@@ -314,7 +317,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
 
   function handleApplyUpdates(err, updatedModules) {
     const needForcedReload = err || hadRuntimeError;
-    const hasUpdates = Boolean(updatedModules.length);
+    const hasUpdates = Boolean(updatedModules?.length);
 
     if (needForcedReload) {
       if (hadRuntimeError) {

@@ -1,4 +1,5 @@
 import { parse } from 'stacktrace-parser';
+import ReactDOM from 'react-dom/client';
 import * as errorTypeHandler from './view/errorTypeHandler';
 import {
   TYPE_UNHANDLED_ERROR,
@@ -8,9 +9,14 @@ import {
   TYPE_REFRESH,
   STACK_TRACE_LIMIT
 } from './constants';
+import { ErrorOverlay } from './view/ErrorOverlay';
 
 let isRegistered = false;
 let stackTraceLimit: number | undefined = undefined;
+
+let isLoadedRoot = false;
+let root: null | HTMLElement = null;
+let errorBody: null | ReactDOM.Root = null;
 
 function onUnhandledError(ev: ErrorEvent) {
   const error = ev?.error;
@@ -22,7 +28,7 @@ function onUnhandledError(ev: ErrorEvent) {
   errorTypeHandler.emit({
     type: TYPE_UNHANDLED_ERROR,
     reason: error,
-    frames: parse(error.stack!)
+    frames: parse(error.stack)
   });
 }
 
@@ -40,7 +46,7 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
   errorTypeHandler.emit({
     type: TYPE_UNHANDLED_REJECTION,
     reason: reason,
-    frames: parse(reason.stack!)
+    frames: parse(reason.stack)
   });
 }
 
@@ -79,14 +85,37 @@ function unregister() {
 
 function onBuildOk() {
   errorTypeHandler.emit({ type: TYPE_BUILD_OK });
+  update();
 }
 
 function onBuildError(message: string) {
   errorTypeHandler.emit({ type: TYPE_BUILD_ERROR, message });
+  render();
 }
 
 function onRefresh() {
   errorTypeHandler.emit({ type: TYPE_REFRESH });
+}
+
+function render() {
+  if (isLoadedRoot) {
+    return;
+  }
+  isLoadedRoot = true;
+  const errorRoot = window.document.createElement('div');
+  root = errorRoot;
+  window.document.body.appendChild(errorRoot);
+  errorBody = ReactDOM.createRoot(errorRoot);
+  errorBody.render(<ErrorOverlay />);
+}
+
+function update() {
+  if (root) {
+    window.document.body.removeChild(root);
+    root = null;
+    isLoadedRoot = false;
+    errorBody?.unmount();
+  }
 }
 
 export { getErrorByType } from './view/helpers/getErrorByType';
