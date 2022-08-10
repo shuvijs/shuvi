@@ -12,16 +12,16 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "optionalDependencies": {
-    "@shuvi/swc-darwin-arm64": "1.0.0-rc.2",
-    "@shuvi/swc-darwin-x64": "1.0.0-rc.2",
-    "@shuvi/swc-linux-arm-gnueabihf": "1.0.0-rc.2",
-    "@shuvi/swc-linux-arm64-gnu": "1.0.0-rc.2",
-    "@shuvi/swc-linux-arm64-musl": "1.0.0-rc.2",
-    "@shuvi/swc-linux-x64-gnu": "1.0.0-rc.2",
-    "@shuvi/swc-linux-x64-musl": "1.0.0-rc.2",
-    "@shuvi/swc-win32-arm64-msvc": "1.0.0-rc.2",
-    "@shuvi/swc-win32-ia32-msvc": "1.0.0-rc.2",
-    "@shuvi/swc-win32-x64-msvc": "1.0.0-rc.2"
+    "@shuvi/swc-darwin-arm64": "1.0.0-rc.3",
+    "@shuvi/swc-darwin-x64": "1.0.0-rc.3",
+    "@shuvi/swc-linux-arm-gnueabihf": "1.0.0-rc.3",
+    "@shuvi/swc-linux-arm64-gnu": "1.0.0-rc.3",
+    "@shuvi/swc-linux-arm64-musl": "1.0.0-rc.3",
+    "@shuvi/swc-linux-x64-gnu": "1.0.0-rc.3",
+    "@shuvi/swc-linux-x64-musl": "1.0.0-rc.3",
+    "@shuvi/swc-win32-arm64-msvc": "1.0.0-rc.3",
+    "@shuvi/swc-win32-ia32-msvc": "1.0.0-rc.3",
+    "@shuvi/swc-win32-x64-msvc": "1.0.0-rc.3"
   },
   "dependencies": {
     "@napi-rs/triples": "1.1.0"
