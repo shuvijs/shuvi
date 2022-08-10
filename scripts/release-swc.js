@@ -106,6 +106,7 @@ async function main() {
   // update all package versions and inter-dependencies
   step('\nUpdating cross dependencies...');
   updateVersions(targetVersion);
+  await runIfNotDry('pnpm', ['install']);
 
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' });
   const publishBranchName = `release/swc-v${targetVersion}`;
