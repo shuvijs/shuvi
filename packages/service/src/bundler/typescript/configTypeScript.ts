@@ -1,5 +1,6 @@
 import chalk from '@shuvi/utils/lib/chalk';
 import fs from 'fs-extra';
+import * as CommentJson from 'comment-json';
 import os from 'os';
 import path from 'path';
 import { IPaths } from '../../core/apiTypes';
@@ -69,9 +70,13 @@ export async function writeDefaultConfigurations(
     jsx: { parsedValue: ts.JsxEmit.Preserve, value: 'preserve' }
   };
 
-  const userTsConfig = await fs.readJSON(tsConfigPath, {
+  const userTsConfigContent = await fs.readFile(tsConfigPath, {
     encoding: 'utf8'
   });
+  const userTsConfig = CommentJson.parse(userTsConfigContent) as Record<
+    string,
+    any
+  >;
   const { options: tsOptions, raw: rawConfig } = tsConfig;
   if (userTsConfig.compilerOptions == null && !('extends' in rawConfig)) {
     userTsConfig.compilerOptions = {};
@@ -165,7 +170,7 @@ export async function writeDefaultConfigurations(
 
   await fs.writeFile(
     tsConfigPath,
-    JSON.stringify(userTsConfig, null, 2).replace(/\n/g, os.EOL) + os.EOL
+    CommentJson.stringify(userTsConfig, null, 2) + os.EOL
   );
 
   if (isFirstTimeSetup) {
