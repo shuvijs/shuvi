@@ -655,12 +655,6 @@ importers:
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
 
-  test/fixtures/typescript-mis:
-    specifiers:
-      shuvi: workspace:*
-    dependencies:
-      shuvi: link:../../../packages/shuvi
-
   test/fixtures/typescript-type-error:
     specifiers:
       '@types/node': 18.0.6
