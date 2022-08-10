@@ -30,6 +30,7 @@ function onUnhandledError(ev: ErrorEvent) {
     reason: error,
     frames: parse(error.stack)
   });
+  render();
 }
 
 function onUnhandledRejection(ev: PromiseRejectionEvent) {
@@ -48,6 +49,7 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
     reason: reason,
     frames: parse(reason.stack)
   });
+  render();
 }
 
 function register() {

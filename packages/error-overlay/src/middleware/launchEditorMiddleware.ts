@@ -13,8 +13,7 @@ export function launchEditorMiddleware(
       const { query } = url.parse(req.url!, true);
       const lineNumber = parseInt(query.lineNumber as string, 10) || 1;
       const colNumber = parseInt(query.colNumber as string, 10) || 1;
-      //TODO: query.file
-      const frameFile = query.fileName?.toString() || null;
+      const frameFile = query.file?.toString() || null;
 
       if (frameFile == null) {
         res.statusCode = 400;

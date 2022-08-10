@@ -1,4 +1,5 @@
 import { StackFrame } from 'stacktrace-parser';
+import { DEV_ORIGINAL_STACK_FRAME_ENDPOINT } from '@shuvi/shared/esm/constants';
 
 type OriginalStackFrameResponse = {
   originalStackFrame: StackFrame;
@@ -58,14 +59,15 @@ export function getOriginalStackFrame(
 
     const controller = new AbortController();
     const tm = setTimeout(() => controller.abort(), 3000);
-    //TODO: how to modify the frame from middleware
-    const res = await self
-      .fetch(`/__shuvi_original-stack-frame?${params.toString()}`, {
+
+    const res = await fetch(
+      `${DEV_ORIGINAL_STACK_FRAME_ENDPOINT}?${params.toString()}`,
+      {
         signal: controller.signal
-      })
-      .finally(() => {
-        clearTimeout(tm);
-      });
+      }
+    ).finally(() => {
+      clearTimeout(tm);
+    });
     if (!res.ok || res.status === 204) {
       return Promise.reject(new Error(await res.text()));
     }

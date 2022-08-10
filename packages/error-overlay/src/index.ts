@@ -3,3 +3,4 @@
 
 export * from './client';
 export * from './middleware';
+export { getServerError } from './view/helpers/nodeStackFrames';
