@@ -1,3 +1,23 @@
+# [1.0.0-rc.5](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.4...v1.0.0-rc.5) (2022-08-10)
+
+
+### Bug Fixes
+
+* allow comment in typescript config ([a03c650](https://github.com/shuvijs/shuvi/commit/a03c65003f263f5dc4a127ffebfcf8adf7e1d283))
+* build ([772dc30](https://github.com/shuvijs/shuvi/commit/772dc303546da86a25b0a9d55781826c091a2f7c))
+* e2e ([cc3f826](https://github.com/shuvijs/shuvi/commit/cc3f8265823d17e2dc3d0bf1e688bfe9b9151c80))
+* plugin not work when serve ([76dd462](https://github.com/shuvijs/shuvi/commit/76dd462b7b9af2568c158c46798a07fe193ae55b))
+* **router:** catchall ([a3f01a5](https://github.com/shuvijs/shuvi/commit/a3f01a5df7896ef1ed976dfd8f1c3b3df5c9cf52))
+* server.js typing ([521820a](https://github.com/shuvijs/shuvi/commit/521820a840311f1d89b1bcc259467c7f86cdd2f0))
+* set preBundle to false when mode is not development ([ae6f55f](https://github.com/shuvijs/shuvi/commit/ae6f55f7977a06d1054d00e95d909b61c49cd99a))
+
+
+### Features
+
+* custom error ([cf212ce](https://github.com/shuvijs/shuvi/commit/cf212ce19368af9328fb0bed4600156f6f3221e6))
+
+
+
 # [1.0.0-rc.4](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.3...v1.0.0-rc.4) (2022-08-02)
 
 
