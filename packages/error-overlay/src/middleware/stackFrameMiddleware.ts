@@ -5,6 +5,10 @@ import path from 'path';
 import url from 'url';
 
 import type webpack from '@shuvi/toolpack/lib/webpack';
+import {
+  BUNDLER_TARGET_CLIENT,
+  BUNDLER_TARGET_SERVER
+} from '@shuvi/shared/lib/constants';
 
 import {
   getSourcePath,
@@ -101,9 +105,29 @@ export async function createOriginalStackFrame({
 export function stackFrameMiddleware(
   originalStackFrameEndpoint: string,
   rootDir: string,
-  clientStats: webpack.Stats | null,
-  serverStats: webpack.Stats | null
+  bundler: any
 ) {
+  let clientStats: webpack.Stats | null = null;
+  let serverStats: webpack.Stats | null = null;
+
+  bundler
+    .getSubCompiler(BUNDLER_TARGET_CLIENT)
+    ?.hooks.done.tap(
+      'stackFrameMiddlewareForClient',
+      (stats: webpack.Stats) => {
+        clientStats = stats;
+      }
+    );
+
+  bundler
+    .getSubCompiler(BUNDLER_TARGET_SERVER)
+    ?.hooks.done.tap(
+      'stackFrameMiddlewareForServer',
+      (stats: webpack.Stats) => {
+        serverStats = stats;
+      }
+    );
+
   return async function (
     req: IncomingMessage,
     res: ServerResponse,

@@ -4,15 +4,12 @@ import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_HOT_MIDDLEWARE_PATH,
-  DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
-  BUNDLER_TARGET_CLIENT,
-  BUNDLER_TARGET_SERVER
+  DEV_ORIGINAL_STACK_FRAME_ENDPOINT
 } from '@shuvi/shared/lib/constants';
 import {
   launchEditorMiddleware,
   stackFrameMiddleware
 } from '@shuvi/error-overlay/lib/middleware';
-import type webpack from '@shuvi/toolpack/lib/webpack';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -46,9 +43,6 @@ export async function getDevMiddleware(
   bundler: Bunlder,
   serverPluginContext: IServerPluginContext
 ): Promise<DevMiddleware> {
-  let clientStats: webpack.Stats | null;
-  let serverStats: webpack.Stats | null;
-
   const context: IContext = {
     state: false,
     callbacks: []
@@ -71,18 +65,6 @@ export async function getDevMiddleware(
   });
   bundler.watch();
 
-  bundler
-    .getSubCompiler(BUNDLER_TARGET_CLIENT)
-    ?.hooks.done.tap('devMiddlewareForClient', stats => {
-      clientStats = stats;
-    });
-
-  bundler
-    .getSubCompiler(BUNDLER_TARGET_SERVER)
-    ?.hooks.done.tap('devMiddlewareForServer', stats => {
-      serverStats = stats;
-    });
-
   const webpackHotMiddleware = new WebpackHotMiddleware({
     disposeInactivePage: serverPluginContext.config.disposeInactivePage,
     compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!,
@@ -101,8 +83,7 @@ export async function getDevMiddleware(
       stackFrameMiddleware(
         DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
         serverPluginContext.paths.rootDir,
-        clientStats,
-        serverStats
+        bundler
       )
     );
     bundler.applyDevMiddlewares(server);
