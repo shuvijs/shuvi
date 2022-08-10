@@ -18,7 +18,7 @@ export default async function main(argv: string[]) {
   const cwd = getProjectDir(program);
   const port = Number(program.port) || 3000;
   const host = program.host || 'localhost';
-  const { plugins, presets, ...config } = await getConfigFromCli(cwd, program);
+  const config = await getConfigFromCli(cwd, program);
   const api = await initShuvi({
     cwd,
     config
