@@ -29,7 +29,8 @@ SOFTWARE.
 import stripAnsi from 'strip-ansi';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import {
-  register,
+  startReportingRuntimeErrors,
+  stopReportingRuntimeErrors,
   onBuildError,
   onBuildOk,
   onRefresh
@@ -63,7 +64,17 @@ export default function connect(options: {
   path: string;
   location: Location;
 }): HotDevClient {
-  register();
+  startReportingRuntimeErrors({
+    onError: function () {
+      hadRuntimeError = true;
+    }
+  });
+
+  if (module.hot && typeof module.hot.dispose === 'function') {
+    module.hot.dispose(function () {
+      stopReportingRuntimeErrors();
+    });
+  }
 
   connectHMR({ ...options, log: true });
 

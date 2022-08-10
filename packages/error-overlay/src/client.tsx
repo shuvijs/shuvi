@@ -52,7 +52,7 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
   render();
 }
 
-function register() {
+function startReportingRuntimeErrors({ onError }: { onError: () => void }) {
   if (isRegistered) {
     return;
   }
@@ -64,11 +64,17 @@ function register() {
     stackTraceLimit = limit;
   } catch {}
 
-  window.addEventListener('error', onUnhandledError);
-  window.addEventListener('unhandledrejection', onUnhandledRejection);
+  window.addEventListener('error', ev => {
+    onError();
+    onUnhandledError(ev);
+  });
+  window.addEventListener('unhandledrejection', ev => {
+    onError();
+    onUnhandledRejection(ev);
+  });
 }
 
-function unregister() {
+function stopReportingRuntimeErrors() {
   if (!isRegistered) {
     return;
   }
@@ -122,4 +128,10 @@ function update() {
 
 export { getErrorByType } from './view/helpers/getErrorByType';
 export { getServerError } from './view/helpers/nodeStackFrames';
-export { onBuildError, onBuildOk, onRefresh, register, unregister };
+export {
+  onBuildError,
+  onBuildOk,
+  onRefresh,
+  startReportingRuntimeErrors,
+  stopReportingRuntimeErrors
+};
