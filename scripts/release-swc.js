@@ -141,21 +141,8 @@ async function main() {
     console.log(`\nDry run finished - run git diff to see package changes.`);
   }
 
-  let { stdout: originRemote } = await run(
-    'git',
-    ['ls-remote', '--get-url', 'origin'],
-    {
-      stdio: 'pipe'
-    }
-  );
-
-  originRemote = originRemote
-    .replace('git@github.com:', '')
-    .replace('.git', '')
-    .replace('/', ':');
-
   const url = new URL(
-    `https://github.com/shuvijs/shuvi/compare/${processBranchName}...${originRemote}:${publishBranchName}`
+    `https://github.com/shuvijs/shuvi/compare/${processBranchName}...${publishBranchName}`
   );
   url.searchParams.set('quick_pull', 1);
   url.searchParams.set('title', publishBranchName);
