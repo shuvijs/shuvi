@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/compiler",
-  "version": "1.0.0-rc.4",
+  "version": "1.0.0-rc.5",
   "main": "./lib/index.js",
   "types": "./lib/index.d.js",
   "files": [
