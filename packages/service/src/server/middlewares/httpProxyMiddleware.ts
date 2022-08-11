@@ -64,16 +64,11 @@ function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
           target: value,
           context
         });
-      } else if (
-        typeof value === 'object' &&
-        typeof value.target === 'string'
-      ) {
-        proxyConfigItem = simplifyPathRewrite({
-          ...value,
-          context
-        });
       } else {
-        return;
+        proxyConfigItem = simplifyPathRewrite({
+          context,
+          ...(value || {})
+        });
       }
 
       proxies.push(mergeDefaultProxyOptions(proxyConfigItem));
