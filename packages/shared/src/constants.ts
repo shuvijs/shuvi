@@ -22,6 +22,8 @@ export const DEV_HOT_MIDDLEWARE_PATH = `${DEV_ONLY_ASSETS_PREFIX}/webpack-hmr`;
 
 export const DEV_HOT_LAUNCH_EDITOR_ENDPOINT = `${DEV_ONLY_ASSETS_PREFIX}/development/open-stack-frame-in-editor`;
 
+export const DEV_ORIGINAL_STACK_FRAME_ENDPOINT = `${DEV_ONLY_ASSETS_PREFIX}/development/original-stack-frame`;
+
 export const DEV_SOCKET_TIMEOUT_MS = 5000;
 
 export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;

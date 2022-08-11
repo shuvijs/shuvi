@@ -1,0 +1,50 @@
+{
+  "name": "@shuvi/error-overlay",
+  "version": "1.0.0-rc.4",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "esm",
+    "umd"
+  ],
+  "scripts": {
+    "dev": "run-p watch:*",
+    "watch:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib -w",
+    "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
+    "watch:umd": "cross-env NODE_ENV=development rollup -c rollup.config.js -w",
+    "prebuild": "rimraf lib",
+    "build": "run-p build:*",
+    "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib",
+    "build:ems": "tsc -p tsconfig.build.json -m esnext --outDir esm",
+    "build:umd": "cross-env NODE_ENV=production rollup -c rollup.config.js"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "dependencies": {
+    "@babel/code-frame": "7.14.5",
+    "@rollup/plugin-replace": "^4.0.0",
+    "@shuvi/shared": "1.0.0-rc.5",
+    "@shuvi/toolpack": "1.0.0-rc.5",
+    "anser": "1.4.9",
+    "data-uri-to-buffer": "3.0.1",
+    "html-entities": "2.3.2",
+    "launch-editor": "2.2.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "source-map": "0.7.4",
+    "stacktrace-parser": "0.1.10",
+    "strip-ansi": "6.0.1",
+    "tslib": "2.4.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "22.0.2",
+    "@rollup/plugin-node-resolve": "13.3.0",
+    "@types/babel__code-frame": "7.0.3",
+    "@types/react": "18.0.9",
+    "@types/react-dom": "18.0.6",
+    "cross-env": "^7.0.3",
+    "rollup": "2.77.2",
+    "rollup-plugin-typescript2": "0.32.1"
+  }
+}

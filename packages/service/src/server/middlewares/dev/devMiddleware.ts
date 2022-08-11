@@ -3,9 +3,13 @@ import { IncomingMessage } from 'http';
 import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
-  DEV_HOT_MIDDLEWARE_PATH
+  DEV_HOT_MIDDLEWARE_PATH,
+  DEV_ORIGINAL_STACK_FRAME_ENDPOINT
 } from '@shuvi/shared/lib/constants';
-import { createLaunchEditorMiddleware } from './launchEditorMiddleware';
+import {
+  launchEditorMiddleware,
+  stackFrameMiddleware
+} from '@shuvi/error-overlay/lib/middleware';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -70,7 +74,17 @@ export async function getDevMiddleware(
   const apply = (server: Server) => {
     const targetServer = server;
     targetServer.use(
-      createLaunchEditorMiddleware(DEV_HOT_LAUNCH_EDITOR_ENDPOINT)
+      launchEditorMiddleware(
+        DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
+        serverPluginContext.paths.rootDir
+      )
+    );
+    targetServer.use(
+      stackFrameMiddleware(
+        DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
+        serverPluginContext.paths.rootDir,
+        bundler
+      )
     );
     bundler.applyDevMiddlewares(server);
   };
