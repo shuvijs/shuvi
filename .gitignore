@@ -20,9 +20,11 @@ node_modules
 /lib/
 packages/*/lib/
 packages/*/esm/
+packages/*/umd/
 
 test/packages/*/lib/
 test/packages/*/esm/
+test/packages/*/umd/
 
 test/fixtures/**/dist/
 test/fixtures/**/.shuvi/
