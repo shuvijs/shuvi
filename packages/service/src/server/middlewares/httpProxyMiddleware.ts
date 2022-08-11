@@ -39,14 +39,31 @@ export function simplifyPathRewrite(proxy: IProxyConfigItem): IProxyConfigItem {
   const rawContext = context.replace(/\/\*$/, '');
   const rawTarget = target.replace(/\/\*$/, '');
   const rewriteContext = `^${rawContext}`;
-  const originPathRewrite = proxy.pathRewrite || {};
   return {
     ...proxy,
     context: rawContext,
     target: rawTarget,
     pathRewrite: {
-      ...originPathRewrite,
       [rewriteContext]: ''
+    }
+  };
+}
+
+export function transformContextFilter(
+  proxy: IProxyConfigItem
+): IProxyConfigItem {
+  // Is both endWith /*
+  if (proxy.pathRewrite) {
+    return proxy;
+  }
+
+  return {
+    ...proxy,
+    context(pathname) {
+      return (
+        pathname.replace(/\/$/, '') ===
+        (proxy.context as string).replace(/\/$/, '')
+      );
     }
   };
 }
@@ -60,18 +77,24 @@ function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
     Object.entries(proxyConfig).forEach(([context, value]) => {
       let proxyConfigItem!: IProxyConfigItem;
       if (typeof value === 'string') {
-        proxyConfigItem = simplifyPathRewrite({
+        proxyConfigItem = {
           target: value,
           context
-        });
+        };
       } else {
-        proxyConfigItem = simplifyPathRewrite({
+        proxyConfigItem = {
           context,
           ...(value || {})
-        });
+        };
       }
+      // Deny custom pathRewrite
+      delete proxyConfigItem.pathRewrite;
 
-      proxies.push(mergeDefaultProxyOptions(proxyConfigItem));
+      proxies.push(
+        mergeDefaultProxyOptions(
+          transformContextFilter(simplifyPathRewrite(proxyConfigItem))
+        )
+      );
     });
   }
 
