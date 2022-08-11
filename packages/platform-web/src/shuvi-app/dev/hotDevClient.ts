@@ -26,9 +26,15 @@ SOFTWARE.
 // It's been edited to rely on webpack-hot-middleware.
 
 // @ts-nocheck
-import * as ErrorOverlay from 'react-error-overlay';
 import stripAnsi from 'strip-ansi';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
+import {
+  startReportingRuntimeErrors,
+  stopReportingRuntimeErrors,
+  onBuildError,
+  onBuildOk,
+  onRefresh
+} from '@shuvi/error-overlay/lib/client';
 import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/esm/constants';
 import { connectHMR, addMessageListener, sendMessage } from './websocket';
 
@@ -51,7 +57,6 @@ let customHmrEventHandler: any;
 export type HotDevClient = {
   sendMessage: (data: any) => void;
   subscribeToHmrEvent: (handler: any) => void;
-  reportRuntimeError: (err: any) => void;
 };
 
 export default function connect(options: {
@@ -59,35 +64,7 @@ export default function connect(options: {
   path: string;
   location: Location;
 }): HotDevClient {
-  // Open stack traces in an editor.
-  ErrorOverlay.setEditorHandler(function editorHandler({
-    fileName,
-    lineNumber,
-    colNumber
-  }: any) {
-    // Resolve invalid paths coming from react-error-overlay
-    const resolvedFilename = fileName.replace(
-      /^webpack:\/\/[^/]+/ /* webpack://namaspcae/resourcepath */,
-      ''
-    );
-    fetch(
-      options.launchEditorEndpoint +
-        '?fileName=' +
-        window.encodeURIComponent(resolvedFilename) +
-        '&lineNumber=' +
-        window.encodeURIComponent(lineNumber || 1) +
-        '&colNumber=' +
-        window.encodeURIComponent(colNumber || 1)
-    );
-  });
-
-  // We need to keep track of if there has been a runtime error.
-  // Essentially, we cannot guarantee application state was not corrupted by the
-  // runtime error. To prevent confusing behavior, we forcibly reload the entire
-  // application. This is handled below when we are notified of a compile (code
-  // change).
-  // See https://github.com/facebook/create-react-app/issues/3096
-  ErrorOverlay.startReportingRuntimeErrors({
+  startReportingRuntimeErrors({
     onError: function () {
       hadRuntimeError = true;
     }
@@ -95,8 +72,7 @@ export default function connect(options: {
 
   if (module.hot && typeof module.hot.dispose === 'function') {
     module.hot.dispose(function () {
-      // TODO: why do we need this?
-      ErrorOverlay.stopReportingRuntimeErrors();
+      stopReportingRuntimeErrors();
     });
   }
 
@@ -125,9 +101,6 @@ export default function connect(options: {
     },
     subscribeToHmrEvent(handler) {
       customHmrEventHandler = handler;
-    },
-    reportRuntimeError(err) {
-      ErrorOverlay.reportRuntimeError(err);
     }
   };
 }
@@ -148,8 +121,12 @@ function clearOutdatedErrors() {
 
 let startLatency = undefined;
 
-function onFastRefresh() {
-  tryDismissErrorOverlay();
+function onFastRefresh(hasUpdates) {
+  onBuildOk();
+
+  if (hasUpdates) {
+    onRefresh();
+  }
 
   if (startLatency) {
     const endLatency = Date.now();
@@ -168,10 +145,10 @@ function handleSuccess() {
 
   // Attempt to apply hot updates or reload.
   if (isHotUpdate) {
-    tryApplyUpdates(function onHotUpdateSuccess() {
+    tryApplyUpdates(function onHotUpdateSuccess(hasUpdates) {
       // Only dismiss it when we're sure it's a hot update.
       // Otherwise it would flicker right before the reload.
-      onFastRefresh();
+      onFastRefresh(hasUpdates);
     });
   }
 }
@@ -205,17 +182,19 @@ function handleWarnings(warnings) {
 
   // Attempt to apply hot updates or reload.
   if (isHotUpdate) {
-    tryApplyUpdates(function onSuccessfulHotUpdate() {
+    tryApplyUpdates(function onSuccessfulHotUpdate(hasUpdates) {
       // Only dismiss it when we're sure it's a hot update.
       // Otherwise it would flicker right before the reload.
-      tryDismissErrorOverlay();
-      onFastRefresh();
+      onFastRefresh(hasUpdates);
     });
   }
 }
 
 // Compilation with errors (e.g. syntax error or missing modules).
 function handleErrors(errors) {
+  if (!Boolean(errors && errors.length)) {
+    return;
+  }
   clearOutdatedErrors();
 
   isFirstCompilation = false;
@@ -228,19 +207,13 @@ function handleErrors(errors) {
   });
 
   // Only show the first error.
-  ErrorOverlay.reportBuildError(formatted.errors[0]);
+  onBuildError(formatted.errors[0]);
 
   // Also log them to the console.
   if (typeof console !== 'undefined' && typeof console.error === 'function') {
     for (var i = 0; i < formatted.errors.length; i++) {
       console.error(stripAnsi(formatted.errors[i]));
     }
-  }
-}
-
-function tryDismissErrorOverlay() {
-  if (!hasCompileErrors) {
-    ErrorOverlay.dismissBuildError();
   }
 }
 
@@ -344,7 +317,7 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   if (!isUpdateAvailable() || !canApplyUpdates()) {
-    ErrorOverlay.dismissBuildError();
+    onBuildOk();
     // HMR failed, need to refresh
     const hmrStatus = module.hot.status();
     if (hmrStatus === 'abort' || hmrStatus === 'fail') {
@@ -355,24 +328,27 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
 
   function handleApplyUpdates(err, updatedModules) {
     const needForcedReload = err || hadRuntimeError;
+    const hasUpdates = Boolean(updatedModules?.length);
+
     if (needForcedReload) {
       if (hadRuntimeError) {
         hadRuntimeError = false;
         window.location.reload();
       } else {
-        ErrorOverlay.reportRuntimeError(err);
         hadRuntimeError = true;
       }
     }
 
     if (typeof onHotUpdateSuccess === 'function') {
       // Maybe we want to do something.
-      onHotUpdateSuccess();
+      onHotUpdateSuccess(hasUpdates);
     }
 
     if (isUpdateAvailable()) {
       // While we were updating, there was a new update! Do it again.
-      tryApplyUpdates(onHotUpdateSuccess);
+      tryApplyUpdates(hasUpdates ? onBuildOk : onHotUpdateSuccess);
+    } else {
+      onBuildOk();
     }
   }
 

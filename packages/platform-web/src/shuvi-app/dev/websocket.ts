@@ -22,7 +22,6 @@ export function sendMessage(data: any) {
 export type HotDevClient = {
   sendMessage: (data: any) => void;
   subscribeToHmrEvent?: (handler: any) => void;
-  reportRuntimeError?: (err: any) => void;
 };
 
 export function connectHMR(options: {
