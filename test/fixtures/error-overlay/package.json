@@ -1,7 +1,0 @@
-{
-  "name": "error-overlay",
-  "dependencies": {
-    "shuvi": "workspace:*",
-    "@shuvi/error-overlay": "workspace:*"
-  }
-}
