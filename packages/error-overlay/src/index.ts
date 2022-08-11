@@ -2,5 +2,5 @@
 // https://github.com/vercel/next.js/blob/canary/packages/react-dev-overlay/
 
 export * from './client';
-export * from './middleware';
+
 export { getServerError } from './view/helpers/nodeStackFrames';
