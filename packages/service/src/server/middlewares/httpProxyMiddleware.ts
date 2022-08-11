@@ -25,32 +25,63 @@ function mergeDefaultProxyOptions(
     ...config
   };
 }
+
+export function simplifyPathRewrite(proxy: IProxyConfigItem): IProxyConfigItem {
+  const { context, target } = proxy;
+  if (typeof context !== 'string' || typeof target !== 'string') {
+    return proxy;
+  }
+
+  if (!context.endsWith('/*') || !target.endsWith('/*')) {
+    return proxy;
+  }
+
+  const rawContext = context.replace(/\/\*$/, '');
+  const rawTarget = target.replace(/\/\*$/, '');
+  const rewriteContext = `^${rawContext}`;
+  return {
+    ...proxy,
+    context: rawContext,
+    target: rawTarget,
+    pathRewrite: {
+      [rewriteContext]: ''
+    }
+  };
+}
+
 function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
-  const res: IProxyConfigItem[] = [];
+  const proxies: IProxyConfigItem[] = [];
 
   if (Array.isArray(proxyConfig)) {
-    proxyConfig.forEach(item => res.push(mergeDefaultProxyOptions(item)));
+    proxyConfig.forEach(item => proxies.push(mergeDefaultProxyOptions(item)));
   } else if (typeof proxyConfig === 'object') {
-    Object.keys(proxyConfig).forEach(context => {
-      const val = proxyConfig[context];
-      const opts =
-        typeof val === 'string'
-          ? {
-              target: val,
-              context
-            }
-          : {
-              ...val,
-              context
-            };
-      res.push(mergeDefaultProxyOptions(opts));
+    Object.entries(proxyConfig).forEach(([context, value]) => {
+      let proxyConfigItem!: IProxyConfigItem;
+      if (typeof value === 'string') {
+        proxyConfigItem = simplifyPathRewrite({
+          target: value,
+          context
+        });
+      } else if (typeof value === 'object') {
+        proxyConfigItem = {
+          ...value,
+          context
+        };
+      } else {
+        return;
+      }
+
+      proxies.push(mergeDefaultProxyOptions(proxyConfigItem));
     });
   }
 
-  return res;
+  return proxies;
 }
 
-export function applyHttpProxyMiddleware(server: Server, proxy: IProxyConfig) {
+export function applyHttpProxyMiddleware(server: Server, proxy?: IProxyConfig) {
+  if (!proxy) {
+    return;
+  }
   const proxyOptions = normalizeProxyConfig(proxy);
   proxyOptions.forEach(({ context, ...opts }) => {
     if (context) {
