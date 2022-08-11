@@ -62,11 +62,14 @@ function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
           target: value,
           context
         });
-      } else if (typeof value === 'object') {
-        proxyConfigItem = {
+      } else if (
+        typeof value === 'object' &&
+        typeof value.target === 'string'
+      ) {
+        proxyConfigItem = simplifyPathRewrite({
           ...value,
           context
-        };
+        });
       } else {
         return;
       }
@@ -78,10 +81,7 @@ function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
   return proxies;
 }
 
-export function applyHttpProxyMiddleware(server: Server, proxy?: IProxyConfig) {
-  if (!proxy) {
-    return;
-  }
+export function applyHttpProxyMiddleware(server: Server, proxy: IProxyConfig) {
   const proxyOptions = normalizeProxyConfig(proxy);
   proxyOptions.forEach(({ context, ...opts }) => {
     if (context) {

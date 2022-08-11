@@ -28,7 +28,9 @@ export class ShuviDevServer extends ShuviServer {
     const devMiddleware = await getDevMiddleware(this._bundler, context);
     await devMiddleware.waitUntilValid();
 
-    applyHttpProxyMiddleware(server, context.config.proxy);
+    if (context.config.proxy) {
+      applyHttpProxyMiddleware(server, context.config.proxy);
+    }
 
     const { rootDir } = context.paths;
     if (this._options.getMiddlewaresBeforeDevMiddlewares) {
