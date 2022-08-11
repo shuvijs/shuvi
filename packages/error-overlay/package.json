@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@babel/code-frame": "7.14.5",
-    "@rollup/plugin-replace": "^4.0.0",
     "@shuvi/shared": "1.0.0-rc.5",
     "@shuvi/toolpack": "1.0.0-rc.5",
     "anser": "1.4.9",
@@ -40,10 +39,10 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "22.0.2",
     "@rollup/plugin-node-resolve": "13.3.0",
+    "@rollup/plugin-replace": "4.0.0",
     "@types/babel__code-frame": "7.0.3",
     "@types/react": "18.0.9",
     "@types/react-dom": "18.0.6",
-    "cross-env": "^7.0.3",
     "rollup": "2.77.2",
     "rollup-plugin-typescript2": "0.32.1"
   }
