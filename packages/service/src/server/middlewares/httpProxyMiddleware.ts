@@ -39,11 +39,13 @@ export function simplifyPathRewrite(proxy: IProxyConfigItem): IProxyConfigItem {
   const rawContext = context.replace(/\/\*$/, '');
   const rawTarget = target.replace(/\/\*$/, '');
   const rewriteContext = `^${rawContext}`;
+  const originPathRewrite = proxy.pathRewrite || {};
   return {
     ...proxy,
     context: rawContext,
     target: rawTarget,
     pathRewrite: {
+      ...originPathRewrite,
       [rewriteContext]: ''
     }
   };
