@@ -25,29 +25,66 @@ function mergeDefaultProxyOptions(
     ...config
   };
 }
+
+export function simplifyPathRewrite(proxy: IProxyConfigItem): IProxyConfigItem {
+  const { context, target } = proxy;
+  const { pathRewrite, ...safeProxy } = proxy;
+  if (typeof context !== 'string' || typeof target !== 'string') {
+    return safeProxy;
+  }
+
+  if (!context.endsWith('/*') || !target.endsWith('/*')) {
+    return {
+      ...safeProxy,
+      context(pathname) {
+        return (
+          pathname.replace(/\/$/, '') ===
+          (proxy.context as string).replace(/\/$/, '')
+        );
+      }
+    };
+  }
+
+  const rawContext = context.replace(/\/\*$/, '');
+  const rawTarget = target.replace(/\/\*$/, '');
+  const rewriteContext = `^${rawContext}`;
+  return {
+    ...safeProxy,
+    context: rawContext,
+    target: rawTarget,
+    pathRewrite: {
+      [rewriteContext]: ''
+    }
+  };
+}
+
 function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
-  const res: IProxyConfigItem[] = [];
+  const proxies: IProxyConfigItem[] = [];
 
   if (Array.isArray(proxyConfig)) {
-    proxyConfig.forEach(item => res.push(mergeDefaultProxyOptions(item)));
+    proxyConfig.forEach(item => proxies.push(mergeDefaultProxyOptions(item)));
   } else if (typeof proxyConfig === 'object') {
-    Object.keys(proxyConfig).forEach(context => {
-      const val = proxyConfig[context];
-      const opts =
-        typeof val === 'string'
-          ? {
-              target: val,
-              context
-            }
-          : {
-              ...val,
-              context
-            };
-      res.push(mergeDefaultProxyOptions(opts));
+    Object.entries(proxyConfig).forEach(([context, value]) => {
+      let proxyConfigItem!: IProxyConfigItem;
+      if (typeof value === 'string') {
+        proxyConfigItem = {
+          target: value,
+          context
+        };
+      } else {
+        proxyConfigItem = {
+          context,
+          ...(value || {})
+        };
+      }
+
+      proxies.push(
+        mergeDefaultProxyOptions(simplifyPathRewrite(proxyConfigItem))
+      );
     });
   }
 
-  return res;
+  return proxies;
 }
 
 export function applyHttpProxyMiddleware(server: Server, proxy: IProxyConfig) {

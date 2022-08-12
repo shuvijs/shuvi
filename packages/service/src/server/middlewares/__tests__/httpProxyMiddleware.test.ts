@@ -1,17 +1,22 @@
 import { findPort } from 'shuvi-test-utils';
 import got from 'got';
-import { applyHttpProxyMiddleware } from '../httpProxyMiddleware';
+import {
+  applyHttpProxyMiddleware,
+  IProxyConfigItem,
+  simplifyPathRewrite
+} from '../httpProxyMiddleware';
 import { Server, IRequest, IResponse, INextFunc } from '../../http-server';
 
 const host = 'localhost';
 
 describe('server proxy test', () => {
   let server: Server;
-  afterEach(async () => {
-    await server.close();
-  });
 
   describe('httpProxyMiddleware test', () => {
+    afterEach(async () => {
+      await server.close();
+    });
+
     let proxyTarget1: Server;
     let proxyTarget1Port: number;
     let proxyTarget2: Server;
@@ -53,17 +58,15 @@ describe('server proxy test', () => {
     test('object options', async () => {
       server = new Server();
       applyHttpProxyMiddleware(server, {
-        '/api': `http://${host}:${proxyTarget1Port}`,
-        '/server1/header': {
-          target: `http://${host}:${proxyTarget1Port}`,
+        '/api/*': `http://${host}:${proxyTarget1Port}/api/*`,
+        '/server1/*': {
+          target: `http://${host}:${proxyTarget1Port}/*`,
           headers: {
             foo: 'bar'
-          },
-          pathRewrite: { '^/server1': '' }
+          }
         },
-        '/server2/api': {
-          target: `http://${host}:${proxyTarget2Port}`,
-          pathRewrite: { '^/server2': '' }
+        '/server2/*': {
+          target: `http://${host}:${proxyTarget2Port}/api/*`
         }
       });
       server.use(
@@ -76,7 +79,6 @@ describe('server proxy test', () => {
       await server.listen(port, host);
       let resp = await got(`http://${host}:${port}/noproxy`);
       expect(resp.body).toEqual('no proxy');
-
       resp = await got(`http://${host}:${port}/api`);
       expect(resp.body).toEqual('api1');
 
@@ -129,6 +131,61 @@ describe('server proxy test', () => {
 
       resp = await got(`http://${host}:${port}/server2/api`);
       expect(resp.body).toEqual('api2');
+    });
+  });
+
+  describe('Simplify proxy config test', function () {
+    it('should get origin object when lose target and context', function () {
+      const item: IProxyConfigItem = {};
+      expect(simplifyPathRewrite(item)).toEqual({});
+    });
+
+    it('should get origin object when lose target', function () {
+      const item: IProxyConfigItem = {
+        context: '/api'
+      };
+      expect(simplifyPathRewrite(item)).toEqual(item);
+    });
+
+    it('should get origin object when lose context', function () {
+      const item: IProxyConfigItem = {
+        target: 'http://localhost'
+      };
+      expect(simplifyPathRewrite(item)).toEqual(item);
+    });
+
+    it('should get origin object when target and context not end with /*', function () {
+      const item: IProxyConfigItem = {
+        target: 'http://localhost',
+        context: '/api'
+      };
+      const ctxFilter = simplifyPathRewrite(item).context as (
+        pathname: string
+      ) => boolean;
+      expect(ctxFilter('/api')).toBe(true);
+      expect(ctxFilter('/api/')).toBe(true);
+      expect(ctxFilter('/ap')).toBe(false);
+    });
+
+    it('should generated path rewrite when both end with /*', function () {
+      const item: IProxyConfigItem = {
+        target: 'http://localhost/console/*',
+        context: '/api/*'
+      };
+      const result = simplifyPathRewrite(item);
+      expect(result).toEqual({
+        target: 'http://localhost/console',
+        context: '/api',
+        pathRewrite: { '^/api': '' }
+      });
+    });
+
+    it('should ignored custom pathRewrite', () => {
+      const item = simplifyPathRewrite({
+        pathRewrite: {}
+      });
+
+      expect(item.pathRewrite).toBeUndefined();
     });
   });
 });
