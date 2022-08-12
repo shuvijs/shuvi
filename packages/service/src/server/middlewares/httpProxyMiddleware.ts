@@ -28,42 +28,32 @@ function mergeDefaultProxyOptions(
 
 export function simplifyPathRewrite(proxy: IProxyConfigItem): IProxyConfigItem {
   const { context, target } = proxy;
+  const { pathRewrite, ...safeProxy } = proxy;
   if (typeof context !== 'string' || typeof target !== 'string') {
-    return proxy;
+    return safeProxy;
   }
 
   if (!context.endsWith('/*') || !target.endsWith('/*')) {
-    return proxy;
+    return {
+      ...safeProxy,
+      context(pathname) {
+        return (
+          pathname.replace(/\/$/, '') ===
+          (proxy.context as string).replace(/\/$/, '')
+        );
+      }
+    };
   }
 
   const rawContext = context.replace(/\/\*$/, '');
   const rawTarget = target.replace(/\/\*$/, '');
   const rewriteContext = `^${rawContext}`;
   return {
-    ...proxy,
+    ...safeProxy,
     context: rawContext,
     target: rawTarget,
     pathRewrite: {
       [rewriteContext]: ''
-    }
-  };
-}
-
-export function transformContextFilter(
-  proxy: IProxyConfigItem
-): IProxyConfigItem {
-  // Is both endWith /*
-  if (proxy.pathRewrite) {
-    return proxy;
-  }
-
-  return {
-    ...proxy,
-    context(pathname) {
-      return (
-        pathname.replace(/\/$/, '') ===
-        (proxy.context as string).replace(/\/$/, '')
-      );
     }
   };
 }
@@ -87,13 +77,9 @@ function normalizeProxyConfig(proxyConfig: IProxyConfig): IProxyConfigItem[] {
           ...(value || {})
         };
       }
-      // Deny custom pathRewrite
-      delete proxyConfigItem.pathRewrite;
 
       proxies.push(
-        mergeDefaultProxyOptions(
-          transformContextFilter(simplifyPathRewrite(proxyConfigItem))
-        )
+        mergeDefaultProxyOptions(simplifyPathRewrite(proxyConfigItem))
       );
     });
   }
