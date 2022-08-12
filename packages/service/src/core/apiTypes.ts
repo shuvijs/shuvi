@@ -4,12 +4,15 @@ import {
   PluginRunner
 } from './lifecycle';
 import { FileOption } from '../project';
+import { IProxyConfig } from '../server/middlewares/httpProxyMiddleware';
 import {
   IServerMiddleware,
   IServerPluginContext,
   ServerPluginInstance
 } from '../server';
 import { DevMiddleware } from '../server/middlewares/dev';
+
+export type { IProxyConfig };
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends {} ? Partial<T[P]> : T[P];
@@ -185,8 +188,6 @@ export interface InternalConfig {
     swcPlugins?: Array<[string, Record<string, unknown>]>;
   };
 }
-
-export type IProxyConfig = any;
 
 export interface Config
   extends DeepPartial<InternalConfig>,
