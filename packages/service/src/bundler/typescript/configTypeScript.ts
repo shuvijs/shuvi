@@ -148,13 +148,31 @@ export async function writeDefaultConfigurations(
     ]
   };
 
-  if (!('include' in rawConfig)) {
-    userTsConfig.include = ['.shuvi/app/shuvi-app.d.ts', 'src'];
+  const toIncludes = ['.shuvi/app/shuvi-app.d.ts', 'src'];
+  if (!('include' in rawConfig) || rawConfig.include.length === 0) {
+    userTsConfig.include = toIncludes;
     suggestedActions.push(
       chalk.cyan('include') +
         ' was set to ' +
         chalk.bold(`['.shuvi/app/shuvi-app.d.ts', 'src']`)
     );
+  } else {
+    const includes = rawConfig.include as string[];
+    const missed: string[] = [];
+    for (let index = 0; index < toIncludes.length; index++) {
+      const item = toIncludes[index];
+      if (!includes.includes(item)) {
+        missed.push(item);
+      }
+    }
+    if (missed.length) {
+      missed.forEach(item => userTsConfig.include.push(item));
+      suggestedActions.push(
+        chalk.cyan('include') +
+          ' was changed to include ' +
+          chalk.bold(`[${missed.map(item => `'${item}'`).join(', ')}]`)
+      );
+    }
   }
 
   if (!('exclude' in rawConfig)) {
