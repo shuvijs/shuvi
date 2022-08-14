@@ -1,7 +1,7 @@
 import {
   TYPE_UNHANDLED_ERROR,
   TYPE_UNHANDLED_REJECTION
-} from '../../constants';
+} from '../../shared/constants';
 import { SupportedErrorEvent } from '../container/RuntimeError';
 import { getErrorSource } from './nodeStackFrames';
 import { getOriginalStackFrames, OriginalStackFrame } from './stack-frame';

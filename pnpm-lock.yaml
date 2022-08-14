@@ -130,6 +130,7 @@ importers:
       '@types/babel__code-frame': 7.0.3
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
+      '@types/source-map': 0.5.7
       anser: 1.4.9
       data-uri-to-buffer: 3.0.1
       html-entities: 2.3.2
@@ -139,7 +140,7 @@ importers:
       rollup: 2.77.2
       rollup-plugin-string: 3.0.0
       rollup-plugin-typescript2: 0.32.1
-      source-map: 0.7.4
+      source-map: 0.5.7
       stacktrace-parser: 0.1.10
       strip-ansi: 6.0.1
       tslib: 2.4.0
@@ -153,7 +154,7 @@ importers:
       launch-editor: 2.2.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      source-map: 0.7.4
+      source-map: 0.5.7
       stacktrace-parser: 0.1.10
       strip-ansi: 6.0.1
       tslib: 2.4.0
@@ -165,6 +166,7 @@ importers:
       '@types/babel__code-frame': 7.0.3
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
+      '@types/source-map': 0.5.7
       rollup: 2.77.2
       rollup-plugin-string: 3.0.0
       rollup-plugin-typescript2: 0.32.1_rollup@2.77.2
@@ -3612,6 +3614,13 @@ packages:
 
   /@types/source-list-map/0.1.2:
     resolution: {integrity: sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==}
+    dev: true
+
+  /@types/source-map/0.5.7:
+    resolution: {integrity: sha512-LrnsgZIfJaysFkv9rRJp4/uAyqw87oVed3s1hhF83nwbo9c7MG9g5DqR0seHP+lkX4ldmMrVolPjQSe2ZfD0yA==}
+    deprecated: This is a stub types definition for source-map (https://github.com/mozilla/source-map). source-map provides its own type definitions, so you don't need @types/source-map installed!
+    dependencies:
+      source-map: 0.7.4
     dev: true
 
   /@types/stack-utils/2.0.1:
@@ -10419,7 +10428,7 @@ packages:
   /source-map/0.7.4:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
     engines: {node: '>= 8'}
-    dev: false
+    dev: true
 
   /sourcemap-codec/1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}

@@ -1,7 +1,5 @@
-import { codeFrameColumns } from '@babel/code-frame';
 import { StackFrame } from 'stacktrace-parser';
 import { IncomingMessage, ServerResponse } from 'http';
-import path from 'path';
 import url from 'url';
 
 import type webpack from '@shuvi/toolpack/lib/webpack';
@@ -10,101 +8,11 @@ import {
   BUNDLER_TARGET_SERVER
 } from '@shuvi/shared/lib/constants';
 
-import {
-  getSourcePath,
-  getModuleById,
-  getSourceById,
-  Source,
-  findOriginalSourcePositionAndContent
-} from './helper';
-
-export type OriginalStackFrameResponse = {
-  originalStackFrame: StackFrame;
-  originalCodeFrame: string | null;
-};
-
-export async function createOriginalStackFrame({
-  line,
-  column,
-  source,
-  modulePath,
-  rootDirectory,
-  frame,
-  errorMessage,
-  compilation
-}: {
-  line: number;
-  column: number | null;
-  source: any;
-  modulePath?: string;
-  rootDirectory: string;
-  frame: any;
-  errorMessage?: string;
-  compilation?: webpack.Compilation;
-}): Promise<OriginalStackFrameResponse | null> {
-  const match = errorMessage?.match(/'([^']+)' module/);
-  const moduleNotFound = match && match[1];
-  const result =
-    moduleNotFound && compilation
-      ? getModuleById(
-          modulePath,
-          compilation!
-        )?.buildInfo?.importLocByPath?.get(moduleNotFound) ?? null
-      : await findOriginalSourcePositionAndContent(source, {
-          line,
-          column
-        });
-
-  if (result === null) {
-    return null;
-  }
-
-  const { sourcePosition, sourceContent } = result;
-
-  if (!sourcePosition.source) {
-    return null;
-  }
-
-  const filePath = path.resolve(
-    rootDirectory,
-    modulePath || getSourcePath(sourcePosition.source)
-  );
-
-  const originalFrame: StackFrame = {
-    file: sourceContent
-      ? path.relative(rootDirectory, filePath)
-      : sourcePosition.source,
-    lineNumber: sourcePosition.line,
-    column: sourcePosition.column,
-    methodName: frame.methodName,
-    arguments: []
-  };
-
-  const originalCodeFrame: string | null =
-    !(originalFrame.file?.includes('node_modules') ?? true) &&
-    sourceContent &&
-    sourcePosition.line
-      ? (codeFrameColumns(
-          sourceContent,
-          {
-            start: {
-              line: sourcePosition.line,
-              column: sourcePosition.column ?? 0
-            }
-          },
-          { forceColor: true }
-        ) as string)
-      : null;
-
-  return {
-    originalStackFrame: originalFrame,
-    originalCodeFrame
-  };
-}
+import { getSourceById, Source } from './helper/getSourceById';
+import { createOriginalStackFrame } from '../shared/helper/createOriginalStackFrame';
 
 export function stackFrameMiddleware(
   originalStackFrameEndpoint: string,
-  rootDir: string,
   bundler: any
 ) {
   let clientStats: webpack.Stats | null = null;
@@ -199,7 +107,6 @@ export function stackFrameMiddleware(
           source,
           frame,
           modulePath: moduleId,
-          rootDirectory: rootDir,
           errorMessage: frame.errorMessage,
           compilation
         });

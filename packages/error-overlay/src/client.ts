@@ -1,6 +1,5 @@
-import iframeScript from 'iframeScript';
 import { parse } from 'stacktrace-parser';
-
+import ReactDOM from 'react-dom/client';
 import * as errorTypeHandler from './view/errorTypeHandler';
 import {
   TYPE_UNHANDLED_ERROR,
@@ -9,31 +8,16 @@ import {
   TYPE_BUILD_OK,
   TYPE_REFRESH,
   STACK_TRACE_LIMIT
-} from './constants';
+} from './shared/constants';
+import { ErrorOverlay } from './view/ErrorOverlay';
+import { parseError } from './shared/helper/parseError';
 
 let isRegistered = false;
 let stackTraceLimit: number | undefined = undefined;
 
-let iframe: null | HTMLIFrameElement = null;
-let isLoadingIframe: boolean = false;
-let isIframeReady: boolean = false;
-let errorType: errorTypeHandler.ErrorTypeEvent;
-
-declare global {
-  interface Window {
-    __SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__: string | {};
-  }
-}
-
-const iframeStyle = {
-  position: 'fixed',
-  top: '0',
-  left: '0',
-  width: '100%',
-  height: '100%',
-  border: 'none',
-  'z-index': 2147483647
-};
+let isLoadedRoot = false;
+let root: null | HTMLElement = null;
+let errorBody: null | ReactDOM.Root = null;
 
 function onUnhandledError(ev: ErrorEvent) {
   const error = ev?.error;
@@ -42,12 +26,12 @@ function onUnhandledError(ev: ErrorEvent) {
     return;
   }
 
-  errorType = {
+  errorTypeHandler.emit({
     type: TYPE_UNHANDLED_ERROR,
     reason: error,
-    frames: parse(error.stack)
-  };
-  update();
+    frames: parse(parseError(error.stack))
+  });
+  render();
 }
 
 function onUnhandledRejection(ev: PromiseRejectionEvent) {
@@ -61,12 +45,12 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
     return;
   }
 
-  errorType = {
+  errorTypeHandler.emit({
     type: TYPE_UNHANDLED_REJECTION,
     reason: reason,
-    frames: parse(reason.stack)
-  };
-  update();
+    frames: parse(parseError(reason.stack))
+  });
+  render();
 }
 
 function startReportingRuntimeErrors({ onError }: { onError: () => void }) {
@@ -109,87 +93,39 @@ function stopReportingRuntimeErrors() {
 }
 
 function onBuildOk() {
-  errorType = { type: TYPE_BUILD_OK };
+  errorTypeHandler.emit({ type: TYPE_BUILD_OK });
   update();
 }
 
 function onBuildError(message: string) {
-  errorType = { type: TYPE_BUILD_ERROR, message };
-  update();
+  errorTypeHandler.emit({ type: TYPE_BUILD_ERROR, message });
+  render();
 }
 
 function onRefresh() {
-  errorType = { type: TYPE_REFRESH };
+  errorTypeHandler.emit({ type: TYPE_REFRESH });
 }
 
-function applyStyles(element: HTMLElement, styles: Object) {
-  element.setAttribute('style', '');
-  for (const key in styles) {
-    if (!Object.prototype.hasOwnProperty.call(styles, key)) {
-      continue;
-    }
-    //@ts-ignore
-    element.style[key] = styles[key];
+function render() {
+  if (isLoadedRoot) {
+    return;
   }
+  isLoadedRoot = true;
+  const errorRoot = window.document.createElement('div');
+  root = errorRoot;
+  window.document.body.appendChild(errorRoot);
+  errorBody = ReactDOM.createRoot(errorRoot);
+  errorBody.render(<ErrorOverlay />);
 }
 
 function update() {
-  // Loading iframe can be either sync or async depending on the browser.
-  if (isLoadingIframe) {
-    // Iframe is loading.
-    // First render will happen soon--don't need to do anything.
-    return;
-  }
-  if (isIframeReady) {
-    // Iframe is ready.
-    // Just update it.
-    updateIframeContent();
-    return;
-  }
-  // We need to schedule the first render.
-  isLoadingIframe = true;
-  const loadingIframe = window.document.createElement('iframe');
-  applyStyles(loadingIframe, iframeStyle);
-  loadingIframe.onload = function () {
-    const iframeDocument = loadingIframe.contentDocument;
-    if (iframeDocument != null && iframeDocument.body != null) {
-      iframe = loadingIframe;
-      const script =
-        loadingIframe.contentWindow!.document.createElement('script');
-      script.type = 'text/javascript';
-      script.innerHTML = iframeScript;
-      iframeDocument.body.appendChild(script);
-    }
-  };
-  const appDocument = window.document;
-  appDocument.body.appendChild(loadingIframe);
-}
-
-function updateIframeContent() {
-  if (!iframe) {
-    throw new Error('Iframe has not been created yet.');
-  }
-
-  //@ts-ignore
-  const isRendered = iframe.contentWindow!.updateContent(errorType);
-
-  if (!isRendered) {
-    window.document.body.removeChild(iframe);
-    iframe = null;
-    isIframeReady = false;
+  if (root) {
+    window.document.body.removeChild(root);
+    root = null;
+    isLoadedRoot = false;
+    errorBody?.unmount();
   }
 }
-
-window.__SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__ =
-  window.__SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__ || {};
-
-//@ts-ignore
-window.__SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__.iframeReady =
-  function iframeReady() {
-    isIframeReady = true;
-    isLoadingIframe = false;
-    updateIframeContent();
-  };
 
 export { getErrorByType } from './view/helpers/getErrorByType';
 export { getServerError } from './view/helpers/nodeStackFrames';

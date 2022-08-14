@@ -1,4 +1,4 @@
-export function getSourceMapUrl(fileContents: string): string | null {
+export function getSourceMapUrl(fileContents: string): string {
   const regex = /\/\/[#@] ?sourceMappingURL=([^\s'"]+)\s*$/gm;
   let match = null;
   for (;;) {
@@ -9,7 +9,7 @@ export function getSourceMapUrl(fileContents: string): string | null {
     match = next;
   }
   if (!(match && match[1])) {
-    return null;
+    return 'Cannot find a source map';
   }
   return match[1].toString();
 }

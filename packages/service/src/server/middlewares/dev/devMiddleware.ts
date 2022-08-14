@@ -80,11 +80,7 @@ export async function getDevMiddleware(
       )
     );
     targetServer.use(
-      stackFrameMiddleware(
-        DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
-        serverPluginContext.paths.rootDir,
-        bundler
-      )
+      stackFrameMiddleware(DEV_ORIGINAL_STACK_FRAME_ENDPOINT, bundler)
     );
     bundler.applyDevMiddlewares(server);
   };

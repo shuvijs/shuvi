@@ -1,44 +1,29 @@
 import { StackFrame } from 'stacktrace-parser';
 import { DEV_ORIGINAL_STACK_FRAME_ENDPOINT } from '@shuvi/shared/esm/constants';
+import { mapper } from './mapper';
 
 type OriginalStackFrameResponse = {
   originalStackFrame: StackFrame;
   originalCodeFrame: string | null;
 };
-export type OriginalStackFrame =
-  | {
-      error: true;
-      reason: string;
-      external: false;
-      expanded: false;
-      sourceStackFrame: StackFrame;
-      originalStackFrame: null;
-      originalCodeFrame: null;
-    }
-  | {
-      error: false;
-      reason: null;
-      external: false;
-      expanded: boolean;
-      sourceStackFrame: StackFrame;
-      originalStackFrame: StackFrame;
-      originalCodeFrame: string | null;
-    }
-  | {
-      error: false;
-      reason: null;
-      external: true;
-      expanded: false;
-      sourceStackFrame: StackFrame;
-      originalStackFrame: null;
-      originalCodeFrame: null;
-    };
+export type OriginalStackFrame = {
+  error: boolean;
+  reason: string | null;
+  external: boolean;
+  expanded: boolean;
+  sourceStackFrame: StackFrame;
+  originalStackFrame: StackFrame | null;
+  originalCodeFrame: string | null;
+};
 
 export function getOriginalStackFrames(
   frames: StackFrame[],
   type: 'server' | null,
   errorMessage: string
 ) {
+  if (!type) {
+    return mapper(frames, errorMessage);
+  }
   return Promise.all(
     frames.map(frame => getOriginalStackFrame(frame, type, errorMessage))
   );

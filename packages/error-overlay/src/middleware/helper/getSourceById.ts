@@ -3,10 +3,10 @@ import { RawSourceMap } from 'source-map';
 import dataUriToBuffer, { MimeBuffer } from 'data-uri-to-buffer';
 import type webpack from '@shuvi/toolpack/lib/webpack';
 
-import { getSourceMapUrl } from './getSourceMapUrl';
-import { getModuleById } from './getModuleById';
+import { getSourceMapUrl } from '../../shared/helper/getSourceMapUrl';
+import { getModuleById } from '../../shared/helper/getModuleById';
 
-export type Source = { map: () => RawSourceMap } | null;
+export type Source = RawSourceMap | null;
 
 function getRawSourceMap(fileContents: string): RawSourceMap | null {
   const sourceUrl = getSourceMapUrl(fileContents);
@@ -50,15 +50,10 @@ export async function getSourceById(
     }
 
     const map = getRawSourceMap(fileContent);
-    if (map == null) {
+    if (map === null) {
       return null;
     }
-
-    return {
-      map() {
-        return map;
-      }
-    };
+    return map;
   }
 
   try {

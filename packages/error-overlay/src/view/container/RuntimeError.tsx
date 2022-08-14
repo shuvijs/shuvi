@@ -18,7 +18,7 @@ import {
   SERVER_TYPE_ERROR,
   TYPE_UNHANDLED_ERROR,
   TYPE_UNHANDLED_REJECTION
-} from '../../constants';
+} from '../../shared/constants';
 
 export type SupportedErrorEvent = {
   id: number;
