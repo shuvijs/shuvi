@@ -14,7 +14,7 @@ node_modules
 .idea/
 .swc
 .turbo
-
+packages/toolpack/src/swc/target
 
 # build output
 /lib/
