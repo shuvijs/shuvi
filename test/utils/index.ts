@@ -41,10 +41,6 @@ export async function check<T>(
   throw new Error('CHECK TIMED OUT: ' + lastErr);
 }
 
-export const getIframeTextContent = (page: Page) => {
-  return page.evaluate(() => {
-    return (
-      document.querySelector('iframe')?.contentDocument?.body.innerText || ''
-    );
-  });
+export const checkShuviPortal = (page: Page) => {
+  return page.evaluate(() => Boolean(document.querySelector('shuvi-portal')));
 };
