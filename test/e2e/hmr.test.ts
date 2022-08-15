@@ -4,7 +4,7 @@ import {
   launchFixture,
   resolveFixture,
   check,
-  getIframeTextContent
+  checkShuviPortal
 } from '../utils';
 import { readFileSync, writeFileSync, renameSync, existsSync } from 'fs';
 
@@ -114,7 +114,6 @@ describe('Hot Module Reloading', () => {
       const pagePath = resolvePagePath('two');
       let originalContent: string | undefined;
       let done = false;
-
       try {
         page = await ctx.browser.page(ctx.url('/hmr/two'));
         expect(await page.$text('[data-test-id="hmr-two"]')).toBe(
@@ -122,6 +121,7 @@ describe('Hot Module Reloading', () => {
         );
 
         originalContent = readFileSync(pagePath, 'utf8');
+
         const editedContent = originalContent.replace(
           'This is the two page',
           '</div>'
@@ -132,8 +132,8 @@ describe('Hot Module Reloading', () => {
 
         // error box content
         await check(
-          () => getIframeTextContent(page),
-          t => /Error:/.test(t)
+          () => checkShuviPortal(page),
+          t => t
         );
 
         // add the original content
