@@ -49,6 +49,7 @@ export default async function main(argv: string[]) {
       // tslint:disable-next-line
       console.error(err);
     }
+    await api.destory();
     process.nextTick(() => process.exit(1));
   }
 }

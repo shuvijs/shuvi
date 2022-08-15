@@ -283,7 +283,17 @@ class Api {
   }
 
   async destory() {
-    await this._projectBuilder.stopBuild();
+    const proms: Promise<any>[] = [];
+    proms.push(this._projectBuilder.stopBuild());
+    if (this._bundler) {
+      proms.push(
+        new Promise<void>(resolve => {
+          this._bundler.watching.close(() => resolve());
+        })
+      );
+    }
+
+    await Promise.all(proms);
     await this._pluginManager.runner.afterDestroy();
   }
 
