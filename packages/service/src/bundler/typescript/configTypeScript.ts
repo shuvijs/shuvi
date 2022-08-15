@@ -126,8 +126,8 @@ export async function writeDefaultConfigurations(
   }
 
   // resolve @shuvi/runtime to the real file
-  userTsConfig.compilerOptions.paths = {
-    ...tsOptions.paths,
+  const pathAlias = userTsConfig.compilerOptions.paths;
+  const shuviPaths = {
     '@shuvi/runtime': [
       path.relative(
         path.resolve(
@@ -147,6 +147,24 @@ export async function writeDefaultConfigurations(
       ) + '/*'
     ]
   };
+  if (!pathAlias || Object.keys(pathAlias).length <= 0) {
+    userTsConfig.compilerOptions.paths = shuviPaths;
+    suggestedActions.push(
+      chalk.cyan('compilerOptions.paths') +
+        ' was set to include ' +
+        chalk.bold(`"@shuvi/runtime" alias`)
+    );
+  } else {
+    userTsConfig.compilerOptions.paths = {
+      ...tsOptions.paths,
+      ...shuviPaths
+    };
+    suggestedActions.push(
+      chalk.cyan('compilerOptions.paths') +
+        ' was modified to include ' +
+        chalk.bold(`"@shuvi/runtime" alias`)
+    );
+  }
 
   const toIncludes = ['.shuvi/app/shuvi-app.d.ts', 'src'];
   if (!('include' in rawConfig) || rawConfig.include.length === 0) {
@@ -169,7 +187,7 @@ export async function writeDefaultConfigurations(
       missed.forEach(item => userTsConfig.include.push(item));
       suggestedActions.push(
         chalk.cyan('include') +
-          ' was changed to include ' +
+          ' was modified to include ' +
           chalk.bold(`[${missed.map(item => `'${item}'`).join(', ')}]`)
       );
     }
