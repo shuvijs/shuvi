@@ -7,3 +7,8 @@ declare module 'launch-editor' {
 
   export default launchEditor;
 }
+
+declare module 'iframeScript' {
+  import iframeScript from '@shuvi/error-overlay/lib/iframe-bundle';
+  export default iframeScript;
+}
