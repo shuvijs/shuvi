@@ -1,8 +1,14 @@
 import { RequestListener } from 'http';
+import url from 'url';
+import { joinPath } from '@shuvi/utils/lib/string';
 import { IPluginContext } from '../core';
 import { normalizeServerMiddleware } from './serverMiddleware';
-import { Server } from './http-server';
-import { IShuviServer, ShuviServerOptions } from './shuviServerTypes';
+import { Server, IRequestHandlerWithNext } from './http-server';
+import {
+  IShuviServer,
+  ShuviServerOptions,
+  ShuviRequest
+} from './shuviServerTypes';
 import {
   PluginManager,
   getManager,
@@ -32,6 +38,30 @@ export abstract class ShuviServer implements IShuviServer {
 
   protected async _initMiddlewares() {
     const { _serverContext: context, _server: server } = this;
+
+    server.use(((req, _resp, next) => {
+      const shuviReq = req as ShuviRequest;
+      const requestTime: number = Date.now();
+      shuviReq.getAssetUrl = (assetPath: string) => {
+        const fullAssetPath = joinPath(
+          this._serverContext.assetPublicPath,
+          assetPath
+        );
+
+        if (this._serverContext.mode === 'development') {
+          const urlObj = url.parse(fullAssetPath);
+          req.readableEncoding;
+          const urlSearchParams = new URLSearchParams(urlObj.search!);
+          // force to invalidate cache in dev
+          urlSearchParams.set('_ts', requestTime.toString());
+          return `${urlObj.pathname}?${urlSearchParams.toString()}`;
+        }
+
+        return fullAssetPath;
+      };
+
+      next();
+    }) as IRequestHandlerWithNext);
 
     const { rootDir } = context.paths;
     if (this._options.getMiddlewares) {

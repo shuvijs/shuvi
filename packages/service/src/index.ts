@@ -8,10 +8,10 @@ export { ProjectBuilder } from './project';
 
 export {
   IShuviServer,
-  IResponse,
-  IRequest,
+  ShuviRequest,
+  ShuviResponse,
   IServerPluginContext,
-  IRequestHandlerWithNext,
+  ShuviRequestHandler,
   ServerPluginConstructor,
   ServerPluginInstance,
   IServerMiddleware,

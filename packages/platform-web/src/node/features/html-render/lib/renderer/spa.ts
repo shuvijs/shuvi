@@ -2,8 +2,8 @@ import { BaseRenderer, AppData } from './base';
 import { IRenderViewOptions, IHtmlDocument } from './types';
 
 export class SpaRenderer extends BaseRenderer {
-  renderDocument({ app }: IRenderViewOptions) {
-    const assets = this._getMainAssetTags();
+  renderDocument({ req, app }: IRenderViewOptions) {
+    const assets = this._getMainAssetTags(req);
     const appData: AppData = {
       ssr: false,
       pageData: {}

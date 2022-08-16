@@ -1,6 +1,6 @@
 import { matchRoutes } from '@shuvi/router';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
-import { IRequestHandlerWithNext, IServerPluginContext } from '@shuvi/service';
+import { ShuviRequestHandler, IServerPluginContext } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 
@@ -26,7 +26,7 @@ export default class OnDemandRouteManager {
     this._serverPluginContext = serverPluginContext;
   }
 
-  getServerMiddleware(): IRequestHandlerWithNext {
+  getServerMiddleware(): ShuviRequestHandler {
     return async (req, res, next) => {
       const pathname = req.pathname;
       if (!pathname.startsWith(this._serverPluginContext.assetPublicPath)) {
@@ -55,7 +55,7 @@ export default class OnDemandRouteManager {
     };
   }
 
-  ensureRoutesMiddleware(): IRequestHandlerWithNext {
+  ensureRoutesMiddleware(): ShuviRequestHandler {
     return async (req, _res, next) => {
       const accept = req.headers['accept'];
       if (req.method !== 'GET') {

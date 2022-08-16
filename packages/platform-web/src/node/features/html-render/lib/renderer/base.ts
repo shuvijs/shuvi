@@ -1,6 +1,7 @@
 import { IAppData } from '@shuvi/platform-shared/shared';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
 import {
+  ShuviRequest,
   BUILD_CLIENT_RUNTIME_MAIN,
   BUILD_CLIENT_RUNTIME_POLYFILL,
   IServerPluginContext
@@ -36,7 +37,7 @@ export abstract class BaseRenderer {
     req
   }: IRenderViewOptions): IRenderDocumentResult;
 
-  protected _getMainAssetTags(): {
+  protected _getMainAssetTags(req: ShuviRequest): {
     styles: IHtmlTag<any>[];
     scripts: IHtmlTag<any>[];
   } {
@@ -47,13 +48,13 @@ export abstract class BaseRenderer {
 
     scripts.push(
       tag('script', {
-        src: this._serverPluginContext.getAssetPublicUrl(polyfill)
+        src: req.getAssetUrl(polyfill)
       })
     );
     entrypoints.js.forEach((asset: string) => {
       scripts.push(
         tag('script', {
-          src: this._serverPluginContext.getAssetPublicUrl(asset)
+          src: req.getAssetUrl(asset)
         })
       );
     });
@@ -62,7 +63,7 @@ export abstract class BaseRenderer {
         styles.push(
           tag('link', {
             rel: 'stylesheet',
-            href: this._serverPluginContext.getAssetPublicUrl(asset)
+            href: req.getAssetUrl(asset)
           })
         );
       });
@@ -109,7 +110,7 @@ export abstract class BaseRenderer {
     const data = JSON.stringify({
       ...appData,
       filesByRoutId: generateFilesByRoutId(clientManifest, routes),
-      publicPath: this._serverPluginContext.getAssetPublicUrl()
+      publicPath: this._serverPluginContext.assetPublicPath
     });
     return tag(
       'script',

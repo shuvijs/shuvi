@@ -1,10 +1,11 @@
+import type { ShuviRequest } from '@shuvi/service';
 import { IURLQuery, IURLParams } from '../routerTypes';
-import { IAppContext, IRequest } from '../applicationTypes';
+import { IAppContext } from '../applicationTypes';
 import { Response } from '../response';
 
 export interface LoaderContextOptions {
   isServer: boolean;
-  req?: IRequest;
+  req?: ShuviRequest;
   query: IURLQuery;
   getAppContext: () => IAppContext;
 }
@@ -66,7 +67,7 @@ export interface IRouteLoaderContext {
   /**
    * server only
    */
-  req?: IRequest;
+  req?: ShuviRequest;
   /**
    * Application context object, which is accessiable during the entire lifecycle of application
    */

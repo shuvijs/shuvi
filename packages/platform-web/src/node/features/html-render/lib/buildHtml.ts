@@ -7,7 +7,7 @@ import {
   BUILD_DEFAULT_DIR,
   IPlatformContent,
   IPluginContext,
-  IResponse,
+  ShuviResponse,
   ServerPluginInstance
 } from '@shuvi/service';
 
@@ -28,7 +28,7 @@ export const buildHtml = async ({
     const request = createRequest({
       url: pathname
     });
-    const response = createResponse<IResponse>({
+    const response = createResponse<ShuviResponse>({
       eventEmitter: EventEmitter
     });
     response.on('end', () => {

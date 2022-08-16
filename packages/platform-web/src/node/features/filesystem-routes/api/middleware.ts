@@ -1,11 +1,9 @@
-import { IServerPluginContext, IRequestHandlerWithNext } from '@shuvi/service';
+import { IServerPluginContext, ShuviRequestHandler } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
 import { server } from '@shuvi/service/lib/resources';
 import { apiRouteHandler } from './apiRouteHandler';
 
-export function middleware(
-  _ctx: IServerPluginContext
-): IRequestHandlerWithNext {
+export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {
   return async function (req, res, next) {
     const { apiRoutes } = server;
     let tempApiModule;

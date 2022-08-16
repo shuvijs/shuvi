@@ -1,21 +1,22 @@
 import { resolve } from '@shuvi/utils/lib/resolve';
-import { IMiddlewareHandler } from './http-server';
+import { ShuviRequestHandler } from './shuviServerTypes';
 
 interface Options {
   rootDir: string;
 }
 
-interface IMiddlewareOptions {
-  handler: string | IMiddlewareHandler;
+export interface IMiddlewareOptions {
+  handler: string | ShuviRequestHandler;
   path?: string;
 }
 
-export type IServerMiddlewareOptions = IMiddlewareOptions | IMiddlewareHandler;
-
-export type IServerMiddleware = string | IServerMiddlewareOptions;
+export type IServerMiddleware =
+  | string
+  | ShuviRequestHandler
+  | IMiddlewareOptions;
 
 interface InternalServerMiddlewareOptions extends IMiddlewareOptions {
-  handler: IMiddlewareHandler;
+  handler: ShuviRequestHandler;
   path: string;
 }
 
@@ -33,7 +34,7 @@ export function normalizeServerMiddleware(
   middleware: IServerMiddleware,
   options: Options
 ): InternalServerMiddlewareOptions {
-  let middlewareOptions: IServerMiddlewareOptions;
+  let middlewareOptions: IMiddlewareOptions;
   if (typeof middleware !== 'object') {
     middlewareOptions = {
       handler: middleware
@@ -42,7 +43,7 @@ export function normalizeServerMiddleware(
     middlewareOptions = middleware;
   }
 
-  let handler: IMiddlewareHandler;
+  let handler: ShuviRequestHandler;
   if (typeof middlewareOptions.handler === 'string') {
     const resolvedPath = resolveHandler(middlewareOptions.handler, options);
     handler = require(resolvedPath);
