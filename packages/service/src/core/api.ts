@@ -32,6 +32,7 @@ import {
 import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
+import url from 'url';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
 
@@ -71,7 +72,6 @@ class Api {
 
   /** will be included by @shuvi/swc-loader */
   private _runtimePluginDirs: string[] = [];
-
   constructor({
     cwd,
     mode,
@@ -144,7 +144,6 @@ class Api {
 
     const { runner, setContext, createPlugin, usePlugin } = this._pluginManager;
     setContext(this._pluginContext);
-
     //## start init
     // 1. init platform
     const { plugins: platformPlugins, getPresetRuntimeFiles } =
@@ -263,7 +262,15 @@ class Api {
   }
 
   getAssetPublicUrl(...paths: string[]): string {
-    return joinPath(this.assetPublicPath, ...paths);
+    const assetPublicPath = joinPath(this.assetPublicPath, ...paths);
+    if (process.env.NODE_ENV === 'development') {
+      const urlObj = url.parse(assetPublicPath);
+      const urlSearchParams = new URLSearchParams(urlObj.search!);
+      urlSearchParams.set('ts', Date.now().toString());
+      return `${urlObj.pathname}?${urlSearchParams.toString()}`;
+    }
+
+    return assetPublicPath;
   }
 
   resolveAppFile(...paths: string[]): string {
