@@ -1,9 +1,14 @@
-import { IServerMiddlewareItem } from './http-server';
+import { ShuviRequestHandler } from './shuviServerTypes';
 import { IProxyConfigItem } from './middlewares/httpProxyMiddleware';
 
+export interface IShuviServerMiddlewareConfig {
+  path: string;
+  handler: ShuviRequestHandler;
+}
+
 export type IServerMiddleware =
-  | IServerMiddlewareItem
-  | IServerMiddlewareItem['handler'];
+  | ShuviRequestHandler
+  | IShuviServerMiddlewareConfig;
 
 export type IProxy = IProxyConfigItem | IProxyConfigItem[];
 

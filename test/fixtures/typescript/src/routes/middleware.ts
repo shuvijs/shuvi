@@ -1,6 +1,6 @@
-import { MiddlewareHandler } from '@shuvi/runtime';
+import { ShuviMiddlewareHandler } from '@shuvi/runtime';
 
-const middleware: MiddlewareHandler = (req, res, next) => {
+const middleware: ShuviMiddlewareHandler = (req, res, next) => {
   if (req.query.middleware) {
     return res.end('middleware success');
   }

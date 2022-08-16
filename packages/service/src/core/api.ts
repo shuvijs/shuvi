@@ -32,7 +32,6 @@ import {
 import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
-import url from 'url';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
 
@@ -135,7 +134,6 @@ class Api {
       phase: this._phase,
       pluginRunner: this._pluginManager.runner,
       assetPublicPath: this.assetPublicPath,
-      getAssetPublicUrl: this.getAssetPublicUrl.bind(this),
       resolveAppFile: this.resolveAppFile.bind(this),
       resolveUserFile: this.resolveUserFile.bind(this),
       resolveBuildFile: this.resolveBuildFile.bind(this),
@@ -259,18 +257,6 @@ class Api {
 
   addResources(key: string, requireStr?: string): void {
     this._projectBuilder.addResources(key, requireStr);
-  }
-
-  getAssetPublicUrl(...paths: string[]): string {
-    const assetPublicPath = joinPath(this.assetPublicPath, ...paths);
-    if (process.env.NODE_ENV === 'development') {
-      const urlObj = url.parse(assetPublicPath);
-      const urlSearchParams = new URLSearchParams(urlObj.search!);
-      urlSearchParams.set('ts', Date.now().toString());
-      return `${urlObj.pathname}?${urlSearchParams.toString()}`;
-    }
-
-    return assetPublicPath;
   }
 
   resolveAppFile(...paths: string[]): string {

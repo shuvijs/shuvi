@@ -1,12 +1,12 @@
 import { IServerPluginContext } from '../plugin';
-import { IRequestHandlerWithNext } from '../../server/http-server';
+import { ShuviRequestHandler } from '../../server';
 import { BUILD_DEFAULT_DIR } from '../../constants';
 import { isStaticFileExist, serveStatic } from '../utils';
 
 export const getAssetMiddleware = (
   context: IServerPluginContext,
   isDev: boolean = false
-): IRequestHandlerWithNext => {
+): ShuviRequestHandler => {
   return async (req, res, next) => {
     let { path = '' } = req.params || {};
     if (Array.isArray(path)) path = path.join('/');

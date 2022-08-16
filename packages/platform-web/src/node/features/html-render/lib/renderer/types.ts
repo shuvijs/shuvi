@@ -1,9 +1,5 @@
-import {
-  IApplication,
-  IRequest,
-  Response
-} from '@shuvi/platform-shared/shared';
-import { IServerPluginContext } from '@shuvi/service';
+import { IApplication, Response } from '@shuvi/platform-shared/shared';
+import { ShuviRequest, IServerPluginContext } from '@shuvi/service';
 import {
   IHtmlAttrs,
   IHtmlTag,
@@ -22,7 +18,7 @@ export interface IRendererConstructorOptions {
 
 export type IRenderViewOptions = {
   app: IApplication;
-  req: IRequest;
+  req: ShuviRequest;
   ssr: boolean;
 };
 

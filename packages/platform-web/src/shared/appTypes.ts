@@ -1,13 +1,13 @@
 import {
-  IRequest,
   IPageRouteRecord,
   IAppData,
   IAppState
 } from '@shuvi/platform-shared/shared';
 import { Application } from '@shuvi/platform-shared/shuvi-app/application';
+import type { ShuviRequest } from '@shuvi/service';
 
 export interface CreateAppServer {
-  (options: { req: IRequest; ssr: boolean }): Application;
+  (options: { req: ShuviRequest; ssr: boolean }): Application;
 }
 
 export interface CreateAppClient {

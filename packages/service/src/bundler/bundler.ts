@@ -16,7 +16,7 @@ import webpack, {
 } from '@shuvi/toolpack/lib/webpack';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
-import { Server, IMiddlewareHandler } from '../server';
+import { Server, ShuviRequestHandler } from '../server';
 import { IPluginContext } from '../core';
 import { isFatalError } from '../error';
 import { Target, TargetChain } from '../core/lifecycle';
@@ -83,7 +83,7 @@ class WebpackBundler implements Bunlder {
   private _typecheckingEvent = createEvent<FinishedCallback>();
   private _finishedNum = 0;
   private _watching: WatchingProxy = new WatchingProxy();
-  private _devMiddlewares: IMiddlewareHandler[] = [];
+  private _devMiddlewares: ShuviRequestHandler[] = [];
   private _inited: boolean = false;
 
   constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {

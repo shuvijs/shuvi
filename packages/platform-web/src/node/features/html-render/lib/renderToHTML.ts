@@ -1,4 +1,4 @@
-import { IRequest, IServerPluginContext } from '@shuvi/service';
+import { ShuviRequest, IServerPluginContext } from '@shuvi/service';
 import { server } from '@shuvi/service/lib/resources';
 import { Response } from '@shuvi/platform-shared/shared';
 import { Renderer } from './renderer';
@@ -7,7 +7,7 @@ export async function renderToHTML({
   req,
   serverPluginContext
 }: {
-  req: IRequest;
+  req: ShuviRequest;
   serverPluginContext: IServerPluginContext;
 }): Promise<Response> {
   let result: Response;

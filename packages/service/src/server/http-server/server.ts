@@ -15,8 +15,8 @@ import {
 const prepareReq: IRequestHandlerWithNext = (req, res, next) => {
   const url = parseUrl(req.url, false);
 
-  req.query = url.query ? parseQuery(url.query) : {};
   req.pathname = url.pathname || '/';
+  req.query = url.query ? parseQuery(url.query) : {};
   req.params = {};
 
   next();
@@ -34,10 +34,15 @@ export class Server {
     this._handleRequest = this._handleRequest.bind(this);
   }
 
-  use(fn: IMiddlewareHandler): this;
-  use(path: string, fn: IMiddlewareHandler): this;
-  use(...args: [IMiddlewareHandler] | [string, IMiddlewareHandler]): this {
-    this._router.use(args[0], args[1]);
+  use<Req extends IRequest = IRequest, Res extends IResponse = IResponse>(
+    fn: IMiddlewareHandler<Req, Res>
+  ): this;
+  use<Req extends IRequest = IRequest, Res extends IResponse = IResponse>(
+    path: string,
+    fn: IMiddlewareHandler<Req, Res>
+  ): this;
+  use(a: any, b?: any): this {
+    this._router.use(a, b);
     return this;
   }
 

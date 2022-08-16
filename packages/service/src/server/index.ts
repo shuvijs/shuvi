@@ -1,12 +1,20 @@
 import { IPluginContext } from '../core';
-import { IShuviServer, ShuviServerOptions } from './shuviServerTypes';
+import {
+  IShuviServer,
+  ShuviServerOptions,
+  ShuviRequest,
+  ShuviResponse,
+  ShuviRequestHandler
+} from './shuviServerTypes';
 import { Bunlder } from '../bundler';
 
-export * from './http-server';
+export { Server } from './http-server';
 
 export * from './plugin';
 
 export * from './shuviServerTypes';
+
+export { ShuviRequest, ShuviResponse, ShuviRequestHandler };
 
 export interface CreateShuviDevServerOptions extends ShuviServerOptions {
   context: IPluginContext;

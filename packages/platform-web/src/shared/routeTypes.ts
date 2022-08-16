@@ -1,16 +1,15 @@
-import { IURLParams, IURLQuery } from '@shuvi/platform-shared/shared';
-import { IRequestHandlerWithNext } from '@shuvi/service';
-import { IResponse, IRequest } from '@shuvi/service';
+import {
+  ShuviRequest,
+  ShuviResponse,
+  ShuviRequestHandler
+} from '@shuvi/service';
 
 export interface IApiReq {
-  pathname: string;
-  query: IURLQuery;
-  params: IURLParams;
   cookies: { [key: string]: string };
   body?: { [key: string]: any };
 }
 
-export type IApiRequest = IRequest & IApiReq;
+export type IApiRequest = ShuviRequest & IApiReq;
 
 export type Send<T> = (body: T) => void;
 
@@ -22,7 +21,7 @@ export type IApiRes<T = any> = {
   redirect(status: number, url: string): IApiRes<T>;
 };
 
-export type IApiResponse<T = any> = IResponse & IApiRes<T>;
+export type IApiResponse<T = any> = ShuviResponse & IApiRes<T>;
 
 export type IApiRequestHandler<T = any> = (
   req: IApiRequest,
@@ -45,7 +44,7 @@ export interface IApiHandler {
 }
 
 export interface IMiddlewareConfig {
-  default: IRequestHandlerWithNext;
+  default: ShuviRequestHandler;
 }
 
 export type IApiRoutes = {
