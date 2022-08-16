@@ -4,7 +4,7 @@ import * as querystring from 'querystring';
 import * as cookie from 'cookie';
 const getRawBody = require('raw-body');
 import * as contentType from 'content-type';
-import { IResponse, IRequest } from '@shuvi/service';
+import { ShuviRequest, ShuviResponse } from '@shuvi/service';
 import {
   IApiRequestHandler,
   IApiReq,
@@ -15,18 +15,14 @@ import {
 export { IApiRequestHandler };
 
 export async function apiRouteHandler(
-  req: IRequest,
-  res: IResponse,
+  req: ShuviRequest,
+  res: ShuviResponse,
   resolver: IApiRequestHandler,
   apiRoutesConfig: any
 ): Promise<void> {
   try {
     const { bodyParser } = apiRoutesConfig || {};
-    const { pathname, query, params } = req;
     const apiReq: IApiReq = {
-      pathname,
-      query,
-      params,
       // Parsing of cookies
       cookies: getCookieParser(req)
     };
@@ -76,7 +72,7 @@ export async function apiRouteHandler(
  * @param req request object
  */
 export async function parseBody(
-  req: IRequest,
+  req: ShuviRequest,
   limit: string | number
 ): Promise<any> {
   let contentTypeObj;
@@ -152,7 +148,7 @@ export function getCookieParser(req: IncomingMessage): {
  * @param statusCode `HTTP` status code of response
  */
 export function sendStatusCode<IRes extends IApiResponse>(
-  res: IResponse,
+  res: ShuviResponse,
   statusCode: number
 ): IRes {
   res.statusCode = statusCode;
@@ -166,7 +162,7 @@ export function sendStatusCode<IRes extends IApiResponse>(
  * @param url URL of redirect
  */
 export function redirect<IRes extends IApiResponse>(
-  res: IResponse,
+  res: ShuviResponse,
   statusOrUrl: string | number,
   url?: string
 ): IRes {
@@ -191,7 +187,11 @@ export function redirect<IRes extends IApiResponse>(
  * @param res response object
  * @param body of response
  */
-export function sendData(req: IRequest, res: IResponse, body: any): void {
+export function sendData(
+  req: ShuviRequest,
+  res: ShuviResponse,
+  body: any
+): void {
   if (body === null || body === undefined) {
     res.end();
     return;
@@ -232,7 +232,11 @@ export function sendData(req: IRequest, res: IResponse, body: any): void {
  * @param res response object
  * @param jsonBody of data
  */
-export function sendJson(req: IRequest, res: IResponse, jsonBody: any): void {
+export function sendJson(
+  req: ShuviRequest,
+  res: ShuviResponse,
+  jsonBody: any
+): void {
   // Set header to application/json
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 

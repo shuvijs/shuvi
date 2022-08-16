@@ -10,11 +10,7 @@ import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 
 export class ReactServerView implements IReactServerView {
-  renderApp: IReactServerView['renderApp'] = async ({
-    app,
-    manifest,
-    getAssetPublicUrl
-  }) => {
+  renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
     await Loadable.preloadAll();
 
     const { router, appComponent: AppComponent, setError: setAppError } = app;
@@ -76,7 +72,7 @@ export class ReactServerView implements IReactServerView {
           tagName: 'link',
           attrs: {
             rel: 'preload',
-            href: getAssetPublicUrl(file),
+            href: req.getAssetUrl(file),
             as: 'script'
           }
         });
@@ -85,7 +81,7 @@ export class ReactServerView implements IReactServerView {
           tagName: 'link',
           attrs: {
             rel: 'stylesheet',
-            href: getAssetPublicUrl(file)
+            href: req.getAssetUrl(file)
           }
         });
       }

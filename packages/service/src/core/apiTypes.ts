@@ -206,5 +206,4 @@ export interface IPluginContext {
   resolveUserFile(...paths: string[]): string;
   resolveBuildFile(...paths: string[]): string;
   resolvePublicFile(...paths: string[]): string;
-  getAssetPublicUrl(...paths: string[]): string;
 }

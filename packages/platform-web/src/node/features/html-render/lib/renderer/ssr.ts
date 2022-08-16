@@ -12,22 +12,20 @@ export class SsrRenderer extends BaseRenderer {
 
     const serverPluginContext = this._serverPluginContext;
     const { view } = server;
-    const { getAssetPublicUrl } = serverPluginContext;
     if (!router) {
       throw new Error('router is null');
     }
     const result = await view.renderApp({
       app,
       req,
-      manifest: clientManifest,
-      getAssetPublicUrl
+      manifest: clientManifest
     });
 
     if (isResponse(result)) {
       return result;
     }
 
-    const mainAssetsTags = this._getMainAssetTags();
+    const mainAssetsTags = this._getMainAssetTags(req);
     const pageDataList =
       await serverPluginContext.serverPluginRunner.getPageData(context);
     const pageData = pageDataList.reduce((acc, data) => {

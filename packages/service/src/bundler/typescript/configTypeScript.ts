@@ -1,4 +1,5 @@
 import chalk from '@shuvi/utils/lib/chalk';
+import isEqual from '@shuvi/utils/lib/isEqual';
 import fs from 'fs-extra';
 import * as CommentJson from 'comment-json';
 import os from 'os';
@@ -127,7 +128,7 @@ export async function writeDefaultConfigurations(
 
   // resolve @shuvi/runtime to the real file
   const pathAlias = userTsConfig.compilerOptions.paths;
-  const shuviPaths = {
+  const shuviPaths: Record<string, string[]> = {
     '@shuvi/runtime': [
       path.relative(
         path.resolve(
@@ -155,15 +156,17 @@ export async function writeDefaultConfigurations(
         chalk.bold(`"@shuvi/runtime" alias`)
     );
   } else {
-    userTsConfig.compilerOptions.paths = {
-      ...tsOptions.paths,
-      ...shuviPaths
-    };
-    suggestedActions.push(
-      chalk.cyan('compilerOptions.paths') +
-        ' was modified to include ' +
-        chalk.bold(`"@shuvi/runtime" alias`)
-    );
+    const keys = Object.keys(shuviPaths);
+    for (const key of keys) {
+      if (!pathAlias[key] || !isEqual(pathAlias[key], shuviPaths[key])) {
+        pathAlias[key] = shuviPaths[key];
+        suggestedActions.push(
+          chalk.cyan('compilerOptions.paths') +
+            ' was modified to include ' +
+            chalk.bold(`"${key}" alias`)
+        );
+      }
+    }
   }
 
   const toIncludes = ['.shuvi/app/shuvi-app.d.ts', 'src'];

@@ -22,10 +22,10 @@
     "baseUrl": "./",
     "paths": {
       "@shuvi/runtime": [
-        ".shuvi/runtime"
+        ".shuvi/app/runtime"
       ],
       "@shuvi/runtime/*": [
-        ".shuvi/runtime/*"
+        ".shuvi/app/runtime/*"
       ]
     }
   },

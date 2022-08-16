@@ -1,12 +1,7 @@
-import type { IncomingMessage } from 'http';
 import { IStoreManager } from '@shuvi/redox';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IRouter, IPageRouteRecord } from './routerTypes';
 import { IPluginList } from './lifecycle';
-
-export type IRequest = IncomingMessage & {
-  [x: string]: any;
-};
 
 export interface IAppContext extends CustomAppContext {
   [x: string]: unknown;

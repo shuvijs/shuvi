@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import {
-  IRequest,
-  IRequestHandlerWithNext,
+  ShuviRequest,
+  ShuviRequestHandler,
   IServerPluginContext
 } from '@shuvi/service';
 import { sendHTML } from '@shuvi/service/lib/server/utils';
@@ -11,7 +11,7 @@ import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
 function createPageHandler(serverPluginContext: IServerPluginContext) {
   return async function (req: IncomingMessage, res: ServerResponse) {
     const result = await renderToHTML({
-      req: req as IRequest,
+      req: req as ShuviRequest,
       serverPluginContext
     });
 
@@ -34,7 +34,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
 
 export function getPageMiddleware(
   api: IServerPluginContext
-): IRequestHandlerWithNext {
+): ShuviRequestHandler {
   let pageHandler = createPageHandler(api);
   return async function (req, res, next) {
     try {

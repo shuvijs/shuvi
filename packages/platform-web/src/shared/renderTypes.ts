@@ -1,14 +1,13 @@
 import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
+import type { ShuviRequest } from '@shuvi/service';
 import {
   Response,
   IApplication,
-  IRequest,
   IAppData
 } from '@shuvi/platform-shared/shared';
 
 export type IRenderViewOptions = {
   app: IApplication;
-  req?: IRequest;
 };
 
 export interface IRenderOptions extends IRenderViewOptions {}
@@ -49,8 +48,8 @@ export interface IClientRendererOptions<ExtraAppData = {}>
 }
 
 export interface IServerRendererOptions extends IRenderOptions {
+  req: ShuviRequest;
   manifest: IManifest;
-  getAssetPublicUrl(path: string): string;
 }
 
 export interface IViewClient<ExtraAppData = {}>
