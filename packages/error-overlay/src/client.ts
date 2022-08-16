@@ -21,7 +21,7 @@ let errorType: errorTypeHandler.ErrorTypeEvent;
 
 declare global {
   interface Window {
-    __REACT_ERROR_OVERLAY_GLOBAL_HOOK__: string | {};
+    __SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__: string | {};
   }
 }
 
@@ -180,11 +180,11 @@ function updateIframeContent() {
   }
 }
 
-window.__REACT_ERROR_OVERLAY_GLOBAL_HOOK__ =
-  window.__REACT_ERROR_OVERLAY_GLOBAL_HOOK__ || {};
+window.__SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__ =
+  window.__SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__ || {};
 
 //@ts-ignore
-window.__REACT_ERROR_OVERLAY_GLOBAL_HOOK__.iframeReady =
+window.__SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__.iframeReady =
   function iframeReady() {
     isIframeReady = true;
     isLoadingIframe = false;
