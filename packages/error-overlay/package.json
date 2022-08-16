@@ -1,21 +1,20 @@
 {
   "name": "@shuvi/error-overlay",
   "version": "1.0.0-rc.4",
-  "main": "lib/index.js",
+  "main": "umd/index.js",
   "files": [
     "lib",
-    "esm",
     "umd"
   ],
   "scripts": {
-    "dev": "run-p watch:*",
+    "dev": "pnpm run iframe-dev && run-p watch:*",
+    "iframe-dev": "cross-env NODE_ENV=development rollup -c rollup.config.iframe.js -w",
     "watch:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib -w",
-    "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
     "watch:umd": "cross-env NODE_ENV=development rollup -c rollup.config.js -w",
     "prebuild": "rimraf lib",
-    "build": "run-p build:*",
+    "build": "pnpm run iframe-prod && run-p build:*",
+    "iframe-prod": "cross-env NODE_ENV=production rollup -c rollup.config.iframe.js",
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib",
-    "build:ems": "tsc -p tsconfig.build.json -m esnext --outDir esm",
     "build:umd": "cross-env NODE_ENV=production rollup -c rollup.config.js"
   },
   "engines": {
@@ -37,6 +36,7 @@
     "tslib": "2.4.0"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "3.1.9",
     "@rollup/plugin-commonjs": "22.0.2",
     "@rollup/plugin-node-resolve": "13.3.0",
     "@rollup/plugin-replace": "4.0.0",
@@ -44,6 +44,7 @@
     "@types/react": "18.0.9",
     "@types/react-dom": "18.0.6",
     "rollup": "2.77.2",
+    "rollup-plugin-string": "3.0.0",
     "rollup-plugin-typescript2": "0.32.1"
   }
 }

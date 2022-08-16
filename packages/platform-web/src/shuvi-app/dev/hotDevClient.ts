@@ -34,7 +34,7 @@ import {
   onBuildError,
   onBuildOk,
   onRefresh
-} from '@shuvi/error-overlay/lib/client';
+} from '@shuvi/error-overlay';
 import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/esm/constants';
 import { connectHMR, addMessageListener, sendMessage } from './websocket';
 

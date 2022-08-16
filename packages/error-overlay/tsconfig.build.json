@@ -4,9 +4,7 @@
     "lib": ["esnext", "dom"],
     "module": "ESNext",
     "esModuleInterop": true,
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
