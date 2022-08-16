@@ -3,26 +3,13 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import ts from 'rollup-plugin-typescript2';
-import alias from '@rollup/plugin-alias';
-import { string } from 'rollup-plugin-string';
 
 const extensions = ['.js', '.ts', '.tsx', 'jsx'];
 
 export default {
-  input: path.join(__dirname, 'src/index.ts'),
+  input: path.join(__dirname, 'src/iframeScript.tsx'),
 
   plugins: [
-    alias({
-      entries: [
-        {
-          find: 'iframeScript',
-          replacement: path.resolve(__dirname, './lib/iframe-bundle.js')
-        }
-      ]
-    }),
-    string({
-      include: path.resolve(__dirname, './lib/iframe-bundle.js')
-    }),
     replace({
       preventAssignment: true,
       values: {
@@ -31,14 +18,14 @@ export default {
     }),
     commonjs(),
     resolve({ extensions }),
+
     ts({
       tsconfig: path.join('./tsconfig.build.json'),
       extensions
     })
   ],
   output: {
-    name: 'ErrorOverlay',
-    file: path.join(__dirname, './umd/index.js'),
-    format: 'umd'
+    name: 'iframe-bundle',
+    file: path.join(__dirname, './lib/iframe-bundle.js')
   }
 };
