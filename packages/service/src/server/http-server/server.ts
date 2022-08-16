@@ -102,10 +102,6 @@ export class Server {
       res,
       next || ((err: any) => this._finalhandler(req, res, err))
     );
-    if (!res.headersSent && process.env.NODE_ENV === 'development') {
-      res.setHeader('Vary', '*');
-      res.setHeader('Cache-Control', 'no-store, must-revalidate');
-    }
   }
 
   private _finalhandler = (req: IRequest, res: IResponse, error?: any) => {
