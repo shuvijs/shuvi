@@ -42,5 +42,10 @@ export async function check<T>(
 }
 
 export const checkShuviPortal = (page: Page) => {
-  return page.evaluate(() => Boolean(document.querySelector('shuvi-portal')));
+  return page.evaluate(() => {
+    const iframeDocument = document.querySelector('iframe')?.contentDocument;
+    return Boolean(
+      iframeDocument && iframeDocument.querySelector('shuvi-portal')
+    );
+  });
 };

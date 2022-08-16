@@ -56,9 +56,7 @@ function reducer(
   }
 }
 
-export const ErrorOverlay: React.FunctionComponent = function ErrorOverlay({}: {
-  children?: React.ReactNode;
-}) {
+export const ErrorOverlay = function ErrorOverlay() {
   const [state, dispatch] = React.useReducer<
     React.Reducer<OverlayState, ErrorTypeHandler.ErrorTypeEvent>
   >(reducer, {
