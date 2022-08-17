@@ -1,5 +1,5 @@
 import { parse, StackFrame } from 'stacktrace-parser';
-import { SERVER_TYPE_ERROR } from '../../shared/constants';
+import { SERVER_TYPE_ERROR } from '../../constants';
 
 const symbolError = Symbol('ShuviError');
 

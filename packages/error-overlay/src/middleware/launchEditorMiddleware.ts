@@ -2,7 +2,7 @@ import launchEditor from 'launch-editor';
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'url';
 import path from 'path';
-import { getSourcePath } from '../shared/helper/getSourcePath';
+import { getSourcePath } from './helper/getSourcePath';
 
 export function launchEditorMiddleware(
   launchEditorEndpoint: string,

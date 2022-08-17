@@ -9,7 +9,7 @@ import {
 } from '@shuvi/shared/lib/constants';
 
 import { getSourceById, Source } from './helper/getSourceById';
-import { createOriginalStackFrame } from '../shared/helper/createOriginalStackFrame';
+import { createOriginalStackFrame } from './helper/createOriginalStackFrame';
 
 export function stackFrameMiddleware(
   originalStackFrameEndpoint: string,

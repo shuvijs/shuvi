@@ -10,7 +10,7 @@ import {
   TYPE_BUILD_ERROR,
   TYPE_UNHANDLED_ERROR,
   TYPE_UNHANDLED_REJECTION
-} from '../shared/constants';
+} from '../constants';
 
 import { Base } from './styles/Base';
 import { ComponentStyles } from './styles/ComponentStyles';

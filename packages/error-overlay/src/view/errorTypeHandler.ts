@@ -5,7 +5,7 @@ import {
   TYPE_BUILD_ERROR,
   TYPE_UNHANDLED_ERROR,
   TYPE_UNHANDLED_REJECTION
-} from '../shared/constants';
+} from '../constants';
 
 export type BuildOk = { type: typeof TYPE_BUILD_OK };
 export type FastRefresh = { type: typeof TYPE_REFRESH };

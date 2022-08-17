@@ -8,7 +8,7 @@ import {
   TYPE_BUILD_OK,
   TYPE_REFRESH,
   STACK_TRACE_LIMIT
-} from './shared/constants';
+} from './constants';
 import { parseStack } from './view/helpers/parseStack';
 
 let isRegistered = false;
