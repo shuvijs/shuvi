@@ -6,16 +6,33 @@ const depa = 'depa';
 const depb = 'depb';
 const depc = 'depc';
 const consoleDepaSymbol = 'consoleDepaSymbol';
-const otherSymbol = 'other-symbol';
+const otherSymbol = 'ExportOther-other-symbol';
 
-function getFileContent(manifest: any, fileName: string): string {
+function getFileContent(
+  manifest: any,
+  fileName: string,
+  from: string = 'loadble'
+): string {
   let realFile = '';
-  const loadbleKeys = Object.keys(manifest.loadble);
-  for (let i = 0; i < loadbleKeys.length; i++) {
-    const key = loadbleKeys[i];
-    if (key.includes(fileName)) {
-      realFile = manifest.loadble[key]['files'][0];
-      break;
+  if (from === 'loadble') {
+    const target = manifest.loadble;
+    const loadbleKeys = Object.keys(target);
+    for (let i = 0; i < loadbleKeys.length; i++) {
+      const key = loadbleKeys[i];
+      if (key.includes(fileName)) {
+        realFile = target[key]['files'][0];
+        break;
+      }
+    }
+  } else if (from === 'bundles') {
+    const target = manifest.bundles;
+    const bundles = Object.keys(target);
+    for (let i = 0; i < bundles.length; i++) {
+      const key = bundles[i];
+      if (key.includes(fileName)) {
+        realFile = target[key];
+        break;
+      }
     }
   }
   if (!realFile) {
@@ -71,8 +88,15 @@ describe('Tree Shaking', () => {
 
   test('route page should only keep default and remove loader', async () => {
     const fileContent = getFileContent(manifest, 'export-other');
-    expect(fileContent).toMatch('ExportOther-symbol');
-    expect(fileContent).not.toMatch('loader-symbol');
+    expect(fileContent).toMatch('ExportOther-default-symbol');
+    expect(fileContent).not.toMatch('ExportOther-loader-symbol');
+    expect(fileContent).not.toMatch(otherSymbol);
+  });
+
+  test("main entry should only keep page's loader and remove other export", async () => {
+    const fileContent = getFileContent(manifest, 'main', 'bundles');
+    expect(fileContent).toMatch('ExportOther-loader-symbol');
+    expect(fileContent).not.toMatch('ExportOther-default-symbol');
     expect(fileContent).not.toMatch(otherSymbol);
   });
 });
