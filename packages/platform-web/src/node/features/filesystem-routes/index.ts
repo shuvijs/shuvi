@@ -1,6 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { buildToString } from '@shuvi/toolpack/lib/utils/build-loaders';
 import { createPlugin } from '@shuvi/service';
 import {
   getRawRoutesFromDir,
@@ -156,8 +153,8 @@ const plugin = createPlugin({
       dependencies: [rawRoutes]
     });
 
-    const loadersFile = defineFile({
-      name: 'loaders.js',
+    const pageLoadersFile = defineFile({
+      name: 'page-loaders.js',
       content: async () => {
         const routes = getRoutes();
         const loaders: Record<string, string> = {};
@@ -180,27 +177,12 @@ const plugin = createPlugin({
         let exports = '';
         Object.entries(loaders).forEach((loader, index) => {
           const [id, component] = loader;
-          imports += `import { loader as loader_${index} } from '${component}'\n`;
+          imports += `import { loader as loader_${index} } from '${component}?keep=loader'\n`;
           exports += `'${id}': loader_${index},\n`;
         });
         return `${imports}  export default {\n  ${exports}\n}`;
       },
       dependencies: [pageRoutesFile]
-    });
-    const loadersFileName = path.join(
-      context.paths.appDir,
-      'files',
-      'loaders.js'
-    );
-    const pageLoadersFile = defineFile({
-      name: 'page-loaders.js',
-      content: async () => {
-        if (fs.existsSync(loadersFileName)) {
-          return await buildToString(loadersFileName);
-        }
-        return '';
-      },
-      dependencies: [loadersFile]
     });
 
     return [
@@ -208,7 +190,6 @@ const plugin = createPlugin({
       pageRoutesFile,
       apiRoutesFile,
       middlewareRoutesFile,
-      loadersFile,
       pageLoadersFile
     ];
   }
