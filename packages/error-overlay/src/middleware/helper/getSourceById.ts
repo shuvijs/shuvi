@@ -8,10 +8,19 @@ import { getModuleById } from '../../shared/helper/getModuleById';
 
 export type Source = RawSourceMap | null;
 
-function getRawSourceMap(fileContents: string): RawSourceMap | null {
+async function getRawSourceMap(
+  fileContents: string,
+  fileUri: string
+): Promise<RawSourceMap | null> {
   const sourceUrl = getSourceMapUrl(fileContents);
+
   if (!sourceUrl?.startsWith('data:')) {
-    return null;
+    const index = fileUri.lastIndexOf('/');
+    const url = fileUri.substring(0, index + 1) + sourceUrl;
+    const sourceMapContent: string | null = await fs
+      .readFile(url, 'utf-8')
+      .catch(() => null);
+    return sourceMapContent;
   }
 
   let buffer: MimeBuffer;
@@ -49,7 +58,8 @@ export async function getSourceById(
       return null;
     }
 
-    const map = getRawSourceMap(fileContent);
+    const map = await getRawSourceMap(fileContent, id);
+
     if (map === null) {
       return null;
     }

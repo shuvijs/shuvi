@@ -1,5 +1,4 @@
 import iframeScript from 'iframeScript';
-import { parse } from 'stacktrace-parser';
 
 import * as errorTypeHandler from './view/errorTypeHandler';
 import {
@@ -10,7 +9,7 @@ import {
   TYPE_REFRESH,
   STACK_TRACE_LIMIT
 } from './shared/constants';
-import { parseError } from './shared/helper/parseError';
+import { parseStack } from './view/helpers/parseStack';
 
 let isRegistered = false;
 let stackTraceLimit: number | undefined = undefined;
@@ -46,7 +45,7 @@ function onUnhandledError(ev: ErrorEvent) {
   errorType = {
     type: TYPE_UNHANDLED_ERROR,
     reason: error,
-    frames: parse(parseError(error.stack))
+    frames: parseStack(error.stack)
   };
   update();
 }
@@ -65,7 +64,7 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
   errorType = {
     type: TYPE_UNHANDLED_REJECTION,
     reason: reason,
-    frames: parse(parseError(reason.stack))
+    frames: parseStack(reason.stack)
   };
   update();
 }

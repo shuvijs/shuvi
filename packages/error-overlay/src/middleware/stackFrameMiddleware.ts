@@ -13,7 +13,9 @@ import { createOriginalStackFrame } from '../shared/helper/createOriginalStackFr
 
 export function stackFrameMiddleware(
   originalStackFrameEndpoint: string,
-  bundler: any
+  bundler: any,
+  resolveBuildFile: (...paths: string[]) => string,
+  buildDefaultDir: string
 ) {
   let clientStats: webpack.Stats | null = null;
   let serverStats: webpack.Stats | null = null;
@@ -50,8 +52,7 @@ export function stackFrameMiddleware(
 
       if (
         !(
-          (frame.file?.startsWith('webpack-internal:///') ||
-            frame.file?.startsWith('file://')) &&
+          frame.file?.startsWith('file://') &&
           Boolean(parseInt(frame.lineNumber?.toString() ?? '', 10))
         )
       ) {
@@ -61,9 +62,9 @@ export function stackFrameMiddleware(
         return;
       }
 
-      const moduleId: string = frame.file.replace(
-        /^(webpack-internal:\/\/\/|file:\/\/)/,
-        ''
+      const moduleId: string = resolveBuildFile(
+        buildDefaultDir,
+        frame.file.replace(/^(file:\/\/)/, '')
       );
 
       let source: Source;

@@ -1,6 +1,5 @@
 import { StackFrame } from 'stacktrace-parser';
 import { DEV_ORIGINAL_STACK_FRAME_ENDPOINT } from '@shuvi/shared/esm/constants';
-import { mapper } from './mapper';
 
 type OriginalStackFrameResponse = {
   originalStackFrame: StackFrame;
@@ -21,9 +20,6 @@ export function getOriginalStackFrames(
   type: 'server' | null,
   errorMessage: string
 ) {
-  if (!type) {
-    return mapper(frames, errorMessage);
-  }
   return Promise.all(
     frames.map(frame => getOriginalStackFrame(frame, type, errorMessage))
   );
@@ -74,12 +70,7 @@ export function getOriginalStackFrame(
     };
   }
 
-  if (
-    !(
-      source.file?.startsWith('webpack-internal:') ||
-      source.file?.startsWith('file:')
-    )
-  ) {
+  if (!source.file?.startsWith('file:')) {
     return Promise.resolve({
       error: false,
       reason: null,
