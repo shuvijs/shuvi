@@ -6,21 +6,32 @@ import type webpack from '@shuvi/toolpack/lib/webpack';
 import { getSourceMapUrl } from './getSourceMapUrl';
 import { getModuleById } from './getModuleById';
 
-export type Source = RawSourceMap | null;
+export type Source = { map: () => RawSourceMap } | null;
 
-async function getRawSourceMap(
-  fileContents: string,
-  fileUri: string
-): Promise<RawSourceMap | null> {
-  const sourceUrl = getSourceMapUrl(fileContents);
+async function getRawSourceMap(fileUrl: string): Promise<RawSourceMap | null> {
+  //fetch sourcemap directly first
+  const url = fileUrl + '.map';
+  const sourceMapContent: string | null = await fs
+    .readFile(url, 'utf-8')
+    .catch(() => null);
+  if (sourceMapContent !== null) {
+    return sourceMapContent;
+  }
+  //fetch sourcemap by fileContent
+  const fileContent: string | null = await fs
+    .readFile(fileUrl, 'utf-8')
+    .catch(() => null);
+
+  if (fileContent == null) {
+    return null;
+  }
+
+  const sourceUrl = getSourceMapUrl(fileContent);
 
   if (!sourceUrl?.startsWith('data:')) {
-    const index = fileUri.lastIndexOf('/');
-    const url = fileUri.substring(0, index + 1) + sourceUrl;
-    const sourceMapContent: string | null = await fs
-      .readFile(url, 'utf-8')
-      .catch(() => null);
-    return sourceMapContent;
+    const index = fileUrl.lastIndexOf('/');
+    const urlFromFile = fileUrl.substring(0, index + 1) + sourceUrl;
+    return await fs.readFile(urlFromFile, 'utf-8').catch(() => null);
   }
 
   let buffer: MimeBuffer;
@@ -50,20 +61,16 @@ export async function getSourceById(
   compilation?: webpack.Compilation
 ): Promise<Source> {
   if (isFile) {
-    const fileContent: string | null = await fs
-      .readFile(id, 'utf-8')
-      .catch(() => null);
-
-    if (fileContent == null) {
-      return null;
-    }
-
-    const map = await getRawSourceMap(fileContent, id);
+    const map = await getRawSourceMap(id);
 
     if (map === null) {
       return null;
     }
-    return map;
+    return {
+      map() {
+        return map;
+      }
+    };
   }
 
   try {
