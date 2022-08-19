@@ -7,25 +7,25 @@ import { getModuleById } from './getModuleById';
 
 export type Source = { map: () => RawSourceMap } | null;
 
-function getRawSourceMap(
+async function getRawSourceMap(
   fileUrl: string,
   compiler: webpack.Compiler
-): RawSourceMap | null {
+): Promise<RawSourceMap | null> {
   //fetch sourcemap directly first
   const url = fileUrl + '.map';
   let sourceMapContent: string | null = null;
 
-  sourceMapContent = (compiler.outputFileSystem as any)
-    .readFileSync(url)
-    .toString();
+  sourceMapContent = await (compiler.outputFileSystem as any).promises
+    .readFile(url, 'utf-8')
+    .catch(() => null);
 
   if (sourceMapContent !== null) {
     return sourceMapContent;
   }
   //fetch sourcemap by fileContent
-  const fileContent: string | null = (compiler.outputFileSystem as any)
-    .readFileSync(fileUrl)
-    .toString();
+  const fileContent = await (compiler.outputFileSystem as any).promises
+    .readFile(fileUrl, 'utf-8')
+    .catch(() => null);
 
   if (fileContent == null) {
     return null;
@@ -40,9 +40,9 @@ function getRawSourceMap(
   if (!sourceUrl?.startsWith('data:')) {
     const index = fileUrl.lastIndexOf('/');
     const urlFromFile = fileUrl.substring(0, index + 1) + sourceUrl;
-    return (compiler.outputFileSystem as any)
-      .readFileSync(urlFromFile)
-      .toString();
+    return (compiler.outputFileSystem as any).promises
+      .readFile(urlFromFile, 'utf-8')
+      .catch(() => null);
   }
 
   let buffer: MimeBuffer;
@@ -66,14 +66,14 @@ function getRawSourceMap(
   }
 }
 
-export function getSourceById(
+export async function getSourceById(
   isFile: boolean,
   id: string,
   compiler: webpack.Compiler,
   compilation?: webpack.Compilation
-): Source {
+): Promise<Source> {
   if (isFile) {
-    const map = getRawSourceMap(id, compiler);
+    const map = await getRawSourceMap(id, compiler);
 
     if (map === null) {
       return null;

@@ -1,6 +1,7 @@
 import type { StackFrame } from 'stacktrace-parser';
-import type { Source } from './getSourceById';
 import type webpack from '@shuvi/toolpack/lib/webpack';
+import type { Source } from './getSourceById';
+import type { OriginalStackFrame } from '../../view/helpers/stack-frame';
 import { createOriginalStackFrame } from './createOriginalStackFrame';
 
 export async function getOriginalStackFrame(
@@ -10,7 +11,7 @@ export async function getOriginalStackFrame(
   buildDefaultDir: string,
   errorMessage?: string,
   compilation?: webpack.Compilation
-) {
+): Promise<OriginalStackFrame> {
   if (
     !(
       frame.file?.startsWith('webpack-internal:') ||

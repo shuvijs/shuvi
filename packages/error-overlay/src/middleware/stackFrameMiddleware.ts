@@ -75,26 +75,29 @@ export function stackFrameMiddleware(
       });
 
       // handle the source from the file
-      for (const fileName of files) {
-        const moduleId: string = resolveBuildFile(
-          buildDefaultDir,
-          fileName.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
+      try {
+        await Promise.all(
+          files.map(async fileName => {
+            const moduleId: string = resolveBuildFile(
+              buildDefaultDir,
+              fileName.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
+            );
+
+            const source = await getSourceById(
+              fileName.startsWith('file:'),
+              moduleId,
+              compiler,
+              compilation
+            );
+            cache.set(fileName, source);
+          })
         );
-        try {
-          const source = getSourceById(
-            fileName.startsWith('file:'),
-            moduleId,
-            compiler,
-            compilation
-          );
-          cache.set(fileName, source);
-        } catch (err) {
-          console.log('Failed to get source map:', err);
-          res.statusCode = 500;
-          res.write('Internal Server Error');
-          res.end();
-          return;
-        }
+      } catch (err) {
+        console.log('Failed to get source map:', err);
+        res.statusCode = 500;
+        res.write('Internal Server Error');
+        res.end();
+        return;
       }
 
       // handle the source position
