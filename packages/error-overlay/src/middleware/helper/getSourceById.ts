@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs';
 import { RawSourceMap } from 'source-map';
 import dataUriToBuffer, { MimeBuffer } from 'data-uri-to-buffer';
 import type webpack from '@shuvi/toolpack/lib/webpack';
@@ -8,19 +7,25 @@ import { getModuleById } from './getModuleById';
 
 export type Source = { map: () => RawSourceMap } | null;
 
-async function getRawSourceMap(fileUrl: string): Promise<RawSourceMap | null> {
+async function getRawSourceMap(
+  fileUrl: string,
+  compiler: webpack.Compiler
+): Promise<RawSourceMap | null> {
   //fetch sourcemap directly first
   const url = fileUrl + '.map';
-  const sourceMapContent: string | null = await fs
-    .readFile(url, 'utf-8')
-    .catch(() => null);
+  let sourceMapContent: string | null = null;
+
+  sourceMapContent = (compiler.outputFileSystem as any)
+    .readFileSync(url)
+    .toString();
+
   if (sourceMapContent !== null) {
     return sourceMapContent;
   }
   //fetch sourcemap by fileContent
-  const fileContent: string | null = await fs
-    .readFile(fileUrl, 'utf-8')
-    .catch(() => null);
+  const fileContent: string | null = (compiler.outputFileSystem as any)
+    .readFileSync(fileUrl)
+    .toString();
 
   if (fileContent == null) {
     return null;
@@ -31,7 +36,9 @@ async function getRawSourceMap(fileUrl: string): Promise<RawSourceMap | null> {
   if (!sourceUrl?.startsWith('data:')) {
     const index = fileUrl.lastIndexOf('/');
     const urlFromFile = fileUrl.substring(0, index + 1) + sourceUrl;
-    return await fs.readFile(urlFromFile, 'utf-8').catch(() => null);
+    return (compiler.outputFileSystem as any)
+      .readFileSync(urlFromFile)
+      .toString();
   }
 
   let buffer: MimeBuffer;
@@ -58,10 +65,11 @@ async function getRawSourceMap(fileUrl: string): Promise<RawSourceMap | null> {
 export async function getSourceById(
   isFile: boolean,
   id: string,
+  compiler: webpack.Compiler,
   compilation?: webpack.Compilation
 ): Promise<Source> {
   if (isFile) {
-    const map = await getRawSourceMap(id);
+    const map = await getRawSourceMap(id, compiler);
 
     if (map === null) {
       return null;

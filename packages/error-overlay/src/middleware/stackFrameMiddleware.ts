@@ -55,6 +55,9 @@ export function stackFrameMiddleware(
 
       const frames: StackFrame[] = JSON.parse(query.frames as string);
       const { isServer, errorMessage } = query;
+      const compiler = isServer
+        ? bundler.getSubCompiler(BUNDLER_TARGET_SERVER)
+        : bundler.getSubCompiler(BUNDLER_TARGET_CLIENT);
       const compilation = isServer
         ? serverStats?.compilation
         : clientStats?.compilation;
@@ -79,6 +82,7 @@ export function stackFrameMiddleware(
           const source = await getSourceById(
             fileName.startsWith('file:'),
             moduleId,
+            compiler,
             compilation
           );
           cache.set(fileName, source);
