@@ -40,7 +40,7 @@ async function getRawSourceMap(
   if (!sourceUrl?.startsWith('data:')) {
     const index = fileUrl.lastIndexOf('/');
     const urlFromFile = fileUrl.substring(0, index + 1) + sourceUrl;
-    return (compiler.outputFileSystem as any).promises
+    return await (compiler.outputFileSystem as any).promises
       .readFile(urlFromFile, 'utf-8')
       .catch(() => null);
   }
