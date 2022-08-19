@@ -56,7 +56,7 @@ describe('apiRoutes development', () => {
 
   test('should return data when catch-all', async () => {
     const res = await got.get(ctx.url('/api/users/1'));
-    expect(JSON.parse(res.body)).toEqual({ slug: ['1'] });
+    expect(JSON.parse(res.body)).toEqual({ '*': '1' });
   });
 
   // test('should return redirect when catch-all with index and trailing slash', async () => {
@@ -71,12 +71,12 @@ describe('apiRoutes development', () => {
 
   test('should return data when catch-all with index and trailing slash', async () => {
     const res = await got.get(ctx.url('/api/users/'));
-    expect(JSON.parse(res.body)).toEqual({});
+    expect(JSON.parse(res.body)).toEqual({ '*': '' });
   });
 
   test('should return data when catch-all with index and no trailing slash', async () => {
     const res = await got.get(ctx.url('/api/users'));
-    expect(JSON.parse(res.body)).toEqual({});
+    expect(JSON.parse(res.body)).toEqual({ '*': '' });
   });
 
   test('should set cors headers when adding cors middleware', async () => {
@@ -439,10 +439,10 @@ describe('apiRoutes development', () => {
   });
 
   test('should return data part dynamic optional nested route', async () => {
-    const res = await got(ctx.url('/api/user/part-id/part-1/more'));
+    const res = await got(ctx.url('/api/user/part-id/part/1/more'));
     expect(JSON.parse(res.body)).toEqual({
       params: {
-        other: ['1', 'more'],
+        '*': '1/more',
         part: 'id',
         post: 'user'
       },
