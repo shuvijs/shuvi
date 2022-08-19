@@ -7,6 +7,20 @@ import { getModuleById } from './getModuleById';
 
 export type Source = { map: () => RawSourceMap } | null;
 
+const readFileWrapper = (
+  url: string,
+  compiler: webpack.Compiler
+): Promise<string | null> => {
+  return new Promise(resolve => {
+    compiler.outputFileSystem.readFile(url, (err: any, res: any) => {
+      if (err) {
+        resolve(null);
+      }
+      resolve(res.toString());
+    });
+  });
+};
+
 async function getRawSourceMap(
   fileUrl: string,
   compiler: webpack.Compiler
@@ -15,17 +29,13 @@ async function getRawSourceMap(
   const url = fileUrl + '.map';
   let sourceMapContent: string | null = null;
 
-  sourceMapContent = await (compiler.outputFileSystem as any).promises
-    .readFile(url, 'utf-8')
-    .catch(() => null);
+  sourceMapContent = await readFileWrapper(url, compiler);
 
   if (sourceMapContent !== null) {
     return sourceMapContent;
   }
   //fetch sourcemap by fileContent
-  const fileContent = await (compiler.outputFileSystem as any).promises
-    .readFile(fileUrl, 'utf-8')
-    .catch(() => null);
+  const fileContent = await readFileWrapper(fileUrl, compiler);
 
   if (fileContent == null) {
     return null;
@@ -40,9 +50,7 @@ async function getRawSourceMap(
   if (!sourceUrl?.startsWith('data:')) {
     const index = fileUrl.lastIndexOf('/');
     const urlFromFile = fileUrl.substring(0, index + 1) + sourceUrl;
-    return await (compiler.outputFileSystem as any).promises
-      .readFile(urlFromFile, 'utf-8')
-      .catch(() => null);
+    return await readFileWrapper(urlFromFile, compiler);
   }
 
   let buffer: MimeBuffer;
