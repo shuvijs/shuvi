@@ -166,45 +166,16 @@ describe('route/page', () => {
       routes: [
         {
           children: [
+            { component: 'c/c-$id/page.js', path: 'c/c-:id' },
+            { component: 'f/$pid-f/$id/page.js', path: 'f/:pid-f/:id' },
+            { component: 'g/$pid/$id/page.js', path: 'g/:pid/:id' },
+            { component: 'a/$id/page.js', path: 'a/:id' },
+            { component: 'g/$pid/page.js', path: 'g/:pid' },
+            { component: 'b/$/page.js', path: 'b/*' },
+            { component: 'd/$/page.js', path: 'd/*' },
+            { component: 'd/page.js', path: 'd' },
             {
-              component: 'f/[pid]/[id]/page.js',
-              path: 'f/:pid/:id'
-            },
-            {
-              component: 'g/[pid]/[id]/page.js',
-              path: 'g/:pid/:id'
-            },
-            {
-              component: 'a/[id]/page.js',
-              path: 'a/:id'
-            },
-            {
-              component: 'g/[pid]/page.js',
-              path: 'g/:pid'
-            },
-            {
-              component: 'b/[[id]]/page.js',
-              path: 'b/:id?'
-            },
-            {
-              component: 'c/[...id]/page.js',
-              path: 'c/:id+'
-            },
-            {
-              component: 'd/[[...id]]/page.js',
-              path: 'd/:id*'
-            },
-            {
-              component: 'd/page.js',
-              path: 'd'
-            },
-            {
-              children: [
-                {
-                  component: 'e/[id]/page.js',
-                  path: ':id'
-                }
-              ],
+              children: [{ component: 'e/$id/page.js', path: ':id' }],
               component: 'e/layout.js',
               path: 'e'
             }
@@ -308,7 +279,7 @@ describe('route/api', () => {
       routes: [
         {
           path: '/api/users/:id',
-          api: 'api/users/[id]/api.js'
+          api: 'api/users/$id/api.js'
         },
         {
           path: '/api/users',

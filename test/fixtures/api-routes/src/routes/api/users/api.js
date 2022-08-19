@@ -1,1 +1,1 @@
-export { default } from './[...slug]/api';
+export { default } from './$/api';
