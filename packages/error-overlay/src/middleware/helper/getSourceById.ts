@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs';
 import { RawSourceMap } from 'source-map';
 import dataUriToBuffer, { MimeBuffer } from 'data-uri-to-buffer';
 import type webpack from '@shuvi/toolpack/lib/webpack';
@@ -8,10 +7,50 @@ import { getModuleById } from './getModuleById';
 
 export type Source = { map: () => RawSourceMap } | null;
 
-function getRawSourceMap(fileContents: string): RawSourceMap | null {
-  const sourceUrl = getSourceMapUrl(fileContents);
-  if (!sourceUrl?.startsWith('data:')) {
+const readFileWrapper = (
+  url: string,
+  compiler: webpack.Compiler
+): Promise<string | null> => {
+  return new Promise(resolve => {
+    compiler.outputFileSystem.readFile(url, (err: any, res: any) => {
+      if (err) {
+        resolve(null);
+      }
+      resolve(res.toString());
+    });
+  });
+};
+
+async function getRawSourceMap(
+  fileUrl: string,
+  compiler: webpack.Compiler
+): Promise<RawSourceMap | null> {
+  //fetch sourcemap directly first
+  const url = fileUrl + '.map';
+  let sourceMapContent: string | null = null;
+
+  sourceMapContent = await readFileWrapper(url, compiler);
+
+  if (sourceMapContent !== null) {
+    return sourceMapContent;
+  }
+  //fetch sourcemap by fileContent
+  const fileContent = await readFileWrapper(fileUrl, compiler);
+
+  if (fileContent == null) {
     return null;
+  }
+
+  const sourceUrl = getSourceMapUrl(fileContent);
+
+  if (!sourceUrl) {
+    return null;
+  }
+
+  if (!sourceUrl?.startsWith('data:')) {
+    const index = fileUrl.lastIndexOf('/');
+    const urlFromFile = fileUrl.substring(0, index + 1) + sourceUrl;
+    return await readFileWrapper(urlFromFile, compiler);
   }
 
   let buffer: MimeBuffer;
@@ -38,22 +77,15 @@ function getRawSourceMap(fileContents: string): RawSourceMap | null {
 export async function getSourceById(
   isFile: boolean,
   id: string,
+  compiler: webpack.Compiler,
   compilation?: webpack.Compilation
 ): Promise<Source> {
   if (isFile) {
-    const fileContent: string | null = await fs
-      .readFile(id, 'utf-8')
-      .catch(() => null);
+    const map = await getRawSourceMap(id, compiler);
 
-    if (fileContent == null) {
+    if (map === null) {
       return null;
     }
-
-    const map = getRawSourceMap(fileContent);
-    if (map == null) {
-      return null;
-    }
-
     return {
       map() {
         return map;

@@ -12,3 +12,12 @@ declare module 'iframeScript' {
   import iframeScript from '@shuvi/error-overlay/lib/iframe-bundle';
   export default iframeScript;
 }
+
+declare module 'source-map' {
+  export {
+    RawSourceMap,
+    SourceMapConsumer,
+    NullableMappedPosition,
+    RawSourceMap
+  } from 'source-map';
+}
