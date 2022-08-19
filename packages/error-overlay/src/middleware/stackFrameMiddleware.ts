@@ -9,7 +9,7 @@ import {
 } from '@shuvi/shared/lib/constants';
 
 import { getSourceById, Source } from './helper/getSourceById';
-import { createOriginalStackFrame } from './helper/createOriginalStackFrame';
+import { getOriginalStackFrame } from './helper/getOriginalStackFrame';
 
 export function stackFrameMiddleware(
   originalStackFrameEndpoint: string,
@@ -19,8 +19,6 @@ export function stackFrameMiddleware(
 ) {
   let clientStats: webpack.Stats | null = null;
   let serverStats: webpack.Stats | null = null;
-  const files: string[] = [];
-  const cache = new Map<string, Source>();
 
   bundler
     .getSubCompiler(BUNDLER_TARGET_CLIENT)
@@ -46,6 +44,8 @@ export function stackFrameMiddleware(
     next: Function
   ) {
     if (req.url!.startsWith(originalStackFrameEndpoint)) {
+      const files: string[] = [];
+      const cache = new Map<string, Source>();
       const { query: queryFromUrl } = url.parse(req.url!, true);
       const query = queryFromUrl as unknown as {
         frames: string;
@@ -62,6 +62,7 @@ export function stackFrameMiddleware(
         ? serverStats?.compilation
         : clientStats?.compilation;
 
+      // handle duplicate files
       frames.forEach((frame: StackFrame) => {
         const { file } = frame;
         if (file == null) {
@@ -73,6 +74,7 @@ export function stackFrameMiddleware(
         files.push(file);
       });
 
+      // handle the source from the file
       for (const fileName of files) {
         const moduleId: string = resolveBuildFile(
           buildDefaultDir,
@@ -95,92 +97,24 @@ export function stackFrameMiddleware(
         }
       }
 
-      const originalStackFrameResponses = await Promise.all(
-        frames.map(async (frame: StackFrame) => {
-          if (
-            !(
-              frame.file?.startsWith('webpack-internal:') ||
-              frame.file?.startsWith('file:')
-            )
-          ) {
-            return {
-              error: false,
-              reason: null,
-              external: true,
-              expanded: false,
-              sourceStackFrame: frame,
-              originalStackFrame: null,
-              originalCodeFrame: null
-            };
-          }
-
-          if (cache.get(frame.file) === null) {
-            return {
-              error: true,
-              reason: 'No Content',
-              external: false,
-              expanded: false,
-              sourceStackFrame: frame,
-              originalStackFrame: null,
-              originalCodeFrame: null
-            };
-          }
-
-          const frameLine = parseInt(frame.lineNumber?.toString() ?? '', 10);
-          let frameColumn: number | null = parseInt(
-            frame.column?.toString() ?? '',
-            10
-          );
-          if (!frameColumn) {
-            frameColumn = null;
-          }
-          const originalStackFrameResponse = await createOriginalStackFrame({
-            line: frameLine,
-            column: frameColumn,
-            source: cache.get(frame.file),
+      // handle the source position
+      const originalStackFrames = await Promise.all(
+        frames.map(async (frame: StackFrame) =>
+          getOriginalStackFrame(
             frame,
-            modulePath: resolveBuildFile(
-              buildDefaultDir,
-              frame.file.replace(/^(file:\/\/)/, '')
-            ),
+            cache,
+            resolveBuildFile,
+            buildDefaultDir,
             errorMessage,
             compilation
-          });
-          if (originalStackFrameResponse === null) {
-            return {
-              error: true,
-              reason: 'No Content',
-              external: false,
-              expanded: false,
-              sourceStackFrame: frame,
-              originalStackFrame: null,
-              originalCodeFrame: null
-            };
-          }
-          return {
-            error: false,
-            reason: null,
-            external: false,
-            expanded: !Boolean(
-              /* collapsed */
-              (frame.file?.includes('node_modules') ||
-                originalStackFrameResponse.originalStackFrame?.file?.includes(
-                  'node_modules'
-                )) ??
-                true
-            ),
-            sourceStackFrame: frame,
-            originalStackFrame: originalStackFrameResponse.originalStackFrame,
-            originalCodeFrame:
-              originalStackFrameResponse.originalCodeFrame || null
-          };
-        })
+          )
+        )
       );
 
       try {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.write(Buffer.from(JSON.stringify(originalStackFrameResponses)));
+        res.write(Buffer.from(JSON.stringify(originalStackFrames)));
         res.end();
         return;
       } catch (err) {

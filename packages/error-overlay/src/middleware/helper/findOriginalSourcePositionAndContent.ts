@@ -29,7 +29,6 @@ export async function findOriginalSourcePositionAndContent(
       sourceContent
     };
   } finally {
-    // Note: There are some issues with the source-map library, so choose version 0.5.7 here, same as react-error-overlay.
-    // consumer.destroy();
+    consumer.destroy();
   }
 }
