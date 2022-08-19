@@ -81,7 +81,7 @@ export function stackFrameMiddleware(
           fileName.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
         );
         try {
-          const source = await getSourceById(
+          const source = getSourceById(
             fileName.startsWith('file:'),
             moduleId,
             compiler,

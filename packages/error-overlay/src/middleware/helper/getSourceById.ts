@@ -7,10 +7,10 @@ import { getModuleById } from './getModuleById';
 
 export type Source = { map: () => RawSourceMap } | null;
 
-async function getRawSourceMap(
+function getRawSourceMap(
   fileUrl: string,
   compiler: webpack.Compiler
-): Promise<RawSourceMap | null> {
+): RawSourceMap | null {
   //fetch sourcemap directly first
   const url = fileUrl + '.map';
   let sourceMapContent: string | null = null;
@@ -32,6 +32,10 @@ async function getRawSourceMap(
   }
 
   const sourceUrl = getSourceMapUrl(fileContent);
+
+  if (!sourceUrl) {
+    return null;
+  }
 
   if (!sourceUrl?.startsWith('data:')) {
     const index = fileUrl.lastIndexOf('/');
@@ -62,14 +66,14 @@ async function getRawSourceMap(
   }
 }
 
-export async function getSourceById(
+export function getSourceById(
   isFile: boolean,
   id: string,
   compiler: webpack.Compiler,
   compilation?: webpack.Compilation
-): Promise<Source> {
+): Source {
   if (isFile) {
-    const map = await getRawSourceMap(id, compiler);
+    const map = getRawSourceMap(id, compiler);
 
     if (map === null) {
       return null;

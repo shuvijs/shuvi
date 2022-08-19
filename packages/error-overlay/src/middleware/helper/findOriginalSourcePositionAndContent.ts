@@ -5,7 +5,6 @@ export async function findOriginalSourcePositionAndContent(
   position: { line: number; column: number | null }
 ) {
   const consumer = await new SourceMapConsumer(webpackSource.map());
-
   try {
     const sourcePosition: NullableMappedPosition = consumer.originalPositionFor(
       {
