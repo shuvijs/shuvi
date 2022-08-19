@@ -8,8 +8,8 @@ import { rankRouteBranches } from '../../shared/router';
 const supportFileTypes = ['page', 'layout', 'middleware', 'api'] as const;
 const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
 
-const dynamicMatchAllRegex = /\[\[(.+?)\]\]/g;
-const dynamicMatchPartRegex = /\[(.+?)\]/g;
+const dynamicMatchAllRegex = /\$$/;
+const dynamicMatchPartRegex = /\$/g;
 
 type GetArrayElementType<T extends readonly any[]> = T extends readonly any[]
   ? T[number]
@@ -23,43 +23,15 @@ type FileTypeChecker = Record<`is${CapName}`, (filename: string) => boolean>;
 export function parseDynamicPath(normalizedRoute: string): string {
   invariant(
     !checkSpecialRegexChars(normalizedRoute),
-    'filePath should not be special regex chars: |\\{}()^$+*?'
+    'filePath should not be special regex chars: |\\{}()^:+*?'
   );
   return normalizedRoute
-    .split('/')
-    .map(segment => {
-      let result = '';
-      result = segment.replace(
-        dynamicMatchAllRegex,
-        function (matchString, ...matchArr) {
-          return parseMatchRepeat(matchArr[0], true);
-        }
-      );
-      result = result.replace(
-        dynamicMatchPartRegex,
-        function (matchString, ...matchArr) {
-          return parseMatchRepeat(matchArr[0], false);
-        }
-      );
-      return `${result}`;
-    })
-    .join('/');
-}
-
-function parseMatchRepeat(param: string, optional: boolean): string {
-  const repeat = param.startsWith('...');
-  if (repeat) {
-    param = param.slice(3);
-  }
-  return repeat
-    ? optional
-      ? `:${param}*`
-      : `:${param}+`
-    : `:${param}${optional ? '?' : ''}`;
+    .replace(dynamicMatchAllRegex, '*')
+    .replace(dynamicMatchPartRegex, ':');
 }
 
 function checkSpecialRegexChars(string: string): boolean {
-  return /[|\\{}()^$+*?]/g.test(string);
+  return /[|\\{}()^:+*?]/g.test(string);
 }
 
 export function normalizeRoutePath(rawPath: string) {
