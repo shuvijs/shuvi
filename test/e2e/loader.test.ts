@@ -38,24 +38,17 @@ describe('loader', () => {
     test('PageComponent should receive context object', async () => {
       page = await ctx.browser.page(ctx.url('/test?a=2'));
       const loaderData = JSON.parse(await page.$text('[data-test-id="foo"]'));
-      [
-        'isServer',
-        'pathname',
-        'query',
-        'params',
-        'redirect',
-        'appContext',
-        'req'
-      ].forEach(key => {
-        expect(loaderData[key]).toBeDefined();
-      });
+      ['pathname', 'query', 'params', 'redirect', 'appContext', 'req'].forEach(
+        key => {
+          expect(loaderData[key]).toBeDefined();
+        }
+      );
 
       const req = loaderData.req;
       expect(typeof req.headers).toBe('object');
       expect(req.url).toBe('/test?a=2');
       expect(req.query).toEqual({ a: '2' });
 
-      expect(loaderData.isServer).toBe(true);
       expect(loaderData.query.a).toBe('2');
       expect(loaderData.params.foo).toBe('test');
       expect(loaderData.appContext).toHaveProperty('store');
@@ -133,19 +126,11 @@ describe('loader', () => {
       const loaderContext = JSON.parse(
         await page.$text('[data-test-id="foo"]')
       );
-      [
-        'isServer',
-        'pathname',
-        'query',
-        'params',
-        'redirect',
-        'appContext'
-      ].forEach(key => {
+      ['pathname', 'query', 'params', 'redirect', 'appContext'].forEach(key => {
         expect(loaderContext[key]).toBeDefined();
       });
 
       expect(loaderContext.req).toBeUndefined();
-      expect(loaderContext.isServer).toBe(false);
       expect(loaderContext.query.a).toBe('2');
       expect(loaderContext.params.foo).toBe('test');
       expect(loaderContext.appContext).toHaveProperty('store');

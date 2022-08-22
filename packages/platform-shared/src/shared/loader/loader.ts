@@ -85,7 +85,7 @@ function errorHelper(msg?: string, statusCode: number = 500) {
 export async function runLoaders(
   matches: IRouteMatch<IPageRouteRecord>[],
   loadersByRouteId: Record<string, Loader>,
-  { isServer, query, req, getAppContext }: LoaderContextOptions
+  { query, req, getAppContext }: LoaderContextOptions
 ): Promise<LoaderDataRecord> {
   if (!matches.length) {
     return [];
@@ -97,7 +97,6 @@ export async function runLoaders(
     let res: Response | undefined;
     try {
       const value = await loaderFn({
-        isServer,
         pathname: match.pathname,
         params: match.params,
         query: query,

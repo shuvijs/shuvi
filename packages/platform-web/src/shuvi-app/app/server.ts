@@ -29,7 +29,6 @@ export const createApp: CreateAppServer = options => {
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
       try {
         const loaderResult = await runLoaders(matches, pageLoaders, {
-          isServer: true,
           req,
           query: to.query,
           getAppContext: () => app.context
