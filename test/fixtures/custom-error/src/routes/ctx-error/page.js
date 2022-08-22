@@ -1,7 +1,7 @@
 import { useLoaderData } from '@shuvi/runtime';
 
 export const loader = ctx => {
-  const id = ctx.isServer ? 'server' : 'client';
+  const id = ctx.req ? 'server' : 'client';
   if (ctx.query.a) {
     return ctx.error(`custom error ${id}`, 502);
   }

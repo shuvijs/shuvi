@@ -4,7 +4,6 @@ import { IAppContext } from '../applicationTypes';
 import { Response } from '../response';
 
 export interface LoaderContextOptions {
-  isServer: boolean;
   req?: ShuviRequest;
   query: IURLQuery;
   getAppContext: () => IAppContext;
@@ -22,10 +21,6 @@ export interface ErrorFunction {
  * route component getInitialProps params `context`
  */
 export interface IRouteLoaderContext {
-  /**
-   * is running on server, if server is true, client will be false
-   */
-  isServer: boolean;
   /**
    * current url path
    */

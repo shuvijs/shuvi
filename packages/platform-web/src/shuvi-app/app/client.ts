@@ -105,7 +105,6 @@ export const createApp: CreateAppClient = ({
             });
 
           runLoaders(matches, pageLoaders, {
-            isServer: false,
             query: to.query,
             getAppContext: () => app.context
           })
