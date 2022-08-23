@@ -50,7 +50,6 @@ export abstract class ShuviServer implements IShuviServer {
 
         if (this._serverContext.mode === 'development') {
           const urlObj = url.parse(fullAssetPath);
-          req.readableEncoding;
           const urlSearchParams = new URLSearchParams(urlObj.search!);
           // force to invalidate cache in dev
           urlSearchParams.set('_ts', requestTime.toString());

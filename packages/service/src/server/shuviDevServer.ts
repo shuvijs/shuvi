@@ -24,7 +24,6 @@ export class ShuviDevServer extends ShuviServer {
 
   async init() {
     const { _serverContext: context, _server: server } = this;
-    const assetsMiddleware = getAssetMiddleware(context, true);
     const devMiddleware = await getDevMiddleware(this._bundler, context);
     await devMiddleware.waitUntilValid();
 
@@ -46,8 +45,7 @@ export class ShuviDevServer extends ShuviServer {
 
     // keep the order
     devMiddleware.apply(server);
-    server.use(`${context.assetPublicPath}/:path(.*)`, assetsMiddleware);
-
+    server.use(getAssetMiddleware(context, true));
     await this._initMiddlewares();
 
     // setup upgrade listener eagerly when we can otherwise
