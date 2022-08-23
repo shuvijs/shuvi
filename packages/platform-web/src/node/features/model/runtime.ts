@@ -39,16 +39,21 @@ const initStore: InitRedox = ({ initialState, ctx }) => {
   return currentStore;
 };
 
-export default createRuntimePlugin({
-  appContext: ctx => {
-    let initialState = {};
-    if (!isServer) {
-      initialState = getPageData('shuviInitialState', {});
+export default createRuntimePlugin(
+  {
+    appContext: ctx => {
+      let initialState = {};
+      if (!isServer) {
+        initialState = getPageData('shuviInitialState', {});
+      }
+      ctx.store = initStore({
+        ctx,
+        initialState
+      });
+      return ctx;
     }
-    ctx.store = initStore({
-      ctx,
-      initialState
-    });
-    return ctx;
+  },
+  {
+    name: 'model'
   }
-});
+);

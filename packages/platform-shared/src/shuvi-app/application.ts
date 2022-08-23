@@ -6,7 +6,7 @@ import {
   IRuntimePluginConstructor,
   IPluginRecord,
   IPluginList
-} from '../shared/lifecycle';
+} from '../shared/runtimPlugin';
 
 export { Application };
 

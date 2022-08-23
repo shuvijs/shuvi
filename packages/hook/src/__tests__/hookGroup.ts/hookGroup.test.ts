@@ -50,8 +50,8 @@ describe('hookManager', () => {
     const extraHook = createSyncHook<void>();
     const baseHooks = { hook };
     const extraHooks = { extraHook };
-    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(
-      baseHooks,
+    const group = createHookManager<typeof baseHooks & typeof extraHooks>(
+      baseHooks as any,
       false
     );
     const { createPlugin, usePlugin, runner, addHooks } = group;
@@ -101,8 +101,8 @@ describe('hookManager', () => {
     const extraHook = createSyncHook<void>();
     const baseHooks = { hook };
     const extraHooks = { extraHook };
-    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(
-      baseHooks,
+    const group = createHookManager<typeof baseHooks & typeof extraHooks>(
+      baseHooks as any,
       false
     );
     const { createPlugin, usePlugin, runner } = group;
@@ -133,8 +133,8 @@ describe('hookManager', () => {
     const extraHook = createSyncHook<void>();
     const baseHooks = { hook };
     const extraHooks = { extraHook };
-    const group = createHookManager<typeof baseHooks, void, typeof extraHooks>(
-      baseHooks,
+    const group = createHookManager<typeof baseHooks & typeof extraHooks>(
+      baseHooks as any,
       false
     );
     const { createPlugin, usePlugin, runner } = group;

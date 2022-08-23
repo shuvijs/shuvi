@@ -37,36 +37,31 @@ export interface HookMap {
   [x: string]: AnyHook;
 }
 
-export type Setup<EHM> = (utils: {
-  addHooks: (hook: Partial<EHM>) => void;
+export type Setup<HM extends HookMap = {}> = (utils: {
+  addHooks: (hook: Partial<HM>) => void;
 }) => void;
-export type CreatePlugin<HM extends HookMap, C, EHM extends HookMap> = (
-  pluginHandlers: IPluginHandlers<HM & EHM, C> & {
-    setup?: Setup<EHM>;
+
+export type CreatePlugin<HM extends HookMap, C> = (
+  pluginHandlers: IPluginHandlers<HM, C> & {
+    setup?: Setup;
   },
   options?: PluginOptions
-) => IPluginInstance<HM & EHM, C>;
+) => IPluginInstance<HM, C>;
 
-// 这意味着context需要在一开始就确定
-export type HookManager<HM extends HookMap, C, EHM extends HookMap> = {
-  createPlugin: (
-    pluginHandlers: IPluginHandlers<HM & EHM, C> & {
-      setup?: Setup<EHM>;
-    },
-    options?: PluginOptions
-  ) => IPluginInstance<HM & EHM, C>;
-  usePlugin: (...plugins: IPluginInstance<HM & EHM, C>[]) => void;
-  runner: RunnerType<HM, EHM>;
+export type HookManager<HM extends HookMap, C> = {
+  createPlugin: CreatePlugin<HM, C>;
+  usePlugin: (...plugins: IPluginInstance<HM, C>[]) => void;
+  runner: RunnerType<HM>;
   setContext: (context: C) => void;
   clear: () => void;
-  addHooks: (hook: Partial<EHM>) => void;
-  hooks: HM | (HM & EHM);
-  getPlugins: () => IPluginInstance<HM & EHM, C>[];
+  addHooks: <EHM extends HookMap>(hook: Partial<EHM>) => void;
+  hooks: HM;
+  getPlugins: () => IPluginInstance<HM, C>[];
 };
 
-export type RunnerType<HM, EHM> = {
-  [K in keyof (HM & EHM)]: HookRunnerType<(HM & EHM)[K]>;
-} & { setup: Setup<EHM> };
+export type RunnerType<HM> = {
+  [K in keyof HM]: HookRunnerType<HM[K]>;
+} & { setup: Setup };
 
 export type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
   ? SyncHook<T, E, R>['run']
@@ -83,7 +78,7 @@ export type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
 export type IPluginInstance<HM, C> = {
   handlers: IPluginHandlers<HM, C>;
   SYNC_PLUGIN_SYMBOL: 'SYNC_PLUGIN_SYMBOL';
-} & PluginOptions;
+} & Required<PluginOptions>;
 
 export type IPluginHandlers<HM, C> = Partial<IPluginHandlersFullMap<HM, C>>;
 
@@ -108,6 +103,7 @@ export type PluginOptions = {
   rivals?: string[];
   required?: string[];
   order?: number;
+  group?: number;
   [x: string]: any;
 };
 
@@ -117,7 +113,8 @@ export const DEFAULT_OPTIONS: Required<PluginOptions> = {
   post: [],
   rivals: [],
   required: [],
-  order: 0
+  order: 0,
+  group: 0
 };
 
 export const SYNC_PLUGIN_SYMBOL = 'SYNC_PLUGIN_SYMBOL';
@@ -129,7 +126,14 @@ export const isPluginInstance = (plugin: any) =>
 
 const sortPlugins = <T extends IPluginInstance<any, any>[]>(input: T): T => {
   let plugins: T = input.slice() as T;
-  plugins.sort((a, b) => (a.order as number) - (b.order as number));
+  plugins.sort((a, b) => {
+    // sort by group first
+    if (a.group === b.group) {
+      return a.order - b.order;
+    } else {
+      return a.group - b.group;
+    }
+  });
   for (let i = 0; i < plugins.length; i++) {
     let plugin = plugins[i];
     if (plugin.pre) {
@@ -228,23 +232,19 @@ const copyHookMap = <HM extends HookMap | Partial<HookMap>>(
   return newHookMap as HM;
 };
 
-export const createHookManager = <
-  HM extends HookMap,
-  C = void,
-  EHM extends HookMap = {}
->(
+export const createHookManager = <HM extends HookMap, C = void>(
   hookMap: HM,
   hasContext: boolean = true
-): HookManager<HM, C, EHM> => {
-  const setupHook = createSyncHook<void, Setup<EHM>>();
-  const _hookMap: HM | (HM & EHM) = {
+): HookManager<HM, C> => {
+  const setupHook = createSyncHook<void, Setup>();
+  const _hookMap: HM = {
     ...copyHookMap(hookMap),
     setup: setupHook
   };
-  let _plugins: IPluginInstance<HM & EHM, C>[] = [];
-  let _hookHandlers: ArrayElements<IPluginHandlers<HM & EHM, C>> =
-    {} as ArrayElements<IPluginHandlers<HM & EHM, C>>;
-  let _internalRunners: RunnerType<HM, EHM> = {} as RunnerType<HM, EHM>;
+  let _plugins: IPluginInstance<HM, C>[] = [];
+  let _hookHandlers: ArrayElements<IPluginHandlers<HM, C>> =
+    {} as ArrayElements<IPluginHandlers<HM, C>>;
+  let _internalRunners: RunnerType<HM> = {} as RunnerType<HM>;
   let _context: C;
   let _initiated = false;
   const init = () => {
@@ -253,9 +253,9 @@ export const createHookManager = <
     setupRunner({ addHooks });
   };
   const createPlugin = (
-    pluginHandlers: IPluginHandlers<HM & EHM, C>,
+    pluginHandlers: IPluginHandlers<HM, C>,
     options: PluginOptions = {}
-  ): IPluginInstance<HM & EHM, C> => {
+  ): IPluginInstance<HM, C> => {
     return {
       ...DEFAULT_OPTIONS,
       name: `plugin-id-${uuid()}`,
@@ -264,7 +264,7 @@ export const createHookManager = <
       SYNC_PLUGIN_SYMBOL
     };
   };
-  const usePlugin = (...plugins: IPluginInstance<HM & EHM, C>[]) => {
+  const usePlugin = (...plugins: IPluginInstance<HM, C>[]) => {
     if (_initiated) {
       return;
     }
@@ -295,12 +295,12 @@ export const createHookManager = <
       cur.clear();
     });
     _plugins = [];
-    _hookHandlers = {} as ArrayElements<IPluginHandlers<HM & EHM, C>>;
-    _internalRunners = {} as RunnerType<HM, EHM>;
+    _hookHandlers = {} as ArrayElements<IPluginHandlers<HM, C>>;
+    _internalRunners = {} as RunnerType<HM>;
     _initiated = false;
   };
 
-  const addHooks = (extraHookMap: Partial<EHM>) => {
+  const addHooks = <EHM extends HookMap>(extraHookMap: Partial<EHM>) => {
     const extraHookMapNew = copyHookMap(extraHookMap);
     for (const hookName in extraHookMapNew) {
       // connot override existed hooks
@@ -316,7 +316,7 @@ export const createHookManager = <
     }
   };
 
-  const getRunner = (hookName: keyof (HM & EHM)) => {
+  const getRunner = (hookName: keyof HM) => {
     if (_internalRunners[hookName]) {
       return _internalRunners[hookName];
     }
@@ -324,7 +324,7 @@ export const createHookManager = <
     _internalRunners[hookName] = currentRunner as any;
     return currentRunner;
   };
-  const getSingerRunner = (hookName: keyof (HM & EHM)) => {
+  const getSingerRunner = (hookName: keyof HM) => {
     let used = false;
     const hook = _hookMap[hookName] as AnyHook;
     const handlers = _hookHandlers[hookName] || [];
@@ -384,10 +384,10 @@ export const createHookManager = <
           init();
           _initiated = true;
         }
-        return getRunner(prop as keyof (HM & EHM));
+        return getRunner(prop as keyof HM);
       }
     }
-  ) as RunnerType<HM, EHM>;
+  ) as RunnerType<HM>;
 
   return {
     createPlugin,
