@@ -8,21 +8,29 @@ export const getAssetMiddleware = (
   isDev: boolean = false
 ): ShuviRequestHandler => {
   return async (req, res, next) => {
-    let { path = '' } = req.params || {};
-    if (Array.isArray(path)) path = path.join('/');
-    if (!path.startsWith('/')) {
-      path = `/${path}`;
-    }
-
+    const fullUrl = new URL(req.url, `http://${req.headers.host}`);
+    let assetPath: string = fullUrl.pathname;
     const candidatePaths = [];
 
     if (context.assetPublicPath.startsWith('/')) {
-      path = path.replace(context.assetPublicPath, '');
-      candidatePaths.push(context.resolveBuildFile(BUILD_DEFAULT_DIR, path));
+      assetPath = assetPath.replace(context.assetPublicPath, '');
+      candidatePaths.push(
+        context.resolveBuildFile(BUILD_DEFAULT_DIR, assetPath)
+      );
+    } else {
+      fullUrl.search = '';
+      const urlWithoutQuery = fullUrl.toString();
+      // when assetPublicPath is http:localhost:3000/xx
+      if (urlWithoutQuery.startsWith(context.assetPublicPath)) {
+        assetPath = urlWithoutQuery.replace(context.assetPublicPath, '');
+        candidatePaths.push(
+          context.resolveBuildFile(BUILD_DEFAULT_DIR, assetPath)
+        );
+      }
     }
 
     if (isDev) {
-      candidatePaths.push(context.resolvePublicFile(path));
+      candidatePaths.push(context.resolvePublicFile(assetPath));
     }
 
     if (!candidatePaths.length) {

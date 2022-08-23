@@ -3,8 +3,7 @@ import { getAssetMiddleware } from './middlewares/getAssetMiddleware';
 export class ShuviProdServer extends ShuviServer {
   async init() {
     const { _serverContext: context } = this;
-    const assetsMiddleware = getAssetMiddleware(context);
-    this._server.use(`${context.assetPublicPath}:path(.*)`, assetsMiddleware);
+    this._server.use(getAssetMiddleware(context));
     await this._initMiddlewares();
   }
 }
