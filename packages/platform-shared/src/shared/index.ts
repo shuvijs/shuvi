@@ -13,12 +13,12 @@ export type { IRuntimeConfig } from './runtimeConfigTypes';
 
 export {
   IAppModule,
-  // fix createRuntimePlugin is not portable begin
   IPluginInstance,
   BuiltInRuntimePluginHooks,
   CustomRuntimePluginHooks,
   RuntimePluginHooks,
-  // fix createRuntimePlugin is not portable end
   createRuntimePlugin,
+  createRuntimePluginBefore,
+  createRuntimePluginAfter,
   RuntimePluginInstance
-} from './lifecycle';
+} from './runtimPlugin';

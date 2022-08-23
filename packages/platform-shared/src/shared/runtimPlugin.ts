@@ -8,6 +8,7 @@ import {
   HookMap
 } from '@shuvi/hook';
 import { CustomRuntimePluginHooks } from '@shuvi/runtime';
+import { createPluginCreator } from '@shuvi/shared/lib/plugins';
 import { IAppContext } from './applicationTypes';
 
 export type AppComponent = unknown;
@@ -39,12 +40,13 @@ export interface RuntimePluginHooks
     CustomRuntimePluginHooks {}
 
 export const getManager = () =>
-  createHookManager<BuiltInRuntimePluginHooks, void, CustomRuntimePluginHooks>(
-    builtinRuntimePluginHooks,
-    false
-  );
+  createHookManager<RuntimePluginHooks, void>(builtinRuntimePluginHooks, false);
 
-export const { createPlugin: createRuntimePlugin } = getManager();
+export const {
+  createPluginBefore: createRuntimePluginBefore,
+  createPlugin: createRuntimePlugin,
+  createPluginAfter: createRuntimePluginAfter
+} = createPluginCreator(getManager());
 
 export type { IPluginInstance, CustomRuntimePluginHooks };
 

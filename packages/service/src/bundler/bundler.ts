@@ -19,7 +19,7 @@ import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
 import { Server, ShuviRequestHandler } from '../server';
 import { IPluginContext } from '../core';
 import { isFatalError } from '../error';
-import { Target, TargetChain } from '../core/lifecycle';
+import { Target, TargetChain } from '../core/plugin';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
 import { BUILD_DEFAULT_DIR } from '../constants';
