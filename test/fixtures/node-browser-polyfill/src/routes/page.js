@@ -39,10 +39,12 @@ export default function NodeBrowserPolyfillPage() {
 
   return (
     <>
-      <div
-        id="node-browser-polyfills"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(state) }}
-      ></div>
+      {state.vm ? (
+        <div
+          id="node-browser-polyfills"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(state) }}
+        />
+      ) : null}
     </>
   );
 }
