@@ -5,7 +5,7 @@ import type { RedoxStore } from '@shuvi/redox';
 export const RedoxWrapper = (App: any, appContext: { store: RedoxStore }) => {
   function RedoxAppWrapper() {
     return (
-      <RedoxRoot redoxStore={appContext.store}>
+      <RedoxRoot store={appContext.store}>
         <App />
       </RedoxRoot>
     );
