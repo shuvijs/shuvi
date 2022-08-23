@@ -5,7 +5,7 @@ import {
   getManager,
   PluginRunner,
   PluginManager
-} from '../lifecycle';
+} from '../plugin';
 import { getManager as getServerPluginManager } from '../../server/plugin';
 import { IPluginConfig, IPresetConfig } from '../apiTypes';
 import { resolvePlugin, resolvePresets, getPlugins } from '../getPlugins';

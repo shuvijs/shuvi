@@ -1,5 +1,5 @@
-import { getManager, PluginManager } from './lifecycle';
-import { initPlugins } from './lifecycle';
+import { getManager, PluginManager } from './runtimPlugin';
+import { initPlugins } from './runtimPlugin';
 import { Store, redox } from '@shuvi/redox';
 import { ErrorModel, errorModel } from './models/error';
 import { LoaderModel, loaderModel } from './models/loader';

@@ -28,7 +28,7 @@ import {
   PluginManager,
   Resources,
   CorePluginInstance
-} from './lifecycle';
+} from './plugin';
 import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';

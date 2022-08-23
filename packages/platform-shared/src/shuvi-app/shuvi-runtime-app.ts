@@ -5,7 +5,7 @@
  *  import {} from '@shuvi/runtime/app'
  *
  */
-import { IAppModule as _IAppModule } from '../shared/lifecycle';
+import { IAppModule as _IAppModule } from '../shared/runtimPlugin';
 
 type AppModule = Required<_IAppModule>;
 

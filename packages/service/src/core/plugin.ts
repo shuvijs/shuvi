@@ -6,8 +6,8 @@ import {
   IPluginInstance,
   IPluginHandlers
 } from '@shuvi/hook';
-
-import { FileOption } from '../project';
+import { createPluginCreator } from '@shuvi/shared/lib/plugins';
+import { FileOption } from '../project/index';
 import {
   ExtraTargetAssistant,
   ConfigWebpackAssistant,
@@ -18,7 +18,7 @@ import {
   Resources,
   AddRuntimeFileUtils,
   WebpackChainType
-} from './lifecycleTypes';
+} from './pluginTypes';
 import { Config, IPluginContext, CustomCorePluginHooks } from './apiTypes';
 
 const extendConfig = createSyncWaterfallHook<Config>();
@@ -69,26 +69,28 @@ const builtinPluginHooks = {
   addRuntimeService
 };
 
-export * from './lifecycleTypes';
+export * from './pluginTypes';
 
 type BuiltinPluginHooks = typeof builtinPluginHooks;
 
-export type CorePluginInstance = IPluginInstance<
-  BuiltinPluginHooks & CustomCorePluginHooks,
-  IPluginContext
->;
+export interface PluginHooks
+  extends BuiltinPluginHooks,
+    CustomCorePluginHooks {}
+
+export type CorePluginInstance = IPluginInstance<PluginHooks, IPluginContext>;
 
 export type CorePluginConstructor = IPluginHandlers<
-  BuiltinPluginHooks & CustomCorePluginHooks,
+  PluginHooks,
   IPluginContext
 >;
 export const getManager = () =>
-  createHookManager<BuiltinPluginHooks, IPluginContext, CustomCorePluginHooks>(
-    builtinPluginHooks
+  createHookManager<PluginHooks, IPluginContext>(
+    builtinPluginHooks as PluginHooks
   );
 
 export type PluginManager = ReturnType<typeof getManager>;
 
 export type PluginRunner = PluginManager['runner'];
 
-export const { createPlugin } = getManager();
+export const { createPluginBefore, createPlugin, createPluginAfter } =
+  createPluginCreator(getManager());

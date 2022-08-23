@@ -1,4 +1,4 @@
-import { createPlugin } from '../../../lifecycle';
+import { createPlugin } from '../../../plugin';
 
 export default createPlugin({
   afterInit: () => {

@@ -5,6 +5,7 @@ import {
   IPluginHandlers,
   HookMap
 } from '@shuvi/hook';
+import { createPluginCreator } from '@shuvi/shared/lib/plugins';
 import { IPluginContext } from '../core';
 import { CustomServerPluginHooks } from './pluginTypes';
 
@@ -33,13 +34,15 @@ export interface ServerPluginHooks
     CustomServerPluginHooks {}
 
 export const getManager = () =>
-  createHookManager<
-    BuiltInServerPluginHooks,
-    IServerPluginContext,
-    CustomServerPluginHooks
-  >(internalHooks);
+  createHookManager<ServerPluginHooks, IServerPluginContext>(
+    internalHooks as ServerPluginHooks
+  );
 
-export const { createPlugin: createServerPlugin } = getManager();
+export const {
+  createPluginBefore: createServerPluginBefore,
+  createPlugin: createServerPlugin,
+  createPluginAfter: createServerPluginAfter
+} = createPluginCreator(getManager());
 
 export type ServerPluginConstructor = IPluginHandlers<
   ServerPluginHooks,
