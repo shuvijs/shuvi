@@ -6,7 +6,7 @@ export const uuid = () => {
   });
 };
 
-export const ifIntersect = <T>(setA: Set<T>, setB: Set<T>) => {
+export const ifIntersect = <T>(setA: ReadonlySet<T>, setB: ReadonlySet<T>) => {
   for (const ele of setA) {
     if (setB.has(ele)) {
       return true;

@@ -155,6 +155,14 @@ class ProjectBuilder {
   get onBuildEnd() {
     return this._fileBuilder.onBuildEnd;
   }
+
+  get onBuildTriggered() {
+    return this._fileBuilder.onBuildTriggered;
+  }
+
+  get findFilesByDependencies() {
+    return this._fileBuilder.findFilesByDependencies;
+  }
 }
 
 export { ProjectBuilder };
