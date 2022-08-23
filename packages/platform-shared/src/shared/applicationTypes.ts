@@ -1,7 +1,7 @@
 import { RedoxStore } from '@shuvi/redox';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IRouter, IPageRouteRecord } from './routerTypes';
-import { IPluginList } from './lifecycle';
+import { IPluginList } from './runtimPlugin';
 
 export interface IAppContext extends CustomAppContext {
   [x: string]: unknown;

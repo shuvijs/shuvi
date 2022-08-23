@@ -16,7 +16,9 @@ export {
   ServerPluginInstance,
   IServerMiddleware,
   createShuviServer,
-  createServerPlugin
+  createServerPlugin,
+  createServerPluginBefore,
+  createServerPluginAfter
 } from './server';
 
 export {
@@ -34,5 +36,7 @@ export {
   CorePluginConstructor,
   CorePluginInstance,
   getApi,
-  createPlugin
+  createPlugin,
+  createPluginBefore,
+  createPluginAfter
 } from './core';

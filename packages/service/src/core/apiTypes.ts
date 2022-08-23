@@ -2,7 +2,7 @@ import {
   CorePluginConstructor,
   CorePluginInstance,
   PluginRunner
-} from './lifecycle';
+} from './plugin';
 import { FileOption } from '../project';
 import { IProxyConfig } from '../server/middlewares/httpProxyMiddleware';
 import {

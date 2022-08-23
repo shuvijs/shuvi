@@ -375,7 +375,10 @@ importers:
       '@types/ws': 8.2.0
 
   packages/shared:
-    specifiers: {}
+    specifiers:
+      '@shuvi/hook': 1.0.0-rc.5
+    dependencies:
+      '@shuvi/hook': link:../hook
 
   packages/shuvi:
     specifiers:

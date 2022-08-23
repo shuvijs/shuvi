@@ -10,6 +10,7 @@
       "@shuvi/libs/lib/*": ["packages/libs/src/*"],
       "@shuvi/router": ["packages/router/src/index"],
       "@shuvi/router-react/lib/*": ["packages/router-react/src/*"],
+      "@shuvi/shared/lib/*": ["packages/shared/src/*"],
       "@shuvi/*": ["packages/*/src"],
       "shuvi/lib/*": ["packages/shuvi/src/*"],
       "shuvi-test-utils": ["test/utils/index"],

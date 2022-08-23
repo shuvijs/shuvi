@@ -1,6 +1,6 @@
 import { createPlugin } from '@shuvi/service';
 import bundlerPlugin from './bundler';
-import { RedoxReactPlugin } from './redox-react';
+import { ModelReactPlugin } from './model';
 import { resolvePkgFile, resolveDep } from '../../paths';
 
 const webReactMainPlugin = createPlugin({
@@ -13,7 +13,7 @@ const webReactMainPlugin = createPlugin({
 });
 const platformWebReact = () => {
   return {
-    plugins: [webReactMainPlugin, bundlerPlugin, RedoxReactPlugin],
+    plugins: [webReactMainPlugin, bundlerPlugin, ModelReactPlugin],
     platformModule: resolvePkgFile('esm/shuvi-app/react/index'),
     polyfills: [
       resolveDep('react-app-polyfill/ie11'),
