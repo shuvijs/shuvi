@@ -29,7 +29,7 @@ export default function AppContainer({
   return (
     <ErrorBoundary>
       <AppProvider app={app}>
-        <Provider storeManager={app.store}>
+        <Provider redoxStore={app.store}>
           <ErrorGuard>{children}</ErrorGuard>
         </Provider>
       </AppProvider>
