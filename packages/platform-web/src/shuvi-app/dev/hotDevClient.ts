@@ -327,16 +327,16 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   function handleApplyUpdates(err, updatedModules) {
-    const needForcedReload = err || hadRuntimeError;
     const hasUpdates = Boolean(updatedModules?.length);
 
-    if (needForcedReload) {
-      if (hadRuntimeError) {
-        hadRuntimeError = false;
-        window.location.reload();
-      } else {
-        hadRuntimeError = true;
-      }
+    if (hadRuntimeError) {
+      hadRuntimeError = false;
+      window.location.reload();
+      return;
+    }
+
+    if (err) {
+      hadRuntimeError = true;
     }
 
     if (typeof onHotUpdateSuccess === 'function') {
