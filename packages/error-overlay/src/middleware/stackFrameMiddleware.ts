@@ -117,6 +117,7 @@ export function stackFrameMiddleware(
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.write(Buffer.from(JSON.stringify(originalStackFrames)));
+        cache.clear();
         return res.end();
       } catch (err) {
         res.statusCode = 500;
