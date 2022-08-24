@@ -123,7 +123,6 @@ export default class ModuleReplacePlugin implements Plugin {
     moduleInfos.forEach(moduleInfo => {
       moduleInfo.action = ModuleAction.RESTORE;
       handler.pending.set(moduleInfo.compiler, false);
-      moduleInfo.compiler.hooks.invalid.call('noop', new Date().getTime());
     });
     return new Promise(resolve => {
       handler.resolve = resolve;
