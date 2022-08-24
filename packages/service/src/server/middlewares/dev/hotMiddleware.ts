@@ -41,9 +41,9 @@ type moduleActivity = {
 const modulesActivity = new Map<modulePath, moduleActivity>();
 const routesActivity = new Map<route, lastActivity>();
 const activePages = new Set<modulePath>();
+
 interface IWebpackHotMiddlewareOptions {
   compiler: webpack.Compiler;
-  path: string;
   disposeInactivePage: boolean;
 }
 
@@ -51,24 +51,18 @@ const DEFAULT_PAGE_BUFFER_SIZE = 2;
 const BASE_INACTIVE_TIMEOUT = 25 * 1000;
 
 export class WebpackHotMiddleware {
-  _path: string;
-  _disposeInactivePage: boolean;
   clientManager: ClientManager;
   latestStats: webpack.Stats | null;
   closed: boolean;
   timer: NodeJS.Timer = setInterval(() => {
     this.handleInactiveModule();
   }, DEV_SOCKET_TIMEOUT_MS + 1000);
+  private _disposeInactivePage: boolean;
 
-  constructor({
-    compiler,
-    path,
-    disposeInactivePage
-  }: IWebpackHotMiddlewareOptions) {
+  constructor({ compiler, disposeInactivePage }: IWebpackHotMiddlewareOptions) {
     this.clientManager = new ClientManager();
     this.latestStats = null;
     this.closed = false;
-    this._path = path;
     this._disposeInactivePage = disposeInactivePage;
 
     compiler.hooks.invalid.tap('webpack-hot-middleware', this.onInvalid);
