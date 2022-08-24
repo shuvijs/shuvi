@@ -53,14 +53,14 @@ export async function writeDefaultConfigurations(
       reason: 'for dynamic import() support'
     },
     moduleResolution: {
-      parsedValue: ts.ModuleResolutionKind.NodeNext,
+      parsedValue: ts.ModuleResolutionKind.Node16,
       // All of these values work:
       parsedValues: [
         ts.ModuleResolutionKind.NodeJs,
         ts.ModuleResolutionKind.Node16,
         ts.ModuleResolutionKind.NodeNext
       ],
-      value: 'nodenext',
+      value: 'node16',
       reason: 'to match webpack resolution'
     },
     resolveJsonModule: { value: true, reason: 'to match webpack resolution' },

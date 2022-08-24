@@ -3,7 +3,6 @@ import { IncomingMessage } from 'http';
 import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
-  DEV_HOT_MIDDLEWARE_PATH,
   DEV_ORIGINAL_STACK_FRAME_ENDPOINT
 } from '@shuvi/shared/lib/constants';
 import {
@@ -68,8 +67,7 @@ export async function getDevMiddleware(
 
   const webpackHotMiddleware = new WebpackHotMiddleware({
     disposeInactivePage: serverPluginContext.config.disposeInactivePage,
-    compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!,
-    path: DEV_HOT_MIDDLEWARE_PATH
+    compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!
   });
 
   const apply = (server: Server) => {

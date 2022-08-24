@@ -1,11 +1,22 @@
 import { SourceMapConsumer, NullableMappedPosition } from 'source-map';
+// @ts-ignore
+import { parseSourceMapInput } from 'source-map/lib/util';
 
 export async function findOriginalSourcePositionAndContent(
   webpackSource: any,
   position: { line: number; column: number | null }
 ) {
-  const consumer = await new SourceMapConsumer(webpackSource.map());
+  let consumer;
+  let content;
+  // if file is changing, the webpackSource.map() may be parted.
+  // use try to resolve whole sourceMap ready。
   try {
+    content = parseSourceMapInput(webpackSource.map());
+  } catch (e) {
+    return null;
+  }
+  try {
+    consumer = await new SourceMapConsumer(content);
     const sourcePosition: NullableMappedPosition = consumer.originalPositionFor(
       {
         line: position.line,
@@ -28,6 +39,6 @@ export async function findOriginalSourcePositionAndContent(
       sourceContent
     };
   } finally {
-    consumer.destroy();
+    consumer && consumer.destroy();
   }
 }

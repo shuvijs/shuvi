@@ -9,7 +9,10 @@ import {
 } from '@shuvi/shared/lib/constants';
 
 import { getSourceById, Source } from './helper/getSourceById';
-import { getOriginalStackFrame } from './helper/getOriginalStackFrame';
+import {
+  getOriginalStackFrame,
+  OriginalStackFrame
+} from './helper/getOriginalStackFrame';
 
 export function stackFrameMiddleware(
   originalStackFrameEndpoint: string,
@@ -38,97 +41,110 @@ export function stackFrameMiddleware(
       }
     );
 
+  const collectSourceMaps = async (
+    files: string[],
+    compiler: webpack.Compiler,
+    compilation: webpack.Compilation | undefined,
+    cache: Map<string, Source>
+  ) => {
+    await Promise.all(
+      files.map(async fileName => {
+        const moduleId: string = resolveBuildFile(
+          buildDefaultDir,
+          fileName.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
+        );
+
+        const source = await getSourceById(
+          fileName.startsWith('file:'),
+          moduleId,
+          compiler,
+          compilation
+        );
+        cache.set(fileName, source);
+      })
+    );
+  };
+
+  const getStackFrames = async (
+    frames: StackFrame[],
+    errorMessage: string | undefined,
+    compilation: webpack.Compilation | undefined,
+    sourceMap: Map<string, Source>
+  ): Promise<OriginalStackFrame[]> => {
+    return await Promise.all(
+      frames.map(async (frame: StackFrame) =>
+        getOriginalStackFrame(
+          frame,
+          sourceMap,
+          resolveBuildFile,
+          buildDefaultDir,
+          errorMessage,
+          compilation
+        )
+      )
+    );
+  };
+
   return async function (
     req: IncomingMessage,
     res: ServerResponse,
     next: Function
   ) {
-    if (req.url!.startsWith(originalStackFrameEndpoint)) {
-      const files: string[] = [];
-      const cache = new Map<string, Source>();
-      const { query: queryFromUrl } = url.parse(req.url!, true);
-      const query = queryFromUrl as unknown as {
-        frames: string;
-        isServer: Boolean;
-        errorMessage: string | undefined;
-      };
+    if (!req.url!.startsWith(originalStackFrameEndpoint)) {
+      return next();
+    }
 
-      const frames: StackFrame[] = JSON.parse(query.frames as string);
-      const { isServer, errorMessage } = query;
-      const compiler = isServer
-        ? bundler.getSubCompiler(BUNDLER_TARGET_SERVER)
-        : bundler.getSubCompiler(BUNDLER_TARGET_CLIENT);
-      const compilation = isServer
-        ? serverStats?.compilation
-        : clientStats?.compilation;
+    const files: string[] = [];
+    const sourceMap = new Map<string, Source>();
+    const { query: queryFromUrl } = url.parse(req.url!, true);
+    const query = queryFromUrl as unknown as {
+      frames: string;
+      isServer: Boolean;
+      errorMessage: string | undefined;
+    };
 
-      // handle duplicate files
-      frames.forEach((frame: StackFrame) => {
-        const { file } = frame;
-        if (file == null) {
-          return;
-        }
-        if (files.indexOf(file) !== -1) {
-          return;
-        }
-        files.push(file);
-      });
+    const frames: StackFrame[] = JSON.parse(query.frames as string);
+    const { isServer, errorMessage } = query;
+    const compiler = isServer
+      ? bundler.getSubCompiler(BUNDLER_TARGET_SERVER)
+      : bundler.getSubCompiler(BUNDLER_TARGET_CLIENT);
+    const compilation = isServer
+      ? serverStats?.compilation
+      : clientStats?.compilation;
 
-      // handle the source from the file
-      try {
-        await Promise.all(
-          files.map(async fileName => {
-            const moduleId: string = resolveBuildFile(
-              buildDefaultDir,
-              fileName.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
-            );
-
-            const source = await getSourceById(
-              fileName.startsWith('file:'),
-              moduleId,
-              compiler,
-              compilation
-            );
-            cache.set(fileName, source);
-          })
-        );
-      } catch (err) {
-        console.log('Failed to get source map:', err);
-        res.statusCode = 500;
-        res.write('Internal Server Error');
-        res.end();
+    // handle duplicate files
+    frames.forEach((frame: StackFrame) => {
+      const { file } = frame;
+      if (file == null) {
         return;
       }
+      if (files.indexOf(file) !== -1) {
+        return;
+      }
+      files.push(file);
+    });
 
+    try {
+      // collect the sourcemaps from the files
+      await collectSourceMaps(files, compiler, compilation, sourceMap);
       // handle the source position
-      const originalStackFrames = await Promise.all(
-        frames.map(async (frame: StackFrame) =>
-          getOriginalStackFrame(
-            frame,
-            cache,
-            resolveBuildFile,
-            buildDefaultDir,
-            errorMessage,
-            compilation
-          )
-        )
+      const originalStackFrames = await getStackFrames(
+        frames,
+        errorMessage,
+        compilation,
+        sourceMap
       );
 
-      try {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.write(Buffer.from(JSON.stringify(originalStackFrames)));
-        res.end();
-        return;
-      } catch (err) {
-        console.log('Failed to parse source map:', err);
-        res.statusCode = 500;
-        res.write('Internal Server Error');
-        res.end();
-        return;
-      }
-    } else {
-      next();
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.write(Buffer.from(JSON.stringify(originalStackFrames)));
+    } catch (err) {
+      res.statusCode = 500;
+      res.write('Internal Server Error');
+    } finally {
+      sourceMap.clear();
     }
+
+    res.end();
   };
 }
