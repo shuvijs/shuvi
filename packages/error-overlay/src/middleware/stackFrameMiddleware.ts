@@ -93,42 +93,39 @@ export function stackFrameMiddleware(
           })
         );
       } catch (err) {
-        console.log('Failed to get source map:', err);
         res.statusCode = 500;
         res.write('Internal Server Error');
-        res.end();
-        return;
+        cache.clear();
+        return res.end();
       }
 
-      // handle the source position
-      const originalStackFrames = await Promise.all(
-        frames.map(async (frame: StackFrame) =>
-          getOriginalStackFrame(
-            frame,
-            cache,
-            resolveBuildFile,
-            buildDefaultDir,
-            errorMessage,
-            compilation
-          )
-        )
-      );
-
       try {
+        // handle the source position
+        const originalStackFrames = await Promise.all(
+          frames.map(async (frame: StackFrame) =>
+            getOriginalStackFrame(
+              frame,
+              cache,
+              resolveBuildFile,
+              buildDefaultDir,
+              errorMessage,
+              compilation
+            )
+          )
+        );
+
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.write(Buffer.from(JSON.stringify(originalStackFrames)));
-        res.end();
-        return;
+        return res.end();
       } catch (err) {
-        console.log('Failed to parse source map:', err);
         res.statusCode = 500;
         res.write('Internal Server Error');
-        res.end();
-        return;
+        cache.clear();
+        return res.end();
       }
     } else {
-      next();
+      return next();
     }
   };
 }
