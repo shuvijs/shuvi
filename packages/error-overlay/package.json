@@ -30,7 +30,7 @@
     "launch-editor": "2.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "source-map": "0.7.4",
+    "source-map": "0.8.0-beta.0",
     "stacktrace-parser": "0.1.10",
     "strip-ansi": "6.0.1",
     "tslib": "2.4.0"
