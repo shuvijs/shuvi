@@ -289,11 +289,11 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
         this._readyDefer.resolve();
       }
 
-      this._afterEachs.call(this._current, pre);
       this._listeners.call({
         action: this._history.action,
         location: this._history.location
       });
+      this._afterEachs.call(this._current, pre);
       finishedCallbacks.forEach(fn => {
         fn();
       });

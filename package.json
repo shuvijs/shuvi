@@ -78,5 +78,15 @@
     "typedoc-plugin-missing-exports": "^0.22.6",
     "turbo": "1.3.4",
     "typescript": "4.7.4"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@babel/core",
+        "react",
+        "react-dom",
+        "typescript"
+      ]
+    }
   }
 }

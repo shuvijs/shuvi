@@ -1,27 +1,22 @@
 import { useMatchedRoute } from '@shuvi/router-react';
 import { IPageRouteRecord, loaderModel } from '@shuvi/platform-shared/shared';
-import { useSharedModel } from './store';
+import { useStaticModel } from './store';
 
 export const noLoaderMessage =
   'Warning: no loader found. Please make sure the page component where `useLoaderData` is called has a `loader` export.';
 
+const hasOwn = Object.prototype.hasOwnProperty;
 export const useLoaderData = <T = any>(): T => {
   const currentMatch = useMatchedRoute<IPageRouteRecord>();
   const id = currentMatch.route!.id;
-  const [loader] = useSharedModel(
-    loaderModel,
-    s => {
-      return {
-        hasLoader: Object.prototype.hasOwnProperty.call(s.dataByRouteId, id),
-        data: s.dataByRouteId[id]
-      };
-    },
-    [id]
-  );
 
-  if (!loader.hasLoader) {
+  // we don't need to watch the model change, cause it always change with
+  // matched route
+  const [state] = useStaticModel(loaderModel);
+
+  if (!hasOwn.call(state.current.dataByRouteId, id)) {
     throw Error(noLoaderMessage);
   }
 
-  return loader.data;
+  return state.current.dataByRouteId[id];
 };

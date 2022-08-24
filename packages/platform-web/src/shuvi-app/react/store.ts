@@ -1,5 +1,5 @@
 import { createContainer } from '@shuvi/redox-react';
 
-const { Provider, useSharedModel } = createContainer();
+const { Provider, useSharedModel, useStaticModel } = createContainer();
 
-export { Provider, useSharedModel };
+export { Provider, useSharedModel, useStaticModel };
