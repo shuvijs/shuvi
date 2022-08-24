@@ -3,7 +3,6 @@ import { IncomingMessage } from 'http';
 import {
   BUNDLER_DEFAULT_TARGET,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
-  DEV_HOT_MIDDLEWARE_PATH,
   DEV_ORIGINAL_STACK_FRAME_ENDPOINT
 } from '@shuvi/shared/lib/constants';
 import {
