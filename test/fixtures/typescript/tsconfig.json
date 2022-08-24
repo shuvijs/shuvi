@@ -15,7 +15,7 @@
     "esModuleInterop": true,
     "noImplicitThis": true,
     "module": "esnext",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",

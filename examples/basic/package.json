@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "shuvi dev",
+    "build": "shuvi build",
+    "start": "shuvi start"
+  },
+  "dependencies": {
+    "shuvi": "1.0.0-rc.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.1",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "typescript": "^4.7.4"
+  }
+}

@@ -5,7 +5,7 @@
     "target": "es6",
     "lib": ["esnext"],
     "module": "esnext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "node16",
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
