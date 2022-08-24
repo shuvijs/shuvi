@@ -4,6 +4,8 @@ import type { Source } from './getSourceById';
 import type { OriginalStackFrame } from '../../view/helpers/stack-frame';
 import { createOriginalStackFrame } from './createOriginalStackFrame';
 
+export { OriginalStackFrame };
+
 export async function getOriginalStackFrame(
   frame: StackFrame,
   cache: Map<string, Source>,
