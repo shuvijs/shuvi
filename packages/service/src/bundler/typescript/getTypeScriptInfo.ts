@@ -19,6 +19,7 @@ export type CheckedDependenciesResult = {
 const requiredPackages = [
   { file: 'typescript', pkg: 'typescript' },
   { file: '@types/react/index.d.ts', pkg: '@types/react' },
+  { file: '@types/react-dom/index.d.ts', pkg: '@types/react' },
   { file: '@types/node/index.d.ts', pkg: '@types/node' }
 ];
 
