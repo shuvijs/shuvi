@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useRef, useReducer } from 'react';
 import * as PropTypes from 'prop-types';
 import invariant from '@shuvi/utils/lib/invariant';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { RouterContext, RouteContext } from './contexts';
 import { useInRouterContext } from './hooks';
 import { __DEV__ } from './constants';
-import { useIsomorphicEffect } from './utils';
 import { IRouterProps } from './types';
 
 /**
@@ -34,22 +33,19 @@ export function Router({
     };
   }, [staticProp, router]);
 
-  const unmount = useRef(false);
-  const forceupdate = useReducer(s => s * -1, 1)[1];
+  const { subscribe, getSnapshot } = React.useMemo(
+    () => ({
+      subscribe: (fn: any) => router.listen(fn),
+      getSnapshot: () => router.current
+    }),
+    [router]
+  );
 
-  useIsomorphicEffect(() => () => (unmount.current = true), []);
-  useIsomorphicEffect(() => {
-    router.listen(() => {
-      if (unmount.current) {
-        return;
-      }
-      forceupdate();
-    });
-  }, [router]);
+  const current = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   return (
     <RouterContext.Provider value={contextVal}>
-      <RouteContext.Provider children={children} value={router.current} />
+      <RouteContext.Provider children={children} value={current} />
     </RouterContext.Provider>
   );
 }

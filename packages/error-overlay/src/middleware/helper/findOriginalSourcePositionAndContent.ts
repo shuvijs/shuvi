@@ -8,13 +8,13 @@ export async function findOriginalSourcePositionAndContent(
 ) {
   let consumer;
   let content;
-  // if file is changing, the webpackSource.map() may be parted.
-  // use try to resolve whole sourceMap ready。
+  // the webpackSource.map() may be broken, check the validity in advance
   try {
     content = parseSourceMapInput(webpackSource.map());
   } catch (e) {
     return null;
   }
+
   try {
     consumer = await new SourceMapConsumer(content);
     const sourcePosition: NullableMappedPosition = consumer.originalPositionFor(
