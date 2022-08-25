@@ -15,7 +15,8 @@ export async function renderToHTML({
   const { application } = server;
   const app = application.createApp({
     req,
-    ssr: serverPluginContext.config.ssr
+    ssr: serverPluginContext.config.ssr,
+    isDev: serverPluginContext.mode === 'development'
   });
 
   try {
@@ -23,11 +24,12 @@ export async function renderToHTML({
     result = await renderer.renderView({
       req,
       app: app.getPublicAPI(),
-      ssr: serverPluginContext.config.ssr
+      ssr: serverPluginContext.config.ssr,
+      isDev: serverPluginContext.mode === 'development'
     });
   } finally {
     await app.dispose();
   }
 
-  return result;
+  return result!;
 }

@@ -16,6 +16,9 @@ export type { RedoxStore };
 export interface IError {
   code?: number;
   message?: string;
+  stack?: string;
+  name?: string;
+  source?: string;
 }
 
 export interface IErrorState {
