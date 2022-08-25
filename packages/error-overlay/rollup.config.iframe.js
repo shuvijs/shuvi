@@ -11,9 +11,14 @@ export default {
 
   plugins: [
     replace({
+      delimiters: ['\\b', '\\b'],
       preventAssignment: true,
       values: {
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+        // We set process.env.NODE_ENV to 'production' so that React is built
+        // in production mode.
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        // This prevents our bundled React from accidentally hijacking devtools.
+        __REACT_DEVTOOLS_GLOBAL_HOOK__: '({})'
       }
     }),
     commonjs(),
@@ -25,6 +30,7 @@ export default {
     })
   ],
   output: {
+    compact: false,
     name: 'iframe-bundle',
     file: path.join(__dirname, './lib/iframe-bundle.js')
   }
