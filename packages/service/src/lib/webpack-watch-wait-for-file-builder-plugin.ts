@@ -3,15 +3,13 @@ import { ProjectBuilder } from '../project/projectBuilder';
 import { FileInfo } from '../project/index';
 
 const checkResumeInterval = 10;
-const fallbackTimeout = 1000 * 30;
+const fallbackTimeout = 1000 * 5;
 
 type Options = {
   onBuildStart: ProjectBuilder['onBuildStart'];
   onBuildEnd: ProjectBuilder['onBuildEnd'];
   onInvalid: ProjectBuilder['onInvalid'];
   isDependency: ProjectBuilder['isDependency'];
-  /** only for testing. should be undefined or false in common case. */
-  preventResumeOnInvalid?: boolean;
 };
 
 const mergeMaps = <K, V>(remaining: Map<K, V>, dropped: ReadonlyMap<K, V>) => {
@@ -39,7 +37,7 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
     let collectedChangedFiles = new Map<string, FileInfo>();
     onInvalid(() => {
       compiler.watching.suspend();
-      if (checkResumeIntervalTimer && !this.options.preventResumeOnInvalid) {
+      if (checkResumeIntervalTimer) {
         clearInterval(checkResumeIntervalTimer);
       }
     });
@@ -71,25 +69,24 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
 
       // fileBuilder's files have changed, wait webpack watcher until it also detect these files have changed
       if (collectedChangedFiles.size) {
-        if (checkResumeIntervalTimer) {
-          clearInterval(checkResumeIntervalTimer);
+        if (!checkResumeIntervalTimer) {
+          checkResumeIntervalTimer = setInterval(() => {
+            if (canResume(collectedChangedFiles)) {
+              collectedChangedFiles.clear();
+              compiler.watching.resume();
+              clearInterval(checkResumeIntervalTimer);
+              clearTimeout(fallbackTimer);
+              checkResumeIntervalTimer = undefined;
+            }
+          }, checkResumeInterval);
         }
-        checkResumeIntervalTimer = setInterval(() => {
-          if (canResume(collectedChangedFiles)) {
-            collectedChangedFiles.clear();
-            compiler.watching.resume();
-            clearInterval(checkResumeIntervalTimer);
-            clearTimeout(fallbackTimer);
-            checkResumeIntervalTimer = undefined;
-          }
-        }, checkResumeInterval);
 
+        clearTimeout(fallbackTimer);
         // set a fallback timer in case of an exception that cannot be resumed
         fallbackTimer = setTimeout(() => {
           collectedChangedFiles.clear();
           compiler.watching.resume();
           clearInterval(checkResumeIntervalTimer);
-          clearTimeout(fallbackTimer);
           checkResumeIntervalTimer = undefined;
         }, fallbackTimeout);
       } else {

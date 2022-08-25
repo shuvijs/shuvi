@@ -121,7 +121,6 @@ describe('webpack watch wait file builder', () => {
             () => page.$text('#__APP'),
             t => /Index Page sample1/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
         };
 
         const times = 5;
@@ -129,7 +128,7 @@ describe('webpack watch wait file builder', () => {
         for (let i = 0; i < times; i++) {
           await loopFn(i + 1);
         }
-        expect(console.error).toBeCalledTimes(0);
+        expect(errorSpy).not.toHaveBeenCalled();
       } finally {
         await page.close();
         await ctx.close();
@@ -154,30 +153,6 @@ describe('webpack watch wait file builder', () => {
           t => /This page could not be found/.test(t)
         );
         expect(errorSpy).not.toHaveBeenCalled();
-      } finally {
-        await page.close();
-        await ctx.close();
-        if (existsSync(threeDirPath)) {
-          renameSync(threeDirPath, oneDirPath);
-        }
-      }
-    });
-
-    test('webpack watching should throw error when changing files frequently and preventResumeOnInvalid', async () => {
-      try {
-        ctx = await launchFixture('webpack-watch-wait-file-builder', {
-          plugins: ['./plugin/fileBuilder', './plugin/preventResumeOnInvalid']
-        });
-        page = await ctx.browser.page(ctx.url('/one'));
-        expect(await page.$text('#__APP')).toBe('Index Page sample1');
-        const errorSpy = jest.spyOn(console, 'error');
-
-        renameSync(oneDirPath, twoDirPath);
-        await check(
-          () => page.$text('#__APP'),
-          t => /This page could not be found/.test(t)
-        );
-        expect(errorSpy).toHaveBeenCalled();
       } finally {
         await page.close();
         await ctx.close();

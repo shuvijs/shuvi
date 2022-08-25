@@ -25,12 +25,10 @@ type OnBuildStartEvent = {};
 type OnSingleBuildEndEvent = {
   finished: boolean;
   changedFiles: ReadonlyMap<string, FileInfo>;
-  timestamp?: number;
 };
 
 type OnBuildEndEvent = {
   changedFiles: ReadonlyMap<string, FileInfo>;
-  timestamp?: number;
 };
 
 type OnBuildStartHandler = (event: OnBuildStartEvent) => void;
@@ -415,20 +413,17 @@ export const getFileBuilder = <C extends {} = {}>(
 
     const { rears } = buildInfo;
     const finished = rears.size === 0;
-    const timestamp = Date.now();
     Array.from(onSingleBuildEndHandlers).forEach(handler => {
       handler({
         finished,
-        changedFiles: getFileInfoMapWithPathAsKey(changedFiles),
-        timestamp
+        changedFiles: getFileInfoMapWithPathAsKey(changedFiles)
       });
     });
 
     if (finished) {
       Array.from(onBuildEndHandlers).forEach(handler => {
         handler({
-          changedFiles: getFileInfoMapWithPathAsKey(collectedChangedFiles),
-          timestamp
+          changedFiles: getFileInfoMapWithPathAsKey(collectedChangedFiles)
         });
       });
     }
