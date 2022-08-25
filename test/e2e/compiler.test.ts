@@ -41,14 +41,13 @@ describe('compiler', () => {
   });
 
   test('could disable dynamic', async () => {
-    page = await ctx.browser.page(ctx.url('/disableShuviDynamic'), {
-      waitUntil: ['domcontentloaded'] // resolve before client-side render
-    });
+    page = await ctx.browser.page(ctx.url('/disableShuviDynamic'));
     const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
-
     expect(
       appData.dynamicIds.includes('./src/components/hello.js')
     ).toBeFalsy();
+    expect(await page.$text('div')).toBe('');
+    await page.waitForSelector('.hello');
     expect(await page.$text('div')).toBe('Hello World');
   });
 

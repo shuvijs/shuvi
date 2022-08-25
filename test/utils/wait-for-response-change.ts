@@ -7,7 +7,7 @@ export const waitForResponseChange = async <T>(
   while (true) {
     const currentTime = Date.now();
     if (currentTime - startTime > timeout) {
-      throw new Error('超时了！');
+      throw new Error('Timeout!');
     }
 
     const result = await requestMethod();
