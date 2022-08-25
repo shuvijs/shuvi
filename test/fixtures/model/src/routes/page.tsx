@@ -113,7 +113,7 @@ export default function Index() {
 
 export const loader = async ctx => {
   const store = ctx.appContext.store;
-  const baseStore = store.get(base);
+  const baseStore = store.getModel(base);
   await baseStore.addStepAsync();
   return {};
 };

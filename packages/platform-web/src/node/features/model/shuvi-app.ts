@@ -1,7 +1,7 @@
-import type { IStoreManager } from '@shuvi/redox';
+import type { RedoxStore } from '@shuvi/redox';
 
 declare module '@shuvi/runtime' {
   export interface CustomAppContext {
-    store: IStoreManager;
+    store: RedoxStore;
   }
 }

@@ -1,4 +1,4 @@
-import { IStoreManager } from '@shuvi/redox';
+import { RedoxStore } from '@shuvi/redox';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IRouter, IPageRouteRecord } from './routerTypes';
 import { IPluginList } from './runtimPlugin';
@@ -11,7 +11,7 @@ export type IRerenderConfig = {
   AppComponent?: any;
 };
 
-export type { IStoreManager };
+export type { RedoxStore };
 
 export interface IError {
   code?: number;
@@ -30,7 +30,7 @@ export interface IApplication {
   readonly context: IAppContext;
   readonly router: IRouter<IPageRouteRecord>;
   readonly appComponent: any;
-  readonly store: IStoreManager;
+  readonly store: RedoxStore;
   readonly error: IError | undefined;
   setError(err: IError): void;
   clearError(): void;
