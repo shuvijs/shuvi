@@ -10,6 +10,8 @@ export interface IPageRouteRecord extends IRouteRecord {
   path: string;
   component?: any;
   children?: IPageRouteRecord[];
+  __import__?: () => Promise<any>;
+  __resolveWeak__?: () => string[];
   __componentSource__?: string;
   __componentRawRequest__?: string;
   [x: string]: any;
