@@ -1,4 +1,4 @@
-import { IStoreManager, redox } from '@shuvi/redox';
+import { RedoxStore, redox } from '@shuvi/redox';
 import {
   createRuntimePlugin,
   getPageData,
@@ -8,9 +8,9 @@ import {
 export type InitRedox = (params: {
   initialState: any;
   ctx: IAppContext;
-}) => IStoreManager;
+}) => RedoxStore;
 
-let currentStore: IStoreManager;
+let currentStore: RedoxStore;
 
 const isServer = typeof window === 'undefined';
 

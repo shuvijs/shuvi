@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useModel, defineModel, ISelectorParams } from '@shuvi/runtime/model';
+import { useModel, defineModel, ModelSnapshot } from '@shuvi/runtime/model';
 
 const other = defineModel({
   name: 'other',
@@ -61,7 +61,7 @@ const user = defineModel(
   [other, dome]
 );
 
-const selector = function (stateAndViews: ISelectorParams<typeof user>) {
+const selector = function (stateAndViews: ModelSnapshot<typeof user>) {
   return {
     stateData: stateAndViews.id,
     one: stateAndViews.one,
