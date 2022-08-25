@@ -24,36 +24,44 @@ module.exports = createPlugin({
     });
   },
   configWebpack: (config, _, context) => {
-    const two = path.resolve(context.paths.routesDir, 'two');
-    const three = path.resolve(context.paths.routesDir, 'three');
-    const threePage = path.resolve(context.paths.routesDir, 'three', 'page.js');
-    const plugin = config.plugin('webpack-watch-wait-for-file-builder-plugin');
-    plugin.tap(([arg]) => {
-      const { onBuildEnd } = arg;
+    if (context.mode === 'development') {
+      const two = path.resolve(context.paths.routesDir, 'two');
+      const three = path.resolve(context.paths.routesDir, 'three');
+      const threePage = path.resolve(
+        context.paths.routesDir,
+        'three',
+        'page.js'
+      );
+      const plugin = config.plugin(
+        'webpack-watch-wait-for-file-builder-plugin'
+      );
+      plugin.tap(([arg]) => {
+        const { onBuildEnd } = arg;
 
-      const end1 = () => {
-        setTimeout(() => {
-          if (fs.existsSync(two)) {
-            fs.renameSync(two, three);
-          }
-        }, 0);
-        onBuildEndCanceler();
-        onBuildEndCanceler = onBuildEnd(end2);
-      };
+        const end1 = () => {
+          setTimeout(() => {
+            if (fs.existsSync(two)) {
+              fs.renameSync(two, three);
+            }
+          }, 0);
+          onBuildEndCanceler();
+          onBuildEndCanceler = onBuildEnd(end2);
+        };
 
-      const end2 = () => {
-        setTimeout(() => {
-          if (fs.existsSync(threePage)) {
-            const content = fs.readFileSync(threePage, 'utf-8');
-            fs.writeFileSync(threePage, content + '\n', 'utf-8');
-          }
-        }, 0);
-        onBuildEndCanceler();
-      };
+        const end2 = () => {
+          setTimeout(() => {
+            if (fs.existsSync(threePage)) {
+              const content = fs.readFileSync(threePage, 'utf-8');
+              fs.writeFileSync(threePage, content + '\n', 'utf-8');
+            }
+          }, 0);
+          onBuildEndCanceler();
+        };
 
-      onBuildEndCanceler = onBuildEnd(end1);
-      return [arg];
-    });
+        onBuildEndCanceler = onBuildEnd(end1);
+        return [arg];
+      });
+    }
     return config;
   }
 });
