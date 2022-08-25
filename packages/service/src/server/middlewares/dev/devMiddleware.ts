@@ -9,7 +9,7 @@ import {
   launchEditorMiddleware,
   stackFrameMiddleware
 } from '@shuvi/error-overlay/lib/middleware';
-import { BUILD_DEFAULT_DIR } from '../../../constants';
+import { BUILD_DEFAULT_DIR, BUILD_SERVER_DIR } from '../../../constants';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -83,7 +83,8 @@ export async function getDevMiddleware(
         DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
         bundler,
         serverPluginContext.resolveBuildFile,
-        BUILD_DEFAULT_DIR
+        BUILD_DEFAULT_DIR,
+        BUILD_SERVER_DIR
       )
     );
     bundler.applyDevMiddlewares(server);

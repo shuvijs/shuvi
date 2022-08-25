@@ -18,7 +18,8 @@ export function stackFrameMiddleware(
   originalStackFrameEndpoint: string,
   bundler: any,
   resolveBuildFile: (...paths: string[]) => string,
-  buildDefaultDir: string
+  buildDefaultDir: string,
+  buildServerDir: string
 ) {
   let clientStats: webpack.Stats | null = null;
   let serverStats: webpack.Stats | null = null;
@@ -45,19 +46,22 @@ export function stackFrameMiddleware(
     files: string[],
     compiler: webpack.Compiler,
     compilation: webpack.Compilation | undefined,
-    cache: Map<string, Source>
+    cache: Map<string, Source>,
+    buildDir: string
   ) => {
     await Promise.all(
       files.map(async fileName => {
-        const moduleId: string = resolveBuildFile(
-          buildDefaultDir,
-          fileName.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
+        const moduleId = fileName.replace(
+          /^(webpack-internal:\/\/\/|file:\/\/)/,
+          ''
         );
 
         const source = await getSourceById(
           fileName.startsWith('file:'),
           moduleId,
           compiler,
+          resolveBuildFile,
+          buildDir,
           compilation
         );
         cache.set(fileName, source);
@@ -69,7 +73,8 @@ export function stackFrameMiddleware(
     frames: StackFrame[],
     errorMessage: string | undefined,
     compilation: webpack.Compilation | undefined,
-    sourceMap: Map<string, Source>
+    sourceMap: Map<string, Source>,
+    buildDir: string
   ): Promise<OriginalStackFrame[]> => {
     return await Promise.all(
       frames.map(async (frame: StackFrame) =>
@@ -77,7 +82,7 @@ export function stackFrameMiddleware(
           frame,
           sourceMap,
           resolveBuildFile,
-          buildDefaultDir,
+          buildDir,
           errorMessage,
           compilation
         )
@@ -99,18 +104,19 @@ export function stackFrameMiddleware(
     const { query: queryFromUrl } = url.parse(req.url!, true);
     const query = queryFromUrl as unknown as {
       frames: string;
-      isServer: Boolean;
+      isServer: string;
       errorMessage: string | undefined;
     };
 
     const frames: StackFrame[] = JSON.parse(query.frames as string);
     const { isServer, errorMessage } = query;
-    const compiler = isServer
-      ? bundler.getSubCompiler(BUNDLER_TARGET_SERVER)
-      : bundler.getSubCompiler(BUNDLER_TARGET_CLIENT);
-    const compilation = isServer
-      ? serverStats?.compilation
-      : clientStats?.compilation;
+    const compiler =
+      isServer === 'true'
+        ? bundler.getSubCompiler(BUNDLER_TARGET_SERVER)
+        : bundler.getSubCompiler(BUNDLER_TARGET_CLIENT);
+    const compilation =
+      isServer === 'true' ? serverStats?.compilation : clientStats?.compilation;
+    const buildDir = isServer === 'true' ? buildServerDir : buildDefaultDir;
 
     // handle duplicate files
     frames.forEach((frame: StackFrame) => {
@@ -126,13 +132,20 @@ export function stackFrameMiddleware(
 
     try {
       // collect the sourcemaps from the files
-      await collectSourceMaps(files, compiler, compilation, sourceMap);
+      await collectSourceMaps(
+        files,
+        compiler,
+        compilation,
+        sourceMap,
+        buildDir
+      );
       // handle the source position
       const originalStackFrames = await getStackFrames(
         frames,
         errorMessage,
         compilation,
-        sourceMap
+        sourceMap,
+        buildDir
       );
 
       res.statusCode = 200;

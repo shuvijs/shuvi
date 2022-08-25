@@ -330,7 +330,9 @@ describe('custom/error.js [prod]', () => {
       await page.shuvi.navigate('/ctx-error');
       // should fail to load chunk and show error page
       await page.waitForSelector('#error');
-      expect(await page.$text('#error')).toBe('custom error 500 Preload Error');
+      expect(await page.$text('#error')).toBe(
+        'custom error 500 Internal Server Error'
+      );
     });
   });
 
@@ -425,7 +427,9 @@ describe('custom/error.js [prod]', () => {
       result = await page.goto(ctx.url('/ctx-error?a=1'));
       expect(result.status()).toBe(200);
       await page.waitForSelector('#error-show-client');
-      expect(await page.$text('#error')).toBe('custom error 500 Preload Error');
+      expect(await page.$text('#error')).toBe(
+        'custom error 500 Internal Server Error'
+      );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
       );
@@ -435,7 +439,9 @@ describe('custom/error.js [prod]', () => {
       await page.shuvi.navigate('/ctx-error');
       // should fail to load chunk and show error page
       await page.waitForSelector('#error');
-      expect(await page.$text('#error')).toBe('custom error 500 Preload Error');
+      expect(await page.$text('#error')).toBe(
+        'custom error 500 Internal Server Error'
+      );
     });
   });
 });

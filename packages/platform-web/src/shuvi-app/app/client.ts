@@ -20,6 +20,7 @@ import pageLoaders from '@shuvi/app/files/page-loaders';
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { CreateAppClient } from '../../shared';
+import { serializeServerError } from '../helper/serializeServerError';
 
 let app: Application;
 
@@ -78,7 +79,7 @@ export const createApp: CreateAppClient = ({
     }
 
     const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
-    let isPreloadError = false;
+
     try {
       const loaderDatas = await new Promise<LoaderDataRecord>(
         (resolve, reject) => {
@@ -100,7 +101,6 @@ export const createApp: CreateAppClient = ({
           runPreload(to)
             .then(tryResolve)
             .catch(err => {
-              isPreloadError = true;
               reject(err);
             });
 
@@ -134,11 +134,9 @@ export const createApp: CreateAppClient = ({
         return;
       }
 
-      app.setError({
-        code: SHUVI_ERROR.APP_ERROR.code,
-        message:
-          error.message || isPreloadError ? 'Preload Error' : 'Loader Error'
-      });
+      app.setError(
+        serializeServerError(error, process.env.NODE_ENV === 'development')
+      );
       next();
       return;
     }

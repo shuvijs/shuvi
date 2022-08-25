@@ -1,5 +1,6 @@
 import { RawSourceMap } from 'source-map';
 import dataUriToBuffer, { MimeBuffer } from 'data-uri-to-buffer';
+import * as path from 'path';
 import type webpack from '@shuvi/toolpack/lib/webpack';
 
 import { getSourceMapUrl } from './getSourceMapUrl';
@@ -16,7 +17,7 @@ const readFileWrapper = (
       if (err) {
         resolve(null);
       }
-      resolve(res.toString());
+      resolve(res?.toString());
     });
   });
 };
@@ -78,10 +79,16 @@ export async function getSourceById(
   isFile: boolean,
   id: string,
   compiler: webpack.Compiler,
+  resolveBuildFile: (...paths: string[]) => string,
+  buildDir: string,
   compilation?: webpack.Compilation
 ): Promise<Source> {
   if (isFile) {
-    const map = await getRawSourceMap(id, compiler);
+    const pathName: string = path.isAbsolute(id)
+      ? id
+      : resolveBuildFile(buildDir, id);
+
+    const map = await getRawSourceMap(pathName, compiler);
 
     if (map === null) {
       return null;

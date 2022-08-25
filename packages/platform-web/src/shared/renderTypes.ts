@@ -50,6 +50,7 @@ export interface IClientRendererOptions<ExtraAppData = {}>
 export interface IServerRendererOptions extends IRenderOptions {
   req: ShuviRequest;
   manifest: IManifest;
+  isDev?: boolean;
 }
 
 export interface IViewClient<ExtraAppData = {}>

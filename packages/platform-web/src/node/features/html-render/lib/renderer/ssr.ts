@@ -7,7 +7,7 @@ import { tag } from './htmlTag';
 import { IHtmlDocument, IRenderViewOptions } from './types';
 
 export class SsrRenderer extends BaseRenderer {
-  async renderDocument({ app, req }: IRenderViewOptions) {
+  async renderDocument({ app, req, isDev }: IRenderViewOptions) {
     const { store, router, context } = app;
 
     const serverPluginContext = this._serverPluginContext;
@@ -18,7 +18,8 @@ export class SsrRenderer extends BaseRenderer {
     const result = await view.renderApp({
       app,
       req,
-      manifest: clientManifest
+      manifest: clientManifest,
+      isDev
     });
 
     if (isResponse(result)) {
