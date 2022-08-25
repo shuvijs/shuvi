@@ -1,3 +1,4 @@
+import path from 'path';
 import { getFileBuilder, defineFile } from '..';
 import { resetFs, sleep, readDirSync, readFileSync } from './helper';
 
@@ -121,6 +122,41 @@ describe('fileBuilder build', () => {
       expect(getContent(a)).toBeUndefined();
       expect(getContent(b)).toBeUndefined();
       expect(getContent(v)).toBeUndefined();
+    });
+
+    test('isDependency should work after build', async () => {
+      const srcA = path.resolve('/', 'srcA');
+      const srcB = path.resolve('/', 'srcB');
+      const dirA = path.resolve('/', 'dirA');
+      const dirB = path.resolve('/', 'dirB');
+      const srcAA = path.resolve('/', 'dirA', 'A');
+      const srcBB = path.resolve('/', 'dirB', 'B');
+      const fileBuilder = getFileBuilder();
+      const { addFile, build, close, isDependency } = fileBuilder;
+      const a = defineFile({
+        name: 'a',
+        content() {
+          return '';
+        },
+        dependencies: [srcA]
+      });
+      const b = defineFile({
+        name: 'b',
+        content() {
+          return '';
+        },
+        dependencies: [dirA]
+      });
+      addFile(a, b);
+      await build();
+      expect(isDependency(srcA)).toBe(true);
+      expect(isDependency(srcB)).toBe(false);
+      expect(isDependency(dirA)).toBe(true);
+      expect(isDependency(dirB)).toBe(false);
+      expect(isDependency(srcAA)).toBe(true);
+      expect(isDependency(srcBB)).toBe(false);
+      expect(isDependency('noop')).toBe(false);
+      await close();
     });
   });
 
