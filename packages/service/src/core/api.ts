@@ -144,18 +144,9 @@ class Api {
     const { runner, setContext, createPlugin, usePlugin } = this._pluginManager;
     setContext(this._pluginContext);
     //## start init
-    // 1. init platform
+    // 1. init platform and internal plugin
     const { plugins: platformPlugins, getPresetRuntimeFiles } =
       await this._initPlatform();
-
-    // 2. init user plugins
-    const userPlugins = getPlugins(this._cwd, {
-      presets: this._presets,
-      plugins: this._plugins
-    });
-    platformPlugins
-      .concat(userPlugins)
-      .forEach(plugin => this._applyPlugin(plugin));
 
     // include runtimePlugin directories at @shuvi/swc-loader
     const addIncludeToSwcLoader = createPlugin({
@@ -177,9 +168,8 @@ class Api {
               {
                 onBuildStart: this._projectBuilder.onBuildStart,
                 onBuildEnd: this._projectBuilder.onBuildEnd,
-                onBuildTriggered: this._projectBuilder.onBuildTriggered,
-                findFilesByDependencies:
-                  this._projectBuilder.findFilesByDependencies
+                onInvalid: this._projectBuilder.onInvalid,
+                isDependency: this._projectBuilder.isDependency
               }
             ]);
         }
@@ -188,6 +178,15 @@ class Api {
       }
     });
     usePlugin(addIncludeToSwcLoader, webpackWaitPlugin);
+
+    // 2. init user plugins
+    const userPlugins = getPlugins(this._cwd, {
+      presets: this._presets,
+      plugins: this._plugins
+    });
+    platformPlugins
+      .concat(userPlugins)
+      .forEach(plugin => this._applyPlugin(plugin));
 
     // 3. init resources
     const resources = (await runner.addResource()).flat() as Resources[];

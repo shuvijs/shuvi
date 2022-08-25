@@ -156,12 +156,12 @@ class ProjectBuilder {
     return this._fileBuilder.onBuildEnd;
   }
 
-  get onBuildTriggered() {
-    return this._fileBuilder.onBuildTriggered;
+  get onInvalid() {
+    return this._fileBuilder.onInvalid;
   }
 
-  get findFilesByDependencies() {
-    return this._fileBuilder.findFilesByDependencies;
+  get isDependency() {
+    return this._fileBuilder.isDependency;
   }
 }
 

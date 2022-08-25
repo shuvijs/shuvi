@@ -1,101 +1,122 @@
-import { ProjectBuilder } from '../project/projectBuilder';
-
-import { createDefer, Defer } from '@shuvi/utils/lib/defer';
-
 import { Compiler, Plugin } from '@shuvi/toolpack/lib/webpack';
+import { ProjectBuilder } from '../project/projectBuilder';
+import { FileInfo } from '../project/index';
+
+const checkResumeInterval = 10;
+const fallbackTimeout = 1000 * 30;
 
 type Options = {
   onBuildStart: ProjectBuilder['onBuildStart'];
   onBuildEnd: ProjectBuilder['onBuildEnd'];
-  onBuildTriggered: ProjectBuilder['onBuildTriggered'];
-  findFilesByDependencies: ProjectBuilder['findFilesByDependencies'];
+  onInvalid: ProjectBuilder['onInvalid'];
+  isDependency: ProjectBuilder['isDependency'];
+  /** only for testing. should be undefined or false in common case. */
+  preventResumeOnInvalid?: boolean;
 };
 
-const mergeSets = <T>(remaining: Set<T>, dropped: ReadonlySet<T>) => {
-  for (const item of dropped) {
-    remaining.add(item);
+const mergeMaps = <K, V>(remaining: Map<K, V>, dropped: ReadonlyMap<K, V>) => {
+  for (const [file, info] of dropped) {
+    remaining.set(file, info);
   }
 };
 
 export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
   options: Options;
-  defer: Defer<Set<string>>;
+
   constructor(options: Options) {
     this.options = options;
-    this.defer = createDefer();
-    this.defer.resolve(new Set());
   }
   apply(compiler: Compiler) {
-    const { onBuildEnd, onBuildTriggered, findFilesByDependencies } =
-      this.options;
+    const { onBuildEnd, onInvalid, isDependency } = this.options;
     /**
      * watching.suspend will pause the real action in the watcher handler but still collecting changed files.
      * watching.resume will resume its action
-     *
-     * We make sure onBuildStart is faster than webpack's watcher and make it suspend.
-     *
      * And resume when onBuildEnd.
-     *
      * In this way, during build of fileBuilder, webpack will not trigger any watchRun event but keep watching changed files.
      */
-    onBuildTriggered(() => {
+    let checkResumeIntervalTimer: NodeJS.Timer | undefined;
+    let fallbackTimer: NodeJS.Timer | undefined;
+    let collectedChangedFiles = new Map<string, FileInfo>();
+    onInvalid(() => {
       compiler.watching.suspend();
+      if (checkResumeIntervalTimer && !this.options.preventResumeOnInvalid) {
+        clearInterval(checkResumeIntervalTimer);
+      }
     });
 
-    const canResume = (
-      changedFiles: ReadonlySet<string>,
-      timestamp: number
-    ) => {
+    /**
+     * check if webpack watching can resume.
+     * webpack watching cannot resume until all the changed files has been detected by webpack watcher.
+     *
+     */
+    const canResume = (changedFiles: ReadonlyMap<string, FileInfo>) => {
       const fileInfoEntries =
         compiler.watching.watcher?.getInfo?.().fileTimeInfoEntries;
       if (!fileInfoEntries) return false;
-      for (const file of changedFiles) {
+
+      for (const [file, { timestamp }] of changedFiles) {
         const fileInfo = fileInfoEntries.get(file);
         const safeTime: number = (fileInfo as any)?.safeTime || 0;
+
+        // webpack watcher's safeTime should >= timestamp
         if (safeTime < timestamp) {
           return false;
         }
       }
       return true;
     };
-    let interval: NodeJS.Timer | undefined;
-    let revealTimer: NodeJS.Timer | undefined;
-    let collectedChangedFiles = new Set<string>();
-    onBuildEnd(({ changedFiles, buildStatus, timestamp }) => {
-      // collect changed files
-      mergeSets(collectedChangedFiles, changedFiles);
 
-      // check collectedChangedFiles when fulfilled
-      if (buildStatus === 'fulfilled') {
-        // fileBuilder's files have changed, wait webpack watcher that it also detect these files have changed
-        if (collectedChangedFiles.size) {
-          if (interval) {
-            clearInterval(interval);
+    onBuildEnd(({ changedFiles }) => {
+      mergeMaps(collectedChangedFiles, changedFiles);
+
+      // fileBuilder's files have changed, wait webpack watcher until it also detect these files have changed
+      if (collectedChangedFiles.size) {
+        if (checkResumeIntervalTimer) {
+          clearInterval(checkResumeIntervalTimer);
+        }
+        checkResumeIntervalTimer = setInterval(() => {
+          if (canResume(collectedChangedFiles)) {
+            collectedChangedFiles.clear();
+            compiler.watching.resume();
+            clearInterval(checkResumeIntervalTimer);
+            clearTimeout(fallbackTimer);
+            checkResumeIntervalTimer = undefined;
           }
-          interval = setInterval(() => {
-            if (canResume(collectedChangedFiles, timestamp)) {
-              collectedChangedFiles.clear();
-              compiler.watching.resume();
-              clearInterval(interval);
-              clearTimeout(revealTimer);
-              interval = undefined;
-            }
-          }, 10);
-        } else {
+        }, checkResumeInterval);
+
+        // set a fallback timer in case of an exception that cannot be resumed
+        fallbackTimer = setTimeout(() => {
+          collectedChangedFiles.clear();
           compiler.watching.resume();
+          clearInterval(checkResumeIntervalTimer);
+          clearTimeout(fallbackTimer);
+          checkResumeIntervalTimer = undefined;
+        }, fallbackTimeout);
+      } else {
+        // resume directly is no changed files
+        compiler.watching.resume();
+      }
+    });
+
+    compiler.hooks.invalid.tap(
+      'WebpackWatchWaitForFileBuilderPlugin-invalid',
+      file => {
+        // collect changed files and removed files and check if they are the dependencies of the fileBuilder
+        // if yes, invoke `compiler.watching.suspend()`
+        const removedFiles: Set<string> | undefined = (compiler.watching as any)
+          ._collectedRemovedFiles;
+        const files = new Set(removedFiles);
+        if (file) {
+          files.add(file);
+        }
+
+        for (const currentFile of files) {
+          if (isDependency(currentFile)) {
+            compiler.watching.suspend();
+            return;
+          }
         }
       }
-    });
-
-    compiler.hooks.invalid.tap('invalid plugin', () => {
-      const modifiedFiles: Set<string> =
-        (compiler.watching as any)._collectedChangedFiles || new Set();
-      const removedFiles: Set<string> =
-        (compiler.watching as any)._collectedRemovedFiles || new Set();
-      const targets = findFilesByDependencies(modifiedFiles, removedFiles);
-      if (targets.size) {
-        compiler.watching.suspend();
-      }
-    });
+    );
   }
 }

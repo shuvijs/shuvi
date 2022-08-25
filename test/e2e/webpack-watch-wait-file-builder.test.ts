@@ -3,45 +3,62 @@ import {
   Page,
   launchFixture,
   resolveFixture,
-  check,
-  checkShuviPortal,
-  wait
+  check
 } from '../utils/index';
-import { renameSync, existsSync } from 'fs';
+import { copySync, renameSync, existsSync, removeSync } from 'fs-extra';
 
 jest.setTimeout(30 * 60 * 1000);
+
+const sampleFilePath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/sample.js'
+);
+const newSampleFilePath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/new-sample.js'
+);
+const routesDirPath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/routes'
+);
+
+const _routesDirPath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/_routes'
+);
+
+const newRoutesDirPath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/new-routes'
+);
+
+const oneDirPath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/routes/one'
+);
+
+const twoDirPath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/routes/two'
+);
+const threeDirPath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/routes/three'
+);
+
+const newOneDirPath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/routes/new-one'
+);
+
+const onePageFilePath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/routes/one/page.js'
+);
+
+const newOnePageFilePath = resolveFixture(
+  'webpack-watch-wait-file-builder/src/routes/one/new-page.js'
+);
+
+afterEach(() => {
+  removeSync(routesDirPath);
+  copySync(_routesDirPath, routesDirPath);
+});
 
 describe('webpack watch wait file builder', () => {
   let ctx: AppCtx;
   let page: Page;
-  const sampleFilePath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/sample.js'
-  );
-  const newSampleFilePath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/new-sample.js'
-  );
-  const routesDirPath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/routes'
-  );
-  const newRoutesDirPath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/new-routes'
-  );
 
-  const oneDirPath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/routes/one'
-  );
-
-  const newOneDirPath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/routes/new-one'
-  );
-
-  const onePageFilePath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/routes/one/page.js'
-  );
-
-  const newOnePageFilePath = resolveFixture(
-    'webpack-watch-wait-file-builder/src/routes/one/new-page.js'
-  );
   describe('changing files should work with WebpackWatchWaitForFileBuilderPlugin', () => {
     test(`webpack watching should wait for fileBuilder's buildEnd and should not throw error when changing files`, async () => {
       try {
@@ -59,13 +76,12 @@ describe('webpack watch wait file builder', () => {
             () => page.$text('#__APP'),
             t => /Index Page not exist/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
+
           renameSync(newSampleFilePath, sampleFilePath);
           await check(
             () => page.$text('#__APP'),
             t => /Index Page sample1/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
 
           // change one page file path and change back
           renameSync(onePageFilePath, newOnePageFilePath);
@@ -73,13 +89,12 @@ describe('webpack watch wait file builder', () => {
             () => page.$text('#__APP'),
             t => /This page could not be found/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
+
           renameSync(newOnePageFilePath, onePageFilePath);
           await check(
             () => page.$text('#__APP'),
             t => /Index Page sample1/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
 
           // change one dir path and change back
           renameSync(oneDirPath, newOneDirPath);
@@ -87,13 +102,12 @@ describe('webpack watch wait file builder', () => {
             () => page.$text('#__APP'),
             t => /This page could not be found/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
+
           renameSync(newOneDirPath, oneDirPath);
           await check(
             () => page.$text('#__APP'),
             t => /Index Page sample1/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
 
           // change routes dir path and change back
           renameSync(routesDirPath, newRoutesDirPath);
@@ -101,7 +115,7 @@ describe('webpack watch wait file builder', () => {
             () => page.$text('#__APP'),
             t => /This page could not be found/.test(t)
           );
-          expect(errorSpy).not.toHaveBeenCalled();
+
           renameSync(newRoutesDirPath, routesDirPath);
           await check(
             () => page.$text('#__APP'),
@@ -110,7 +124,7 @@ describe('webpack watch wait file builder', () => {
           expect(errorSpy).not.toHaveBeenCalled();
         };
 
-        const times = 2;
+        const times = 5;
 
         for (let i = 0; i < times; i++) {
           await loopFn(i + 1);
@@ -133,96 +147,42 @@ describe('webpack watch wait file builder', () => {
         page = await ctx.browser.page(ctx.url('/one'));
         expect(await page.$text('#__APP')).toBe('Index Page sample1');
         const errorSpy = jest.spyOn(console, 'error');
-        const loopFn = async (time: number) => {
-          console.log('------------ current time ------------', time);
-          // change sample file path and change back
-          renameSync(sampleFilePath, newSampleFilePath);
 
-          expect(errorSpy).not.toHaveBeenCalled();
-          renameSync(newSampleFilePath, sampleFilePath);
-          await wait(200);
-          expect(errorSpy).not.toHaveBeenCalled();
-
-          // change one page file path and change back
-          renameSync(onePageFilePath, newOnePageFilePath);
-          await wait(200);
-          expect(errorSpy).not.toHaveBeenCalled();
-          renameSync(newOnePageFilePath, onePageFilePath);
-          await wait(200);
-          expect(errorSpy).not.toHaveBeenCalled();
-
-          // change one dir path and change back
-          renameSync(oneDirPath, newOneDirPath);
-          await wait(200);
-          expect(errorSpy).not.toHaveBeenCalled();
-          renameSync(newOneDirPath, oneDirPath);
-          await wait(200);
-          expect(errorSpy).not.toHaveBeenCalled();
-
-          // change routes dir path and change back
-          renameSync(routesDirPath, newRoutesDirPath);
-          await wait(200);
-          expect(errorSpy).not.toHaveBeenCalled();
-          renameSync(newRoutesDirPath, routesDirPath);
-          await wait(200);
-          expect(errorSpy).not.toHaveBeenCalled();
-        };
-
-        const times = 2;
-
-        for (let i = 0; i < times; i++) {
-          await loopFn(i + 1);
-        }
-        expect(console.error).toBeCalledTimes(0);
+        renameSync(oneDirPath, twoDirPath);
+        await check(
+          () => page.$text('#__APP'),
+          t => /This page could not be found/.test(t)
+        );
+        expect(errorSpy).not.toHaveBeenCalled();
       } finally {
         await page.close();
         await ctx.close();
-        if (existsSync(newSampleFilePath)) {
-          renameSync(newSampleFilePath, sampleFilePath);
+        if (existsSync(threeDirPath)) {
+          renameSync(threeDirPath, oneDirPath);
         }
       }
     });
-  });
 
-  describe.skip('changing files should not work without WebpackWatchWaitForFileBuilderPlugin', () => {
-    test(`webpack watching should not wait for fileBuilder's buildEnd and should throw error when changing files`, async () => {
+    test('webpack watching should throw error when changing files frequently and preventResumeOnInvalid', async () => {
       try {
         ctx = await launchFixture('webpack-watch-wait-file-builder', {
-          plugins: ['./plugin/fileBuilder', './plugin/disableWebpackPlugin']
+          plugins: ['./plugin/fileBuilder', './plugin/preventResumeOnInvalid']
         });
         page = await ctx.browser.page(ctx.url('/one'));
         expect(await page.$text('#__APP')).toBe('Index Page sample1');
         const errorSpy = jest.spyOn(console, 'error');
-        renameSync(sampleFilePath, newSampleFilePath);
+
+        renameSync(oneDirPath, twoDirPath);
         await check(
           () => page.$text('#__APP'),
-          t => /Index Page not exist/.test(t)
+          t => /This page could not be found/.test(t)
         );
-        expect(errorSpy).toBeCalled();
-        expect(errorSpy).toHaveBeenCalledWith(
-          expect.stringContaining('[shuvi/server] Failed to compile')
-        );
-        expect(errorSpy).toHaveBeenCalledWith(
-          expect.stringContaining('[shuvi/client] Failed to compile')
-        );
-        errorSpy.mockClear();
-        renameSync(newSampleFilePath, sampleFilePath);
-        await check(
-          () => checkShuviPortal(page),
-          t => t
-        );
-        expect(errorSpy).toBeCalled();
-        expect(errorSpy).toHaveBeenCalledWith(
-          expect.stringContaining('[shuvi/server] Failed to compile')
-        );
-        expect(errorSpy).toHaveBeenCalledWith(
-          expect.stringContaining('[shuvi/client] Failed to compile')
-        );
+        expect(errorSpy).toHaveBeenCalled();
       } finally {
         await page.close();
         await ctx.close();
-        if (existsSync(newSampleFilePath)) {
-          renameSync(newSampleFilePath, sampleFilePath);
+        if (existsSync(threeDirPath)) {
+          renameSync(threeDirPath, oneDirPath);
         }
       }
     });
