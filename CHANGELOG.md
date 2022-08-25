@@ -1,3 +1,13 @@
+# [1.0.0-rc.7](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.6...v1.0.0-rc.7) (2022-08-25)
+
+
+### Bug Fixes
+
+* --version option not work ([dba1541](https://github.com/shuvijs/shuvi/commit/dba15417e63757887883392a4094dd9f73ef81de))
+* package name ([c4b63ee](https://github.com/shuvijs/shuvi/commit/c4b63ee94ab0631e5b2696e9d36042a8fb33e872))
+
+
+
 # [1.0.0-rc.6](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.5...v1.0.0-rc.6) (2022-08-25)
 
 
