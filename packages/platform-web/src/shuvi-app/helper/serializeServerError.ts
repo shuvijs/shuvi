@@ -2,7 +2,7 @@
 import stripAnsi from 'strip-ansi';
 import { IError } from '@shuvi/platform-shared/shared';
 
-function errorToJSON(err: Error) {
+function errorToJSON(err: Error): IError {
   return {
     code: 500,
     message: stripAnsi(err.message),
