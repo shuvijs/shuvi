@@ -33,21 +33,23 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    if (appError && process.env.NODE_ENV === 'development') {
-      setTimeout(() => {
-        let error;
-        try {
-          // Generate a new error object. We `throw` it because some browsers
-          // will set the `stack` when thrown, and we want to ensure ours is
-          // not overridden when we re-throw it below.
-          throw new Error(appError.message);
-        } catch (e) {
-          error = e as Error;
-        }
-        error.name = appError.name ?? '';
-        error.stack = appError.stack;
-        throw getServerError(error);
-      });
+    if (process.env.NODE_ENV === 'development') {
+      if (appError && appError.source === 'server') {
+        setTimeout(() => {
+          let error;
+          try {
+            // Generate a new error object. We `throw` it because some browsers
+            // will set the `stack` when thrown, and we want to ensure ours is
+            // not overridden when we re-throw it below.
+            throw new Error(appError.message);
+          } catch (e) {
+            error = e as Error;
+          }
+          error.name = appError.name ?? '';
+          error.stack = appError.stack;
+          throw getServerError(error);
+        });
+      }
     }
 
     const TypedAppComponent = AppComponent as React.ComponentType;

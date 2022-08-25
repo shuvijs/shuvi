@@ -13,12 +13,14 @@ export type IRerenderConfig = {
 
 export type { RedoxStore };
 
+export type ErrorSource = 'server';
+
 export interface IError {
   code?: number;
   message?: string;
   stack?: string;
   name?: string;
-  source?: string;
+  source?: ErrorSource;
 }
 
 export interface IErrorState {
