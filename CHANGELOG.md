@@ -1,3 +1,38 @@
+# [1.0.0-rc.6](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.5...v1.0.0-rc.6) (2022-08-25)
+
+
+### Bug Fixes
+
+* add @shuvi/runtime alias to typescript.paths ([dd111cf](https://github.com/shuvijs/shuvi/commit/dd111cf2410cda65c94d9bef3c6a6816c6c21b57))
+* **build:** remove unused import ([0427b20](https://github.com/shuvijs/shuvi/commit/0427b20d0d37d7ae47a951f19d058c3c49e6d9e5))
+* clear cache ([2a3671c](https://github.com/shuvijs/shuvi/commit/2a3671cc78d0d54cfe1bef9057da123b3b5a83ef))
+* close watching when destory ([36b39cd](https://github.com/shuvijs/shuvi/commit/36b39cdaa3646ed470cfa84cd65cc4bba85c575b))
+* fix the dll test case ([9b2a083](https://github.com/shuvijs/shuvi/commit/9b2a08355845852c7364b517dce77d2edd6c4e9e))
+* host default to 0.0.0.0 when serve ([cffb819](https://github.com/shuvijs/shuvi/commit/cffb819a132d2fe54e15daae172a3e51af2af42f))
+* make test more reliable ([a8eaacc](https://github.com/shuvijs/shuvi/commit/a8eaaccdb5ada70af5bd5729290a11d26be00ce1))
+* make webpack.compile wait until fileBuilder is finished ([1b1bc7d](https://github.com/shuvijs/shuvi/commit/1b1bc7d071502f4730314bb0ef5dd3bb65af5b13))
+* only throw server error ([bf45676](https://github.com/shuvijs/shuvi/commit/bf456768d58e69da9ff95ccf27a524e496b3d7b0))
+* **overlay:** parse sourceMap in advance ([36ec502](https://github.com/shuvijs/shuvi/commit/36ec502ac804d80c649ccee959f9e70cea2f1d40))
+* react devtools not working ([bbeb50a](https://github.com/shuvijs/shuvi/commit/bbeb50a756fa81be3e67f55fbbe0fb39f5fd4c36))
+* remove uncessary invalid call ([580bd40](https://github.com/shuvijs/shuvi/commit/580bd4073753055022104a6c589f812862477536))
+* safari bug of link-preload memory ccache ([cb66849](https://github.com/shuvijs/shuvi/commit/cb66849d434b84a10d3ff53349578bb38082f4e8))
+* support doman in publicPath ([2a92a15](https://github.com/shuvijs/shuvi/commit/2a92a1530ac69774cce5357092d320b8bdf4f272))
+* unreliable e2e case ([7c40639](https://github.com/shuvijs/shuvi/commit/7c40639ec7a2e0b7c5d448caed81fdf533302cf1))
+* use use-sync-external-store to work with react concurrence ([1d019c6](https://github.com/shuvijs/shuvi/commit/1d019c6f5cf2017478bcfcefccabca02c2d2fa5e))
+
+
+### Features
+
+* able to control the order between user plugins and internal plugins ([7cc231a](https://github.com/shuvijs/shuvi/commit/7cc231a53aca7c1364f7b44a74e669aecb93cffb))
+* change to remix's style of conventional routes ([8dae00b](https://github.com/shuvijs/shuvi/commit/8dae00b82aa92f4d287271efb36f9a72695c540c))
+* display the source of client error  ([c42ab54](https://github.com/shuvijs/shuvi/commit/c42ab547b6a7d6ad20dd4af3e3cc7695586e2c74))
+* error overlay ([8f79851](https://github.com/shuvijs/shuvi/commit/8f7985143b3c24eb34706729ea98f3fce293b19f))
+* server render error ([7092c3d](https://github.com/shuvijs/shuvi/commit/7092c3d80e0cbaced629dc32d302fb6e4518a70f))
+* simplify proxy config ([5924923](https://github.com/shuvijs/shuvi/commit/5924923e626ee45c13385657a5b3985cd6a4ac65))
+* use shake-exports of swc-loader to generate page-laoders ([0517281](https://github.com/shuvijs/shuvi/commit/0517281f33630ec1f3e973c043cc8e6078cdcaf6))
+
+
+
 # [1.0.0-rc.5](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.4...v1.0.0-rc.5) (2022-08-10)
 
 
