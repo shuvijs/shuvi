@@ -10,7 +10,7 @@ export async function getOriginalStackFrame(
   frame: StackFrame,
   cache: Map<string, Source>,
   resolveBuildFile: (...paths: string[]) => string,
-  buildDefaultDir: string,
+  buildDir: string,
   errorMessage?: string,
   compilation?: webpack.Compilation
 ): Promise<OriginalStackFrame> {
@@ -54,8 +54,8 @@ export async function getOriginalStackFrame(
     source: cache.get(frame.file),
     frame,
     modulePath: resolveBuildFile(
-      buildDefaultDir,
-      frame.file.replace(/^(file:\/\/)/, '')
+      buildDir,
+      frame.file.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
     ),
     errorMessage,
     compilation

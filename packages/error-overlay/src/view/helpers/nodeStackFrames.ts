@@ -1,7 +1,7 @@
 import { parse, StackFrame } from 'stacktrace-parser';
 import { SERVER_TYPE_ERROR } from '../../constants';
 
-const symbolError = Symbol('ShuviError');
+const symbolError = Symbol.for('ShuviError');
 
 type ErrorType = 'server';
 

@@ -11,10 +11,12 @@ import application, {
   Application
 } from '@shuvi/platform-shared/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
+import chalk from '@shuvi/utils/lib/chalk';
 import { CreateAppServer } from '../../shared';
+import { serializeServerError } from '../helper/serializeServerError';
 
 export const createApp: CreateAppServer = options => {
-  const { req, ssr } = options;
+  const { req, ssr, isDev } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
@@ -48,10 +50,10 @@ export const createApp: CreateAppServer = options => {
           next();
           return;
         }
-
-        app.setError({
-          message: error.message || 'Loader Error'
-        });
+        if (isDev) {
+          console.error(chalk.red('error') + ' - ' + error.stack);
+        }
+        app.setError(serializeServerError(error, isDev));
         next();
         return;
       }

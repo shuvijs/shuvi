@@ -3,14 +3,21 @@ import { renderToString } from 'react-dom/server';
 import { redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
+import chalk from '@shuvi/utils/lib/chalk';
 import { IHtmlTag } from '../../../shared';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
+import { serializeServerError } from '../../helper/serializeServerError';
 
 export class ReactServerView implements IReactServerView {
-  renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
+  renderApp: IReactServerView['renderApp'] = async ({
+    req,
+    app,
+    manifest,
+    isDev
+  }) => {
     await Loadable.preloadAll();
 
     const { router, appComponent: AppComponent, setError: setAppError } = app;
@@ -28,7 +35,7 @@ export class ReactServerView implements IReactServerView {
     }
 
     const loadableModules: string[] = [];
-    let htmlContent: string;
+    let htmlContent: string | undefined = undefined;
     let head: IHtmlTag[];
 
     const RootApp = (
@@ -45,6 +52,12 @@ export class ReactServerView implements IReactServerView {
 
     try {
       htmlContent = renderToString(RootApp);
+    } catch (error: any) {
+      if (isDev) {
+        console.error(chalk.red('error') + ' - ' + error.stack);
+      }
+      setAppError(serializeServerError(error, isDev));
+      htmlContent = renderToString(RootApp); // Consistency on both server and client side
     } finally {
       head = Head.rewind() || [];
     }
