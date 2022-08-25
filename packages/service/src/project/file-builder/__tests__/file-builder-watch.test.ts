@@ -76,8 +76,14 @@ describe('fileBuilder watch', () => {
     test('should update file by the order of dependencies after one updates', done => {
       const fileBuilder = getFileBuilder();
 
-      const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-        fileBuilder;
+      const {
+        addFile,
+        getContent,
+        watch,
+        onBuildStart,
+        onSingleBuildEnd,
+        close
+      } = fileBuilder;
       writeFileSync(src, 'a');
       const A = defineFile({
         name: 'a',
@@ -121,7 +127,7 @@ describe('fileBuilder watch', () => {
 
         onBuildStart(onBuildStartHandler);
 
-        onBuildEnd(() => {
+        onSingleBuildEnd(() => {
           expect(onBuildStartHandler).toBeCalledTimes(1);
           const newFiles = readDirSync(rootDir);
           expect(newFiles).toEqual(['a', 'b', 'c', 'src']);
@@ -150,8 +156,14 @@ describe('fileBuilder watch', () => {
          * Then we will trigger change of E. E's dependency graph has no intersection with A's and C's so its update will run immediately as well.
          */
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         writeFileSync(srcE, 'e');
@@ -236,7 +248,7 @@ describe('fileBuilder watch', () => {
               };
               const onBuildStartHandler = getRunner([start]);
 
-              let onBuildEndCanceler: () => void;
+              let onSingleBuildEndCanceler: () => void;
 
               const end1 = () => {
                 // 1st buildEnd event: E -> F updated
@@ -272,12 +284,19 @@ describe('fileBuilder watch', () => {
                 expect(logs).toEqual(['start e', 'end e', 'end a', 'end c']);
                 close().then(done);
               };
-              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
-                onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
-              });
+              const onSingleBuildEndHandler = getRunner(
+                [end1, end2, end3],
+                () => {
+                  onSingleBuildEndCanceler();
+                  onSingleBuildEndCanceler = onSingleBuildEnd(
+                    onSingleBuildEndHandler
+                  );
+                }
+              );
               onBuildStart(onBuildStartHandler);
-              onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              onSingleBuildEndCanceler = onSingleBuildEnd(
+                onSingleBuildEndHandler
+              );
               writeFileSync(srcE, 'ee');
             }, BUILD_INTERVAL);
           }, BUILD_INTERVAL);
@@ -294,8 +313,15 @@ describe('fileBuilder watch', () => {
          * Then we will trigger change of D. D's dependency graph intersects with C's so it should wait for C's done.
          */
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onBuildEnd,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         writeFileSync(srcD, 'd');
@@ -363,9 +389,9 @@ describe('fileBuilder watch', () => {
 
               const onBuildStartHandler = getRunner([start]);
 
-              let onBuildEndCanceler: () => void;
+              let onSingleBuildEndCanceler: () => void;
 
-              const end1 = () => {
+              const singleEnd1 = () => {
                 // 1st buildEnd event: C -> E updated
                 logs.push('end c');
                 matchFile([
@@ -377,7 +403,7 @@ describe('fileBuilder watch', () => {
                 ]);
               };
 
-              const end2 = () => {
+              const singleEnd2 = () => {
                 // 2nd buildEnd event: D -> E updated
                 logs.push('end d');
                 matchFile([
@@ -388,21 +414,65 @@ describe('fileBuilder watch', () => {
                 ]);
               };
 
-              const end3 = () => {
+              const singleEnd3 = () => {
                 // 3rd buildEnd event: A -> B updated
                 logs.push('end a');
                 matchFile([
                   [a, 'aa'],
                   [b, 'aab']
                 ]);
-                expect(logs).toEqual(['end c', 'start d', 'end d', 'end a']);
+              };
+              const onSingleBuildEndHandler = getRunner(
+                [singleEnd1, singleEnd2, singleEnd3],
+                () => {
+                  onSingleBuildEndCanceler();
+                  onSingleBuildEndCanceler = onSingleBuildEnd(
+                    onSingleBuildEndHandler
+                  );
+                }
+              );
+
+              let onBuildEndCanceler: () => void;
+              const end1 = () => {
+                logs.push('end 1');
+                matchFile([
+                  [a, 'a'],
+                  [b, 'ab'],
+                  [c, 'cc'],
+                  [d, 'dd'],
+                  [e, 'ccdd']
+                ]);
+              };
+
+              const end2 = () => {
+                logs.push('end 2');
+                matchFile([
+                  [a, 'aa'],
+                  [b, 'aab'],
+                  [c, 'cc'],
+                  [d, 'dd'],
+                  [e, 'ccdd']
+                ]);
+                expect(logs).toEqual([
+                  'end c',
+                  'start d',
+                  'end d',
+                  'end 1',
+                  'end a',
+                  'end 2'
+                ]);
                 close().then(done);
               };
-              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
+
+              const onBuildEndHandler = getRunner([end1, end2], () => {
                 onBuildEndCanceler();
                 onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               });
+
               onBuildStart(onBuildStartHandler);
+              onSingleBuildEndCanceler = onSingleBuildEnd(
+                onSingleBuildEndHandler
+              );
               onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
               writeFileSync(srcD, 'dd');
             }, BUILD_INTERVAL);
@@ -421,8 +491,14 @@ describe('fileBuilder watch', () => {
          * Then we will trigger change of B. B's dependency graph intersects with A's and C's so it should wait for them done.
          */
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
         writeFileSync(srcC, 'c');
@@ -488,7 +564,7 @@ describe('fileBuilder watch', () => {
 
               const onBuildStartHandler = getRunner([start]);
 
-              let onBuildEndCanceler: () => void;
+              let onSingleBuildEndCanceler: () => void;
 
               const end1 = () => {
                 // 1st buildEnd event: A -> D updated
@@ -524,12 +600,19 @@ describe('fileBuilder watch', () => {
                 close().then(done);
               };
 
-              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
-                onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
-              });
+              const onSingleBuildEndHandler = getRunner(
+                [end1, end2, end3],
+                () => {
+                  onSingleBuildEndCanceler();
+                  onSingleBuildEndCanceler = onSingleBuildEnd(
+                    onSingleBuildEndHandler
+                  );
+                }
+              );
               onBuildStart(onBuildStartHandler);
-              onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              onSingleBuildEndCanceler = onSingleBuildEnd(
+                onSingleBuildEndHandler
+              );
               writeFileSync(srcB, 'bb');
             }, BUILD_INTERVAL);
           }, BUILD_INTERVAL);
@@ -549,8 +632,14 @@ describe('fileBuilder watch', () => {
          * And then we will trigger change of C. C's dependency graph has no intersection with A's so its update will run immediately.
          */
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         const A = defineFile({
@@ -594,7 +683,7 @@ describe('fileBuilder watch', () => {
 
             setTimeout(() => {
               let onBuildStartCanceler: () => void;
-              let onBuildEndCanceler: () => void;
+              let onSingleBuildEndCanceler: () => void;
               const logs: string[] = [];
 
               const start1 = () => {
@@ -667,12 +756,19 @@ describe('fileBuilder watch', () => {
                 close().then(done);
               };
 
-              const onBuildEndHandler = getRunner([end1, end2, end3], () => {
-                onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
-              });
+              const onSingleBuildEndHandler = getRunner(
+                [end1, end2, end3],
+                () => {
+                  onSingleBuildEndCanceler();
+                  onSingleBuildEndCanceler = onSingleBuildEnd(
+                    onSingleBuildEndHandler
+                  );
+                }
+              );
               onBuildStartCanceler = onBuildStart(onBuildStartHandler);
-              onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              onSingleBuildEndCanceler = onSingleBuildEnd(
+                onSingleBuildEndHandler
+              );
 
               writeFileSync(srcC, 'cc');
             }, BUILD_INTERVAL);
@@ -692,8 +788,14 @@ describe('fileBuilder watch', () => {
          * Then, we will trigger change of C. C's dependency graph has intersection with A's and B's so it should merge with B.
          */
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
         writeFileSync(srcC, 'c');
@@ -737,7 +839,7 @@ describe('fileBuilder watch', () => {
           setTimeout(() => {
             writeFileSync(srcB, 'bb');
             setTimeout(() => {
-              let onBuildEndCanceler: () => void;
+              let onSingleBuildEndCanceler: () => void;
               const logs: string[] = [];
 
               const start = () => {
@@ -777,12 +879,16 @@ describe('fileBuilder watch', () => {
                 close().then(done);
               };
 
-              const onBuildEndHandler = getRunner([end1, end2], () => {
-                onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              const onSingleBuildEndHandler = getRunner([end1, end2], () => {
+                onSingleBuildEndCanceler();
+                onSingleBuildEndCanceler = onSingleBuildEnd(
+                  onSingleBuildEndHandler
+                );
               });
               onBuildStart(onBuildStartHandler);
-              onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              onSingleBuildEndCanceler = onSingleBuildEnd(
+                onSingleBuildEndHandler
+              );
               writeFileSync(srcC, 'cc');
             }, BUILD_INTERVAL);
           }, BUILD_INTERVAL);
@@ -802,8 +908,14 @@ describe('fileBuilder watch', () => {
          */
 
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
         writeFileSync(srcC, 'c');
@@ -854,7 +966,7 @@ describe('fileBuilder watch', () => {
             writeFileSync(srcB, 'bb');
 
             setTimeout(() => {
-              let onBuildEndCanceler: () => void;
+              let onSingleBuildEndCanceler: () => void;
               const logs: string[] = [];
               const start = () => {
                 // buildStart event: C -> E should update and merge with B -> [D, E]
@@ -895,13 +1007,17 @@ describe('fileBuilder watch', () => {
                 close().then(done);
               };
 
-              const onBuildEndHandler = getRunner([end1, end2], () => {
-                onBuildEndCanceler();
-                onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              const onSingleBuildEndHandler = getRunner([end1, end2], () => {
+                onSingleBuildEndCanceler();
+                onSingleBuildEndCanceler = onSingleBuildEnd(
+                  onSingleBuildEndHandler
+                );
               });
 
               onBuildStart(onBuildStartHandler);
-              onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+              onSingleBuildEndCanceler = onSingleBuildEnd(
+                onSingleBuildEndHandler
+              );
               writeFileSync(srcC, 'cc');
             }, BUILD_INTERVAL);
           }, BUILD_INTERVAL);
@@ -923,8 +1039,14 @@ describe('fileBuilder watch', () => {
          */
 
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         writeFileSync(srcE, 'e');
@@ -996,7 +1118,7 @@ describe('fileBuilder watch', () => {
 
                 setTimeout(() => {
                   let onBuildStartCanceler: () => void;
-                  let onBuildEndCanceler: () => void;
+                  let onSingleBuildEndCanceler: () => void;
                   const logs: string[] = [];
 
                   const start1 = () => {
@@ -1114,16 +1236,20 @@ describe('fileBuilder watch', () => {
                     }
                   );
 
-                  const onBuildEndHandler = getRunner(
+                  const onSingleBuildEndHandler = getRunner(
                     [end1, end2, end3, end4, end5],
                     () => {
-                      onBuildEndCanceler();
-                      onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                      onSingleBuildEndCanceler();
+                      onSingleBuildEndCanceler = onSingleBuildEnd(
+                        onSingleBuildEndHandler
+                      );
                     }
                   );
 
                   onBuildStartCanceler = onBuildStart(onBuildStartHandler);
-                  onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                  onSingleBuildEndCanceler = onSingleBuildEnd(
+                    onSingleBuildEndHandler
+                  );
 
                   writeFileSync(srcE, 'ee');
                 }, BUILD_INTERVAL);
@@ -1145,8 +1271,14 @@ describe('fileBuilder watch', () => {
          * Then trigger change of D. D's dependency graph intersects with C's so it should merge with C.
          */
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcC, 'c');
         writeFileSync(srcD, 'd');
@@ -1212,7 +1344,7 @@ describe('fileBuilder watch', () => {
 
                 setTimeout(() => {
                   let onBuildStartCanceler: () => void;
-                  let onBuildEndCanceler: () => void;
+                  let onSingleBuildEndCanceler: () => void;
                   const logs: string[] = [];
 
                   const start1 = () => {
@@ -1299,16 +1431,20 @@ describe('fileBuilder watch', () => {
                     }
                   );
 
-                  const onBuildEndHandler = getRunner(
+                  const onSingleBuildEndHandler = getRunner(
                     [end1, end2, end3, end4],
                     () => {
-                      onBuildEndCanceler();
-                      onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                      onSingleBuildEndCanceler();
+                      onSingleBuildEndCanceler = onSingleBuildEnd(
+                        onSingleBuildEndHandler
+                      );
                     }
                   );
 
                   onBuildStartCanceler = onBuildStart(onBuildStartHandler);
-                  onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                  onSingleBuildEndCanceler = onSingleBuildEnd(
+                    onSingleBuildEndHandler
+                  );
 
                   writeFileSync(srcD, 'dd');
                 }, BUILD_INTERVAL);
@@ -1332,8 +1468,14 @@ describe('fileBuilder watch', () => {
          * Then we will trigger change of B. B's dependency graph intersects with A's and C's so it should merge with both A and C.
          */
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildStart, onBuildEnd, close } =
-          fileBuilder;
+        const {
+          addFile,
+          getContent,
+          watch,
+          onBuildStart,
+          onSingleBuildEnd,
+          close
+        } = fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
         writeFileSync(srcC, 'c');
@@ -1395,7 +1537,7 @@ describe('fileBuilder watch', () => {
 
                 setTimeout(() => {
                   let onBuildStartCanceler: () => void;
-                  let onBuildEndCanceler: () => void;
+                  let onSingleBuildEndCanceler: () => void;
                   const logs: string[] = [];
 
                   const start = () => {
@@ -1454,16 +1596,20 @@ describe('fileBuilder watch', () => {
                     onBuildStartCanceler = onBuildStart(onBuildStartHandler);
                   });
 
-                  const onBuildEndHandler = getRunner(
+                  const onSingleBuildEndHandler = getRunner(
                     [end1, end2, end3],
                     () => {
-                      onBuildEndCanceler();
-                      onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                      onSingleBuildEndCanceler();
+                      onSingleBuildEndCanceler = onSingleBuildEnd(
+                        onSingleBuildEndHandler
+                      );
                     }
                   );
 
                   onBuildStartCanceler = onBuildStart(onBuildStartHandler);
-                  onBuildEndCanceler = onBuildEnd(onBuildEndHandler);
+                  onSingleBuildEndCanceler = onSingleBuildEnd(
+                    onSingleBuildEndHandler
+                  );
 
                   writeFileSync(srcB, 'bb');
                 }, BUILD_INTERVAL);
@@ -1479,7 +1625,8 @@ describe('fileBuilder watch', () => {
     describe('during once build while watching', () => {
       test('a file should notify all its dependents that they can skip build if its content has no change', done => {
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        const { addFile, getContent, watch, onSingleBuildEnd, close } =
+          fileBuilder;
         writeFileSync(src, 'a');
 
         const contentA = jest.fn((_, oldContent: string) => {
@@ -1527,11 +1674,11 @@ describe('fileBuilder watch', () => {
           expect(contentA).toBeCalledTimes(1);
           expect(contentB).toBeCalledTimes(1);
           expect(contentC).toBeCalledTimes(1);
-          onBuildEnd(({ noChange }) => {
+          onSingleBuildEnd(({ changedFiles }) => {
             expect(contentA).toBeCalledTimes(2);
             expect(contentB).toBeCalledTimes(1);
             expect(contentC).toBeCalledTimes(1);
-            expect(noChange).toBe(true);
+            expect(changedFiles.size).toBe(0);
             check();
             close().then(done);
           });
@@ -1540,7 +1687,8 @@ describe('fileBuilder watch', () => {
       });
       test('a file should notify its dependents that they can skip build if itself skip build', done => {
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        const { addFile, getContent, watch, onSingleBuildEnd, close } =
+          fileBuilder;
         writeFileSync(src, 'a');
 
         const contentA = jest.fn(() => {
@@ -1596,12 +1744,12 @@ describe('fileBuilder watch', () => {
           expect(contentB).toBeCalledTimes(1);
           expect(contentC).toBeCalledTimes(1);
           expect(contentD).toBeCalledTimes(1);
-          onBuildEnd(({ noChange }) => {
+          onSingleBuildEnd(({ changedFiles }) => {
             expect(contentA).toBeCalledTimes(2);
             expect(contentB).toBeCalledTimes(1);
             expect(contentC).toBeCalledTimes(1);
             expect(contentD).toBeCalledTimes(1);
-            expect(noChange).toBe(true);
+            expect(changedFiles.size).toBe(0);
             check();
             close().then(done);
           });
@@ -1610,7 +1758,8 @@ describe('fileBuilder watch', () => {
       });
       test('a file should skip build if all its dependencies notify it to skip build', done => {
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        const { addFile, getContent, watch, onSingleBuildEnd, close } =
+          fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
 
@@ -1656,11 +1805,11 @@ describe('fileBuilder watch', () => {
           expect(contentA).toBeCalledTimes(1);
           expect(contentB).toBeCalledTimes(1);
           expect(contentC).toBeCalledTimes(1);
-          onBuildEnd(({ noChange }) => {
+          onSingleBuildEnd(({ changedFiles }) => {
             expect(contentA).toBeCalledTimes(2);
             expect(contentB).toBeCalledTimes(2);
             expect(contentC).toBeCalledTimes(1);
-            expect(noChange).toBe(true);
+            expect(changedFiles.size).toBe(0);
             check();
             close().then(done);
           });
@@ -1670,7 +1819,8 @@ describe('fileBuilder watch', () => {
       });
       test('a file should not skip build if not all its dependencies notify it to skip build', done => {
         const fileBuilder = getFileBuilder();
-        const { addFile, getContent, watch, onBuildEnd, close } = fileBuilder;
+        const { addFile, getContent, watch, onSingleBuildEnd, close } =
+          fileBuilder;
         writeFileSync(srcA, 'a');
         writeFileSync(srcB, 'b');
 
@@ -1713,13 +1863,13 @@ describe('fileBuilder watch', () => {
           expect(contentA).toBeCalledTimes(1);
           expect(contentB).toBeCalledTimes(1);
           expect(contentC).toBeCalledTimes(1);
-          onBuildEnd(({ noChange }) => {
+          onSingleBuildEnd(({ changedFiles }) => {
             matchFile([
               [a, 'a'],
               [b, 'bb'],
               [c, 'abb']
             ]);
-            expect(noChange).toBe(false);
+            expect(changedFiles.size).toBeGreaterThan(0);
             expect(contentA).toBeCalledTimes(2);
             expect(contentB).toBeCalledTimes(2);
             expect(contentC).toBeCalledTimes(2);

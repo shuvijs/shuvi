@@ -155,6 +155,14 @@ class ProjectBuilder {
   get onBuildEnd() {
     return this._fileBuilder.onBuildEnd;
   }
+
+  get onInvalid() {
+    return this._fileBuilder.onInvalid;
+  }
+
+  get isDependency() {
+    return this._fileBuilder.isDependency;
+  }
 }
 
 export { ProjectBuilder };
