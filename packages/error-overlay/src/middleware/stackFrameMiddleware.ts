@@ -46,25 +46,30 @@ export function stackFrameMiddleware(
     files: string[],
     compiler: webpack.Compiler,
     compilation: webpack.Compilation | undefined,
-    cache: Map<string, Source>,
+    cache: Map<string, Source | null>,
     buildDir: string
-  ) => {
+  ): Promise<void> => {
     await Promise.all(
       files.map(async fileName => {
-        const moduleId = fileName.replace(
-          /^(webpack-internal:\/\/\/|file:\/\/)/,
-          ''
-        );
+        try {
+          const moduleId = fileName.replace(
+            /^(webpack-internal:\/\/\/|file:\/\/)/,
+            ''
+          );
 
-        const source = await getSourceById(
-          fileName.startsWith('file:'),
-          moduleId,
-          compiler,
-          resolveBuildFile,
-          buildDir,
-          compilation
-        );
-        cache.set(fileName, source);
+          const source = await getSourceById(
+            fileName.startsWith('file:'),
+            moduleId,
+            compiler,
+            resolveBuildFile,
+            buildDir,
+            compilation
+          );
+
+          cache.set(fileName, source);
+        } catch {
+          cache.set(fileName, null);
+        }
       })
     );
   };
@@ -73,20 +78,34 @@ export function stackFrameMiddleware(
     frames: StackFrame[],
     errorMessage: string | undefined,
     compilation: webpack.Compilation | undefined,
-    sourceMap: Map<string, Source>,
+    sourceMap: Map<string, Source | null>,
     buildDir: string
   ): Promise<OriginalStackFrame[]> => {
     return await Promise.all(
-      frames.map(async (frame: StackFrame) =>
-        getOriginalStackFrame(
-          frame,
-          sourceMap,
-          resolveBuildFile,
-          buildDir,
-          errorMessage,
-          compilation
-        )
-      )
+      frames.map(async (frame: StackFrame) => {
+        let result;
+        try {
+          result = await getOriginalStackFrame(
+            frame,
+            sourceMap,
+            resolveBuildFile,
+            buildDir,
+            errorMessage,
+            compilation
+          );
+        } catch {
+          result = {
+            error: true,
+            reason: 'No Content',
+            external: false,
+            expanded: false,
+            sourceStackFrame: frame,
+            originalStackFrame: null,
+            originalCodeFrame: null
+          };
+        }
+        return result;
+      })
     );
   };
 
@@ -100,7 +119,7 @@ export function stackFrameMiddleware(
     }
 
     const files: string[] = [];
-    const sourceMap = new Map<string, Source>();
+    const sourceMap = new Map<string, Source | null>();
     const { query: queryFromUrl } = url.parse(req.url!, true);
     const query = queryFromUrl as unknown as {
       frames: string;
@@ -130,34 +149,23 @@ export function stackFrameMiddleware(
       files.push(file);
     });
 
-    try {
-      // collect the sourcemaps from the files
-      await collectSourceMaps(
-        files,
-        compiler,
-        compilation,
-        sourceMap,
-        buildDir
-      );
-      // handle the source position
-      const originalStackFrames = await getStackFrames(
-        frames,
-        errorMessage,
-        compilation,
-        sourceMap,
-        buildDir
-      );
+    // collect the sourcemaps from the files
+    await collectSourceMaps(files, compiler, compilation, sourceMap, buildDir);
 
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.write(Buffer.from(JSON.stringify(originalStackFrames)));
-    } catch (err) {
-      res.statusCode = 500;
-      res.write('Internal Server Error');
-    } finally {
-      sourceMap.clear();
-    }
+    // handle the source position
+    const originalStackFrames = await getStackFrames(
+      frames,
+      errorMessage,
+      compilation,
+      sourceMap,
+      buildDir
+    );
 
+    sourceMap.clear();
+
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.write(Buffer.from(JSON.stringify(originalStackFrames)));
     res.end();
   };
 }
