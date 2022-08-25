@@ -93,7 +93,7 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
           checkResumeIntervalTimer = undefined;
         }, fallbackTimeout);
       } else {
-        // resume directly is no changed files
+        // resume directly when no changed files
         compiler.watching.resume();
       }
     });
