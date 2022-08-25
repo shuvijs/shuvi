@@ -14,9 +14,8 @@ export default function getRoutes(
         __import__,
         __resolveWeak__,
         children,
-        ...rest
+        ...route
       } = originalRoute;
-      const route = { ...rest };
       if (children) {
         route.children = getRoutesWithRequire(children);
       }
@@ -28,7 +27,12 @@ export default function getRoutes(
           })
         });
       }
-      return { __componentRawRequest__, __resolveWeak__, ...route };
+
+      if (__componentRawRequest__) {
+        route.__componentRawRequest__ = __componentRawRequest__;
+      }
+
+      return route;
     });
   const routesWithRequire = getRoutesWithRequire(routes || []);
   return routesWithRequire;

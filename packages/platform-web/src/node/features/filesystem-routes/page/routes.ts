@@ -99,7 +99,7 @@ export const generateRoutesContent = (
   return `
 let routes;
 
-if (typeof windows === 'undefined') {
+if (typeof window === 'undefined') {
   routes = ${serverRoutes}
 } else {
   routes = ${clientRoutes}
