@@ -18,6 +18,8 @@ export interface WatchOptions {
 
 export type WatchCallback = (event: WatchEvent) => void;
 
+export type ChangeCallback = (file: string, time: number) => void;
+
 const options = {
   // options:
   aggregateTimeout: 300,
@@ -39,7 +41,8 @@ export function watch(
     aggregateTimeout,
     startTime = Date.now()
   }: WatchOptions,
-  cb: WatchCallback
+  callback: WatchCallback,
+  callbackUndelayed?: ChangeCallback
 ): () => void {
   const watchPackOptions = { ...options };
   if (aggregateTimeout !== undefined) {
@@ -48,7 +51,7 @@ export function watch(
   const wp = new Watchpack(watchPackOptions);
   wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
     const knownFiles = wp.getTimeInfoEntries();
-    cb({
+    callback({
       changes: Array.from(changes),
       removals: Array.from(removals),
       getAllFiles() {
@@ -62,6 +65,11 @@ export function watch(
       }
     });
   });
+  if (callbackUndelayed) {
+    wp.on('change', callbackUndelayed);
+    wp.on('remove', callbackUndelayed);
+  }
+
   wp.watch({ files, directories, missing, startTime });
 
   return () => {
