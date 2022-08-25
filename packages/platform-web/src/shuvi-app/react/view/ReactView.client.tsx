@@ -33,7 +33,7 @@ export class ReactClientView implements IReactClientView {
       (window as any).__SHUVI = { router };
     }
 
-    if (appError && process.env.NODE_ENV === 'development') {
+    if (appError && appError.stack && process.env.NODE_ENV === 'development') {
       setTimeout(() => {
         let error;
         try {
