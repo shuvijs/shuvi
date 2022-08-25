@@ -34,7 +34,6 @@ export class ReactClientView implements IReactClientView {
     }
 
     if (appError && process.env.NODE_ENV === 'development') {
-      setAppError(appError);
       setTimeout(() => {
         let error;
         try {
