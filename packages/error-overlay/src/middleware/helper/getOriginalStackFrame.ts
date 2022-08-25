@@ -8,7 +8,7 @@ export { OriginalStackFrame };
 
 export async function getOriginalStackFrame(
   frame: StackFrame,
-  cache: Map<string, Source>,
+  cache: Map<string, Source | null>,
   resolveBuildFile: (...paths: string[]) => string,
   buildDir: string,
   errorMessage?: string,
