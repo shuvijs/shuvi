@@ -17,7 +17,7 @@ export default async function main(argv: string[]) {
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
   const port = Number(program.port) || 3000;
-  const host = program.host || 'localhost';
+  const host = program.host || '0.0.0.0';
   const config = await getConfigFromCli(cwd, program);
   const api = await initShuvi({
     cwd,
@@ -29,7 +29,8 @@ export default async function main(argv: string[]) {
   });
   try {
     await shuviApp.listen(port, host);
-    console.log(`Ready on http://${host}:${port}`);
+    const appUrl = `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`;
+    console.log(`Ready on ${appUrl}`);
   } catch (err) {
     console.error(err);
     process.exit(1);
