@@ -21,7 +21,7 @@ describe('serializeRoutes', () => {
     }
   ];
 
-  test('should output full content when is server', () => {
+  test('should output full content when includeMeta is true', () => {
     const content = serializeRoutes(routes, true);
     expect(content).toMatchInlineSnapshot(`
       "[{path: \\"/\\",
@@ -61,7 +61,7 @@ describe('serializeRoutes', () => {
     expect(content).toMatch('__componentRawRequest__');
   });
 
-  test('should output full content when is client', () => {
+  test('should not output meta info when includeMeta is false', () => {
     const content = serializeRoutes(routes, false);
     expect(content).toMatchInlineSnapshot(`
       "[{path: \\"/\\",

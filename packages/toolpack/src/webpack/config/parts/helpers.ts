@@ -62,3 +62,11 @@ export const webpackHelpers = (): IWebpackHelpers => {
 export function shouldUseRelativeAssetPaths(publicPath: string) {
   return publicPath === './';
 }
+
+export function splitChunksFilter(chunk: any) {
+  const excludes: Record<string, boolean> = {
+    'static/polyfill': true
+  };
+
+  return excludes[chunk.name] !== true;
+}

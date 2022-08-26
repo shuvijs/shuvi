@@ -7,11 +7,11 @@ export const SERVER_BUILD_MANIFEST_PATH = '../build-manifest.server.json';
 
 export const BUILD_DEFAULT_DIR = 'client';
 
-export const BUILD_CLIENT_RUNTIME_MAIN = `static/runtime/main`;
+export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/polyfill`;
 
-export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/runtime/webpack`;
+export const BUILD_CLIENT_RUNTIME_MAIN = `static/main`;
 
-export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/runtime/polyfill`;
+export const BUILD_CLIENT_RUNTIME_WEBPACK = `static/webpack-runtime`;
 
 // todo: move to platform-web
 export const BUILD_SERVER_DIR = 'server';

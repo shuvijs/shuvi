@@ -22,7 +22,7 @@ const KEEP_SYMBOL = querystring.stringify({ keep: ['default'] });
  */
 export function serializeRoutes(
   routes: IPageRouteConfigWithId[],
-  isServer: boolean
+  includeMeta: boolean
 ): string {
   let res = '';
   for (let index = 0; index < routes.length; index++) {
@@ -38,7 +38,7 @@ export function serializeRoutes(
         const componentSource = component;
         const componentRequest = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}&${KEEP_SYMBOL}`;
         // `webpackExports` works with production and optimization.minimize, check compiled dist
-        if (isServer) {
+        if (includeMeta) {
           strRoute += `__componentRawRequest__: "${componentRequest}",\n`;
           strRoute += `__componentSource__: "${componentSource}",\n`;
         }
@@ -56,7 +56,7 @@ __resolveWeak__: () => [require.resolveWeak("${componentRequest}")]`.trim();
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializeRoutes(childRoutes, isServer)},\n`;
+      strRoute += `children: ${serializeRoutes(childRoutes, includeMeta)},\n`;
     }
 
     res += `{${strRoute}},\n`;
@@ -91,10 +91,11 @@ export function normalizeRoutes(
 }
 
 export const generateRoutesContent = (
-  routes: IPageRouteConfigWithId[]
+  routes: IPageRouteConfigWithId[],
+  isDev: boolean
 ): string => {
   const serverRoutes = serializeRoutes(routes, true);
-  const clientRoutes = serializeRoutes(routes, false);
+  const clientRoutes = serializeRoutes(routes, isDev);
 
   return `
 let routes;

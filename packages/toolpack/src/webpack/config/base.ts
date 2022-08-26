@@ -5,12 +5,13 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
-import ChunkNamePlugin from '../plugins/chunk-names-plugin';
+// import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import { AppSourceRegexs } from '../../constants';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import SupportTsExtensionResolverPlugin from '../plugins/support-ts-extension-resolver-plugin';
+import { splitChunksFilter } from './parts/helpers';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
 
@@ -93,13 +94,28 @@ export function baseWebpackChain({
     emitOnErrors: !dev,
     checkWasmTypes: false,
     nodeEnv: false,
-    splitChunks: false,
     runtimeChunk: undefined,
     minimize: !dev,
     realContentHash: false
   });
 
-  if (!dev) {
+  if (dev) {
+    config.optimization.usedExports(false);
+    config.optimization.splitChunks({
+      chunks: splitChunksFilter,
+      cacheGroups: {
+        defaultVendors: false,
+        default: false,
+        vendors: {
+          name: 'static/vendors',
+          test: /[\\/]node_modules[\\/]/,
+          // Don't let webpack eliminate this chunk (prevents this chunk from
+          // becoming a part of the commons chunk)
+          enforce: true
+        }
+      }
+    });
+  } else {
     // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
       {
@@ -199,7 +215,7 @@ export function baseWebpackChain({
       name: 'static/media/[name].[hash:8].[ext]'
     });
 
-  config.plugin('chunk-names').use(ChunkNamePlugin);
+  // config.plugin('chunk-names').use(ChunkNamePlugin);
   config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {
       resourceRegExp: /^\.\/locale$/,
@@ -297,8 +313,6 @@ export function baseWebpackChain({
     });
 
     config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
-
-    config.optimization.usedExports(false);
   } else {
     config
       .plugin('private/hashed-moduleids-plugin')

@@ -8,6 +8,7 @@ import { IWebpackHelpers } from '../types';
 import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
+import { splitChunksFilter } from './parts/helpers';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 
@@ -74,7 +75,7 @@ export function createBrowserWebpackChain(
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
   } else {
     chain.optimization.splitChunks({
-      chunks: 'all',
+      chunks: splitChunksFilter,
       cacheGroups: {
         default: false,
         defaultVendors: false,
