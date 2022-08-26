@@ -19,14 +19,10 @@ export default class ChunkNamesPlugin {
               if (chunk instanceof HotUpdateChunk) {
                 return originalMethod(result, options);
               }
-            
-              const chunkGraph = options.chunkGraph;
-              const hasEntryModule =
-                chunkGraph.getNumberOfEntryModules(chunk) > 0;
 
               if (chunk.filenameTemplate) {
                 filenameTemplate = chunk.filenameTemplate;
-              } else if (chunk.hasRuntime() || hasEntryModule) {
+              } else if (chunk.canBeInitial()) {
                 filenameTemplate = outputOptions.filename;
               } else {
                 filenameTemplate = outputOptions.chunkFilename;

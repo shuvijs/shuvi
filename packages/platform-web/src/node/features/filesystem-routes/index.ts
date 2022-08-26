@@ -48,7 +48,8 @@ const plugin = createPlugin({
       },
       paths,
       pluginRunner,
-      phase
+      phase,
+      mode
     } = context;
     const isBuildPhase = phase === 'PHASE_PRODUCTION_BUILD';
 
@@ -94,7 +95,10 @@ const plugin = createPlugin({
           paths.routesDir
         );
         setRoutes(normalizedRoutes);
-        return generatePageRoutesContent(normalizedRoutes);
+        return generatePageRoutesContent(
+          normalizedRoutes,
+          mode === 'development'
+        );
       },
       dependencies: [rawRoutes]
     });
