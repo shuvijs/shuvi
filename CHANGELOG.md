@@ -1,3 +1,12 @@
+# [1.0.0-rc.8](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.7...v1.0.0-rc.8) (2022-08-26)
+
+
+### Bug Fixes
+
+* only throw error when it is first render ([74a2e51](https://github.com/shuvijs/shuvi/commit/74a2e51a3e4c75c949f9ea08d4298ce630cff3e2))
+
+
+
 # [1.0.0-rc.7](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.6...v1.0.0-rc.7) (2022-08-25)
 
 
