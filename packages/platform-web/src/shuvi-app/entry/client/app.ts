@@ -57,3 +57,10 @@ if (module.hot) {
 
   module.hot.accept(['@shuvi/app/files/routes'], handleHotUpdate);
 }
+
+// For e2e test
+if ((window as any).__SHUVI) {
+  (window as any).__SHUVI.router = app.router;
+} else {
+  (window as any).__SHUVI = { router: app.router };
+}
