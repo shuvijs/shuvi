@@ -2,20 +2,18 @@ import { ReactNode } from 'react';
 import { Root } from 'react-dom/client';
 
 type RenderActionParam = {
-  ssr?: boolean;
-  isInitialRender?: boolean;
+  appContainer: Element | Document;
   root?: ReactNode;
-  callback?: () => unknown;
-  appContainer?: Element | Document;
+  shouldHydrate?: boolean;
 };
 
-let renderAction: (options: RenderActionParam) => void;
+let doRender: (options: RenderActionParam, callback: () => void) => void;
 
 if (process.env.__SHUVI__AFTER__REACT__18__) {
   const { createRoot, hydrateRoot } = require('react-dom/client');
   let renderRoot: Root;
-  renderAction = ({ ssr, isInitialRender, root, callback, appContainer }) => {
-    if (ssr && isInitialRender) {
+  doRender = ({ root, appContainer, shouldHydrate }, callback) => {
+    if (shouldHydrate) {
       renderRoot = hydrateRoot(appContainer, root);
       callback?.();
     } else {
@@ -27,8 +25,8 @@ if (process.env.__SHUVI__AFTER__REACT__18__) {
   };
 } else {
   const { hydrate, render } = require('react-dom');
-  renderAction = ({ ssr, isInitialRender, root, callback, appContainer }) => {
-    if (ssr && isInitialRender) {
+  doRender = ({ root, appContainer, shouldHydrate }, callback) => {
+    if (shouldHydrate) {
       hydrate(root, appContainer, callback);
     } else {
       render(root, appContainer);
@@ -36,4 +34,4 @@ if (process.env.__SHUVI__AFTER__REACT__18__) {
   };
 }
 
-export { renderAction };
+export { doRender };
