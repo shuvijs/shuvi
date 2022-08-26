@@ -6,7 +6,7 @@ import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { IReactClientView } from '../types';
-import { renderAction } from './render-action';
+import { doRender } from './render';
 
 const headManager = new HeadManager();
 
@@ -26,38 +26,31 @@ export class ReactClientView implements IReactClientView {
       error: appError
     } = app;
     let { ssr, dynamicIds } = appData;
-    // For e2e test
-    if ((window as any).__SHUVI) {
-      (window as any).__SHUVI.router = router;
-    } else {
-      (window as any).__SHUVI = { router };
-    }
-
-
-    if (process.env.NODE_ENV === 'development') {
-      if (appError && appError.source === 'server') {
-        setTimeout(() => {
-          let error;
-          try {
-            // Generate a new error object. We `throw` it because some browsers
-            // will set the `stack` when thrown, and we want to ensure ours is
-            // not overridden when we re-throw it below.
-            throw new Error(appError.message);
-          } catch (e) {
-            error = e as Error;
-          }
-          error.name = appError.name ?? '';
-          error.stack = appError.stack;
-          throw getServerError(error);
-        });
-      }
-    }
+    const shouldHydrate = ssr && isInitialRender;
 
     const TypedAppComponent = AppComponent as React.ComponentType;
 
-    if (ssr) {
-      await Loadable.preloadReady(dynamicIds);
-      await router.ready;
+    if (ssr && isInitialRender) {
+      if (process.env.NODE_ENV === 'development') {
+        if (appError && appError.source === 'server') {
+          setTimeout(() => {
+            let error;
+            try {
+              // Generate a new error object. We `throw` it because some browsers
+              // will set the `stack` when thrown, and we want to ensure ours is
+              // not overridden when we re-throw it below.
+              throw new Error(appError.message);
+            } catch (e) {
+              error = e as Error;
+            }
+            error.name = appError.name ?? '';
+            error.stack = appError.stack;
+            throw getServerError(error);
+          });
+        }
+      }
+
+      await Promise.all([Loadable.preloadReady(dynamicIds), router.ready]);
     } else {
       await router.ready;
       const { matches } = router.current;
@@ -78,16 +71,15 @@ export class ReactClientView implements IReactClientView {
       </Router>
     );
 
-    const ssrCallback = () => {
-      this._isInitialRender = false;
-    };
-
-    renderAction({
-      ssr,
-      isInitialRender,
-      root,
-      callback: ssrCallback,
-      appContainer
-    });
+    doRender(
+      {
+        root,
+        appContainer,
+        shouldHydrate
+      },
+      () => {
+        this._isInitialRender = false;
+      }
+    );
   };
 }
