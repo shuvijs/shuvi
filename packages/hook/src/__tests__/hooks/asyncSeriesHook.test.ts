@@ -1,27 +1,24 @@
-import { AsyncParallelHookHandler, createAsyncParallelHook } from '../../hooks';
+import { AsyncSeriesHookHandler, createAsyncSeriesHook } from '../../hooks';
 import { sleep } from '../utils';
 
-describe('AsyncParallelHook', () => {
-  test('hooks should run in parallel', async () => {
-    const hook = createAsyncParallelHook<void>();
-    const logs: number[] = [];
+describe('AsyncSeriesHook', () => {
+  test('hooks should run in sequence', async () => {
+    const hook = createAsyncSeriesHook<void>();
+    const logs: string[] = [];
     hook.use(async () => {
       await sleep(10);
-      logs.push(1);
-    });
-    hook.use(async () => {
-      logs.push(2);
+      logs.push('hook 1');
     });
     hook.use(() => {
-      logs.push(3);
+      logs.push('hook 2');
     });
     await hook.run();
-    expect(logs).toEqual([2, 3, 1]);
+    expect(logs).toEqual(['hook 1', 'hook 2']);
   });
 
   test('the params of run() should be as the params of the hook handler', async () => {
-    const hook = createAsyncParallelHook<number, number>();
-    const handler: AsyncParallelHookHandler<number, number, void> = jest.fn(
+    const hook = createAsyncSeriesHook<number, number>();
+    const handler: AsyncSeriesHookHandler<number, number, void> = jest.fn(
       (i, e) => {
         expect(i).toBe(1);
         expect(e).toBe(2);
@@ -33,7 +30,7 @@ describe('AsyncParallelHook', () => {
   });
 
   test('result should be array', async () => {
-    const hook = createAsyncParallelHook<void, void, number | void>();
+    const hook = createAsyncSeriesHook<void, void, number | void>();
     hook.use(() => 10);
     hook.use(() => {});
     hook.use(async () => 20);

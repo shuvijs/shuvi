@@ -13,7 +13,13 @@ import {
   createSyncBailHook,
   createSyncWaterfallHook,
   createAsyncParallelHook,
-  createAsyncSeriesWaterfallHook
+  createAsyncSeriesWaterfallHook,
+  AsyncSeriesHook,
+  AsyncSeriesBailHook,
+  AsyncSeriesHookHandler,
+  AsyncSeriesBailHookHandler,
+  createAsyncSeriesBailHook,
+  createAsyncSeriesHook
 } from './hooks';
 
 export type PatchPluginParameter<T, C> = RemoveManagerVoidParameter<
@@ -32,6 +38,8 @@ export type AnyHook =
   | SyncBailHook<any, any, any>
   | SyncWaterfallHook<any, any>
   | AsyncParallelHook<any, any, any>
+  | AsyncSeriesHook<any, any, any>
+  | AsyncSeriesBailHook<any, any, any>
   | AsyncSeriesWaterfallHook<any, any>;
 export interface HookMap {
   [x: string]: AnyHook;
@@ -71,6 +79,10 @@ export type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
   ? SyncWaterfallHook<T, E>['run']
   : H extends AsyncParallelHook<infer T, infer E, infer R>
   ? AsyncParallelHook<T, E, R>['run']
+  : H extends AsyncSeriesHook<infer T, infer E, infer R>
+  ? AsyncSeriesHook<T, E, R>['run']
+  : H extends AsyncSeriesBailHook<infer T, infer E, infer R>
+  ? AsyncSeriesBailHook<T, E, R>['run']
   : H extends AsyncSeriesWaterfallHook<infer T, infer E>
   ? AsyncSeriesWaterfallHook<T, E>['run']
   : never;
@@ -91,6 +103,10 @@ export type IPluginHandlersFullMap<HM, C> = {
     ? PatchPluginParameter<SyncWaterfallHookHandler<T, E>, C>
     : HM[K] extends AsyncParallelHook<infer T, infer E, infer R>
     ? PatchPluginParameter<AsyncParallelHookHandler<T, E, R>, C>
+    : HM[K] extends AsyncSeriesHook<infer T, infer E, infer R>
+    ? PatchPluginParameter<AsyncSeriesHookHandler<T, E, R>, C>
+    : HM[K] extends AsyncSeriesBailHook<infer T, infer E, infer R>
+    ? PatchPluginParameter<AsyncSeriesBailHookHandler<T, E, R>, C>
     : HM[K] extends AsyncSeriesWaterfallHook<infer T, infer E>
     ? PatchPluginParameter<AsyncSeriesWaterfallHookHandler<T, E>, C>
     : never;
@@ -222,6 +238,12 @@ const copyHookMap = <HM extends HookMap | Partial<HookMap>>(
         break;
       case 'AsyncParallelHook':
         newHookMap[hookName] = createAsyncParallelHook();
+        break;
+      case 'AsyncSeriesHook':
+        newHookMap[hookName] = createAsyncSeriesHook();
+        break;
+      case 'AsyncSeriesBailHook':
+        newHookMap[hookName] = createAsyncSeriesBailHook();
         break;
       case 'AsyncSeriesWaterfallHook':
         newHookMap[hookName] = createAsyncSeriesWaterfallHook();

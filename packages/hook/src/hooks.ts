@@ -95,6 +95,17 @@ export type SyncWaterfallHookHandler<I, E> = (
   initalValue: I,
   extraArgs: E
 ) => I;
+
+export type AsyncSeriesHookHandler<I, E, R> = (
+  initalValue: I,
+  extraArg: E
+) => Promise<R> | R;
+
+export type AsyncSeriesBailHookHandler<I, E, R> = (
+  initalValue: I,
+  extraArg: E
+) => Promise<R | undefined | void> | R | undefined | void;
+
 export type AsyncSeriesWaterfallHookHandler<I, E> = (
   initalValue: I,
   extraArg: E
@@ -132,15 +143,25 @@ export type SyncWaterfallHook<I, E = void> = {
   type: string;
 };
 
-/** Normal async hook. No return value
- *
- * RemoveVoidParameter<(
-    null extends R ?
-    (R extends void ? ((initalValue: I, extraArg: E) => Promise<R[]>) :
-      ((initalValue: I, extraArg: E) => Promise<R[]>)) :
-    ((initalValue: I, extraArg: E) => Promise<R[]>)
-  )>
- */
+export type AsyncSeriesHook<I = void, E = void, R = void> = {
+  use: (
+    ...handlers: RemoveVoidParameter<AsyncSeriesHookHandler<I, E, R>>[]
+  ) => void;
+  run: RemoveVoidParameter<(initalValue: I, extraArg: E) => Promise<R[]>>;
+  clear: () => void;
+  type: string;
+};
+
+export type AsyncSeriesBailHook<I = void, E = void, R = I> = {
+  use: (
+    ...handlers: RemoveVoidParameter<AsyncSeriesBailHookHandler<I, E, R>>[]
+  ) => void;
+  run: RemoveVoidParameter<AsyncSeriesBailHookHandler<I, E, R>>;
+  clear: () => void;
+  type: string;
+};
+
+/** Normal async parallel hook */
 export type AsyncParallelHook<I = void, E = void, R = void> = {
   use: (
     ...handlers: RemoveVoidParameter<AsyncParallelHookHandler<I, E, R>>[]
@@ -273,6 +294,70 @@ export const createAsyncParallelHook = <
     run,
     clear,
     type: 'AsyncParallelHook'
+  };
+};
+
+export const createAsyncSeriesHook = <
+  I = void,
+  E = void,
+  R = void
+>(): AsyncSeriesHook<I, E, R> => {
+  let _handlers: RemoveVoidParameter<AsyncSeriesHookHandler<I, E, R>>[] = [];
+  const use = (
+    ...handlers: RemoveVoidParameter<AsyncSeriesHookHandler<I, E, R>>[]
+  ) => {
+    _handlers.push(...handlers);
+  };
+  const run = async (...args: any[]): Promise<R[]> => {
+    const result: R[] = [];
+    for (let i = 0; i < _handlers.length; i++) {
+      const handler = _handlers[i];
+      // @ts-ignore
+      const currentResult = await handler(...args);
+      result.push(currentResult);
+    }
+    return result;
+  };
+  const clear = () => {
+    _handlers = [];
+  };
+  return {
+    use,
+    run,
+    clear,
+    type: 'AsyncSeriesHook'
+  };
+};
+
+export const createAsyncSeriesBailHook = <
+  I = void,
+  E = void,
+  R = I
+>(): AsyncSeriesBailHook<I, E, R> => {
+  let _handlers: RemoveVoidParameter<AsyncSeriesBailHookHandler<I, E, R>>[] =
+    [];
+  const use = (
+    ...handlers: RemoveVoidParameter<AsyncSeriesBailHookHandler<I, E, R>>[]
+  ) => {
+    _handlers.push(...handlers);
+  };
+  const run = async (...args: any[]): Promise<R | undefined | void> => {
+    for (let i = 0; i < _handlers.length; i++) {
+      const handler = _handlers[i];
+      // @ts-ignore
+      const result = await handler(...args);
+      if (result !== undefined) return result;
+    }
+    return undefined;
+  };
+  const clear = () => {
+    _handlers = [];
+  };
+  return {
+    use,
+    run,
+    clear,
+    type: 'AsyncSeriesHook'
   };
 };
 
