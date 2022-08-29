@@ -20,9 +20,13 @@ export default class ChunkNamesPlugin {
                 return originalMethod(result, options);
               }
 
+              const chunkGraph = options.chunkGraph;
+              const hasEntryModule =
+                chunkGraph.getNumberOfEntryModules(chunk) > 0;
+
               if (chunk.filenameTemplate) {
                 filenameTemplate = chunk.filenameTemplate;
-              } else if (chunk.canBeInitial()) {
+              } else if (chunk.hasRuntime() || hasEntryModule) {
                 filenameTemplate = outputOptions.filename;
               } else {
                 filenameTemplate = outputOptions.chunkFilename;

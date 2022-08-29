@@ -5,9 +5,8 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
-// import ChunkNamePlugin from '../plugins/chunk-names-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
-import { AppSourceRegexs } from '../../constants';
+import { AppSourceRegexs, CommonChunkFilename } from '../../constants';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import SupportTsExtensionResolverPlugin from '../plugins/support-ts-extension-resolver-plugin';
@@ -90,6 +89,23 @@ export function baseWebpackChain({
   config.performance.hints(false);
   config.context(projectRoot);
 
+  config.output.path(outputDir);
+  config.output.merge({
+    publicPath,
+    filename: `${dev ? '[name].js' : '[name].[contenthash:8]'}.js`,
+    // This saves chunks with the name given via `import()`
+    chunkFilename: `static/chunks/${
+      dev ? '[name]' : '[name].[contenthash:8]'
+    }.js`,
+    hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
+    hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
+    strictModuleExceptionHandling: true,
+    // crossOriginLoading: crossOrigin,
+    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
+    hashFunction: 'xxhash64',
+    hashDigestLength: 16
+  });
+
   config.optimization.merge({
     emitOnErrors: !dev,
     checkWasmTypes: false,
@@ -107,7 +123,8 @@ export function baseWebpackChain({
         defaultVendors: false,
         default: false,
         vendors: {
-          name: 'static/vendors',
+          name: 'vendors',
+          filename: CommonChunkFilename,
           test: /[\\/]node_modules[\\/]/,
           // Don't let webpack eliminate this chunk (prevents this chunk from
           // becoming a part of the commons chunk)
@@ -133,23 +150,6 @@ export function baseWebpackChain({
       }
     ]);
   }
-
-  config.output.path(outputDir);
-  config.output.merge({
-    publicPath,
-    filename: `${dev ? '[name]' : '[name].[contenthash:8]'}.js`,
-    // This saves chunks with the name given via `import()`
-    chunkFilename: `static/chunks/${
-      dev ? '[name]' : '[name].[contenthash:8]'
-    }.js`,
-    hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
-    hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
-    strictModuleExceptionHandling: true,
-    // crossOriginLoading: crossOrigin,
-    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
-    hashFunction: 'xxhash64',
-    hashDigestLength: 16
-  });
 
   // Support for NODE_PATH
   const nodePathList = (process.env.NODE_PATH || '')
@@ -215,7 +215,6 @@ export function baseWebpackChain({
       name: 'static/media/[name].[hash:8].[ext]'
     });
 
-  // config.plugin('chunk-names').use(ChunkNamePlugin);
   config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {
       resourceRegExp: /^\.\/locale$/,
