@@ -10,15 +10,17 @@ First, run the development server:
 npm run dev
 # or
 yarn dev
+# or
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `src/routes/page.js`. The page auto-updates as you edit the file.
 
-[API routes](https://shuvijs.github.io/shuvijs.org/docs/guide/Routes#api-routes) can be accessed on [http://localhost:3000/api](http://localhost:3000/api). This endpoint can be edited in `routes/api/api.js`.
+[API routes](https://shuvijs.github.io/shuvijs.org/docs/guide/Routes#api-routes) can be accessed on [http://localhost:3000/api](http://localhost:3000/api). This endpoint can be edited in `src/routes/api/api.js`.
 
-The `routes/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://shuvijs.github.io/shuvijs.org/docs/guide/Routes#api-routes) instead of React pages.
+The `src/routes/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://shuvijs.github.io/shuvijs.org/docs/guide/Routes#api-routes) instead of React pages.
 
 ## Learn More
 
