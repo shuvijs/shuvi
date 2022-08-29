@@ -1,3 +1,20 @@
+# [1.0.0-rc.9](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.8...v1.0.0-rc.9) (2022-08-29)
+
+
+### Bug Fixes
+
+* cannot pass options ([55321ba](https://github.com/shuvijs/shuvi/commit/55321bac9207698dfb95b67a51412c31d225f2a8))
+* chunks filename ([531aea9](https://github.com/shuvijs/shuvi/commit/531aea9b965686d4398697b5d50453efd58404a9))
+* iframe should not be rendered when no error occurs ([#420](https://github.com/shuvijs/shuvi/issues/420)) ([8251361](https://github.com/shuvijs/shuvi/commit/8251361ad7845c6d89f1870d1afeaaae0a71fb36))
+* **webpack-wait-file-builder:** fix clearing timer at onInvalid ([#419](https://github.com/shuvijs/shuvi/issues/419)) ([8540ff0](https://github.com/shuvijs/shuvi/commit/8540ff0193444b566cf978d234aea049fab1be08))
+
+
+### Features
+
+* **hook:** add AsyncSeriesHook & AsyncSeriesBailHook  ([61b4eae](https://github.com/shuvijs/shuvi/commit/61b4eaec8d889a677e7ab9905a1aa851928fd7a0))
+
+
+
 # [1.0.0-rc.8](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.7...v1.0.0-rc.8) (2022-08-26)
 
 
