@@ -13,16 +13,27 @@ let iframeRoot = null;
 let errorBody = null;
 let isFirstRender = true;
 
-function render(errorOverlayProps) {
-  errorTypeHandler.emit(errorOverlayProps);
+function render({ errorType, hasBuildError, hasRuntimeError }) {
+  errorTypeHandler.emit(errorType);
+  if (!hasBuildError && !hasRuntimeError) {
+    return null;
+  }
   return <ErrorOverlay />;
 }
 
-window.updateContent = function updateContent(errorOverlayProps) {
-  let renderedElement = render(errorOverlayProps);
+window.updateContent = function updateContent({
+  errorType,
+  hasBuildError,
+  hasRuntimeError
+}) {
+  let renderedElement = render({
+    errorType,
+    hasBuildError,
+    hasRuntimeError
+  });
 
   if (renderedElement === null) {
-    errorBody.unmount();
+    errorBody && errorBody.unmount();
     return false;
   }
   // Update the overlay

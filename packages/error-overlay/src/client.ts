@@ -18,6 +18,8 @@ let iframe: null | HTMLIFrameElement = null;
 let isLoadingIframe: boolean = false;
 let isIframeReady: boolean = false;
 let errorType: errorTypeHandler.ErrorTypeEvent;
+let hasBuildError: Boolean = false;
+let hasRuntimeError: Boolean = false;
 
 declare global {
   interface Window {
@@ -42,6 +44,7 @@ function onUnhandledError(ev: ErrorEvent) {
     return;
   }
 
+  hasRuntimeError = true;
   errorType = {
     type: TYPE_UNHANDLED_ERROR,
     reason: error,
@@ -61,6 +64,7 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
     return;
   }
 
+  hasRuntimeError = true;
   errorType = {
     type: TYPE_UNHANDLED_REJECTION,
     reason: reason,
@@ -103,17 +107,19 @@ function stopReportingRuntimeErrors() {
     } catch {}
     stackTraceLimit = undefined;
   }
-
+  hasRuntimeError = false;
   window.removeEventListener('error', onUnhandledError);
   window.removeEventListener('unhandledrejection', onUnhandledRejection);
 }
 
 function onBuildOk() {
+  hasBuildError = false;
   errorType = { type: TYPE_BUILD_OK };
   update();
 }
 
 function onBuildError(message: string) {
+  hasBuildError = true;
   errorType = { type: TYPE_BUILD_ERROR, message };
   update();
 }
@@ -171,7 +177,11 @@ function updateIframeContent() {
   }
 
   //@ts-ignore
-  const isRendered = iframe.contentWindow!.updateContent(errorType);
+  const isRendered = iframe.contentWindow!.updateContent({
+    errorType,
+    hasBuildError,
+    hasRuntimeError
+  });
 
   if (!isRendered) {
     window.document.body.removeChild(iframe);
