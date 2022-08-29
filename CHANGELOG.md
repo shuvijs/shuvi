@@ -1,3 +1,13 @@
+# [1.0.0-rc.10](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.9...v1.0.0-rc.10) (2022-08-29)
+
+
+### Bug Fixes
+
+* check issuer for framework chunks ([9890620](https://github.com/shuvijs/shuvi/commit/989062039342ad7fe21d06f7e6de99b348ca3cd9))
+* make e2e test stable ([9e8e8f9](https://github.com/shuvijs/shuvi/commit/9e8e8f9a7ebf29e8ec3be60a5a91dcda309006d8))
+
+
+
 # [1.0.0-rc.9](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.8...v1.0.0-rc.9) (2022-08-29)
 
 
