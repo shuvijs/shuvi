@@ -37,8 +37,14 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
     let collectedChangedFiles = new Map<string, FileInfo>();
     onInvalid(() => {
       compiler.watching.suspend();
+      /**
+       * if another onInvalid happened during checking resume loop,
+       * then stop the checkResumeIntervalTimer and the fallback timer.
+       */
       if (checkResumeIntervalTimer) {
         clearInterval(checkResumeIntervalTimer);
+        clearTimeout(fallbackTimer);
+        checkResumeIntervalTimer = undefined;
       }
     });
 
