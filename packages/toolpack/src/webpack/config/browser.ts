@@ -4,6 +4,7 @@ import * as path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { resolve } from '@shuvi/utils/lib/resolve';
 // import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
+import { CommonChunkFilename } from '../../constants';
 import { IWebpackHelpers } from '../types';
 import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
@@ -82,20 +83,32 @@ export function createBrowserWebpackChain(
         framework: {
           chunks: 'all',
           name: 'framework',
+          filename: CommonChunkFilename,
           // This regex ignores nested copies of framework libraries so they're
           // bundled with their issuer.
           // https://github.com/zeit/next.js/pull/9012
-          test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|@shuvi\/router|@shuvi\/router-react|scheduler|prop-types|use-sync-external-store|history)[\\/]/,
+          test(module: { nameForCondition: Function }) {
+            const resource: string | undefined = module.nameForCondition();
+            return resource
+              ? ['@shuvi/redox-react', 'react', 'react-dom'].some(
+                  pkg => resource.indexOf(pkg) >= 0
+                )
+              : false;
+          },
+          // test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|@shuvi[\\/]router|@shuvi[\\/]router-react|scheduler|prop-types|use-sync-external-store|history)[\\/]/,
           priority: 40,
           // Don't let webpack eliminate this chunk (prevents this chunk from
           // becoming a part of the commons chunk)
           enforce: true
         },
         lib: {
-          test(module: { size: Function; identifier: Function }): boolean {
+          test(module: {
+            size: Function;
+            nameForCondition: Function;
+          }): boolean {
             return (
               module.size() > BIG_LIBRARY_THRESHOLD &&
-              /node_modules[/\\]/.test(module.identifier())
+              /node_modules[/\\]/.test(module.nameForCondition() || '')
             );
           },
           name(module: {
@@ -118,28 +131,9 @@ export function createBrowserWebpackChain(
 
             return hash.digest('hex').substring(0, 8);
           },
+          filename: CommonChunkFilename,
           priority: 30,
           minChunks: 1,
-          reuseExistingChunk: true
-        },
-        commons: {
-          name: 'commons',
-          minChunks: 2,
-          priority: 20
-        },
-        shared: {
-          name(module: any, chunks: any) {
-            return crypto
-              .createHash('sha1')
-              .update(
-                chunks.reduce((acc: string, chunk: webpack.Chunk) => {
-                  return acc + chunk.name;
-                }, '')
-              )
-              .digest('hex');
-          },
-          priority: 10,
-          minChunks: 2,
           reuseExistingChunk: true
         }
       },

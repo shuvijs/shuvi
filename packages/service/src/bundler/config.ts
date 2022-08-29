@@ -92,14 +92,6 @@ export function createWebpackConfig(
   chain.resolve.alias.set('@shuvi/app', paths.appDir);
   chain.resolve.alias.set('@shuvi/runtime', paths.runtimeDir);
   chain.resolve.alias.set('@shuvi/user', paths.srcDir);
-  chain.output.set('filename', ({ chunk }: { chunk: { name: string } }) => {
-    // Use `[name]-[contenthash].js` in production
-    if (!dev) {
-      return `[name]-[contenthash].js`;
-    }
-
-    return '[name].js';
-  });
 
   return chain;
 }
