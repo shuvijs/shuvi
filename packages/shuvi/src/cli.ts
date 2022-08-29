@@ -17,7 +17,7 @@ program.on('--help', () => {
 });
 
 program.name('shuvi').version(pkgInfo.version).usage('<cmd> [options]');
-program.parse();
+program.allowUnknownOption().parse();
 
 const args = program.args;
 const [cmd, ...commandArgs] = args.length ? args : ['dev'];
