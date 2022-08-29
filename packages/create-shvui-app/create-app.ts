@@ -211,8 +211,7 @@ export async function createApp({
       scripts: {
         dev: 'shuvi dev',
         build: 'shuvi build',
-        start: 'shuvi start',
-        lint: 'shuvi lint'
+        start: 'shuvi start'
       }
     };
     /**
@@ -229,11 +228,11 @@ export async function createApp({
     /**
      * Default dependencies.
      */
-    const dependencies = ['react', 'react-dom', 'shuvi'];
+    const dependencies = ['shuvi'];
     /**
      * Default devDependencies.
      */
-    const devDependencies = ['eslint', 'eslint-config-shuvi'];
+    const devDependencies = [];
     /**
      * TypeScript projects will have type definitions and other devDependencies.
      */

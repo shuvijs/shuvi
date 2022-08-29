@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import got from 'got';
 import tar from 'tar';
 import { Stream } from 'stream';
@@ -28,11 +27,11 @@ export async function getRepoInfo(
     : file.join('/');
 
   if (
-    // Support repos whose entire purpose is to be a NextJS example, e.g.
-    // https://github.com/:username/:my-cool-nextjs-example-repo-name.
+    // Support repos whose entire purpose is to be a ShuviJS example, e.g.
+    // https://github.com/:username/:my-cool-shuvijs-example-repo-name.
     t === undefined ||
     // Support GitHub URL that ends with a trailing slash, e.g.
-    // https://github.com/:username/:my-cool-nextjs-example-repo-name/
+    // https://github.com/:username/:my-cool-shuvijs-example-repo-name/
     // In this case "t" will be an empty string while the next part "_branch" will be undefined
     (t === '' && _branch === undefined)
   ) {
@@ -74,7 +73,7 @@ export function existsInRepo(nameOrUrl: string): Promise<boolean> {
     return isUrlOk(url.href);
   } catch {
     return isUrlOk(
-      `https://api.github.com/repos/vercel/next.js/contents/examples/${encodeURIComponent(
+      `https://api.github.com/repos/shuvijs/shuvi/contents/examples/${encodeURIComponent(
         nameOrUrl
       )}`
     );
@@ -105,7 +104,7 @@ export function downloadAndExtractExample(
   }
 
   return pipeline(
-    got.stream('https://codeload.github.com/vercel/next.js/tar.gz/canary'),
-    tar.extract({ cwd: root, strip: 3 }, [`next.js-canary/examples/${name}`])
+    got.stream('https://codeload.github.com/shuvijs/shuvi/tar.gz/main'),
+    tar.extract({ cwd: root, strip: 3 }, [`shuvi-main/examples/${name}`])
   );
 }
