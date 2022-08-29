@@ -1,3 +1,4 @@
+import { Loader } from '@shuvi/runtime';
 import { defineModel, useRootModel } from '@shuvi/runtime/model';
 
 const sleep = (time: number) =>
@@ -111,7 +112,7 @@ export default function Index() {
   );
 }
 
-export const loader = async ctx => {
+export const loader: Loader = async ctx => {
   const store = ctx.appContext.store;
   const baseStore = store.getModel(base);
   await baseStore.addStepAsync();
