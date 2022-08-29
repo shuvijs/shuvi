@@ -12,6 +12,22 @@ import { withStyle } from './parts/style';
 import { splitChunksFilter } from './parts/helpers';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
+const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/]@shuvi[\\/]/;
+const FRAMEWORK_REACT_MODULES: {
+  test: RegExp;
+  issuers?: RegExp[];
+}[] = [
+  {
+    test: /[/\\]node_modules[/\\]react[/\\]/
+  },
+  {
+    test: /[/\\]node_modules[/\\]react-dom[/\\]/
+  },
+  {
+    test: /[/\\]node_modules[/\\]scheduler[/\\]/,
+    issuers: [/[/\\]node_modules[/\\]react-dom[/\\]/]
+  }
+];
 
 export interface BrowserOptions extends BaseOptions {
   webpackHelpers: IWebpackHelpers;
@@ -84,16 +100,35 @@ export function createBrowserWebpackChain(
           chunks: 'all',
           name: 'framework',
           filename: CommonChunkFilename,
-          // This regex ignores nested copies of framework libraries so they're
-          // bundled with their issuer.
-          // https://github.com/zeit/next.js/pull/9012
-          test(module: { nameForCondition: Function }) {
+          test(module: { nameForCondition: Function; issuer: any }) {
             const resource: string | undefined = module.nameForCondition();
-            return resource
-              ? ['@shuvi/redox-react', 'react', 'react-dom'].some(
-                  pkg => resource.indexOf(pkg) >= 0
-                )
-              : false;
+            if (!resource) {
+              return false;
+            }
+
+            if (SHUVI_PKGS_REGEX.test(resource)) {
+              return true;
+            }
+
+            return FRAMEWORK_REACT_MODULES.some(frameworkModule => {
+              if (!frameworkModule.test.test(resource)) {
+                return false;
+              }
+
+              // Check issuer to ignore nested copies of framework libraries so they're
+              // bundled with their issuer.
+              // https://github.com/zeit/next.js/pull/9012
+              if (frameworkModule.issuers) {
+                for (const issuer of frameworkModule.issuers) {
+                  const issuerResource = module.issuer.nameForCondition();
+                  if (!issuer.test(issuerResource)) {
+                    return false;
+                  }
+                }
+              }
+
+              return true;
+            });
           },
           // test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|@shuvi[\\/]router|@shuvi[\\/]router-react|scheduler|prop-types|use-sync-external-store|history)[\\/]/,
           priority: 40,
@@ -108,7 +143,7 @@ export function createBrowserWebpackChain(
           }): boolean {
             return (
               module.size() > BIG_LIBRARY_THRESHOLD &&
-              /node_modules[/\\]/.test(module.nameForCondition() || '')
+              /[/\\]node_modules[/\\]/.test(module.nameForCondition() || '')
             );
           },
           name(module: {
