@@ -178,15 +178,6 @@ export async function createApp({
       );
     }
 
-    // Copy default `shuvi-env.d.ts` to any example that is typescript
-    const tsconfigPath = path.join(root, 'tsconfig.json');
-    if (fs.existsSync(tsconfigPath)) {
-      fs.copyFileSync(
-        path.join(__dirname, 'templates', 'typescript', 'shuvi-env.d.ts'),
-        path.join(root, 'shuvi-env.d.ts')
-      );
-    }
-
     hasPackageJson = fs.existsSync(packageJsonPath);
     if (hasPackageJson) {
       console.log('Installing packages. This might take a couple of minutes.');
@@ -228,7 +219,7 @@ export async function createApp({
     /**
      * Default dependencies.
      */
-    const dependencies = ['shuvi'];
+    const dependencies = ['shuvi@next'];
     /**
      * Default devDependencies.
      */

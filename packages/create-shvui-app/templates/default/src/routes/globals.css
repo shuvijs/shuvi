@@ -15,13 +15,11 @@ a {
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+html {
+  color-scheme: dark;
+}
 
-  body {
-    color: black;
-    background: ivory
-  }
+body {
+  color: black;
+  background: ivory
 }
