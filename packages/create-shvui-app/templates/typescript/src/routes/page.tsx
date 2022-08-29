@@ -18,7 +18,7 @@ export default function Home() {
 
         <p className={styles.description}>
           Get started by editing{' '}
-          <code className={styles.code}>src/routes/page.js</code>
+          <code className={styles.code}>src/routes/page.tsx</code>
         </p>
 
         <div className={styles.grid}>
