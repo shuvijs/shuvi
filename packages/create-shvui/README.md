@@ -48,3 +48,7 @@ pnpm create shuvi my-first-app
 - **Zero Dependencies**: Initializing a project is as quick as one second. Create Shuvi App has zero dependencies.
 - **Offline Support**: Create Shuvi App will automatically detect if you're offline and bootstrap your project using your local package cache.
 - **Support for Examples**: Create Shuvi App can bootstrap your application using an example from the Shuvi.js examples collection (e.g. `npx create-shuvi --example basic`).
+
+## Reference
+
+This create-shuvi package is based on [create-next-app](https://github.com/vercel/next.js/tree/canary/packages/create-next-app), and its contribution is greatly appreciated.
