@@ -174,12 +174,17 @@ async function launchShuvi(
   });
 }
 
-export async function launchFixture(
+export interface LaunchOptions {
+  envOverrides?: Partial<NodeJS.ProcessEnv>;
+  isDev?: boolean;
+  onStdout?: (data: string) => void;
+  onStderr?: (error: string) => void;
+}
+
+async function launchFixture(
   name: string,
   configOverrides: ShuviConfig = {},
-  envOverrides: Partial<NodeJS.ProcessEnv> = {},
-  isDev: boolean = true,
-  handleStdoutStderr: IHandleStdoutStderr = {}
+  { envOverrides = {}, isDev = true, onStdout, onStderr }: LaunchOptions = {}
 ) {
   const projectPath = resolveFixture(name);
   // remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect
@@ -192,7 +197,10 @@ export async function launchFixture(
     isDev,
     configOverrides,
     envOverrides,
-    handleStdoutStderr
+    {
+      onStdout,
+      onStderr
+    }
   );
   const browser = new Browser();
   await browser.start();
@@ -213,17 +221,24 @@ export async function launchFixture(
   };
 }
 
+export async function devFixture(
+  name: string,
+  configOverrides: ShuviConfig = {},
+  options?: Omit<LaunchOptions, 'isDev'>
+): Promise<AppCtx> {
+  return await launchFixture(name, configOverrides, {
+    ...options,
+    isDev: true
+  });
+}
+
 export async function serveFixture(
   name: string,
   configOverrides: ShuviConfig = {},
-  envOverrides: Partial<NodeJS.ProcessEnv> = {},
-  handleStdoutStderr: IHandleStdoutStderr = {}
+  options?: Omit<LaunchOptions, 'isDev'>
 ): Promise<AppCtx> {
-  return await launchFixture(
-    name,
-    configOverrides,
-    envOverrides,
-    false,
-    handleStdoutStderr
-  );
+  return await launchFixture(name, configOverrides, {
+    ...options,
+    isDev: false
+  });
 }

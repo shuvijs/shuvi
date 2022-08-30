@@ -55,7 +55,7 @@ async function loaderTransform(source, inputSourceMap) {
 
   let keep = [];
 
-  if (isPageFile) {
+  if (this.resourceQuery) {
     const query = querystring.parse(this.resourceQuery.slice(1));
     if (query.keep) {
       if (Array.isArray(query.keep)) {

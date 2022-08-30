@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
@@ -7,7 +7,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('custom/document.ejs', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('custom-document-template');
+    ctx = await devFixture('custom-document-template');
   });
   afterAll(async () => {
     await ctx.close();

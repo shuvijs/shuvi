@@ -1,10 +1,10 @@
-import { AppCtx, Page, launchFixture, check } from '../utils';
+import { AppCtx, Page, devFixture, check } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
 describe('redox', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('model');
+    ctx = await devFixture('model');
     page = await ctx.browser.page();
   });
   afterAll(async () => {

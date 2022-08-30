@@ -1,5 +1,5 @@
 import got from 'got';
-import { AppCtx, launchFixture, serveFixture } from '../utils';
+import { AppCtx, devFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -14,7 +14,7 @@ describe('Public Dir', () => {
     let res;
 
     expect.assertions(5);
-    ctx = await launchFixture('public-dir');
+    ctx = await devFixture('public-dir');
 
     // file
     res = await got.get(ctx.url(`/user.json`), {

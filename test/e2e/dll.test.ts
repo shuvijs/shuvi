@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture, resolveFixture } from '../utils';
+import { AppCtx, Page, devFixture, resolveFixture } from '../utils';
 
 const FIXTURE = 'dll';
 const pkg = /react@18\.1\.0/; //react@18.1.0
@@ -11,7 +11,7 @@ describe('without Dll preBundle', () => {
   let modules: string[];
 
   beforeAll(async () => {
-    ctx = await launchFixture(FIXTURE, { experimental: { preBundle: false } });
+    ctx = await devFixture(FIXTURE, { experimental: { preBundle: false } });
     modules = await require(resolveFixture(`dll/dist/client/modules.json`));
   });
 
@@ -37,7 +37,7 @@ describe('with Dll preBundle', () => {
 
   beforeAll(async () => {
     jest.resetModules();
-    ctx = await launchFixture(FIXTURE, { experimental: { preBundle: true } });
+    ctx = await devFixture(FIXTURE, { experimental: { preBundle: true } });
     modules = await require(resolveFixture(`dll/dist/client/modules.json`));
   });
 

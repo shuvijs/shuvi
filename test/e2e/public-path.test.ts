@@ -1,6 +1,6 @@
 import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
 
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
@@ -9,7 +9,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('public path', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('public-path', {
+    ctx = await devFixture('public-path', {
       publicPath: '/test/'
     });
   });

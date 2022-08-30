@@ -1,7 +1,7 @@
 import {
   AppCtx,
   Page,
-  launchFixture,
+  devFixture,
   resolveFixture,
   check,
   checkShuviPortal
@@ -23,7 +23,7 @@ describe('Hot Module Reloading', () => {
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('basic', { ssr: true });
+    ctx = await devFixture('basic', { ssr: true });
   });
   afterAll(async () => {
     await ctx.close();
