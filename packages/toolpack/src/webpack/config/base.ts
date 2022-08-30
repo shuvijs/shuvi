@@ -98,7 +98,8 @@ export function baseWebpackChain({
       dev ? '[name]' : '[name].[contenthash:8]'
     }.js`,
     hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
-    hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
+    hotUpdateMainFilename:
+      'static/webpack/[runtime].[fullhash].hot-update.json',
     strictModuleExceptionHandling: true,
     // crossOriginLoading: crossOrigin,
     webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
