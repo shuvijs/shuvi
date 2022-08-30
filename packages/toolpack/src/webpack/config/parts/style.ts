@@ -1,7 +1,4 @@
-import {
-  DEV_STYLE_ANCHOR_ID,
-  DEV_STYLE_PREPARE
-} from '@shuvi/shared/lib/constants';
+import { DEV_STYLE_ANCHOR_ID } from '@shuvi/shared/lib/constants';
 import { WebpackChain as Config } from '../base';
 import Rule from 'webpack-chain/src/Rule';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -173,12 +170,6 @@ function cssRule({
           // anchor. By inserting before and not after, we do not
           // need to track the last inserted element.
           parentNode.insertBefore(element, anchorElement);
-
-          window["${DEV_STYLE_PREPARE}"] = new Promise(function(resolve) {
-            (window.requestAnimationFrame || setTimeout)(function() {
-              resolve();
-            });
-          });
         `
         ),
         esModule: true
