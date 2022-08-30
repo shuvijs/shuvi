@@ -1,7 +1,7 @@
 import {
   AppCtx,
   Page,
-  launchFixture,
+  devFixture,
   resolveFixture,
   check
 } from '../utils/index';
@@ -62,7 +62,7 @@ describe('webpack watch wait file builder', () => {
   describe('changing files should work with WebpackWatchWaitForFileBuilderPlugin', () => {
     test(`webpack watching should wait for fileBuilder's buildEnd and should not throw error when changing files`, async () => {
       try {
-        ctx = await launchFixture('webpack-watch-wait-file-builder', {
+        ctx = await devFixture('webpack-watch-wait-file-builder', {
           plugins: ['./plugin/fileBuilder']
         });
         page = await ctx.browser.page(ctx.url('/one'));
@@ -140,7 +140,7 @@ describe('webpack watch wait file builder', () => {
 
     test('webpack watching should not throw error when changing files frequently', async () => {
       try {
-        ctx = await launchFixture('webpack-watch-wait-file-builder', {
+        ctx = await devFixture('webpack-watch-wait-file-builder', {
           plugins: ['./plugin/fileBuilder']
         });
         page = await ctx.browser.page(ctx.url('/one'));

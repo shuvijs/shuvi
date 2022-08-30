@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -13,7 +13,7 @@ describe('Dotenv development', () => {
     Object.assign(process.env, {
       NODE_ENV: 'development'
     });
-    ctx = await launchFixture('dotenv', { ssr: true });
+    ctx = await devFixture('dotenv', { ssr: true });
 
     page = await ctx.browser.page(ctx.url('/'));
 

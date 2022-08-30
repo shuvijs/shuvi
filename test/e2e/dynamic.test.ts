@@ -2,7 +2,7 @@ import {
   CLIENT_APPDATA_ID,
   CLIENT_CONTAINER_ID
 } from '@shuvi/shared/lib/constants';
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
@@ -11,7 +11,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('Dynamic', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('dynamic');
+    ctx = await devFixture('dynamic');
   }, 1000 * 60 * 5);
 
   afterAll(async () => {

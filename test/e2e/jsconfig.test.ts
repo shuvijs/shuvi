@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
@@ -7,7 +7,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('jsconfig', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('jsconfig');
+    ctx = await devFixture('jsconfig');
   });
   afterAll(async () => {
     await ctx.close();

@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -7,7 +7,7 @@ describe('Node Browser Polyfill', () => {
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('node-browser-polyfill', { ssr: true });
+    ctx = await devFixture('node-browser-polyfill', { ssr: true });
   });
   afterEach(async () => {
     await page.close();

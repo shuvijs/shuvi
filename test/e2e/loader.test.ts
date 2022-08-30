@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture, serveFixture } from '../utils';
+import { AppCtx, Page, devFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -7,7 +7,7 @@ describe('loader', () => {
   let page: Page;
   describe('ssr = true', () => {
     beforeAll(async () => {
-      ctx = await launchFixture('loader');
+      ctx = await devFixture('loader');
     });
     afterEach(async () => {
       await page.close();

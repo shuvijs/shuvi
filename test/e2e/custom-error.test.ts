@@ -3,7 +3,7 @@ import * as path from 'path';
 import {
   AppCtx,
   Page,
-  launchFixture,
+  devFixture,
   resolveFixture,
   serveFixture
 } from '../utils';
@@ -38,7 +38,7 @@ describe('custom/error.js [dev]', () => {
     let result: any;
 
     beforeAll(async () => {
-      ctx = await launchFixture('custom-error');
+      ctx = await devFixture('custom-error');
       page = await ctx.browser.page();
     });
     afterAll(async () => {
@@ -135,7 +135,7 @@ describe('custom/error.js [dev]', () => {
     let result: any;
 
     beforeAll(async () => {
-      ctx = await launchFixture('custom-error', {
+      ctx = await devFixture('custom-error', {
         ssr: false,
         router: { history: 'browser' }
       });
