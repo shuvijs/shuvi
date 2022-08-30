@@ -73,6 +73,7 @@ export function resolvePlugin(
       }
     } catch (e) {
       console.error('error when resolving corePlugin');
+      console.error(e);
     }
 
     // resolve serverPlugin
