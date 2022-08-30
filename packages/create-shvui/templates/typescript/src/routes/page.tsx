@@ -1,6 +1,6 @@
 import { Head } from '@shuvi/runtime';
 import './globals.css';
-import styles from './Home.module.css';
+import styles from './module.css';
 
 export default function Home() {
   return (
