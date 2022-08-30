@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-shared",
-  "version": "1.0.0-rc.11",
+  "version": "1.0.0-rc.12",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -82,18 +82,18 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/hook": "1.0.0-rc.11",
+    "@shuvi/hook": "1.0.0-rc.12",
     "@shuvi/redox": "0.0.6",
-    "@shuvi/router": "1.0.0-rc.11",
-    "@shuvi/runtime": "1.0.0-rc.11",
-    "@shuvi/service": "1.0.0-rc.11",
-    "@shuvi/shared": "1.0.0-rc.11",
-    "@shuvi/toolpack": "1.0.0-rc.11",
-    "@shuvi/utils": "1.0.0-rc.11",
+    "@shuvi/router": "1.0.0-rc.12",
+    "@shuvi/runtime": "1.0.0-rc.12",
+    "@shuvi/service": "1.0.0-rc.12",
+    "@shuvi/shared": "1.0.0-rc.12",
+    "@shuvi/toolpack": "1.0.0-rc.12",
+    "@shuvi/utils": "1.0.0-rc.12",
     "redux": "4.1.2"
   },
   "peerDependencies": {
-    "@shuvi/service": "1.0.0-rc.11"
+    "@shuvi/service": "1.0.0-rc.12"
   },
   "devDependencies": {
     "@types/minimatch": "3.0.5"

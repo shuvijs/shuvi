@@ -1,3 +1,13 @@
+# [1.0.0-rc.12](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.11...v1.0.0-rc.12) (2022-08-30)
+
+
+### Bug Fixes
+
+* getModuleExport ([36bea8c](https://github.com/shuvijs/shuvi/commit/36bea8ce811b9759868b928dc5387caa64f4e3f9))
+* loader tree shaking ([695529a](https://github.com/shuvijs/shuvi/commit/695529a90db85f2633078fad5d595e7e9d93c21b))
+
+
+
 # [1.0.0-rc.11](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.10...v1.0.0-rc.11) (2022-08-30)
 
 
