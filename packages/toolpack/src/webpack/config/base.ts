@@ -92,7 +92,7 @@ export function baseWebpackChain({
   config.output.path(outputDir);
   config.output.merge({
     publicPath,
-    filename: `${dev ? '[name].js' : '[name].[contenthash:8]'}.js`,
+    filename: `${dev ? '[name]' : '[name].[contenthash:8]'}.js`,
     // This saves chunks with the name given via `import()`
     chunkFilename: `static/chunks/${
       dev ? '[name]' : '[name].[contenthash:8]'
