@@ -1,6 +1,6 @@
 {
   "name": "create-shuvi",
-  "version": "1.0.0-rc.10",
+  "version": "1.0.0-rc.1",
   "keywords": [
     "react",
     "shuvi",
@@ -16,9 +16,8 @@
   ],
   "scripts": {
     "dev": "ncc build ./index.ts -w -o dist/",
-    "prerelease": "rimraf ./dist/",
-    "build": "ncc build ./index.ts -o ./dist/ --minify --no-cache --no-source-map-register",
-    "release": "pnpm build"
+    "prebuild": "rimraf ./dist/",
+    "build": "ncc build ./index.ts -o ./dist/ --minify --no-cache --no-source-map-register"
   },
   "devDependencies": {
     "@types/async-retry": "1.3.0",
