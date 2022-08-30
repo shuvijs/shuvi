@@ -18,9 +18,9 @@ const app = createApp({
   appData
 });
 
-const render = () => {
+const render = async () => {
   const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
-  view.renderApp({
+  await view.renderApp({
     app: app.getPublicAPI(),
     appData,
     appContainer
@@ -29,7 +29,7 @@ const render = () => {
 
 const run = async () => {
   await app.init();
-  render();
+  await render();
 };
 
 export { run, app };

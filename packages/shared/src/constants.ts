@@ -16,8 +16,6 @@ export const DEV_STYLE_ANCHOR_ID = '__shuvi_style_anchor';
 
 export const DEV_STYLE_HIDE_FOUC = 'data-shuvi-hide-fouc';
 
-export const DEV_STYLE_PREPARE = '__shuvi_style_prepare';
-
 export const DEV_HOT_MIDDLEWARE_PATH = `${DEV_ONLY_ASSETS_PREFIX}/webpack-hmr`;
 
 export const DEV_HOT_LAUNCH_EDITOR_ENDPOINT = `${DEV_ONLY_ASSETS_PREFIX}/development/open-stack-frame-in-editor`;
