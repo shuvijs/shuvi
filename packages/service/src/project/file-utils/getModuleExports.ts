@@ -23,15 +23,27 @@ export const getExports = (content: string) => {
 
   traverse(ast, {
     ExportDeclaration(path) {
-      if (path.type === 'ExportNamedDeclaration') {
-        const node = path.node as BabelTypes.ExportNamedDeclaration;
-        const declarations = (
-          node.declaration as BabelTypes.VariableDeclaration
-        ).declarations;
-        declarations.forEach(d => {
-          const name = (d.id as BabelTypes.Identifier).name;
-          if (name) {
-            exports.push(name);
+      if (path.type !== 'ExportNamedDeclaration') {
+        return;
+      }
+
+      const { declaration, specifiers } =
+        path.node as BabelTypes.ExportNamedDeclaration;
+
+      if (!declaration && specifiers.length) {
+        specifiers.forEach(item => {
+          if (BabelTypes.isIdentifier(item.exported)) {
+            exports.push(item.exported.name);
+          }
+        });
+      } else if (BabelTypes.isFunctionDeclaration(declaration)) {
+        if (declaration.id) {
+          exports.push(declaration.id.name);
+        }
+      } else if (BabelTypes.isVariableDeclaration(declaration)) {
+        declaration.declarations.forEach(d => {
+          if (BabelTypes.isIdentifier(d.id)) {
+            exports.push(d.id.name);
           }
         });
       }
