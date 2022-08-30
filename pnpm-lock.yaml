@@ -740,12 +740,6 @@ importers:
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
 
-  test/fixtures/runtime-public-path:
-    specifiers:
-      '@shuvi/shared': workspace:*
-    dependencies:
-      '@shuvi/shared': link:../../../packages/shared
-
   test/fixtures/typescript:
     specifiers:
       '@types/node': 18.0.6

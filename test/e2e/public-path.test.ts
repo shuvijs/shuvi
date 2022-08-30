@@ -1,4 +1,5 @@
-import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
+import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
+
 import { AppCtx, Page, launchFixture } from '../utils';
 
 let ctx: AppCtx;
@@ -8,7 +9,9 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('public path', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('public-path');
+    ctx = await launchFixture('public-path', {
+      publicPath: '/test/'
+    });
   });
   afterAll(async () => {
     await ctx.close();
@@ -18,31 +21,9 @@ describe('public path', () => {
     await page.close();
   });
 
-  test('should pass public path to client', async () => {
+  test('should access public path from appData', async () => {
     page = await ctx.browser.page(ctx.url('/'));
-    const pubicPath = await page.evaluate(
-      (name: any) => window[name],
-      IDENTITY_RUNTIME_PUBLICPATH
-    );
-    expect(pubicPath).toBe('/');
-  });
-});
-
-describe('runtime public path', () => {
-  beforeAll(async () => {
-    ctx = await launchFixture('runtime-public-path');
-  });
-  afterAll(async () => {
-    await ctx.close();
-  });
-
-  afterEach(async () => {
-    await page.close();
-  });
-
-  test('should overwrite publicPath in client', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
-    await page.waitForSelector('#public-path');
-    expect(await page.$text('#public-path')).toBe('/client-overwrite/');
+    const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
+    expect(appData.publicPath).toBe('/test/');
   });
 });

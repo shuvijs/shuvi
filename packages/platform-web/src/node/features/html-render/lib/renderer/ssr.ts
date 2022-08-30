@@ -1,9 +1,7 @@
 import { IData, isResponse } from '@shuvi/platform-shared/shared';
 import { getPublicRuntimeConfig } from '@shuvi/platform-shared/shared/shuvi-singleton-runtimeConfig';
-import { IDENTITY_RUNTIME_PUBLICPATH } from '@shuvi/shared/lib/constants';
 import { clientManifest, server } from '@shuvi/service/lib/resources';
 import { BaseRenderer, AppData } from './base';
-import { tag } from './htmlTag';
 import { IHtmlDocument, IRenderViewOptions } from './types';
 
 export class SsrRenderer extends BaseRenderer {
@@ -55,11 +53,6 @@ export class SsrRenderer extends BaseRenderer {
         ...(result.mainEndTags || [])
       ],
       scriptTags: [
-        tag(
-          'script',
-          {},
-          `${IDENTITY_RUNTIME_PUBLICPATH} = "${serverPluginContext.assetPublicPath}"`
-        ),
         ...(result.scriptBeginTags || []),
         ...mainAssetsTags.scripts,
         ...(result.scriptEndTags || [])

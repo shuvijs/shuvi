@@ -3,10 +3,8 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { resolve } from '@shuvi/utils/lib/resolve';
-// import PreferResolverPlugin from '../plugins/prefer-resolver-plugin';
 import { CommonChunkFilename } from '../../constants';
 import { IWebpackHelpers } from '../types';
-import DynamicPublicPathPlugin from '../plugins/dynamic-public-path-plugin';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
 import { splitChunksFilter } from './parts/helpers';
@@ -81,12 +79,6 @@ export function createBrowserWebpackChain(
         }
       ]);
   }
-
-  // if (options.target) {
-  //   chain.resolve
-  //     .plugin('private/prefer-resolver-plugin')
-  //     .use(PreferResolverPlugin, [{ suffix: options.target }]);
-  // }
 
   if (dev) {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
@@ -218,7 +210,7 @@ export function createBrowserWebpackChain(
       'process.env': JSON.stringify('{}')
     }
   ]);
-  chain.plugin('dynamic-public-path-plugin').use(DynamicPublicPathPlugin);
+  // chain.plugin('dynamic-public-path-plugin').use(DynamicPublicPathPlugin);
   chain.plugin('private/build-manifest').tap(([options]) => [
     {
       ...options,

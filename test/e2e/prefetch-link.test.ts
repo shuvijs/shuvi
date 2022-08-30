@@ -1,6 +1,6 @@
 import got from 'got';
 import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
-import { AppCtx, Page, serveFixture } from '../utils';
+import { AppCtx, Page, serveFixture } from '../utils/index';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -32,15 +32,7 @@ describe('Prefetch Support with SSR', () => {
 
     const filesByRoutId = appData.filesByRoutId;
 
-    const publicPathClient = JSON.parse(
-      await page.evaluate(() =>
-        JSON.stringify(window.__shuvi_dynamic_public_path__)
-      )
-    );
-
-    const publicPathServer = appData.publicPath;
-
-    const publicPath = publicPathClient || publicPathServer;
+    const publicPath = appData.publicPath;
 
     const withPrefetchRoutes = await page.shuvi.match(WITH_PREFETCH_LINK);
     withPrefetchHref = `${publicPath}${
@@ -123,12 +115,7 @@ describe('Prefetch Support with SPA', () => {
 
     const filesByRoutId = appData.filesByRoutId;
 
-    const publicPathClient = await page.evaluate(
-      () => window.__shuvi_dynamic_public_path__
-    );
-    const publicPathServer = appData.publicPath;
-
-    const publicPath = publicPathClient || publicPathServer;
+    const publicPath = appData.publicPath;
 
     const withPrefetchRoutes = await page.shuvi.match(WITH_PREFETCH_LINK);
     withPrefetchHref = `${publicPath}${
