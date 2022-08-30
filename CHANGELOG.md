@@ -1,3 +1,18 @@
+# [1.0.0-rc.11](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.10...v1.0.0-rc.11) (2022-08-30)
+
+
+### Bug Fixes
+
+* output name ([bc6cb7e](https://github.com/shuvijs/shuvi/commit/bc6cb7e451834d768db8c3de21da5689421b28c6))
+
+
+### Features
+
+* create shuvi app ([29906f1](https://github.com/shuvijs/shuvi/commit/29906f1e68b6ad155384428b75dbe0bdbde0adf5))
+* remove DynamicPublicPath ([e879321](https://github.com/shuvijs/shuvi/commit/e8793215030d46bbf2ad95ba01ef725b8794a899))
+
+
+
 # [1.0.0-rc.10](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.9...v1.0.0-rc.10) (2022-08-29)
 
 
