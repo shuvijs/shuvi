@@ -26,8 +26,6 @@ export const DEV_ORIGINAL_STACK_FRAME_ENDPOINT = `${DEV_ONLY_ASSETS_PREFIX}/deve
 
 export const DEV_SOCKET_TIMEOUT_MS = 5000;
 
-export const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;
-
 export const ROUTE_NOT_FOUND_NAME = `404`;
 
 export const SHUVI_ERROR = {
