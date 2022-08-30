@@ -1,5 +1,5 @@
 import { DEV_STYLE_HIDE_FOUC } from '@shuvi/shared/lib/constants';
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
@@ -9,7 +9,7 @@ jest.setTimeout(5 * 60 * 1000);
 ['CSS', 'ParcelCss'].forEach(function (describeName) {
   describe(describeName, () => {
     beforeAll(async () => {
-      ctx = await launchFixture(
+      ctx = await devFixture(
         'css',
         describeName === 'ParcelCss'
           ? {

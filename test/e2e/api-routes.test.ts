@@ -1,5 +1,5 @@
 ﻿import got from 'got';
-import { AppCtx, launchFixture, resolveFixture } from '../utils';
+import { AppCtx, devFixture, resolveFixture } from '../utils';
 import { writeFileSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
 import { waitForResponseChange } from '../utils/wait-for-response-change';
@@ -13,11 +13,15 @@ jest.setTimeout(5 * 60 * 1000);
 describe('apiRoutes development', () => {
   beforeAll(async () => {
     stderr = '';
-    ctx = await launchFixture('api-routes', {}, {}, true, {
-      onStderr(error) {
-        stderr += error;
+    ctx = await devFixture(
+      'api-routes',
+      {},
+      {
+        onStderr(error) {
+          stderr += error;
+        }
       }
-    });
+    );
   });
   afterAll(async () => {
     await ctx.close();

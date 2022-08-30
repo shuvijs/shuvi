@@ -1,4 +1,4 @@
-import { launchFixture } from '../utils';
+import { devFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -7,7 +7,7 @@ describe('plugin', () => {
     jest.resetAllMocks();
     jest.spyOn(console, 'error');
     const consoleSpy = jest.spyOn(console, 'error');
-    const ctx = await launchFixture('plugin', {
+    const ctx = await devFixture('plugin', {
       ssr: true,
       plugins: ['shuvi-test-plugin-use-exports']
     });
@@ -25,7 +25,7 @@ describe('plugin', () => {
     jest.resetAllMocks();
     jest.spyOn(console, 'error');
     const consoleSpy = jest.spyOn(console, 'error');
-    const ctx = await launchFixture('plugin', {
+    const ctx = await devFixture('plugin', {
       ssr: true,
       plugins: ['shuvi-test-plugin-no-exports']
     });

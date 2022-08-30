@@ -1,5 +1,5 @@
 import got from 'got';
-import { AppCtx, Page, launchFixture, resolveFixture } from '../utils';
+import { AppCtx, Page, devFixture, resolveFixture } from '../utils';
 import * as fse from 'fs-extra';
 
 jest.setTimeout(5 * 60 * 1000);
@@ -10,7 +10,7 @@ describe('TypesSript Suppport', () => {
 
   beforeAll(async () => {
     // await fse.remove(resolveFixture('typescript', 'tsconfig.json'));
-    ctx = await launchFixture('typescript', { ssr: true });
+    ctx = await devFixture('typescript', { ssr: true });
   });
   afterAll(async () => {
     await page.close();

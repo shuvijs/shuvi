@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -9,7 +9,9 @@ describe('Basic Features', () => {
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('basic', { ssr: true }, {}, !isProduction);
+    ctx = await (isProduction
+      ? serveFixture('basic', { ssr: true })
+      : devFixture('basic', { ssr: true }));
   });
   afterAll(async () => {
     await page.close();
@@ -124,7 +126,7 @@ describe('[SPA] Basic Features', () => {
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('basic', {
+    ctx = await devFixture('basic', {
       ssr: false,
       router: { history: 'browser' }
     });

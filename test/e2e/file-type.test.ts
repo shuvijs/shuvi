@@ -1,15 +1,13 @@
-import { AppCtx, Page, launchFixture } from '../utils';
+import { AppCtx, Page, devFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
-
-const isProduction = process.env.NODE_ENV === 'production';
 
 describe('File Type', () => {
   let ctx: AppCtx;
   let page: Page;
 
   beforeAll(async () => {
-    ctx = await launchFixture('file-type', {}, {}, !isProduction);
+    ctx = await devFixture('file-type');
   });
   afterAll(async () => {
     await ctx.close();

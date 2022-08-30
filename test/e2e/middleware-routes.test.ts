@@ -1,5 +1,5 @@
 import got from 'got';
-import { AppCtx, launchFixture } from '../utils/index';
+import { AppCtx, devFixture } from '../utils/index';
 
 let ctx: AppCtx;
 
@@ -7,7 +7,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('middleware-routes development', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('middleware-routes');
+    ctx = await devFixture('middleware-routes');
   });
   afterAll(async () => {
     await ctx.close();

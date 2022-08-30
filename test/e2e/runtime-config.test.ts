@@ -1,4 +1,4 @@
-import { AppCtx, Page, launchFixture, check } from '../utils';
+import { AppCtx, Page, devFixture, check } from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
@@ -7,7 +7,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 describe('SSR: Runtime Config', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('runtime-config');
+    ctx = await devFixture('runtime-config');
   });
 
   beforeEach(() => {
@@ -56,7 +56,7 @@ describe('SSR: Runtime Config', () => {
 
 describe('CSR: Runtime Config', () => {
   beforeAll(async () => {
-    ctx = await launchFixture('runtime-config', {
+    ctx = await devFixture('runtime-config', {
       ssr: false,
       router: {
         history: 'browser'
