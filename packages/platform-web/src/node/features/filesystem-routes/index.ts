@@ -4,13 +4,11 @@ import {
   getPageRoutes,
   getApiRoutes,
   getMiddlewareRoutes,
-  IPageRouteConfig,
-  IMiddlewareRouteConfig,
-  IApiRouteConfig
+  IPageRouteConfig
 } from '@shuvi/platform-shared/node';
 import { IPageRouteConfigWithId } from '@shuvi/platform-shared/shared';
 import { ifComponentHasLoader } from '../html-render/lib';
-import { addRoutes, addMiddlewareRoutes } from './hooks';
+import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
   getRoutes,
   setRoutes,
@@ -36,16 +34,11 @@ export {
 
 const plugin = createPlugin({
   setup: ({ addHooks }) => {
-    addHooks({ addRoutes, addMiddlewareRoutes });
+    addHooks({ addRoutes, addApiRoutes, addMiddlewareRoutes });
   },
   addRuntimeFile: async ({ defineFile, getContent }, context) => {
     const {
-      config: {
-        routes: pageRoutes,
-        middlewareRoutes,
-        apiRoutes,
-        conventionRoutes
-      },
+      config: { routes: pageRoutes, conventionRoutes },
       paths,
       pluginRunner,
       phase,
@@ -106,51 +99,41 @@ const plugin = createPlugin({
     const apiRoutesFile = defineFile({
       name: 'apiRoutes.js',
       content: async () => {
-        let routes: IApiRouteConfig[];
-        const hasConfigRoutes = Array.isArray(apiRoutes);
-        if (hasConfigRoutes) {
-          routes = apiRoutes;
-        } else {
-          const { routes: _routes, warnings } = await getApiRoutes(
-            getContent(rawRoutes),
-            conventionRoutes.exclude
-          );
+        const { routes: fsRoutes, warnings } = await getApiRoutes(
+          getContent(rawRoutes),
+          conventionRoutes.exclude
+        );
 
-          if (isBuildPhase) {
-            warnings.forEach(warning => {
-              console.warn(warning);
-            });
-          }
-
-          routes = _routes;
+        if (isBuildPhase) {
+          warnings.forEach(warning => {
+            console.warn(warning);
+          });
         }
 
-        return generateApiRoutesContent(routes, paths.routesDir);
+        const pluginRoutes = (await pluginRunner.addApiRoutes()).flat();
+        return generateApiRoutesContent(
+          pluginRoutes.concat(fsRoutes),
+          paths.routesDir
+        );
       },
       dependencies: [rawRoutes]
     });
     const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
       content: async () => {
-        let routes: IMiddlewareRouteConfig[];
-        const hasConfigRoutes = Array.isArray(middlewareRoutes);
-        if (hasConfigRoutes) {
-          routes = middlewareRoutes;
-        } else {
-          const { routes: _routes, warnings } = await getMiddlewareRoutes(
-            getContent(rawRoutes),
-            conventionRoutes.exclude
-          );
-          if (isBuildPhase) {
-            warnings.forEach(warning => {
-              console.warn(warning);
-            });
-          }
-          routes = _routes;
+        const { routes: _routes, warnings } = await getMiddlewareRoutes(
+          getContent(rawRoutes),
+          conventionRoutes.exclude
+        );
+        if (isBuildPhase) {
+          warnings.forEach(warning => {
+            console.warn(warning);
+          });
         }
+        const fsRoutes = _routes;
 
-        const extraRoutes = (await pluginRunner.addMiddlewareRoutes()).flat();
-        return generateMiddlewareRoutesContent(extraRoutes.concat(routes), {
+        const pluginRoutes = (await pluginRunner.addMiddlewareRoutes()).flat();
+        return generateMiddlewareRoutesContent(pluginRoutes.concat(fsRoutes), {
           baseDir: paths.routesDir
         });
       },

@@ -1,0 +1,6 @@
+{
+  "name": "fixture-routes-middleware",
+  "dependencies": {
+    "shuvi": "workspace:*"
+  }
+}

@@ -14,7 +14,7 @@
     "pnpm": "^7.5.2"
   },
   "scripts": {
-    "dev": "pnpm -r --stream --parallel run dev",
+    "dev": "pnpm -r --stream --parallel --filter !create-shuvi --filter !error-overlay run dev",
     "build": "pnpm -r run build",
     "clean": "pnpm -r --parallel exec rimraf node_modules lib esm shuvi-app && pnpm exec rimraf node_modules",
     "shuvi": "node ./packages/shuvi/bin/cli.js",
