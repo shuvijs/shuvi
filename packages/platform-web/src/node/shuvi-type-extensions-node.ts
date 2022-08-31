@@ -11,7 +11,8 @@ import {
 import { IViewServer } from './features/html-render/index';
 import {
   addRoutes,
-  addMiddlewareRoutes
+  addMiddlewareRoutes,
+  addApiRoutes
 } from './features/filesystem-routes/hooks';
 export {};
 
@@ -37,14 +38,14 @@ declare global {
       ssr: PlatformWebCustomConfig['ssr'];
       router: PlatformWebCustomConfig['router'];
       routes?: PlatformWebCustomConfig['routes'];
-      middlewareRoutes?: PlatformWebCustomConfig['middlewareRoutes'];
-      apiRoutes?: PlatformWebCustomConfig['apiRoutes'];
+      // apiRoutes?: PlatformWebCustomConfig['apiRoutes'];
+      // middlewareRoutes?: PlatformWebCustomConfig['middlewareRoutes'];
       conventionRoutes: PlatformWebCustomConfig['conventionRoutes'];
     }
     interface CustomCorePluginHooks {
       addRoutes: typeof addRoutes;
       addMiddlewareRoutes: typeof addMiddlewareRoutes;
-      // addAPIRoutes: typeof addAPIRoutes;
+      addApiRoutes: typeof addApiRoutes;
     }
   }
 }

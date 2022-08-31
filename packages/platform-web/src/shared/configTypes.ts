@@ -1,8 +1,6 @@
 import {
   IRouterHistoryMode,
-  IPageRouteConfig,
-  IMiddlewareRouteConfig,
-  IApiRouteConfig
+  IPageRouteConfig
 } from '@shuvi/platform-shared/shared';
 
 export interface IRouterConfig {
@@ -12,9 +10,8 @@ export interface IRouterConfig {
 export interface PlatformWebCustomConfig {
   ssr: boolean;
   router: IRouterConfig;
-  routes?: IPageRouteConfig[]; // generate by files what under src/pages or user defined
-  middlewareRoutes?: IMiddlewareRouteConfig[];
-  apiRoutes?: IApiRouteConfig[]; // generate by files what under src/apis or user defined
+  // generate by files what under src/pages or user defined
+  routes?: IPageRouteConfig[];
   conventionRoutes: {
     exclude?: string[];
   };
