@@ -5,9 +5,9 @@ let ctx: AppCtx;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('middleware-routes development', () => {
+describe('routes-middleware development', () => {
   beforeAll(async () => {
-    ctx = await devFixture('middleware-routes');
+    ctx = await devFixture('routes-middleware');
   });
   afterAll(async () => {
     await ctx.close();

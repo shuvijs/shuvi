@@ -1,12 +1,12 @@
 ﻿import got from 'got';
-import { AppCtx, devFixture, resolveFixture } from '../utils';
+import { AppCtx, devFixture, resolveFixture } from '../utils/index';
 import { writeFileSync } from 'fs';
 import { readFile, writeFile } from 'fs/promises';
 import { waitForResponseChange } from '../utils/wait-for-response-change';
 
 let ctx: AppCtx;
 let stderr = '';
-const json = require(resolveFixture('api-routes/big.json'));
+const json = require(resolveFixture('routes-api/big.json'));
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -14,7 +14,7 @@ describe('apiRoutes development', () => {
   beforeAll(async () => {
     stderr = '';
     ctx = await devFixture(
-      'api-routes',
+      'routes-api',
       {},
       {
         onStderr(error) {
@@ -503,10 +503,18 @@ describe('apiRoutes development', () => {
     expect(res.body).toBe('hello world');
   });
 
-  describe('apiRoutes hmr', () => {
+  test('addApiRoutes should work', async () => {
+    const apiURL = '/api/hello-from-plugin';
+    const res = await got(ctx.url(apiURL));
+    expect(JSON.parse(res.body)).toEqual({
+      msg: 'hello'
+    });
+  });
+
+  describe('HMR', () => {
     test('should detect the changes and display it', async () => {
       const filePath = resolveFixture(
-        'api-routes/src/routes/api/hmr-test/api.js'
+        'routes-api/src/routes/api/hmr-test/api.js'
       );
       let originalContent: string | undefined;
       let done = false;

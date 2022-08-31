@@ -687,12 +687,6 @@ importers:
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
 
-  test/fixtures/middleware-routes:
-    specifiers:
-      shuvi: workspace:*
-    dependencies:
-      shuvi: link:../../../packages/shuvi
-
   test/fixtures/model:
     specifiers:
       '@types/node': 18.0.6
@@ -739,6 +733,18 @@ importers:
     dependencies:
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
+
+  test/fixtures/routes-api:
+    specifiers:
+      shuvi: workspace:*
+    dependencies:
+      shuvi: link:../../../packages/shuvi
+
+  test/fixtures/routes-middleware:
+    specifiers:
+      shuvi: workspace:*
+    dependencies:
+      shuvi: link:../../../packages/shuvi
 
   test/fixtures/typescript:
     specifiers:
