@@ -67,7 +67,8 @@
       "types": "./shuvi-type-extensions-node.d.js",
       "default": "./shuvi-type-extensions-node.js"
     },
-    "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts"
+    "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "dev": "run-p watch:*",

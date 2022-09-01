@@ -13,8 +13,7 @@ import { getFilePresets } from '../project/file-presets';
  * `user/error`, `user/runtime` and `entry`
  */
 export const getPresetRuntimeFilesCreator =
-  (platformModule: string, polyfills: string[]) =>
-  async (pluginContext: IPluginContext) => {
+  (platformModule: string) => async (pluginContext: IPluginContext) => {
     const { pluginRunner, config } = pluginContext;
     const getCandidates = (
       fileName: string,
@@ -64,7 +63,6 @@ export const getPresetRuntimeFilesCreator =
     const runner = pluginContext.pluginRunner;
     const appEntryCodes = (await runner.addEntryCode()).flat();
     context.entryCodes.push(...appEntryCodes);
-    context.polyfills.push(...polyfills);
     const files = getFilePresets(context);
     return files;
   };

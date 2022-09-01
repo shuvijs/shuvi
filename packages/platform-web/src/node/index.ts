@@ -19,12 +19,7 @@ const platform =
     const platformFrameworkContent = await platformFramework();
 
     const platformModule = platformFrameworkContent.platformModule as string;
-    const polyfills = platformFrameworkContent.polyfills as string[];
-
-    const getPresetRuntimeFiles = getPresetRuntimeFilesCreator(
-      platformModule,
-      polyfills
-    );
+    const getPresetRuntimeFiles = getPresetRuntimeFilesCreator(platformModule);
 
     return {
       types: [

@@ -65,7 +65,7 @@ export function shouldUseRelativeAssetPaths(publicPath: string) {
 
 export function splitChunksFilter(chunk: any) {
   const excludes: Record<string, boolean> = {
-    'static/polyfill': true
+    // 'static/polyfill': true
   };
 
   return excludes[chunk.name] !== true;

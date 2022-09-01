@@ -14,6 +14,7 @@
   "files": [
     "esm",
     "lib",
+    "polyfills",
     "shuvi-env.d.ts",
     "shuvi-image.d.ts",
     "shuvi-type-extensions-node.d.ts",
@@ -49,22 +50,25 @@
       "types": "./shuvi-type-extensions-node.d.js",
       "default": "./shuvi-type-extensions-node.js"
     },
-    "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts"
+    "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "dev": "run-p watch:*",
     "watch:esm": "tsc -p tsconfig.build.browser.json -w",
     "watch:cjs": "tsc -p tsconfig.build.node.json -w",
-    "prebuild": "rimraf lib esm types",
+    "prebuild": "rimraf lib esm polyfills",
     "build": "run-p build:*",
     "build:esm": "tsc -p tsconfig.build.browser.json",
-    "build:cjs": "tsc -p tsconfig.build.node.json"
+    "build:cjs": "tsc -p tsconfig.build.node.json",
+    "build:polyfills": "microbundle -i src/polyfills/index.js -o polyfills/polyfills.js -f iife --no-sourcemap --external none --no-pkg-main"
   },
   "engines": {
     "node": ">= 12.0.0"
   },
   "dependencies": {
     "@next/react-refresh-utils": "12.1.6",
+    "@shuvi/error-overlay": "1.0.0-rc.12",
     "@shuvi/hook": "1.0.0-rc.12",
     "@shuvi/platform-shared": "1.0.0-rc.12",
     "@shuvi/redox": "0.0.6",
@@ -76,33 +80,34 @@
     "@shuvi/shared": "1.0.0-rc.12",
     "@shuvi/toolpack": "1.0.0-rc.12",
     "@shuvi/utils": "1.0.0-rc.12",
-    "@shuvi/error-overlay": "1.0.0-rc.12",
     "content-type": "1.0.4",
     "cookie": "0.4.1",
+    "core-js": "3.6.5",
     "ejs": "3.1.5",
     "fs-extra": "9.0.1",
     "node-mocks-http": "1.11.0",
+    "object-assign": "4.1.1",
     "raw-body": "2.4.1",
     "react": "18.1.0",
-    "react-app-polyfill": "2.0.0",
     "react-dom": "18.1.0",
     "react-error-overlay": "6.0.8",
     "react-refresh": "0.12.0",
     "strip-ansi": "6.0.0",
-    "use-sync-external-store": "1.1.0"
+    "use-sync-external-store": "1.1.0",
+    "whatwg-fetch": "3.0.0"
   },
   "peerDependencies": {
     "@shuvi/service": "1.0.0-rc.12"
   },
   "devDependencies": {
-    "@types/react": "18.0.9",
-    "@types/react-dom": "18.0.6",
-    "@types/react-test-renderer": "18.0.0",
     "@testing-library/react": "^13.2.0",
     "@types/content-type": "^1.1.5",
     "@types/cookie": "^0.4.1",
     "@types/ejs": "^3.1.0",
     "@types/raw-body": "^2.3.0",
-    "webpack": "5.73.0"
+    "@types/react": "18.0.9",
+    "@types/react-dom": "18.0.6",
+    "@types/react-test-renderer": "18.0.0",
+    "microbundle": "0.15.1"
   }
 }

@@ -1,9 +1,16 @@
 import { IModuleItem, IManifest } from '../types';
-import webpack from 'webpack';
-import { Compiler, Compilation, Plugin, ChunkGroup } from 'webpack';
+import webpack, {
+  Compiler,
+  Compilation,
+  sources,
+  Plugin,
+  ChunkGroup,
+  Asset
+} from 'webpack';
 import Entrypoint from 'webpack/lib/Entrypoint';
+import { BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL } from '@shuvi/shared/lib/constants';
 
-const { RawSource } = webpack.sources;
+const { RawSource } = sources;
 
 type ModuleId = string | number;
 
@@ -83,6 +90,19 @@ export default class BuildManifestPlugin implements Plugin {
 
       this._collect(chunkGroup, compiler, compilation, chunkRootModulesMap);
     });
+
+    const compilationAssets: Asset[] = compilation.getAssets();
+
+    this._manifest.polyfillFiles = compilationAssets
+      .filter(p => {
+        // Ensure only .js files are passed through
+        if (!p.name.endsWith('.js')) {
+          return false;
+        }
+
+        return p.info && BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL in p.info;
+      })
+      .map(v => v.name);
 
     this._manifest.loadble = Object.keys(this._manifest.loadble)
       .sort()

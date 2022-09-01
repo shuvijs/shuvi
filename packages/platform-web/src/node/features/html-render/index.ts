@@ -2,17 +2,21 @@ import {
   BUILD_SERVER_DIR,
   BUILD_SERVER_FILE_SERVER,
   BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_POLYFILL,
+  BUILD_CLIENT_RUNTIME_POLYFILLS,
+  ResolvedPlugin,
   createPlugin
 } from '@shuvi/service';
-import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
+import { IPlatformContext } from '@shuvi/service/lib/core';
 import {
   BUNDLER_DEFAULT_TARGET,
-  BUNDLER_TARGET_SERVER
+  BUNDLER_TARGET_SERVER,
+  BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL
 } from '@shuvi/shared/lib/constants';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
+import { CopyFilePlugin } from '@shuvi/toolpack/lib/webpack/plugins/copy-file-plugin';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import { resolvePkgFile } from '../../paths';
+import { getVersion } from '../../version';
 import { getMiddlewares } from '../middlewares';
 import generateResource from './lib/generateResource';
 import { buildHtml } from './lib/buildHtml';
@@ -38,15 +42,27 @@ export const getPlugin = (
 ): ResolvedPlugin => {
   const core = createPlugin({
     configWebpack: (chain, { name }) => {
+      const pkgVersion = getVersion();
       if (name === BUNDLER_DEFAULT_TARGET) {
         chain.merge({
           entry: {
-            [BUILD_CLIENT_RUNTIME_POLYFILL]: ['@shuvi/app/core/polyfill'],
             [BUILD_CLIENT_RUNTIME_MAIN]: [
               resolvePkgFile('esm/shuvi-app/entry/client')
             ]
           }
         });
+        chain.plugin('polyfills').use(CopyFilePlugin, [
+          {
+            filePath: resolvePkgFile('polyfills/polyfills.js'),
+            cacheKey: pkgVersion,
+            name: BUILD_CLIENT_RUNTIME_POLYFILLS,
+            info: {
+              [BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL]: 1,
+              // This file is already minified
+              minimized: true
+            }
+          }
+        ]);
       }
       return chain;
     },

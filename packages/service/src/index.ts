@@ -38,5 +38,6 @@ export {
   getApi,
   createPlugin,
   createPluginBefore,
-  createPluginAfter
+  createPluginAfter,
+  ResolvedPlugin
 } from './core';
