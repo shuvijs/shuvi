@@ -12,7 +12,6 @@ declare global {
 
     interface CustomCorePluginHooks {
       addEntryCode: typeof extendedHooks.addEntryCode;
-      addPolyfill: typeof extendedHooks.addPolyfill;
       modifyRuntimeConfig: typeof extendedHooks.modifyRuntimeConfig;
     }
   }

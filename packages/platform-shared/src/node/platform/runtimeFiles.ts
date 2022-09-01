@@ -62,10 +62,9 @@ export const getPresetRuntimeFilesCreator =
       ...publicRuntimeConfig
     };
     const runner = pluginContext.pluginRunner;
-    const appPolyfills = (await runner.addPolyfill()).flat();
     const appEntryCodes = (await runner.addEntryCode()).flat();
     context.entryCodes.push(...appEntryCodes);
-    context.polyfills.push(...polyfills, ...appPolyfills);
+    context.polyfills.push(...polyfills);
     const files = getFilePresets(context);
     return files;
   };
