@@ -2,7 +2,6 @@ import * as path from 'path';
 import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
-import { DefinePlugin } from 'webpack';
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
@@ -68,7 +67,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     config
       .plugin('react-refresh-plugin')
       .use(ReactRefreshWebpackPlugin, [webpack]);
-    config.plugin('version-env-plugin').use(DefinePlugin, [
+    config.plugin('version-env-plugin').use(webpack.DefinePlugin, [
       {
         'process.env.__SHUVI__AFTER__REACT__18__': JSON.stringify(
           isReactVersionAfter18()

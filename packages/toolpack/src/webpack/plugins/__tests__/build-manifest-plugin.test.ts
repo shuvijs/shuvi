@@ -27,6 +27,7 @@ describe('build-manifest-plugin', () => {
           compilation.assets['build-manifest.json'].source().toString()
         )
       ).toStrictEqual({
+        polyfillFiles: [],
         entries: {
           main: {
             js: ['runtime.js', 'main.js']
@@ -68,6 +69,7 @@ describe('build-manifest-plugin', () => {
           compilation.assets['build-manifest.json'].source().toString()
         )
       ).toStrictEqual({
+        polyfillFiles: [],
         entries: {
           main: {
             js: ['runtime.js', 'main.js']
