@@ -1,5 +1,5 @@
 // shuvi built-in entry
-// IMPORTANT: there files must be runned before any other codes
+// IMPORTANT: there files must be run before any other codes
 import './setup-env';
 
 // user entry
