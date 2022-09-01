@@ -22,8 +22,11 @@ export interface IChunk {
 }
 
 export interface IManifest {
+  // client only
+  polyfillFiles?: string[];
+
   entries: {
-    [s: string]: IAssetMap;
+    [s: string]: IAssetMap; // name => assets
   };
   bundles: {
     [name: string]: string; // name => file

@@ -92,8 +92,11 @@ export function createBrowserWebpackChain(
           chunks: 'all',
           name: 'framework',
           filename: CommonChunkFilename,
-          test(module: { nameForCondition: Function; issuer: any }) {
-            const resource: string | undefined = module.nameForCondition();
+          test(
+            module: webpack.Module,
+            { moduleGraph }: { moduleGraph: webpack.ModuleGraph }
+          ) {
+            const resource: string | null = module.nameForCondition();
             if (!resource) {
               return false;
             }
@@ -111,9 +114,13 @@ export function createBrowserWebpackChain(
               // bundled with their issuer.
               // https://github.com/zeit/next.js/pull/9012
               if (frameworkModule.issuers) {
-                for (const issuer of frameworkModule.issuers) {
-                  const issuerResource = module.issuer.nameForCondition();
-                  if (!issuer.test(issuerResource)) {
+                for (const issuerTest of frameworkModule.issuers) {
+                  // fix:  DeprecationWarning: Module.issuer: Use new ModuleGraph API
+                  const issuer = moduleGraph.getIssuer(module);
+                  const issuerResource = issuer
+                    ? issuer.nameForCondition()
+                    : null;
+                  if (!issuerResource || !issuerTest.test(issuerResource)) {
                     return false;
                   }
                 }

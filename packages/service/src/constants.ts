@@ -7,7 +7,7 @@ export const SERVER_BUILD_MANIFEST_PATH = '../build-manifest.server.json';
 
 export const BUILD_DEFAULT_DIR = 'client';
 
-export const BUILD_CLIENT_RUNTIME_POLYFILL = `static/polyfill`;
+export const BUILD_CLIENT_RUNTIME_POLYFILLS = `static/polyfills`;
 
 export const BUILD_CLIENT_RUNTIME_MAIN = `static/main`;
 

@@ -8,7 +8,6 @@ export interface UserModule {
 
 export interface ProjectContext {
   entryCodes: string[];
-  polyfills: string[];
   runtimeConfig: IRuntimeConfig;
   platformModule: string;
   userModule: UserModule;
@@ -17,7 +16,6 @@ export interface ProjectContext {
 export const createProjectContext = (): ProjectContext => {
   return {
     entryCodes: [],
-    polyfills: [],
     runtimeConfig: {},
     platformModule: '',
     userModule: {
