@@ -12,12 +12,7 @@ import { Head } from '../head';
 import { serializeServerError } from '../../helper/serializeServerError';
 
 export class ReactServerView implements IReactServerView {
-  renderApp: IReactServerView['renderApp'] = async ({
-    req,
-    app,
-    manifest,
-    isDev
-  }) => {
+  renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
     await Loadable.preloadAll();
 
     const { router, appComponent: AppComponent, setError: setAppError } = app;
@@ -53,10 +48,10 @@ export class ReactServerView implements IReactServerView {
     try {
       htmlContent = renderToString(RootApp);
     } catch (error: any) {
-      if (isDev) {
+      if (process.env.NODE_ENV === 'development') {
         console.error(chalk.red('error') + ' - ' + error.stack);
       }
-      setAppError(serializeServerError(error, isDev));
+      setAppError(serializeServerError(error));
       htmlContent = renderToString(RootApp); // Consistency on both server and client side
     } finally {
       head = Head.rewind() || [];
@@ -80,6 +75,19 @@ export class ReactServerView implements IReactServerView {
     const preloadDynamicChunks: IHtmlTag<'link'>[] = [];
     const styles: IHtmlTag<'link'>[] = [];
     for (const file of dynamicImportChunkSet) {
+      // Safari Bug: https://bugs.webkit.org/show_bug.cgi?id=187726
+      // If a request is preloaded, Safari will always retrieve it from the
+      // cache, regardless of the cache headers for that request.
+      // disable preload for safari on dev
+      if (process.env.NODE_ENV === 'development') {
+        const ua = req.headers['user-agent'] || '';
+        if (/safari/i.test(ua) && !/chrome/i.test(ua)) {
+          if (/\.js$/.test(file)) {
+            continue;
+          }
+        }
+      }
+
       if (/\.js$/.test(file)) {
         preloadDynamicChunks.push({
           tagName: 'link',

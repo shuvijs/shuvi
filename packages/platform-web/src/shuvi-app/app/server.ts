@@ -16,7 +16,7 @@ import { CreateAppServer } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
 
 export const createApp: CreateAppServer = options => {
-  const { req, ssr, isDev } = options;
+  const { req, ssr } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
@@ -50,10 +50,10 @@ export const createApp: CreateAppServer = options => {
           next();
           return;
         }
-        if (isDev) {
+        if (process.env.NODE_ENV === 'development') {
           console.error(chalk.red('error') + ' - ' + error.stack);
         }
-        app.setError(serializeServerError(error, isDev));
+        app.setError(serializeServerError(error));
         next();
         return;
       }

@@ -1,5 +1,4 @@
 import { RequestListener } from 'http';
-import url from 'url';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { IPluginContext } from '../core';
 import { normalizeServerMiddleware } from './serverMiddleware';
@@ -41,20 +40,11 @@ export abstract class ShuviServer implements IShuviServer {
 
     server.use(((req, _resp, next) => {
       const shuviReq = req as ShuviRequest;
-      const requestTime: number = Date.now();
       shuviReq.getAssetUrl = (assetPath: string) => {
         const fullAssetPath = joinPath(
           this._serverContext.assetPublicPath,
           assetPath
         );
-
-        if (this._serverContext.mode === 'development') {
-          const urlObj = url.parse(fullAssetPath);
-          const urlSearchParams = new URLSearchParams(urlObj.search!);
-          // force to invalidate cache in dev
-          urlSearchParams.set('_ts', requestTime.toString());
-          return `${urlObj.pathname}?${urlSearchParams.toString()}`;
-        }
 
         return fullAssetPath;
       };
