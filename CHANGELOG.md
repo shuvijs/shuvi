@@ -1,3 +1,19 @@
+# [1.0.0-rc.13](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.12...v1.0.0-rc.13) (2022-09-02)
+
+
+### Bug Fixes
+
+* append hash to common chunks in production ([8152828](https://github.com/shuvijs/shuvi/commit/8152828481ce068fa72f0b2ea16ac5cb7b864e72))
+* hotUpdateMainFilename confict ([9d62ebc](https://github.com/shuvijs/shuvi/commit/9d62ebc388cfc3145f19663906448da8c1e3bee7))
+
+
+### Features
+
+* addApiRoutes hook ([cf7bcca](https://github.com/shuvijs/shuvi/commit/cf7bcca0489ee6b8a1269ee66083f7eecbde3776))
+* prebundle polyfills.js ([33cdfd0](https://github.com/shuvijs/shuvi/commit/33cdfd007539bca1cbc546885b663575522711cb))
+
+
+
 # [1.0.0-rc.12](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.11...v1.0.0-rc.12) (2022-08-30)
 
 
