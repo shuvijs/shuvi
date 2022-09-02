@@ -161,15 +161,18 @@ export function baseWebpackChain({
     modules: [
       'node_modules',
       ...nodePathList // Support for NODE_PATH environment variable
-    ],
-    alias: {}
+    ]
   });
+  config.resolve.alias.set(
+    '@swc/helpers',
+    path.dirname(require.resolve(`@swc/helpers/package.json`))
+  );
 
   config.resolveLoader.merge({
     alias: [
+      'parcel-css-loader',
       'shuvi-swc-loader',
-      'route-component-loader',
-      'parcel-css-loader'
+      'route-component-loader'
     ].reduce((alias, loader) => {
       alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
       return alias;
@@ -200,11 +203,6 @@ export function baseWebpackChain({
       supportedBrowsers: false,
       swcCacheDir: path.join(cacheDir, 'swc')
     });
-
-  config.resolve.alias.set(
-    '@swc/helpers',
-    path.dirname(require.resolve(`@swc/helpers/package.json`))
-  );
 
   mainRule
     .oneOf('media')
