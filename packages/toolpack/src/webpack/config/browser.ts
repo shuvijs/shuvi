@@ -3,11 +3,10 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { resolve } from '@shuvi/utils/lib/resolve';
-import { CommonChunkFilename } from '../../constants';
 import { IWebpackHelpers } from '../types';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
-import { splitChunksFilter } from './parts/helpers';
+import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/]@shuvi[\\/]/;
@@ -91,7 +90,7 @@ export function createBrowserWebpackChain(
         framework: {
           chunks: 'all',
           name: 'framework',
-          filename: CommonChunkFilename,
+          filename: commonChunkFilename({ dev: false }),
           test(
             module: webpack.Module,
             { moduleGraph }: { moduleGraph: webpack.ModuleGraph }
@@ -165,7 +164,7 @@ export function createBrowserWebpackChain(
 
             return hash.digest('hex').substring(0, 8);
           },
-          filename: CommonChunkFilename,
+          filename: commonChunkFilename({ dev: false }),
           priority: 30,
           minChunks: 1,
           reuseExistingChunk: true
