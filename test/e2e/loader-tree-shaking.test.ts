@@ -50,7 +50,7 @@ function runTest({ dev }: { dev: boolean }) {
   let page: Page;
   let manifest: any;
 
-  describe(`Loader Tree Shaking [${dev ? 'dev' : 'build'}]`, () => {
+  describe(`Loader Tree Shaking [${dev ? 'dev' : 'prod'}]`, () => {
     beforeAll(async () => {
       if (dev) {
         ctx = await devFixture('loader-tree-shaking');
