@@ -20,7 +20,6 @@ export type IRenderViewOptions = {
   app: IApplication;
   req: ShuviRequest;
   ssr: boolean;
-  isDev: boolean;
 };
 
 export type IRenderDocumentResult =
