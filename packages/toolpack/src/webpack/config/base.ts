@@ -6,11 +6,11 @@ import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
-import { AppSourceRegexs, CommonChunkFilename } from '../../constants';
+import { AppSourceRegexs } from '../../constants';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import SupportTsExtensionResolverPlugin from '../plugins/support-ts-extension-resolver-plugin';
-import { splitChunksFilter } from './parts/helpers';
+import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
 
@@ -125,7 +125,7 @@ export function baseWebpackChain({
         default: false,
         vendors: {
           name: 'vendors',
-          filename: CommonChunkFilename,
+          filename: commonChunkFilename({ dev: true }),
           test: /[\\/]node_modules[\\/]/,
           // Don't let webpack eliminate this chunk (prevents this chunk from
           // becoming a part of the commons chunk)
