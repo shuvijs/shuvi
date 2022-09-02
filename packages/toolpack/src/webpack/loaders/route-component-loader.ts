@@ -1,21 +1,24 @@
-import { loader } from 'webpack';
-import * as loaderUtils from 'loader-utils';
+import { LoaderDefinition } from 'webpack';
 
 export type RouteComponentLoaderOptions = {
   componentAbsolutePath: string;
   active: boolean;
 };
 
-const routeComponentLoader: loader.Loader = function (this: any) {
-  const { componentAbsolutePath }: any = loaderUtils.getOptions(this);
+const routeComponentLoader: LoaderDefinition<RouteComponentLoaderOptions> =
+  function (this) {
+    const { componentAbsolutePath } = this.getOptions(this);
 
-  const stringifyRequest = loaderUtils.stringifyRequest(
-    this,
-    `${componentAbsolutePath}?__shuvi-route`
-  );
-  return `
+    const stringifyRequest = JSON.stringify(
+      this.utils.contextify(
+        this.context || this.rootContext,
+        `${componentAbsolutePath}?__shuvi-route`
+      )
+    );
+
+    return `
 const = require(${stringifyRequest})
 `.trim();
-};
+  };
 
 export default routeComponentLoader;

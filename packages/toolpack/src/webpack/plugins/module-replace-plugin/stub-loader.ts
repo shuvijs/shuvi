@@ -1,9 +1,12 @@
-import { loader } from 'webpack';
-import * as loaderUtils from 'loader-utils';
+import { PitchLoaderDefinitionFunction, LoaderContext } from 'webpack';
+
+export interface ModuleReplaceOption {
+  replacedModule: string;
+}
 
 const isSelfLoader = (l: any) => l.path !== __filename;
 
-const genRequest = (loaderCtx: loader.LoaderContext, loaders: any[]) => {
+const genRequest = (loaderCtx: LoaderContext<any>, loaders: any[]) => {
   const loaderStrings: string[] = [];
 
   loaders.forEach(loader => {
@@ -13,33 +16,40 @@ const genRequest = (loaderCtx: loader.LoaderContext, loaders: any[]) => {
     loaderStrings.push(request);
   });
 
-  return loaderUtils.stringifyRequest(
-    loaderCtx,
-    '!' +
-      [...loaderStrings, loaderCtx.resourcePath + loaderCtx.resourceQuery].join(
-        '!'
-      )
+  return JSON.stringify(
+    loaderCtx.utils.contextify(
+      loaderCtx.context || loaderCtx.rootContext,
+      '-!' +
+        [
+          ...loaderStrings,
+          loaderCtx.resourcePath + loaderCtx.resourceQuery
+        ].join('!')
+    )
   );
 };
 
-module.exports = (code: string) => code;
+export const pitch: PitchLoaderDefinitionFunction<ModuleReplaceOption> =
+  function (this) {
+    this.cacheable(false);
 
-module.exports.pitch = function (this: loader.LoaderContext) {
-  this.cacheable(false);
+    const { replacedModule } = this.getOptions() || {};
+    let loaders = this.loaders;
 
-  const { replacedModule }: any = loaderUtils.getOptions(this) || {};
-  let loaders = this.loaders;
+    // remove self
+    loaders = loaders.filter(isSelfLoader);
 
-  // remove self
-  loaders = loaders.filter(isSelfLoader);
+    const request = replacedModule
+      ? JSON.stringify(
+          this.utils.contextify(
+            this.context || this.rootContext,
+            replacedModule
+          )
+        )
+      : genRequest(this, loaders);
 
-  const request = replacedModule
-    ? loaderUtils.stringifyRequest(this, replacedModule)
-    : genRequest(this, loaders);
-
-  return `
+    return `
 import mod from ${request}; 
 export * from ${request}
 export default mod;
 `.trim();
-};
+  };

@@ -2,7 +2,7 @@ import * as path from 'path';
 import browserslist from 'browserslist';
 import { transform, browserslistToTargets } from '@parcel/css';
 import type { ImportDependency, UrlDependency } from '@parcel/css';
-import type { loader } from 'webpack';
+import { LoaderContext } from 'webpack';
 import CssSyntaxError from './CssSyntaxError';
 import {
   combineRequests,
@@ -26,11 +26,11 @@ const browsersTargets = browserslistToTargets(
 );
 
 export default async function loader(
-  this: loader.LoaderContext,
+  this: LoaderContext<any>,
   content: string | Buffer,
   map?: string
 ) {
-  const rawOptions = (this as any).getOptions();
+  const rawOptions = this.getOptions();
   const callback = this.async();
 
   let options;
@@ -56,7 +56,9 @@ export default async function loader(
     isSupportAbsoluteURL = true;
   }
   const isSupportDataURL =
-    options.esModule && Boolean('fsStartTime' in this._compiler);
+    options.esModule &&
+    this._compiler &&
+    Boolean('fsStartTime' in this._compiler);
 
   const needToUseIcssPlugin = shouldUseIcssPlugin(options);
 

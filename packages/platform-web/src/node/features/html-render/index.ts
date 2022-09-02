@@ -22,9 +22,25 @@ import generateResource from './lib/generateResource';
 import { buildHtml } from './lib/buildHtml';
 import server from './server';
 
+const ENTRY_FLAG = 'shuviEntry';
+
+function makeEntryRequest(req: string): string {
+  return `${req}?${ENTRY_FLAG}=true`;
+}
+
+function getClientEntry(): IWebpackEntry {
+  return {
+    [BUILD_CLIENT_RUNTIME_MAIN]: [
+      makeEntryRequest(resolvePkgFile('esm/shuvi-app/entry/client'))
+    ]
+  };
+}
+
 function getServerEntry(): IWebpackEntry {
   return {
-    [BUILD_SERVER_FILE_SERVER]: [resolvePkgFile('esm/shuvi-app/entry/server')]
+    [BUILD_SERVER_FILE_SERVER]: [
+      makeEntryRequest(resolvePkgFile('esm/shuvi-app/entry/server'))
+    ]
   };
 }
 
@@ -45,11 +61,7 @@ export const getPlugin = (
       const pkgVersion = getVersion();
       if (name === BUNDLER_DEFAULT_TARGET) {
         chain.merge({
-          entry: {
-            [BUILD_CLIENT_RUNTIME_MAIN]: [
-              resolvePkgFile('esm/shuvi-app/entry/client')
-            ]
-          }
+          entry: getClientEntry()
         });
         chain.plugin('polyfills').use(CopyFilePlugin, [
           {
