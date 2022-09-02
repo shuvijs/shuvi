@@ -12,11 +12,8 @@ function errorToJSON(err: Error): IError {
   };
 }
 
-export function serializeServerError(
-  err: Error,
-  dev: boolean | undefined
-): IError {
-  if (dev) {
+export function serializeServerError(err: Error): IError {
+  if (process.env.NODE_ENV === 'development') {
     return errorToJSON(err);
   }
 

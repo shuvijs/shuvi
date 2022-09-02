@@ -134,9 +134,7 @@ export const createApp: CreateAppClient = ({
         return;
       }
 
-      app.setError(
-        serializeServerError(error, process.env.NODE_ENV === 'development')
-      );
+      app.setError(serializeServerError(error));
       next();
       return;
     }
