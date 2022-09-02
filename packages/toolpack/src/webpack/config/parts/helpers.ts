@@ -70,3 +70,7 @@ export function splitChunksFilter(chunk: any) {
 
   return excludes[chunk.name] !== true;
 }
+
+export const commonChunkFilename = ({ dev }: { dev: boolean }) => {
+  return `static/common/${dev ? '[name]' : '[name].[contenthash:8]'}.js`;
+};
