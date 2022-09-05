@@ -31,7 +31,7 @@ function checkDependencies(
 
   const missingPackages = deps.filter(p => {
     try {
-      resolutions.set(p.pkg, resolve(p.file, { basedir: `${dir}/` }));
+      resolutions.set(p.pkg, resolve(p.file, { basedir: dir }));
       return false;
     } catch (_) {
       return true;
