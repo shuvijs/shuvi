@@ -25,10 +25,10 @@ export const getPresetRuntimeFilesCreator =
         fallbackType
       );
 
-    const { public: publicRuntimeConfig, server: serverRuntimeConfig } =
+    const { publicRuntimeConfig, serverRuntimeConfig } =
       await pluginRunner.modifyRuntimeConfig({
-        public: config.publicRuntimeConfig || {},
-        server: config.runtimeConfig || {}
+        publicRuntimeConfig: config.publicRuntimeConfig || {},
+        serverRuntimeConfig: config.serverRuntimeConfig || {}
       });
     const serverKeys = Object.keys(serverRuntimeConfig);
     const publicKeys = Object.keys(publicRuntimeConfig);

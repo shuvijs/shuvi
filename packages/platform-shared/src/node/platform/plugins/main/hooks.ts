@@ -7,8 +7,8 @@ import { IRuntimeConfig } from '../../../../shared';
 const addEntryCode = createAsyncParallelHook<void, void, string | string[]>();
 const modifyRuntimeConfig = createAsyncSeriesWaterfallHook<
   {
-    public: IRuntimeConfig;
-    server: IRuntimeConfig;
+    publicRuntimeConfig: IRuntimeConfig;
+    serverRuntimeConfig: IRuntimeConfig;
   },
   void
 >();
