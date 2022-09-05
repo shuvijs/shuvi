@@ -67,10 +67,10 @@ const isAbsoluteUrl = (url: string) => {
 };
 
 export const Link = function LinkWithPrefetch({
-  prefetch,
-  onMouseEnter,
   to,
   ref,
+  prefetch,
+  onMouseEnter,
   ...rest
 }: LinkWrapperProps) {
   const isHrefValid = typeof to === 'string' && !isAbsoluteUrl(to);
@@ -107,10 +107,10 @@ export const Link = function LinkWithPrefetch({
 
   const childProps: {
     ref?: any;
-    onMouseEnter: React.MouseEventHandler;
+    onMouseEnter: React.MouseEventHandler<HTMLAnchorElement>;
   } = {
     ref: setRef,
-    onMouseEnter: (e: React.MouseEvent) => {
+    onMouseEnter: (e: React.MouseEvent<HTMLAnchorElement>) => {
       if (typeof onMouseEnter === 'function') {
         onMouseEnter(e);
       }
@@ -125,5 +125,6 @@ export const Link = function LinkWithPrefetch({
 };
 
 interface LinkWrapperProps extends LinkProps {
+  prefetch?: boolean;
   ref?: any;
 }
