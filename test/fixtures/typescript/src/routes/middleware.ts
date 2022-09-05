@@ -1,4 +1,4 @@
-import { ShuviMiddlewareHandler } from '@shuvi/runtime';
+import { ShuviMiddlewareHandler } from '@shuvi/runtime/server';
 
 const middleware: ShuviMiddlewareHandler = (req, res, next) => {
   if (req.query.middleware) {
