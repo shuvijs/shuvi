@@ -80,19 +80,14 @@ export interface LinkProps
   replace?: boolean;
   state?: State;
   to: PathRecord;
-  prefetch?: boolean;
-  onMouseEnter?: (e: any) => void;
 }
 
 if (__DEV__) {
   Link.displayName = 'Link';
   Link.propTypes = {
-    onClick: PropTypes.func,
     replace: PropTypes.bool,
     state: PropTypes.object,
     target: PropTypes.string,
-    prefetch: PropTypes.bool,
-    onMouseEnter: PropTypes.func,
     // @ts-ignore proptypes's bug?
     to: PropTypes.oneOfType([
       PropTypes.string,
