@@ -6,6 +6,8 @@ import { IPaths } from '../../core/apiTypes';
 import { getPkgManager } from '../helper/getPkgManager';
 import { TypeScriptModule, TsCompilerOptions } from './types';
 import { writeDefaultConfigurations } from './configTypeScript';
+import * as url from 'url';
+import * as os from 'os';
 import {
   hasTsConfig,
   hasTypescriptFiles,
@@ -105,7 +107,6 @@ export async function setupTypeScript(paths: IPaths) {
     if (deps.missing.length > 0) {
       missingPackagesError(projectDir, deps.missing);
     }
-
     typeScriptPath = deps.resovled.get('typescript');
     tsConfigPath = path.join(projectDir, 'tsconfig.json');
     const needDefaultTsConfig = !(await hasTsConfig(tsConfigPath));
@@ -117,11 +118,16 @@ export async function setupTypeScript(paths: IPaths) {
           )} file for you.`
         )
       );
-      console.log();
       await fs.writeJson(tsConfigPath, {});
     }
+    let usefulPath: string = typeScriptPath!;
+
+    if (os.platform() === 'win32') {
+      usefulPath = url.pathToFileURL(typeScriptPath!).toString();
+    }
+
     // @ts-ignore
-    const { default: ts } = (await import(typeScriptPath!)) as TypeScriptModule;
+    const { default: ts } = (await import(usefulPath)) as TypeScriptModule;
     const tsConfig = await getTsConfig(ts, tsConfigPath);
     tsCompilerOptions = tsConfig.options;
     await writeDefaultConfigurations(
