@@ -109,10 +109,6 @@ export const getPlugin = (
     },
     addRuntimeService: () => [
       {
-        source: resolvePkgFile('esm/shuvi-app/shuvi-runtime-index'),
-        exported: '*'
-      },
-      {
         source: resolvePkgFile('lib/node/shuvi-runtime-server'),
         filepath: 'server.ts',
         exported: '*'

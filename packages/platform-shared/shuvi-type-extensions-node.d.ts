@@ -7,7 +7,7 @@ declare global {
   namespace ShuviService {
     interface CustomConfig {
       publicRuntimeConfig?: IRuntimeConfig;
-      runtimeConfig?: IRuntimeConfig;
+      serverRuntimeConfig?: IRuntimeConfig;
     }
 
     interface CustomCorePluginHooks {
