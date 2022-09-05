@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-web",
-  "version": "1.0.0-rc.13",
+  "version": "1.0.0-rc.14",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -68,18 +68,18 @@
   },
   "dependencies": {
     "@next/react-refresh-utils": "12.1.6",
-    "@shuvi/error-overlay": "1.0.0-rc.13",
-    "@shuvi/hook": "1.0.0-rc.13",
-    "@shuvi/platform-shared": "1.0.0-rc.13",
+    "@shuvi/error-overlay": "1.0.0-rc.14",
+    "@shuvi/hook": "1.0.0-rc.14",
+    "@shuvi/platform-shared": "1.0.0-rc.14",
     "@shuvi/redox": "0.0.6",
     "@shuvi/redox-react": "0.0.6",
-    "@shuvi/router": "1.0.0-rc.13",
-    "@shuvi/router-react": "1.0.0-rc.13",
-    "@shuvi/runtime": "1.0.0-rc.13",
-    "@shuvi/service": "1.0.0-rc.13",
-    "@shuvi/shared": "1.0.0-rc.13",
-    "@shuvi/toolpack": "1.0.0-rc.13",
-    "@shuvi/utils": "1.0.0-rc.13",
+    "@shuvi/router": "1.0.0-rc.14",
+    "@shuvi/router-react": "1.0.0-rc.14",
+    "@shuvi/runtime": "1.0.0-rc.14",
+    "@shuvi/service": "1.0.0-rc.14",
+    "@shuvi/shared": "1.0.0-rc.14",
+    "@shuvi/toolpack": "1.0.0-rc.14",
+    "@shuvi/utils": "1.0.0-rc.14",
     "content-type": "1.0.4",
     "cookie": "0.4.1",
     "core-js": "3.6.5",
@@ -97,7 +97,7 @@
     "whatwg-fetch": "3.0.0"
   },
   "peerDependencies": {
-    "@shuvi/service": "1.0.0-rc.13"
+    "@shuvi/service": "1.0.0-rc.14"
   },
   "devDependencies": {
     "@testing-library/react": "^13.2.0",

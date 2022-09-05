@@ -1,3 +1,20 @@
+# [1.0.0-rc.14](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.13...v1.0.0-rc.14) (2022-09-05)
+
+
+### Bug Fixes
+
+* fix props typing of Link component ([c334caf](https://github.com/shuvijs/shuvi/commit/c334caf822314e98bc9f8fb5c1bc648ae59459c9))
+* remove filepath from IRoute ([efeccad](https://github.com/shuvijs/shuvi/commit/efeccadef21ded879ab56fd14450c2badb313f4b))
+* safari disable cache doesnot affect preloaded content ([3eff1e2](https://github.com/shuvijs/shuvi/commit/3eff1e2ba5fe7f60eb0e9f57734043ee6c920605))
+* use require instead of import ([5dd8f9e](https://github.com/shuvijs/shuvi/commit/5dd8f9e1ce214c15d2ccb9470ff1f9c444601c65))
+
+
+### Features
+
+*  ts prompt & include jsconfig to ts template ([95349c2](https://github.com/shuvijs/shuvi/commit/95349c29a198ad5aa08d9074e17d626eba269b12))
+
+
+
 # [1.0.0-rc.13](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.12...v1.0.0-rc.13) (2022-09-02)
 
 
