@@ -10,6 +10,7 @@ import { validateNpmName } from './helpers/validate-pkg';
 import packageJson from './package.json';
 
 let projectPath: string = '';
+let isTypescript: boolean | undefined = undefined;
 
 const program = new Commander.Command(packageJson.name)
   .version(packageJson.version)
@@ -99,6 +100,20 @@ async function run(): Promise<void> {
     process.exit(1);
   }
 
+  isTypescript = program.typescript;
+
+  if (isTypescript === undefined) {
+    const res = await prompts({
+      type: 'toggle',
+      name: 'typescript',
+      message: 'Add Typescript?',
+      initial: false,
+      active: 'Yes',
+      inactive: 'No'
+    });
+    isTypescript = res.typescript;
+  }
+
   const resolvedProjectPath = path.resolve(projectPath);
   const projectName = path.basename(resolvedProjectPath);
 
@@ -134,7 +149,7 @@ async function run(): Promise<void> {
       packageManager,
       example: example && example !== 'default' ? example : undefined,
       examplePath: program.examplePath,
-      typescript: program.typescript
+      typescript: isTypescript
     });
   } catch (reason) {
     if (!(reason instanceof DownloadError)) {
