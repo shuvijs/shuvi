@@ -12,13 +12,12 @@ export type IParams = Record<string, string[] | string>;
 export type IRouteComponentProps = Record<string, string>;
 
 export type IRouteRecord<Element = any, ExtendedTypes = {}> = {
-  caseSensitive?: boolean;
-  children?: IRouteRecord<Element, ExtendedTypes>[];
-  component?: Element; // For react will be React.Element
-  redirect?: string;
-  props?: IRouteComponentProps;
   path: string;
-  filepath?: string;
+  component?: Element;
+  children?: IRouteRecord<Element, ExtendedTypes>[];
+  props?: IRouteComponentProps;
+  redirect?: string;
+  caseSensitive?: boolean;
 } & ExtendedTypes;
 
 export type NavigationGuardNextCallback = () => any;
