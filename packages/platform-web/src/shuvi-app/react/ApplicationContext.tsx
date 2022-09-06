@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { IApplication } from '@shuvi/platform-shared/shared';
+import { Application } from '../../shared';
 
-export const ApplicationContext = React.createContext<IApplication>(
-  null as any
-);
+export const ApplicationContext = React.createContext<Application>(null as any);
 
 export function AppProvider({
   app,
   children
 }: React.PropsWithChildren<{
-  app: IApplication;
+  app: Application;
 }>) {
   return (
     <ApplicationContext.Provider value={app}>

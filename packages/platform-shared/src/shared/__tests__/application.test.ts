@@ -1,8 +1,9 @@
-import { Application } from '../application';
+import { ApplicationImpl } from '../application';
 import { createRouter, createMemoryHistory } from '../router';
 
 function getApp() {
-  const app = new Application({
+  const app = new ApplicationImpl({
+    config: {},
     AppComponent: {},
     router: createRouter({
       history: createMemoryHistory(),

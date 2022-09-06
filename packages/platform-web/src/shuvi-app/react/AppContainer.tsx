@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { IApplication, errorModel } from '@shuvi/platform-shared/shared';
-import { AppProvider } from './applicationContext';
+import { errorModel } from '@shuvi/platform-shared/shared';
+import { Application } from '../../shared';
+import { AppProvider } from './ApplicationContext';
 import ErrorPage from './ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Provider, useSharedModel } from './store';
@@ -24,7 +25,7 @@ export default function AppContainer({
   app,
   children
 }: React.PropsWithChildren<{
-  app: IApplication;
+  app: Application;
 }>) {
   return (
     <ErrorBoundary>
