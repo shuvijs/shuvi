@@ -31,7 +31,8 @@ export type IAppState = {
   error?: IErrorState;
 };
 
-export interface IApplication {
+export interface Application<Config extends {} = {}> {
+  readonly config: Config;
   readonly context: IAppContext;
   readonly router: IRouter<IPageRouteRecord>;
   readonly appComponent: any;
@@ -43,7 +44,8 @@ export interface IApplication {
   setLoadersData(datas: Record<string, any>): void;
 }
 
-export interface IApplicationOptions {
+export interface ApplicationOptions<C extends {}> {
+  config: C;
   router: IRouter;
   AppComponent: any;
   initialState?: IAppState;

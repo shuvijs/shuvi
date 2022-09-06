@@ -7,12 +7,10 @@ import {
   isRedirect
 } from '@shuvi/platform-shared/shared';
 import pageLoaders from '@shuvi/app/files/page-loaders';
-import application, {
-  Application
-} from '@shuvi/platform-shared/shuvi-app/application';
+import application from '@shuvi/platform-shared/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
 import chalk from '@shuvi/utils/lib/chalk';
-import { CreateAppServer } from '../../shared';
+import { CreateAppServer, InternalApplication } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
 
 export const createApp: CreateAppServer = options => {
@@ -25,7 +23,7 @@ export const createApp: CreateAppServer = options => {
     history,
     routes: getRoutes(routes)
   }) as IRouter;
-  let app: Application;
+  let app: InternalApplication;
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
@@ -64,7 +62,10 @@ export const createApp: CreateAppServer = options => {
 
   app = application({
     AppComponent,
-    router
+    router,
+    config: {
+      ssr
+    }
   });
 
   return app;

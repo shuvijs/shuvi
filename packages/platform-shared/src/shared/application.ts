@@ -6,23 +6,25 @@ import { LoaderModel, loaderModel } from './models/loader';
 import { IRouter, IPageRouteRecord } from './routerTypes';
 import {
   RedoxStore,
-  IApplication,
+  Application,
   IAppContext,
-  IApplicationOptions,
+  ApplicationOptions,
   IRerenderConfig,
   IError
 } from './applicationTypes';
 
-export class Application {
+export class ApplicationImpl<Config extends {} = {}> {
   private _router: IRouter<IPageRouteRecord>;
   private _appComponent: any;
   private _pluginManager: PluginManager;
   private _context: IAppContext;
+  private _config: Config;
   private _store: RedoxStore;
   private _error: ModelPublicInstance<ErrorModel>;
   private _loader: ModelPublicInstance<LoaderModel>;
 
-  constructor(options: IApplicationOptions) {
+  constructor(options: ApplicationOptions<Config>) {
+    this._config = options.config;
     this._router = options.router;
     this._context = {} as IAppContext;
     this._store = redox({ initialState: options.initialState });
@@ -36,6 +38,10 @@ export class Application {
 
   get router() {
     return this._router;
+  }
+
+  get config() {
+    return this._config;
   }
 
   get context() {
@@ -109,13 +115,24 @@ export class Application {
     );
   }
 
-  getPublicAPI(): IApplication {
+  getPublicAPI(): Application<Config> {
     const self = this;
     return {
-      context: self._context,
-      router: self._router,
-      appComponent: self._appComponent,
-      store: self._store,
+      get config() {
+        return self._config;
+      },
+      get context() {
+        return self._context;
+      },
+      get router() {
+        return self._router;
+      },
+      get appComponent() {
+        return self._appComponent;
+      },
+      get store() {
+        return self._store;
+      },
       get error() {
         return self.error;
       },

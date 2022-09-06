@@ -7,9 +7,7 @@ import {
   isResponse,
   LoaderDataRecord
 } from '@shuvi/platform-shared/shared';
-import application, {
-  Application
-} from '@shuvi/platform-shared/shuvi-app/application';
+import application from '@shuvi/platform-shared/shuvi-app/application';
 import {
   createRouter,
   History,
@@ -19,12 +17,12 @@ import {
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
-import { CreateAppClient } from '../../shared';
+import { InternalApplication, CreateAppClient } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
 
-let app: Application;
+let app: InternalApplication;
 
-export { Application };
+export { InternalApplication };
 
 export const createApp: CreateAppClient = ({
   routes,
@@ -52,7 +50,8 @@ export const createApp: CreateAppClient = ({
   app = application({
     initialState: appState,
     AppComponent: appComponent,
-    router
+    router,
+    config: { ssr }
   });
 
   const loadersData = app.getLoadersData();
