@@ -1,14 +1,14 @@
 import * as customApp from '@shuvi/app/user/app';
 import { pluginRecord } from '@shuvi/app/core/plugins';
-import { Application } from '../shared/application';
-import { createRuntimePlugin, IAppModule, IApplicationOptions } from './shared';
+import { ApplicationImpl } from '../shared/application';
+import { createRuntimePlugin, IAppModule, ApplicationOptions } from './shared';
 import {
   IRuntimePluginConstructor,
   IPluginRecord,
   IPluginList
 } from '../shared/runtimPlugin';
 
-export { Application };
+export { ApplicationImpl };
 
 function getPlugins(runtime: IAppModule, pluginRecords: IPluginRecord) {
   const plugins: IPluginList = [];
@@ -40,8 +40,10 @@ function getPlugins(runtime: IAppModule, pluginRecords: IPluginRecord) {
   return plugins;
 }
 
-export default function application(options: IApplicationOptions): Application {
-  const application = new Application({
+export default function application<C extends {}>(
+  options: ApplicationOptions<C>
+): ApplicationImpl<C> {
+  const application = new ApplicationImpl({
     ...options,
     plugins: getPlugins(customApp, pluginRecord)
   });

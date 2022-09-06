@@ -8,7 +8,7 @@ export { errorModel } from './models/error';
 export { loaderModel } from './models/loader';
 
 export * from './applicationTypes';
-export type { Application } from './application';
+export type { ApplicationImpl } from './application';
 export type { IRuntimeConfig } from './runtimeConfigTypes';
 
 export {

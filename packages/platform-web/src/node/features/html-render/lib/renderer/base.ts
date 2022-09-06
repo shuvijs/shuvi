@@ -15,7 +15,7 @@ import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { clientManifest } from '@shuvi/service/lib/resources';
 import generateFilesByRoutId from '../generateFilesByRoutId';
 import { tag } from './htmlTag';
-import { IHtmlTag, IApplication } from './types';
+import { IHtmlTag, Application } from './types';
 import {
   IRendererConstructorOptions,
   IRenderViewOptions,
@@ -43,7 +43,7 @@ function getPolyfillScripts(
 
 export abstract class BaseRenderer {
   protected _serverPluginContext: IServerPluginContext;
-  protected _app?: IApplication;
+  protected _app?: Application;
 
   constructor({ serverPluginContext }: IRendererConstructorOptions) {
     this._serverPluginContext = serverPluginContext;
@@ -117,7 +117,7 @@ export abstract class BaseRenderer {
     );
   }
 
-  protected _getInlineAppData(app: IApplication, appData: AppData): IHtmlTag {
+  protected _getInlineAppData(app: Application, appData: AppData): IHtmlTag {
     const routes = app.router.routes || [];
     const data = JSON.stringify({
       ...appData,

@@ -1,4 +1,4 @@
-import { IApplication, Response } from '@shuvi/platform-shared/shared';
+import { Response } from '@shuvi/platform-shared/shared';
 import { ShuviRequest, IServerPluginContext } from '@shuvi/service';
 import {
   IHtmlAttrs,
@@ -7,17 +7,18 @@ import {
   IServerRendererOptions,
   IViewClient,
   IViewServer,
-  IRenderAppServerResult
+  IRenderAppServerResult,
+  Application
 } from '../../../../../shared';
 
-export { IHtmlAttrs, IHtmlTag, IApplication };
+export { IHtmlAttrs, IHtmlTag, Application };
 
 export interface IRendererConstructorOptions {
   serverPluginContext: IServerPluginContext;
 }
 
 export type IRenderViewOptions = {
-  app: IApplication;
+  app: Application;
   req: ShuviRequest;
   ssr: boolean;
 };

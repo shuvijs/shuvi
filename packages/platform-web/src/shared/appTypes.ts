@@ -1,13 +1,22 @@
 import {
   IPageRouteRecord,
   IAppData,
-  IAppState
+  IAppState,
+  Application as _Application
 } from '@shuvi/platform-shared/shared';
-import { Application } from '@shuvi/platform-shared/shuvi-app/application';
+import { ApplicationImpl as _ApplicationImpl } from '@shuvi/platform-shared/shuvi-app/application';
 import type { ShuviRequest } from '@shuvi/service';
 
+export interface AppConfig {
+  ssr: boolean;
+}
+
+export type InternalApplication = _ApplicationImpl<AppConfig>;
+
+export type Application = _Application<AppConfig>;
+
 export interface CreateAppServer {
-  (options: { req: ShuviRequest; ssr: boolean }): Application;
+  (options: { req: ShuviRequest; ssr: boolean }): InternalApplication;
 }
 
 export interface CreateAppClient {
@@ -15,5 +24,5 @@ export interface CreateAppClient {
     routes: IPageRouteRecord[];
     appComponent: any;
     appData: IAppData<any, IAppState>;
-  }): Application;
+  }): InternalApplication;
 }

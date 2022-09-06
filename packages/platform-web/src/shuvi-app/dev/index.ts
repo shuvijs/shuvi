@@ -1,9 +1,9 @@
-import { Application } from '@shuvi/platform-shared/shuvi-app/application';
 import {
   DEV_SOCKET_TIMEOUT_MS,
   DEV_HOT_MIDDLEWARE_PATH,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT
 } from '@shuvi/shared/esm/constants';
+import { InternalApplication } from '../../shared';
 import connect, { HotDevClient } from './hotDevClient';
 
 interface Event {
@@ -13,7 +13,7 @@ interface Event {
 
 let devClient: HotDevClient;
 
-export const initHMRAndDevClient = (app: Application) => {
+export const initHMRAndDevClient = (app: InternalApplication) => {
   if (devClient) {
     return devClient;
   }
