@@ -32,13 +32,13 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
   };
 }
 
-export function getPageMiddleware(
+export async function getPageMiddleware(
   api: IServerPluginContext
-): ShuviRequestHandler {
+): Promise<ShuviRequestHandler> {
   let pageHandler = createPageHandler(api);
+  pageHandler = await api.serverPluginRunner.handlePageRequest(pageHandler);
   return async function (req, res, next) {
     try {
-      pageHandler = await api.serverPluginRunner.handlePageRequest(pageHandler);
       await pageHandler(req, res);
     } catch (error) {
       next(error);
