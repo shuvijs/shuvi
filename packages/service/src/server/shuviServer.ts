@@ -54,7 +54,7 @@ export abstract class ShuviServer implements IShuviServer {
 
     const { rootDir } = context.paths;
     if (this._options.getMiddlewares) {
-      const serverMiddlewares = [this._options.getMiddlewares(context)]
+      const serverMiddlewares = [await this._options.getMiddlewares(context)]
         .flat()
         .map(m => normalizeServerMiddleware(m, { rootDir }));
       serverMiddlewares.forEach(({ path, handler }) => {
