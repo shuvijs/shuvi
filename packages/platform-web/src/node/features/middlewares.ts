@@ -5,13 +5,13 @@ import { OnDemandRouteManager } from './on-demand-compile-page';
 import { getApiMiddleware, getMiddlewareMiddleware } from './filesystem-routes';
 import { getPageMiddleware } from './html-render';
 
-export const getMiddlewares = (
+export const getMiddlewares = async (
   context: IServerPluginContext
-): IServerMiddleware[] => {
+): Promise<IServerMiddleware[]> => {
   return [
     getMiddlewareMiddleware(context),
     getApiMiddleware(context),
-    getPageMiddleware(context)
+    await getPageMiddleware(context)
   ].filter(Boolean);
 };
 
