@@ -14,10 +14,14 @@ export const resolvePluginFile = (pluginName: string, ...paths: string[]) =>
     ...paths
   );
 
+export const resolvePkgFileWithoutFileProtocol = (...paths: string[]) =>
+  isWindowsSystem()
+    ? path.win32.join(PackageDir, ...paths)
+    : path.join(PackageDir, ...paths);
+
 export const resolvePkgFile = (...paths: string[]) => {
-  const targetPath = path.join(PackageDir, ...paths);
   if (isWindowsSystem()) {
-    return pathToFileUrl(targetPath);
+    return pathToFileUrl(path.win32.join(PackageDir, ...paths));
   }
-  return targetPath;
+  return path.join(PackageDir, ...paths);
 };

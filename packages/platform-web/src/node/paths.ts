@@ -8,10 +8,14 @@ export const resolveDep = (module: string) => require.resolve(module);
 export const resolveLib = (module: string) =>
   path.dirname(resolveDep(path.join(module, 'package.json')));
 
+export const resolvePkgFileWithoutFileProtocol = (...paths: string[]) =>
+  isWindowsSystem()
+    ? path.win32.join(PACKAGE_DIR, ...paths)
+    : path.join(PACKAGE_DIR, ...paths);
+
 export const resolvePkgFile = (...paths: string[]) => {
-  const targetPath = path.join(PACKAGE_DIR, ...paths);
   if (isWindowsSystem()) {
-    return pathToFileUrl(targetPath);
+    return pathToFileUrl(path.win32.join(PACKAGE_DIR, ...paths));
   }
-  return targetPath;
+  return path.join(PACKAGE_DIR, ...paths);
 };

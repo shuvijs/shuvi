@@ -33,6 +33,8 @@ import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import WebpackWatchWaitForFileBuilderPlugin from '../lib/webpack-watch-wait-for-file-builder-plugin';
+import { isWindowsSystem } from '@shuvi/utils/lib/platform';
+import { fileURLToPath } from 'url';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
 
@@ -151,10 +153,13 @@ class Api {
     // include runtimePlugin directories at @shuvi/swc-loader
     const addIncludeToSwcLoader = createPlugin({
       configWebpack: config => {
-        config.module
-          .rule('main')
-          .oneOf('js')
-          .include.merge(this._runtimePluginDirs);
+        // todo: 此处的_runtimePluginDirs是FILE协议的，但WEBPACK INCLUDE不支持该FILE协议
+
+        let includeList = this._runtimePluginDirs;
+        if (isWindowsSystem()) {
+          includeList = includeList.map(item => fileURLToPath(item));
+        }
+        config.module.rule('main').oneOf('js').include.merge(includeList);
         return config;
       }
     });

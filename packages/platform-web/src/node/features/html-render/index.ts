@@ -15,7 +15,7 @@ import {
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { CopyFilePlugin } from '@shuvi/toolpack/lib/webpack/plugins/copy-file-plugin';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
-import { resolvePkgFile } from '../../paths';
+import { resolvePkgFile, resolvePkgFileWithoutFileProtocol } from '../../paths';
 import { getVersion } from '../../version';
 import { getMiddlewares } from '../middlewares';
 import generateResource from './lib/generateResource';
@@ -31,7 +31,9 @@ function makeEntryRequest(req: string): string {
 function getClientEntry(): IWebpackEntry {
   return {
     [BUILD_CLIENT_RUNTIME_MAIN]: [
-      makeEntryRequest(resolvePkgFile('esm/shuvi-app/entry/client'))
+      makeEntryRequest(
+        resolvePkgFileWithoutFileProtocol('esm/shuvi-app/entry/client')
+      )
     ]
   };
 }
@@ -39,7 +41,9 @@ function getClientEntry(): IWebpackEntry {
 function getServerEntry(): IWebpackEntry {
   return {
     [BUILD_SERVER_FILE_SERVER]: [
-      makeEntryRequest(resolvePkgFile('esm/shuvi-app/entry/server'))
+      makeEntryRequest(
+        resolvePkgFileWithoutFileProtocol('esm/shuvi-app/entry/server')
+      )
     ]
   };
 }
@@ -65,7 +69,9 @@ export const getPlugin = (
         });
         chain.plugin('polyfills').use(CopyFilePlugin, [
           {
-            filePath: resolvePkgFile('polyfills/polyfills.js'),
+            filePath: resolvePkgFileWithoutFileProtocol(
+              'polyfills/polyfills.js'
+            ),
             cacheKey: pkgVersion,
             name: BUILD_CLIENT_RUNTIME_POLYFILLS,
             info: {
@@ -109,11 +115,15 @@ export const getPlugin = (
     },
     addRuntimeService: () => [
       {
-        source: resolvePkgFile('esm/shuvi-app/shuvi-runtime-index'),
+        source: resolvePkgFileWithoutFileProtocol(
+          'esm/shuvi-app/shuvi-runtime-index'
+        ),
         exported: '*'
       },
       {
-        source: resolvePkgFile('lib/node/shuvi-runtime-server'),
+        source: resolvePkgFileWithoutFileProtocol(
+          'lib/node/shuvi-runtime-server'
+        ),
         filepath: 'server.ts',
         exported: '*'
       }
