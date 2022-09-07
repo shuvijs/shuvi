@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { createPluginAfter } from '@shuvi/service';
 import { resolveLib, resolvePkgFile } from '../../../paths';
+import { makeSureSuffix } from '@shuvi/utils/lib/platform';
 
 const core = createPluginAfter(
   {
@@ -27,6 +28,6 @@ export const ModelReactPlugin = {
   core,
   runtime: {
     // this need
-    plugin: resolvePkgFile('esm/shuvi-app/react/model/runtime')
+    plugin: makeSureSuffix(resolvePkgFile('esm/shuvi-app/react/model/runtime'))
   }
 };
