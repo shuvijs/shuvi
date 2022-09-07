@@ -100,7 +100,7 @@ export type IPlatformContent = {
   ) => FileOption<any>[] | Promise<FileOption<any>[]>;
   getMiddlewares?: (
     context: IServerPluginContext
-  ) => IServerMiddleware | IServerMiddleware[];
+  ) => Promise<IServerMiddleware | IServerMiddleware[]>;
   getMiddlewaresBeforeDevMiddlewares?: (
     devMiddleware: DevMiddleware,
     context: IServerPluginContext
