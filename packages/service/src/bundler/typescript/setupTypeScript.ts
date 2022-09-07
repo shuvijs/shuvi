@@ -6,8 +6,7 @@ import { IPaths } from '../../core/apiTypes';
 import { getPkgManager } from '../helper/getPkgManager';
 import { TypeScriptModule, TsCompilerOptions } from './types';
 import { writeDefaultConfigurations } from './configTypeScript';
-import * as url from 'url';
-import * as os from 'os';
+
 import {
   hasTsConfig,
   hasTypescriptFiles,
@@ -15,6 +14,7 @@ import {
   getTsConfig,
   PackageDep
 } from './getTypeScriptInfo';
+import { isWindowsSystem, pathToFileUrl } from '@shuvi/utils/lib/platform';
 
 let hasSetup = false;
 
@@ -122,8 +122,8 @@ export async function setupTypeScript(paths: IPaths) {
     }
     let usefulPath: string = typeScriptPath!;
 
-    if (os.platform() === 'win32') {
-      usefulPath = url.pathToFileURL(typeScriptPath!).toString();
+    if (isWindowsSystem()) {
+      usefulPath = pathToFileUrl(typeScriptPath!);
     }
 
     // @ts-ignore

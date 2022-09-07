@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
 import { withExts } from '@shuvi/utils/lib/file';
+import { isWindowsSystem, pathToFileUrl } from '@shuvi/utils/lib/platform';
 
 export const getAllFiles = (dependencies: string | string[]) => {
   const allFiles: string[] = [];
@@ -22,6 +23,10 @@ export const getAllFiles = (dependencies: string | string[]) => {
 
 export const getModuleExport = (module: string, defaultExport?: boolean) => {
   if (module) {
+    if (isWindowsSystem()) {
+      module = pathToFileUrl(module);
+    }
+
     return defaultExport
       ? `export { default } from "${module}"`
       : `export * from "${module}"`;
@@ -73,6 +78,7 @@ export const getContentProxyObj = (Obj: {
 
   for (let source of sources) {
     const exportContents = Obj[source];
+
     statements.push(
       `proxyObj.${source} ${
         exportContents
@@ -102,6 +108,9 @@ const getExportsContent = (
     // stripFullPath because type definition unable to read full path.
     if (stripFullPath) {
       source = source.substring(source.indexOf('node_modules'));
+    }
+    if (isWindowsSystem()) {
+      source = pathToFileUrl(source);
     }
     for (const exportContent of exportContents) {
       statements.push(`export ${exportContent} from "${source}"`);

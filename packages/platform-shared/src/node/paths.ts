@@ -1,4 +1,5 @@
 import path from 'path';
+import { isWindowsSystem, pathToFileUrl } from '@shuvi/utils/lib/platform';
 
 export const PackageDir = path.resolve(__dirname, '..', '..');
 
@@ -13,5 +14,10 @@ export const resolvePluginFile = (pluginName: string, ...paths: string[]) =>
     ...paths
   );
 
-export const resolvePkgFile = (...paths: string[]) =>
-  path.join(PackageDir, ...paths);
+export const resolvePkgFile = (...paths: string[]) => {
+  const targetPath = path.join(PackageDir, ...paths);
+  if (isWindowsSystem()) {
+    return pathToFileUrl(targetPath);
+  }
+  return targetPath;
+};
