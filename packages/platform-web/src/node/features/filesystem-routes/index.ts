@@ -3,7 +3,7 @@ import {
   getRawRoutesFromDir,
   getPageRoutes,
   getApiRoutes,
-  getMiddlewareRoutes,
+  // getMiddlewareRoutes,
   IPageRouteConfig
 } from '@shuvi/platform-shared/node';
 import {
@@ -34,6 +34,8 @@ export {
   getMiddlewareMiddleware,
   getApiMiddleware
 };
+
+let isWarned: boolean = false;
 
 const plugin = createPlugin({
   setup: ({ addHooks }) => {
@@ -124,32 +126,27 @@ const plugin = createPlugin({
     const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
       content: async () => {
-        const { routes: _routes, warnings } = await getMiddlewareRoutes(
-          getContent(rawRoutes),
-          conventionRoutes.exclude
-        );
-        if (isBuildPhase) {
-          warnings.forEach(warning => {
-            console.warn(warning);
-          });
-        }
-        let fsRoutes = _routes;
-
         // Remove the 'middleware' file convention first, and deal with it in a future major update.
-        if (fsRoutes.length > 0) {
-          console.error(
-            'Error: We currently no longer support the "middleware" file convention.'
-          );
-        }
+        // const { routes: _routes, warnings } = await getMiddlewareRoutes(
+        //   getContent(rawRoutes),
+        //   conventionRoutes.exclude
+        // );
+        // if (isBuildPhase) {
+        //   warnings.forEach(warning => {
+        //     console.warn(warning);
+        //   });
+        // }
+        // let fsRoutes = _routes;
 
         const pluginRoutes: IMiddlewareRouteConfig[] = (
           await pluginRunner.addMiddlewareRoutes()
         ).flat();
 
-        if (pluginRoutes.length > 0) {
+        if (!isWarned && pluginRoutes.length > 0) {
           console.warn(
             'Warning: addMiddlewareRoutes is an experimental feature, we recommend using api routes instead.'
           );
+          isWarned = true;
         }
 
         return generateMiddlewareRoutesContent(pluginRoutes, {
