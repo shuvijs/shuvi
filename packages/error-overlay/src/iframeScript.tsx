@@ -13,8 +13,11 @@ let iframeRoot = null;
 let errorBody = null;
 let isFirstRender = true;
 
-function render({ errorType, hasBuildError, hasRuntimeError }) {
-  errorTypeHandler.emit(errorType);
+function render({ errorTypeList, hasBuildError, hasRuntimeError }) {
+  errorTypeList.forEach((errorType: errorTypeHandler.ErrorTypeEvent) => {
+    errorTypeHandler.emit(errorType);
+  });
+
   if (!hasBuildError && !hasRuntimeError) {
     return null;
   }
@@ -22,12 +25,12 @@ function render({ errorType, hasBuildError, hasRuntimeError }) {
 }
 
 window.updateContent = function updateContent({
-  errorType,
+  errorTypeList,
   hasBuildError,
   hasRuntimeError
 }) {
   let renderedElement = render({
-    errorType,
+    errorTypeList,
     hasBuildError,
     hasRuntimeError
   });

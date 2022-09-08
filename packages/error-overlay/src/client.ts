@@ -17,7 +17,7 @@ let stackTraceLimit: number | undefined = undefined;
 let iframe: null | HTMLIFrameElement = null;
 let isLoadingIframe: boolean = false;
 let isIframeReady: boolean = false;
-let errorType: errorTypeHandler.ErrorTypeEvent;
+let errorTypeList: errorTypeHandler.ErrorTypeEvent[] = [];
 let hasBuildError: Boolean = false;
 let hasRuntimeError: Boolean = false;
 
@@ -45,11 +45,11 @@ function onUnhandledError(ev: ErrorEvent) {
   }
 
   hasRuntimeError = true;
-  errorType = {
+  errorTypeList.push({
     type: TYPE_UNHANDLED_ERROR,
     reason: error,
     frames: parseStack(error.stack)
-  };
+  });
   update();
 }
 
@@ -65,11 +65,11 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
   }
 
   hasRuntimeError = true;
-  errorType = {
+  errorTypeList.push({
     type: TYPE_UNHANDLED_REJECTION,
     reason: reason,
     frames: parseStack(reason.stack)
-  };
+  });
   update();
 }
 
@@ -114,18 +114,18 @@ function stopReportingRuntimeErrors() {
 
 function onBuildOk() {
   hasBuildError = false;
-  errorType = { type: TYPE_BUILD_OK };
+  errorTypeList.push({ type: TYPE_BUILD_OK });
   update();
 }
 
 function onBuildError(message: string) {
   hasBuildError = true;
-  errorType = { type: TYPE_BUILD_ERROR, message };
+  errorTypeList.push({ type: TYPE_BUILD_ERROR, message });
   update();
 }
 
 function onRefresh() {
-  errorType = { type: TYPE_REFRESH };
+  errorTypeList.push({ type: TYPE_REFRESH });
 }
 
 function applyStyles(element: HTMLElement, styles: Object) {
@@ -178,10 +178,13 @@ function updateIframeContent() {
 
   //@ts-ignore
   const isRendered = iframe.contentWindow!.updateContent({
-    errorType,
+    errorTypeList,
     hasBuildError,
     hasRuntimeError
   });
+
+  //After the errors have been added to the queue of the error handler, we must clear the errorTypeList
+  errorTypeList = [];
 
   if (!isRendered) {
     window.document.body.removeChild(iframe);
