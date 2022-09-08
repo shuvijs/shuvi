@@ -6,6 +6,11 @@ export default createServerPlugin({
     return server?.server?.getPageData?.(appContext, context) || {};
   },
   handlePageRequest: (originalHandlePageRequest, context) => {
+    if (server?.server?.handlePageRequest !== undefined) {
+      console.warn(
+        'Warning: handlePageRequest is an experimental feature, we recommend using api routes instead.'
+      );
+    }
     return (
       server?.server?.handlePageRequest?.(originalHandlePageRequest, context) ||
       originalHandlePageRequest

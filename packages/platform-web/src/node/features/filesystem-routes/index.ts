@@ -6,7 +6,10 @@ import {
   getMiddlewareRoutes,
   IPageRouteConfig
 } from '@shuvi/platform-shared/node';
-import { IPageRouteConfigWithId } from '@shuvi/platform-shared/shared';
+import {
+  IPageRouteConfigWithId,
+  IMiddlewareRouteConfig
+} from '@shuvi/platform-shared/shared';
 import { ifComponentHasLoader } from '../html-render/lib';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
@@ -130,10 +133,26 @@ const plugin = createPlugin({
             console.warn(warning);
           });
         }
-        const fsRoutes = _routes;
+        let fsRoutes = _routes;
 
-        const pluginRoutes = (await pluginRunner.addMiddlewareRoutes()).flat();
-        return generateMiddlewareRoutesContent(pluginRoutes.concat(fsRoutes), {
+        // Remove the 'middleware' file convention first, and deal with it in a future major update.
+        if (fsRoutes.length > 0) {
+          console.error(
+            'Error: We currently no longer support the "middleware" file convention.'
+          );
+        }
+
+        const pluginRoutes: IMiddlewareRouteConfig[] = (
+          await pluginRunner.addMiddlewareRoutes()
+        ).flat();
+
+        if (pluginRoutes.length > 0) {
+          console.warn(
+            'Warning: addMiddlewareRoutes is an experimental feature, we recommend using api routes instead.'
+          );
+        }
+
+        return generateMiddlewareRoutesContent(pluginRoutes, {
           baseDir: paths.routesDir
         });
       },
