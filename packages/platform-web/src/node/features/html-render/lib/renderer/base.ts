@@ -36,7 +36,8 @@ function getPolyfillScripts(
     .filter(polyfill => polyfill.endsWith('.js'))
     .map(polyfill =>
       tag('script', {
-        src: req.getAssetUrl(polyfill)
+        src: req.getAssetUrl(polyfill),
+        nomodule: true
       })
     );
 }
