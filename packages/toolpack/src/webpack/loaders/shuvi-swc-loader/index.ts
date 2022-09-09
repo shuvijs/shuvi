@@ -25,15 +25,25 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
+import { LoaderContext } from 'webpack';
 import querystring from 'querystring';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
 import { transform } from '@shuvi/compiler';
-import getLoaderSWCOptions from './getLoaderSWCOptions';
+import getLoaderSWCOptions, {
+  SWCLoaderOptions,
+  CompilerOptions
+} from './getLoaderSWCOptions';
+
+export { SWCLoaderOptions, CompilerOptions };
 
 const IS_PAGE_FILE = RegExp(escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`));
 
-async function loaderTransform(source, inputSourceMap) {
+async function loaderTransform(
+  this: LoaderContext<SWCLoaderOptions>,
+  source: string,
+  inputSourceMap: string
+) {
   // Make the loader async
   const filename = this.resourcePath;
 
@@ -41,7 +51,6 @@ async function loaderTransform(source, inputSourceMap) {
 
   const {
     isServer,
-    experimental,
     compiler,
     supportedBrowsers,
     swcCacheDir,
@@ -53,7 +62,7 @@ async function loaderTransform(source, inputSourceMap) {
     this.resourceQuery && IS_PAGE_FILE.test(this.resourceQuery)
   );
 
-  let keep = [];
+  let keep: string[] = [];
 
   if (this.resourceQuery) {
     const query = querystring.parse(this.resourceQuery.slice(1));
@@ -69,20 +78,19 @@ async function loaderTransform(source, inputSourceMap) {
   const isDevelopment = this.mode === 'development';
 
   const swcOptions = getLoaderSWCOptions({
+    development: this.mode === 'development',
     filename,
     isServer,
     isPageFile,
     minify,
-    development: this.mode === 'development',
+    keep,
     hasReactRefresh:
       hasReactRefresh !== undefined
         ? hasReactRefresh
         : isDevelopment && !isServer,
-    experimental,
-    compiler,
     supportedBrowsers,
     swcCacheDir,
-    keep
+    compiler
   });
 
   const programmaticOptions = {
@@ -124,7 +132,11 @@ async function loaderTransform(source, inputSourceMap) {
   });
 }
 
-export default function swcLoader(inputSource, inputSourceMap) {
+export default function swcLoader(
+  this: LoaderContext<SWCLoaderOptions>,
+  inputSource: string,
+  inputSourceMap: string
+) {
   const callback = this.async && this.async();
   loaderTransform.call(this, inputSource, inputSourceMap).then(
     ([transformedSource, outputSourceMap]) => {

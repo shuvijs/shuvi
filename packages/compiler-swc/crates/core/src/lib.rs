@@ -69,9 +69,6 @@ pub struct TransformOptions {
     pub is_server: bool,
 
     #[serde(default)]
-    pub disable_shuvi_dynamic: bool,
-
-    #[serde(default)]
     pub css_module_flag: String,
 
     #[serde(default)]
@@ -106,7 +103,6 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
         hook_optimizer::hook_optimizer(),
         shuvi_dynamic::shuvi_dynamic(
             opts.is_server,
-            opts.disable_shuvi_dynamic
         ),
 
         match &opts.styled_components {

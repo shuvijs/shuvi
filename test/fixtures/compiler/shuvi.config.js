@@ -13,7 +13,6 @@ export default {
       autoLabel: 'dev-only',
       labelFormat: 'custom--[local]'
     },
-    disableShuviDynamic: true,
     experimentalDecorators: true,
     emitDecoratorMetadata: true
   },
