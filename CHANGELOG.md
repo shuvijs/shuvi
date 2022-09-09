@@ -1,3 +1,20 @@
+# [1.0.0-rc.15](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.14...v1.0.0-rc.15) (2022-09-09)
+
+
+### Bug Fixes
+
+* handle the errorType which is overwrited  ([965683b](https://github.com/shuvijs/shuvi/commit/965683b9345316ed1771de1957fb494350905d85))
+* **html-render:** prevent `handlePageRequest` from being called repeatedly ([#425](https://github.com/shuvijs/shuvi/issues/425)) ([f78252c](https://github.com/shuvijs/shuvi/commit/f78252c5f8dc29449e55e38c85b5062102a84f9b))
+
+
+### Features
+
+* add nomodule attr for polyfills ([3ca1f4e](https://github.com/shuvijs/shuvi/commit/3ca1f4e4f105daee7a4244a2516ceae12641fba0))
+* do not show error code for none-ssr page ([1b6e102](https://github.com/shuvijs/shuvi/commit/1b6e102b24a8955652d8d93c00b1979ad195e3fb))
+* remove 'middleware' file convention ([#427](https://github.com/shuvijs/shuvi/issues/427)) ([85e639a](https://github.com/shuvijs/shuvi/commit/85e639a1ca6d7cf08931e5e81647f28e94057e55))
+
+
+
 # [1.0.0-rc.14](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.13...v1.0.0-rc.14) (2022-09-05)
 
 
