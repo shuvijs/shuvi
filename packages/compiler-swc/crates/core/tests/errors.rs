@@ -33,7 +33,6 @@ fn shuvi_dynamic_errors(input: PathBuf) {
         &|_tr| {
             shuvi_dynamic(
                 false,
-                false,
             )
         },
         &input,

@@ -40,17 +40,6 @@ describe('compiler', () => {
     expect(await page.$text('div')).toBe('symbol-string');
   });
 
-  test('could disable dynamic', async () => {
-    page = await ctx.browser.page(ctx.url('/disableShuviDynamic'));
-    const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
-    expect(
-      appData.dynamicIds.includes('./src/components/hello.js')
-    ).toBeFalsy();
-    expect(await page.$text('div')).toBe('');
-    await page.waitForSelector('.hello');
-    expect(await page.$text('div')).toBe('Hello World');
-  });
-
   test('should support modularize imports', async () => {
     page = await ctx.browser.page(ctx.url('/modularizeImports'));
     expect(await page.$text('div')).toBe('modularizeImports-symbol');

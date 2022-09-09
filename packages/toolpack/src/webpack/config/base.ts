@@ -11,6 +11,7 @@ import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import SupportTsExtensionResolverPlugin from '../plugins/support-ts-extension-resolver-plugin';
 import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
+import { CompilerOptions } from '../loaders/shuvi-swc-loader';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
 
@@ -19,7 +20,6 @@ const resolveLocalLoader = (name: string) =>
 
 export interface BaseOptions {
   dev: boolean;
-  parcelCss: boolean;
   name: string;
   projectRoot: string;
 
@@ -41,8 +41,8 @@ export interface BaseOptions {
   env?: {
     [x: string]: string | undefined;
   };
-  experimental?: Record<string, any>;
-  compiler?: Record<string, any>;
+  parcelCss?: boolean;
+  compiler?: CompilerOptions;
 }
 
 const terserOptions = {
@@ -71,7 +71,6 @@ export function baseWebpackChain({
   dev,
   outputDir,
   parcelCss,
-  experimental,
   compiler,
   projectRoot,
   include,
@@ -198,7 +197,6 @@ export function baseWebpackChain({
     .loader('@shuvi/shuvi-swc-loader')
     .options({
       isServer: false,
-      experimental,
       compiler,
       supportedBrowsers: false,
       swcCacheDir: path.join(cacheDir, 'swc')

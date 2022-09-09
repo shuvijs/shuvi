@@ -5,8 +5,7 @@ const swc = async (
   modularizeImports: Record<string, any> = {}
 ) => {
   const options = {
-    modularizeImports,
-    disableShuviDynamic: false
+    modularizeImports
   };
 
   return transform(code, options)!;

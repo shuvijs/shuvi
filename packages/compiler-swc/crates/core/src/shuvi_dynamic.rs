@@ -9,10 +9,9 @@ use swc_ecmascript::ast::{
 use swc_ecmascript::utils::ExprFactory;
 use swc_ecmascript::visit::{Fold, FoldWith};
 
-pub fn shuvi_dynamic(is_server: bool, disable_shuvi_dynamic: bool) -> impl Fold {
+pub fn shuvi_dynamic(is_server: bool) -> impl Fold {
     ShuviDynamicPatcher {
         is_server,
-        disable_shuvi_dynamic,
         dynamic_bindings: vec![],
         is_shuvi_dynamic_first_arg: false,
         dynamically_imported_specifier: None,
@@ -22,7 +21,6 @@ pub fn shuvi_dynamic(is_server: bool, disable_shuvi_dynamic: bool) -> impl Fold 
 #[derive(Debug)]
 struct ShuviDynamicPatcher {
     is_server: bool,
-    disable_shuvi_dynamic: bool,
     dynamic_bindings: Vec<Id>,
     is_shuvi_dynamic_first_arg: bool,
     dynamically_imported_specifier: Option<String>,
@@ -156,11 +154,7 @@ impl Fold for ShuviDynamicPatcher {
                                                             optional: false,
                                                         })),
                                                         prop: MemberProp::Ident(Ident {
-                                                            sym: if self.disable_shuvi_dynamic {
-                                                                "resolve".into()
-                                                            } else {
-                                                                "resolveWeak".into()
-                                                            },
+                                                            sym: "resolveWeak".into(),
                                                             span: DUMMY_SP,
                                                             optional: false,
                                                         }),
