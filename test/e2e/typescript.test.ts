@@ -32,11 +32,12 @@ describe('TypesSript Suppport', () => {
     expect(JSON.parse(res.body)).toStrictEqual({ data: 'apis index success' });
   });
 
-  test('middleware should work', async () => {
-    let res;
-    res = await got.get(ctx.url('/hello?middleware=true'));
-    expect(res.body).toStrictEqual('middleware success');
-  });
+  // Remove the 'middleware' file convention first, and deal with it in a future major update.
+  // test('middleware should work', async () => {
+  //   let res;
+  //   res = await got.get(ctx.url('/hello?middleware=true'));
+  //   expect(res.body).toStrictEqual('middleware success');
+  // });
 
   test('should enable incremental mode', async () => {
     expect(async () => {
