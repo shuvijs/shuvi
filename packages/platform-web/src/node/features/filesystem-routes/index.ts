@@ -3,10 +3,13 @@ import {
   getRawRoutesFromDir,
   getPageRoutes,
   getApiRoutes,
-  getMiddlewareRoutes,
+  // getMiddlewareRoutes,
   IPageRouteConfig
 } from '@shuvi/platform-shared/node';
-import { IPageRouteConfigWithId } from '@shuvi/platform-shared/shared';
+import {
+  IPageRouteConfigWithId,
+  IMiddlewareRouteConfig
+} from '@shuvi/platform-shared/shared';
 import { ifComponentHasLoader } from '../html-render/lib';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
@@ -31,6 +34,8 @@ export {
   getMiddlewareMiddleware,
   getApiMiddleware
 };
+
+let isWarnedAddMiddlewareRoutes: boolean = false;
 
 const plugin = createPlugin({
   setup: ({ addHooks }) => {
@@ -121,19 +126,30 @@ const plugin = createPlugin({
     const middlewareRoutesFile = defineFile({
       name: 'middlewareRoutes.js',
       content: async () => {
-        const { routes: _routes, warnings } = await getMiddlewareRoutes(
-          getContent(rawRoutes),
-          conventionRoutes.exclude
-        );
-        if (isBuildPhase) {
-          warnings.forEach(warning => {
-            console.warn(warning);
-          });
-        }
-        const fsRoutes = _routes;
+        // Remove the 'middleware' file convention first, and deal with it in a future major update.
+        // const { routes: _routes, warnings } = await getMiddlewareRoutes(
+        //   getContent(rawRoutes),
+        //   conventionRoutes.exclude
+        // );
+        // if (isBuildPhase) {
+        //   warnings.forEach(warning => {
+        //     console.warn(warning);
+        //   });
+        // }
+        // let fsRoutes = _routes;
 
-        const pluginRoutes = (await pluginRunner.addMiddlewareRoutes()).flat();
-        return generateMiddlewareRoutesContent(pluginRoutes.concat(fsRoutes), {
+        const pluginRoutes: IMiddlewareRouteConfig[] = (
+          await pluginRunner.addMiddlewareRoutes()
+        ).flat();
+
+        if (!isWarnedAddMiddlewareRoutes && pluginRoutes.length > 0) {
+          console.warn(
+            'Warning: addMiddlewareRoutes is an experimental feature, we recommend using api routes instead.'
+          );
+          isWarnedAddMiddlewareRoutes = true;
+        }
+
+        return generateMiddlewareRoutesContent(pluginRoutes, {
           baseDir: paths.routesDir
         });
       },
