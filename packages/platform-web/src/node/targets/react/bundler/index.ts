@@ -56,17 +56,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     resolveLocal('react-dom')
   ]);
 
-  if (name === BUNDLER_DEFAULT_TARGET && context.mode === 'development') {
-    config.module
-      .rule('main')
-      .oneOf('js')
-      .use('react-refresh-loader')
-      .loader(require.resolve('@next/react-refresh-utils/loader'))
-      .before('shuvi-swc-loader');
-
-    config
-      .plugin('react-refresh-plugin')
-      .use(ReactRefreshWebpackPlugin, [webpack]);
+  if (name === BUNDLER_DEFAULT_TARGET) {
     config.plugin('version-env-plugin').use(webpack.DefinePlugin, [
       {
         'process.env.__SHUVI__AFTER__REACT__18__': JSON.stringify(
@@ -74,6 +64,19 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
         )
       }
     ]);
+
+    if (context.mode === 'development') {
+      config.module
+        .rule('main')
+        .oneOf('js')
+        .use('react-refresh-loader')
+        .loader(require.resolve('@next/react-refresh-utils/loader'))
+        .before('shuvi-swc-loader');
+
+      config
+        .plugin('react-refresh-plugin')
+        .use(ReactRefreshWebpackPlugin, [webpack]);
+    }
   }
   return config;
 };
