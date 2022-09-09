@@ -45,13 +45,6 @@ export function createNodeWebpackChain(options: NodeOptions): WebpackChain {
       isServer: true
     }));
 
-  chain.plugin('private/build-manifest').tap(([options]) => [
-    {
-      ...options,
-      modules: false
-    }
-  ]);
-
   chain.plugin('define').tap(([options]) => [
     {
       ...options,

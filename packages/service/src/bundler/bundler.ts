@@ -7,22 +7,23 @@ import ForkTsCheckerWebpackPlugin, {
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import Logger from '@shuvi/utils/lib/logger';
 import { inspect } from 'util';
-import webpack, {
+import {
+  webpack,
   WebpackChain,
   DynamicDll,
   MultiCompiler as WebapckMultiCompiler,
   Compiler as WebapckCompiler,
-  webpackResolveContext
+  resolveWebpackModule
 } from '@shuvi/toolpack/lib/webpack';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
-import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
+import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { Server, ShuviRequestHandler } from '../server';
 import { IPluginContext } from '../core';
 import { isFatalError } from '../error';
 import { Target, TargetChain } from '../core/plugin';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
-import { BUILD_DEFAULT_DIR } from '../constants';
+import { CLIENT_OUTPUT_DIR } from '../constants';
 import { setupTypeScript } from './typescript';
 import { WatchingProxy, Watching } from './watchingProxy';
 
@@ -103,7 +104,7 @@ class WebpackBundler implements Bunlder {
         rootDir: this._cliContext.paths.rootDir,
         exclude: [/react-refresh/],
         resolveWebpackModule(module) {
-          return require(`${webpackResolveContext}/${module}`);
+          return resolveWebpackModule(module);
         }
       });
       this._devMiddlewares.push(dynamicDll.middleware);
@@ -143,7 +144,7 @@ class WebpackBundler implements Bunlder {
     }
 
     this._targets.forEach(({ name }) => {
-      if (name === BUNDLER_DEFAULT_TARGET) {
+      if (name === BUNDLER_TARGET_CLIENT) {
         this._setupListenersForTarget(name, {
           typeChecking: true
         });
@@ -380,16 +381,16 @@ class WebpackBundler implements Bunlder {
   private _initDefaultBuildTarget(): TargetChain[] {
     const defaultWebpackHelpers = webpackHelpers();
     const defaultChain = createWebpackConfig(this._cliContext, {
-      name: BUNDLER_DEFAULT_TARGET,
+      name: BUNDLER_TARGET_CLIENT,
       node: false,
       entry: {},
-      outputDir: BUILD_DEFAULT_DIR,
+      outputDir: CLIENT_OUTPUT_DIR,
       webpackHelpers: defaultWebpackHelpers
     });
     return [
       {
         chain: defaultChain,
-        name: BUNDLER_DEFAULT_TARGET
+        name: BUNDLER_TARGET_CLIENT
       }
     ];
   }
@@ -417,12 +418,7 @@ class WebpackBundler implements Bunlder {
         helpers: defaultWebpackHelpers,
         webpack,
         resolveWebpackModule(path: string) {
-          if (!path.startsWith('webpack/')) {
-            console.error(
-              'path need startWith "webpack/" to resolve webpack module'
-            );
-          }
-          return require(`${webpackResolveContext}${path}`);
+          return resolveWebpackModule(path);
         }
       });
       if (hasEntry(chain)) {

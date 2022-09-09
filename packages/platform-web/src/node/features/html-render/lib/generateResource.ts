@@ -1,25 +1,25 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
+import { IPluginContext } from '@shuvi/service';
+import { urlToRequest } from '@shuvi/service/lib/project/file-utils';
 import {
-  BUILD_DEFAULT_DIR,
-  BUILD_SERVER_DIR,
   CLIENT_BUILD_MANIFEST_PATH,
   SERVER_BUILD_MANIFEST_PATH,
-  BUILD_SERVER_FILE_SERVER,
-  IPluginContext
-} from '@shuvi/service';
-import { urlToRequest } from '@shuvi/service/lib/project/file-utils';
+  CLIENT_OUTPUT_DIR,
+  SERVER_OUTPUT_DIR,
+  BUILD_SERVER_FILE_SERVER
+} from '../../../../shared';
 
 const generateResources = (context: IPluginContext) => {
   const { resolveUserFile } = context;
   const { buildDir } = context.paths;
   const clientManifestRequest = urlToRequest(
-    path.join(buildDir, BUILD_DEFAULT_DIR, CLIENT_BUILD_MANIFEST_PATH)
+    path.join(buildDir, CLIENT_OUTPUT_DIR, CLIENT_BUILD_MANIFEST_PATH)
   );
   const serverManifestRequest = urlToRequest(
-    path.join(buildDir, BUILD_SERVER_DIR, SERVER_BUILD_MANIFEST_PATH)
+    path.join(buildDir, SERVER_OUTPUT_DIR, SERVER_BUILD_MANIFEST_PATH)
   );
-  const serverModuleDir = path.join(buildDir, BUILD_SERVER_DIR);
+  const serverModuleDir = path.join(buildDir, SERVER_OUTPUT_DIR);
   const result: [string, string | undefined][] = [];
 
   result.push(['clientManifest', clientManifestRequest]);

@@ -37,13 +37,10 @@ export const SHUVI_ERROR = {
   }
 };
 
-// bundle
-export const BUNDLER_DEFAULT_TARGET = `${NAME}/client`;
-// service has BUNDLER_DEFAULT_TARGET and
-// shuvi inner has used BUNDLER_DEFAULT_TARGET replaced BUNDLER_DEFAULT_TARGET,
-// keep BUNDLER_TARGET_CLIENT for old users plugins, will be remove in future
-export const BUNDLER_TARGET_CLIENT = BUNDLER_DEFAULT_TARGET;
+export const BUNDLER_TARGET_CLIENT = `${NAME}/client`;
 
 export const BUNDLER_TARGET_SERVER = `${NAME}/server`;
 
-export const BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL = Symbol(`polyfills`);
+export const CLIENT_OUTPUT_DIR = 'client';
+
+export const SERVER_OUTPUT_DIR = 'server';

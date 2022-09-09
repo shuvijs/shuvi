@@ -1,22 +1,19 @@
 import { IAppData } from '@shuvi/platform-shared/shared';
 import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
-import {
-  ShuviRequest,
-  BUILD_CLIENT_RUNTIME_MAIN,
-  IServerPluginContext
-} from '@shuvi/service';
+import { ShuviRequest, IServerPluginContext } from '@shuvi/service';
 import {
   CLIENT_CONTAINER_ID,
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '@shuvi/shared/lib/constants';
-import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
-import { clientManifest } from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/lib/resources';
+import { IManifest, BUILD_CLIENT_RUNTIME_MAIN } from '../../../../../shared';
 import generateFilesByRoutId from '../generateFilesByRoutId';
 import { tag } from './htmlTag';
-import { IHtmlTag, Application } from './types';
 import {
+  IHtmlTag,
+  Application,
   IRendererConstructorOptions,
   IRenderViewOptions,
   IRenderDocumentResult
@@ -61,9 +58,12 @@ export abstract class BaseRenderer {
   } {
     const styles: IHtmlTag<'link' | 'style'>[] = [];
     const scripts: IHtmlTag<'script'>[] = [];
-    const entrypoints = clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
+    const entrypoints =
+      resources.clientManifest.entries[BUILD_CLIENT_RUNTIME_MAIN];
 
-    getPolyfillScripts(req, clientManifest).forEach(item => scripts.push(item));
+    getPolyfillScripts(req, resources.clientManifest).forEach(item =>
+      scripts.push(item)
+    );
     entrypoints.js.forEach((asset: string) => {
       scripts.push(
         tag('script', {
@@ -122,7 +122,7 @@ export abstract class BaseRenderer {
     const routes = app.router.routes || [];
     const data = JSON.stringify({
       ...appData,
-      filesByRoutId: generateFilesByRoutId(clientManifest, routes),
+      filesByRoutId: generateFilesByRoutId(resources.clientManifest, routes),
       publicPath: this._serverPluginContext.assetPublicPath
     });
     return tag(

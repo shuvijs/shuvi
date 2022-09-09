@@ -1,25 +1,26 @@
-import {
-  BUILD_SERVER_DIR,
-  BUILD_SERVER_FILE_SERVER,
-  BUILD_CLIENT_RUNTIME_MAIN,
-  BUILD_CLIENT_RUNTIME_POLYFILLS,
-  ResolvedPlugin,
-  createPlugin
-} from '@shuvi/service';
+import { ResolvedPlugin, createPlugin } from '@shuvi/service';
 import { IPlatformContext } from '@shuvi/service/lib/core';
-import {
-  BUNDLER_DEFAULT_TARGET,
-  BUNDLER_TARGET_SERVER,
-  BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL
-} from '@shuvi/shared/lib/constants';
 import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { CopyFilePlugin } from '@shuvi/toolpack/lib/webpack/plugins/copy-file-plugin';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
+import {
+  BUNDLER_TARGET_CLIENT,
+  BUNDLER_TARGET_SERVER,
+  CLIENT_BUILD_MANIFEST_PATH,
+  SERVER_BUILD_MANIFEST_PATH,
+  SERVER_OUTPUT_DIR,
+  BUILD_SERVER_FILE_SERVER,
+  BUILD_CLIENT_RUNTIME_POLYFILLS,
+  BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL,
+  BUILD_CLIENT_RUNTIME_WEBPACK,
+  BUILD_CLIENT_RUNTIME_MAIN
+} from '../../../shared';
 import { resolvePkgFile } from '../../paths';
 import { getVersion } from '../../version';
 import { getMiddlewares } from '../middlewares';
 import generateResource from './lib/generateResource';
 import { buildHtml } from './lib/buildHtml';
+import BuildManifestPlugin from './lib/webpack/build-manifest-plugin';
 import server from './server';
 
 const ENTRY_FLAG = 'shuviEntry';
@@ -57,12 +58,16 @@ export const getPlugin = (
   platformContext: IPlatformContext
 ): ResolvedPlugin => {
   const core = createPlugin({
-    configWebpack: (chain, { name }) => {
+    configWebpack: (chain, { name, mode }) => {
+      const isDev = mode === 'development';
       const pkgVersion = getVersion();
-      if (name === BUNDLER_DEFAULT_TARGET) {
+      const isServer = name === BUNDLER_TARGET_SERVER;
+      const isClient = name === BUNDLER_TARGET_CLIENT;
+      if (isClient) {
         chain.merge({
           entry: getClientEntry()
         });
+        chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
         chain.plugin('polyfills').use(CopyFilePlugin, [
           {
             filePath: resolvePkgFile('polyfills/polyfills.js'),
@@ -75,7 +80,23 @@ export const getPlugin = (
             }
           }
         ]);
+        chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
+          {
+            filename: CLIENT_BUILD_MANIFEST_PATH,
+            modules: true,
+            chunkRequest: isDev
+          }
+        ]);
+      } else if (isServer) {
+        chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
+          {
+            filename: SERVER_BUILD_MANIFEST_PATH,
+            modules: false,
+            chunkRequest: isDev
+          }
+        ]);
       }
+
       return chain;
     },
     addExtraTarget: ({ createConfig }, context) => {
@@ -84,7 +105,7 @@ export const getPlugin = (
         name: BUNDLER_TARGET_SERVER,
         node: true,
         entry: getServerEntry(),
-        outputDir: BUILD_SERVER_DIR,
+        outputDir: SERVER_OUTPUT_DIR,
         webpackHelpers: serverWebpackHelpers
       });
       return {

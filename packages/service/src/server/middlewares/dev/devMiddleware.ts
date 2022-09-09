@@ -1,7 +1,7 @@
 import ws from 'ws';
 import { IncomingMessage } from 'http';
 import {
-  BUNDLER_DEFAULT_TARGET,
+  BUNDLER_TARGET_CLIENT,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_ORIGINAL_STACK_FRAME_ENDPOINT
 } from '@shuvi/shared/lib/constants';
@@ -9,7 +9,7 @@ import {
   launchEditorMiddleware,
   stackFrameMiddleware
 } from '@shuvi/error-overlay/lib/middleware';
-import { BUILD_DEFAULT_DIR, BUILD_SERVER_DIR } from '../../../constants';
+import { CLIENT_OUTPUT_DIR, SERVER_OUTPUT_DIR } from '../../../constants';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
@@ -67,7 +67,7 @@ export async function getDevMiddleware(
 
   const webpackHotMiddleware = new WebpackHotMiddleware({
     disposeInactivePage: serverPluginContext.config.disposeInactivePage,
-    compiler: bundler.getSubCompiler(BUNDLER_DEFAULT_TARGET)!
+    compiler: bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!
   });
 
   const apply = (server: Server) => {
@@ -83,8 +83,8 @@ export async function getDevMiddleware(
         DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
         bundler,
         serverPluginContext.resolveBuildFile,
-        BUILD_DEFAULT_DIR,
-        BUILD_SERVER_DIR
+        CLIENT_OUTPUT_DIR,
+        SERVER_OUTPUT_DIR
       )
     );
     bundler.applyDevMiddlewares(server);

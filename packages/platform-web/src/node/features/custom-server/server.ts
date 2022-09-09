@@ -1,16 +1,16 @@
 import { createServerPlugin } from '@shuvi/service';
-import { server } from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/lib/resources';
 
 let isWarnedhandlePageRequest: boolean = false;
 
 export default createServerPlugin({
   getPageData: (appContext, context) => {
-    return server?.server?.getPageData?.(appContext, context) || {};
+    return resources.server?.server?.getPageData?.(appContext, context) || {};
   },
   handlePageRequest: (originalHandlePageRequest, context) => {
     if (
       !isWarnedhandlePageRequest &&
-      server?.server?.handlePageRequest !== undefined
+      resources.server?.server?.handlePageRequest !== undefined
     ) {
       isWarnedhandlePageRequest = true;
       console.warn(
@@ -18,11 +18,17 @@ export default createServerPlugin({
       );
     }
     return (
-      server?.server?.handlePageRequest?.(originalHandlePageRequest, context) ||
-      originalHandlePageRequest
+      resources.server?.server?.handlePageRequest?.(
+        originalHandlePageRequest,
+        context
+      ) || originalHandlePageRequest
     );
   },
   modifyHtml: async (document, context, pluginContext) => {
-    await server?.server?.modifyHtml?.(document, context, pluginContext);
+    await resources.server?.server?.modifyHtml?.(
+      document,
+      context,
+      pluginContext
+    );
   }
 });
