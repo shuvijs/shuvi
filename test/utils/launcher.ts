@@ -46,7 +46,7 @@ export function buildFixture(
   configOverrides: ShuviConfig = {},
   spawnOptions: SpawnOptions = {}
 ) {
-  return shuviSync(
+  const res = shuviSync(
     'build',
     [
       path.isAbsolute(fixture) ? fixture : resolveFixture(fixture),
@@ -55,6 +55,10 @@ export function buildFixture(
     ],
     spawnOptions
   );
+  if (res.status !== 0) {
+    throw res.error || new Error(res.stderr);
+  }
+  return res;
 }
 
 export async function launchFixtureAtCurrentProcess(
@@ -103,7 +107,7 @@ async function launchShuvi(
   envOverrides: Partial<NodeJS.ProcessEnv>,
   handleStdoutStderr: IHandleStdoutStderr
 ): Promise<ChildProcess> {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     // dynamic NODE_SERVER like EXPRESS, KOA default SHUVI
     const NODE_SERVER = process.env.NODE_SERVER;
     const spawnOptions: SpawnOptions = {
@@ -114,7 +118,12 @@ async function launchShuvi(
     }
     // At first, build when production mode
     if (!isDev) {
-      buildFixture(projectPath, configOverrides, spawnOptions);
+      try {
+        buildFixture(projectPath, configOverrides, spawnOptions);
+      } catch (error) {
+        reject(error);
+        return;
+      }
     }
     let shuviProcess: ChildProcess;
     if (NODE_SERVER) {
@@ -125,7 +134,8 @@ async function launchShuvi(
           NODE_SERVER.toLocaleLowerCase()
         );
       } catch (error) {
-        throw error;
+        reject(error);
+        return;
       }
 
       shuviProcess = spawn('node', [NODE_SERVER_SOURCE], {
@@ -158,10 +168,10 @@ async function launchShuvi(
         // In this case, it will be a little more complex to spy on `console.log`.
         console.log(data);
         // We could only listen to the console output to ensure that devServer is ready
+        handleStdoutStderr.onStdout && handleStdoutStderr.onStdout(data);
         if (data.includes('Ready on')) {
           resolve(shuviProcess);
         }
-        handleStdoutStderr.onStdout && handleStdoutStderr.onStdout(data);
       });
     }
     if (shuviProcess.stderr) {

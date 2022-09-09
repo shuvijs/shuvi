@@ -7,8 +7,8 @@
     "umd"
   ],
   "scripts": {
-    "dev": "pnpm run iframe-dev && run-p watch:*",
-    "iframe-dev": "cross-env NODE_ENV=development rollup -c rollup.config.iframe.js -w",
+    "dev": "run-p watch:*",
+    "watch:iframe": "cross-env NODE_ENV=development rollup -c rollup.config.iframe.js -w",
     "watch:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib -w",
     "watch:umd": "cross-env NODE_ENV=development rollup -c rollup.config.js -w",
     "prebuild": "rimraf lib",
