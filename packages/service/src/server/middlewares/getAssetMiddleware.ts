@@ -1,6 +1,6 @@
 import { IServerPluginContext } from '../plugin';
 import { ShuviRequestHandler } from '../../server';
-import { BUILD_DEFAULT_DIR } from '../../constants';
+import { CLIENT_OUTPUT_DIR } from '../../constants';
 import { isStaticFileExist, serveStatic } from '../utils';
 
 export const getAssetMiddleware = (
@@ -15,7 +15,7 @@ export const getAssetMiddleware = (
     if (context.assetPublicPath.startsWith('/')) {
       assetPath = assetPath.replace(context.assetPublicPath, '');
       candidatePaths.push(
-        context.resolveBuildFile(BUILD_DEFAULT_DIR, assetPath)
+        context.resolveBuildFile(CLIENT_OUTPUT_DIR, assetPath)
       );
     } else {
       fullUrl.search = '';
@@ -24,7 +24,7 @@ export const getAssetMiddleware = (
       if (urlWithoutQuery.startsWith(context.assetPublicPath)) {
         assetPath = urlWithoutQuery.replace(context.assetPublicPath, '');
         candidatePaths.push(
-          context.resolveBuildFile(BUILD_DEFAULT_DIR, assetPath)
+          context.resolveBuildFile(CLIENT_OUTPUT_DIR, assetPath)
         );
       }
     }

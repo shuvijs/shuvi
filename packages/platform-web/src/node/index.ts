@@ -10,6 +10,8 @@ import {
 } from './features';
 import { resolvePkgFile } from './paths';
 
+export * from '../shared';
+
 export { PlatformWebCustomConfig } from '../shared/configTypes';
 
 const platform =

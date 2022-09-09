@@ -1,14 +1,14 @@
 import '@shuvi/platform-shared/shuvi-type-extensions-node';
 import { IPageRouteRecord } from '@shuvi/platform-shared/shared';
-import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import {
+  IManifest,
   IMiddlewareRoutes,
   CreateAppServer,
   IApiRoutes,
   IServerModule,
   PlatformWebCustomConfig
-} from '../shared/index';
-import { IViewServer } from './features/html-render/index';
+} from '../shared';
+import { IViewServer } from './features/html-render';
 import {
   addRoutes,
   addMiddlewareRoutes,
@@ -17,19 +17,21 @@ import {
 export {};
 
 declare module '@shuvi/service/lib/resources' {
-  export const server: {
-    server: IServerModule;
-    pageRoutes: IPageRouteRecord[];
-    apiRoutes: IApiRoutes;
-    middlewareRoutes: IMiddlewareRoutes;
-    application: {
-      createApp: CreateAppServer;
+  export interface IResources {
+    server: {
+      server: IServerModule;
+      pageRoutes: IPageRouteRecord[];
+      apiRoutes: IApiRoutes;
+      middlewareRoutes: IMiddlewareRoutes;
+      application: {
+        createApp: CreateAppServer;
+      };
+      view: IViewServer;
     };
-    view: IViewServer;
-  };
-  export const documentPath: string;
-  export const clientManifest: IManifest;
-  export const serverManifest: IManifest;
+    documentPath: string;
+    clientManifest: IManifest;
+    serverManifest: IManifest;
+  }
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import webpack from '@shuvi/toolpack/lib/webpack';
+import { webpack } from '@shuvi/toolpack/lib/webpack';
 import { loadFixture } from './utils';
 
 const dotEnvConfigInlineSnapShot = `
@@ -65,6 +65,7 @@ test('should load config in esmodule', async () => {
   const config = await loadFixture('esm');
 
   expect(config.env).toMatchInlineSnapshot(dotEnvConfigInlineSnapShot);
+  console.log('config', config);
   expect((config as any).webpack).toBe(webpack);
 });
 

@@ -269,6 +269,7 @@ importers:
       core-js: 3.6.5
       ejs: 3.1.5
       fs-extra: 9.0.1
+      memfs: 3.1.2
       microbundle: 0.15.1
       node-mocks-http: 1.11.0
       object-assign: 4.1.1
@@ -318,6 +319,7 @@ importers:
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
       '@types/react-test-renderer': 18.0.0
+      memfs: 3.1.2
       microbundle: 0.15.1
 
   packages/router:
@@ -508,7 +510,7 @@ importers:
       fs-extra: 9.0.1
       ignore-loader: 0.1.2
       loader-utils: 2.0.0
-      memfs: ^3.1.2
+      memfs: 3.1.2
       mini-css-extract-plugin: 1.3.9
       mrmime: 1.0.0
       path-browserify: 1.0.1
@@ -592,7 +594,7 @@ importers:
       '@types/loader-utils': 2.0.1
       '@types/mini-css-extract-plugin': 1.2.2
       '@types/webpack-bundle-analyzer': 3.8.0
-      memfs: 3.2.0
+      memfs: 3.1.2
 
   packages/utils:
     specifiers:
@@ -8261,6 +8263,10 @@ packages:
       minipass: 2.9.0
     dev: true
 
+  /fs-monkey/1.0.0:
+    resolution: {integrity: sha512-nxkkzQ5Ga+ETriXxIof4TncyMSzrV9jFIF+kGN16nw5CiAdWAnG/2FgM7CHhRenW1EBiDx+r1tf/P78HGKCgnA==}
+    dev: true
+
   /fs-monkey/1.0.1:
     resolution: {integrity: sha512-fcSa+wyTqZa46iWweI7/ZiUfegOZl0SG8+dltIwFXo7+zYU9J9kpS3NB6pZcSlJdhvIwp81Adx2XhZorncxiaA==}
 
@@ -10369,6 +10375,13 @@ packages:
   /media-typer/0.3.0:
     resolution: {integrity: sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=}
     engines: {node: '>= 0.6'}
+
+  /memfs/3.1.2:
+    resolution: {integrity: sha512-YubKuE+RGSdpZcRq2Nih8HcHj3LrqndsDFNB9IFjrgwzdM4eq+fImlDMfNm/HdRhYRkLdUecHGIpdz+wyrqlDg==}
+    engines: {node: '>= 4.0.0'}
+    dependencies:
+      fs-monkey: 1.0.0
+    dev: true
 
   /memfs/3.2.0:
     resolution: {integrity: sha512-f/xxz2TpdKv6uDn6GtHee8ivFyxwxmPuXatBb1FBwxYNuVpbM3k/Y1Z+vC0mH/dIXXrukYfe3qe5J32Dfjg93A==}

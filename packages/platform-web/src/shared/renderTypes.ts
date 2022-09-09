@@ -1,6 +1,6 @@
-import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import type { ShuviRequest } from '@shuvi/service';
 import { Response, IAppData } from '@shuvi/platform-shared/shared';
+import { IManifest } from '../shared';
 import { Application } from './appTypes';
 
 export type IRenderViewOptions = {

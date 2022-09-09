@@ -2,13 +2,13 @@ import BuildManifestPlugin from '../build-manifest-plugin';
 import { createCompiler } from './helpers/webpack';
 import { resolveFixture } from './utils';
 
-const basicEntry = resolveFixture('basic');
+const entry = resolveFixture('manifest');
 
 describe('build-manifest-plugin', () => {
   test('default', done => {
     expect.assertions(1);
     const compiler = createCompiler({
-      entry: basicEntry,
+      entry: entry,
       optimization: {
         runtimeChunk: {
           name: 'runtime'
@@ -48,7 +48,7 @@ describe('build-manifest-plugin', () => {
   test('enable all', done => {
     expect.assertions(1);
     const compiler = createCompiler({
-      entry: basicEntry,
+      entry: entry,
       optimization: {
         runtimeChunk: {
           name: 'runtime'
@@ -80,26 +80,26 @@ describe('build-manifest-plugin', () => {
           runtime: 'runtime.js'
         },
         chunkRequest: {
-          'static/chunks/helperOne.js': '../shared/one',
-          'static/chunks/helperTwo.js': '../shared/two',
-          'main.js': basicEntry,
-          'runtime.js': basicEntry
+          'static/chunks/helperOne.js': './shared/one',
+          'static/chunks/helperTwo.js': './shared/two',
+          'main.js': entry,
+          'runtime.js': entry
         },
         loadble: {
-          '../shared/one': {
+          './shared/one': {
             children: [
               {
-                id: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js',
-                name: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/one.js'
+                id: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/one.js',
+                name: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/one.js'
               }
             ],
             files: ['static/chunks/helperOne.js']
           },
-          '../shared/two': {
+          './shared/two': {
             children: [
               {
-                id: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js',
-                name: './packages/toolpack/src/webpack/plugins/__tests__/fixtures/shared/two.js'
+                id: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/two.js',
+                name: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/two.js'
               }
             ],
             files: ['static/chunks/helperTwo.js']

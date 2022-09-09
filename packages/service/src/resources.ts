@@ -1,10 +1,10 @@
-export type IResources<Extra = {}> = {
+export interface IResources {
   [x: string]: any;
-} & { [K in keyof Extra]: Extra[K] };
+}
 
 let isCached = false;
 let requireTarget = '';
-const cache: IResources = {};
+const cache = {} as IResources;
 
 const proxyHandler = {
   get: function (target: IResources, props: string) {
@@ -28,5 +28,6 @@ export const _setResourceEnv = function (cached: boolean, requireStr: string) {
   requireTarget = requireStr;
 };
 const proxy = new Proxy(cache, proxyHandler);
-module.exports = proxy;
 proxy._setResourceEnv = _setResourceEnv;
+
+export default proxy;

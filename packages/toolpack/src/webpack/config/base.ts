@@ -4,7 +4,6 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import webpack from 'webpack';
 import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
-import BuildManifestPlugin from '../plugins/build-manifest-plugin';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import { AppSourceRegexs } from '../../constants';
 import * as crypto from 'crypto';
@@ -35,7 +34,6 @@ export interface BaseOptions {
     tsCompilerOptions?: TsCompilerOptions;
     resolvedBaseUrl?: string;
   };
-  buildManifestFilename: string;
   target?: string;
   publicPath?: string;
   env?: {
@@ -76,7 +74,6 @@ export function baseWebpackChain({
   include,
   typescript,
   name,
-  buildManifestFilename,
   publicPath = '/',
   env = {},
   cacheDir
@@ -247,11 +244,6 @@ export function baseWebpackChain({
       'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
     }
   ]);
-  config
-    .plugin('private/build-manifest')
-    .use(BuildManifestPlugin, [
-      { filename: buildManifestFilename, chunkRequest: dev }
-    ]);
 
   const getCacheConfig = () => {
     const projectHash = crypto

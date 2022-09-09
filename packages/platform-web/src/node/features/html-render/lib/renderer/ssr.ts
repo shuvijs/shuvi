@@ -1,6 +1,6 @@
 import { IData, isResponse } from '@shuvi/platform-shared/shared';
 import { getPublicRuntimeConfig } from '@shuvi/platform-shared/shared/shuvi-singleton-runtimeConfig';
-import { clientManifest, server } from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/lib/resources';
 import { BaseRenderer, AppData } from './base';
 import { IHtmlDocument, IRenderViewOptions } from './types';
 
@@ -9,14 +9,14 @@ export class SsrRenderer extends BaseRenderer {
     const { store, router, context } = app;
 
     const serverPluginContext = this._serverPluginContext;
-    const { view } = server;
+    const { view } = resources.server;
     if (!router) {
       throw new Error('router is null');
     }
     const result = await view.renderApp({
       app,
       req,
-      manifest: clientManifest
+      manifest: resources.clientManifest
     });
 
     if (isResponse(result)) {

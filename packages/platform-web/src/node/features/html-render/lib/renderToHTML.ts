@@ -1,5 +1,5 @@
 import { ShuviRequest, IServerPluginContext } from '@shuvi/service';
-import { server } from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/lib/resources';
 import { Response } from '@shuvi/platform-shared/shared';
 import { Renderer } from './renderer';
 
@@ -12,7 +12,7 @@ export async function renderToHTML({
 }): Promise<Response> {
   let result: Response;
   const renderer = new Renderer({ serverPluginContext });
-  const { application } = server;
+  const { application } = resources.server;
   const app = application.createApp({
     req,
     ssr: serverPluginContext.config.ssr

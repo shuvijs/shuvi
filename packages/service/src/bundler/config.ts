@@ -6,11 +6,6 @@ import {
 import { IPluginContext } from '../core';
 import { getTypeScriptInfo } from './typescript';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
-import {
-  CLIENT_BUILD_MANIFEST_PATH,
-  SERVER_BUILD_MANIFEST_PATH,
-  BUILD_CLIENT_RUNTIME_WEBPACK
-} from '../constants';
 
 export interface IWebpackEntry {
   [x: string]: string | string[];
@@ -63,8 +58,7 @@ export function createWebpackConfig(
       typescript,
       include,
       env,
-      webpackHelpers,
-      buildManifestFilename: SERVER_BUILD_MANIFEST_PATH
+      webpackHelpers
     });
   } else {
     chain = createBrowserWebpackChain({
@@ -80,10 +74,8 @@ export function createWebpackConfig(
       include,
       env,
       webpackHelpers,
-      analyze: config.analyze,
-      buildManifestFilename: CLIENT_BUILD_MANIFEST_PATH
+      analyze: config.analyze
     });
-    chain.optimization.runtimeChunk({ name: BUILD_CLIENT_RUNTIME_WEBPACK });
   }
 
   chain.name(opts.name);

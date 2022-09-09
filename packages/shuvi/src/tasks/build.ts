@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { IPluginContext, BUILD_DEFAULT_DIR, Bunlder } from '@shuvi/service';
+import { IPluginContext, Bunlder } from '@shuvi/service';
+import { CLIENT_OUTPUT_DIR } from '@shuvi/shared/lib/constants';
 import { ShuviConfig } from '../config';
 import { initShuvi } from '../shuvi';
 
@@ -39,7 +40,7 @@ function copyPublicFolder(context: IPluginContext) {
 
   fs.copySync(
     context.paths.publicDir,
-    path.join(context.paths.buildDir, BUILD_DEFAULT_DIR),
+    path.join(context.paths.buildDir, CLIENT_OUTPUT_DIR),
     {
       dereference: true
     }

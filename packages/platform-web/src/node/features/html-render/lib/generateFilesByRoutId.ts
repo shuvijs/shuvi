@@ -1,5 +1,5 @@
-import { IManifest } from '@shuvi/toolpack/lib/webpack/types';
 import { IPageRouteRecord } from '@shuvi/platform-shared/shared';
+import { IManifest } from '../../../../shared';
 
 export default function generateFilesByRoutId(
   assetMap: IManifest,

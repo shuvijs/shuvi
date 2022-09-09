@@ -216,13 +216,6 @@ export function createBrowserWebpackChain(
       'process.env': JSON.stringify('{}')
     }
   ]);
-  // chain.plugin('dynamic-public-path-plugin').use(DynamicPublicPathPlugin);
-  chain.plugin('private/build-manifest').tap(([options]) => [
-    {
-      ...options,
-      modules: true
-    }
-  ]);
 
   return withStyle(chain, {
     extractCss: !dev,
