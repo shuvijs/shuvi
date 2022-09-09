@@ -1,7 +1,7 @@
 import { RawSourceMap } from 'source-map';
 import dataUriToBuffer, { MimeBuffer } from 'data-uri-to-buffer';
 import * as path from 'path';
-import type webpack from '@shuvi/toolpack/lib/webpack';
+import type { webpack } from '@shuvi/toolpack/lib/webpack';
 
 import { getSourceMapUrl } from './getSourceMapUrl';
 import { getModuleById } from './getModuleById';
