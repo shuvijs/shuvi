@@ -4,12 +4,12 @@ import { createRequest, createResponse } from 'node-mocks-http';
 import * as path from 'path';
 import {
   createShuviServer,
-  BUILD_DEFAULT_DIR,
   IPlatformContent,
   IPluginContext,
   ShuviResponse,
   ServerPluginInstance
 } from '@shuvi/service';
+import { CLIENT_OUTPUT_DIR } from '../../../../shared';
 
 export const buildHtml = async ({
   context,
@@ -34,7 +34,7 @@ export const buildHtml = async ({
     response.on('end', () => {
       const html = response._getBuffer();
       fse.writeFileSync(
-        path.resolve(context.paths.buildDir, BUILD_DEFAULT_DIR, filename),
+        path.resolve(context.paths.buildDir, CLIENT_OUTPUT_DIR, filename),
         html
       );
       resolve();

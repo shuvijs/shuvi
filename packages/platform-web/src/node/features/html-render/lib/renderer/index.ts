@@ -1,5 +1,5 @@
 import { IServerPluginContext } from '@shuvi/service';
-import { documentPath } from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/lib/resources';
 import { Response, isResponse, text } from '@shuvi/platform-shared/shared';
 import { stringifyTag, stringifyAttrs } from './htmlTag';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';
@@ -61,7 +61,7 @@ export class Renderer {
 
   constructor(options: IRendererConstructorOptions) {
     this._serverPluginContext = options.serverPluginContext;
-    this._documentTemplate = parseTemplateFile(documentPath);
+    this._documentTemplate = parseTemplateFile(resources.documentPath);
     this._ssrRenderer = new SsrRenderer(options);
     this._spaRenderer = new SpaRenderer(options);
   }

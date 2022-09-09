@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
-import { BUNDLER_DEFAULT_TARGET } from '@shuvi/shared/lib/constants';
+import { BUNDLER_TARGET_CLIENT } from '../../../../shared';
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
@@ -56,7 +56,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     resolveLocal('react-dom')
   ]);
 
-  if (name === BUNDLER_DEFAULT_TARGET) {
+  if (name === BUNDLER_TARGET_CLIENT) {
     config.plugin('version-env-plugin').use(webpack.DefinePlugin, [
       {
         'process.env.__SHUVI__AFTER__REACT__18__': JSON.stringify(

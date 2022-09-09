@@ -1,5 +1,5 @@
 import { matchRoutes } from '@shuvi/router';
-import { clientManifest, server } from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/lib/resources';
 import { ShuviRequestHandler, IServerPluginContext } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
@@ -40,7 +40,8 @@ export default class OnDemandRouteManager {
         this._serverPluginContext.assetPublicPath,
         ''
       );
-      const chunkInitiatorModule = clientManifest.chunkRequest[chunkName];
+      const chunkInitiatorModule =
+        resources.clientManifest.chunkRequest[chunkName];
 
       if (!chunkInitiatorModule) {
         return next();
@@ -79,7 +80,8 @@ export default class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
-    const matchedRoutes = matchRoutes(server.pageRoutes, pathname) || [];
+    const matchedRoutes =
+      matchRoutes(resources.server.pageRoutes, pathname) || [];
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { __componentRawRequest__ } }) => __componentRawRequest__)

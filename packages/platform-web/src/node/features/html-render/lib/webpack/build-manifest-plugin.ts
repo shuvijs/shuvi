@@ -1,14 +1,20 @@
-import { IModuleItem, IManifest } from '../types';
-import webpack, {
+import {
+  IModuleItem,
+  IManifest,
+  BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL
+} from '../../../../../shared';
+import {
+  webpack,
   Compiler,
   Compilation,
   sources,
   Plugin,
   ChunkGroup,
-  Asset
-} from 'webpack';
-import Entrypoint from 'webpack/lib/Entrypoint';
-import { BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL } from '@shuvi/shared/lib/constants';
+  Asset,
+  resolveWebpackModule
+} from '@shuvi/toolpack/lib/webpack';
+
+const Entrypoint = resolveWebpackModule('webpack/lib/Entrypoint');
 
 const { RawSource } = sources;
 
