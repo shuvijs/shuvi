@@ -3,11 +3,9 @@ import transform from '../swc-transform';
 const swc = async (
   code: string,
   {
-    isServer = false,
-    disableShuviDynamic = false
+    isServer = false
   }: {
     isServer: boolean;
-    disableShuviDynamic?: boolean;
   }
 ) => {
   const filename = 'noop.js';
@@ -40,7 +38,6 @@ const swc = async (
 
   const options = {
     isServer,
-    disableShuviDynamic,
     minify: true,
     jsc
   };
@@ -65,24 +62,6 @@ describe('dynamic-plugin', () => {
 
       expect(output).toMatchInlineSnapshot(
         `"import{dynamic}from\\"@shuvi/runtime\\";dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")]})"`
-      );
-    });
-
-    test('dynamic import could be disabled', async () => {
-      const output = await swc(
-        `
-        import { dynamic } from '@shuvi/runtime'
-  
-        dynamic(() => import("./component"),{})
-      `,
-        {
-          isServer,
-          disableShuviDynamic: true
-        }
-      );
-
-      expect(output).toMatchInlineSnapshot(
-        `"import{dynamic}from\\"@shuvi/runtime\\";dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolve(\\"./component\\")]})"`
       );
     });
 

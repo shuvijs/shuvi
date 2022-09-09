@@ -1,17 +1,60 @@
 type Obj = Record<string, any>;
 
-export type LoaderSWCOptions = {
+export interface CompilerOptions {
+  removeConsole?: boolean;
+  useDefineForClassFields?: boolean;
+  reactRemoveProperties?: boolean;
+  jsxImportSource?: string;
+  emotion?:
+    | boolean
+    | {
+        sourceMap?: boolean;
+        autoLabel?: 'dev-only' | 'always' | 'never';
+        labelFormat?: string;
+      };
+  styledComponents?:
+    | boolean
+    | {
+        /**
+         * Enabled by default in development, disabled in production to reduce file size,
+         * setting this will override the default for all environments.
+         */
+        displayName?: boolean;
+        topLevelImportPaths?: string[];
+        ssr?: boolean;
+        fileName?: boolean;
+        meaninglessFileNames?: string[];
+        minify?: boolean;
+        transpileTemplateLiterals?: boolean;
+        namespace?: string;
+        pure?: boolean;
+        cssProp?: boolean;
+      };
+
+  experimentalDecorators?: boolean;
+  emitDecoratorMetadata?: boolean;
+  modularizeImports?: Record<
+    string,
+    {
+      transform: string;
+      preventFullImport?: boolean;
+      skipDefaultConversion?: boolean;
+    }
+  >;
+  swcPlugins?: [name: string, option: any][];
+}
+
+export type SWCLoaderOptions = {
   filename: string;
   isServer: boolean;
   isPageFile: boolean;
   development: boolean;
+  keep: string[];
   minify: boolean | Obj;
   hasReactRefresh: boolean;
   supportedBrowsers: any[];
-  experimental: Obj;
-  compiler: Obj;
   swcCacheDir: string;
-  keep: string[];
+  compiler: CompilerOptions;
 };
 
 export function getParserOptions({
@@ -43,20 +86,20 @@ function getBaseSWCOptions({
   development,
   hasReactRefresh,
   isServer,
-  experimental,
   compiler,
   swcCacheDir,
   keep
-}: Omit<LoaderSWCOptions, 'supportedBrowsers'>) {
+}: Omit<SWCLoaderOptions, 'supportedBrowsers'>) {
   const parserConfig = getParserOptions({ filename, compiler });
   const enableDecorators = Boolean(compiler?.experimentalDecorators);
   const emitDecoratorMetadata = Boolean(compiler?.emitDecoratorMetadata);
   const useDefineForClassFields = Boolean(compiler?.useDefineForClassFields);
-  const plugins = (experimental?.swcPlugins ?? [])
+  const plugins = (compiler?.swcPlugins ?? [])
     .filter(Array.isArray)
     .map(([name, options]: [string, any]) => [require.resolve(name), options]);
 
   return {
+    isDevelopment: development,
     jsc: {
       externalHelpers: true,
       parser: parserConfig,
@@ -99,25 +142,36 @@ function getBaseSWCOptions({
       }
     },
     minify,
-    isDevelopment: development,
+    sourceMaps: undefined,
+
+    // shuvi specific
     isServer,
     isPageFile,
     shakeExports: keep.length > 0 ? { ignore: keep } : null,
-    disableShuviDynamic: compiler?.disableShuviDynamic || false,
     cssModuleFlag: 'cssmodules',
-    sourceMaps: undefined,
-    styledComponents: getStyledComponentsOptions(compiler, development),
+
+    // advanced
     removeConsole: compiler?.removeConsole,
     reactRemoveProperties: compiler?.reactRemoveProperties,
-    modularizeImports: experimental?.modularizeImports,
+    modularizeImports: compiler?.modularizeImports,
+
+    // third-party libraries
+    styledComponents: getStyledComponentsOptions(compiler, development),
     emotion: getEmotionOptions(compiler, development)
   };
 }
 
-function getStyledComponentsOptions(compiler: Obj, development: boolean) {
+function getStyledComponentsOptions(
+  compiler: CompilerOptions,
+  development: boolean
+) {
   let styledComponentsOptions = compiler?.styledComponents;
   if (!styledComponentsOptions) {
     return null;
+  }
+
+  if (styledComponentsOptions === true) {
+    styledComponentsOptions = {};
   }
 
   return {
@@ -126,7 +180,7 @@ function getStyledComponentsOptions(compiler: Obj, development: boolean) {
   };
 }
 
-function getEmotionOptions(compiler: Obj, development: boolean) {
+function getEmotionOptions(compiler: CompilerOptions, development: boolean) {
   const emotion = compiler?.emotion;
   if (!emotion) {
     return null;
@@ -165,13 +219,12 @@ export default function getLoaderSWCOptions({
   minify,
   isPageFile,
   hasReactRefresh,
-  experimental,
   compiler,
   supportedBrowsers,
   swcCacheDir,
   keep
 }: // This is not passed yet as "paths" resolving is handled by webpack currently.
-LoaderSWCOptions) {
+SWCLoaderOptions) {
   let baseOptions = getBaseSWCOptions({
     filename,
     isPageFile,
@@ -179,14 +232,13 @@ LoaderSWCOptions) {
     isServer,
     minify,
     hasReactRefresh,
-    experimental,
     compiler,
     swcCacheDir,
     keep
   });
 
   if (isServer) {
-    (baseOptions as typeof baseOptions & { env: Record<string, any> }).env = {
+    (baseOptions as any).env = {
       targets: {
         // Targets the current version of Node.js
         node: process.versions.node
@@ -194,10 +246,9 @@ LoaderSWCOptions) {
     };
   } else {
     // Matches default @babel/preset-env behavior
-    (baseOptions.jsc as typeof baseOptions.jsc & { target: string }).target =
-      'es5';
+    (baseOptions.jsc as any).target = 'es5';
     if (supportedBrowsers && supportedBrowsers.length > 0) {
-      (baseOptions as typeof baseOptions & { env: Record<string, any> }).env = {
+      (baseOptions as any).env = {
         targets: supportedBrowsers
       };
     }

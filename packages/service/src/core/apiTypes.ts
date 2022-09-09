@@ -1,3 +1,4 @@
+import { CompilerOptions } from '@shuvi/toolpack/lib/webpack/loaders/shuvi-swc-loader';
 import {
   CorePluginConstructor,
   CorePluginInstance,
@@ -121,46 +122,20 @@ export interface CustomCorePluginHooks
 export interface CustomConfig extends ShuviService.CustomConfig {}
 
 export interface CompilerConfig {
-  reactRemoveProperties?:
-    | boolean
-    | {
-        properties?: string[];
-      };
-  removeConsole?:
-    | boolean
-    | {
-        exclude?: string[];
-      };
-  styledComponents?:
-    | boolean
-    | {
-        /**
-         * Enabled by default in development, disabled in production to reduce file size,
-         * setting this will override the default for all environments.
-         */
-        displayName?: boolean;
-        topLevelImportPaths?: string[];
-        ssr?: boolean;
-        fileName?: boolean;
-        meaninglessFileNames?: string[];
-        minify?: boolean;
-        transpileTemplateLiterals?: boolean;
-        namespace?: string;
-        pure?: boolean;
-        cssProp?: boolean;
-      };
-  emotion?:
-    | boolean
-    | {
-        sourceMap?: boolean;
-        autoLabel?: 'dev-only' | 'always' | 'never';
-        labelFormat?: string;
-      };
-  disableShuviDynamic?: boolean;
-  experimentalDecorators?: boolean;
-  emitDecoratorMetadata?: boolean;
-  useDefineForClassFields?: boolean;
-  jsxImportSource?: string;
+  // general
+  removeConsole?: CompilerOptions['removeConsole'];
+
+  // react
+  reactRemoveProperties?: CompilerOptions['reactRemoveProperties'];
+  jsxImportSource?: CompilerOptions['jsxImportSource'];
+
+  // third-party libraries
+  styledComponents?: CompilerOptions['styledComponents'];
+  emotion?: CompilerOptions['emotion'];
+
+  // legacy decrator
+  experimentalDecorators?: CompilerOptions['experimentalDecorators'];
+  emitDecoratorMetadata?: CompilerOptions['emitDecoratorMetadata'];
 }
 
 export interface InternalConfig {
@@ -177,15 +152,8 @@ export interface InternalConfig {
     parcelCss: boolean;
     preBundle: boolean;
     // browsersListForSwc?: boolean;
-    modularizeImports?: Record<
-      string,
-      {
-        transform: string;
-        preventFullImport?: boolean;
-        skipDefaultConversion?: boolean;
-      }
-    >;
-    swcPlugins?: Array<[string, Record<string, unknown>]>;
+    modularizeImports?: CompilerOptions['modularizeImports'];
+    swcPlugins?: CompilerOptions['swcPlugins'];
   };
 }
 

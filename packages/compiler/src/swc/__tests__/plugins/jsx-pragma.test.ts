@@ -30,7 +30,6 @@ const swc = async (code: string) => {
   };
 
   const options = {
-    disableShuviDynamic: false,
     minify: true,
     jsc
   };

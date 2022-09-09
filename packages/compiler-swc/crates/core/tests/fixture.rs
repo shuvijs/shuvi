@@ -1,15 +1,13 @@
 use shuvi_swc::{
-    shuvi_dynamic::shuvi_dynamic,
+    auto_css_module::auto_css_module,
     react_remove_properties::remove_properties,
     remove_console::remove_console,
-    auto_css_module::auto_css_module,
     shake_exports::{shake_exports, Config as ShakeExportsConfig},
+    shuvi_dynamic::shuvi_dynamic,
 };
 use std::path::PathBuf;
 use swc_ecma_transforms_testing::{test, test_fixture};
-use swc_ecmascript::{
-    parser::{EsConfig, Syntax},
-};
+use swc_ecmascript::parser::{EsConfig, Syntax};
 use testing::fixture;
 
 fn syntax() -> Syntax {
@@ -25,55 +23,17 @@ fn shuvi_dynamic_fixture(input: PathBuf) {
     let output_server = input.parent().unwrap().join("output-server.js");
     test_fixture(
         syntax(),
-        &|_tr| {
-            shuvi_dynamic(
-                false,
-                false,
-            )
-        },
+        &|_tr| shuvi_dynamic(false),
         &input,
         &output_client,
     );
-    test_fixture(
-        syntax(),
-        &|_tr| {
-            shuvi_dynamic(
-                true,
-                false,
-            )
-        },
-        &input,
-        &output_server,
-    );
-}
-
-#[fixture("tests/fixture/shuvi-dynamic-disabled/**/input.js")]
-fn shuvi_dynamic_disabled_fixture(input: PathBuf) {
-    let output_client = input.parent().unwrap().join("output-client.js");
-    test_fixture(
-        syntax(),
-        &|_tr| {
-            shuvi_dynamic(
-                false,
-                true,
-            )
-        },
-        &input,
-        &output_client,
-    )
+    test_fixture(syntax(), &|_tr| shuvi_dynamic(true), &input, &output_server);
 }
 
 #[fixture("tests/fixture/auto-css-module/no-flag/input.js")]
 fn auto_css_module_default_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
-    test_fixture(
-        syntax(),
-        &|_tr| {
-            auto_css_module("".into())
-        },
-        &input,
-        &output,
-    );
+    test_fixture(syntax(), &|_tr| auto_css_module("".into()), &input, &output);
 }
 
 #[fixture("tests/fixture/auto-css-module/with-flag/input.js")]
@@ -81,9 +41,7 @@ fn auto_css_module_flag_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
     test_fixture(
         syntax(),
-        &|_tr| {
-            auto_css_module("foo".into())
-        },
+        &|_tr| auto_css_module("foo".into()),
         &input,
         &output,
     );
@@ -163,4 +121,3 @@ fn shake_exports_fixture_default(input: PathBuf) {
         &output,
     );
 }
-

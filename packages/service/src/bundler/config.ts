@@ -43,7 +43,11 @@ export function createWebpackConfig(
   const include = [paths.appDir, paths.srcDir, ...(opts.include || [])];
   const parcelCss = !!config.experimental.parcelCss;
   const experimental = config.experimental;
-  const compiler = config.compiler;
+  const compiler = {
+    ...config.compiler,
+    modularizeImports: experimental.modularizeImports,
+    swcPlugins: experimental.swcPlugins
+  };
   const typescript = getTypeScriptInfo();
 
   if (opts.node) {
@@ -55,7 +59,6 @@ export function createWebpackConfig(
       cacheDir,
       publicPath,
       parcelCss,
-      experimental,
       compiler,
       typescript,
       include,
@@ -72,7 +75,6 @@ export function createWebpackConfig(
       cacheDir,
       publicPath,
       parcelCss,
-      experimental,
       compiler,
       typescript,
       include,

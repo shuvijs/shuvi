@@ -42,7 +42,6 @@ const swc = async (
   };
 
   const options = {
-    disableShuviDynamic: false,
     minify: true,
     jsc
   };

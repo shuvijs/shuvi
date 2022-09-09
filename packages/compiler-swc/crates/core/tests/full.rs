@@ -54,7 +54,6 @@ fn test(input: &Path, minify: bool) {
                 is_page_file: false,
                 is_development: true,
                 is_server: false,
-                disable_shuvi_dynamic: false,
                 styled_components: Some(assert_json("{}")),
                 remove_console: None,
                 css_module_flag: String::from("").into(),

@@ -33,7 +33,6 @@ const swc = async (code: string, emotion: Record<string, any> = {}) => {
     emotion,
     filename,
     sourceFileName: filename,
-    disableShuviDynamic: false,
     jsc
   };
 
