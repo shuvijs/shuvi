@@ -94,7 +94,6 @@
     "raw-body": "2.4.1",
     "react": "18.1.0",
     "react-dom": "18.1.0",
-    "react-error-overlay": "6.0.8",
     "react-refresh": "0.12.0",
     "strip-ansi": "6.0.0",
     "use-sync-external-store": "1.1.0",
