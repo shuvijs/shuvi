@@ -1,6 +1,6 @@
 {
   "name": "shuvi",
-  "version": "1.0.0-rc.16",
+  "version": "1.0.0-rc.17",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -25,12 +25,12 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/platform-shared": "1.0.0-rc.16",
-    "@shuvi/platform-web": "1.0.0-rc.16",
-    "@shuvi/service": "1.0.0-rc.16",
-    "@shuvi/shared": "1.0.0-rc.16",
-    "@shuvi/toolpack": "1.0.0-rc.16",
-    "@shuvi/utils": "1.0.0-rc.16",
+    "@shuvi/platform-shared": "1.0.0-rc.17",
+    "@shuvi/platform-web": "1.0.0-rc.17",
+    "@shuvi/service": "1.0.0-rc.17",
+    "@shuvi/shared": "1.0.0-rc.17",
+    "@shuvi/toolpack": "1.0.0-rc.17",
+    "@shuvi/utils": "1.0.0-rc.17",
     "cli-highlight": "^2.1.9",
     "commander": "5.1.0",
     "cross-spawn": "7.0.3",
