@@ -1,9 +1,13 @@
 import { IRuntimeConfig } from './runtimeConfigTypes';
 
+const isServer = typeof window === 'undefined';
+
+/**
+ * use global this to store runtime config, so we can safely bundle this module
+ * and get rid of the multiple-module-instance problem.
+ * */
 const KEY_SERVER_RUNTIME_CONFIG = Symbol.for('shuvi_server_runtime_config');
 const KEY_PUBLIC_RUNTIME_CONFIG = Symbol.for('shuvi_client_runtime_config');
-
-const isServer = typeof window === 'undefined';
 
 let publicRuntimeConfig: IRuntimeConfig | undefined | null;
 let serverRuntimeConfig: IRuntimeConfig | undefined | null;
