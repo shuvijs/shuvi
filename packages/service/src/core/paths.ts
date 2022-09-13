@@ -10,20 +10,21 @@ interface IPathsOpts {
 
 export function getPaths(opts: IPathsOpts): IPaths {
   const { rootDir, outputPath, publicDir } = opts;
-  const toAbsolute = (p: string) => (isAbsolute(p) ? p : join(rootDir, p));
-  const srcDir = toAbsolute('src');
-  const srcChildDir = (p: string) => join(srcDir, p);
+  const resolvePath = (...p: string[]) => {
+    const fullpath = join(...p);
+    return isAbsolute(fullpath) ? fullpath : join(rootDir, fullpath);
+  };
 
   return {
     rootDir,
-    srcDir,
-    routesDir: srcChildDir('routes'),
-    privateDir: toAbsolute(`.${NAME}`),
-    appDir: toAbsolute(`.${NAME}/app`),
-    resources: toAbsolute(`.${NAME}/app/resources.js`),
-    runtimeDir: toAbsolute(`.${NAME}/app/runtime`),
-    cacheDir: toAbsolute(`.${NAME}/cache`),
-    buildDir: toAbsolute(outputPath),
-    publicDir: toAbsolute(publicDir)
+    srcDir: resolvePath('src'),
+    routesDir: resolvePath('src', 'routes'),
+    privateDir: resolvePath(`.${NAME}`),
+    appDir: resolvePath(`.${NAME}`, 'app'),
+    runtimeDir: resolvePath(`.${NAME}`, 'app', 'runtime'),
+    cacheDir: resolvePath(`.${NAME}`, 'cache'),
+    buildDir: resolvePath(outputPath),
+    publicDir: resolvePath(publicDir),
+    resourcesFile: resolvePath(`.${NAME}`, 'app', 'resources.js')
   };
 }
