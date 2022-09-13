@@ -1,7 +1,7 @@
 import { IPluginContext } from '@shuvi/service';
 import { fileUtils } from '@shuvi/service/lib/project';
 import {
-  setRuntimeConfig,
+  setServerRuntimeConfig,
   setPublicRuntimeConfig
 } from '../../shared/shuvi-singleton-runtimeConfig';
 import { createProjectContext } from '../project/projectContext';
@@ -42,12 +42,9 @@ export const getPresetRuntimeFilesCreator =
         break;
       }
     }
-    if (serverKeys) {
-      setRuntimeConfig(serverRuntimeConfig);
-    }
-    if (publicKeys) {
-      setPublicRuntimeConfig(publicRuntimeConfig);
-    }
+
+    setServerRuntimeConfig(serverKeys ? serverRuntimeConfig : null);
+    setPublicRuntimeConfig(publicKeys ? publicRuntimeConfig : null);
 
     const context = createProjectContext();
     context.userModule = {
