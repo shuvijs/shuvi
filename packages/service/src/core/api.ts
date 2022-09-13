@@ -126,7 +126,7 @@ class Api {
     Object.freeze(this._config);
     Object.freeze(this._paths);
 
-    _setResourceEnv(this._mode === 'production', this._paths.resources);
+    _setResourceEnv(this._mode === 'production', this._paths.resourcesFile);
 
     this._pluginContext = {
       mode: this._mode,

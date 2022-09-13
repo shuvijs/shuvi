@@ -49,7 +49,7 @@ export interface IPaths {
   runtimeDir: string;
 
   // resources file
-  resources: string;
+  resourcesFile: string;
 
   // cache file
   cacheDir: string;
