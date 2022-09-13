@@ -1,3 +1,21 @@
+# [1.0.0-rc.17](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.16...v1.0.0-rc.17) (2022-09-13)
+
+
+### Features
+
+* bundle runtimeConfig ([aafba7d](https://github.com/shuvijs/shuvi/commit/aafba7dff8355e6d5a1a9866f66e42624aef1098))
+
+
+
+# [1.0.0-rc.17](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.16...v1.0.0-rc.17) (2022-09-13)
+
+
+### Features
+
+* bundle runtimeConfig ([aafba7d](https://github.com/shuvijs/shuvi/commit/aafba7dff8355e6d5a1a9866f66e42624aef1098))
+
+
+
 # [1.0.0-rc.16](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.15...v1.0.0-rc.16) (2022-09-13)
 
 
