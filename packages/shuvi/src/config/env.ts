@@ -3,6 +3,7 @@ import { DotenvConfigOutput } from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import * as fs from 'fs';
 import * as path from 'path';
+import logger from '@shuvi/utils/lib/logger';
 
 export const loadDotenvConfig = (dir: string) => {
   const mode = process.env.NODE_ENV!;
@@ -37,17 +38,14 @@ export const loadDotenvConfig = (dir: string) => {
         result = dotenvExpand(result);
 
         if (result.parsed) {
-          console.log(`Loaded env from ${path.join(dir, envFile)}`);
+          logger.info(`Loaded env from ${path.join(dir, envFile)}`);
           envsFromDotEnv = {
             ...envsFromDotEnv,
             ...result.parsed
           };
         }
       } catch (err) {
-        console.error(
-          `Failed to load env from ${path.join(dir, envFile)}`,
-          err
-        );
+        logger.error(`Failed to load env from ${path.join(dir, envFile)}`, err);
       }
     } catch (err: any) {
       if (err.code !== 'ENOENT') {

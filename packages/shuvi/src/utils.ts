@@ -1,6 +1,7 @@
 import { existsSync } from 'fs';
 import * as path from 'path';
 import { CommanderStatic } from 'commander';
+import logger from '@shuvi/utils/lib/logger';
 //@ts-ignore
 import pkgInfo from '../package.json';
 
@@ -13,7 +14,7 @@ export function getProjectDir(
 ): string {
   const dir = path.resolve(cmd.args[0] || '.');
   if (!existsSync(dir)) {
-    console.error(`> No such directory exists as the project root: ${dir}`);
+    logger.error(`> No such directory exists as the project root: ${dir}`);
     cmd.outputHelp();
     process.exit(1);
   }

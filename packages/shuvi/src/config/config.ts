@@ -8,6 +8,7 @@ import {
 import { PlatformWebCustomConfig } from '@shuvi/platform-web';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
+import logger from '@shuvi/utils/lib/logger';
 import { ShuviConfig } from './configTypes';
 import { loadDotenvConfig } from './env';
 
@@ -55,7 +56,7 @@ export async function loadConfig({
   if (filepath) {
     configFilePath = path.resolve(rootDir, filepath);
     if (!fs.existsSync(configFilePath)) {
-      console.warn('Config file not found: ' + filepath);
+      logger.warn('Config file not found: ' + filepath);
       return {};
     }
   } else {

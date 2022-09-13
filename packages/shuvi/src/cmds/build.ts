@@ -1,4 +1,5 @@
 import program from 'commander';
+import logger from '@shuvi/utils/lib/logger';
 import { build } from '../tasks/build';
 import { getPackageInfo, getProjectDir } from '../utils';
 import { OptionsKeyMap, getConfigFromCli } from '../config';
@@ -41,10 +42,10 @@ export default async function main(argv: string[]) {
       cwd,
       config
     });
-    console.log('Build successfully!');
+    logger.info('Build successfully!');
   } catch (error) {
-    console.error('Failed to build.\n');
-    console.error((error as Error).message);
+    logger.error('Failed to build.\n');
+    logger.error((error as Error).message);
 
     process.exit(1);
   }

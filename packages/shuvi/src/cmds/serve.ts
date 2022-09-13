@@ -1,5 +1,6 @@
 import program from 'commander';
 import { createShuviServer } from '@shuvi/service';
+import logger from '@shuvi/utils/lib/logger';
 import { getPackageInfo, getProjectDir } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
@@ -30,9 +31,9 @@ export default async function main(argv: string[]) {
   try {
     await shuviApp.listen(port, host);
     const appUrl = `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`;
-    console.log(`Ready on ${appUrl}`);
+    logger.info(`Ready on ${appUrl}`);
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     process.exit(1);
   }
 }
