@@ -1,3 +1,14 @@
+# [1.0.0-rc.16](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.15...v1.0.0-rc.16) (2022-09-13)
+
+
+### Bug Fixes
+
+* catch error ([0fbaf5d](https://github.com/shuvijs/shuvi/commit/0fbaf5d55a277c1a8968d37a6350f24d3670b42c))
+* remove react-error-overlay dependency ([#431](https://github.com/shuvijs/shuvi/issues/431)) ([c019cc6](https://github.com/shuvijs/shuvi/commit/c019cc6f60d4c59f334aca16a0b7531cc7daaf03))
+* use reletive path in resources.js ([0f1a8c7](https://github.com/shuvijs/shuvi/commit/0f1a8c7e4ceb9c550a60c14ca5de6206abac7a14))
+
+
+
 # [1.0.0-rc.15](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.14...v1.0.0-rc.15) (2022-09-09)
 
 
