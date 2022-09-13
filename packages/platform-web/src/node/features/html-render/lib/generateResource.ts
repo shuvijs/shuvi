@@ -11,15 +11,25 @@ import {
 } from '../../../../shared';
 
 const generateResources = (context: IPluginContext) => {
-  const { resolveUserFile } = context;
+  const { resolveUserFile, paths } = context;
+  const resourcesDir = path.dirname(paths.resourcesFile);
   const { buildDir } = context.paths;
   const clientManifestRequest = urlToRequest(
-    path.join(buildDir, CLIENT_OUTPUT_DIR, CLIENT_BUILD_MANIFEST_PATH)
+    path.relative(
+      resourcesDir,
+      path.join(buildDir, CLIENT_OUTPUT_DIR, CLIENT_BUILD_MANIFEST_PATH)
+    )
   );
   const serverManifestRequest = urlToRequest(
-    path.join(buildDir, SERVER_OUTPUT_DIR, SERVER_BUILD_MANIFEST_PATH)
+    path.relative(
+      resourcesDir,
+      path.join(buildDir, SERVER_OUTPUT_DIR, SERVER_BUILD_MANIFEST_PATH)
+    )
   );
-  const serverModuleDir = path.join(buildDir, SERVER_OUTPUT_DIR);
+  const serverModuleDir = path.relative(
+    resourcesDir,
+    path.join(buildDir, SERVER_OUTPUT_DIR)
+  );
   const result: [string, string | undefined][] = [];
 
   result.push(['clientManifest', clientManifestRequest]);
@@ -36,11 +46,14 @@ const generateResources = (context: IPluginContext) => {
   ]);
 
   const customDoc = resolveUserFile('document.ejs');
-  let documentPath = require.resolve(
-    '@shuvi/platform-shared/template/document.ejs'
-  );
+  let documentPath: string;
   if (fse.existsSync(customDoc)) {
-    documentPath = customDoc;
+    documentPath = path.relative(process.cwd(), customDoc);
+  } else {
+    documentPath = path.relative(
+      process.cwd(),
+      require.resolve('@shuvi/platform-shared/template/document.ejs')
+    );
   }
 
   result.push([`documentPath = "${documentPath}"`, undefined]);
