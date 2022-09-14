@@ -5,15 +5,15 @@ export const getDefaultConfig: () => InternalConfig = () => ({
   env: {},
   rootDir: process.cwd(),
   analyze: false,
-  outputPath: 'dist',
+  outputPath: 'build',
   publicDir: 'public',
   publicPath: DEFAULT_PUBLIC_PATH,
   typescript: {
     ignoreBuildErrors: false
   },
+  disposeInactivePage: process.env.NODE_ENV === 'test' ? false : true,
   experimental: {
     parcelCss: false,
     preBundle: false
-  },
-  disposeInactivePage: process.env.NODE_ENV === 'test' ? false : true
+  }
 });
