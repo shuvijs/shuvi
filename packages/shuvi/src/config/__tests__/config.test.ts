@@ -21,14 +21,6 @@ test('should load config', async () => {
   expect(config.publicPath).toBe('/test');
 });
 
-test('should overwrite config with userConfig ', async () => {
-  const config = await loadFixture('base', {
-    publicDir: './public-dir'
-  });
-
-  expect(config.publicDir).toBe('./public-dir');
-});
-
 test('should warn when customed configFile does not exist', async () => {
   const warn = jest
     .spyOn(global.console, 'warn')
@@ -36,7 +28,7 @@ test('should warn when customed configFile does not exist', async () => {
   const config = await loadFixture(
     'base',
     {
-      publicDir: './'
+      ssr: false
     },
     'none-exist-file'
   );
@@ -44,7 +36,7 @@ test('should warn when customed configFile does not exist', async () => {
   expect(warn).toHaveBeenCalledWith(
     expect.stringMatching(/Config file not found:/)
   );
-  expect(config.publicDir).toBe('./');
+  expect(config.ssr).toBe(false);
 });
 
 test('should inject dotenv into config', async () => {
@@ -65,7 +57,6 @@ test('should load config in esmodule', async () => {
   const config = await loadFixture('esm');
 
   expect(config.env).toMatchInlineSnapshot(dotEnvConfigInlineSnapShot);
-  console.log('config', config);
   expect((config as any).webpack).toBe(webpack);
 });
 
