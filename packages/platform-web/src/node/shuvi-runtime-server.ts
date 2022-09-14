@@ -19,12 +19,12 @@ declare global {
 
 type ServerModule = Required<_IServerModule>;
 
-// server runtime api
+// server runtime api, used in page.js
 export type ShuviMiddlewareHandler = ShuviRequestHandler;
 
 export type ShuviApiHandler = IApiRequestHandler;
 
-// server hooks
+// server hooks, used in src/server.js
 export type GetPageDataFunction = RemoveLast<ServerModule['getPageData']>;
 
 export type HandlePageRequestFunction = RemoveLast<
