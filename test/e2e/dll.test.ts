@@ -12,7 +12,7 @@ describe('without Dll preBundle', () => {
 
   beforeAll(async () => {
     ctx = await devFixture(FIXTURE, { experimental: { preBundle: false } });
-    modules = await require(resolveFixture(`dll/dist/client/modules.json`));
+    modules = await require(resolveFixture(`dll/build/client/modules.json`));
   });
 
   afterAll(async () => {
@@ -38,7 +38,7 @@ describe('with Dll preBundle', () => {
   beforeAll(async () => {
     jest.resetModules();
     ctx = await devFixture(FIXTURE, { experimental: { preBundle: true } });
-    modules = await require(resolveFixture(`dll/dist/client/modules.json`));
+    modules = await require(resolveFixture(`dll/build/client/modules.json`));
   });
 
   afterAll(async () => {

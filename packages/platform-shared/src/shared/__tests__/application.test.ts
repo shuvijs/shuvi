@@ -38,7 +38,6 @@ describe('application', () => {
     } = app.pluginManager;
     appContext.use(context => {
       context.foo = 'bar';
-      return context;
     });
     await app.init();
     const ctx = app.context;
@@ -52,7 +51,6 @@ describe('application', () => {
     } = app.pluginManager;
     appContext.use(context => {
       context.test = true;
-      return context;
     });
     appComponent.use((AppComponent: any, context: any) => {
       expect(context.test).toBe(true);

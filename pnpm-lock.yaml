@@ -635,11 +635,13 @@ importers:
       '@emotion/styled': 11.9.3
       '@swc/plugin-transform-imports': 0.8.4
       react-is: ''
+      shuvi: workspace:*
       styled-components: 5.3.5
     dependencies:
       '@emotion/react': 11.9.3
       '@emotion/styled': 11.9.3_@emotion+react@11.9.3
       react-is: 18.2.0
+      shuvi: link:../../../packages/shuvi
       styled-components: 5.3.5_react-is@18.2.0
     devDependencies:
       '@swc/plugin-transform-imports': 0.8.4

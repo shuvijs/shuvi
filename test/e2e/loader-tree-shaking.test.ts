@@ -38,7 +38,7 @@ function getFileContent(
   if (!realFile) {
     throw new Error(`con't find webpack bundle file: ${fileName}`);
   }
-  const fileDir = resolveFixture('loader-tree-shaking/dist/client/');
+  const fileDir = resolveFixture('loader-tree-shaking/build/client/');
   const fileContent = fs.readFileSync(path.join(fileDir, realFile), 'utf-8');
   return fileContent;
 }
@@ -60,7 +60,7 @@ function runTest({ dev }: { dev: boolean }) {
 
       page = await ctx.browser.page();
       const manifestPath = resolveFixture(
-        'loader-tree-shaking/dist/build-manifest.client.json'
+        'loader-tree-shaking/build/build-manifest.client.json'
       );
       const manifestContent = await fs.promises.readFile(manifestPath, {
         encoding: 'utf-8'

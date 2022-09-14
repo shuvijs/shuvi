@@ -2,6 +2,7 @@
   "name": "compiler",
   "dependencies": {
     "react-is": "",
+    "shuvi": "workspace:*",
     "styled-components": "5.3.5",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3"

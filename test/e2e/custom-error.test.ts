@@ -12,7 +12,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 async function deleteFile() {
   const manifest = await require(resolveFixture(
-    'custom-error/dist/build-manifest.client.json'
+    'custom-error/build/build-manifest.client.json'
   ));
   const fileName = 'custom-error/src/routes/ctx-error';
   const loadbleKeys = Object.keys(manifest.loadble);
@@ -24,7 +24,7 @@ async function deleteFile() {
       if (!realFile) {
         throw new Error(`con't find webpack bundle file: ${fileName}`);
       }
-      const fileDir = resolveFixture('custom-error/dist/client/');
+      const fileDir = resolveFixture('custom-error/build/client/');
       fs.unlinkSync(path.join(fileDir, realFile));
       break;
     }
