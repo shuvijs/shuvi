@@ -1,4 +1,3 @@
-import { reactive } from './file-manager';
 import { RuntimePluginConfig } from '../core';
 
 export interface ProjectContext {
@@ -16,10 +15,9 @@ export interface ProjectContext {
   typeDeclarationFiles: string[];
 }
 
-export const createProjectContext = () =>
-  reactive<ProjectContext>({
-    runtimeServices: new Map(),
-    resources: new Map(),
-    runtimePlugins: [],
-    typeDeclarationFiles: []
-  });
+export const createProjectContext: () => ProjectContext = () => ({
+  runtimeServices: new Map(),
+  resources: new Map(),
+  runtimePlugins: [],
+  typeDeclarationFiles: []
+});

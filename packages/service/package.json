@@ -36,7 +36,6 @@
     "@shuvi/toolpack": "1.0.0-rc.17",
     "@shuvi/utils": "1.0.0-rc.17",
     "@shuvi/error-overlay": "1.0.0-rc.17",
-    "@vue/reactivity": "3.1.4",
     "commander": "5.1.0",
     "comment-json": "4.2.2",
     "cross-spawn": "7.0.3",
