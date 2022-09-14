@@ -120,8 +120,7 @@ class Api {
 
     this._paths = getPaths({
       rootDir: this._cwd,
-      outputPath: this._config.outputPath,
-      publicDir: this._config.publicDir
+      outputPath: this._config.outputPath
     });
     Object.freeze(this._config);
     Object.freeze(this._paths);

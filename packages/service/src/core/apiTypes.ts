@@ -141,7 +141,6 @@ export interface CompilerConfig {
 export interface InternalConfig {
   env: Record<string, string>;
   outputPath: string;
-  publicDir: string;
   publicPath: string;
   analyze: boolean;
   typescript: { ignoreBuildErrors: boolean };
