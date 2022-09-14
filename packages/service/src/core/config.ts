@@ -6,7 +6,6 @@ export const getDefaultConfig: () => InternalConfig = () => ({
   rootDir: process.cwd(),
   analyze: false,
   outputPath: 'build',
-  publicDir: 'public',
   publicPath: DEFAULT_PUBLIC_PATH,
   typescript: {
     ignoreBuildErrors: false
