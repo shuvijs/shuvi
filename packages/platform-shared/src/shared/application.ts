@@ -103,9 +103,7 @@ export class ApplicationImpl<Config extends {} = {}> {
   }
 
   private async _initAppContext() {
-    this._context = (await this._pluginManager.runner.appContext(
-      this._context
-    )) as IAppContext;
+    await this._pluginManager.runner.appContext(this._context);
   }
 
   private async _initAppComponent() {
