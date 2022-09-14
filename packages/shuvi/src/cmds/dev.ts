@@ -1,10 +1,19 @@
 import program from 'commander';
 import { createShuviServer } from '@shuvi/service';
 import chalk from '@shuvi/utils/lib/chalk';
-import logger, { printServerUrl } from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/lib/logger';
 import { getPackageInfo, getProjectDir } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
+
+function printServerUrl(url: string): void {
+  const colorUrl = (url: string) =>
+    chalk.cyan(url.replace(/:(\d+)\//, (_, port) => `:${chalk.bold(port)}/`));
+
+  logger.info(
+    `  ${chalk.green('➜')}  ${chalk.bold('Local')}:   ${colorUrl(url)} \n`
+  );
+}
 
 export default async function main(argv: string[]) {
   const startTime = performance.now();

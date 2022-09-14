@@ -37,15 +37,4 @@ class LoggerImpl implements Logger {
   }
 }
 
-const logger = new LoggerImpl('shuvi');
-
-export function printServerUrl(url: string): void {
-  const colorUrl = (url: string) =>
-    chalk.cyan(url.replace(/:(\d+)\//, (_, port) => `:${chalk.bold(port)}/`));
-
-  logger.info(
-    `  ${chalk.green('➜')}  ${chalk.bold('Local')}:   ${colorUrl(url)} \n`
-  );
-}
-
-export default logger;
+export default new LoggerImpl('shuvi');
