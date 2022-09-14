@@ -3,10 +3,7 @@ export const init = () => {
 };
 
 export const appContext = ctx => {
-  return {
-    ...ctx,
-    testFlag: 1
-  };
+  ctx.testFlag = 1;
 };
 
 export const appComponent = UserApp => {

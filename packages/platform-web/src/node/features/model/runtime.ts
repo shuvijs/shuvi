@@ -50,7 +50,6 @@ export default createRuntimePlugin(
         ctx,
         initialState
       });
-      return ctx;
     }
   },
   {
