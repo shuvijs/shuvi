@@ -70,10 +70,10 @@ function createTestCtx(fixture: string) {
 describe('shuvi/build', () => {
   it('should generate html file to analyze webpack bundle by specify --analyze flag', async () => {
     const project = createTestCtx('shuvi-cli');
-    project.clear('dist');
+    project.clear('build');
     const { message } = await project.run('build', ['--analyze']);
-    expect(project.exist('dist/client/static')).toBeTruthy();
-    expect(project.exist('dist/analyze/client.html')).toBeTruthy();
+    expect(project.exist('build/client/static')).toBeTruthy();
+    expect(project.exist('build/analyze/client.html')).toBeTruthy();
     expect(message).toMatch('Build successfully!');
   });
 

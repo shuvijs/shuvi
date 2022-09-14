@@ -38,7 +38,7 @@ function getFileContent(
   if (!realFile) {
     throw new Error(`con't find webpack bundle file: ${fileName}`);
   }
-  const fileDir = resolveFixture('tree-shaking/dist/client/');
+  const fileDir = resolveFixture('tree-shaking/build/client/');
   const fileContent = fs.readFileSync(path.join(fileDir, realFile), 'utf-8');
   return fileContent;
 }
@@ -55,7 +55,7 @@ describe('Tree Shaking', () => {
     });
     ctx = await serveFixture('tree-shaking');
     manifest = await require(resolveFixture(
-      'tree-shaking/dist/build-manifest.client.json'
+      'tree-shaking/build/build-manifest.client.json'
     ));
   });
   afterAll(async () => {

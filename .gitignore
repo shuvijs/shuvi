@@ -14,11 +14,12 @@ node_modules
 .idea/
 .swc
 .turbo
+
+# rust build output
 packages/toolpack/src/swc/target
 
 # build output
-dist
-/lib/
+packages/*/dist/
 packages/*/lib/
 packages/*/esm/
 packages/*/umd/
@@ -28,6 +29,7 @@ test/packages/*/esm/
 test/packages/*/umd/
 
 test/fixtures/**/dist/
+test/fixtures/**/build/
 test/fixtures/**/.shuvi/
 examples/**/.shuvi
 examples/**/dist
