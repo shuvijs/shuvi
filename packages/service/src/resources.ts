@@ -1,3 +1,5 @@
+import logger from '@shuvi/utils/lib/logger';
+
 export interface IResources {
   [x: string]: any;
 }
@@ -12,11 +14,19 @@ const proxyHandler = {
     if (result) {
       return result;
     }
-    const proxyObj = (requireTarget && require(requireTarget)) || {};
-    result = proxyObj[props];
-    if (typeof result === 'function') {
-      result = result();
+    try {
+      const proxyObj = (requireTarget && require(requireTarget)) || {};
+      result = proxyObj[props];
+      if (typeof result === 'function') {
+        result = result();
+      }
+    } catch (error) {
+      logger.error(
+        `"resouces.${props}" is not ready, try access it when necessary.`
+      );
+      throw error;
     }
+
     if (isCached) {
       cache[props] = result;
     }

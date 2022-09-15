@@ -5,8 +5,9 @@ import {
   IServerPluginContext
 } from '@shuvi/service';
 import { sendHTML } from '@shuvi/service/lib/server/utils';
-import { renderToHTML } from './renderToHTML';
 import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
+import { IHandlePageRequest } from '../serverHooks';
+import { renderToHTML } from './renderToHTML';
 
 function createPageHandler(serverPluginContext: IServerPluginContext) {
   return async function (req: IncomingMessage, res: ServerResponse) {
@@ -35,9 +36,16 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
 export async function getPageMiddleware(
   api: IServerPluginContext
 ): Promise<ShuviRequestHandler> {
-  let pageHandler = createPageHandler(api);
-  pageHandler = await api.serverPluginRunner.handlePageRequest(pageHandler);
+  const defaultPageHandler = createPageHandler(api);
+  let pageHandler: IHandlePageRequest;
+
   return async function (req, res, next) {
+    if (!pageHandler) {
+      pageHandler = await api.serverPluginRunner.handlePageRequest(
+        defaultPageHandler
+      );
+    }
+
     try {
       await pageHandler(req, res);
     } catch (error) {

@@ -13,6 +13,7 @@ import { CLIENT_OUTPUT_DIR, SERVER_OUTPUT_DIR } from '../../../constants';
 import { WebpackHotMiddleware } from './hotMiddleware';
 import { Bunlder } from '../../../bundler';
 import { Server } from '../../http-server';
+import { ShuviRequestHandler } from '../../shuviServerTypes';
 import { IServerPluginContext } from '../../plugin';
 
 type ICallback = () => void;
@@ -35,14 +36,15 @@ export interface DevMiddleware {
   apply(server?: Server): void;
   send(action: string, payload?: any): void;
   invalidate(): Promise<unknown>;
-  waitUntilValid(force?: boolean): void;
   onHMR(req: IncomingMessage, socket: any, head: Buffer): void;
 }
 
-export async function getDevMiddleware(
+export function getDevMiddleware(
   bundler: Bunlder,
   serverPluginContext: IServerPluginContext
-): Promise<DevMiddleware> {
+): DevMiddleware {
+  let valid = false;
+  let applied = false;
   const context: IContext = {
     state: false,
     callbacks: []
@@ -70,26 +72,6 @@ export async function getDevMiddleware(
     compiler: bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!
   });
 
-  const apply = (server: Server) => {
-    const targetServer = server;
-    targetServer.use(
-      launchEditorMiddleware(
-        DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
-        serverPluginContext.paths.rootDir
-      )
-    );
-    targetServer.use(
-      stackFrameMiddleware(
-        DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
-        bundler,
-        serverPluginContext.resolveBuildFile,
-        CLIENT_OUTPUT_DIR,
-        SERVER_OUTPUT_DIR
-      )
-    );
-    bundler.applyDevMiddlewares(server);
-  };
-
   const send = (action: string, payload?: any) => {
     webpackHotMiddleware.publish({ action, data: payload });
   };
@@ -116,11 +98,43 @@ export async function getDevMiddleware(
     });
   };
 
+  const apply = (server: Server) => {
+    if (applied) {
+      return;
+    }
+    applied = true;
+
+    const targetServer = server;
+    targetServer.use((async (_req, _resp, next) => {
+      if (!valid) {
+        await waitUntilValid();
+        valid = true;
+      }
+
+      next();
+    }) as ShuviRequestHandler);
+    targetServer.use(
+      launchEditorMiddleware(
+        DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
+        serverPluginContext.paths.rootDir
+      )
+    );
+    targetServer.use(
+      stackFrameMiddleware(
+        DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
+        bundler,
+        serverPluginContext.resolveBuildFile,
+        CLIENT_OUTPUT_DIR,
+        SERVER_OUTPUT_DIR
+      )
+    );
+    bundler.applyDevMiddlewares(server);
+  };
+
   return {
     apply,
     send,
     invalidate,
-    waitUntilValid,
     onHMR
   };
 }
