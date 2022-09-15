@@ -148,7 +148,7 @@ export interface InternalConfig {
   compiler?: CompilerConfig;
   disposeInactivePage: boolean;
   experimental: {
-    parcelCss: boolean;
+    lightningCss: boolean;
     preBundle: boolean;
     // browsersListForSwc?: boolean;
     modularizeImports?: CompilerOptions['modularizeImports'];

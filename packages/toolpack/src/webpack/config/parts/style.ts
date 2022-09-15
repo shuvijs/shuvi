@@ -13,7 +13,7 @@ interface StyleOptions {
   extractCss?: boolean;
   sourceMap?: boolean;
   ssr?: boolean;
-  parcelCss?: boolean;
+  lightningCss?: boolean;
 }
 
 function getCSSModuleLocalIdent(
@@ -55,12 +55,12 @@ function ssrCssRule({
   test,
   resourceQuery,
   scss,
-  parcelCss
+  lightningCss
 }: {
   test: any;
   resourceQuery?: any;
   scss?: boolean;
-  parcelCss?: boolean;
+  lightningCss?: boolean;
 }): Config.Rule {
   const rule: Config.Rule = new Rule();
   rule.test(test);
@@ -68,10 +68,10 @@ function ssrCssRule({
     rule.resourceQuery(resourceQuery);
   }
 
-  if (parcelCss) {
+  if (lightningCss) {
     rule
-      .use('parcel-css-loader')
-      .loader('@shuvi/parcel-css-loader')
+      .use('lightningcss-loader')
+      .loader('@shuvi/lightningcss-loader')
       .options({
         sourceMap: false,
         importLoaders: scss ? 1 : 0,
@@ -115,7 +115,7 @@ function cssRule({
   test,
   resourceQuery,
   cssModule,
-  parcelCss,
+  lightningCss,
   extractCss,
   sourceMap,
   scss
@@ -124,7 +124,7 @@ function cssRule({
   test: any;
   resourceQuery?: any;
   cssModule?: boolean;
-  parcelCss?: boolean;
+  lightningCss?: boolean;
   extractCss?: boolean;
   sourceMap?: boolean;
   scss?: boolean;
@@ -176,10 +176,10 @@ function cssRule({
       });
   }
 
-  if (parcelCss) {
+  if (lightningCss) {
     rule
-      .use('parcel-css-loader')
-      .loader('@shuvi/parcel-css-loader')
+      .use('lightningcss-loader')
+      .loader('@shuvi/lightningcss-loader')
       .options({
         sourceMap,
         importLoaders: scss ? 2 : 1,
@@ -247,7 +247,7 @@ export function withStyle(
     sourceMap,
     ssr,
     publicPath,
-    parcelCss,
+    lightningCss,
     filename,
     chunkFilename
   }: StyleOptions
@@ -261,7 +261,7 @@ export function withStyle(
         test: cssRegex,
         resourceQuery: cssModuleQueryRegex,
         scss: false,
-        parcelCss
+        lightningCss
       }).after('js')
     );
     oneOfs.set(
@@ -271,7 +271,7 @@ export function withStyle(
         test: sassRegex,
         resourceQuery: cssModuleQueryRegex,
         scss: true,
-        parcelCss
+        lightningCss
       }).after('css-module')
     );
     const ignoreRule: Config.Rule = new Rule();
@@ -302,7 +302,7 @@ export function withStyle(
       test: cssRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
-      parcelCss,
+      lightningCss,
       scss: false,
       extractCss,
       sourceMap,
@@ -315,7 +315,7 @@ export function withStyle(
     cssRule({
       test: cssRegex,
       cssModule: false,
-      parcelCss,
+      lightningCss,
       scss: false,
       extractCss,
       sourceMap,
@@ -329,7 +329,7 @@ export function withStyle(
       test: sassRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
-      parcelCss,
+      lightningCss,
       scss: true,
       extractCss,
       sourceMap,
@@ -342,7 +342,7 @@ export function withStyle(
     cssRule({
       test: sassRegex,
       cssModule: false,
-      parcelCss,
+      lightningCss,
       scss: true,
       extractCss,
       sourceMap,

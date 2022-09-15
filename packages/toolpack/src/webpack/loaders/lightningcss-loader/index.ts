@@ -1,7 +1,7 @@
 import * as path from 'path';
 import browserslist from 'browserslist';
-import { transform, browserslistToTargets } from '@parcel/css';
-import type { ImportDependency, UrlDependency } from '@parcel/css';
+import { transform, browserslistToTargets } from 'lightningcss';
+import type { ImportDependency, UrlDependency } from 'lightningcss';
 import { LoaderContext } from 'webpack';
 import CssSyntaxError from './CssSyntaxError';
 import {

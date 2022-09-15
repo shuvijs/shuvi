@@ -14,7 +14,7 @@ jest.setTimeout(5 * 60 * 1000);
         describeName === 'ParcelCss'
           ? {
               experimental: {
-                parcelCss: true
+                lightningCss: true
               }
             }
           : {}
