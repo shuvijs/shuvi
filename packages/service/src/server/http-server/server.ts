@@ -1,6 +1,7 @@
 import * as http from 'http';
 import { parse as parseUrl } from 'url';
 import { parseQuery } from '@shuvi/router';
+import logger from '@shuvi/utils/lib/logger';
 import detectPort from 'detect-port';
 import { sendHTML } from '../utils';
 import { getRouter, Router } from './router';
@@ -120,7 +121,7 @@ export class Server {
     // unhandled error
     if (error) {
       setImmediate(function () {
-        console.error(
+        logger.error(
           `server error: ${req.url} `,
           error.stack || error.toString()
         );
