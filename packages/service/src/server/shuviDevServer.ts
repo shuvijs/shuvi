@@ -1,4 +1,7 @@
-import { DEV_HOT_MIDDLEWARE_PATH } from '@shuvi/shared/lib/constants';
+import {
+  DEV_HOT_MIDDLEWARE_PATH,
+  DEV_READY_ENDPOINT
+} from '@shuvi/shared/lib/constants';
 import { Bunlder } from '../bundler';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
@@ -28,13 +31,19 @@ export class ShuviDevServer extends ShuviServer {
 
     const devMiddleware = getDevMiddleware(this._bundler, context);
 
-    let valid = false;
+    let ready = false;
     // muse be the first middleware, to make sure the build is finisehd.
-    server.use((async (_req, _resp, next) => {
-      if (!valid) {
+    server.use((async (req, resp, next) => {
+      if (!ready) {
         await devMiddleware.waitUntilValid();
-        valid = true;
+        ready = true;
       }
+
+      if (req.pathname === DEV_READY_ENDPOINT) {
+        resp.end();
+        return;
+      }
+
       next();
     }) as ShuviRequestHandler);
 
