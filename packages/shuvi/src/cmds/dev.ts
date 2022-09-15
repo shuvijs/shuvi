@@ -6,7 +6,7 @@ import { getPackageInfo, getProjectDir } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
 
-function printServerUrl(url: string): void {
+export function printServerUrl(url: string): void {
   const colorUrl = (url: string) =>
     chalk.cyan(url.replace(/:(\d+)\//, (_, port) => `:${chalk.bold(port)}/`));
 
@@ -49,13 +49,11 @@ export default async function main(argv: string[]) {
   try {
     await shuviApp.listen(port, host);
     const appUrl = `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`;
-    const startupDurationString = startTime
-      ? chalk.dim(
-          `ready in ${chalk.white(
-            chalk.bold(Math.ceil(performance.now() - startTime))
-          )} ms`
-        )
-      : '';
+    const startupDurationString = chalk.dim(
+      `ready in ${chalk.white(
+        chalk.bold(Math.ceil(performance.now() - startTime))
+      )} ms`
+    );
     logger.info(
       `\n  ${chalk.green(
         `${chalk.bold('SHUVI')} v${pkgInfo.version}`

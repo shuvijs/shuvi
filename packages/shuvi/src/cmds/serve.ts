@@ -1,11 +1,14 @@
 import program from 'commander';
 import { createShuviServer } from '@shuvi/service';
+import chalk from '@shuvi/utils/lib/chalk';
 import logger from '@shuvi/utils/lib/logger';
 import { getPackageInfo, getProjectDir } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
+import { printServerUrl } from './dev';
 
 export default async function main(argv: string[]) {
+  const startTime = performance.now();
   const pkgInfo = getPackageInfo();
   program
     .name(pkgInfo.name)
@@ -31,7 +34,17 @@ export default async function main(argv: string[]) {
   try {
     await shuviApp.listen(port, host);
     const appUrl = `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`;
-    logger.info(`Ready on ${appUrl}`);
+    const startupDurationString = chalk.dim(
+      `ready in ${chalk.white(
+        chalk.bold(Math.ceil(performance.now() - startTime))
+      )} ms`
+    );
+    logger.info(
+      `\n  ${chalk.green(
+        `${chalk.bold('SHUVI')} v${pkgInfo.version}`
+      )} ${startupDurationString}\n`
+    );
+    printServerUrl(appUrl);
   } catch (err) {
     logger.error(err);
     process.exit(1);
