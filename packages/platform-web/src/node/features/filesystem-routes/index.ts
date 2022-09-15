@@ -10,6 +10,7 @@ import {
   IPageRouteConfigWithId,
   IMiddlewareRouteConfig
 } from '@shuvi/platform-shared/shared';
+import logger from '@shuvi/utils/lib/logger';
 import { ifComponentHasLoader } from '../html-render/lib';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
@@ -79,7 +80,7 @@ const plugin = createPlugin({
 
           if (isBuildPhase) {
             warnings.forEach(warning => {
-              console.warn(warning.msg);
+              logger.warn(warning.msg);
             });
           }
 
@@ -111,7 +112,7 @@ const plugin = createPlugin({
 
         if (isBuildPhase) {
           warnings.forEach(warning => {
-            console.warn(warning);
+            logger.warn(warning);
           });
         }
 
@@ -133,7 +134,7 @@ const plugin = createPlugin({
         // );
         // if (isBuildPhase) {
         //   warnings.forEach(warning => {
-        //     console.warn(warning);
+        //     logger.warn(warning);
         //   });
         // }
         // let fsRoutes = _routes;
@@ -143,7 +144,7 @@ const plugin = createPlugin({
         ).flat();
 
         if (!isWarnedAddMiddlewareRoutes && pluginRoutes.length > 0) {
-          console.warn(
+          logger.warn(
             'Warning: addMiddlewareRoutes is an experimental feature, we recommend using api routes instead.'
           );
           isWarnedAddMiddlewareRoutes = true;

@@ -1,10 +1,12 @@
 import program from 'commander';
 import { createShuviServer } from '@shuvi/service';
-import { getPackageInfo, getProjectDir } from '../utils';
+import logger from '@shuvi/utils/lib/logger';
+import { getPackageInfo, getProjectDir, printStartupInfo } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
 
 export default async function main(argv: string[]) {
+  const startTime = performance.now();
   const pkgInfo = getPackageInfo();
   program
     .name(pkgInfo.name)
@@ -20,10 +22,12 @@ export default async function main(argv: string[]) {
   const port = Number(program.port) || 3000;
   const host = program.host || 'localhost';
   const config = await getConfigFromCli(cwd, program);
+
   const api = await initShuvi({
     cwd,
     config
   });
+
   await api.buildApp();
   const bundler = await api.getBundler();
   const shuviApp = await createShuviServer({
@@ -33,19 +37,23 @@ export default async function main(argv: string[]) {
     ...api.serverConfigs
   });
   try {
-    console.log('Starting the development server...');
     await shuviApp.listen(port, host);
-    const appUrl = `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`;
-    console.log(`Ready on ${appUrl}`);
+
+    printStartupInfo({
+      startTime,
+      readyTime: performance.now(),
+      host,
+      port
+    });
   } catch (err: any) {
     if (err.code === 'EADDRINUSE') {
       let errorMessage = `Port ${port} is already in use.`;
       errorMessage += '\nUse `--port` to specify some other port.';
       // tslint:disable-next-line
-      console.error(errorMessage);
+      logger.error(errorMessage);
     } else {
       // tslint:disable-next-line
-      console.error(err);
+      logger.error(err);
     }
     await api.destory();
     process.nextTick(() => process.exit(1));
