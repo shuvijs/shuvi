@@ -163,6 +163,7 @@ export async function bundleRequire(filepath: string, options: Options = {}) {
     absWorkingDir: cwd,
     outfile,
     format: 'cjs',
+    target: 'es6',
     platform: 'node',
     sourcemap: 'inline',
     bundle: true,
