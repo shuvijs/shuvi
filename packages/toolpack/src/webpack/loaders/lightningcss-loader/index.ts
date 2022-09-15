@@ -8,7 +8,7 @@ import {
   combineRequests,
   getExportCode,
   getImportCode,
-  getParcelCssModuleCode,
+  getLightningCssModuleCode,
   getPreRequester,
   isDataUrl,
   isURLRequestable,
@@ -62,9 +62,9 @@ export default async function loader(
 
   const needToUseIcssPlugin = shouldUseIcssPlugin(options);
 
-  let ParcelCssRes;
+  let LightningCssRes;
   try {
-    ParcelCssRes = transform({
+    LightningCssRes = transform({
       filename: path.relative(this.rootContext, this.resourcePath),
       code: content instanceof Buffer ? content : Buffer.from(content),
       // minify: this.mode === 'production',
@@ -79,7 +79,7 @@ export default async function loader(
       targets: browsersTargets
     });
     if (options.sourceMap && map) {
-      ParcelCssRes.map = normalizeSourceMap(map, this.resourcePath);
+      LightningCssRes.map = normalizeSourceMap(map, this.resourcePath);
     }
   } catch (error: any) {
     console.error('-> error', error);
@@ -90,17 +90,17 @@ export default async function loader(
     }
     return;
   }
-  const { dependencies = [] } = ParcelCssRes;
+  const { dependencies = [] } = LightningCssRes;
 
-  const parcelImportsMap = new Map();
-  const parcelUrlsMap = new Map();
+  const lightningImportsMap = new Map();
+  const lightningUrlsMap = new Map();
   const icssMap = new Map();
-  const parcelReplacementsMap = new Map();
+  const lightningReplacementsMap = new Map();
 
-  const parcelImports = [];
-  const parcelApis = [];
-  const parcelReplacements = [];
-  const parcelExports = [];
+  const lightningImports = [];
+  const lightningApis = [];
+  const lightningReplacements = [];
+  const lightningExports = [];
 
   let hasUrlImportHelper = false;
 
@@ -157,7 +157,7 @@ export default async function loader(
         url = resolvedUrl;
       }
       if (!requestable) {
-        parcelApis.push({
+        lightningApis.push({
           url,
           layer: undefined,
           supports,
@@ -167,12 +167,12 @@ export default async function loader(
         continue;
       }
       url = prefix ? `${prefix}!${url}` : url;
-      let importName = parcelImportsMap.get(url);
+      let importName = lightningImportsMap.get(url);
       if (!importName) {
-        const { size } = parcelImportsMap;
+        const { size } = lightningImportsMap;
         importName = `___CSS_LOADER_AT_RULE_IMPORT_${size}___`;
-        parcelImportsMap.set(url, importName);
-        parcelImports.push({
+        lightningImportsMap.set(url, importName);
+        lightningImports.push({
           type: 'rule_import',
           importName,
           url: stringifyRequest(
@@ -182,7 +182,7 @@ export default async function loader(
           index: size
         });
       }
-      parcelApis.push({
+      lightningApis.push({
         importName,
         layer: undefined, // not support
         supports,
@@ -198,9 +198,9 @@ export default async function loader(
       // console.log("-> url6 6", url, requestable, needResolve);
       // Do not traverse inside `url`
       if (!requestable && !needResolve) {
-        if (!parcelReplacementsMap.get(url)) {
-          parcelReplacementsMap.set(url, placeholder);
-          parcelReplacements.push({
+        if (!lightningReplacementsMap.get(url)) {
+          lightningReplacementsMap.set(url, placeholder);
+          lightningReplacements.push({
             placeholder,
             replacementName: url,
             hash: undefined,
@@ -243,7 +243,7 @@ export default async function loader(
       }
 
       if (!hasUrlImportHelper) {
-        parcelImports.push({
+        lightningImports.push({
           type: 'get_url_import',
           importName: '___CSS_LOADER_GET_URL_IMPORT___',
           url: stringifyRequest(this, require.resolve('./runtime/getUrl.js')),
@@ -254,20 +254,20 @@ export default async function loader(
       }
 
       url = prefix ? `${prefix}!${url}` : url;
-      let importName = parcelUrlsMap.get(url);
+      let importName = lightningUrlsMap.get(url);
 
       if (!importName) {
-        importName = `___CSS_LOADER_URL_IMPORT_${parcelUrlsMap.size}___`;
-        parcelUrlsMap.set(url, importName);
+        importName = `___CSS_LOADER_URL_IMPORT_${lightningUrlsMap.size}___`;
+        lightningUrlsMap.set(url, importName);
 
-        parcelImports.push({
+        lightningImports.push({
           // type: 'url',
           importName,
           url: stringifyRequest(this, url),
           index
         });
 
-        parcelReplacements.push({
+        lightningReplacements.push({
           placeholder,
           replacementName: `___CSS_LOADER_URL_REPLACEMENT_${index}___`,
           importName,
@@ -278,7 +278,7 @@ export default async function loader(
       }
     }
   }
-  if (ParcelCssRes.exports) {
+  if (LightningCssRes.exports) {
     const resolver = (this as any).getResolve({
       dependencyType: 'icss',
       conditionNames: ['style'],
@@ -287,9 +287,9 @@ export default async function loader(
       mainFiles: ['index', '...'],
       preferRelative: true
     });
-    const exportKeys = Object.keys(ParcelCssRes.exports);
+    const exportKeys = Object.keys(LightningCssRes.exports);
     for (const exportKey of exportKeys) {
-      const exportItem = ParcelCssRes.exports[exportKey];
+      const exportItem = LightningCssRes.exports[exportKey];
       const { name, composes } = exportItem;
       let value = name;
       for (const compose of composes) {
@@ -325,7 +325,7 @@ export default async function loader(
             importName = `___CSS_LOADER_ICSS_IMPORT_${index}___`;
             icssMap.set(url, importName);
 
-            parcelImports.push({
+            lightningImports.push({
               type: 'icss_import',
               importName,
               url: stringifyRequest(
@@ -339,12 +339,12 @@ export default async function loader(
               index
             });
 
-            parcelApis.push({ importName, dedupe: true, index });
+            lightningApis.push({ importName, dedupe: true, index });
           }
 
-          const replacementName: string = `___REPLACEMENT_${parcelReplacements.length}_${importName}`;
+          const replacementName: string = `___REPLACEMENT_${lightningReplacements.length}_${importName}`;
 
-          parcelReplacements.push({
+          lightningReplacements.push({
             localName: compose.name,
             replacementName,
             importName
@@ -353,46 +353,46 @@ export default async function loader(
           value += ` ${replacementName}`;
         }
       }
-      parcelExports.push({
+      lightningExports.push({
         name: exportKey,
         value
       });
     }
   }
   if (options.modules.exportOnlyLocals !== true) {
-    parcelImports.unshift({
+    lightningImports.unshift({
       type: 'api_import',
       importName: '___CSS_LOADER_API_IMPORT___',
       url: stringifyRequest(this, require.resolve('./runtime/api'))
     });
 
     if (options.sourceMap) {
-      parcelImports.unshift({
+      lightningImports.unshift({
         importName: '___CSS_LOADER_API_SOURCEMAP_IMPORT___',
         url: stringifyRequest(this, require.resolve('./runtime/sourceMaps'))
       });
     } else {
-      parcelImports.unshift({
+      lightningImports.unshift({
         importName: '___CSS_LOADER_API_NO_SOURCEMAP_IMPORT___',
         url: stringifyRequest(this, require.resolve('./runtime/noSourceMaps'))
       });
     }
   }
 
-  parcelImportsMap.clear();
-  parcelUrlsMap.clear();
+  lightningImportsMap.clear();
+  lightningUrlsMap.clear();
   icssMap.clear();
-  parcelReplacementsMap.clear();
+  lightningReplacementsMap.clear();
 
-  const importCode = getImportCode(parcelImports, options);
+  const importCode = getImportCode(lightningImports, options);
 
   let moduleCode;
 
   try {
-    moduleCode = getParcelCssModuleCode(
-      ParcelCssRes,
-      parcelApis,
-      parcelReplacements,
+    moduleCode = getLightningCssModuleCode(
+      LightningCssRes,
+      lightningApis,
+      lightningReplacements,
       options,
       this
     );
@@ -403,8 +403,8 @@ export default async function loader(
     return;
   }
   const exportCode = getExportCode(
-    parcelExports,
-    parcelReplacements,
+    lightningExports,
+    lightningReplacements,
     needToUseIcssPlugin,
     options
   );

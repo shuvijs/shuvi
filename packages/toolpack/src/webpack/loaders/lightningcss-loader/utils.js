@@ -808,7 +808,7 @@ function getImportCode(imports, options) {
   return code ? `// Imports\n${code}` : '';
 }
 
-function normalizeParcelCssSourceMapForRuntime(map, loaderContext) {
+function normalizeLightningCssSourceMapForRuntime(map, loaderContext) {
   let resultMap = null;
 
   if (map instanceof Buffer) {
@@ -871,7 +871,7 @@ function printParams(media, dedupe, supports, layer) {
   return result;
 }
 
-function getParcelCssModuleCode(
+function getLightningCssModuleCode(
   result,
   api,
   replacements,
@@ -887,7 +887,7 @@ function getParcelCssModuleCode(
   if (options.sourceMap) {
     const sourceMap = result.map;
 
-    sourceMapValue = `,${normalizeParcelCssSourceMapForRuntime(
+    sourceMapValue = `,${normalizeLightningCssSourceMapForRuntime(
       sourceMap,
       loaderContext
     )}`;
@@ -1153,7 +1153,7 @@ export {
   normalizeSourceMap,
   getPreRequester,
   getImportCode,
-  getParcelCssModuleCode,
+  getLightningCssModuleCode,
   getExportCode,
   resolveRequests,
   isURLRequestable,
