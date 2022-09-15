@@ -1,5 +1,6 @@
 import { IPluginContext } from '@shuvi/service';
 import { fileUtils } from '@shuvi/service/lib/project';
+import logger from '@shuvi/utils/lib/logger';
 import {
   setServerRuntimeConfig,
   setPublicRuntimeConfig
@@ -36,7 +37,7 @@ export const getPresetRuntimeFilesCreator =
       const key = serverKeys[index];
       const hasSameKey = publicKeys.includes(key);
       if (hasSameKey) {
-        console.warn(
+        logger.warn(
           `Warning: key "${key}" exist in both "runtimeConfig" and "publicRuntimeConfig". Please rename the key, or the value from "publicRuntimeConfig" will be applied.\n`
         );
         break;

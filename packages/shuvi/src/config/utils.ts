@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import logger from '@shuvi/utils/lib/logger';
 import { ShuviConfig } from './configTypes';
 import { loadConfig } from './config';
 
@@ -43,7 +44,7 @@ function getConfigFromCliOtherOptions(
       Object.assign(config, overrides);
     }
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
   return config;
 }

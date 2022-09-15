@@ -5,7 +5,7 @@ import ForkTsCheckerWebpackPlugin, {
   createCodeFrameFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import Logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/lib/logger';
 import { inspect } from 'util';
 import {
   webpack,
@@ -46,8 +46,6 @@ const defaultBundleOptions: NormalizedBundlerOptions = {
   ignoreTypeScriptErrors: false
 };
 
-const logger = Logger('shuvi:bundler');
-
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
 export interface Bunlder {
@@ -86,6 +84,8 @@ class WebpackBundler implements Bunlder {
   private _watching: WatchingProxy = new WatchingProxy();
   private _devMiddlewares: ShuviRequestHandler[] = [];
   private _inited: boolean = false;
+  private _startTime: number | null = null;
+  private _isCompiling: boolean | null = false;
 
   constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
     this._options = options;
@@ -172,7 +172,7 @@ class WebpackBundler implements Bunlder {
     const compiler = this._compiler;
 
     if (this._options.ignoreTypeScriptErrors) {
-      console.log('Skipping validation of types');
+      logger.info('Skipping validation of types');
       this._compiler.compilers.forEach(compiler => {
         ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
           'afterTypeScriptCheck',
@@ -211,6 +211,19 @@ class WebpackBundler implements Bunlder {
       this._compiler.hooks.done.tap('done', async stats => {
         const warnings: webpack.StatsError[] = [];
         const errors: webpack.StatsError[] = [];
+        this._isCompiling = false;
+        let timeMessage = '';
+
+        if (this._startTime) {
+          const time = performance.now() - this._startTime;
+          this._startTime = 0;
+
+          timeMessage =
+            time > 2000
+              ? ` in ${Math.round(time / 100) / 10}s`
+              : ` in ${Math.ceil(time)} ms`;
+        }
+
         stats.stats.forEach(s => {
           const statsData = s.toJson({
             all: false,
@@ -223,11 +236,25 @@ class WebpackBundler implements Bunlder {
 
         const isSuccessful = !warnings.length && !errors.length;
         if (isSuccessful) {
+          if (!isFirstSuccessfulCompile) {
+            logger.info(
+              `Compiled client and server successfully${timeMessage}`
+            );
+          }
           setImmediate(first => {
             // make sure this event is fired after all bundler:target-done
             this._cliContext.pluginRunner.afterBundlerDone({ first, stats });
           }, isFirstSuccessfulCompile);
           isFirstSuccessfulCompile = false;
+        }
+        //reset the startTime
+        this._startTime = null;
+      });
+
+      this._compiler.hooks.invalid.tap('invalid', () => {
+        if (!this._isCompiling) {
+          this._isCompiling = true;
+          logger.info('Compiling client and server...');
         }
       });
     }
@@ -256,13 +283,11 @@ class WebpackBundler implements Bunlder {
     let tsMessagesResolver: (diagnostics: CompilerStats) => void;
     let isInvalid = true;
 
-    const _log = (...args: string[]) => console.log(`[${name}]`, ...args);
-    const _error = (...args: string[]) => console.error(`[${name}]`, ...args);
-    const _warn = (...args: string[]) => console.warn(`[${name}]`, ...args);
+    const _error = (...args: string[]) => logger.error(`[${name}]`, ...args);
+    const _warn = (...args: string[]) => logger.warn(`[${name}]`, ...args);
     compiler.hooks.invalid.tap(`invalid`, () => {
       tsMessagesPromise = undefined;
       isInvalid = true;
-      _log('Compiling...');
     });
 
     const useTypeScript = !!compiler.options.plugins?.find(
@@ -299,6 +324,11 @@ class WebpackBundler implements Bunlder {
       );
     }
 
+    compiler.hooks.beforeCompile.tap('beforeCompile', () => {
+      if (this._startTime === null) {
+        this._startTime = performance.now();
+      }
+    });
     // "done" event fires when Webpack has finished recompiling the bundle.
     // Whether or not you have warnings or errors, you will get this event.
     compiler.hooks.done.tap('done', async stats => {
@@ -324,7 +354,6 @@ class WebpackBundler implements Bunlder {
       const isSuccessful =
         !messages.errors?.length && !messages.warnings?.length;
       if (isSuccessful) {
-        _log('Compiled successfully!');
         await this._cliContext.pluginRunner.afterBundlerTargetDone({
           first: isFirstSuccessfulCompile,
           name: compiler.name!,
@@ -448,7 +477,7 @@ export async function getBundler(ctx: IPluginContext): Promise<Bunlder> {
     return bundler;
   } catch (err: any) {
     if (isFatalError(err)) {
-      console.error(err.message);
+      logger.error(err.message);
       process.exit(1);
     }
 

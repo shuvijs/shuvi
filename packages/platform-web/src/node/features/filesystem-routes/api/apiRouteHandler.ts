@@ -5,6 +5,7 @@ import * as cookie from 'cookie';
 const getRawBody = require('raw-body');
 import * as contentType from 'content-type';
 import { ShuviRequest, ShuviResponse } from '@shuvi/service';
+import logger from '@shuvi/utils/lib/logger';
 import {
   IApiRequestHandler,
   IApiReq,
@@ -58,7 +59,7 @@ export async function apiRouteHandler(
       !(res.finished || res.headersSent) &&
       !wasPiped
     ) {
-      console.warn(
+      logger.warn(
         `API resolved without sending a response for ${req.url}, this may result in stalled requests.`
       );
     }

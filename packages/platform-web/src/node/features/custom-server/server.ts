@@ -1,5 +1,6 @@
 import { createServerPlugin } from '@shuvi/service';
 import resources from '@shuvi/service/lib/resources';
+import logger from '@shuvi/utils/lib/logger';
 
 let isWarnedhandlePageRequest: boolean = false;
 
@@ -13,7 +14,7 @@ export default createServerPlugin({
       resources.server?.server?.handlePageRequest !== undefined
     ) {
       isWarnedhandlePageRequest = true;
-      console.warn(
+      logger.warn(
         'Warning: handlePageRequest is an experimental feature, please use with caution.'
       );
     }

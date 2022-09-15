@@ -1,6 +1,7 @@
 import invariant from '@shuvi/utils/lib/invariant';
 import { resolve } from '@shuvi/utils/lib/resolve';
 import { isPluginInstance, IPluginInstance } from '@shuvi/hook';
+import logger from '@shuvi/utils/lib/logger';
 import * as path from 'path';
 import { createPlugin, CorePluginInstance } from './plugin';
 import {
@@ -72,8 +73,8 @@ export function resolvePlugin(
         }
       }
     } catch (e) {
-      console.error('error when resolving corePlugin');
-      console.error(e);
+      logger.error('error when resolving corePlugin');
+      logger.error(e);
     }
 
     // resolve serverPlugin
@@ -92,7 +93,7 @@ export function resolvePlugin(
         }
       }
     } catch (e) {
-      console.error('error when resolving serverPlugin');
+      logger.error('error when resolving serverPlugin');
     }
 
     // resolve runtimePlugin

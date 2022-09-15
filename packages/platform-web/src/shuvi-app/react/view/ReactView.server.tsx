@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server';
 import { redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { Router } from '@shuvi/router-react';
-import chalk from '@shuvi/utils/lib/chalk';
+import logger from '@shuvi/utils/lib/logger';
 import { IHtmlTag } from '../../../shared';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';
@@ -49,7 +49,7 @@ export class ReactServerView implements IReactServerView {
       htmlContent = renderToString(RootApp);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
-        console.error(chalk.red('error') + ' - ' + error.stack);
+        logger.error(error.stack);
       }
       setAppError(serializeServerError(error));
       htmlContent = renderToString(RootApp); // Consistency on both server and client side

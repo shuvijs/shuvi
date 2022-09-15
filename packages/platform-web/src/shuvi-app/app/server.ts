@@ -9,7 +9,7 @@ import {
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import application from '@shuvi/platform-shared/shuvi-app/application';
 import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
-import chalk from '@shuvi/utils/lib/chalk';
+import logger from '@shuvi/utils/lib/logger';
 import { CreateAppServer, InternalApplication } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
 
@@ -49,7 +49,7 @@ export const createApp: CreateAppServer = options => {
           return;
         }
         if (process.env.NODE_ENV === 'development') {
-          console.error(chalk.red('error') + ' - ' + error.stack);
+          logger.error(error.stack);
         }
         app.setError(serializeServerError(error));
         next();
