@@ -72,6 +72,8 @@ function ssrCssRule({
         importLoaders: scss ? 1 : 0,
         esModule: true,
         modules: {
+          pattern: '[local]_[hash]',
+          dashedIdents: true,
           exportOnlyLocals: true
         }
       });
@@ -180,7 +182,10 @@ function cssRule({
         importLoaders: scss ? 2 : 1,
         esModule: true,
         ...(cssModule && {
-          modules: {}
+          modules: {
+            pattern: '[local]_[hash]',
+            dashedIdents: true
+          }
         })
       });
   } else {

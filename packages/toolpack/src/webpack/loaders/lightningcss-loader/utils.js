@@ -692,9 +692,10 @@ function normalizeOptions(rawOptions, loaderContext) {
   };
 }
 
-function shouldUseIcssPlugin(options) {
+function getCssModuleOptions(options) {
   if (Boolean(options.modules)) {
-    return { pattern: '[local]_[hash]', dashedIdents: false };
+    const { pattern, dashedIdents } = options.modules;
+    return { pattern, dashedIdents };
   }
   return Boolean(options.modules);
 }
@@ -979,7 +980,7 @@ function dashesCamelCase(str) {
 function getExportCode(exports, replacements, icssPluginUsed, options) {
   let code = '// Exports\n';
 
-  if (Boolean(icssPluginUsed)) {
+  if (icssPluginUsed) {
     let localsCode = '';
 
     const addExportToLocalsCode = (names, value) => {
@@ -1150,7 +1151,7 @@ function combineRequests(preRequest, url) {
 
 export {
   normalizeOptions,
-  shouldUseIcssPlugin,
+  getCssModuleOptions,
   normalizeUrl,
   requestify,
   normalizeSourceMap,

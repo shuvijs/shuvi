@@ -16,7 +16,7 @@ import {
   normalizeUrl,
   requestify,
   resolveRequests,
-  shouldUseIcssPlugin,
+  getCssModuleOptions,
   stringifyRequest,
   normalizeSourceMap
 } from './utils';
@@ -60,7 +60,7 @@ export default async function loader(
     this._compiler &&
     Boolean('fsStartTime' in this._compiler);
 
-  const needToUseIcssPlugin = shouldUseIcssPlugin(options);
+  const needToUseIcssPlugin = getCssModuleOptions(options);
 
   let LightningCssRes;
   try {
