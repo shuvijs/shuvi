@@ -5,7 +5,6 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
-import { AppSourceRegexs } from '../../constants';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import SupportTsExtensionResolverPlugin from '../plugins/support-ts-extension-resolver-plugin';
@@ -26,7 +25,7 @@ export interface BaseOptions {
   cacheDir: string;
 
   // src files need to be include
-  include: string[];
+  include: (string | RegExp)[];
   typescript?: {
     useTypeScript: boolean;
     typeScriptPath?: string;
@@ -188,7 +187,7 @@ export function baseWebpackChain({
   mainRule
     .oneOf('js')
     .test(/\.(tsx|ts|js|cjs|mjs|jsx)$/)
-    .include.merge([...include, ...AppSourceRegexs])
+    .include.merge([...include])
     .end()
     .use('shuvi-swc-loader')
     .loader('@shuvi/shuvi-swc-loader')
