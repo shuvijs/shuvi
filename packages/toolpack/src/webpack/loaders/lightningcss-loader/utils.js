@@ -692,7 +692,17 @@ function normalizeOptions(rawOptions, loaderContext) {
   };
 }
 
-function shouldUseIcssPlugin(options) {
+function getCssModuleOptions(options) {
+  if (typeof options.modules === 'object') {
+    const modules = options.modules;
+    return {
+      pattern: modules.getLocalIdent
+        ? modules.getLocalIdent()
+        : '[local]_[hash]',
+      dashedIdents: Boolean(modules.dashedIdents)
+    };
+  }
+
   return Boolean(options.modules);
 }
 
@@ -808,7 +818,7 @@ function getImportCode(imports, options) {
   return code ? `// Imports\n${code}` : '';
 }
 
-function normalizeParcelCssSourceMapForRuntime(map, loaderContext) {
+function normalizeLightningCssSourceMapForRuntime(map, loaderContext) {
   let resultMap = null;
 
   if (map instanceof Buffer) {
@@ -871,7 +881,7 @@ function printParams(media, dedupe, supports, layer) {
   return result;
 }
 
-function getParcelCssModuleCode(
+function getLightningCssModuleCode(
   result,
   api,
   replacements,
@@ -887,7 +897,7 @@ function getParcelCssModuleCode(
   if (options.sourceMap) {
     const sourceMap = result.map;
 
-    sourceMapValue = `,${normalizeParcelCssSourceMapForRuntime(
+    sourceMapValue = `,${normalizeLightningCssSourceMapForRuntime(
       sourceMap,
       loaderContext
     )}`;
@@ -976,7 +986,7 @@ function dashesCamelCase(str) {
 function getExportCode(exports, replacements, icssPluginUsed, options) {
   let code = '// Exports\n';
 
-  if (icssPluginUsed) {
+  if (Boolean(icssPluginUsed)) {
     let localsCode = '';
 
     const addExportToLocalsCode = (names, value) => {
@@ -1147,13 +1157,13 @@ function combineRequests(preRequest, url) {
 
 export {
   normalizeOptions,
-  shouldUseIcssPlugin,
+  getCssModuleOptions,
   normalizeUrl,
   requestify,
   normalizeSourceMap,
   getPreRequester,
   getImportCode,
-  getParcelCssModuleCode,
+  getLightningCssModuleCode,
   getExportCode,
   resolveRequests,
   isURLRequestable,
