@@ -142,7 +142,7 @@ export function baseWebpackChain({
       {
         // @ts-ignore
         minify: lightningCss
-          ? CssMinimizerPlugin.parcelCssMinify
+          ? CssMinimizerPlugin.lightningCssMinify
           : CssMinimizerPlugin.cssnanoMinify
       }
     ]);
