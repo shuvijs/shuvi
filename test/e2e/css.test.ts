@@ -6,15 +6,15 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-['CSS', 'ParcelCss'].forEach(function (describeName) {
+['CSS', 'LightningCss'].forEach(function (describeName) {
   describe(describeName, () => {
     beforeAll(async () => {
       ctx = await devFixture(
         'css',
-        describeName === 'ParcelCss'
+        describeName === 'LightningCss'
           ? {
               experimental: {
-                parcelCss: true
+                lightningCss: true
               }
             }
           : {}
@@ -90,9 +90,7 @@ jest.setTimeout(5 * 60 * 1000);
       // wait for render
       page.waitForTimeout(1000);
 
-      expect(await page.$attr('#css-modules', 'class')).toMatch(
-        /(style_)?test_.*/
-      );
+      expect(await page.$attr('#css-modules', 'class')).toMatch(/test__.*/);
       expect(
         await page.$eval(
           '#css-modules',
@@ -127,13 +125,13 @@ jest.setTimeout(5 * 60 * 1000);
         disableJavaScript: true
       });
       expect(await page.$attr('[data-test-id="css"]', 'class')).toMatch(
-        /(style_)?test_.*/
+        /test__.*/
       );
       expect(await page.$attr('[data-test-id="sass"]', 'class')).toMatch(
-        /(style_)?test_.*/
+        /test__.*/
       );
       expect(await page.$attr('[data-test-id="scss"]', 'class')).toMatch(
-        /(style_)?test_.*/
+        /test__.*/
       );
     });
 

@@ -12,7 +12,7 @@ export const getDefaultConfig: () => InternalConfig = () => ({
   },
   disposeInactivePage: process.env.NODE_ENV === 'test' ? false : true,
   experimental: {
-    parcelCss: false,
+    lightningCss: false,
     preBundle: false
   }
 });

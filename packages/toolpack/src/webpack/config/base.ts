@@ -38,7 +38,7 @@ export interface BaseOptions {
   env?: {
     [x: string]: string | undefined;
   };
-  parcelCss?: boolean;
+  lightningCss?: boolean;
   compiler?: CompilerOptions;
 }
 
@@ -67,7 +67,7 @@ export { WebpackChain };
 export function baseWebpackChain({
   dev,
   outputDir,
-  parcelCss,
+  lightningCss,
   compiler,
   projectRoot,
   include,
@@ -140,8 +140,8 @@ export function baseWebpackChain({
     config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin, [
       {
         // @ts-ignore
-        minify: parcelCss
-          ? CssMinimizerPlugin.parcelCssMinify
+        minify: lightningCss
+          ? CssMinimizerPlugin.lightningCssMinify
           : CssMinimizerPlugin.cssnanoMinify
       }
     ]);
@@ -165,7 +165,7 @@ export function baseWebpackChain({
 
   config.resolveLoader.merge({
     alias: [
-      'parcel-css-loader',
+      'lightningcss-loader',
       'shuvi-swc-loader',
       'route-component-loader'
     ].reduce((alias, loader) => {

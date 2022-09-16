@@ -1,6 +1,7 @@
 import { DEV_STYLE_ANCHOR_ID } from '@shuvi/shared/lib/constants';
 import { WebpackChain as Config } from '../base';
 import Rule from 'webpack-chain/src/Rule';
+import { LoaderContext } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as loaderUtils from 'loader-utils';
 import * as path from 'path';
@@ -13,37 +14,50 @@ interface StyleOptions {
   extractCss?: boolean;
   sourceMap?: boolean;
   ssr?: boolean;
-  parcelCss?: boolean;
+  lightningCss?: boolean;
 }
 
+const regexLikeIndexModule = /(?<!pages[\\/])index\.(scss|sass|css)$/;
+
 function getCSSModuleLocalIdent(
-  context: any,
-  localIdentName: string,
-  localName: string,
-  options: any
+  context: LoaderContext<any>,
+  _: any,
+  exportName: string,
+  options: object
 ) {
-  // Use the filename or folder name, based on some uses the index.js / index.module.(css|scss|sass) project style
-  const fileNameOrFolder = context.resourcePath.match(
-    /index\.module\.(css|scss|sass)$/
-  )
+  const relativePath = path
+    .relative(context.rootContext, context.resourcePath)
+    .replace(/\\+/g, '/');
+
+  // Generate a more meaningful name (parent folder) when the user names the
+  // file `index.css`.
+  const fileNameOrFolder = regexLikeIndexModule.test(relativePath)
     ? '[folder]'
     : '[name]';
-  // Create a hash based on a the file location and class name. Will be unique across a project, and close to globally unique.
+
+  // Generate a hash to make the class name unique.
   const hash = loaderUtils.getHashDigest(
-    // @ts-ignore
-    path.posix.relative(context.rootContext, context.resourcePath) + localName,
+    Buffer.from(`filePath:${relativePath}#className:${exportName}`),
     'md5',
     'base64',
     5
   );
-  // Use loaderUtils to find the file or folder name
-  const className = loaderUtils.interpolateName(
-    context,
-    fileNameOrFolder + '_' + localName + '__' + hash,
-    options
+
+  // Have webpack interpolate the `[folder]` or `[name]` to its real value.
+  return (
+    loaderUtils
+      .interpolateName(
+        context as any,
+        fileNameOrFolder + '_' + exportName + '__' + hash,
+        options
+      )
+      // Replace invalid symbols with underscores instead of escaping
+      // https://mathiasbynens.be/notes/css-escapes#identifiers-strings
+      .replace(/[^a-zA-Z0-9-_]/g, '_')
+      // "they cannot start with a digit, two hyphens, or a hyphen followed by a digit [sic]"
+      // https://www.w3.org/TR/CSS21/syndata.html#characters
+      .replace(/^(\d|--|-\d)/, '__$1')
   );
-  // remove the .module that appears in every classname when based on the file.
-  return className.replace('.module_', '_');
 }
 
 // style files regexes
@@ -55,12 +69,12 @@ function ssrCssRule({
   test,
   resourceQuery,
   scss,
-  parcelCss
+  lightningCss
 }: {
   test: any;
   resourceQuery?: any;
   scss?: boolean;
-  parcelCss?: boolean;
+  lightningCss?: boolean;
 }): Config.Rule {
   const rule: Config.Rule = new Rule();
   rule.test(test);
@@ -68,15 +82,16 @@ function ssrCssRule({
     rule.resourceQuery(resourceQuery);
   }
 
-  if (parcelCss) {
+  if (lightningCss) {
     rule
-      .use('parcel-css-loader')
-      .loader('@shuvi/parcel-css-loader')
+      .use('lightningcss-loader')
+      .loader('@shuvi/lightningcss-loader')
       .options({
         sourceMap: false,
         importLoaders: scss ? 1 : 0,
         esModule: true,
         modules: {
+          getLocalIdent: () => '[name]_[local]__[hash]',
           exportOnlyLocals: true
         }
       });
@@ -115,7 +130,7 @@ function cssRule({
   test,
   resourceQuery,
   cssModule,
-  parcelCss,
+  lightningCss,
   extractCss,
   sourceMap,
   scss
@@ -124,7 +139,7 @@ function cssRule({
   test: any;
   resourceQuery?: any;
   cssModule?: boolean;
-  parcelCss?: boolean;
+  lightningCss?: boolean;
   extractCss?: boolean;
   sourceMap?: boolean;
   scss?: boolean;
@@ -176,16 +191,19 @@ function cssRule({
       });
   }
 
-  if (parcelCss) {
+  if (lightningCss) {
     rule
-      .use('parcel-css-loader')
-      .loader('@shuvi/parcel-css-loader')
+      .use('lightningcss-loader')
+      .loader('@shuvi/lightningcss-loader')
       .options({
         sourceMap,
         importLoaders: scss ? 2 : 1,
         esModule: true,
         ...(cssModule && {
-          modules: {}
+          modules: {
+            getLocalIdent: () => '[name]_[local]__[hash]',
+            exportOnlyLocals: false
+          }
         })
       });
   } else {
@@ -198,8 +216,8 @@ function cssRule({
         esModule: true,
         ...(cssModule && {
           modules: {
-            getLocalIdent: getCSSModuleLocalIdent
-            // exportOnlyLocals: true,
+            getLocalIdent: getCSSModuleLocalIdent,
+            exportOnlyLocals: false
           }
         })
       });
@@ -247,7 +265,7 @@ export function withStyle(
     sourceMap,
     ssr,
     publicPath,
-    parcelCss,
+    lightningCss,
     filename,
     chunkFilename
   }: StyleOptions
@@ -261,7 +279,7 @@ export function withStyle(
         test: cssRegex,
         resourceQuery: cssModuleQueryRegex,
         scss: false,
-        parcelCss
+        lightningCss
       }).after('js')
     );
     oneOfs.set(
@@ -271,9 +289,11 @@ export function withStyle(
         test: sassRegex,
         resourceQuery: cssModuleQueryRegex,
         scss: true,
-        parcelCss
+        lightningCss
       }).after('css-module')
     );
+
+    // ignore noraml css module
     const ignoreRule: Config.Rule = new Rule();
     ignoreRule
       .test([cssRegex, sassRegex])
@@ -302,7 +322,7 @@ export function withStyle(
       test: cssRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
-      parcelCss,
+      lightningCss,
       scss: false,
       extractCss,
       sourceMap,
@@ -315,7 +335,7 @@ export function withStyle(
     cssRule({
       test: cssRegex,
       cssModule: false,
-      parcelCss,
+      lightningCss,
       scss: false,
       extractCss,
       sourceMap,
@@ -329,7 +349,7 @@ export function withStyle(
       test: sassRegex,
       resourceQuery: cssModuleQueryRegex,
       cssModule: true,
-      parcelCss,
+      lightningCss,
       scss: true,
       extractCss,
       sourceMap,
@@ -342,7 +362,7 @@ export function withStyle(
     cssRule({
       test: sassRegex,
       cssModule: false,
-      parcelCss,
+      lightningCss,
       scss: true,
       extractCss,
       sourceMap,

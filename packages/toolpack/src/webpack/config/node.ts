@@ -54,7 +54,7 @@ export function createNodeWebpackChain(options: NodeOptions): WebpackChain {
 
   return withStyle(chain, {
     ssr: true,
-    parcelCss: options.parcelCss,
+    lightningCss: options.lightningCss,
     filename: 'static/css/[contenthash:8].css',
     chunkFilename: 'static/css/[contenthash:8].chunk.css'
   });
