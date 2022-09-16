@@ -43,7 +43,7 @@ export function createWebpackConfig(
     AppSourceRegexp,
     ...(opts.include || [])
   ];
-  const parcelCss = !!config.experimental.parcelCss;
+  const lightningCss = !!config.experimental.lightningCss;
   const experimental = config.experimental;
   const compiler = {
     ...config.compiler,
@@ -60,7 +60,7 @@ export function createWebpackConfig(
       outputDir,
       cacheDir,
       publicPath,
-      parcelCss,
+      lightningCss,
       compiler,
       typescript,
       include,
@@ -75,7 +75,7 @@ export function createWebpackConfig(
       outputDir,
       cacheDir,
       publicPath,
-      parcelCss,
+      lightningCss,
       compiler,
       typescript,
       include,
