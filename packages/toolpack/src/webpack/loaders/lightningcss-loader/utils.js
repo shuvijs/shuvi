@@ -980,7 +980,7 @@ function dashesCamelCase(str) {
 function getExportCode(exports, replacements, icssPluginUsed, options) {
   let code = '// Exports\n';
 
-  if (icssPluginUsed) {
+  if (Boolean(icssPluginUsed)) {
     let localsCode = '';
 
     const addExportToLocalsCode = (names, value) => {
