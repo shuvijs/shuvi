@@ -1,5 +1,4 @@
 // import resolve from "resolve";
-import { AppSourceRegexs } from '../../../constants';
 import { ExternalsFunction } from '../../types';
 
 type Test = string | RegExp;
@@ -28,7 +27,7 @@ export function nodeExternals({
   projectRoot,
   include
 }: {
-  include: string[];
+  include: (string | RegExp)[];
   projectRoot: string;
 }): ExternalsFunction {
   const nodeExternal: ExternalsFunction = ({ context, request }, next) => {
@@ -46,10 +45,6 @@ export function nodeExternals({
     // make sure we don't externalize anything that is
     // supposed to be transpiled
     if (match(request, include)) {
-      return transpiled();
-    }
-
-    if (match(request, AppSourceRegexs)) {
       return transpiled();
     }
 
