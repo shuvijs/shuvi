@@ -4,8 +4,14 @@ import {
   createAsyncParallelHook,
   createAsyncSeriesHook
 } from '@shuvi/hook';
+import { ShuviRequest } from '@shuvi/service';
 import { IAppContext } from '@shuvi/platform-shared/shared';
 import { IHtmlDocument } from '../html-render';
+
+export interface ModifyHtmlContext {
+  req: ShuviRequest;
+  appContext: IAppContext;
+}
 
 export type IHandlePageRequest = (
   req: IncomingMessage,
@@ -18,7 +24,7 @@ const getPageData = createAsyncParallelHook<
   Record<string, unknown>
 >();
 const handlePageRequest = createSyncWaterfallHook<IHandlePageRequest>();
-const modifyHtml = createAsyncSeriesHook<IHtmlDocument, IAppContext>();
+const modifyHtml = createAsyncSeriesHook<IHtmlDocument, ModifyHtmlContext>();
 
 export const extendedHooks = {
   getPageData,
