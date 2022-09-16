@@ -8,11 +8,19 @@ import {
   resolveFixture
 } from '../utils';
 
-function getFileContent(
-  manifest: any,
+async function getFileContent(
+  fixture: string,
   fileName: string,
   from: string = 'loadble'
-): string {
+): Promise<string> {
+  const manifestPath = resolveFixture(
+    `${fixture}/build/build-manifest.client.json`
+  );
+  const manifestContent = await fs.promises.readFile(manifestPath, {
+    encoding: 'utf-8'
+  });
+  const manifest = JSON.parse(manifestContent);
+
   let realFile = '';
   if (from === 'loadble') {
     const target = manifest.loadble;
@@ -38,7 +46,7 @@ function getFileContent(
   if (!realFile) {
     throw new Error(`con't find webpack bundle file: ${fileName}`);
   }
-  const fileDir = resolveFixture('loader-tree-shaking/dist/client/');
+  const fileDir = resolveFixture('loader-tree-shaking/build/client/');
   const fileContent = fs.readFileSync(path.join(fileDir, realFile), 'utf-8');
   return fileContent;
 }
@@ -48,7 +56,6 @@ jest.setTimeout(5 * 60 * 1000);
 function runTest({ dev }: { dev: boolean }) {
   let ctx: AppCtx;
   let page: Page;
-  let manifest: any;
 
   describe(`Loader Tree Shaking [${dev ? 'dev' : 'prod'}]`, () => {
     beforeAll(async () => {
@@ -59,13 +66,6 @@ function runTest({ dev }: { dev: boolean }) {
       }
 
       page = await ctx.browser.page();
-      const manifestPath = resolveFixture(
-        'loader-tree-shaking/dist/build-manifest.client.json'
-      );
-      const manifestContent = await fs.promises.readFile(manifestPath, {
-        encoding: 'utf-8'
-      });
-      manifest = JSON.parse(manifestContent);
     });
 
     afterAll(async () => {
@@ -76,8 +76,8 @@ function runTest({ dev }: { dev: boolean }) {
     test('route page should remove loader function-declaration/async', async () => {
       await page.goto(ctx.url('/function-declaration/async'));
       await page.waitForSelector('#content');
-      const fileContent = getFileContent(
-        manifest,
+      const fileContent = await getFileContent(
+        'loader-tree-shaking',
         'function-declaration/async'
       );
       expect(fileContent).not.toMatch(
@@ -88,8 +88,8 @@ function runTest({ dev }: { dev: boolean }) {
     test('route page should remove loader function-declaration/normal', async () => {
       await page.goto(ctx.url('/function-declaration/normal'));
       await page.waitForSelector('#content');
-      const fileContent = getFileContent(
-        manifest,
+      const fileContent = await getFileContent(
+        'loader-tree-shaking',
         'function-declaration/normal'
       );
       expect(fileContent).not.toMatch(
@@ -100,8 +100,8 @@ function runTest({ dev }: { dev: boolean }) {
     test('route page should remove loader variable-declaration/async', async () => {
       await page.goto(ctx.url('/variable-declaration/async'));
       await page.waitForSelector('#content');
-      const fileContent = getFileContent(
-        manifest,
+      const fileContent = await getFileContent(
+        'loader-tree-shaking',
         'variable-declaration/async'
       );
       expect(fileContent).not.toMatch(
@@ -112,8 +112,8 @@ function runTest({ dev }: { dev: boolean }) {
     test('route page should remove loader variable-declaration/normal', async () => {
       await page.goto(ctx.url('/variable-declaration/normal'));
       await page.waitForSelector('#content');
-      const fileContent = getFileContent(
-        manifest,
+      const fileContent = await getFileContent(
+        'loader-tree-shaking',
         'variable-declaration/normal'
       );
       expect(fileContent).not.toMatch(
@@ -124,7 +124,11 @@ function runTest({ dev }: { dev: boolean }) {
     test("main entry should only keep page's loader", async () => {
       await page.goto(ctx.url('/function-declaration/async'));
       await page.waitForSelector('#content');
-      const fileContent = getFileContent(manifest, 'main', 'bundles');
+      const fileContent = await getFileContent(
+        'loader-tree-shaking',
+        'main',
+        'bundles'
+      );
       expect(fileContent).toMatch('function-declaration-async-loader-symbol');
       expect(fileContent).toMatch('function-declaration-normal-loader-symbol');
       expect(fileContent).toMatch('variable-declaration-async-loader-symbol');

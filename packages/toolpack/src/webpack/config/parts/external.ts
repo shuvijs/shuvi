@@ -41,9 +41,7 @@ export function nodeExternals({
     }
 
     const notExternalModules: Test[] = [];
-    const externalModules: Test[] = [
-      /platform-shared[/\\](esm|lib)[/\\]shared[/\\]shuvi-singleton-runtimeConfig/
-    ];
+    const externalModules: Test[] = [];
 
     // make sure we don't externalize anything that is
     // supposed to be transpiled

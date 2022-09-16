@@ -169,7 +169,7 @@ async function launchShuvi(
         console.log(data);
         // We could only listen to the console output to ensure that devServer is ready
         handleStdoutStderr.onStdout && handleStdoutStderr.onStdout(data);
-        if (data.includes('Ready on')) {
+        if (data.includes('ready in')) {
           resolve(shuviProcess);
         }
       });

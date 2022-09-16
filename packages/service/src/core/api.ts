@@ -1,6 +1,7 @@
 import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { joinPath } from '@shuvi/utils/lib/string';
+import logger from '@shuvi/utils/lib/logger';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOption } from '../project';
@@ -120,8 +121,7 @@ class Api {
 
     this._paths = getPaths({
       rootDir: this._cwd,
-      outputPath: this._config.outputPath,
-      publicDir: this._config.publicDir
+      outputPath: this._config.outputPath
     });
     Object.freeze(this._config);
     Object.freeze(this._paths);
@@ -431,7 +431,7 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     await api.init();
   } catch (err: any) {
     if (isFatalError(err)) {
-      console.error(err.message);
+      logger.error(err.message);
       process.exit(1);
     }
 

@@ -1,5 +1,6 @@
 import {
   createAsyncParallelHook,
+  createAsyncSeriesHook,
   createAsyncSeriesWaterfallHook,
   createHookManager,
   isPluginInstance,
@@ -14,7 +15,7 @@ import { IAppContext } from './applicationTypes';
 export type AppComponent = unknown;
 
 const init = createAsyncParallelHook<void>();
-const appContext = createAsyncSeriesWaterfallHook<IAppContext, void>();
+const appContext = createAsyncSeriesHook<IAppContext>();
 const appComponent = createAsyncSeriesWaterfallHook<
   AppComponent,
   IAppContext

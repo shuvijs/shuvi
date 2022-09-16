@@ -39,10 +39,11 @@ export interface DevMiddleware {
   onHMR(req: IncomingMessage, socket: any, head: Buffer): void;
 }
 
-export async function getDevMiddleware(
+export function getDevMiddleware(
   bundler: Bunlder,
   serverPluginContext: IServerPluginContext
-): Promise<DevMiddleware> {
+): DevMiddleware {
+  let applied = false;
   const context: IContext = {
     state: false,
     callbacks: []
@@ -70,26 +71,6 @@ export async function getDevMiddleware(
     compiler: bundler.getSubCompiler(BUNDLER_TARGET_CLIENT)!
   });
 
-  const apply = (server: Server) => {
-    const targetServer = server;
-    targetServer.use(
-      launchEditorMiddleware(
-        DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
-        serverPluginContext.paths.rootDir
-      )
-    );
-    targetServer.use(
-      stackFrameMiddleware(
-        DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
-        bundler,
-        serverPluginContext.resolveBuildFile,
-        CLIENT_OUTPUT_DIR,
-        SERVER_OUTPUT_DIR
-      )
-    );
-    bundler.applyDevMiddlewares(server);
-  };
-
   const send = (action: string, payload?: any) => {
     webpackHotMiddleware.publish({ action, data: payload });
   };
@@ -114,6 +95,30 @@ export async function getDevMiddleware(
     wsServer.handleUpgrade(req, req.socket, head, client => {
       webpackHotMiddleware.onHMR(client);
     });
+  };
+
+  const apply = (server: Server) => {
+    if (applied) {
+      return;
+    }
+    applied = true;
+
+    server.use(
+      launchEditorMiddleware(
+        DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
+        serverPluginContext.paths.rootDir
+      )
+    );
+    server.use(
+      stackFrameMiddleware(
+        DEV_ORIGINAL_STACK_FRAME_ENDPOINT,
+        bundler,
+        serverPluginContext.resolveBuildFile,
+        CLIENT_OUTPUT_DIR,
+        SERVER_OUTPUT_DIR
+      )
+    );
+    bundler.applyDevMiddlewares(server);
   };
 
   return {

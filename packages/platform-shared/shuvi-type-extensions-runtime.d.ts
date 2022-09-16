@@ -35,11 +35,6 @@ declare module '@shuvi/app/core/setRuntimeConfig' {
   export default function setRuntimeConfig(config: IRuntimeConfig): void;
 }
 
-declare module '@shuvi/app/core/setPublicRuntimeConfig' {
-  import { IRuntimeConfig } from '@shuvi/platform-shared/shared';
-  export default function setPublicRuntimeConfig(config: IRuntimeConfig): void;
-}
-
 declare module '@shuvi/app/user/error' {
   const Error: any;
   export default Error;

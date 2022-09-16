@@ -1,3 +1,4 @@
+import { DEV_READY_ENDPOINT } from '@shuvi/shared/lib/constants';
 import { AppCtx, Page, devFixture, resolveFixture } from '../utils';
 
 const FIXTURE = 'dll';
@@ -12,7 +13,9 @@ describe('without Dll preBundle', () => {
 
   beforeAll(async () => {
     ctx = await devFixture(FIXTURE, { experimental: { preBundle: false } });
-    modules = await require(resolveFixture(`dll/dist/client/modules.json`));
+    page = await ctx.browser.page();
+    await page.goto(ctx.url(DEV_READY_ENDPOINT));
+    modules = await require(resolveFixture(`dll/build/client/modules.json`));
   });
 
   afterAll(async () => {
@@ -38,7 +41,9 @@ describe('with Dll preBundle', () => {
   beforeAll(async () => {
     jest.resetModules();
     ctx = await devFixture(FIXTURE, { experimental: { preBundle: true } });
-    modules = await require(resolveFixture(`dll/dist/client/modules.json`));
+    page = await ctx.browser.page();
+    await page.goto(ctx.url(DEV_READY_ENDPOINT));
+    modules = await require(resolveFixture(`dll/build/client/modules.json`));
   });
 
   afterAll(async () => {

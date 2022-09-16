@@ -1,7 +1,8 @@
 import { IPluginContext } from '@shuvi/service';
 import { fileUtils } from '@shuvi/service/lib/project';
+import logger from '@shuvi/utils/lib/logger';
 import {
-  setRuntimeConfig,
+  setServerRuntimeConfig,
   setPublicRuntimeConfig
 } from '../../shared/shuvi-singleton-runtimeConfig';
 import { createProjectContext } from '../project/projectContext';
@@ -36,18 +37,15 @@ export const getPresetRuntimeFilesCreator =
       const key = serverKeys[index];
       const hasSameKey = publicKeys.includes(key);
       if (hasSameKey) {
-        console.warn(
+        logger.warn(
           `Warning: key "${key}" exist in both "runtimeConfig" and "publicRuntimeConfig". Please rename the key, or the value from "publicRuntimeConfig" will be applied.\n`
         );
         break;
       }
     }
-    if (serverKeys) {
-      setRuntimeConfig(serverRuntimeConfig);
-    }
-    if (publicKeys) {
-      setPublicRuntimeConfig(publicRuntimeConfig);
-    }
+
+    setServerRuntimeConfig(serverKeys ? serverRuntimeConfig : null);
+    setPublicRuntimeConfig(publicKeys ? publicRuntimeConfig : null);
 
     const context = createProjectContext();
     context.userModule = {

@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import { IPluginContext, Bunlder } from '@shuvi/service';
 import { CLIENT_OUTPUT_DIR } from '@shuvi/shared/lib/constants';
+import logger from '@shuvi/utils/lib/logger';
 import { ShuviConfig } from '../config';
 import { initShuvi } from '../shuvi';
 
@@ -28,8 +29,8 @@ async function bundle(bundler: Bunlder) {
 
   // Show warnings if no errors were found.
   if (messages.warnings.length) {
-    console.log('Compiled with warnings.\n');
-    console.log(messages.warnings.join('\n\n'));
+    logger.warn('Compiled with warnings.\n');
+    logger.warn(messages.warnings.join('\n\n'));
   }
 }
 

@@ -2,6 +2,7 @@ import { readFile, pathExists, stat as fileStat } from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import chalk from '@shuvi/utils/lib/chalk';
+import logger from '@shuvi/utils/lib/logger';
 import { resolve } from '@shuvi/utils/lib/resolve';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { TsConfig, TypeScriptModule } from './types';
@@ -129,12 +130,10 @@ export async function getTsConfig(
     return result;
   } catch (err: any) {
     if (err && err.name === 'SyntaxError') {
-      console.error(
-        chalk.red.bold(
-          'Could not parse',
-          chalk.cyan('tsconfig.json') + '.',
-          'Please make sure it contains syntactically correct JSON.'
-        )
+      logger.error(
+        'Could not parse',
+        chalk.cyan('tsconfig.json') + '.',
+        'Please make sure it contains syntactically correct JSON.'
       );
     }
 

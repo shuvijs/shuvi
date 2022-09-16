@@ -13,8 +13,8 @@ export const appComponent: AppComponentFunction = async UserApp => {
   return UserApp;
 };
 
-export const appContent: AppContextFunction = context => {
-  return context;
+export const appContext: AppContextFunction = _context => {
+  // do nothing
 };
 
 export const dispose: DisposeFunction = () => {
