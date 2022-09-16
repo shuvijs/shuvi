@@ -5,10 +5,10 @@ import logger from '@shuvi/utils/lib/logger';
 let isWarnedhandlePageRequest: boolean = false;
 
 export default createServerPlugin({
-  getPageData: (appContext, context) => {
-    return resources.server?.server?.getPageData?.(appContext, context) || {};
+  getPageData: appContext => {
+    return resources.server?.server?.getPageData?.(appContext) || {};
   },
-  handlePageRequest: (originalHandlePageRequest, context) => {
+  handlePageRequest: originalHandlePageRequest => {
     if (
       !isWarnedhandlePageRequest &&
       resources.server?.server?.handlePageRequest !== undefined
@@ -20,16 +20,11 @@ export default createServerPlugin({
     }
     return (
       resources.server?.server?.handlePageRequest?.(
-        originalHandlePageRequest,
-        context
+        originalHandlePageRequest
       ) || originalHandlePageRequest
     );
   },
-  modifyHtml: async (document, context, pluginContext) => {
-    await resources.server?.server?.modifyHtml?.(
-      document,
-      context,
-      pluginContext
-    );
+  modifyHtml: async (document, context) => {
+    await resources.server?.server?.modifyHtml?.(document, context);
   }
 });

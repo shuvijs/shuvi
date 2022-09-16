@@ -68,17 +68,17 @@ export class Renderer {
 
   async renderView(options: IRenderViewOptions) {
     let result: Response;
-    const { app } = options;
+    const { app, req } = options;
 
     const doc = await this._renderDocument(options);
     if (isResponse(doc)) {
       result = doc;
     } else {
       addEssentialTagsIfMissing(doc);
-      await this._serverPluginContext.serverPluginRunner.modifyHtml(
-        doc,
-        app.context
-      );
+      await this._serverPluginContext.serverPluginRunner.modifyHtml(doc, {
+        req,
+        appContext: app.context
+      });
       const htmlStr = this._renderDocumentToString(doc);
       result = text(htmlStr, {
         status: app.error?.code ?? 200
