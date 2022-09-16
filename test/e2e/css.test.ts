@@ -90,9 +90,7 @@ jest.setTimeout(5 * 60 * 1000);
       // wait for render
       page.waitForTimeout(1000);
 
-      expect(await page.$attr('#css-modules', 'class')).toMatch(
-        /(style_)?test_.*|.*_test/
-      );
+      expect(await page.$attr('#css-modules', 'class')).toMatch(/test_.*/);
       expect(
         await page.$eval(
           '#css-modules',
@@ -127,13 +125,13 @@ jest.setTimeout(5 * 60 * 1000);
         disableJavaScript: true
       });
       expect(await page.$attr('[data-test-id="css"]', 'class')).toMatch(
-        /(style_)?test_.*|.*_test/
+        /test_.*/
       );
       expect(await page.$attr('[data-test-id="sass"]', 'class')).toMatch(
-        /(style_)?test_.*|.*_test/
+        /test_.*/
       );
       expect(await page.$attr('[data-test-id="scss"]', 'class')).toMatch(
-        /(style_)?test_.*|.*_test/
+        /test_.*/
       );
     });
 
