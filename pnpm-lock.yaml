@@ -219,7 +219,7 @@ importers:
   packages/platform-shared:
     specifiers:
       '@shuvi/hook': 1.0.0-rc.17
-      '@shuvi/redox': 0.0.6
+      '@shuvi/redox': 0.0.7
       '@shuvi/router': 1.0.0-rc.17
       '@shuvi/runtime': 1.0.0-rc.17
       '@shuvi/service': 1.0.0-rc.17
@@ -230,7 +230,7 @@ importers:
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
-      '@shuvi/redox': 0.0.6
+      '@shuvi/redox': 0.0.7
       '@shuvi/router': link:../router
       '@shuvi/runtime': link:../runtime
       '@shuvi/service': link:../service
@@ -247,8 +247,8 @@ importers:
       '@shuvi/error-overlay': 1.0.0-rc.17
       '@shuvi/hook': 1.0.0-rc.17
       '@shuvi/platform-shared': 1.0.0-rc.17
-      '@shuvi/redox': 0.0.6
-      '@shuvi/redox-react': 0.0.6
+      '@shuvi/redox': 0.0.7
+      '@shuvi/redox-react': 0.0.7
       '@shuvi/router': 1.0.0-rc.17
       '@shuvi/router-react': 1.0.0-rc.17
       '@shuvi/runtime': 1.0.0-rc.17
@@ -285,8 +285,8 @@ importers:
       '@shuvi/error-overlay': link:../error-overlay
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/redox': 0.0.6
-      '@shuvi/redox-react': 0.0.6_baayl4hj3ttsihek6nyhiakvpq
+      '@shuvi/redox': 0.0.7
+      '@shuvi/redox-react': 0.0.7_c5csfgawg4azvbqq44mfv7bbq4
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
@@ -4182,10 +4182,10 @@ packages:
       react-dom: 16.8.0_react@16.8.0
     dev: false
 
-  /@shuvi/redox-react/0.0.6_baayl4hj3ttsihek6nyhiakvpq:
-    resolution: {integrity: sha512-Iyz/2Ri5RPcQnNugsHY2PZ47aMIFYkvfl/9MTmxNFS/3cYdYwC7fa4ozhH8PXDW0/1MISqAAESghrDIObAiFZw==}
+  /@shuvi/redox-react/0.0.7_c5csfgawg4azvbqq44mfv7bbq4:
+    resolution: {integrity: sha512-6LZcUo/rVeGl++kfArGia1+6wVTwnEsjAtZAPTEsmiuQ5jcuaOvTjUWj3Un+PzXYXkeKahE+a8AePscnYakKfQ==}
     peerDependencies:
-      '@shuvi/redox': 0.0.6
+      '@shuvi/redox': 0.0.7
       react: '>=16.8'
       react-dom: '>=16.8'
     peerDependenciesMeta:
@@ -4194,7 +4194,7 @@ packages:
       react-dom:
         optional: true
     dependencies:
-      '@shuvi/redox': 0.0.6
+      '@shuvi/redox': 0.0.7
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
       use-sync-external-store: 1.2.0_react@18.1.0
@@ -4212,8 +4212,8 @@ packages:
       tiny-invariant: 1.2.0
     dev: false
 
-  /@shuvi/redox/0.0.6:
-    resolution: {integrity: sha512-J4oyTTnHmwdpMcvxw8+bCoYk2EGLvDfFrPZqwuKZVcTGWYg6K2OA2aUOIaiXvPezHEJCHnXoGOodNQpNPDcATg==}
+  /@shuvi/redox/0.0.7:
+    resolution: {integrity: sha512-80YJCbkSUkz61lXfCXQR2Wg8WL/jtRKLwd2tC+6JytgAJ+f3sX1c5+6hr2Ga42a/PsA7+Zsxu98Fb7X2sAzkKA==}
     engines: {node: '>=10'}
     dependencies:
       immer: 9.0.6
