@@ -2,8 +2,8 @@
 const matchNativeWin32Path = /^([A-Z]:[/\\])|^\\\\/i;
 const win32Root = /^[A-Z]:[/\\]+/i;
 
-export function urlToRequest(filepath: string) {
-  if (matchNativeWin32Path.test(filepath)) {
+export function urlToRequest(filepath: string, needProcess = true) {
+  if (matchNativeWin32Path.test(filepath) && needProcess) {
     // turn "C:\" or "C:\\" into "c:/"
     filepath = `${filepath.replace(
       win32Root,
@@ -17,6 +17,5 @@ export function urlToRequest(filepath: string) {
   }
 
   filepath = filepath.replace(/\\/g, '/');
-
   return filepath;
 }
