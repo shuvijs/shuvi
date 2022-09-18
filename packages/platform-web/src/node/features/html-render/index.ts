@@ -116,7 +116,8 @@ export const getPlugin = (
     addRuntimeService: () => [
       {
         source: resolvePkgFileWithoutFileProtocol(
-          'esm/shuvi-app/shuvi-runtime-index'
+          // fixme: WINDOWS 不加.JS 会报错 MODULE NOT FOUND ?
+          'esm/shuvi-app/shuvi-runtime-index.js'
         ),
         exported: '*'
       },
