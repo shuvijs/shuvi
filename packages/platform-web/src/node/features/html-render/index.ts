@@ -137,13 +137,15 @@ export const getPlugin = (
     ],
     addResource: context => generateResource(context),
     afterBuild: async context => {
-      await buildHtml({
-        context,
-        serverPlugins: platformContext.serverPlugins,
-        getMiddlewares,
-        pathname: '/',
-        filename: 'index.html'
-      });
+      if (context.config.ssr === false) {
+        await buildHtml({
+          context,
+          serverPlugins: platformContext.serverPlugins,
+          getMiddlewares,
+          pathname: '/',
+          filename: 'index.html'
+        });
+      }
     }
   });
 
