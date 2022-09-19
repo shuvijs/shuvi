@@ -1,3 +1,24 @@
+# [1.0.0-rc.18](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.17...v1.0.0-rc.18) (2022-09-19)
+
+
+### Bug Fixes
+
+* change to modifyHtml to AsyncSeriesHook ([9521e22](https://github.com/shuvijs/shuvi/commit/9521e22545d4c676e62b2df8b58f555d4a643978))
+* **e2e:** wait first build ([44a6076](https://github.com/shuvijs/shuvi/commit/44a607689cbb6ddba884dd3ae612e1d9c43d00a1))
+* fix the repeat log ([03f11f9](https://github.com/shuvijs/shuvi/commit/03f11f9775efe55a487120dc9113ae390d3eab4c))
+* make sure bundler has finished build before running any middlewares ([ef064bc](https://github.com/shuvijs/shuvi/commit/ef064bc08d97c8b998509a5c60a32987aff99241))
+* output target of shuvi.config.tst got overwrited by user tscoonfig.json ([a9d5d27](https://github.com/shuvijs/shuvi/commit/a9d5d273c0073dcb97724b4da506123ce2893d7b))
+
+
+### Features
+
+* add req to modifyHtml ([30d4ab5](https://github.com/shuvijs/shuvi/commit/30d4ab55aaa910053b914dcc1469e5f86cd80b6d))
+* console beautify ([455a424](https://github.com/shuvijs/shuvi/commit/455a42439cd05008390ca49559525c6276480164))
+* improve performance of shuvi dev ([535aefe](https://github.com/shuvijs/shuvi/commit/535aefed3000359679ecc366f9f2242a57fc0f62))
+* lightning css ([90f3134](https://github.com/shuvijs/shuvi/commit/90f3134418fa2017d83957ec06fee239fe2f53f1))
+
+
+
 # [1.0.0-rc.17](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.16...v1.0.0-rc.17) (2022-09-13)
 
 
