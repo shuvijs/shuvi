@@ -140,9 +140,6 @@ export const getAllowFilesAndDirs = async (dirname: string) => {
   return result;
 };
 
-export const hasAllowFiles = (files: string[]): boolean =>
-  files.some(file => isRouteFile(file));
-
 export const readDir = (fullPath: string) => {
   return fs.promises.readdir(fullPath, { encoding: 'utf-8' });
 };
