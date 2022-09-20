@@ -272,8 +272,47 @@ describe('route/api', () => {
       errors: normalizeWarnings(errors, dir)
     };
   };
+
   it('should get correct api routes', async () => {
     const result = await getFixtureApiRoutes('api');
+
+    expect(result).toMatchObject({
+      routes: [
+        {
+          path: '/users/:id',
+          api: 'users/$id/api.js'
+        },
+        {
+          path: '/api',
+          api: 'api/api.js'
+        },
+        {
+          path: '/users',
+          api: 'users/api.js'
+        }
+      ],
+      warnings: [],
+      errors: []
+    });
+  });
+
+  it('should get correct api routes', async () => {
+    const result = await getFixtureApiRoutes('api-1');
+
+    expect(result).toMatchObject({
+      routes: [
+        {
+          path: '/api',
+          api: 'api/api.js'
+        }
+      ],
+      warnings: [],
+      errors: []
+    });
+  });
+
+  it('should get correct api routes (api-with-page)', async () => {
+    const result = await getFixtureApiRoutes('api-with-page');
 
     expect(result).toMatchObject({
       routes: [
@@ -306,7 +345,7 @@ describe('route/api', () => {
         },
         {
           type: 'api',
-          msg: 'Find both layout.js and api.js in "b"!, only "layout.js" is used.'
+          msg: 'Find both page.js and api.js in "b"!, only "page.js" is used.'
         }
       ],
       errors: []

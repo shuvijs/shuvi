@@ -5,10 +5,10 @@ import {
   IMiddlewareRoutes,
   CreateAppServer,
   IApiRoutes,
-  IServerModule,
   PlatformWebCustomConfig
 } from '../shared';
 import { IViewServer } from './features/html-render';
+import { IServerModule } from './shuvi-runtime-server';
 import {
   addRoutes,
   addMiddlewareRoutes,

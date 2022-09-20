@@ -69,12 +69,12 @@ export interface IRouteLoaderContext {
   appContext: IAppContext;
 }
 
-export type Loader<T extends {} = {}> = (
-  loaderContenxt: IRouteLoaderContext
-) => Promise<T | void | undefined> | T | void | undefined;
+export type Loader<T = any> = (
+  loaderContext: IRouteLoaderContext
+) => Promise<T> | T;
 
 export type NormalizedLoader = (
-  loaderContenxt: IRouteLoaderContext
+  loaderContext: IRouteLoaderContext
 ) => Promise<Response | undefined>;
 
 export type LoaderDataRecord = Record<string, any>;

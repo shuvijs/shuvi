@@ -7,6 +7,8 @@ import { IPluginContext } from '../core';
 import { getTypeScriptInfo } from './typescript';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 
+const AppSourceRegexp: RegExp = /([/\\]shuvi-app[/\\])|([/\\]\.shuvi[/\\])/;
+
 export interface IWebpackEntry {
   [x: string]: string | string[];
 }
@@ -35,8 +37,13 @@ export function createWebpackConfig(
   const cacheDir = paths.cacheDir;
   const publicPath = assetPublicPath;
   const env = config.env;
-  const include = [paths.appDir, paths.srcDir, ...(opts.include || [])];
-  const parcelCss = !!config.experimental.parcelCss;
+  const include = [
+    paths.srcDir,
+    paths.appDir,
+    AppSourceRegexp,
+    ...(opts.include || [])
+  ];
+  const lightningCss = !!config.experimental.lightningCss;
   const experimental = config.experimental;
   const compiler = {
     ...config.compiler,
@@ -53,7 +60,7 @@ export function createWebpackConfig(
       outputDir,
       cacheDir,
       publicPath,
-      parcelCss,
+      lightningCss,
       compiler,
       typescript,
       include,
@@ -68,7 +75,7 @@ export function createWebpackConfig(
       outputDir,
       cacheDir,
       publicPath,
-      parcelCss,
+      lightningCss,
       compiler,
       typescript,
       include,

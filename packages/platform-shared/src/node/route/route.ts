@@ -7,7 +7,6 @@ import {
 } from '../../shared';
 import {
   getAllowFilesAndDirs,
-  hasAllowFiles,
   normalizeRoutePath,
   combineComponents,
   sortRoutes,
@@ -76,7 +75,6 @@ export const getRawRoutesFromDir = async (
     parentDir: string
   ) => {
     const files = await getAllowFilesAndDirs(dirname);
-    const onlyHasDir = !hasAllowFiles(files);
 
     if (!files.length) {
       warnings.push({
@@ -100,19 +98,14 @@ export const getRawRoutesFromDir = async (
 
       const segment = parentDir === '' ? '/' : normalizeRoutePath(parentDir);
       if (isDir) {
-        if (onlyHasDir) {
-          // only indent segment,routes was in same level.
-          await visitDirectory(filepath, routes, `${parentDir}/${file}`);
-        } else {
-          const route: RawDirRoute = {
-            kind: 'dir',
-            filepath,
-            segment: segment,
-            children: []
-          };
-          routes.push(route);
-          await visitDirectory(filepath, route.children, file);
-        }
+        const route: RawDirRoute = {
+          kind: 'dir',
+          filepath,
+          segment: segment,
+          children: []
+        };
+        routes.push(route);
+        await visitDirectory(filepath, route.children, file);
       } else {
         const ext = extname(file);
         const type = basename(file, ext) as SupportFileType;

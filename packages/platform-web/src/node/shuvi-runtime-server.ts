@@ -1,11 +1,9 @@
-import { ShuviRequestHandler } from '@shuvi/service';
-import { IServerModule as _IServerModule, IApiRequestHandler } from '../shared';
+import {
+  ShuviRequestHandler,
+  ServerPluginConstructor as _ServerPluginConstructor
+} from '@shuvi/service';
+import { IApiRequestHandler } from '../shared';
 import { extendedHooks } from './features/html-render/serverHooks';
-
-type Head<T extends any[]> = T extends [...infer Head, any] ? Head : never;
-type RemoveLast<T extends (...args: any) => any> = (
-  ...args: Head<Parameters<T>>
-) => ReturnType<T>;
 
 declare global {
   namespace ShuviService {
@@ -17,7 +15,12 @@ declare global {
   }
 }
 
-type ServerModule = Required<_IServerModule>;
+type ServerPluginConstructor = Required<_ServerPluginConstructor>;
+
+type Head<T extends any[]> = T extends [...infer Head, any] ? Head : never;
+type RemoveLast<T extends (...args: any) => any> = (
+  ...args: Head<Parameters<T>>
+) => ReturnType<T>;
 
 // server runtime api, used in page.js
 export type ShuviMiddlewareHandler = ShuviRequestHandler;
@@ -25,10 +28,20 @@ export type ShuviMiddlewareHandler = ShuviRequestHandler;
 export type ShuviApiHandler = IApiRequestHandler;
 
 // server hooks, used in src/server.js
-export type GetPageDataFunction = RemoveLast<ServerModule['getPageData']>;
-
-export type HandlePageRequestFunction = RemoveLast<
-  ServerModule['handlePageRequest']
+export type GetPageDataFunction = RemoveLast<
+  ServerPluginConstructor['getPageData']
 >;
 
-export type ModifyHtmlFunction = RemoveLast<ServerModule['modifyHtml']>;
+export type HandlePageRequestFunction = RemoveLast<
+  ServerPluginConstructor['handlePageRequest']
+>;
+
+export type ModifyHtmlFunction = RemoveLast<
+  ServerPluginConstructor['modifyHtml']
+>;
+
+export interface IServerModule {
+  getPageData?: GetPageDataFunction;
+  handlePageRequest?: HandlePageRequestFunction;
+  modifyHtml?: ModifyHtmlFunction;
+}
