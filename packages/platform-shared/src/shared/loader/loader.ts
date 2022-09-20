@@ -105,13 +105,18 @@ export async function runLoaders(
         appContext,
         ...(req ? { req } : {})
       });
-      if (value) {
-        res = createJson(value);
+
+      if (value === undefined) {
+        throw new Error(
+          `You defined a loader for route "${match.route.path}" but didn't return ` +
+            `anything from your \`loader\` function. Please return a value or \`null\`.`
+        );
       }
+
+      res = createJson(value);
     } catch (error) {
       if (process.env.NODE_ENV === 'development' && !isResponse(error)) {
         console.error(`loader function error of route "${match.route.path}"`);
-        console.error(error);
       }
       throw error;
     }
