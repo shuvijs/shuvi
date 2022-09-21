@@ -1,5 +1,9 @@
 import Watchpack, { TimeInfo } from 'watchpack';
-import isEqual from './isEqual';
+
+const watchpackExplanationType = {
+  change: 'change',
+  rename: 'rename'
+};
 
 export { TimeInfo };
 
@@ -52,40 +56,35 @@ export function watch(
     watchPackOptions.aggregateTimeout = aggregateTimeout;
   }
   const wp = new Watchpack(watchPackOptions);
-  let allFiles: string[] = [];
-  let isFirstChange: Boolean = true;
-
-  const getAllFiles = () => {
-    const knownFiles = wp.getTimeInfoEntries();
-    const res: string[] = [];
-    for (const [file, timeinfo] of knownFiles.entries()) {
-      if (timeinfo && timeinfo.accuracy !== undefined) {
-        res.push(file);
-      }
-    }
-    return res;
-  };
+  let isChangeType: boolean = false;
 
   wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
-    if (ignoreFileContentUpdate && isEqual(allFiles, getAllFiles())) {
+    const knownFiles = wp.getTimeInfoEntries();
+
+    if (ignoreFileContentUpdate && isChangeType) {
+      isChangeType = false;
       return;
     }
 
-    allFiles = getAllFiles();
     callback({
       changes: Array.from(changes),
       removals: Array.from(removals),
-      getAllFiles
+      getAllFiles() {
+        const res: string[] = [];
+        for (const [file, timeinfo] of knownFiles.entries()) {
+          if (timeinfo && timeinfo.accuracy !== undefined) {
+            res.push(file);
+          }
+        }
+        return res;
+      }
     });
   });
   if (callbackUndelayed) {
-    wp.on('change', (file, time) => {
-      if (isFirstChange) {
-        allFiles = getAllFiles();
-        isFirstChange = false;
-      }
+    wp.on('change', (file, time, explanation) => {
+      isChangeType = explanation === watchpackExplanationType.change;
 
-      if (ignoreFileContentUpdate && isEqual(allFiles, getAllFiles())) {
+      if (ignoreFileContentUpdate && isChangeType) {
         return;
       }
 
