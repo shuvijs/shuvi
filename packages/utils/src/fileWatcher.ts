@@ -1,4 +1,5 @@
 import Watchpack, { TimeInfo } from 'watchpack';
+import isEqual from './isEqual';
 
 export { TimeInfo };
 
@@ -14,6 +15,7 @@ export interface WatchOptions {
   missing?: string[];
   aggregateTimeout?: number;
   startTime?: number;
+  ignoreFileContentUpdate?: boolean;
 }
 
 export type WatchCallback = (event: WatchEvent) => void;
@@ -39,7 +41,8 @@ export function watch(
     directories,
     missing,
     aggregateTimeout,
-    startTime = Date.now()
+    startTime = Date.now(),
+    ignoreFileContentUpdate
   }: WatchOptions,
   callback: WatchCallback,
   callbackUndelayed?: ChangeCallback
@@ -49,25 +52,49 @@ export function watch(
     watchPackOptions.aggregateTimeout = aggregateTimeout;
   }
   const wp = new Watchpack(watchPackOptions);
-  wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
+  let allFiles: string[] = [];
+  let isFirstChange: Boolean = true;
+
+  const getAllFiles = () => {
     const knownFiles = wp.getTimeInfoEntries();
+    const res: string[] = [];
+    for (const [file, timeinfo] of knownFiles.entries()) {
+      if (timeinfo && timeinfo.accuracy !== undefined) {
+        res.push(file);
+      }
+    }
+    return res;
+  };
+
+  wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
+    if (ignoreFileContentUpdate && isEqual(allFiles, getAllFiles())) {
+      return;
+    }
+
+    allFiles = getAllFiles();
     callback({
       changes: Array.from(changes),
       removals: Array.from(removals),
-      getAllFiles() {
-        const res: string[] = [];
-        for (const [file, timeinfo] of knownFiles.entries()) {
-          if (timeinfo && timeinfo.accuracy !== undefined) {
-            res.push(file);
-          }
-        }
-        return res;
-      }
+      getAllFiles
     });
   });
   if (callbackUndelayed) {
-    wp.on('change', callbackUndelayed);
-    wp.on('remove', callbackUndelayed);
+    wp.on('change', (file, time) => {
+      if (isFirstChange) {
+        allFiles = getAllFiles();
+        isFirstChange = false;
+      }
+
+      if (ignoreFileContentUpdate && isEqual(allFiles, getAllFiles())) {
+        return;
+      }
+
+      callbackUndelayed(file, time);
+    });
+
+    wp.on('remove', (file, time) => {
+      callbackUndelayed(file, time);
+    });
   }
 
   wp.watch({ files, directories, missing, startTime });

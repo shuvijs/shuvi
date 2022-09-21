@@ -8,11 +8,12 @@ export type ContentFunction<T, C> = (
 export type FileDependency = string | FileOption<any>;
 
 export interface FileOption<T = string, C = any> {
-  name?: string;
   id: FileId;
-  virtual?: boolean;
   content: ContentFunction<T, C>;
+  name?: string;
+  virtual?: boolean;
   dependencies?: FileDependency[];
+  watchOptions?: { ignoreFileContentUpdate: boolean };
 }
 
 export type FileOptionWithoutId<T = string, C = any> = Omit<
@@ -21,11 +22,11 @@ export type FileOptionWithoutId<T = string, C = any> = Omit<
 >;
 
 export interface FileInternalInstance<T = string, C = any> {
+  id: FileId;
+  content: ContentFunction<T, C>;
   name?: string;
   fullPath?: string;
-  id: FileId;
   virtual?: boolean;
-  content: ContentFunction<T, C>;
   fileContent?: T;
 }
 
