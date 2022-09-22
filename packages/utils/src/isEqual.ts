@@ -46,6 +46,22 @@ function isEqual(obj1: any, obj2: any) {
     return obj1.toString() === obj2.toString();
   }
 
+  function areMapsEqual() {
+    let testVal;
+    if (obj1.size !== obj2.size) {
+      return false;
+    }
+    for (var [key, val] of obj1) {
+      testVal = obj2.get(key);
+      // in cases of an undefined value, make sure the key
+      // actually exists on the object so there are no false positives
+      if (testVal !== val || (testVal === undefined && !obj2.has(key))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   function arePrimativesEqual() {
     return obj1 === obj2;
   }
@@ -60,6 +76,7 @@ function isEqual(obj1: any, obj2: any) {
   if (type === 'array') return areArraysEqual();
   if (type === 'object') return areObjectsEqual();
   if (type === 'function') return areFunctionsEqual();
+  if (type === 'map') return areMapsEqual();
   return arePrimativesEqual();
 }
 

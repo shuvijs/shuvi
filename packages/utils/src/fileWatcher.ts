@@ -1,4 +1,5 @@
 import Watchpack, { TimeInfo } from 'watchpack';
+import isEqual from './isEqual';
 
 const watchpackExplanationType = {
   change: 'change',
@@ -56,15 +57,22 @@ export function watch(
     watchPackOptions.aggregateTimeout = aggregateTimeout;
   }
   const wp = new Watchpack(watchPackOptions);
-  let isChangeType: boolean = false;
+  let allFiles = new Map<string, TimeInfo>();
+  let isFirstAggregated: boolean = true;
 
   wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
     const knownFiles = wp.getTimeInfoEntries();
 
-    if (ignoreFileContentUpdate && isChangeType) {
-      isChangeType = false;
+    if (isFirstAggregated) {
+      allFiles = knownFiles;
+      isFirstAggregated = false;
+    }
+
+    if (ignoreFileContentUpdate && isEqual(knownFiles, allFiles)) {
       return;
     }
+
+    allFiles = knownFiles;
 
     callback({
       changes: Array.from(changes),
@@ -82,23 +90,23 @@ export function watch(
   });
   if (callbackUndelayed) {
     wp.on('change', (file, time, explanation) => {
-      isChangeType = explanation === watchpackExplanationType.change;
-
-      if (ignoreFileContentUpdate && isChangeType) {
+      if (
+        ignoreFileContentUpdate &&
+        explanation === watchpackExplanationType.change
+      ) {
         return;
       }
 
       callbackUndelayed(file, time);
     });
 
-    wp.on('remove', (file, time) => {
-      callbackUndelayed(file, time);
-    });
+    wp.on('remove', callbackUndelayed);
   }
 
   wp.watch({ files, directories, missing, startTime });
 
   return () => {
+    allFiles.clear();
     wp.close();
   };
 }

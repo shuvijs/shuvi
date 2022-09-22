@@ -100,5 +100,26 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
         compiler.watching.resume();
       }
     });
+
+    // compiler.hooks.invalid.tap(
+    //   'WebpackWatchWaitForFileBuilderPlugin-invalid',
+    //   (file, time) => {
+    //     // collect changed files and removed files and check if they are the dependencies of the fileBuilder
+    //     // if yes, invoke `compiler.watching.suspend()`
+    //     const removedFiles: Set<string> | undefined = (compiler.watching as any)
+    //       ._collectedRemovedFiles;
+    //     const files = new Set(removedFiles);
+    //     if (file) {
+    //       files.add(file);
+    //     }
+
+    //     for (const currentFile of files) {
+    //       if (isDependency(currentFile)) {
+    //         // compiler.watching.suspend();
+    //         return;
+    //       }
+    //     }
+    //   }
+    // );
   }
 }
