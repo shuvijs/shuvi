@@ -93,4 +93,4 @@ export type PluginManager = ReturnType<typeof getManager>;
 export type PluginRunner = PluginManager['runner'];
 
 export const { createPluginBefore, createPlugin, createPluginAfter } =
-  createPluginCreator(getManager());
+  createPluginCreator<PluginHooks, IPluginContext>();
