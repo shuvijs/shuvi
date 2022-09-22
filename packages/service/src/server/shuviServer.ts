@@ -2,11 +2,17 @@ import { RequestListener } from 'http';
 import { joinPath } from '@shuvi/utils/lib/string';
 import { IPluginContext } from '../core';
 import { normalizeServerMiddleware } from './serverMiddleware';
-import { Server, IRequestHandlerWithNext } from './http-server';
+import {
+  Server,
+  IRequestHandlerWithNext,
+  IRequest,
+  IResponse
+} from './http-server';
 import {
   IShuviServer,
   ShuviServerOptions,
-  ShuviRequest
+  ShuviRequest,
+  ShuviResponse
 } from './shuviServerTypes';
 import {
   PluginManager,
@@ -35,20 +41,28 @@ export abstract class ShuviServer implements IShuviServer {
 
   abstract init(): Promise<void>;
 
+  private _normalizeReq(req: IRequest) {
+    const shuviReq = req as ShuviRequest;
+    shuviReq.getAssetUrl = (assetPath: string) => {
+      const fullAssetPath = joinPath(
+        this._serverContext.assetPublicPath,
+        assetPath
+      );
+
+      return fullAssetPath;
+    };
+  }
+
+  private _normalizeResp(_resp: IResponse) {
+    // do nothing
+  }
+
   protected async _initMiddlewares() {
     const { _serverContext: context, _server: server } = this;
 
-    server.use(((req, _resp, next) => {
-      const shuviReq = req as ShuviRequest;
-      shuviReq.getAssetUrl = (assetPath: string) => {
-        const fullAssetPath = joinPath(
-          this._serverContext.assetPublicPath,
-          assetPath
-        );
-
-        return fullAssetPath;
-      };
-
+    server.use(((req, resp, next) => {
+      this._normalizeReq(req);
+      this._normalizeResp(resp);
       next();
     }) as IRequestHandlerWithNext);
 
