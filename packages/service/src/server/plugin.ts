@@ -42,7 +42,7 @@ export const {
   createPluginBefore: createServerPluginBefore,
   createPlugin: createServerPlugin,
   createPluginAfter: createServerPluginAfter
-} = createPluginCreator(getManager());
+} = createPluginCreator<ServerPluginHooks, IServerPluginContext>();
 
 export type ServerPluginConstructor = IPluginHandlers<
   ServerPluginHooks,

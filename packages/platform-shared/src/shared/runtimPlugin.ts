@@ -47,7 +47,7 @@ export const {
   createPluginBefore: createRuntimePluginBefore,
   createPlugin: createRuntimePlugin,
   createPluginAfter: createRuntimePluginAfter
-} = createPluginCreator(getManager());
+} = createPluginCreator<RuntimePluginHooks, void>();
 
 export type { IPluginInstance, CustomRuntimePluginHooks };
 

@@ -89,7 +89,7 @@ export type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
 
 export type IPluginInstance<HM, C> = {
   handlers: IPluginHandlers<HM, C>;
-  SYNC_PLUGIN_SYMBOL: 'SYNC_PLUGIN_SYMBOL';
+  PLUGIN_SYMBOL: 'PLUGIN_SYMBOL';
 } & Required<PluginOptions>;
 
 export type IPluginHandlers<HM, C> = Partial<IPluginHandlersFullMap<HM, C>>;
@@ -123,7 +123,7 @@ export type PluginOptions = {
   [x: string]: any;
 };
 
-export const DEFAULT_OPTIONS: Required<PluginOptions> = {
+const DEFAULT_OPTIONS: Required<PluginOptions> = {
   name: 'untitled',
   pre: [],
   post: [],
@@ -133,12 +133,12 @@ export const DEFAULT_OPTIONS: Required<PluginOptions> = {
   group: 0
 };
 
-export const SYNC_PLUGIN_SYMBOL = 'SYNC_PLUGIN_SYMBOL';
+const PLUGIN_SYMBOL = 'PLUGIN_SYMBOL';
 
 export const isPluginInstance = (plugin: any) =>
   plugin &&
-  plugin.hasOwnProperty(SYNC_PLUGIN_SYMBOL) &&
-  plugin.SYNC_PLUGIN_SYMBOL === SYNC_PLUGIN_SYMBOL;
+  plugin.hasOwnProperty(PLUGIN_SYMBOL) &&
+  plugin.PLUGIN_SYMBOL === PLUGIN_SYMBOL;
 
 const sortPlugins = <T extends IPluginInstance<any, any>[]>(input: T): T => {
   let plugins: T = input.slice() as T;
@@ -254,6 +254,19 @@ const copyHookMap = <HM extends HookMap | Partial<HookMap>>(
   return newHookMap as HM;
 };
 
+export function createPlugin<HM extends HookMap, C = void>(
+  pluginHandlers: IPluginHandlers<HM, C>,
+  options: PluginOptions = {}
+): IPluginInstance<HM, C> {
+  return {
+    ...DEFAULT_OPTIONS,
+    name: `plugin-id-${uuid()}`,
+    ...options,
+    handlers: pluginHandlers,
+    PLUGIN_SYMBOL
+  };
+}
+
 export const createHookManager = <HM extends HookMap, C = void>(
   hookMap: HM,
   hasContext: boolean = true
@@ -274,18 +287,7 @@ export const createHookManager = <HM extends HookMap, C = void>(
     const setupRunner = getRunner('setup');
     setupRunner({ addHooks });
   };
-  const createPlugin = (
-    pluginHandlers: IPluginHandlers<HM, C>,
-    options: PluginOptions = {}
-  ): IPluginInstance<HM, C> => {
-    return {
-      ...DEFAULT_OPTIONS,
-      name: `plugin-id-${uuid()}`,
-      ...options,
-      handlers: pluginHandlers,
-      SYNC_PLUGIN_SYMBOL
-    };
-  };
+
   const usePlugin = (...plugins: IPluginInstance<HM, C>[]) => {
     if (_initiated) {
       return;
@@ -412,7 +414,7 @@ export const createHookManager = <HM extends HookMap, C = void>(
   ) as RunnerType<HM>;
 
   return {
-    createPlugin,
+    createPlugin: createPlugin as CreatePlugin<HM, C>,
     usePlugin,
     runner: runnerProxy,
     clear,
