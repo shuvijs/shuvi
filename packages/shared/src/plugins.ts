@@ -1,5 +1,5 @@
 import {
-  HookManager,
+  createPlugin,
   HookMap,
   Setup,
   IPluginHandlers,
@@ -28,11 +28,10 @@ export interface CreatePluginByGroup<HM extends HookMap, C> {
   createPluginAfter: PluginFunc<HM, C>;
 }
 
-export function createPluginCreator<HM extends HookMap, C>(
-  manager: HookManager<HM, C>
-): CreatePluginByGroup<HM, C> {
-  const { createPlugin } = manager;
-
+export function createPluginCreator<
+  HM extends HookMap,
+  C
+>(): CreatePluginByGroup<HM, C> {
   const createOptions = (
     group: number,
     opt: _PluginOptions = {}
@@ -49,13 +48,19 @@ export function createPluginCreator<HM extends HookMap, C>(
 
   return {
     createPluginBefore(handler, options) {
-      return createPlugin(handler, createOptions(GROUP_BEFORE_USER, options));
+      return createPlugin<HM, C>(
+        handler,
+        createOptions(GROUP_BEFORE_USER, options)
+      );
     },
     createPlugin(handler, options) {
-      return createPlugin(handler, createOptions(GROUP_USER, options));
+      return createPlugin<HM, C>(handler, createOptions(GROUP_USER, options));
     },
     createPluginAfter(handler, options) {
-      return createPlugin(handler, createOptions(GROUP_AFTER_USER, options));
+      return createPlugin<HM, C>(
+        handler,
+        createOptions(GROUP_AFTER_USER, options)
+      );
     }
   };
 }
