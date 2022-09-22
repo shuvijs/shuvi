@@ -11,8 +11,7 @@ import {
 import {
   IShuviServer,
   ShuviServerOptions,
-  ShuviRequest,
-  ShuviResponse
+  ShuviRequest
 } from './shuviServerTypes';
 import {
   PluginManager,
