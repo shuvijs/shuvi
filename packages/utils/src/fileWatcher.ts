@@ -56,32 +56,32 @@ export function watch(
     watchPackOptions.aggregateTimeout = aggregateTimeout;
   }
   const wp = new Watchpack(watchPackOptions);
-  const changedFiles: Set<string> = new Set();
-  const removedFiles: Set<string> = new Set();
+  let aggregatedChanges: Set<string> = new Set();
+  let aggregatedRemovals: Set<string> = new Set();
 
   wp.on('aggregated', () => {
-    const knownFiles = wp.getTimeInfoEntries();
-
-    if (!changedFiles.size && !removedFiles.size) {
+    if (!aggregatedChanges.size && !aggregatedRemovals.size) {
       return;
     }
+    const knownFiles = wp.getTimeInfoEntries();
+    const changes = Array.from(aggregatedChanges);
+    const removals = Array.from(aggregatedRemovals);
+    aggregatedChanges = new Set();
+    aggregatedRemovals = new Set();
 
     callback({
-      changes: Array.from(changedFiles),
-      removals: Array.from(removedFiles),
+      changes,
+      removals,
       getAllFiles() {
         const res: string[] = [];
-        for (const [file, timeinfo] of knownFiles.entries()) {
-          if (timeinfo && timeinfo.accuracy !== undefined) {
+        for (const [file, timeInfo] of knownFiles.entries()) {
+          if (timeInfo && timeInfo.accuracy !== undefined) {
             res.push(file);
           }
         }
         return res;
       }
     });
-
-    changedFiles.clear();
-    removedFiles.clear();
   });
 
   wp.on('change', (file, time, explanation) => {
@@ -91,7 +91,8 @@ export function watch(
     ) {
       return;
     }
-    changedFiles.add(file);
+    aggregatedRemovals.delete(file);
+    aggregatedChanges.add(file);
     callbackUndelayed?.(file, time);
   });
 
@@ -102,15 +103,16 @@ export function watch(
     ) {
       return;
     }
-    removedFiles.add(file);
+    aggregatedChanges.delete(file);
+    aggregatedRemovals.add(file);
     callbackUndelayed?.(file, time);
   });
 
   wp.watch({ files, directories, missing, startTime });
 
   return () => {
-    changedFiles.clear();
-    removedFiles.clear();
+    aggregatedChanges.clear();
+    aggregatedRemovals.clear();
     wp.close();
   };
 }
