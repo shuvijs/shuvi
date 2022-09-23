@@ -1,5 +1,4 @@
 import Watchpack, { TimeInfo } from 'watchpack';
-import isEqual from './isEqual';
 
 const watchpackExplanationType = {
   change: 'change',
@@ -57,26 +56,19 @@ export function watch(
     watchPackOptions.aggregateTimeout = aggregateTimeout;
   }
   const wp = new Watchpack(watchPackOptions);
-  let allFiles = new Map<string, TimeInfo>();
-  let isFirstAggregated: boolean = true;
+  const changedFiles: Set<string> = new Set();
+  const removedFiles: Set<string> = new Set();
 
-  wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
+  wp.on('aggregated', () => {
     const knownFiles = wp.getTimeInfoEntries();
 
-    if (isFirstAggregated) {
-      allFiles = knownFiles;
-      isFirstAggregated = false;
-    }
-
-    if (ignoreFileContentUpdate && isEqual(knownFiles, allFiles)) {
+    if (!changedFiles.size && !removedFiles.size) {
       return;
     }
 
-    allFiles = knownFiles;
-
     callback({
-      changes: Array.from(changes),
-      removals: Array.from(removals),
+      changes: Array.from(changedFiles),
+      removals: Array.from(removedFiles),
       getAllFiles() {
         const res: string[] = [];
         for (const [file, timeinfo] of knownFiles.entries()) {
@@ -87,26 +79,38 @@ export function watch(
         return res;
       }
     });
+
+    changedFiles.clear();
+    removedFiles.clear();
   });
-  if (callbackUndelayed) {
-    wp.on('change', (file, time, explanation) => {
-      if (
-        ignoreFileContentUpdate &&
-        explanation === watchpackExplanationType.change
-      ) {
-        return;
-      }
 
-      callbackUndelayed(file, time);
-    });
+  wp.on('change', (file, time, explanation) => {
+    if (
+      ignoreFileContentUpdate &&
+      explanation === watchpackExplanationType.change
+    ) {
+      return;
+    }
+    changedFiles.add(file);
+    callbackUndelayed?.(file, time);
+  });
 
-    wp.on('remove', callbackUndelayed);
-  }
+  wp.on('remove', (file, time, explanation) => {
+    if (
+      ignoreFileContentUpdate &&
+      explanation === watchpackExplanationType.change
+    ) {
+      return;
+    }
+    removedFiles.add(file);
+    callbackUndelayed?.(file, time);
+  });
 
   wp.watch({ files, directories, missing, startTime });
 
   return () => {
-    allFiles.clear();
+    changedFiles.clear();
+    removedFiles.clear();
     wp.close();
   };
 }

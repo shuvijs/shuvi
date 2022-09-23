@@ -25,7 +25,7 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
     this.options = options;
   }
   apply(compiler: Compiler) {
-    const { onBuildEnd, onInvalid } = this.options;
+    const { onBuildEnd, onInvalid, isDependency } = this.options;
     /**
      * watching.suspend will pause the real action in the watcher handler but still collecting changed files.
      * watching.resume will resume its action
@@ -101,25 +101,25 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
       }
     });
 
-    // compiler.hooks.invalid.tap(
-    //   'WebpackWatchWaitForFileBuilderPlugin-invalid',
-    //   (file, time) => {
-    //     // collect changed files and removed files and check if they are the dependencies of the fileBuilder
-    //     // if yes, invoke `compiler.watching.suspend()`
-    //     const removedFiles: Set<string> | undefined = (compiler.watching as any)
-    //       ._collectedRemovedFiles;
-    //     const files = new Set(removedFiles);
-    //     if (file) {
-    //       files.add(file);
-    //     }
+    compiler.hooks.invalid.tap(
+      'WebpackWatchWaitForFileBuilderPlugin-invalid',
+      file => {
+        // collect changed files and removed files and check if they are the dependencies of the fileBuilder
+        // if yes, invoke `compiler.watching.suspend()`
+        const removedFiles: Set<string> | undefined = (compiler.watching as any)
+          ._collectedRemovedFiles;
+        const files = new Set(removedFiles);
+        if (file) {
+          files.add(file);
+        }
 
-    //     for (const currentFile of files) {
-    //       if (isDependency(currentFile)) {
-    //         // compiler.watching.suspend();
-    //         return;
-    //       }
-    //     }
-    //   }
-    // );
+        for (const currentFile of files) {
+          if (isDependency(currentFile)) {
+            // compiler.watching.suspend();
+            return;
+          }
+        }
+      }
+    );
   }
 }
