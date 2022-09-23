@@ -1,5 +1,10 @@
 import Watchpack, { TimeInfo } from 'watchpack';
 
+const watchpackExplanationType = {
+  change: 'change',
+  rename: 'rename'
+};
+
 export { TimeInfo };
 
 export interface WatchEvent {
@@ -14,6 +19,7 @@ export interface WatchOptions {
   missing?: string[];
   aggregateTimeout?: number;
   startTime?: number;
+  ignoreFileContentUpdate?: boolean;
 }
 
 export type WatchCallback = (event: WatchEvent) => void;
@@ -39,7 +45,8 @@ export function watch(
     directories,
     missing,
     aggregateTimeout,
-    startTime = Date.now()
+    startTime = Date.now(),
+    ignoreFileContentUpdate
   }: WatchOptions,
   callback: WatchCallback,
   callbackUndelayed?: ChangeCallback
@@ -49,15 +56,26 @@ export function watch(
     watchPackOptions.aggregateTimeout = aggregateTimeout;
   }
   const wp = new Watchpack(watchPackOptions);
-  wp.on('aggregated', (changes: Set<string>, removals: Set<string>) => {
+  let aggregatedChanges: Set<string> = new Set();
+  let aggregatedRemovals: Set<string> = new Set();
+
+  wp.on('aggregated', () => {
+    if (!aggregatedChanges.size && !aggregatedRemovals.size) {
+      return;
+    }
     const knownFiles = wp.getTimeInfoEntries();
+    const changes = Array.from(aggregatedChanges);
+    const removals = Array.from(aggregatedRemovals);
+    aggregatedChanges = new Set();
+    aggregatedRemovals = new Set();
+
     callback({
-      changes: Array.from(changes),
-      removals: Array.from(removals),
+      changes,
+      removals,
       getAllFiles() {
         const res: string[] = [];
-        for (const [file, timeinfo] of knownFiles.entries()) {
-          if (timeinfo && timeinfo.accuracy !== undefined) {
+        for (const [file, timeInfo] of knownFiles.entries()) {
+          if (timeInfo && timeInfo.accuracy !== undefined) {
             res.push(file);
           }
         }
@@ -65,14 +83,36 @@ export function watch(
       }
     });
   });
-  if (callbackUndelayed) {
-    wp.on('change', callbackUndelayed);
-    wp.on('remove', callbackUndelayed);
-  }
+
+  wp.on('change', (file, time, explanation) => {
+    if (
+      ignoreFileContentUpdate &&
+      explanation === watchpackExplanationType.change
+    ) {
+      return;
+    }
+    aggregatedRemovals.delete(file);
+    aggregatedChanges.add(file);
+    callbackUndelayed?.(file, time);
+  });
+
+  wp.on('remove', (file, time, explanation) => {
+    if (
+      ignoreFileContentUpdate &&
+      explanation === watchpackExplanationType.change
+    ) {
+      return;
+    }
+    aggregatedChanges.delete(file);
+    aggregatedRemovals.add(file);
+    callbackUndelayed?.(file, time);
+  });
 
   wp.watch({ files, directories, missing, startTime });
 
   return () => {
+    aggregatedChanges.clear();
+    aggregatedRemovals.clear();
     wp.close();
   };
 }
