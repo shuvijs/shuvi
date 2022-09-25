@@ -11,7 +11,6 @@ import {
   IMiddlewareRouteConfig
 } from '@shuvi/platform-shared/shared';
 import logger from '@shuvi/utils/lib/logger';
-import { ifComponentHasLoader } from '../html-render/lib';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
   getRoutes,
@@ -166,10 +165,7 @@ const plugin = createPlugin({
           routes.forEach(r => {
             const { component, id, children } = r;
             if (component && id) {
-              const hasLoader = ifComponentHasLoader(component);
-              if (hasLoader) {
-                loaders[id] = component;
-              }
+              loaders[id] = component;
             }
             if (children) {
               traverseRoutes(children);
