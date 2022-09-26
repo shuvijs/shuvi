@@ -107,6 +107,24 @@ fn shake_exports_fixture(input: PathBuf) {
     );
 }
 
+#[fixture("tests/fixture/shake-exports/export-false/input.js")]
+fn shake_exports_fixture_false(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    test_fixture(
+        syntax(),
+        &|_tr| {
+            shake_exports(ShakeExportsConfig {
+                ignore: vec![
+                    String::from("keep").into(),
+                    String::from("keep1").into(),
+                ],
+            })
+        },
+        &input,
+        &output,
+    );
+}
+
 #[fixture("tests/fixture/shake-exports/keep-default/input.js")]
 fn shake_exports_fixture_default(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
