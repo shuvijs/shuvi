@@ -31,12 +31,17 @@ async function checkTargets(paths) {
 async function installSWCNative({ force }) {
   if (!force) {
     const hasTargets = await checkTargets([
-      'packages/compiler-swc/target/release/libshuvi_swc.d'
+      'packages/compiler-swc/native/shuvi-swc.darwin-arm64.node'
     ]);
     if (hasTargets) {
+      console.log(
+        `skip shuvi-swc.darwin-arm64.node build due to targets binary exists`
+      );
       return;
     }
   }
+
+  console.log(`start build shuvi-swc.darwin-arm64.node`);
 
   var stdout = execSync(
     'pnpm turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release',
@@ -108,7 +113,7 @@ async function main() {
     force
   };
   await installSWCNative(options);
-  await buildTargets(options);
+  // await buildTargets(options);
 }
 
 main();
