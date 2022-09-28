@@ -95,7 +95,7 @@ async function main() {
     '![process.env.SHUVI_SKIP_BOOTSTRAP] =>',
     process.env.SHUVI_SKIP_BOOTSTRAP
   );
-  if (process.env.SHUVI_SKIP_BOOTSTRAP) {
+  if (!!process.env.SHUVI_SKIP_BOOTSTRAP) {
     console.log(`Skipping bootstrap due to SHUVI_SKIP_BOOTSTRAP env`);
     return;
   }
