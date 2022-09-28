@@ -10,6 +10,7 @@ import {
   IPageRouteConfigWithId,
   IMiddlewareRouteConfig
 } from '@shuvi/platform-shared/shared';
+import { LOADER_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import logger from '@shuvi/utils/lib/logger';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
@@ -177,7 +178,7 @@ const plugin = createPlugin({
         let exports = '';
         Object.entries(loaders).forEach((loader, index) => {
           const [id, component] = loader;
-          imports += `import { loader as loader_${index} } from '${component}?keep=loader'\n`;
+          imports += `import { loader as loader_${index} } from '${component}?${LOADER_RESOURCE_QUERYSTRING}'\n`;
           exports += `'${id}': loader_${index},\n`;
         });
         return `${imports}  export default {\n  ${exports}\n}`;
