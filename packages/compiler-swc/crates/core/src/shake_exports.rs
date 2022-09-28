@@ -2,7 +2,6 @@ use serde::Deserialize;
 use swc_atoms::js_word;
 use swc_atoms::JsWord;
 use swc_common::Mark;
-use swc_common::DUMMY_SP;
 use swc_ecmascript::ast::*;
 use swc_ecmascript::transforms::optimization::simplify::dce::{dce, Config as DCEConfig};
 use swc_ecmascript::visit::{Fold, FoldWith};
@@ -20,9 +19,9 @@ pub fn shake_exports(config: Config) -> impl Fold {
 }
 
 #[derive(Debug, Default)]
-struct ExportShaker {
-    ignore: Vec<JsWord>,
-    remove_export: bool,
+pub struct ExportShaker {
+    pub ignore: Vec<JsWord>,
+    pub remove_export: bool,
 }
 
 impl Fold for ExportShaker {
@@ -39,29 +38,6 @@ impl Fold for ExportShaker {
                 new_items.push(item)
             }
             self.remove_export = false;
-        }
-        if new_items.len() == 0 {
-            for ignore_item in &self.ignore {
-                let var = VarDeclarator {
-                    span: DUMMY_SP,
-                    name: Pat::Ident(Ident::new(ignore_item.into(), DUMMY_SP).into()),
-                    init: Some(Box::new(Expr::Lit(Lit::Bool(Bool {
-                        span: DUMMY_SP,
-                        value: false,
-                    })))),
-                    definite: Default::default(),
-                };
-
-                new_items.push(ModuleItem::ModuleDecl(ModuleDecl::ExportDecl(ExportDecl {
-                    span: DUMMY_SP,
-                    decl: Decl::Var(VarDecl {
-                        span: DUMMY_SP,
-                        kind: VarDeclKind::Var,
-                        declare: Default::default(),
-                        decls: vec![var],
-                    }),
-                })))
-            }
         }
         new_items
     }

@@ -52,6 +52,7 @@ fn test(input: &Path, minify: bool) {
                     ..Default::default()
                 },
                 is_page_file: false,
+                shuvi_page_loader: false,
                 is_development: true,
                 is_server: false,
                 styled_components: Some(assert_json("{}")),
