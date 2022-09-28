@@ -9,10 +9,11 @@ import { writeDefaultConfigurations } from './configTypeScript';
 import {
   hasTsConfig,
   hasTypescriptFiles,
-  checkNecessarytDeps,
+  checkNecessarytDeps as checkNecessaryDeps,
   getTsConfig,
   PackageDep
 } from './getTypeScriptInfo';
+import { installDependencies } from './installDependencies';
 
 let hasSetup = false;
 
@@ -91,8 +92,11 @@ export function getTypeScriptInfo(): TypeScriptInfo {
   };
 }
 
-export async function setupTypeScript(paths: IPaths) {
-  if (hasSetup) {
+export async function setupTypeScript(
+  paths: IPaths,
+  isSetupByWatchPack?: boolean
+) {
+  if (hasSetup && !isSetupByWatchPack) {
     return;
   }
 
@@ -101,9 +105,38 @@ export async function setupTypeScript(paths: IPaths) {
   useTypeScript = await hasTypescriptFiles(paths.srcDir);
   tsCompilerOptions = {};
   if (useTypeScript) {
-    const deps = checkNecessarytDeps(projectDir);
+    let deps = checkNecessaryDeps(projectDir);
     if (deps.missing.length > 0) {
-      missingPackagesError(projectDir, deps.missing);
+      if (!isSetupByWatchPack) {
+        missingPackagesError(projectDir, deps.missing);
+      }
+      console.log(
+        chalk.bold.yellow(
+          `It looks like you're trying to use TypeScript but do not have the required package(s) installed.`
+        ) +
+          '\n' +
+          'Installing dependencies' +
+          '\n\n' +
+          chalk.bold(
+            'If you are not trying to use TypeScript, please remove the ' +
+              chalk.cyan('tsconfig.json') +
+              ' file from your package root (and any TypeScript files in your pages directory).'
+          ) +
+          '\n'
+      );
+
+      await installDependencies(paths.srcDir, deps.missing, true).catch(err => {
+        if (err && typeof err === 'object' && 'command' in err) {
+          console.error(
+            `Failed to install required TypeScript dependencies, please install them manually to continue:\n` +
+              (err as any).command +
+              '\n'
+          );
+        }
+        throw err;
+      });
+
+      deps = checkNecessaryDeps(projectDir);
     }
 
     typeScriptPath = deps.resovled.get('typescript');

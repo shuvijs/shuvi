@@ -466,7 +466,7 @@ export const getFileBuilder = <C extends {} = {}>(
             }
           }
           if (!_useTypeScript && _enabledTypeScript) {
-            await setupTypeScript(_paths!);
+            await setupTypeScript(_paths!, true);
           }
           watcherHandler(id);
         },
