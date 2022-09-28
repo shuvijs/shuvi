@@ -131,7 +131,7 @@ export const getFileBuilder = <C extends {} = {}>(
   ) => {
     await Promise.all(
       fileOptions.map(async currentFile => {
-        const { id, dependencies } = currentFile;
+        const { id, dependencies, watchOptions } = currentFile;
         // create instance
         if (!files.get(id)) {
           files.set(id, createInstance(currentFile, rootDir));
@@ -154,7 +154,13 @@ export const getFileBuilder = <C extends {} = {}>(
                 } else if (dependencyFile) {
                   missing.push(dependencyFile);
                 }
-                watchMap.set(id, { directories, files, missing });
+
+                watchMap.set(id, {
+                  directories,
+                  files,
+                  missing,
+                  ignoreFileContentUpdate: watchOptions?.ignoreFileContentUpdate
+                });
                 watchingFilesMap.set(dependencyFile, id);
               } else {
                 const dependencyId = dependencyFile.id;

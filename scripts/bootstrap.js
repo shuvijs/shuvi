@@ -66,7 +66,7 @@ async function buildTargets({ force }) {
       name: 'error-overlay',
       outputs: ['packages/error-overlay/umd/index.js'],
       build: () => {
-        execSync('pnpm run --filter=@shuvi/error-overlay build', {
+        execSync('pnpm -r run --filter "@shuvi/error-overlay..." build', {
           cwd: rootPath
         });
       }

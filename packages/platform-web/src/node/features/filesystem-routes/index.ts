@@ -62,7 +62,10 @@ const plugin = createPlugin({
         );
         return rawRoutes;
       },
-      dependencies: [paths.routesDir]
+      dependencies: [paths.routesDir],
+      watchOptions: {
+        ignoreFileContentUpdate: true
+      }
     });
 
     const pageRoutesFile = defineFile({
