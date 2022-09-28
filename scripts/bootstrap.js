@@ -93,14 +93,10 @@ async function buildTargets({ force }) {
 }
 
 async function main() {
-  console.log(
-    '![process.env.SHUVI_SKIP_BOOTSTRAP] =>',
-    process.env.SHUVI_SKIP_BOOTSTRAP
-  );
-  // if (process.env.SHUVI_SKIP_BOOTSTRAP) {
-  //   console.log(`Skipping bootstrap due to SHUVI_SKIP_BOOTSTRAP env`);
-  //   return;
-  // }
+  if (process.env.SHUVI_SKIP_BOOTSTRAP) {
+    console.log(`Skipping bootstrap due to SHUVI_SKIP_BOOTSTRAP env`);
+    return;
+  }
 
   const args = minimist(process.argv.slice(2), {
     boolean: ['force']
@@ -113,7 +109,7 @@ async function main() {
     force
   };
   await installSWCNative(options);
-  // await buildTargets(options);
+  await buildTargets(options);
 }
 
 main();
