@@ -1,5 +1,6 @@
 use shuvi_swc::{
     auto_css_module::auto_css_module,
+    page_loader::page_loader,
     react_remove_properties::remove_properties,
     remove_console::remove_console,
     shake_exports::{shake_exports, Config as ShakeExportsConfig},
@@ -86,6 +87,22 @@ fn react_remove_properties_custom_fixture(input: PathBuf) {
     );
 }
 
+#[fixture("tests/fixture/shake-exports/keep-default/input.js")]
+fn shake_exports_fixture_default(input: PathBuf) {
+    let output = input.parent().unwrap().join("output.js");
+    test_fixture(
+        syntax(),
+        &|_tr| {
+            shake_exports(ShakeExportsConfig {
+                ignore: vec![String::from("default").into()],
+            })
+        },
+        &input,
+        &output,
+    );
+}
+
+
 #[fixture("tests/fixture/shake-exports/most-usecases/input.js")]
 fn shake_exports_fixture(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
@@ -107,17 +124,10 @@ fn shake_exports_fixture(input: PathBuf) {
     );
 }
 
-#[fixture("tests/fixture/shake-exports/keep-default/input.js")]
-fn shake_exports_fixture_default(input: PathBuf) {
+
+#[fixture("tests/fixture/page-loader/**/input.js")]
+fn shake_exports_fixture_page_loader(input: PathBuf) {
     let output = input.parent().unwrap().join("output.js");
-    test_fixture(
-        syntax(),
-        &|_tr| {
-            shake_exports(ShakeExportsConfig {
-                ignore: vec![String::from("default").into()],
-            })
-        },
-        &input,
-        &output,
-    );
+    test_fixture(syntax(), &|_tr| page_loader(), &input, &output);
 }
+
