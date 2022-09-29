@@ -9,7 +9,7 @@ import { writeDefaultConfigurations } from './configTypeScript';
 import {
   hasTsConfig,
   hasTypescriptFiles,
-  checkNecessarytDeps as checkNecessaryDeps,
+  checkNecessaryDeps,
   getTsConfig,
   PackageDep
 } from './getTypeScriptInfo';
