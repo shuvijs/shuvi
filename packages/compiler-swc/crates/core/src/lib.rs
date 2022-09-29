@@ -32,7 +32,7 @@ DEALINGS IN THE SOFTWARE.
 use auto_cjs::contains_cjs;
 use either::Either;
 use serde::Deserialize;
-use std::{sync::Arc};
+use std::sync::Arc;
 use swc::config::ModuleConfig;
 use swc_common::comments::Comments;
 use swc_common::{self, chain};
@@ -43,15 +43,16 @@ use swc_ecmascript::transforms::pass::noop;
 use swc_ecmascript::visit::Fold;
 
 mod auto_cjs;
+pub mod auto_css_module;
 pub mod disallow_re_export_all_in_page;
 pub mod hook_optimizer;
+pub mod page_loader;
 pub mod react_remove_properties;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod remove_console;
 pub mod shake_exports;
-mod top_level_binding_collector;
 pub mod shuvi_dynamic;
-pub mod auto_css_module;
+mod top_level_binding_collector;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -70,6 +71,9 @@ pub struct TransformOptions {
 
     #[serde(default)]
     pub css_module_flag: String,
+
+    #[serde(default)]
+    pub shuvi_page_loader: bool,
 
     #[serde(default)]
     pub styled_components: Option<styled_components::Config>,
@@ -96,15 +100,16 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
     opts: &'a TransformOptions,
     comments: C,
 ) -> impl Fold + 'a {
-
     chain!(
+        if opts.shuvi_page_loader {
+            Either::Left(page_loader::page_loader())
+        } else {
+            Either::Right(noop())
+        },
         auto_css_module::auto_css_module(opts.css_module_flag.clone()),
         disallow_re_export_all_in_page::disallow_re_export_all_in_page(opts.is_page_file),
         hook_optimizer::hook_optimizer(),
-        shuvi_dynamic::shuvi_dynamic(
-            opts.is_server,
-        ),
-
+        shuvi_dynamic::shuvi_dynamic(opts.is_server,),
         match &opts.styled_components {
             Some(config) => Either::Left(styled_components::styled_components(
                 file.name.clone(),
@@ -113,7 +118,6 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
             )),
             None => Either::Right(noop()),
         },
-        
         match &opts.remove_console {
             Some(config) if config.truthy() =>
                 Either::Left(remove_console::remove_console(config.clone())),

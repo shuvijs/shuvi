@@ -34,9 +34,12 @@ async function installSWCNative({ force }) {
       'packages/compiler-swc/target/release/libshuvi_swc.d'
     ]);
     if (hasTargets) {
+      console.log(`skip swc node binary build due to targets binary exists`);
       return;
     }
   }
+
+  console.log(`start build swc node binary`);
 
   var stdout = execSync(
     'pnpm turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release',
@@ -88,7 +91,10 @@ async function buildTargets({ force }) {
 }
 
 async function main() {
-  if (process.env.SHUVI_SKIP_BOOTSTRAP) {
+  if (
+    process.env.SHUVI_SKIP_BOOTSTRAP &&
+    process.env.SHUVI_SKIP_BOOTSTRAP === `true`
+  ) {
     console.log(`Skipping bootstrap due to SHUVI_SKIP_BOOTSTRAP env`);
     return;
   }

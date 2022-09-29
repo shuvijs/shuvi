@@ -87,13 +87,18 @@ export async function runLoaders(
   loadersByRouteId: Record<string, Loader>,
   { query, req, getAppContext }: LoaderContextOptions
 ): Promise<LoaderDataRecord> {
+  const loaderDatas: LoaderDataRecord = {};
+
   if (!matches.length) {
-    return [];
+    return loaderDatas;
   }
 
   const appContext = getAppContext();
   const createLoader = (match: IRouteMatch<IPageRouteRecord>) => async () => {
     const loaderFn = loadersByRouteId[match.route.id];
+    if (typeof loaderFn !== 'function') {
+      return;
+    }
     let res: Response | undefined;
     try {
       const value = await loaderFn({
@@ -126,7 +131,6 @@ export async function runLoaders(
 
   // call loaders in parallel
   const resultList = await runInParallerAndBail(matches.map(createLoader));
-  const loaderDatas: LoaderDataRecord = {};
 
   for (let index = 0; index < resultList.length; index++) {
     const item = resultList[index];

@@ -27,8 +27,10 @@ DEALINGS IN THE SOFTWARE.
 */
 import { LoaderContext } from 'webpack';
 import querystring from 'querystring';
-import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
+import {
+  ROUTE_RESOURCE_QUERYSTRING,
+  LOADER_RESOURCE_QUERYSTRING
+} from '@shuvi/shared/lib/constants';
 import { transform } from '@shuvi/compiler';
 import getLoaderSWCOptions, {
   SWCLoaderOptions,
@@ -36,8 +38,6 @@ import getLoaderSWCOptions, {
 } from './getLoaderSWCOptions';
 
 export { SWCLoaderOptions, CompilerOptions };
-
-const IS_PAGE_FILE = RegExp(escapeRegExp(`?${ROUTE_RESOURCE_QUERYSTRING}`));
 
 async function loaderTransform(
   this: LoaderContext<SWCLoaderOptions>,
@@ -58,21 +58,16 @@ async function loaderTransform(
     minify = false
   } = loaderOptions;
 
-  const isPageFile = !!(
-    this.resourceQuery && IS_PAGE_FILE.test(this.resourceQuery)
-  );
+  let isPageFile = false;
+
+  let shuviPageLoader = false;
 
   let keep: string[] = [];
 
   if (this.resourceQuery) {
     const query = querystring.parse(this.resourceQuery.slice(1));
-    if (query.keep) {
-      if (Array.isArray(query.keep)) {
-        keep = query.keep;
-      } else {
-        keep.push(query.keep);
-      }
-    }
+    isPageFile = query[ROUTE_RESOURCE_QUERYSTRING] !== undefined;
+    shuviPageLoader = query[LOADER_RESOURCE_QUERYSTRING] !== undefined;
   }
 
   const isDevelopment = this.mode === 'development';
@@ -82,6 +77,7 @@ async function loaderTransform(
     filename,
     isServer,
     isPageFile,
+    shuviPageLoader,
     minify,
     keep,
     hasReactRefresh:

@@ -1,3 +1,5 @@
+const ROUTE_KEEP_SYMBOL = { ignore: ['default'] };
+
 type Obj = Record<string, any>;
 
 export interface CompilerOptions {
@@ -48,6 +50,7 @@ export type SWCLoaderOptions = {
   filename: string;
   isServer: boolean;
   isPageFile: boolean;
+  shuviPageLoader: boolean;
   development: boolean;
   keep: string[];
   minify: boolean | Obj;
@@ -82,6 +85,7 @@ export function getParserOptions({
 function getBaseSWCOptions({
   filename,
   isPageFile,
+  shuviPageLoader,
   minify,
   development,
   hasReactRefresh,
@@ -147,7 +151,8 @@ function getBaseSWCOptions({
     // shuvi specific
     isServer,
     isPageFile,
-    shakeExports: keep.length > 0 ? { ignore: keep } : null,
+    shuviPageLoader,
+    shakeExports: isPageFile ? ROUTE_KEEP_SYMBOL : null,
     cssModuleFlag: 'cssmodules',
 
     // advanced
@@ -218,6 +223,7 @@ export default function getLoaderSWCOptions({
   isServer,
   minify,
   isPageFile,
+  shuviPageLoader,
   hasReactRefresh,
   compiler,
   supportedBrowsers,
@@ -228,6 +234,7 @@ SWCLoaderOptions) {
   let baseOptions = getBaseSWCOptions({
     filename,
     isPageFile,
+    shuviPageLoader,
     development,
     isServer,
     minify,

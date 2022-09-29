@@ -19,9 +19,9 @@ pub fn shake_exports(config: Config) -> impl Fold {
 }
 
 #[derive(Debug, Default)]
-struct ExportShaker {
-    ignore: Vec<JsWord>,
-    remove_export: bool,
+pub struct ExportShaker {
+    pub ignore: Vec<JsWord>,
+    pub remove_export: bool,
 }
 
 impl Fold for ExportShaker {
