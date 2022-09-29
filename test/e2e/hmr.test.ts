@@ -110,6 +110,62 @@ describe('Hot Module Reloading', () => {
       }
     });
 
+    test('should support add loader dynamic', async () => {
+      const pagePath = resolvePagePath('two');
+
+      let originalContent: string | undefined;
+      let done = false;
+
+      try {
+        page = await ctx.browser.page(ctx.url('/hmr/two'));
+        expect(await page.$text('[data-test-id="hmr-two"]')).toBe(
+          'This is the two page'
+        );
+
+        originalContent = readFileSync(pagePath, 'utf8');
+        const editedContent = `
+        import { useLoaderData } from '@shuvi/runtime';
+
+        export default () => {
+          const data = useLoaderData();
+          return (
+            <div data-test-id="hmr-two">{data.t}</div>
+          )
+        };
+
+        export const loader = async () => {
+          return {
+            t: 'LOADER_SYMBOL'
+          };
+        };
+        `;
+
+        // change the content
+        writeFileSync(pagePath, editedContent, 'utf8');
+
+        await check(
+          () => page.$text('[data-test-id="hmr-two"]'),
+          t => /LOADER_SYMBOL/.test(t)
+        );
+
+        // add the original content
+        writeFileSync(pagePath, originalContent, 'utf8');
+
+        await check(
+          () => page.$text('[data-test-id="hmr-two"]'),
+          t => /This is the two page/.test(t)
+        );
+
+        done = true;
+      } finally {
+        await page.close();
+
+        if (!done && originalContent) {
+          writeFileSync(pagePath, originalContent, 'utf8');
+        }
+      }
+    });
+
     test('should show compile error message', async () => {
       const pagePath = resolvePagePath('two');
       let originalContent: string | undefined;

@@ -4,6 +4,7 @@ export const NAME = 'shuvi';
 export const DEV_ONLY_URL_PREFIX = `/_${NAME}`;
 
 export const ROUTE_RESOURCE_QUERYSTRING = `shuvi-route`;
+export const LOADER_RESOURCE_QUERYSTRING = `shuvi-page-loader`;
 
 export const PUBLIC_ENV_PREFIX = 'SHUVI_PUBLIC_';
 
