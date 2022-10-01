@@ -132,11 +132,19 @@ export class ShuviDevServer extends ShuviServer {
           });
         }
 
-        //TODO: fast refresh when env/tsconfig.json be created
+        //TODO: fast refresh when env/tsconfig.json be created/updated
         if (tsconfigChange) {
           await this._devMiddleware?.invalidate();
         }
       }
     );
+  }
+
+  async close() {
+    if (this._webpackWatcher) {
+      this._webpackWatcher();
+      this._webpackWatcher = null;
+    }
+    await super.close();
   }
 }
