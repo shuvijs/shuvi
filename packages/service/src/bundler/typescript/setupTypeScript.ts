@@ -52,7 +52,7 @@ function missingPackagesError(dir: string, pkgs: PackageDep[]) {
     chalk.bold(
       'If you are not trying to use TypeScript, please remove the ' +
         chalk.cyan('tsconfig.json') +
-        ' file from your package root (and any TypeScript files in your pages directory).'
+        ' file from your package root (and any TypeScript files in your routes directory).'
     );
 
   throw Error.Fatal(

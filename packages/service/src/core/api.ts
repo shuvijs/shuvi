@@ -6,7 +6,6 @@ import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOption } from '../project';
 import { getBundler, Bunlder } from '../bundler';
-import { getTypeScriptInfo } from '../bundler/typescript';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
 import { ServerPluginInstance } from '../server';
 import { _setResourceEnv } from '../resources';
@@ -144,7 +143,6 @@ class Api {
 
     const { runner, setContext, createPlugin, usePlugin } = this._pluginManager;
     setContext(this._pluginContext);
-    this._projectBuilder.setPaths(this._pluginContext.paths);
     //## start init
     // 1. init platform and internal plugin
     const { plugins: platformPlugins, getPresetRuntimeFiles } =
@@ -217,9 +215,6 @@ class Api {
     if (!this._bundler) {
       this._bundler = await getBundler(this.pluginContext);
     }
-
-    const { useTypeScript } = getTypeScriptInfo();
-    this._projectBuilder.setUseTypescript(useTypeScript);
 
     return this._bundler;
   }

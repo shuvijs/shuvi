@@ -2,7 +2,7 @@ import * as path from 'path';
 import invariant from '@shuvi/utils/lib/invariant';
 import { getFilePresets } from './file-presets';
 import { getExportsFromObject } from './file-utils';
-import { RuntimePluginConfig, IPaths } from '../core';
+import { RuntimePluginConfig } from '../core';
 import { ProjectContext, createProjectContext } from './projectContext';
 import {
   getFileBuilder,
@@ -130,14 +130,6 @@ class ProjectBuilder {
     }
     //this._fileManager.addFile(options);
     this._fileBuilder.addFile(option);
-  }
-
-  setPaths(paths: IPaths) {
-    return this._fileBuilder.setPaths(paths);
-  }
-
-  setUseTypescript(useTypeScript: boolean) {
-    return this._fileBuilder.setUseTypescript(useTypeScript);
   }
 
   async build(dir: string): Promise<void> {

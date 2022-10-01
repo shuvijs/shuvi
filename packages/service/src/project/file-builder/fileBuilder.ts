@@ -19,8 +19,6 @@ import type {
   FileInfo
 } from './types';
 import { appendChangedFiles } from './helpers';
-import { IPaths } from '../../core';
-import { setupTypeScript } from '../../bundler/typescript';
 
 type OnBuildStartEvent = {};
 
@@ -51,8 +49,6 @@ export interface FileBuilder<C extends {}> {
   onInvalid: (eventHandler: () => void) => EventCanceler;
   /** check if the file is the dependency of the fileBuilder */
   isDependency: (filePath: string) => boolean;
-  setPaths: (paths: IPaths) => void;
-  setUseTypescript: (useTypeScript: boolean) => void;
 }
 
 const createInstance = (
@@ -86,10 +82,6 @@ export const getFileBuilder = <C extends {} = {}>(
   const onBuildEndHandlers = new Set<OnBuildEndHandler>();
   const onSingleBuildEndHandlers = new Set<OnSingleBuildEndHandler>();
   const onInvalidHandlers = new Set<() => void>();
-
-  let _paths: IPaths | undefined;
-  let _useTypeScript: boolean | undefined;
-  let _enabledTypeScript: boolean;
 
   const addFile = (...newFileOption: FileOption<any, C>[]) => {
     fileOptions.push(...newFileOption.map(option => ({ ...option })));
@@ -457,17 +449,7 @@ export const getFileBuilder = <C extends {} = {}>(
     for (const [id, watchOptions] of watchMap) {
       const canceler = createWatcher(
         { ...watchOptions, aggregateTimeout: 0 },
-        async ({ getAllFiles }) => {
-          let allFiles = getAllFiles();
-
-          for (const fileName of allFiles) {
-            if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
-              _enabledTypeScript = true;
-            }
-          }
-          if (!_useTypeScript && _enabledTypeScript) {
-            await setupTypeScript(_paths!, true);
-          }
+        () => {
           watcherHandler(id);
         },
         () => {
@@ -561,14 +543,6 @@ export const getFileBuilder = <C extends {} = {}>(
   const isDependency = (filePath: string) =>
     Boolean(getFileIdByFileDependencyPath(filePath));
 
-  const setPaths = (paths: IPaths) => {
-    _paths = paths;
-  };
-  const setUseTypescript = (useTypeScript: boolean) => {
-    _useTypeScript = useTypeScript;
-    _enabledTypeScript = useTypeScript;
-  };
-
   return {
     addFile,
     build,
@@ -579,8 +553,6 @@ export const getFileBuilder = <C extends {} = {}>(
     onBuildEnd,
     onSingleBuildEnd,
     onInvalid,
-    isDependency,
-    setPaths,
-    setUseTypescript
+    isDependency
   };
 };

@@ -2,7 +2,10 @@ import {
   DEV_HOT_MIDDLEWARE_PATH,
   DEV_READY_ENDPOINT
 } from '@shuvi/shared/lib/constants';
+import { Watchpack, watch as watcher } from '@shuvi/utils/lib/fileWatcher';
+import { join } from 'path';
 import { Bunlder } from '../bundler';
+import { setupTypeScript, getTypeScriptInfo } from '../bundler/typescript';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
@@ -16,6 +19,8 @@ import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
 
 export class ShuviDevServer extends ShuviServer {
   private _bundler: Bunlder;
+  private _devMiddleware?: DevMiddleware | null;
+  private _webpackWatcher?: typeof Watchpack | null;
 
   constructor(
     corePluginContext: any,
@@ -29,13 +34,13 @@ export class ShuviDevServer extends ShuviServer {
     const { _serverContext: context, _server: server } = this;
     const { rootDir } = context.paths;
 
-    const devMiddleware = getDevMiddleware(this._bundler, context);
+    this._devMiddleware = getDevMiddleware(this._bundler, context);
 
     let ready = false;
     // muse be the first middleware, to make sure the build is finisehd.
     server.use((async (req, resp, next) => {
       if (!ready) {
-        await devMiddleware.waitUntilValid();
+        await this._devMiddleware?.waitUntilValid();
         ready = true;
       }
 
@@ -49,7 +54,10 @@ export class ShuviDevServer extends ShuviServer {
 
     if (this._options.getMiddlewaresBeforeDevMiddlewares) {
       const serverMiddlewaresBeforeDevMiddleware = [
-        this._options.getMiddlewaresBeforeDevMiddlewares(devMiddleware, context)
+        this._options.getMiddlewaresBeforeDevMiddlewares(
+          this._devMiddleware,
+          context
+        )
       ]
         .flat()
         .map(m => normalizeServerMiddleware(m, { rootDir }));
@@ -62,13 +70,15 @@ export class ShuviDevServer extends ShuviServer {
       applyHttpProxyMiddleware(server, context.config.proxy);
     }
     // keep the order
-    devMiddleware.apply(server);
+    this._devMiddleware.apply(server);
     server.use(getAssetMiddleware(context, true));
     await this._initMiddlewares();
 
     // setup upgrade listener eagerly when we can otherwise
     // it will be done on the first request via req.socket.server
-    this._setupWebSocketHandler(server, devMiddleware);
+    this._setupWebSocketHandler(server, this._devMiddleware);
+
+    await this.startWatcher();
   }
 
   // todo: move into devMiddleware?
@@ -82,4 +92,51 @@ export class ShuviDevServer extends ShuviServer {
       }
     });
   };
+
+  private async startWatcher(): Promise<void> {
+    if (this._webpackWatcher) {
+      return;
+    }
+
+    const { routesDir, rootDir } = this._serverContext.paths;
+    const files: string[] = [];
+    const directories: string[] = [routesDir];
+    let { useTypeScript } = getTypeScriptInfo();
+    let enabledTypeScript: boolean = useTypeScript;
+
+    // tsconfig/jsconfig paths
+    const tsconfigPaths = [
+      join(rootDir, 'tsconfig.json'),
+      join(rootDir, 'jsconfig.json')
+    ];
+    files.push(...tsconfigPaths);
+
+    this._webpackWatcher = watcher(
+      {
+        directories,
+        files,
+        startTime: 0
+      },
+      async ({ getAllFiles }) => {
+        const allFiles = getAllFiles();
+        let tsconfigChange: boolean = false;
+
+        for (const fileName of allFiles) {
+          if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
+            enabledTypeScript = true;
+          }
+        }
+        if (!useTypeScript && enabledTypeScript) {
+          await setupTypeScript(this._serverContext.paths, true).then(() => {
+            tsconfigChange = true;
+          });
+        }
+
+        //TODO: fast refresh when env/tsconfig.json be created
+        if (tsconfigChange) {
+          await this._devMiddleware?.invalidate();
+        }
+      }
+    );
+  }
 }
