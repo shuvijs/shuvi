@@ -450,6 +450,7 @@ export const getFileBuilder = <C extends {} = {}>(
       const canceler = createWatcher(
         { ...watchOptions, aggregateTimeout: 0 },
         () => {
+          // currently handler has no params
           watcherHandler(id);
         },
         () => {
