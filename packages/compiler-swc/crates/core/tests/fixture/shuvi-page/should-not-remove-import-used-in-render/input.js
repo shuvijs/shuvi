@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Root,
   Children,
@@ -8,7 +8,7 @@ import {
   ValueInRender,
   ValueInEffect,
   UnusedInRender
-} from '../';
+} from "../";
 
 export default function Test() {
   const [x, setX] = useState(ValueInRender.value);

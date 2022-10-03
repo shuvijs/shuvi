@@ -138,7 +138,7 @@ fn shake_exports_fixture_page_loader(input: PathBuf) {
 
 #[fixture("tests/fixture/shuvi-page/**/input.js")]
 fn shuvi_page_fixture(input: PathBuf) {
-    let output = input.parent().unwrap().join("output.js");
+    let output = input.parent().unwrap().join("default.js");
     test_fixture(
         syntax(),
         &|tr| {

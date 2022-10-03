@@ -1,1 +1,1 @@
-export { loader, default } from 'a';
+export { loader, default } from "a";

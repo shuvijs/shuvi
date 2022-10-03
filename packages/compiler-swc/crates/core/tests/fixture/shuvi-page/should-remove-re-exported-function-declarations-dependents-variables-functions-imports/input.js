@@ -1,16 +1,16 @@
-import keep_me from 'hello';
-import { keep_me2 } from 'hello2';
-import * as keep_me3 from 'hello3';
+import keep_me from "hello";
+import { keep_me2 } from "hello2";
+import * as keep_me3 from "hello3";
 
-import drop_me from 'bla';
-import { drop_me2 } from 'foo';
-import { drop_me3, but_not_me } from 'bar';
-import * as remove_mua from 'hehe';
+import drop_me from "bla";
+import { drop_me2 } from "foo";
+import { drop_me3, but_not_me } from "bar";
+import * as remove_mua from "hehe";
 
 var leave_me_alone = 1;
 function dont_bug_me_either() {}
 
-const inceptionVar = 'hahaa';
+const inceptionVar = "hahaa";
 var var1 = 1;
 let var2 = 2;
 const var3 = inceptionVar + remove_mua;

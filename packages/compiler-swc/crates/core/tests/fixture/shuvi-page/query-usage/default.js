@@ -1,8 +1,8 @@
 export default function GspPage({ prop }) {
   return __jsx(
-    'div',
+    "div",
     {
-      id: 'prop'
+      id: "prop"
     },
     prop
   );

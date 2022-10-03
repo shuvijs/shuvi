@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Root,
   Children,
@@ -7,7 +7,7 @@ import {
   AttributeJSX,
   ValueInRender,
   ValueInEffect
-} from '../';
+} from "../";
 export default function Test() {
   const [x, setX] = useState(ValueInRender.value);
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function Test() {
       x: x
     },
     __jsx(
-      'div',
+      "div",
       null,
       __jsx(Children, {
         attr: AttributeValue,

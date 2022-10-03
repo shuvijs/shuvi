@@ -11,4 +11,4 @@ function Function2() {
   return { bug };
 }
 
-export { loader } from 'a';
+export { loader } from "a";

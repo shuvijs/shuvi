@@ -1,5 +1,5 @@
-import other from 'other';
+import other from "other";
 const [foo] = other;
 export default function Home() {
-  return __jsx('div', null);
+  return __jsx("div", null);
 }
