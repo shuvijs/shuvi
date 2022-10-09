@@ -91,6 +91,10 @@ async function buildTargets({ force }) {
 }
 
 async function main() {
+  console.log(
+    '![process.env.SHUVI_SKIP_BOOTSTRAP] =>',
+    process.env.SHUVI_SKIP_BOOTSTRAP
+  );
   if (
     process.env.SHUVI_SKIP_BOOTSTRAP &&
     process.env.SHUVI_SKIP_BOOTSTRAP === `true`
