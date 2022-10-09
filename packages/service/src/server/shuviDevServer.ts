@@ -19,7 +19,6 @@ import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
 
 export class ShuviDevServer extends ShuviServer {
   private _bundler: Bunlder;
-  private _devMiddleware?: DevMiddleware | null;
   private _webpackWatcher?: typeof Watchpack | null;
 
   constructor(
@@ -34,13 +33,13 @@ export class ShuviDevServer extends ShuviServer {
     const { _serverContext: context, _server: server } = this;
     const { rootDir } = context.paths;
 
-    this._devMiddleware = getDevMiddleware(this._bundler, context);
+    const devMiddleware = getDevMiddleware(this._bundler, context);
 
     let ready = false;
     // muse be the first middleware, to make sure the build is finisehd.
     server.use((async (req, resp, next) => {
       if (!ready) {
-        await this._devMiddleware?.waitUntilValid();
+        await devMiddleware.waitUntilValid();
         ready = true;
       }
 
@@ -54,10 +53,7 @@ export class ShuviDevServer extends ShuviServer {
 
     if (this._options.getMiddlewaresBeforeDevMiddlewares) {
       const serverMiddlewaresBeforeDevMiddleware = [
-        this._options.getMiddlewaresBeforeDevMiddlewares(
-          this._devMiddleware,
-          context
-        )
+        this._options.getMiddlewaresBeforeDevMiddlewares(devMiddleware, context)
       ]
         .flat()
         .map(m => normalizeServerMiddleware(m, { rootDir }));
@@ -70,15 +66,15 @@ export class ShuviDevServer extends ShuviServer {
       applyHttpProxyMiddleware(server, context.config.proxy);
     }
     // keep the order
-    this._devMiddleware.apply(server);
+    devMiddleware.apply(server);
     server.use(getAssetMiddleware(context, true));
     await this._initMiddlewares();
 
     // setup upgrade listener eagerly when we can otherwise
     // it will be done on the first request via req.socket.server
-    this._setupWebSocketHandler(server, this._devMiddleware);
+    this._setupWebSocketHandler(server, devMiddleware);
 
-    await this.startWatcher();
+    await this.startWatcher(devMiddleware);
   }
 
   // todo: move into devMiddleware?
@@ -93,7 +89,7 @@ export class ShuviDevServer extends ShuviServer {
     });
   };
 
-  private async startWatcher(): Promise<void> {
+  private async startWatcher(devMiddleware: DevMiddleware): Promise<void> {
     if (this._webpackWatcher) {
       return;
     }
@@ -134,7 +130,7 @@ export class ShuviDevServer extends ShuviServer {
 
         //TODO: fast refresh when env/tsconfig.json be created/updated
         if (tsconfigChange) {
-          await this._devMiddleware?.invalidate();
+          await devMiddleware?.invalidate();
         }
       }
     );
