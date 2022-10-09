@@ -202,7 +202,7 @@ export async function createApp({
       scripts: {
         dev: 'shuvi dev',
         build: 'shuvi build',
-        start: 'shuvi start'
+        serve: 'shuvi serve'
       }
     };
     /**
