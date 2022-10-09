@@ -77,7 +77,7 @@ impl Analyzer<'_> {
         if self.in_loader_fn {
             let is_new = !self.state.refs_from_loader_fn.contains(&id);
             self.state.refs_from_loader_fn.insert(id);
-            if is_new {
+            if self.only_keep_loader && is_new {
                 self.state.should_run_again = true;
             }
         } else {
@@ -95,7 +95,7 @@ impl Fold for Analyzer<'_> {
 
     fn fold_binding_ident(&mut self, i: BindingIdent) -> BindingIdent {
         if !self.in_lhs_of_var || self.in_loader_fn {
-            tracing::info!("fold_binding_ident 7777");
+            // tracing::info!("fold_binding_ident 7777");
             self.add_ref(i.id.to_id());
         }
 
@@ -180,8 +180,11 @@ impl Fold for Analyzer<'_> {
 
         self.state.cur_declaring.insert(f.ident.to_id());
 
-        let is_in_loader = EXPORTS.contains(&&*f.ident.sym)
-            || self.state.refs_from_loader_fn.contains(&f.ident.to_id());
+        let mut is_in_loader = EXPORTS.contains(&&*f.ident.sym);
+        if self.only_keep_loader {
+            is_in_loader =
+                is_in_loader || self.state.refs_from_loader_fn.contains(&f.ident.to_id());
+        }
 
         self.in_loader_fn |= is_in_loader;
 
@@ -283,8 +286,12 @@ impl Fold for Analyzer<'_> {
         let old_in_data = self.in_loader_fn;
 
         if let Pat::Ident(name) = &v.name {
-            let is_in_loader = EXPORTS.contains(&&*name.id.sym)
-                || self.state.refs_from_loader_fn.contains(&name.id.to_id());
+            let mut is_in_loader = EXPORTS.contains(&&*name.id.sym);
+            if self.only_keep_loader {
+                is_in_loader =
+                    is_in_loader || self.state.refs_from_loader_fn.contains(&name.id.to_id());
+            }
+
             if is_in_loader {
                 self.in_loader_fn = true
             } else {
@@ -322,8 +329,6 @@ impl ShuviPage {
         }
         if self.only_keep_loader {
             return !self.state.refs_from_loader_fn.contains(&id);
-            // return !(self.state.refs_from_loader_fn.contains(&id)
-            //     && !self.state.refs_from_other.contains(&id));
         }
         self.state.refs_from_loader_fn.contains(&id) && !self.state.refs_from_other.contains(&id)
     }
@@ -586,9 +591,7 @@ impl Fold for ShuviPage {
                 | ExportSpecifier::Named(ExportNamedSpecifier {
                     exported: Some(ModuleExportName::Ident(exported)),
                     ..
-                }) => {
-                    is_keep_identifier(exported).map(|res| res)
-                }
+                }) => is_keep_identifier(exported).map(|res| res),
                 ExportSpecifier::Named(ExportNamedSpecifier {
                     orig: ModuleExportName::Ident(orig),
                     ..
