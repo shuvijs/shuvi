@@ -1,5 +1,3 @@
-const ROUTE_KEEP_SYMBOL = { ignore: ['default'] };
-
 type Obj = Record<string, any>;
 
 export interface CompilerOptions {
@@ -152,7 +150,6 @@ function getBaseSWCOptions({
     isServer,
     isPageFile,
     shuviPageLoader,
-    shakeExports: isPageFile ? ROUTE_KEEP_SYMBOL : null,
     cssModuleFlag: 'cssmodules',
 
     // advanced
