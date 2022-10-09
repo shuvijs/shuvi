@@ -8,16 +8,8 @@ use swc_ecmascript::visit::FoldWith;
 use swc_ecmascript::visit::{noop_fold_type, Fold};
 
 static EXPORTS: &[&str; 1] = &["loader"];
-static KEEP_EXPORTS: &[&str; 2] = &[EXPORTS[0], "default"];
 
 #[allow(clippy::wrong_self_convention)]
-fn is_keep_identifier(i: &Ident) -> Result<bool, Error> {
-    if KEEP_EXPORTS.contains(&&*i.sym) {
-        Ok(true)
-    } else {
-        Ok(false)
-    }
-}
 
 /// Note: This paths requires running `resolver` **before** running this.
 pub fn shuvi_page(only_keep_loader: bool) -> impl Fold {
@@ -580,55 +572,11 @@ impl Fold for ShuviPage {
             }
         });
 
-        // remove other exports
-        n.specifiers.retain(|s| {
-            let preserve = match s {
-                ExportSpecifier::Namespace(ExportNamespaceSpecifier {
-                    name: ModuleExportName::Ident(exported),
-                    ..
-                })
-                | ExportSpecifier::Default(ExportDefaultSpecifier { exported, .. })
-                | ExportSpecifier::Named(ExportNamedSpecifier {
-                    exported: Some(ModuleExportName::Ident(exported)),
-                    ..
-                }) => is_keep_identifier(exported).map(|res| res),
-                ExportSpecifier::Named(ExportNamedSpecifier {
-                    orig: ModuleExportName::Ident(orig),
-                    ..
-                }) => is_keep_identifier(orig).map(|res| res),
-
-                _ => Ok(true),
-            };
-
-            match preserve {
-                Ok(false) => false,
-                Ok(true) => true,
-                Err(_) => false,
-            }
-        });
-
         n
     }
 
     /// This methods returns [Pat::Invalid] if the pattern should be removed.
     fn fold_pat(&mut self, mut p: Pat) -> Pat {
-        // tracing::info!("fold_pat start => `{:?}`", p);
-        // let mut has_rest = false;
-        // let p_copy = p.clone();
-        // if let Pat::Ident(name) = &mut p {
-        //     for prop in &obj.props {
-        //         if prop.is_rest() {
-        //             has_rest = true;
-        //         }
-        //     }
-        // }
-        // if let Pat::Object(obj) = &mut p {
-        //     for prop in &obj.props {
-        //         if prop.is_rest() {
-        //             has_rest = true;
-        //         }
-        //     }
-        // }
 
         p = p.fold_children_with(self);
 
