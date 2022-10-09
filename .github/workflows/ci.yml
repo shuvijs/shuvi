@@ -15,7 +15,7 @@ name: CI
 
 env:
   CI: true
-  SHUVI_SKIP_BOOTSTRAP: false
+  SHUVI_SKIP_BOOTSTRAP: true
 
 concurrency:
   group: ci-${{ github.ref }}
