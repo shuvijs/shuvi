@@ -166,3 +166,34 @@ fn shuvi_page_default_fixture(input: PathBuf) {
         &output,
     );
 }
+
+#[fixture("tests/fixture/shuvi-page/**/input.js")]
+fn shuvi_page_loader_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("loader.js");
+    test_fixture(
+        syntax(),
+        &|tr| {
+            let top_level_mark = Mark::fresh(Mark::root());
+            let jsx = jsx::<SingleThreadedComments>(
+                tr.cm.clone(),
+                None,
+                swc_ecmascript::transforms::react::Options {
+                    next: false.into(),
+                    runtime: None,
+                    import_source: Some("".into()),
+                    pragma: Some("__jsx".into()),
+                    pragma_frag: Some("__jsxFrag".into()),
+                    throw_if_namespace: false.into(),
+                    development: false.into(),
+                    use_builtins: true.into(),
+                    use_spread: true.into(),
+                    refresh: Default::default(),
+                },
+                top_level_mark,
+            );
+            chain!(shuvi_page(true), jsx)
+        },
+        &input,
+        &output,
+    );
+}

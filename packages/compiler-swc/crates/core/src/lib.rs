@@ -33,7 +33,7 @@ use auto_cjs::contains_cjs;
 use either::Either;
 use serde::Deserialize;
 use std::sync::Arc;
-use swc_atoms::JsWord;
+// use swc_atoms::JsWord;
 use swc::config::ModuleConfig;
 use swc_common::comments::Comments;
 use swc_common::{self, chain};
@@ -100,18 +100,11 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
     comments: C,
 ) -> impl Fold + 'a {
     chain!(
-        if opts.is_page_file {
+        if opts.is_page_file || opts.shuvi_page_loader {
             Either::Left({
                 disallow_re_export_all_in_page::disallow_re_export_all_in_page(true);
-                shake_exports::shake_exports(shake_exports::Config {
-                    ignore: Vec::from([JsWord::from("default")]),
-                })
+                shuvi_page::shuvi_page(opts.shuvi_page_loader)
             })
-        } else {
-            Either::Right(noop())
-        },
-        if opts.shuvi_page_loader {
-            Either::Left(page_loader::page_loader())
         } else {
             Either::Right(noop())
         },

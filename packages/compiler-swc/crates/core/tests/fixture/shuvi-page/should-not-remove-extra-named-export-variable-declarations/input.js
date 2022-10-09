@@ -3,10 +3,6 @@ export const loader = () => {
   },
   foo = 2;
 
-export const loader = function () {
-  return { props: {} };
-};
-
 export default function Test() {
   return <div />;
 }

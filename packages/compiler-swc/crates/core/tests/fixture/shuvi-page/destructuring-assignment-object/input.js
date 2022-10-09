@@ -9,7 +9,7 @@ export async function loader() {
   readdir;
   foo;
   b;
-  cat;
+  bar;
   rem;
 }
 export default function Home() {

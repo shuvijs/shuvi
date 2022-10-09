@@ -1,4 +1,4 @@
-use easy_error::{Error};
+use easy_error::Error;
 use fxhash::FxHashSet;
 use std::mem::take;
 use swc_common::pass::{Repeat, Repeated};
@@ -7,12 +7,22 @@ use swc_ecmascript::ast::*;
 use swc_ecmascript::visit::FoldWith;
 use swc_ecmascript::visit::{noop_fold_type, Fold};
 
-static LOADER_EXPORTS: &[&str; 1] = &["loader"];
+static EXPORTS: &[&str; 1] = &["loader"];
+static KEEP_EXPORTS: &[&str; 2] = &[EXPORTS[0], "default"];
+
+#[allow(clippy::wrong_self_convention)]
+fn is_keep_identifier(i: &Ident) -> Result<bool, Error> {
+    if KEEP_EXPORTS.contains(&&*i.sym) {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
 
 /// Note: This paths requires running `resolver` **before** running this.
-pub fn shuvi_page(keep_loader: bool) -> impl Fold {
+pub fn shuvi_page(only_keep_loader: bool) -> impl Fold {
     Repeat::new(ShuviPage {
-        keep_loader,
+        only_keep_loader,
         state: State {
             ..Default::default()
         },
@@ -45,12 +55,9 @@ struct State {
 
 impl State {
     #[allow(clippy::wrong_self_convention)]
-    fn is_data_identifier(&mut self, i: &Ident) -> Result<bool, Error> {
-        if LOADER_EXPORTS.contains(&&*i.sym) {
-            if &*i.sym == "loader" {
-                self.is_server_props = true;
-            }
-
+    fn is_loader_identifier(&mut self, i: &Ident) -> Result<bool, Error> {
+        if EXPORTS.contains(&&*i.sym) {
+            self.is_server_props = true;
             Ok(true)
         } else {
             Ok(false)
@@ -62,20 +69,21 @@ struct Analyzer<'a> {
     state: &'a mut State,
     in_lhs_of_var: bool,
     in_loader_fn: bool,
-    keep_loader: bool,
+    only_keep_loader: bool,
 }
 
 impl Analyzer<'_> {
     fn add_ref(&mut self, id: Id) {
-        tracing::info!("add_ref({},{:?}, data = {})", id.0, id.1, self.in_loader_fn);
         if self.in_loader_fn {
+            let is_new = !self.state.refs_from_loader_fn.contains(&id);
             self.state.refs_from_loader_fn.insert(id);
+            if is_new {
+                self.state.should_run_again = true;
+            }
         } else {
             if self.state.cur_declaring.contains(&id) {
-                tracing::info!("cur_declaring.contains {},{:?}", id.0, id.1);
                 return;
             }
-            tracing::info!("refs_from_other insert {},{:?}", id.0, id.1);
             self.state.refs_from_other.insert(id);
         }
     }
@@ -87,6 +95,7 @@ impl Fold for Analyzer<'_> {
 
     fn fold_binding_ident(&mut self, i: BindingIdent) -> BindingIdent {
         if !self.in_lhs_of_var || self.in_loader_fn {
+            tracing::info!("fold_binding_ident 7777");
             self.add_ref(i.id.to_id());
         }
 
@@ -95,8 +104,16 @@ impl Fold for Analyzer<'_> {
 
     fn fold_export_named_specifier(&mut self, s: ExportNamedSpecifier) -> ExportNamedSpecifier {
         if let ModuleExportName::Ident(id) = &s.orig {
-            if !LOADER_EXPORTS.contains(&&*id.sym) {
-                self.add_ref(id.to_id());
+            let not_has_sym = !EXPORTS.contains(&&*id.sym);
+            if self.only_keep_loader {
+                if !not_has_sym {
+                    self.state.is_server_props = true;
+                    self.state.refs_from_loader_fn.insert(id.to_id());
+                }
+            } else {
+                if not_has_sym {
+                    self.add_ref(id.to_id());
+                }
             }
         }
 
@@ -110,8 +127,16 @@ impl Fold for Analyzer<'_> {
             }
 
             if let Pat::Ident(id) = &d.decls[0].name {
-                if !LOADER_EXPORTS.contains(&&*id.id.sym) {
-                    self.add_ref(id.to_id());
+                let not_has_sym = !EXPORTS.contains(&&*id.id.sym);
+                if self.only_keep_loader {
+                    if !not_has_sym {
+                        self.state.is_server_props = true;
+                        self.state.refs_from_loader_fn.insert(id.to_id());
+                    }
+                } else {
+                    if not_has_sym {
+                        self.add_ref(id.to_id());
+                    }
                 }
             }
         }
@@ -155,17 +180,17 @@ impl Fold for Analyzer<'_> {
 
         self.state.cur_declaring.insert(f.ident.to_id());
 
-        if let Ok(is_data_identifier) = self.state.is_data_identifier(&f.ident) {
-            self.in_loader_fn |= is_data_identifier;
-        } else {
-            return f;
-        }
-        tracing::info!(
-            "shuvi_page: Handling `{}{:?}`; in_loader_fn = {:?}",
-            f.ident.sym,
-            f.ident.span.ctxt,
-            self.in_loader_fn
-        );
+        let is_in_loader = EXPORTS.contains(&&*f.ident.sym)
+            || self.state.refs_from_loader_fn.contains(&f.ident.to_id());
+
+        self.in_loader_fn |= is_in_loader;
+
+        // tracing::info!(
+        //     "shuvi_page: Handling `{}{:?}`; in_loader_fn = {:?}",
+        //     f.ident.sym,
+        //     f.ident.span.ctxt,
+        //     self.in_loader_fn
+        // );
 
         let f = f.fold_children_with(self);
 
@@ -208,12 +233,17 @@ impl Fold for Analyzer<'_> {
             match &e.decl {
                 Decl::Fn(f) => {
                     // Drop loader.
-                    if !self.keep_loader {
-                        if let Ok(is_data_identifier) = self.state.is_data_identifier(&f.ident) {
-                            if is_data_identifier {
+                    if let Ok(is_loader_identifier) = self.state.is_loader_identifier(&f.ident) {
+                        if is_loader_identifier {
+                            if !self.only_keep_loader {
+                                return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
+                            }
+                        } else {
+                            if self.only_keep_loader {
                                 return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
                             }
                         }
+                        return s;
                     } else {
                         return s;
                     }
@@ -253,10 +283,10 @@ impl Fold for Analyzer<'_> {
         let old_in_data = self.in_loader_fn;
 
         if let Pat::Ident(name) = &v.name {
-            if let Ok(is_data_identifier) = self.state.is_data_identifier(&name.id) {
-                if is_data_identifier {
-                    self.in_loader_fn = true;
-                }
+            let is_in_loader = EXPORTS.contains(&&*name.id.sym)
+                || self.state.refs_from_loader_fn.contains(&name.id.to_id());
+            if is_in_loader {
+                self.in_loader_fn = true
             } else {
                 return v;
             }
@@ -280,15 +310,20 @@ impl Fold for Analyzer<'_> {
 
 /// Actual implementation of the transform.
 struct ShuviPage {
-    keep_loader: bool,
+    only_keep_loader: bool,
     pub state: State,
     in_lhs_of_var: bool,
 }
 
 impl ShuviPage {
     fn should_remove(&self, id: Id) -> bool {
-        if self.keep_loader {
+        if !self.state.done {
+            return false;
+        }
+        if self.only_keep_loader {
             return !self.state.refs_from_loader_fn.contains(&id);
+            // return !(self.state.refs_from_loader_fn.contains(&id)
+            //     && !self.state.refs_from_other.contains(&id));
         }
         self.state.refs_from_loader_fn.contains(&id) && !self.state.refs_from_other.contains(&id)
     }
@@ -298,15 +333,13 @@ impl ShuviPage {
     where
         N: for<'aa> FoldWith<Analyzer<'aa>>,
     {
-        tracing::info!("mark_as_candidate");
-
         // Analyzer never change `in_loader_fn` to false, so all identifiers in `n` will
         // be marked as referenced from a data function.
         let mut v = Analyzer {
             state: &mut self.state,
             in_lhs_of_var: false,
             in_loader_fn: true,
-            keep_loader: self.keep_loader,
+            only_keep_loader: self.only_keep_loader,
         };
 
         let n = n.fold_with(&mut v);
@@ -358,14 +391,14 @@ impl Fold for ShuviPage {
     }
 
     fn fold_module(&mut self, mut m: Module) -> Module {
-        tracing::info!("shuvi_page: Start");
+        // tracing::info!("shuvi_page: Start");
         {
             // Fill the state.
             let mut v = Analyzer {
                 state: &mut self.state,
                 in_lhs_of_var: false,
                 in_loader_fn: false,
-                keep_loader: self.keep_loader,
+                only_keep_loader: self.only_keep_loader,
             };
             m = m.fold_with(&mut v);
         }
@@ -381,7 +414,7 @@ impl Fold for ShuviPage {
     fn fold_module_item(&mut self, i: ModuleItem) -> ModuleItem {
         if let ModuleItem::ModuleDecl(ModuleDecl::Import(i)) = i {
             let is_for_side_effect = i.specifiers.is_empty();
-            if self.keep_loader && is_for_side_effect {
+            if self.only_keep_loader && is_for_side_effect {
                 return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
             }
             let i = i.fold_with(self);
@@ -412,22 +445,23 @@ impl Fold for ShuviPage {
         items.retain(|s| !matches!(s, ModuleItem::Stmt(Stmt::Empty(..))));
 
         if !self.state.done && !self.state.should_run_again {
+            // run by collects what loader used
             self.state.done = true;
-
-            if self.keep_loader {
+            self.state.should_run_again = true
+        } else if self.state.done && !self.state.should_run_again {
+            if self.only_keep_loader {
                 let mut new = vec![];
-
                 if !self.state.is_server_props {
                     let var = VarDeclarator {
                         span: DUMMY_SP,
-                        name: Pat::Ident(Ident::new(LOADER_EXPORTS[0].into(), DUMMY_SP).into()),
+                        name: Pat::Ident(Ident::new(EXPORTS[0].into(), DUMMY_SP).into()),
                         init: Some(Box::new(Expr::Lit(Lit::Bool(Bool {
                             span: DUMMY_SP,
                             value: false,
                         })))),
                         definite: Default::default(),
                     };
-    
+
                     new.push(ModuleItem::ModuleDecl(ModuleDecl::ExportDecl(ExportDecl {
                         span: DUMMY_SP,
                         decl: Decl::Var(VarDecl {
@@ -439,22 +473,45 @@ impl Fold for ShuviPage {
                     })));
                     return new;
                 }
-
                 if items.iter().any(|s| s.is_module_decl()) {
                     for item in take(&mut items) {
+                        // drop some default and * export
                         if let ModuleItem::ModuleDecl(
-                            ModuleDecl::ExportDefaultDecl(..) | ModuleDecl::ExportDefaultExpr(..),
+                            ModuleDecl::ExportDefaultDecl(..)
+                            | ModuleDecl::ExportDefaultExpr(..)
+                            | ModuleDecl::ExportAll(..),
                         ) = &item
                         {
-                        } else {
-                            new.push(item);
+                            continue;
                         }
+                        if let ModuleItem::ModuleDecl(ModuleDecl::ExportDecl(e)) = &item {
+                            match &e.decl {
+                                Decl::Class(decl_class) => {
+                                    if let Ok(is_loader_identifier) =
+                                        self.state.is_loader_identifier(&decl_class.ident)
+                                    {
+                                        if !is_loader_identifier {
+                                            continue;
+                                        }
+                                    }
+                                }
+                                Decl::Fn(decl_fn) => {
+                                    if let Ok(is_loader_identifier) =
+                                        self.state.is_loader_identifier(&decl_fn.ident)
+                                    {
+                                        if !is_loader_identifier {
+                                            continue;
+                                        }
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        new.push(item);
                     }
-    
-                    return new;
                 }
+                return new;
             }
-            
         }
 
         items
@@ -475,34 +532,73 @@ impl Fold for ShuviPage {
                     ..
                 }) => self
                     .state
-                    .is_data_identifier(exported)
-                    .map(|is_data_identifier| !is_data_identifier),
+                    .is_loader_identifier(exported)
+                    .map(|is_loader_identifier| !is_loader_identifier),
                 ExportSpecifier::Named(ExportNamedSpecifier {
                     orig: ModuleExportName::Ident(orig),
                     ..
                 }) => self
                     .state
-                    .is_data_identifier(orig)
-                    .map(|is_data_identifier| !is_data_identifier),
+                    .is_loader_identifier(orig)
+                    .map(|is_loader_identifier| !is_loader_identifier),
 
                 _ => Ok(true),
             };
 
             match preserve {
                 Ok(false) => {
-                    tracing::info!("Dropping a export specifier because it's a data identifier");
-
                     if let ExportSpecifier::Named(ExportNamedSpecifier {
                         orig: ModuleExportName::Ident(orig),
                         ..
                     }) = s
                     {
-                        self.state.should_run_again = true;
+                        // tracing::info!(
+                        //     "Dropping a export specifier because it's a data identifier {:?}",
+                        //     orig.to_id()
+                        // );
                         self.state.refs_from_loader_fn.insert(orig.to_id());
+                    }
+
+                    if self.only_keep_loader {
+                        return true;
                     }
 
                     false
                 }
+                Ok(true) => {
+                    if self.only_keep_loader {
+                        return false;
+                    }
+                    true
+                }
+                Err(_) => false,
+            }
+        });
+
+        // remove other exports
+        n.specifiers.retain(|s| {
+            let preserve = match s {
+                ExportSpecifier::Namespace(ExportNamespaceSpecifier {
+                    name: ModuleExportName::Ident(exported),
+                    ..
+                })
+                | ExportSpecifier::Default(ExportDefaultSpecifier { exported, .. })
+                | ExportSpecifier::Named(ExportNamedSpecifier {
+                    exported: Some(ModuleExportName::Ident(exported)),
+                    ..
+                }) => {
+                    is_keep_identifier(exported).map(|res| res)
+                }
+                ExportSpecifier::Named(ExportNamedSpecifier {
+                    orig: ModuleExportName::Ident(orig),
+                    ..
+                }) => is_keep_identifier(orig).map(|res| res),
+
+                _ => Ok(true),
+            };
+
+            match preserve {
+                Ok(false) => false,
                 Ok(true) => true,
                 Err(_) => false,
             }
@@ -513,20 +609,31 @@ impl Fold for ShuviPage {
 
     /// This methods returns [Pat::Invalid] if the pattern should be removed.
     fn fold_pat(&mut self, mut p: Pat) -> Pat {
+        // tracing::info!("fold_pat start => `{:?}`", p);
+        // let mut has_rest = false;
+        // let p_copy = p.clone();
+        // if let Pat::Ident(name) = &mut p {
+        //     for prop in &obj.props {
+        //         if prop.is_rest() {
+        //             has_rest = true;
+        //         }
+        //     }
+        // }
+        // if let Pat::Object(obj) = &mut p {
+        //     for prop in &obj.props {
+        //         if prop.is_rest() {
+        //             has_rest = true;
+        //         }
+        //     }
+        // }
+
         p = p.fold_children_with(self);
 
         if self.in_lhs_of_var {
             match &mut p {
                 Pat::Ident(name) => {
-                    tracing::info!("fold_pat p `{}{:?}`", name.id.sym, name.id.span.ctxt);
                     if self.should_remove(name.id.to_id()) {
                         self.state.should_run_again = true;
-                        tracing::info!(
-                            "Dropping var `{}{:?}` because it should be removed",
-                            name.id.sym,
-                            name.id.span.ctxt
-                        );
-
                         return Pat::Invalid(Invalid { span: DUMMY_SP });
                     }
                 }
@@ -540,7 +647,7 @@ impl Fold for ShuviPage {
                     }
                 }
                 Pat::Object(obj) => {
-                    tracing::info!("Pat::Object `{:?}`", obj);
+                    // tracing::info!("Pat::Object `{:?}`", obj);
                     if !obj.props.is_empty() {
                         obj.props = take(&mut obj.props)
                             .into_iter()
@@ -599,13 +706,15 @@ impl Fold for ShuviPage {
 
                 s = Stmt::Decl(Decl::Fn(f));
             }
+            Stmt::Decl(Decl::Class(c)) => {
+                if self.should_remove(c.ident.to_id()) {
+                    return Stmt::Empty(EmptyStmt { span: DUMMY_SP });
+                }
+
+                s = Stmt::Decl(Decl::Class(c));
+            }
             _ => {}
         }
-
-        // tracing::info!(
-        //     "fold_stmt`{:?}`",
-        //     s
-        // );
 
         let s = s.fold_children_with(self);
         match s {

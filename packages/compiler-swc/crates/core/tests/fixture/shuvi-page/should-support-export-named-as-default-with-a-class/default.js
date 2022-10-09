@@ -4,4 +4,4 @@ class El extends React.Component {
   }
 }
 const a = 5;
-export { El as default, a };
+export { El as default };
