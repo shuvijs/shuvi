@@ -34,6 +34,40 @@ describe('AsyncSeriesWaterfallHook', () => {
   });
 
   test('the initial value of the hook handler should be the return value of the previous hook handler', async () => {
+    const hook = createAsyncSeriesWaterfallHook<number, number>();
+    const handler1: AsyncSeriesWaterfallHookHandler<number, number> = jest.fn(
+      (i, e) => {
+        expect(i).toBe(1);
+        expect(e).toBe(2);
+        return 5;
+      }
+    );
+
+    const handler2: AsyncSeriesWaterfallHookHandler<number, number> = jest.fn(
+      async (i, e) => {
+        expect(i).toBe(5);
+        expect(e).toBe(2);
+        return 10;
+      }
+    );
+
+    const handler3: AsyncSeriesWaterfallHookHandler<number, number> = jest.fn(
+      (i, e) => {
+        expect(i).toBe(10);
+        expect(e).toBe(2);
+        return 8;
+      }
+    );
+
+    hook.use(handler1, handler2, handler3);
+    const result = await hook.run(1, 2);
+    expect(result).toBe(8);
+    expect(handler1).toBeCalledTimes(1);
+    expect(handler2).toBeCalledTimes(1);
+    expect(handler3).toBeCalledTimes(1);
+  });
+
+  test('the handler that returns undefined should execute but the result should be discarded', async () => {
     const hook = createAsyncSeriesWaterfallHook<number | undefined, number>();
     const handler1: AsyncSeriesWaterfallHookHandler<
       number | undefined,
@@ -48,7 +82,7 @@ describe('AsyncSeriesWaterfallHook', () => {
       number | undefined,
       number
     > = jest.fn(async (i, e) => {
-      expect(i).toBe(undefined);
+      expect(i).toBe(1);
       expect(e).toBe(2);
       return 10;
     });
@@ -64,7 +98,7 @@ describe('AsyncSeriesWaterfallHook', () => {
 
     hook.use(handler1, handler2, handler3);
     const result = await hook.run(1, 2);
-    expect(result).toBeUndefined();
+    expect(result).toBe(10);
     expect(handler1).toBeCalledTimes(1);
     expect(handler2).toBeCalledTimes(1);
     expect(handler3).toBeCalledTimes(1);
