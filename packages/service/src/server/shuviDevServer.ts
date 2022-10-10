@@ -123,7 +123,7 @@ export class ShuviDevServer extends ShuviServer {
           }
         }
         if (!useTypeScript && enabledTypeScript) {
-          await setupTypeScript(this._serverContext.paths, true);
+          await setupTypeScript(this._serverContext.paths);
           useTypeScript = true;
           tsconfigChange = true;
         }
