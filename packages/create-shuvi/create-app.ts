@@ -313,7 +313,7 @@ export async function createApp({
     );
     console.log('    Builds the app for production.');
     console.log();
-    console.log(chalk.cyan(`  ${packageManager} start`));
+    console.log(chalk.cyan(`  ${packageManager} serve`));
     console.log('    Runs the built app in production mode.');
     console.log();
     console.log('We suggest that you begin by typing:');
