@@ -253,7 +253,10 @@ export const createSyncWaterfallHook = <
     for (let i = 0; i < _handlers.length; i++) {
       const handler = _handlers[i];
       // @ts-ignore
-      currentParam = handler(currentParam, ...otherArgs);
+      const result = handler(currentParam, ...otherArgs);
+      if (result !== undefined) {
+        currentParam = result;
+      }
     }
     return currentParam;
   };
@@ -377,7 +380,10 @@ export const createAsyncSeriesWaterfallHook = <
     for (let i = 0; i < _handlers.length; i++) {
       const handler = _handlers[i];
       // @ts-ignore
-      currentParam = await handler(currentParam, ...otherArgs);
+      const result = await handler(currentParam, ...otherArgs);
+      if (result !== undefined) {
+        currentParam = result;
+      }
     }
     return currentParam;
   };
