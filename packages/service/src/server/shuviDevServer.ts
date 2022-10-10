@@ -123,14 +123,9 @@ export class ShuviDevServer extends ShuviServer {
           }
         }
         if (!useTypeScript && enabledTypeScript) {
-          // we tolerate the error here as this is best effort
-          // and the manual install command will be shown
-          await setupTypeScript(this._serverContext.paths, true)
-            .then(() => {
-              useTypeScript = true;
-              tsconfigChange = true;
-            })
-            .catch(() => {});
+          await setupTypeScript(this._serverContext.paths, true);
+          useTypeScript = true;
+          tsconfigChange = true;
         }
 
         //TODO: fast refresh when env/tsconfig.json be created/updated
