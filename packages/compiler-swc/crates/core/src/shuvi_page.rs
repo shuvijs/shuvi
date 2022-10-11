@@ -12,9 +12,9 @@ static EXPORTS: &[&str; 1] = &["loader"];
 #[allow(clippy::wrong_self_convention)]
 
 /// Note: This paths requires running `resolver` **before** running this.
-pub fn shuvi_page(only_keep_loader: bool) -> impl Fold {
+pub fn shuvi_page(page_pick_loader: bool) -> impl Fold {
     Repeat::new(ShuviPage {
-        only_keep_loader,
+        page_pick_loader,
         state: State {
             ..Default::default()
         },
@@ -61,7 +61,7 @@ struct Analyzer<'a> {
     state: &'a mut State,
     in_lhs_of_var: bool,
     in_loader_fn: bool,
-    only_keep_loader: bool,
+    page_pick_loader: bool,
 }
 
 impl Analyzer<'_> {
@@ -69,7 +69,7 @@ impl Analyzer<'_> {
         if self.in_loader_fn {
             let is_new = !self.state.refs_from_loader_fn.contains(&id);
             self.state.refs_from_loader_fn.insert(id);
-            if self.only_keep_loader && is_new {
+            if self.page_pick_loader && is_new {
                 self.state.should_run_again = true;
             }
         } else {
@@ -96,7 +96,7 @@ impl Fold for Analyzer<'_> {
     fn fold_export_named_specifier(&mut self, s: ExportNamedSpecifier) -> ExportNamedSpecifier {
         if let ModuleExportName::Ident(id) = &s.orig {
             let not_has_sym = !EXPORTS.contains(&&*id.sym);
-            if self.only_keep_loader {
+            if self.page_pick_loader {
                 if !not_has_sym {
                     self.state.is_server_props = true;
                     self.state.refs_from_loader_fn.insert(id.to_id());
@@ -119,7 +119,7 @@ impl Fold for Analyzer<'_> {
 
             if let Pat::Ident(id) = &d.decls[0].name {
                 let not_has_sym = !EXPORTS.contains(&&*id.id.sym);
-                if self.only_keep_loader {
+                if self.page_pick_loader {
                     if !not_has_sym {
                         self.state.is_server_props = true;
                         self.state.refs_from_loader_fn.insert(id.to_id());
@@ -172,7 +172,7 @@ impl Fold for Analyzer<'_> {
         self.state.cur_declaring.insert(f.ident.to_id());
 
         let mut is_in_loader = EXPORTS.contains(&&*f.ident.sym);
-        if self.only_keep_loader {
+        if self.page_pick_loader {
             is_in_loader =
                 is_in_loader || self.state.refs_from_loader_fn.contains(&f.ident.to_id());
         }
@@ -226,14 +226,14 @@ impl Fold for Analyzer<'_> {
         if let ModuleItem::ModuleDecl(ModuleDecl::ExportDecl(e)) = &s {
             match &e.decl {
                 Decl::Fn(f) => {
-                    // Drop or keep loader depend on self.only_keep_loader value
+                    // Drop or keep loader depend on self.page_pick_loader value
                     if let Ok(is_loader_identifier) = self.state.is_loader_identifier(&f.ident) {
                         if is_loader_identifier {
-                            if !self.only_keep_loader {
+                            if !self.page_pick_loader {
                                 return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
                             }
                         } else {
-                            if self.only_keep_loader {
+                            if self.page_pick_loader {
                                 return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
                             }
                         }
@@ -276,7 +276,7 @@ impl Fold for Analyzer<'_> {
     fn fold_var_declarator(&mut self, mut v: VarDeclarator) -> VarDeclarator {
         let old_in_data = self.in_loader_fn;
 
-        if self.only_keep_loader {
+        if self.page_pick_loader {
             // find loader used outside fn, may be toplevel expression
             // unit test
             // var_declarator: should-keep-shared-variable-declarations
@@ -324,7 +324,7 @@ impl Fold for Analyzer<'_> {
         } else {
             if let Pat::Ident(name) = &v.name {
                 let mut is_in_loader = EXPORTS.contains(&&*name.id.sym);
-                if self.only_keep_loader {
+                if self.page_pick_loader {
                     is_in_loader =
                         is_in_loader || self.state.refs_from_loader_fn.contains(&name.id.to_id());
                 }
@@ -354,14 +354,14 @@ impl Fold for Analyzer<'_> {
 
 /// Actual implementation of the transform.
 struct ShuviPage {
-    only_keep_loader: bool,
+    page_pick_loader: bool,
     pub state: State,
     in_lhs_of_var: bool,
 }
 
 impl ShuviPage {
     fn should_remove(&self, id: Id) -> bool {
-        if self.only_keep_loader {
+        if self.page_pick_loader {
             // recursively find the variables used by the loader
             // unit test: should-remove-re-exported-function-declarations-dependents-variables-functions-imports
             if !self.state.done {
@@ -383,7 +383,7 @@ impl ShuviPage {
             state: &mut self.state,
             in_lhs_of_var: false,
             in_loader_fn: true,
-            only_keep_loader: self.only_keep_loader,
+            page_pick_loader: self.page_pick_loader,
         };
 
         let n = n.fold_with(&mut v);
@@ -441,7 +441,7 @@ impl Fold for ShuviPage {
                 state: &mut self.state,
                 in_lhs_of_var: false,
                 in_loader_fn: false,
-                only_keep_loader: self.only_keep_loader,
+                page_pick_loader: self.page_pick_loader,
             };
             m = m.fold_with(&mut v);
         }
@@ -457,7 +457,7 @@ impl Fold for ShuviPage {
     fn fold_module_item(&mut self, i: ModuleItem) -> ModuleItem {
         if let ModuleItem::ModuleDecl(ModuleDecl::Import(i)) = i {
             let is_for_side_effect = i.specifiers.is_empty();
-            if self.only_keep_loader && is_for_side_effect {
+            if self.page_pick_loader && is_for_side_effect {
                 return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
             }
             let i = i.fold_with(self);
@@ -492,7 +492,7 @@ impl Fold for ShuviPage {
             self.state.done = true;
             self.state.should_run_again = true
         } else if self.state.done && !self.state.should_run_again {
-            if self.only_keep_loader {
+            if self.page_pick_loader {
                 let mut new = vec![];
                 // no loader just return export const loader = false
                 if !self.state.is_server_props {
@@ -603,14 +603,14 @@ impl Fold for ShuviPage {
                         self.state.refs_from_loader_fn.insert(orig.to_id());
                     }
 
-                    if self.only_keep_loader {
+                    if self.page_pick_loader {
                         return true;
                     }
 
                     false
                 }
                 Ok(true) => {
-                    if self.only_keep_loader {
+                    if self.page_pick_loader {
                         return false;
                     }
                     true

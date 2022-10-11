@@ -48,9 +48,8 @@ export type SWCLoaderOptions = {
   filename: string;
   isServer: boolean;
   isPageFile: boolean;
-  shuviPageLoader: boolean;
+  pagePickLoader: boolean;
   development: boolean;
-  keep: string[];
   minify: boolean | Obj;
   hasReactRefresh: boolean;
   supportedBrowsers: any[];
@@ -83,14 +82,13 @@ export function getParserOptions({
 function getBaseSWCOptions({
   filename,
   isPageFile,
-  shuviPageLoader,
+  pagePickLoader,
   minify,
   development,
   hasReactRefresh,
   isServer,
   compiler,
-  swcCacheDir,
-  keep
+  swcCacheDir
 }: Omit<SWCLoaderOptions, 'supportedBrowsers'>) {
   const parserConfig = getParserOptions({ filename, compiler });
   const enableDecorators = Boolean(compiler?.experimentalDecorators);
@@ -149,7 +147,7 @@ function getBaseSWCOptions({
     // shuvi specific
     isServer,
     isPageFile,
-    shuviPageLoader,
+    pagePickLoader,
     cssModuleFlag: 'cssmodules',
 
     // advanced
@@ -220,25 +218,23 @@ export default function getLoaderSWCOptions({
   isServer,
   minify,
   isPageFile,
-  shuviPageLoader,
+  pagePickLoader,
   hasReactRefresh,
   compiler,
   supportedBrowsers,
-  swcCacheDir,
-  keep
+  swcCacheDir
 }: // This is not passed yet as "paths" resolving is handled by webpack currently.
 SWCLoaderOptions) {
   let baseOptions = getBaseSWCOptions({
     filename,
     isPageFile,
-    shuviPageLoader,
+    pagePickLoader,
     development,
     isServer,
     minify,
     hasReactRefresh,
     compiler,
-    swcCacheDir,
-    keep
+    swcCacheDir
   });
 
   if (isServer) {

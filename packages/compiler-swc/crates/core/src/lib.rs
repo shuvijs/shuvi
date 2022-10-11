@@ -75,7 +75,7 @@ pub struct TransformOptions {
     pub css_module_flag: String,
 
     #[serde(default)]
-    pub shuvi_page_loader: bool,
+    pub page_pick_loader: bool,
 
     #[serde(default)]
     pub styled_components: Option<styled_components::Config>,
@@ -101,9 +101,9 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
 ) -> impl Fold + 'a {
     chain!(
         disallow_re_export_all_in_page::disallow_re_export_all_in_page(opts.is_page_file),
-        if opts.is_page_file || opts.shuvi_page_loader {
+        if opts.is_page_file {
             Either::Left({
-                shuvi_page::shuvi_page(opts.shuvi_page_loader)
+                shuvi_page::shuvi_page(opts.page_pick_loader)
             })
         } else {
             Either::Right(noop())

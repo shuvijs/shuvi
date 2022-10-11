@@ -1,13 +1,13 @@
 import transform from '../swc-transform';
 
-const swc = async (code: string, just_keep_loader: boolean = false) => {
+const swc = async (code: string, pagePickLoader: boolean = false) => {
   const jsc = {
     target: 'es2021'
   };
 
   const options = {
     isPageFile: true,
-    shuviPageLoader: just_keep_loader,
+    pagePickLoader,
     jsc
   };
 
