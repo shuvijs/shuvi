@@ -5,10 +5,15 @@ use shuvi_swc::{
     remove_console::remove_console,
     shake_exports::{shake_exports, Config as ShakeExportsConfig},
     shuvi_dynamic::shuvi_dynamic,
+    shuvi_page::shuvi_page,
 };
 use std::path::PathBuf;
+use swc_common::{chain, comments::SingleThreadedComments, Mark};
 use swc_ecma_transforms_testing::{test, test_fixture};
-use swc_ecmascript::parser::{EsConfig, Syntax};
+use swc_ecmascript::{
+    parser::{EsConfig, Syntax},
+    transforms::react::jsx,
+};
 use testing::fixture;
 
 fn syntax() -> Syntax {
@@ -131,3 +136,64 @@ fn shake_exports_fixture_page_loader(input: PathBuf) {
     test_fixture(syntax(), &|_tr| page_loader(), &input, &output);
 }
 
+#[fixture("tests/fixture/shuvi-page/**/input.js")]
+fn shuvi_page_default_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("default.js");
+    test_fixture(
+        syntax(),
+        &|tr| {
+            let top_level_mark = Mark::fresh(Mark::root());
+            let jsx = jsx::<SingleThreadedComments>(
+                tr.cm.clone(),
+                None,
+                swc_ecmascript::transforms::react::Options {
+                    next: false.into(),
+                    runtime: None,
+                    import_source: Some("".into()),
+                    pragma: Some("__jsx".into()),
+                    pragma_frag: Some("__jsxFrag".into()),
+                    throw_if_namespace: false.into(),
+                    development: false.into(),
+                    use_builtins: true.into(),
+                    use_spread: true.into(),
+                    refresh: Default::default(),
+                },
+                top_level_mark,
+            );
+            chain!(shuvi_page(false), jsx)
+        },
+        &input,
+        &output,
+    );
+}
+
+#[fixture("tests/fixture/shuvi-page/**/input.js")]
+fn shuvi_page_loader_fixture(input: PathBuf) {
+    let output = input.parent().unwrap().join("loader.js");
+    test_fixture(
+        syntax(),
+        &|tr| {
+            let top_level_mark = Mark::fresh(Mark::root());
+            let jsx = jsx::<SingleThreadedComments>(
+                tr.cm.clone(),
+                None,
+                swc_ecmascript::transforms::react::Options {
+                    next: false.into(),
+                    runtime: None,
+                    import_source: Some("".into()),
+                    pragma: Some("__jsx".into()),
+                    pragma_frag: Some("__jsxFrag".into()),
+                    throw_if_namespace: false.into(),
+                    development: false.into(),
+                    use_builtins: true.into(),
+                    use_spread: true.into(),
+                    refresh: Default::default(),
+                },
+                top_level_mark,
+            );
+            chain!(shuvi_page(true), jsx)
+        },
+        &input,
+        &output,
+    );
+}

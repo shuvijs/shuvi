@@ -60,14 +60,13 @@ async function loaderTransform(
 
   let isPageFile = false;
 
-  let shuviPageLoader = false;
-
-  let keep: string[] = [];
+  let pagePickLoader = false;
 
   if (this.resourceQuery) {
     const query = querystring.parse(this.resourceQuery.slice(1));
-    isPageFile = query[ROUTE_RESOURCE_QUERYSTRING] !== undefined;
-    shuviPageLoader = query[LOADER_RESOURCE_QUERYSTRING] !== undefined;
+    pagePickLoader = query[LOADER_RESOURCE_QUERYSTRING] !== undefined;
+    isPageFile =
+      pagePickLoader || query[ROUTE_RESOURCE_QUERYSTRING] !== undefined;
   }
 
   const isDevelopment = this.mode === 'development';
@@ -77,9 +76,8 @@ async function loaderTransform(
     filename,
     isServer,
     isPageFile,
-    shuviPageLoader,
+    pagePickLoader,
     minify,
-    keep,
     hasReactRefresh:
       hasReactRefresh !== undefined
         ? hasReactRefresh
