@@ -33,6 +33,7 @@ use auto_cjs::contains_cjs;
 use either::Either;
 use serde::Deserialize;
 use std::sync::Arc;
+// use swc_atoms::JsWord;
 use swc::config::ModuleConfig;
 use swc_common::comments::Comments;
 use swc_common::{self, chain};
@@ -52,6 +53,7 @@ pub mod react_remove_properties;
 pub mod remove_console;
 pub mod shake_exports;
 pub mod shuvi_dynamic;
+pub mod shuvi_page;
 mod top_level_binding_collector;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -73,7 +75,7 @@ pub struct TransformOptions {
     pub css_module_flag: String,
 
     #[serde(default)]
-    pub shuvi_page_loader: bool,
+    pub page_pick_loader: bool,
 
     #[serde(default)]
     pub styled_components: Option<styled_components::Config>,
@@ -83,9 +85,6 @@ pub struct TransformOptions {
 
     #[serde(default)]
     pub react_remove_properties: Option<react_remove_properties::Config>,
-
-    #[serde(default)]
-    pub shake_exports: Option<shake_exports::Config>,
 
     #[serde(default)]
     pub emotion: Option<swc_emotion::EmotionOptions>,
@@ -101,13 +100,15 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
     comments: C,
 ) -> impl Fold + 'a {
     chain!(
-        if opts.shuvi_page_loader {
-            Either::Left(page_loader::page_loader())
+        disallow_re_export_all_in_page::disallow_re_export_all_in_page(opts.is_page_file),
+        if opts.is_page_file {
+            Either::Left({
+                shuvi_page::shuvi_page(opts.page_pick_loader)
+            })
         } else {
             Either::Right(noop())
         },
         auto_css_module::auto_css_module(opts.css_module_flag.clone()),
-        disallow_re_export_all_in_page::disallow_re_export_all_in_page(opts.is_page_file),
         hook_optimizer::hook_optimizer(),
         shuvi_dynamic::shuvi_dynamic(opts.is_server,),
         match &opts.styled_components {
@@ -127,10 +128,6 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
             Some(config) if config.truthy() =>
                 Either::Left(react_remove_properties::remove_properties(config.clone())),
             _ => Either::Right(noop()),
-        },
-        match &opts.shake_exports {
-            Some(config) => Either::Left(shake_exports::shake_exports(config.clone())),
-            None => Either::Right(noop()),
         },
         opts.emotion
             .as_ref()

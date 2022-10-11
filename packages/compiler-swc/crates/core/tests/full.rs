@@ -59,7 +59,6 @@ fn test(input: &Path, minify: bool) {
                 remove_console: None,
                 css_module_flag: String::from("").into(),
                 react_remove_properties: None,
-                shake_exports: None,
                 emotion: Some(assert_json("{}")),
                 modularize_imports: None,
             };
