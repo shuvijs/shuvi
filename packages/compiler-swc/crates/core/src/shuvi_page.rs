@@ -87,7 +87,6 @@ impl Fold for Analyzer<'_> {
 
     fn fold_binding_ident(&mut self, i: BindingIdent) -> BindingIdent {
         if !self.in_lhs_of_var || self.in_loader_fn {
-            // tracing::info!("fold_binding_ident 7777");
             self.add_ref(i.id.to_id());
         }
 
@@ -227,7 +226,7 @@ impl Fold for Analyzer<'_> {
         if let ModuleItem::ModuleDecl(ModuleDecl::ExportDecl(e)) = &s {
             match &e.decl {
                 Decl::Fn(f) => {
-                    // Drop loader.
+                    // Drop or keep loader depend on self.only_keep_loader value
                     if let Ok(is_loader_identifier) = self.state.is_loader_identifier(&f.ident) {
                         if is_loader_identifier {
                             if !self.only_keep_loader {
@@ -277,17 +276,63 @@ impl Fold for Analyzer<'_> {
     fn fold_var_declarator(&mut self, mut v: VarDeclarator) -> VarDeclarator {
         let old_in_data = self.in_loader_fn;
 
-        if let Pat::Ident(name) = &v.name {
-            let mut is_in_loader = EXPORTS.contains(&&*name.id.sym);
-            if self.only_keep_loader {
-                is_in_loader =
-                    is_in_loader || self.state.refs_from_loader_fn.contains(&name.id.to_id());
+        if self.only_keep_loader {
+            // find loader used outside fn, may be toplevel expression
+            // unit test
+            // var_declarator: should-keep-shared-variable-declarations
+            // deconstruct_declarator: destructuring-assignment-array destructuring-assignment-object
+            if !self.in_loader_fn {
+                let mut stack: Vec<&Pat> = vec![];
+                stack.push(&v.name);
+                while stack.len() != 0 {
+                    let item = stack.pop();
+                    if let Some(Pat::Ident(name)) = item {
+                        if self.state.refs_from_loader_fn.contains(&name.id.to_id()) {
+                            self.in_loader_fn = true;
+                            break;
+                        };
+                    } else if let Some(Pat::Array(arr)) = item {
+                        for elem in &arr.elems {
+                            match elem {
+                                Some(p) => {
+                                    stack.push(p);
+                                }
+                                _ => {}
+                            }
+                        }
+                    } else if let Some(Pat::Object(obj)) = item {
+                        for p in &obj.props {
+                            match p {
+                                ObjectPatProp::KeyValue(prop) => {
+                                    stack.push(&prop.value);
+                                }
+                                ObjectPatProp::Assign(prop) => {
+                                    if self.state.refs_from_loader_fn.contains(&prop.key.to_id()) {
+                                        self.in_loader_fn = true;
+                                        break;
+                                    }
+                                }
+                                ObjectPatProp::Rest(prop) => {
+                                    stack.push(&prop.arg);
+                                }
+                            }
+                        }
+                    }
+                }
+                stack.clear();
             }
-
-            if is_in_loader {
-                self.in_loader_fn = true
-            } else {
-                return v;
+        } else {
+            if let Pat::Ident(name) = &v.name {
+                let mut is_in_loader = EXPORTS.contains(&&*name.id.sym);
+                if self.only_keep_loader {
+                    is_in_loader =
+                        is_in_loader || self.state.refs_from_loader_fn.contains(&name.id.to_id());
+                }
+                if is_in_loader {
+                    self.in_loader_fn = true
+                } else {
+                    return v;
+                }
             }
         }
 
@@ -316,10 +361,12 @@ struct ShuviPage {
 
 impl ShuviPage {
     fn should_remove(&self, id: Id) -> bool {
-        if !self.state.done {
-            return false;
-        }
         if self.only_keep_loader {
+            // recursively find the variables used by the loader
+            // unit test: should-remove-re-exported-function-declarations-dependents-variables-functions-imports
+            if !self.state.done {
+                return false;
+            }
             return !self.state.refs_from_loader_fn.contains(&id);
         }
         self.state.refs_from_loader_fn.contains(&id) && !self.state.refs_from_other.contains(&id)
@@ -388,7 +435,6 @@ impl Fold for ShuviPage {
     }
 
     fn fold_module(&mut self, mut m: Module) -> Module {
-        // tracing::info!("shuvi_page: Start");
         {
             // Fill the state.
             let mut v = Analyzer {
@@ -448,6 +494,7 @@ impl Fold for ShuviPage {
         } else if self.state.done && !self.state.should_run_again {
             if self.only_keep_loader {
                 let mut new = vec![];
+                // no loader just return export const loader = false
                 if !self.state.is_server_props {
                     let var = VarDeclarator {
                         span: DUMMY_SP,
@@ -577,7 +624,6 @@ impl Fold for ShuviPage {
 
     /// This methods returns [Pat::Invalid] if the pattern should be removed.
     fn fold_pat(&mut self, mut p: Pat) -> Pat {
-
         p = p.fold_children_with(self);
 
         if self.in_lhs_of_var {
@@ -598,7 +644,6 @@ impl Fold for ShuviPage {
                     }
                 }
                 Pat::Object(obj) => {
-                    // tracing::info!("Pat::Object `{:?}`", obj);
                     if !obj.props.is_empty() {
                         obj.props = take(&mut obj.props)
                             .into_iter()
