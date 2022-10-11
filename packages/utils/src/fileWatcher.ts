@@ -5,7 +5,7 @@ const watchpackExplanationType = {
   rename: 'rename'
 };
 
-export { TimeInfo };
+export { Watchpack, TimeInfo };
 
 export interface WatchEvent {
   changes: string[];
