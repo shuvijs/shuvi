@@ -100,9 +100,9 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
     comments: C,
 ) -> impl Fold + 'a {
     chain!(
+        disallow_re_export_all_in_page::disallow_re_export_all_in_page(opts.is_page_file),
         if opts.is_page_file || opts.shuvi_page_loader {
             Either::Left({
-                disallow_re_export_all_in_page::disallow_re_export_all_in_page(true);
                 shuvi_page::shuvi_page(opts.shuvi_page_loader)
             })
         } else {
