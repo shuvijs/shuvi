@@ -2,7 +2,10 @@ import {
   DEV_HOT_MIDDLEWARE_PATH,
   DEV_READY_ENDPOINT
 } from '@shuvi/shared/lib/constants';
+import { Watchpack, watch as watcher } from '@shuvi/utils/lib/fileWatcher';
+import { join } from 'path';
 import { Bunlder } from '../bundler';
+import { setupTypeScript, getTypeScriptInfo } from '../bundler/typescript';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
@@ -16,6 +19,7 @@ import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
 
 export class ShuviDevServer extends ShuviServer {
   private _bundler: Bunlder;
+  private _webpackWatcher?: typeof Watchpack | null;
 
   constructor(
     corePluginContext: any,
@@ -69,6 +73,8 @@ export class ShuviDevServer extends ShuviServer {
     // setup upgrade listener eagerly when we can otherwise
     // it will be done on the first request via req.socket.server
     this._setupWebSocketHandler(server, devMiddleware);
+
+    await this.startWatcher(devMiddleware);
   }
 
   // todo: move into devMiddleware?
@@ -82,4 +88,59 @@ export class ShuviDevServer extends ShuviServer {
       }
     });
   };
+
+  private async startWatcher(devMiddleware: DevMiddleware): Promise<void> {
+    if (this._webpackWatcher) {
+      return;
+    }
+
+    const { routesDir, rootDir } = this._serverContext.paths;
+    const files: string[] = [];
+    const directories: string[] = [routesDir];
+    let { useTypeScript } = getTypeScriptInfo();
+    let enabledTypeScript: boolean = useTypeScript;
+
+    // tsconfig/jsconfig paths
+    const tsconfigPaths = [
+      join(rootDir, 'tsconfig.json'),
+      join(rootDir, 'jsconfig.json')
+    ];
+    files.push(...tsconfigPaths);
+
+    this._webpackWatcher = watcher(
+      {
+        directories,
+        files,
+        startTime: 0
+      },
+      async ({ getAllFiles }) => {
+        const allFiles = getAllFiles();
+        let tsconfigChange: boolean = false;
+
+        for (const fileName of allFiles) {
+          if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
+            enabledTypeScript = true;
+          }
+        }
+        if (!useTypeScript && enabledTypeScript) {
+          await setupTypeScript(this._serverContext.paths);
+          useTypeScript = true;
+          tsconfigChange = true;
+        }
+
+        //TODO: fast refresh when env/tsconfig.json be created/updated
+        if (tsconfigChange) {
+          await devMiddleware?.invalidate();
+        }
+      }
+    );
+  }
+
+  async close() {
+    if (this._webpackWatcher) {
+      this._webpackWatcher();
+      this._webpackWatcher = null;
+    }
+    await super.close();
+  }
 }
