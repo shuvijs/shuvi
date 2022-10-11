@@ -1,7 +1,6 @@
 import * as path from 'path';
 import chalk from '@shuvi/utils/lib/chalk';
 import fs from 'fs-extra';
-import { isCI } from 'ci-info';
 import { Error } from '../../error';
 import { IPaths } from '../../core/apiTypes';
 import { getPkgManager } from '../helper/getPkgManager';
@@ -93,7 +92,10 @@ export function getTypeScriptInfo(): TypeScriptInfo {
   };
 }
 
-export async function setupTypeScript(paths: IPaths) {
+export async function setupTypeScript(
+  paths: IPaths,
+  reportMissingError: Boolean = false
+) {
   if (hasSetup) {
     return;
   }
@@ -105,7 +107,7 @@ export async function setupTypeScript(paths: IPaths) {
   if (useTypeScript) {
     let deps = checkNecessaryDeps(projectDir);
     if (deps.missing.length > 0) {
-      if (isCI) {
+      if (reportMissingError) {
         missingPackagesError(projectDir, deps.missing);
       }
       console.log(
