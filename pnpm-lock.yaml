@@ -85,19 +85,30 @@ importers:
   packages/compiler:
     specifiers:
       '@napi-rs/triples': 1.1.0
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.5
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.5
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.5
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.5
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.5
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.5
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.5
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.6
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.6
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.6
       '@swc/plugin-transform-imports': 0.8.4
     dependencies:
       '@napi-rs/triples': 1.1.0
+    optionalDependencies:
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.6
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.6
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.6
     devDependencies:
       '@swc/plugin-transform-imports': 0.8.4
 
@@ -4207,6 +4218,96 @@ packages:
     dependencies:
       immer: 9.0.6
     dev: false
+
+  /@shuvi/swc-darwin-arm64/1.0.0-rc.6:
+    resolution: {integrity: sha512-wg/yXUZUyW+5SI7UuB5V1elmR4nk8zcMP6SmVSdy+ieq5U5nXuE1PxBgab5MuLvk2WvEyQMa16w63SwXvN3p+A==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-darwin-x64/1.0.0-rc.6:
+    resolution: {integrity: sha512-arDfqhn3Q9PNkKTRdEEcvz0++8lSnyaVbi1HG2beKk9L/FCUFCVCD9FfXWLyEOVoyPyAMU4LOEdRN5lDVn2D+w==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-arm-gnueabihf/1.0.0-rc.6:
+    resolution: {integrity: sha512-FGrsUB2biJfgiVgCbwaT84nKNI8Tn/IgMZeejDvCFElxFL+rQ6x7WnaDUoWNPdpCf8+4sYci1jGbgPiNMLbF5w==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-arm64-gnu/1.0.0-rc.6:
+    resolution: {integrity: sha512-T81faJfAJegVIpXGrOYWjKyT2zv6ChVjzmSbUNDsYcNvXKqtV6fPAbhCWsAQkd4/o2YU5eN2CaqZSg+EAJ5t2A==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-arm64-musl/1.0.0-rc.6:
+    resolution: {integrity: sha512-9sQjclvszN6fARZiUdgJzX3JHJYTY1uTIW/nfnkSaxVh//H8S41p0DcEn0k0tqqlnXgy5nwIqEmlxa3uRDEaeQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-x64-gnu/1.0.0-rc.6:
+    resolution: {integrity: sha512-5zB5pO1BIt/PckbW0QC7FPMx+ucIS6SCHbJwy20zCG2LWN9ybbKsirRlRcTGmOtc6kyPprOctHeG3Pn4KreF7Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-x64-musl/1.0.0-rc.6:
+    resolution: {integrity: sha512-LTHWC9bOa5XCis8gIdQK/rBCooBz65q449xFHxR+wxSJlXR2QVrDa7UUCsws3wLPCWnD9Z9ERgVNmt3hQueSQA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-win32-arm64-msvc/1.0.0-rc.6:
+    resolution: {integrity: sha512-XleUMiPsHh5ILIhCAbiSEkxefxXYhjcyPIWqjOhsuYlPUOgti3ApR6xD+nT2DDEC7UmNr+zd3bMVnDKSIgtYpg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-win32-ia32-msvc/1.0.0-rc.6:
+    resolution: {integrity: sha512-fTv1NyjX3HMu/0elYI+4RF/CMVJW6p+7XkyL5axf7nnPUJsts5qNDMESFvMC52OqkKnvfkHcVd0+nfm+HcG/eg==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-win32-x64-msvc/1.0.0-rc.6:
+    resolution: {integrity: sha512-hTgVQaxV7hTQWR9DXGZdCzGXtpxV7BiYKFj1ygiysR8o7N/KeWYuaSGVzF9eNw7J0SQHzQiJjaRfGbL8g7JhGQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /@sinclair/typebox/0.23.5:
     resolution: {integrity: sha512-AFBVi/iT4g20DHoujvMH1aEDn8fGJh4xsRGCP6d8RpLPMqsNPvW01Jcn0QysXTsg++/xj25NmJsGyH9xug/wKg==}
