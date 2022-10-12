@@ -20,6 +20,7 @@ import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
 export class ShuviDevServer extends ShuviServer {
   private _bundler: Bunlder;
   private _webpackWatcher?: typeof Watchpack | null;
+  private verifyingTypeScript?: boolean;
 
   constructor(
     corePluginContext: any,
@@ -123,7 +124,7 @@ export class ShuviDevServer extends ShuviServer {
           }
         }
         if (!useTypeScript && enabledTypeScript) {
-          await setupTypeScript(this._serverContext.paths);
+          await this.verifyTypeScript();
           useTypeScript = true;
           tsconfigChange = true;
         }
@@ -134,6 +135,18 @@ export class ShuviDevServer extends ShuviServer {
         }
       }
     );
+  }
+
+  private async verifyTypeScript() {
+    if (this.verifyingTypeScript) {
+      return;
+    }
+    try {
+      this.verifyingTypeScript = true;
+      await setupTypeScript(this._serverContext.paths);
+    } finally {
+      this.verifyingTypeScript = false;
+    }
   }
 
   async close() {
