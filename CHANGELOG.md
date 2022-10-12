@@ -1,3 +1,28 @@
+# [1.0.0-rc.19](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.18...v1.0.0-rc.19) (2022-10-12)
+
+
+### Bug Fixes
+
+* build ([a5b864a](https://github.com/shuvijs/shuvi/commit/a5b864ab9f7c212ec16a0d5a6a320caf2750a79e))
+* build error-overlay and its deps ([98bb5a7](https://github.com/shuvijs/shuvi/commit/98bb5a7c9a95b3d803730e3f0134a9ae424ee286))
+* extract loader by swc ([972236e](https://github.com/shuvijs/shuvi/commit/972236e7a9c00a311563db202caebc89f6ae1a29))
+* false positive of api and page conflicting ([506bc65](https://github.com/shuvijs/shuvi/commit/506bc65a2cd501b86548ec443c3e5825742b3783))
+* **hook:** seriesHook should discard handlers that returns undefined ([#441](https://github.com/shuvijs/shuvi/issues/441)) ([6085f19](https://github.com/shuvijs/shuvi/commit/6085f19265a619f4827a14a2cae2c61216e2ee4c))
+* loader can't update when add/remove ([277810c](https://github.com/shuvijs/shuvi/commit/277810c7f743b0911572721ca0dee3ffc001de9f))
+* only output html when ssr=false ([ac9d032](https://github.com/shuvijs/shuvi/commit/ac9d03231f16aafc366be600c84d0fec83988ab3))
+* rename shuvi_page_loader to page_pick_loader ([85e5ccd](https://github.com/shuvijs/shuvi/commit/85e5ccdb195e3fb062b9ae4f841ca90e64a5b352))
+* replace start with serve ([9d3d7ab](https://github.com/shuvijs/shuvi/commit/9d3d7aba67e5f572f52f669576422f6419922f0d))
+
+
+### Features
+
+* error when return undefined ([f74e80d](https://github.com/shuvijs/shuvi/commit/f74e80df536692b97d5ad5f35bf5d4d496e0c43d))
+* file builder ignore file update in routes ([7d60810](https://github.com/shuvijs/shuvi/commit/7d608107332c4e4e69c50ee58239a0d8abcba33f))
+* make createPlugin contextless ([5f2474f](https://github.com/shuvijs/shuvi/commit/5f2474fb6d93b8a7b16dc2074c503800b4afd079))
+* ts auto install ([1632567](https://github.com/shuvijs/shuvi/commit/16325671bc415d14e2aa0a9933098e8c21dc2c2b))
+
+
+
 # [1.0.0-rc.18](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.17...v1.0.0-rc.18) (2022-09-19)
 
 
