@@ -1,21 +1,42 @@
 import invariant from '@shuvi/utils/lib/invariant';
-import { resolve } from '@shuvi/utils/lib/resolve';
 import { isPluginInstance, IPluginInstance } from '@shuvi/hook';
 import logger from '@shuvi/utils/lib/logger';
 import * as path from 'path';
-import { createPlugin, CorePluginInstance } from './plugin';
+import {
+  createPlugin,
+  CorePluginInstance,
+  CorePluginConstructor
+} from './plugin';
 import {
   IPreset,
   IPluginConfig,
   IPresetConfig,
-  IPresetSpec,
   IPluginContext,
-  ResolvedPlugin
+  ResolvedPlugin,
+  ISplitPluginConfig
 } from './apiTypes';
 
-interface ResolvePluginOptions {
+interface ResolvePluginOrPresetOptions {
   dir: string;
 }
+
+const isInlinePluginConfig = (
+  pluginConfig: ISplitPluginConfig | CorePluginConstructor
+): pluginConfig is ISplitPluginConfig => {
+  const possibleKeys = ['core', 'server', 'runtime', 'types'];
+  if (
+    possibleKeys.some(key => {
+      if (key in pluginConfig) {
+        const value = pluginConfig[key as keyof ISplitPluginConfig];
+        return typeof value === 'string';
+      }
+      return false;
+    })
+  ) {
+    return true;
+  }
+  return false;
+};
 
 function getPluginInstance(
   pluginPath: string,
@@ -37,7 +58,7 @@ function getPluginInstance(
 
 export function resolvePlugin(
   pluginConfig: IPluginConfig,
-  resolveOptions?: ResolvePluginOptions
+  resolveOptions?: ResolvePluginOrPresetOptions
 ): ResolvedPlugin {
   const resolved: ResolvedPlugin = {};
   // pluginPath needed to be an absolute path of plugin directory
@@ -45,26 +66,71 @@ export function resolvePlugin(
   const paths = basedir ? [basedir] : undefined;
   let pluginPath: string = '';
   let pluginOptions: any;
+  let corePluginPath: string = '';
+  let serverPluginPath: string = '';
+  let runtimePluginPath: string = '';
+  let typesPath: string = '';
+
+  const resolveSplitPluginConfig = (config: ISplitPluginConfig) => {
+    const { core, server, runtime, types } = config;
+    core && (corePluginPath = core);
+    server && (serverPluginPath = server);
+    runtime && (runtimePluginPath = runtime);
+    types && (typesPath = types);
+  };
+
+  /**
+   * array has 2 conditions
+   * 1. [string, any]
+   * 2. [ISplitPluginConfig, any]
+   */
   if (Array.isArray(pluginConfig)) {
-    pluginPath = pluginConfig[0] as string;
+    const pluginPathOrSplitPluginConfig = pluginConfig[0];
     pluginOptions = pluginConfig[1];
+    if (typeof pluginPathOrSplitPluginConfig === 'string') {
+      pluginPath = pluginPathOrSplitPluginConfig;
+    } else {
+      if (isInlinePluginConfig(pluginPathOrSplitPluginConfig)) {
+        resolveSplitPluginConfig(pluginPathOrSplitPluginConfig);
+      }
+    }
+
+    /** string is normal plugin path */
   } else if (typeof pluginConfig === 'string') {
     pluginPath = pluginConfig;
+
+    /**
+     * object has 3 conditions
+     * 1. CorePluginInstance
+     * 2. ISplitPluginConfig
+     * 3. CorePluginConstructor
+     */
   } else if (typeof pluginConfig === 'object') {
-    let pluginInstance: CorePluginInstance;
+    let pluginInstance: CorePluginInstance | null = null;
     if (isPluginInstance(pluginConfig)) {
       pluginInstance = pluginConfig as CorePluginInstance;
+    } else if (isInlinePluginConfig(pluginConfig)) {
+      resolveSplitPluginConfig(pluginConfig);
     } else {
       pluginInstance = createPlugin(pluginConfig);
     }
-    resolved.core = pluginInstance;
+    if (pluginInstance) {
+      resolved.core = pluginInstance;
+    }
   }
-  if (pluginPath) {
-    let corePluginPath: string = '';
-    try {
-      corePluginPath = require.resolve(pluginPath, { paths });
-    } catch {}
 
+  if (
+    pluginPath ||
+    corePluginPath ||
+    serverPluginPath ||
+    runtimePluginPath ||
+    typesPath
+  ) {
+    if (pluginPath && !corePluginPath) {
+      try {
+        corePluginPath = require.resolve(pluginPath, { paths });
+      } catch {}
+    }
     try {
       if (corePluginPath) {
         const core = getPluginInstance(corePluginPath, pluginOptions);
@@ -73,17 +139,17 @@ export function resolvePlugin(
         }
       }
     } catch (e) {
-      logger.error('error when resolving corePlugin');
-      logger.error(e);
+      logger.error(`error when resolving corePlugin ${corePluginPath}`, e);
     }
 
     // resolve serverPlugin
-    let serverPluginPath: string = '';
-    try {
-      serverPluginPath = require.resolve(pluginPath + path.sep + 'server', {
-        paths
-      });
-    } catch {}
+    if (pluginPath && !serverPluginPath) {
+      try {
+        serverPluginPath = require.resolve(pluginPath + path.sep + 'server', {
+          paths
+        });
+      } catch {}
+    }
 
     try {
       if (serverPluginPath) {
@@ -93,16 +159,17 @@ export function resolvePlugin(
         }
       }
     } catch (e) {
-      logger.error('error when resolving serverPlugin');
+      logger.error(`error when resolving serverPlugin ${serverPluginPath}`, e);
     }
 
     // resolve runtimePlugin
-    let runtimePluginPath: string = '';
-    try {
-      runtimePluginPath = require.resolve(pluginPath + path.sep + 'runtime', {
-        paths
-      });
-    } catch {}
+    if (pluginPath && !runtimePluginPath) {
+      try {
+        runtimePluginPath = require.resolve(pluginPath + path.sep + 'runtime', {
+          paths
+        });
+      } catch {}
+    }
 
     if (runtimePluginPath) {
       resolved.runtime = {
@@ -111,18 +178,20 @@ export function resolvePlugin(
       };
     }
 
-    let typesPath: string = '';
-    try {
-      typesPath = require.resolve(pluginPath + path.sep + 'types', {
-        paths
-      });
-    } catch {
+    if (pluginPath && !typesPath) {
       try {
-        typesPath = require.resolve(pluginPath + path.sep + 'types.d.ts', {
+        typesPath = require.resolve(pluginPath + path.sep + 'types', {
           paths
         });
-      } catch {}
+      } catch {
+        try {
+          typesPath = require.resolve(pluginPath + path.sep + 'types.d.ts', {
+            paths
+          });
+        } catch {}
+      }
     }
+
     if (typesPath) {
       const dir = path.dirname(typesPath);
       resolved.types = dir + path.sep + 'types';
@@ -131,92 +200,79 @@ export function resolvePlugin(
   return resolved;
 }
 
-function resolvePreset(
+/** resolve single preset to resolvedPlugins */
+export function resolvePreset(
   presetConfig: IPresetConfig,
-  resolveOptions: ResolvePluginOptions
-): IPreset {
+  resolveOptions: ResolvePluginOrPresetOptions,
+  pluginContext: IPluginContext
+): ResolvedPlugin[] {
+  const collectedPlugins: ResolvedPlugin[] = [];
   let presetPath: string;
   let options: any;
 
   if (Array.isArray(presetConfig)) {
     presetPath = presetConfig[0];
-    const nameOrOption = presetConfig[1];
-    if (typeof nameOrOption === 'string') {
-      options = {};
-    } else {
-      options = nameOrOption;
-    }
+    options = presetConfig[1];
   } else if (typeof presetConfig === 'string') {
     presetPath = presetConfig;
-    options = {};
   } else {
     throw new Error(`Plugin must be one of type [string, array, function]`);
   }
+  const basedir = resolveOptions?.dir ? resolveOptions.dir : undefined;
+  const paths = basedir ? [basedir] : undefined;
+  presetPath = require.resolve(presetPath, { paths });
+  const presetModule = require(presetPath);
+  const preset: IPreset = presetModule.default || presetModule;
 
-  presetPath = resolve(presetPath, { basedir: resolveOptions.dir });
+  if (typeof preset === 'function') {
+    const presetContent = preset(pluginContext, options);
+    const { presets, plugins } = presetContent;
 
-  const id = presetPath;
-  let preset = require(presetPath);
-  preset = preset.default || preset;
-  const presetFn: IPresetSpec = (context: IPluginContext) => {
-    return preset(context, options);
-  };
+    if (plugins) {
+      invariant(
+        Array.isArray(plugins),
+        `plugins returned from preset ${presetPath} must be Array.`
+      );
+      const resolvedPlugins = resolvePlugins(plugins, resolveOptions);
+      collectedPlugins.push(...resolvedPlugins);
+    }
 
-  return {
-    id,
-    get: () => presetFn
-  };
+    if (presets) {
+      invariant(
+        Array.isArray(presets),
+        `presets returned from preset ${presetPath} must be Array.`
+      );
+      presets.forEach(currentPreset => {
+        const currentResolvedPlugins = resolvePreset(
+          currentPreset,
+          resolveOptions,
+          pluginContext
+        );
+        collectedPlugins.push(...currentResolvedPlugins);
+      });
+    }
+  }
+  return collectedPlugins;
 }
 
 export const resolvePlugins = (
   plugins: IPluginConfig[],
-  options: ResolvePluginOptions
+  options: ResolvePluginOrPresetOptions
 ): ResolvedPlugin[] => {
   return plugins.map(plugin => resolvePlugin(plugin, options));
 };
 
 export function resolvePresets(
   presets: IPresetConfig[],
-  options: ResolvePluginOptions
-): IPreset[] {
-  return presets.map(preset => resolvePreset(preset, options));
-}
-
-function initPreset(
-  rootDir: string,
-  preset: IPreset,
-  collection: ResolvedPlugin[]
-) {
-  const { id, get: getPreset } = preset;
-  const { presets, plugins } = getPreset()({});
-
-  if (presets) {
-    invariant(
-      Array.isArray(presets),
-      `presets returned from preset ${id} must be Array.`
-    );
-
-    const resolvedPresets = resolvePresets(presets, {
-      dir: rootDir
-    });
-
-    for (const preset of resolvedPresets) {
-      initPreset(rootDir, preset, collection);
-    }
-  }
-
-  if (plugins) {
-    invariant(
-      Array.isArray(plugins),
-      `presets returned from preset ${id} must be Array.`
-    );
-
-    collection.push(
-      ...resolvePlugins(plugins, {
-        dir: rootDir
-      })
-    );
-  }
+  options: ResolvePluginOrPresetOptions,
+  pluginContext: IPluginContext
+): ResolvedPlugin[] {
+  const allPlugins: ResolvedPlugin[] = [];
+  presets.forEach(current => {
+    const resolveds = resolvePreset(current, options, pluginContext);
+    allPlugins.push(...resolveds);
+  });
+  return allPlugins;
 }
 
 export function getPlugins(
@@ -224,22 +280,23 @@ export function getPlugins(
   config: {
     presets?: IPresetConfig[];
     plugins?: IPluginConfig[];
-  }
+  },
+  pluginContext: IPluginContext
 ): ResolvedPlugin[] {
-  const presetPlugins: ResolvedPlugin[] = [];
-  // init presets
-  const presets = resolvePresets(config.presets || [], {
-    dir: rootDir
-  });
-
-  for (const preset of presets) {
-    initPreset(rootDir, preset, presetPlugins);
-  }
-
   // init plugins
   const plugins = resolvePlugins(config.plugins || [], {
     dir: rootDir
   });
-  const allPlugins = presetPlugins.concat(plugins);
+
+  // init presets
+  const presetPlugins = resolvePresets(
+    config.presets || [],
+    {
+      dir: rootDir
+    },
+    pluginContext
+  );
+
+  const allPlugins = plugins.concat(presetPlugins);
   return allPlugins;
 }

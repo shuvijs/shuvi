@@ -21,11 +21,6 @@ export type DeepPartial<T> = {
 
 export type IServiceMode = 'development' | 'production';
 
-export interface IPreset {
-  id: string;
-  get: () => IPresetSpec;
-}
-
 export interface IPaths {
   // project root
   rootDir: string;
@@ -60,19 +55,23 @@ export interface IPaths {
 
 export type IPluginConfig =
   | string
+  | ISplitPluginConfig
   | CorePluginConstructor
   | CorePluginInstance
-  | [string, any?];
+  | [string, any?]
+  | [ISplitPluginConfig, any?];
 
 export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
 
-export interface IPresetSpec {
-  (options: any): {
-    presets?: IPresetConfig[];
-    plugins?: IPluginConfig[];
-  };
+export type IPreset = (context: IPluginContext, options: any) => IPresetContent;
+
+export type PresetFunction = IPreset;
+
+export interface IPresetContent {
+  presets?: IPresetConfig[];
+  plugins?: IPluginConfig[];
 }
 
 export declare type IServicePhase =
@@ -85,6 +84,14 @@ export type RuntimePluginConfig = {
   plugin: string;
   options?: any;
 };
+
+/** plugin config that specify path of each file */
+export interface ISplitPluginConfig {
+  core?: string;
+  server?: string;
+  runtime?: string;
+  types?: string;
+}
 
 export interface ResolvedPlugin {
   core?: CorePluginInstance; // instance
