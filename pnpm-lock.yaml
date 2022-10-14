@@ -85,30 +85,30 @@ importers:
   packages/compiler:
     specifiers:
       '@napi-rs/triples': 1.1.0
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.5
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.5
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.5
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.5
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.5
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.5
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.5
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.6
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.6
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.6
       '@swc/plugin-transform-imports': 0.8.4
     dependencies:
       '@napi-rs/triples': 1.1.0
     optionalDependencies:
-      '@shuvi/swc-darwin-arm64': 1.0.0-rc.5
-      '@shuvi/swc-darwin-x64': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.5
-      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.5
-      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.5
-      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.5
-      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.5
-      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.5
-      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.5
+      '@shuvi/swc-darwin-arm64': 1.0.0-rc.6
+      '@shuvi/swc-darwin-x64': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm-gnueabihf': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-arm64-musl': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-gnu': 1.0.0-rc.6
+      '@shuvi/swc-linux-x64-musl': 1.0.0-rc.6
+      '@shuvi/swc-win32-arm64-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-ia32-msvc': 1.0.0-rc.6
+      '@shuvi/swc-win32-x64-msvc': 1.0.0-rc.6
     devDependencies:
       '@swc/plugin-transform-imports': 0.8.4
 
@@ -169,8 +169,8 @@ importers:
       '@rollup/plugin-commonjs': 22.0.2
       '@rollup/plugin-node-resolve': 13.3.0
       '@rollup/plugin-replace': 4.0.0
-      '@shuvi/shared': 1.0.0-rc.18
-      '@shuvi/toolpack': 1.0.0-rc.18
+      '@shuvi/shared': 1.0.0-rc.19
+      '@shuvi/toolpack': 1.0.0-rc.19
       '@types/babel__code-frame': 7.0.3
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
@@ -218,14 +218,14 @@ importers:
 
   packages/platform-shared:
     specifiers:
-      '@shuvi/hook': 1.0.0-rc.18
+      '@shuvi/hook': 1.0.0-rc.19
       '@shuvi/redox': 0.0.7
-      '@shuvi/router': 1.0.0-rc.18
-      '@shuvi/runtime': 1.0.0-rc.18
-      '@shuvi/service': 1.0.0-rc.18
-      '@shuvi/shared': 1.0.0-rc.18
-      '@shuvi/toolpack': 1.0.0-rc.18
-      '@shuvi/utils': 1.0.0-rc.18
+      '@shuvi/router': 1.0.0-rc.19
+      '@shuvi/runtime': 1.0.0-rc.19
+      '@shuvi/service': 1.0.0-rc.19
+      '@shuvi/shared': 1.0.0-rc.19
+      '@shuvi/toolpack': 1.0.0-rc.19
+      '@shuvi/utils': 1.0.0-rc.19
       '@types/minimatch': 3.0.5
       redux: 4.1.2
     dependencies:
@@ -244,18 +244,18 @@ importers:
   packages/platform-web:
     specifiers:
       '@next/react-refresh-utils': 12.1.6
-      '@shuvi/error-overlay': 1.0.0-rc.18
-      '@shuvi/hook': 1.0.0-rc.18
-      '@shuvi/platform-shared': 1.0.0-rc.18
+      '@shuvi/error-overlay': 1.0.0-rc.19
+      '@shuvi/hook': 1.0.0-rc.19
+      '@shuvi/platform-shared': 1.0.0-rc.19
       '@shuvi/redox': 0.0.7
       '@shuvi/redox-react': 0.0.7
-      '@shuvi/router': 1.0.0-rc.18
-      '@shuvi/router-react': 1.0.0-rc.18
-      '@shuvi/runtime': 1.0.0-rc.18
-      '@shuvi/service': 1.0.0-rc.18
-      '@shuvi/shared': 1.0.0-rc.18
-      '@shuvi/toolpack': 1.0.0-rc.18
-      '@shuvi/utils': 1.0.0-rc.18
+      '@shuvi/router': 1.0.0-rc.19
+      '@shuvi/router-react': 1.0.0-rc.19
+      '@shuvi/runtime': 1.0.0-rc.19
+      '@shuvi/service': 1.0.0-rc.19
+      '@shuvi/shared': 1.0.0-rc.19
+      '@shuvi/toolpack': 1.0.0-rc.19
+      '@shuvi/utils': 1.0.0-rc.19
       '@testing-library/react': ^13.2.0
       '@types/content-type': ^1.1.5
       '@types/cookie': ^0.4.1
@@ -322,7 +322,7 @@ importers:
 
   packages/router:
     specifiers:
-      '@shuvi/utils': 1.0.0-rc.18
+      '@shuvi/utils': 1.0.0-rc.19
       query-string: 6.13.8
     dependencies:
       '@shuvi/utils': link:../utils
@@ -330,9 +330,9 @@ importers:
 
   packages/router-react:
     specifiers:
-      '@shuvi/platform-shared': 1.0.0-rc.18
-      '@shuvi/router': 1.0.0-rc.18
-      '@shuvi/utils': 1.0.0-rc.18
+      '@shuvi/platform-shared': 1.0.0-rc.19
+      '@shuvi/router': 1.0.0-rc.19
+      '@shuvi/utils': 1.0.0-rc.19
       '@types/prop-types': ^15.7.5
       '@types/react': 18.0.9
       '@types/react-test-renderer': 18.0.0
@@ -359,7 +359,7 @@ importers:
 
   packages/runtime:
     specifiers:
-      '@shuvi/hook': 1.0.0-rc.18
+      '@shuvi/hook': 1.0.0-rc.19
     dependencies:
       '@shuvi/hook': link:../hook
 
@@ -370,13 +370,13 @@ importers:
       '@babel/parser': 7.14.7
       '@babel/traverse': 7.14.7
       '@babel/types': 7.12.11
-      '@shuvi/error-overlay': 1.0.0-rc.18
-      '@shuvi/hook': 1.0.0-rc.18
-      '@shuvi/router': 1.0.0-rc.18
-      '@shuvi/runtime': 1.0.0-rc.18
-      '@shuvi/shared': 1.0.0-rc.18
-      '@shuvi/toolpack': 1.0.0-rc.18
-      '@shuvi/utils': 1.0.0-rc.18
+      '@shuvi/error-overlay': 1.0.0-rc.19
+      '@shuvi/hook': 1.0.0-rc.19
+      '@shuvi/router': 1.0.0-rc.19
+      '@shuvi/runtime': 1.0.0-rc.19
+      '@shuvi/shared': 1.0.0-rc.19
+      '@shuvi/toolpack': 1.0.0-rc.19
+      '@shuvi/utils': 1.0.0-rc.19
       '@types/babel__code-frame': ^7.0.3
       '@types/babel__generator': ^7.6.4
       '@types/babel__traverse': ^7.14.2
@@ -426,18 +426,18 @@ importers:
 
   packages/shared:
     specifiers:
-      '@shuvi/hook': 1.0.0-rc.18
+      '@shuvi/hook': 1.0.0-rc.19
     dependencies:
       '@shuvi/hook': link:../hook
 
   packages/shuvi:
     specifiers:
-      '@shuvi/platform-shared': 1.0.0-rc.18
-      '@shuvi/platform-web': 1.0.0-rc.18
-      '@shuvi/service': 1.0.0-rc.18
-      '@shuvi/shared': 1.0.0-rc.18
-      '@shuvi/toolpack': 1.0.0-rc.18
-      '@shuvi/utils': 1.0.0-rc.18
+      '@shuvi/platform-shared': 1.0.0-rc.19
+      '@shuvi/platform-web': 1.0.0-rc.19
+      '@shuvi/service': 1.0.0-rc.19
+      '@shuvi/shared': 1.0.0-rc.19
+      '@shuvi/toolpack': 1.0.0-rc.19
+      '@shuvi/utils': 1.0.0-rc.19
       '@types/cross-spawn': 6.0.1
       '@types/dotenv': 8.2.0
       cli-highlight: ^2.1.9
@@ -478,9 +478,9 @@ importers:
       '@babel/preset-react': 7.10.1
       '@babel/preset-typescript': 7.12.7
       '@babel/runtime': 7.12.5
-      '@shuvi/compiler': 1.0.0-rc.18
-      '@shuvi/shared': 1.0.0-rc.18
-      '@shuvi/utils': 1.0.0-rc.18
+      '@shuvi/compiler': 1.0.0-rc.19
+      '@shuvi/shared': 1.0.0-rc.19
+      '@shuvi/utils': 1.0.0-rc.19
       '@swc/helpers': 0.4.3
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
@@ -4219,8 +4219,8 @@ packages:
       immer: 9.0.6
     dev: false
 
-  /@shuvi/swc-darwin-arm64/1.0.0-rc.5:
-    resolution: {integrity: sha512-G7mCfwWXzr8qLthVe8ZY5PRvV+8dKF9vAYE97Yn7sFU+X12DBoTcGT6bkp0/iY+EQXqLDAv/S8HuZcPcgSmM2Q==}
+  /@shuvi/swc-darwin-arm64/1.0.0-rc.6:
+    resolution: {integrity: sha512-wg/yXUZUyW+5SI7UuB5V1elmR4nk8zcMP6SmVSdy+ieq5U5nXuE1PxBgab5MuLvk2WvEyQMa16w63SwXvN3p+A==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -4228,8 +4228,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-darwin-x64/1.0.0-rc.5:
-    resolution: {integrity: sha512-jhNOG9FuTdb46BRgMsfkJ8Bd0PQxfxCQE3VLe+Ra8js5gQg9r5irC/JYY+O/+IEE1vNTn4qmXyC9EG/Vhfu2tA==}
+  /@shuvi/swc-darwin-x64/1.0.0-rc.6:
+    resolution: {integrity: sha512-arDfqhn3Q9PNkKTRdEEcvz0++8lSnyaVbi1HG2beKk9L/FCUFCVCD9FfXWLyEOVoyPyAMU4LOEdRN5lDVn2D+w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -4237,8 +4237,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-arm-gnueabihf/1.0.0-rc.5:
-    resolution: {integrity: sha512-BQf9q/GgGuDy3tC59A2XNBQu7Hntl8wNvuQtFMI0+EZd+YsMOWX1spHDGTRucN5ZIcM6jHOws5X7VS/LTPYdNw==}
+  /@shuvi/swc-linux-arm-gnueabihf/1.0.0-rc.6:
+    resolution: {integrity: sha512-FGrsUB2biJfgiVgCbwaT84nKNI8Tn/IgMZeejDvCFElxFL+rQ6x7WnaDUoWNPdpCf8+4sYci1jGbgPiNMLbF5w==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
@@ -4246,8 +4246,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-arm64-gnu/1.0.0-rc.5:
-    resolution: {integrity: sha512-pCaiT2Av2WpuQMrcTFbNLoFULWeNnmOhfsbuz+xtS5H02qbuq0Flg6fS1l/9F6WIRqsbk/3+0uM5IhGTeBxYYQ==}
+  /@shuvi/swc-linux-arm64-gnu/1.0.0-rc.6:
+    resolution: {integrity: sha512-T81faJfAJegVIpXGrOYWjKyT2zv6ChVjzmSbUNDsYcNvXKqtV6fPAbhCWsAQkd4/o2YU5eN2CaqZSg+EAJ5t2A==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4255,8 +4255,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-arm64-musl/1.0.0-rc.5:
-    resolution: {integrity: sha512-aun/KkaQbuuoUzdNI45tFFZPP5BFbCzG1WnztGKWFyU1IIXF+9VZz37ASF6y1L2qNFlWmjplTTDr+oxQ3bt2GQ==}
+  /@shuvi/swc-linux-arm64-musl/1.0.0-rc.6:
+    resolution: {integrity: sha512-9sQjclvszN6fARZiUdgJzX3JHJYTY1uTIW/nfnkSaxVh//H8S41p0DcEn0k0tqqlnXgy5nwIqEmlxa3uRDEaeQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4264,8 +4264,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-x64-gnu/1.0.0-rc.5:
-    resolution: {integrity: sha512-H06Mp7crvX8C6fBS5JIdAdrhrAPoQMBO+guIrqTUFfE+Y/6tMN72SUHKLZQzLHwCS+xHzFZrZqz/NmhePlM2Uw==}
+  /@shuvi/swc-linux-x64-gnu/1.0.0-rc.6:
+    resolution: {integrity: sha512-5zB5pO1BIt/PckbW0QC7FPMx+ucIS6SCHbJwy20zCG2LWN9ybbKsirRlRcTGmOtc6kyPprOctHeG3Pn4KreF7Q==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4273,8 +4273,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-linux-x64-musl/1.0.0-rc.5:
-    resolution: {integrity: sha512-DS0TcdNFGfjMRuw7jnOx+Q6gKSE3ZOinHKP0MKOTnN4q/YEERW73B1hIx+ErCzSBljr3Lbt+VIMtbXpVD37PZQ==}
+  /@shuvi/swc-linux-x64-musl/1.0.0-rc.6:
+    resolution: {integrity: sha512-LTHWC9bOa5XCis8gIdQK/rBCooBz65q449xFHxR+wxSJlXR2QVrDa7UUCsws3wLPCWnD9Z9ERgVNmt3hQueSQA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4282,8 +4282,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-win32-arm64-msvc/1.0.0-rc.5:
-    resolution: {integrity: sha512-mkuGTFt75vGp3hZUUXXRPWHeYuORjMHF7//OY+FfoS4686VnMcUVwjR5OWBiTQ0AtSvusLY0PARS3kKvwP8N/g==}
+  /@shuvi/swc-win32-arm64-msvc/1.0.0-rc.6:
+    resolution: {integrity: sha512-XleUMiPsHh5ILIhCAbiSEkxefxXYhjcyPIWqjOhsuYlPUOgti3ApR6xD+nT2DDEC7UmNr+zd3bMVnDKSIgtYpg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -4291,8 +4291,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-win32-ia32-msvc/1.0.0-rc.5:
-    resolution: {integrity: sha512-c89iPA+QcH90a716FSEO9TUL02c3vDjTqqRnGYYQqATwptS5wAwcmP9TYnacdxUt+u5bfBsyjAS3XgVk7kATAw==}
+  /@shuvi/swc-win32-ia32-msvc/1.0.0-rc.6:
+    resolution: {integrity: sha512-fTv1NyjX3HMu/0elYI+4RF/CMVJW6p+7XkyL5axf7nnPUJsts5qNDMESFvMC52OqkKnvfkHcVd0+nfm+HcG/eg==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -4300,8 +4300,8 @@ packages:
     dev: false
     optional: true
 
-  /@shuvi/swc-win32-x64-msvc/1.0.0-rc.5:
-    resolution: {integrity: sha512-VNW8CoVM49sz8/ALIBb5ayrKC6psR4PA7Zorhcp8l4O5fECPWxpSArAqtjctGx3Vh3wmMyCP1bJDtSWxb8OCBQ==}
+  /@shuvi/swc-win32-x64-msvc/1.0.0-rc.6:
+    resolution: {integrity: sha512-hTgVQaxV7hTQWR9DXGZdCzGXtpxV7BiYKFj1ygiysR8o7N/KeWYuaSGVzF9eNw7J0SQHzQiJjaRfGbL8g7JhGQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]

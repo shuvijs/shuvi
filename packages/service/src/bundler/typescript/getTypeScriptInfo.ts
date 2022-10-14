@@ -63,7 +63,7 @@ export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {
   return typescriptFiles.length > 0;
 }
 
-export function checkNecessarytDeps(
+export function checkNecessaryDeps(
   projectDir: string
 ): CheckedDependenciesResult {
   return checkDependencies(projectDir, requiredPackages);
