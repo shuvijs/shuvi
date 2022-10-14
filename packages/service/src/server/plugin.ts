@@ -54,6 +54,8 @@ export type ServerPluginInstance = IPluginInstance<
   IServerPluginContext
 >;
 
+export type ServerPluginFactory = (options: any) => ServerPluginInstance;
+
 export const initServerPlugins = (
   manager: PluginManager,
   serverPlugins: ServerPluginInstance[],

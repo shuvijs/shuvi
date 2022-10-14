@@ -13,26 +13,24 @@ import {
   IPresetConfig,
   IPluginContext,
   ResolvedPlugin,
-  ISplitPluginConfig
+  DetailedPluginConfig,
+  CorePluginConfig
 } from './apiTypes';
+import { createServerPlugin } from '../server/plugin';
 
 interface ResolvePluginOrPresetOptions {
   dir: string;
 }
 
-const isInlinePluginConfig = (
-  pluginConfig: ISplitPluginConfig | CorePluginConstructor
-): pluginConfig is ISplitPluginConfig => {
+/**
+ * As long as the pluginConfig has any of these key  ['core', 'server', 'runtime', 'types'],
+ * we regard it as DetailedPluginConfig
+ */
+const isDetailedPluginConfig = (
+  pluginConfig: DetailedPluginConfig | CorePluginConstructor
+): pluginConfig is DetailedPluginConfig => {
   const possibleKeys = ['core', 'server', 'runtime', 'types'];
-  if (
-    possibleKeys.some(key => {
-      if (key in pluginConfig) {
-        const value = pluginConfig[key as keyof ISplitPluginConfig];
-        return typeof value === 'string';
-      }
-      return false;
-    })
-  ) {
+  if (possibleKeys.some(key => key in pluginConfig)) {
     return true;
   }
   return false;
@@ -56,14 +54,28 @@ function getPluginInstance(
   return;
 }
 
+const resolvePluginFactory = <T extends (options: unknown) => any>(
+  pluginFactory: T,
+  options: unknown
+): ReturnType<T> | undefined => {
+  try {
+    const instance = pluginFactory(options);
+    return instance;
+  } catch (e) {
+    logger.error(`error when resolving core plugin factory`, e);
+  }
+  return undefined;
+};
+
 export function resolvePlugin(
   pluginConfig: IPluginConfig,
   resolveOptions?: ResolvePluginOrPresetOptions
 ): ResolvedPlugin {
-  const resolved: ResolvedPlugin = {};
-  // pluginPath needed to be an absolute path of plugin directory
   const basedir = resolveOptions?.dir ? resolveOptions.dir : undefined;
   const paths = basedir ? [basedir] : undefined;
+
+  const resolved: ResolvedPlugin = {};
+  let pluginBody: string | CorePluginConfig | DetailedPluginConfig;
   let pluginPath: string = '';
   let pluginOptions: any;
   let corePluginPath: string = '';
@@ -71,51 +83,79 @@ export function resolvePlugin(
   let runtimePluginPath: string = '';
   let typesPath: string = '';
 
-  const resolveSplitPluginConfig = (config: ISplitPluginConfig) => {
+  const resolveDetailedPluginConfig = (config: DetailedPluginConfig) => {
     const { core, server, runtime, types } = config;
-    core && (corePluginPath = core);
-    server && (serverPluginPath = server);
+    if (core) {
+      if (typeof core === 'string') {
+        corePluginPath = core;
+      } else if (typeof core === 'function') {
+        const coreInstance = resolvePluginFactory(core, pluginOptions);
+        if (coreInstance) {
+          resolved.core = coreInstance;
+        }
+      } else if (typeof core === 'object') {
+        if (isPluginInstance(core)) {
+          resolved.core = core;
+        } else {
+          resolved.core = createPlugin(core);
+        }
+      }
+    }
+
+    if (server) {
+      if (typeof server === 'string') {
+        serverPluginPath = server;
+      } else if (typeof server === 'function') {
+        const serverInstance = resolvePluginFactory(server, pluginOptions);
+        if (serverInstance) {
+          resolved.server = serverInstance;
+        }
+      } else if (typeof server === 'object') {
+        if (isPluginInstance(server)) {
+          resolved.server = server;
+        } else {
+          resolved.server = createServerPlugin(server);
+        }
+      }
+    }
+
     runtime && (runtimePluginPath = runtime);
     types && (typesPath = types);
   };
 
-  /**
-   * array has 2 conditions
-   * 1. [string, any]
-   * 2. [ISplitPluginConfig, any]
-   */
   if (Array.isArray(pluginConfig)) {
-    const pluginPathOrSplitPluginConfig = pluginConfig[0];
-    pluginOptions = pluginConfig[1];
-    if (typeof pluginPathOrSplitPluginConfig === 'string') {
-      pluginPath = pluginPathOrSplitPluginConfig;
-    } else {
-      if (isInlinePluginConfig(pluginPathOrSplitPluginConfig)) {
-        resolveSplitPluginConfig(pluginPathOrSplitPluginConfig);
-      }
+    [pluginBody, pluginOptions] = pluginConfig;
+  } else {
+    pluginBody = pluginConfig;
+  }
+
+  if (!pluginBody) {
+    return resolved;
+  }
+
+  /** string is normal plugin path */
+  if (typeof pluginBody === 'string') {
+    pluginPath = pluginBody;
+
+    /** function is CorePluginFactory */
+  } else if (typeof pluginBody === 'function') {
+    const corePluginInstance = resolvePluginFactory(pluginBody, pluginOptions);
+    if (corePluginInstance) {
+      resolved.core = corePluginInstance;
     }
-
-    /** string is normal plugin path */
-  } else if (typeof pluginConfig === 'string') {
-    pluginPath = pluginConfig;
-
     /**
      * object has 3 conditions
      * 1. CorePluginInstance
-     * 2. ISplitPluginConfig
+     * 2. DetailedPluginConfig
      * 3. CorePluginConstructor
      */
-  } else if (typeof pluginConfig === 'object') {
-    let pluginInstance: CorePluginInstance | null = null;
-    if (isPluginInstance(pluginConfig)) {
-      pluginInstance = pluginConfig as CorePluginInstance;
-    } else if (isInlinePluginConfig(pluginConfig)) {
-      resolveSplitPluginConfig(pluginConfig);
+  } else if (typeof pluginBody === 'object') {
+    if (isPluginInstance<CorePluginInstance>(pluginBody)) {
+      resolved.core = pluginBody;
+    } else if (isDetailedPluginConfig(pluginBody)) {
+      resolveDetailedPluginConfig(pluginBody);
     } else {
-      pluginInstance = createPlugin(pluginConfig);
-    }
-    if (pluginInstance) {
-      resolved.core = pluginInstance;
+      resolved.core = createPlugin(pluginBody);
     }
   }
 

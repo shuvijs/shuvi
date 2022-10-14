@@ -1,6 +1,7 @@
 import { CompilerOptions } from '@shuvi/toolpack/lib/webpack/loaders/shuvi-swc-loader';
 import {
   CorePluginConstructor,
+  CorePluginFactory,
   CorePluginInstance,
   PluginRunner
 } from './plugin';
@@ -9,7 +10,9 @@ import { IProxyConfig } from '../server/middlewares/httpProxyMiddleware';
 import {
   IServerMiddleware,
   IServerPluginContext,
-  ServerPluginInstance
+  ServerPluginInstance,
+  ServerPluginConstructor,
+  ServerPluginFactory
 } from '../server';
 import { DevMiddleware } from '../server/middlewares/dev';
 
@@ -53,13 +56,30 @@ export interface IPaths {
   publicDir: string;
 }
 
-export type IPluginConfig =
-  | string
-  | ISplitPluginConfig
+export type CorePluginConfig =
   | CorePluginConstructor
   | CorePluginInstance
-  | [string, any?]
-  | [ISplitPluginConfig, any?];
+  | CorePluginFactory;
+
+export type ServerPluginConfig =
+  | ServerPluginConstructor
+  | ServerPluginInstance
+  | ServerPluginFactory;
+
+export type DetailedPluginConfig = {
+  core?: string | CorePluginConfig;
+  server?: string | ServerPluginConfig;
+  runtime?: string;
+  types?: string;
+};
+
+export type IPluginConfig =
+  | string // the path of single core plugin or all-in-one plugin
+  | CorePluginConfig
+  | DetailedPluginConfig
+  | [string, any]
+  | [CorePluginConfig, any]
+  | [DetailedPluginConfig, any];
 
 export type IPresetConfig =
   | string

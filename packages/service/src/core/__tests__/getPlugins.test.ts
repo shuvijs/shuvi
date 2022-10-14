@@ -201,6 +201,18 @@ describe('resolve plugin', () => {
     });
   });
 
+  describe('plugin can be a function', () => {
+    test('plugin can be core plugin factory', () => {
+      resolveAndApplyPlugin(() =>
+        createPlugin({
+          test: () => 'instance'
+        })
+      );
+      const result = runner.test();
+      expect(result).toStrictEqual(['instance']);
+    });
+  });
+
   describe('plugin can be an object', () => {
     test('plugin can be core plugin instance object', () => {
       resolveAndApplyPlugin(
@@ -220,26 +232,58 @@ describe('resolve plugin', () => {
       expect(result).toStrictEqual(['instance']);
     });
 
-    test('plugin can be SplitPluginConfig', async () => {
-      const plugin = resolveAndApplyPlugin({
-        core: resolvePluginPath('./all-three-plugins', 'index.js'),
-        server: resolvePluginPath('./all-three-plugins', 'server.js'),
-        runtime: resolvePluginPath('./all-three-plugins', 'runtime.js'),
-        types: resolvePluginPath('./all-three-plugins', 'types.d.ts')
+    describe('plugin can be DetailedPluginConfig', () => {
+      test('core and server field can be string', () => {
+        const plugin = resolveAndApplyPlugin({
+          core: resolvePluginPath('./all-three-plugins', 'index.js'),
+          server: resolvePluginPath('./all-three-plugins', 'server.js'),
+          runtime: resolvePluginPath('./all-three-plugins', 'runtime.js'),
+          types: resolvePluginPath('./all-three-plugins', 'types.d.ts')
+        });
+        expect(isPluginInstance(plugin.core)).toBe(true);
+        expect(isPluginInstance(plugin.server)).toBe(true);
+        expect(plugin.runtime).toHaveProperty('plugin');
+        expect(plugin.runtime?.options).toBeUndefined();
+        const coreResult = runner.test();
+        expect(coreResult).toStrictEqual(['all-three-plugins-core']);
+        const serverResult = serverPluginRunner.test();
+        expect(serverResult).toStrictEqual(['all-three-plugins-server']);
+        const runtimeResult = runtimePluginRunner.test();
+        expect(runtimeResult).toStrictEqual(['all-three-plugins-runtime']);
+        expect(plugin.types).toBe(
+          path.join(__dirname, 'fixtures/plugins/all-three-plugins/types')
+        );
       });
-      expect(isPluginInstance(plugin.core)).toBe(true);
-      expect(isPluginInstance(plugin.server)).toBe(true);
-      expect(plugin.runtime).toHaveProperty('plugin');
-      expect(plugin.runtime?.options).toBeUndefined();
-      const coreResult = runner.test();
-      expect(coreResult).toStrictEqual(['all-three-plugins-core']);
-      const serverResult = serverPluginRunner.test();
-      expect(serverResult).toStrictEqual(['all-three-plugins-server']);
-      const runtimeResult = runtimePluginRunner.test();
-      expect(runtimeResult).toStrictEqual(['all-three-plugins-runtime']);
-      expect(plugin.types).toBe(
-        path.join(__dirname, 'fixtures/plugins/all-three-plugins/types')
-      );
+      test('core and server field can be plugin factory function', () => {
+        resolveAndApplyPlugin({
+          core: () =>
+            createPlugin({
+              test: () => 'instance'
+            })
+        });
+        const result = runner.test();
+        expect(result).toStrictEqual(['instance']);
+      });
+
+      test('core and server field can be plugin instance object', () => {
+        resolveAndApplyPlugin({
+          core: createPlugin({
+            test: () => 'instance'
+          })
+        });
+        const result = runner.test();
+        expect(result).toStrictEqual(['instance']);
+      });
+
+      test('core and server field can be plugin constructor object', () => {
+        resolveAndApplyPlugin({
+          core: {
+            test: () => 'instance'
+          }
+        });
+        const result = runner.test();
+        expect(result).toStrictEqual(['instance']);
+      });
     });
   });
 
@@ -301,41 +345,121 @@ describe('resolve plugin', () => {
         expect(runtimeResult).toStrictEqual([options.name + 'runtime']);
       });
     });
-    describe('first item is SplitPluginConfig', () => {
-      test('should work', () => {
-        const options = { name: 'all-three-plugins' };
-        const plugin = resolveAndApplyPlugin([
-          {
-            core: resolvePluginPath(
-              './all-three-plugins-with-options',
-              'index.js'
-            ),
-            server: resolvePluginPath(
-              './all-three-plugins-with-options',
-              'server.js'
-            ),
-            runtime: resolvePluginPath(
-              './all-three-plugins-with-options',
-              'runtime.js'
-            ),
-            types: resolvePluginPath(
-              './all-three-plugins-with-options',
-              'types.d.ts'
-            )
-          },
-          options
+
+    describe('first item can be function', () => {
+      test('first item can be core plugin factory', () => {
+        const name = 'plugin-factory';
+        resolveAndApplyPlugin([
+          (option: any) =>
+            createPlugin({
+              test: () => option
+            }),
+          name
         ]);
-        console.warn('plugin', plugin);
-        expect(isPluginInstance(plugin.core)).toBe(true);
-        expect(isPluginInstance(plugin.server)).toBe(true);
-        expect(plugin.runtime).toHaveProperty('plugin');
-        expect(plugin.runtime?.options).toBe(options);
-        const coreResult = runner.test();
-        expect(coreResult).toStrictEqual([options.name + 'core']);
-        const serverResult = serverPluginRunner.test();
-        expect(serverResult).toStrictEqual([options.name + 'server']);
-        const runtimeResult = runtimePluginRunner.test();
-        expect(runtimeResult).toStrictEqual([options.name + 'runtime']);
+        const result = runner.test();
+        expect(result).toStrictEqual([name]);
+      });
+    });
+
+    describe('first item can be an object', () => {
+      test('first item can be core plugin instance object', () => {
+        resolveAndApplyPlugin([
+          createPlugin({
+            test: () => 'instance'
+          }),
+          ''
+        ]);
+        const result = runner.test();
+        expect(result).toStrictEqual(['instance']);
+      });
+
+      test('first item can be core plugin constructor object', () => {
+        resolveAndApplyPlugin([
+          {
+            test: () => 'instance'
+          },
+          ''
+        ]);
+        const result = runner.test();
+        expect(result).toStrictEqual(['instance']);
+      });
+
+      describe('first item can be DetailedPluginConfig', () => {
+        test('core and server field can be string', () => {
+          const options = { name: 'all-three-plugins' };
+          const plugin = resolveAndApplyPlugin([
+            {
+              core: resolvePluginPath(
+                './all-three-plugins-with-options',
+                'index.js'
+              ),
+              server: resolvePluginPath(
+                './all-three-plugins-with-options',
+                'server.js'
+              ),
+              runtime: resolvePluginPath(
+                './all-three-plugins-with-options',
+                'runtime.js'
+              ),
+              types: resolvePluginPath(
+                './all-three-plugins-with-options',
+                'types.d.ts'
+              )
+            },
+            options
+          ]);
+          console.warn('plugin', plugin);
+          expect(isPluginInstance(plugin.core)).toBe(true);
+          expect(isPluginInstance(plugin.server)).toBe(true);
+          expect(plugin.runtime).toHaveProperty('plugin');
+          expect(plugin.runtime?.options).toBe(options);
+          const coreResult = runner.test();
+          expect(coreResult).toStrictEqual([options.name + 'core']);
+          const serverResult = serverPluginRunner.test();
+          expect(serverResult).toStrictEqual([options.name + 'server']);
+          const runtimeResult = runtimePluginRunner.test();
+          expect(runtimeResult).toStrictEqual([options.name + 'runtime']);
+        });
+        test('core and server field can be plugin factory function', () => {
+          const name = 'plugin-factory';
+          resolveAndApplyPlugin([
+            {
+              core: (option: string) =>
+                createPlugin({
+                  test: () => option
+                })
+            },
+            name
+          ]);
+          const result = runner.test();
+          expect(result).toStrictEqual([name]);
+        });
+
+        test('core and server field can be plugin instance object', () => {
+          resolveAndApplyPlugin([
+            {
+              core: createPlugin({
+                test: () => 'instance'
+              })
+            },
+            ''
+          ]);
+          const result = runner.test();
+          expect(result).toStrictEqual(['instance']);
+        });
+
+        test('core and server field can be plugin constructor object', () => {
+          resolveAndApplyPlugin([
+            {
+              core: {
+                test: () => 'instance'
+              }
+            },
+            ''
+          ]);
+          const result = runner.test();
+          expect(result).toStrictEqual(['instance']);
+        });
       });
     });
   });
