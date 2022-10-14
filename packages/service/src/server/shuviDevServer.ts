@@ -163,7 +163,7 @@ export class ShuviDevServer extends ShuviServer {
 
         if (tsconfigChange || envChange) {
           if (envChange) {
-            loadDotenvConfig(rootDir);
+            loadDotenvConfig(rootDir, true);
           }
           await devMiddleware?.invalidate();
         }
