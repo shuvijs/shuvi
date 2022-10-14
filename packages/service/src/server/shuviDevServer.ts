@@ -16,6 +16,7 @@ import {
 import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
 import { getAssetMiddleware } from './middlewares/getAssetMiddleware';
 import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
+import { loadDotenvConfig } from '../config/env';
 
 export class ShuviDevServer extends ShuviServer {
   private _bundler: Bunlder;
@@ -98,8 +99,18 @@ export class ShuviDevServer extends ShuviServer {
     const { routesDir, rootDir } = this._serverContext.paths;
     const files: string[] = [];
     const directories: string[] = [routesDir];
+    const fileWatchTimes = new Map();
+
     let { useTypeScript } = getTypeScriptInfo();
     let enabledTypeScript: boolean = useTypeScript;
+
+    const envFiles = [
+      '.env.development.local',
+      '.env.local',
+      '.env.development',
+      '.env'
+    ].map(file => join(rootDir, file));
+    files.push(...envFiles);
 
     // tsconfig/jsconfig paths
     const tsconfigPaths = [
@@ -114,23 +125,46 @@ export class ShuviDevServer extends ShuviServer {
         files,
         startTime: 0
       },
-      async ({ getAllFiles }) => {
-        const allFiles = getAllFiles();
+      async ({ knownFiles }) => {
+        let envChange = false;
         let tsconfigChange: boolean = false;
 
-        for (const fileName of allFiles) {
+        for (const [fileName, timeInfo] of knownFiles) {
+          if (
+            !files.includes(fileName) &&
+            !directories.some(dir => fileName.startsWith(dir))
+          ) {
+            continue;
+          }
+
+          const watchTime = fileWatchTimes.get(fileName);
+          const watchTimeChange =
+            watchTime && watchTime !== timeInfo?.timestamp;
+
+          fileWatchTimes.set(fileName, timeInfo?.timestamp);
+
+          if (envFiles.includes(fileName)) {
+            if (watchTimeChange) {
+              envChange = true;
+            }
+            continue;
+          }
+
           if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
             enabledTypeScript = true;
           }
         }
+
         if (!useTypeScript && enabledTypeScript) {
           await this.verifyTypeScript();
           useTypeScript = true;
           tsconfigChange = true;
         }
 
-        //TODO: fast refresh when env/tsconfig.json be created/updated
-        if (tsconfigChange) {
+        if (tsconfigChange || envChange) {
+          if (envChange) {
+            loadDotenvConfig(rootDir);
+          }
           await devMiddleware?.invalidate();
         }
       }
