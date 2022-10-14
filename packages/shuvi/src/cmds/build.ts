@@ -1,8 +1,8 @@
 import program from 'commander';
 import logger from '@shuvi/utils/lib/logger';
+import { OptionsKeyMap, getConfigFromCli } from '@shuvi/service';
 import { build } from '../tasks/build';
 import { getPackageInfo, getProjectDir } from '../utils';
-import { OptionsKeyMap, getConfigFromCli } from '../config';
 
 const pkgInfo = getPackageInfo();
 

@@ -1,7 +1,12 @@
-import { IPlatform, getApi, Api } from '@shuvi/service';
+import {
+  IPlatform,
+  getApi,
+  Api,
+  ShuviConfig,
+  normalizeConfig
+} from '@shuvi/service';
 import platformWeb from '@shuvi/platform-web';
 import { ShuviMode, ShuviPhase } from './types';
-import { ShuviConfig, normalizeConfig } from './config';
 
 export function getPlatform(): IPlatform {
   return platformWeb({ framework: 'react' });

@@ -1,10 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { IPluginContext, Bunlder } from '@shuvi/service';
+import { IPluginContext, Bunlder, ShuviConfig } from '@shuvi/service';
 import { CLIENT_OUTPUT_DIR } from '@shuvi/shared/lib/constants';
 import logger from '@shuvi/utils/lib/logger';
-import { ShuviConfig } from '../config';
 import { initShuvi } from '../shuvi';
 
 export interface IBuildOptions {

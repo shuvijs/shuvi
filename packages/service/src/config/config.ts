@@ -5,7 +5,6 @@ import {
   PATH_SEG_RE,
   JS_EXT_RE
 } from '@shuvi/toolpack/lib/utils/bundleRequire';
-import { PlatformWebCustomConfig } from '@shuvi/platform-web';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import logger from '@shuvi/utils/lib/logger';
@@ -21,7 +20,7 @@ export interface LoadConfigOptions {
   loadEnv?: boolean;
 }
 
-function getDefaultPlatformConfig(): PlatformWebCustomConfig {
+function getDefaultPlatformConfig() {
   return {
     ssr: true,
     router: {

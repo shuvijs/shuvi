@@ -1,9 +1,9 @@
 import { inspect } from 'util';
 import program from 'commander';
 import chalk from '@shuvi/utils/lib/chalk';
+import { getConfigFromCli } from '@shuvi/service';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { getPackageInfo, getProjectDir } from '../utils';
-import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
 
 export default async function main(argv: string[]) {
