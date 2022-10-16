@@ -3,6 +3,7 @@ import {
   DEV_READY_ENDPOINT
 } from '@shuvi/shared/lib/constants';
 import { Watchpack, watch as watcher } from '@shuvi/utils/lib/fileWatcher';
+import { getDefineEnv } from '@shuvi/toolpack/lib/webpack/config';
 import { join } from 'path';
 import { Bunlder } from '../bundler';
 import { setupTypeScript, getTypeScriptInfo } from '../bundler/typescript';
@@ -100,6 +101,7 @@ export class ShuviDevServer extends ShuviServer {
     const files: string[] = [];
     const directories: string[] = [routesDir];
     const fileWatchTimes = new Map();
+    const configs = await this._bundler.resolveTargetConfig();
 
     let { useTypeScript } = getTypeScriptInfo();
     let enabledTypeScript: boolean = useTypeScript;
@@ -165,6 +167,40 @@ export class ShuviDevServer extends ShuviServer {
           if (envChange) {
             loadDotenvConfig(rootDir, true);
           }
+
+          configs.forEach(({ config }) => {
+            if (envChange) {
+              config.plugins?.forEach((plugin: any) => {
+                // we look for the DefinePlugin definitions so we can
+                // update them on the active compilers
+                if (
+                  plugin &&
+                  typeof plugin.definitions === 'object' &&
+                  plugin.definitions.__SHUVI_DEFINE_ENV
+                ) {
+                  const newDefine = {
+                    __SHUVI_DEFINE_ENV: 'true',
+                    ...getDefineEnv(this._serverContext.config.env),
+                    'process.env.NODE_ENV': JSON.stringify('development'),
+                    ...(config.target === 'web'
+                      ? {
+                          __BROWSER__: true,
+                          // prevent errof of destructing process.env
+                          'process.env': JSON.stringify('{}')
+                        }
+                      : { __BROWSER__: false })
+                  };
+                  Object.keys(plugin.definitions).forEach(key => {
+                    if (!(key in newDefine)) {
+                      delete plugin.definitions[key];
+                    }
+                  });
+                  Object.assign(plugin.definitions, newDefine);
+                }
+              });
+            }
+          });
+
           await devMiddleware?.invalidate();
         }
       }
