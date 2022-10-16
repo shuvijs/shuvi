@@ -81,7 +81,7 @@ export const loadDotenvConfig = (dir: string, forceReload = false) => {
   if (combinedEnv && !forceReload) {
     return { combinedEnv, loadedEnvFiles: cachedLoadedEnvFiles };
   }
-
+  // @ts-ignore
   process.env = Object.assign({}, initialEnv);
 
   previousLoadedEnvFiles = cachedLoadedEnvFiles;

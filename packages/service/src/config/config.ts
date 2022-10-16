@@ -18,6 +18,7 @@ export interface LoadConfigOptions {
   rootDir?: string;
   filepath?: string;
   loadEnv?: boolean;
+  forceReloadEnv?: boolean;
 }
 
 function getDefaultPlatformConfig() {
@@ -42,13 +43,14 @@ export function normalizeConfig(rawConfig: ShuviConfig): ShuviConfig {
 export async function loadConfig({
   rootDir = '.',
   filepath = '',
-  loadEnv = true
+  loadEnv = true,
+  forceReloadEnv = false
 }: LoadConfigOptions = {}): Promise<ShuviConfig> {
   rootDir = path.resolve(rootDir);
 
   // read dotenv so we can get env in shuvi.config.js
   if (loadEnv) {
-    loadDotenvConfig(rootDir);
+    loadDotenvConfig(rootDir, forceReloadEnv);
   }
 
   let configFilePath: string;
