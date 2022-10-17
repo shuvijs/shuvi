@@ -1,7 +1,7 @@
 import { createHookManager, createSyncHook } from '@shuvi/hook';
 import * as path from 'path';
 
-const test = createSyncHook();
+const test = createSyncHook<void, void, string>();
 
 export const getManager = () => createHookManager({ test }, false);
 
