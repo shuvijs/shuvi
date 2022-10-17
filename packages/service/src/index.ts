@@ -31,6 +31,8 @@ export {
   IServiceMode,
   IPluginConfig,
   IPresetConfig,
+  PresetFunction,
+  IPresetContent,
   NormalizedConfig,
   IPluginContext,
   IPlatform,
