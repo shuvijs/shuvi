@@ -1,7 +1,12 @@
 import program from 'commander';
-import { createShuviServer, getConfigFromCli } from '@shuvi/service';
+import { createShuviServer } from '@shuvi/service';
 import logger from '@shuvi/utils/lib/logger';
-import { getPackageInfo, getProjectDir, printStartupInfo } from '../utils';
+import {
+  getPackageInfo,
+  getProjectDir,
+  printStartupInfo,
+  getConfigFromCli
+} from '../utils';
 import { initShuvi } from '../shuvi';
 
 export default async function main(argv: string[]) {

@@ -8,5 +8,3 @@ export type OptionsKeyMap = Record<
 >;
 
 export { normalizeConfig, loadConfig, defineConfig } from './config';
-
-export { getConfigFromCli } from './utils';
