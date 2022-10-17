@@ -135,7 +135,11 @@ const DEFAULT_OPTIONS: Required<PluginOptions> = {
 
 const PLUGIN_SYMBOL = 'PLUGIN_SYMBOL';
 
-export const isPluginInstance = (plugin: any) =>
+export const isPluginInstance = <
+  T extends IPluginInstance<any, any> = IPluginInstance<any, any>
+>(
+  plugin: any
+): plugin is T =>
   plugin &&
   plugin.hasOwnProperty(PLUGIN_SYMBOL) &&
   plugin.PLUGIN_SYMBOL === PLUGIN_SYMBOL;

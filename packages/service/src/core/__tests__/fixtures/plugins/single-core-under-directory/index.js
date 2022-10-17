@@ -1,7 +1,5 @@
 import { createPlugin } from '../../../../plugin';
 
 export default createPlugin({
-  afterInit: () => {
-    console.log('single-core');
-  }
+  test: () => 'single-core-under-directory'
 });

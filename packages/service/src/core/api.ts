@@ -180,10 +180,14 @@ class Api {
     usePlugin(addIncludeToSwcLoader, webpackWaitPlugin);
 
     // 2. init user plugins
-    const userPlugins = getPlugins(this._cwd, {
-      presets: this._presets,
-      plugins: this._plugins
-    });
+    const userPlugins = getPlugins(
+      this._cwd,
+      {
+        presets: this._presets,
+        plugins: this._plugins
+      },
+      this._pluginContext
+    );
     platformPlugins
       .concat(userPlugins)
       .forEach(plugin => this._applyPlugin(plugin));

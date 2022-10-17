@@ -1,5 +1,5 @@
 {
-  "name": "shuvi-test-plugin-no-exports",
+  "name": "shuvi-plugin-sample",
   "version": "0.0.1-pre.10",
   "repository": {
     "type": "git",
@@ -15,6 +15,11 @@
   "sideEffects": false,
   "main": "lib/index.js",
   "module": "esm/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js",
+    "./runtime": "./esm/runtime.js"
+  },
   "types": "lib/index.d.ts",
   "scripts": {
     "dev": "run-p watch:*",
@@ -26,22 +31,9 @@
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
   "dependencies": {
-    "@shuvi/redox": "0.0.1-pre.4",
-    "@shuvi/redox-react": "0.0.1-pre.4",
     "@shuvi/hook": "workspace:*",
     "@shuvi/platform-shared": "workspace:*",
-    "@shuvi/service": "workspace:*",
-    "@shuvi/utils": "workspace:*",
-    "redux": "4.1.2"
-  },
-  "devDependencies": {
-    "@types/react": "^16.9.43",
-    "react": "16.8.0",
-    "react-dom": "16.8.0"
-  },
-  "peerDependencies": {
-    "react": ">=16.8",
-    "react-dom": ">=16.8"
+    "@shuvi/service": "workspace:*"
   },
   "engines": {
     "node": ">= 12.0.0"
