@@ -238,11 +238,16 @@ export function baseWebpackChain({
     }
   ]);
 
-  config.plugin('define').use(webpack.DefinePlugin, [
+  config.plugin('private/define').use(webpack.DefinePlugin, [
     {
       // internal field to identify the plugin config
       __SHUVI_DEFINE_ENV: 'true',
-      ...getDefineEnv(env),
+      ...getDefineEnv(env)
+    }
+  ]);
+
+  config.plugin('define').use(webpack.DefinePlugin, [
+    {
       'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
     }
   ]);

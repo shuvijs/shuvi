@@ -180,15 +180,7 @@ export class ShuviDevServer extends ShuviServer {
                 ) {
                   const newDefine = {
                     __SHUVI_DEFINE_ENV: 'true',
-                    ...getDefineEnv(this._serverContext.config.env),
-                    'process.env.NODE_ENV': JSON.stringify('development'),
-                    ...(config.target === 'web'
-                      ? {
-                          __BROWSER__: true,
-                          // prevent errof of destructing process.env
-                          'process.env': JSON.stringify('{}')
-                        }
-                      : { __BROWSER__: false })
+                    ...getDefineEnv(this._serverContext.config.env)
                   };
                   Object.keys(plugin.definitions).forEach(key => {
                     if (!(key in newDefine)) {
