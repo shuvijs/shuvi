@@ -92,10 +92,10 @@ export const loadDotenvConfig = (dir: string, forceReload = false) => {
   // Priority top to bottom
   const dotenvFiles = [
     `.env.${mode}.local`,
-    `.env.local`,
+    mode !== 'test' && `.env.local`,
     `.env.${mode}`,
     '.env'
-  ];
+  ].filter(Boolean) as string[];
 
   for (const envFile of dotenvFiles) {
     const dotEnvPath = path.join(dir, envFile);
