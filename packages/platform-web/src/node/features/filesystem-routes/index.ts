@@ -12,6 +12,7 @@ import {
 } from '@shuvi/platform-shared/shared';
 import { LOADER_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import logger from '@shuvi/utils/lib/logger';
+import { removeExt } from '@shuvi/utils/lib/file';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
   getRoutes,
@@ -169,7 +170,7 @@ const plugin = createPlugin({
           routes.forEach(r => {
             const { component, id, children } = r;
             if (component && id) {
-              loaders[id] = component;
+              loaders[id] = removeExt(component);
             }
             if (children) {
               traverseRoutes(children);
