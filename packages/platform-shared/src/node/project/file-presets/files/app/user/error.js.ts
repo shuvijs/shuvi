@@ -1,4 +1,5 @@
 import { fileUtils } from '@shuvi/service/lib/project';
+import { removeExt } from '@shuvi/utils/lib/file';
 import { defineFile } from '../../..';
 import { ProjectContext } from '../../../../projectContext';
 
@@ -10,7 +11,9 @@ export default (context: ProjectContext) => {
   return defineFile({
     dependencies: candidates,
     content: () => {
-      return getFirstModuleExport(getAllFiles(candidates), candidates, true);
+      const noExtFiles = getAllFiles(candidates).map(file => removeExt(file));
+      const noExtCandidates = candidates.map(file => removeExt(file));
+      return getFirstModuleExport(noExtFiles, noExtCandidates, true);
     }
   });
 };

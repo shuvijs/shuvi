@@ -4,7 +4,7 @@ import {
   IPageRouteConfigWithId
 } from '@shuvi/platform-shared/shared';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { normalizePath } from '@shuvi/utils/lib/file';
+import { normalizePath, removeExt } from '@shuvi/utils/lib/file';
 
 export { IPageRouteConfig };
 
@@ -32,7 +32,7 @@ export function serializeRoutes(
 
       if (key === 'component') {
         const { component } = route;
-        const componentSource = component;
+        const componentSource = removeExt(component!);
         const componentRequest = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
         // `webpackExports` works with production and optimization.minimize, check compiled dist
         if (includeMeta) {
