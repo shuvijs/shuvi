@@ -1,20 +1,19 @@
-import * as path from 'path';
 import { createPluginAfter } from '@shuvi/service';
 import { resolveLib, resolvePkgFile } from '../../../paths';
+
+const redoxReactSource = resolveLib('@shuvi/redox-react');
 
 const core = createPluginAfter(
   {
     addRuntimeService: () => [
       {
-        source: path.dirname(
-          require.resolve('@shuvi/redox-react/package.json')
-        ),
+        source: redoxReactSource,
         exported: '*',
         filepath: 'model.ts'
       }
     ],
     configWebpack: config => {
-      config.resolve.alias.set('@shuvi/redox', resolveLib('@shuvi/redox'));
+      config.resolve.alias.set('@shuvi/redox-react', redoxReactSource);
       return config;
     }
   },
