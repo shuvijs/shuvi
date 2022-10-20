@@ -1,7 +1,5 @@
 import { createPlugin } from '../../../utils';
 
 export default createPlugin({
-  test: () => {
-    console.log('all-three-plugins-runtime');
-  }
+  test: () => 'only-server-and-runtime-runtime'
 });

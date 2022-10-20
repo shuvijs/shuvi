@@ -1,3 +1,12 @@
+# [1.0.0-rc.20](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.19...v1.0.0-rc.20) (2022-10-17)
+
+
+### Bug Fixes
+
+* pass pluginContext to preset ([ee13c18](https://github.com/shuvijs/shuvi/commit/ee13c187ae94429d788a298223a3284ca3f946a9))
+
+
+
 # [1.0.0-rc.19](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.18...v1.0.0-rc.19) (2022-10-12)
 
 

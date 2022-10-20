@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { join, extname, basename } from 'path';
-import { isDirectory } from '@shuvi/utils/lib/file';
+import { isDirectory, removeExt } from '@shuvi/utils/lib/file';
 import invariant from '@shuvi/utils/lib/invariant';
 import { RouteConfigType } from './route';
 import { rankRouteBranches } from '../../shared/router';
@@ -35,11 +35,11 @@ function checkSpecialRegexChars(string: string): boolean {
 }
 
 export function normalizeRoutePath(rawPath: string) {
-  let routePath = rawPath
+  let routePath =
     // Remove the file extension from the end
-    .replace(/\.\w+$/, '')
-    // Convert to unix path
-    .replace(/\\/g, '/');
+    removeExt(rawPath)
+      // Convert to unix path
+      .replace(/\\/g, '/');
 
   // /xxxx/index -> /xxxx/
   routePath = rawPath.replace(/\/index$/, '/');
