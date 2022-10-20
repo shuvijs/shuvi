@@ -14,6 +14,5 @@ export async function loadFixture(
     rootDir: resolveFixture(fixture),
     forceReloadEnv: true
   });
-  console.log('loadFixture', deepmerge(config, overrides));
   return deepmerge(config, overrides);
 }

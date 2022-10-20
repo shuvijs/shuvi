@@ -45,8 +45,6 @@ interface IApiOPtions {
   config?: Config;
   configFilePath?: string;
   platform?: IPlatform;
-  plugins?: IPluginConfig[];
-  presets?: IPresetConfig[];
 }
 
 interface ServerConfigs {
@@ -61,8 +59,8 @@ class Api {
   private _phase: IServicePhase;
   private _config!: NormalizedConfig;
   private _configFromCli!: Config;
-  private _plugins: IPluginConfig[];
-  private _presets: IPresetConfig[];
+  private _plugins: IPluginConfig[] = [];
+  private _presets: IPresetConfig[] = [];
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
   private _bundler!: Bunlder;
@@ -82,8 +80,6 @@ class Api {
     mode,
     config: configFromCli = {},
     configFilePath,
-    presets,
-    plugins,
     phase,
     platform
   }: IApiOPtions) {
@@ -93,8 +89,6 @@ class Api {
     this._platform = platform;
     this._configFromCli = configFromCli;
     this._configFilePath = configFilePath || '';
-    this._presets = presets || [];
-    this._plugins = plugins || [];
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
@@ -125,16 +119,18 @@ class Api {
       return;
     }
 
-    const configFromFile = await loadConfig({
+    const { plugins, presets, ...configFromFile } = await loadConfig({
       rootDir: this._cwd,
       filepath: this._configFilePath
     });
+    this._presets = presets || [];
+    this._plugins = plugins || [];
+
     this._config = deepmerge(
       getDefaultConfig(),
       configFromFile,
       this._configFromCli
     );
-    console.log('api', this._config);
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: this._config.outputPath
@@ -442,9 +438,7 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     mode,
     phase,
     config: options.config,
-    platform: options.platform,
-    presets: options.presets,
-    plugins: options.plugins
+    platform: options.platform
   });
 
   try {
