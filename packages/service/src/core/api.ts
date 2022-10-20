@@ -134,6 +134,7 @@ class Api {
       configFromFile,
       this._configFromCli
     );
+    console.log('api', this._config);
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: this._config.outputPath

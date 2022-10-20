@@ -28,15 +28,15 @@ export default async function main(argv: string[]) {
     NODE_ENV: mode
   });
   const configFilePath = program.config && path.resolve(cwd, program.config);
-  let configFromCli = await getConfigFromCli(program);
-  configFromCli = deepmerge(configFromCli, {
+  let config = await getConfigFromCli(program);
+  config = deepmerge(config, {
     typescript: {
       ignoreBuildErrors: true
     }
   });
   const api = await initShuvi({
     cwd,
-    configFromCli,
+    config,
     configFilePath,
     mode,
     phase: 'PHASE_INSPECT_WEBPACK'

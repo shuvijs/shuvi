@@ -38,11 +38,11 @@ export default async function main(argv: string[]) {
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
   const configFilePath = program.config && path.resolve(cwd, program.config);
-  const configFromCli = await getConfigFromCli(program, cliConfigMap);
+  const config = await getConfigFromCli(program, cliConfigMap);
   try {
     await build({
       cwd,
-      configFromCli,
+      config,
       configFilePath
     });
     logger.info('Build successfully!');

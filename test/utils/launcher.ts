@@ -68,7 +68,7 @@ export async function launchFixtureAtCurrentProcess(
   const config = await loadFixture(name, overrides);
   const api = await initShuvi({
     cwd: resolveFixture(name),
-    configFromCli: config
+    config
   });
   await api.buildApp();
   const bundler = await api.getBundler();
@@ -88,7 +88,7 @@ export async function serveFixtureAtCurrentProcess(
   const config = await loadFixture(name, overrides);
   const api = await build({
     cwd: resolveFixture(name),
-    configFromCli: config
+    config
   });
   const shuviApp = await createShuviServer({
     context: api.pluginContext,

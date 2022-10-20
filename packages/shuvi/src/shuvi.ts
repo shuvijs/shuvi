@@ -8,7 +8,7 @@ export function getPlatform(): IPlatform {
 }
 
 export interface ShuviOption {
-  configFromCli: ShuviConfig;
+  config: ShuviConfig;
   cwd?: string;
   phase?: ShuviPhase;
   mode?: ShuviMode;
@@ -16,10 +16,10 @@ export interface ShuviOption {
 }
 
 export async function initShuvi({
-  configFromCli,
+  config,
   ...options
 }: ShuviOption): Promise<Api> {
-  const normalizedConfig = normalizeConfig(configFromCli);
+  const normalizedConfig = normalizeConfig(config);
   const { plugins, presets, ...restConfig } = normalizedConfig;
   const shuvi = await getApi({
     ...options,

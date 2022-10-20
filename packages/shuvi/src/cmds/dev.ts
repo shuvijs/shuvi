@@ -23,11 +23,11 @@ export default async function main(argv: string[]) {
   const port = Number(program.port) || 3000;
   const host = program.host || 'localhost';
   const configFilePath = program.config && path.resolve(cwd, program.config);
-  const configFromCli = await getConfigFromCli(program);
+  const config = await getConfigFromCli(program);
 
   const api = await initShuvi({
     cwd,
-    configFromCli,
+    config,
     configFilePath
   });
 
