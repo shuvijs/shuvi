@@ -45,6 +45,8 @@ interface IApiOPtions {
   config?: Config;
   configFilePath?: string;
   platform?: IPlatform;
+  plugins?: IPluginConfig[];
+  presets?: IPresetConfig[];
 }
 
 interface ServerConfigs {
@@ -80,6 +82,8 @@ class Api {
     mode,
     config: configFromCli = {},
     configFilePath,
+    presets,
+    plugins,
     phase,
     platform
   }: IApiOPtions) {
@@ -89,6 +93,8 @@ class Api {
     this._platform = platform;
     this._configFromCli = configFromCli;
     this._configFilePath = configFilePath || '';
+    this._presets = presets || [];
+    this._plugins = plugins || [];
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
@@ -123,9 +129,8 @@ class Api {
       rootDir: this._cwd,
       filepath: this._configFilePath
     });
-    this._presets = presets || [];
-    this._plugins = plugins || [];
-
+    this._presets = [...this._presets, ...(presets || [])];
+    this._plugins = [...this._plugins, ...(plugins || [])];
     this._config = deepmerge(
       getDefaultConfig(),
       configFromFile,
@@ -438,7 +443,9 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     mode,
     phase,
     config: options.config,
-    platform: options.platform
+    platform: options.platform,
+    presets: options.presets,
+    plugins: options.plugins
   });
 
   try {
