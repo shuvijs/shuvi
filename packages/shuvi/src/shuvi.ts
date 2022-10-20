@@ -20,9 +20,12 @@ export async function initShuvi({
   ...options
 }: ShuviOption): Promise<Api> {
   const normalizedConfig = normalizeConfig(config);
+  const { plugins, presets, ...restConfig } = normalizedConfig;
   const shuvi = await getApi({
     ...options,
-    config: normalizedConfig,
+    plugins,
+    presets,
+    config: restConfig,
     platform: getPlatform()
   });
 
