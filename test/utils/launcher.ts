@@ -65,8 +65,8 @@ export async function launchFixtureAtCurrentProcess(
   name: string,
   overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
-  const config = await loadFixture(name, overrides);
-  const api = await initShuvi({ cwd: resolveFixture(name), config });
+  const configFromCli = await loadFixture(name, overrides);
+  const api = await initShuvi({ cwd: resolveFixture(name), configFromCli });
   await api.buildApp();
   const bundler = await api.getBundler();
   const shuviApp = await createShuviServer({
@@ -82,10 +82,10 @@ export async function serveFixtureAtCurrentProcess(
   name: string,
   overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
-  const config = await loadFixture(name, overrides);
+  const configFromCli = await loadFixture(name, overrides);
   const api = await build({
     cwd: resolveFixture(name),
-    config
+    configFromCli
   });
   const shuviApp = await createShuviServer({
     context: api.pluginContext,
