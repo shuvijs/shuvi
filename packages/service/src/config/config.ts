@@ -5,7 +5,6 @@ import {
   PATH_SEG_RE,
   JS_EXT_RE
 } from '@shuvi/toolpack/lib/utils/bundleRequire';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import logger from '@shuvi/utils/lib/logger';
 import { ShuviConfig } from './configTypes';
@@ -19,25 +18,6 @@ export interface LoadConfigOptions {
   filepath?: string;
   loadEnv?: boolean;
   forceReloadEnv?: boolean;
-}
-
-function getDefaultPlatformConfig() {
-  return {
-    ssr: true,
-    router: {
-      history: 'auto'
-    },
-    conventionRoutes: {}
-  };
-}
-
-export function normalizeConfig(rawConfig: ShuviConfig): ShuviConfig {
-  const config = deepmerge(getDefaultPlatformConfig(), rawConfig);
-  if (config.router.history === 'auto') {
-    config.router.history = config.ssr ? 'browser' : 'hash';
-  }
-
-  return config;
 }
 
 export async function loadConfig({
@@ -86,8 +66,4 @@ export async function loadConfig({
   fileConfig = (fileConfig as any).default || fileConfig;
 
   return fileConfig;
-}
-
-export function defineConfig(config: ShuviConfig): ShuviConfig {
-  return config;
 }

@@ -3,7 +3,8 @@ import * as path from 'path';
 import program from 'commander';
 import chalk from '@shuvi/utils/lib/chalk';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { getPackageInfo, getProjectDir, getConfigFromCli } from '../utils';
+import { getPackageInfo, getProjectDir } from '../utils';
+import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
 
 export default async function main(argv: string[]) {
