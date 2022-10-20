@@ -34,6 +34,7 @@ import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import WebpackWatchWaitForFileBuilderPlugin from '../lib/webpack-watch-wait-for-file-builder-plugin';
+import { loadConfig } from '../config';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
 
@@ -42,6 +43,7 @@ interface IApiOPtions {
   mode: IServiceMode;
   phase: IServicePhase;
   config?: Config;
+  configFilePath?: string;
   platform?: IPlatform;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
@@ -58,6 +60,7 @@ class Api {
   private _mode: IServiceMode;
   private _phase: IServicePhase;
   private _config!: NormalizedConfig;
+  private _configFromCli!: Config;
   private _plugins: IPluginConfig[];
   private _presets: IPresetConfig[];
   private _paths!: IPaths;
@@ -68,6 +71,7 @@ class Api {
   private _pluginManager: PluginManager;
   private _pluginContext!: IPluginContext;
   private _serverConfigs!: ServerConfigs;
+  private _configFilePath: string;
 
   private _inited: boolean = false;
 
@@ -76,7 +80,8 @@ class Api {
   constructor({
     cwd,
     mode,
-    config = {},
+    config: configFromCli = {},
+    configFilePath,
     presets,
     plugins,
     phase,
@@ -86,7 +91,8 @@ class Api {
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._config = deepmerge(getDefaultConfig(), config);
+    this._configFromCli = configFromCli;
+    this._configFilePath = configFilePath || '';
     this._presets = presets || [];
     this._plugins = plugins || [];
     this._pluginManager = getManager();
@@ -119,6 +125,15 @@ class Api {
       return;
     }
 
+    const configFromFile = await loadConfig({
+      rootDir: this._cwd,
+      filepath: this._configFilePath
+    });
+    this._config = deepmerge(
+      getDefaultConfig(),
+      configFromFile,
+      this._configFromCli
+    );
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: this._config.outputPath

@@ -3,8 +3,7 @@ import * as path from 'path';
 import { CommanderStatic } from 'commander';
 import logger from '@shuvi/utils/lib/logger';
 import chalk from '@shuvi/utils/lib/chalk';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { ShuviConfig, loadConfig } from '@shuvi/service';
+import { ShuviConfig } from '@shuvi/service';
 //@ts-ignore
 import pkgInfo from '../package.json';
 
@@ -100,20 +99,12 @@ function getConfigFromCliOtherOptions(
 }
 
 export async function getConfigFromCli(
-  cwd: string,
   cliOptions: Record<string, any>,
   cliOptionsKeyMap: OptionsKeyMap = {}
 ): Promise<ShuviConfig> {
-  const configFilePath =
-    cliOptions.config && path.resolve(cwd, cliOptions.config);
-  const configFromFile = await loadConfig({
-    rootDir: cwd,
-    filepath: configFilePath
-  });
   const configFromCliOtherOptions = getConfigFromCliOtherOptions(
     cliOptions,
     cliOptionsKeyMap
   );
-  const configFromCli = deepmerge(configFromFile, configFromCliOtherOptions);
-  return configFromCli;
+  return configFromCliOtherOptions;
 }

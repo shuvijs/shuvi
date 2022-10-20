@@ -13,17 +13,18 @@ export function getPlatform(): IPlatform {
 }
 
 export interface ShuviOption {
+  configFromCli: ShuviConfig;
   cwd?: string;
   phase?: ShuviPhase;
   mode?: ShuviMode;
-  config: ShuviConfig;
+  configFilePath?: string;
 }
 
 export async function initShuvi({
-  config,
+  configFromCli,
   ...options
 }: ShuviOption): Promise<Api> {
-  const normalizedConfig = normalizeConfig(config);
+  const normalizedConfig = normalizeConfig(configFromCli);
   const { plugins, presets, ...restConfig } = normalizedConfig;
   const shuvi = await getApi({
     ...options,
