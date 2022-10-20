@@ -2,7 +2,7 @@ import { PlatformWebCustomConfig } from '@shuvi/platform-web';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { ShuviConfig } from '@shuvi/service';
 
-export function getDefaultPlatformConfig(): PlatformWebCustomConfig {
+function getDefaultPlatformConfig(): PlatformWebCustomConfig {
   return {
     ssr: true,
     router: {
