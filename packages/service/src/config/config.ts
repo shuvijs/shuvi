@@ -50,7 +50,7 @@ export async function loadConfig({
 
   // read dotenv so we can get env in shuvi.config.js
   if (loadEnv) {
-    loadDotenvConfig(rootDir, forceReloadEnv);
+    loadDotenvConfig({ rootDir, forceReloadEnv });
   }
 
   let configFilePath: string;

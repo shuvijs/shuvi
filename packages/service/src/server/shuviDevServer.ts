@@ -101,7 +101,7 @@ export class ShuviDevServer extends ShuviServer {
     const files: string[] = [];
     const directories: string[] = [routesDir];
     const fileWatchTimes = new Map();
-    const configs = await this._bundler.resolveTargetConfig();
+    const configs = this._bundler.targets;
 
     let { useTypeScript } = getTypeScriptInfo();
     let enabledTypeScript: boolean = useTypeScript;
@@ -165,7 +165,7 @@ export class ShuviDevServer extends ShuviServer {
 
         if (tsconfigChange || envChange) {
           if (envChange) {
-            loadDotenvConfig(rootDir, true);
+            loadDotenvConfig({ rootDir, forceReloadEnv: true });
           }
 
           configs.forEach(({ config }) => {

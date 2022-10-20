@@ -73,12 +73,18 @@ export function processEnv(
   return Object.assign(process.env, parsed);
 }
 
-export const loadDotenvConfig = (dir: string, forceReload = false) => {
+export const loadDotenvConfig = ({
+  rootDir,
+  forceReloadEnv = false
+}: {
+  rootDir: string;
+  forceReloadEnv?: boolean;
+}) => {
   if (!initialEnv) {
     initialEnv = Object.assign({}, process.env);
   }
 
-  if (combinedEnv && !forceReload) {
+  if (combinedEnv && !forceReloadEnv) {
     return { combinedEnv, loadedEnvFiles: cachedLoadedEnvFiles };
   }
   // @ts-ignore
@@ -98,7 +104,7 @@ export const loadDotenvConfig = (dir: string, forceReload = false) => {
   ].filter(Boolean) as string[];
 
   for (const envFile of dotenvFiles) {
-    const dotEnvPath = path.join(dir, envFile);
+    const dotEnvPath = path.join(rootDir, envFile);
 
     try {
       const stats = fs.statSync(dotEnvPath);
@@ -119,6 +125,6 @@ export const loadDotenvConfig = (dir: string, forceReload = false) => {
     }
   }
 
-  combinedEnv = processEnv(cachedLoadedEnvFiles, dir, forceReload);
+  combinedEnv = processEnv(cachedLoadedEnvFiles, rootDir, forceReloadEnv);
   return { combinedEnv, loadedEnvFiles: cachedLoadedEnvFiles };
 };
