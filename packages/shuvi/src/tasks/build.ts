@@ -7,10 +7,10 @@ import logger from '@shuvi/utils/lib/logger';
 import { initShuvi } from '../shuvi';
 
 export interface IBuildOptions {
-  config: ShuviConfig;
+  config?: ShuviConfig;
   cwd?: string;
   target?: 'spa' | 'ssr';
-  configFilePath?: string;
+  configFile?: string;
 }
 
 const defaultBuildOptions = {
@@ -56,8 +56,8 @@ export async function build(options: IBuildOptions) {
   const api = await initShuvi({
     cwd: opts.cwd,
     mode: 'production',
-    config: opts.config,
-    configFilePath: opts.configFilePath,
+    config: opts.config || {},
+    configFile: opts.configFile,
     phase: 'PHASE_PRODUCTION_BUILD'
   });
 

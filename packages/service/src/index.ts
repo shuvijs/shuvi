@@ -6,8 +6,6 @@ export { Bunlder } from './bundler';
 
 export { ProjectBuilder } from './project';
 
-export * from './config';
-
 export {
   IShuviServer,
   ShuviRequest,
@@ -26,14 +24,14 @@ export {
 export {
   Api,
   IPaths,
-  Config,
+  ShuviConfig,
   IServicePhase,
   IServiceMode,
   IPluginConfig,
   IPresetConfig,
   PresetFunction,
   IPresetContent,
-  NormalizedConfig,
+  NormalizedShuviConfig,
   IPluginContext,
   IPlatform,
   IPlatformContent,
