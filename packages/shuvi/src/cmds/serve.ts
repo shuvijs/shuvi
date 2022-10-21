@@ -1,4 +1,5 @@
 import program from 'commander';
+import * as path from 'path';
 import { createShuviServer } from '@shuvi/service';
 import logger from '@shuvi/utils/lib/logger';
 import { getPackageInfo, getProjectDir, printStartupInfo } from '../utils';
@@ -20,10 +21,12 @@ export default async function main(argv: string[]) {
   const cwd = getProjectDir(program);
   const port = Number(program.port) || 3000;
   const host = program.host || '0.0.0.0';
-  const config = await getConfigFromCli(cwd, program);
+  const configFilePath = program.config && path.resolve(cwd, program.config);
+  const config = await getConfigFromCli(program);
   const api = await initShuvi({
     cwd,
-    config
+    config,
+    configFilePath
   });
   const shuviApp = await createShuviServer({
     context: api.pluginContext,

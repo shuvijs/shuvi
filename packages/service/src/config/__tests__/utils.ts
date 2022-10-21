@@ -14,7 +14,8 @@ export async function loadFixture(
 ) {
   const config = await loadConfig({
     rootDir: resolveFixture(name),
-    filepath: configFile
+    filepath: configFile,
+    forceReloadEnv: true
   });
   return deepmerge(config, userConfig);
 }
