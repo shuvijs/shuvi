@@ -34,7 +34,7 @@ import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import WebpackWatchWaitForFileBuilderPlugin from '../lib/webpack-watch-wait-for-file-builder-plugin';
-import { loadConfig } from '../config';
+import { loadConfig, ShuviConfig } from '../config';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
 
@@ -47,6 +47,7 @@ interface IApiOPtions {
   platform?: IPlatform;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
+  normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
 }
 
 interface ServerConfigs {
@@ -60,7 +61,7 @@ class Api {
   private _mode: IServiceMode;
   private _phase: IServicePhase;
   private _config!: NormalizedConfig;
-  private _configFromCli!: Config;
+  private _customConfig!: Config;
   private _plugins: IPluginConfig[] = [];
   private _presets: IPresetConfig[] = [];
   private _paths!: IPaths;
@@ -72,6 +73,9 @@ class Api {
   private _pluginContext!: IPluginContext;
   private _serverConfigs!: ServerConfigs;
   private _configFilePath: string;
+  private _normalizePlatformConfig:
+    | ((rawConfig: ShuviConfig) => ShuviConfig)
+    | undefined;
 
   private _inited: boolean = false;
 
@@ -80,24 +84,26 @@ class Api {
   constructor({
     cwd,
     mode,
-    config: configFromCli = {},
+    config: customConfig = {},
     configFilePath,
     presets,
     plugins,
     phase,
-    platform
+    platform,
+    normalizePlatformConfig
   }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._configFromCli = configFromCli;
+    this._customConfig = customConfig;
     this._configFilePath = configFilePath || '';
     this._presets = presets || [];
     this._plugins = plugins || [];
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
+    this._normalizePlatformConfig = normalizePlatformConfig;
   }
 
   get cwd() {
@@ -125,17 +131,21 @@ class Api {
       return;
     }
 
-    const { plugins, presets, ...configFromFile } = await loadConfig({
+    const configFromFile = await loadConfig({
       rootDir: this._cwd,
       filepath: this._configFilePath
     });
+    const config = this._normalizePlatformConfig
+      ? this._normalizePlatformConfig(
+          deepmerge(configFromFile, this._customConfig)
+        )
+      : deepmerge(configFromFile, this._customConfig);
+
+    const { presets, plugins, ...restConfig } = config;
+    this._config = deepmerge(getDefaultConfig(), restConfig);
     this._presets = [...this._presets, ...(presets || [])];
     this._plugins = [...this._plugins, ...(plugins || [])];
-    this._config = deepmerge(
-      getDefaultConfig(),
-      configFromFile,
-      this._configFromCli
-    );
+
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: this._config.outputPath
@@ -445,7 +455,8 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     config: options.config,
     platform: options.platform,
     presets: options.presets,
-    plugins: options.plugins
+    plugins: options.plugins,
+    normalizePlatformConfig: options.normalizePlatformConfig
   });
 
   try {

@@ -3,6 +3,6 @@ export type OptionsKeyMap = Record<
   string | ((config: any, optionValue: any) => void)
 >;
 
-export { normalizeConfig, defineConfig } from './config';
+export { normalizePlatformConfig, defineConfig } from './config';
 
 export { getConfigFromCli } from './utils';
