@@ -12,7 +12,7 @@ export interface ShuviOption {
   cwd?: string;
   phase?: ShuviPhase;
   mode?: ShuviMode;
-  configFilePath?: string;
+  configFile?: string;
 }
 
 export async function initShuvi({

@@ -13,6 +13,5 @@ export {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_INSPECT_WEBPACK,
   // config
-  ShuviConfig,
-  loadConfig
+  ShuviConfig
 } from '@shuvi/service';

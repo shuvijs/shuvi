@@ -21,12 +21,12 @@ export default async function main(argv: string[]) {
   const cwd = getProjectDir(program);
   const port = Number(program.port) || 3000;
   const host = program.host || '0.0.0.0';
-  const configFilePath = program.config && path.resolve(cwd, program.config);
+  const configFile = program.config && path.resolve(cwd, program.config);
   const config = await getConfigFromCli(program);
   const api = await initShuvi({
     cwd,
     config,
-    configFilePath
+    configFile
   });
   const shuviApp = await createShuviServer({
     context: api.pluginContext,

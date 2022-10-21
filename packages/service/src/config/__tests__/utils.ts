@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { ShuviConfig } from '../configTypes';
+import { ShuviConfig } from '../../core';
 import { loadConfig } from '../config';
 
 export function resolveFixture(name: string) {

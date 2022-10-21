@@ -1,5 +1,5 @@
 import { getApi } from '../api';
-import { Config } from '..';
+import { ShuviConfig } from '..';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import { readFileSync } from 'fs';
@@ -31,7 +31,7 @@ describe('plugins', () => {
   });
 
   test('should access config and paths', async () => {
-    let config: Config;
+    let config: ShuviConfig;
 
     const api = await getApi({
       cwd: resolveFxiture('dotenv'),

@@ -37,13 +37,13 @@ export default async function main(argv: string[]) {
     .option('--config-overrides <json>', 'config overrides json')
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
-  const configFilePath = program.config && path.resolve(cwd, program.config);
+  const configFile = program.config && path.resolve(cwd, program.config);
   const config = await getConfigFromCli(program, cliConfigMap);
   try {
     await build({
       cwd,
       config,
-      configFilePath
+      configFile
     });
     logger.info('Build successfully!');
   } catch (error) {
