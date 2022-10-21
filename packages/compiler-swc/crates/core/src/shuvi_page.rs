@@ -455,6 +455,13 @@ impl Fold for ShuviPage {
     }
 
     fn fold_module_item(&mut self, i: ModuleItem) -> ModuleItem {
+        // remove the expr out of loader
+        if self.page_pick_loader && self.state.done {
+            if let ModuleItem::Stmt(Stmt::Expr(_e)) = i {
+                return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
+            }
+        }
+
         if let ModuleItem::ModuleDecl(ModuleDecl::Import(i)) = i {
             let is_for_side_effect = i.specifiers.is_empty();
             if self.page_pick_loader && is_for_side_effect {
