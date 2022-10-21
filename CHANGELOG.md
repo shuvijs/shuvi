@@ -1,3 +1,21 @@
+# [1.0.0](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.20...v1.0.0) (2022-10-21)
+
+
+### Bug Fixes
+
+* **platform:**  add redox-react alias ([ed51953](https://github.com/shuvijs/shuvi/commit/ed5195318ec9763cfb945cc49dbfb47a361b3b91))
+* **swc:** pick loader and skip effects ([c20b809](https://github.com/shuvijs/shuvi/commit/c20b809b4bfb56829b60268831d65046c7ca156b))
+* **swc:** test bug ([#451](https://github.com/shuvijs/shuvi/issues/451)) ([a717285](https://github.com/shuvijs/shuvi/commit/a717285f6517e6e35464463e733cad2d47df5f60))
+
+
+### Features
+
+* env fast refresh ([e361ee5](https://github.com/shuvijs/shuvi/commit/e361ee56d5b04621ea2f7e4302367269c08f688e))
+* remove ext ([#447](https://github.com/shuvijs/shuvi/issues/447)) ([2b4a90c](https://github.com/shuvijs/shuvi/commit/2b4a90cb6c74f6db3c98e84552643e29a4d429f7))
+* set "@" a alias of "./src" ([d657f47](https://github.com/shuvijs/shuvi/commit/d657f474d5e9262d2c2f3932369d55165c700b4b))
+
+
+
 # [1.0.0-rc.20](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.19...v1.0.0-rc.20) (2022-10-17)
 
 
