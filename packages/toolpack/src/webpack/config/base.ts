@@ -64,6 +64,29 @@ const terserOptions = {
 
 export { WebpackChain };
 
+export function getDefineEnv(env: { [x: string]: string | undefined }) {
+  return {
+    ...Object.keys(process.env).reduce(
+      (prev: { [key: string]: string }, key: string) => {
+        if (key.startsWith(PUBLIC_ENV_PREFIX)) {
+          prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
+        }
+        return prev;
+      },
+      {}
+    ),
+    ...Object.keys(env).reduce((acc, key) => {
+      if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
+        throw new Error(`The key "${key}" under "env" is not allowed.`);
+      }
+      return {
+        ...acc,
+        [`process.env.${key}`]: JSON.stringify(env[key])
+      };
+    }, {} as { [key: string]: string })
+  };
+}
+
 export function baseWebpackChain({
   dev,
   outputDir,
@@ -215,31 +238,16 @@ export function baseWebpackChain({
     }
   ]);
 
-  const shuviPublicEnv = Object.keys(process.env).reduce(
-    (prev: { [key: string]: string }, key: string) => {
-      if (key.startsWith(PUBLIC_ENV_PREFIX)) {
-        prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
-      }
-      return prev;
-    },
-    {}
-  );
-
-  const shuviConfigEnv = Object.keys(env).reduce((acc, key) => {
-    if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
-      throw new Error(`The key "${key}" under "env" is not allowed.`);
+  config.plugin('private/define').use(webpack.DefinePlugin, [
+    {
+      // internal field to identify the plugin config
+      __SHUVI_DEFINE_ENV: 'true',
+      ...getDefineEnv(env)
     }
-
-    return {
-      ...acc,
-      [`process.env.${key}`]: JSON.stringify(env[key])
-    };
-  }, {} as { [key: string]: string });
+  ]);
 
   config.plugin('define').use(webpack.DefinePlugin, [
     {
-      ...shuviPublicEnv,
-      ...shuviConfigEnv,
       'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
     }
   ]);
@@ -251,8 +259,7 @@ export function baseWebpackChain({
       .digest('hex');
 
     const stringifiedEnvs = Object.entries({
-      ...shuviConfigEnv,
-      ...shuviPublicEnv
+      ...getDefineEnv(env)
     }).reduce((prev: string, [key, value]) => {
       return `${prev}|${key}=${value}`;
     }, '');

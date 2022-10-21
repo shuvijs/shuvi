@@ -1,4 +1,5 @@
 import program from 'commander';
+import * as path from 'path';
 import logger from '@shuvi/utils/lib/logger';
 import { build } from '../tasks/build';
 import { getPackageInfo, getProjectDir } from '../utils';
@@ -36,11 +37,13 @@ export default async function main(argv: string[]) {
     .option('--config-overrides <json>', 'config overrides json')
     .parse(argv, { from: 'user' });
   const cwd = getProjectDir(program);
-  const config = await getConfigFromCli(cwd, program, cliConfigMap);
+  const configFilePath = program.config && path.resolve(cwd, program.config);
+  const config = await getConfigFromCli(program, cliConfigMap);
   try {
     await build({
       cwd,
-      config
+      config,
+      configFilePath
     });
     logger.info('Build successfully!');
   } catch (error) {

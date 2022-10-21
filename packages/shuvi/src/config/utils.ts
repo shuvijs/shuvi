@@ -1,8 +1,5 @@
-import * as path from 'path';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import logger from '@shuvi/utils/lib/logger';
-import { ShuviConfig } from './configTypes';
-import { loadConfig } from './config';
+import { ShuviConfig } from '@shuvi/service';
 
 export type OptionsKeyMap = Record<
   string,
@@ -50,20 +47,12 @@ function getConfigFromCliOtherOptions(
 }
 
 export async function getConfigFromCli(
-  cwd: string,
   cliOptions: Record<string, any>,
   cliOptionsKeyMap: OptionsKeyMap = {}
 ): Promise<ShuviConfig> {
-  const configFilePath =
-    cliOptions.config && path.resolve(cwd, cliOptions.config);
-  const configFromFile = await loadConfig({
-    rootDir: cwd,
-    filepath: configFilePath
-  });
   const configFromCliOtherOptions = getConfigFromCliOtherOptions(
     cliOptions,
     cliOptionsKeyMap
   );
-  const configFromCli = deepmerge(configFromFile, configFromCliOtherOptions);
-  return configFromCli;
+  return configFromCliOtherOptions;
 }

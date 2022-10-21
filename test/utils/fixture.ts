@@ -11,7 +11,8 @@ export async function loadFixture(
   overrides: ShuviConfig = {}
 ): Promise<ShuviConfig> {
   const config = await loadConfig({
-    rootDir: resolveFixture(fixture)
+    rootDir: resolveFixture(fixture),
+    forceReloadEnv: true
   });
   return deepmerge(config, overrides);
 }

@@ -66,7 +66,10 @@ export async function launchFixtureAtCurrentProcess(
   overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
   const config = await loadFixture(name, overrides);
-  const api = await initShuvi({ cwd: resolveFixture(name), config });
+  const api = await initShuvi({
+    cwd: resolveFixture(name),
+    config
+  });
   await api.buildApp();
   const bundler = await api.getBundler();
   const shuviApp = await createShuviServer({
