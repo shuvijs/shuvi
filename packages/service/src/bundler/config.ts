@@ -92,7 +92,7 @@ export function createWebpackConfig(
 
   chain.resolve.alias.set('@shuvi/app', paths.appDir);
   chain.resolve.alias.set('@shuvi/runtime', paths.runtimeDir);
-  chain.resolve.alias.set('@shuvi/user', paths.srcDir);
+  chain.resolve.alias.set('@', paths.srcDir);
 
   return chain;
 }
