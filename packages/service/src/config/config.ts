@@ -7,31 +7,27 @@ import {
 } from '@shuvi/toolpack/lib/utils/bundleRequire';
 import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
 import logger from '@shuvi/utils/lib/logger';
-import { ShuviConfig } from './configTypes';
+import { ShuviConfig } from '../core';
+import { CONFIG_FILE } from '../constants';
 import { loadDotenvConfig } from './env';
 
-const DEFAUL_CONFIG_FILE_NAME = 'shuvi.config';
 const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'];
 
 export interface LoadConfigOptions {
   rootDir?: string;
   filepath?: string;
-  loadEnv?: boolean;
   forceReloadEnv?: boolean;
 }
 
 export async function loadConfig({
   rootDir = '.',
   filepath = '',
-  loadEnv = true,
   forceReloadEnv = false
 }: LoadConfigOptions = {}): Promise<ShuviConfig> {
   rootDir = path.resolve(rootDir);
 
   // read dotenv so we can get env in shuvi.config.js
-  if (loadEnv) {
-    loadDotenvConfig({ rootDir, forceReloadEnv });
-  }
+  loadDotenvConfig({ rootDir, forceReloadEnv });
 
   let configFilePath: string;
   if (filepath) {
@@ -42,7 +38,7 @@ export async function loadConfig({
     }
   } else {
     const defaultFiles = withExts(
-      path.resolve(rootDir, DEFAUL_CONFIG_FILE_NAME),
+      path.resolve(rootDir, CONFIG_FILE),
       validExts
     );
     configFilePath = findFirstExistedFile(defaultFiles) as string;

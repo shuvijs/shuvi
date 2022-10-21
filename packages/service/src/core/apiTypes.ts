@@ -166,14 +166,16 @@ export interface CompilerConfig {
 }
 
 export interface InternalConfig {
+  presets?: IPresetConfig[];
+  plugins?: IPluginConfig[];
   env: Record<string, string>;
   outputPath: string;
   publicPath: string;
-  analyze: boolean;
-  typescript: { ignoreBuildErrors: boolean };
   proxy?: IProxyConfig;
-  compiler?: CompilerConfig;
+  analyze: boolean;
   disposeInactivePage: boolean;
+  compiler?: CompilerConfig;
+  typescript: { ignoreBuildErrors: boolean };
   experimental: {
     lightningCss: boolean;
     preBundle: boolean;
@@ -183,16 +185,16 @@ export interface InternalConfig {
   };
 }
 
-export interface Config
+export interface ShuviConfig
   extends DeepPartial<InternalConfig>,
     DeepPartial<CustomConfig> {}
 
-export interface NormalizedConfig extends InternalConfig, CustomConfig {}
+export interface NormalizedShuviConfig extends InternalConfig, CustomConfig {}
 
 export interface IPluginContext {
   mode: IServiceMode;
   paths: IPaths;
-  config: NormalizedConfig;
+  config: NormalizedShuviConfig;
   phase: IServicePhase;
   pluginRunner: PluginRunner;
   assetPublicPath: string;

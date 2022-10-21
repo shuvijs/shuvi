@@ -78,14 +78,14 @@ async function buildTargets({ force }) {
         console.log(`skip ${name} due to targets already existing`);
         continue;
       }
+    }
 
-      console.log(`> Build ${name}`);
-      try {
-        await build();
-        console.log(`✅ Done`);
-      } catch (error) {
-        console.log(`❌ Fail`);
-      }
+    console.log(`> Build ${name}`);
+    try {
+      await build();
+      console.log(`✅ Done`);
+    } catch (error) {
+      console.log(`❌ Fail`);
     }
   }
 }
