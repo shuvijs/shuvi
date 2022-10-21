@@ -32,7 +32,8 @@ DEALINGS IN THE SOFTWARE.
 use auto_cjs::contains_cjs;
 use either::Either;
 use serde::Deserialize;
-use std::{sync::Arc};
+use std::sync::Arc;
+// use swc_atoms::JsWord;
 use swc::config::ModuleConfig;
 use swc_common::comments::Comments;
 use swc_common::{self, chain};
@@ -43,15 +44,17 @@ use swc_ecmascript::transforms::pass::noop;
 use swc_ecmascript::visit::Fold;
 
 mod auto_cjs;
+pub mod auto_css_module;
 pub mod disallow_re_export_all_in_page;
 pub mod hook_optimizer;
+pub mod page_loader;
 pub mod react_remove_properties;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod remove_console;
 pub mod shake_exports;
-mod top_level_binding_collector;
 pub mod shuvi_dynamic;
-pub mod auto_css_module;
+pub mod shuvi_page;
+mod top_level_binding_collector;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -72,6 +75,9 @@ pub struct TransformOptions {
     pub css_module_flag: String,
 
     #[serde(default)]
+    pub page_pick_loader: bool,
+
+    #[serde(default)]
     pub styled_components: Option<styled_components::Config>,
 
     #[serde(default)]
@@ -79,9 +85,6 @@ pub struct TransformOptions {
 
     #[serde(default)]
     pub react_remove_properties: Option<react_remove_properties::Config>,
-
-    #[serde(default)]
-    pub shake_exports: Option<shake_exports::Config>,
 
     #[serde(default)]
     pub emotion: Option<swc_emotion::EmotionOptions>,
@@ -96,15 +99,18 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
     opts: &'a TransformOptions,
     comments: C,
 ) -> impl Fold + 'a {
-
     chain!(
-        auto_css_module::auto_css_module(opts.css_module_flag.clone()),
         disallow_re_export_all_in_page::disallow_re_export_all_in_page(opts.is_page_file),
+        if opts.is_page_file {
+            Either::Left({
+                shuvi_page::shuvi_page(opts.page_pick_loader)
+            })
+        } else {
+            Either::Right(noop())
+        },
+        auto_css_module::auto_css_module(opts.css_module_flag.clone()),
         hook_optimizer::hook_optimizer(),
-        shuvi_dynamic::shuvi_dynamic(
-            opts.is_server,
-        ),
-
+        shuvi_dynamic::shuvi_dynamic(opts.is_server,),
         match &opts.styled_components {
             Some(config) => Either::Left(styled_components::styled_components(
                 file.name.clone(),
@@ -113,7 +119,6 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
             )),
             None => Either::Right(noop()),
         },
-        
         match &opts.remove_console {
             Some(config) if config.truthy() =>
                 Either::Left(remove_console::remove_console(config.clone())),
@@ -123,10 +128,6 @@ pub fn custom_before_pass<'a, C: Comments + 'a>(
             Some(config) if config.truthy() =>
                 Either::Left(react_remove_properties::remove_properties(config.clone())),
             _ => Either::Right(noop()),
-        },
-        match &opts.shake_exports {
-            Some(config) => Either::Left(shake_exports::shake_exports(config.clone())),
-            None => Either::Right(noop()),
         },
         opts.emotion
             .as_ref()

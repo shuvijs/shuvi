@@ -1,11 +1,10 @@
 import { createHash } from 'crypto';
-import querystring from 'querystring';
 import {
   IPageRouteConfig,
   IPageRouteConfigWithId
 } from '@shuvi/platform-shared/shared';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
-import { normalizePath } from '@shuvi/utils/lib/file';
+import { normalizePath, removeExt } from '@shuvi/utils/lib/file';
 
 export { IPageRouteConfig };
 
@@ -14,8 +13,6 @@ type RouteKeysWithoutChildren = keyof Omit<IPageRouteConfig, 'children'>;
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
 }
-
-const KEEP_SYMBOL = querystring.stringify({ keep: ['default'] });
 
 /**
  * returns JSON string of IPageRouteConfigWithId
@@ -35,8 +32,8 @@ export function serializeRoutes(
 
       if (key === 'component') {
         const { component } = route;
-        const componentSource = component;
-        const componentRequest = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}&${KEEP_SYMBOL}`;
+        const componentSource = removeExt(component!);
+        const componentRequest = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
         // `webpackExports` works with production and optimization.minimize, check compiled dist
         if (includeMeta) {
           strRoute += `__componentRawRequest__: "${componentRequest}",\n`;

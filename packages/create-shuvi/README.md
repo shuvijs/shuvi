@@ -40,14 +40,14 @@ pnpm create shuvi my-first-app
 - **--use-npm** - Explicitly tell the CLI to bootstrap the app using npm. To bootstrap using yarn we recommend to run `yarn create shuvi`
 - **--use-pnpm** - Explicitly tell the CLI to bootstrap the app using pnpm. To bootstrap using pnpm we recommend running `pnpm create shuvi`
 
-## Why use Create Shuvi App?
+## Why use Create Shuvi?
 
 `create-shuvi` allows you to create a new Shuvi.js app within seconds. It is officially maintained by the creators of Shuvi.js, and includes a number of benefits:
 
 - **Interactive Experience**: Running `npx create-shuvi` (with no arguments) launches an interactive experience that guides you through setting up a project.
-- **Zero Dependencies**: Initializing a project is as quick as one second. Create Shuvi App has zero dependencies.
-- **Offline Support**: Create Shuvi App will automatically detect if you're offline and bootstrap your project using your local package cache.
-- **Support for Examples**: Create Shuvi App can bootstrap your application using an example from the Shuvi.js examples collection (e.g. `npx create-shuvi --example basic`).
+- **Zero Dependencies**: Initializing a project is as quick as one second. Create Shuvi has zero dependencies.
+- **Offline Support**: Create Shuvi will automatically detect if you're offline and bootstrap your project using your local package cache.
+- **Support for Examples**: Create Shuvi can bootstrap your application using an example from the Shuvi.js examples collection (e.g. `npx create-shuvi --example basic`).
 
 ## Reference
 

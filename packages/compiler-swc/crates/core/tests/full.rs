@@ -52,13 +52,13 @@ fn test(input: &Path, minify: bool) {
                     ..Default::default()
                 },
                 is_page_file: false,
+                page_pick_loader: false,
                 is_development: true,
                 is_server: false,
                 styled_components: Some(assert_json("{}")),
                 remove_console: None,
                 css_module_flag: String::from("").into(),
                 react_remove_properties: None,
-                shake_exports: None,
                 emotion: Some(assert_json("{}")),
                 modularize_imports: None,
             };

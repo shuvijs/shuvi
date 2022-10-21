@@ -83,6 +83,9 @@ export type CorePluginConstructor = IPluginHandlers<
   PluginHooks,
   IPluginContext
 >;
+
+export type CorePluginFactory = (options: any) => CorePluginInstance;
+
 export const getManager = () =>
   createHookManager<PluginHooks, IPluginContext>(
     builtinPluginHooks as PluginHooks

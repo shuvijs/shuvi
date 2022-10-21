@@ -10,8 +10,9 @@ import {
   IPageRouteConfigWithId,
   IMiddlewareRouteConfig
 } from '@shuvi/platform-shared/shared';
+import { LOADER_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
 import logger from '@shuvi/utils/lib/logger';
-import { ifComponentHasLoader } from '../html-render/lib';
+import { removeExt } from '@shuvi/utils/lib/file';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
   getRoutes,
@@ -62,7 +63,10 @@ const plugin = createPlugin({
         );
         return rawRoutes;
       },
-      dependencies: [paths.routesDir]
+      dependencies: [paths.routesDir],
+      watchOptions: {
+        ignoreFileContentUpdate: true
+      }
     });
 
     const pageRoutesFile = defineFile({
@@ -166,10 +170,7 @@ const plugin = createPlugin({
           routes.forEach(r => {
             const { component, id, children } = r;
             if (component && id) {
-              const hasLoader = ifComponentHasLoader(component);
-              if (hasLoader) {
-                loaders[id] = component;
-              }
+              loaders[id] = removeExt(component);
             }
             if (children) {
               traverseRoutes(children);
@@ -181,7 +182,7 @@ const plugin = createPlugin({
         let exports = '';
         Object.entries(loaders).forEach((loader, index) => {
           const [id, component] = loader;
-          imports += `import { loader as loader_${index} } from '${component}?keep=loader'\n`;
+          imports += `import { loader as loader_${index} } from '${component}?${LOADER_RESOURCE_QUERYSTRING}'\n`;
           exports += `'${id}': loader_${index},\n`;
         });
         return `${imports}  export default {\n  ${exports}\n}`;

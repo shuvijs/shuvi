@@ -1,6 +1,7 @@
 import { CompilerOptions } from '@shuvi/toolpack/lib/webpack/loaders/shuvi-swc-loader';
 import {
   CorePluginConstructor,
+  CorePluginFactory,
   CorePluginInstance,
   PluginRunner
 } from './plugin';
@@ -9,7 +10,9 @@ import { IProxyConfig } from '../server/middlewares/httpProxyMiddleware';
 import {
   IServerMiddleware,
   IServerPluginContext,
-  ServerPluginInstance
+  ServerPluginInstance,
+  ServerPluginConstructor,
+  ServerPluginFactory
 } from '../server';
 import { DevMiddleware } from '../server/middlewares/dev';
 
@@ -20,11 +23,6 @@ export type DeepPartial<T> = {
 };
 
 export type IServiceMode = 'development' | 'production';
-
-export interface IPreset {
-  id: string;
-  get: () => IPresetSpec;
-}
 
 export interface IPaths {
   // project root
@@ -58,21 +56,42 @@ export interface IPaths {
   publicDir: string;
 }
 
-export type IPluginConfig =
-  | string
+export type CorePluginConfig =
   | CorePluginConstructor
   | CorePluginInstance
-  | [string, any?];
+  | CorePluginFactory;
+
+export type ServerPluginConfig =
+  | ServerPluginConstructor
+  | ServerPluginInstance
+  | ServerPluginFactory;
+
+export type DetailedPluginConfig = {
+  core?: string | CorePluginConfig;
+  server?: string | ServerPluginConfig;
+  runtime?: string;
+  types?: string;
+};
+
+export type IPluginConfig =
+  | string // the path of single core plugin or all-in-one plugin
+  | CorePluginConfig
+  | DetailedPluginConfig
+  | [string, any]
+  | [CorePluginConfig, any]
+  | [DetailedPluginConfig, any];
 
 export type IPresetConfig =
   | string
   | [string /* plugin module */, any? /* plugin options */];
 
-export interface IPresetSpec {
-  (options: any): {
-    presets?: IPresetConfig[];
-    plugins?: IPluginConfig[];
-  };
+export type IPreset = (context: IPluginContext, options: any) => IPresetContent;
+
+export type PresetFunction = IPreset;
+
+export interface IPresetContent {
+  presets?: IPresetConfig[];
+  plugins?: IPluginConfig[];
 }
 
 export declare type IServicePhase =
@@ -85,6 +104,14 @@ export type RuntimePluginConfig = {
   plugin: string;
   options?: any;
 };
+
+/** plugin config that specify path of each file */
+export interface ISplitPluginConfig {
+  core?: string;
+  server?: string;
+  runtime?: string;
+  types?: string;
+}
 
 export interface ResolvedPlugin {
   core?: CorePluginInstance; // instance

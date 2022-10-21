@@ -115,7 +115,7 @@ export default class WebpackWatchWaitForFileBuilderPlugin implements Plugin {
 
         for (const currentFile of files) {
           if (isDependency(currentFile)) {
-            compiler.watching.suspend();
+            // compiler.watching.suspend();
             return;
           }
         }

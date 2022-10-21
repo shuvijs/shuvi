@@ -463,7 +463,7 @@ class WebpackBundler implements Bunlder {
 
 export async function getBundler(ctx: IPluginContext): Promise<Bunlder> {
   try {
-    await setupTypeScript(ctx.paths);
+    await setupTypeScript(ctx.paths, ctx.mode === 'production');
     const options = {
       ...defaultBundleOptions,
       preBundle: ctx.config.experimental.preBundle,
