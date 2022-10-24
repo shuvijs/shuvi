@@ -1,1 +1,1 @@
-export type IRuntimeConfig = Record<string, string>;
+export type IRuntimeConfig = Record<string, any>;
