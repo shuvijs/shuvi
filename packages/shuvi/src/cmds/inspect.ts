@@ -1,4 +1,5 @@
 import { inspect } from 'util';
+import * as path from 'path';
 import program from 'commander';
 import chalk from '@shuvi/utils/lib/chalk';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
@@ -26,7 +27,8 @@ export default async function main(argv: string[]) {
   Object.assign(process.env, {
     NODE_ENV: mode
   });
-  let config = await getConfigFromCli(cwd, program);
+  const configFile = program.config && path.resolve(cwd, program.config);
+  let config = await getConfigFromCli(program);
   config = deepmerge(config, {
     typescript: {
       ignoreBuildErrors: true
@@ -35,6 +37,7 @@ export default async function main(argv: string[]) {
   const api = await initShuvi({
     cwd,
     config,
+    configFile,
     mode,
     phase: 'PHASE_INSPECT_WEBPACK'
   });

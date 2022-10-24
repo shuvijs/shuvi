@@ -19,9 +19,9 @@ import {
   AddRuntimeFileUtils,
   WebpackChainType
 } from './pluginTypes';
-import { Config, IPluginContext, CustomCorePluginHooks } from './apiTypes';
+import { ShuviConfig, IPluginContext, CustomCorePluginHooks } from './apiTypes';
 
-const extendConfig = createSyncWaterfallHook<Config>();
+const extendConfig = createSyncWaterfallHook<ShuviConfig>();
 const afterInit = createAsyncParallelHook<void>();
 const afterBuild = createAsyncParallelHook<void>();
 const afterDestroy = createAsyncParallelHook<void>();

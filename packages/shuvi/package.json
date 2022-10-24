@@ -1,6 +1,6 @@
 {
   "name": "shuvi",
-  "version": "1.0.0-rc.20",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -25,21 +25,18 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/platform-shared": "1.0.0-rc.20",
-    "@shuvi/platform-web": "1.0.0-rc.20",
-    "@shuvi/service": "1.0.0-rc.20",
-    "@shuvi/shared": "1.0.0-rc.20",
-    "@shuvi/toolpack": "1.0.0-rc.20",
-    "@shuvi/utils": "1.0.0-rc.20",
+    "@shuvi/platform-shared": "1.0.0",
+    "@shuvi/platform-web": "1.0.0",
+    "@shuvi/service": "1.0.0",
+    "@shuvi/shared": "1.0.0",
+    "@shuvi/toolpack": "1.0.0",
+    "@shuvi/utils": "1.0.0",
     "cli-highlight": "^2.1.9",
     "commander": "5.1.0",
     "cross-spawn": "7.0.3",
-    "dotenv": "8.2.0",
-    "dotenv-expand": "5.1.0",
     "fs-extra": "9.0.1"
   },
   "devDependencies": {
-    "@types/cross-spawn": "6.0.1",
-    "@types/dotenv": "8.2.0"
+    "@types/cross-spawn": "6.0.1"
   }
 }

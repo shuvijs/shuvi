@@ -49,6 +49,7 @@ const defaultBundleOptions: NormalizedBundlerOptions = {
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
 export interface Bunlder {
+  targets: Target[];
   watching: Watching;
   watch(): Watching;
   build(): Promise<BundlerResult>;
@@ -186,6 +187,10 @@ class WebpackBundler implements Bunlder {
 
   public async resolveTargetConfig(): Promise<Target[]> {
     return await this._getTargets();
+  }
+
+  public get targets() {
+    return this._targets;
   }
 
   private async _getWebpackCompiler(

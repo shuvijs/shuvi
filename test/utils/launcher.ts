@@ -2,7 +2,7 @@ import * as qs from 'querystring';
 import { createShuviServer, IShuviServer } from '@shuvi/service';
 import { ShuviConfig } from 'shuvi/lib';
 import { initShuvi } from 'shuvi/lib/shuvi';
-import { loadFixture, resolveFixture } from './fixture';
+import { resolveFixture } from './fixture';
 import { shuviSync, shuvi, build } from './shuvi';
 import { findPort } from './findPort';
 import Browser from './browser';
@@ -65,8 +65,10 @@ export async function launchFixtureAtCurrentProcess(
   name: string,
   overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
-  const config = await loadFixture(name, overrides);
-  const api = await initShuvi({ cwd: resolveFixture(name), config });
+  const api = await initShuvi({
+    cwd: resolveFixture(name),
+    config: overrides
+  });
   await api.buildApp();
   const bundler = await api.getBundler();
   const shuviApp = await createShuviServer({
@@ -82,10 +84,9 @@ export async function serveFixtureAtCurrentProcess(
   name: string,
   overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
-  const config = await loadFixture(name, overrides);
   const api = await build({
     cwd: resolveFixture(name),
-    config
+    config: overrides
   });
   const shuviApp = await createShuviServer({
     context: api.pluginContext,

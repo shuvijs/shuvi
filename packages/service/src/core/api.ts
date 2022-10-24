@@ -11,8 +11,8 @@ import { ServerPluginInstance } from '../server';
 import { _setResourceEnv } from '../resources';
 import { isFatalError } from '../error';
 import {
-  Config,
-  NormalizedConfig,
+  ShuviConfig,
+  NormalizedShuviConfig,
   IPluginConfig,
   IPresetConfig,
   IPaths,
@@ -34,6 +34,7 @@ import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
 import WebpackWatchWaitForFileBuilderPlugin from '../lib/webpack-watch-wait-for-file-builder-plugin';
+import { loadConfig } from '../config';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
 
@@ -41,10 +42,12 @@ interface IApiOPtions {
   cwd: string;
   mode: IServiceMode;
   phase: IServicePhase;
-  config?: Config;
+  config?: ShuviConfig;
+  configFile?: string;
   platform?: IPlatform;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
+  normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
 }
 
 interface ServerConfigs {
@@ -54,44 +57,55 @@ interface ServerConfigs {
 }
 
 class Api {
+  private _inited: boolean = false;
   private _cwd: string;
   private _mode: IServiceMode;
   private _phase: IServicePhase;
-  private _config!: NormalizedConfig;
-  private _plugins: IPluginConfig[];
-  private _presets: IPresetConfig[];
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
   private _bundler!: Bunlder;
+
+  private _configFile?: string;
+  private _customConfig: ShuviConfig;
+  private _customPresets: IPresetConfig[];
+  private _customPlugins: IPluginConfig[];
+  private _config!: NormalizedShuviConfig;
+  private _plugins: IPluginConfig[] = [];
+  private _presets: IPresetConfig[] = [];
+
   private _platform?: IPlatform;
+  private _normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
+
+  private _serverConfigs!: ServerConfigs;
   private _serverPlugins: ServerPluginInstance[] = [];
   private _pluginManager: PluginManager;
   private _pluginContext!: IPluginContext;
-  private _serverConfigs!: ServerConfigs;
-
-  private _inited: boolean = false;
 
   /** will be included by @shuvi/swc-loader */
   private _runtimePluginDirs: string[] = [];
   constructor({
     cwd,
     mode,
-    config = {},
+    config,
+    configFile,
     presets,
     plugins,
     phase,
-    platform
+    platform,
+    normalizePlatformConfig
   }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
     this._phase = phase;
     this._platform = platform;
-    this._config = deepmerge(getDefaultConfig(), config);
-    this._presets = presets || [];
-    this._plugins = plugins || [];
+    this._configFile = configFile;
+    this._customConfig = config || {};
+    this._customPresets = presets || [];
+    this._customPlugins = plugins || [];
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
+    this._normalizePlatformConfig = normalizePlatformConfig;
   }
 
   get cwd() {
@@ -119,6 +133,20 @@ class Api {
       return;
     }
 
+    const configFromFile = await loadConfig({
+      rootDir: this._cwd,
+      filepath: this._configFile
+    });
+    this._config = deepmerge(
+      getDefaultConfig(),
+      this._normalizePlatformConfig
+        ? this._normalizePlatformConfig(
+            deepmerge(configFromFile, this._customConfig)
+          )
+        : deepmerge(configFromFile, this._customConfig)
+    );
+    this._presets = [...this._customPresets, ...(this._config.presets || [])];
+    this._plugins = [...this._customPlugins, ...(this._config.plugins || [])];
     this._paths = getPaths({
       rootDir: this._cwd,
       outputPath: this._config.outputPath
@@ -428,7 +456,8 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     config: options.config,
     platform: options.platform,
     presets: options.presets,
-    plugins: options.plugins
+    plugins: options.plugins,
+    normalizePlatformConfig: options.normalizePlatformConfig
   });
 
   try {

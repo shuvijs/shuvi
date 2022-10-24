@@ -11,6 +11,7 @@ export interface WatchEvent {
   changes: string[];
   removals: string[];
   getAllFiles: () => string[];
+  knownFiles: Map<string, TimeInfo>;
 }
 
 export interface WatchOptions {
@@ -80,7 +81,8 @@ export function watch(
           }
         }
         return res;
-      }
+      },
+      knownFiles
     });
   });
 
