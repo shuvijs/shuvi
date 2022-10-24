@@ -17,7 +17,7 @@ import { installDependencies } from './installDependencies';
 
 let hasSetup = false;
 
-interface TypeScriptInfo {
+export interface TypeScriptInfo {
   useTypeScript: boolean;
   typeScriptPath?: string;
   tsConfigPath?: string;
@@ -96,10 +96,6 @@ export async function setupTypeScript(
   paths: IPaths,
   reportMissingError: Boolean = false
 ) {
-  if (hasSetup) {
-    return;
-  }
-
   hasSetup = true;
   const projectDir = paths.rootDir;
   useTypeScript = await hasTypescriptFiles(paths.srcDir);

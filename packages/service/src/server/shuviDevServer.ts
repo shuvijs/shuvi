@@ -6,7 +6,11 @@ import { Watchpack, watch as watcher } from '@shuvi/utils/lib/fileWatcher';
 import { getDefineEnv } from '@shuvi/toolpack/lib/webpack/config';
 import { join } from 'path';
 import { Bunlder } from '../bundler';
-import { setupTypeScript, getTypeScriptInfo } from '../bundler/typescript';
+import {
+  setupTypeScript,
+  getTypeScriptInfo,
+  TypeScriptInfo
+} from '../bundler/typescript';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
@@ -152,6 +156,16 @@ export class ShuviDevServer extends ShuviServer {
             continue;
           }
 
+          if (tsconfigPaths.includes(fileName)) {
+            if (fileName.endsWith('tsconfig.json')) {
+              enabledTypeScript = true;
+            }
+            if (watchTimeChange) {
+              tsconfigChange = true;
+            }
+            continue;
+          }
+
           if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
             enabledTypeScript = true;
           }
@@ -164,11 +178,51 @@ export class ShuviDevServer extends ShuviServer {
         }
 
         if (tsconfigChange || envChange) {
+          let tsconfigResult: TypeScriptInfo | undefined;
+
+          if (tsconfigChange) {
+            await this.verifyTypeScript();
+            tsconfigResult = getTypeScriptInfo();
+          }
+
           if (envChange) {
             loadDotenvConfig({ rootDir, forceReloadEnv: true });
           }
 
           configs.forEach(({ config }) => {
+            if (tsconfigChange) {
+              config.resolve?.plugins?.forEach((plugin: any) => {
+                // look for the JsConfigPathsPlugin and update with the latest paths/baseUrl config
+                if (plugin && plugin.jsConfigPlugin && tsconfigResult) {
+                  const { resolvedBaseUrl, tsCompilerOptions } = tsconfigResult;
+                  const currentResolvedBaseUrl = plugin.resolvedBaseUrl;
+                  const resolvedUrlIndex = config.resolve?.modules?.findIndex(
+                    item => item === currentResolvedBaseUrl
+                  );
+
+                  if (
+                    resolvedBaseUrl &&
+                    resolvedBaseUrl !== currentResolvedBaseUrl
+                  ) {
+                    // remove old baseUrl and add new one
+                    if (resolvedUrlIndex && resolvedUrlIndex > -1) {
+                      config.resolve?.modules?.splice(resolvedUrlIndex, 1);
+                    }
+                    config.resolve?.modules?.push(resolvedBaseUrl);
+                  }
+
+                  if (tsCompilerOptions?.paths && resolvedBaseUrl) {
+                    Object.keys(plugin.paths).forEach(key => {
+                      delete plugin.paths[key];
+                    });
+
+                    Object.assign(plugin.paths, tsCompilerOptions.paths);
+                    plugin.resolvedBaseUrl = resolvedBaseUrl;
+                  }
+                }
+              });
+            }
+
             if (envChange) {
               config.plugins?.forEach((plugin: any) => {
                 // we look for the DefinePlugin definitions so we can

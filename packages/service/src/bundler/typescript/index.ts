@@ -1,2 +1,6 @@
-export { setupTypeScript, getTypeScriptInfo } from './setupTypeScript';
+export {
+  setupTypeScript,
+  getTypeScriptInfo,
+  TypeScriptInfo
+} from './setupTypeScript';
 export * from './types';
