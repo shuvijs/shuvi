@@ -51,7 +51,7 @@
       ]
     },
     "./shuvi-type-extensions-node": {
-      "types": "./shuvi-type-extensions-node.d.js",
+      "types": "./shuvi-type-extensions-node.d.ts",
       "default": "./shuvi-type-extensions-node.js"
     },
     "./shuvi-type-extensions-runtime": "./shuvi-type-extensions-runtime.d.ts",

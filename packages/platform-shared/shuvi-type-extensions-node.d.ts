@@ -1,18 +1,1 @@
-import { IRuntimeConfig } from './src/shared';
-import { extendedHooks } from './src/node/platform/plugins/main/hooks';
-
-export {};
-
-declare global {
-  namespace ShuviService {
-    interface CustomConfig {
-      publicRuntimeConfig?: IRuntimeConfig;
-      serverRuntimeConfig?: IRuntimeConfig;
-    }
-
-    interface CustomCorePluginHooks {
-      addEntryCode: typeof extendedHooks.addEntryCode;
-      modifyRuntimeConfig: typeof extendedHooks.modifyRuntimeConfig;
-    }
-  }
-}
+/// <reference types="./lib/node/platform/shuvi-type-extensions-node" />
