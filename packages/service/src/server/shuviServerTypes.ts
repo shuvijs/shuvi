@@ -8,12 +8,15 @@ import {
   IRequestHandlerWithNext
 } from '../server/http-server';
 
+import type { getCookieParser } from './utils';
+
 export interface CustomShuviRequest {}
 
 export interface CustomShuviResponse {}
 
 export interface ShuviRequest extends IRequest, CustomShuviRequest {
   getAssetUrl(assetPath: string): string;
+  cookies: ReturnType<typeof getCookieParser>;
 }
 
 export interface ShuviResponse extends IResponse, CustomShuviResponse {}

@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { existsSync, statSync } from 'fs';
 import send from 'send';
+import * as cookie from 'cookie';
 
 export function isStaticFileExist(path: string): Boolean {
   if (existsSync(path)) {
@@ -29,6 +30,21 @@ export function serveStatic(
       .pipe(res)
       .on('finish', resolve);
   });
+}
+
+/**
+ * Parse cookies from `req` header
+ * @param req request object
+ */
+
+export function getCookieParser(req: IncomingMessage): {
+  [key: string]: string;
+} {
+  const header: undefined | string | string[] = req.headers.cookie;
+  if (!header) {
+    return {};
+  }
+  return cookie.parse(Array.isArray(header) ? header.join(';') : header);
 }
 
 export function sendHTML(
