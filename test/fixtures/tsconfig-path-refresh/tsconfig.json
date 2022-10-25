@@ -19,9 +19,9 @@
     "paths": {
       "@shuvi/runtime": [".shuvi/app/runtime"],
       "@shuvi/runtime/*": [".shuvi/app/runtime/*"],
+      "@lib/*": ["src/lib/first-lib/*"],
       "@comp/*": ["src/components/*"],
-      "@myComponent2": ["src/components/component-2.tsx"],
-      "@lib/*": ["src/lib/first-lib/*"]
+      "@myComponent2": ["src/components/component-2.tsx"]
     }
   },
   "include": [".shuvi/app/shuvi-app.d.ts", "src"],
