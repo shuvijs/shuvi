@@ -195,28 +195,13 @@ export class ShuviDevServer extends ShuviServer {
                 // look for the JsConfigPathsPlugin and update with the latest paths/baseUrl config
                 if (plugin && plugin.jsConfigPlugin && tsconfigResult) {
                   const { resolvedBaseUrl, tsCompilerOptions } = tsconfigResult;
-                  const currentResolvedBaseUrl = plugin.resolvedBaseUrl;
-                  const resolvedUrlIndex = config.resolve?.modules?.findIndex(
-                    item => item === currentResolvedBaseUrl
-                  );
-
-                  if (
-                    resolvedBaseUrl &&
-                    resolvedBaseUrl !== currentResolvedBaseUrl
-                  ) {
-                    // remove old baseUrl and add new one
-                    if (resolvedUrlIndex && resolvedUrlIndex > -1) {
-                      config.resolve?.modules?.splice(resolvedUrlIndex, 1);
-                    }
-                    config.resolve?.modules?.push(resolvedBaseUrl);
-                  }
 
                   if (tsCompilerOptions?.paths && resolvedBaseUrl) {
                     Object.keys(plugin.paths).forEach(key => {
                       delete plugin.paths[key];
                     });
 
-                    Object.assign(plugin.paths, tsCompilerOptions.paths);
+                    plugin.paths = { ...tsCompilerOptions.paths };
                     plugin.resolvedBaseUrl = resolvedBaseUrl;
                   }
                 }
