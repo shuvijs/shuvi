@@ -10,7 +10,7 @@ import {
   setupTypeScript,
   getTypeScriptInfo,
   TypeScriptInfo,
-  loadUpdatedTsConfig
+  loadTsConfig
 } from '../bundler/typescript';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
@@ -182,8 +182,7 @@ export class ShuviDevServer extends ShuviServer {
           let tsconfigResult: TypeScriptInfo | undefined;
 
           if (tsconfigChange) {
-            await loadUpdatedTsConfig(rootDir);
-            tsconfigResult = getTypeScriptInfo();
+            tsconfigResult = await loadTsConfig(rootDir);
           }
 
           if (envChange) {

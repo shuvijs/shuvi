@@ -30,8 +30,6 @@ let typeScriptPath: string | undefined;
 let tsConfigPath: string | undefined;
 let tsCompilerOptions: TsCompilerOptions;
 let typescriptModule: TypeScriptModule;
-let jsConfigPath: string | undefined;
-let hasJsconfig: boolean;
 let resolvedBaseUrl: string | undefined;
 
 function missingPackagesError(dir: string, pkgs: PackageDep[]) {
@@ -95,26 +93,31 @@ export function getTypeScriptInfo(): TypeScriptInfo {
   };
 }
 
-export async function loadUpdatedTsConfig(projectDir: string) {
-  if (!hasSetup) {
-    throw Error.Fatal(
-      "please call 'setupTypeScript' before calling 'loadUpdatedTsConfig'"
-    );
-  }
-
-  if (useTypeScript && tsConfigPath) {
-    const tsConfig = await getTsConfig(typescriptModule, tsConfigPath);
-    tsCompilerOptions = tsConfig.options;
-  }
-
-  if (!useTypeScript && hasJsconfig && jsConfigPath) {
+async function loadJsConfig(projectDir: string) {
+  const jsConfigPath = path.join(projectDir, 'jsconfig.json');
+  const hasJsconfig = await fs.pathExists(jsConfigPath);
+  if (hasJsconfig) {
     const userJsConfig = await fs.readJSON(jsConfigPath);
     tsCompilerOptions = userJsConfig.compilerOptions;
+  }
+}
+
+export async function loadTsConfig(
+  projectDir: string
+): Promise<TypeScriptInfo> {
+  if (useTypeScript) {
+    const tsConfig = await getTsConfig(typescriptModule, tsConfigPath!);
+    tsCompilerOptions = tsConfig.options;
+  } else {
+    // update tsCompilerOptions by jsconfig
+    await loadJsConfig(projectDir);
   }
 
   if (tsCompilerOptions?.baseUrl) {
     resolvedBaseUrl = path.resolve(projectDir, tsCompilerOptions.baseUrl);
   }
+
+  return { useTypeScript, tsCompilerOptions, resolvedBaseUrl };
 }
 
 export async function setupTypeScript(
@@ -185,13 +188,8 @@ export async function setupTypeScript(
       paths,
       needDefaultTsConfig
     );
-  }
-
-  jsConfigPath = path.join(projectDir, 'jsconfig.json');
-  hasJsconfig = await fs.pathExists(jsConfigPath);
-  if (!useTypeScript && hasJsconfig) {
-    const userJsConfig = await fs.readJSON(jsConfigPath);
-    tsCompilerOptions = userJsConfig.compilerOptions;
+  } else {
+    await loadJsConfig(projectDir);
   }
 
   if (tsCompilerOptions?.baseUrl) {
