@@ -158,7 +158,10 @@ export class ShuviDevServer extends ShuviServer {
           }
 
           if (tsconfigPaths.includes(fileName)) {
-            if (fileName.endsWith('tsconfig.json')) {
+            if (
+              fileName.endsWith('tsconfig.json') &&
+              fileWatchTimes.get(fileName)
+            ) {
               enabledTypeScript = true;
             }
             if (watchTimeChange) {
