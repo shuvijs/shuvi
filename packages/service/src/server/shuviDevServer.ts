@@ -9,7 +9,8 @@ import { Bunlder } from '../bundler';
 import {
   setupTypeScript,
   getTypeScriptInfo,
-  TypeScriptInfo
+  TypeScriptInfo,
+  loadUpdatedTsConfig
 } from '../bundler/typescript';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
@@ -172,7 +173,7 @@ export class ShuviDevServer extends ShuviServer {
         }
 
         if (!useTypeScript && enabledTypeScript) {
-          await this.verifyTypeScript();
+          await this.verifyTypeScript(enabledTypeScript);
           useTypeScript = true;
           tsconfigChange = true;
         }
@@ -181,7 +182,7 @@ export class ShuviDevServer extends ShuviServer {
           let tsconfigResult: TypeScriptInfo | undefined;
 
           if (tsconfigChange) {
-            await this.verifyTypeScript();
+            await loadUpdatedTsConfig(rootDir);
             tsconfigResult = getTypeScriptInfo();
           }
 
@@ -238,13 +239,17 @@ export class ShuviDevServer extends ShuviServer {
     );
   }
 
-  private async verifyTypeScript() {
+  private async verifyTypeScript(enabledTypeScript: boolean) {
     if (this.verifyingTypeScript) {
       return;
     }
     try {
       this.verifyingTypeScript = true;
-      await setupTypeScript(this._serverContext.paths);
+      await setupTypeScript(
+        this._serverContext.paths,
+        this._serverContext.mode === 'production', // should be false
+        enabledTypeScript
+      );
     } finally {
       this.verifyingTypeScript = false;
     }

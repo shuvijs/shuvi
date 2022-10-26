@@ -1,6 +1,7 @@
 export {
   setupTypeScript,
   getTypeScriptInfo,
-  TypeScriptInfo
+  TypeScriptInfo,
+  loadUpdatedTsConfig
 } from './setupTypeScript';
 export * from './types';
