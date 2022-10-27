@@ -185,7 +185,7 @@ export class ShuviDevServer extends ShuviServer {
           let tsconfigResult: TypeScriptInfo | undefined;
 
           if (tsconfigChange) {
-            tsconfigResult = await loadTsConfig(rootDir);
+            tsconfigResult = await loadTsConfig(rootDir, useTypeScript);
           }
 
           if (envChange) {
@@ -249,7 +249,7 @@ export class ShuviDevServer extends ShuviServer {
       this.verifyingTypeScript = true;
       await setupTypeScript(
         this._serverContext.paths,
-        this._serverContext.mode === 'production', // should be false
+        false,
         enabledTypeScript
       );
     } finally {

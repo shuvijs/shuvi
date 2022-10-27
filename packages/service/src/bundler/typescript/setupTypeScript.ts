@@ -95,7 +95,8 @@ export function getTypeScriptInfo(): TypeScriptInfo {
 }
 
 export async function loadTsConfig(
-  projectDir: string
+  projectDir: string,
+  useTypeScript: boolean
 ): Promise<TypeScriptInfo> {
   if (useTypeScript) {
     tsConfig = await getTsConfig(typescriptModule, tsConfigPath!);
@@ -175,7 +176,7 @@ export async function setupTypeScript(
       await fs.writeJson(tsConfigPath, {});
     }
     typescriptModule = require(typeScriptPath!) as TypeScriptModule;
-    await loadTsConfig(projectDir);
+    await loadTsConfig(projectDir, useTypeScript);
     await writeDefaultConfigurations(
       typescriptModule,
       tsConfigPath,
@@ -184,6 +185,6 @@ export async function setupTypeScript(
       needDefaultTsConfig
     );
   } else {
-    await loadTsConfig(projectDir);
+    await loadTsConfig(projectDir, useTypeScript);
   }
 }
