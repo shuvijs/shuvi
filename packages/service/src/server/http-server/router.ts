@@ -64,12 +64,12 @@ class RouterImpl implements Router {
     return this;
   }
 
-  handleRequest(req: IRequest, res: IResponse, out: INextFunc) {
+  async handleRequest(req: IRequest, res: IResponse, out: INextFunc) {
     let index = 0;
 
     let done = (err: any) => out(err);
 
-    const next: INextFunc = err => {
+    const next: INextFunc = async err => {
       // next callback
       const route = this._routes[index++];
 
@@ -108,7 +108,7 @@ class RouterImpl implements Router {
 
       // call the route handler
       if (err) {
-        this._callRouteErrorHandler(
+        await this._callRouteErrorHandler(
           handler as IErrorHandlerWithNext,
           err,
           req,
@@ -116,7 +116,7 @@ class RouterImpl implements Router {
           next
         );
       } else {
-        this._callRouteRequestHandler(
+        await this._callRouteRequestHandler(
           handler as IRequestHandlerWithNext,
           req,
           res,
@@ -125,10 +125,10 @@ class RouterImpl implements Router {
       }
     };
 
-    return next();
+    return await next();
   }
 
-  private _callRouteRequestHandler(
+  private async _callRouteRequestHandler(
     handler: IRequestHandlerWithNext,
     req: IRequest,
     res: IResponse,
@@ -140,13 +140,13 @@ class RouterImpl implements Router {
     }
 
     try {
-      handler(req, res, next);
+      await handler(req, res, next);
     } catch (err) {
       next(err);
     }
   }
 
-  private _callRouteErrorHandler(
+  private async _callRouteErrorHandler(
     handler: IErrorHandlerWithNext,
     error: any,
     req: IRequest,
@@ -159,7 +159,7 @@ class RouterImpl implements Router {
     }
 
     try {
-      handler(error, req, res, next);
+      await handler(error, req, res, next);
     } catch (err) {
       next(err);
     }

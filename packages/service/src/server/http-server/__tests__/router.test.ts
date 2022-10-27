@@ -60,4 +60,30 @@ describe('router', () => {
     expect(body).toEqual('some error');
     expect(fn).not.toHaveBeenCalled();
   });
+
+  test('should catch async error', async () => {
+    const router = getRouter();
+    const fn = jest.fn();
+    router.use(
+      '/error',
+      async (req: IRequest, res: IResponse, next: INextFunc) => {
+        throw new Error('some error');
+        next();
+      }
+    );
+    router.use('/error', (req: IRequest, res: IResponse) => {
+      fn();
+    });
+    router.use(
+      '/error',
+      (error: Error, req: IRequest, res: IResponse, next: INextFunc) => {
+        res.end(error.message);
+      }
+    );
+    server = await getServer(router);
+
+    const { body } = await got(`http://${host}:${server.port}/error`);
+    expect(body).toEqual('some error');
+    expect(fn).not.toHaveBeenCalled();
+  });
 });
