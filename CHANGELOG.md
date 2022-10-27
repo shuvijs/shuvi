@@ -1,3 +1,18 @@
+## [1.0.1](https://github.com/shuvijs/shuvi/compare/v1.0.0...v1.0.1) (2022-10-27)
+
+
+### Bug Fixes
+
+* add catch for asset middleware ([#459](https://github.com/shuvijs/shuvi/issues/459)) ([e56fe8d](https://github.com/shuvijs/shuvi/commit/e56fe8df616b91994176e6db320d1e2616f91c1f))
+* rename exported shuvi-type-extensions files ([84750ea](https://github.com/shuvijs/shuvi/commit/84750eaf77e6851bfb64f3ca54fb62c58a1942fc))
+
+
+### Features
+
+* **service:** support cookies ([d9be84d](https://github.com/shuvijs/shuvi/commit/d9be84d95c5e2ef9eafd6f96bc169e475bf9e2a0))
+
+
+
 # [1.0.0](https://github.com/shuvijs/shuvi/compare/v1.0.0-rc.20...v1.0.0) (2022-10-21)
 
 
