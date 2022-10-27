@@ -8,29 +8,34 @@ export const getAssetMiddleware = (
   isDev: boolean = false
 ): ShuviRequestHandler => {
   return async (req, res, next) => {
-    const fullUrl = new URL(req.url, `http://${req.headers.host}`);
-    let assetPath: string = fullUrl.pathname;
     const candidatePaths = [];
 
-    if (context.assetPublicPath.startsWith('/')) {
-      assetPath = assetPath.replace(context.assetPublicPath, '');
-      candidatePaths.push(
-        context.resolveBuildFile(CLIENT_OUTPUT_DIR, assetPath)
-      );
-    } else {
-      fullUrl.search = '';
-      const urlWithoutQuery = fullUrl.toString();
-      // when assetPublicPath is http:localhost:3000/xx
-      if (urlWithoutQuery.startsWith(context.assetPublicPath)) {
-        assetPath = urlWithoutQuery.replace(context.assetPublicPath, '');
+    try {
+      const fullUrl = new URL(req.url, `http://${req.headers.host}`);
+      let assetPath: string = fullUrl.pathname;
+
+      if (context.assetPublicPath.startsWith('/')) {
+        assetPath = assetPath.replace(context.assetPublicPath, '');
         candidatePaths.push(
           context.resolveBuildFile(CLIENT_OUTPUT_DIR, assetPath)
         );
+      } else {
+        fullUrl.search = '';
+        const urlWithoutQuery = fullUrl.toString();
+        // when assetPublicPath is http:localhost:3000/xx
+        if (urlWithoutQuery.startsWith(context.assetPublicPath)) {
+          assetPath = urlWithoutQuery.replace(context.assetPublicPath, '');
+          candidatePaths.push(
+            context.resolveBuildFile(CLIENT_OUTPUT_DIR, assetPath)
+          );
+        }
       }
-    }
 
-    if (isDev) {
-      candidatePaths.push(context.resolvePublicFile(assetPath));
+      if (isDev) {
+        candidatePaths.push(context.resolvePublicFile(assetPath));
+      }
+    } catch (err) {
+      return next(err);
     }
 
     if (!candidatePaths.length) {
