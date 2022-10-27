@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import { Error } from '../../error';
 import { IPaths } from '../../core/apiTypes';
 import { getPkgManager } from '../helper/getPkgManager';
-import { TypeScriptModule, TsCompilerOptions } from './types';
+import { TypeScriptModule, TsCompilerOptions, TsConfig } from './types';
 import { writeDefaultConfigurations } from './configTypeScript';
 import {
   hasTsConfig,
@@ -25,6 +25,7 @@ export interface TypeScriptInfo {
   resolvedBaseUrl?: string;
 }
 
+let tsConfig: TsConfig;
 let useTypeScript: boolean;
 let typeScriptPath: string | undefined;
 let tsConfigPath: string | undefined;
@@ -93,24 +94,19 @@ export function getTypeScriptInfo(): TypeScriptInfo {
   };
 }
 
-async function loadJsConfig(projectDir: string) {
-  const jsConfigPath = path.join(projectDir, 'jsconfig.json');
-  const hasJsconfig = await fs.pathExists(jsConfigPath);
-  if (hasJsconfig) {
-    const userJsConfig = await fs.readJSON(jsConfigPath);
-    tsCompilerOptions = userJsConfig.compilerOptions;
-  }
-}
-
 export async function loadTsConfig(
   projectDir: string
 ): Promise<TypeScriptInfo> {
   if (useTypeScript) {
-    const tsConfig = await getTsConfig(typescriptModule, tsConfigPath!);
+    tsConfig = await getTsConfig(typescriptModule, tsConfigPath!);
     tsCompilerOptions = tsConfig.options;
   } else {
-    // update tsCompilerOptions by jsconfig
-    await loadJsConfig(projectDir);
+    const jsConfigPath = path.join(projectDir, 'jsconfig.json');
+    const hasJsconfig = await fs.pathExists(jsConfigPath);
+    if (hasJsconfig) {
+      const userJsConfig = await fs.readJSON(jsConfigPath);
+      tsCompilerOptions = userJsConfig.compilerOptions;
+    }
   }
 
   if (tsCompilerOptions?.baseUrl) {
@@ -179,8 +175,7 @@ export async function setupTypeScript(
       await fs.writeJson(tsConfigPath, {});
     }
     typescriptModule = require(typeScriptPath!) as TypeScriptModule;
-    const tsConfig = await getTsConfig(typescriptModule, tsConfigPath);
-    tsCompilerOptions = tsConfig.options;
+    await loadTsConfig(projectDir);
     await writeDefaultConfigurations(
       typescriptModule,
       tsConfigPath,
@@ -189,10 +184,6 @@ export async function setupTypeScript(
       needDefaultTsConfig
     );
   } else {
-    await loadJsConfig(projectDir);
-  }
-
-  if (tsCompilerOptions?.baseUrl) {
-    resolvedBaseUrl = path.resolve(projectDir, tsCompilerOptions.baseUrl);
+    await loadTsConfig(projectDir);
   }
 }
