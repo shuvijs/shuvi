@@ -18,6 +18,7 @@ import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
 import { getAssetMiddleware } from './middlewares/getAssetMiddleware';
 import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
 import { loadDotenvConfig } from '../config/env';
+import { validateUrlMiddleware } from './middlewares/validateUrlMiddleware';
 
 export class ShuviDevServer extends ShuviServer {
   private _bundler: Bunlder;
@@ -35,6 +36,8 @@ export class ShuviDevServer extends ShuviServer {
   async init() {
     const { _serverContext: context, _server: server } = this;
     const { rootDir } = context.paths;
+
+    server.use(validateUrlMiddleware);
 
     const devMiddleware = getDevMiddleware(this._bundler, context);
 
