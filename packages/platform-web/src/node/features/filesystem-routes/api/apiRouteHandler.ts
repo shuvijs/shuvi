@@ -1,7 +1,5 @@
-import { IncomingMessage } from 'http';
 import { Stream } from 'stream';
 import * as querystring from 'querystring';
-import * as cookie from 'cookie';
 const getRawBody = require('raw-body');
 import * as contentType from 'content-type';
 import { ShuviRequest, ShuviResponse } from '@shuvi/service';
@@ -23,10 +21,7 @@ export async function apiRouteHandler(
 ): Promise<void> {
   try {
     const { bodyParser } = apiRoutesConfig || {};
-    const apiReq: IApiReq = {
-      // Parsing of cookies
-      cookies: getCookieParser(req)
-    };
+    const apiReq: IApiReq = {};
 
     // Parsing of body
     if (bodyParser && !apiReq.body) {
@@ -126,21 +121,6 @@ function parseJson(str: string): object {
   } catch (e) {
     throw new ApiError(400, 'Invalid JSON');
   }
-}
-
-/**
- * Parse cookies from `req` header
- * @param req request object
- */
-
-export function getCookieParser(req: IncomingMessage): {
-  [key: string]: string;
-} {
-  const header: undefined | string | string[] = req.headers.cookie;
-  if (!header) {
-    return {};
-  }
-  return cookie.parse(Array.isArray(header) ? header.join(';') : header);
 }
 
 /**

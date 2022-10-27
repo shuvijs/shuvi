@@ -5,7 +5,6 @@ import {
 } from '@shuvi/service';
 
 export interface IApiReq {
-  cookies: { [key: string]: string };
   body?: { [key: string]: any };
 }
 

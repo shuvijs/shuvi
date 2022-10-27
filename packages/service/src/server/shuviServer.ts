@@ -19,6 +19,7 @@ import {
   initServerPlugins,
   IServerPluginContext
 } from './plugin';
+import { getCookieParser } from './utils';
 
 export abstract class ShuviServer implements IShuviServer {
   protected _server: Server;
@@ -50,6 +51,8 @@ export abstract class ShuviServer implements IShuviServer {
 
       return fullAssetPath;
     };
+    // Parsing of cookies
+    shuviReq.cookies = getCookieParser(req);
   }
 
   private _normalizeResp(_resp: IResponse) {
