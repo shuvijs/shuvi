@@ -13,6 +13,7 @@
     "@shuvi/shared": "workspace:*",
     "@shuvi/utils": "workspace:*",
     "@types/react-test-renderer": "16.9.2",
+    "http-server": "^14.1.1",
     "shuvi": "workspace:*"
   }
 }

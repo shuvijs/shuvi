@@ -6,7 +6,7 @@ import {
   ShuviResponse,
   ShuviRequestHandler
 } from './shuviServerTypes';
-import { Bunlder } from '../bundler';
+import { Bundler } from '../bundler';
 
 export { Server } from './http-server';
 
@@ -18,7 +18,7 @@ export { ShuviRequest, ShuviResponse, ShuviRequestHandler };
 
 export interface CreateShuviDevServerOptions extends ShuviServerOptions {
   context: IPluginContext;
-  bundler: Bunlder;
+  bundler: Bundler;
   dev: true;
 }
 

@@ -2,7 +2,7 @@ export * from './namespace';
 
 export * from './constants';
 
-export { Bunlder } from './bundler';
+export { Bundler } from './bundler';
 
 export { ProjectBuilder } from './project';
 

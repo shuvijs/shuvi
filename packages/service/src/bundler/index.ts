@@ -1,5 +1,5 @@
 export { BundlerResult } from './runCompiler';
 
-export { getBundler, Bunlder } from './bundler';
+export { getBundler, Bundler } from './bundler';
 
 export { Watching } from './watchingProxy';

@@ -5,7 +5,7 @@ import {
 import { Watchpack, watch as watcher } from '@shuvi/utils/lib/fileWatcher';
 import { getDefineEnv } from '@shuvi/toolpack/lib/webpack/config';
 import { join } from 'path';
-import { Bunlder } from '../bundler';
+import { Bundler } from '../bundler';
 import {
   setupTypeScript,
   getJavaScriptInfo,
@@ -25,7 +25,7 @@ import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
 import { loadDotenvConfig } from '../config/env';
 
 export class ShuviDevServer extends ShuviServer {
-  private _bundler: Bunlder;
+  private _bundler: Bundler;
   private _webpackWatcher?: typeof Watchpack | null;
   private verifyingTypeScript?: boolean;
 
@@ -75,7 +75,7 @@ export class ShuviDevServer extends ShuviServer {
     }
     // keep the order
     devMiddleware.apply(server);
-    server.use(getAssetMiddleware(context, true));
+    server.use(getAssetMiddleware(context));
     await this._initMiddlewares();
 
     // setup upgrade listener eagerly when we can otherwise
