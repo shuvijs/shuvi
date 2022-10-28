@@ -41,7 +41,8 @@ export function createBrowserWebpackChain(
   chain.target('web');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
   chain.resolve.extensions.merge([
-    ...(useTypeScript ? ['.ts', '.tsx'] : []),
+    '.ts',
+    '.tsx',
     '.mjs',
     '.js',
     '.jsx',

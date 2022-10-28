@@ -281,14 +281,12 @@ export function baseWebpackChain({
       : getCacheConfig()
   );
 
-  if (typescript?.tsCompilerOptions?.paths && typescript?.resolvedBaseUrl) {
-    config.resolve
-      .plugin('jsconfig-paths-plugin')
-      .use(JsConfigPathsPlugin, [
-        typescript.tsCompilerOptions.paths,
-        typescript.resolvedBaseUrl
-      ]);
-  }
+  config.resolve
+    .plugin('jsconfig-paths-plugin')
+    .use(JsConfigPathsPlugin, [
+      typescript?.tsCompilerOptions?.paths || {},
+      typescript?.resolvedBaseUrl || projectRoot
+    ]);
 
   if (!typescript?.useTypeScript) {
     config.resolve

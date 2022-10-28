@@ -8,14 +8,14 @@ export interface NodeOptions extends BaseOptions {
 }
 
 export function createNodeWebpackChain(options: NodeOptions): WebpackChain {
-  const { webpackHelpers, typescript, dev } = options;
+  const { webpackHelpers, dev } = options;
   const chain = baseWebpackChain(options);
-  const useTypeScript = !!typescript?.useTypeScript;
 
   chain.target('node');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
   chain.resolve.extensions.merge([
-    ...(useTypeScript ? ['.ts', '.tsx'] : []),
+    '.ts',
+    '.tsx',
     '.js',
     '.mjs',
     '.jsx',
