@@ -8,9 +8,9 @@ import { join } from 'path';
 import { Bunlder } from '../bundler';
 import {
   setupTypeScript,
-  getTypeScriptInfo,
-  TypeScriptInfo,
-  loadTsConfig
+  getJavaScriptInfo,
+  ParsedJsConfig,
+  loadJsConfig
 } from '../bundler/typescript';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
@@ -108,8 +108,8 @@ export class ShuviDevServer extends ShuviServer {
     const fileWatchTimes = new Map();
     const configs = this._bundler.targets;
 
-    let { useTypeScript } = getTypeScriptInfo();
-    let enabledTypeScript: boolean = useTypeScript;
+    let { useTypeScript } = getJavaScriptInfo();
+    let enableTypeScript: boolean = useTypeScript;
 
     const envFiles = [
       '.env.development.local',
@@ -162,7 +162,7 @@ export class ShuviDevServer extends ShuviServer {
               fileName.endsWith('tsconfig.json') &&
               fileWatchTimes.get(fileName)
             ) {
-              enabledTypeScript = true;
+              enableTypeScript = true;
             }
             if (watchTimeChange) {
               tsconfigChange = true;
@@ -171,21 +171,21 @@ export class ShuviDevServer extends ShuviServer {
           }
 
           if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
-            enabledTypeScript = true;
+            enableTypeScript = true;
           }
         }
 
-        if (!useTypeScript && enabledTypeScript) {
-          await this.verifyTypeScript(enabledTypeScript);
+        if (!useTypeScript && enableTypeScript) {
+          await this.verifyTypeScript(enableTypeScript);
           useTypeScript = true;
           tsconfigChange = true;
         }
 
         if (tsconfigChange || envChange) {
-          let tsconfigResult: TypeScriptInfo | undefined;
+          let parseJsConfig: ParsedJsConfig | undefined;
 
           if (tsconfigChange) {
-            tsconfigResult = await loadTsConfig(rootDir, useTypeScript);
+            parseJsConfig = await loadJsConfig(rootDir, { typescript: true });
           }
 
           if (envChange) {
@@ -196,15 +196,15 @@ export class ShuviDevServer extends ShuviServer {
             if (tsconfigChange) {
               config.resolve?.plugins?.forEach((plugin: any) => {
                 // look for the JsConfigPathsPlugin and update with the latest paths/baseUrl config
-                if (plugin && plugin.jsConfigPlugin && tsconfigResult) {
-                  const { resolvedBaseUrl, tsCompilerOptions } = tsconfigResult;
+                if (plugin && plugin.jsConfigPlugin && parseJsConfig) {
+                  const { resolvedBaseUrl, compilerOptions } = parseJsConfig;
 
-                  if (tsCompilerOptions?.paths && resolvedBaseUrl) {
+                  if (compilerOptions.paths && resolvedBaseUrl) {
                     Object.keys(plugin.paths).forEach(key => {
                       delete plugin.paths[key];
                     });
 
-                    plugin.paths = { ...tsCompilerOptions.paths };
+                    plugin.paths = { ...compilerOptions.paths };
                     plugin.resolvedBaseUrl = resolvedBaseUrl;
                   }
                 }
@@ -241,17 +241,16 @@ export class ShuviDevServer extends ShuviServer {
     );
   }
 
-  private async verifyTypeScript(enabledTypeScript: boolean) {
+  private async verifyTypeScript(enableTypeScript: boolean) {
     if (this.verifyingTypeScript) {
       return;
     }
     try {
       this.verifyingTypeScript = true;
-      await setupTypeScript(
-        this._serverContext.paths,
-        false,
-        enabledTypeScript
-      );
+      await setupTypeScript(this._serverContext.paths, {
+        reportMissingError: false,
+        enableTypeScript: enableTypeScript
+      });
     } finally {
       this.verifyingTypeScript = false;
     }
