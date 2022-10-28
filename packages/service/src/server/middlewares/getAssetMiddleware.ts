@@ -4,8 +4,7 @@ import { CLIENT_OUTPUT_DIR } from '../../constants';
 import { isStaticFileExist, serveStatic } from '../utils';
 
 export const getAssetMiddleware = (
-  context: IServerPluginContext,
-  isDev: boolean = false
+  context: IServerPluginContext
 ): ShuviRequestHandler => {
   return async (req, res, next) => {
     const candidatePaths = [];
@@ -31,9 +30,7 @@ export const getAssetMiddleware = (
         }
       }
 
-      if (isDev) {
-        candidatePaths.push(context.resolvePublicFile(assetPath));
-      }
+      candidatePaths.push(context.resolvePublicFile(assetPath));
     } catch (err) {
       return next(err);
     }

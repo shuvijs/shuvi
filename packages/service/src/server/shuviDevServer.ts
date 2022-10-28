@@ -75,7 +75,7 @@ export class ShuviDevServer extends ShuviServer {
     }
     // keep the order
     devMiddleware.apply(server);
-    server.use(getAssetMiddleware(context, true));
+    server.use(getAssetMiddleware(context));
     await this._initMiddlewares();
 
     // setup upgrade listener eagerly when we can otherwise
