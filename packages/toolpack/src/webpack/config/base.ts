@@ -7,7 +7,6 @@ import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
-import SupportTsExtensionResolverPlugin from '../plugins/support-ts-extension-resolver-plugin';
 import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 import { CompilerOptions } from '../loaders/shuvi-swc-loader';
 
@@ -26,12 +25,11 @@ export interface BaseOptions {
 
   // src files need to be include
   include: (string | RegExp)[];
-  typescript?: {
+  jsConfig?: {
     useTypeScript: boolean;
     typeScriptPath?: string;
-    tsConfigPath?: string;
-    tsCompilerOptions?: TsCompilerOptions;
-    resolvedBaseUrl?: string;
+    compilerOptions: TsCompilerOptions;
+    resolvedBaseUrl: string;
   };
   target?: string;
   publicPath?: string;
@@ -94,7 +92,7 @@ export function baseWebpackChain({
   compiler,
   projectRoot,
   include,
-  typescript,
+  jsConfig,
   name,
   publicPath = '/',
   env = {},
@@ -284,15 +282,9 @@ export function baseWebpackChain({
   config.resolve
     .plugin('jsconfig-paths-plugin')
     .use(JsConfigPathsPlugin, [
-      typescript?.tsCompilerOptions?.paths || {},
-      typescript?.resolvedBaseUrl || projectRoot
+      jsConfig?.compilerOptions.paths || {},
+      jsConfig?.resolvedBaseUrl || projectRoot
     ]);
-
-  if (!typescript?.useTypeScript) {
-    config.resolve
-      .plugin('support-ts-extension-resolver-plugin')
-      .use(SupportTsExtensionResolverPlugin);
-  }
 
   if (dev) {
     // For webpack-dev-middleware usage

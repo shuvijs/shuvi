@@ -4,7 +4,7 @@ import {
   createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
 import { IPluginContext } from '../core';
-import { getTypeScriptInfo } from './typescript';
+import { getJavaScriptInfo } from './typescript';
 import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 
 const AppSourceRegexp: RegExp = /([/\\]shuvi-app[/\\])|([/\\]\.shuvi[/\\])/;
@@ -50,7 +50,7 @@ export function createWebpackConfig(
     modularizeImports: experimental.modularizeImports,
     swcPlugins: experimental.swcPlugins
   };
-  const typescript = getTypeScriptInfo();
+  const jsConfig = getJavaScriptInfo();
 
   if (opts.node) {
     chain = createNodeWebpackChain({
@@ -62,7 +62,7 @@ export function createWebpackConfig(
       publicPath,
       lightningCss,
       compiler,
-      typescript,
+      jsConfig,
       include,
       env,
       webpackHelpers
@@ -77,7 +77,7 @@ export function createWebpackConfig(
       publicPath,
       lightningCss,
       compiler,
-      typescript,
+      jsConfig,
       include,
       env,
       webpackHelpers,

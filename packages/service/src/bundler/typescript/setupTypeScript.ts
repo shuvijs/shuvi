@@ -4,34 +4,37 @@ import fs from 'fs-extra';
 import { Error } from '../../error';
 import { IPaths } from '../../core/apiTypes';
 import { getPkgManager } from '../helper/getPkgManager';
-import { TypeScriptModule, TsCompilerOptions, TsConfig } from './types';
+import { TypeScriptModule, TsCompilerOptions, TsParsedConfig } from './types';
 import { writeDefaultConfigurations } from './configTypeScript';
+import { hasTsConfig, hasTypescriptFiles, getTsConfig } from './getTsConfig';
 import {
-  hasTsConfig,
-  hasTypescriptFiles,
+  resolveDependencies,
   checkNecessaryDeps,
-  getTsConfig,
   PackageDep
-} from './getTypeScriptInfo';
+} from './checkDependencies';
 import { installDependencies } from './installDependencies';
 
 let hasSetup = false;
 
-export interface TypeScriptInfo {
+export interface JavaScriptInfo {
   useTypeScript: boolean;
   typeScriptPath?: string;
-  tsConfigPath?: string;
-  tsCompilerOptions: TsCompilerOptions;
-  resolvedBaseUrl?: string;
+  compilerOptions: TsCompilerOptions;
+  resolvedBaseUrl: string;
 }
 
-let tsConfig: TsConfig;
+export interface ParsedJsConfig {
+  useTypescript: boolean;
+  tsParsedConfig?: TsParsedConfig;
+  compilerOptions: TsCompilerOptions;
+  resolvedBaseUrl: string;
+}
+
 let useTypeScript: boolean;
+let compilerOptions: TsCompilerOptions;
 let typeScriptPath: string | undefined;
-let tsConfigPath: string | undefined;
-let tsCompilerOptions: TsCompilerOptions;
-let typescriptModule: TypeScriptModule;
-let resolvedBaseUrl: string | undefined;
+let typescriptModule: TypeScriptModule | undefined;
+let resolvedBaseUrl: string;
 
 function missingPackagesError(dir: string, pkgs: PackageDep[]) {
   const packageManager = getPkgManager(dir);
@@ -78,54 +81,79 @@ function missingPackagesError(dir: string, pkgs: PackageDep[]) {
   );
 }
 
-export function getTypeScriptInfo(): TypeScriptInfo {
+export function getJavaScriptInfo(): JavaScriptInfo {
   if (!hasSetup) {
     throw Error.Fatal(
-      "please call 'setupTypeScript' before calling 'getTypeScriptInfo'"
+      "please call 'setupTypeScript' before calling 'getJavaScriptInfo'"
     );
   }
 
   return {
     useTypeScript,
     typeScriptPath,
-    tsConfigPath,
-    tsCompilerOptions,
+    compilerOptions,
     resolvedBaseUrl
   };
 }
 
-export async function loadTsConfig(
+export async function loadJsConfig(
   projectDir: string,
-  useTypeScript: boolean
-): Promise<TypeScriptInfo> {
+  {
+    typeScriptPath,
+    typescript = false
+  }: {
+    typeScriptPath?: string;
+    typescript?: boolean;
+  }
+): Promise<ParsedJsConfig> {
+  let useTypescript: boolean = typescript;
+  let tsParsedConfig: TsParsedConfig | undefined;
+  let compilerOptions: TsCompilerOptions = {};
+  let resolvedBaseUrl: string | undefined;
   if (useTypeScript) {
-    tsConfig = await getTsConfig(typescriptModule, tsConfigPath!);
-    tsCompilerOptions = tsConfig.options;
+    const tsConfigPath = path.join(projectDir, 'tsconfig.json');
+    if (!typeScriptPath) {
+      const deps = resolveDependencies(projectDir, [
+        { file: 'typescript', pkg: 'typescript' }
+      ]);
+      typeScriptPath = deps.resovled.get('typescript');
+    }
+    if (typeScriptPath && (await hasTsConfig(tsConfigPath))) {
+      const typescriptModule = require(typeScriptPath!) as TypeScriptModule;
+      tsParsedConfig = await getTsConfig(typescriptModule, tsConfigPath);
+      compilerOptions = tsParsedConfig.options;
+    }
   } else {
     const jsConfigPath = path.join(projectDir, 'jsconfig.json');
-    const hasJsconfig = await fs.pathExists(jsConfigPath);
-    if (hasJsconfig) {
-      const userJsConfig = await fs.readJSON(jsConfigPath);
-      tsCompilerOptions = userJsConfig.compilerOptions;
+    if (await fs.pathExists(jsConfigPath)) {
+      const jsConfig = await fs.readJSON(jsConfigPath);
+      compilerOptions = jsConfig.compilerOptions;
     }
   }
 
-  if (tsCompilerOptions?.baseUrl) {
-    resolvedBaseUrl = path.resolve(projectDir, tsCompilerOptions.baseUrl);
+  if (compilerOptions?.baseUrl) {
+    resolvedBaseUrl = path.resolve(projectDir, compilerOptions.baseUrl);
+  } else {
+    resolvedBaseUrl = projectDir;
   }
 
-  return { useTypeScript, tsCompilerOptions, resolvedBaseUrl };
+  return { useTypescript, tsParsedConfig, compilerOptions, resolvedBaseUrl };
 }
 
 export async function setupTypeScript(
   paths: IPaths,
-  reportMissingError: boolean = false,
-  enabledTypeScript?: boolean
+  {
+    reportMissingError = false,
+    enableTypeScript
+  }: {
+    reportMissingError: boolean;
+    enableTypeScript?: boolean;
+  }
 ) {
   hasSetup = true;
+  useTypeScript = enableTypeScript || (await hasTypescriptFiles(paths.srcDir));
   const projectDir = paths.rootDir;
-  useTypeScript = enabledTypeScript || (await hasTypescriptFiles(paths.srcDir));
-  tsCompilerOptions = {};
+  let parsedJsConfig: ParsedJsConfig;
   if (useTypeScript) {
     let deps = checkNecessaryDeps(projectDir);
     if (deps.missing.length > 0) {
@@ -162,7 +190,7 @@ export async function setupTypeScript(
     }
 
     typeScriptPath = deps.resovled.get('typescript');
-    tsConfigPath = path.join(projectDir, 'tsconfig.json');
+    const tsConfigPath = path.join(projectDir, 'tsconfig.json');
     const needDefaultTsConfig = !(await hasTsConfig(tsConfigPath));
     if (needDefaultTsConfig) {
       console.log(
@@ -176,15 +204,20 @@ export async function setupTypeScript(
       await fs.writeJson(tsConfigPath, {});
     }
     typescriptModule = require(typeScriptPath!) as TypeScriptModule;
-    await loadTsConfig(projectDir, useTypeScript);
+    parsedJsConfig = await loadJsConfig(projectDir, {
+      typescript: true
+    });
     await writeDefaultConfigurations(
       typescriptModule,
       tsConfigPath,
-      tsConfig,
+      parsedJsConfig.tsParsedConfig!,
       paths,
       needDefaultTsConfig
     );
   } else {
-    await loadTsConfig(projectDir, useTypeScript);
+    parsedJsConfig = await loadJsConfig(projectDir, { typescript: false });
   }
+
+  compilerOptions = parsedJsConfig.compilerOptions;
+  resolvedBaseUrl = parsedJsConfig.resolvedBaseUrl;
 }

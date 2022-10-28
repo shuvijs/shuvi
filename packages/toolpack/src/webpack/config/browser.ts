@@ -34,9 +34,9 @@ export interface BrowserOptions extends BaseOptions {
 export function createBrowserWebpackChain(
   options: BrowserOptions
 ): WebpackChain {
-  const { cacheDir, typescript, dev, publicPath, analyze } = options;
+  const { projectRoot, cacheDir, jsConfig, dev, publicPath, analyze } = options;
   const chain = baseWebpackChain(options);
-  const useTypeScript = !!typescript?.useTypeScript;
+  const useTypeScript = !!jsConfig?.useTypeScript;
 
   chain.target('web');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
@@ -56,9 +56,9 @@ export function createBrowserWebpackChain(
       .use(require.resolve('fork-ts-checker-webpack-plugin'), [
         {
           typescript: {
-            configFile: typescript.tsConfigPath,
+            configFile: path.join(projectRoot, 'tsconfig.json'),
             mode: 'write-references',
-            typeScriptPath: typescript.typeScriptPath,
+            typeScriptPath: jsConfig.typeScriptPath,
             diagnosticOptions: {
               syntactic: true
             },

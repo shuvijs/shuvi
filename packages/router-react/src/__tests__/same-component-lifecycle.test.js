@@ -24,7 +24,6 @@ describe('when the same component is mounted by two different routes', () => {
     let renderRoot;
     class Home extends React.Component {
       componentDidMount() {
-        console.log(111);
         mountCount += 1;
       }
       render() {
