@@ -256,7 +256,18 @@ export async function serveFixture(
 
 export async function serveStatic(root: string): Promise<AppCtx> {
   const port = await findPort();
-  const shuviProcess = spawn('pnpm', ['http-server', root, '-p', String(port)]);
+  const httpServerBinPath = path.resolve(
+    path.dirname(require.resolve('http-server')),
+    '..',
+    'bin',
+    'http-server'
+  );
+  const shuviProcess = spawn('node', [
+    httpServerBinPath,
+    root,
+    '-p',
+    String(port)
+  ]);
   const browser = new Browser();
   await browser.start();
   const url = (route: string, query?: Record<string, any>) => {
