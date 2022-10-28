@@ -11,7 +11,7 @@ import {
 } from '@shuvi/error-overlay/lib/middleware';
 import { CLIENT_OUTPUT_DIR, SERVER_OUTPUT_DIR } from '../../../constants';
 import { WebpackHotMiddleware } from './hotMiddleware';
-import { Bunlder } from '../../../bundler';
+import { Bundler } from '../../../bundler';
 import { Server } from '../../http-server';
 import { IServerPluginContext } from '../../plugin';
 
@@ -40,7 +40,7 @@ export interface DevMiddleware {
 }
 
 export function getDevMiddleware(
-  bundler: Bunlder,
+  bundler: Bundler,
   serverPluginContext: IServerPluginContext
 ): DevMiddleware {
   let applied = false;
