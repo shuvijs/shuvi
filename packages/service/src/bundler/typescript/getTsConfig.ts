@@ -3,47 +3,8 @@ import os from 'os';
 import path from 'path';
 import chalk from '@shuvi/utils/lib/chalk';
 import logger from '@shuvi/utils/lib/logger';
-import { resolve } from '@shuvi/utils/lib/resolve';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
-import { TsConfig, TypeScriptModule } from './types';
-
-export interface PackageDep {
-  file: string;
-  pkg: string;
-}
-
-export type CheckedDependenciesResult = {
-  resovled: Map<string, string>; // <pkg, resolvePath>
-  missing: PackageDep[];
-};
-
-const requiredPackages = [
-  { file: 'typescript', pkg: 'typescript' },
-  { file: '@types/react/index.d.ts', pkg: '@types/react' },
-  { file: '@types/react-dom/index.d.ts', pkg: '@types/react-dom' },
-  { file: '@types/node/index.d.ts', pkg: '@types/node' }
-];
-
-function checkDependencies(
-  dir: string,
-  deps: PackageDep[]
-): CheckedDependenciesResult {
-  let resolutions = new Map<string, string>();
-
-  const missingPackages = deps.filter(p => {
-    try {
-      resolutions.set(p.pkg, resolve(p.file, { basedir: dir }));
-      return false;
-    } catch (_) {
-      return true;
-    }
-  });
-
-  return {
-    resovled: resolutions,
-    missing: missingPackages
-  };
-}
+import { TsParsedConfig, TypeScriptModule } from './types';
 
 export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {
   try {
@@ -63,12 +24,6 @@ export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {
   return typescriptFiles.length > 0;
 }
 
-export function checkNecessaryDeps(
-  projectDir: string
-): CheckedDependenciesResult {
-  return checkDependencies(projectDir, requiredPackages);
-}
-
 export async function hasTsConfig(tsConfigPath: string): Promise<boolean> {
   const hasTsConfig = await pathExists(tsConfigPath);
 
@@ -86,7 +41,7 @@ export async function hasTsConfig(tsConfigPath: string): Promise<boolean> {
 export async function getTsConfig(
   ts: TypeScriptModule,
   tsConfigPath: string
-): Promise<TsConfig> {
+): Promise<TsParsedConfig> {
   const formatDiagnosticHost = {
     getCanonicalFileName: (fileName: string) => fileName,
     getCurrentDirectory: ts.sys.getCurrentDirectory,

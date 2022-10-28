@@ -5,12 +5,12 @@ import * as CommentJson from 'comment-json';
 import os from 'os';
 import path from 'path';
 import { IPaths } from '../../core/apiTypes';
-import { TypeScriptModule, TsConfig } from './types';
+import { TypeScriptModule, TsParsedConfig } from './types';
 
 export async function writeDefaultConfigurations(
   ts: TypeScriptModule,
   tsConfigPath: string,
-  tsConfig: TsConfig,
+  tsConfig: TsParsedConfig,
   paths: IPaths,
   isFirstTimeSetup: boolean
 ) {

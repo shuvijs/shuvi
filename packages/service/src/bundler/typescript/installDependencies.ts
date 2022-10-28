@@ -3,7 +3,7 @@ import spawn from 'cross-spawn';
 import * as path from 'path';
 import { PackageManager, getPkgManager } from '../helper/getPkgManager';
 import { getOnline } from '../helper/getOnline';
-import type { PackageDep } from './getTypeScriptInfo';
+import type { PackageDep } from './checkDependencies';
 
 interface InstallArgs {
   /**

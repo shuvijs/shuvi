@@ -1,7 +1,8 @@
 export {
   setupTypeScript,
-  getTypeScriptInfo,
-  TypeScriptInfo,
-  loadTsConfig
+  getJavaScriptInfo,
+  JavaScriptInfo as TypeScriptInfo,
+  ParsedJsConfig,
+  loadJsConfig
 } from './setupTypeScript';
 export * from './types';
