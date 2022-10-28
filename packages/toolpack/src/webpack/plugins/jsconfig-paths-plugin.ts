@@ -166,20 +166,13 @@ type Paths = { [match: string]: string[] };
 export default class JsConfigPathsPlugin implements ResolvePluginInstance {
   paths: Paths;
   resolvedBaseUrl: string;
+  jsConfigPlugin: boolean;
   constructor(paths: Paths, resolvedBaseUrl: string) {
     this.paths = paths;
     this.resolvedBaseUrl = resolvedBaseUrl;
+    this.jsConfigPlugin = true;
   }
   apply(resolver: Resolver) {
-    const paths = this.paths;
-    const pathsKeys = Object.keys(paths);
-
-    // If no aliases are added bail out
-    if (pathsKeys.length === 0) {
-      return;
-    }
-
-    const baseDirectory = this.resolvedBaseUrl;
     const target = resolver.ensureHook('resolve');
     resolver
       .getHook('described-resolve')
@@ -190,6 +183,14 @@ export default class JsConfigPathsPlugin implements ResolvePluginInstance {
           resolveContext: any,
           callback: (err?: any, result?: any) => void
         ) => {
+          const paths = this.paths;
+          const pathsKeys = Object.keys(paths);
+
+          // If no aliases are added bail out
+          if (pathsKeys.length === 0) {
+            return callback();
+          }
+
           const moduleName = request.request;
 
           // Exclude node_modules from paths support (speeds up resolving)
@@ -234,7 +235,7 @@ export default class JsConfigPathsPlugin implements ResolvePluginInstance {
                 // try next path candidate
                 return pathCallback();
               }
-              const candidate = path.join(baseDirectory, curPath);
+              const candidate = path.join(this.resolvedBaseUrl, curPath);
               const obj = Object.assign({}, request, {
                 request: candidate
               });
