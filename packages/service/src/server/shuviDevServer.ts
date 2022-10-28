@@ -6,7 +6,12 @@ import { Watchpack, watch as watcher } from '@shuvi/utils/lib/fileWatcher';
 import { getDefineEnv } from '@shuvi/toolpack/lib/webpack/config';
 import { join } from 'path';
 import { Bunlder } from '../bundler';
-import { setupTypeScript, getTypeScriptInfo } from '../bundler/typescript';
+import {
+  setupTypeScript,
+  getTypeScriptInfo,
+  TypeScriptInfo,
+  loadTsConfig
+} from '../bundler/typescript';
 import { Server } from '../server/http-server';
 import { ShuviServer } from './shuviServer';
 import { normalizeServerMiddleware } from './serverMiddleware';
@@ -152,23 +157,60 @@ export class ShuviDevServer extends ShuviServer {
             continue;
           }
 
+          if (tsconfigPaths.includes(fileName)) {
+            if (
+              fileName.endsWith('tsconfig.json') &&
+              fileWatchTimes.get(fileName)
+            ) {
+              enabledTypeScript = true;
+            }
+            if (watchTimeChange) {
+              tsconfigChange = true;
+            }
+            continue;
+          }
+
           if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
             enabledTypeScript = true;
           }
         }
 
         if (!useTypeScript && enabledTypeScript) {
-          await this.verifyTypeScript();
+          await this.verifyTypeScript(enabledTypeScript);
           useTypeScript = true;
           tsconfigChange = true;
         }
 
         if (tsconfigChange || envChange) {
+          let tsconfigResult: TypeScriptInfo | undefined;
+
+          if (tsconfigChange) {
+            tsconfigResult = await loadTsConfig(rootDir, useTypeScript);
+          }
+
           if (envChange) {
             loadDotenvConfig({ rootDir, forceReloadEnv: true });
           }
 
           configs.forEach(({ config }) => {
+            if (tsconfigChange) {
+              config.resolve?.plugins?.forEach((plugin: any) => {
+                // look for the JsConfigPathsPlugin and update with the latest paths/baseUrl config
+                if (plugin && plugin.jsConfigPlugin && tsconfigResult) {
+                  const { resolvedBaseUrl, tsCompilerOptions } = tsconfigResult;
+
+                  if (tsCompilerOptions?.paths && resolvedBaseUrl) {
+                    Object.keys(plugin.paths).forEach(key => {
+                      delete plugin.paths[key];
+                    });
+
+                    plugin.paths = { ...tsCompilerOptions.paths };
+                    plugin.resolvedBaseUrl = resolvedBaseUrl;
+                  }
+                }
+              });
+            }
+
             if (envChange) {
               config.plugins?.forEach((plugin: any) => {
                 // we look for the DefinePlugin definitions so we can
@@ -199,13 +241,17 @@ export class ShuviDevServer extends ShuviServer {
     );
   }
 
-  private async verifyTypeScript() {
+  private async verifyTypeScript(enabledTypeScript: boolean) {
     if (this.verifyingTypeScript) {
       return;
     }
     try {
       this.verifyingTypeScript = true;
-      await setupTypeScript(this._serverContext.paths);
+      await setupTypeScript(
+        this._serverContext.paths,
+        false,
+        enabledTypeScript
+      );
     } finally {
       this.verifyingTypeScript = false;
     }
