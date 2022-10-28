@@ -1,7 +1,7 @@
 import { RequestListener } from 'http';
 import { ServerPluginInstance } from './plugin';
 import { IPlatformContent } from '../core';
-import { Bunlder } from '../bundler';
+import { Bundler } from '../bundler';
 import {
   IRequest,
   IResponse,
@@ -40,5 +40,5 @@ export interface ShuviServerOptions {
 }
 
 export interface ShuviDevServerOptions extends ShuviServerOptions {
-  bundler: Bunlder;
+  bundler: Bundler;
 }

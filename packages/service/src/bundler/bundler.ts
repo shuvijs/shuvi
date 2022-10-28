@@ -48,7 +48,7 @@ const defaultBundleOptions: NormalizedBundlerOptions = {
 
 const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
 
-export interface Bunlder {
+export interface Bundler {
   targets: Target[];
   watching: Watching;
   watch(): Watching;
@@ -68,13 +68,13 @@ export interface CompilerStats {
 
 export type FinishedCallback = (stats: CompilerStats) => any;
 
-export interface BunlderEvent {
+export interface BundlerEvent {
   'build-done': (stats: CompilerStats) => void;
   'ts-error': (err: CompilerErr) => void;
   'ts-warnings': (warnings: CompilerErr[]) => void;
 }
 
-class WebpackBundler implements Bunlder {
+class WebpackBundler implements Bundler {
   private _cliContext: IPluginContext;
   private _compiler!: WebapckMultiCompiler;
   private _options: NormalizedBundlerOptions;
@@ -466,7 +466,7 @@ class WebpackBundler implements Bunlder {
   }
 }
 
-export async function getBundler(ctx: IPluginContext): Promise<Bunlder> {
+export async function getBundler(ctx: IPluginContext): Promise<Bundler> {
   try {
     await setupTypeScript(ctx.paths, ctx.mode === 'production');
     const options = {

@@ -5,7 +5,7 @@ import logger from '@shuvi/utils/lib/logger';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOption } from '../project';
-import { getBundler, Bunlder } from '../bundler';
+import { getBundler, Bundler } from '../bundler';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
 import { ServerPluginInstance } from '../server';
 import { _setResourceEnv } from '../resources';
@@ -63,7 +63,7 @@ class Api {
   private _phase: IServicePhase;
   private _paths!: IPaths;
   private _projectBuilder!: ProjectBuilder;
-  private _bundler!: Bunlder;
+  private _bundler!: Bundler;
 
   private _configFile?: string;
   private _customConfig: ShuviConfig;
@@ -239,7 +239,7 @@ class Api {
     this._inited = true;
   }
 
-  async getBundler(): Promise<Bunlder> {
+  async getBundler(): Promise<Bundler> {
     if (!this._inited) {
       throw new Error('call init() first');
     }
