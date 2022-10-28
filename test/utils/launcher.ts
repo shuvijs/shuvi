@@ -253,3 +253,36 @@ export async function serveFixture(
     isDev: false
   });
 }
+
+export async function serveStatic(root: string): Promise<AppCtx> {
+  const port = await findPort();
+  const httpServerBinPath = path.resolve(
+    path.dirname(require.resolve('http-server')),
+    '..',
+    'bin',
+    'http-server'
+  );
+  const shuviProcess = spawn('node', [
+    httpServerBinPath,
+    root,
+    '-p',
+    String(port)
+  ]);
+  const browser = new Browser();
+  await browser.start();
+  const url = (route: string, query?: Record<string, any>) => {
+    const urlPath = 'http://localhost:' + port + route;
+    if (query) {
+      return urlPath + '?' + qs.stringify(query);
+    } else {
+      return urlPath;
+    }
+  };
+  return {
+    browser,
+    url,
+    async close() {
+      await Promise.all([shuviProcess.kill(), browser.close()]);
+    }
+  };
+}
