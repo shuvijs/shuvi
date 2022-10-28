@@ -4,7 +4,7 @@ import {
   ShuviRequestHandler,
   IServerPluginContext
 } from '@shuvi/service';
-import { sendHTML } from '@shuvi/service/lib/server/utils';
+import { sendHTML as originalSendHtml } from '@shuvi/service/lib/server/utils';
 import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
 import { IHandlePageRequest } from '../serverHooks';
 import { renderToHTML } from './renderToHTML';
@@ -25,7 +25,15 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
     } else if (isText(result)) {
       const textResp = result as Response;
       res.statusCode = textResp.status;
-      sendHTML(req, res, textResp.data);
+
+      const sendHtml = await serverPluginContext.serverPluginRunner.sendHtml(
+        // make originalSendHtml an async function
+        async (req, res, html) => {
+          originalSendHtml(req, res, html);
+        }
+      );
+
+      await sendHtml(req, res, textResp.data);
     } else {
       // shuold never reach here
       throw new Error('Unexpected reponse type from renderToHTML');

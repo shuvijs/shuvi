@@ -2,7 +2,8 @@ import { IncomingMessage, ServerResponse } from 'http';
 import {
   createSyncWaterfallHook,
   createAsyncParallelHook,
-  createAsyncSeriesHook
+  createAsyncSeriesHook,
+  createAsyncSeriesWaterfallHook
 } from '@shuvi/hook';
 import { ShuviRequest } from '@shuvi/service';
 import { IAppContext } from '@shuvi/platform-shared/shared';
@@ -16,7 +17,13 @@ export interface ModifyHtmlContext {
 export type IHandlePageRequest = (
   req: IncomingMessage,
   res: ServerResponse
-) => any;
+) => Promise<void>;
+
+export type ISendHtml = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  html: string
+) => Promise<void>;
 
 const getPageData = createAsyncParallelHook<
   void,
@@ -25,9 +32,11 @@ const getPageData = createAsyncParallelHook<
 >();
 const handlePageRequest = createSyncWaterfallHook<IHandlePageRequest>();
 const modifyHtml = createAsyncSeriesHook<IHtmlDocument, ModifyHtmlContext>();
+const sendHtml = createAsyncSeriesWaterfallHook<ISendHtml>();
 
 export const extendedHooks = {
   getPageData,
   handlePageRequest,
-  modifyHtml
+  modifyHtml,
+  sendHtml
 };
