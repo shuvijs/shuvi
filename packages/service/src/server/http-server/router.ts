@@ -79,7 +79,7 @@ class RouterImpl implements Router {
       // all done
       if (!route) {
         // final function handler
-        this._handleAsyncError(done, err);
+        this._handleError(done, err);
         return;
       }
 
@@ -133,7 +133,7 @@ class RouterImpl implements Router {
     return next();
   }
 
-  private _handleAsyncError(done: Done, err?: any) {
+  private _handleError(done: Done, err?: any) {
     setImmediate(done, err);
   }
 
@@ -153,7 +153,7 @@ class RouterImpl implements Router {
       const result = handler(req, res, next);
       if (types.isPromise(result)) {
         result.catch(err => {
-          this._handleAsyncError(done, err);
+          this._handleError(done, err);
         });
       }
     } catch (err) {
@@ -178,7 +178,7 @@ class RouterImpl implements Router {
       const result = handler(error, req, res, next);
       if (types.isPromise(result)) {
         result.catch(err => {
-          this._handleAsyncError(done, err);
+          this._handleError(done, err);
         });
       }
     } catch (err) {

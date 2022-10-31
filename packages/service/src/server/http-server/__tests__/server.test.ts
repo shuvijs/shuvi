@@ -8,7 +8,6 @@ const host = 'localhost';
 describe('server', () => {
   let server: Server;
   afterEach(async () => {
-    jest.restoreAllMocks();
     await server.close();
   });
 
