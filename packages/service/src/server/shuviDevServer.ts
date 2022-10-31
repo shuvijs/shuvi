@@ -34,6 +34,7 @@ export class ShuviDevServer extends ShuviServer {
     { bundler, ...options }: ShuviDevServerOptions
   ) {
     super(corePluginContext, options);
+    this._catchUnexpectedError();
     this._bundler = bundler;
   }
 
@@ -83,6 +84,15 @@ export class ShuviDevServer extends ShuviServer {
     this._setupWebSocketHandler(server, devMiddleware);
 
     await this.startWatcher(devMiddleware);
+  }
+
+  private _catchUnexpectedError() {
+    process.on('unhandledRejection', reason => {
+      console.error(`Caught unhandledRejection: \n`, reason, '\n');
+    });
+    process.on('uncaughtException', err => {
+      console.error(`Caught uncaughtException: \n`, err, '\n');
+    });
   }
 
   // todo: move into devMiddleware?

@@ -148,4 +148,51 @@ describe('server', () => {
     expect(error.code).toBe('EADDRINUSE');
     expect(error.message).toMatch(/is being used./);
   });
+
+  test('should not crash when async middleware throw error', async () => {
+    const logSpy = jest.spyOn(console, 'error');
+    let logs = '';
+    logSpy.mockImplementation((...args) => {
+      logs += args.filter(a => typeof a === 'string').join('');
+    });
+
+    server = new Server();
+    const port = await findPort();
+    await server.listen(port);
+    server.use(
+      '/error',
+      async (req: IRequest, res: IResponse, next: INextFunc) => {
+        throw new Error('some error');
+        next();
+      }
+    );
+    const fn = jest.fn();
+    server.use('/error', (req: IRequest, res: IResponse) => {
+      fn();
+    });
+    server.use('/ok', (req: IRequest, res: IResponse) => {
+      res.end('ok');
+    });
+
+    let errorMsg = '';
+
+    try {
+      await got(`http://${host}:${server.port}/error`);
+    } catch (error) {
+      // @ts-ignore
+      errorMsg = error.toString();
+    }
+
+    expect(logs).toContain('server error: /error  Error: some error');
+
+    expect(errorMsg).toContain(
+      'HTTPError: Response code 500 (Internal Server Error)'
+    );
+
+    expect(fn).not.toHaveBeenCalled();
+
+    expect((await got(`http://${host}:${server.port}/ok`)).body).toEqual('ok');
+
+    logSpy.mockRestore();
+  });
 });
