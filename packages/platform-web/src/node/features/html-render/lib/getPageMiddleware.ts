@@ -6,10 +6,19 @@ import {
 } from '@shuvi/service';
 import { sendHTML as originalSendHtml } from '@shuvi/service/lib/server/utils';
 import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
-import { IHandlePageRequest, RequestContext } from '../serverHooks';
+import { IHandlePageRequest, RequestContext, ISendHtml } from '../serverHooks';
 import { renderToHTML } from './renderToHTML';
 
 function createPageHandler(serverPluginContext: IServerPluginContext) {
+  const wrappedSendHtml = async (
+    html: string,
+    { req, res }: RequestContext
+  ) => {
+    originalSendHtml(req, res, html);
+  };
+
+  let sendHtml: ISendHtml;
+
   return async function (req: IncomingMessage, res: ServerResponse) {
     const result = await renderToHTML({
       req: req as ShuviRequest,
@@ -26,17 +35,11 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
       const textResp = result as Response;
       res.statusCode = textResp.status;
 
-      const wrappedSendHtml = async (
-        html: string,
-        { req, res }: RequestContext
-      ) => {
-        originalSendHtml(req, res, html);
-      };
-
-      const sendHtml = await serverPluginContext.serverPluginRunner.sendHtml(
-        wrappedSendHtml
-      );
-
+      if (!sendHtml) {
+        sendHtml = await serverPluginContext.serverPluginRunner.sendHtml(
+          wrappedSendHtml
+        );
+      }
       await sendHtml(textResp.data, { req, res });
     } else {
       // shuold never reach here
