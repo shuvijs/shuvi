@@ -98,8 +98,15 @@ export class Server {
   }
 
   private _listenUncaughtException() {
-    process.on('unhandledRejection', err => {
-      console.log(`Caught unhandledRejection: \n`, err, '\n');
+    process.on('exception', (err, origin) => {
+      console.error(
+        `Caught exception: \n`,
+        err,
+        '\n',
+        `Exception origin: \n`,
+        origin,
+        '\n'
+      );
     });
   }
 
