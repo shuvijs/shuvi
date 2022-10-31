@@ -14,8 +14,8 @@ export const handlePageRequest = originalHandlePageRequest => {
 };
 
 export const sendHtml = originalSendHtml => {
-  return async (req, res, html) => {
-    await originalSendHtml(req, res, html);
+  return async (html, { req, res }) => {
+    await originalSendHtml(html, { req, res });
     if (req.pathname === '/sendHtml') {
       console.log('test-sendHtml');
     }

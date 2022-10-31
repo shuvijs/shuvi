@@ -19,10 +19,14 @@ export type IHandlePageRequest = (
   res: ServerResponse
 ) => Promise<void>;
 
+export type RequestContext = {
+  req: IncomingMessage;
+  res: ServerResponse;
+};
+
 export type ISendHtml = (
-  req: IncomingMessage,
-  res: ServerResponse,
-  html: string
+  html: string,
+  requestContext: RequestContext
 ) => Promise<void>;
 
 const getPageData = createAsyncParallelHook<
