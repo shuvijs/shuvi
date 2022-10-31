@@ -1,3 +1,4 @@
+import { types } from 'util';
 import { getType, isFunction } from '@shuvi/utils';
 import invariant from '@shuvi/utils/lib/invariant';
 import { matchPathname } from '@shuvi/router';
@@ -16,6 +17,8 @@ interface RouteOptions {
   // strict: boolean;
   end: boolean;
 }
+
+type Done = (err?: any) => void;
 
 export interface Router {
   use(fn: IMiddlewareHandler): this;
@@ -67,7 +70,7 @@ class RouterImpl implements Router {
   handleRequest(req: IRequest, res: IResponse, out: INextFunc) {
     let index = 0;
 
-    let done = (err: any) => out(err);
+    let done: Done = err => out(err);
 
     const next: INextFunc = err => {
       // next callback
@@ -76,7 +79,7 @@ class RouterImpl implements Router {
       // all done
       if (!route) {
         // final function handler
-        setImmediate(done, err);
+        this._handleAsyncError(done, err);
         return;
       }
 
@@ -113,14 +116,16 @@ class RouterImpl implements Router {
           err,
           req,
           res,
-          next
+          next,
+          done
         );
       } else {
         this._callRouteRequestHandler(
           handler as IRequestHandlerWithNext,
           req,
           res,
-          next
+          next,
+          done
         );
       }
     };
@@ -128,11 +133,16 @@ class RouterImpl implements Router {
     return next();
   }
 
+  private _handleAsyncError(done: Done, err?: any) {
+    setImmediate(done, err);
+  }
+
   private _callRouteRequestHandler(
     handler: IRequestHandlerWithNext,
     req: IRequest,
     res: IResponse,
-    next: INextFunc
+    next: INextFunc,
+    done: INextFunc
   ) {
     if (handler.length > 3) {
       // not a standard request handler
@@ -140,7 +150,12 @@ class RouterImpl implements Router {
     }
 
     try {
-      handler(req, res, next);
+      const result = handler(req, res, next);
+      if (types.isPromise(result)) {
+        result.catch(err => {
+          this._handleAsyncError(done, err);
+        });
+      }
     } catch (err) {
       next(err);
     }
@@ -151,7 +166,8 @@ class RouterImpl implements Router {
     error: any,
     req: IRequest,
     res: IResponse,
-    next: INextFunc
+    next: INextFunc,
+    done: Done
   ) {
     if (handler.length !== 4) {
       // not a standard error handler
@@ -159,7 +175,12 @@ class RouterImpl implements Router {
     }
 
     try {
-      handler(error, req, res, next);
+      const result = handler(error, req, res, next);
+      if (types.isPromise(result)) {
+        result.catch(err => {
+          this._handleAsyncError(done, err);
+        });
+      }
     } catch (err) {
       next(err);
     }

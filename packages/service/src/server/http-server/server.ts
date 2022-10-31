@@ -31,7 +31,6 @@ export class Server {
   private _upgradeListener: ((...args: any[]) => void) | null = null;
 
   constructor() {
-    this._listenUncaughtException();
     this._router = this._setupRouter();
     this._handleRequest = this._handleRequest.bind(this);
   }
@@ -95,19 +94,6 @@ export class Server {
 
   onUpgrade(listener: (...args: any[]) => void) {
     this._upgradeListener = listener;
-  }
-
-  private _listenUncaughtException() {
-    process.on('exception', (err, origin) => {
-      console.error(
-        `Caught exception: \n`,
-        err,
-        '\n',
-        `Exception origin: \n`,
-        origin,
-        '\n'
-      );
-    });
   }
 
   private _setupRouter(): Router {
