@@ -7,6 +7,17 @@ export const getPageData = () => {
 export const handlePageRequest = originalHandlePageRequest => {
   return async (req, res) => {
     await originalHandlePageRequest(req, res);
-    console.log('test-handle-page-request');
+    if (req.pathname === '/handlePageRequest') {
+      console.log('test-handle-page-request');
+    }
+  };
+};
+
+export const sendHtml = originalSendHtml => {
+  return async (html, { req, res }) => {
+    await originalSendHtml(html, { req, res });
+    if (req.pathname === '/sendHtml') {
+      console.log('test-sendHtml');
+    }
   };
 };

@@ -25,9 +25,18 @@ describe('custom/server.js', () => {
   test('should replace handlePageRequest by hooks', async () => {
     jest.spyOn(console, 'log');
 
-    page = await ctx.browser.page(ctx.url('/'));
+    page = await ctx.browser.page(ctx.url('/handlePageRequest'));
     expect(console.log).toHaveBeenLastCalledWith(
       expect.stringMatching(/test-handle-page-request/)
+    );
+  });
+
+  test('should call sendHtml', async () => {
+    jest.spyOn(console, 'log');
+
+    page = await ctx.browser.page(ctx.url('/sendHtml'));
+    expect(console.log).toHaveBeenLastCalledWith(
+      expect.stringMatching(/test-sendHtml/)
     );
   });
 });
