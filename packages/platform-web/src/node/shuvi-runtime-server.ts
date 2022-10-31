@@ -11,6 +11,7 @@ declare global {
       getPageData: typeof extendedHooks.getPageData;
       handlePageRequest: typeof extendedHooks.handlePageRequest;
       modifyHtml: typeof extendedHooks.modifyHtml;
+      sendHtml: typeof extendedHooks.sendHtml;
     }
   }
 }
@@ -40,8 +41,11 @@ export type ModifyHtmlFunction = RemoveLast<
   ServerPluginConstructor['modifyHtml']
 >;
 
+export type SendHtmlFunction = RemoveLast<ServerPluginConstructor['sendHtml']>;
+
 export interface IServerModule {
   getPageData?: GetPageDataFunction;
   handlePageRequest?: HandlePageRequestFunction;
   modifyHtml?: ModifyHtmlFunction;
+  sendHtml?: SendHtmlFunction;
 }

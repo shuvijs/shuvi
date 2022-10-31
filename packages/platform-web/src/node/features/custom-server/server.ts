@@ -26,5 +26,10 @@ export default createServerPlugin({
   },
   modifyHtml: async (document, context) => {
     await resources.server?.server?.modifyHtml?.(document, context);
+  },
+  sendHtml: async originalSendHtml => {
+    return (
+      resources.server.server?.sendHtml?.(originalSendHtml) || originalSendHtml
+    );
   }
 });

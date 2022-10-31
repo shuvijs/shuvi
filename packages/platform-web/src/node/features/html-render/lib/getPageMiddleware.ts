@@ -4,12 +4,22 @@ import {
   ShuviRequestHandler,
   IServerPluginContext
 } from '@shuvi/service';
-import { sendHTML } from '@shuvi/service/lib/server/utils';
+import { sendHTML as originalSendHtml } from '@shuvi/service/lib/server/utils';
 import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
-import { IHandlePageRequest } from '../serverHooks';
+import { IHandlePageRequest, RequestContext, ISendHtml } from '../serverHooks';
 import { renderToHTML } from './renderToHTML';
 
 function createPageHandler(serverPluginContext: IServerPluginContext) {
+  const wrappedSendHtml = async (
+    html: string,
+    { req, res }: RequestContext
+  ) => {
+    originalSendHtml(req, res, html);
+  };
+
+  let sendHtml: ISendHtml;
+  let pendingSendHtml: Promise<ISendHtml>;
+
   return async function (req: IncomingMessage, res: ServerResponse) {
     const result = await renderToHTML({
       req: req as ShuviRequest,
@@ -25,7 +35,15 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
     } else if (isText(result)) {
       const textResp = result as Response;
       res.statusCode = textResp.status;
-      sendHTML(req, res, textResp.data);
+
+      if (!sendHtml) {
+        if (!pendingSendHtml) {
+          pendingSendHtml =
+            serverPluginContext.serverPluginRunner.sendHtml(wrappedSendHtml);
+        }
+        sendHtml = await pendingSendHtml;
+      }
+      await sendHtml(textResp.data, { req, res });
     } else {
       // shuold never reach here
       throw new Error('Unexpected reponse type from renderToHTML');
@@ -38,12 +56,15 @@ export async function getPageMiddleware(
 ): Promise<ShuviRequestHandler> {
   const defaultPageHandler = createPageHandler(api);
   let pageHandler: IHandlePageRequest;
+  let pendingPageHandler: Promise<IHandlePageRequest>;
 
   return async function (req, res, next) {
     if (!pageHandler) {
-      pageHandler = await api.serverPluginRunner.handlePageRequest(
-        defaultPageHandler
-      );
+      if (!pendingPageHandler) {
+        pendingPageHandler =
+          api.serverPluginRunner.handlePageRequest(defaultPageHandler);
+      }
+      pageHandler = await pendingPageHandler;
     }
 
     try {
