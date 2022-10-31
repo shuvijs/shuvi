@@ -18,6 +18,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
   };
 
   let sendHtml: ISendHtml;
+  let pendingSendHtml: Promise<ISendHtml>;
 
   return async function (req: IncomingMessage, res: ServerResponse) {
     const result = await renderToHTML({
@@ -36,9 +37,11 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
       res.statusCode = textResp.status;
 
       if (!sendHtml) {
-        sendHtml = await serverPluginContext.serverPluginRunner.sendHtml(
-          wrappedSendHtml
-        );
+        if (!pendingSendHtml) {
+          pendingSendHtml =
+            serverPluginContext.serverPluginRunner.sendHtml(wrappedSendHtml);
+        }
+        sendHtml = await pendingSendHtml;
       }
       await sendHtml(textResp.data, { req, res });
     } else {
@@ -53,12 +56,15 @@ export async function getPageMiddleware(
 ): Promise<ShuviRequestHandler> {
   const defaultPageHandler = createPageHandler(api);
   let pageHandler: IHandlePageRequest;
+  let pendingPageHandler: Promise<IHandlePageRequest>;
 
   return async function (req, res, next) {
     if (!pageHandler) {
-      pageHandler = await api.serverPluginRunner.handlePageRequest(
-        defaultPageHandler
-      );
+      if (!pendingPageHandler) {
+        pendingPageHandler =
+          api.serverPluginRunner.handlePageRequest(defaultPageHandler);
+      }
+      pageHandler = await pendingPageHandler;
     }
 
     try {

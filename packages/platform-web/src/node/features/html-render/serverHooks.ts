@@ -1,6 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import {
-  createSyncWaterfallHook,
   createAsyncParallelHook,
   createAsyncSeriesHook,
   createAsyncSeriesWaterfallHook
@@ -34,7 +33,7 @@ const getPageData = createAsyncParallelHook<
   IAppContext,
   Record<string, unknown>
 >();
-const handlePageRequest = createSyncWaterfallHook<IHandlePageRequest>();
+const handlePageRequest = createAsyncSeriesWaterfallHook<IHandlePageRequest>();
 const modifyHtml = createAsyncSeriesHook<IHtmlDocument, ModifyHtmlContext>();
 const sendHtml = createAsyncSeriesWaterfallHook<ISendHtml>();
 
