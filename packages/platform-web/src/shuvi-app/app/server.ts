@@ -36,7 +36,10 @@ export const createApp: CreateAppServer = options => {
         app.setLoadersData(loaderResult);
       } catch (error: any) {
         if (isRedirect(error)) {
-          next(error.headers.get('Location')!);
+          next({
+            path: error.headers.get('Location')!,
+            skipGuards: true
+          });
           return;
         }
 

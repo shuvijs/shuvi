@@ -211,6 +211,25 @@ describe('router', () => {
       expect(router.current.pathname).toBe('/new');
     });
 
+    it('should not call guards when push with skipGuards', () => {
+      const beforeEachFn = jest.fn().mockImplementation((to, from, next) => {
+        next();
+      });
+      const beforeResolveFn = jest.fn().mockImplementation((to, from, next) => {
+        next();
+      });
+
+      router.beforeEach(beforeEachFn);
+      router.beforeResolve(beforeResolveFn);
+      let current = router.current;
+      expect(current).toBe(router.current);
+      ((router as any)._history as MemoryHistory).push('/about', {
+        skipGuards: true
+      });
+      expect(router.current.pathname).toBe('/about');
+      expect(beforeEachFn).toBeCalledTimes(0);
+      expect(beforeResolveFn).toBeCalledTimes(0);
+    });
     it('should handle redirect well', () => {});
   });
 });

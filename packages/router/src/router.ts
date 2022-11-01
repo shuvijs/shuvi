@@ -184,7 +184,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _doTransition(
     to: PathRecord,
     onComplete: Function,
-    onAbort?: Function
+    onAbort?: Function,
+    skipGuards?: boolean
   ) {
     const nextRoute = this._getNextRoute(to);
     const current = this._current;
@@ -200,10 +201,12 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     }
 
     const routeContext = new Map<RouteRecord, NavigationHookContext>();
-    const queue = ([] as Array<NavigationGuardHook>).concat(
-      this._beforeEachs.toArray(),
-      this._beforeResolves.toArray()
-    );
+    const queue = skipGuards
+      ? ([] as Array<NavigationGuardHook>)
+      : ([] as Array<NavigationGuardHook>).concat(
+          this._beforeEachs.toArray(),
+          this._beforeResolves.toArray()
+        );
 
     let cancel: boolean = false;
 
@@ -247,12 +250,18 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
             abort();
             if (typeof to === 'object') {
               if (to.replace) {
-                this.replace(to.path);
+                this._history.replace(to.path as string, {
+                  redirectedFrom: current,
+                  skipGuards: to.skipGuards
+                });
               } else {
-                this.push(to.path);
+                this._history.push(to.path as string, {
+                  redirectedFrom: current,
+                  skipGuards: to.skipGuards
+                });
               }
             } else {
-              this.push(to);
+              this._history.push(to, { redirectedFrom: current });
             }
           } else {
             if (isFunction(to)) {

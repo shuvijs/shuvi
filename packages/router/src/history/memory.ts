@@ -60,10 +60,14 @@ export default class MemoryHistory extends BaseHistory {
     // do nothing
   }
 
-  push(to: PathRecord, { state, redirectedFrom }: PushOptions = {}) {
+  push(
+    to: PathRecord,
+    { state, redirectedFrom, skipGuards }: PushOptions = {}
+  ) {
     return this.transitionTo(to, {
       state,
       redirectedFrom,
+      skipGuards,
       onTransition: ({ location }) => {
         this._index += 1;
         this._entries.splice(this._index, this._entries.length, location);
@@ -71,11 +75,15 @@ export default class MemoryHistory extends BaseHistory {
     });
   }
 
-  replace(to: PathRecord, { state, redirectedFrom }: PushOptions = {}) {
+  replace(
+    to: PathRecord,
+    { state, redirectedFrom, skipGuards }: PushOptions = {}
+  ) {
     return this.transitionTo(to, {
       state,
       action: ACTION_REPLACE,
       redirectedFrom,
+      skipGuards,
       onTransition: ({ location }) => {
         this._entries[this._index] = location;
       }

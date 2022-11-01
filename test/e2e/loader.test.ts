@@ -70,19 +70,55 @@ describe('loader', () => {
 
     describe('redirect', () => {
       it('should work in server', async () => {
-        page = await ctx.browser.page(
-          ctx.url('/context/redirect', { target: '/context/static' })
+        const responses: { url: string; status: number }[] = [];
+        page = await ctx.browser.page(ctx.url('/'));
+        page.on('request', request => {
+          request.continue();
+        });
+        page.on('response', e => {
+          e.status();
+          const url = e.url();
+          if (url.includes('/context/redirect')) {
+            const status = e.status();
+            responses.push({
+              url,
+              status
+            });
+          }
+        });
+        await page.setRequestInterception(true);
+        await page.goto(
+          ctx.url('/context/redirect', { target: '/context/redirect/combo/a' })
         );
-        expect(await page.$text('#page-context-static')).toBe('Static Page');
+        expect(responses).toEqual([
+          {
+            url: ctx.url('/context/redirect', {
+              target: '/context/redirect/combo/a'
+            }),
+            status: 302
+          },
+          {
+            url: ctx.url('/context/redirect/combo/a'),
+            status: 302
+          },
+          {
+            url: ctx.url('/context/redirect/combo/b'),
+            status: 302
+          },
+          {
+            url: ctx.url('/context/redirect/combo/c'),
+            status: 200
+          }
+        ]);
       });
 
       it('should work in client', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
-          target: '/context/static'
+          target: '/context/redirect/combo/a'
         });
-        await page.waitForSelector('#page-context-static');
-        expect(await page.$text('#page-context-static')).toBe('Static Page');
+        await page.waitForSelector('#page-content');
+        expect(await page.$text('#page-content')).toBe('C');
       });
     });
 
