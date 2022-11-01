@@ -40,6 +40,11 @@ export interface TransitionOptions {
   state?: State;
   action?: Action;
   redirectedFrom?: PathRecord;
+
+  /**
+   * skipGuards means this route transition will be straightforwardly executed without any before guard
+   */
+  skipGuards?: boolean;
   onTransition(event: {
     location: Location;
     state: HistoryState;
@@ -51,6 +56,7 @@ export interface TransitionOptions {
 export interface PushOptions {
   state?: object | null | undefined;
   redirectedFrom?: PathRecord;
+  skipGuards?: boolean;
 }
 
 export default abstract class BaseHistory {
@@ -59,7 +65,8 @@ export default abstract class BaseHistory {
   doTransition: (
     to: PathRecord,
     onComplete: Function,
-    onAbort?: Function
+    onAbort?: Function,
+    skipGuards?: boolean
   ) => void = () => void 0;
 
   protected _index: number = 0;
@@ -116,7 +123,8 @@ export default abstract class BaseHistory {
       onAbort,
       action = ACTION_PUSH,
       state = null,
-      redirectedFrom
+      redirectedFrom,
+      skipGuards
     }: TransitionOptions
   ) {
     const { path } = this.resolve(to, this.location.pathname);
@@ -133,7 +141,8 @@ export default abstract class BaseHistory {
             onAbort,
             action,
             state,
-            redirectedFrom
+            redirectedFrom,
+            skipGuards
           });
         }
       });
@@ -155,7 +164,8 @@ export default abstract class BaseHistory {
 
         this._updateState(action);
       },
-      onAbort
+      onAbort,
+      skipGuards
     );
   }
 
