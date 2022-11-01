@@ -25,7 +25,11 @@ export type NavigationGuardNextCallback = () => any;
 export interface NavigationGuardNext {
   (): void;
   (error: Error): void;
-  (location: string | { path?: string; replace?: boolean }): void;
+  (
+    location:
+      | string
+      | { path?: string; replace?: boolean; skipGuards?: boolean }
+  ): void;
   (valid: boolean | undefined): void;
   (cb: NavigationGuardNextCallback): void;
 }
