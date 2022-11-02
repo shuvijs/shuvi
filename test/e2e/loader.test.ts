@@ -69,6 +69,9 @@ describe('loader', () => {
     });
 
     describe('redirect', () => {
+      const THIRD_PARTY_SITE =
+        'https://en.wikipedia.org/wiki/React_(JavaScript_library)#Components';
+
       it('should work in server', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page(ctx.url('/'));
@@ -112,6 +115,37 @@ describe('loader', () => {
         ]);
       });
 
+      it('should support third-party site in server', async () => {
+        const responses: { url: string; status: number }[] = [];
+        page = await ctx.browser.page(ctx.url('/'));
+        page.on('request', request => {
+          request.continue();
+        });
+        page.on('response', e => {
+          e.status();
+          const url = e.url();
+          if (url.includes('/context/redirect')) {
+            const status = e.status();
+            responses.push({
+              url,
+              status
+            });
+          }
+        });
+        await page.setRequestInterception(true);
+        await page.goto(
+          ctx.url('/context/redirect', { target: THIRD_PARTY_SITE })
+        );
+        expect(responses).toEqual([
+          {
+            url: ctx.url('/context/redirect', {
+              target: THIRD_PARTY_SITE
+            }),
+            status: 302
+          }
+        ]);
+      });
+
       it('should work in client', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
@@ -119,6 +153,15 @@ describe('loader', () => {
         });
         await page.waitForSelector('#page-content');
         expect(await page.$text('#page-content')).toBe('C');
+      });
+
+      it('should support third-party site in client', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.shuvi.navigate('/context/redirect', {
+          target: THIRD_PARTY_SITE
+        });
+        await page.waitForSelector('#firstHeading');
+        expect(await page.$text('#firstHeading')).toContain('React');
       });
     });
 
