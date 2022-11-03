@@ -5,7 +5,8 @@ import {
   getRouteMatchesWithInvalidLoader,
   isRedirect,
   isResponse,
-  LoaderDataRecord
+  LoaderDataRecord,
+  isThirdSite
 } from '@shuvi/platform-shared/shared';
 import application from '@shuvi/platform-shared/shuvi-app/application';
 import {
@@ -19,7 +20,6 @@ import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { InternalApplication, CreateAppClient } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
-import isThirdSite from '../helper/isThirdSite';
 
 let app: InternalApplication;
 
@@ -125,7 +125,10 @@ export const createApp: CreateAppClient = ({
         if (isThirdSite(location)) {
           window.location.replace(location);
         } else {
-          next(location);
+          next({
+            path: location,
+            replace: true
+          });
         }
         return;
       }
