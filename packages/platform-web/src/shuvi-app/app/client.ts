@@ -5,8 +5,7 @@ import {
   getRouteMatchesWithInvalidLoader,
   isRedirect,
   isResponse,
-  LoaderDataRecord,
-  isThirdSite
+  LoaderDataRecord
 } from '@shuvi/platform-shared/shared';
 import application from '@shuvi/platform-shared/shuvi-app/application';
 import {
@@ -20,6 +19,7 @@ import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { InternalApplication, CreateAppClient } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
+import isThirdSite from '../helper/isThirdSite';
 
 let app: InternalApplication;
 

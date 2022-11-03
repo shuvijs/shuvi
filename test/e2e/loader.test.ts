@@ -118,8 +118,7 @@ describe('loader', () => {
         ]);
       });
 
-      // FIXME: redirect support relative url
-      it.skip('should support relative url in server', async () => {
+      it('should support relative url in server', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page(ctx.url('/'));
         page.on('request', request => {
@@ -192,11 +191,10 @@ describe('loader', () => {
         expect(await page.$text('#page-content')).toBe('C');
       });
 
-      // FIXME: redirect support relative url
-      it.skip('should support relative url in client', async () => {
+      it('should support relative url in client', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
-          target: 'combo/c'
+          target: 'context/redirect/combo/c'
         });
         await page.waitForSelector('#page-content');
         expect(await page.$text('#page-content')).toBe('C');

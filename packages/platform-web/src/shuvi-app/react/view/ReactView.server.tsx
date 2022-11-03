@@ -19,18 +19,19 @@ export class ReactServerView implements IReactServerView {
     await router.ready;
 
     // todo: move these into renderer
-    let { matches, redirected, state } = router.current;
+    let { matches, redirected, state, pathname } = router.current;
     // handler no matches
     if (!matches.length) {
       setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
-      const { location, status } = state as {
+      const { location, status, isThirdSite } = state as {
+        isThirdSite: boolean;
         location: string;
         status: number;
       };
-      return redirect(location, status);
+      return redirect(isThirdSite ? location : pathname, status);
     }
 
     const loadableModules: string[] = [];

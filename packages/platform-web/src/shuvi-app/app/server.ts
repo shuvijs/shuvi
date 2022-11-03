@@ -17,6 +17,7 @@ import {
 import logger from '@shuvi/utils/lib/logger';
 import { CreateAppServer, InternalApplication } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
+import thirdSite from '../helper/isThirdSite';
 
 export const createApp: CreateAppServer = options => {
   const { req, ssr } = options;
@@ -42,12 +43,14 @@ export const createApp: CreateAppServer = options => {
       } catch (error: any) {
         if (isRedirect(error)) {
           const location = error.headers.get('Location')!;
+          const isThirdSite = thirdSite(location);
           const status = error.status;
           next({
-            path: pathToString(to),
+            path: isThirdSite ? pathToString(to) : location,
             replace: true,
             skipGuards: true,
             state: {
+              isThirdSite,
               location,
               status: status
             }

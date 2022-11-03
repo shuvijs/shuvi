@@ -69,21 +69,11 @@ export async function runInParallerAndBail<T>(
   });
 }
 
-const THIRD_SITE_REG = /^http(s?)\:\/\//;
-
-export function isThirdSite(url: string) {
-  return THIRD_SITE_REG.test(url);
-}
-
 function redirectHelper(to: string, status: number = 302) {
   if (process.env.NODE_ENV === 'development') {
     invariant(
       typeof to === 'string',
       `redirect fist argument should be string, now is ${typeof to}`
-    );
-    invariant(
-      to.startsWith('/') || isThirdSite(to),
-      `redirect fist argument should be start with '/' or 'http'`
     );
   }
 
