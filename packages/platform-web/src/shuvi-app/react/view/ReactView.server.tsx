@@ -2,7 +2,7 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
-import { Router, pathToString } from '@shuvi/router-react';
+import { Router } from '@shuvi/router-react';
 import logger from '@shuvi/utils/lib/logger';
 import { IHtmlTag } from '../../../shared';
 import Loadable, { LoadableContext } from '../loadable';
@@ -10,6 +10,7 @@ import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { serializeServerError } from '../../helper/serializeServerError';
+import isThirdSite from '../../helper/isThirdSite';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
@@ -19,20 +20,21 @@ export class ReactServerView implements IReactServerView {
     await router.ready;
 
     // todo: move these into renderer
-    let { matches, redirected, state } = router.current;
+    let { matches, redirected, state, pathname } = router.current;
     // handler no matches
     if (!matches.length) {
       setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
-      const { location, status, isThirdSite } = state as {
-        isThirdSite: boolean;
+      const { location, status } = state as {
         location: string;
         status: number;
       };
       return redirect(
-        isThirdSite ? location : pathToString(router.current),
+        isThirdSite(location)
+          ? location
+          : router.resolve(location, pathname).href,
         status
       );
     }
