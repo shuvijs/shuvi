@@ -1,3 +1,22 @@
+## [1.0.2](https://github.com/shuvijs/shuvi/compare/v1.0.1...v1.0.2) (2022-11-04)
+
+
+### Bug Fixes
+
+* **ErrorBoundary:** fix the issue that `useApp` returns null at ErrorBoundary ([829c88b](https://github.com/shuvijs/shuvi/commit/829c88b9fae64695ba3044033ab1577bac0d3108))
+
+
+### Features
+
+* always serve files public dir ([c816dca](https://github.com/shuvijs/shuvi/commit/c816dca0dca032e8b268c76d4f2670de58863870))
+* **platform-web:** redirect support external url ([90f1469](https://github.com/shuvijs/shuvi/commit/90f1469eeae151c38d51ecc79c8b77f6a1fff585))
+* **router:** add skipGuards option for push/replace ([c2cfc47](https://github.com/shuvijs/shuvi/commit/c2cfc471f7ca451439d54e770aa14e6a9314454c))
+* **serverPlugin:** add sendHtml hook ([c405006](https://github.com/shuvijs/shuvi/commit/c4050068cb89eca10835cb47a3a10b7f4676461c))
+* **service:** catch unhandledRejection  ([0fc25c1](https://github.com/shuvijs/shuvi/commit/0fc25c140e9a34f67da2da84eb2916a23bc813b6))
+* tsconfig fast refresh ([52e0edc](https://github.com/shuvijs/shuvi/commit/52e0edc8628272a609324f2fb8f34033e9f47bd9))
+
+
+
 ## [1.0.1](https://github.com/shuvijs/shuvi/compare/v1.0.0...v1.0.1) (2022-10-27)
 
 
