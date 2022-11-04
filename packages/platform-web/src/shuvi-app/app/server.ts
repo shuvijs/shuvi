@@ -8,7 +8,12 @@ import {
 } from '@shuvi/platform-shared/shared';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import application from '@shuvi/platform-shared/shuvi-app/application';
-import { createRouter, createMemoryHistory, IRouter } from '@shuvi/router';
+import {
+  createRouter,
+  createMemoryHistory,
+  IRouter,
+  pathToString
+} from '@shuvi/router';
 import logger from '@shuvi/utils/lib/logger';
 import { CreateAppServer, InternalApplication } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
@@ -36,9 +41,16 @@ export const createApp: CreateAppServer = options => {
         app.setLoadersData(loaderResult);
       } catch (error: any) {
         if (isRedirect(error)) {
+          const location = error.headers.get('Location')!;
+          const status = error.status;
           next({
-            path: error.headers.get('Location')!,
-            skipGuards: true
+            path: pathToString(to),
+            replace: true,
+            skipGuards: true,
+            state: {
+              location,
+              status
+            }
           });
           return;
         }
