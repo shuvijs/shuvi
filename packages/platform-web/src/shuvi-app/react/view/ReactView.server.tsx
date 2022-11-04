@@ -2,7 +2,7 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
-import { Router } from '@shuvi/router-react';
+import { Router, pathToString } from '@shuvi/router-react';
 import logger from '@shuvi/utils/lib/logger';
 import { IHtmlTag } from '../../../shared';
 import Loadable, { LoadableContext } from '../loadable';
@@ -19,7 +19,7 @@ export class ReactServerView implements IReactServerView {
     await router.ready;
 
     // todo: move these into renderer
-    let { matches, redirected, state, pathname } = router.current;
+    let { matches, redirected, state } = router.current;
     // handler no matches
     if (!matches.length) {
       setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
@@ -31,7 +31,10 @@ export class ReactServerView implements IReactServerView {
         location: string;
         status: number;
       };
-      return redirect(isThirdSite ? location : pathname, status);
+      return redirect(
+        isThirdSite ? location : pathToString(router.current),
+        status
+      );
     }
 
     const loadableModules: string[] = [];
