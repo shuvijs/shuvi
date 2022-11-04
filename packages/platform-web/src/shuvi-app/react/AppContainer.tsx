@@ -28,12 +28,12 @@ export default function AppContainer({
   app: Application;
 }>) {
   return (
-    <ErrorBoundary>
-      <AppProvider app={app}>
+    <AppProvider app={app}>
+      <ErrorBoundary>
         <Provider store={app.store}>
           <ErrorGuard>{children}</ErrorGuard>
         </Provider>
-      </AppProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </AppProvider>
   );
 }
