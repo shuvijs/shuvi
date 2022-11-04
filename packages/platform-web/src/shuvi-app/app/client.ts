@@ -19,6 +19,7 @@ import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { InternalApplication, CreateAppClient } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
+import isThirdSite from '../helper/isThirdSite';
 
 let app: InternalApplication;
 
@@ -120,7 +121,15 @@ export const createApp: CreateAppClient = ({
       app.setLoadersData(loaderDatas);
     } catch (error: any) {
       if (isRedirect(error)) {
-        next(error.headers.get('Location')!);
+        const location = error.headers.get('Location')!;
+        if (isThirdSite(location)) {
+          window.location.replace(location);
+        } else {
+          next({
+            path: location,
+            replace: true
+          });
+        }
         return;
       }
 

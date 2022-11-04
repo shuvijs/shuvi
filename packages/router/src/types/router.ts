@@ -28,7 +28,7 @@ export interface NavigationGuardNext {
   (
     location:
       | string
-      | { path?: string; replace?: boolean; skipGuards?: boolean }
+      | { path?: string; replace?: boolean; skipGuards?: boolean; state?: any }
   ): void;
   (valid: boolean | undefined): void;
   (cb: NavigationGuardNextCallback): void;

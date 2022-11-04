@@ -1,3 +1,4 @@
+import { redirect } from 'packages/platform-shared/lib/shared/response';
 import { AppCtx, Page, devFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
@@ -69,7 +70,12 @@ describe('loader', () => {
     });
 
     describe('redirect', () => {
-      it('should work in server', async () => {
+      const THIRD_PARTY_SITE =
+        'https://en.wikipedia.org/wiki/React_(JavaScript_library)#Components';
+
+      const FULL_URL = '/context/redirect/combo/params?query=1';
+
+      it('should support redirect chain in server', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page(ctx.url('/'));
         page.on('request', request => {
@@ -97,12 +103,84 @@ describe('loader', () => {
             }),
             status: 302
           },
+          // default status code
           {
             url: ctx.url('/context/redirect/combo/a'),
             status: 302
           },
+          // custom status code
           {
             url: ctx.url('/context/redirect/combo/b'),
+            status: 307
+          },
+          {
+            url: ctx.url('/context/redirect/combo/c'),
+            status: 200
+          }
+        ]);
+      });
+
+      it('should support params and query in server', async () => {
+        const responses: { url: string; status: number }[] = [];
+        page = await ctx.browser.page(ctx.url('/'));
+        page.on('request', request => {
+          request.continue();
+        });
+        page.on('response', e => {
+          e.status();
+          const url = e.url();
+          if (url.includes('/context/redirect')) {
+            const status = e.status();
+            responses.push({
+              url,
+              status
+            });
+          }
+        });
+        await page.setRequestInterception(true);
+        await page.goto(ctx.url('/context/redirect', { target: FULL_URL }));
+        expect(responses).toEqual([
+          {
+            url: ctx.url('/context/redirect', {
+              target: FULL_URL
+            }),
+            status: 302
+          },
+          {
+            url: ctx.url(FULL_URL),
+            status: 200
+          }
+        ]);
+        await page.waitForSelector('#url-data');
+        expect(await page.$text('#url-data')).toBe(
+          '{"query":{"query":"1"},"params":{"d":"params"},"pathname":"/context/redirect/combo/params"}'
+        );
+      });
+
+      it('should support relative url in server', async () => {
+        const responses: { url: string; status: number }[] = [];
+        page = await ctx.browser.page(ctx.url('/'));
+        page.on('request', request => {
+          request.continue();
+        });
+        page.on('response', e => {
+          e.status();
+          const url = e.url();
+          if (url.includes('/context/redirect')) {
+            const status = e.status();
+            responses.push({
+              url,
+              status
+            });
+          }
+        });
+        await page.setRequestInterception(true);
+        await page.goto(ctx.url('/context/redirect', { target: 'combo/c' }));
+        expect(responses).toEqual([
+          {
+            url: ctx.url('/context/redirect', {
+              target: 'combo/c'
+            }),
             status: 302
           },
           {
@@ -112,13 +190,71 @@ describe('loader', () => {
         ]);
       });
 
-      it('should work in client', async () => {
+      it('should support third-party site in server', async () => {
+        const responses: { url: string; status: number }[] = [];
+        page = await ctx.browser.page(ctx.url('/'));
+        page.on('request', request => {
+          request.continue();
+        });
+        page.on('response', e => {
+          e.status();
+          const url = e.url();
+          if (url.includes('/context/redirect')) {
+            const status = e.status();
+            responses.push({
+              url,
+              status
+            });
+          }
+        });
+        await page.setRequestInterception(true);
+        await page.goto(
+          ctx.url('/context/redirect', { target: THIRD_PARTY_SITE })
+        );
+        expect(responses).toEqual([
+          {
+            url: ctx.url('/context/redirect', {
+              target: THIRD_PARTY_SITE
+            }),
+            status: 302
+          }
+        ]);
+      });
+
+      it('should support redirect chain in client', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: '/context/redirect/combo/a'
         });
         await page.waitForSelector('#page-content');
         expect(await page.$text('#page-content')).toBe('C');
+      });
+
+      it('should support params and query url in client', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.shuvi.navigate('/context/redirect', { target: FULL_URL });
+        await page.waitForSelector('#url-data');
+        expect(await page.$text('#url-data')).toBe(
+          '{"query":{"query":"1"},"params":{"d":"params"},"pathname":"/context/redirect/combo/params"}'
+        );
+      });
+
+      it('should support relative url in client', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.shuvi.navigate('/context/redirect', {
+          target: 'context/redirect/combo/c'
+        });
+        await page.waitForSelector('#page-content');
+        expect(await page.$text('#page-content')).toBe('C');
+      });
+
+      it('should support third-party site in client', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.shuvi.navigate('/context/redirect', {
+          target: THIRD_PARTY_SITE
+        });
+        await page.waitForSelector('#firstHeading');
+        expect(await page.$text('#firstHeading')).toContain('React');
       });
     });
 

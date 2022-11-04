@@ -5,5 +5,5 @@ export default function Page() {
 }
 
 export const loader: Loader = async ({ redirect }) => {
-  return redirect('/context/redirect/combo/c');
+  return redirect('/context/redirect/combo/c', 307);
 };

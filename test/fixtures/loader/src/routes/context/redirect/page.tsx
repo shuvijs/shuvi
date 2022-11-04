@@ -7,11 +7,12 @@ export default () => {
 
 export const loader: Loader = async ctx => {
   const { query, redirect } = ctx;
-  if (query) {
+  if (query.target) {
     if (query.code) {
       return redirect(query.target as string, +query.code);
     } else {
       return redirect(query.target as string);
     }
   }
+  return null;
 };

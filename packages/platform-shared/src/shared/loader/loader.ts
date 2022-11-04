@@ -70,6 +70,13 @@ export async function runInParallerAndBail<T>(
 }
 
 function redirectHelper(to: string, status: number = 302) {
+  if (process.env.NODE_ENV === 'development') {
+    invariant(
+      typeof to === 'string',
+      `redirect fist argument should be string, now is ${typeof to}`
+    );
+  }
+
   throw createRedirect(to, status);
 }
 
