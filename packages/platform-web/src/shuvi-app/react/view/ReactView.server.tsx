@@ -10,6 +10,7 @@ import AppContainer from '../AppContainer';
 import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { serializeServerError } from '../../helper/serializeServerError';
+import isThirdSite from '../../helper/isThirdSite';
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
@@ -19,14 +20,23 @@ export class ReactServerView implements IReactServerView {
     await router.ready;
 
     // todo: move these into renderer
-    let { pathname, matches, redirected } = router.current;
+    let { matches, redirected, state, pathname } = router.current;
     // handler no matches
     if (!matches.length) {
       setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
     }
 
     if (redirected) {
-      return redirect(pathname);
+      const { location, status } = state as {
+        location: string;
+        status: number;
+      };
+      return redirect(
+        isThirdSite(location)
+          ? location
+          : router.resolve(location, pathname).href,
+        status
+      );
     }
 
     const loadableModules: string[] = [];

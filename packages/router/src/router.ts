@@ -252,12 +252,14 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
               if (to.replace) {
                 this._history.replace(to.path as string, {
                   redirectedFrom: current,
-                  skipGuards: to.skipGuards
+                  skipGuards: to.skipGuards,
+                  state: to.state
                 });
               } else {
                 this._history.push(to.path as string, {
                   redirectedFrom: current,
-                  skipGuards: to.skipGuards
+                  skipGuards: to.skipGuards,
+                  state: to.state
                 });
               }
             } else {
