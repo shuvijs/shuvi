@@ -29,6 +29,7 @@ export type ConfigWebpackAssistant = {
 export interface TargetChain {
   name: string;
   chain: WebpackChain;
+  helpers: IWebpackHelpers;
 }
 
 export interface Target {

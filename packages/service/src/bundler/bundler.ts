@@ -424,14 +424,14 @@ class WebpackBundler implements Bundler {
     return [
       {
         chain: defaultChain,
-        name: BUNDLER_TARGET_CLIENT
+        name: BUNDLER_TARGET_CLIENT,
+        helpers: defaultWebpackHelpers
       }
     ];
   }
 
   private async _getTargets(): Promise<Target[]> {
     const targets: Target[] = [];
-    const defaultWebpackHelpers = webpackHelpers();
     // get base config
     const buildTargets = this._initDefaultBuildTarget();
     const extraTargets = (
@@ -444,12 +444,12 @@ class WebpackBundler implements Bundler {
     buildTargets.push(...extraTargets);
 
     for (const buildTarget of buildTargets) {
-      let { chain, name } = buildTarget;
+      let { chain, name, helpers } = buildTarget;
       // modify config by api hooks
       chain = await this._cliContext.pluginRunner.configWebpack(chain, {
         name,
         mode: this._cliContext.mode,
-        helpers: defaultWebpackHelpers,
+        helpers,
         webpack,
         resolveWebpackModule(path: string) {
           return resolveWebpackModule(path);

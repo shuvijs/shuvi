@@ -110,7 +110,8 @@ export const getPlugin = (
       });
       return {
         name: BUNDLER_TARGET_SERVER,
-        chain: serverChain
+        chain: serverChain,
+        helpers: serverWebpackHelpers
       };
     },
     addRuntimeFile: ({ defineFile }, context) => {
