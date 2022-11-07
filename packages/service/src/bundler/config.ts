@@ -5,7 +5,6 @@ import {
 } from '@shuvi/toolpack/lib/webpack/config';
 import { IPluginContext } from '../core';
 import { getJavaScriptInfo } from './typescript';
-import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
 
 const AppSourceRegexp: RegExp = /([/\\]shuvi-app[/\\])|([/\\]\.shuvi[/\\])/;
 
@@ -19,12 +18,11 @@ export interface IWebpackConfigOptions {
   entry: IWebpackEntry;
   include?: string[];
   outputDir?: string;
-  webpackHelpers: IWebpackHelpers;
 }
 
 export function createWebpackConfig(
   { mode, assetPublicPath, paths, config }: IPluginContext,
-  { webpackHelpers, ...opts }: IWebpackConfigOptions
+  { ...opts }: IWebpackConfigOptions
 ): WebpackChain {
   const dev = mode === 'development';
   let chain: WebpackChain;
@@ -64,8 +62,7 @@ export function createWebpackConfig(
       compiler,
       jsConfig,
       include,
-      env,
-      webpackHelpers
+      env
     });
   } else {
     chain = createBrowserWebpackChain({
@@ -80,7 +77,6 @@ export function createWebpackConfig(
       jsConfig,
       include,
       env,
-      webpackHelpers,
       analyze: config.analyze
     });
   }

@@ -1,7 +1,33 @@
+import invariant from '@shuvi/utils/lib/invariant';
 import { WebpackChain } from '../base';
-import { ExternalsFunction, IWebpackHelpers } from '../../types';
+import { ExternalsFunction } from '../../types';
 
-export const webpackHelpers = (): IWebpackHelpers => {
+const externalsFunctionMap = new WeakMap<WebpackChain, ExternalsFunction[]>();
+
+export const addExternals = (
+  webpackChain: WebpackChain,
+  externalFn: ExternalsFunction
+) => {
+  checkWebpackExternals(webpackChain);
+  const externalFns = externalsFunctionMap.get(webpackChain);
+
+  invariant(
+    externalFns && Array.isArray(externalFns),
+    `Externals was modified directly, addExternals will have no effect.`
+  );
+
+  externalFns.push(externalFn);
+};
+
+export const checkWebpackExternals = (webpackChain: WebpackChain) => {
+  let externals = webpackChain.get('externals');
+  invariant(
+    typeof externals === 'function' && externals.name === 'defaultExternalsFn',
+    `Externals was modified directly, addExternals will have no effect.`
+  );
+};
+
+export const initWebpackHelpers = (webpackChain: WebpackChain) => {
   const externalFns: ExternalsFunction[] = [];
 
   const defaultExternalsFn: ExternalsFunction = (
@@ -33,30 +59,16 @@ export const webpackHelpers = (): IWebpackHelpers => {
     }
   };
 
-  return {
-    addExternals: (
-      webpackChain: WebpackChain,
-      externalFn: ExternalsFunction
-    ) => {
-      let externals = webpackChain.get('externals');
-      if (!externals) {
-        externals = defaultExternalsFn;
-        webpackChain.externals(externals);
-      }
-
-      if (
-        typeof externals === 'function' &&
-        externals.name === 'defaultExternalsFn'
-      ) {
-        externalFns.push(externalFn);
-        return;
-      }
-
-      throw new Error(
-        'Externals was modified directly, addExternals will have no effect.'
-      );
-    }
-  };
+  let externals = webpackChain.get('externals');
+  invariant(
+    !externals,
+    `webpackChain externals has been set, initWebpackHelpers can't work as expected.`
+  );
+  if (!externals) {
+    externals = defaultExternalsFn;
+    webpackChain.externals(externals);
+    externalsFunctionMap.set(webpackChain, externalFns);
+  }
 };
 
 export function shouldUseRelativeAssetPaths(publicPath: string) {
