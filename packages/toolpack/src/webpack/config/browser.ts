@@ -3,7 +3,6 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { resolve } from '@shuvi/utils/lib/resolve';
-import { IWebpackHelpers } from '../types';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
 import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
@@ -27,7 +26,6 @@ const FRAMEWORK_REACT_MODULES: {
 ];
 
 export interface BrowserOptions extends BaseOptions {
-  webpackHelpers: IWebpackHelpers;
   analyze?: boolean;
 }
 
