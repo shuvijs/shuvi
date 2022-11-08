@@ -63,19 +63,15 @@ export const addExternals = (
   externalFn: ExternalsFunction
 ) => {
   let externals = webpackChain.get('externals');
+
   if (!externals) {
     initExternalsHelpers(webpackChain);
   } else {
     checkWebpackExternals(webpackChain);
   }
+
   const externalFns = externalsFunctionMap.get(webpackChain);
-
-  invariant(
-    externalFns && Array.isArray(externalFns),
-    `Externals was modified directly, addExternals will have no effect.`
-  );
-
-  externalFns.push(externalFn);
+  externalFns!.push(externalFn);
 };
 
 export function shouldUseRelativeAssetPaths(publicPath: string) {
