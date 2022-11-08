@@ -4,30 +4,17 @@ import { ExternalsFunction } from '../../types';
 
 const externalsFunctionMap = new WeakMap<WebpackChain, ExternalsFunction[]>();
 
-export const addExternals = (
-  webpackChain: WebpackChain,
-  externalFn: ExternalsFunction
-) => {
-  checkWebpackExternals(webpackChain);
-  const externalFns = externalsFunctionMap.get(webpackChain);
-
-  invariant(
-    externalFns && Array.isArray(externalFns),
-    `Externals was modified directly, addExternals will have no effect.`
-  );
-
-  externalFns.push(externalFn);
-};
-
 export const checkWebpackExternals = (webpackChain: WebpackChain) => {
   let externals = webpackChain.get('externals');
   invariant(
-    typeof externals === 'function' && externals.name === 'defaultExternalsFn',
+    !externals ||
+      (typeof externals === 'function' &&
+        externals.name === 'defaultExternalsFn'),
     `Externals was modified directly, addExternals will have no effect.`
   );
 };
 
-export const initWebpackHelpers = (webpackChain: WebpackChain) => {
+const initExternalsHelpers = (webpackChain: WebpackChain) => {
   const externalFns: ExternalsFunction[] = [];
 
   const defaultExternalsFn: ExternalsFunction = (
@@ -69,6 +56,26 @@ export const initWebpackHelpers = (webpackChain: WebpackChain) => {
     webpackChain.externals(externals);
     externalsFunctionMap.set(webpackChain, externalFns);
   }
+};
+
+export const addExternals = (
+  webpackChain: WebpackChain,
+  externalFn: ExternalsFunction
+) => {
+  let externals = webpackChain.get('externals');
+  if (!externals) {
+    initExternalsHelpers(webpackChain);
+  } else {
+    checkWebpackExternals(webpackChain);
+  }
+  const externalFns = externalsFunctionMap.get(webpackChain);
+
+  invariant(
+    externalFns && Array.isArray(externalFns),
+    `Externals was modified directly, addExternals will have no effect.`
+  );
+
+  externalFns.push(externalFn);
 };
 
 export function shouldUseRelativeAssetPaths(publicPath: string) {

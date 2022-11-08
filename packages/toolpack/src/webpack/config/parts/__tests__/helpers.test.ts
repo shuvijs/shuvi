@@ -1,4 +1,4 @@
-import { initWebpackHelpers, addExternals } from '../helpers';
+import { addExternals } from '../helpers';
 import { WebpackChain } from '../../base';
 
 const setupTest = () => {
@@ -17,8 +17,6 @@ describe('webpackHelpers', () => {
       const defaultCallback = jest.fn();
 
       expect(chain.get('externals')).toBeUndefined();
-
-      initWebpackHelpers(chain);
 
       addExternals(chain, mockExternalFn);
 
@@ -56,8 +54,6 @@ describe('webpackHelpers', () => {
         next(null, 'next');
       });
 
-      initWebpackHelpers(chain);
-
       addExternals(chain, mockExternalFn1);
       addExternals(chain, shouldInvokeCallback);
       addExternals(chain, mockExternalFn3);
@@ -86,18 +82,6 @@ describe('webpackHelpers', () => {
         addExternals(chain, () => {})
       ).toThrowErrorMatchingInlineSnapshot(
         `"Invariant failed: Externals was modified directly, addExternals will have no effect."`
-      );
-    });
-
-    test('should throw error when call initWebpackHelpers twice', () => {
-      const { chain } = setupTest();
-
-      initWebpackHelpers(chain);
-
-      expect(() =>
-        initWebpackHelpers(chain)
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"Invariant failed: webpackChain externals has been set, initWebpackHelpers can't work as expected."`
       );
     });
   });

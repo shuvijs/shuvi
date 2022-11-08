@@ -7,11 +7,7 @@ import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
-import {
-  splitChunksFilter,
-  commonChunkFilename,
-  initWebpackHelpers
-} from './parts/helpers';
+import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 import { CompilerOptions } from '../loaders/shuvi-swc-loader';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
@@ -103,7 +99,6 @@ export function baseWebpackChain({
   cacheDir
 }: BaseOptions): WebpackChain {
   const config = new WebpackChain();
-  initWebpackHelpers(config);
   config.mode(dev ? 'development' : 'production');
   config.bail(!dev);
   config.performance.hints(false);
