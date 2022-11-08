@@ -1,6 +1,5 @@
 import { ResolvedPlugin, createPlugin } from '@shuvi/service';
 import { IPlatformContext } from '@shuvi/service/lib/core';
-import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
 import { CopyFilePlugin } from '@shuvi/toolpack/lib/webpack/plugins/copy-file-plugin';
 import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import {
@@ -100,13 +99,11 @@ export const getPlugin = (
       return chain;
     },
     addExtraTarget: ({ createConfig }, context) => {
-      const serverWebpackHelpers = webpackHelpers();
       const serverChain = createConfig({
         name: BUNDLER_TARGET_SERVER,
         node: true,
         entry: getServerEntry(),
-        outputDir: SERVER_OUTPUT_DIR,
-        webpackHelpers: serverWebpackHelpers
+        outputDir: SERVER_OUTPUT_DIR
       });
       return {
         name: BUNDLER_TARGET_SERVER,

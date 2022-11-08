@@ -704,10 +704,14 @@ importers:
 
   test/fixtures/plugin-and-preset:
     specifiers:
+      '@shuvi/shared': workspace:*
+      lodash: ^4.17.15
       shuvi: workspace:*
       shuvi-plugin-sample: workspace:*
       shuvi-preset-sample: workspace:*
     dependencies:
+      '@shuvi/shared': link:../../../packages/shared
+      lodash: 4.17.21
       shuvi: link:../../../packages/shuvi
       shuvi-plugin-sample: link:../../packages/plugin-sample
       shuvi-preset-sample: link:../../packages/preset-sample
