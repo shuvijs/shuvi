@@ -15,7 +15,10 @@ import {
   Compiler as WebapckCompiler,
   resolveWebpackModule
 } from '@shuvi/toolpack/lib/webpack';
-import { webpackHelpers } from '@shuvi/toolpack/lib/webpack/config';
+import {
+  addExternals,
+  checkWebpackExternals
+} from '@shuvi/toolpack/lib/webpack/config';
 import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
 import { Server, ShuviRequestHandler } from '../server';
 import { IPluginContext } from '../core';
@@ -413,13 +416,11 @@ class WebpackBundler implements Bundler {
   }
 
   private _initDefaultBuildTarget(): TargetChain[] {
-    const defaultWebpackHelpers = webpackHelpers();
     const defaultChain = createWebpackConfig(this._cliContext, {
       name: BUNDLER_TARGET_CLIENT,
       node: false,
       entry: {},
-      outputDir: CLIENT_OUTPUT_DIR,
-      webpackHelpers: defaultWebpackHelpers
+      outputDir: CLIENT_OUTPUT_DIR
     });
     return [
       {
@@ -431,7 +432,6 @@ class WebpackBundler implements Bundler {
 
   private async _getTargets(): Promise<Target[]> {
     const targets: Target[] = [];
-    const defaultWebpackHelpers = webpackHelpers();
     // get base config
     const buildTargets = this._initDefaultBuildTarget();
     const extraTargets = (
@@ -443,6 +443,7 @@ class WebpackBundler implements Bundler {
     ).filter(Boolean);
     buildTargets.push(...extraTargets);
 
+    const defaultWebpackHelpers = { addExternals };
     for (const buildTarget of buildTargets) {
       let { chain, name } = buildTarget;
       // modify config by api hooks
@@ -455,6 +456,7 @@ class WebpackBundler implements Bundler {
           return resolveWebpackModule(path);
         }
       });
+      checkWebpackExternals(chain);
       if (hasEntry(chain)) {
         const chainConfig = chain.toConfig();
         logger.debug(`${name} Config`);

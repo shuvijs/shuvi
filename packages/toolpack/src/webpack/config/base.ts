@@ -99,7 +99,6 @@ export function baseWebpackChain({
   cacheDir
 }: BaseOptions): WebpackChain {
   const config = new WebpackChain();
-
   config.mode(dev ? 'development' : 'production');
   config.bail(!dev);
   config.performance.hints(false);

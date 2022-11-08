@@ -1,7 +1,9 @@
 {
   "name": "fixture-plugin",
   "dependencies": {
+    "lodash": "^4.17.15",
     "shuvi": "workspace:*",
+    "@shuvi/shared": "workspace:*",
     "shuvi-plugin-sample": "workspace:*",
     "shuvi-preset-sample": "workspace:*"
   }

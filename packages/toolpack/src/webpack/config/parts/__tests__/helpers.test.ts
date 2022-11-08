@@ -1,12 +1,10 @@
-import { webpackHelpers } from '../helpers';
+import { addExternals } from '../helpers';
 import { WebpackChain } from '../../base';
 
 const setupTest = () => {
-  const helpers = webpackHelpers();
   const chain = new WebpackChain();
 
   return {
-    helpers,
     chain
   };
 };
@@ -14,13 +12,13 @@ const setupTest = () => {
 describe('webpackHelpers', () => {
   describe('addExternals', () => {
     test('should work with 1 externalFn', () => {
-      const { chain, helpers } = setupTest();
+      const { chain } = setupTest();
       const mockExternalFn = jest.fn();
       const defaultCallback = jest.fn();
 
       expect(chain.get('externals')).toBeUndefined();
 
-      helpers.addExternals(chain, mockExternalFn);
+      addExternals(chain, mockExternalFn);
 
       const newExternalFn = chain.get('externals');
       expect(newExternalFn.name).toBe('defaultExternalsFn');
@@ -41,7 +39,7 @@ describe('webpackHelpers', () => {
     });
 
     test('should exit when one of the externalFn invoke callback', () => {
-      const { chain, helpers } = setupTest();
+      const { chain } = setupTest();
       const defaultCallback = jest.fn();
 
       const mockExternalFn1 = jest.fn().mockImplementation((_, next) => {
@@ -56,9 +54,9 @@ describe('webpackHelpers', () => {
         next(null, 'next');
       });
 
-      helpers.addExternals(chain, mockExternalFn1);
-      helpers.addExternals(chain, shouldInvokeCallback);
-      helpers.addExternals(chain, mockExternalFn3);
+      addExternals(chain, mockExternalFn1);
+      addExternals(chain, shouldInvokeCallback);
+      addExternals(chain, mockExternalFn3);
 
       const newExternalFn = chain.get('externals');
       newExternalFn(
@@ -76,14 +74,14 @@ describe('webpackHelpers', () => {
     });
 
     test('should throw error when externals is directly modified', () => {
-      const { chain, helpers } = setupTest();
+      const { chain } = setupTest();
 
       chain.externals('dummyExternals');
 
       expect(() =>
-        helpers.addExternals(chain, () => {})
+        addExternals(chain, () => {})
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Externals was modified directly, addExternals will have no effect."`
+        `"Invariant failed: Externals was modified directly, addExternals will have no effect."`
       );
     });
   });

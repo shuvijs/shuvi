@@ -1,4 +1,3 @@
-import { redirect } from 'packages/platform-shared/lib/shared/response';
 import { AppCtx, Page, devFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
