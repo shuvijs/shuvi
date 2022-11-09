@@ -80,7 +80,6 @@
     "@shuvi/router": "1.0.2",
     "@shuvi/router-react": "1.0.2",
     "@shuvi/runtime": "1.0.2",
-    "@shuvi/service": "1.0.2",
     "@shuvi/shared": "1.0.2",
     "@shuvi/toolpack": "1.0.2",
     "@shuvi/utils": "1.0.2",
@@ -102,6 +101,7 @@
     "@shuvi/service": "1.0.2"
   },
   "devDependencies": {
+    "@shuvi/service": "workspace:*",
     "@testing-library/react": "^13.2.0",
     "@types/content-type": "^1.1.5",
     "@types/ejs": "^3.1.0",

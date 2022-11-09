@@ -233,12 +233,12 @@ importers:
       '@shuvi/redox': 0.0.7
       '@shuvi/router': link:../router
       '@shuvi/runtime': link:../runtime
-      '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
       redux: 4.1.2
     devDependencies:
+      '@shuvi/service': link:../service
       '@types/minimatch': 3.0.5
 
   packages/platform-web:
@@ -288,7 +288,6 @@ importers:
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
-      '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
@@ -306,6 +305,7 @@ importers:
       use-sync-external-store: 1.1.0_react@18.1.0
       whatwg-fetch: 3.0.0
     devDependencies:
+      '@shuvi/service': link:../service
       '@testing-library/react': 13.3.0_ef5jwxihqo6n7gxfmzogljlgcm
       '@types/content-type': 1.1.5
       '@types/ejs': 3.1.0

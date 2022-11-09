@@ -87,7 +87,6 @@
     "@shuvi/redox": "0.0.7",
     "@shuvi/router": "1.0.2",
     "@shuvi/runtime": "1.0.2",
-    "@shuvi/service": "1.0.2",
     "@shuvi/shared": "1.0.2",
     "@shuvi/toolpack": "1.0.2",
     "@shuvi/utils": "1.0.2",
@@ -97,6 +96,7 @@
     "@shuvi/service": "1.0.2"
   },
   "devDependencies": {
+    "@shuvi/service": "workspace:*",
     "@types/minimatch": "3.0.5"
   }
 }
