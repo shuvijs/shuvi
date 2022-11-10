@@ -1,3 +1,12 @@
+## [1.0.3](https://github.com/shuvijs/shuvi/compare/v1.0.2...v1.0.3) (2022-11-10)
+
+
+### Bug Fixes
+
+* **service:** fix external helper ([c78629b](https://github.com/shuvijs/shuvi/commit/c78629bf3216481376fb6679488620218b3feaa4))
+
+
+
 ## [1.0.2](https://github.com/shuvijs/shuvi/compare/v1.0.1...v1.0.2) (2022-11-04)
 
 
