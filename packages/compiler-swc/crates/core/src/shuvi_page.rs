@@ -230,7 +230,6 @@ impl Fold for Analyzer<'_> {
                                 return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
                             }
                         } else {
-                            print!("ddddssdasd {:?}", f);
                             if self.page_pick_loader {
                                 return ModuleItem::Stmt(Stmt::Empty(EmptyStmt { span: DUMMY_SP }));
                             }
