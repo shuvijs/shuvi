@@ -177,14 +177,11 @@ impl Fold for Analyzer<'_> {
                 is_in_loader || self.state.refs_from_loader_fn.contains(&f.ident.to_id());
         }
 
-        self.in_loader_fn |= is_in_loader;
-
-        // tracing::info!(
-        //     "shuvi_page: Handling `{}{:?}`; in_loader_fn = {:?}",
-        //     f.ident.sym,
-        //     f.ident.span.ctxt,
-        //     self.in_loader_fn
-        // );
+        if is_in_loader {
+            self.in_loader_fn |= is_in_loader;
+        } else {
+            return f;
+        }
 
         let f = f.fold_children_with(self);
 
@@ -280,7 +277,8 @@ impl Fold for Analyzer<'_> {
             // find loader used outside fn, may be toplevel expression
             // unit test
             // var_declarator: should-keep-shared-variable-declarations
-            // deconstruct_declarator: destructuring-assignment-array destructuring-assignment-object
+            // deconstruct_declarator: destructuring-assignment-array
+            // destructuring-assignment-object
             if !self.in_loader_fn {
                 let mut stack: Vec<&Pat> = vec![];
                 stack.push(&v.name);
@@ -323,13 +321,10 @@ impl Fold for Analyzer<'_> {
             }
         } else {
             if let Pat::Ident(name) = &v.name {
-                let mut is_in_loader = EXPORTS.contains(&&*name.id.sym);
-                if self.page_pick_loader {
-                    is_in_loader =
-                        is_in_loader || self.state.refs_from_loader_fn.contains(&name.id.to_id());
-                }
-                if is_in_loader {
-                    self.in_loader_fn = true
+                if let Ok(is_data_identifier) = self.state.is_loader_identifier(&name.id) {
+                    if is_data_identifier {
+                        self.in_loader_fn = true;
+                    }
                 } else {
                     return v;
                 }
@@ -363,7 +358,8 @@ impl ShuviPage {
     fn should_remove(&self, id: Id) -> bool {
         if self.page_pick_loader {
             // recursively find the variables used by the loader
-            // unit test: should-remove-re-exported-function-declarations-dependents-variables-functions-imports
+            // unit test:
+            // should-remove-re-exported-function-declarations-dependents-variables-functions-imports
             if !self.state.done {
                 return false;
             }
@@ -423,7 +419,9 @@ impl Fold for ShuviPage {
             | ImportSpecifier::Default(ImportDefaultSpecifier { local, .. })
             | ImportSpecifier::Namespace(ImportStarAsSpecifier { local, .. }) => {
                 if self.should_remove(local.to_id()) {
-                    self.state.should_run_again = true;
+                    if self.page_pick_loader {
+                        self.state.should_run_again = true;
+                    }
                     false
                 } else {
                     true
@@ -754,3 +752,5 @@ impl Fold for ShuviPage {
         decls
     }
 }
+
+
