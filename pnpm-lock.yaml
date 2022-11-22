@@ -729,6 +729,21 @@ importers:
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
 
+  test/fixtures/preload-error:
+    specifiers:
+      '@types/node': 18.0.6
+      '@types/react': 18.0.9
+      '@types/react-dom': 18.0.6
+      mitt: ^3.0.0
+      shuvi: workspace:*
+    dependencies:
+      mitt: 3.0.0
+      shuvi: link:../../../packages/shuvi
+    devDependencies:
+      '@types/node': 18.0.6
+      '@types/react': 18.0.9
+      '@types/react-dom': 18.0.6
+
   test/fixtures/public-path:
     specifiers: {}
 
@@ -10657,6 +10672,10 @@ packages:
     dependencies:
       minipass: 2.9.0
     dev: true
+
+  /mitt/3.0.0:
+    resolution: {integrity: sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==}
+    dev: false
 
   /mixin-deep/1.3.2:
     resolution: {integrity: sha512-WRoDn//mXBiJ1H40rqa3vH0toePwSsGb45iInWlTySa+Uu4k3tYUSxa2v1KqAiLtvlrSzaExqS1gtk96A9zvEA==}

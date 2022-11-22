@@ -101,6 +101,7 @@ export const createApp: CreateAppClient = ({
           runPreload(to)
             .then(tryResolve)
             .catch(err => {
+              console.error('runPreload error', err);
               reject(err);
             });
 
@@ -141,7 +142,7 @@ export const createApp: CreateAppClient = ({
         next();
         return;
       }
-
+      console.error('this error should be shown on error-overlay', error);
       app.setError(serializeServerError(error));
       next();
       return;
