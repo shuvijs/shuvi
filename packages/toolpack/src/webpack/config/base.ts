@@ -7,7 +7,6 @@ import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
-import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 import { CompilerOptions } from '../loaders/shuvi-swc-loader';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
@@ -126,6 +125,7 @@ export function baseWebpackChain({
     emitOnErrors: !dev,
     checkWasmTypes: false,
     nodeEnv: false,
+    splitChunks: false,
     runtimeChunk: undefined,
     minimize: !dev,
     realContentHash: false
@@ -133,21 +133,6 @@ export function baseWebpackChain({
 
   if (dev) {
     config.optimization.usedExports(false);
-    config.optimization.splitChunks({
-      chunks: splitChunksFilter,
-      cacheGroups: {
-        defaultVendors: false,
-        default: false,
-        vendors: {
-          name: 'vendors',
-          filename: commonChunkFilename({ dev: true }),
-          test: /[\\/]node_modules[\\/]/,
-          // Don't let webpack eliminate this chunk (prevents this chunk from
-          // becoming a part of the commons chunk)
-          enforce: true
-        }
-      }
-    });
   } else {
     // @ts-ignore
     config.optimization.minimizer('terser').use(TerserPlugin, [
