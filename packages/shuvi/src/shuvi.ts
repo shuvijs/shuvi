@@ -2,6 +2,8 @@ import { IPlatform, getApi, Api, ShuviConfig } from '@shuvi/service';
 import platformWeb from '@shuvi/platform-web';
 import { ShuviMode, ShuviPhase } from './types';
 import { normalizePlatformConfig } from './config';
+//@ts-ignore
+import pkgInfo from '../package.json';
 
 export function getPlatform(): IPlatform {
   return platformWeb({ framework: 'react' });
@@ -26,7 +28,8 @@ export async function initShuvi({
     presets,
     config: restConfig,
     platform: getPlatform(),
-    normalizePlatformConfig
+    normalizePlatformConfig,
+    version: pkgInfo.version
   });
 
   return shuvi;

@@ -6,6 +6,7 @@ import ForkTsCheckerWebpackPlugin, {
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import logger from '@shuvi/utils/lib/logger';
+import { Telemetry } from '@shuvi/telemetry';
 import { inspect } from 'util';
 import {
   webpack,
@@ -56,6 +57,7 @@ export interface Bundler {
   watching: Watching;
   watch(): Watching;
   build(): Promise<BundlerResult>;
+  analysis(): Promise<void>;
   onBuildDone(cb: FinishedCallback): RemoveListenerCallback;
   onTypeCheckingDone(cb: FinishedCallback): RemoveListenerCallback;
   applyDevMiddlewares(server: Server): void;
@@ -90,10 +92,16 @@ class WebpackBundler implements Bundler {
   private _inited: boolean = false;
   private _startTime: number | null = null;
   private _isCompiling: boolean | null = false;
+  private _telemetry: Telemetry | undefined;
 
-  constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
+  constructor(
+    options: NormalizedBundlerOptions,
+    cliContext: IPluginContext,
+    telemetry?: Telemetry
+  ) {
     this._options = options;
     this._cliContext = cliContext;
+    this._telemetry = telemetry;
   }
 
   async init() {
@@ -128,6 +136,20 @@ class WebpackBundler implements Bundler {
     }
 
     return this._compiler.compilers.find(compiler => compiler.name === name);
+  }
+
+  async analysis() {
+    logger.info('Start collecting data...');
+    const analysisBegin = process.hrtime();
+    //TODO: collect some data
+
+    const analysisEnd = process.hrtime(analysisBegin);
+    if (this._telemetry) {
+      this._telemetry.record({
+        eventName: 'TODO',
+        payload: { durationInSeconds: analysisEnd[0] }
+      });
+    }
   }
 
   onBuildDone(cb: FinishedCallback) {
@@ -468,7 +490,10 @@ class WebpackBundler implements Bundler {
   }
 }
 
-export async function getBundler(ctx: IPluginContext): Promise<Bundler> {
+export async function getBundler(
+  ctx: IPluginContext,
+  telemetry?: Telemetry
+): Promise<Bundler> {
   try {
     await setupTypeScript(ctx.paths, {
       reportMissingError: ctx.mode === 'production'
@@ -481,7 +506,7 @@ export async function getBundler(ctx: IPluginContext): Promise<Bundler> {
     if (ctx.mode !== 'development') {
       options.preBundle = false;
     }
-    const bundler = new WebpackBundler(options, ctx);
+    const bundler = new WebpackBundler(options, ctx, telemetry);
     await bundler.init();
     return bundler;
   } catch (err: any) {

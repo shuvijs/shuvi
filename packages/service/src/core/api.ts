@@ -2,6 +2,7 @@ import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { joinPath } from '@shuvi/utils/lib/string';
 import logger from '@shuvi/utils/lib/logger';
+import { Telemetry } from '@shuvi/telemetry';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOption } from '../project';
@@ -48,6 +49,8 @@ interface IApiOPtions {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
+  telemetry?: Telemetry;
+  version?: string;
 }
 
 interface ServerConfigs {
@@ -81,6 +84,8 @@ class Api {
   private _pluginManager: PluginManager;
   private _pluginContext!: IPluginContext;
 
+  private _telemetry: Telemetry;
+
   /** will be included by @shuvi/swc-loader */
   private _runtimePluginDirs: string[] = [];
   constructor({
@@ -92,7 +97,9 @@ class Api {
     plugins,
     phase,
     platform,
-    normalizePlatformConfig
+    normalizePlatformConfig,
+    telemetry,
+    version
   }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
@@ -106,6 +113,7 @@ class Api {
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
     this._normalizePlatformConfig = normalizePlatformConfig;
+    this._telemetry = telemetry || new Telemetry({ version });
   }
 
   get cwd() {
@@ -126,6 +134,10 @@ class Api {
 
   get serverConfigs() {
     return this._serverConfigs;
+  }
+
+  get telemetry() {
+    return this._telemetry;
   }
 
   async init() {
@@ -245,7 +257,7 @@ class Api {
     }
 
     if (!this._bundler) {
-      this._bundler = await getBundler(this.pluginContext);
+      this._bundler = await getBundler(this.pluginContext, this.telemetry);
     }
 
     return this._bundler;
@@ -457,7 +469,9 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     platform: options.platform,
     presets: options.presets,
     plugins: options.plugins,
-    normalizePlatformConfig: options.normalizePlatformConfig
+    normalizePlatformConfig: options.normalizePlatformConfig,
+    telemetry: options.telemetry,
+    version: options.version
   });
 
   try {
