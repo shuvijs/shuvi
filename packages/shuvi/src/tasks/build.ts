@@ -19,7 +19,6 @@ const defaultBuildOptions = {
 
 async function bundle(bundler: Bundler) {
   const result = await bundler.build();
-  await bundler.analysis();
   const messages = formatWebpackMessages(result);
   // If errors exist, only show errors.
   if (messages.errors.length) {
@@ -77,6 +76,7 @@ export async function build(options: IBuildOptions) {
   const bundler = await api.getBundler();
   // transpile the application
   await bundle(bundler);
+  await bundler.analysis();
   await pluginContext.pluginRunner.afterBuild();
   return api;
 }

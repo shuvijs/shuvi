@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { createEvent, RemoveListenerCallback } from '@shuvi/utils/lib/events';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
@@ -6,7 +7,9 @@ import ForkTsCheckerWebpackPlugin, {
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import logger from '@shuvi/utils/lib/logger';
+import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { Telemetry } from '@shuvi/telemetry';
+import { eventBuildOptimize } from '@shuvi/telemetry/lib/events';
 import { inspect } from 'util';
 import {
   webpack,
@@ -28,7 +31,7 @@ import { Target, TargetChain } from '../core/plugin';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
 import { CLIENT_OUTPUT_DIR } from '../constants';
-import { setupTypeScript } from './typescript';
+import { setupTypeScript, getJavaScriptInfo } from './typescript';
 import { WatchingProxy, Watching } from './watchingProxy';
 
 export type CompilerErr = {
@@ -139,17 +142,58 @@ class WebpackBundler implements Bundler {
   }
 
   async analysis() {
+    if (!this._telemetry) {
+      return;
+    }
     logger.info('Start collecting data...');
+
     const analysisBegin = process.hrtime();
-    //TODO: collect some data
+    const routesExtensions = ['ts', 'tsx', 'js', 'jsx'];
+
+    const routePaths = await recursiveReadDir(
+      this._cliContext.paths.routesDir,
+      { filter: new RegExp(`\\.(?:${routesExtensions.join('|')})$`) }
+    );
+
+    const middlewareCount = routePaths.filter(path =>
+      /middleware\..*/i.test(path)
+    ).length;
+
+    const srcDirFiles = await fs.promises.readdir(
+      this._cliContext.paths.srcDir,
+      {
+        encoding: 'utf-8'
+      }
+    );
+
+    const hasStatic404 = srcDirFiles.some(value => /error/i.test(value));
+    const pageLoadersPath = path.join(
+      this._cliContext.paths.appDir,
+      '/files/page-loaders.js'
+    );
+
+    const pageLoadersFile = await fs.promises.readFile(pageLoadersPath, {
+      encoding: 'utf8'
+    });
+
+    const totalLoaderCount = pageLoadersFile
+      .toString()
+      .split('\n')
+      .filter(loader => loader.startsWith('import')).length;
+
+    const { useTypeScript } = getJavaScriptInfo();
 
     const analysisEnd = process.hrtime(analysisBegin);
-    if (this._telemetry) {
-      this._telemetry.record({
-        eventName: 'TODO',
-        payload: { durationInSeconds: analysisEnd[0] }
-      });
-    }
+
+    this._telemetry.record(
+      eventBuildOptimize(routePaths, {
+        durationInSeconds: analysisEnd[0],
+        hasStatic404,
+        middlewareCount,
+        totalLoaderCount,
+        useTypeScript
+      })
+    );
   }
 
   onBuildDone(cb: FinishedCallback) {
