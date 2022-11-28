@@ -1,3 +1,17 @@
+## [1.0.4](https://github.com/shuvijs/shuvi/compare/v1.0.3...v1.0.4) (2022-11-28)
+
+
+### Bug Fixes
+
+* **swc:** page and loader has same depends  ([3bdba94](https://github.com/shuvijs/shuvi/commit/3bdba9471426feb086d1e48f4066185f7c6cee55))
+
+
+### Features
+
+* disable spiltChunks at dev to prevent preload error ([#471](https://github.com/shuvijs/shuvi/issues/471)) ([ccc5647](https://github.com/shuvijs/shuvi/commit/ccc5647a2dbd9cb3ebe6a20fe73d2bc00020a639))
+
+
+
 ## [1.0.3](https://github.com/shuvijs/shuvi/compare/v1.0.2...v1.0.3) (2022-11-10)
 
 
