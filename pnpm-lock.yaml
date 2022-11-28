@@ -169,8 +169,8 @@ importers:
       '@rollup/plugin-commonjs': 22.0.2
       '@rollup/plugin-node-resolve': 13.3.0
       '@rollup/plugin-replace': 4.0.0
-      '@shuvi/shared': 1.0.3
-      '@shuvi/toolpack': 1.0.3
+      '@shuvi/shared': 1.0.4
+      '@shuvi/toolpack': 1.0.4
       '@types/babel__code-frame': 7.0.3
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
@@ -218,14 +218,14 @@ importers:
 
   packages/platform-shared:
     specifiers:
-      '@shuvi/hook': 1.0.3
+      '@shuvi/hook': 1.0.4
       '@shuvi/redox': 0.0.7
-      '@shuvi/router': 1.0.3
-      '@shuvi/runtime': 1.0.3
+      '@shuvi/router': 1.0.4
+      '@shuvi/runtime': 1.0.4
       '@shuvi/service': workspace:*
-      '@shuvi/shared': 1.0.3
-      '@shuvi/toolpack': 1.0.3
-      '@shuvi/utils': 1.0.3
+      '@shuvi/shared': 1.0.4
+      '@shuvi/toolpack': 1.0.4
+      '@shuvi/utils': 1.0.4
       '@types/minimatch': 3.0.5
       redux: 4.1.2
     dependencies:
@@ -244,18 +244,18 @@ importers:
   packages/platform-web:
     specifiers:
       '@next/react-refresh-utils': 12.1.6
-      '@shuvi/error-overlay': 1.0.3
-      '@shuvi/hook': 1.0.3
-      '@shuvi/platform-shared': 1.0.3
+      '@shuvi/error-overlay': 1.0.4
+      '@shuvi/hook': 1.0.4
+      '@shuvi/platform-shared': 1.0.4
       '@shuvi/redox': 0.0.7
       '@shuvi/redox-react': 0.0.7
-      '@shuvi/router': 1.0.3
-      '@shuvi/router-react': 1.0.3
-      '@shuvi/runtime': 1.0.3
+      '@shuvi/router': 1.0.4
+      '@shuvi/router-react': 1.0.4
+      '@shuvi/runtime': 1.0.4
       '@shuvi/service': workspace:*
-      '@shuvi/shared': 1.0.3
-      '@shuvi/toolpack': 1.0.3
-      '@shuvi/utils': 1.0.3
+      '@shuvi/shared': 1.0.4
+      '@shuvi/toolpack': 1.0.4
+      '@shuvi/utils': 1.0.4
       '@testing-library/react': ^13.2.0
       '@types/content-type': ^1.1.5
       '@types/ejs': ^3.1.0
@@ -318,7 +318,7 @@ importers:
 
   packages/router:
     specifiers:
-      '@shuvi/utils': 1.0.3
+      '@shuvi/utils': 1.0.4
       query-string: 6.13.8
     dependencies:
       '@shuvi/utils': link:../utils
@@ -326,9 +326,9 @@ importers:
 
   packages/router-react:
     specifiers:
-      '@shuvi/platform-shared': 1.0.3
-      '@shuvi/router': 1.0.3
-      '@shuvi/utils': 1.0.3
+      '@shuvi/platform-shared': 1.0.4
+      '@shuvi/router': 1.0.4
+      '@shuvi/utils': 1.0.4
       '@types/prop-types': ^15.7.5
       '@types/react': 18.0.9
       '@types/react-test-renderer': 18.0.0
@@ -355,7 +355,7 @@ importers:
 
   packages/runtime:
     specifiers:
-      '@shuvi/hook': 1.0.3
+      '@shuvi/hook': 1.0.4
     dependencies:
       '@shuvi/hook': link:../hook
 
@@ -366,13 +366,13 @@ importers:
       '@babel/parser': 7.14.7
       '@babel/traverse': 7.14.7
       '@babel/types': 7.12.11
-      '@shuvi/error-overlay': 1.0.3
-      '@shuvi/hook': 1.0.3
-      '@shuvi/router': 1.0.3
-      '@shuvi/runtime': 1.0.3
-      '@shuvi/shared': 1.0.3
-      '@shuvi/toolpack': 1.0.3
-      '@shuvi/utils': 1.0.3
+      '@shuvi/error-overlay': 1.0.4
+      '@shuvi/hook': 1.0.4
+      '@shuvi/router': 1.0.4
+      '@shuvi/runtime': 1.0.4
+      '@shuvi/shared': 1.0.4
+      '@shuvi/toolpack': 1.0.4
+      '@shuvi/utils': 1.0.4
       '@types/babel__code-frame': ^7.0.3
       '@types/babel__generator': ^7.6.4
       '@types/babel__traverse': ^7.14.2
@@ -430,18 +430,18 @@ importers:
 
   packages/shared:
     specifiers:
-      '@shuvi/hook': 1.0.3
+      '@shuvi/hook': 1.0.4
     dependencies:
       '@shuvi/hook': link:../hook
 
   packages/shuvi:
     specifiers:
-      '@shuvi/platform-shared': 1.0.3
-      '@shuvi/platform-web': 1.0.3
-      '@shuvi/service': 1.0.3
-      '@shuvi/shared': 1.0.3
-      '@shuvi/toolpack': 1.0.3
-      '@shuvi/utils': 1.0.3
+      '@shuvi/platform-shared': 1.0.4
+      '@shuvi/platform-web': 1.0.4
+      '@shuvi/service': 1.0.4
+      '@shuvi/shared': 1.0.4
+      '@shuvi/toolpack': 1.0.4
+      '@shuvi/utils': 1.0.4
       '@types/cross-spawn': 6.0.1
       cli-highlight: ^2.1.9
       commander: 5.1.0
@@ -476,9 +476,9 @@ importers:
       '@babel/preset-react': 7.10.1
       '@babel/preset-typescript': 7.12.7
       '@babel/runtime': 7.12.5
-      '@shuvi/compiler': 1.0.3
-      '@shuvi/shared': 1.0.3
-      '@shuvi/utils': 1.0.3
+      '@shuvi/compiler': 1.0.4
+      '@shuvi/shared': 1.0.4
+      '@shuvi/utils': 1.0.4
       '@swc/helpers': 0.4.3
       '@types/babel__core': ^7.1.19
       '@types/cross-spawn': 6.0.1
