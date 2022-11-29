@@ -46,7 +46,7 @@ export class Telemetry {
   private rawProjectId: string;
   private meta: EventMeta;
   private context: EventContext;
-  private postEndpoint: string;
+  private postEndpoint: string | undefined;
 
   private queue: Set<Promise<RecordObject>>;
 
@@ -69,7 +69,7 @@ export class Telemetry {
     }
     this.sessionId = randomBytes(32).toString('hex');
     this.rawProjectId = getRawProjectId();
-    this.postEndpoint = postEndpoint || 'TODO: update end point';
+    this.postEndpoint = postEndpoint;
 
     this.queue = new Set();
 
@@ -192,6 +192,10 @@ export class Telemetry {
     }
 
     if (events.length < 1) {
+      return Promise.resolve();
+    }
+
+    if (!this.postEndpoint) {
       return Promise.resolve();
     }
 

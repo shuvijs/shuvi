@@ -111,7 +111,8 @@ class Api {
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
     this._normalizePlatformConfig = normalizePlatformConfig;
-    this._telemetry = telemetry || new Telemetry({});
+    this._telemetry =
+      telemetry || new Telemetry({ postEndpoint: 'TODO: update end point' });
   }
 
   get cwd() {
