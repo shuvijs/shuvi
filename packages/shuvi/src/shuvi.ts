@@ -20,7 +20,6 @@ export async function initShuvi({
   ...options
 }: ShuviOption): Promise<Api> {
   const { plugins, presets, ...restConfig } = config;
-
   const shuvi = await getApi({
     ...options,
     plugins,

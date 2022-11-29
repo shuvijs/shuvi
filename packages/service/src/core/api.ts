@@ -2,7 +2,6 @@ import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { joinPath } from '@shuvi/utils/lib/string';
 import logger from '@shuvi/utils/lib/logger';
-import { Telemetry } from '@shuvi/telemetry';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOption } from '../project';
@@ -49,7 +48,6 @@ interface IApiOPtions {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
-  telemetry?: Telemetry;
 }
 
 interface ServerConfigs {
@@ -94,8 +92,7 @@ class Api {
     plugins,
     phase,
     platform,
-    normalizePlatformConfig,
-    telemetry
+    normalizePlatformConfig
   }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
@@ -460,8 +457,7 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     platform: options.platform,
     presets: options.presets,
     plugins: options.plugins,
-    normalizePlatformConfig: options.normalizePlatformConfig,
-    telemetry: options.telemetry
+    normalizePlatformConfig: options.normalizePlatformConfig
   });
 
   try {
