@@ -83,8 +83,6 @@ class Api {
   private _pluginManager: PluginManager;
   private _pluginContext!: IPluginContext;
 
-  private _telemetry: Telemetry;
-
   /** will be included by @shuvi/swc-loader */
   private _runtimePluginDirs: string[] = [];
   constructor({
@@ -111,8 +109,6 @@ class Api {
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
     this._normalizePlatformConfig = normalizePlatformConfig;
-    this._telemetry =
-      telemetry || new Telemetry({ postEndpoint: 'TODO: update end point' });
   }
 
   get cwd() {
@@ -133,10 +129,6 @@ class Api {
 
   get serverConfigs() {
     return this._serverConfigs;
-  }
-
-  get telemetry() {
-    return this._telemetry;
   }
 
   async init() {

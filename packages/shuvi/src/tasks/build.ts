@@ -2,9 +2,12 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import { IPluginContext, Bundler, ShuviConfig, analysis } from '@shuvi/service';
+import { Telemetry } from '@shuvi/telemetry';
 import { CLIENT_OUTPUT_DIR } from '@shuvi/shared/lib/constants';
 import logger from '@shuvi/utils/lib/logger';
 import { initShuvi } from '../shuvi';
+//@ts-ignore
+import pkgInfo from '../../package.json';
 
 export interface IBuildOptions {
   config?: ShuviConfig;
@@ -53,6 +56,13 @@ export async function build(options: IBuildOptions) {
     ...defaultBuildOptions,
     ...options
   };
+
+  //TODO: update end point
+  const telemetry = new Telemetry({
+    meta: { shuviVersion: pkgInfo.version },
+    postEndpoint: ''
+  });
+
   const api = await initShuvi({
     cwd: opts.cwd,
     mode: 'production',
@@ -77,6 +87,6 @@ export async function build(options: IBuildOptions) {
   // transpile the application
   await bundle(bundler);
   await pluginContext.pluginRunner.afterBuild();
-  await analysis({ context: api.pluginContext, telemetry: api.telemetry });
+  await analysis({ context: api.pluginContext, telemetry });
   return api;
 }

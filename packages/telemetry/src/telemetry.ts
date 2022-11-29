@@ -74,7 +74,7 @@ export class Telemetry {
     this.queue = new Set();
 
     this.notify();
-    this.meta = { ...getAnonymousMeta(process.env._SHUVI_VERSION!), ...meta };
+    this.meta = { ...getAnonymousMeta(), ...meta };
     this.context = {
       anonymousId: this.anonymousId,
       projectId: this.projectId,

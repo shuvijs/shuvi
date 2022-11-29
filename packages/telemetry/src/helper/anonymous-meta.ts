@@ -21,7 +21,7 @@ type AnonymousMeta = {
 
 let traits: AnonymousMeta | undefined;
 
-export function getAnonymousMeta(version: string): AnonymousMeta {
+export function getAnonymousMeta(): AnonymousMeta {
   if (traits) {
     return traits;
   }
@@ -41,8 +41,7 @@ export function getAnonymousMeta(version: string): AnonymousMeta {
     isDocker: isDockerFunction(),
     isWsl: isWslBoolean,
     isCI: ciEnvironment.isCI,
-    ciName: (ciEnvironment.isCI && ciEnvironment.name) || null,
-    shuviVersion: version
+    ciName: (ciEnvironment.isCI && ciEnvironment.name) || null
   };
 
   return traits;

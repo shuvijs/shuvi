@@ -442,6 +442,7 @@ importers:
       '@shuvi/platform-web': 1.0.4
       '@shuvi/service': 1.0.4
       '@shuvi/shared': 1.0.4
+      '@shuvi/telemetry': 1.0.4
       '@shuvi/toolpack': 1.0.4
       '@shuvi/utils': 1.0.4
       '@types/cross-spawn': 6.0.1
@@ -454,6 +455,7 @@ importers:
       '@shuvi/platform-web': link:../platform-web
       '@shuvi/service': link:../service
       '@shuvi/shared': link:../shared
+      '@shuvi/telemetry': link:../telemetry
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
       cli-highlight: 2.1.9
