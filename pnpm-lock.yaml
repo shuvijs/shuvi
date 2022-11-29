@@ -366,24 +366,14 @@ importers:
       '@babel/parser': 7.14.7
       '@babel/traverse': 7.14.7
       '@babel/types': 7.12.11
-<<<<<<< HEAD
-      '@shuvi/error-overlay': 1.0.3
-      '@shuvi/hook': 1.0.3
-      '@shuvi/router': 1.0.3
-      '@shuvi/runtime': 1.0.3
-      '@shuvi/shared': 1.0.3
-      '@shuvi/telemetry': 1.0.3
-      '@shuvi/toolpack': 1.0.3
-      '@shuvi/utils': 1.0.3
-=======
       '@shuvi/error-overlay': 1.0.4
       '@shuvi/hook': 1.0.4
       '@shuvi/router': 1.0.4
       '@shuvi/runtime': 1.0.4
       '@shuvi/shared': 1.0.4
+      '@shuvi/telemetry': 1.0.4
       '@shuvi/toolpack': 1.0.4
       '@shuvi/utils': 1.0.4
->>>>>>> de7c76a765d2d0f8d17f6e4e2d6141081e2a5dfd
       '@types/babel__code-frame': ^7.0.3
       '@types/babel__generator': ^7.6.4
       '@types/babel__traverse': ^7.14.2
@@ -475,7 +465,7 @@ importers:
 
   packages/telemetry:
     specifiers:
-      '@shuvi/utils': 1.0.3
+      '@shuvi/utils': 1.0.4
       '@types/async-retry': 1.3.0
       '@types/node-fetch': 2.6.1
       async-retry: 1.3.3
