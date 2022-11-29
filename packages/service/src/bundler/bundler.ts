@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 import { createEvent, RemoveListenerCallback } from '@shuvi/utils/lib/events';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
@@ -7,9 +6,6 @@ import ForkTsCheckerWebpackPlugin, {
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import logger from '@shuvi/utils/lib/logger';
-import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
-import { Telemetry } from '@shuvi/telemetry';
-import { eventBuildOptimize } from '@shuvi/telemetry/lib/events';
 import { inspect } from 'util';
 import {
   webpack,
@@ -31,7 +27,7 @@ import { Target, TargetChain } from '../core/plugin';
 import { createWebpackConfig, IWebpackConfigOptions } from './config';
 import { runCompiler, BundlerResult } from './runCompiler';
 import { CLIENT_OUTPUT_DIR } from '../constants';
-import { setupTypeScript, getJavaScriptInfo } from './typescript';
+import { setupTypeScript } from './typescript';
 import { WatchingProxy, Watching } from './watchingProxy';
 
 export type CompilerErr = {
@@ -60,7 +56,6 @@ export interface Bundler {
   watching: Watching;
   watch(): Watching;
   build(): Promise<BundlerResult>;
-  analysis(): Promise<void>;
   onBuildDone(cb: FinishedCallback): RemoveListenerCallback;
   onTypeCheckingDone(cb: FinishedCallback): RemoveListenerCallback;
   applyDevMiddlewares(server: Server): void;
@@ -95,16 +90,10 @@ class WebpackBundler implements Bundler {
   private _inited: boolean = false;
   private _startTime: number | null = null;
   private _isCompiling: boolean | null = false;
-  private _telemetry: Telemetry | undefined;
 
-  constructor(
-    options: NormalizedBundlerOptions,
-    cliContext: IPluginContext,
-    telemetry?: Telemetry
-  ) {
+  constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
     this._options = options;
     this._cliContext = cliContext;
-    this._telemetry = telemetry;
   }
 
   async init() {
@@ -139,61 +128,6 @@ class WebpackBundler implements Bundler {
     }
 
     return this._compiler.compilers.find(compiler => compiler.name === name);
-  }
-
-  async analysis() {
-    if (!this._telemetry) {
-      return;
-    }
-    logger.info('Start collecting data...');
-
-    const analysisBegin = process.hrtime();
-    const routesExtensions = ['ts', 'tsx', 'js', 'jsx'];
-
-    const routePaths = await recursiveReadDir(
-      this._cliContext.paths.routesDir,
-      { filter: new RegExp(`\\.(?:${routesExtensions.join('|')})$`) }
-    );
-
-    const middlewareCount = routePaths.filter(path =>
-      /middleware\..*/i.test(path)
-    ).length;
-
-    const srcDirFiles = await fs.promises.readdir(
-      this._cliContext.paths.srcDir,
-      {
-        encoding: 'utf-8'
-      }
-    );
-
-    const hasStatic404 = srcDirFiles.some(value => /error/i.test(value));
-    const pageLoadersPath = path.join(
-      this._cliContext.paths.appDir,
-      '/files/page-loaders.js'
-    );
-
-    const pageLoadersFile = await fs.promises.readFile(pageLoadersPath, {
-      encoding: 'utf8'
-    });
-
-    const totalLoaderCount = pageLoadersFile
-      .toString()
-      .split('\n')
-      .filter(loader => loader.startsWith('import')).length;
-
-    const { useTypeScript } = getJavaScriptInfo();
-
-    const analysisEnd = process.hrtime(analysisBegin);
-
-    this._telemetry.record(
-      eventBuildOptimize(routePaths, {
-        durationInSeconds: analysisEnd[0],
-        hasStatic404,
-        middlewareCount,
-        totalLoaderCount,
-        useTypeScript
-      })
-    );
   }
 
   onBuildDone(cb: FinishedCallback) {
@@ -534,10 +468,7 @@ class WebpackBundler implements Bundler {
   }
 }
 
-export async function getBundler(
-  ctx: IPluginContext,
-  telemetry?: Telemetry
-): Promise<Bundler> {
+export async function getBundler(ctx: IPluginContext): Promise<Bundler> {
   try {
     await setupTypeScript(ctx.paths, {
       reportMissingError: ctx.mode === 'production'
@@ -550,7 +481,7 @@ export async function getBundler(
     if (ctx.mode !== 'development') {
       options.preBundle = false;
     }
-    const bundler = new WebpackBundler(options, ctx, telemetry);
+    const bundler = new WebpackBundler(options, ctx);
     await bundler.init();
     return bundler;
   } catch (err: any) {

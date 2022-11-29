@@ -50,7 +50,6 @@ interface IApiOPtions {
   presets?: IPresetConfig[];
   normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
   telemetry?: Telemetry;
-  version?: string;
 }
 
 interface ServerConfigs {
@@ -98,8 +97,7 @@ class Api {
     phase,
     platform,
     normalizePlatformConfig,
-    telemetry,
-    version
+    telemetry
   }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
@@ -113,7 +111,7 @@ class Api {
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
     this._normalizePlatformConfig = normalizePlatformConfig;
-    this._telemetry = telemetry || new Telemetry({ version });
+    this._telemetry = telemetry || new Telemetry({});
   }
 
   get cwd() {
@@ -257,7 +255,7 @@ class Api {
     }
 
     if (!this._bundler) {
-      this._bundler = await getBundler(this.pluginContext, this.telemetry);
+      this._bundler = await getBundler(this.pluginContext);
     }
 
     return this._bundler;
@@ -470,8 +468,7 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     presets: options.presets,
     plugins: options.plugins,
     normalizePlatformConfig: options.normalizePlatformConfig,
-    telemetry: options.telemetry,
-    version: options.version
+    telemetry: options.telemetry
   });
 
   try {

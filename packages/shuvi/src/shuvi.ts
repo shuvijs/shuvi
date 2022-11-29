@@ -21,15 +21,16 @@ export async function initShuvi({
   config,
   ...options
 }: ShuviOption): Promise<Api> {
+  process.env._SHUVI_VERSION = pkgInfo.version;
   const { plugins, presets, ...restConfig } = config;
+
   const shuvi = await getApi({
     ...options,
     plugins,
     presets,
     config: restConfig,
     platform: getPlatform(),
-    normalizePlatformConfig,
-    version: pkgInfo.version
+    normalizePlatformConfig
   });
 
   return shuvi;

@@ -51,12 +51,10 @@ export class Telemetry {
   private queue: Set<Promise<RecordObject>>;
 
   constructor({
-    version,
     meta,
     context,
     postEndpoint
   }: {
-    version?: string;
     meta?: EventMeta;
     context?: EventContext;
     postEndpoint?: string;
@@ -76,8 +74,7 @@ export class Telemetry {
     this.queue = new Set();
 
     this.notify();
-
-    this.meta = { ...getAnonymousMeta(version!), ...meta };
+    this.meta = { ...getAnonymousMeta(process.env._SHUVI_VERSION!), ...meta };
     this.context = {
       anonymousId: this.anonymousId,
       projectId: this.projectId,

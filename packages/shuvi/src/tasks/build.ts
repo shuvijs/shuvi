@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { IPluginContext, Bundler, ShuviConfig } from '@shuvi/service';
+import { IPluginContext, Bundler, ShuviConfig, analysis } from '@shuvi/service';
 import { CLIENT_OUTPUT_DIR } from '@shuvi/shared/lib/constants';
 import logger from '@shuvi/utils/lib/logger';
 import { initShuvi } from '../shuvi';
@@ -76,7 +76,7 @@ export async function build(options: IBuildOptions) {
   const bundler = await api.getBundler();
   // transpile the application
   await bundle(bundler);
-  await bundler.analysis();
   await pluginContext.pluginRunner.afterBuild();
+  await analysis({ context: api.pluginContext, telemetry: api.telemetry });
   return api;
 }
