@@ -6,6 +6,8 @@ export { Bundler } from './bundler';
 
 export { ProjectBuilder } from './project';
 
+export { analysis } from './analysis';
+
 export {
   IShuviServer,
   ShuviRequest,
