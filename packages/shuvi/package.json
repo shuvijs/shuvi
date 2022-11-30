@@ -31,6 +31,7 @@
     "@shuvi/shared": "1.0.4",
     "@shuvi/toolpack": "1.0.4",
     "@shuvi/utils": "1.0.4",
+    "@shuvi/telemetry": "1.0.4",
     "cli-highlight": "^2.1.9",
     "commander": "5.1.0",
     "cross-spawn": "7.0.3",
