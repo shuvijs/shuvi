@@ -219,7 +219,6 @@ importers:
   packages/platform-shared:
     specifiers:
       '@shuvi/hook': 1.0.4
-      '@shuvi/redox': 0.0.7
       '@shuvi/router': 1.0.4
       '@shuvi/runtime': 1.0.4
       '@shuvi/service': workspace:*
@@ -227,15 +226,16 @@ importers:
       '@shuvi/toolpack': 1.0.4
       '@shuvi/utils': 1.0.4
       '@types/minimatch': 3.0.5
+      doura: 0.0.3
       redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
-      '@shuvi/redox': 0.0.7
       '@shuvi/router': link:../router
       '@shuvi/runtime': link:../runtime
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
+      doura: 0.0.3
       redux: 4.1.2
     devDependencies:
       '@shuvi/service': link:../service
@@ -247,8 +247,6 @@ importers:
       '@shuvi/error-overlay': 1.0.4
       '@shuvi/hook': 1.0.4
       '@shuvi/platform-shared': 1.0.4
-      '@shuvi/redox': 0.0.7
-      '@shuvi/redox-react': 0.0.7
       '@shuvi/router': 1.0.4
       '@shuvi/router-react': 1.0.4
       '@shuvi/runtime': 1.0.4
@@ -265,6 +263,7 @@ importers:
       '@types/react-test-renderer': 18.0.0
       content-type: 1.0.4
       core-js: 3.6.5
+      doura: 0.0.3
       ejs: 3.1.5
       fs-extra: 9.0.1
       memfs: 3.1.2
@@ -274,6 +273,7 @@ importers:
       raw-body: 2.4.1
       react: 18.1.0
       react-dom: 18.1.0
+      react-doura: 0.0.3
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0
@@ -283,8 +283,6 @@ importers:
       '@shuvi/error-overlay': link:../error-overlay
       '@shuvi/hook': link:../hook
       '@shuvi/platform-shared': link:../platform-shared
-      '@shuvi/redox': 0.0.7
-      '@shuvi/redox-react': 0.0.7_c5csfgawg4azvbqq44mfv7bbq4
       '@shuvi/router': link:../router
       '@shuvi/router-react': link:../router-react
       '@shuvi/runtime': link:../runtime
@@ -293,6 +291,7 @@ importers:
       '@shuvi/utils': link:../utils
       content-type: 1.0.4
       core-js: 3.6.5
+      doura: 0.0.3
       ejs: 3.1.5
       fs-extra: 9.0.1
       node-mocks-http: 1.11.0
@@ -300,6 +299,7 @@ importers:
       raw-body: 2.4.1
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
+      react-doura: 0.0.3_lsvu3ppk7vz23his7sr2cbmsna
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0_react@18.1.0
@@ -4179,31 +4179,6 @@ packages:
       rxjs: 6.5.5
     dev: true
 
-  /@shuvi/redox-react/0.0.7_c5csfgawg4azvbqq44mfv7bbq4:
-    resolution: {integrity: sha512-6LZcUo/rVeGl++kfArGia1+6wVTwnEsjAtZAPTEsmiuQ5jcuaOvTjUWj3Un+PzXYXkeKahE+a8AePscnYakKfQ==}
-    peerDependencies:
-      '@shuvi/redox': 0.0.7
-      react: '>=16.8'
-      react-dom: '>=16.8'
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-    dependencies:
-      '@shuvi/redox': 0.0.7
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
-      use-sync-external-store: 1.2.0_react@18.1.0
-    dev: false
-
-  /@shuvi/redox/0.0.7:
-    resolution: {integrity: sha512-80YJCbkSUkz61lXfCXQR2Wg8WL/jtRKLwd2tC+6JytgAJ+f3sX1c5+6hr2Ga42a/PsA7+Zsxu98Fb7X2sAzkKA==}
-    engines: {node: '>=10'}
-    dependencies:
-      immer: 9.0.6
-    dev: false
-
   /@shuvi/swc-darwin-arm64/1.0.0-rc.7:
     resolution: {integrity: sha512-pvdiRP0+Sw/c2cggJuVlBV31HZWCQsOCQC/FimD1/8NGm/rAqH1v/Q/eWVw2MgXxSsRGmjdcS4Omn0g6JLIa3g==}
     engines: {node: '>= 10'}
@@ -4236,6 +4211,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -4245,6 +4221,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
@@ -4254,6 +4231,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -4263,6 +4241,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
@@ -7121,6 +7100,10 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
+  /doura/0.0.3:
+    resolution: {integrity: sha512-RPGE0Co2GIKyxNkjE+jBeDClb/6QEKuKTk5gWgtOPsZH9kd0R9HvyjifK4H02elUOV3gG7bqF3OZsQ0mwE86TQ==}
+    dev: false
+
   /duplexer/0.1.1:
     resolution: {integrity: sha512-sxNZ+ljy+RA1maXoUReeqBBpBC6RLKmg5ewzV+x+mSETmWNoKdZN6vcQjpFROemza23hGFskJtFNoUWUaQ+R4Q==}
     dev: true
@@ -8853,10 +8836,6 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
-  /immer/9.0.6:
-    resolution: {integrity: sha512-G95ivKpy+EvVAnAab4fVa4YGYn24J1SpEktnJX7JJ45Bd7xqME/SCplFzYFmTbrkwZbQ4xJK1xMTUYBkN6pWsQ==}
-    dev: false
-
   /immutable/4.0.0:
     resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
     dev: true
@@ -10110,6 +10089,7 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -10119,6 +10099,7 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
@@ -10128,6 +10109,7 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -10137,6 +10119,7 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
@@ -12594,6 +12577,24 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-doura/0.0.3_lsvu3ppk7vz23his7sr2cbmsna:
+    resolution: {integrity: sha512-kYwLL7Eff89ljA7IWPXuXl5kIAAh0jDoYjF0VeQeKd882CCry9P9cvcPj4nZ6x2G/DeSJoj2b223M397hCPRNw==}
+    peerDependencies:
+      doura: 0.0.3
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      doura: 0.0.3
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      use-sync-external-store: 1.2.0_react@18.1.0
     dev: false
 
   /react-is/16.13.0:

@@ -1,7 +1,7 @@
-import type { RedoxStore } from '@shuvi/redox';
+import type { Doura } from 'doura';
 
 declare module '@shuvi/runtime' {
   export interface CustomAppContext {
-    store: RedoxStore;
+    store: Doura;
   }
 }

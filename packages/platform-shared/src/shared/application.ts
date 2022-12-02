@@ -1,11 +1,11 @@
 import { getManager, PluginManager } from './runtimPlugin';
 import { initPlugins } from './runtimPlugin';
-import { ModelPublicInstance, redox } from '@shuvi/redox';
-import { ErrorModel, errorModel } from './models/error';
-import { LoaderModel, loaderModel } from './models/loader';
+import { ModelPublicInstance, doura } from 'doura';
+import { ErrorModel, errorModel, errorModelName } from './models/error';
+import { LoaderModel, loaderModel, loaderModelName } from './models/loader';
 import { IRouter, IPageRouteRecord } from './routerTypes';
 import {
-  RedoxStore,
+  Doura,
   Application,
   IAppContext,
   ApplicationOptions,
@@ -19,7 +19,7 @@ export class ApplicationImpl<Config extends {} = {}> {
   private _pluginManager: PluginManager;
   private _context: IAppContext;
   private _config: Config;
-  private _store: RedoxStore;
+  private _store: Doura;
   private _error: ModelPublicInstance<ErrorModel>;
   private _loader: ModelPublicInstance<LoaderModel>;
 
@@ -27,12 +27,11 @@ export class ApplicationImpl<Config extends {} = {}> {
     this._config = options.config;
     this._router = options.router;
     this._context = {} as IAppContext;
-    this._store = redox({ initialState: options.initialState });
-    this._error = this._store.getModel(errorModel);
-    this._loader = this._store.getModel(loaderModel);
+    this._store = doura({ initialState: options.initialState });
+    this._error = this._store.getModel(errorModelName, errorModel);
+    this._loader = this._store.getModel(loaderModelName, loaderModel);
     this._appComponent = options.AppComponent;
     this._pluginManager = getManager();
-
     initPlugins(this._pluginManager, options.plugins || []);
   }
 

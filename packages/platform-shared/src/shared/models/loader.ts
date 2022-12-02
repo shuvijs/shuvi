@@ -1,4 +1,4 @@
-import { defineModel } from '@shuvi/redox';
+import { defineModel } from 'doura';
 
 export interface LoaderState {
   dataByRouteId: Record<string, any>;
@@ -8,25 +8,17 @@ const initState: LoaderState = {
   dataByRouteId: {}
 };
 
+export const loaderModelName = 'loader';
+
 export const loaderModel = defineModel({
-  name: 'loader',
   state: initState,
-  reducers: {
-    setDatas(state, newData: Record<string, any>) {
-      return {
-        ...state,
-        dataByRouteId: {
-          ...state.dataByRouteId,
-          ...newData
-        }
+  actions: {
+    setDatas(newData: Record<string, any>) {
+      this.dataByRouteId = {
+        ...this.dataByRouteId,
+        ...newData
       };
     }
-    // clearDatas(state) {
-    //   return {
-    //     ...state,
-    //     dataByRouteId: {}
-    //   };
-    // }
   },
   views: {
     getAllData() {
