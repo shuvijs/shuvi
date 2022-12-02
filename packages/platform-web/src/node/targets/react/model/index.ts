@@ -1,19 +1,19 @@
 import { createPluginAfter } from '@shuvi/service';
 import { resolveLib, resolvePkgFile } from '../../../paths';
 
-const redoxReactSource = resolveLib('@shuvi/redox-react');
+const reactDouraSource = resolveLib('react-doura');
 
 const core = createPluginAfter(
   {
     addRuntimeService: () => [
       {
-        source: redoxReactSource,
+        source: reactDouraSource,
         exported: '*',
         filepath: 'model.ts'
       }
     ],
     configWebpack: config => {
-      config.resolve.alias.set('@shuvi/redox-react', redoxReactSource);
+      config.resolve.alias.set('react-doura', reactDouraSource);
       return config;
     }
   },

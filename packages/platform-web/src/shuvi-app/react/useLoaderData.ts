@@ -1,5 +1,9 @@
 import { useMatchedRoute } from '@shuvi/router-react';
-import { IPageRouteRecord, loaderModel } from '@shuvi/platform-shared/shared';
+import {
+  IPageRouteRecord,
+  loaderModel,
+  loaderModelName
+} from '@shuvi/platform-shared/shared';
 import { useStaticModel } from './store';
 
 export const noLoaderMessage =
@@ -12,11 +16,11 @@ export const useLoaderData = <T = any>(): T => {
 
   // we don't need to watch the model change, cause it always change with
   // matched route
-  const [state] = useStaticModel(loaderModel);
+  const loaderData = useStaticModel(loaderModelName, loaderModel);
 
-  if (!hasOwn.call(state.current.dataByRouteId, id)) {
+  if (!hasOwn.call(loaderData.dataByRouteId, id)) {
     throw Error(noLoaderMessage);
   }
 
-  return state.current.dataByRouteId[id];
+  return loaderData.dataByRouteId[id];
 };

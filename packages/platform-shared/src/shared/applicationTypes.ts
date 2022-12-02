@@ -1,4 +1,4 @@
-import { RedoxStore } from '@shuvi/redox';
+import { Doura } from 'doura';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IRouter, IPageRouteRecord } from './routerTypes';
 import { IPluginList } from './runtimPlugin';
@@ -11,7 +11,7 @@ export type IRerenderConfig = {
   AppComponent?: any;
 };
 
-export type { RedoxStore };
+export type { Doura };
 
 export type ErrorSource = 'server';
 
@@ -24,11 +24,11 @@ export interface IError {
 }
 
 export interface IErrorState {
-  error?: IError;
+  error: IError | null;
 }
 
 export type IAppState = {
-  error?: IErrorState;
+  error: IErrorState;
 };
 
 export interface Application<Config extends {} = {}> {
@@ -36,8 +36,8 @@ export interface Application<Config extends {} = {}> {
   readonly context: IAppContext;
   readonly router: IRouter<IPageRouteRecord>;
   readonly appComponent: any;
-  readonly store: RedoxStore;
-  readonly error: IError | undefined;
+  readonly store: Doura;
+  readonly error: IErrorState['error'];
   setError(err: IError): void;
   clearError(): void;
   getLoadersData(): Record<string, any>;

@@ -1,10 +1,10 @@
-import { RedoxStore } from '@shuvi/redox';
+import { Doura } from 'doura';
 import { createRuntimePluginAfter } from '@shuvi/platform-shared/shared';
-import { RedoxWrapper } from './RedoxWrapper';
+import { DouraWrapper } from './Wrapper';
 
 declare module '@shuvi/runtime' {
   interface CustomAppContext {
-    store: RedoxStore;
+    store: Doura;
   }
 }
 
@@ -12,7 +12,7 @@ declare module '@shuvi/runtime' {
 export default createRuntimePluginAfter(
   {
     appComponent: async (App, appContext) => {
-      return RedoxWrapper(App, {
+      return DouraWrapper(App, {
         store: appContext.store
       });
     }

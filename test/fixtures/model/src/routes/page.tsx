@@ -8,21 +8,16 @@ const sleep = (time: number) =>
     }, time);
   });
 
-const core = defineModel({
-  name: 'core',
+const baseName = 'base';
+const base = defineModel({
   state: {
-    hello: 'core',
+    hello: 'base',
     step: 1
   },
-  reducers: {
-    addStep: function (state) {
-      return {
-        ...state,
-        step: state.step + 1
-      };
-    }
-  },
   actions: {
+    addStep() {
+      this.step++;
+    },
     async addStepAsync() {
       await sleep(100);
       this.addStep();
@@ -30,79 +25,38 @@ const core = defineModel({
   }
 });
 
-const base = defineModel(
-  {
-    name: 'base',
-    state: {
-      hello: 'base',
-      step: 1
-    },
-    reducers: {
-      addStep: state => {
-        return {
-          ...state,
-          step: state.step + 1
-        };
-      }
-    },
-    actions: {
-      async addStepAsync() {
-        await sleep(100);
-        this.addStep();
-      }
-    }
-  },
-  [core]
-);
-
-const count = defineModel(
-  {
-    name: 'count',
+const countName = 'count';
+const count = defineModel(({ use }) => {
+  const baseModel = use(baseName, base);
+  return {
     state: {
       hello: 'count',
       num: 1
     },
-    reducers: {
-      addCount: (state, payload: number) => {
-        return {
-          ...state,
-          num: state.num + payload
-        };
-      }
-    },
     actions: {
+      addCount(payload: number) {
+        this.num += payload;
+      },
       async addCountAsync() {
-        this.addCount(this.$dep.base.$state.step);
-        await this.$dep.base.addStepAsync();
+        this.addCount(baseModel.step);
+        await baseModel.addStepAsync();
       }
     }
-  },
-  [base]
-);
+  };
+});
 
 export default function Index() {
-  const [{ num, hello: helloCount }, { addCountAsync }] = useRootModel(count);
-  const [{ hello: helloBase, step }, { addStepAsync }] = useRootModel(base);
+  const countModel = useRootModel(countName, count);
+  const baseModel = useRootModel(baseName, base);
   return (
     <div>
       <div>
-        Count: {helloCount} {num}
-        <button
-          onClick={() => {
-            addCountAsync();
-          }}
-        >
-          Add Count
-        </button>
-      </div>
-
-      <div>
-        Base: {helloBase}
-        <span id="step">{step}</span>
+        <div id="num">{countModel.num}</div>
+        <span id="step">{baseModel.step}</span>
         <button
           id="add-async"
           onClick={() => {
-            addStepAsync();
+            baseModel.addStepAsync();
           }}
         >
           Add Step
@@ -114,7 +68,9 @@ export default function Index() {
 
 export const loader: Loader = async ctx => {
   const store = ctx.appContext.store;
-  const baseStore = store.getModel(base);
-  await baseStore.addStepAsync();
+  const baseStore = store.getModel(baseName, base);
+  baseStore.addStep();
+  const countStore = store.getModel(countName, count);
+  await countStore.addCountAsync();
   return {};
 };

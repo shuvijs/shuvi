@@ -1,28 +1,28 @@
-import { RedoxStore, redox } from '@shuvi/redox';
+import { Doura, doura } from 'doura';
 import {
   createRuntimePlugin,
   getPageData,
   IAppContext
 } from '@shuvi/platform-shared/shared';
 
-export type InitRedox = (params: {
+export type InitDoura = (params: {
   initialState: any;
   ctx: IAppContext;
-}) => RedoxStore;
+}) => Doura;
 
-let currentStore: RedoxStore;
+let currentStore: Doura;
 
 const isServer = typeof window === 'undefined';
 
 // for client, singleton mode
 // for server, return new store
-const initStore: InitRedox = ({ initialState, ctx }) => {
+const initStore: InitDoura = ({ initialState, ctx }) => {
   const createStoreInstance = () => {
-    // return createRedox(initialState, {
+    // return createDoura(initialState, {
     //   ...ctx,
     //   isServer
     // });
-    return redox({
+    return doura({
       initialState
     });
   };

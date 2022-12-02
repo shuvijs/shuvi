@@ -1,29 +1,22 @@
-import { defineModel } from '@shuvi/redox';
+import { defineModel } from 'doura';
 import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
 import { IErrorState, IError } from '../applicationTypes';
 
-const DEFAULT_ERRORSTATE = {
-  error: undefined
+const DEFAULT_ERROR_STATE = {
+  error: null
 } as IErrorState;
 
+export const errorModelName = 'error';
+
 export const errorModel = defineModel({
-  name: 'error',
-  state: DEFAULT_ERRORSTATE,
-  reducers: {
-    setError(_state, error?: IError) {
-      return {
-        ..._state,
-        error: error
-      };
-    }
-  },
+  state: DEFAULT_ERROR_STATE,
   actions: {
-    set(payload?: IError) {
-      this.setError(payload || SHUVI_ERROR.APP_ERROR);
+    set(error: IError = SHUVI_ERROR.APP_ERROR) {
+      this.error = error;
     },
     clear() {
       if (this.hasError) {
-        this.setError(undefined);
+        this.error = null;
       }
     }
   },
@@ -32,7 +25,7 @@ export const errorModel = defineModel({
       return this.error;
     },
     hasError() {
-      return typeof this.error !== 'undefined';
+      return this.error !== null;
     }
   }
 });

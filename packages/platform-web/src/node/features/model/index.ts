@@ -2,18 +2,18 @@ import { createPlugin } from '@shuvi/service';
 import { resolvePkgFile, resolveLib } from '../../paths';
 import server from './server';
 
-const redoxSource = resolveLib('@shuvi/redox');
+const douraSource = resolveLib('doura');
 
 const core = createPlugin({
   addRuntimeService: () => [
     {
-      source: redoxSource,
+      source: douraSource,
       exported: '*',
       filepath: 'model.ts'
     }
   ],
   configWebpack: config => {
-    config.resolve.alias.set('@shuvi/redox', redoxSource);
+    config.resolve.alias.set('doura', douraSource);
     return config;
   }
 });
