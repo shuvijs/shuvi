@@ -17,7 +17,8 @@ describe('redox', () => {
   test('ssr state delivery to client', async () => {
     await page.goto(ctx.url('/'));
     await page.waitForSelector('#step');
-    expect(await page.$text('#step')).toBe('2');
+    expect(await page.$text('#step')).toBe('3');
+    expect(await page.$text('#step')).toBe('3');
   });
 
   test('async actions should worked', async () => {
@@ -28,9 +29,9 @@ describe('redox', () => {
 
     await check(
       () => page.$text('#step'),
-      t => t !== '2'
+      t => t !== '3'
     );
 
-    expect(await page.$text('#step')).toBe('3');
+    expect(await page.$text('#step')).toBe('4');
   });
 });

@@ -84,7 +84,7 @@
   },
   "dependencies": {
     "@shuvi/hook": "1.0.4",
-    "@shuvi/redox": "0.0.7",
+    "doura": "0.0.3",
     "@shuvi/router": "1.0.4",
     "@shuvi/runtime": "1.0.4",
     "@shuvi/shared": "1.0.4",

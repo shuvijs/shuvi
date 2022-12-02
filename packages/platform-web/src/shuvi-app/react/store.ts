@@ -1,4 +1,4 @@
-import { createContainer } from '@shuvi/redox-react';
+import { createContainer } from 'react-doura';
 
 const { Provider, useSharedModel, useStaticModel } = createContainer();
 
