@@ -1,3 +1,12 @@
+## [1.0.5](https://github.com/shuvijs/shuvi/compare/v1.0.4...v1.0.5) (2022-12-02)
+
+
+### Features
+
+* adopt doura ([#474](https://github.com/shuvijs/shuvi/issues/474)) ([c257554](https://github.com/shuvijs/shuvi/commit/c2575548e5e4b7c011f90510d5d90feff87a77b9))
+
+
+
 ## [1.0.4](https://github.com/shuvijs/shuvi/compare/v1.0.3...v1.0.4) (2022-11-28)
 
 
