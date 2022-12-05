@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/router-react",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -28,9 +28,9 @@
     "node": ">= 12.0.0"
   },
   "dependencies": {
-    "@shuvi/router": "1.0.6",
-    "@shuvi/platform-shared": "1.0.6",
-    "@shuvi/utils": "1.0.6",
+    "@shuvi/router": "1.0.7",
+    "@shuvi/platform-shared": "1.0.7",
+    "@shuvi/utils": "1.0.7",
     "prop-types": "^15.8.1",
     "use-sync-external-store": "1.1.0"
   },

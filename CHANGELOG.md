@@ -1,3 +1,12 @@
+## [1.0.7](https://github.com/shuvijs/shuvi/compare/v1.0.6...v1.0.7) (2022-12-05)
+
+
+### Bug Fixes
+
+* add meta info and fix get telemetry logic ([#475](https://github.com/shuvijs/shuvi/issues/475)) ([9eb6b81](https://github.com/shuvijs/shuvi/commit/9eb6b8121e1963a408ed1403026f8d0e91be9919))
+
+
+
 ## [1.0.6](https://github.com/shuvijs/shuvi/compare/v1.0.5...v1.0.6) (2022-12-05)
 
 
