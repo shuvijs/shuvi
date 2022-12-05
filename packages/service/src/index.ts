@@ -25,6 +25,7 @@ export {
 
 export {
   Api,
+  Telemetry,
   IPaths,
   ShuviConfig,
   IServicePhase,

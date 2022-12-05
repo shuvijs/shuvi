@@ -1,12 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import logger from '@shuvi/utils/lib/logger';
-import { Telemetry } from '@shuvi/telemetry';
 import { eventBuildOptimize } from '@shuvi/telemetry/lib/events';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
-
 import { getJavaScriptInfo } from '../bundler/typescript';
-import { IPluginContext } from '../core';
+import { IPluginContext, Telemetry } from '../core';
 
 export const analysis = async ({
   context,

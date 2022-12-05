@@ -20,20 +20,22 @@ const TELEMETRY_KEY_ID = `telemetry.anonymousId`;
 // See the `oneWayHash` function.
 const TELEMETRY_KEY_SALT = `telemetry.salt`;
 
-type TelemetryEvent = { eventName: string; payload: object };
-type EventContext = {
+export type TelemetryEvent = { eventName: string; payload: object };
+
+export type EventContext = {
   anonymousId?: string;
   projectId?: string;
   sessionId?: string;
   [key: string]: unknown;
 };
-type EventMeta = { [key: string]: unknown };
-type EventBatchShape = {
+export type EventMeta = { [key: string]: unknown };
+
+export type EventBatchShape = {
   eventName: string;
   fields: object;
 };
 
-type RecordObject = {
+export type RecordObject = {
   isFulfilled: boolean;
   isRejected: boolean;
   value?: any;
@@ -41,9 +43,11 @@ type RecordObject = {
 };
 
 export class Telemetry {
+  private name: string;
   private conf: Conf<any> | null;
   private sessionId: string;
   private rawProjectId: string;
+  private projectId: string;
   private meta: EventMeta;
   private context: EventContext;
   private postEndpoint: string | undefined;
@@ -51,10 +55,12 @@ export class Telemetry {
   private queue: Set<Promise<RecordObject>>;
 
   constructor({
+    name,
     meta,
     context,
     postEndpoint
   }: {
+    name: string;
     meta?: EventMeta;
     context?: EventContext;
     postEndpoint?: string;
@@ -67,13 +73,15 @@ export class Telemetry {
     } catch (_) {
       this.conf = null;
     }
+    this.name = name;
     this.sessionId = randomBytes(32).toString('hex');
     this.rawProjectId = getRawProjectId();
+    this.projectId = this._oneWayHash(this.rawProjectId);
     this.postEndpoint = postEndpoint;
 
     this.queue = new Set();
 
-    this.notify();
+    this._notify();
     this.meta = { ...getAnonymousMeta(), ...meta };
     this.context = {
       anonymousId: this.anonymousId,
@@ -84,28 +92,6 @@ export class Telemetry {
     Object.freeze(this.meta);
     Object.freeze(this.context);
   }
-
-  private notify = () => {
-    if (!this.conf) {
-      return;
-    }
-
-    // The end-user has already been notified about our telemetry integration. We
-    // don't need to constantly annoy them about it.
-    // We will re-inform users about the telemetry if significant changes are
-    // ever made.
-    if (this.conf.get(TELEMETRY_KEY_NOTIFY_DATE, '')) {
-      return;
-    }
-    this.conf.set(TELEMETRY_KEY_NOTIFY_DATE, Date.now().toString());
-
-    console.log(
-      `${chalk.magenta.bold(
-        'Attention'
-      )}: Shuvi.js now collects completely anonymous telemetry regarding usage.`
-    );
-    console.log();
-  };
 
   get anonymousId(): string {
     const val = this.conf && this.conf.get(TELEMETRY_KEY_ID);
@@ -129,26 +115,7 @@ export class Telemetry {
     return generated;
   }
 
-  oneWayHash = (payload: BinaryLike): string => {
-    const hash = createHash('sha256');
-
-    // Always prepend the payload value with salt. This ensures the hash is truly
-    // one-way.
-    hash.update(this.salt);
-
-    // Update is an append operation, not a replacement. The salt from the prior
-    // update is still present!
-    hash.update(payload);
-    return hash.digest('hex');
-  };
-
-  private get projectId(): string {
-    return this.oneWayHash(this.rawProjectId);
-  }
-
-  record = (
-    _events: TelemetryEvent | TelemetryEvent[]
-  ): Promise<RecordObject> => {
+  record(_events: TelemetryEvent | TelemetryEvent[]): Promise<RecordObject> {
     const _this = this;
     // pseudo try-catch
     async function wrapper() {
@@ -177,13 +144,50 @@ export class Telemetry {
     this.queue.add(prom);
 
     return prom;
-  };
+  }
 
-  flush = async () => Promise.all(this.queue).catch(() => null);
+  async flush() {
+    Promise.all(this.queue).catch(() => null);
+  }
 
-  private _submitRecord = (
+  private _notify() {
+    if (!this.conf) {
+      return;
+    }
+
+    // The end-user has already been notified about our telemetry integration. We
+    // don't need to constantly annoy them about it.
+    // We will re-inform users about the telemetry if significant changes are
+    // ever made.
+    if (this.conf.get(TELEMETRY_KEY_NOTIFY_DATE, '')) {
+      return;
+    }
+    this.conf.set(TELEMETRY_KEY_NOTIFY_DATE, Date.now().toString());
+
+    console.log(
+      `${chalk.magenta.bold('Attention')}: ${
+        this.name
+      } now collects completely anonymous telemetry regarding usage.`
+    );
+    console.log();
+  }
+
+  private _oneWayHash(payload: BinaryLike): string {
+    const hash = createHash('sha256');
+
+    // Always prepend the payload value with salt. This ensures the hash is truly
+    // one-way.
+    hash.update(this.salt);
+
+    // Update is an append operation, not a replacement. The salt from the prior
+    // update is still present!
+    hash.update(payload);
+    return hash.digest('hex');
+  }
+
+  private _submitRecord(
     _events: TelemetryEvent | TelemetryEvent[]
-  ): Promise<any> => {
+  ): Promise<any> {
     let events: TelemetryEvent[];
     if (Array.isArray(_events)) {
       events = _events;
@@ -207,5 +211,5 @@ export class Telemetry {
         fields: payload
       })) as Array<EventBatchShape>
     });
-  };
+  }
 }
