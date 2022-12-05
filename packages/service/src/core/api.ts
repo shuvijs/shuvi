@@ -2,6 +2,11 @@ import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
 import { deepmerge } from '@shuvi/utils/lib/deepmerge';
 import { joinPath } from '@shuvi/utils/lib/string';
 import logger from '@shuvi/utils/lib/logger';
+import {
+  Telemetry as TelemetryImpl,
+  RecordObject,
+  TelemetryEvent
+} from '@shuvi/telemetry';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOption } from '../project';
@@ -48,12 +53,17 @@ interface IApiOPtions {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
+  telemetry?: TelemetryImpl;
 }
 
 interface ServerConfigs {
   serverPlugins: ServerPluginInstance[];
   getMiddlewares: IPlatformContent['getMiddlewares'];
   getMiddlewaresBeforeDevMiddlewares: IPlatformContent['getMiddlewaresBeforeDevMiddlewares'];
+}
+
+export interface Telemetry {
+  record(events: TelemetryEvent | TelemetryEvent[]): Promise<RecordObject>;
 }
 
 class Api {
@@ -72,6 +82,9 @@ class Api {
   private _config!: NormalizedShuviConfig;
   private _plugins: IPluginConfig[] = [];
   private _presets: IPresetConfig[] = [];
+
+  private _telemetryImpl?: TelemetryImpl;
+  private _telemetry!: Telemetry;
 
   private _platform?: IPlatform;
   private _normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
@@ -92,7 +105,8 @@ class Api {
     plugins,
     phase,
     platform,
-    normalizePlatformConfig
+    normalizePlatformConfig,
+    telemetry
   }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
@@ -102,6 +116,7 @@ class Api {
     this._customConfig = config || {};
     this._customPresets = presets || [];
     this._customPlugins = plugins || [];
+    this._telemetryImpl = telemetry;
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
@@ -126,6 +141,25 @@ class Api {
 
   get serverConfigs() {
     return this._serverConfigs;
+  }
+
+  get telemetry() {
+    if (this._telemetry) {
+      this._telemetry = {
+        record: (events: TelemetryEvent | TelemetryEvent[]) => {
+          if (!this._telemetryImpl) {
+            return Promise.resolve({
+              isFulfilled: true,
+              isRejected: true
+            });
+          }
+
+          return this._telemetryImpl.record(events);
+        }
+      };
+    }
+
+    return this._telemetry;
   }
 
   async init() {
@@ -457,7 +491,8 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     platform: options.platform,
     presets: options.presets,
     plugins: options.plugins,
-    normalizePlatformConfig: options.normalizePlatformConfig
+    normalizePlatformConfig: options.normalizePlatformConfig,
+    telemetry: options.telemetry
   });
 
   try {
