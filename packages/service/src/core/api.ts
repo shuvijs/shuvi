@@ -144,7 +144,7 @@ class Api {
   }
 
   get telemetry() {
-    if (this._telemetry) {
+    if (!this._telemetry) {
       this._telemetry = {
         record: (events: TelemetryEvent | TelemetryEvent[]) => {
           if (!this._telemetryImpl) {
