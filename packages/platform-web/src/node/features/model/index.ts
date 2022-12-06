@@ -20,6 +20,9 @@ const core = createPlugin({
 
 export default {
   core,
+  runtime: {
+    plugin: resolvePkgFile('esm/shuvi-app/model/runtime.js')
+  },
   server,
   types: resolvePkgFile('lib/node/features/model/shuvi-app.d.ts')
 };
