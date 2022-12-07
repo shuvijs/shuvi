@@ -5,10 +5,7 @@ import {
   IAppContext
 } from '@shuvi/platform-shared/shared';
 
-export type InitDoura = (params: {
-  initialState: any;
-  ctx: IAppContext;
-}) => Doura;
+type InitDoura = (params: { initialState: any; ctx: IAppContext }) => Doura;
 
 let currentStore: Doura;
 
@@ -18,10 +15,6 @@ const isServer = typeof window === 'undefined';
 // for server, return new store
 const initStore: InitDoura = ({ initialState, ctx }) => {
   const createStoreInstance = () => {
-    // return createDoura(initialState, {
-    //   ...ctx,
-    //   isServer
-    // });
     return doura({
       initialState
     });
