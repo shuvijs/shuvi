@@ -64,6 +64,7 @@ interface ServerConfigs {
 
 export interface Telemetry {
   record(events: TelemetryEvent | TelemetryEvent[]): Promise<RecordObject>;
+  flush(): Promise<void>;
 }
 
 class Api {
@@ -155,6 +156,12 @@ class Api {
           }
 
           return this._telemetryImpl.record(events);
+        },
+        flush: () => {
+          if (!this._telemetryImpl) {
+            return Promise.resolve();
+          }
+          return this._telemetryImpl.flush();
         }
       };
     }

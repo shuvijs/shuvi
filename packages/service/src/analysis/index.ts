@@ -1,7 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import logger from '@shuvi/utils/lib/logger';
-import { eventBuildOptimize } from '@shuvi/telemetry/lib/events';
+import {
+  eventBuildOptimize,
+  eventPackageDetected
+} from '@shuvi/telemetry/lib/events';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { getJavaScriptInfo } from '../bundler/typescript';
 import { IPluginContext, Telemetry } from '../core';
@@ -52,6 +55,10 @@ export const analysis = async ({
 
   const analysisEnd = process.hrtime(analysisBegin);
 
+  const packageDetectedEvents = await eventPackageDetected(
+    context.paths.rootDir
+  );
+  telemetry.record(packageDetectedEvents);
   telemetry.record(
     eventBuildOptimize(routePaths, {
       durationInSeconds: analysisEnd[0],
