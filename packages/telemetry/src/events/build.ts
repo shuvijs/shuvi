@@ -85,3 +85,70 @@ export async function eventPackageDetected(
     return [];
   }
 }
+
+export const EVENT_BUILD_FEATURE_USAGE = 'SHUVI_BUILD_FEATURE_USAGE';
+
+export type Feature =
+  | 'shuvi/lightningCss'
+  | 'shuvi/webpack-dll'
+  | 'swcPlugins'
+  | 'swcModularizeImports'
+  | 'swcRemoveConsole'
+  | 'swcReactRemoveProperties'
+  | 'swcJsxImportSource'
+  | 'swcStyledComponents'
+  | 'swcEmotion'
+  | 'swcExperimentalDecorators'
+  | 'swcEmitDecoratorMetadata';
+
+const BUILD_FEATURES: Array<Feature> = [
+  'shuvi/lightningCss',
+  'shuvi/webpack-dll',
+  'swcPlugins',
+  'swcModularizeImports',
+  'swcRemoveConsole',
+  'swcReactRemoveProperties',
+  'swcJsxImportSource',
+  'swcStyledComponents',
+  'swcEmotion',
+  'swcExperimentalDecorators',
+  'swcEmitDecoratorMetadata'
+];
+
+export type EventBuildFeatureUsage = {
+  featureName: Feature;
+  invocationCount: number;
+};
+
+export function eventBuildFeatureUsage({
+  compiler,
+  experimental
+}: {
+  compiler: Record<string, any> | undefined;
+  experimental: Record<string, any> | undefined;
+}): Array<{ eventName: string; payload: EventBuildFeatureUsage }> {
+  const buildFeaturesMap = new Map(
+    [
+      ['shuvi/lightningCss', !!experimental?.lightningCss],
+      ['shuvi/webpack-dll', !!experimental?.preBundle],
+      ['swcPlugins', !!experimental?.swcPlugins?.length],
+      ['swcModularizeImports', !!experimental?.modularizeImports],
+      ['swcRemoveConsole', !!compiler?.removeConsole],
+      ['swcReactRemoveProperties', !!compiler?.reactRemoveProperties],
+      ['swcJsxImportSource', !!compiler?.jsxImportSource],
+      ['swcStyledComponents', !!compiler?.styledComponents],
+      ['swcEmotion', !!compiler?.emotion],
+      ['swcExperimentalDecorators', !!compiler?.experimentalDecorators],
+      ['swcEmitDecoratorMetadata', !!compiler?.emitDecoratorMetadata]
+    ].filter<[Feature, boolean]>(Boolean as any)
+  );
+  return BUILD_FEATURES.map(featureName => {
+    return {
+      eventName: EVENT_BUILD_FEATURE_USAGE,
+      payload: {
+        featureName,
+        invocationCount: buildFeaturesMap.get(featureName) ? 1 : 0
+      }
+    };
+  });
+}
