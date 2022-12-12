@@ -5,7 +5,7 @@ import {
   eventBuildOptimize,
   eventPackageDetected,
   eventBuildFeatureUsage
-} from '@shuvi/telemetry/lib/events';
+} from './events';
 import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
 import { getJavaScriptInfo } from '../bundler/typescript';
 import { IPluginContext, Telemetry } from '../core';
