@@ -48,7 +48,8 @@
     "send": "0.17.1",
     "ws": "8.2.3",
     "dotenv": "16.0.3",
-    "dotenv-expand": "9.0.0"
+    "dotenv-expand": "9.0.0",
+    "find-up": "4.1.0"
   },
   "devDependencies": {
     "@babel/types": "7.12.11",

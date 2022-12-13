@@ -79,5 +79,6 @@ export async function build(options: IBuildOptions) {
   await bundle(bundler);
   await pluginContext.pluginRunner.afterBuild();
   await analysis({ context: api.pluginContext, telemetry: api.telemetry });
+  await api.telemetry.flush();
   return api;
 }
