@@ -1,3 +1,18 @@
+## [1.0.8](https://github.com/shuvijs/shuvi/compare/v1.0.7...v1.0.8) (2022-12-14)
+
+
+### Bug Fixes
+
+* **release-swc:** use stable docker image ([5c84257](https://github.com/shuvijs/shuvi/commit/5c842578a682feb85f3cae4d7d1a4fc5ab64903b))
+* use esm for model runtime ([0710529](https://github.com/shuvijs/shuvi/commit/0710529c09da68156bd48c8ba9c829b2c5012d29))
+
+
+### Features
+
+* **telemetry:** add EVENT_BUILD_FEATURE_USAGE and EVENT_PACKAGE_DETECTED ([#477](https://github.com/shuvijs/shuvi/issues/477)) ([616b44d](https://github.com/shuvijs/shuvi/commit/616b44d727b88db912e1da6f049968c02930810d))
+
+
+
 ## [1.0.7](https://github.com/shuvijs/shuvi/compare/v1.0.6...v1.0.7) (2022-12-05)
 
 
