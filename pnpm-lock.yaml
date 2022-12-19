@@ -195,8 +195,6 @@ importers:
       data-uri-to-buffer: 3.0.1
       html-entities: 2.3.2
       launch-editor: 2.2.1
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
       source-map: 0.8.0-beta.0
       stacktrace-parser: 0.1.10
       strip-ansi: 6.0.1
@@ -209,6 +207,8 @@ importers:
       '@types/babel__code-frame': 7.0.3
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       rollup: 2.77.2
       rollup-plugin-string: 3.0.0
       rollup-plugin-typescript2: 0.32.1_rollup@2.77.2
@@ -271,8 +271,8 @@ importers:
       node-mocks-http: 1.11.0
       object-assign: 4.1.1
       raw-body: 2.4.1
-      react: 18.1.0
-      react-dom: 18.1.0
+      react: 18.2.0
+      react-dom: 18.2.0
       react-doura: 0.0.4
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
@@ -297,16 +297,16 @@ importers:
       node-mocks-http: 1.11.0
       object-assign: 4.1.1
       raw-body: 2.4.1
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
-      react-doura: 0.0.4_7bpcwtk6sdjhe22vaob5yexide
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-doura: 0.0.4_scg2bk73sbkjkulrqkqzpg3ysa
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
-      use-sync-external-store: 1.1.0_react@18.1.0
+      use-sync-external-store: 1.1.0_react@18.2.0
       whatwg-fetch: 3.0.0
     devDependencies:
       '@shuvi/service': link:../service
-      '@testing-library/react': 13.3.0_ef5jwxihqo6n7gxfmzogljlgcm
+      '@testing-library/react': 13.3.0_biqbaboplfbrettd7655fr4n2y
       '@types/content-type': 1.1.5
       '@types/ejs': 3.1.0
       '@types/raw-body': 2.3.0
@@ -4211,6 +4211,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -4220,6 +4221,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
@@ -4229,6 +4231,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
@@ -4238,6 +4241,7 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
@@ -4330,7 +4334,7 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@testing-library/react/13.3.0_ef5jwxihqo6n7gxfmzogljlgcm:
+  /@testing-library/react/13.3.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-DB79aA426+deFgGSjnf5grczDPiL4taK3hFaa+M5q7q20Kcve9eQottOG5kZ74KEr55v0tU2CQormSSDK87zYQ==}
     engines: {node: '>=12'}
     peerDependencies:
@@ -4345,8 +4349,8 @@ packages:
       '@babel/runtime': 7.12.5
       '@testing-library/dom': 8.16.0
       '@types/react-dom': 18.0.6
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: true
 
   /@tootallnate/once/2.0.0:
@@ -12561,6 +12565,7 @@ packages:
       loose-envify: 1.4.0
       react: 18.1.0
       scheduler: 0.22.0
+    dev: true
 
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
@@ -12573,9 +12578,8 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
-    dev: false
 
-  /react-doura/0.0.4_7bpcwtk6sdjhe22vaob5yexide:
+  /react-doura/0.0.4_scg2bk73sbkjkulrqkqzpg3ysa:
     resolution: {integrity: sha512-+Zcrbaxpv3UTAKcXyBEUI2Iq60PpNWbISLLb/pv55p0Ku7v5k4xR+3Ay+/AZM1gaXfv/aMzscjllek3a3VCwSA==}
     peerDependencies:
       doura: 0.0.4
@@ -12588,9 +12592,9 @@ packages:
         optional: true
     dependencies:
       doura: 0.0.4
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
-      use-sync-external-store: 1.2.0_react@18.1.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /react-is/16.13.0:
@@ -12665,7 +12669,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /read-pkg-up/3.0.0:
     resolution: {integrity: sha512-YFzFrVvpC6frF1sz8psoHDBGF7fLPc+llq/8NB43oagqWkx8ar5zYtsTORtOjw9W2RHLpWP+zTWwBvf1bCmcSw==}
@@ -13111,12 +13114,12 @@ packages:
     resolution: {integrity: sha512-6QAm1BgQI88NPYymgGQLCZgvep4FyePDWFpXVK+zNSUgHwlqpJy8VEh8Et0KxTACS4VWwMousBElAZOH9nkkoQ==}
     dependencies:
       loose-envify: 1.4.0
+    dev: true
 
   /scheduler/0.23.0:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /schema-utils/2.7.0:
     resolution: {integrity: sha512-0ilKFI6QQF5nxDZLFn2dMjvc4hjg/Wkg7rHd3jK6/A4a1Hl9VFdQWvgB1UMGoU94pad1P/8N7fMcEnLnSiju8A==}
@@ -14522,7 +14525,18 @@ packages:
       react: 18.1.0
     dev: false
 
-  /use-sync-external-store/1.2.0_react@18.1.0:
+  /use-sync-external-store/1.1.0_react@18.2.0:
+    resolution: {integrity: sha512-SEnieB2FPKEVne66NpXPd1Np4R1lTNKfjuy3XdIoPQKYBAFdzbzSZlSn1KJZUiihQLQC5Znot4SBz1EOTBwQAQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /use-sync-external-store/1.2.0_react@18.2.0:
     resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -14530,7 +14544,7 @@ packages:
       react:
         optional: true
     dependencies:
-      react: 18.1.0
+      react: 18.2.0
     dev: false
 
   /use/3.1.1:
