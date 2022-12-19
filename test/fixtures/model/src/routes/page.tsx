@@ -1,5 +1,5 @@
 import { Loader } from '@shuvi/runtime';
-import { defineModel, useRootModel } from '@shuvi/runtime/model';
+import { defineModel, useModel } from '@shuvi/runtime/model';
 
 const sleep = (time: number) =>
   new Promise(resolve => {
@@ -46,8 +46,8 @@ const count = defineModel(({ use }) => {
 });
 
 export default function Index() {
-  const countModel = useRootModel(countName, count);
-  const baseModel = useRootModel(baseName, base);
+  const countModel = useModel(countName, count);
+  const baseModel = useModel(baseName, base);
   return (
     <div>
       <div>
