@@ -127,7 +127,7 @@ describe('resolve plugin', () => {
         const runtimeResult = runtimePluginRunner.test();
         expect(runtimeResult).toStrictEqual(['all-three-plugins-runtime']);
         expect(plugin.types).toBe(
-          path.join(__dirname, 'fixtures/plugins/all-three-plugins/types')
+          path.join(__dirname, 'fixtures/plugins/all-three-plugins/types.d.ts')
         );
       });
 
@@ -179,7 +179,7 @@ describe('resolve plugin', () => {
         const runtimeResult = runtimePluginRunner.test();
         expect(runtimeResult).toStrictEqual(['all-three-plugins-runtime']);
         expect(plugin.types).toBe(
-          path.join(__dirname, 'fixtures/plugins/all-three-plugins/types')
+          path.join(__dirname, 'fixtures/plugins/all-three-plugins/types.d.ts')
         );
       });
 
@@ -251,7 +251,7 @@ describe('resolve plugin', () => {
         const runtimeResult = runtimePluginRunner.test();
         expect(runtimeResult).toStrictEqual(['all-three-plugins-runtime']);
         expect(plugin.types).toBe(
-          path.join(__dirname, 'fixtures/plugins/all-three-plugins/types')
+          path.join(__dirname, 'fixtures/plugins/all-three-plugins/types.d.ts')
         );
       });
       test('core and server field can be plugin factory function', () => {

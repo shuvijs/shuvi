@@ -6,7 +6,7 @@ export default defineFile({
     const types = context.typeDeclarationFiles;
     return types
       .map(file => {
-        const isPath = file.startsWith('/') || file.startsWith('.');
+        const isPath = /\.d\.ts$/.test(file) || file.startsWith('.');
         return isPath
           ? `/// <reference path="${file}" />`
           : `/// <reference types="${file}" />`;
