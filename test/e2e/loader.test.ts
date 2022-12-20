@@ -54,6 +54,24 @@ describe('loader', () => {
       expect(loaderData.appContext).toHaveProperty('store');
     });
 
+    test('pathname, query, params at loader context object should be same at different layers of route', async () => {
+      page = await ctx.browser.page(ctx.url('/test?a=2'));
+      await page.waitForSelector('[data-test-id="foo"]');
+      const rootLoaderContext = JSON.parse(
+        await page.$text('[data-test-id="root-layout"]')
+      );
+      const leafLoaderContext = JSON.parse(
+        await page.$text('[data-test-id="foo"]')
+      );
+      ['pathname', 'query', 'params'].forEach(key => {
+        expect(rootLoaderContext[key]).toBeDefined();
+        expect(leafLoaderContext[key]).toBeDefined();
+      });
+      expect(leafLoaderContext.pathname).toBe(rootLoaderContext.pathname);
+      expect(leafLoaderContext.query).toStrictEqual(rootLoaderContext.query);
+      expect(leafLoaderContext.params).toStrictEqual(rootLoaderContext.params);
+    });
+
     test('should be called after a client navigation', async () => {
       page = await ctx.browser.page(ctx.url('/one'));
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
@@ -305,6 +323,24 @@ describe('loader', () => {
       expect(loaderContext.query.a).toBe('2');
       expect(loaderContext.params.foo).toBe('test');
       expect(loaderContext.appContext).toHaveProperty('store');
+    });
+
+    test('pathname, query, params at loader context object should be same at different layers of route', async () => {
+      page = await ctx.browser.page(ctx.url('/test?a=2'));
+      await page.waitForSelector('[data-test-id="foo"]');
+      const rootLoaderContext = JSON.parse(
+        await page.$text('[data-test-id="root-layout"]')
+      );
+      const leafLoaderContext = JSON.parse(
+        await page.$text('[data-test-id="foo"]')
+      );
+      ['pathname', 'query', 'params'].forEach(key => {
+        expect(rootLoaderContext[key]).toBeDefined();
+        expect(leafLoaderContext[key]).toBeDefined();
+      });
+      expect(leafLoaderContext.pathname).toBe(rootLoaderContext.pathname);
+      expect(leafLoaderContext.query).toStrictEqual(rootLoaderContext.query);
+      expect(leafLoaderContext.params).toStrictEqual(rootLoaderContext.params);
     });
 
     test('should be called after navigations', async () => {
