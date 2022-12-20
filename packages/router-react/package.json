@@ -32,7 +32,7 @@
     "@shuvi/platform-shared": "1.0.8",
     "@shuvi/utils": "1.0.8",
     "prop-types": "^15.8.1",
-    "use-sync-external-store": "1.1.0"
+    "use-sync-external-store": "1.2.0"
   },
   "devDependencies": {
     "@types/prop-types": "^15.7.5",
@@ -40,8 +40,8 @@
     "@types/react-test-renderer": "18.0.0",
     "@types/use-sync-external-store": "0.0.3",
     "react-test-renderer": "^18.1.0",
-    "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

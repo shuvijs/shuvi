@@ -2,7 +2,7 @@ import { DEV_READY_ENDPOINT } from '@shuvi/shared/lib/constants';
 import { AppCtx, Page, devFixture, resolveFixture } from '../utils';
 
 const FIXTURE = 'dll';
-const pkg = /react@18\.1\.0/; //react@18.1.0
+const pkg = /react@18\.2\.0/; //react@18.2.0
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -29,7 +29,7 @@ describe('without Dll preBundle', () => {
   test('Page /', async () => {
     page = await ctx.browser.page(ctx.url('/'));
     expect(page.statusCode).toBe(200);
-    expect(await page.$text('div')).toBe('Hello DLL');
+    expect(await page.$text('#dll')).toBe('Hello DLL');
   });
 });
 
@@ -57,6 +57,6 @@ describe('with Dll preBundle', () => {
   test('Page /', async () => {
     page = await ctx.browser.page(ctx.url('/'));
     expect(page.statusCode).toBe(200);
-    expect(await page.$text('div')).toBe('Hello DLL');
+    expect(await page.$text('#dll')).toBe('Hello DLL');
   });
 });

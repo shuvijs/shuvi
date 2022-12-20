@@ -334,24 +334,24 @@ importers:
       '@types/react-test-renderer': 18.0.0
       '@types/use-sync-external-store': 0.0.3
       prop-types: ^15.8.1
-      react: 18.1.0
-      react-dom: 18.1.0
+      react: 18.2.0
+      react-dom: 18.2.0
       react-test-renderer: ^18.1.0
-      use-sync-external-store: 1.1.0
+      use-sync-external-store: 1.2.0
     dependencies:
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/router': link:../router
       '@shuvi/utils': link:../utils
       prop-types: 15.8.1
-      use-sync-external-store: 1.1.0_react@18.1.0
+      use-sync-external-store: 1.2.0_react@18.2.0
     devDependencies:
       '@types/prop-types': 15.7.5
       '@types/react': 18.0.9
       '@types/react-test-renderer': 18.0.0
       '@types/use-sync-external-store': 0.0.3
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
-      react-test-renderer: 18.1.0_react@18.1.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-test-renderer: 18.1.0_react@18.2.0
 
   packages/runtime:
     specifiers:
@@ -12554,19 +12554,6 @@ packages:
       scheduler: 0.19.1
     dev: false
 
-  /react-dom/18.1.0_react@18.1.0:
-    resolution: {integrity: sha512-fU1Txz7Budmvamp7bshe4Zi32d0ll7ect+ccxNu9FlObT605GOEB8BfO4tmRJ39R5Zj831VCpvQ05QPBW5yb+w==}
-    peerDependencies:
-      react: ^18.1.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-    dependencies:
-      loose-envify: 1.4.0
-      react: 18.1.0
-      scheduler: 0.22.0
-    dev: true
-
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -12622,7 +12609,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /react-shallow-renderer/16.15.0_react@18.1.0:
+  /react-shallow-renderer/16.15.0_react@18.2.0:
     resolution: {integrity: sha512-oScf2FqQ9LFVQgA73vr86xl2NaOIX73rh+YFqcOp68CWj56tSfgtGKrEbyhCj0rSijyG9M1CYprTh39fBi5hzA==}
     peerDependencies:
       react: ^16.0.0 || ^17.0.0 || ^18.0.0
@@ -12631,11 +12618,11 @@ packages:
         optional: true
     dependencies:
       object-assign: 4.1.1
-      react: 18.1.0
+      react: 18.2.0
       react-is: 18.1.0
     dev: true
 
-  /react-test-renderer/18.1.0_react@18.1.0:
+  /react-test-renderer/18.1.0_react@18.2.0:
     resolution: {integrity: sha512-OfuueprJFW7h69GN+kr4Ywin7stcuqaYAt1g7airM5cUgP0BoF5G5CXsPGmXeDeEkncb2fqYNECO4y18sSqphg==}
     peerDependencies:
       react: ^18.1.0
@@ -12643,9 +12630,9 @@ packages:
       react:
         optional: true
     dependencies:
-      react: 18.1.0
+      react: 18.2.0
       react-is: 18.1.0
-      react-shallow-renderer: 16.15.0_react@18.1.0
+      react-shallow-renderer: 16.15.0_react@18.2.0
       scheduler: 0.22.0
     dev: true
 
@@ -12657,12 +12644,6 @@ packages:
       object-assign: 4.1.1
       prop-types: 15.8.1
     dev: false
-
-  /react/18.1.0:
-    resolution: {integrity: sha512-4oL8ivCz5ZEPyclFQXaNksK3adutVS8l2xzZU0cqEFrE9Sb7fC0EFK5uEk74wIreL1DERyjvsU915j1pcT2uEQ==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      loose-envify: 1.4.0
 
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
@@ -14513,17 +14494,6 @@ packages:
   /url-join/4.0.1:
     resolution: {integrity: sha512-jk1+QP6ZJqyOiuEI9AEWQfju/nB2Pw466kbA0LEZljHwKeMgd9WrAEgEGxjPDD2+TNbbb37rTyhEfrCXfuKXnA==}
     dev: true
-
-  /use-sync-external-store/1.1.0_react@18.1.0:
-    resolution: {integrity: sha512-SEnieB2FPKEVne66NpXPd1Np4R1lTNKfjuy3XdIoPQKYBAFdzbzSZlSn1KJZUiihQLQC5Znot4SBz1EOTBwQAQ==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-    dependencies:
-      react: 18.1.0
-    dev: false
 
   /use-sync-external-store/1.1.0_react@18.2.0:
     resolution: {integrity: sha512-SEnieB2FPKEVne66NpXPd1Np4R1lTNKfjuy3XdIoPQKYBAFdzbzSZlSn1KJZUiihQLQC5Znot4SBz1EOTBwQAQ==}
