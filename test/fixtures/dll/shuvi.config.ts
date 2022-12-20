@@ -1,3 +1,4 @@
 export default {
-  plugins: ['./plugin']
+  plugins: ['./plugin'],
+  experimental: { preBundle: true }
 };
