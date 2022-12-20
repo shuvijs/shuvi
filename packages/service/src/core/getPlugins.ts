@@ -233,8 +233,7 @@ export function resolvePlugin(
     }
 
     if (typesPath) {
-      const dir = path.dirname(typesPath);
-      resolved.types = dir + path.sep + 'types';
+      resolved.types = typesPath;
     }
   }
   return resolved;
