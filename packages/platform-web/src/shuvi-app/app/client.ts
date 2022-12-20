@@ -103,9 +103,10 @@ export const createApp: CreateAppClient = ({
             .catch(err => {
               reject(err);
             });
-
           runLoaders(matches, pageLoaders, {
+            pathname: to.pathname,
             query: to.query,
+            params: to.params,
             getAppContext: () => app.context
           })
             .then(_value => {
