@@ -35,7 +35,9 @@ export const createApp: CreateAppServer = options => {
       try {
         const loaderResult = await runLoaders(matches, pageLoaders, {
           req,
+          pathname: to.pathname,
           query: to.query,
+          params: to.params,
           getAppContext: () => app.context
         });
         app.setLoadersData(loaderResult);
