@@ -1,3 +1,13 @@
+## [1.0.9](https://github.com/shuvijs/shuvi/compare/v1.0.8...v1.0.9) (2022-12-21)
+
+
+### Bug Fixes
+
+* **loader:** pathname, query and params at loaderContext should be same at different layers of route ([9a71ca0](https://github.com/shuvijs/shuvi/commit/9a71ca0706523b395d66658c3ab24cc5efe27861))
+* **plugin:** use d.ts to distinguish between path and module ([e6139cb](https://github.com/shuvijs/shuvi/commit/e6139cb1cd80bfdb4c3ce4702b90d78783dae944))
+
+
+
 ## [1.0.8](https://github.com/shuvijs/shuvi/compare/v1.0.7...v1.0.8) (2022-12-14)
 
 
