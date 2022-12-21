@@ -92,7 +92,7 @@ function errorHelper(msg?: string, statusCode: number = 500) {
 export async function runLoaders(
   matches: IRouteMatch<IPageRouteRecord>[],
   loadersByRouteId: Record<string, Loader>,
-  { query, req, getAppContext }: LoaderContextOptions
+  { pathname, query, params, req, getAppContext }: LoaderContextOptions
 ): Promise<LoaderDataRecord> {
   const loaderDatas: LoaderDataRecord = {};
 
@@ -109,9 +109,9 @@ export async function runLoaders(
     let res: Response | undefined;
     try {
       const value = await loaderFn({
-        pathname: match.pathname,
-        params: match.params,
-        query: query,
+        pathname,
+        params,
+        query,
         redirect: redirectHelper,
         error: errorHelper,
         appContext,

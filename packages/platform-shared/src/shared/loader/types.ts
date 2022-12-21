@@ -4,8 +4,10 @@ import { IAppContext } from '../applicationTypes';
 import { Response } from '../response';
 
 export interface LoaderContextOptions {
-  req?: ShuviRequest;
-  query: IURLQuery;
+  req?: IRouteLoaderContext['req'];
+  pathname: IRouteLoaderContext['pathname'];
+  query: IRouteLoaderContext['query'];
+  params: IRouteLoaderContext['params'];
   getAppContext: () => IAppContext;
 }
 
