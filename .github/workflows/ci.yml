@@ -15,6 +15,7 @@ name: CI
 
 env:
   CI: true
+  RUST_TOOLCHAIN: nightly-2022-02-23
   SHUVI_SKIP_BOOTSTRAP: false
 
 concurrency:
@@ -22,13 +23,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-test:
+  test:
     strategy:
       matrix:
         os:
           - ubuntu-latest
           # - windows-latest
-    name: Unit Test on ${{ matrix.os }}
+    name: Build and Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -47,8 +48,47 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2021-08-12
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
           profile: minimal
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: stable-ubuntu-latest-cargo-registry
+
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: stable-ubuntu-latest-cargo-index
+
+      # We use week in the turbo cache key to keep the cache from infinitely growing
+      - id: get-week
+        run: echo ::set-output name=WEEK::$(date +%U)
+
+      - name: Turbo Cache
+        id: turbo-cache
+        uses: actions/cache@v3
+        with:
+          path: .turbo
+          key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ steps.get-week.outputs.WEEK }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ github.job }}-${{ github.ref_name }}-${{ steps.get-week.outputs.WEEK }}-
+            turbo-${{ github.job }}-main-${{ steps.get-week.outputs.WEEK }}-
+            turbo-${{ github.job }}-
+
+      # We use restore-key to pick latest cache.
+      # We will not get exact match, but doc says
+      # "If there are multiple partial matches for a restore key, the action returns the most recently created cache."
+      # So we get latest cache
+      - name: Cache built files
+        uses: actions/cache@v3
+        with:
+          path: ./packages/compiler-swc/target
+          key: compiler-swc-cargo-cache-dev-ubuntu-latest-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            compiler-swc-cargo-cache-dev-ubuntu-latest
 
       - run: pnpm install --frozen-lockfile
 
@@ -57,39 +97,6 @@ jobs:
 
       - name: Run unit tests
         run: pnpm test:unit
-
-  e2e-test:
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          # - windows-latest
-    name: E2E Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: ^7.5.2
-
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          cache: 'pnpm'
-
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2021-08-12
-          profile: minimal
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm build
 
       - name: Run e2e tests
         run: pnpm test:e2e
