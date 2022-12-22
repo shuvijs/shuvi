@@ -7,7 +7,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["lib/**", "esm/**"]
+      "outputs": ["dist/**", "esm/**", "lib/**"]
     },
     "build-native": {
       "dependsOn": ["^build-native"],
