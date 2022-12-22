@@ -27,7 +27,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          # - windows-latest
     name: Unit Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -63,7 +63,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          # - windows-latest
     name: E2E Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
