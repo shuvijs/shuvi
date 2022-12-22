@@ -34,9 +34,9 @@ export interface IPageRouteConfig {
   path: string;
 }
 
-export interface IPageRouteConfigWithId extends IPageRouteConfig {
+export interface INormalizedPageRouteConfig extends IPageRouteConfig {
   id: string;
-  children?: IPageRouteConfigWithId[];
+  children?: INormalizedPageRouteConfig[];
 }
 
 export interface IMiddlewareRouteConfig {

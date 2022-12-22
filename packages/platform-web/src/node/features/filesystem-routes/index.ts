@@ -7,7 +7,7 @@ import {
   IPageRouteConfig
 } from '@shuvi/platform-shared/node';
 import {
-  IPageRouteConfigWithId,
+  INormalizedPageRouteConfig,
   IMiddlewareRouteConfig
 } from '@shuvi/platform-shared/shared';
 import { LOADER_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
@@ -166,7 +166,7 @@ const plugin = createPlugin({
       content: async () => {
         const routes = getRoutes();
         const loaders: Record<string, string> = {};
-        const traverseRoutes = (routes: IPageRouteConfigWithId[]) => {
+        const traverseRoutes = (routes: INormalizedPageRouteConfig[]) => {
           routes.forEach(r => {
             const { component, id, children } = r;
             if (component && id) {

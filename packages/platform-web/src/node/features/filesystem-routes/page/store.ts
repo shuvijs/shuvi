@@ -1,8 +1,8 @@
-import { IPageRouteConfigWithId } from '@shuvi/platform-shared/shared';
+import { INormalizedPageRouteConfig } from '@shuvi/platform-shared/shared';
 
-let routes: IPageRouteConfigWithId[] = [];
+let routes: INormalizedPageRouteConfig[] = [];
 
-export const setRoutes = (newRoutes: IPageRouteConfigWithId[]) => {
+export const setRoutes = (newRoutes: INormalizedPageRouteConfig[]) => {
   routes = newRoutes;
 };
 
