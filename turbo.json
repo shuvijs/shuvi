@@ -1,7 +1,14 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "baseBranch": "origin/main",
   "pipeline": {
+    "dev": {
+      "dependsOn": ["^dev"],
+      "outputs": ["lib/**", "esm/**"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["lib/**", "esm/**"]
+    },
     "build-native": {
       "dependsOn": ["^build-native"],
       "outputs": ["native/*.node"]
