@@ -108,10 +108,6 @@ function resolve(obj) {
   return obj && obj.__esModule ? obj.default : obj;
 }
 
-function render(loaded, props) {
-  return React.createElement(resolve(loaded), props);
-}
-
 function createLoadableComponent(loadFn, options) {
   let opts = Object.assign(
     {
@@ -119,7 +115,6 @@ function createLoadableComponent(loadFn, options) {
       loading: null,
       delay: 200,
       timeout: null,
-      render: render,
       webpack: null,
       modules: null
     },
@@ -196,7 +191,7 @@ function createLoadableComponent(loadFn, options) {
           retry: subscription.retry
         });
       } else if (state.loaded) {
-        return opts.render(state.loaded, props);
+        return React.createElement(resolve(state.loaded), props);
       } else {
         return null;
       }
@@ -298,16 +293,6 @@ class LoadableSubscription {
 function Loadable<P>(opts: Options): React.ComponentType<P> {
   return createLoadableComponent(load, opts);
 }
-
-function LoadableMap<P>(opts: Options): React.ComponentType<P> {
-  if (typeof opts.render !== 'function') {
-    throw new Error('LoadableMap requires a `render(loaded, props)` function');
-  }
-
-  return createLoadableComponent(loadMap, opts);
-}
-
-Loadable.Map = LoadableMap;
 
 function flushInitializers(initializers, ids) {
   let promises = [];
