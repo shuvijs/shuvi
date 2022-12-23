@@ -11,6 +11,17 @@
   "files": [
     "lib"
   ],
+  "exports": {
+    "./babel": "./lib/babel/index.js",
+    "./utils/*": "./lib/utils/*.js",
+    "./webpack": "./lib/webpack/index.js",
+    "./webpack/config": "./lib/webpack/config/index.js",
+    "./webpack/loaders/shuvi-swc-loader": "./lib/webpack/loaders/shuvi-swc-loader/index.js",
+    "./webpack/plugins/module-replace-plugin": "./lib/webpack/plugins/module-replace-plugin/index.js",
+    "./webpack/plugins/*": "./lib/webpack/plugins/*.js",
+    "./webpack/types": "./lib/webpack/types.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",

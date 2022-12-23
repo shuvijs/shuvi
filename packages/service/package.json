@@ -4,18 +4,26 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
-    "directory": "packages/shuvi"
+    "directory": "packages/service"
   },
   "author": "liximomo",
   "license": "MIT",
   "sideEffects": false,
   "main": "lib/index.js",
-  "module": "esm/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib",
     "types"
   ],
+  "exports": {
+    ".": "./lib/index.js",
+    "./bundler": "./lib/bundler/index.js",
+    "./config": "./lib/config/index.js",
+    "./project": "./lib/project/index.js",
+    "./server": "./lib/server/index.js",
+    "./resources": "./lib/resources.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -m commonjs -w",
     "prebuild": "rimraf lib",

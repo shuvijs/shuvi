@@ -3,13 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shuvi/toolpack/lib/*": ["packages/toolpack/src/*"],
-      "@shuvi/hook/lib/*": ["packages/hook/src/*"],
-      "@shuvi/service/lib/*": ["packages/service/src/*"],
-      "@shuvi/utils/lib/*": ["packages/utils/src/*"],
-      "@shuvi/libs/lib/*": ["packages/libs/src/*"],
-      "@shuvi/router": ["packages/router/src/index"],
-      "@shuvi/router-react/lib/*": ["packages/router-react/src/*"],
       "@shuvi/*": ["packages/*/src"],
       "shuvi-test-utils": ["test/utils/index"],
       "shuvi-test-utils/*": ["test/utils/*"]

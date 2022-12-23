@@ -1,5 +1,5 @@
 import { ShuviRequest, IServerPluginContext } from '@shuvi/service';
-import resources from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/resources';
 import { Response } from '@shuvi/platform-shared/shared';
 import { Renderer } from './renderer';
 

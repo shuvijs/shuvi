@@ -1,5 +1,5 @@
 import { IServerPluginContext, IServerMiddleware } from '@shuvi/service';
-import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev/devMiddleware';
+import { DevMiddleware } from '@shuvi/service/server';
 
 import { OnDemandRouteManager } from './on-demand-compile-page';
 import { getApiMiddleware, getMiddlewareMiddleware } from './filesystem-routes';

@@ -1,5 +1,5 @@
-import { fileUtils } from '@shuvi/service/lib/project';
-import { removeExt } from '@shuvi/utils/lib/file';
+import { fileUtils } from '@shuvi/service/project';
+import { removeExt } from '@shuvi/utils/file';
 import { defineFile } from '../../..';
 import { ProjectContext } from '../../../../projectContext';
 

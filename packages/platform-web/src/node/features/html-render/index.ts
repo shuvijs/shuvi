@@ -1,7 +1,7 @@
 import { ResolvedPlugin, createPlugin } from '@shuvi/service';
-import { IPlatformContext } from '@shuvi/service/lib/core';
-import { CopyFilePlugin } from '@shuvi/toolpack/lib/webpack/plugins/copy-file-plugin';
-import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
+import { IPlatformContext } from '@shuvi/service';
+import { CopyFilePlugin } from '@shuvi/toolpack/webpack/plugins/copy-file-plugin';
+import { IWebpackEntry } from '@shuvi/service/bundler';
 import {
   BUNDLER_TARGET_CLIENT,
   BUNDLER_TARGET_SERVER,

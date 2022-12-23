@@ -1,5 +1,5 @@
 import type { StackFrame } from 'stacktrace-parser';
-import type webpack from '@shuvi/toolpack/lib/webpack';
+import type webpack from '@shuvi/toolpack/webpack';
 import type { Source } from './getSourceById';
 import type { OriginalStackFrame } from '../../view/helpers/stack-frame';
 import { createOriginalStackFrame } from './createOriginalStackFrame';

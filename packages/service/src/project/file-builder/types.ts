@@ -5,9 +5,9 @@ export type ContentFunction<T, C> = (
   oldContent: T
 ) => T | Promise<T>;
 
-export type FileDependency = string | FileOption<any>;
+export type FileDependency = string | FileOptionWithId<any>;
 
-export interface FileOption<T = string, C = any> {
+export interface FileOptionWithId<T = string, C = any> {
   id: FileId;
   content: ContentFunction<T, C>;
   name?: string;
@@ -16,8 +16,8 @@ export interface FileOption<T = string, C = any> {
   watchOptions?: { ignoreFileContentUpdate: boolean };
 }
 
-export type FileOptionWithoutId<T = string, C = any> = Omit<
-  FileOption<T, C>,
+export type FileOption<T = string, C = any> = Omit<
+  FileOptionWithId<T, C>,
   'id'
 >;
 
@@ -31,8 +31,8 @@ export interface FileInternalInstance<T = string, C = any> {
 }
 
 export type DefineFile = <T = string, C = any>(
-  fileOption: FileOptionWithoutId<T, C>
-) => FileOption<T, C>;
+  fileOption: FileOption<T, C>
+) => FileOptionWithId<T, C>;
 
 export type DependencyInfo = {
   dependencies: Set<FileId>;

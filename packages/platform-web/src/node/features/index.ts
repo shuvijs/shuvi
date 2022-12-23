@@ -1,4 +1,4 @@
-import { IPlatformContext, ResolvedPlugin } from '@shuvi/service/lib/core';
+import { IPlatformContext, ResolvedPlugin } from '@shuvi/service';
 import FeatureOnDemanCompilePage from './on-demand-compile-page';
 import { getPlugin as getHTMLRenderPlugin } from './html-render';
 import FeatureCustomServer from './custom-server';

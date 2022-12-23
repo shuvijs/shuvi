@@ -1,4 +1,4 @@
-import { fileUtils } from '@shuvi/service/lib/project';
+import { fileUtils } from '@shuvi/service/project';
 import { defineFile } from '../../..';
 import { ProjectContext } from '../../../../projectContext';
 import * as os from 'os';

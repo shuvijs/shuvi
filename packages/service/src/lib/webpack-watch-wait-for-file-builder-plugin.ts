@@ -1,4 +1,4 @@
-import { Compiler, Plugin } from '@shuvi/toolpack/lib/webpack';
+import { Compiler, Plugin } from '@shuvi/toolpack/webpack';
 import { ProjectBuilder } from '../project/projectBuilder';
 import { FileInfo } from '../project/index';
 

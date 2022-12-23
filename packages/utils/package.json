@@ -13,6 +13,11 @@
     "lib"
   ],
   "sideEffects": false,
+  "exports": {
+    ".": "./lib/index.js",
+    "./*": "./lib/*.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",

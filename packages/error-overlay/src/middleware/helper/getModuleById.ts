@@ -1,4 +1,4 @@
-import type webpack from '@shuvi/toolpack/lib/webpack';
+import type webpack from '@shuvi/toolpack/webpack';
 
 export function getModuleById(
   id: string | undefined,

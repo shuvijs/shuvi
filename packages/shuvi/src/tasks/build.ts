@@ -1,9 +1,15 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import { IPluginContext, Bundler, ShuviConfig, analysis } from '@shuvi/service';
+import formatWebpackMessages from '@shuvi/toolpack/utils/formatWebpackMessages';
+import {
+  IPluginContext,
+  Bundler,
+  ShuviConfig,
+  analysis,
+  Api
+} from '@shuvi/service';
 import { CLIENT_OUTPUT_DIR } from '@shuvi/shared/constants';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import { initShuvi } from '../shuvi';
 
 export interface IBuildOptions {
@@ -48,7 +54,7 @@ function copyPublicFolder(context: IPluginContext) {
   );
 }
 
-export async function build(options: IBuildOptions) {
+export async function build(options: IBuildOptions): Promise<Api> {
   const opts = {
     ...defaultBuildOptions,
     ...options

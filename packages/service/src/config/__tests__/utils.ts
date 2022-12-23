@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import { deepmerge } from '@shuvi/utils/deepmerge';
 import { ShuviConfig } from '../../core';
 import { loadConfig } from '../config';
 

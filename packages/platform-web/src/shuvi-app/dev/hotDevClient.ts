@@ -27,7 +27,7 @@ SOFTWARE.
 
 // @ts-nocheck
 import stripAnsi from 'strip-ansi';
-import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
+import formatWebpackMessages from '@shuvi/toolpack/utils/formatWebpackMessages';
 import {
   startReportingRuntimeErrors,
   stopReportingRuntimeErrors,

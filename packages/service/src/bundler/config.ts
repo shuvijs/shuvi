@@ -2,7 +2,7 @@ import {
   WebpackChain,
   createBrowserWebpackChain,
   createNodeWebpackChain
-} from '@shuvi/toolpack/lib/webpack/config';
+} from '@shuvi/toolpack/webpack/config';
 import { IPluginContext } from '../core';
 import { getJavaScriptInfo } from './typescript';
 

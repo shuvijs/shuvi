@@ -1,4 +1,4 @@
-import { webpack } from '@shuvi/toolpack/lib/webpack';
+import { webpack } from '@shuvi/toolpack/webpack';
 import { loadFixture } from './utils';
 
 const dotEnvConfigInlineSnapShot = `

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { getFilePresets } from './file-presets';
 import { getExportsFromObject } from './file-utils';
 import { RuntimePluginConfig } from '../core';
@@ -8,7 +8,7 @@ import {
   getFileBuilder,
   defineFile,
   FileBuilder,
-  FileOption
+  FileOptionWithId
 } from './file-builder';
 
 function checkFilepath(filepath: string): string {
@@ -52,7 +52,7 @@ const isTruthy = (value: unknown, recursive = true): boolean => {
 class ProjectBuilder {
   private _projectContext: ProjectContext;
   private _fileBuilder: FileBuilder<ProjectContext>;
-  private _internalFiles: FileOption<any, any>[];
+  private _internalFiles: FileOptionWithId<any, any>[];
 
   constructor() {
     this._projectContext = createProjectContext();
@@ -124,7 +124,7 @@ class ProjectBuilder {
   /**
    * default path is the root path
    */
-  addFile(option: FileOption<any, any>): void {
+  addFile(option: FileOptionWithId<any, any>): void {
     if (option.name) {
       checkFilepath(option.name);
     }

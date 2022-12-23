@@ -7,7 +7,7 @@ import {
   IPluginHandlers
 } from '@shuvi/hook';
 import { createPluginCreator } from '@shuvi/shared/plugins';
-import { FileOption } from '../project/index';
+import { FileOptionWithId } from '../project/index';
 import {
   ExtraTargetAssistant,
   ConfigWebpackAssistant,
@@ -46,7 +46,7 @@ const addResource = createAsyncParallelHook<
 const addRuntimeFile = createAsyncParallelHook<
   void,
   AddRuntimeFileUtils,
-  FileOption<any> | FileOption<any>[]
+  FileOptionWithId<any> | FileOptionWithId<any>[]
 >();
 
 const addRuntimeService = createAsyncParallelHook<

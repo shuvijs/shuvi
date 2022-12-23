@@ -10,9 +10,13 @@ import { Bundler } from '../bundler';
 
 export { Server } from './http-server';
 
+export { DevMiddleware } from './middlewares/dev';
+
 export * from './plugin';
 
 export * from './shuviServerTypes';
+
+export { sendHTML } from './utils';
 
 export { ShuviRequest, ShuviResponse, ShuviRequestHandler };
 

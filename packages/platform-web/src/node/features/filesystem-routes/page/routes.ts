@@ -4,7 +4,7 @@ import {
   INormalizedPageRouteConfig
 } from '@shuvi/platform-shared/shared';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/constants';
-import { normalizePath, removeExt } from '@shuvi/utils/lib/file';
+import { normalizePath, removeExt } from '@shuvi/utils/file';
 
 export { IPageRouteConfig };
 

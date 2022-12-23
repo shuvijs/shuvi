@@ -12,7 +12,7 @@ import {
   ChunkGroup,
   Asset,
   resolveWebpackModule
-} from '@shuvi/toolpack/lib/webpack';
+} from '@shuvi/toolpack/webpack';
 
 const Entrypoint = resolveWebpackModule('webpack/lib/Entrypoint');
 

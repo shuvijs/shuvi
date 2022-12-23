@@ -1,6 +1,6 @@
 import { IPluginContext } from '@shuvi/service';
-import { fileUtils } from '@shuvi/service/lib/project';
-import logger from '@shuvi/utils/lib/logger';
+import { fileUtils } from '@shuvi/service/project';
+import logger from '@shuvi/utils/logger';
 import {
   setServerRuntimeConfig,
   setPublicRuntimeConfig

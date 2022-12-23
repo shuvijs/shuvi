@@ -1,4 +1,4 @@
-import { Defer, createDefer } from '@shuvi/utils/lib/defer';
+import { Defer, createDefer } from '@shuvi/utils/defer';
 import {
   IRouter,
   IRoute,

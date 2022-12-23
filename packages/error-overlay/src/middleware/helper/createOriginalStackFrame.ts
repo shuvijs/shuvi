@@ -1,7 +1,7 @@
 import { codeFrameColumns } from '@babel/code-frame';
 import { StackFrame } from 'stacktrace-parser';
 
-import type webpack from '@shuvi/toolpack/lib/webpack';
+import type webpack from '@shuvi/toolpack/webpack';
 
 import { getSourcePath } from './getSourcePath';
 import { getModuleById } from './getModuleById';

@@ -1,5 +1,5 @@
-import chalk from '@shuvi/utils/lib/chalk';
-import isEqual from '@shuvi/utils/lib/isEqual';
+import chalk from '@shuvi/utils/chalk';
+import isEqual from '@shuvi/utils/isEqual';
 import fs from 'fs-extra';
 import * as CommentJson from 'comment-json';
 import os from 'os';

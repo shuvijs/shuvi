@@ -1,8 +1,8 @@
 import { inspect } from 'util';
 import * as path from 'path';
 import program from 'commander';
-import chalk from '@shuvi/utils/lib/chalk';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import chalk from '@shuvi/utils/chalk';
+import { deepmerge } from '@shuvi/utils/deepmerge';
 import { getPackageInfo, getProjectDir } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';

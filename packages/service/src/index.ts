@@ -2,9 +2,9 @@ export * from './namespace';
 
 export * from './constants';
 
-export { Bundler } from './bundler';
+export * from './bundler';
 
-export { ProjectBuilder } from './project';
+export * from './project';
 
 export { analysis } from './analysis';
 
@@ -12,6 +12,7 @@ export {
   IShuviServer,
   ShuviRequest,
   ShuviResponse,
+  ServerPluginHooks,
   IServerPluginContext,
   ShuviRequestHandler,
   ServerPluginConstructor,
@@ -35,9 +36,11 @@ export {
   PresetFunction,
   IPresetContent,
   NormalizedShuviConfig,
+  PluginHooks,
   IPluginContext,
   IPlatform,
   IPlatformContent,
+  IPlatformContext,
   CorePluginConstructor,
   CorePluginInstance,
   getApi,

@@ -1,6 +1,6 @@
 import { IData, isResponse } from '@shuvi/platform-shared/shared';
 import { getPublicRuntimeConfig } from '@shuvi/platform-shared/shared/shuvi-singleton-runtimeConfig';
-import resources from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/resources';
 import { BaseRenderer, AppData } from './base';
 import { IHtmlDocument, IRenderViewOptions } from './types';
 

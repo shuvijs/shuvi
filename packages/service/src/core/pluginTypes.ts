@@ -1,7 +1,7 @@
 import { RequestListener } from 'http';
-import { WebpackChain } from '@shuvi/toolpack/lib/webpack';
-import { webpack, Configuration } from '@shuvi/toolpack/lib/webpack';
-import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
+import { WebpackChain } from '@shuvi/toolpack/webpack';
+import { webpack, Configuration } from '@shuvi/toolpack/webpack';
+import { IWebpackHelpers } from '@shuvi/toolpack/webpack/types';
 import { defineFile, FileBuilder } from '../project/index';
 import { IWebpackConfigOptions } from '../bundler/config';
 import { IServiceMode } from './apiTypes';

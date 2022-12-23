@@ -2,7 +2,7 @@ import { StackFrame } from 'stacktrace-parser';
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'url';
 
-import type { webpack } from '@shuvi/toolpack/lib/webpack';
+import type { webpack } from '@shuvi/toolpack/webpack';
 import {
   BUNDLER_TARGET_CLIENT,
   BUNDLER_TARGET_SERVER

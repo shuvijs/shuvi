@@ -1,5 +1,5 @@
 import { IServerPluginContext } from '@shuvi/service';
-import resources from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/resources';
 import { Response, isResponse, text } from '@shuvi/platform-shared/shared';
 import { stringifyTag, stringifyAttrs } from './htmlTag';
 import { parseTemplateFile, renderTemplate } from '../viewTemplate';

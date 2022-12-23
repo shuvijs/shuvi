@@ -4,9 +4,9 @@ import {
   bundleRequire,
   PATH_SEG_RE,
   JS_EXT_RE
-} from '@shuvi/toolpack/lib/utils/bundleRequire';
-import { findFirstExistedFile, withExts } from '@shuvi/utils/lib/file';
-import logger from '@shuvi/utils/lib/logger';
+} from '@shuvi/toolpack/utils/bundleRequire';
+import { findFirstExistedFile, withExts } from '@shuvi/utils/file';
+import logger from '@shuvi/utils/logger';
 import { ShuviConfig } from '../core';
 import { CONFIG_FILE } from '../constants';
 import { loadDotenvConfig } from './env';

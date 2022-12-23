@@ -1,8 +1,8 @@
 import { matchRoutes } from '@shuvi/router';
-import resources from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/resources';
 import { ShuviRequestHandler, IServerPluginContext } from '@shuvi/service';
-import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
-import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
+import { DevMiddleware } from '@shuvi/service/server';
+import ModuleReplacePlugin from '@shuvi/toolpack/webpack/plugins/module-replace-plugin';
 
 function acceptsHtml(
   header: string,

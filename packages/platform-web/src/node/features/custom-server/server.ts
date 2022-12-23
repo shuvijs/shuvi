@@ -1,6 +1,6 @@
 import { createServerPlugin } from '@shuvi/service';
-import resources from '@shuvi/service/lib/resources';
-import logger from '@shuvi/utils/lib/logger';
+import resources from '@shuvi/service/resources';
+import logger from '@shuvi/utils/logger';
 
 let isWarnedhandlePageRequest: boolean = false;
 

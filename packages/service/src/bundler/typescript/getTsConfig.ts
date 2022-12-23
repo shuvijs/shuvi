@@ -1,9 +1,9 @@
 import { readFile, pathExists, stat as fileStat } from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import chalk from '@shuvi/utils/lib/chalk';
-import logger from '@shuvi/utils/lib/logger';
-import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
+import chalk from '@shuvi/utils/chalk';
+import logger from '@shuvi/utils/logger';
+import { recursiveReadDir } from '@shuvi/utils/recursiveReaddir';
 import { TsParsedConfig, TypeScriptModule } from './types';
 
 export async function hasTypescriptFiles(projectDir: string): Promise<boolean> {

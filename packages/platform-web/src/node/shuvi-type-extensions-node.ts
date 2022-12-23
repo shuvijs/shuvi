@@ -16,7 +16,7 @@ import {
 } from './features/filesystem-routes/hooks';
 export {};
 
-declare module '@shuvi/service/lib/resources' {
+declare module '@shuvi/service/resources' {
   export interface IResources {
     server: {
       server: IServerModule;

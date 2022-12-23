@@ -11,8 +11,8 @@ import {
   IMiddlewareRouteConfig
 } from '@shuvi/platform-shared/shared';
 import { LOADER_RESOURCE_QUERYSTRING } from '@shuvi/shared/constants';
-import logger from '@shuvi/utils/lib/logger';
-import { removeExt } from '@shuvi/utils/lib/file';
+import logger from '@shuvi/utils/logger';
+import { removeExt } from '@shuvi/utils/file';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';
 import {
   getRoutes,

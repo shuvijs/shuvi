@@ -1,6 +1,6 @@
 import { IServerPluginContext, ShuviRequestHandler } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
-import resources from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/resources';
 import { apiRouteHandler } from './apiRouteHandler';
 
 export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {

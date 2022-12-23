@@ -1,5 +1,5 @@
 import { defineFile } from '../../..';
-import { fileUtils } from '@shuvi/service/lib/project';
+import { fileUtils } from '@shuvi/service/project';
 import { ProjectContext } from '../../../../projectContext';
 
 export default (context: ProjectContext) =>

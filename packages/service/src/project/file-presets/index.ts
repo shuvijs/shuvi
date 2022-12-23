@@ -2,8 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   defineFile as originalDefineFile,
-  FileOption,
-  FileOptionWithoutId
+  FileOptionWithId,
+  FileOption
 } from '../file-builder';
 const EXT_REGEXP = /\.[a-zA-Z]+$/;
 
@@ -14,10 +14,10 @@ const EXT_REGEXP = /\.[a-zA-Z]+$/;
 const getAllFiles = (
   dirPath: string,
   parent: string = '',
-  fileList: FileOption<any, any>[] = []
-): FileOption<any, any>[] => {
+  fileList: FileOptionWithId<any, any>[] = []
+): FileOptionWithId<any, any>[] => {
   const files = fs.readdirSync(dirPath);
-  let currentFileList: FileOption<any, any>[] = fileList;
+  let currentFileList: FileOptionWithId<any, any>[] = fileList;
   files.forEach((file: string) => {
     const filepath = path.join(dirPath, file);
     const name = path.join(parent, file.replace(EXT_REGEXP, ''));
@@ -41,6 +41,6 @@ export function getFilePresets() {
   return getAllFiles(path.join(__dirname, 'files'));
 }
 
-export type FileOptionWithoutName = Omit<FileOptionWithoutId, 'name'>;
+export type FileOptionWithoutName = Omit<FileOption, 'name'>;
 
 export const defineFile = (options: FileOptionWithoutName) => options;

@@ -1,4 +1,4 @@
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import { ShuviConfig } from '@shuvi/service';
 
 export type OptionsKeyMap = Record<

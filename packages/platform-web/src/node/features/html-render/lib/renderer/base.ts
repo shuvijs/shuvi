@@ -1,5 +1,5 @@
 import { IAppData } from '@shuvi/platform-shared/shared';
-import { htmlEscapeJsonString } from '@shuvi/utils/lib/htmlescape';
+import { htmlEscapeJsonString } from '@shuvi/utils/htmlescape';
 import { ShuviRequest, IServerPluginContext } from '@shuvi/service';
 import {
   CLIENT_CONTAINER_ID,
@@ -7,7 +7,7 @@ import {
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
 } from '@shuvi/shared/constants';
-import resources from '@shuvi/service/lib/resources';
+import resources from '@shuvi/service/resources';
 import { IManifest, BUILD_CLIENT_RUNTIME_MAIN } from '../../../../../shared';
 import generateFilesByRoutId from '../generateFilesByRoutId';
 import { tag } from './htmlTag';

@@ -5,7 +5,7 @@ import {
   Compiler as WebpackCompiler,
   Configuration,
   NormalModule
-} from '@shuvi/toolpack/lib/webpack';
+} from '@shuvi/toolpack/webpack';
 import { resolveFixture } from '../utils';
 
 export interface WatchChainer {

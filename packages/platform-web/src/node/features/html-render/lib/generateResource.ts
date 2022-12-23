@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import { IPluginContext } from '@shuvi/service';
-import { urlToRequest } from '@shuvi/service/lib/project/file-utils';
+import { fileUtils } from '@shuvi/service/project';
 import {
   CLIENT_BUILD_MANIFEST_PATH,
   SERVER_BUILD_MANIFEST_PATH,
@@ -14,13 +14,13 @@ const generateResources = (context: IPluginContext) => {
   const { resolveUserFile, paths } = context;
   const resourcesDir = path.dirname(paths.resourcesFile);
   const { buildDir } = context.paths;
-  const clientManifestRequest = urlToRequest(
+  const clientManifestRequest = fileUtils.urlToRequest(
     path.relative(
       resourcesDir,
       path.join(buildDir, CLIENT_OUTPUT_DIR, CLIENT_BUILD_MANIFEST_PATH)
     )
   );
-  const serverManifestRequest = urlToRequest(
+  const serverManifestRequest = fileUtils.urlToRequest(
     path.relative(
       resourcesDir,
       path.join(buildDir, SERVER_OUTPUT_DIR, SERVER_BUILD_MANIFEST_PATH)

@@ -1,8 +1,8 @@
 import { existsSync } from 'fs';
 import * as path from 'path';
 import { CommanderStatic } from 'commander';
-import logger from '@shuvi/utils/lib/logger';
-import chalk from '@shuvi/utils/lib/chalk';
+import logger from '@shuvi/utils/logger';
+import chalk from '@shuvi/utils/chalk';
 //@ts-ignore
 import pkgInfo from '../package.json';
 

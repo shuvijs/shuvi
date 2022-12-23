@@ -1,5 +1,5 @@
 import { RequestListener } from 'http';
-import { joinPath } from '@shuvi/utils/lib/string';
+import { joinPath } from '@shuvi/utils/string';
 import { IPluginContext } from '../core';
 import { normalizeServerMiddleware } from './serverMiddleware';
 import {

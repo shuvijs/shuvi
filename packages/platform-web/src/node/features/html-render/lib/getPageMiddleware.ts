@@ -4,7 +4,7 @@ import {
   ShuviRequestHandler,
   IServerPluginContext
 } from '@shuvi/service';
-import { sendHTML as originalSendHtml } from '@shuvi/service/lib/server/utils';
+import { sendHTML as originalSendHtml } from '@shuvi/service/server';
 import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
 import { IHandlePageRequest, RequestContext, ISendHtml } from '../serverHooks';
 import { renderToHTML } from './renderToHTML';
