@@ -1,4 +1,4 @@
-import { DEV_STYLE_HIDE_FOUC } from '@shuvi/shared/lib/constants';
+import { DEV_STYLE_HIDE_FOUC } from '@shuvi/shared/constants';
 import { AppCtx, Page, devFixture } from '../utils';
 
 let ctx: AppCtx;

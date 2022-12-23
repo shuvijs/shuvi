@@ -1,4 +1,4 @@
-import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
+import { CLIENT_APPDATA_ID } from '@shuvi/shared/constants';
 
 import { AppCtx, Page, devFixture } from '../utils';
 

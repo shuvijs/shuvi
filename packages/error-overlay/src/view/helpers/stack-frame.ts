@@ -1,5 +1,5 @@
 import { StackFrame } from 'stacktrace-parser';
-import { DEV_ORIGINAL_STACK_FRAME_ENDPOINT } from '@shuvi/shared/esm/constants';
+import { DEV_ORIGINAL_STACK_FRAME_ENDPOINT } from '@shuvi/shared/constants';
 
 export type OriginalStackFrame = {
   error: boolean;

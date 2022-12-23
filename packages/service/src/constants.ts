@@ -1,7 +1,4 @@
-export {
-  CLIENT_OUTPUT_DIR,
-  SERVER_OUTPUT_DIR
-} from '@shuvi/shared/lib/constants';
+export { CLIENT_OUTPUT_DIR, SERVER_OUTPUT_DIR } from '@shuvi/shared/constants';
 
 export const CONFIG_FILE = 'shuvi.config';
 

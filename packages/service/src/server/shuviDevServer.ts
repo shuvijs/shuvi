@@ -1,7 +1,7 @@
 import {
   DEV_HOT_MIDDLEWARE_PATH,
   DEV_READY_ENDPOINT
-} from '@shuvi/shared/lib/constants';
+} from '@shuvi/shared/constants';
 import { Watchpack, watch as watcher } from '@shuvi/utils/lib/fileWatcher';
 import { getDefineEnv } from '@shuvi/toolpack/lib/webpack/config';
 import { join } from 'path';

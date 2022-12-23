@@ -6,7 +6,7 @@ import {
   DEV_STYLE_ANCHOR_ID,
   DEV_STYLE_HIDE_FOUC,
   CLIENT_APPDATA_ID
-} from '@shuvi/shared/lib/constants';
+} from '@shuvi/shared/constants';
 import resources from '@shuvi/service/lib/resources';
 import { IManifest, BUILD_CLIENT_RUNTIME_MAIN } from '../../../../../shared';
 import generateFilesByRoutId from '../generateFilesByRoutId';

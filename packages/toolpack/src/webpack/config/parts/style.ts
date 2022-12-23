@@ -1,4 +1,4 @@
-import { DEV_STYLE_ANCHOR_ID } from '@shuvi/shared/lib/constants';
+import { DEV_STYLE_ANCHOR_ID } from '@shuvi/shared/constants';
 import { WebpackChain as Config } from '../base';
 import Rule from 'webpack-chain/src/Rule';
 import { LoaderContext } from 'webpack';

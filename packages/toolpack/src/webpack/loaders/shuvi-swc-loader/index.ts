@@ -30,7 +30,7 @@ import querystring from 'querystring';
 import {
   ROUTE_RESOURCE_QUERYSTRING,
   LOADER_RESOURCE_QUERYSTRING
-} from '@shuvi/shared/lib/constants';
+} from '@shuvi/shared/constants';
 import { transform } from '@shuvi/compiler';
 import getLoaderSWCOptions, {
   SWCLoaderOptions,

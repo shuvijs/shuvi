@@ -2,7 +2,7 @@ import Anser from 'anser';
 import * as React from 'react';
 import { StackFrame } from 'stacktrace-parser';
 import stripAnsi from 'strip-ansi';
-import { DEV_HOT_LAUNCH_EDITOR_ENDPOINT } from '@shuvi/shared/esm/constants';
+import { DEV_HOT_LAUNCH_EDITOR_ENDPOINT } from '@shuvi/shared/constants';
 
 import { ExternalLinkIcon } from '../../Icons';
 import { getFrameSource } from '../../../helpers/stack-frame';

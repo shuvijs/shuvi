@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StackFrame } from 'stacktrace-parser';
-import { DEV_HOT_LAUNCH_EDITOR_ENDPOINT } from '@shuvi/shared/esm/constants';
+import { DEV_HOT_LAUNCH_EDITOR_ENDPOINT } from '@shuvi/shared/constants';
 
 import { ExternalLinkIcon } from '../../Icons';
 import {

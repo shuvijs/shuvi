@@ -1,5 +1,5 @@
 import got from 'got';
-import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
+import { CLIENT_APPDATA_ID } from '@shuvi/shared/constants';
 import { AppCtx, Page, serveFixture } from '../utils/index';
 
 jest.setTimeout(5 * 60 * 1000);

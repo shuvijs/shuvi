@@ -10,7 +10,7 @@ import {
   INormalizedPageRouteConfig,
   IMiddlewareRouteConfig
 } from '@shuvi/platform-shared/shared';
-import { LOADER_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
+import { LOADER_RESOURCE_QUERYSTRING } from '@shuvi/shared/constants';
 import logger from '@shuvi/utils/lib/logger';
 import { removeExt } from '@shuvi/utils/lib/file';
 import { addRoutes, addApiRoutes, addMiddlewareRoutes } from './hooks';

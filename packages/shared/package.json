@@ -13,6 +13,13 @@
     "esm"
   ],
   "sideEffects": false,
+  "exports": {
+    "./*": {
+      "import": "./esm/*.js",
+      "require": "./lib/*.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "run-p watch:*",
     "watch:esm": "tsc -p tsconfig.build.json -m esnext --outDir esm -w",
@@ -23,7 +30,7 @@
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
   "engines": {
-    "node": ">= 12.0.0"
+    "node": ">= 16.0.0"
   },
   "dependencies": {
     "@shuvi/hook": "1.0.9"

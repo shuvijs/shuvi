@@ -1,5 +1,5 @@
 import { join, isAbsolute } from 'path';
-import { NAME } from '@shuvi/shared/lib/constants';
+import { NAME } from '@shuvi/shared/constants';
 import { PUBLIC_DIR_NAME } from '../constants';
 import { IPaths } from './apiTypes';
 
