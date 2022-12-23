@@ -10,7 +10,7 @@ import { uuid, ifIntersect } from './utils';
 import { WATCH_AGGREGATE_TIMEOUT } from './constants';
 import type {
   FileId,
-  FileOption,
+  FileOptionWithId,
   FileInternalInstance,
   BuildInfo,
   DependencyInfo,
@@ -38,11 +38,11 @@ type OnBuildEndHandler = (event: OnBuildEndEvent) => void;
 type EventCanceler = () => void;
 
 export interface FileBuilder<C extends {}> {
-  addFile: (...newFileOption: FileOption<any, C>[]) => void;
+  addFile: (...newFileOption: FileOptionWithId<any, C>[]) => void;
   build: (dir?: string) => Promise<void>;
   watch: (dir?: string) => Promise<void>;
   close: () => Promise<void>;
-  getContent: <T>(fileOption: FileOption<T>) => T;
+  getContent: <T>(fileOption: FileOptionWithId<T>) => T;
   onBuildStart: (eventHandler: OnBuildStartHandler) => EventCanceler;
   onBuildEnd: (eventHandler: OnBuildEndHandler) => EventCanceler;
   onSingleBuildEnd: (eventHandler: OnSingleBuildEndHandler) => EventCanceler;
@@ -52,7 +52,7 @@ export interface FileBuilder<C extends {}> {
 }
 
 const createInstance = (
-  fileOption: FileOption<any>,
+  fileOption: FileOptionWithId<any>,
   rootDir: string
 ): FileInternalInstance => {
   const instance: FileInternalInstance = {
@@ -70,7 +70,7 @@ export const getFileBuilder = <C extends {} = {}>(
 ): FileBuilder<C> => {
   let rootDir = '/';
   const context = fileContext || {};
-  const fileOptions: FileOption<any>[] = [];
+  const fileOptions: FileOptionWithId<any>[] = [];
   const dependencyMap = new Map<FileId, DependencyInfo>();
   const watchMap = new Map<FileId, WatchOptions>();
   const watchingFilesMap = new Map<string, FileId>();
@@ -83,7 +83,7 @@ export const getFileBuilder = <C extends {} = {}>(
   const onSingleBuildEndHandlers = new Set<OnSingleBuildEndHandler>();
   const onInvalidHandlers = new Set<() => void>();
 
-  const addFile = (...newFileOption: FileOption<any, C>[]) => {
+  const addFile = (...newFileOption: FileOptionWithId<any, C>[]) => {
     fileOptions.push(...newFileOption.map(option => ({ ...option })));
   };
 
@@ -126,7 +126,7 @@ export const getFileBuilder = <C extends {} = {}>(
   };
 
   const initFiles = async (
-    fileOptions: FileOption<any, any>[],
+    fileOptions: FileOptionWithId<any, any>[],
     needWatch: boolean = false
   ) => {
     await Promise.all(
@@ -512,7 +512,7 @@ export const getFileBuilder = <C extends {} = {}>(
     runningBuilds.clear();
     awaitingBuilds.clear();
   };
-  const getContent = <T>(fileOption: FileOption<T>) => {
+  const getContent = <T>(fileOption: FileOptionWithId<T>) => {
     return files.get(fileOption.id)?.fileContent;
   };
   const onBuildStart = (eventHandler: OnBuildStartHandler) => {

@@ -5,7 +5,7 @@ import {
   CorePluginInstance,
   PluginRunner
 } from './plugin';
-import { FileOption } from '../project';
+import { FileOptionWithId } from '../project';
 import { IProxyConfig } from '../server/middlewares/httpProxyMiddleware';
 import {
   IServerMiddleware,
@@ -125,7 +125,7 @@ export type IPlatformContent = {
   plugins?: (CorePluginInstance | ResolvedPlugin | string)[];
   getPresetRuntimeFiles: (
     context: IPluginContext
-  ) => FileOption<any>[] | Promise<FileOption<any>[]>;
+  ) => FileOptionWithId<any>[] | Promise<FileOptionWithId<any>[]>;
   getMiddlewares?: (
     context: IServerPluginContext
   ) => Promise<IServerMiddleware | IServerMiddleware[]>;

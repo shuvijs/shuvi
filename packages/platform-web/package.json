@@ -68,7 +68,7 @@
     "build:polyfills": "microbundle -i src/polyfills/index.js -o polyfills/polyfills.js -f iife --no-sourcemap --external none --no-pkg-main"
   },
   "engines": {
-    "node": ">= 12.0.0"
+    "node": ">= 16.0.0"
   },
   "dependencies": {
     "@next/react-refresh-utils": "12.1.6",
