@@ -9,7 +9,7 @@ import {
 } from '@shuvi/telemetry';
 import rimraf from 'rimraf';
 import * as path from 'path';
-import { defineFile, ProjectBuilder, FileOption } from '../project';
+import { defineFile, ProjectBuilder, FileOptionWithId } from '../project';
 import { getBundler, Bundler } from '../bundler';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
 import { ServerPluginInstance } from '../server';
@@ -311,14 +311,14 @@ class Api {
     }
   }
 
-  addRuntimeFile(option: FileOption<any>): void {
+  addRuntimeFile(option: FileOptionWithId<any>): void {
     if (option.name) {
       option.name = path.join('app', 'files', option.name);
     }
     this._projectBuilder.addFile(option);
   }
 
-  addInternalRuntimeFile(option: FileOption<any>): void {
+  addInternalRuntimeFile(option: FileOptionWithId<any>): void {
     this._projectBuilder.addFile(option);
   }
 
@@ -389,7 +389,9 @@ class Api {
 
   private async _initPlatform(): Promise<{
     plugins: ResolvedPlugin[];
-    getPresetRuntimeFiles: () => Promise<FileOption<any>[]> | FileOption<any>[];
+    getPresetRuntimeFiles: () =>
+      | Promise<FileOptionWithId<any>[]>
+      | FileOptionWithId<any>[];
   }> {
     if (!this._platform)
       return {
