@@ -1,4 +1,4 @@
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { IRouteMatch, IPageRouteRecord } from '../routerTypes';
 import {
   Response,

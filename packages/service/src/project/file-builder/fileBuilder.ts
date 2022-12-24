@@ -1,11 +1,8 @@
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { createDefer, Defer } from '@shuvi/utils';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  watch as createWatcher,
-  WatchOptions
-} from '@shuvi/utils/lib/fileWatcher';
+import { watch as createWatcher, WatchOptions } from '@shuvi/utils/fileWatcher';
 import { uuid, ifIntersect } from './utils';
 import { WATCH_AGGREGATE_TIMEOUT } from './constants';
 import type {

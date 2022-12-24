@@ -1,6 +1,6 @@
 import { stat as fileStat } from 'fs-extra';
-import { resolve } from '@shuvi/utils/lib/resolve';
-import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
+import { resolve } from '@shuvi/utils/resolve';
+import { recursiveReadDir } from '@shuvi/utils/recursiveReaddir';
 
 export interface PackageDep {
   file: string;

@@ -1,4 +1,4 @@
-import chalk from '@shuvi/utils/lib/chalk';
+import chalk from '@shuvi/utils/chalk';
 import spawn from 'cross-spawn';
 import * as path from 'path';
 import { PackageManager, getPkgManager } from '../helper/getPkgManager';

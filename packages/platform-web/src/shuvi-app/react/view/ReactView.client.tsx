@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { Router } from '@shuvi/router-react';
 import { getServerError } from '@shuvi/error-overlay';
 import AppContainer from '../AppContainer';

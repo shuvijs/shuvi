@@ -9,7 +9,7 @@ import {
   HookMap
 } from '@shuvi/hook';
 import { CustomRuntimePluginHooks } from '@shuvi/runtime';
-import { createPluginCreator } from '@shuvi/shared/lib/plugins';
+import { createPluginCreator } from '@shuvi/shared/plugins';
 import { IAppContext } from './applicationTypes';
 
 export type AppComponent = unknown;

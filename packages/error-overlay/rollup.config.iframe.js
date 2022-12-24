@@ -2,7 +2,7 @@ import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import ts from 'rollup-plugin-typescript2';
+import ts from '@rollup/plugin-typescript';
 
 const extensions = ['.js', '.ts', '.tsx', 'jsx'];
 
@@ -21,17 +21,16 @@ export default {
         __REACT_DEVTOOLS_GLOBAL_HOOK__: '({})'
       }
     }),
-    commonjs(),
     resolve({ extensions }),
-
     ts({
       tsconfig: path.join('./tsconfig.build.json'),
-      extensions
-    })
+      declaration: false
+    }),
+    commonjs({ extensions })
   ],
   output: {
     compact: false,
-    name: 'iframe-bundle',
-    file: path.join(__dirname, './lib/iframe-bundle.js')
+    file: path.join(__dirname, './lib/iframe-bundle.js'),
+    format: 'iife'
   }
 };

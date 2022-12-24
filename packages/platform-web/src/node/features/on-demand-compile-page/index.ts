@@ -1,8 +1,8 @@
 import { createPlugin } from '@shuvi/service';
-import { escapeRegExp } from '@shuvi/utils/lib/escapeRegExp';
+import { escapeRegExp } from '@shuvi/utils/escapeRegExp';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import RequireCacheHotReloaderPlugin from '@shuvi/toolpack/lib/webpack/plugins/require-cache-hot-reloader-plugin';
-import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/lib/constants';
+import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/constants';
 
 const dumbRouteComponent = require.resolve('./emptyComponent');
 

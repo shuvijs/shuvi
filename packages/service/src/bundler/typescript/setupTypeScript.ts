@@ -1,5 +1,5 @@
 import * as path from 'path';
-import chalk from '@shuvi/utils/lib/chalk';
+import chalk from '@shuvi/utils/chalk';
 import fs from 'fs-extra';
 import { Error } from '../../error';
 import { IPaths } from '../../core/apiTypes';

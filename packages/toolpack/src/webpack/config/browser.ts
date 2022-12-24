@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import webpack from 'webpack';
 import * as path from 'path';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import { resolve } from '@shuvi/utils/lib/resolve';
+import { resolve } from '@shuvi/utils/resolve';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
 import { splitChunksFilter, commonChunkFilename } from './parts/helpers';

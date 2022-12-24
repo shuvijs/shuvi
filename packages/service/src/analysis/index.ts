@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import {
   eventBuildOptimize,
   eventPackageDetected,
   eventBuildFeatureUsage
 } from './events';
-import { recursiveReadDir } from '@shuvi/utils/lib/recursiveReaddir';
+import { recursiveReadDir } from '@shuvi/utils/recursiveReaddir';
 import { getJavaScriptInfo } from '../bundler/typescript';
 import { IPluginContext, Telemetry } from '../core';
 

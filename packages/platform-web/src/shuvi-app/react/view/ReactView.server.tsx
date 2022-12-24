@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { redirect } from '@shuvi/platform-shared/shared';
-import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { Router } from '@shuvi/router-react';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import { IHtmlTag } from '../../../shared';
 import Loadable, { LoadableContext } from '../loadable';
 import AppContainer from '../AppContainer';

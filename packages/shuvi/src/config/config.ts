@@ -1,5 +1,5 @@
 import { PlatformWebCustomConfig } from '@shuvi/platform-web';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
+import { deepmerge } from '@shuvi/utils/deepmerge';
 import { ShuviConfig } from '@shuvi/service';
 
 function getDefaultPlatformConfig(): PlatformWebCustomConfig {
