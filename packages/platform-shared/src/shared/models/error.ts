@@ -1,5 +1,5 @@
 import { defineModel } from 'doura';
-import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { IErrorState, IError } from '../applicationTypes';
 
 const DEFAULT_ERROR_STATE = {

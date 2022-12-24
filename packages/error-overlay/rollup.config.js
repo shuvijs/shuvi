@@ -2,7 +2,7 @@ import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import ts from 'rollup-plugin-typescript2';
+import ts from '@rollup/plugin-typescript';
 import alias from '@rollup/plugin-alias';
 import { string } from 'rollup-plugin-string';
 
@@ -29,12 +29,12 @@ export default {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
       }
     }),
-    commonjs(),
     resolve({ extensions }),
     ts({
       tsconfig: path.join('./tsconfig.build.json'),
-      extensions
-    })
+      declaration: false
+    }),
+    commonjs({ extensions })
   ],
   output: {
     name: 'ErrorOverlay',

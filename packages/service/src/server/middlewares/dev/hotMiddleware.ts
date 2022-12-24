@@ -25,7 +25,7 @@
 import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/lib/constants';
+import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/constants';
 
 type modulePath = string;
 type route = string;

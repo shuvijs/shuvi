@@ -35,7 +35,7 @@ import {
   onBuildOk,
   onRefresh
 } from '@shuvi/error-overlay';
-import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/esm/constants';
+import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/constants';
 import { connectHMR, addMessageListener, sendMessage } from './websocket';
 
 // This alternative WebpackDevServer combines the functionality of:

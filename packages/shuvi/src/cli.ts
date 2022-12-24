@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import program from 'commander';
 import * as spawn from 'cross-spawn';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import { getPackageInfo } from './utils';
 
 const Commands = ['dev', 'build', 'serve', 'inspect'] as const;

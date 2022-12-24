@@ -7,7 +7,7 @@ import type * as webpackType from 'webpack';
 import type { Configuration } from 'webpack';
 import type WebpackChain from 'webpack-chain';
 
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { NAME, DEFAULT_PUBLIC_PATH, DLL_FILENAME } from './constants';
 import { Bundler, ShareConfig } from './bundler';
 import { ModuleSnapshot } from './moduleCollector';

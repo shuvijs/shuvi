@@ -1,6 +1,6 @@
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { isPluginInstance, IPluginInstance } from '@shuvi/hook';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import * as path from 'path';
 import {
   createPlugin,

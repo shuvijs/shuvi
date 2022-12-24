@@ -1,5 +1,5 @@
 import * as path from 'path';
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { getFilePresets } from './file-presets';
 import { getExportsFromObject } from './file-utils';
 import { RuntimePluginConfig } from '../core';

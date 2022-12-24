@@ -14,7 +14,7 @@ import {
   IRouter,
   pathToString
 } from '@shuvi/router';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import { CreateAppServer, InternalApplication } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
 

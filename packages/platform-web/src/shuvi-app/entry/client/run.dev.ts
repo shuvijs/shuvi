@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { DEV_STYLE_HIDE_FOUC } from '@shuvi/shared/lib/constants';
+import { DEV_STYLE_HIDE_FOUC } from '@shuvi/shared/constants';
 import { initHMRAndDevClient } from '../../dev';
 import { run, app } from './app';
 

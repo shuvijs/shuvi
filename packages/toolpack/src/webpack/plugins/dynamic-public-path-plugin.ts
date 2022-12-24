@@ -1,5 +1,5 @@
 import { Compiler, Plugin, RuntimeGlobals, RuntimeModule } from 'webpack';
-import { NAME } from '@shuvi/shared/lib/constants';
+import { NAME } from '@shuvi/shared/constants';
 
 const IDENTITY_RUNTIME_PUBLICPATH = `__${NAME}_dynamic_public_path__`;
 

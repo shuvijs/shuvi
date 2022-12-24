@@ -2,7 +2,7 @@ import {
   DEV_SOCKET_TIMEOUT_MS,
   DEV_HOT_MIDDLEWARE_PATH,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT
-} from '@shuvi/shared/esm/constants';
+} from '@shuvi/shared/constants';
 import { InternalApplication } from '../../shared';
 import connect, { HotDevClient } from './hotDevClient';
 

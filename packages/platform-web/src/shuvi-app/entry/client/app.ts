@@ -1,4 +1,4 @@
-import { CLIENT_CONTAINER_ID } from '@shuvi/shared/lib/constants';
+import { CLIENT_CONTAINER_ID } from '@shuvi/shared/constants';
 // renderer must be imported before application
 // we need to init renderer before import AppComponent
 import {

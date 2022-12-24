@@ -12,7 +12,7 @@ import {
   IPathPattern,
   matchPathname
 } from '@shuvi/router';
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { __DEV__ } from './constants';
 import { RouterContext, RouteContext, MatchedRouteContext } from './contexts';
 import { warning } from './utils';

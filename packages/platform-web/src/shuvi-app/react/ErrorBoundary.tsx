@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
-import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import ErrorPage from './ErrorPage';
 
 type ErrorBoundaryState = { error: Error | null };

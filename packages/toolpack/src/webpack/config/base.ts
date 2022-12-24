@@ -3,7 +3,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import webpack from 'webpack';
 import * as path from 'path';
-import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/lib/constants';
+import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';

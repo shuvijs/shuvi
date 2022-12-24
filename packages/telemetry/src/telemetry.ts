@@ -1,4 +1,4 @@
-import chalk from '@shuvi/utils/lib/chalk';
+import chalk from '@shuvi/utils/chalk';
 import Conf from 'conf';
 import { BinaryLike, createHash, randomBytes } from 'crypto';
 

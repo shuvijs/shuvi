@@ -6,7 +6,7 @@ import type { webpack } from '@shuvi/toolpack/lib/webpack';
 import {
   BUNDLER_TARGET_CLIENT,
   BUNDLER_TARGET_SERVER
-} from '@shuvi/shared/lib/constants';
+} from '@shuvi/shared/constants';
 
 import { getSourceById, Source } from './helper/getSourceById';
 import {

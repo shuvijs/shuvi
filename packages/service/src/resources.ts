@@ -1,4 +1,4 @@
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 
 export interface IResources {
   [x: string]: any;

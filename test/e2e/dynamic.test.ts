@@ -1,7 +1,7 @@
 import {
   CLIENT_APPDATA_ID,
   CLIENT_CONTAINER_ID
-} from '@shuvi/shared/lib/constants';
+} from '@shuvi/shared/constants';
 import { AppCtx, Page, devFixture } from '../utils';
 
 let ctx: AppCtx;

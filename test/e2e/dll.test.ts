@@ -1,4 +1,4 @@
-import { DEV_READY_ENDPOINT } from '@shuvi/shared/lib/constants';
+import { DEV_READY_ENDPOINT } from '@shuvi/shared/constants';
 import { AppCtx, Page, devFixture, resolveFixture } from '../utils';
 
 const FIXTURE = 'dll';

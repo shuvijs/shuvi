@@ -1,4 +1,4 @@
-import { htmlEscapeContent } from '@shuvi/utils/lib/htmlescape';
+import { htmlEscapeContent } from '@shuvi/utils/htmlescape';
 import { IHtmlAttrs, IHtmlTag } from './types';
 
 /**

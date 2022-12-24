@@ -1,5 +1,5 @@
 import { basename, extname, join, dirname, sep } from 'path';
-import { isDirectory } from '@shuvi/utils/lib/file';
+import { isDirectory } from '@shuvi/utils/file';
 import {
   IPageRouteConfig,
   IApiRouteConfig,

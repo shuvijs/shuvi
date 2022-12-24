@@ -4,7 +4,7 @@ import {
   BUNDLER_TARGET_CLIENT,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
   DEV_ORIGINAL_STACK_FRAME_ENDPOINT
-} from '@shuvi/shared/lib/constants';
+} from '@shuvi/shared/constants';
 import {
   launchEditorMiddleware,
   stackFrameMiddleware

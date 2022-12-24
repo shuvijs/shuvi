@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import { expand as dotenvExpand } from 'dotenv-expand';
 import * as fs from 'fs';
 import * as path from 'path';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 
 export type Env = { [key: string]: string | undefined };
 export type LoadedEnvFiles = Array<{

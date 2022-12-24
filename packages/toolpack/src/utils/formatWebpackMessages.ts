@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import chalk from '@shuvi/utils/lib/chalk';
+import chalk from '@shuvi/utils/chalk';
 
 interface StatsError {
   moduleName?: string;

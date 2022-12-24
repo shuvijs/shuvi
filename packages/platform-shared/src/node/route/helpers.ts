@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { join, extname, basename } from 'path';
-import { isDirectory, removeExt } from '@shuvi/utils/lib/file';
-import invariant from '@shuvi/utils/lib/invariant';
+import { isDirectory, removeExt } from '@shuvi/utils/file';
+import invariant from '@shuvi/utils/invariant';
 import { RouteConfigType } from './route';
 import { rankRouteBranches } from '../../shared/router';
 

@@ -16,7 +16,7 @@ import {
 } from '@shuvi/router';
 import pageLoaders from '@shuvi/app/files/page-loaders';
 import { historyMode } from '@shuvi/app/files/routerConfig';
-import { SHUVI_ERROR } from '@shuvi/shared/lib/constants';
+import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { InternalApplication, CreateAppClient } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
 import isThirdSite from '../helper/isThirdSite';

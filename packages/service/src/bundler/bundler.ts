@@ -1,11 +1,11 @@
 import path from 'path';
-import { createEvent, RemoveListenerCallback } from '@shuvi/utils/lib/events';
+import { createEvent, RemoveListenerCallback } from '@shuvi/utils/events';
 import ForkTsCheckerWebpackPlugin, {
   Issue,
   createCodeFrameFormatter
 } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import { inspect } from 'util';
 import {
   webpack,
@@ -19,7 +19,7 @@ import {
   addExternals,
   checkWebpackExternals
 } from '@shuvi/toolpack/lib/webpack/config';
-import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/lib/constants';
+import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/constants';
 import { Server, ShuviRequestHandler } from '../server';
 import { IPluginContext } from '../core';
 import { isFatalError } from '../error';

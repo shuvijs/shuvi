@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { CLIENT_APPDATA_ID } from '@shuvi/shared/lib/constants';
+import { CLIENT_APPDATA_ID } from '@shuvi/shared/constants';
 
 export type IData = {
   [k: string]: string | number | boolean | undefined | null;

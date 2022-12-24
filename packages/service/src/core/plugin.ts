@@ -6,7 +6,7 @@ import {
   IPluginInstance,
   IPluginHandlers
 } from '@shuvi/hook';
-import { createPluginCreator } from '@shuvi/shared/lib/plugins';
+import { createPluginCreator } from '@shuvi/shared/plugins';
 import { FileOptionWithId } from '../project/index';
 import {
   ExtraTargetAssistant,

@@ -1,4 +1,4 @@
-import { resolve } from '@shuvi/utils/lib/resolve';
+import { resolve } from '@shuvi/utils/resolve';
 import { ShuviRequestHandler } from './shuviServerTypes';
 
 interface Options {

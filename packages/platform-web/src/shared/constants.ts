@@ -3,7 +3,7 @@ export {
   BUNDLER_TARGET_SERVER,
   CLIENT_OUTPUT_DIR,
   SERVER_OUTPUT_DIR
-} from '@shuvi/shared/lib/constants';
+} from '@shuvi/shared/constants';
 
 export const CLIENT_BUILD_MANIFEST_PATH = '../build-manifest.client.json';
 

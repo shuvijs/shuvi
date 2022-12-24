@@ -1,5 +1,5 @@
 import { IApiRouteConfig } from '@shuvi/platform-shared/node';
-import { normalizePath } from '@shuvi/utils/lib/file';
+import { normalizePath } from '@shuvi/utils/file';
 
 export { IApiRouteConfig };
 

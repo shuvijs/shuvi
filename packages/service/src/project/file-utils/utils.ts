@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { recursiveReadDirSync } from '@shuvi/utils/lib/recursiveReaddir';
-import { withExts } from '@shuvi/utils/lib/file';
+import { recursiveReadDirSync } from '@shuvi/utils/recursiveReaddir';
+import { withExts } from '@shuvi/utils/file';
 
 export const getAllFiles = (dependencies: string | string[]) => {
   const allFiles: string[] = [];
@@ -54,9 +54,9 @@ export const getUserCustomFileCandidates = (
   const SRC_DIR = 'src';
   const moduleFileExtensions = ['.ts', '.tsx', '.js', '.jsx'];
   const fallbackMap: Record<typeof fallbackType, string> = {
-    nullish: require.resolve('@shuvi/utils/lib/nullish'),
-    noop: require.resolve('@shuvi/utils/lib/noop'),
-    noopFn: require.resolve('@shuvi/utils/lib/noopFn')
+    nullish: require.resolve('@shuvi/utils/nullish'),
+    noop: require.resolve('@shuvi/utils/noop'),
+    noopFn: require.resolve('@shuvi/utils/noopFn')
   };
   const fallback = fallbackMap[fallbackType] || fallbackMap['nullish'];
   return [

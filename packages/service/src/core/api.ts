@@ -1,7 +1,7 @@
-import { isPluginInstance } from '@shuvi/hook/lib/hookGroup';
-import { deepmerge } from '@shuvi/utils/lib/deepmerge';
-import { joinPath } from '@shuvi/utils/lib/string';
-import logger from '@shuvi/utils/lib/logger';
+import { isPluginInstance } from '@shuvi/hook';
+import { deepmerge } from '@shuvi/utils/deepmerge';
+import { joinPath } from '@shuvi/utils/string';
+import logger from '@shuvi/utils/logger';
 import {
   Telemetry as TelemetryImpl,
   RecordObject,

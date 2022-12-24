@@ -1,4 +1,4 @@
-import isEqual from '@shuvi/utils/lib/isEqual';
+import isEqual from '@shuvi/utils/isEqual';
 import { IRoute, IPageRouteRecord, IRouteMatch } from '../routerTypes';
 import { Loader } from '../loader';
 

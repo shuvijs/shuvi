@@ -3,7 +3,7 @@ import * as querystring from 'querystring';
 const getRawBody = require('raw-body');
 import * as contentType from 'content-type';
 import { ShuviRequest, ShuviResponse } from '@shuvi/service';
-import logger from '@shuvi/utils/lib/logger';
+import logger from '@shuvi/utils/logger';
 import {
   IApiRequestHandler,
   IApiReq,

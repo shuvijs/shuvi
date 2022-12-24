@@ -1,5 +1,5 @@
 const { createPlugin } = require('shuvi');
-const { BUNDLER_TARGET_SERVER } = require('@shuvi/shared/lib/constants');
+const { BUNDLER_TARGET_SERVER } = require('@shuvi/shared/constants');
 
 module.exports = createPlugin({
   configWebpack: (config, { name, helpers }, context) => {

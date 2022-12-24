@@ -1,4 +1,4 @@
-import invariant from '@shuvi/utils/lib/invariant';
+import invariant from '@shuvi/utils/invariant';
 import { WebpackChain } from '../base';
 import { ExternalsFunction } from '../../types';
 
