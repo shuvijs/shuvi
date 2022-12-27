@@ -56,7 +56,7 @@ export function createBrowserWebpackChain(
           typescript: {
             configFile: path.join(projectRoot, 'tsconfig.json'),
             mode: 'write-references',
-            typeScriptPath: jsConfig.typeScriptPath,
+            typescriptPath: jsConfig.typeScriptPath,
             diagnosticOptions: {
               syntactic: true
             },
