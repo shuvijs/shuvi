@@ -98,10 +98,10 @@ const plugin = createPlugin({
           paths.routesDir
         );
         setRoutes(normalizedRoutes);
-        return generatePageRoutesContent(
-          normalizedRoutes,
-          mode === 'development'
-        );
+        return generatePageRoutesContent(normalizedRoutes, {
+          dev: mode === 'development',
+          ssr: context.config.ssr
+        });
       },
       dependencies: [rawRoutes]
     });

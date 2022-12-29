@@ -8,3 +8,7 @@ declare module '@shuvi/runtime' {
     store: Doura;
   }
 }
+
+declare global {
+  const __BROWSER__: boolean;
+}

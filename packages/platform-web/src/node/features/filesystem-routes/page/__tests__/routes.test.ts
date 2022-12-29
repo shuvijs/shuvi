@@ -22,7 +22,7 @@ describe('serializeRoutes', () => {
   ];
 
   test('should output full content when includeMeta is true', () => {
-    const content = serializeRoutes(routes, true);
+    const content = serializeRoutes(routes, { includeMeta: true });
     expect(content).toMatchInlineSnapshot(`
       "[{path: \\"/\\",
       __componentRawRequest__: \\"Foo?shuvi-route\\",
@@ -62,7 +62,7 @@ describe('serializeRoutes', () => {
   });
 
   test('should not output meta info when includeMeta is false', () => {
-    const content = serializeRoutes(routes, false);
+    const content = serializeRoutes(routes, { includeMeta: false });
     expect(content).toMatchInlineSnapshot(`
       "[{path: \\"/\\",
       __import__: () => import(
@@ -93,6 +93,15 @@ describe('serializeRoutes', () => {
     `);
     expect(content).not.toMatch('__componentSource__');
     expect(content).not.toMatch('__componentRawRequest__');
+  });
+
+  test('should be replaced with EmptyPageComponent', () => {
+    const content = serializeRoutes(routes, {
+      includeMeta: false,
+      useEmptyComponent: true
+    });
+    expect(content).not.toMatch('Foo?shuvi-route');
+    expect(content).toMatch('page/EmptyPageComponent');
   });
 });
 
