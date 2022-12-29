@@ -57,11 +57,12 @@ export const getPlugin = (
   platformContext: IPlatformContext
 ): ResolvedPlugin => {
   const core = createPlugin({
-    configWebpack: (chain, { name, mode }) => {
+    configWebpack: (chain, { name, mode }, ctx) => {
       const isDev = mode === 'development';
       const pkgVersion = getVersion();
       const isServer = name === BUNDLER_TARGET_SERVER;
       const isClient = name === BUNDLER_TARGET_CLIENT;
+
       if (isClient) {
         chain.merge({
           entry: getClientEntry()
@@ -87,6 +88,16 @@ export const getPlugin = (
           }
         ]);
       } else if (isServer) {
+        if (!ctx.config.ssr) {
+          chain.module
+            .rule('spa-ignore')
+            .test(/\.shuvi\/app\/user\/app\.js/)
+            .use('empty-loader')
+            .loader('@shuvi/empty-loader')
+            .end()
+            .pre();
+        }
+
         chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
           {
             filename: SERVER_BUILD_MANIFEST_PATH,

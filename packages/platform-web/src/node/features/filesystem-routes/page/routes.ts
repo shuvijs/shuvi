@@ -5,10 +5,15 @@ import {
 } from '@shuvi/platform-shared/shared';
 import { ROUTE_RESOURCE_QUERYSTRING } from '@shuvi/shared/constants';
 import { normalizePath, removeExt } from '@shuvi/utils/file';
+import { resolvePkgFile } from '../../../paths';
 
 export { IPageRouteConfig };
 
 type RouteKeysWithoutChildren = keyof Omit<IPageRouteConfig, 'children'>;
+
+const EmptyComponnetPath = resolvePkgFile(
+  'lib/node/features/filesystem-routes/page/EmptyPageComponent'
+);
 
 function genRouteId(filepath: string) {
   return createHash('md4').update(filepath).digest('hex').substr(0, 4);
@@ -19,7 +24,13 @@ function genRouteId(filepath: string) {
  */
 export function serializeRoutes(
   routes: INormalizedPageRouteConfig[],
-  includeMeta: boolean
+  {
+    includeMeta,
+    useEmptyComponent
+  }: {
+    includeMeta: boolean;
+    useEmptyComponent?: boolean;
+  }
 ): string {
   let res = '';
   for (let index = 0; index < routes.length; index++) {
@@ -32,11 +43,15 @@ export function serializeRoutes(
       if (key === 'component') {
         const { component, id } = route;
         const componentSource = removeExt(component!);
-        const componentRequest = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
+        let componentRequest = `${componentSource}?${ROUTE_RESOURCE_QUERYSTRING}`;
         // `webpackExports` works with production and optimization.minimize, check compiled dist
         if (includeMeta) {
           strRoute += `__componentRawRequest__: "${componentRequest}",\n`;
           strRoute += `__componentSource__: "${componentSource}",\n`;
+        }
+
+        if (useEmptyComponent) {
+          componentRequest = EmptyComponnetPath;
         }
 
         strRoute += `
@@ -52,7 +67,10 @@ __resolveWeak__: () => [require.resolveWeak("${componentRequest}")]`.trim();
     }
 
     if (childRoutes && childRoutes.length > 0) {
-      strRoute += `children: ${serializeRoutes(childRoutes, includeMeta)},\n`;
+      strRoute += `children: ${serializeRoutes(childRoutes, {
+        includeMeta,
+        useEmptyComponent
+      })},\n`;
     }
 
     res += `{${strRoute}},\n`;
@@ -92,10 +110,21 @@ export function normalizeRoutes(
 
 export const generateRoutesContent = (
   routes: INormalizedPageRouteConfig[],
-  isDev: boolean
+  {
+    dev,
+    ssr
+  }: {
+    dev: boolean;
+    ssr: boolean;
+  }
 ): string => {
-  const serverRoutes = serializeRoutes(routes, true);
-  const clientRoutes = serializeRoutes(routes, isDev);
+  const serverRoutes = serializeRoutes(routes, {
+    includeMeta: true,
+    useEmptyComponent: ssr === false
+  });
+  const clientRoutes = serializeRoutes(routes, {
+    includeMeta: dev
+  });
 
   return `
 let routes;
