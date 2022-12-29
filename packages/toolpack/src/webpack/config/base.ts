@@ -172,6 +172,7 @@ export function baseWebpackChain({
     alias: [
       'lightningcss-loader',
       'shuvi-swc-loader',
+      'empty-loader',
       'route-component-loader'
     ].reduce((alias, loader) => {
       alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);

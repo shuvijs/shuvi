@@ -15,7 +15,7 @@ describe('custom/app.js', () => {
   afterEach(async () => {
     await page.close();
   });
-  test('should work', async () => {
+  it('should work', async () => {
     page = await ctx.browser.page();
     const result = await page.goto(ctx.url('/404'));
 
