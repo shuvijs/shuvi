@@ -1,3 +1,13 @@
+## [1.0.10](https://github.com/shuvijs/shuvi/compare/v1.0.9...v1.0.10) (2022-12-30)
+
+
+### Bug Fixes
+
+* ignore app.js on server side when setting ssr to false ([d548634](https://github.com/shuvijs/shuvi/commit/d548634fbeb785caab9411cbf6189e863c458741))
+* **typo:** change typeScriptPath to typescriptPath ([a6440f0](https://github.com/shuvijs/shuvi/commit/a6440f046b9cc894482a147d67ca7a891a0acb10))
+
+
+
 ## [1.0.9](https://github.com/shuvijs/shuvi/compare/v1.0.8...v1.0.9) (2022-12-21)
 
 
