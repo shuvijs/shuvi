@@ -10,6 +10,10 @@ const allowReadFilExtList = ['ts', 'js', 'tsx', 'jsx'] as const;
 
 const dynamicMatchAllRegex = /\$$/;
 const dynamicMatchPartRegex = /\$/g;
+const dynamicMatchOptionalRegex = /\$\$([a-zA-Z0-9]+)/g;
+function replace$$(match: string, p1: any) {
+  return `:${p1}?`;
+}
 
 type GetArrayElementType<T extends readonly any[]> = T extends readonly any[]
   ? T[number]
@@ -27,6 +31,7 @@ export function parseDynamicPath(normalizedRoute: string): string {
   );
   return normalizedRoute
     .replace(dynamicMatchAllRegex, '*')
+    .replace(dynamicMatchOptionalRegex, replace$$)
     .replace(dynamicMatchPartRegex, ':');
 }
 
