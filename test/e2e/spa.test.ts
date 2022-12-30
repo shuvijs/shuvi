@@ -21,6 +21,8 @@ describe('SPA mode', () => {
   });
 
   it('should be an empty module when ssr = false', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
+
     const fixtureDir = resolveFixture('spa');
     const fileContent = fs.readFileSync(
       path.join(fixtureDir, 'build/server/server.js'),
