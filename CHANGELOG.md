@@ -1,3 +1,12 @@
+## [1.0.11](https://github.com/shuvijs/shuvi/compare/v1.0.10...v1.0.11) (2023-01-04)
+
+
+### Bug Fixes
+
+* ignore ssr-only runtime modules on server side when setting ssr to false ([22dd7ca](https://github.com/shuvijs/shuvi/commit/22dd7ca0a346c31752a4a2bb5aff1ef041c19b73))
+
+
+
 ## [1.0.10](https://github.com/shuvijs/shuvi/compare/v1.0.9...v1.0.10) (2022-12-30)
 
 
