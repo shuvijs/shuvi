@@ -20,7 +20,7 @@ describe('SPA mode', () => {
     }
   });
 
-  it('should be an empty module when ssr = false', async () => {
+  it('should not include ssr-only runtime modules when ssr = false', async () => {
     page = await ctx.browser.page(ctx.url('/'));
 
     const fixtureDir = resolveFixture('spa');
@@ -28,6 +28,7 @@ describe('SPA mode', () => {
       path.join(fixtureDir, 'build/server/server.js'),
       'utf-8'
     );
-    expect(fileContent).not.toContain('cutsom_app_mlmc3i27w1');
+    expect(fileContent).not.toContain('cutsom-app-mlmc3i27w1');
+    expect(fileContent).not.toContain('runtime-plugin-xrHRS0jMox');
   });
 });

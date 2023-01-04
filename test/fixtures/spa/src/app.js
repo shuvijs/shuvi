@@ -1,4 +1,4 @@
-export const _test_id = 'cutsom_app_mlmc3i27w1';
+export const _test_id = 'cutsom-app-mlmc3i27w1';
 
 export const appComponent = UserApp => {
   function AppComponent(props) {

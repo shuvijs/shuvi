@@ -89,13 +89,10 @@ export const getPlugin = (
         ]);
       } else if (isServer) {
         if (!ctx.config.ssr) {
-          chain.module
-            .rule('spa-ignore')
-            .test(/\.shuvi\/app\/user\/app\.js/)
-            .use('empty-loader')
-            .loader('@shuvi/empty-loader')
-            .end()
-            .pre();
+          chain.resolve.alias.set(
+            '@shuvi/platform-shared/shuvi-app/application$',
+            '@shuvi/platform-shared/shuvi-app/application.bare'
+          );
         }
 
         chain.plugin('private/build-manifest').use(BuildManifestPlugin, [

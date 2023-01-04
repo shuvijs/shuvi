@@ -779,6 +779,12 @@ importers:
     dependencies:
       shuvi: link:../../../packages/shuvi
 
+  test/fixtures/spa:
+    specifiers:
+      shuvi: workspace:*
+    dependencies:
+      shuvi: link:../../../packages/shuvi
+
   test/fixtures/tsconfig-path-refresh:
     specifiers:
       '@types/node': 18.0.6
