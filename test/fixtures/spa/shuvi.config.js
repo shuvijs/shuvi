@@ -1,3 +1,4 @@
 export default {
-  ssr: false
+  ssr: false,
+  plugins: [['./plugin', {}]]
 };
