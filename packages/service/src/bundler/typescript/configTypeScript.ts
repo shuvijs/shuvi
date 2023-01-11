@@ -37,7 +37,7 @@ export async function writeDefaultConfigurations(
     },
     noImplicitThis: {
       value: true,
-      reason: 'requirement for redox'
+      reason: 'requirement for doura'
     },
     module: {
       parsedValue: ts.ModuleKind.ESNext,
