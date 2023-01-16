@@ -20,15 +20,25 @@ export const getAllFiles = (dependencies: string | string[]) => {
   return allFiles;
 };
 
-export const getModuleExport = (module: string, defaultExport?: boolean) => {
+export const getModuleExport = (
+  module: string,
+  defaultExport?: boolean,
+  removeExtension?: boolean
+) => {
   if (module) {
+    let modulePath = module;
+    if (removeExtension) {
+      const parsed = path.parse(module);
+      modulePath = `${parsed.dir}${path.sep}${parsed.name}`;
+    }
     return defaultExport
-      ? `export { default } from "${module}"`
-      : `export * from "${module}"`;
+      ? `export { default } from "${modulePath}"`
+      : `export * from "${modulePath}"`;
   }
   return defaultExport ? `export default null` : `export default {}`;
 };
 
+/** get first existed module and remove the extension */
 export const getFirstModuleExport = (
   allFiles: string[],
   candidates: string[],
@@ -39,7 +49,7 @@ export const getFirstModuleExport = (
       const currentCandidate = candidates[i];
       const currentLookup = allFiles.find(x => x === currentCandidate);
       if (currentLookup) {
-        return getModuleExport(currentLookup, defaultExport);
+        return getModuleExport(currentLookup, defaultExport, true);
       }
     }
   }
