@@ -4,6 +4,7 @@ import {
 } from '@shuvi/service';
 import { IApiRequestHandler } from '../shared';
 import { extendedHooks } from './features/html-render/serverHooks';
+import type { IHtmlDocument } from './features/html-render/lib/renderer/types';
 
 declare global {
   namespace ShuviService {
@@ -40,6 +41,9 @@ export type HandlePageRequestFunction = RemoveLast<
 export type ModifyHtmlFunction = RemoveLast<
   ServerPluginConstructor['modifyHtml']
 >;
+
+/** indirect type of ModifyHtmlFunction */
+export type { IHtmlDocument };
 
 export type SendHtmlFunction = RemoveLast<ServerPluginConstructor['sendHtml']>;
 
