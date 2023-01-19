@@ -147,7 +147,7 @@ export class Telemetry {
   }
 
   async flush() {
-    Promise.all(this.queue).catch(() => null);
+    await Promise.all(this.queue).catch(() => null);
   }
 
   private _notify() {
