@@ -1,3 +1,18 @@
+## [1.0.12](https://github.com/shuvijs/shuvi/compare/v1.0.11...v1.0.12) (2023-01-19)
+
+
+### Bug Fixes
+
+* remove extension of custom-app, custom-server and custom-error in @shuvi/app/user ([#490](https://github.com/shuvijs/shuvi/issues/490)) ([e4a4b8f](https://github.com/shuvijs/shuvi/commit/e4a4b8f2ac93817a6c7189a56a5a71f173fd44a3))
+* rename to doura ([cd0fdcb](https://github.com/shuvijs/shuvi/commit/cd0fdcbef2a45306f8a5d176f8a73ef29741f383))
+
+
+### Features
+
+* add IHtmlDocument type at shuvi-runtime-server ([#491](https://github.com/shuvijs/shuvi/issues/491)) ([26b3240](https://github.com/shuvijs/shuvi/commit/26b32409095567eece4dfa5bcf781d30006e8d83))
+
+
+
 ## [1.0.11](https://github.com/shuvijs/shuvi/compare/v1.0.10...v1.0.11) (2023-01-04)
 
 
