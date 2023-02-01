@@ -12,7 +12,7 @@ import { CustomRuntimePluginHooks } from '@shuvi/runtime';
 import { createPluginCreator } from '@shuvi/shared/plugins';
 import { IAppContext } from './applicationTypes';
 
-export type AppComponent = unknown;
+export type AppComponent = any;
 
 const init = createAsyncParallelHook<void>();
 const appContext = createAsyncSeriesHook<IAppContext>();
