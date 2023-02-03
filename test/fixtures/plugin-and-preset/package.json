@@ -1,5 +1,5 @@
 {
-  "name": "fixture-plugin",
+  "name": "fixture-plugin-plugin-and-preset",
   "dependencies": {
     "lodash": "^4.17.15",
     "shuvi": "workspace:*",
