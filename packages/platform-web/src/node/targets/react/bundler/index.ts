@@ -3,6 +3,8 @@ import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_TARGET_CLIENT } from '../../../../shared';
 
+const isString = (value: string | undefined): value is string => Boolean(value);
+
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
   { name, webpack },
@@ -58,27 +60,32 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     '@shuvi/router-react$',
     resolveLocal('@shuvi/router-react')
   );
-
-  // @ts-ignore
-  config.resolve.alias.set('react$', [
-    resolveUser('react'),
-    resolveLocal('react')
-  ]);
-  // @ts-ignore
-  config.resolve.alias.set('react/jsx-runtime$', [
-    resolveUser('react', 'jsx-runtime'),
-    resolveLocal('react', 'jsx-runtime')
-  ]);
-  // @ts-ignore
-  config.resolve.alias.set('react/jsx-dev-runtime$', [
-    resolveUser('react', 'jsx-dev-runtime'),
-    resolveLocal('react', 'jsx-dev-runtime')
-  ]);
-  // @ts-ignore
-  config.resolve.alias.set('react-dom$', [
-    resolveUser('react-dom'),
-    resolveLocal('react-dom')
-  ]);
+  config.resolve.alias.set(
+    'react$',
+    // @ts-ignore
+    [resolveUser('react'), resolveLocal('react')].filter(isString)
+  );
+  config.resolve.alias.set(
+    'react/jsx-runtime$',
+    // @ts-ignore
+    [
+      resolveUser('react', 'jsx-runtime'),
+      resolveLocal('react', 'jsx-runtime')
+    ].filter(isString)
+  );
+  config.resolve.alias.set(
+    'react/jsx-dev-runtime$',
+    // @ts-ignore
+    [
+      resolveUser('react', 'jsx-dev-runtime'),
+      resolveLocal('react', 'jsx-dev-runtime')
+    ].filter(isString)
+  );
+  config.resolve.alias.set(
+    'react-dom$',
+    // @ts-ignore
+    [resolveUser('react-dom'), resolveLocal('react-dom')].filter(isString)
+  );
 
   if (name === BUNDLER_TARGET_CLIENT) {
     config.plugin('version-env-plugin').use(webpack.DefinePlugin, [
