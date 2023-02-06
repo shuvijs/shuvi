@@ -12,7 +12,7 @@ import {
   sortRoutes,
   SupportFileType
 } from './helpers';
-import { matchFile, getFileMatcherPatterns } from './matchSpec';
+import { matchesSpecs } from './matchSpec';
 
 export type { IPageRouteConfig, IApiRouteConfig, IMiddlewareRouteConfig };
 
@@ -54,7 +54,13 @@ export type RouteConfigType =
 
 export const getRawRoutesFromDir = async (
   dirname: string,
-  excludes?: string[]
+  {
+    includes,
+    excludes
+  }: {
+    includes?: string[];
+    excludes?: string[];
+  }
 ): Promise<RawRoutes> => {
   const rootDirname = dirname;
   if (!(await isDirectory(rootDirname))) {
@@ -68,7 +74,11 @@ export const getRawRoutesFromDir = async (
   const warnings: RouteException[] = [];
   const errors: RouteException[] = [];
   const routes: RawRoute[] = [];
-  const patterns = getFileMatcherPatterns(rootDirname, excludes);
+  const shouldExclude = matchesSpecs(rootDirname, {
+    includes: includes && includes.length > 0 ? includes : ['**/*'],
+    excludes,
+    caseSensitive: false
+  });
   const visitDirectory = async (
     dirname: string,
     routes: RawRoute[],
@@ -92,7 +102,7 @@ export const getRawRoutesFromDir = async (
         filepath = join(filepath, sep);
       }
 
-      if (!matchFile(filepath, patterns, false)) {
+      if (shouldExclude(filepath)) {
         continue;
       }
 
@@ -130,11 +140,17 @@ export const getRawRoutesFromDir = async (
 
 export const getPageRoutes = async (
   dir: string | RawRoutes,
-  excludes?: string[]
+  {
+    includes,
+    excludes
+  }: {
+    includes?: string[];
+    excludes?: string[];
+  } = {}
 ): Promise<PageRoutes> => {
   let raw: RawRoutes;
   if (typeof dir === 'string') {
-    raw = await getRawRoutesFromDir(dir, excludes);
+    raw = await getRawRoutesFromDir(dir, { excludes });
   } else {
     raw = dir;
   }
@@ -191,11 +207,17 @@ export const getPageRoutes = async (
 
 export const getApiRoutes = async (
   dir: string | RawRoutes,
-  excludes?: string[]
+  {
+    includes,
+    excludes
+  }: {
+    includes?: string[];
+    excludes?: string[];
+  } = {}
 ): Promise<ApiRoutes> => {
   let raw: RawRoutes;
   if (typeof dir === 'string') {
-    raw = await getRawRoutesFromDir(dir, excludes);
+    raw = await getRawRoutesFromDir(dir, { excludes });
   } else {
     raw = dir;
   }
@@ -265,11 +287,17 @@ export const getApiRoutes = async (
 
 export const getMiddlewareRoutes = async (
   dir: string | RawRoutes,
-  excludes?: string[]
+  {
+    includes,
+    excludes
+  }: {
+    includes?: string[];
+    excludes?: string[];
+  } = {}
 ): Promise<MiddlewareRoutes> => {
   let raw: RawRoutes;
   if (typeof dir === 'string') {
-    raw = await getRawRoutesFromDir(dir, excludes);
+    raw = await getRawRoutesFromDir(dir, { excludes });
   } else {
     raw = dir;
   }

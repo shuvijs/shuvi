@@ -9,13 +9,12 @@ import {
 describe('route/raw-route', () => {
   const getRawRoutes = async (
     dirname: string,
-    { exclude }: { exclude?: string[] } = {}
+    { excludes }: { excludes?: string[] } = {}
   ) => {
     const dir = getFixturePath(dirname);
-    const { routes, warnings, errors } = await getRawRoutesFromDir(
-      dir,
-      exclude
-    );
+    const { routes, warnings, errors } = await getRawRoutesFromDir(dir, {
+      excludes
+    });
 
     return {
       routes: normalizePath(routes, dir, 'filepath'),
@@ -39,7 +38,7 @@ describe('route/raw-route', () => {
 
   it('should get raw routes from dir', async () => {
     const result = await getRawRoutes('exclude', {
-      exclude: ['ignore-dir', 'ignore-file/**/api.js']
+      excludes: ['ignore-dir', 'ignore-file/**/api.js']
     });
 
     expect(pick(result.routes, 'filepath')).toMatchObject([

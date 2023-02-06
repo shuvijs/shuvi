@@ -13,6 +13,7 @@ export interface PlatformWebCustomConfig {
   // generate by files what under src/pages or user defined
   routes?: IPageRouteConfig[];
   conventionRoutes: {
+    include?: string[];
     exclude?: string[];
   };
 }

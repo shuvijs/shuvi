@@ -57,10 +57,10 @@ const plugin = createPlugin({
       name: 'virtual-raw-routes.js',
       virtual: true,
       content: async () => {
-        const rawRoutes = await getRawRoutesFromDir(
-          paths.routesDir,
-          conventionRoutes.exclude
-        );
+        const rawRoutes = await getRawRoutesFromDir(paths.routesDir, {
+          includes: conventionRoutes.include,
+          excludes: conventionRoutes.exclude
+        });
         return rawRoutes;
       },
       dependencies: [paths.routesDir],
@@ -79,7 +79,10 @@ const plugin = createPlugin({
         } else {
           const { routes: _routes, warnings } = await getPageRoutes(
             getContent(rawRoutes),
-            conventionRoutes.exclude
+            {
+              includes: conventionRoutes.include,
+              excludes: conventionRoutes.exclude
+            }
           );
 
           if (isBuildPhase) {
@@ -111,7 +114,10 @@ const plugin = createPlugin({
       content: async () => {
         const { routes: fsRoutes, warnings } = await getApiRoutes(
           getContent(rawRoutes),
-          conventionRoutes.exclude
+          {
+            includes: conventionRoutes.include,
+            excludes: conventionRoutes.exclude
+          }
         );
 
         if (isBuildPhase) {
@@ -134,7 +140,10 @@ const plugin = createPlugin({
         // Remove the 'middleware' file convention first, and deal with it in a future major update.
         // const { routes: _routes, warnings } = await getMiddlewareRoutes(
         //   getContent(rawRoutes),
-        //   conventionRoutes.exclude
+        //   {
+        //     includes: conventionRoutes.include,
+        //     excludes: conventionRoutes.exclude
+        //   }
         // );
         // if (isBuildPhase) {
         //   warnings.forEach(warning => {
