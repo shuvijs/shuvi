@@ -1,3 +1,17 @@
+## [1.0.13](https://github.com/shuvijs/shuvi/compare/v1.0.12...v1.0.13) (2023-02-06)
+
+
+### Bug Fixes
+
+* fix the logic of resolveUser to adapt to monorepo ([56864c6](https://github.com/shuvijs/shuvi/commit/56864c635b0b395d150771a83147b55c0856f10f))
+
+
+### Features
+
+* doura support devtool ([0b551b4](https://github.com/shuvijs/shuvi/commit/0b551b46f2d5ab47597da36d41451f219da80e1f))
+
+
+
 ## [1.0.12](https://github.com/shuvijs/shuvi/compare/v1.0.11...v1.0.12) (2023-01-19)
 
 
