@@ -1,4 +1,4 @@
-import { Doura, doura } from 'doura';
+import { Doura, doura, devtool } from 'doura';
 import {
   createRuntimePlugin,
   getPageData,
@@ -16,7 +16,8 @@ const isServer = typeof window === 'undefined';
 const initStore: InitDoura = ({ initialState, ctx }) => {
   const createStoreInstance = () => {
     return doura({
-      initialState
+      initialState,
+      plugins: process.env.NODE_ENV === 'development' ? [[devtool]] : []
     });
   };
   // for server
