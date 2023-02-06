@@ -3,7 +3,7 @@ import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_TARGET_CLIENT } from '../../../../shared';
 
-const isString = (value: string | undefined): value is string => Boolean(value);
+const isDefined = <T>(value: T | undefined): value is T => Boolean(value);
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
@@ -63,7 +63,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
   config.resolve.alias.set(
     'react$',
     // @ts-ignore
-    [resolveUser('react'), resolveLocal('react')].filter(isString)
+    [resolveUser('react'), resolveLocal('react')].filter(isDefined)
   );
   config.resolve.alias.set(
     'react/jsx-runtime$',
@@ -71,7 +71,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     [
       resolveUser('react', 'jsx-runtime'),
       resolveLocal('react', 'jsx-runtime')
-    ].filter(isString)
+    ].filter(isDefined)
   );
   config.resolve.alias.set(
     'react/jsx-dev-runtime$',
@@ -79,12 +79,12 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     [
       resolveUser('react', 'jsx-dev-runtime'),
       resolveLocal('react', 'jsx-dev-runtime')
-    ].filter(isString)
+    ].filter(isDefined)
   );
   config.resolve.alias.set(
     'react-dom$',
     // @ts-ignore
-    [resolveUser('react-dom'), resolveLocal('react-dom')].filter(isString)
+    [resolveUser('react-dom'), resolveLocal('react-dom')].filter(isDefined)
   );
 
   if (name === BUNDLER_TARGET_CLIENT) {
