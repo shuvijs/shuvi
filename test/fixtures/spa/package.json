@@ -1,5 +1,5 @@
 {
-  "name": "fixture-plugin",
+  "name": "fixture-plugin-spa",
   "dependencies": {
     "shuvi": "workspace:*"
   }
