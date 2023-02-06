@@ -53,6 +53,7 @@ const newOnePageFilePath = resolveFixture(
 afterEach(() => {
   removeSync(routesDirPath);
   copySync(_routesDirPath, routesDirPath);
+  jest.restoreAllMocks();
 });
 
 describe('webpack watch wait file builder', () => {

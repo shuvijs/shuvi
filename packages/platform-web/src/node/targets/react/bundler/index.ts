@@ -3,6 +3,8 @@ import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { BUNDLER_TARGET_CLIENT } from '../../../../shared';
 
+const isDefined = <T>(value: T | undefined): value is T => Boolean(value);
+
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
   { name, webpack },
@@ -12,16 +14,40 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     const pck = path.dirname(require.resolve(`${m}/package.json`));
     return sub ? `${pck}/${sub}` : pck;
   };
-  const resolveUser = (m: string) =>
-    path.join(context.paths.rootDir, 'node_modules', m);
+
+  const resolveUser = (m: string, sub?: string) => {
+    const { rootDir } = context.paths;
+    let userPkg: { dependencies: Record<string, string> } = {
+      dependencies: {}
+    };
+    // Check if target dependency is declared at user's package.json
+    try {
+      userPkg = require(path.join(rootDir, `package.json`));
+      if (!userPkg.dependencies) {
+        userPkg.dependencies = {};
+      }
+    } catch {}
+
+    if (m in userPkg.dependencies) {
+      // Resolve path of target dependency from user root path
+      try {
+        const module = sub ? `${m}/${sub}` : m;
+        return require.resolve(module, { paths: [rootDir] });
+      } catch {}
+    }
+    return undefined;
+  };
 
   const isReactVersionAfter18 = () => {
     let version: string = '';
     try {
-      version = require(resolveUser('react-dom')).version;
-    } catch (e) {
+      const userReactDomPkgPath = resolveUser('react-dom', 'package.json');
+      if (userReactDomPkgPath) {
+        version = require(userReactDomPkgPath).version;
+      }
+    } catch {}
+    if (!version) {
       version = require(resolveLocal('react-dom')).version;
-    } finally {
     }
     const majorVersion = parseInt(version.split('.')[0] || '', 10);
 
@@ -34,27 +60,32 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     '@shuvi/router-react$',
     resolveLocal('@shuvi/router-react')
   );
-
-  // @ts-ignore
-  config.resolve.alias.set('react$', [
-    resolveUser('react'),
-    resolveLocal('react')
-  ]);
-  // @ts-ignore
-  config.resolve.alias.set('react/jsx-runtime$', [
-    resolveUser('react/jsx-runtime'),
-    resolveLocal('react', 'jsx-runtime')
-  ]);
-  // @ts-ignore
-  config.resolve.alias.set('react/jsx-dev-runtime$', [
-    resolveUser('react/jsx-dev-runtime'),
-    resolveLocal('react', 'jsx-dev-runtime')
-  ]);
-  // @ts-ignore
-  config.resolve.alias.set('react-dom$', [
-    resolveUser('react-dom'),
-    resolveLocal('react-dom')
-  ]);
+  config.resolve.alias.set(
+    'react$',
+    // @ts-ignore
+    [resolveUser('react'), resolveLocal('react')].filter(isDefined)
+  );
+  config.resolve.alias.set(
+    'react/jsx-runtime$',
+    // @ts-ignore
+    [
+      resolveUser('react', 'jsx-runtime'),
+      resolveLocal('react', 'jsx-runtime')
+    ].filter(isDefined)
+  );
+  config.resolve.alias.set(
+    'react/jsx-dev-runtime$',
+    // @ts-ignore
+    [
+      resolveUser('react', 'jsx-dev-runtime'),
+      resolveLocal('react', 'jsx-dev-runtime')
+    ].filter(isDefined)
+  );
+  config.resolve.alias.set(
+    'react-dom$',
+    // @ts-ignore
+    [resolveUser('react-dom'), resolveLocal('react-dom')].filter(isDefined)
+  );
 
   if (name === BUNDLER_TARGET_CLIENT) {
     config.plugin('version-env-plugin').use(webpack.DefinePlugin, [
