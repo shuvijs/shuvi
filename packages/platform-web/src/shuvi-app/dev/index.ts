@@ -3,6 +3,7 @@ import {
   DEV_HOT_MIDDLEWARE_PATH,
   DEV_HOT_LAUNCH_EDITOR_ENDPOINT
 } from '@shuvi/shared/constants';
+import { getPublicPath } from '@shuvi/platform-shared/shared/helper/getPublicPath';
 import { InternalApplication } from '../../shared';
 import connect, { HotDevClient } from './hotDevClient';
 
@@ -21,7 +22,7 @@ export const initHMRAndDevClient = (app: InternalApplication) => {
   devClient = connect({
     launchEditorEndpoint: DEV_HOT_LAUNCH_EDITOR_ENDPOINT,
     path: DEV_HOT_MIDDLEWARE_PATH,
-    location
+    assetPublicPath: getPublicPath()
   });
 
   setInterval(() => {

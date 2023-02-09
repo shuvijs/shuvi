@@ -1,12 +1,12 @@
 import { DEV_STYLE_HIDE_FOUC } from '@shuvi/shared/constants';
 import { AppCtx, Page, devFixture } from '../utils';
 
-let ctx: AppCtx;
-let page: Page;
-
 jest.setTimeout(5 * 60 * 1000);
 
 ['CSS', 'LightningCss'].forEach(function (describeName) {
+  let ctx: AppCtx;
+  let page: Page;
+
   describe(describeName, () => {
     beforeAll(async () => {
       ctx = await devFixture(
