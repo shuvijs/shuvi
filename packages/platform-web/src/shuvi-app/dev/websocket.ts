@@ -54,7 +54,9 @@ export function connectHMR(options: {
 
     const { hostname, port } = window.location;
     const protocol = getSocketProtocol(options.assetPublicPath);
-    const assetPublicPath = options.assetPublicPath.replace(/^\/+/, '');
+    const assetPublicPath = options.assetPublicPath
+      .replace(/^\/+/, '')
+      .replace(/\/+$/, '');
 
     let url = `${protocol}://${hostname}:${port}${
       assetPublicPath ? `/${assetPublicPath}` : ''
