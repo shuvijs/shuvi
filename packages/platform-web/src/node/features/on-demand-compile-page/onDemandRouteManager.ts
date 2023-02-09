@@ -20,26 +20,31 @@ function acceptsHtml(
 
 export default class OnDemandRouteManager {
   public devMiddleware: DevMiddleware | null = null;
-  public _serverPluginContext: IServerPluginContext;
+  private _serverPluginContext: IServerPluginContext;
+  private _assetPathPrefix: string;
 
   constructor(serverPluginContext: IServerPluginContext) {
     this._serverPluginContext = serverPluginContext;
+    const { assetPublicPath } = this._serverPluginContext;
+    if (assetPublicPath.startsWith('http')) {
+      const url = new URL(assetPublicPath);
+      this._assetPathPrefix = url.pathname;
+    } else {
+      this._assetPathPrefix = assetPublicPath;
+    }
   }
 
   getServerMiddleware(): ShuviRequestHandler {
     return async (req, res, next) => {
       const pathname = req.pathname;
-      if (!pathname.startsWith(this._serverPluginContext.assetPublicPath)) {
+      if (!pathname.startsWith(this._assetPathPrefix)) {
         return next();
       }
       if (!this.devMiddleware) {
         return next();
       }
 
-      const chunkName = pathname.replace(
-        this._serverPluginContext.assetPublicPath,
-        ''
-      );
+      const chunkName = pathname.replace(this._assetPathPrefix, '');
       const chunkInitiatorModule =
         resources.clientManifest.chunkRequest[chunkName];
 
