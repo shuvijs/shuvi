@@ -1,3 +1,12 @@
+## [1.0.15](https://github.com/shuvijs/shuvi/compare/v1.0.14...v1.0.15) (2023-02-09)
+
+
+### Bug Fixes
+
+* removing extra slash in hmr path ([ece2636](https://github.com/shuvijs/shuvi/commit/ece2636b3d7f998597fcd78cd09eba9d03ea0118))
+
+
+
 ## [1.0.14](https://github.com/shuvijs/shuvi/compare/v1.0.13...v1.0.14) (2023-02-09)
 
 
