@@ -1,3 +1,17 @@
+## [1.0.14](https://github.com/shuvijs/shuvi/compare/v1.0.13...v1.0.14) (2023-02-09)
+
+
+### Bug Fixes
+
+* hmr not working with custom publicPath that has a different protocol ([fc8d4f8](https://github.com/shuvijs/shuvi/commit/fc8d4f87f54136c38c8eca32646399bbb9982305))
+
+
+### Features
+
+* new option "conventionRoutes.include" ([bc47b78](https://github.com/shuvijs/shuvi/commit/bc47b78336c038b8680895e85f458fca89ea8913))
+
+
+
 ## [1.0.13](https://github.com/shuvijs/shuvi/compare/v1.0.12...v1.0.13) (2023-02-06)
 
 
