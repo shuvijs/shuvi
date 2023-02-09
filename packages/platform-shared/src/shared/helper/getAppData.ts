@@ -29,7 +29,7 @@ export function getAppData(): IAppData {
     return {
       ssr: false,
       filesByRoutId: {},
-      publicPath: ''
+      publicPath: '/'
     };
   }
 
@@ -39,7 +39,7 @@ export function getAppData(): IAppData {
       ssr: false,
       pageData: {},
       filesByRoutId: {},
-      publicPath: ''
+      publicPath: '/'
     };
   }
 

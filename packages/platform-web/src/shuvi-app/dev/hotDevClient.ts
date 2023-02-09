@@ -62,7 +62,7 @@ export type HotDevClient = {
 export default function connect(options: {
   launchEditorEndpoint: string;
   path: string;
-  location: Location;
+  assetPublicPath: string;
 }): HotDevClient {
   startReportingRuntimeErrors({
     onError: function () {

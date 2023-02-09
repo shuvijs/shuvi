@@ -3,7 +3,14 @@ const eventCallbacks: ((event: any) => void)[] = [];
 let lastActivity = Date.now();
 let initDataBeforeWsOnline: any[] = [];
 
-function getSocketProtocol(protocol: string): string {
+function getSocketProtocol(assetPublicPath: string): string {
+  let protocol = window.location.protocol;
+
+  try {
+    // assetPublicPath is a url
+    protocol = new URL(assetPublicPath).protocol;
+  } catch (_) {}
+
   return protocol === 'http:' ? 'ws' : 'wss';
 }
 
@@ -28,11 +35,7 @@ export function connectHMR(options: {
   path: string;
   timeout: number;
   log?: boolean;
-  location: {
-    protocol: string;
-    hostname: string;
-    port?: string;
-  };
+  assetPublicPath: string;
 }) {
   if (!options.timeout) {
     options.timeout = 5000;
@@ -48,9 +51,18 @@ export function connectHMR(options: {
 
   function init() {
     if (source) source.close();
-    let { protocol, hostname, port } = options.location;
-    protocol = getSocketProtocol(protocol);
-    let url = `${protocol}://${hostname}:${port}`;
+
+    const { hostname, port } = window.location;
+    const protocol = getSocketProtocol(options.assetPublicPath);
+    const assetPublicPath = options.assetPublicPath.replace(/^\/+/, '');
+
+    let url = `${protocol}://${hostname}:${port}${
+      assetPublicPath ? `/${assetPublicPath}` : ''
+    }`;
+
+    if (assetPublicPath.startsWith('http')) {
+      url = `${protocol}://${assetPublicPath.split('://')[1]}`;
+    }
 
     source = new WebSocket(`${url}${options.path}`);
     source.onopen = handleOnline;
