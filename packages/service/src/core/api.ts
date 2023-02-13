@@ -7,11 +7,12 @@ import {
   RecordObject,
   TelemetryEvent
 } from '@shuvi/telemetry';
+import { setGlobal } from '@shuvi/trace';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOptionWithId } from '../project';
 import { getBundler, Bundler } from '../bundler';
-import { DEFAULT_PUBLIC_PATH } from '../constants';
+import { DEFAULT_PUBLIC_PATH, PHASE_DEVELOPMENT_SERVER } from '../constants';
 import { ServerPluginInstance } from '../server';
 import { _setResourceEnv } from '../resources';
 import { isFatalError } from '../error';
@@ -276,6 +277,10 @@ class Api {
     platformPresetRuntimeFiles.forEach(file => {
       this.addInternalRuntimeFile(file);
     });
+
+    setGlobal('buildDir', this._paths.buildDir);
+    setGlobal('phase', PHASE_DEVELOPMENT_SERVER);
+    setGlobal('telemetry', this._telemetryImpl);
 
     this._inited = true;
   }

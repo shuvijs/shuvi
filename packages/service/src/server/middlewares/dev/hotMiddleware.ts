@@ -26,6 +26,9 @@ import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/constants';
+import { Span, trace, flushAllTraces } from '@shuvi/trace';
+//@ts-ignore
+import pkgInfo from '../../../../package.json';
 
 type modulePath = string;
 type route = string;
@@ -58,6 +61,7 @@ export class WebpackHotMiddleware {
     this.handleInactiveModule();
   }, DEV_SOCKET_TIMEOUT_MS + 1000);
   private _disposeInactivePage: boolean;
+  private hotMiddlewareSpan: Span;
 
   constructor({ compiler, disposeInactivePage }: IWebpackHotMiddlewareOptions) {
     this.clientManager = new ClientManager();
@@ -67,6 +71,14 @@ export class WebpackHotMiddleware {
 
     compiler.hooks.invalid.tap('webpack-hot-middleware', this.onInvalid);
     compiler.hooks.done.tap('webpack-hot-middleware', this.onDone);
+
+    this.hotMiddlewareSpan = trace('hot-middleware', undefined, {
+      version: pkgInfo.version as string
+    });
+
+    // Ensure the hotMiddlewareSpan is flushed immediately as it's the parentSpan for all processing
+    // of the current `shuvi dev` invocation.
+    this.hotMiddlewareSpan.stop();
   }
 
   onInvalid = () => {
@@ -79,6 +91,8 @@ export class WebpackHotMiddleware {
     // Keep hold of latest stats so they can be propagated to new clients
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
+    // Ensure traces are flushed after each compile in development mode
+    flushAllTraces();
   };
   onHMR = (client: ws) => {
     if (this.closed) return;
@@ -93,16 +107,53 @@ export class WebpackHotMiddleware {
         const parsedData = JSON.parse(
           typeof data !== 'string' ? data.toString() : data
         );
-        if (parsedData.event === 'ping') {
-          client.send(
-            JSON.stringify({
-              event: 'pong'
-            })
-          );
+
+        let traceChild:
+          | {
+              name: string;
+              startTime?: bigint;
+              endTime?: bigint;
+              attrs?: Record<string, number | string>;
+            }
+          | undefined;
+
+        switch (parsedData.event) {
+          case 'ping':
+            {
+              client.send(
+                JSON.stringify({
+                  event: 'pong'
+                })
+              );
+            }
+            break;
+          case 'updatePageStatus': {
+            this.updateModuleActivity(
+              parsedData.currentRoutes,
+              parsedData.page
+            );
+            break;
+          }
+          case 'client-hmr-latency': {
+            traceChild = {
+              name: parsedData.event,
+              startTime: BigInt(parsedData.startTime * 1000 * 1000),
+              endTime: BigInt(parsedData.endTime * 1000 * 1000)
+            };
+            break;
+          }
+          default: {
+            break;
+          }
         }
 
-        if (parsedData.event === 'updatePageStatus') {
-          this.updateModuleActivity(parsedData.currentRoutes, parsedData.page);
+        if (traceChild) {
+          this.hotMiddlewareSpan.manualTraceChild(
+            traceChild.name,
+            traceChild.startTime || process.hrtime.bigint(),
+            traceChild.endTime || process.hrtime.bigint(),
+            { ...traceChild.attrs }
+          );
         }
       } catch (_) {}
     });
