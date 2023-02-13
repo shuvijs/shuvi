@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
-import { traceGlobals } from '../shared';
 import fs from 'fs';
 import path from 'path';
+import { traceGlobals } from '../shared';
 
 type Event = {
   traceId: string;
