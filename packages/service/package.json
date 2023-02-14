@@ -37,6 +37,7 @@
     "@shuvi/utils": "1.0.15",
     "@shuvi/error-overlay": "1.0.15",
     "@shuvi/telemetry": "1.0.15",
+    "@shuvi/trace": "1.0.15",
     "commander": "5.1.0",
     "comment-json": "4.2.2",
     "cross-spawn": "7.0.3",
