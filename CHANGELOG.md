@@ -1,3 +1,12 @@
+## [1.0.16](https://github.com/shuvijs/shuvi/compare/v1.0.15...v1.0.16) (2023-02-17)
+
+
+### Features
+
+* init the trace module and add hmr event to json and telemetry ([bff9258](https://github.com/shuvijs/shuvi/commit/bff9258983bf74985dc91ef1a896bf5e45153596))
+
+
+
 ## [1.0.15](https://github.com/shuvijs/shuvi/compare/v1.0.14...v1.0.15) (2023-02-09)
 
 
