@@ -78,6 +78,7 @@ export const createApp: CreateAppClient = ({
       return;
     }
 
+    console.log('![pageLoaders2] =>', pageLoaders);
     const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
 
     try {
@@ -155,3 +156,7 @@ export const createApp: CreateAppClient = ({
 
   return app;
 };
+
+if (module.hot) {
+  module.hot.accept('@shuvi/app/files/page-loaders');
+}
