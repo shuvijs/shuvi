@@ -155,3 +155,7 @@ export const createApp: CreateAppClient = ({
 
   return app;
 };
+
+if (module.hot) {
+  module.hot.accept('@shuvi/app/files/page-loaders');
+}

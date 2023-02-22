@@ -66,7 +66,7 @@ describe('Hot Module Reloading', () => {
   });
 
   describe('editing a page', () => {
-    test('should detect the changes and display it', async () => {
+    test('should detect the changes and display it by hmr', async () => {
       const pagePath = resolvePagePath('two');
 
       let originalContent: string | undefined;
@@ -74,6 +74,7 @@ describe('Hot Module Reloading', () => {
 
       try {
         page = await ctx.browser.page(ctx.url('/hmr/two'));
+        const logs = page.collectBrowserLog();
         expect(await page.$text('[data-test-id="hmr-two"]')).toBe(
           'This is the two page'
         );
@@ -100,6 +101,10 @@ describe('Hot Module Reloading', () => {
           t => /This is the two page/.test(t)
         );
 
+        logs.dispose();
+        // not reload
+        expect(logs.texts.join(',')).not.toContain('[HMR] connected');
+
         done = true;
       } finally {
         await page.close();
@@ -110,7 +115,7 @@ describe('Hot Module Reloading', () => {
       }
     });
 
-    test('should support add loader dynamic', async () => {
+    test('should support add loader dynamic by hmr', async () => {
       const pagePath = resolvePagePath('two');
 
       let originalContent: string | undefined;
@@ -118,6 +123,7 @@ describe('Hot Module Reloading', () => {
 
       try {
         page = await ctx.browser.page(ctx.url('/hmr/two'));
+        const logs = page.collectBrowserLog();
         expect(await page.$text('[data-test-id="hmr-two"]')).toBe(
           'This is the two page'
         );
@@ -155,6 +161,10 @@ describe('Hot Module Reloading', () => {
           () => page.$text('[data-test-id="hmr-two"]'),
           t => /This is the two page/.test(t)
         );
+
+        logs.dispose();
+        // not reload
+        expect(logs.texts.join(',')).not.toContain('[HMR] connected');
 
         done = true;
       } finally {
