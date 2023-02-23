@@ -10,7 +10,7 @@ import { getFilePresets } from '../project/file-presets';
 
 /**
  * A creator for `getPresetRuntimeFiles` which helps platforms to build a bunch of runtime files including
- * `core/error`, `core/platform`, `core/plugins`, `core/polyfill`, `core/runtimeConfig`, `core/setRuntimeConfig`,
+ * ``core/platform`, `core/plugins`, `core/polyfill`, `core/runtimeConfig`, `core/setRuntimeConfig`,
  * `user/error`, `user/runtime` and `entry`
  */
 export const getPresetRuntimeFilesCreator =

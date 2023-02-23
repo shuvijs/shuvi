@@ -2,11 +2,6 @@ declare module '@shuvi/app/core/entry' {
   export {};
 }
 
-declare module '@shuvi/app/core/error' {
-  const Error: any;
-  export default Error;
-}
-
 declare module '@shuvi/app/core/platform' {
   import { IPageRouteRecord, IViewClient } from '@shuvi/platform-shared/shared';
 
