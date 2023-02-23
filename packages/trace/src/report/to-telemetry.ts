@@ -3,7 +3,7 @@ import { traceGlobals } from '../shared';
 // White list of events that can be telemetry.
 const TRACE_EVENT_ACCESSLIST = new Map(
   Object.entries({
-    'client-hmr-latency': 'CLIENT_HMR_LATENCY'
+    'client-hmr-latency': 'SHUVI_CLIENT_HMR_LATENCY'
   })
 );
 
