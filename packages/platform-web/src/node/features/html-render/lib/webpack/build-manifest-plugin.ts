@@ -308,16 +308,16 @@ export default class BuildManifestPlugin implements Plugin {
     }
 
     if (typeof value === 'string') {
-      const existed = modules[request].files.some(file => file === value);
+      const existed = modules[request]?.files.some(file => file === value);
       if (!existed) {
-        modules[request].files.push(value);
+        modules[request]?.files.push(value);
       }
     } else {
-      const existed = modules[request].children.some(
+      const existed = modules[request]?.children.some(
         item => item.id === value.id
       );
       if (!existed) {
-        modules[request].children.push(value);
+        modules[request]?.children.push(value);
       }
     }
   }

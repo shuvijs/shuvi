@@ -8,8 +8,8 @@ export default function generateFilesByRoutId(
   let filesByRoutId: Record<string, string[]> = {};
   const loadable = assetMap.loadble;
   routes.forEach(({ id, __componentRawRequest__ }) => {
-    if (__componentRawRequest__) {
-      filesByRoutId[id] = loadable[__componentRawRequest__].files;
+    if (__componentRawRequest__ && loadable[__componentRawRequest__]) {
+      filesByRoutId[id] = loadable[__componentRawRequest__]!.files;
     }
   });
 
