@@ -22,6 +22,17 @@ export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
   // related issue: https://github.com/graphql/graphql-js/issues/1272
   chain.resolve.mainFields.clear().add('main').add('module');
 
+  chain
+    .plugin('private/bundle-analyzer-plugin')
+    .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin, [
+      {
+        logLevel: 'warn',
+        openAnalyzer: false,
+        analyzerMode: 'static',
+        reportFilename: '../analyze/client.html'
+      }
+    ]);
+
   chain.output.libraryTarget('commonjs2');
   chain.optimization.minimize(false);
   addExternals(
