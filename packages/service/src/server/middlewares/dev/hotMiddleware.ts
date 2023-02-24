@@ -137,8 +137,8 @@ export class WebpackHotMiddleware {
           case 'client-hmr-latency': {
             traceChild = {
               name: parsedData.event,
-              startTime: BigInt(parsedData.startTime * 1000 * 1000),
-              endTime: BigInt(parsedData.endTime * 1000 * 1000)
+              startTime: BigInt(parsedData.startTime) * BigInt(1000 * 1000),
+              endTime: BigInt(parsedData.endTime) * BigInt(1000 * 1000)
             };
             break;
           }
