@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/shared",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -33,6 +33,6 @@
     "node": ">= 16.0.0"
   },
   "dependencies": {
-    "@shuvi/hook": "1.0.16"
+    "@shuvi/hook": "1.0.17"
   }
 }
