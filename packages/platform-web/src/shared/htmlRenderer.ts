@@ -34,6 +34,6 @@ export interface IManifest {
     [file: string]: string; // file => request
   };
   loadble: {
-    [s: string]: IModule;
+    [s: string]: IModule | undefined;
   };
 }
