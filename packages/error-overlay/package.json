@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/error-overlay",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "main": "umd/index.js",
   "types": "lib/index.d.ts",
   "files": [
@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "@babel/code-frame": "7.14.5",
-    "@shuvi/shared": "1.0.16",
-    "@shuvi/toolpack": "1.0.16",
+    "@shuvi/shared": "1.0.17",
+    "@shuvi/toolpack": "1.0.17",
     "anser": "1.4.9",
     "data-uri-to-buffer": "3.0.1",
     "html-entities": "2.3.2",
