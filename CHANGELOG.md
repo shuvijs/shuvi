@@ -1,3 +1,12 @@
+## [1.0.18](https://github.com/shuvijs/shuvi/compare/v1.0.17...v1.0.18) (2023-02-28)
+
+
+### Features
+
+* set `experimentalDecorators` and `emitDecoratorMetadata` via tsconfig ([0933cfb](https://github.com/shuvijs/shuvi/commit/0933cfb6fe012927bc1feac4acd5156c3bba9e27))
+
+
+
 ## [1.0.17](https://github.com/shuvijs/shuvi/compare/v1.0.16...v1.0.17) (2023-02-24)
 
 
