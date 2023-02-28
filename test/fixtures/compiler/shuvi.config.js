@@ -12,9 +12,7 @@ export default {
       sourceMap: true,
       autoLabel: 'dev-only',
       labelFormat: 'custom--[local]'
-    },
-    experimentalDecorators: true,
-    emitDecoratorMetadata: true
+    }
   },
   experimental: {
     modularizeImports: {
