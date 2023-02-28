@@ -131,6 +131,7 @@ function onFastRefresh(hasUpdates) {
   if (startLatency) {
     const endLatency = Date.now();
     const latency = endLatency - startLatency;
+    startLatency = undefined;
     console.log(`[Fast Refresh] done in ${latency}ms`);
     sendMessage(
       JSON.stringify({
@@ -236,7 +237,9 @@ function processMessage(e) {
 
   switch (obj.action) {
     case 'building': {
-      startLatency = Date.now();
+      if (startLatency === undefined) {
+        startLatency = Date.now();
+      }
       console.log(
         '[Fast Refresh] bundle ' +
           (obj.name ? "'" + obj.name + "' " : '') +
