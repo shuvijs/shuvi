@@ -97,9 +97,7 @@ export type Feature =
   | 'swcReactRemoveProperties'
   | 'swcJsxImportSource'
   | 'swcStyledComponents'
-  | 'swcEmotion'
-  | 'swcExperimentalDecorators'
-  | 'swcEmitDecoratorMetadata';
+  | 'swcEmotion';
 
 const BUILD_FEATURES: Array<Feature> = [
   'shuvi/lightningCss',
@@ -110,9 +108,7 @@ const BUILD_FEATURES: Array<Feature> = [
   'swcReactRemoveProperties',
   'swcJsxImportSource',
   'swcStyledComponents',
-  'swcEmotion',
-  'swcExperimentalDecorators',
-  'swcEmitDecoratorMetadata'
+  'swcEmotion'
 ];
 
 export type EventBuildFeatureUsage = {
@@ -137,9 +133,7 @@ export function eventBuildFeatureUsage({
       ['swcReactRemoveProperties', !!compiler?.reactRemoveProperties],
       ['swcJsxImportSource', !!compiler?.jsxImportSource],
       ['swcStyledComponents', !!compiler?.styledComponents],
-      ['swcEmotion', !!compiler?.emotion],
-      ['swcExperimentalDecorators', !!compiler?.experimentalDecorators],
-      ['swcEmitDecoratorMetadata', !!compiler?.emitDecoratorMetadata]
+      ['swcEmotion', !!compiler?.emotion]
     ].filter<[Feature, boolean]>(Boolean as any)
   );
   return BUILD_FEATURES.map(featureName => {

@@ -3,6 +3,7 @@ import {
   createBrowserWebpackChain,
   createNodeWebpackChain
 } from '@shuvi/toolpack/lib/webpack/config';
+import { CompilerOptions } from '@shuvi/toolpack/lib/webpack/loaders/shuvi-swc-loader';
 import { IPluginContext } from '../core';
 import { getJavaScriptInfo } from './typescript';
 
@@ -43,12 +44,18 @@ export function createWebpackConfig(
   ];
   const lightningCss = !!config.experimental.lightningCss;
   const experimental = config.experimental;
-  const compiler = {
+  const jsConfig = getJavaScriptInfo();
+  const compiler: CompilerOptions = {
     ...config.compiler,
     modularizeImports: experimental.modularizeImports,
-    swcPlugins: experimental.swcPlugins
+    swcPlugins: experimental.swcPlugins,
+    experimentalDecorators: Boolean(
+      jsConfig?.compilerOptions?.experimentalDecorators
+    ),
+    emitDecoratorMetadata: Boolean(
+      jsConfig?.compilerOptions?.emitDecoratorMetadata
+    )
   };
-  const jsConfig = getJavaScriptInfo();
 
   if (opts.node) {
     chain = createNodeWebpackChain({

@@ -159,10 +159,6 @@ export interface CompilerConfig {
   // third-party libraries
   styledComponents?: CompilerOptions['styledComponents'];
   emotion?: CompilerOptions['emotion'];
-
-  // legacy decrator
-  experimentalDecorators?: CompilerOptions['experimentalDecorators'];
-  emitDecoratorMetadata?: CompilerOptions['emitDecoratorMetadata'];
 }
 
 export interface InternalConfig {
