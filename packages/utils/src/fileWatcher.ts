@@ -61,6 +61,9 @@ export function watch(
   let aggregatedRemovals: Set<string> = new Set();
 
   wp.on('aggregated', () => {
+    // if (!aggregatedChanges.size && !aggregatedRemovals.size) {
+    //   return;
+    // }
     const knownFiles = wp.getTimeInfoEntries();
     const changes = Array.from(aggregatedChanges);
     const removals = Array.from(aggregatedRemovals);
@@ -83,31 +86,29 @@ export function watch(
     });
   });
 
-  if (callbackUndelayed) {
-    wp.on('change', (file, time, explanation) => {
-      if (
-        ignoreFileContentUpdate &&
-        explanation === watchpackExplanationType.change
-      ) {
-        return;
-      }
-      aggregatedRemovals.delete(file);
-      aggregatedChanges.add(file);
-      callbackUndelayed?.(file, time);
-    });
+  wp.on('change', (file, time, explanation) => {
+    if (
+      ignoreFileContentUpdate &&
+      explanation === watchpackExplanationType.change
+    ) {
+      return;
+    }
+    aggregatedRemovals.delete(file);
+    aggregatedChanges.add(file);
+    callbackUndelayed?.(file, time);
+  });
 
-    wp.on('remove', (file, time, explanation) => {
-      if (
-        ignoreFileContentUpdate &&
-        explanation === watchpackExplanationType.change
-      ) {
-        return;
-      }
-      aggregatedChanges.delete(file);
-      aggregatedRemovals.add(file);
-      callbackUndelayed?.(file, time);
-    });
-  }
+  wp.on('remove', (file, time, explanation) => {
+    if (
+      ignoreFileContentUpdate &&
+      explanation === watchpackExplanationType.change
+    ) {
+      return;
+    }
+    aggregatedChanges.delete(file);
+    aggregatedRemovals.add(file);
+    callbackUndelayed?.(file, time);
+  });
 
   wp.watch({ files, directories, missing, startTime });
 
