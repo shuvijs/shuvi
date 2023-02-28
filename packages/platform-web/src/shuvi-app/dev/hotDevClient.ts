@@ -131,7 +131,6 @@ function onFastRefresh(hasUpdates) {
   if (startLatency) {
     const endLatency = Date.now();
     const latency = endLatency - startLatency;
-    startLatency = undefined;
     console.log(`[Fast Refresh] done in ${latency}ms`);
     sendMessage(
       JSON.stringify({
@@ -140,6 +139,7 @@ function onFastRefresh(hasUpdates) {
         endTime: endLatency
       })
     );
+    startLatency = undefined;
   }
 }
 
