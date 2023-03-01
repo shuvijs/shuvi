@@ -61,9 +61,6 @@ export function watch(
   let aggregatedRemovals: Set<string> = new Set();
 
   wp.on('aggregated', () => {
-    // if (!aggregatedChanges.size && !aggregatedRemovals.size) {
-    //   return;
-    // }
     const knownFiles = wp.getTimeInfoEntries();
     const changes = Array.from(aggregatedChanges);
     const removals = Array.from(aggregatedRemovals);
