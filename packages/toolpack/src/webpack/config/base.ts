@@ -190,6 +190,11 @@ export function baseWebpackChain({
     .test(/\.m?js/)
     .resolve.set('fullySpecified', false);
 
+  config.module
+    .rule('private/shuvi-runtime')
+    .test(/\.shuvi[/\\]app[/\\]runtime[/\\]index\.(js|ts)/)
+    .set('sideEffects', false);
+
   mainRule
     .oneOf('js')
     .test(/\.(tsx|ts|js|cjs|mjs|jsx)$/)
