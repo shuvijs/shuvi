@@ -2,6 +2,9 @@ import { Doura } from 'doura';
 import { CustomAppContext } from '@shuvi/runtime';
 import { IRouter, IPageRouteRecord } from './routerTypes';
 import { IPluginList } from './runtimPlugin';
+import { Loader } from './loader';
+
+export type Loaders = Record<string, Loader>;
 
 export interface IAppContext extends CustomAppContext {
   [x: string]: unknown;
@@ -44,10 +47,20 @@ export interface Application<Config extends {} = {}> {
   setLoadersData(datas: Record<string, any>): void;
 }
 
-export interface ApplicationOptions<C extends {}> {
+export interface GetLoadersFn {
+  (): Promise<Record<string, Loader>>;
+}
+
+export interface ApplicationInternalOptions<C extends {}> {
   config: C;
   router: IRouter;
   AppComponent: any;
+  getLoaders: GetLoadersFn;
   initialState?: IAppState;
   plugins?: IPluginList;
 }
+
+export type ApplicationlOptions<C extends {}> = Omit<
+  ApplicationInternalOptions<C>,
+  'getLoaders' | 'plugins'
+>;

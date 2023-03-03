@@ -94,7 +94,10 @@ describe('Tree Shaking', () => {
   });
 
   test("main entry should only keep page's loader and remove other export", async () => {
-    const fileContent = getFileContent(manifest, 'main', 'bundles');
+    const fileContent = getFileContent(
+      manifest,
+      '@shuvi/app/files/page-loaders'
+    );
     expect(fileContent).toMatch('ExportOther-loader-symbol');
     expect(fileContent).not.toMatch('ExportOther-default-symbol');
     expect(fileContent).not.toMatch(otherSymbol);
