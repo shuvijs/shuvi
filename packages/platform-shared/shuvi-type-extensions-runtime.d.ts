@@ -42,3 +42,10 @@ declare module '@shuvi/app/user/app' {
   export const appContext: IAppModule['appContext'];
   export const dispose: IAppModule['dispose'];
 }
+
+declare module '@shuvi/app/files/page-loaders' {
+  import { Loaders } from '@shuvi/platform-shared/shared';
+
+  const loaders: Loaders;
+  export default loaders;
+}

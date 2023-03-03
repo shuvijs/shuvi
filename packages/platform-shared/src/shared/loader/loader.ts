@@ -107,6 +107,7 @@ export async function runLoaders(
       return;
     }
     let res: Response | undefined;
+    let error: any;
     try {
       const value = await loaderFn({
         pathname,
@@ -119,17 +120,23 @@ export async function runLoaders(
       });
 
       if (value === undefined) {
-        throw new Error(
+        error = new Error(
           `You defined a loader for route "${match.route.path}" but didn't return ` +
             `anything from your \`loader\` function. Please return a value or \`null\`.`
         );
+      } else {
+        res = createJson(value);
       }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development' && !isResponse(err)) {
+        console.error(
+          `error occurs in loader function of route "${match.route.path}"`
+        );
+      }
+      error = err;
+    }
 
-      res = createJson(value);
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development' && !isResponse(error)) {
-        console.error(`loader function error of route "${match.route.path}"`);
-      }
+    if (error) {
       throw error;
     }
 

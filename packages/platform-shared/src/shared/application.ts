@@ -8,9 +8,10 @@ import {
   Doura,
   Application,
   IAppContext,
-  ApplicationOptions,
+  ApplicationInternalOptions,
   IRerenderConfig,
-  IError
+  IError,
+  GetLoadersFn
 } from './applicationTypes';
 
 export class ApplicationImpl<Config extends {} = {}> {
@@ -22,14 +23,16 @@ export class ApplicationImpl<Config extends {} = {}> {
   private _store: Doura;
   private _error: ModelPublicInstance<ErrorModel>;
   private _loader: ModelPublicInstance<LoaderModel>;
+  private _getLoaders: GetLoadersFn;
 
-  constructor(options: ApplicationOptions<Config>) {
+  constructor(options: ApplicationInternalOptions<Config>) {
     this._config = options.config;
     this._router = options.router;
     this._context = {} as IAppContext;
     this._store = doura({ initialState: options.initialState });
     this._error = this._store.getModel(errorModelName, errorModel);
     this._loader = this._store.getModel(loaderModelName, loaderModel);
+    this._getLoaders = options.getLoaders;
     this._appComponent = options.AppComponent;
     this._pluginManager = getManager();
     initPlugins(this._pluginManager, options.plugins || []);
@@ -65,6 +68,10 @@ export class ApplicationImpl<Config extends {} = {}> {
 
   clearError() {
     this._error.clear();
+  }
+
+  getLoaders() {
+    return this._getLoaders();
   }
 
   getLoadersData() {
