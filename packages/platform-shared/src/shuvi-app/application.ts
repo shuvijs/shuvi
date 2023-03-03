@@ -1,7 +1,7 @@
 import * as customApp from '@shuvi/app/user/app';
 import { pluginRecord } from '@shuvi/app/core/plugins';
 import { ApplicationImpl } from '../shared/application';
-import { createRuntimePlugin, IAppModule, ApplicationOptions } from './shared';
+import { createRuntimePlugin, IAppModule, ApplicationlOptions } from './shared';
 import {
   IRuntimePluginConstructor,
   IPluginRecord,
@@ -41,12 +41,23 @@ function getPlugins(runtime: IAppModule, pluginRecords: IPluginRecord) {
 }
 
 export default function application<C extends {}>(
-  options: ApplicationOptions<C>
-): ApplicationImpl<C> {
+  options: ApplicationlOptions<C>
+) {
   const application = new ApplicationImpl({
     ...options,
+    getLoaders: async () => {
+      const mod = await import(
+        /* webpackChunkName: "loaders" */
+        '@shuvi/app/files/page-loaders'
+      );
+      return mod.default || mod;
+    },
     plugins: getPlugins(customApp, pluginRecord)
   });
 
   return application;
+}
+
+if (module.hot) {
+  module.hot.accept('@shuvi/app/files/page-loaders');
 }

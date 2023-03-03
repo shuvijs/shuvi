@@ -126,8 +126,7 @@ function runTest({ dev }: { dev: boolean }) {
       await page.waitForSelector('#content');
       const fileContent = await getFileContent(
         'loader-tree-shaking',
-        'main',
-        'bundles'
+        '@shuvi/app/files/page-loaders'
       );
       expect(fileContent).toMatch('function-declaration-async-loader-symbol');
       expect(fileContent).toMatch('function-declaration-normal-loader-symbol');

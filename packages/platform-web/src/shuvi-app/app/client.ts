@@ -14,7 +14,6 @@ import {
   createBrowserHistory,
   createHashHistory
 } from '@shuvi/router';
-import pageLoaders from '@shuvi/app/files/page-loaders';
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { InternalApplication, CreateAppClient } from '../../shared';
@@ -78,6 +77,7 @@ export const createApp: CreateAppClient = ({
       return;
     }
 
+    const pageLoaders = await app.getLoaders();
     const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
 
     try {
@@ -155,7 +155,3 @@ export const createApp: CreateAppClient = ({
 
   return app;
 };
-
-if (module.hot) {
-  module.hot.accept('@shuvi/app/files/page-loaders');
-}

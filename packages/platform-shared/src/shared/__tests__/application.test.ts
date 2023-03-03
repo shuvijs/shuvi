@@ -5,6 +5,7 @@ function getApp() {
   const app = new ApplicationImpl({
     config: {},
     AppComponent: {},
+    getLoaders: () => Promise.resolve({}),
     router: createRouter({
       history: createMemoryHistory(),
       routes: [

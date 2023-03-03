@@ -1,13 +1,14 @@
 import { ApplicationImpl } from '../shared/application';
-import { ApplicationOptions } from './shared';
+import { ApplicationlOptions } from './shared';
 
 export { ApplicationImpl };
 
 export default function application<C extends {}>(
-  options: ApplicationOptions<C>
+  options: ApplicationlOptions<C>
 ): ApplicationImpl<C> {
   const application = new ApplicationImpl({
-    ...options
+    ...options,
+    getLoaders: () => Promise.resolve({})
   });
 
   return application;
