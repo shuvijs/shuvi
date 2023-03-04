@@ -107,16 +107,6 @@ export const getPlugin = (
                 return resource;
               }
             ]);
-
-          chain
-            .plugin('replace/page-loaders')
-            .use(webpack.NormalModuleReplacementPlugin, [
-              /\@shuvi\/app\/files\/page-loaders$/,
-              function (resource) {
-                resource.request = '@shuvi/utils/nullish';
-                return resource;
-              }
-            ]);
         }
 
         chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
