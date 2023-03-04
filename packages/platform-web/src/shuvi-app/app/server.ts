@@ -6,7 +6,6 @@ import {
   isResponse,
   isRedirect
 } from '@shuvi/platform-shared/shared';
-import pageLoaders from '@shuvi/app/files/page-loaders';
 import application from '@shuvi/platform-shared/shuvi-app/application';
 import {
   createRouter,
@@ -31,6 +30,7 @@ export const createApp: CreateAppServer = options => {
   let app: InternalApplication;
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
+      const pageLoaders = await app.getLoaders();
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
       try {
         const loaderResult = await runLoaders(matches, pageLoaders, {

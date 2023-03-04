@@ -1,3 +1,22 @@
+## [1.0.18](https://github.com/shuvijs/shuvi/compare/v1.0.17...v1.0.18) (2023-02-28)
+
+
+### Features
+
+* set `experimentalDecorators` and `emitDecoratorMetadata` via tsconfig ([0933cfb](https://github.com/shuvijs/shuvi/commit/0933cfb6fe012927bc1feac4acd5156c3bba9e27))
+
+
+
+## [1.0.17](https://github.com/shuvijs/shuvi/compare/v1.0.16...v1.0.17) (2023-02-24)
+
+
+### Bug Fixes
+
+* fullpage reload because loader fails to do hmr ([42a24a0](https://github.com/shuvijs/shuvi/commit/42a24a04f2cdc33775ec03dc89a5244f50552fe6))
+* loadble props may not exist ([2be29e7](https://github.com/shuvijs/shuvi/commit/2be29e7cf59b37702fb0ecc442b6f803acfa56c5))
+
+
+
 ## [1.0.16](https://github.com/shuvijs/shuvi/compare/v1.0.15...v1.0.16) (2023-02-17)
 
 
