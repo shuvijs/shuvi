@@ -97,13 +97,6 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     ]);
 
     if (context.mode === 'development') {
-      config.module
-        .rule('main')
-        .oneOf('js')
-        .use('react-refresh-loader')
-        .loader(require.resolve('@next/react-refresh-utils/loader'))
-        .before('shuvi-swc-loader');
-
       config
         .plugin('react-refresh-plugin')
         .use(ReactRefreshWebpackPlugin, [webpack]);

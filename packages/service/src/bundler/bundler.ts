@@ -460,7 +460,7 @@ class WebpackBundler implements Bundler {
       if (hasEntry(chain)) {
         const chainConfig = chain.toConfig();
         logger.debug(`${name} Config`);
-        logger.debug(inspect(chainConfig.resolve?.alias, { depth: 10 }));
+        logger.debug(inspect(chainConfig, { depth: 16 }));
         targets.push({ name, config: chainConfig });
       }
     }
