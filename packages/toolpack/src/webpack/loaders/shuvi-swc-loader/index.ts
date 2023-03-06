@@ -81,7 +81,7 @@ async function loaderTransform(
     hasReactRefresh:
       hasReactRefresh !== undefined
         ? hasReactRefresh
-        : isDevelopment && !isServer,
+        : isDevelopment && !isServer && !pagePickLoader,
     supportedBrowsers,
     swcCacheDir,
     compiler
