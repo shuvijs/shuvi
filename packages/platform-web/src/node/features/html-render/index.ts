@@ -101,8 +101,7 @@ export const getPlugin = (
                 const { context } = resource;
                 // form shuvi internal request
                 if ((context as string).endsWith('esm/shuvi-app/react/view')) {
-                  resource.request =
-                    '@shuvi/platform-web/shuvi-app/react/view/ReactView.server.bare';
+                  resource.request = './ReactView.server.bare';
                 }
                 return resource;
               }
