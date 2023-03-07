@@ -57,7 +57,7 @@ export const getPlugin = (
   platformContext: IPlatformContext
 ): ResolvedPlugin => {
   const core = createPlugin({
-    configWebpack: (chain, { name, mode }, ctx) => {
+    configWebpack: (chain, { webpack, name, mode }, ctx) => {
       const isDev = mode === 'development';
       const pkgVersion = getVersion();
       const isServer = name === BUNDLER_TARGET_SERVER;
@@ -93,6 +93,19 @@ export const getPlugin = (
             '@shuvi/platform-shared/shuvi-app/application$',
             '@shuvi/platform-shared/shuvi-app/application.bare'
           );
+          chain
+            .plugin('replace/ReactView.server')
+            .use(webpack.NormalModuleReplacementPlugin, [
+              /\.\/ReactView\.server/,
+              function (resource) {
+                const { context } = resource;
+                // form shuvi internal request
+                if ((context as string).endsWith('esm/shuvi-app/react/view')) {
+                  resource.request = './ReactView.server.bare';
+                }
+                return resource;
+              }
+            ]);
         }
 
         chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
