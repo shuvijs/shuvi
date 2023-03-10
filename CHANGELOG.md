@@ -1,3 +1,12 @@
+## [1.0.19](https://github.com/shuvijs/shuvi/compare/v1.0.18...v1.0.19) (2023-03-10)
+
+
+### Bug Fixes
+
+* client remove overlay ([#508](https://github.com/shuvijs/shuvi/issues/508)) ([defd23a](https://github.com/shuvijs/shuvi/commit/defd23a42c692cd9f03774a514e116d7f72f0a5b))
+
+
+
 ## [1.0.18](https://github.com/shuvijs/shuvi/compare/v1.0.17...v1.0.18) (2023-02-28)
 
 
