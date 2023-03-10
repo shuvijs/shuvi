@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { Router } from '@shuvi/router-react';
-import { getServerError } from '@shuvi/error-overlay';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
@@ -32,6 +31,7 @@ export class ReactClientView implements IReactClientView {
 
     if (ssr && isInitialRender) {
       if (process.env.NODE_ENV === 'development') {
+        const { getServerError } = require('@shuvi/error-overlay');
         if (appError && appError.source === 'server') {
           setTimeout(() => {
             let error;
