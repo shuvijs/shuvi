@@ -74,6 +74,7 @@ const plugin = createPlugin({
       content: async () => {
         let routes: IPageRouteConfig[];
         const hasConfigRoutes = Array.isArray(pageRoutes);
+        console.log();
         if (hasConfigRoutes) {
           routes = pageRoutes as IPageRouteConfig[];
         } else {
