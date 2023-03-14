@@ -150,7 +150,7 @@ export const getPageRoutes = async (
 ): Promise<PageRoutes> => {
   let raw: RawRoutes;
   if (typeof dir === 'string') {
-    raw = await getRawRoutesFromDir(dir, { excludes });
+    raw = await getRawRoutesFromDir(dir, { includes, excludes });
   } else {
     raw = dir;
   }
@@ -217,7 +217,7 @@ export const getApiRoutes = async (
 ): Promise<ApiRoutes> => {
   let raw: RawRoutes;
   if (typeof dir === 'string') {
-    raw = await getRawRoutesFromDir(dir, { excludes });
+    raw = await getRawRoutesFromDir(dir, { includes, excludes });
   } else {
     raw = dir;
   }
@@ -297,7 +297,7 @@ export const getMiddlewareRoutes = async (
 ): Promise<MiddlewareRoutes> => {
   let raw: RawRoutes;
   if (typeof dir === 'string') {
-    raw = await getRawRoutesFromDir(dir, { excludes });
+    raw = await getRawRoutesFromDir(dir, { includes, excludes });
   } else {
     raw = dir;
   }
