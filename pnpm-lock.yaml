@@ -260,7 +260,6 @@ importers:
       '@types/raw-body': ^2.3.0
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
-      '@types/react-test-renderer': 18.0.0
       content-type: 1.0.4
       core-js: 3.6.5
       doura: 0.0.9
@@ -312,7 +311,6 @@ importers:
       '@types/raw-body': 2.3.0
       '@types/react': 18.0.9
       '@types/react-dom': 18.0.6
-      '@types/react-test-renderer': 18.0.0
       memfs: 3.1.2
       microbundle: 0.15.1
 
@@ -862,7 +860,7 @@ importers:
       '@shuvi/utils': workspace:*
       '@types/react-test-renderer': 18.0.0
       http-server: ^14.1.1
-      react-test-renderer: ^18.1.0
+      react-test-renderer: 18.1.0
       shuvi: workspace:*
     devDependencies:
       '@shuvi/service': link:../../packages/service
@@ -12685,7 +12683,6 @@ packages:
 
   /react-is/18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
-    dev: false
 
   /react-refresh/0.12.0:
     resolution: {integrity: sha512-suLIhrU2IHKL5JEKR/fAwJv7bbeq4kJ+pJopf77jHwuR+HmJS/HbrPIGsTBUVfw7tXPOmYv7UJ7PCaN49e8x4A==}
@@ -12701,7 +12698,7 @@ packages:
         optional: true
     dependencies:
       object-assign: 4.1.1
-      react-is: 18.1.0
+      react-is: 18.2.0
     dev: true
 
   /react-shallow-renderer/16.15.0_react@18.2.0:
@@ -12714,7 +12711,7 @@ packages:
     dependencies:
       object-assign: 4.1.1
       react: 18.2.0
-      react-is: 18.1.0
+      react-is: 18.2.0
     dev: true
 
   /react-test-renderer/18.1.0:
@@ -12725,7 +12722,7 @@ packages:
       react:
         optional: true
     dependencies:
-      react-is: 18.1.0
+      react-is: 18.2.0
       react-shallow-renderer: 16.15.0
       scheduler: 0.22.0
     dev: true
@@ -12739,7 +12736,7 @@ packages:
         optional: true
     dependencies:
       react: 18.2.0
-      react-is: 18.1.0
+      react-is: 18.2.0
       react-shallow-renderer: 16.15.0_react@18.2.0
       scheduler: 0.22.0
     dev: true
