@@ -1,3 +1,12 @@
+## [1.0.20](https://github.com/shuvijs/shuvi/compare/v1.0.19...v1.0.20) (2023-03-14)
+
+
+### Bug Fixes
+
+* fix parameters of `getRawRoutesFromDir` ([#509](https://github.com/shuvijs/shuvi/issues/509)) ([443f238](https://github.com/shuvijs/shuvi/commit/443f2389d0b398c47e1b274c0286119ea933184a))
+
+
+
 ## [1.0.19](https://github.com/shuvijs/shuvi/compare/v1.0.18...v1.0.19) (2023-03-10)
 
 
