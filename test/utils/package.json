@@ -12,8 +12,9 @@
     "@shuvi/service": "workspace:*",
     "@shuvi/shared": "workspace:*",
     "@shuvi/utils": "workspace:*",
-    "@types/react-test-renderer": "16.9.2",
+    "@types/react-test-renderer": "18.0.0",
     "http-server": "^14.1.1",
-    "shuvi": "workspace:*"
+    "shuvi": "workspace:*",
+    "react-test-renderer": "^18.1.0"
   }
 }
