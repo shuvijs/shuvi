@@ -1,4 +1,5 @@
 import WebpackChain from 'webpack-chain';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import TerserPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import webpack from 'webpack';
@@ -37,6 +38,7 @@ export interface BaseOptions {
   };
   lightningCss?: boolean;
   compiler?: CompilerOptions;
+  analyze?: boolean;
 }
 
 const terserOptions = {
@@ -84,6 +86,10 @@ export function getDefineEnv(env: { [x: string]: string | undefined }) {
   };
 }
 
+/** remove 'shuvi/' of the target name */
+const getSimplifiedTargetName = (targetName: string) =>
+  targetName.replace(/^shuvi\//, '');
+
 export function baseWebpackChain({
   dev,
   outputDir,
@@ -95,7 +101,8 @@ export function baseWebpackChain({
   name,
   publicPath = '/',
   env = {},
-  cacheDir
+  cacheDir,
+  analyze
 }: BaseOptions): WebpackChain {
   const config = new WebpackChain();
   config.mode(dev ? 'development' : 'production');
@@ -150,6 +157,22 @@ export function baseWebpackChain({
           : CssMinimizerPlugin.cssnanoMinify
       }
     ]);
+
+    if (analyze) {
+      const targetName = getSimplifiedTargetName(name);
+      config
+        .plugin('private/bundle-analyzer-plugin')
+        .use(BundleAnalyzerPlugin, [
+          {
+            logLevel: 'info',
+            openAnalyzer: false,
+            analyzerMode: 'static',
+            reportFilename: `../analyze/${targetName}.html`,
+            generateStatsFile: true,
+            statsFilename: `../analyze/${targetName}-stats.json`
+          }
+        ]);
+    }
   }
 
   // Support for NODE_PATH

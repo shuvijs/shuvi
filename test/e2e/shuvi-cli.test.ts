@@ -73,7 +73,10 @@ describe('shuvi/build', () => {
     project.clear('build');
     const { message } = await project.run('build', ['--analyze']);
     expect(project.exist('build/client/static')).toBeTruthy();
+    expect(project.exist('build/analyze/server.html')).toBeTruthy();
     expect(project.exist('build/analyze/client.html')).toBeTruthy();
+    expect(message).toMatch('Webpack Bundle Analyzer saved report');
+    expect(message).toMatch('Webpack Bundle Analyzer saved stats file');
     expect(message).toMatch('Build successfully!');
   });
 

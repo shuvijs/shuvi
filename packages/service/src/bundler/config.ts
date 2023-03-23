@@ -35,15 +35,14 @@ export function createWebpackConfig(
     : paths.buildDir;
   const cacheDir = paths.cacheDir;
   const publicPath = assetPublicPath;
-  const env = config.env;
   const include = [
     paths.srcDir,
     paths.appDir,
     AppSourceRegexp,
     ...(opts.include || [])
   ];
-  const lightningCss = !!config.experimental.lightningCss;
-  const experimental = config.experimental;
+  const { env, analyze, experimental } = config;
+  const lightningCss = !!experimental.lightningCss;
   const jsConfig = getJavaScriptInfo();
   const compiler: CompilerOptions = {
     ...config.compiler,
@@ -69,7 +68,8 @@ export function createWebpackConfig(
       compiler,
       jsConfig,
       include,
-      env
+      env,
+      analyze
     });
   } else {
     chain = createBrowserWebpackChain({
@@ -84,7 +84,7 @@ export function createWebpackConfig(
       jsConfig,
       include,
       env,
-      analyze: config.analyze
+      analyze
     });
   }
 
