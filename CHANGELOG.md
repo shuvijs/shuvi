@@ -1,3 +1,17 @@
+## [1.0.21](https://github.com/shuvijs/shuvi/compare/v1.0.20...v1.0.21) (2023-03-24)
+
+
+### Bug Fixes
+
+* fix the calculation of hmr ([114af40](https://github.com/shuvijs/shuvi/commit/114af408a5cf6ea2331e88e2773324b44146f6ed))
+
+
+### Features
+
+* **analyze:** apply analyzer to all targets & add webpack stats output ([#511](https://github.com/shuvijs/shuvi/issues/511)) ([62cc3c4](https://github.com/shuvijs/shuvi/commit/62cc3c45940a884bf20bf6ba6f23396aff57bec9))
+
+
+
 ## [1.0.20](https://github.com/shuvijs/shuvi/compare/v1.0.19...v1.0.20) (2023-03-14)
 
 

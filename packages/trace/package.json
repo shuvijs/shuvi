@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/trace",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "author": "liximomo",
   "license": "MIT",
   "main": "lib/index.js",
