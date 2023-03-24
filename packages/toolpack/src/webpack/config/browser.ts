@@ -1,7 +1,6 @@
 import * as crypto from 'crypto';
 import webpack from 'webpack';
 import * as path from 'path';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { resolve } from '@shuvi/utils/resolve';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
@@ -25,14 +24,8 @@ const FRAMEWORK_REACT_MODULES: {
   }
 ];
 
-export interface BrowserOptions extends BaseOptions {
-  analyze?: boolean;
-}
-
-export function createBrowserWebpackChain(
-  options: BrowserOptions
-): WebpackChain {
-  const { projectRoot, cacheDir, jsConfig, dev, publicPath, analyze } = options;
+export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
+  const { projectRoot, cacheDir, jsConfig, dev, publicPath } = options;
   const chain = baseWebpackChain(options);
   const useTypeScript = !!jsConfig?.useTypeScript;
 
@@ -172,18 +165,7 @@ export function createBrowserWebpackChain(
       maxInitialRequests: 25,
       minSize: 20000
     });
-    if (analyze) {
-      chain.plugin('private/bundle-analyzer-plugin').use(BundleAnalyzerPlugin, [
-        {
-          logLevel: 'warn',
-          openAnalyzer: false,
-          analyzerMode: 'static',
-          reportFilename: '../analyze/client.html'
-        }
-      ]);
-    }
   }
-
   // node polyfills
   chain.resolve.set('fallback', {
     buffer: resolve('buffer', {
