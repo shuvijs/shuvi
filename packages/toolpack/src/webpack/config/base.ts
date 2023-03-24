@@ -164,7 +164,7 @@ export function baseWebpackChain({
         .plugin('private/bundle-analyzer-plugin')
         .use(BundleAnalyzerPlugin, [
           {
-            logLevel: 'info',
+            logLevel: 'warn',
             openAnalyzer: false,
             analyzerMode: 'static',
             reportFilename: `../analyze/${targetName}.html`,
