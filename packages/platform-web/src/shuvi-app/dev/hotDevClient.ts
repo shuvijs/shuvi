@@ -324,11 +324,12 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   if (!isUpdateAvailable() || !canApplyUpdates()) {
-    onBuildOk();
     // HMR failed, need to refresh
     const hmrStatus = module.hot.status();
     if (hmrStatus === 'abort' || hmrStatus === 'fail') {
       window.location.reload();
+    } else {
+      onBuildOk();
     }
     return;
   }
@@ -359,37 +360,46 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
     }
   }
 
-  try {
-    // https://webpack.js.org/api/hot-module-replacement/#check
-    let updatedModules = await module.hot.check(/* autoApply */ false);
-
-    if (!updatedModules) {
-      return;
+  module.hot.check(/* autoApply */ true).then(
+    (updatedModules: any) => {
+      handleApplyUpdates(null, updatedModules);
+    },
+    (err: any) => {
+      handleApplyUpdates(err, null);
     }
+  );
 
-    // if there is another updating, delay the update
-    // multiple hotupdate occurs during import() will cause hmr error
-    // so we delay the adjacent hotupdates
-    // import() == loade module script ----> require(module)
-    //                                  |
-    //                                  |
-    //     if applyUpdate happens here, require will cause a error
-    if (isUpdateAvailable()) {
-      await new Promise(resolve => {
-        setTimeout(resolve, 50);
-      });
-    }
+  // try {
+  //   // https://webpack.js.org/api/hot-module-replacement/#check
+  //   let updatedModules = await module.hot.check(/* autoApply */ false);
 
-    if (updatedModules) {
-      if (module.hot.status() !== 'ready') {
-        await waitForReady();
-      }
+  //   if (!updatedModules) {
+  //     return;
+  //   }
 
-      updatedModules = await module.hot.apply();
-    }
+  //   // if there is another updating, delay the update
+  //   // multiple hotupdate occurs during import() will cause hmr error
+  //   // so we delay the adjacent hotupdates
+  //   // import() == loade module script ----> require(module)
+  //   //                                  |
+  //   //                                  |
+  //   //     if applyUpdate happens here, require will cause a error
+  //   if (isUpdateAvailable()) {
+  //     await new Promise(resolve => {
+  //       setTimeout(resolve, 50);
+  //     });
+  //   }
 
-    handleApplyUpdates(null, updatedModules);
-  } catch (err) {
-    handleApplyUpdates(err, null);
-  }
+  //   if (updatedModules) {
+  //     if (module.hot.status() !== 'ready') {
+  //       await waitForReady();
+  //     }
+
+  //     updatedModules = await module.hot.apply();
+  //   }
+
+  //   handleApplyUpdates(null, updatedModules);
+  // } catch (err) {
+  //   handleApplyUpdates(err, null);
+  // }
 }

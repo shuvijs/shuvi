@@ -332,7 +332,7 @@ class WebpackBundler implements Bundler {
       );
     }
 
-    compiler.hooks.beforeCompile.tap('beforeCompile', () => {
+    compiler.hooks.invalid.tap('invalid', () => {
       if (this._startTime === null) {
         this._startTime = performance.now();
       }
