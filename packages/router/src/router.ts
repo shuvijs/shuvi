@@ -85,69 +85,69 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     return this._history.action;
   }
 
-  init() {
+  init = () => {
     const setup = () => this._history.setup();
     this._history.transitionTo(this._getCurrent(), {
       onTransition: setup,
       onAbort: setup
     });
     return this;
-  }
+  };
 
-  push(to: any, state?: any) {
+  push = (to: any, state?: any) => {
     return this._history.push(to, { state });
-  }
+  };
 
-  replace(to: any, state?: any) {
+  replace = (to: any, state?: any) => {
     return this._history.replace(to, { state });
-  }
+  };
 
-  go(delta: number) {
+  go = (delta: number) => {
     this._history.go(delta);
-  }
+  };
 
-  back() {
+  back = () => {
     this._history.back();
-  }
+  };
 
-  forward() {
+  forward = () => {
     this._history.forward();
-  }
+  };
 
-  block(blocker: any) {
+  block = (blocker: any) => {
     return this._history.block(blocker);
-  }
+  };
 
-  listen(listener: any) {
+  listen = (listener: any) => {
     return this._listeners.push(listener);
-  }
+  };
 
-  beforeEach(listener: NavigationGuardHook) {
+  beforeEach = (listener: NavigationGuardHook) => {
     return this._beforeEachs.push(listener);
-  }
+  };
 
-  beforeResolve(listener: NavigationGuardHook) {
+  beforeResolve = (listener: NavigationGuardHook) => {
     return this._beforeResolves.push(listener);
-  }
+  };
 
-  afterEach(listener: NavigationResolvedHook) {
+  afterEach = (listener: NavigationResolvedHook) => {
     return this._afterEachs.push(listener);
-  }
+  };
 
-  resolve(to: PathRecord, from?: any): ResolvedPath {
+  resolve = (to: PathRecord, from?: any): ResolvedPath => {
     return this._history.resolve(
       to,
       from ? joinPaths([this._basename, from]) : this._basename
     );
-  }
+  };
 
-  match(to: PathRecord): Array<IRouteMatch<RouteRecord>> {
+  match = (to: PathRecord): Array<IRouteMatch<RouteRecord>> => {
     const { _routes: routes, _basename: basename } = this;
     const matches = matchRoutes(routes, to, basename);
     return matches || [];
-  }
+  };
 
-  replaceRoutes(routes: RouteRecord[]) {
+  replaceRoutes = (routes: RouteRecord[]) => {
     if (this._ready) {
       this._ready = false;
       this._readyDefer = createDefer<void>();
@@ -170,7 +170,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       onTransition: setup,
       onAbort: setup
     });
-  }
+  };
 
   /*
     The Full Navigation Resolution Flow for shuvi/router
