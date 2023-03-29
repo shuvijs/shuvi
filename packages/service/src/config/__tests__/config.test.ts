@@ -10,6 +10,11 @@ test('should load config', async () => {
   expect(config.publicPath).toBe('/test');
 });
 
+test('should not load config when configPath is false', async () => {
+  const config = await loadFixture('base', undefined, false);
+  expect(config.publicPath).toBeUndefined();
+});
+
 test('should warn when customed configFile does not exist', async () => {
   const warn = jest
     .spyOn(global.console, 'warn')

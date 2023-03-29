@@ -49,7 +49,7 @@ interface IApiOPtions {
   mode: IServiceMode;
   phase: IServicePhase;
   config?: ShuviConfig;
-  configFile?: string;
+  configFile?: string | false;
   platform?: IPlatform;
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
@@ -77,7 +77,7 @@ class Api {
   private _projectBuilder!: ProjectBuilder;
   private _bundler!: Bundler;
 
-  private _configFile?: string;
+  private _configFile?: string | false;
   private _customConfig: ShuviConfig;
   private _customPresets: IPresetConfig[];
   private _customPlugins: IPluginConfig[];
@@ -502,6 +502,7 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     mode,
     phase,
     config: options.config,
+    configFile: options.configFile,
     platform: options.platform,
     presets: options.presets,
     plugins: options.plugins,

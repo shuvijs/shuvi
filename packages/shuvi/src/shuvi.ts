@@ -15,7 +15,7 @@ export interface ShuviOption {
   cwd?: string;
   phase?: ShuviPhase;
   mode?: ShuviMode;
-  configFile?: string;
+  configFile?: string | false;
 }
 
 const TELEMETRY_ENDPOINT = '';

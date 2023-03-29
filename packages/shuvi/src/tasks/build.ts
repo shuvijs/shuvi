@@ -10,7 +10,7 @@ export interface IBuildOptions {
   config?: ShuviConfig;
   cwd?: string;
   target?: 'spa' | 'ssr';
-  configFile?: string;
+  configFile?: string | false;
 }
 
 const defaultBuildOptions = {

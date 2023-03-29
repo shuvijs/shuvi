@@ -10,7 +10,7 @@ export function resolveFixture(name: string) {
 export async function loadFixture(
   name: string,
   userConfig: ShuviConfig = {},
-  configFile?: string
+  configFile?: string | false
 ) {
   const config = await loadConfig({
     rootDir: resolveFixture(name),
