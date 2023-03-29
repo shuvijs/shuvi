@@ -15,10 +15,15 @@ const validExts = ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs'];
 
 export interface LoadConfigOptions {
   rootDir?: string;
-  filepath?: string;
+  filepath?: string | false;
   forceReloadEnv?: boolean;
 }
 
+/**
+ * when filePath is false, do not read config file
+ * when filePath is '' or undefined, read default config file (shuvi.config.*)
+ * when filePath is non-null string, read from filePath
+ */
 export async function loadConfig({
   rootDir = '.',
   filepath = '',
@@ -30,6 +35,9 @@ export async function loadConfig({
   loadDotenvConfig({ rootDir, forceReloadEnv });
 
   let configFilePath: string;
+  if (filepath === false) {
+    return {};
+  }
   if (filepath) {
     configFilePath = path.resolve(rootDir, filepath);
     if (!fs.existsSync(configFilePath)) {
