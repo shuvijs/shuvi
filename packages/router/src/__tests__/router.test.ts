@@ -13,9 +13,9 @@ describe('router', () => {
         })
       });
 
-      let current = router.current;
+      const { push, current } = router;
       expect(current).toEqual(router.current);
-      router.push('/about');
+      push('/about');
       expect(current).not.toEqual(router.current);
     });
   });
@@ -90,12 +90,11 @@ describe('router', () => {
     });
 
     it('should run the navigation flow in sequence', () => {
-      router.beforeEach(beforeEachFn);
-      router.afterEach(afterEachFn);
+      const { push } = router;
 
       let current = router.current;
       expect(current).toBe(router.current);
-      router.push('/about');
+      push('/about');
       expect(current).not.toBe(router.current);
     });
 
@@ -106,12 +105,11 @@ describe('router', () => {
         next(false);
       });
 
-      router.beforeEach(beforeEachFn);
-      router.afterEach(afterEachFn);
+      const { push } = router;
 
       let current = router.current;
       expect(current).toBe(router.current);
-      router.push('/about');
+      push('/about');
       // route not changed because aborted
       expect(current).toBe(router.current);
 
@@ -128,12 +126,11 @@ describe('router', () => {
         next(new Error());
       });
 
-      router.beforeEach(beforeEachFn);
-      router.afterEach(afterEachFn);
+      const { push } = router;
 
       let current = router.current;
       expect(current).toBe(router.current);
-      router.push('/about');
+      push('/about');
       // route not changed because aborted
       expect(current).toBe(router.current);
 
@@ -148,12 +145,11 @@ describe('router', () => {
         throw new Error('test error');
       });
 
-      router.beforeEach(beforeEachFn);
-      router.afterEach(afterEachFn);
+      const { push } = router;
 
       let current = router.current;
       expect(current).toBe(router.current);
-      router.push('/about');
+      push('/about');
       // route not changed because aborted
       expect(current).toBe(router.current);
 
@@ -170,11 +166,13 @@ describe('router', () => {
         }
       });
 
-      router.beforeEach(beforeEachFn);
+      const { push, beforeEach } = router;
+
+      beforeEach(beforeEachFn);
 
       let current = router.current;
       expect(current).toBe(router.current);
-      router.push('/about');
+      push('/about');
 
       // route not changed because aborted
       expect(router.current.pathname).toBe('/new');
@@ -191,11 +189,13 @@ describe('router', () => {
         }
       });
 
-      router.beforeEach(beforeEachFn);
+      const { push, beforeEach } = router;
+
+      beforeEach(beforeEachFn);
 
       let current = router.current;
       expect(current).toBe(router.current);
-      router.push('/about');
+      push('/about');
 
       // route not changed because aborted
       expect(router.current.pathname).toBe('/new');
@@ -219,8 +219,10 @@ describe('router', () => {
         next();
       });
 
-      router.beforeEach(beforeEachFn);
-      router.beforeResolve(beforeResolveFn);
+      const { beforeEach, beforeResolve } = router;
+
+      beforeEach(beforeEachFn);
+      beforeResolve(beforeResolveFn);
       let current = router.current;
       expect(current).toBe(router.current);
       ((router as any)._history as MemoryHistory).push('/about', {
