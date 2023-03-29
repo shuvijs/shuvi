@@ -105,7 +105,10 @@ describe('router', () => {
         next(false);
       });
 
-      const { push } = router;
+      const { push, beforeEach, afterEach } = router;
+
+      beforeEach(beforeEachFn);
+      afterEach(afterEachFn);
 
       let current = router.current;
       expect(current).toBe(router.current);
@@ -126,7 +129,10 @@ describe('router', () => {
         next(new Error());
       });
 
-      const { push } = router;
+      const { push, beforeEach, afterEach } = router;
+
+      beforeEach(beforeEachFn);
+      afterEach(afterEachFn);
 
       let current = router.current;
       expect(current).toBe(router.current);
@@ -145,7 +151,10 @@ describe('router', () => {
         throw new Error('test error');
       });
 
-      const { push } = router;
+      const { push, beforeEach, afterEach } = router;
+
+      beforeEach(beforeEachFn);
+      afterEach(afterEachFn);
 
       let current = router.current;
       expect(current).toBe(router.current);
