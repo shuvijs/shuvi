@@ -1,3 +1,13 @@
+## [1.0.22](https://github.com/shuvijs/shuvi/compare/v1.0.21...v1.0.22) (2023-03-30)
+
+
+### Features
+
+* allow configFile set to false to skip reading shuvi config file ([#513](https://github.com/shuvijs/shuvi/issues/513)) ([07f595f](https://github.com/shuvijs/shuvi/commit/07f595fcc4b8923c3ab1ee273e3b3233546d45fb))
+* useRouter support Destructuring ([#512](https://github.com/shuvijs/shuvi/issues/512)) ([0338762](https://github.com/shuvijs/shuvi/commit/03387620bb6911c8c1c4466d70dd6baf35c60691))
+
+
+
 ## [1.0.21](https://github.com/shuvijs/shuvi/compare/v1.0.20...v1.0.21) (2023-03-24)
 
 
