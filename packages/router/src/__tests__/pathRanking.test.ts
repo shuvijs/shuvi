@@ -151,6 +151,16 @@ describe('Path ranking', () => {
     });
   });
 
+  // FIXME
+  it.skip('puts catchall param after same prefix', () => {
+    possibleOptions.forEach(options => {
+      checkPathOrder([
+        ['/a', options],
+        ['/a/:a(.*)', options]
+      ]);
+    });
+  });
+
   it('sensitive should go before non sensitive', () => {
     checkPathOrder([
       ['/Home', { sensitive: true }],
