@@ -122,6 +122,8 @@ function clearOutdatedErrors() {
 let startLatency = undefined;
 
 function onFastRefresh(hasUpdates) {
+  onBuildOk();
+
   if (hasUpdates) {
     onRefresh();
   }
@@ -138,8 +140,6 @@ function onFastRefresh(hasUpdates) {
       })
     );
   }
-
-  onBuildOk();
 }
 
 // Successful compilation.
