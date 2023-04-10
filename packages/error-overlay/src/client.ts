@@ -20,6 +20,7 @@ let isIframeReady: boolean = false;
 let errorTypeList: errorTypeHandler.ErrorTypeEvent[] = [];
 let hasBuildError: Boolean = false;
 let hasRuntimeError: Boolean = false;
+let prevRendered = false;
 
 declare global {
   interface Window {
@@ -115,7 +116,9 @@ function stopReportingRuntimeErrors() {
 function onBuildOk() {
   hasBuildError = false;
   errorTypeList.push({ type: TYPE_BUILD_OK });
-  update();
+  if (prevRendered) {
+    update();
+  }
 }
 
 function onBuildError(message: string) {
@@ -171,8 +174,6 @@ function update() {
   appDocument.body.appendChild(loadingIframe);
 }
 
-let prevRendered = false;
-
 function updateIframeContent() {
   if (!iframe) {
     throw new Error('Iframe has not been created yet.');
@@ -189,7 +190,7 @@ function updateIframeContent() {
   errorTypeList = [];
 
   // Continuous errors and no errors will not operate dom
-  if (prevRendered && !isRendered) {
+  if (!isRendered) {
     window.document.body.removeChild(iframe);
     iframe = null;
     isIframeReady = false;
