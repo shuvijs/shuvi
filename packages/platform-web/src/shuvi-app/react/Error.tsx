@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Head } from './head';
-import { useApp } from './ApplicationContext';
 
 const style = {
   container: {
@@ -17,14 +16,14 @@ const style = {
   error: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   errorCode: {
     fontSize: '24px',
-    fontWeight: 500
+    fontWeight: 500,
+    borderRight: '1px solid rgba(0, 0, 0, 0.3)',
+    paddingRight: '20px',
+    marginRight: '20px'
   },
   errorDesc: {
     fontSize: '16px',
-    lineHeight: '1',
-    borderLeft: '1px solid rgba(0, 0, 0, 0.3)',
-    paddingLeft: '20px',
-    marginLeft: '20px'
+    lineHeight: '1'
   }
 } as const;
 
@@ -34,8 +33,8 @@ export default function Error({
 }: {
   errorCode?: number;
   errorDesc?: string;
+  error?: Error;
 }) {
-  const app = useApp();
   return (
     <div style={style.container}>
       <Head>
@@ -43,8 +42,7 @@ export default function Error({
       </Head>
 
       <div style={style.error}>
-        {/* 500 will cause confusion for SPA application, so only show error code on SSR */}
-        {app.config.ssr && <div style={style.errorCode}>{errorCode}</div>}
+        {errorCode && <div style={style.errorCode}>{errorCode}</div>}
         <div style={style.errorDesc}>{errorDesc || 'Error'}</div>
       </div>
     </div>

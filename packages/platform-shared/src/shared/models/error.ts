@@ -1,5 +1,4 @@
 import { defineModel } from 'doura';
-import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { IErrorState, IError } from '../applicationTypes';
 
 const DEFAULT_ERROR_STATE = {
@@ -11,7 +10,7 @@ export const errorModelName = 'error';
 export const errorModel = defineModel({
   state: DEFAULT_ERROR_STATE,
   actions: {
-    set(error: IError = SHUVI_ERROR.APP_ERROR) {
+    set(error: IError) {
       this.error = error;
     },
     clear() {

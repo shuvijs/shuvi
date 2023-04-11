@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from '@shuvi/runtime';
-export default ({ errorCode, errorDesc }) => {
+export default ({ errorCode, errorDesc, error }) => {
   const [showError, setErrorStatus] = React.useState(false);
   React.useEffect(() => {
     setErrorStatus(true);
@@ -11,6 +11,7 @@ export default ({ errorCode, errorDesc }) => {
         custom error {errorCode} {errorDesc}
       </div>
       <br />
+      <div id="error-stack">{error?.stack}</div>
       <Link id="to-about" to="/about">
         about
       </Link>

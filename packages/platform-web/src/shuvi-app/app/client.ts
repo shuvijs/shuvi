@@ -17,7 +17,6 @@ import {
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { InternalApplication, CreateAppClient } from '../../shared';
-import { serializeServerError } from '../helper/serializeServerError';
 import isThirdSite from '../helper/isThirdSite';
 
 let app: InternalApplication;
@@ -135,16 +134,22 @@ export const createApp: CreateAppClient = ({
       }
 
       if (isResponse(error) && error.status >= 400 && error.status < 600) {
+        // client error has no status code
         app.setError({
-          code: error.status,
           message: error.data
         });
         next();
         return;
       }
 
-      app.setError(serializeServerError(error));
-      next();
+      app.setError({
+        message: SHUVI_ERROR.CLIENT_ERROR.message,
+        error
+      });
+      // to trigger error-overlay at dev
+      next(() => {
+        throw error;
+      });
       return;
     }
 

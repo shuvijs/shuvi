@@ -1,14 +1,18 @@
 // @ts-ignore
 import stripAnsi from 'strip-ansi';
 import { IError } from '@shuvi/platform-shared/shared';
+import { SHUVI_ERROR } from '@shuvi/shared/constants';
 
 function errorToJSON(err: Error): IError {
   return {
     code: 500,
     message: stripAnsi(err.message),
-    name: err.name,
     source: 'server',
-    stack: err.stack
+    error: {
+      name: err.name,
+      stack: err.stack,
+      message: err.message
+    }
   };
 }
 
@@ -19,7 +23,6 @@ export function serializeServerError(err: Error): IError {
 
   return {
     code: 500,
-    message: 'Internal Server Error',
-    name: 'Internal Server Error'
+    message: SHUVI_ERROR.SERVER_ERROR.message
   };
 }
