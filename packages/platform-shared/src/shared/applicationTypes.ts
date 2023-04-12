@@ -21,9 +21,8 @@ export type ErrorSource = 'server';
 export interface IError {
   code?: number;
   message?: string;
-  stack?: string;
-  name?: string;
   source?: ErrorSource;
+  error?: Error;
 }
 
 export interface IErrorState {

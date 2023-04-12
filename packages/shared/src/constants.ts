@@ -34,6 +34,13 @@ export const SHUVI_ERROR = {
     code: 500,
     message: 'Internal Application Error.'
   },
+  SERVER_ERROR: {
+    code: 500,
+    message: 'Internal Server Error.'
+  },
+  CLIENT_ERROR: {
+    message: 'Internal Application Error'
+  },
   PAGE_NOT_FOUND: {
     code: 404,
     message: 'This page could not be found.'

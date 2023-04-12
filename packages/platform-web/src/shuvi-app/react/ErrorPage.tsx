@@ -6,10 +6,12 @@ const Error = userError || error;
 
 export default function ErrorPage({
   code,
-  message
+  message,
+  error
 }: {
   code?: number;
   message?: string;
+  error?: Error;
 }) {
-  return <Error errorCode={code} errorDesc={message} />;
+  return <Error errorCode={code} errorDesc={message} error={error} />;
 }
