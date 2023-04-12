@@ -142,6 +142,7 @@ export const createApp: CreateAppClient = ({
         return;
       }
 
+      // If loader throws a error, we need to rethrow it
       app.setError({
         message: SHUVI_ERROR.CLIENT_ERROR.message,
         error

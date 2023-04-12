@@ -42,7 +42,9 @@ export default function Error({
       </Head>
 
       <div style={style.error}>
-        {errorCode && <div style={style.errorCode}>{errorCode}</div>}
+        {errorCode !== undefined && (
+          <div style={style.errorCode}>{errorCode}</div>
+        )}
         <div style={style.errorDesc}>{errorDesc || 'Error'}</div>
       </div>
     </div>
