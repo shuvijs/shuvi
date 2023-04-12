@@ -8,12 +8,13 @@ import { Provider, useSharedModel } from './store';
 
 function ErrorGuard({ children = null }: React.PropsWithChildren<{}>) {
   const errorState = useSharedModel(errorModelName, errorModel);
-
-  if (errorState.hasError) {
+  const { error, hasError } = errorState;
+  if (hasError) {
     return (
       <ErrorPage
-        code={errorState.error?.code}
-        message={errorState.error?.message}
+        code={error?.code}
+        message={error?.message}
+        error={error?.error}
       />
     );
   }

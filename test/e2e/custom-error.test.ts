@@ -146,7 +146,7 @@ describe('custom/error.js [dev]', () => {
       await ctx.close();
     });
 
-    test('should render error page with status in dev', async () => {
+    test('should not render error page with status in dev', async () => {
       result = await page.goto(ctx.url('/ctx-error?a=1'));
 
       if (!result) {
@@ -156,7 +156,9 @@ describe('custom/error.js [dev]', () => {
       expect(result.status()).toBe(200);
       // ssr error result
       await page.waitForSelector('#error');
-      expect(await page.$text('#error')).toContain('custom error 502');
+      expect(await page.$text('#error')).toContain(
+        'custom error  custom error client'
+      );
       // client error result
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error-show-client')).toContain(
@@ -196,7 +198,7 @@ describe('custom/error.js [dev]', () => {
 
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 502 custom error client'
+        'custom error  custom error client'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
@@ -324,14 +326,17 @@ describe('custom/error.js [prod]', () => {
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
       );
-      await page.shuvi.navigate('/');
+    });
+
+    test('should show client errors during client route navigation', async () => {
+      await page.goto(ctx.url('/'));
       await page.waitForSelector('#index');
       expect(await page.$text('#index')).toBe('Index Page');
       await page.shuvi.navigate('/ctx-error');
       // should fail to load chunk and show error page
       await page.waitForSelector('#error');
       expect(await page.$text('#error')).toBe(
-        'custom error 500 Internal Server Error'
+        'custom error  Internal Application Error'
       );
     });
   });
@@ -353,6 +358,17 @@ describe('custom/error.js [prod]', () => {
       await ctx.close();
     });
 
+    test('should show error stack for rendering error', async () => {
+      await page.goto(ctx.url('/render-error'));
+      await page.waitForTimeout(1000);
+      expect(await page.$text('#error')).toBe(
+        'custom error  Internal Application Error'
+      );
+      expect(await page.$text('#error-stack')).toMatch(
+        'Error: Custom Render Error'
+      );
+    });
+
     test('should render error page with 200 status', async () => {
       result = await page.goto(ctx.url('/ctx-error?a=1'));
 
@@ -363,7 +379,9 @@ describe('custom/error.js [prod]', () => {
       expect(result.status()).toBe(200);
       // server error result
       await page.waitForSelector('#error');
-      expect(await page.$text('#error')).toContain('custom error 502');
+      expect(await page.$text('#error')).toContain(
+        'custom error  custom error client'
+      );
       // client error result
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error-show-client')).toContain(
@@ -402,7 +420,7 @@ describe('custom/error.js [prod]', () => {
 
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 502 custom error client'
+        'custom error  custom error client'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
@@ -428,7 +446,7 @@ describe('custom/error.js [prod]', () => {
       expect(result.status()).toBe(200);
       await page.waitForSelector('#error-show-client');
       expect(await page.$text('#error')).toBe(
-        'custom error 500 Internal Server Error'
+        'custom error  Internal Application Error'
       );
       expect(await page.$text('#error-show-client')).toContain(
         'error only in client for test'
@@ -440,7 +458,7 @@ describe('custom/error.js [prod]', () => {
       // should fail to load chunk and show error page
       await page.waitForSelector('#error');
       expect(await page.$text('#error')).toBe(
-        'custom error 500 Internal Server Error'
+        'custom error  Internal Application Error'
       );
     });
   });

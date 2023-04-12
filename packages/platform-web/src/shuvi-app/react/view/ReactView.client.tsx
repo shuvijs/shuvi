@@ -43,8 +43,8 @@ export class ReactClientView implements IReactClientView {
             } catch (e) {
               error = e as Error;
             }
-            error.name = appError.name ?? '';
-            error.stack = appError.stack;
+            error.name = appError.error?.name ?? '';
+            error.stack = appError.error?.stack;
             throw getServerError(error);
           });
         }
