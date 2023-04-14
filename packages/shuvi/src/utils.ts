@@ -1,6 +1,5 @@
 import { existsSync } from 'fs';
 import * as path from 'path';
-import { CommanderStatic } from 'commander';
 import logger from '@shuvi/utils/logger';
 import chalk from '@shuvi/utils/chalk';
 //@ts-ignore
@@ -10,16 +9,13 @@ export function getPackageInfo() {
   return pkgInfo;
 }
 
-export function getProjectDir(
-  cmd: CommanderStatic | Record<string, any>
-): string {
-  const dir = path.resolve(cmd.args[0] || '.');
-  if (!existsSync(dir)) {
-    logger.error(`> No such directory exists as the project root: ${dir}`);
-    cmd.outputHelp();
+export function getProjectDir(dir: string): string {
+  const dirPath = path.resolve(dir || '.');
+  if (!existsSync(dirPath)) {
+    logger.error(`> No such directory exists as the project root: ${dirPath}`);
     process.exit(1);
   }
-  return dir;
+  return dirPath;
 }
 
 export function printStartupInfo({
@@ -51,3 +47,32 @@ export function printStartupInfo({
     `  ${chalk.green('➜')}  ${chalk.bold('Local')}:   ${colorUrl(appUrl)} \n`
   );
 }
+
+/**
+ * ref: https://github.com/remix-run/remix/blob/main/packages/remix-dev/colors.ts
+ */
+
+export const useColor =
+  chalk.supportsColor &&
+  // https://no-color.org/
+  !process.env.NO_COLOR;
+
+const K = <T = unknown>(x: T): T => x;
+
+export const color = {
+  heading: useColor ? chalk.underline : K,
+  arg: useColor ? chalk.yellowBright : K,
+  error: useColor ? chalk.red : K,
+  warning: useColor ? chalk.yellow : K,
+  hint: useColor ? chalk.blue : K,
+
+  logoBlue: useColor ? chalk.blueBright : K,
+  logoGreen: useColor ? chalk.greenBright : K,
+  logoYellow: useColor ? chalk.yellowBright : K,
+  logoPink: useColor ? chalk.magentaBright : K,
+  logoRed: useColor ? chalk.redBright : K,
+
+  gray: useColor ? chalk.gray : K,
+  blue: useColor ? chalk.blue : K,
+  bold: useColor ? chalk.bold : K
+};
