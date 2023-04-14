@@ -1,29 +1,43 @@
-import program from 'commander';
+import { Command } from 'commander';
 import * as path from 'path';
 import { createShuviServer } from '@shuvi/service';
 import logger from '@shuvi/utils/logger';
-import { getPackageInfo, getProjectDir, printStartupInfo } from '../utils';
+import { getProjectDir, printStartupInfo } from '../utils';
 import { getConfigFromCli } from '../config';
 import { initShuvi } from '../shuvi';
 
-export default async function main(argv: string[]) {
-  const startTime = performance.now();
-  const pkgInfo = getPackageInfo();
-  program
-    .name(pkgInfo.name)
-    .usage(`dev [dir] [options]`)
-    .helpOption()
-    .option('--host <host>', 'specify host')
-    .option('--port <port>', 'specify port')
-    .option('--config <file>', 'path to config file')
-    .option('--config-overrides <json>', 'config overrides json')
-    .parse(argv, { from: 'user' });
+import {
+  argumentDir,
+  optionHostDev,
+  optionPort,
+  optionConfig,
+  optionOverrides,
+  DevOptions
+} from './utils/options';
 
-  const cwd = getProjectDir(program);
-  const port = Number(program.port) || 3000;
-  const host = program.host || 'localhost';
-  const configFile = program.config && path.resolve(cwd, program.config);
-  const config = await getConfigFromCli(program);
+export default () => {
+  const subCommand = new Command('dev');
+
+  subCommand
+    .usage(`[dir] [options]`)
+    .description('run your project locally in development')
+    .addArgument(argumentDir)
+    .addOption(optionHostDev)
+    .addOption(optionPort)
+    .addOption(optionConfig)
+    .addOption(optionOverrides)
+    .action(devAction);
+
+  return subCommand;
+};
+
+async function devAction(dir: string, options: DevOptions) {
+  process.env.NODE_ENV = 'development';
+  const startTime = performance.now();
+  const cwd = getProjectDir(dir);
+  const { host, port } = options;
+  const configFile = options.config && path.resolve(cwd, options.config);
+  const config = await getConfigFromCli(options);
 
   const api = await initShuvi({
     cwd,
