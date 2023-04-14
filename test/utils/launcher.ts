@@ -200,7 +200,7 @@ async function launchFixture(
   const projectPath = resolveFixture(name);
   // remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect
   rimraf.sync(resolveFixture(name, '.shuvi'));
-  rimraf.sync(resolveFixture(name, 'dist'));
+  rimraf.sync(resolveFixture(name, 'build'));
   const port = await findPort();
   const shuviProcess = await launchShuvi(
     projectPath,

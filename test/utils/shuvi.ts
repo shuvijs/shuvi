@@ -13,10 +13,9 @@ export function shuvi(
 ): ChildProcess {
   const isDev = command === 'dev';
 
-  const cliAgent = require.resolve('shuvi/lib/agent');
-  const shuviCmd = require.resolve('shuvi/lib/cmds/' + command);
+  const shuviCmd = require.resolve('shuvi/bin/cli');
 
-  const p = spawn('node', [cliAgent, shuviCmd, ...args], {
+  const p = spawn('node', [shuviCmd, command, ...args], {
     ...options,
     env: {
       ...process.env,
@@ -36,10 +35,9 @@ export function shuviSync(
 ): SpawnSyncReturns<string> {
   const isDev = command === 'dev';
 
-  const cliAgent = require.resolve('shuvi/lib/agent');
-  const shuviCmd = require.resolve('shuvi/lib/cmds/' + command);
+  const shuviCmd = require.resolve('shuvi/bin/cli');
 
-  const r = sync('node', [cliAgent, shuviCmd, ...args], {
+  const r = sync('node', [shuviCmd, command, ...args], {
     ...options,
     encoding: 'utf8',
     env: {
