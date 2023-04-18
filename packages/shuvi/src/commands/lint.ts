@@ -164,13 +164,11 @@ export async function lintAction(
   const paths = api.pluginContext.paths;
   const cacheLocation = join(paths.cacheDir, options.cacheLocation);
 
-  const hasAppDir = false;
-
   await setupTypeScript(paths, {
     reportMissingError: false
   });
 
-  runLintCheck(cwd, pathsToLint, hasAppDir, {
+  runLintCheck(cwd, pathsToLint, {
     lintDuringBuild: false,
     eslintOptions: eslintOptions(options, cacheLocation),
     reportErrorsOnly: reportErrorsOnly,
