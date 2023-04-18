@@ -98,3 +98,7 @@ export interface ServeOptions extends Options {
   host: string;
   port: number;
 }
+
+export interface LintOptions extends Options {
+  mode?: IServiceMode;
+}
