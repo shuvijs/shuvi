@@ -51,7 +51,7 @@ export default defineRule({
    * Creates an ESLint rule listener.
    */
   create(context) {
-    const ruleOptions: (string | string[])[] = context.options;
+    const ruleOptions = context.options;
     const [customPagesDirectory] = ruleOptions;
 
     const rootDirs = [context.getCwd()];

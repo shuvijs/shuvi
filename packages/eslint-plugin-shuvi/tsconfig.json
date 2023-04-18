@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "noImplicitAny": false,
     "outDir": "lib",
     "module": "commonjs",
     "esModuleInterop": true

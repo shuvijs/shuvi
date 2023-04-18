@@ -15,7 +15,6 @@ module.exports = {
         lib: ['esnext'],
         module: 'commonjs',
         moduleResolution: 'nodenext',
-        noImplicitAny: false,
         skipLibCheck: true,
         esModuleInterop: true,
         noUnusedLocals: false

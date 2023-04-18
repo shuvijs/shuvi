@@ -4,8 +4,8 @@ import { normalizeRoutePath } from '@shuvi/platform-shared/node/route/helpers';
 import { rankRouteBranches } from '@shuvi/router';
 // Cache for fs.lstatSync lookup.
 // Prevent multiple blocking IO requests that have already been calculated.
-const fsLstatSyncCache = {};
-const fsLstatSync = source => {
+const fsLstatSyncCache = {} as Record<string, fs.Stats>;
+const fsLstatSync = (source: string) => {
   fsLstatSyncCache[source] = fsLstatSyncCache[source] || fs.lstatSync(source);
   return fsLstatSyncCache[source];
 };
@@ -26,7 +26,7 @@ function isSymlink(source: string) {
 
 // Cache for fs.readdirSync lookup.
 // Prevent multiple blocking IO requests that have already been calculated.
-const fsReadDirSyncCache = {};
+const fsReadDirSyncCache = {} as Record<string, string[]>;
 
 /**
  * Recursively parse directory for page URLs.
