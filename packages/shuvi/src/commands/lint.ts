@@ -34,10 +34,7 @@ import { runLintCheck } from './eslint/core/runLintCheck';
 import { CompileError } from './eslint/compile-error';
 import { argumentDir, optionMode, LintOptions } from './utils/options';
 
-const eslintOptions = (
-  options: EsLintOption,
-  defaultCacheLocation: string
-) => ({
+const eslintOptions = (options: EsLintOption, cacheLocation: string) => ({
   overrideConfigFile: options.config,
   extensions: options.ext,
   resolvePluginsRelativeTo: options.resolvePluginsRelativeTo,
@@ -49,7 +46,7 @@ const eslintOptions = (
   allowInlineConfig: !Boolean(options.inlineConfig),
   reportUnusedDisableDirectives: options.reportUnusedDisableDirectives,
   cache: !Boolean(options.cache),
-  cacheLocation: options.cacheLocation || defaultCacheLocation,
+  cacheLocation: cacheLocation,
   cacheStrategy: options.cacheStrategy,
   errorOnUnmatchedPattern: options.errorOnUnmatchedPattern
     ? Boolean(options.errorOnUnmatchedPattern)
@@ -124,7 +121,7 @@ export async function lintAction(
   Object.assign(process.env, {
     NODE_ENV: mode
   });
-  console.log('options: ', options);
+
   const cwd = getProjectDir(dir);
 
   let config = await getConfigFromCli(options);
@@ -165,7 +162,8 @@ export async function lintAction(
   const outputFile = options['outputFile'];
 
   const paths = api.pluginContext.paths;
-  const defaultCacheLocation = join(paths.cacheDir, options.cacheLocation);
+  const cacheLocation = join(paths.cacheDir, options.cacheLocation);
+
   const hasAppDir = false;
 
   await setupTypeScript(paths, {
@@ -174,7 +172,7 @@ export async function lintAction(
 
   runLintCheck(cwd, pathsToLint, hasAppDir, {
     lintDuringBuild: false,
-    eslintOptions: eslintOptions(options, defaultCacheLocation),
+    eslintOptions: eslintOptions(options, cacheLocation),
     reportErrorsOnly: reportErrorsOnly,
     maxWarnings,
     formatter,

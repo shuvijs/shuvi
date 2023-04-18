@@ -222,7 +222,7 @@ async function lint(
       }
     } else {
       console.warn(
-        'The Shuvi.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/basic-features/eslint#migrating-existing-config'
+        'The Shuvi.js plugin was not detected in your ESLint configuration.'
       );
     }
 
@@ -392,7 +392,7 @@ export async function runLintCheck(
         if (selectedConfig == null) {
           // Show a warning if no option is selected in prompt
           console.warn(
-            'If you set up ESLint yourself, we recommend adding the Shuvi.js ESLint plugin. See https://nextjs.org/docs/basic-features/eslint#migrating-existing-config'
+            'If you set up ESLint yourself, we recommend adding the Shuvi.js ESLint plugin.'
           );
           return null;
         } else {

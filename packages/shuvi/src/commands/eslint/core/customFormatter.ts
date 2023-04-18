@@ -130,9 +130,7 @@ export function formatResults(
     outputWithMessages:
       resultsWithMessages.length > 0
         ? output +
-          `\n\n${chalk.cyan(
-            'info'
-          )}  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules`
+          `\n\n${chalk.cyan('info')}  - Need to disable some ESLint rules?`
         : '',
     totalShuviPluginErrorCount,
     totalShuviPluginWarningCount

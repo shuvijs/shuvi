@@ -19,12 +19,10 @@
   },
   "dependencies": {
     "@shuvi/router": "1.0.22",
-    "@shuvi/platform-shared": "1.0.22",
-    "glob": "7.1.7"
+    "@shuvi/platform-shared": "1.0.22"
   },
   "devDependencies": {
-    "@types/glob": "7.1.1",
     "@types/eslint": "7.28.0",
-    "eslint": "7.24.0"
+    "eslint": "7.28.0"
   }
 }

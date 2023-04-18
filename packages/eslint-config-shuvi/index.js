@@ -57,12 +57,13 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:@shuvi/shuvi/recommended'
   ],
-  plugins: ['import', 'react', 'jsx-a11y'],
+  plugins: ['@shuvi/shuvi', 'import', 'react', 'jsx-a11y'],
   rules: {
     'import/no-anonymous-default-export': 'warn',
     'react/no-unknown-property': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
+    'react/display-name': 'off',
     'react/jsx-no-target-blank': 'off',
     'jsx-a11y/alt-text': [
       'warn',
@@ -83,7 +84,7 @@ module.exports = {
     sourceType: 'module',
     allowImportExportEverywhere: true,
     babelOptions: {
-      presets: ['@shuvi/toolpack/lib/babel/preset'],
+      presets: [require.resolve('@shuvi/toolpack/lib/babel/preset')],
       caller: {
         // Eslint supports top level await when a parser for it is included. We enable the parser by default for Babel.
         supportsTopLevelAwait: true

@@ -1,7 +1,6 @@
 import { defineRule } from '../utils/define-rule';
 import * as path from 'path';
 import * as fs from 'fs';
-import { getRootDirs } from '../utils/get-root-dirs';
 import { matchRoutes } from '@shuvi/router';
 
 import {
@@ -55,7 +54,7 @@ export default defineRule({
     const ruleOptions: (string | string[])[] = context.options;
     const [customPagesDirectory] = ruleOptions;
 
-    const rootDirs = getRootDirs(context);
+    const rootDirs = [context.getCwd()];
 
     const pagesDirs = (
       customPagesDirectory

@@ -1,4 +1,3 @@
-import path = require('path');
 import { defineRule } from '../utils/define-rule';
 
 export default defineRule({

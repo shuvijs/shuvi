@@ -44,6 +44,7 @@ export async function hasNecessaryDependencies(
         } else {
           resolutions.set(p.pkg, resolveFrom(baseDir, p.file));
         }
+        return;
       } catch (_) {
         return missingPackages.push(p);
       }
