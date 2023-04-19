@@ -57,6 +57,9 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:@shuvi/shuvi/recommended'
   ],
+  /**
+   * @todo we will back to these rules in phase 2
+   */
   // plugins: ['@shuvi/shuvi', 'import', 'react', 'jsx-a11y'],
   plugins: ['@shuvi/shuvi', 'react'],
   // rules: {
