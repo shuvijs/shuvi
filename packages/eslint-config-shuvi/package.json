@@ -9,9 +9,7 @@
     "url": "git+https://github.com/shuvijs/shuvi.git",
     "directory": "packages/eslint-config-shuvi"
   },
-  "scripts": {
-    "test-pack": "cd ../../ && pnpm test-pack eslint-config-next"
-  },
+  "scripts": {},
   "dependencies": {
     "@babel/eslint-parser": "7.18.2",
     "@shuvi/toolpack": "1.0.22",
