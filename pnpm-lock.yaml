@@ -479,7 +479,6 @@ importers:
 
   packages/shuvi:
     specifiers:
-      '@babel/code-frame': 7.12.11
       '@shuvi/platform-shared': 1.0.22
       '@shuvi/platform-web': 1.0.22
       '@shuvi/service': 1.0.22
@@ -498,7 +497,6 @@ importers:
       fs-extra: 10.1.0
       semver: 7.3.2
     dependencies:
-      '@babel/code-frame': 7.12.11
       '@shuvi/platform-shared': link:../platform-shared
       '@shuvi/platform-web': link:../platform-web
       '@shuvi/service': link:../service
