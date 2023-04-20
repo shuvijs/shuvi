@@ -1,3 +1,12 @@
+## [1.0.23](https://github.com/shuvijs/shuvi/compare/v1.0.22...v1.0.23) (2023-04-20)
+
+
+### Features
+
+* support shuvi lint  ([d97c072](https://github.com/shuvijs/shuvi/commit/d97c072deae1fb24c4f412a83e4847114ba97599))
+
+
+
 ## [1.0.22](https://github.com/shuvijs/shuvi/compare/v1.0.21...v1.0.22) (2023-03-30)
 
 
