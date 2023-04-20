@@ -1,0 +1,28 @@
+{
+  "name": "@shuvi/eslint-plugin-shuvi",
+  "version": "1.0.22",
+  "description": "ESLint plugin for Shuvi.",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/eslint-plugin-shuvi"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "dev": "tsc -p tsconfig.json -w",
+    "prebuild": "rimraf lib",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@shuvi/router": "1.0.22",
+    "@shuvi/platform-shared": "1.0.22"
+  },
+  "devDependencies": {
+    "@types/eslint": "7.28.0",
+    "eslint": "7.28.0"
+  }
+}

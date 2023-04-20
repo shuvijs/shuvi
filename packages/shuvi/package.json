@@ -26,6 +26,10 @@
     "node": ">= 16.0.0"
   },
   "dependencies": {
+    "comment-json": "3.0.3",
+    "find-up": "4.1.0",
+    "semver": "7.3.2",
+    "cli-select": "1.1.2",
     "@shuvi/platform-shared": "1.0.22",
     "@shuvi/platform-web": "1.0.22",
     "@shuvi/service": "1.0.22",
@@ -39,6 +43,7 @@
     "fs-extra": "10.1.0"
   },
   "devDependencies": {
+    "@types/semver": "7.3.1",
     "@types/cross-spawn": "6.0.1"
   }
 }

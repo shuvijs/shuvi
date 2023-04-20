@@ -4,7 +4,7 @@ import makeDevCommand from './commands/dev';
 import makeBuildCommand from './commands/build';
 import makeInspectCommand from './commands/inspect';
 import makeServeCommand from './commands/serve';
-// import makeLintCommand from './commands/lint';
+import makeLintCommand from './commands/lint';
 import { TITLE, HELPER } from './constants';
 import { optionNoColor } from './commands/utils/options';
 import { getPackageInfo, color } from './utils';
@@ -16,7 +16,7 @@ const devCommand = makeDevCommand().copyInheritedSettings(program);
 const buildCommand = makeBuildCommand().copyInheritedSettings(program);
 const inspectCommand = makeInspectCommand().copyInheritedSettings(program);
 const serveCommand = makeServeCommand().copyInheritedSettings(program);
-// const lintCommand = makeLintCommand().copyInheritedSettings(program);
+const lintCommand = makeLintCommand().copyInheritedSettings(program);
 
 program
   .name(name)
@@ -28,7 +28,7 @@ program
   .addCommand(buildCommand)
   .addCommand(inspectCommand)
   .addCommand(serveCommand)
-  // .addCommand(lintCommand)
+  .addCommand(lintCommand)
   .usage(`[command] [dir] [options]`)
   .configureHelp({
     subcommandTerm: cmd => {
