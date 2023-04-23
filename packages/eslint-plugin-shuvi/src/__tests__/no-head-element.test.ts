@@ -1,4 +1,4 @@
-import rule from '../rules/no-head-element';
+import rule, { url } from '../rules/no-head-element';
 import { RuleTester } from 'eslint';
 (RuleTester as any).setDefaultConfig({
   parserOptions: {
@@ -81,8 +81,7 @@ ruleTester.run('no-head-element', rule, {
       filename: './pages/index.js',
       errors: [
         {
-          message:
-            'Do not use `<head>` element. Use `<Head />` from `shuvi/runtime` instead.',
+          message: `Do not use \`<head>\` element. Use \`<Head />\` from \`shuvi/runtime\` instead. See: ${url}`,
           type: 'JSXOpeningElement'
         }
       ]
@@ -107,8 +106,7 @@ ruleTester.run('no-head-element', rule, {
       filename: 'pages/index.ts',
       errors: [
         {
-          message:
-            'Do not use `<head>` element. Use `<Head />` from `shuvi/runtime` instead.',
+          message: `Do not use \`<head>\` element. Use \`<Head />\` from \`shuvi/runtime\` instead. See: ${url}`,
           type: 'JSXOpeningElement'
         }
       ]
