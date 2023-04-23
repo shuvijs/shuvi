@@ -43,7 +43,7 @@ const requiredPackages = [
 
 export const ESLINT_PROMPT_VALUES = [
   {
-    title: 'Recommended',
+    title: 'Base configuration (recommended)',
     config: {
       extends: 'shuvi'
     }
@@ -56,7 +56,11 @@ export const ESLINT_PROMPT_VALUES = [
 
 async function cliPrompt() {
   console.log(
-    chalk.bold(`${chalk.cyan('?')} How would you like to configure ESLint?`)
+    chalk.bold(
+      `${chalk.cyan(
+        '?'
+      )} How would you like to configure ESLint? https://shuvijs.github.io/shuvijs.org/docs/guides/ESLint`
+    )
   );
 
   try {
@@ -221,7 +225,7 @@ async function lint(
       }
     } else {
       console.warn(
-        'The Shuvi.js plugin was not detected in your ESLint configuration.'
+        'The Shuvi.js plugin was not detected in your ESLint configuration. https://shuvijs.github.io/shuvijs.org/docs/guides/ESLint#migrating-existing-config'
       );
     }
 
@@ -383,7 +387,7 @@ export async function runLintCheck(
         if (selectedConfig == null) {
           // Show a warning if no option is selected in prompt
           console.warn(
-            'If you set up ESLint yourself, we recommend adding the Shuvi.js ESLint plugin.'
+            'If you set up ESLint yourself, we recommend adding the Shuvi.js ESLint plugin. See https://shuvijs.github.io/shuvijs.org/docs/guides/ESLint#migrating-existing-config'
           );
           return null;
         } else {

@@ -130,7 +130,9 @@ export function formatResults(
     outputWithMessages:
       resultsWithMessages.length > 0
         ? output +
-          `\n\n${chalk.cyan('info')}  - Need to disable some ESLint rules?`
+          `\n\n${chalk.cyan(
+            'info'
+          )}  - Need to disable some ESLint rules? Learn more here: https://shuvijs.github.io/shuvijs.org/docs/guides/ESLint#disabling-rules`
         : '',
     totalShuviPluginErrorCount,
     totalShuviPluginWarningCount

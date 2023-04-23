@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import rule from '../rules/no-html-link-for-pages';
+import rule, { url } from '../rules/no-html-link-for-pages';
 import { Linter } from 'eslint';
 import * as path from 'path';
 
@@ -315,7 +315,7 @@ describe('no-html-link-for-pages', function () {
     );
     expect(report).not.toBeUndefined();
     expect(report.message).toEqual(
-      'Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `shuvi/runtime` instead.'
+      `Do not use an \`<a>\` element to navigate to \`/\`. Use \`<Link />\` from \`shuvi/runtime\` instead. See: ${url}`
     );
   });
 
@@ -329,7 +329,7 @@ describe('no-html-link-for-pages', function () {
     );
     expect(report).not.toBeUndefined();
     expect(report.message).toEqual(
-      'Do not use an `<a>` element to navigate to `/list/foo/bar/`. Use `<Link />` from `shuvi/runtime` instead.'
+      `Do not use an \`<a>\` element to navigate to \`/list/foo/bar/\`. Use \`<Link />\` from \`shuvi/runtime\` instead. See: ${url}`
     );
     const [secondReport] = withCustomPagesLinter.verify(
       secondInvalidDynamicCode,
@@ -340,7 +340,7 @@ describe('no-html-link-for-pages', function () {
     );
     expect(secondReport).not.toBeUndefined();
     expect(secondReport.message).toEqual(
-      'Do not use an `<a>` element to navigate to `/list/foo/`. Use `<Link />` from `shuvi/runtime` instead.'
+      `Do not use an \`<a>\` element to navigate to \`/list/foo/\`. Use \`<Link />\` from \`shuvi/runtime\` instead. See: ${url}`
     );
     const [thirdReport] = withCustomPagesLinter.verify(
       thirdInvalidDynamicCode,
@@ -351,7 +351,7 @@ describe('no-html-link-for-pages', function () {
     );
     expect(thirdReport).not.toBeUndefined();
     expect(thirdReport.message).toEqual(
-      'Do not use an `<a>` element to navigate to `/list/lorem-ipsum/`. Use `<Link />` from `shuvi/runtime` instead.'
+      `Do not use an \`<a>\` element to navigate to \`/list/lorem-ipsum/\`. Use \`<Link />\` from \`shuvi/runtime\` instead. See: ${url}`
     );
   });
 });
