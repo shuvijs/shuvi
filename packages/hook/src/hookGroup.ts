@@ -7,7 +7,7 @@ import {
   createAsyncSeriesBailHook,
   createAsyncSeriesHook
 } from './hooks';
-import { checkPlugins, sortPlugins } from './utils';
+import { verifyPlugins, sortPlugins } from './utils';
 import {
   AnyHook,
   CreatePlugin,
@@ -127,7 +127,7 @@ export const createHookManager = <HM extends HookMap, C = void>(
     _plugins.push(...plugins);
   };
   const load = () => {
-    checkPlugins(_plugins);
+    verifyPlugins(_plugins);
     _plugins = sortPlugins(_plugins);
     _plugins.forEach(plugin => {
       const handlers = plugin.handlers;

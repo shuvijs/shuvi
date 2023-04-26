@@ -293,6 +293,93 @@ describe('hookManager', () => {
 });
 
 describe('plugin options', () => {
+  describe('name', () => {
+    test('plugin name must be string type', async () => {
+      const hook = createSyncHook<void, void, string>();
+      const group = createHookManager({ hook }, false);
+      const { createPlugin, usePlugin, runner } = group;
+
+      const pluginA = createPlugin(
+        {
+          hook: () => 'a'
+        },
+        {
+          name: 'a'
+        }
+      );
+
+      const pluginB = createPlugin(
+        {
+          hook: () => 'b'
+        },
+        {
+          name: 0 as any
+        }
+      );
+
+      usePlugin(pluginA, pluginB);
+      expect(() => {
+        runner.hook();
+      }).toThrowError(`Plugin name must be string type.`);
+    });
+    test('plugin name must be non-empty string.', async () => {
+      const hook = createSyncHook<void, void, string>();
+      const group = createHookManager({ hook }, false);
+      const { createPlugin, usePlugin, runner } = group;
+
+      const pluginA = createPlugin(
+        {
+          hook: () => 'a'
+        },
+        {
+          name: 'a'
+        }
+      );
+
+      const pluginB = createPlugin(
+        {
+          hook: () => 'b'
+        },
+        {
+          name: ''
+        }
+      );
+
+      usePlugin(pluginA, pluginB);
+      expect(() => {
+        runner.hook();
+      }).toThrowError(`Plugin name must be non-empty string.`);
+    });
+
+    test('plugin name should be unique', async () => {
+      const hook = createSyncHook<void, void, string>();
+      const group = createHookManager({ hook }, false);
+      const { createPlugin, usePlugin, runner } = group;
+
+      const pluginA = createPlugin(
+        {
+          hook: () => 'a'
+        },
+        {
+          name: 'a'
+        }
+      );
+
+      const pluginB = createPlugin(
+        {
+          hook: () => 'b'
+        },
+        {
+          name: 'a'
+        }
+      );
+
+      usePlugin(pluginA, pluginB);
+      expect(() => {
+        runner.hook();
+      }).toThrowError(`Plugin name duplication detected: a`);
+    });
+  });
   describe('basic plugin order', () => {
     describe(`when set 'before' option, current plugin should before those configured plugins.`, () => {
       test('when initial order is right', async () => {

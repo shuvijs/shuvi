@@ -95,8 +95,19 @@ export const sortPlugins = <T extends IPluginInstance<any, any>[]>(
   return sorted;
 };
 
-export const checkPlugins = (plugins: IPluginInstance<any, any>[]) => {
+export const verifyPlugins = (plugins: IPluginInstance<any, any>[]) => {
+  const names = new Set<string>();
   for (const current of plugins) {
+    if (typeof current.name !== 'string') {
+      throw new Error(`Plugin name must be string type.`);
+    }
+    if (!current.name) {
+      throw new Error(`Plugin name must be non-empty string.`);
+    }
+    if (names.has(current.name)) {
+      throw new Error(`Plugin name duplication detected: ${current.name}.`);
+    }
+    names.add(current.name);
     if (current.conflict) {
       for (const conflict of current.conflict) {
         for (const plugin of plugins) {
