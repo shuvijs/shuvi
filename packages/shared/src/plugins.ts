@@ -11,7 +11,13 @@ export const GROUP_BEFORE_USER = -1;
 export const GROUP_USER = 0;
 export const GROUP_AFTER_USER = 1;
 
-export type PluginOptions = Omit<_PluginOptions, 'group' | 'order'>;
+export type PluginOptions = {
+  name?: _PluginOptions['name'];
+  before?: _PluginOptions['before'];
+  after?: _PluginOptions['after'];
+  conflict?: _PluginOptions['conflict'];
+  required?: _PluginOptions['required'];
+};
 
 export interface PluginFunc<HM extends HookMap, C> {
   (
@@ -34,16 +40,29 @@ export function createPluginCreator<
 >(): CreatePluginByGroup<HM, C> {
   const createOptions = (
     group: number,
-    opt: _PluginOptions = {}
-  ): PluginOptions => {
-    return {
-      name: opt.name,
-      pre: opt.pre,
-      post: opt.post,
-      rivals: opt.rivals,
-      required: opt.required,
+    opt: PluginOptions = {}
+  ): _PluginOptions => {
+    const { name, before, after, conflict, required } = opt;
+    const result: _PluginOptions = {
       group
     };
+    // avoid undefined value because undefined value will override default value
+    if (name !== undefined) {
+      result.name = name;
+    }
+    if (before !== undefined) {
+      result.before = before;
+    }
+    if (after !== undefined) {
+      result.after = after;
+    }
+    if (conflict !== undefined) {
+      result.conflict = conflict;
+    }
+    if (required !== undefined) {
+      result.required = required;
+    }
+    return result;
   };
 
   return {
