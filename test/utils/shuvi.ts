@@ -7,7 +7,7 @@ export async function build(options: IBuildOptions) {
 }
 
 export function shuvi(
-  command: 'dev' | 'build' | 'serve' | 'inspect' | string,
+  command: 'dev' | 'build' | 'serve' | 'inspect' | 'lint' | string,
   args: string[],
   options: SpawnOptions = {}
 ): ChildProcess {
@@ -29,7 +29,7 @@ export function shuvi(
 }
 
 export function shuviSync(
-  command: 'dev' | 'build' | 'start',
+  command: 'dev' | 'build' | 'start' | 'lint',
   args: string[],
   options: SpawnOptions = {}
 ): SpawnSyncReturns<string> {

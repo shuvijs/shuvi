@@ -110,3 +110,36 @@ export function execOnce<TArgs extends any[], TResult extends unknown>(
     return result;
   };
 }
+
+// 0 is the exact match
+export const THRESHOLD = 1;
+
+// the minimum number of operations required to convert string a to string b.
+export function minDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+
+  if (m < n) {
+    return minDistance(b, a);
+  }
+
+  if (n === 0) {
+    return m;
+  }
+
+  let previousRow = Array.from({ length: n + 1 }, (_, i) => i);
+
+  for (let i = 0; i < m; i++) {
+    const s1 = a[i];
+    let currentRow = [i + 1];
+    for (let j = 0; j < n; j++) {
+      const s2 = b[j];
+      const insertions = previousRow[j + 1] + 1;
+      const deletions = currentRow[j] + 1;
+      const substitutions = previousRow[j] + Number(s1 !== s2);
+      currentRow.push(Math.min(insertions, deletions, substitutions));
+    }
+    previousRow = currentRow;
+  }
+  return previousRow[previousRow.length - 1];
+}
