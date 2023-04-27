@@ -1,4 +1,4 @@
-import rule from '../rules/no-typos';
+import rule from '../rules/no-typos-page';
 import { RuleTester } from 'eslint';
 (RuleTester as any).setDefaultConfig({
   parserOptions: {
@@ -13,7 +13,7 @@ import { RuleTester } from 'eslint';
 
 const ruleTester = new RuleTester();
 
-ruleTester.run('no-typos', rule, {
+ruleTester.run('no-typos-page', rule, {
   valid: [
     `
       export default function Page() {
