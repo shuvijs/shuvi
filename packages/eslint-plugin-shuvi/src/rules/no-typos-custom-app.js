@@ -2,7 +2,7 @@ import { defineRule } from '../utils/define-rule';
 import { THRESHOLD, minDistance } from '../utils/url';
 
 const EXPORT_FUNCTIONS = ['init', 'appContext', 'appComponent', 'dispose'];
-const PAGEREG = /src\/app\.(j|t)s?$/;
+const FILEREG = /src\/app\.(j|t)s?$/;
 
 export default defineRule({
   meta: {
@@ -37,7 +37,7 @@ export default defineRule({
     return {
       ExportNamedDeclaration(node) {
         const fileName = context.getFilename();
-        if (!fileName || !PAGEREG.test(fileName)) {
+        if (!fileName || !FILEREG.test(fileName)) {
           return;
         }
 

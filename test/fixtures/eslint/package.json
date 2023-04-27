@@ -1,0 +1,11 @@
+{
+  "name": "fixture-eslint",
+  "scripts":{
+    "lint": "shuvi lint"
+  },
+  "dependencies": {
+    "shuvi": "workspace:*",
+    "eslint-config-shuvi": "workspace:*",
+    "eslint": "8.39.0"
+  }
+}

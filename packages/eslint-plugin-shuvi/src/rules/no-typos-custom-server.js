@@ -7,7 +7,7 @@ const EXPORT_FUNCTIONS = [
   'modifyHtml',
   'sendHtml'
 ];
-const PAGEREG = /src\/server\.(j|t)s?$/;
+const FILEREG = /src\/server\.(j|t)s?$/;
 
 export default defineRule({
   meta: {
@@ -42,7 +42,7 @@ export default defineRule({
     return {
       ExportNamedDeclaration(node) {
         const fileName = context.getFilename();
-        if (!fileName || !PAGEREG.test(fileName)) {
+        if (!fileName || !FILEREG.test(fileName)) {
           return;
         }
 
