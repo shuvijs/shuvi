@@ -1,6 +1,3 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as fse from 'fs-extra';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { shuvi, resolveFixture } from '../utils';
 
@@ -8,14 +5,6 @@ jest.setTimeout(30 * 1000);
 
 function createTestCtx(fixture: string) {
   const projectRoot = resolveFixture(fixture);
-
-  const exist = (file: string) => {
-    return fs.existsSync(path.resolve(projectRoot, file));
-  };
-
-  const clear = (file: string) => {
-    return fse.removeSync(path.resolve(projectRoot, file));
-  };
 
   const runCommand = (
     command: string,
@@ -61,8 +50,6 @@ function createTestCtx(fixture: string) {
   };
 
   return {
-    exist,
-    clear,
     run: runCommand
   };
 }
