@@ -1,135 +1,31 @@
 import {
-  SyncHook,
-  SyncBailHook,
-  SyncWaterfallHook,
-  AsyncParallelHook,
-  AsyncSeriesWaterfallHook,
-  SyncHookHandler,
-  SyncBailHookHandler,
-  SyncWaterfallHookHandler,
-  AsyncParallelHookHandler,
-  AsyncSeriesWaterfallHookHandler,
   createSyncHook,
   createSyncBailHook,
   createSyncWaterfallHook,
   createAsyncParallelHook,
   createAsyncSeriesWaterfallHook,
-  AsyncSeriesHook,
-  AsyncSeriesBailHook,
-  AsyncSeriesHookHandler,
-  AsyncSeriesBailHookHandler,
   createAsyncSeriesBailHook,
   createAsyncSeriesHook
 } from './hooks';
-
-export type PatchPluginParameter<T, C> = RemoveManagerVoidParameter<
-  AddContextParameter<T, C>
->;
-
-export type AddContextParameter<T, C> = T extends (
-  initalValue: infer I,
-  extraArg: infer E
-) => infer R
-  ? (initalValue: I, extraArg: E, context: C) => R
-  : T;
-
-export type AnyHook =
-  | SyncHook<any, any, any>
-  | SyncBailHook<any, any, any>
-  | SyncWaterfallHook<any, any>
-  | AsyncParallelHook<any, any, any>
-  | AsyncSeriesHook<any, any, any>
-  | AsyncSeriesBailHook<any, any, any>
-  | AsyncSeriesWaterfallHook<any, any>;
-export interface HookMap {
-  [x: string]: AnyHook;
-}
-
-export type Setup<HM extends HookMap = {}> = (utils: {
-  addHooks: (hook: Partial<HM>) => void;
-}) => void;
-
-export type CreatePlugin<HM extends HookMap, C> = (
-  pluginHandlers: IPluginHandlers<HM, C> & {
-    setup?: Setup;
-  },
-  options?: PluginOptions
-) => IPluginInstance<HM, C>;
-
-export type HookManager<HM extends HookMap, C> = {
-  createPlugin: CreatePlugin<HM, C>;
-  usePlugin: (...plugins: IPluginInstance<HM, C>[]) => void;
-  runner: RunnerType<HM>;
-  setContext: (context: C) => void;
-  clear: () => void;
-  addHooks: <EHM extends HookMap>(hook: Partial<EHM>) => void;
-  hooks: HM;
-  getPlugins: () => IPluginInstance<HM, C>[];
-};
-
-export type RunnerType<HM> = {
-  [K in keyof HM]: HookRunnerType<HM[K]>;
-} & { setup: Setup };
-
-export type HookRunnerType<H> = H extends SyncHook<infer T, infer E, infer R>
-  ? SyncHook<T, E, R>['run']
-  : H extends SyncBailHook<infer T, infer E, infer R>
-  ? SyncBailHook<T, E, R>['run']
-  : H extends SyncWaterfallHook<infer T, infer E>
-  ? SyncWaterfallHook<T, E>['run']
-  : H extends AsyncParallelHook<infer T, infer E, infer R>
-  ? AsyncParallelHook<T, E, R>['run']
-  : H extends AsyncSeriesHook<infer T, infer E, infer R>
-  ? AsyncSeriesHook<T, E, R>['run']
-  : H extends AsyncSeriesBailHook<infer T, infer E, infer R>
-  ? AsyncSeriesBailHook<T, E, R>['run']
-  : H extends AsyncSeriesWaterfallHook<infer T, infer E>
-  ? AsyncSeriesWaterfallHook<T, E>['run']
-  : never;
-
-export type IPluginInstance<HM, C> = {
-  handlers: IPluginHandlers<HM, C>;
-  PLUGIN_SYMBOL: 'PLUGIN_SYMBOL';
-} & Required<PluginOptions>;
-
-export type IPluginHandlers<HM, C> = Partial<IPluginHandlersFullMap<HM, C>>;
-
-export type IPluginHandlersFullMap<HM, C> = {
-  [K in keyof HM]: HM[K] extends SyncHook<infer T, infer E, infer R>
-    ? PatchPluginParameter<SyncHookHandler<T, E, R>, C>
-    : HM[K] extends SyncBailHook<infer T, infer E, infer R>
-    ? PatchPluginParameter<SyncBailHookHandler<T, E, R>, C>
-    : HM[K] extends SyncWaterfallHook<infer T, infer E>
-    ? PatchPluginParameter<SyncWaterfallHookHandler<T, E>, C>
-    : HM[K] extends AsyncParallelHook<infer T, infer E, infer R>
-    ? PatchPluginParameter<AsyncParallelHookHandler<T, E, R>, C>
-    : HM[K] extends AsyncSeriesHook<infer T, infer E, infer R>
-    ? PatchPluginParameter<AsyncSeriesHookHandler<T, E, R>, C>
-    : HM[K] extends AsyncSeriesBailHook<infer T, infer E, infer R>
-    ? PatchPluginParameter<AsyncSeriesBailHookHandler<T, E, R>, C>
-    : HM[K] extends AsyncSeriesWaterfallHook<infer T, infer E>
-    ? PatchPluginParameter<AsyncSeriesWaterfallHookHandler<T, E>, C>
-    : never;
-};
-
-export type PluginOptions = {
-  name?: string;
-  pre?: string[];
-  post?: string[];
-  rivals?: string[];
-  required?: string[];
-  order?: number;
-  group?: number;
-  [x: string]: any;
-};
+import { verifyPlugins, sortPlugins } from './utils';
+import {
+  AnyHook,
+  CreatePlugin,
+  IPluginHandlers,
+  IPluginInstance,
+  HookManager,
+  HookMap,
+  PluginOptions,
+  RunnerType,
+  Setup
+} from './types';
 
 const DEFAULT_OPTIONS: Required<PluginOptions> = {
   name: 'untitled',
-  pre: [],
-  post: [],
-  rivals: [],
+  before: [],
+  after: [],
+  conflict: [],
   required: [],
-  order: 0,
   group: 0
 };
 
@@ -143,74 +39,6 @@ export const isPluginInstance = <
   plugin &&
   plugin.hasOwnProperty(PLUGIN_SYMBOL) &&
   plugin.PLUGIN_SYMBOL === PLUGIN_SYMBOL;
-
-const sortPlugins = <T extends IPluginInstance<any, any>[]>(input: T): T => {
-  let plugins: T = input.slice() as T;
-  plugins.sort((a, b) => {
-    // sort by group first
-    if (a.group === b.group) {
-      return a.order - b.order;
-    } else {
-      return a.group - b.group;
-    }
-  });
-  for (let i = 0; i < plugins.length; i++) {
-    let plugin = plugins[i];
-    if (plugin.pre) {
-      for (const pre of plugin.pre) {
-        for (let j = i + 1; j < plugins.length; j++) {
-          if (plugins[j].name === pre) {
-            plugins = [
-              ...plugins.slice(0, i),
-              plugins[j],
-              ...plugins.slice(i, j),
-              ...plugins.slice(j + 1, plugins.length)
-            ] as T;
-          }
-        }
-      }
-    }
-
-    if (plugin.post) {
-      for (const post of plugin.post) {
-        for (let j = 0; j < i; j++) {
-          if (plugins[j].name === post) {
-            plugins = [
-              ...plugins.slice(0, j),
-              ...plugins.slice(j + 1, i + 1),
-              plugins[j],
-              ...plugins.slice(i + 1, plugins.length)
-            ] as T;
-          }
-        }
-      }
-    }
-  }
-  return plugins;
-};
-
-const checkPlugins = (plugins: IPluginInstance<any, any>[]) => {
-  for (const origin of plugins) {
-    if (origin.rivals) {
-      for (const rival of origin.rivals) {
-        for (const plugin of plugins) {
-          if (rival === plugin.name) {
-            throw new Error(`${origin.name} has rival ${plugin.name}`);
-          }
-        }
-      }
-    }
-    if (origin.required) {
-      for (const required of origin.required) {
-        if (!plugins.some(plugin => plugin.name === required)) {
-          throw new Error(
-            `The plugin: ${required} is required when plugin: ${origin.name} is exist.`
-          );
-        }
-      }
-    }
-  }
-};
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -299,10 +127,9 @@ export const createHookManager = <HM extends HookMap, C = void>(
     _plugins.push(...plugins);
   };
   const load = () => {
-    let plugins = _plugins;
-    plugins = sortPlugins(plugins);
-    checkPlugins(plugins);
-    plugins.forEach(plugin => {
+    verifyPlugins(_plugins);
+    _plugins = sortPlugins(_plugins);
+    _plugins.forEach(plugin => {
       const handlers = plugin.handlers;
       let hookName: keyof HM;
       for (hookName in handlers) {
@@ -428,100 +255,3 @@ export const createHookManager = <HM extends HookMap, C = void>(
     getPlugins: () => _plugins
   };
 };
-export type RemoveManagerVoidParameter<T> = T extends (
-  initalValue: infer I,
-  extraArg: infer E,
-  context: infer C
-) => infer R
-  ? null extends I
-    ? /*('I is any') :*/
-      null extends E
-      ? /* E is any */
-        null extends C
-        ? /* C is any */
-          (initialValue: I, extraArg: E, context: C) => R
-        : void extends C
-        ? /*C is void*/
-          (initialValue: I, extraArg: E) => R
-        : /*C is normal*/
-          (initialValue: I, extraArg: E, context: C) => R
-      : void extends E
-      ? /*E is void*/
-        null extends C
-        ? /* C is any */
-          (initialValue: I, context: C) => R
-        : void extends C
-        ? /*C is void*/
-          (initialValue: I) => R
-        : /*C is normal*/
-          (initialValue: I, context: C) => R
-      : /*E is normal*/
-      null extends C
-      ? /* C is any */
-        (initialValue: I, extraArg: E, context: C) => R
-      : void extends C
-      ? /*C is void*/
-        (initialValue: I, extraArg: E) => R
-      : /*C is normal*/
-        (initialValue: I, extraArg: E, context: C) => R
-    : void extends I
-    ? /* I is void */
-      null extends E
-      ? /* E is any */
-        null extends C
-        ? /* C is any */
-          (extraArg: E, context: C) => R
-        : void extends C
-        ? /*C is void*/
-          (extraArg: E) => R
-        : /*C is normal*/
-          (extraArg: E, context: C) => R
-      : void extends E
-      ? /*E is void*/
-        null extends C
-        ? /* C is any */
-          (context: C) => R
-        : void extends C
-        ? /*C is void*/
-          () => R
-        : /*C is normal*/
-          (context: C) => R
-      : /*E is normal*/
-      null extends C
-      ? /* C is any */
-        (extraArg: E, context: C) => R
-      : void extends C
-      ? /*C is void*/
-        (extraArg: E) => R
-      : /*C is normal*/
-        (extraArg: E, context: C) => R
-    : null extends E
-    ? /* E is any */
-      null extends C
-      ? /* C is any */
-        (initialValue: I, extraArg: E, context: C) => R
-      : void extends C
-      ? /*C is void*/
-        (initialValue: I, extraArg: E) => R
-      : /*C is normal*/
-        (initialValue: I, extraArg: E, context: C) => R
-    : void extends E
-    ? /*E is void*/
-      null extends C
-      ? /* C is any */
-        (initialValue: I, context: C) => R
-      : void extends C
-      ? /*C is void*/
-        (initialValue: I) => R
-      : /*C is normal*/
-        (initialValue: I, context: C) => R
-    : /*E is normal*/
-    null extends C
-    ? /* C is any */
-      (initialValue: I, extraArg: E, context: C) => R
-    : void extends C
-    ? /*C is void*/
-      (initialValue: I, extraArg: E) => R
-    : /*C is normal*/
-      (initialValue: I, extraArg: E, context: C) => R
-  : T;

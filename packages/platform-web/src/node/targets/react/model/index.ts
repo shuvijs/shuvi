@@ -1,9 +1,9 @@
-import { createPluginAfter } from '@shuvi/service';
+import { createPlugin } from '@shuvi/service';
 import { resolveLib, resolvePkgFile } from '../../../paths';
 
 const reactDouraSource = resolveLib('react-doura');
 
-const core = createPluginAfter(
+const core = createPlugin(
   {
     addRuntimeService: () => [
       {
