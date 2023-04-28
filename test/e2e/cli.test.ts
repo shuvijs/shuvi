@@ -1,70 +1,14 @@
-import { SpawnOptionsWithoutStdio } from 'child_process';
-import { shuvi, resolveFixture } from '../utils';
+import { shuviSync, resolveFixture } from '../utils';
 
 jest.setTimeout(30 * 1000);
-
-function createTestCtx(fixture: string) {
-  const projectRoot = resolveFixture(fixture);
-
-  const runCommand = (
-    command: string,
-    args: string[] = [],
-    options?: SpawnOptionsWithoutStdio
-  ) => {
-    return new Promise<{ code: number; message: string }>((resolve, reject) => {
-      let output = '';
-      let err = '';
-      const s = shuvi(command, [projectRoot, ...args], {
-        ...options
-      });
-
-      if (s.stdout === null || s.stderr === null) {
-        return reject({
-          code: -1,
-          message: `fail to run ${command}`
-        });
-      }
-
-      s.stdout.on('data', data => {
-        output += data;
-      });
-
-      s.stderr.on('data', data => {
-        err += data;
-      });
-
-      s.on('exit', code => {
-        if (code === 0) {
-          resolve({
-            code,
-            message: output
-          });
-        } else {
-          reject({
-            code,
-            message: err
-          });
-        }
-      });
-    });
-  };
-
-  return {
-    run: runCommand
-  };
-}
 
 describe('shuvi lint', () => {
   let message = '';
 
   beforeAll(async () => {
-    const project = createTestCtx('eslint');
-    try {
-      await project.run('lint');
-    } catch (error) {
-      console.log('error: ', error);
-      message = (error as { message: string }).message;
-    }
+    const projectRoot = resolveFixture('eslint');
+    const child_process = shuviSync('lint', [projectRoot]);
+    message = child_process.stderr.toString();
   });
 
   it('should tip no-html-link-for-pages', async () => {
