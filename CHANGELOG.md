@@ -1,3 +1,12 @@
+## [1.0.25](https://github.com/shuvijs/shuvi/compare/v1.0.24...v1.0.25) (2023-05-04)
+
+
+### Features
+
+* add more lint rules ([#522](https://github.com/shuvijs/shuvi/issues/522)) ([cc1b85f](https://github.com/shuvijs/shuvi/commit/cc1b85f33d3c5fff5b2685b5290e897876c685be))
+
+
+
 ## [1.0.24](https://github.com/shuvijs/shuvi/compare/v1.0.23...v1.0.24) (2023-04-27)
 
 
