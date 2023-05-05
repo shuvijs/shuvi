@@ -37,8 +37,6 @@ export {
   getApiMiddleware
 };
 
-let isWarnedAddMiddlewareRoutes: boolean = false;
-
 const plugin = createPlugin({
   setup: ({ addHooks }) => {
     addHooks({ addRoutes, addApiRoutes, addMiddlewareRoutes });
@@ -155,13 +153,6 @@ const plugin = createPlugin({
         const pluginRoutes: IMiddlewareRouteConfig[] = (
           await pluginRunner.addMiddlewareRoutes()
         ).flat();
-
-        if (!isWarnedAddMiddlewareRoutes && pluginRoutes.length > 0) {
-          logger.warn(
-            'Warning: addMiddlewareRoutes is an experimental feature, we recommend using api routes instead.'
-          );
-          isWarnedAddMiddlewareRoutes = true;
-        }
 
         return generateMiddlewareRoutesContent(pluginRoutes, {
           baseDir: paths.routesDir
