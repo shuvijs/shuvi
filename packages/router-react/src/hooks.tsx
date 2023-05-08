@@ -150,7 +150,7 @@ export function useNavigate(): INavigateFunction {
  * URL that were matched by the route path.
  */
 export function useParams(): IParams {
-  return useContext(MatchedRouteContext).params;
+  return useContext(RouteContext).params;
 }
 
 /**

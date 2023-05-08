@@ -5,9 +5,10 @@ import { MemoryRouter as Router, useParams, RouterView } from '..';
 describe('nested routes', () => {
   it('gets all params from parent routes', () => {
     function Users() {
+      let { username } = useParams();
       return (
         <div>
-          <h1>Users</h1>
+          <h1>Users:{username}</h1>
           <RouterView />
         </div>
       );
@@ -17,7 +18,7 @@ describe('nested routes', () => {
       let { username } = useParams();
       return (
         <div>
-          <h1>User: {username}</h1>
+          <h1>User:{username}</h1>
           <RouterView />
         </div>
       );
@@ -40,7 +41,7 @@ describe('nested routes', () => {
       return (
         <div>
           <h1>
-            User: {username}, course {courseId}
+            User:{username}, course{courseId}
           </h1>
         </div>
       );
