@@ -3,11 +3,12 @@
 exports[`nested routes gets all params from parent routes 1`] = `
 <div>
   <h1>
-    Users
+    Users:
+    michael
   </h1>
   <div>
     <h1>
-      User: 
+      User:
       michael
     </h1>
     <div>
@@ -16,9 +17,9 @@ exports[`nested routes gets all params from parent routes 1`] = `
       </h1>
       <div>
         <h1>
-          User: 
+          User:
           michael
-          , course 
+          , course
           routing
         </h1>
       </div>
