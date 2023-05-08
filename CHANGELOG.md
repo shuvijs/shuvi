@@ -1,3 +1,12 @@
+## [1.0.26](https://github.com/shuvijs/shuvi/compare/v1.0.25...v1.0.26) (2023-05-08)
+
+
+### Bug Fixes
+
+* `useParams` will give the same result no matter where it is used ([#526](https://github.com/shuvijs/shuvi/issues/526)) ([49032df](https://github.com/shuvijs/shuvi/commit/49032dfd2c79e4f8dbc4ed312df8b6a16ccba0c4))
+
+
+
 ## [1.0.25](https://github.com/shuvijs/shuvi/compare/v1.0.24...v1.0.25) (2023-05-04)
 
 
