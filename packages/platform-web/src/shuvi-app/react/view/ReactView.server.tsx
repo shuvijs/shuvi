@@ -27,16 +27,24 @@ export class ReactServerView implements IReactServerView {
     }
 
     if (redirected) {
-      const { location, status } = state as {
-        location: string;
-        status: number;
-      };
-      return redirect(
-        isThirdSite(location)
-          ? location
-          : router.resolve(location, pathname).href,
-        status
-      );
+      // handel loader redirect
+      if (
+        state &&
+        typeof (state as { location: string }).location === 'string'
+      ) {
+        const { location, status } = state as {
+          location: string;
+          status: number;
+        };
+        return redirect(
+          isThirdSite(location)
+            ? location
+            : router.resolve(location, pathname).href,
+          status
+        );
+      }
+      // handle router internal redirect
+      return redirect(pathname);
     }
 
     const loadableModules: string[] = [];
