@@ -171,8 +171,6 @@ function update() {
   appDocument.body.appendChild(loadingIframe);
 }
 
-let prevRendered = false;
-
 function updateIframeContent() {
   if (!iframe) {
     throw new Error('Iframe has not been created yet.');
@@ -188,13 +186,11 @@ function updateIframeContent() {
   //After the errors have been added to the queue of the error handler, we must clear the errorTypeList
   errorTypeList = [];
 
-  // Continuous errors and no errors will not operate dom
-  if (prevRendered && !isRendered) {
+  if (!isRendered) {
     window.document.body.removeChild(iframe);
     iframe = null;
     isIframeReady = false;
   }
-  prevRendered = isRendered;
 }
 
 window.__SHUVI_ERROR_OVERLAY_GLOBAL_HOOK__ =
