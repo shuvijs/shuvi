@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/runtime",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -26,7 +26,7 @@
     "build:cjs": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
   },
   "dependencies": {
-    "@shuvi/hook": "1.0.26"
+    "@shuvi/hook": "1.0.27"
   },
   "engines": {
     "node": ">= 16.0.0"
