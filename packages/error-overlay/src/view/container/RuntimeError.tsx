@@ -24,7 +24,10 @@ export type SupportedErrorEvent = {
   id: number;
   event: UnhandledError | UnhandledRejection;
 };
-export type RuntimeErrorProps = { errors: SupportedErrorEvent[] };
+export type RuntimeErrorProps = {
+  errors: SupportedErrorEvent[];
+  close: () => void;
+};
 
 type ReadyErrorEvent = ReadyRuntimeError;
 
@@ -43,7 +46,8 @@ function getErrorSignature(ev: SupportedErrorEvent): string {
 }
 
 export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
-  errors
+  errors,
+  close
 }) {
   const [lookups, setLookups] = React.useState(
     {} as { [eventId: string]: ReadyErrorEvent }
@@ -127,6 +131,7 @@ export const RuntimeError: React.FC<RuntimeErrorProps> = function RuntimeError({
   const minimize = React.useCallback((e?: MouseEvent | TouchEvent) => {
     e?.preventDefault();
     setDisplayState('minimized');
+    close();
   }, []);
   const hide = React.useCallback((e?: MouseEvent | TouchEvent) => {
     e?.preventDefault();

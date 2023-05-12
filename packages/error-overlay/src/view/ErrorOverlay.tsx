@@ -56,7 +56,13 @@ function reducer(
   }
 }
 
-export const ErrorOverlay = function ErrorOverlay() {
+export type ErrorOverlayProps = {
+  dismissRuntimeErrors: () => void;
+};
+
+export const ErrorOverlay: React.FC<ErrorOverlayProps> = function ErrorOverlay({
+  dismissRuntimeErrors
+}) {
   const [state, dispatch] = React.useReducer<
     React.Reducer<OverlayState, ErrorTypeHandler.ErrorTypeEvent>
   >(reducer, {
@@ -88,7 +94,7 @@ export const ErrorOverlay = function ErrorOverlay() {
           {hasBuildError ? (
             <BuildError error={state.buildError!} />
           ) : hasRuntimeErrors ? (
-            <RuntimeError errors={state.errors} />
+            <RuntimeError errors={state.errors} close={dismissRuntimeErrors} />
           ) : undefined}
         </ShadowPortal>
       ) : undefined}
