@@ -13,7 +13,12 @@ let iframeRoot = null;
 let errorBody = null;
 let isFirstRender = true;
 
-function render({ errorTypeList, hasBuildError, hasRuntimeError }) {
+function render({
+  errorTypeList,
+  hasBuildError,
+  hasRuntimeError,
+  dismissRuntimeErrors
+}) {
   errorTypeList.forEach((errorType: errorTypeHandler.ErrorTypeEvent) => {
     errorTypeHandler.emit(errorType);
   });
@@ -21,18 +26,20 @@ function render({ errorTypeList, hasBuildError, hasRuntimeError }) {
   if (!hasBuildError && !hasRuntimeError) {
     return null;
   }
-  return <ErrorOverlay />;
+  return <ErrorOverlay dismissRuntimeErrors={dismissRuntimeErrors} />;
 }
 
 window.updateContent = function updateContent({
   errorTypeList,
   hasBuildError,
-  hasRuntimeError
+  hasRuntimeError,
+  dismissRuntimeErrors
 }) {
   let renderedElement = render({
     errorTypeList,
     hasBuildError,
-    hasRuntimeError
+    hasRuntimeError,
+    dismissRuntimeErrors
   });
 
   if (renderedElement === null) {

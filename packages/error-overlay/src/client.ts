@@ -112,6 +112,11 @@ function stopReportingRuntimeErrors() {
   window.removeEventListener('unhandledrejection', onUnhandledRejection);
 }
 
+function dismissRuntimeErrors() {
+  hasRuntimeError = false;
+  update();
+}
+
 function onBuildOk() {
   hasBuildError = false;
   errorTypeList.push({ type: TYPE_BUILD_OK });
@@ -180,7 +185,8 @@ function updateIframeContent() {
   const isRendered = iframe.contentWindow!.updateContent({
     errorTypeList,
     hasBuildError,
-    hasRuntimeError
+    hasRuntimeError,
+    dismissRuntimeErrors
   });
 
   //After the errors have been added to the queue of the error handler, we must clear the errorTypeList
