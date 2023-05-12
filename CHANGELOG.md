@@ -1,3 +1,13 @@
+## [1.0.27](https://github.com/shuvijs/shuvi/compare/v1.0.26...v1.0.27) (2023-05-12)
+
+
+### Bug Fixes
+
+* close iframe directly ([#529](https://github.com/shuvijs/shuvi/issues/529)) ([89d554a](https://github.com/shuvijs/shuvi/commit/89d554a41c890d64f6032ba3ba5bfa8dfbe3b03a))
+* custom routes redirect ([#527](https://github.com/shuvijs/shuvi/issues/527)) ([a53f47b](https://github.com/shuvijs/shuvi/commit/a53f47b003493f334fbe004fcd48cd30f09b51da))
+
+
+
 ## [1.0.26](https://github.com/shuvijs/shuvi/compare/v1.0.25...v1.0.26) (2023-05-08)
 
 
