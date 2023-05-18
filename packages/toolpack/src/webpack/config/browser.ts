@@ -74,13 +74,33 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
   if (dev) {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
   } else {
+    const getDefaultChunkName = (_module: any, chunks: any) => {
+      return crypto
+        .createHash('sha1')
+        .update(
+          chunks.reduce((acc: string, chunk: webpack.Chunk) => {
+            return acc + chunk.name;
+          }, '')
+        )
+        .digest('hex')
+        .substring(0, 8);
+    };
+
     chain.optimization.splitChunks({
-      filename: commonChunkFilename({ dev: false }),
       chunks: splitChunksFilter,
       cacheGroups: {
+        default: {
+          name: getDefaultChunkName,
+          filename: commonChunkFilename({ dev: false })
+        },
+        defaultVendors: {
+          name: getDefaultChunkName,
+          filename: commonChunkFilename({ dev: false })
+        },
         framework: {
           chunks: 'all',
           name: 'framework',
+          filename: commonChunkFilename({ dev: false }),
           test(
             module: webpack.Module,
             { moduleGraph }: { moduleGraph: webpack.ModuleGraph }
@@ -154,6 +174,7 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
 
             return hash.digest('hex').substring(0, 8);
           },
+          filename: commonChunkFilename({ dev: false }),
           priority: 30,
           minChunks: 1,
           reuseExistingChunk: true

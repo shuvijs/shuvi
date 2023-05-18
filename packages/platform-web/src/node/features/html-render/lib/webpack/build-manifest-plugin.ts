@@ -137,9 +137,8 @@ export default class BuildManifestPlugin implements Plugin {
 
   private _collectEntries(entrypoint: ChunkGroup) {
     for (const chunk of entrypoint.chunks) {
-      // If there's no files
-      // Note: `default` and `defaultVendors` chunk have no name
-      if (!chunk.files) {
+      // If there's no name or no files
+      if (!chunk.name || !chunk.files) {
         continue;
       }
 
