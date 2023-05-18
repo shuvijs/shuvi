@@ -7,7 +7,7 @@ import { withStyle } from './parts/style';
 import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
-const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/]@shuvi[\\/]/;
+const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/](@shuvi|doura)[\\/]/;
 const FRAMEWORK_REACT_MODULES: {
   test: RegExp;
   issuers?: RegExp[];
@@ -75,14 +75,12 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
   } else {
     chain.optimization.splitChunks({
+      filename: commonChunkFilename({ dev: false }),
       chunks: splitChunksFilter,
       cacheGroups: {
-        default: false,
-        defaultVendors: false,
         framework: {
           chunks: 'all',
           name: 'framework',
-          filename: commonChunkFilename({ dev: false }),
           test(
             module: webpack.Module,
             { moduleGraph }: { moduleGraph: webpack.ModuleGraph }
@@ -156,7 +154,6 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
 
             return hash.digest('hex').substring(0, 8);
           },
-          filename: commonChunkFilename({ dev: false }),
           priority: 30,
           minChunks: 1,
           reuseExistingChunk: true
