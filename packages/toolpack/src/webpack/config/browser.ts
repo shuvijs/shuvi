@@ -7,7 +7,8 @@ import { withStyle } from './parts/style';
 import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
-const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/]@shuvi[\\/]/;
+const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/](@shuvi|doura)[\\/]/;
+const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
 const FRAMEWORK_REACT_MODULES: {
   test: RegExp;
   issuers?: RegExp[];
@@ -74,11 +75,37 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
   if (dev) {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
   } else {
+    const getDefaultChunkName = (_module: any, chunks: any) => {
+      return crypto
+        .createHash('sha1')
+        .update(
+          chunks.reduce((acc: string, chunk: webpack.Chunk) => {
+            return acc + chunk.name;
+          }, '')
+        )
+        .digest('hex')
+        .substring(0, 8);
+    };
+
     chain.optimization.splitChunks({
       chunks: splitChunksFilter,
       cacheGroups: {
-        default: false,
-        defaultVendors: false,
+        default: {
+          name: getDefaultChunkName,
+          filename: commonChunkFilename({ dev: false }),
+          idHint: '',
+          reuseExistingChunk: true,
+          minChunks: 2,
+          priority: -20
+        },
+        defaultVendors: {
+          name: getDefaultChunkName,
+          filename: commonChunkFilename({ dev: false }),
+          idHint: 'vendors',
+          reuseExistingChunk: true,
+          test: NODE_MODULES_REGEXP,
+          priority: -10
+        },
         framework: {
           chunks: 'all',
           name: 'framework',
@@ -133,7 +160,7 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
           }): boolean {
             return (
               module.size() > BIG_LIBRARY_THRESHOLD &&
-              /[/\\]node_modules[/\\]/.test(module.nameForCondition() || '')
+              NODE_MODULES_REGEXP.test(module.nameForCondition() || '')
             );
           },
           name(module: {
