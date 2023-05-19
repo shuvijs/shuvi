@@ -8,6 +8,7 @@ import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/](@shuvi|doura)[\\/]/;
+const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
 const FRAMEWORK_REACT_MODULES: {
   test: RegExp;
   issuers?: RegExp[];
@@ -91,11 +92,19 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
       cacheGroups: {
         default: {
           name: getDefaultChunkName,
-          filename: commonChunkFilename({ dev: false })
+          filename: commonChunkFilename({ dev: false }),
+          idHint: '',
+          reuseExistingChunk: true,
+          minChunks: 2,
+          priority: -20
         },
         defaultVendors: {
           name: getDefaultChunkName,
-          filename: commonChunkFilename({ dev: false })
+          filename: commonChunkFilename({ dev: false }),
+          idHint: 'vendors',
+          reuseExistingChunk: true,
+          test: NODE_MODULES_REGEXP,
+          priority: -10
         },
         framework: {
           chunks: 'all',
@@ -151,7 +160,7 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
           }): boolean {
             return (
               module.size() > BIG_LIBRARY_THRESHOLD &&
-              /[/\\]node_modules[/\\]/.test(module.nameForCondition() || '')
+              NODE_MODULES_REGEXP.test(module.nameForCondition() || '')
             );
           },
           name(module: {
