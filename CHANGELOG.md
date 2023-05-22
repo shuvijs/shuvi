@@ -1,3 +1,12 @@
+## [1.0.28](https://github.com/shuvijs/shuvi/compare/v1.0.27...v1.0.28) (2023-05-22)
+
+
+### Bug Fixes
+
+* set the default cacheGroups settings ([914e6f0](https://github.com/shuvijs/shuvi/commit/914e6f0c153e5bf35b2606e7d87ad793d3f7eb1f))
+
+
+
 ## [1.0.27](https://github.com/shuvijs/shuvi/compare/v1.0.26...v1.0.27) (2023-05-12)
 
 
