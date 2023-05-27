@@ -335,8 +335,6 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
   }
 
   function handleApplyUpdates(err, updatedModules) {
-    const hasUpdates = Boolean(updatedModules?.length);
-
     if (hadRuntimeError) {
       hadRuntimeError = false;
       window.location.reload();
@@ -345,6 +343,13 @@ async function tryApplyUpdates(onHotUpdateSuccess) {
 
     if (err) {
       hadRuntimeError = true;
+    }
+
+    const hasUpdates = Boolean(updatedModules?.length);
+
+    if (!hasUpdates) {
+      window.location.reload();
+      return;
     }
 
     if (typeof onHotUpdateSuccess === 'function') {
