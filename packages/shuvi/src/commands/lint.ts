@@ -42,10 +42,10 @@ const eslintOptions = (options: EsLintOption, cacheLocation: string) => ({
   fix: options.fix,
   fixTypes: options.fixType,
   ignorePath: options.ignorePath,
-  ignore: !Boolean(options.ignore),
-  allowInlineConfig: !Boolean(options.inlineConfig),
+  ignore: Boolean(options.ignore),
+  allowInlineConfig: Boolean(options.inlineConfig),
   reportUnusedDisableDirectives: options.reportUnusedDisableDirectives,
-  cache: !Boolean(options.cache),
+  cache: Boolean(options.cache),
   cacheLocation: cacheLocation,
   cacheStrategy: options.cacheStrategy,
   errorOnUnmatchedPattern: options.errorOnUnmatchedPattern

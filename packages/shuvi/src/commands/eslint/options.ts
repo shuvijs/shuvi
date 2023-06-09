@@ -53,7 +53,7 @@ export const optionIgnorePath = new Option(
 export const optionNoIgnore = new Option(
   '--no-ignore',
   `Disable use of ignore files and patterns`
-).default(false);
+).default(true);
 
 export const optionQuiet = new Option('--quiet', `Report errors only`).default(
   false
@@ -62,7 +62,11 @@ export const optionQuiet = new Option('--quiet', `Report errors only`).default(
 export const optionMaxWarnings = new Option(
   '--max-warnings',
   `Number of warnings to trigger nonzero exit code`
-).default(-1);
+)
+  .argParser(function (value) {
+    return parseInt(value, 10);
+  })
+  .default(-1);
 
 export const optionOutputFile = new Option(
   '-o, --output-file <path>',
@@ -77,17 +81,17 @@ export const optionFormat = new Option(
 export const optionNoInlineConfig = new Option(
   '--no-inline-config',
   `Prevent comments from changing config or rules`
-).default(false);
+).default(true);
 
 export const optionReportUnusedDisableDirectives = new Option(
-  '--report-unused-disable-directives',
+  '--report-unused-disable-directives <directives>',
   `Adds reported errors for unused eslint-disable directives ("error" | "warn" | "off")`
 ).default(null);
 
 export const optionNoCache = new Option(
   '--no-cache',
   `Disable caching`
-).default(false);
+).default(true);
 
 export const optionCacheLocation = new Option(
   '--cache-location <location>',
