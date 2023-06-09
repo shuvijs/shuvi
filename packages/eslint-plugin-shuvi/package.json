@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/eslint-plugin-shuvi",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "ESLint plugin for Shuvi.",
   "main": "lib/index.js",
   "license": "MIT",
@@ -18,8 +18,8 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@shuvi/router": "1.0.28",
-    "@shuvi/platform-shared": "1.0.28"
+    "@shuvi/router": "1.0.29",
+    "@shuvi/platform-shared": "1.0.29"
   },
   "devDependencies": {
     "@types/eslint": "7.28.0",

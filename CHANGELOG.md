@@ -1,3 +1,13 @@
+## [1.0.29](https://github.com/shuvijs/shuvi/compare/v1.0.28...v1.0.29) (2023-06-09)
+
+
+### Bug Fixes
+
+* hmr request 404 ([#531](https://github.com/shuvijs/shuvi/issues/531)) ([67b0b5b](https://github.com/shuvijs/shuvi/commit/67b0b5bf18b2eb8076b58df16b0cad77bcc10c24))
+* **lint:** accept options starting with --no ([#533](https://github.com/shuvijs/shuvi/issues/533)) ([cc88054](https://github.com/shuvijs/shuvi/commit/cc88054a5e497a50c72da3d62cd975f1b85f0b6a))
+
+
+
 ## [1.0.28](https://github.com/shuvijs/shuvi/compare/v1.0.27...v1.0.28) (2023-05-22)
 
 
