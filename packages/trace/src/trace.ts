@@ -1,7 +1,5 @@
-import { SpanId } from './shared';
-import { reporter } from './report';
+import { SpanId, reporter } from './shared';
 
-const NUM_OF_MICROSEC_IN_NANOSEC = BigInt('1000');
 let count = 0;
 const getId = () => {
   count++;
@@ -24,7 +22,7 @@ export class Span {
   status: SpanStatus;
   now: number;
 
-  _start: bigint;
+  _start: number;
 
   constructor({
     name,
@@ -34,7 +32,7 @@ export class Span {
   }: {
     name: string;
     parentId?: SpanId;
-    startTime?: bigint;
+    startTime?: number;
     attrs?: Object;
   }) {
     this.name = name;
@@ -43,37 +41,34 @@ export class Span {
     this.attrs = attrs ? { ...attrs } : {};
     this.status = SpanStatus.Started;
     this.id = getId();
-    this._start = startTime || process.hrtime.bigint();
-    // hrtime cannot be used to reconstruct tracing span's actual start time
-    // since it does not have relation to clock time:
-    // `These times are relative to an arbitrary time in the past, and not related to the time of day and therefore not subject to clock drift`
-    // https://nodejs.org/api/process.html#processhrtimetime
+    const now = Date.now();
+    this._start = startTime || now;
     // Capturing current datetime as additional metadata for external reconstruction.
-    this.now = Date.now();
+    this.now = now;
   }
 
-  // Durations are reported as microseconds. This gives 1000x the precision
+  // Durations are reported as microseconds.
   // of something like Date.now(), which reports in milliseconds.
   // Additionally, ~285 years can be safely represented as microseconds as
   // a float64 in both JSON and JavaScript.
-  stop(stopTime?: bigint) {
-    const end: bigint = stopTime || process.hrtime.bigint();
-    const duration = (end - this._start) / NUM_OF_MICROSEC_IN_NANOSEC;
+  stop(stopTime?: number) {
+    if (!reporter) {
+      return;
+    }
+    const end: number = stopTime || Date.now();
+    const duration = end - this._start;
     this.status = SpanStatus.Stopped;
     if (duration > Number.MAX_SAFE_INTEGER) {
-      throw new Error(
-        `Duration is too long to express as float64: ${duration}`
-      );
+      console.warn(`Duration is too long to express as float64: ${duration}`);
     }
-    const timestamp = this._start / NUM_OF_MICROSEC_IN_NANOSEC;
-    reporter.report(
+    reporter(
+      this.now,
       this.name,
-      Number(duration),
-      Number(timestamp),
+      duration,
+      this._start,
       this.id,
       this.parentId,
-      this.attrs,
-      this.now
+      this.attrs
     );
   }
 
@@ -83,8 +78,8 @@ export class Span {
 
   manualTraceChild(
     name: string,
-    startTime: bigint,
-    stopTime: bigint,
+    startTime: number,
+    stopTime: number,
     attrs?: Object
   ) {
     const span = new Span({ name, parentId: this.id, attrs, startTime });
@@ -119,5 +114,3 @@ export const trace = (
 ) => {
   return new Span({ name, parentId, attrs });
 };
-
-export const flushAllTraces = () => reporter.flushAll();

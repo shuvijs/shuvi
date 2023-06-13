@@ -1,3 +1,3 @@
 export default function Entry() {
-  return <div id="index">Index Page</div>;
+  return <div id="index">Index Page 12</div>;
 }
