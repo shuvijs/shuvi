@@ -4,7 +4,10 @@
   "author": "liximomo",
   "license": "MIT",
   "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
   "files": [
+    "esm",
     "lib"
   ],
   "scripts": {
