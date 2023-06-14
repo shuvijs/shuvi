@@ -5,7 +5,7 @@ import { IPluginContext, Bundler, ShuviConfig, analysis } from '@shuvi/service';
 import { CLIENT_OUTPUT_DIR } from '@shuvi/shared/constants';
 import logger from '@shuvi/utils/logger';
 import { initShuvi } from '../shuvi';
-
+import { telemetry } from '../telemetry';
 export interface IBuildOptions {
   config?: ShuviConfig;
   cwd?: string;
@@ -78,7 +78,6 @@ export async function build(options: IBuildOptions) {
   // transpile the application
   await bundle(bundler);
   await pluginContext.pluginRunner.afterBuild();
-  await analysis({ context: api.pluginContext, telemetry: api.telemetry });
-  await api.telemetry.flush();
+  await analysis({ context: api.pluginContext, telemetry });
   return api;
 }

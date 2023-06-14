@@ -36,7 +36,7 @@
     "@shuvi/shared": "1.0.29",
     "@shuvi/toolpack": "1.0.29",
     "@shuvi/utils": "1.0.29",
-    "@shuvi/telemetry": "1.0.29",
+    "@shuvi/reporters": "1.0.29",
     "cli-highlight": "^2.1.9",
     "commander": "10.0.0",
     "cross-spawn": "7.0.3",
