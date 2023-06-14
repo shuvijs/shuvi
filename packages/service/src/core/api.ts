@@ -4,6 +4,7 @@ import { joinPath } from '@shuvi/utils/string';
 import logger from '@shuvi/utils/logger';
 import rimraf from 'rimraf';
 import * as path from 'path';
+import { trace, setReporter, getReporter, Span } from '@shuvi/trace';
 import { defineFile, ProjectBuilder, FileOptionWithId } from '../project';
 import { getBundler, Bundler } from '../bundler';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
@@ -50,6 +51,11 @@ interface IApiOPtions {
   normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
 }
 
+type Trace = Span & {
+  setReporter: typeof setReporter;
+  getReporter: typeof getReporter;
+};
+
 interface ServerConfigs {
   serverPlugins: ServerPluginInstance[];
   getMiddlewares: IPlatformContent['getMiddlewares'];
@@ -80,6 +86,7 @@ class Api {
   private _serverPlugins: ServerPluginInstance[] = [];
   private _pluginManager: PluginManager;
   private _pluginContext!: IPluginContext;
+  private _trace!: Trace;
 
   /** will be included by @shuvi/swc-loader */
   private _runtimePluginDirs: string[] = [];
@@ -106,6 +113,10 @@ class Api {
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
     this._normalizePlatformConfig = normalizePlatformConfig;
+    const shuviTrace = trace('SHUVI_TRACE') as Trace;
+    shuviTrace.setReporter = setReporter;
+    shuviTrace.getReporter = getReporter;
+    this._trace = shuviTrace;
   }
 
   get cwd() {
@@ -126,6 +137,10 @@ class Api {
 
   get serverConfigs() {
     return this._serverConfigs;
+  }
+
+  get trace() {
+    return this._trace;
   }
 
   async init() {
