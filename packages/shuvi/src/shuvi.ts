@@ -3,6 +3,7 @@ import platformWeb from '@shuvi/platform-web';
 import { ShuviMode, ShuviPhase } from './types';
 import { normalizePlatformConfig } from './config';
 import { telemetry } from './telemetry';
+import { setReporter } from '@shuvi/service/lib/trace';
 
 export function getPlatform(): IPlatform {
   return platformWeb({ framework: 'react' });
@@ -32,7 +33,7 @@ export async function initShuvi({
   });
 
   if (telemetry) {
-    shuvi.trace.setReporter(telemetry.report);
+    setReporter(telemetry.report);
   }
 
   return shuvi;

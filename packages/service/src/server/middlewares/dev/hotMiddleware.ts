@@ -26,7 +26,7 @@ import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/constants';
-import { Span, trace } from '@shuvi/trace';
+import { Span, trace } from '../../../trace';
 //@ts-ignore
 import pkgInfo from '../../../../package.json';
 

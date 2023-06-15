@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { Reporter } from '@shuvi/trace';
+import type { Reporter } from '@shuvi/shared/reporter';
 
 type Event = {
   traceId: string;

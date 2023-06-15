@@ -1,7 +1,7 @@
 import chalk from '@shuvi/utils/chalk';
 import Conf from 'conf';
 import { BinaryLike, createHash, randomBytes } from 'crypto';
-import { Reporter } from '@shuvi/trace';
+import type { Reporter } from '@shuvi/shared/reporter';
 
 import { getAnonymousMeta } from './helper/anonymous-meta';
 import { _postPayload } from './helper/post-payload';

@@ -355,7 +355,7 @@ importers:
 
   packages/reporters:
     specifiers:
-      '@shuvi/trace': 1.0.29
+      '@shuvi/shared': 1.0.29
       '@shuvi/utils': 1.0.29
       '@types/async-retry': 1.3.0
       '@types/node-fetch': 2.6.1
@@ -366,6 +366,7 @@ importers:
       is-wsl: 2.2.0
       node-fetch: 2.6.7
     dependencies:
+      '@shuvi/shared': link:../shared
       '@shuvi/utils': link:../utils
       async-retry: 1.3.3
       ci-info: 3.6.2
@@ -374,7 +375,6 @@ importers:
       is-wsl: 2.2.0
       node-fetch: 2.6.7
     devDependencies:
-      '@shuvi/trace': link:../trace
       '@types/async-retry': 1.3.0
       '@types/node-fetch': 2.6.1
 
@@ -435,7 +435,6 @@ importers:
       '@shuvi/runtime': 1.0.29
       '@shuvi/shared': 1.0.29
       '@shuvi/toolpack': 1.0.29
-      '@shuvi/trace': 1.0.29
       '@shuvi/utils': 1.0.29
       '@types/babel__code-frame': ^7.0.3
       '@types/babel__generator': ^7.6.4
@@ -470,7 +469,6 @@ importers:
       '@shuvi/runtime': link:../runtime
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
-      '@shuvi/trace': link:../trace
       '@shuvi/utils': link:../utils
       commander: 5.1.0
       comment-json: 4.2.2
@@ -669,9 +667,6 @@ importers:
       '@types/mini-css-extract-plugin': 1.2.2
       '@types/webpack-bundle-analyzer': 3.8.0
       memfs: 3.1.2
-
-  packages/trace:
-    specifiers: {}
 
   packages/utils:
     specifiers:

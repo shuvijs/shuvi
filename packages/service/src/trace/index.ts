@@ -1,4 +1,7 @@
-import { SpanId, reporter } from './shared';
+// This package 'trace' is a modified version of the Next.js that can be found here:
+// https://github.com/vercel/next.js/tree/canary/packages/next/src/trace
+
+import type { SpanId, Reporter } from '@shuvi/shared/reporter';
 
 let count = 0;
 const getId = () => {
@@ -13,16 +16,23 @@ export enum SpanStatus {
   Stopped
 }
 
-export class Span {
-  name: string;
-  id: SpanId;
-  parentId?: SpanId;
-  duration: number | null;
-  attrs: { [key: string]: any };
-  status: SpanStatus;
-  now: number;
+export let reporter: Reporter | undefined = undefined;
 
-  _start: number;
+export function setReporter(r: Reporter) {
+  if (reporter) {
+    return console.error('Reporter already set, ignoring');
+  }
+  reporter = r;
+}
+
+export class Span {
+  private _name: string;
+  private _id: SpanId;
+  private _parentId?: SpanId;
+  private _attrs: { [key: string]: any };
+  private _status: SpanStatus;
+  private _now: number;
+  private _start: number;
 
   constructor({
     name,
@@ -35,16 +45,19 @@ export class Span {
     startTime?: number;
     attrs?: Object;
   }) {
-    this.name = name;
-    this.parentId = parentId;
-    this.duration = null;
-    this.attrs = attrs ? { ...attrs } : {};
-    this.status = SpanStatus.Started;
-    this.id = getId();
+    this._name = name;
+    this._parentId = parentId;
+    this._attrs = attrs ? { ...attrs } : {};
+    this._status = SpanStatus.Started;
+    this._id = getId();
     const now = Date.now();
     this._start = startTime || now;
     // Capturing current datetime as additional metadata for external reconstruction.
-    this.now = now;
+    this._now = now;
+  }
+
+  get status() {
+    return this._status;
   }
 
   // Durations are reported as microseconds.
@@ -57,23 +70,23 @@ export class Span {
     }
     const end: number = stopTime || Date.now();
     const duration = end - this._start;
-    this.status = SpanStatus.Stopped;
+    this._status = SpanStatus.Stopped;
     if (duration > Number.MAX_SAFE_INTEGER) {
       console.warn(`Duration is too long to express as float64: ${duration}`);
     }
     reporter(
-      this.now,
-      this.name,
+      this._now,
+      this._name,
       duration,
       this._start,
-      this.id,
-      this.parentId,
-      this.attrs
+      this._id,
+      this._parentId,
+      this._attrs
     );
   }
 
   traceChild(name: string, attrs?: Object) {
-    return new Span({ name, parentId: this.id, attrs });
+    return new Span({ name, parentId: this._id, attrs });
   }
 
   manualTraceChild(
@@ -82,12 +95,12 @@ export class Span {
     stopTime: number,
     attrs?: Object
   ) {
-    const span = new Span({ name, parentId: this.id, attrs, startTime });
+    const span = new Span({ name, parentId: this._id, attrs, startTime });
     span.stop(stopTime);
   }
 
   setAttribute(key: string, value: any) {
-    this.attrs[key] = String(value);
+    this._attrs[key] = String(value);
   }
 
   traceFn<T>(fn: (span: Span) => T): T {
