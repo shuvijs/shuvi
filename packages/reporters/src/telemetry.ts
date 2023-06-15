@@ -116,7 +116,7 @@ export class Telemetry {
     return generated;
   }
 
-  report: Reporter = (
+  report: Reporter = ({
     timestamp,
     name,
     duration,
@@ -124,7 +124,7 @@ export class Telemetry {
     id,
     parentId,
     attrs
-  ) => {
+  }) => {
     this.record({
       eventName: name,
       payload: {

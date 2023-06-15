@@ -75,15 +75,15 @@ export class Span {
     if (duration > Number.MAX_SAFE_INTEGER) {
       console.warn(`Duration is too long to express as float64: ${duration}`);
     }
-    reporter(
-      this._now,
-      this._name,
+    reporter({
+      timestamp: this._now,
+      name: this._name,
       duration,
-      this._start,
-      this._id,
-      this._parentId,
-      this._attrs
-    );
+      startTime: this._start,
+      id: this._id,
+      parentId: this._parentId,
+      attrs: this._attrs
+    });
   }
 
   traceChild(name: string, attrs?: Object) {

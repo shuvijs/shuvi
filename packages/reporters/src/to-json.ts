@@ -144,7 +144,7 @@ export class ToJson {
     });
   };
 
-  report: Reporter = (
+  report: Reporter = ({
     timestamp,
     name,
     duration,
@@ -152,7 +152,7 @@ export class ToJson {
     id,
     parentId,
     attrs
-  ) => {
+  }) => {
     if (!this.buildDir || !this.phase) {
       return;
     }
