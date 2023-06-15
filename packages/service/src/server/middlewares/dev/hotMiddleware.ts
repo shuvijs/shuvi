@@ -78,7 +78,7 @@ export class WebpackHotMiddleware {
 
     // Ensure the hotMiddlewareSpan is flushed immediately as it's the parentSpan for all processing
     // of the current `shuvi dev` invocation.
-    this.hotMiddlewareSpan.stop();
+    // this.hotMiddlewareSpan.stop();
   }
 
   onInvalid = () => {

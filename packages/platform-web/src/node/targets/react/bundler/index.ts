@@ -7,7 +7,7 @@ const isDefined = <T>(value: T | undefined): value is T => Boolean(value);
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
-  { name, webpack },
+  { name, webpack, helpers },
   context
 ) => {
   const resolveLocal = (m: string, sub?: string) => {
@@ -54,7 +54,6 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     return majorVersion >= 18;
   };
 
-  config.resolve.alias.set('@shuvi/service', resolveLocal('@shuvi/service'));
   config.resolve.alias.set('@shuvi/router$', resolveLocal('@shuvi/router'));
   config.resolve.alias.set(
     '@shuvi/router-react$',
@@ -87,7 +86,13 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
     [resolveUser('react-dom'), resolveLocal('react-dom')].filter(isDefined)
   );
 
+  const servicePath = resolveLocal('@shuvi/service');
+  const tracePath = require.resolve('@shuvi/trace', { paths: [servicePath] });
+
+  config.resolve.alias.set('@shuvi/service', servicePath);
+
   if (name === BUNDLER_TARGET_CLIENT) {
+    config.resolve.alias.set('@shuvi/trace$', tracePath);
     config.plugin('version-env-plugin').use(webpack.DefinePlugin, [
       {
         'process.env.__SHUVI__AFTER__REACT__18__': JSON.stringify(
@@ -101,6 +106,18 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
         .plugin('react-refresh-plugin')
         .use(ReactRefreshWebpackPlugin, [webpack]);
     }
+  } else {
+    helpers.addExternals(config, ({ request }, next) => {
+      switch (request) {
+        case '@shuvi/trace': {
+          next(null, `commonjs ${tracePath}`);
+          break;
+        }
+        default: {
+          next(null, 'next');
+        }
+      }
+    });
   }
 
   return config;
