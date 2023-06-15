@@ -20,7 +20,8 @@ export let reporter: Reporter | undefined = undefined;
 
 export function setReporter(r: Reporter) {
   if (reporter) {
-    return console.error('Reporter already set, ignoring');
+    throw new Error('Reporter already set !');
+    return;
   }
   reporter = r;
 }
