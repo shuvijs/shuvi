@@ -9,3 +9,8 @@ export const resolveLib = (module: string) =>
 
 export const resolvePkgFile = (...paths: string[]) =>
   path.join(PACKAGE_DIR, ...paths);
+
+export const resolveLocal = (m: string, sub?: string) => {
+  const pck = resolveLib(m);
+  return sub ? `${pck}/${sub}` : pck;
+};

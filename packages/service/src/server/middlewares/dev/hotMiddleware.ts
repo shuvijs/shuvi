@@ -26,7 +26,7 @@ import type webpack from '@shuvi/toolpack/lib/webpack';
 import type ws from 'ws';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
 import { DEV_SOCKET_TIMEOUT_MS } from '@shuvi/shared/constants';
-import { Span, trace, flushAllTraces } from '@shuvi/trace';
+import { Span, trace } from '../../../trace';
 //@ts-ignore
 import pkgInfo from '../../../../package.json';
 
@@ -78,7 +78,7 @@ export class WebpackHotMiddleware {
 
     // Ensure the hotMiddlewareSpan is flushed immediately as it's the parentSpan for all processing
     // of the current `shuvi dev` invocation.
-    this.hotMiddlewareSpan.stop();
+    // this.hotMiddlewareSpan.stop();
   }
 
   onInvalid = () => {
@@ -92,7 +92,6 @@ export class WebpackHotMiddleware {
     this.latestStats = statsResult;
     this.publishStats('built', this.latestStats);
     // Ensure traces are flushed after each compile in development mode
-    flushAllTraces();
   };
   onHMR = (client: ws) => {
     if (this.closed) return;
@@ -111,8 +110,8 @@ export class WebpackHotMiddleware {
         let traceChild:
           | {
               name: string;
-              startTime?: bigint;
-              endTime?: bigint;
+              startTime?: number;
+              endTime?: number;
               attrs?: Record<string, number | string>;
             }
           | undefined;
@@ -137,8 +136,8 @@ export class WebpackHotMiddleware {
           case 'client-hmr-latency': {
             traceChild = {
               name: parsedData.event,
-              startTime: BigInt(parsedData.startTime) * BigInt(1000 * 1000),
-              endTime: BigInt(parsedData.endTime) * BigInt(1000 * 1000)
+              startTime: parsedData.startTime,
+              endTime: parsedData.endTime
             };
             break;
           }
@@ -147,11 +146,11 @@ export class WebpackHotMiddleware {
           }
         }
 
-        if (traceChild) {
+        if (traceChild && traceChild.startTime && traceChild.endTime) {
           this.hotMiddlewareSpan.manualTraceChild(
             traceChild.name,
-            traceChild.startTime || process.hrtime.bigint(),
-            traceChild.endTime || process.hrtime.bigint(),
+            traceChild.startTime,
+            traceChild.endTime,
             { ...traceChild.attrs }
           );
         }

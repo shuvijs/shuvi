@@ -2,17 +2,11 @@ import { isPluginInstance } from '@shuvi/hook';
 import { deepmerge } from '@shuvi/utils/deepmerge';
 import { joinPath } from '@shuvi/utils/string';
 import logger from '@shuvi/utils/logger';
-import {
-  Telemetry as TelemetryImpl,
-  RecordObject,
-  TelemetryEvent
-} from '@shuvi/telemetry';
-import { setGlobal } from '@shuvi/trace';
 import rimraf from 'rimraf';
 import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOptionWithId } from '../project';
 import { getBundler, Bundler } from '../bundler';
-import { DEFAULT_PUBLIC_PATH, PHASE_DEVELOPMENT_SERVER } from '../constants';
+import { DEFAULT_PUBLIC_PATH } from '../constants';
 import { ServerPluginInstance } from '../server';
 import { _setResourceEnv } from '../resources';
 import { isFatalError } from '../error';
@@ -54,18 +48,12 @@ interface IApiOPtions {
   plugins?: IPluginConfig[];
   presets?: IPresetConfig[];
   normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
-  telemetry?: TelemetryImpl;
 }
 
 interface ServerConfigs {
   serverPlugins: ServerPluginInstance[];
   getMiddlewares: IPlatformContent['getMiddlewares'];
   getMiddlewaresBeforeDevMiddlewares: IPlatformContent['getMiddlewaresBeforeDevMiddlewares'];
-}
-
-export interface Telemetry {
-  record(events: TelemetryEvent | TelemetryEvent[]): Promise<RecordObject>;
-  flush(): Promise<void>;
 }
 
 class Api {
@@ -84,9 +72,6 @@ class Api {
   private _config!: NormalizedShuviConfig;
   private _plugins: IPluginConfig[] = [];
   private _presets: IPresetConfig[] = [];
-
-  private _telemetryImpl?: TelemetryImpl;
-  private _telemetry!: Telemetry;
 
   private _platform?: IPlatform;
   private _normalizePlatformConfig?: (rawConfig: ShuviConfig) => ShuviConfig;
@@ -107,8 +92,7 @@ class Api {
     plugins,
     phase,
     platform,
-    normalizePlatformConfig,
-    telemetry
+    normalizePlatformConfig
   }: IApiOPtions) {
     this._cwd = cwd;
     this._mode = mode;
@@ -118,7 +102,6 @@ class Api {
     this._customConfig = config || {};
     this._customPresets = presets || [];
     this._customPlugins = plugins || [];
-    this._telemetryImpl = telemetry;
     this._pluginManager = getManager();
     this._pluginManager.clear();
     this._projectBuilder = new ProjectBuilder();
@@ -143,31 +126,6 @@ class Api {
 
   get serverConfigs() {
     return this._serverConfigs;
-  }
-
-  get telemetry() {
-    if (!this._telemetry) {
-      this._telemetry = {
-        record: (events: TelemetryEvent | TelemetryEvent[]) => {
-          if (!this._telemetryImpl) {
-            return Promise.resolve({
-              isFulfilled: true,
-              isRejected: true
-            });
-          }
-
-          return this._telemetryImpl.record(events);
-        },
-        flush: () => {
-          if (!this._telemetryImpl) {
-            return Promise.resolve();
-          }
-          return this._telemetryImpl.flush();
-        }
-      };
-    }
-
-    return this._telemetry;
   }
 
   async init() {
@@ -277,10 +235,6 @@ class Api {
     platformPresetRuntimeFiles.forEach(file => {
       this.addInternalRuntimeFile(file);
     });
-
-    setGlobal('buildDir', this._paths.buildDir);
-    setGlobal('phase', PHASE_DEVELOPMENT_SERVER);
-    setGlobal('telemetry', this._telemetryImpl);
 
     this._inited = true;
   }
@@ -506,8 +460,7 @@ export async function getApi(options: Partial<IApiOPtions> = {}): Promise<Api> {
     platform: options.platform,
     presets: options.presets,
     plugins: options.plugins,
-    normalizePlatformConfig: options.normalizePlatformConfig,
-    telemetry: options.telemetry
+    normalizePlatformConfig: options.normalizePlatformConfig
   });
 
   try {

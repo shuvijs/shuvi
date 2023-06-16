@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { CorePluginConstructor, createPlugin } from '@shuvi/service';
 import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
+import { resolveLocal } from '../../../paths';
 import { BUNDLER_TARGET_CLIENT } from '../../../../shared';
 
 const isDefined = <T>(value: T | undefined): value is T => Boolean(value);
@@ -10,11 +11,6 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
   { name, webpack },
   context
 ) => {
-  const resolveLocal = (m: string, sub?: string) => {
-    const pck = path.dirname(require.resolve(`${m}/package.json`));
-    return sub ? `${pck}/${sub}` : pck;
-  };
-
   const resolveUser = (m: string, sub?: string) => {
     const { rootDir } = context.paths;
     let userPkg: { dependencies: Record<string, string> } = {

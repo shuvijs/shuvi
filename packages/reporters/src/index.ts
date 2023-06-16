@@ -2,3 +2,4 @@
 // https://github.com/vercel/next.js/tree/canary/packages/next/telemetry
 
 export * from './telemetry';
+export * from './to-json';

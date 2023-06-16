@@ -1,5 +1,5 @@
 {
-  "name": "@shuvi/telemetry",
+  "name": "@shuvi/reporters",
   "version": "1.0.29",
   "author": "liximomo",
   "license": "MIT",
@@ -13,6 +13,7 @@
     "build": "tsc -p tsconfig.build.json -m commonjs"
   },
   "dependencies": {
+    "@shuvi/shared": "1.0.29",
     "@shuvi/utils": "1.0.29",
     "conf": "5.0.0",
     "is-docker": "2.0.0",

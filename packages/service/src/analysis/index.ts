@@ -8,14 +8,21 @@ import {
 } from './events';
 import { recursiveReadDir } from '@shuvi/utils/recursiveReaddir';
 import { getJavaScriptInfo } from '../bundler/typescript';
-import { IPluginContext, Telemetry } from '../core';
+import { IPluginContext } from '../core';
+
+import { RecordObject, TelemetryEvent } from '@shuvi/reporters';
+
+interface Telemetry {
+  record(events: TelemetryEvent | TelemetryEvent[]): Promise<RecordObject>;
+  flush(): Promise<void>;
+}
 
 export const analysis = async ({
   context,
   telemetry
 }: {
   context: IPluginContext;
-  telemetry: Telemetry;
+  telemetry?: Telemetry;
 }) => {
   if (!telemetry || !context) {
     return;

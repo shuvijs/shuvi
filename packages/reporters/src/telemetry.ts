@@ -1,6 +1,7 @@
 import chalk from '@shuvi/utils/chalk';
 import Conf from 'conf';
 import { BinaryLike, createHash, randomBytes } from 'crypto';
+import type { Reporter } from '@shuvi/shared/reporter';
 
 import { getAnonymousMeta } from './helper/anonymous-meta';
 import { _postPayload } from './helper/post-payload';
@@ -114,6 +115,29 @@ export class Telemetry {
     this.conf && this.conf.set(TELEMETRY_KEY_SALT, generated);
     return generated;
   }
+
+  report: Reporter = ({
+    timestamp,
+    name,
+    duration,
+    startTime,
+    id,
+    parentId,
+    attrs
+  }) => {
+    this.record({
+      eventName: name,
+      payload: {
+        parentId,
+        name,
+        id,
+        startTime,
+        duration,
+        timestamp,
+        tags: attrs
+      }
+    });
+  };
 
   record(_events: TelemetryEvent | TelemetryEvent[]): Promise<RecordObject> {
     const _this = this;

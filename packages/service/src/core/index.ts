@@ -1,4 +1,4 @@
-export type { Api, Telemetry } from './api';
+export type { Api } from './api';
 export { getApi } from './api';
 export { resolvePlugin } from './getPlugins';
 export * from './apiTypes';

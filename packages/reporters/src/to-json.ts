@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { traceGlobals } from '../shared';
+import type { Reporter } from '@shuvi/shared/reporter';
 
 type Event = {
   traceId: string;
@@ -15,7 +15,7 @@ type Event = {
 };
 
 // Batch events as zipkin allows for multiple events to be sent in one go
-export function batcher(reportEvents: (evts: Event[]) => Promise<void>) {
+function batcher(reportEvents: (evts: Event[]) => Promise<void>) {
   const events: Event[] = [];
   // Promise queue to ensure events are always sent on flushAll
   const queue = new Set();
@@ -41,14 +41,11 @@ export function batcher(reportEvents: (evts: Event[]) => Promise<void>) {
   };
 }
 
-let writeStream: RotatingWriteStream;
-let traceId: string;
-let batch: ReturnType<typeof batcher> | undefined;
-
 const writeStreamOptions = {
   flags: 'a',
   encoding: 'utf8' as const
 };
+
 class RotatingWriteStream {
   file: string;
   writeStream!: fs.WriteStream;
@@ -108,67 +105,67 @@ class RotatingWriteStream {
   }
 }
 
-const reportToLocalHost = (
-  name: string,
-  duration: number,
-  timestamp: number,
-  id: number,
-  parentId?: number,
-  attrs?: Object,
-  startTime?: number
-) => {
-  const buildDir = traceGlobals.get('buildDir');
-  const phase = traceGlobals.get('phase');
+export class ToJson {
+  private phase: string;
+  private buildDir: string;
+  private traceId: string;
+  private writeStream: RotatingWriteStream | undefined;
+  private batch: ReturnType<typeof batcher>;
 
-  if (!buildDir || !phase) {
-    return;
-  }
-
-  if (!traceId) {
-    traceId = randomBytes(8).toString('hex');
-  }
-  if (!batch) {
-    batch = batcher(async events => {
-      if (!writeStream) {
-        await fs.promises.mkdir(buildDir, { recursive: true });
-        const file = path.join(buildDir, 'trace');
-        writeStream = new RotatingWriteStream(
+  constructor(phase: string, buildDir: string, traceId: string) {
+    this.phase = phase;
+    this.buildDir = buildDir;
+    this.traceId = traceId || randomBytes(8).toString('hex');
+    this.batch = batcher(async events => {
+      if (!this.writeStream) {
+        await fs.promises.mkdir(this.buildDir, { recursive: true });
+        const file = path.join(this.buildDir, 'trace');
+        this.writeStream = new RotatingWriteStream(
           file,
           // Development is limited to 50MB, production is unlimited
-          phase === 'PHASE_DEVELOPMENT_SERVER' ? 52428800 : Infinity
+          this.phase === 'PHASE_DEVELOPMENT_SERVER' ? 52428800 : Infinity
         );
       }
       const eventsJson = JSON.stringify(events);
       try {
-        await writeStream.write(eventsJson + '\n');
+        await this.writeStream.write(eventsJson + '\n');
       } catch (err) {
         console.log(err);
       }
     });
   }
 
-  batch.report({
-    traceId,
-    parentId,
-    name,
-    id,
-    timestamp,
-    duration,
-    tags: attrs,
-    startTime
-  });
-};
+  flushAll = () => {
+    this.batch.flushAll().then(() => {
+      // Only end writeStream when manually flushing in production
+      if (this.phase !== 'PHASE_DEVELOPMENT_SERVER') {
+        this.writeStream?.end();
+      }
+    });
+  };
 
-export default {
-  flushAll: () =>
-    batch
-      ? batch.flushAll().then(() => {
-          const phase = traceGlobals.get('phase');
-          // Only end writeStream when manually flushing in production
-          if (phase !== 'PHASE_DEVELOPMENT_SERVER') {
-            writeStream.end();
-          }
-        })
-      : undefined,
-  report: reportToLocalHost
-};
+  report: Reporter = ({
+    timestamp,
+    name,
+    duration,
+    startTime,
+    id,
+    parentId,
+    attrs
+  }) => {
+    if (!this.buildDir || !this.phase) {
+      return;
+    }
+
+    this.batch.report({
+      traceId: this.traceId,
+      parentId,
+      name,
+      id,
+      startTime,
+      duration,
+      timestamp,
+      tags: attrs
+    });
+  };
+}
