@@ -8,7 +8,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
 ) => {
   if (name === BUNDLER_TARGET_SERVER) {
     helpers.addExternals(config, ({ request }, next) => {
-      if (/@shuvi[/\\](hook$|router$|utils)/.test(request)) {
+      if (/@shuvi[/\\](hook$|router$)/.test(request)) {
         return next(null, resolveDep(request));
       } else {
         return next(null, 'next');
