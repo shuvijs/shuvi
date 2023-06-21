@@ -266,7 +266,6 @@ importers:
       '@shuvi/utils': 1.0.29
       '@types/minimatch': 3.0.5
       doura: 0.0.11
-      redux: 4.1.2
     dependencies:
       '@shuvi/hook': link:../hook
       '@shuvi/router': link:../router
@@ -275,7 +274,6 @@ importers:
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
       doura: 0.0.11
-      redux: 4.1.2
     devDependencies:
       '@shuvi/service': link:../service
       '@types/minimatch': 3.0.5
@@ -13958,12 +13956,6 @@ packages:
       indent-string: 4.0.0
       strip-indent: 3.0.0
     dev: true
-
-  /redux/4.1.2:
-    resolution: {integrity: sha512-SH8PglcebESbd/shgf6mii6EIoRM0zrQyjcuQ+ojmfxjTtE0z9Y8pa62iA/OJ58qjP6j27uyW4kUF4jl/jd6sw==}
-    dependencies:
-      '@babel/runtime': 7.12.5
-    dev: false
 
   /regenerate-unicode-properties/8.2.0:
     resolution: {integrity: sha512-F9DjY1vKLo/tPePDycuH3dn9H1OTPIkVD9Kz4LODu+F2C75mgjAJ7x/gwy6ZcSNRAAkhNlJSOHRe8k3p+K9WhA==}
