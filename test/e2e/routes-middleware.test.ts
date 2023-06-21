@@ -10,6 +10,7 @@ describe('routes-middleware development', () => {
     ctx = await devFixture('routes-middleware');
   });
   afterAll(async () => {
+    jest.restoreAllMocks();
     await ctx.close();
   });
 

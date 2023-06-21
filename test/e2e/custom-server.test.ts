@@ -14,6 +14,7 @@ describe('custom/server.js', () => {
   });
   afterEach(async () => {
     await page.close();
+    jest.restoreAllMocks();
   });
 
   test('should get pageData in client and custom documentProps', async () => {

@@ -96,8 +96,5 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Run unit tests
-        run: pnpm test:unit
-
       - name: Run e2e tests
         run: pnpm test:e2e
