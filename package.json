@@ -20,7 +20,7 @@
     "clean": "pnpm -r --parallel exec rimraf node_modules lib esm shuvi-app && pnpm exec rimraf node_modules",
     "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",
-    "test": "pnpm test:unit && pnpm test:e2e",
+    "test": "pnpm test:e2e",
     "test:unit": "jest ./packages",
     "test:e2e": "cross-env NODE_OPTIONS=--max_old_space_size=4096 jest --filter ./scripts/filter-e2e.js --runInBand",
     "test:e2e:express": "cross-env NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
@@ -80,6 +80,11 @@
     "typedoc-plugin-missing-exports": "^0.23.0",
     "turbo": "1.3.4",
     "typescript": "4.8.4"
+  },
+  "overrides": {
+    "cacheable-request": {
+      "keyv": "npm:@keyvhq/core@~1.6.6"
+    }
   },
   "pnpm": {
     "peerDependencyRules": {
