@@ -24,10 +24,6 @@ interface IContext {
 
 const wsServer = new ws.Server({ noServer: true });
 
-process.nextTick(function () {
-  wsServer.close();
-});
-
 function ready(context: IContext, callback: ICallback) {
   if (context.state) {
     return callback();
