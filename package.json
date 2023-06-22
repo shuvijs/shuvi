@@ -17,7 +17,7 @@
     "bootstrap": "node ./scripts/bootstrap.js",
     "dev": "turbo run dev --parallel --filter !create-shuvi --filter !error-overlay",
     "build": "turbo run build",
-    "clean": "git clean -dfX",
+    "clean": "pnpm -r --parallel exec rimraf node_modules lib esm shuvi-app && pnpm exec rimraf node_modules",
     "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",
     "test": "pnpm test:unit && pnpm test:e2e",
