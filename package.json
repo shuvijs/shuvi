@@ -22,7 +22,7 @@
     "jest": "jest",
     "test": "pnpm test:unit && pnpm test:e2e",
     "test:unit": "jest ./packages",
-    "test:e2e": "cross-env NODE_OPTIONS=--max_old_space_size=8192 jest --filter ./scripts/filter-e2e.js --runInBand",
+    "test:e2e": "cross-env NODE_OPTIONS=--max_old_space_size=8192 jest --filter ./scripts/filter-e2e.js --runInBand --maxConcurrency=1",
     "test:e2e:express": "cross-env NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
     "test:e2e:koa": "cross-env NODE_SERVER=KOA jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=KOA jest test/e2e/basic --runInBand",
     "postinstall": "pnpm run bootstrap",
