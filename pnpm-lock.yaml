@@ -20,7 +20,7 @@ importers:
       execa: ^4.0.2
       express: ^4.17.1
       fs-extra: 9.0.1
-      get-port: ^5.1.1
+      get-port-please: 3.0.1
       got: ^10.7.0
       husky: ^8.0.1
       is-wsl: ^2.1.1
@@ -60,7 +60,7 @@ importers:
       execa: 4.1.0
       express: 4.17.1
       fs-extra: 9.0.1
-      get-port: 5.1.1
+      get-port-please: 3.0.1
       got: 10.7.0
       husky: 8.0.1
       is-wsl: 2.1.1
@@ -9229,9 +9229,8 @@ packages:
       yargs: 16.2.0
     dev: true
 
-  /get-port/5.1.1:
-    resolution: {integrity: sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ==}
-    engines: {node: '>=8'}
+  /get-port-please/3.0.1:
+    resolution: {integrity: sha512-R5pcVO8Z1+pVDu8Ml3xaJCEkBiiy1VQN9za0YqH8GIi1nIqD4IzQhzY6dDzMRtdS1lyiGlucRzm8IN8wtLIXng==}
     dev: true
 
   /get-stream/5.1.0:
