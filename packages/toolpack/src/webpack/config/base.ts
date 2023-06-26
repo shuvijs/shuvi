@@ -302,7 +302,7 @@ export function baseWebpackChain({
   if (dev) {
     // For webpack-dev-middleware usage
     config.watchOptions({
-      aggregateTimeout: 300,
+      aggregateTimeout: 500,
       ignored: ['**/.git/**']
     });
     config.set('infrastructureLogging', {
