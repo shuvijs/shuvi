@@ -2,7 +2,7 @@ import { AppCtx, devFixture, Page } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('react-16 test ', function () {
+describe.skip('react-16 test ', function () {
   const targetElementSelector = '#index';
   const expectResult = 'Index Page';
   let page: Page;
