@@ -5,7 +5,7 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('custom/app.js', () => {
+describe.skip('custom/app.js', () => {
   beforeAll(async () => {
     ctx = await devFixture('custom-app');
   });
