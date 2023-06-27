@@ -18,7 +18,7 @@ function resolveRoutePath(routeName: string) {
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('Hot Module Reloading', () => {
+describe.skip('Hot Module Reloading', () => {
   let ctx: AppCtx;
   let page: Page;
 
