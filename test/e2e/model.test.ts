@@ -25,7 +25,7 @@ describe('model', () => {
     await page.goto(ctx.url('/'));
     await page.waitForSelector('#step');
 
-    page.$eval('#add-async', el => (el as any).click());
+    await page.$eval('#add-async', el => (el as any).click());
 
     await check(
       () => page.$text('#step'),

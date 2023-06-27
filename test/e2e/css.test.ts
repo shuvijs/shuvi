@@ -84,11 +84,11 @@ jest.setTimeout(5 * 60 * 1000);
     test('should import .css files as css modules', async () => {
       page = await ctx.browser.page(ctx.url('/css-modules'));
       // wait for style inserting
-      page.waitForFunction(`document
+      await page.waitForFunction(`document
     .querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`);
 
       // wait for render
-      page.waitForTimeout(1000);
+      await page.waitForTimeout(1000);
 
       expect(await page.$attr('#css-modules', 'class')).toMatch(/test__.*/);
       expect(
@@ -138,7 +138,7 @@ jest.setTimeout(5 * 60 * 1000);
     test('should remove FOUC style when no css', async () => {
       page = await ctx.browser.page(ctx.url('/no-css'));
       // wait for style inserting
-      page.waitForFunction(
+      await page.waitForFunction(
         `document.querySelectorAll('[${DEV_STYLE_HIDE_FOUC}]').length <= 0`
       );
       expect(

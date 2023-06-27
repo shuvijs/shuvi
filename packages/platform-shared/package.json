@@ -89,8 +89,7 @@
     "@shuvi/runtime": "1.0.29",
     "@shuvi/shared": "1.0.29",
     "@shuvi/toolpack": "1.0.29",
-    "@shuvi/utils": "1.0.29",
-    "redux": "4.1.2"
+    "@shuvi/utils": "1.0.29"
   },
   "peerDependencies": {
     "@shuvi/service": "1.0.29"
