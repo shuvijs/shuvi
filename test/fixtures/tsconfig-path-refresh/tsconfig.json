@@ -21,7 +21,7 @@
       "@shuvi/runtime/*": [".shuvi/app/runtime/*"],
       "@lib/*": ["src/lib/first-lib/*"],
       "@comp/*": ["src/components/*"],
-      "@myComponent2": ["src/components/component-2.tsx"]
+      "@/*": ["src/*"]
     }
   },
   "include": [".shuvi/app/shuvi-app.d.ts", "src"],

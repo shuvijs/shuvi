@@ -1,5 +1,5 @@
 import { Component1 } from '@comp/component-1';
-import { Component2 } from '@myComponent2';
+import { Component2 } from '@/components/component-2';
 import { firstData } from '@lib/first-data';
 
 export default function Page() {
