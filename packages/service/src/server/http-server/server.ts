@@ -64,7 +64,7 @@ export class Server {
     this.port = port;
 
     const srv = (this._server = http.createServer(this.getRequestHandler()));
-
+    this._server.requestTimeout = 5 * 1000;
     await new Promise((resolve, reject) => {
       // This code catches EADDRINUSE error if the port is already in use
       srv.on('error', reject);
