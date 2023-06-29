@@ -23,6 +23,8 @@ const prepareReq: IRequestHandlerWithNext = (req, res, next) => {
   next();
 };
 
+http.globalAgent.maxSockets = 1;
+
 export class Server {
   hostname: string | undefined;
   port: number | undefined;
