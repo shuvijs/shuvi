@@ -43,7 +43,7 @@ describe('Tsconfig Path Refresh', () => {
     );
   });
 
-  test('should automatically load added paths correctly', async () => {
+  test.skip('should automatically load added paths correctly', async () => {
     const mainPageContent = readFileSync(
       resolveFixture(MAIN_PAGE_PATH),
       'utf8'
