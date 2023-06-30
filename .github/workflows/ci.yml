@@ -16,7 +16,7 @@ name: CI
 env:
   CI: true
   RUST_TOOLCHAIN: nightly-2022-02-23
-  SHUVI_SKIP_BOOTSTRAP: false
+  SHUVI_SKIP_BOOTSTRAP: true
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-latest
           # - windows-latest
     name: Build and Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
