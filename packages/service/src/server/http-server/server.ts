@@ -66,10 +66,12 @@ export class Server {
     await new Promise((resolve, reject) => {
       // This code catches EADDRINUSE error if the port is already in use
       srv.on('error', reject);
-      srv.on('listening', resolve);
-      if (this._upgradeListener) {
-        srv.on('upgrade', this._upgradeListener);
-      }
+      srv.on('listening', () => {
+        if (this._upgradeListener) {
+          srv.on('upgrade', this._upgradeListener);
+        }
+        resolve(void 0);
+      });
       srv.listen(port, hostname);
     });
   }
