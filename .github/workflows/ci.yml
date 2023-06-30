@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
           # - windows-latest
     name: Build and Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
