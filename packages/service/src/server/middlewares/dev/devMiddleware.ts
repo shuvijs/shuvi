@@ -23,6 +23,7 @@ interface IContext {
 }
 
 const wsServer = new ws.Server({ noServer: true });
+wsServer.on('error', console.error);
 
 function ready(context: IContext, callback: ICallback) {
   if (context.state) {
