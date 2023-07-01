@@ -60,113 +60,118 @@ export default class Browser {
     if (!this._browser) {
       throw new Error('Please call start() before page(url)');
     }
-    const page = (await this._browser.newPage()) as Page;
-    page.setDefaultTimeout(30 * 1000);
-    if (url) {
-      if (options.disableJavaScript) {
-        await page.setJavaScriptEnabled(false);
-      } else {
-        await page.setJavaScriptEnabled(true);
-      }
-      const response = await page.goto(url, options);
-      page.statusCode = response?.status();
-    }
-    // await page.waitForFunction(`!!${page.$nuxtGlobalHandle}`);
-
-    page.collectBrowserLog = () => {
-      const texts: string[] = [];
-      const onLogs = (msg: ConsoleMessage) => {
-        texts.push(msg.text());
-      };
-      page.on('console', onLogs);
-
-      return {
-        texts,
-        dispose: () => {
-          page.off('console', onLogs);
+    let page: Page = {} as Page;
+    try {
+      page = (await this._browser.newPage()) as Page;
+      page.setDefaultTimeout(30 * 1000);
+      if (url) {
+        if (options.disableJavaScript) {
+          await page.setJavaScriptEnabled(false);
+        } else {
+          await page.setJavaScriptEnabled(true);
         }
-      };
-    };
-    page.html = () =>
-      page.evaluate(() => window.document.documentElement.outerHTML);
-    page.$text = (selector: string, trim: boolean) =>
-      page.$eval(
-        selector,
-        (el: { textContent: string | null }, trim: any) => {
-          if (el.textContent === null) {
-            throw Error('no matching element');
-          }
+        const response = await page.goto(url, options);
+        page.statusCode = response?.status();
+      }
+      // await page.waitForFunction(`!!${page.$nuxtGlobalHandle}`);
 
-          return trim
-            ? el.textContent.replace(/^\s+|\s+$/g, '')
-            : el.textContent;
-        },
-        trim
-      );
-    page.$$text = (selector: string, trim: boolean) =>
-      page.$$eval(
-        selector,
-        (els: any[], trim: any) =>
-          els.map((el: { textContent: string | null }) => {
+      page.collectBrowserLog = () => {
+        const texts: string[] = [];
+        const onLogs = (msg: ConsoleMessage) => {
+          texts.push(msg.text());
+        };
+        page.on('console', onLogs);
+
+        return {
+          texts,
+          dispose: () => {
+            page.off('console', onLogs);
+          }
+        };
+      };
+      page.html = () =>
+        page.evaluate(() => window.document.documentElement.outerHTML);
+      page.$text = (selector: string, trim: boolean) =>
+        page.$eval(
+          selector,
+          (el: { textContent: string | null }, trim: any) => {
             if (el.textContent === null) {
-              return null;
+              throw Error('no matching element');
             }
 
             return trim
               ? el.textContent.replace(/^\s+|\s+$/g, '')
               : el.textContent;
-          }),
-        trim
-      );
-    page.$attr = (selector: string, attr: string) =>
-      page.$eval(
-        selector,
-        (el, attr) => {
-          const val = el.getAttribute(attr as string);
-          if (val === null) {
-            throw Error(`"${el.tagName}" no attr "${attr}"`);
-          }
-          return val;
-        },
-        attr
-      );
-    page.$$attr = (selector: string, attr: string) =>
-      page.$$eval(
-        selector,
-        (els, attr) =>
-          els.map((el: { getAttribute: (arg0: string) => any }) =>
-            el.getAttribute(attr as string)
-          ),
-        attr
-      );
-
-    const getShuvi = () => page.evaluateHandle('window.__SHUVI');
-    page.shuvi = {
-      async navigate(path: string, query: Record<string, any> = {}) {
-        const $shuvi = await getShuvi();
-        if (query) {
-          path = path + '?' + qs.stringify(query);
-        }
-        return page.evaluate(
-          ($shuvi: { router: string[] }, path: string) =>
-            $shuvi.router.push(path),
-          $shuvi,
-          path
+          },
+          trim
         );
-      },
-      async match(path: string) {
-        const $shuvi = await getShuvi();
-        return JSON.parse(
-          await page.evaluate(
-            ($shuvi: { router: any }, path: string) =>
-              JSON.stringify($shuvi.router.match(path)),
+      page.$$text = (selector: string, trim: boolean) =>
+        page.$$eval(
+          selector,
+          (els: any[], trim: any) =>
+            els.map((el: { textContent: string | null }) => {
+              if (el.textContent === null) {
+                return null;
+              }
+
+              return trim
+                ? el.textContent.replace(/^\s+|\s+$/g, '')
+                : el.textContent;
+            }),
+          trim
+        );
+      page.$attr = (selector: string, attr: string) =>
+        page.$eval(
+          selector,
+          (el, attr) => {
+            const val = el.getAttribute(attr as string);
+            if (val === null) {
+              throw Error(`"${el.tagName}" no attr "${attr}"`);
+            }
+            return val;
+          },
+          attr
+        );
+      page.$$attr = (selector: string, attr: string) =>
+        page.$$eval(
+          selector,
+          (els, attr) =>
+            els.map((el: { getAttribute: (arg0: string) => any }) =>
+              el.getAttribute(attr as string)
+            ),
+          attr
+        );
+
+      const getShuvi = () => page.evaluateHandle('window.__SHUVI');
+      page.shuvi = {
+        async navigate(path: string, query: Record<string, any> = {}) {
+          const $shuvi = await getShuvi();
+          if (query) {
+            path = path + '?' + qs.stringify(query);
+          }
+          return page.evaluate(
+            ($shuvi: { router: string[] }, path: string) =>
+              $shuvi.router.push(path),
             $shuvi,
             path
-          )
-        );
-      }
-    };
-
+          );
+        },
+        async match(path: string) {
+          const $shuvi = await getShuvi();
+          return JSON.parse(
+            await page.evaluate(
+              ($shuvi: { router: any }, path: string) =>
+                JSON.stringify($shuvi.router.match(path)),
+              $shuvi,
+              path
+            )
+          );
+        }
+      };
+    } catch (e) {
+      console.log('page error');
+      console.error(e);
+    }
     return page;
   }
 }

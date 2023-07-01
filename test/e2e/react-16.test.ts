@@ -47,6 +47,7 @@ describe('react-16 test ', function () {
 
   test('should version is 16.14.0', async () => {
     const result = await getVersionFixtureResult();
+    console.log('result: ', result);
 
     expect(result).toEqual({
       reactVersion: '16.14.0',
@@ -56,11 +57,13 @@ describe('react-16 test ', function () {
 
   test('should ssr render', async () => {
     const text = await getFixtureResult();
+    console.log('text: ', text);
     expect(text).toBe(expectResult);
   });
 
   test('should csr render', async () => {
     const text = await getFixtureResult(false);
+    console.log('text: ', text);
     expect(text).toBe(expectResult);
   });
 });

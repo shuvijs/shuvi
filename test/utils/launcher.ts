@@ -216,7 +216,7 @@ async function launchFixture(
   const browser = new Browser();
   await browser.start();
   const url = (route: string, query?: Record<string, any>) => {
-    const urlPath = 'http://localhost:' + port + route;
+    const urlPath = 'http://127.0.0.1:' + port + route;
     if (query) {
       return urlPath + '?' + qs.stringify(query);
     } else {
