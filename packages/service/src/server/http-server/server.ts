@@ -67,15 +67,17 @@ export class Server {
       // This code catches EADDRINUSE error if the port is already in use
       srv.on('error', function (err: any) {
         console.log('srv has err: ', err);
-        return reject();
+        return reject(err);
       });
       srv.on('listening', function () {
         console.log('srv has listening: ');
-        return resolve(void 0);
       });
       srv.listen(port, hostname, () => {
         if (this._upgradeListener) {
           srv.on('upgrade', this._upgradeListener);
+          resolve(void 0);
+        } else {
+          resolve(void 0);
         }
       });
     });
