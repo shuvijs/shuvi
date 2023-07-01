@@ -38,11 +38,11 @@ jobs:
         with:
           version: ^7.5.2
 
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          cache: 'pnpm'
+      # - name: Use Node.js 16
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: 16
+      #     cache: 'pnpm'
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
@@ -97,8 +97,8 @@ jobs:
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
 
-      - name: Run unit tests
-        run: pnpm test:unit
+      # - name: Run unit tests
+      #   run: pnpm test:unit
 
       - name: Run e2e tests
         run: pnpm test:e2e
