@@ -1,10 +1,24 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
-import puppeteer, { ConsoleMessage, NavigationOptions } from 'puppeteer-core';
+import puppeteer, {
+  ConsoleMessage,
+  PuppeteerLaunchOptions
+} from 'puppeteer-core';
 import * as qs from 'querystring';
 import ChromeDetector from './chrome';
 
-export interface Page extends puppeteer.Page {
+type PuppeteerBrowser = ReturnType<typeof puppeteer.launch> extends Promise<
+  infer T
+>
+  ? T
+  : never;
+type puppeteerPage = ReturnType<PuppeteerBrowser['newPage']> extends Promise<
+  infer T
+>
+  ? T
+  : never;
+
+export interface Page extends puppeteerPage {
   [x: string]: any;
 
   html(): Promise<string>;
@@ -20,13 +34,13 @@ export interface Page extends puppeteer.Page {
   };
 }
 
-export interface PageOptions extends NavigationOptions {
+export interface PageOptions extends PuppeteerLaunchOptions {
   disableJavaScript?: boolean;
 }
 
 export default class Browser {
   private _detector: any;
-  private _browser!: puppeteer.Browser;
+  private _browser!: PuppeteerBrowser;
 
   constructor() {
     this._detector = new ChromeDetector();
@@ -150,8 +164,7 @@ export default class Browser {
             path = path + '?' + qs.stringify(query);
           }
           return page.evaluate(
-            ($shuvi: { router: string[] }, path: string) =>
-              $shuvi.router.push(path),
+            ($shuvi: any, path: string) => $shuvi.router.push(path),
             $shuvi,
             path
           );
@@ -160,7 +173,7 @@ export default class Browser {
           const $shuvi = await getShuvi();
           return JSON.parse(
             await page.evaluate(
-              ($shuvi: { router: any }, path: string) =>
+              ($shuvi: any, path: string) =>
                 JSON.stringify($shuvi.router.match(path)),
               $shuvi,
               path
