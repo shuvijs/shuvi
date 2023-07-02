@@ -43,6 +43,7 @@ describe('On Demand Compile', () => {
   });
 
   test('should compile while client navigate', async () => {
+    page = await ctx.browser.page(ctx.url('/'));
     expect(isPageCompiled('a')).toBe(false);
     await page.shuvi.navigate('/a');
     await page.waitForSelector('#a');
