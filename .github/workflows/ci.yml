@@ -95,8 +95,8 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
       - name: Run unit tests
         run: pnpm test:unit
