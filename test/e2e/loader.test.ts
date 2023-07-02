@@ -33,6 +33,7 @@ describe('loader', () => {
       });
 
       expect(onlyExeClient).toBeFalsy();
+      page.waitForNetworkIdle();
     });
 
     test('PageComponent should receive context object', async () => {

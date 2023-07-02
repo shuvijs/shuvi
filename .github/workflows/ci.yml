@@ -16,7 +16,7 @@ name: CI
 env:
   CI: true
   RUST_TOOLCHAIN: nightly-2022-02-23
-  SHUVI_SKIP_BOOTSTRAP: true
+  SHUVI_SKIP_BOOTSTRAP: false
 
 concurrency:
   group: ci-${{ github.ref }}
