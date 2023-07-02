@@ -31,7 +31,6 @@ describe('loader', () => {
       const onlyExeClient = await page.evaluate(() => {
         return (window as any).__LOADER_RUNED__;
       });
-
       expect(onlyExeClient).toBeFalsy();
     });
 
