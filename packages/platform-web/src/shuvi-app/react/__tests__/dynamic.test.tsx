@@ -2,6 +2,12 @@
  * @jest-environment jsdom
  */
 
+global.setImmediate =
+  global.setImmediate ||
+  ((fn: any, ...args: any) => global.setTimeout(fn, 0, ...args));
+global.clearImmediate =
+  global.clearImmediate || ((id: any) => global.clearTimeout(id));
+
 import * as React from 'react';
 import { getByText, render, waitFor, cleanup } from '@testing-library/react';
 import { wait } from 'shuvi-test-utils';
