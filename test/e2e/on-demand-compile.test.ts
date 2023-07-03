@@ -15,7 +15,7 @@ function isPageCompiled(page: string) {
   return ((global as any).__shuviPages || []).indexOf(page) >= 0;
 }
 
-describe.skip('On Demand Compile', () => {
+describe('On Demand Compile', () => {
   let ctx: AppCtx;
   let page: Page;
   const originalNodeEnv: string = (process.env as any).NODE_ENV;
