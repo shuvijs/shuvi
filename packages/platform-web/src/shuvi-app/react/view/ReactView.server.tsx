@@ -13,7 +13,12 @@ import { serializeServerError } from '../../helper/serializeServerError';
 import isThirdSite from '../../helper/isThirdSite';
 
 export class ReactServerView implements IReactServerView {
-  renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
+  renderApp: IReactServerView['renderApp'] = async ({
+    req,
+    app,
+    manifest,
+    serverRequestTrace
+  }) => {
     await Loadable.preloadAll();
 
     const { router, appComponent: AppComponent, setError: setAppError } = app;
@@ -62,7 +67,9 @@ export class ReactServerView implements IReactServerView {
         </AppContainer>
       </Router>
     );
-
+    const renderToStringTrace = serverRequestTrace.traceChild(
+      'SHUVI_SERVER_RENDER_TO_STRING'
+    );
     try {
       htmlContent = renderToString(RootApp);
     } catch (error: any) {
@@ -131,6 +138,8 @@ export class ReactServerView implements IReactServerView {
     if (dynamicImportIdSet.size) {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
+
+    renderToStringTrace.stop();
 
     return {
       appData,

@@ -9,6 +9,9 @@ export class SsrRenderer extends BaseRenderer {
     const { store, router, context } = app;
 
     const serverPluginContext = this._serverPluginContext;
+    const {
+      traces: { serverRequestTrace }
+    } = serverPluginContext;
     const { view } = resources.server;
     if (!router) {
       throw new Error('router is null');
@@ -16,7 +19,8 @@ export class SsrRenderer extends BaseRenderer {
     const result = await view.renderApp({
       app,
       req,
-      manifest: resources.clientManifest
+      manifest: resources.clientManifest,
+      serverRequestTrace
     });
 
     if (isResponse(result)) {

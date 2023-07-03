@@ -10,21 +10,32 @@ import { IHandlePageRequest, RequestContext, ISendHtml } from '../serverHooks';
 import { renderToHTML } from './renderToHTML';
 
 function createPageHandler(serverPluginContext: IServerPluginContext) {
+  const {
+    traces: { serverRequestTrace }
+  } = serverPluginContext;
   const wrappedSendHtml = async (
     html: string,
     { req, res }: RequestContext
   ) => {
+    const sendHtmlOriginalTrace = serverRequestTrace.traceChild(
+      'SHUVI_SERVER_SEND_HTML_ORIGINAL'
+    );
     originalSendHtml(req, res, html);
+    sendHtmlOriginalTrace.stop();
   };
 
   let sendHtml: ISendHtml;
   let pendingSendHtml: Promise<ISendHtml>;
 
   return async function (req: IncomingMessage, res: ServerResponse) {
-    const result = await renderToHTML({
-      req: req as ShuviRequest,
-      serverPluginContext
-    });
+    const result = await serverRequestTrace
+      .traceChild('SHUVI_SERVER_RENDER_TO_HTML')
+      .traceAsyncFn(() =>
+        renderToHTML({
+          req: req as ShuviRequest,
+          serverPluginContext
+        })
+      );
 
     if (isRedirect(result)) {
       const redirectResp = result as Response;
@@ -43,7 +54,14 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
         }
         sendHtml = await pendingSendHtml;
       }
+      const {
+        traces: { serverRequestTrace }
+      } = serverPluginContext;
+      const sendHtmlHookTrace = serverRequestTrace.traceChild(
+        'SHUVI_SERVER_SEND_HTML'
+      );
       await sendHtml(textResp.data, { req, res });
+      sendHtmlHookTrace.stop();
     } else {
       // shuold never reach here
       throw new Error('Unexpected reponse type from renderToHTML');
@@ -59,6 +77,12 @@ export async function getPageMiddleware(
   let pendingPageHandler: Promise<IHandlePageRequest>;
 
   return async function (req, res, next) {
+    const {
+      traces: { serverRequestTrace }
+    } = api;
+    const runPageMiddlewareTrace = serverRequestTrace.traceChild(
+      'SHUVI_SERVER_RUN_PAGE_MIDDLEWARE'
+    );
     if (!pageHandler) {
       if (!pendingPageHandler) {
         pendingPageHandler =
@@ -69,7 +93,10 @@ export async function getPageMiddleware(
 
     try {
       await pageHandler(req, res);
+      runPageMiddlewareTrace.stop();
     } catch (error) {
+      runPageMiddlewareTrace.setAttribute('error', true);
+      runPageMiddlewareTrace.stop();
       next(error);
     }
   };

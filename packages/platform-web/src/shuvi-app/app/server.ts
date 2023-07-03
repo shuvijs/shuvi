@@ -13,6 +13,7 @@ import {
   IRouter,
   pathToString
 } from '@shuvi/router';
+import { trace } from '@shuvi/service/lib/trace';
 import logger from '@shuvi/utils/logger';
 import { CreateAppServer, InternalApplication } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
@@ -28,8 +29,12 @@ export const createApp: CreateAppServer = options => {
     routes: getRoutes(routes)
   }) as IRouter;
   let app: InternalApplication;
+  const serverLoaderTrace = trace('SERVER_LOADER');
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
+      const runLoadersTrace = serverLoaderTrace.traceChild(
+        'SHUVI_SERVER_RUN_LOADERS'
+      );
       const pageLoaders = await app.getLoaders();
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
       try {
@@ -41,7 +46,10 @@ export const createApp: CreateAppServer = options => {
           getAppContext: () => app.context
         });
         app.setLoadersData(loaderResult);
+        runLoadersTrace.setAttribute('error', false);
+        runLoadersTrace.stop();
       } catch (error: any) {
+        runLoadersTrace.setAttribute('error', true);
         if (isRedirect(error)) {
           const location = error.headers.get('Location')!;
           const status = error.status;
@@ -54,6 +62,8 @@ export const createApp: CreateAppServer = options => {
               status
             }
           });
+          runLoadersTrace.setAttribute('errorType', 'redirect');
+          runLoadersTrace.stop();
           return;
         }
 
@@ -63,6 +73,8 @@ export const createApp: CreateAppServer = options => {
             message: error.data
           });
           next();
+          runLoadersTrace.setAttribute('errorType', 'user_error');
+          runLoadersTrace.stop();
           return;
         }
         if (process.env.NODE_ENV === 'development') {
@@ -70,6 +82,8 @@ export const createApp: CreateAppServer = options => {
         }
         app.setError(serializeServerError(error));
         next();
+        runLoadersTrace.setAttribute('errorType', 'unexpected_error');
+        runLoadersTrace.stop();
         return;
       }
 

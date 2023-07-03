@@ -6,6 +6,7 @@ import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import { doRender } from './render';
+import { clientEntryTrace } from '../../entry/client/trace';
 
 const headManager = new HeadManager();
 
@@ -71,15 +72,17 @@ export class ReactClientView implements IReactClientView {
       </Router>
     );
 
-    doRender(
-      {
-        root,
-        appContainer,
-        shouldHydrate
-      },
-      () => {
-        this._isInitialRender = false;
-      }
-    );
+    clientEntryTrace.traceChild('SHUVI_CLIENT_DO_RENDER').traceFn(() => {
+      doRender(
+        {
+          root,
+          appContainer,
+          shouldHydrate
+        },
+        () => {
+          this._isInitialRender = false;
+        }
+      );
+    });
   };
 }

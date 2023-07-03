@@ -6,7 +6,10 @@
 import setRuntimeConfig from '@shuvi/app/core/setRuntimeConfig';
 import runtimeConfig from '@shuvi/app/core/runtimeConfig';
 import { getAppData } from '@shuvi/platform-shared/shared';
+import { clientEntryTrace } from './trace';
 
+clientEntryTrace.traceChild('SHUVI_CLIENT_ENTRY_START').stop();
+const setupEnvTrace = clientEntryTrace.traceChild('SHUVI_CLIENT_SETUP_ENV');
 // === set runtime config ===
 const appData = getAppData();
 
@@ -19,3 +22,4 @@ if (runtimeConfig) {
 if (appData.runtimeConfig) {
   setRuntimeConfig(appData.runtimeConfig);
 }
+setupEnvTrace.stop();

@@ -9,14 +9,17 @@ import {
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
 import { createApp } from '../../app/client';
+import { clientEntryTrace } from './trace';
 
 const appData = getAppData();
 
-const app = createApp({
-  appComponent: PlatformAppComponent,
-  routes,
-  appData
-});
+const app = clientEntryTrace.traceChild('SHUVI_CLIENT_CREATE_APP').traceFn(() =>
+  createApp({
+    appComponent: PlatformAppComponent,
+    routes,
+    appData
+  })
+);
 
 const render = async () => {
   const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
@@ -28,8 +31,12 @@ const render = async () => {
 };
 
 const run = async () => {
-  await app.init();
+  const runAppTrace = clientEntryTrace.traceChild('SHUVI_CLIENT_RUN_APP');
+  await clientEntryTrace
+    .traceChild('SHUVI_CLIENT_APP_INIT')
+    .traceAsyncFn(() => app.init());
   await render();
+  runAppTrace.stop();
 };
 
 export { run, app };

@@ -12,14 +12,23 @@ export async function renderToHTML({
 }): Promise<Response> {
   let result: Response;
   const renderer = new Renderer({ serverPluginContext });
+  const {
+    traces: { serverCreateAppTrace }
+  } = serverPluginContext;
   const { application } = resources.server;
-  const app = application.createApp({
-    req,
-    ssr: serverPluginContext.config.ssr
-  });
+  const app = serverCreateAppTrace
+    .traceChild('SHUVI_SERVER_CREATE_APP')
+    .traceFn(() =>
+      application.createApp({
+        req,
+        ssr: serverPluginContext.config.ssr
+      })
+    );
 
   try {
-    await app.init();
+    await serverCreateAppTrace
+      .traceChild('SHUVI_SERVER_APP_INIT')
+      .traceAsyncFn(() => app.init());
     result = await renderer.renderView({
       req,
       app: app.getPublicAPI(),
