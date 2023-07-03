@@ -31,19 +31,14 @@ describe('On Demand Compile', () => {
     jest.resetModules();
   });
 
-  test('should compile at first request', async () => {
+  test('should compile on demand', async () => {
+    // should compile at first request
     expect(getCompiledPage().length).toEqual(0);
-  });
-
-  test('should compile at first request', async () => {
     expect(isPageCompiled('index')).toBe(false);
     page = await ctx.browser.page(ctx.url('/'));
     expect(isPageCompiled('index')).toBe(true);
     expect(getCompiledPage().length).toEqual(1);
-  });
-
-  test('should compile while client navigate', async () => {
-    page = await ctx.browser.page(ctx.url('/'));
+    // should compile while client navigate
     expect(isPageCompiled('a')).toBe(false);
     await page.shuvi.navigate('/a');
     await page.waitForSelector('#a');
