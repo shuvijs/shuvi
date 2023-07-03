@@ -58,7 +58,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
         traces: { serverRequestTrace }
       } = serverPluginContext;
       const sendHtmlHookTrace = serverRequestTrace.traceChild(
-        'SHUVI_SERVER_SEND_HTML'
+        'SHUVI_SERVER_SEND_HTML_HOOK'
       );
       await sendHtml(textResp.data, { req, res });
       sendHtmlHookTrace.stop();
@@ -95,6 +95,7 @@ export async function getPageMiddleware(
       await pageHandler(req, res);
       runPageMiddlewareTrace.stop();
     } catch (error) {
+      console.log('---------runPageMiddlewareTrace error', error);
       runPageMiddlewareTrace.setAttribute('error', true);
       runPageMiddlewareTrace.stop();
       next(error);
