@@ -9,9 +9,6 @@ describe('loader', () => {
     beforeAll(async () => {
       ctx = await devFixture('loader');
     });
-    afterEach(async () => {
-      await page.close();
-    });
     afterAll(async () => {
       await ctx.close();
     });
@@ -33,7 +30,6 @@ describe('loader', () => {
       });
 
       expect(onlyExeClient).toBeFalsy();
-      page.waitForNetworkIdle();
     });
 
     test('PageComponent should receive context object', async () => {
