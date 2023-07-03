@@ -1,9 +1,6 @@
 // License: https://github.com/nuxt/nuxt.js/blob/9831943a1f270069e05bbf1a472804b31ed4b007/LICENSE
 
-import puppeteer, {
-  ConsoleMessage,
-  PuppeteerLaunchOptions
-} from 'puppeteer-core';
+import puppeteer, { ConsoleMessage } from 'puppeteer-core';
 import * as qs from 'querystring';
 import ChromeDetector from './chrome';
 
@@ -17,6 +14,8 @@ type puppeteerPage = ReturnType<PuppeteerBrowser['newPage']> extends Promise<
 >
   ? T
   : never;
+
+type puppeteerPageOptions = Parameters<puppeteerPage['goto']>[1];
 
 export interface Page extends puppeteerPage {
   [x: string]: any;
@@ -34,9 +33,9 @@ export interface Page extends puppeteerPage {
   };
 }
 
-export interface PageOptions extends PuppeteerLaunchOptions {
+type PageOptions = puppeteerPageOptions & {
   disableJavaScript?: boolean;
-}
+};
 
 export default class Browser {
   private _detector: any;
