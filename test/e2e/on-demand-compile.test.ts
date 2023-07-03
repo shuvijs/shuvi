@@ -2,11 +2,6 @@ import { AppCtx, Page, launchFixtureAtCurrentProcess } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
-afterEach(() => {
-  // force require to load file to make sure compiled file get load correctlly
-  jest.resetModules();
-});
-
 function getCompiledPage(): string[] {
   return (global as any).__shuviPages || [];
 }
@@ -23,8 +18,11 @@ describe('On Demand Compile', () => {
     (process.env as any).NODE_ENV = 'development';
     ctx = await launchFixtureAtCurrentProcess('on-demand-compile');
   });
+  afterEach(() => {
+    // force require to load file to make sure compiled file get load correctlly
+    jest.resetModules();
+  });
   afterAll(async () => {
-    await page.close();
     await ctx.close();
     (process.env as any).NODE_ENV = originalNodeEnv;
   });
