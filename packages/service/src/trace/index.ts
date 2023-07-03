@@ -80,6 +80,7 @@ export class Span {
       name: this._name,
       duration,
       startTime: this._start,
+      endTime: end,
       id: this._id,
       parentId: this._parentId,
       attrs: this._attrs
