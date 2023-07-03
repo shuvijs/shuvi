@@ -18,14 +18,11 @@ describe('Dynamic', () => {
     await ctx.close();
   });
 
-  afterEach(async () => {
-    await page.close();
-  });
-
   test('should render dynamic import components', async () => {
     page = await ctx.browser.page(ctx.url('/ssr'));
 
-    await page.waitForSelector(`#${CLIENT_APPDATA_ID}`);
+    await page.waitForNavigation({ waitUntil: 'domcontentloaded' }); // resolve before client-side render
+
     const appData = JSON.parse(await page.$text(`#${CLIENT_APPDATA_ID}`));
 
     expect(appData.dynamicIds.includes('./src/components/hello.js')).toBe(true);

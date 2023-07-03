@@ -6,7 +6,7 @@ describe('Dotenv production', () => {
   let ctx: AppCtx;
   let page: Page;
 
-  afterEach(async () => {
+  afterAll(async () => {
     await ctx.close();
   });
 
@@ -16,9 +16,11 @@ describe('Dotenv production', () => {
     });
     ctx = await serveFixture('dotenv', { ssr: true });
     page = await ctx.browser.page(ctx.url('/'));
+
+    await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
     expect(page.statusCode).toBe(200);
 
-    await page.waitForSelector('#publicValue');
     // Note: if this test fail, client render is not working in client.
     expect(await page.$text('#publicValue')).toBe('publicValue');
     expect(await page.$text('#valueNotFoundOnClient')).toBe('');
