@@ -73,7 +73,7 @@ export const createApp: CreateAppServer = options => {
             message: error.data
           });
           next();
-          runLoadersTrace.setAttribute('errorType', 'user_error');
+          runLoadersTrace.setAttribute('errorType', 'userError');
           runLoadersTrace.stop();
           return;
         }
@@ -82,7 +82,7 @@ export const createApp: CreateAppServer = options => {
         }
         app.setError(serializeServerError(error));
         next();
-        runLoadersTrace.setAttribute('errorType', 'unexpected_error');
+        runLoadersTrace.setAttribute('errorType', 'unexpectedError');
         runLoadersTrace.stop();
         return;
       }

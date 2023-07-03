@@ -148,7 +148,7 @@ export const createApp: CreateAppClient = ({
           message: error.data
         });
         next();
-        runLoadersTrace.setAttribute('errorType', 'user_error');
+        runLoadersTrace.setAttribute('errorType', 'userError');
         runLoadersTrace.stop();
         return;
       }
@@ -162,7 +162,7 @@ export const createApp: CreateAppClient = ({
       next(() => {
         throw error;
       });
-      runLoadersTrace.setAttribute('errorType', 'unexpected_error');
+      runLoadersTrace.setAttribute('errorType', 'unexpectedError');
       runLoadersTrace.stop();
       return;
     }
