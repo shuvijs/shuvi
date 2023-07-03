@@ -38,6 +38,7 @@ describe('On Demand Compile', () => {
     page = await ctx.browser.page(ctx.url('/'));
     expect(isPageCompiled('index')).toBe(true);
     expect(getCompiledPage().length).toEqual(1);
+
     // should compile while client navigate
     expect(isPageCompiled('a')).toBe(false);
     await page.shuvi.navigate('/a');
