@@ -122,7 +122,6 @@ export const createApp: CreateAppClient = ({
         }
       );
       app.setLoadersData(loaderDatas);
-      console.log('runLoaders end', performance.now());
       runLoadersTrace.setAttribute('error', false);
       runLoadersTrace.stop();
     } catch (error: any) {
