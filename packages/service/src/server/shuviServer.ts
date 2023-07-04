@@ -64,7 +64,7 @@ export abstract class ShuviServer implements IShuviServer {
 
     server.use(((req, resp, next) => {
       context.traces.serverRequestTrace
-        .traceChild('SHUVI_SERVER_START_HANDLE_REQUEST')
+        .traceChild('SHUVI_SERVER_HANDLE_REQUEST_START')
         .stop();
       this._normalizeReq(req);
       this._normalizeResp(resp);
