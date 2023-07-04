@@ -72,7 +72,9 @@ export class ReactServerView implements IReactServerView {
     );
     try {
       htmlContent = renderToString(RootApp);
+      renderToStringTrace.setAttribute('error', false);
     } catch (error: any) {
+      renderToStringTrace.setAttribute('error', true);
       if (process.env.NODE_ENV === 'development') {
         logger.error(error.stack);
       }
@@ -80,6 +82,7 @@ export class ReactServerView implements IReactServerView {
       htmlContent = renderToString(RootApp); // Consistency on both server and client side
     } finally {
       head = Head.rewind() || [];
+      renderToStringTrace.stop();
     }
 
     const { loadble } = manifest;
@@ -138,8 +141,6 @@ export class ReactServerView implements IReactServerView {
     if (dynamicImportIdSet.size) {
       appData.dynamicIds = Array.from(dynamicImportIdSet);
     }
-
-    renderToStringTrace.stop();
 
     return {
       appData,
