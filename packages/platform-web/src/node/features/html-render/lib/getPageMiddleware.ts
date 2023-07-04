@@ -83,7 +83,6 @@ export async function getPageMiddleware(
     const runPageMiddlewareTrace = serverRequestTrace.traceChild(
       'SHUVI_SERVER_RUN_PAGE_MIDDLEWARE'
     );
-    runPageMiddlewareTrace.setAttribute('url', req.url);
     if (!pageHandler) {
       if (!pendingPageHandler) {
         pendingPageHandler =
