@@ -32,11 +32,12 @@ const uuid = () => {
   });
 };
 
-function useNavigationTrace() {
+function useTrace() {
   const router = useRouter();
   const route = useCurrentRoute();
   let navigationTrace = React.useRef<typeof clientRenderTrace>();
   React.useEffect(() => {
+    clientRenderTrace.traceChild('SHUVI_PAGE_READY').stop();
     router.beforeEach((to, from, next) => {
       navigationTrace.current = clientRenderTrace.traceChild(
         'SHUVI_NAVIGATION_DONE'
@@ -69,7 +70,7 @@ export default function AppContainer({
 }: React.PropsWithChildren<{
   app: Application;
 }>) {
-  useNavigationTrace();
+  useTrace();
   return (
     <AppProvider app={app}>
       <ErrorBoundary>
