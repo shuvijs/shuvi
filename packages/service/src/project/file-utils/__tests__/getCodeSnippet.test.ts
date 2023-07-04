@@ -1,5 +1,5 @@
 import { getCodeSnippet } from '../getCodeSnippet';
-import { trim } from 'shuvi-test-utils';
+import { trim } from 'shuvi-test-utils/shared';
 
 describe('collectDeps', () => {
   test('should work', () => {

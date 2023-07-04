@@ -1,5 +1,5 @@
 import { transform } from '@babel/core';
-import { trim } from 'shuvi-test-utils';
+import { trim } from 'shuvi-test-utils/shared';
 
 function babel(code: string) {
   return transform(code, {
@@ -8,14 +8,14 @@ function babel(code: string) {
       [
         require.resolve('../optimize-hook-destructuring'),
         {
-          lib: true,
-        },
-      ],
+          lib: true
+        }
+      ]
     ],
     babelrc: false,
     configFile: false,
     sourceType: 'module',
-    compact: true,
+    compact: true
   })!.code;
 }
 

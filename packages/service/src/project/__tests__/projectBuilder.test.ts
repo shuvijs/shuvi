@@ -3,7 +3,6 @@ import { removeSync } from 'fs-extra';
 import { readFileSync, existsSync } from 'fs';
 import { ProjectBuilder } from '../projectBuilder';
 import { defineFile } from '../file-builder';
-import { wait } from 'shuvi-test-utils';
 
 type TestRule = [string, string | RegExp];
 

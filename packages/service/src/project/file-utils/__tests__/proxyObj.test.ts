@@ -1,5 +1,5 @@
 import { getContentProxyObj } from '../';
-import { trim } from 'shuvi-test-utils';
+import { trim } from 'shuvi-test-utils/shared';
 
 describe('proxyObj', () => {
   test('should work', () => {

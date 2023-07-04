@@ -4,7 +4,7 @@
 
 import * as React from 'react';
 import { getByText, render, waitFor, cleanup } from '@testing-library/react';
-import { wait } from 'shuvi-test-utils';
+import { wait } from 'shuvi-test-utils/shared';
 import dynamic from '../dynamic';
 
 describe('dynamic', () => {

@@ -9,9 +9,6 @@ describe('loader', () => {
     beforeAll(async () => {
       ctx = await devFixture('loader');
     });
-    afterEach(async () => {
-      await page.close();
-    });
     afterAll(async () => {
       await ctx.close();
     });
