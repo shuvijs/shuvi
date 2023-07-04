@@ -1,5 +1,5 @@
 import { getExports } from '../getModuleExports';
-import { trim } from 'shuvi-test-utils';
+import { trim } from 'shuvi-test-utils/shared';
 
 describe('getModuleExports', () => {
   test('export function declaration', () => {
