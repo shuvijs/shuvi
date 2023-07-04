@@ -1,6 +1,6 @@
 import { transform } from '@babel/core';
 import type { PresetOptions } from '../preset';
-import { trim } from 'shuvi-test-utils';
+import { trim } from 'shuvi-test-utils/shared';
 
 const babel = (
   code: string,
