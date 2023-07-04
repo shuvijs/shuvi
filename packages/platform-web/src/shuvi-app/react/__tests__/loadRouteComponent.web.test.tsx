@@ -2,18 +2,12 @@
  * @jest-environment jsdom
  */
 
-global.setImmediate =
-  global.setImmediate ||
-  ((fn: any, ...args: any) => global.setTimeout(fn, 0, ...args));
-global.clearImmediate =
-  global.clearImmediate || ((id: any) => global.clearTimeout(id));
-
 import { loadRouteComponent } from '../loadRouteComponent';
 import { act } from 'shuvi-test-utils/reactTestRender';
 import FirstPage from './fixtures/loadRouteComponent/firstPage';
 import DetailPage from './fixtures/loadRouteComponent/detailPage';
 import { renderWithRoutes } from './utils';
-import { wait } from 'shuvi-test-utils';
+import { wait } from 'shuvi-test-utils/shared';
 
 jest.mock('@shuvi/app/files/page-loaders', () => ({}), { virtual: true });
 

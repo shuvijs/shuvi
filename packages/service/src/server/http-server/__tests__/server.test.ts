@@ -1,4 +1,4 @@
-import { findPort } from 'shuvi-test-utils';
+import { findPort } from 'shuvi-test-utils/findPort';
 import got from 'got';
 import { Server } from '../server';
 import { IRequest, IResponse, INextFunc } from '../serverTypes';
