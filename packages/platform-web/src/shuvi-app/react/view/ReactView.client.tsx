@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
+import { CLIENT_ENTRY } from '@shuvi/shared/constants/trace';
 import { Router } from '@shuvi/router-react';
 import AppContainer from '../AppContainer';
 import { HeadManager, HeadManagerContext } from '../head';
 import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import { doRender } from './render';
+import { clientEntryTrace } from '../../entry/client/trace';
 
 const headManager = new HeadManager();
 
@@ -71,15 +73,19 @@ export class ReactClientView implements IReactClientView {
       </Router>
     );
 
-    doRender(
-      {
-        root,
-        appContainer,
-        shouldHydrate
-      },
-      () => {
-        this._isInitialRender = false;
-      }
-    );
+    clientEntryTrace
+      .traceChild(CLIENT_ENTRY.events.SHUVI_CLIENT_DO_RENDER.name)
+      .traceFn(() => {
+        doRender(
+          {
+            root,
+            appContainer,
+            shouldHydrate
+          },
+          () => {
+            this._isInitialRender = false;
+          }
+        );
+      });
   };
 }

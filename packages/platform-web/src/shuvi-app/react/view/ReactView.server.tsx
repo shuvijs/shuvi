@@ -2,6 +2,7 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
+import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 import { Router } from '@shuvi/router-react';
 import logger from '@shuvi/utils/logger';
 import { IHtmlTag } from '../../../shared';
@@ -12,8 +13,15 @@ import { Head } from '../head';
 import { serializeServerError } from '../../helper/serializeServerError';
 import isThirdSite from '../../helper/isThirdSite';
 
+const { SHUVI_SERVER_RENDER_TO_STRING } = SERVER_REQUEST.events;
+
 export class ReactServerView implements IReactServerView {
-  renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
+  renderApp: IReactServerView['renderApp'] = async ({
+    req,
+    app,
+    manifest,
+    serverRequestTrace
+  }) => {
     await Loadable.preloadAll();
 
     const { router, appComponent: AppComponent, setError: setAppError } = app;
@@ -62,10 +70,20 @@ export class ReactServerView implements IReactServerView {
         </AppContainer>
       </Router>
     );
-
+    const renderToStringTrace = serverRequestTrace.traceChild(
+      SHUVI_SERVER_RENDER_TO_STRING.name
+    );
     try {
       htmlContent = renderToString(RootApp);
+      renderToStringTrace.setAttribute(
+        SHUVI_SERVER_RENDER_TO_STRING.attrs.error.name,
+        false
+      );
     } catch (error: any) {
+      renderToStringTrace.setAttribute(
+        SHUVI_SERVER_RENDER_TO_STRING.attrs.error.name,
+        true
+      );
       if (process.env.NODE_ENV === 'development') {
         logger.error(error.stack);
       }
@@ -73,6 +91,7 @@ export class ReactServerView implements IReactServerView {
       htmlContent = renderToString(RootApp); // Consistency on both server and client side
     } finally {
       head = Head.rewind() || [];
+      renderToStringTrace.stop();
     }
 
     const { loadble } = manifest;
