@@ -44,7 +44,7 @@ export class Span {
     name: string;
     parentId?: SpanId;
     startTime?: number;
-    attrs?: Object;
+    attrs?: Record<string, any>;
   }) {
     this._name = name;
     this._parentId = parentId;
@@ -103,6 +103,12 @@ export class Span {
 
   setAttribute(key: string, value: any) {
     this._attrs[key] = String(value);
+  }
+
+  setAttributes(attrs: Record<string, any>) {
+    Object.keys(attrs).forEach(key => {
+      this.setAttribute(key, attrs[key]);
+    });
   }
 
   traceFn<T>(fn: (span: Span) => T): T {

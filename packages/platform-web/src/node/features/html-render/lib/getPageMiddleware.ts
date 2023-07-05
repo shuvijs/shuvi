@@ -100,24 +100,16 @@ export async function getPageMiddleware(
 
     try {
       await pageHandler(req, res);
-      runPageMiddlewareTrace.setAttribute(
-        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.error.name,
-        false
-      );
-      runPageMiddlewareTrace.setAttribute(
-        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.statusCode.name,
-        res.statusCode
-      );
+      runPageMiddlewareTrace.setAttributes({
+        [SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.error.name]: false,
+        [SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.statusCode.name]: res.statusCode
+      });
       runPageMiddlewareTrace.stop();
     } catch (error) {
-      runPageMiddlewareTrace.setAttribute(
-        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.error.name,
-        true
-      );
-      runPageMiddlewareTrace.setAttribute(
-        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.statusCode.name,
-        res.statusCode
-      );
+      runPageMiddlewareTrace.setAttributes({
+        [SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.error.name]: true,
+        [SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.statusCode.name]: res.statusCode
+      });
       runPageMiddlewareTrace.stop();
       next(error);
     }
