@@ -1,5 +1,5 @@
 import { transform } from '@babel/core';
-import { trim } from 'shuvi-test-utils';
+import { trim } from 'shuvi-test-utils/shared';
 
 function babel(code: string) {
   return transform(code, {
@@ -8,9 +8,9 @@ function babel(code: string) {
       [
         require('@babel/preset-react'),
         {
-          pragma: '__jsx',
-        },
-      ],
+          pragma: '__jsx'
+        }
+      ]
     ],
     plugins: [
       [
@@ -19,14 +19,14 @@ function babel(code: string) {
           module: 'react',
           importAs: 'React',
           pragma: '__jsx',
-          property: 'createElement',
-        },
-      ],
+          property: 'createElement'
+        }
+      ]
     ],
     babelrc: false,
     configFile: false,
     sourceType: 'module',
-    compact: true,
+    compact: true
   })!.code;
 }
 
