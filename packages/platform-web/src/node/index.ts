@@ -4,6 +4,7 @@ import {
   getPresetRuntimeFilesCreator
 } from '@shuvi/platform-shared/node';
 import tracePlugin from './trace';
+import externalInternalLibs from './external-internal-libs';
 import {
   getPlugins,
   getMiddlewares,
@@ -30,6 +31,7 @@ const platform =
         resolvePkgFile('shuvi-image.d.ts')
       ],
       plugins: [
+        externalInternalLibs,
         tracePlugin,
         ...SharedPlugins,
         ...getPlugins(platformContext),
