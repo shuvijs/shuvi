@@ -5,6 +5,7 @@ export type traceData = {
   name: string;
   duration: number;
   startTime: number;
+  endTime: number;
   id: SpanId;
   parentId?: SpanId;
   attrs?: Object;

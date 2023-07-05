@@ -16,13 +16,17 @@ import {
 } from '@shuvi/router';
 import { historyMode } from '@shuvi/app/files/routerConfig';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
+import { CLIENT_RENDER } from '@shuvi/shared/constants/trace';
+
 import { InternalApplication, CreateAppClient } from '../../shared';
 import isThirdSite from '../helper/isThirdSite';
+import { clientRenderTrace } from '../entry/client/trace';
 
 let app: InternalApplication;
 
 export { InternalApplication };
 
+const { SHUVI_CLIENT_RUN_LOADERS } = CLIENT_RENDER.events;
 export const createApp: CreateAppClient = ({
   routes,
   appData,
@@ -75,7 +79,9 @@ export const createApp: CreateAppClient = ({
       next();
       return;
     }
-
+    const runLoadersTrace = clientRenderTrace.traceChild(
+      SHUVI_CLIENT_RUN_LOADERS.name
+    );
     const pageLoaders = await app.getLoaders();
     const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
 
@@ -119,7 +125,16 @@ export const createApp: CreateAppClient = ({
         }
       );
       app.setLoadersData(loaderDatas);
+      runLoadersTrace.setAttribute(
+        SHUVI_CLIENT_RUN_LOADERS.attrs.error.name,
+        false
+      );
+      runLoadersTrace.stop();
     } catch (error: any) {
+      runLoadersTrace.setAttribute(
+        SHUVI_CLIENT_RUN_LOADERS.attrs.error.name,
+        true
+      );
       if (isRedirect(error)) {
         const location = error.headers.get('Location')!;
         if (isThirdSite(location)) {
@@ -130,6 +145,11 @@ export const createApp: CreateAppClient = ({
             replace: true
           });
         }
+        runLoadersTrace.setAttribute(
+          SHUVI_CLIENT_RUN_LOADERS.attrs.errorType.name,
+          'redirect'
+        );
+        runLoadersTrace.stop();
         return;
       }
 
@@ -139,6 +159,11 @@ export const createApp: CreateAppClient = ({
           message: error.data
         });
         next();
+        runLoadersTrace.setAttribute(
+          SHUVI_CLIENT_RUN_LOADERS.attrs.errorType.name,
+          'userError'
+        );
+        runLoadersTrace.stop();
         return;
       }
 
@@ -151,6 +176,11 @@ export const createApp: CreateAppClient = ({
       next(() => {
         throw error;
       });
+      runLoadersTrace.setAttribute(
+        SHUVI_CLIENT_RUN_LOADERS.attrs.errorType.name,
+        'unexpectedError'
+      );
+      runLoadersTrace.stop();
       return;
     }
 

@@ -13,12 +13,14 @@ import {
   IRouter,
   pathToString
 } from '@shuvi/router';
+import { SERVER_CREATE_APP } from '@shuvi/shared/constants/trace';
 import logger from '@shuvi/utils/logger';
 import { CreateAppServer, InternalApplication } from '../../shared';
 import { serializeServerError } from '../helper/serializeServerError';
 
+const { SHUVI_SERVER_RUN_LOADERS } = SERVER_CREATE_APP.events;
 export const createApp: CreateAppServer = options => {
-  const { req, ssr } = options;
+  const { req, ssr, serverCreateAppTrace } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
@@ -30,6 +32,9 @@ export const createApp: CreateAppServer = options => {
   let app: InternalApplication;
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
+      const runLoadersTrace = serverCreateAppTrace.traceChild(
+        SHUVI_SERVER_RUN_LOADERS.name
+      );
       const pageLoaders = await app.getLoaders();
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
       try {
@@ -41,7 +46,16 @@ export const createApp: CreateAppServer = options => {
           getAppContext: () => app.context
         });
         app.setLoadersData(loaderResult);
+        runLoadersTrace.setAttribute(
+          SHUVI_SERVER_RUN_LOADERS.attrs.error.name,
+          false
+        );
+        runLoadersTrace.stop();
       } catch (error: any) {
+        runLoadersTrace.setAttribute(
+          SHUVI_SERVER_RUN_LOADERS.attrs.error.name,
+          true
+        );
         if (isRedirect(error)) {
           const location = error.headers.get('Location')!;
           const status = error.status;
@@ -54,6 +68,11 @@ export const createApp: CreateAppServer = options => {
               status
             }
           });
+          runLoadersTrace.setAttribute(
+            SHUVI_SERVER_RUN_LOADERS.attrs.errorType.name,
+            'redirect'
+          );
+          runLoadersTrace.stop();
           return;
         }
 
@@ -63,6 +82,11 @@ export const createApp: CreateAppServer = options => {
             message: error.data
           });
           next();
+          runLoadersTrace.setAttribute(
+            SHUVI_SERVER_RUN_LOADERS.attrs.errorType.name,
+            'userError'
+          );
+          runLoadersTrace.stop();
           return;
         }
         if (process.env.NODE_ENV === 'development') {
@@ -70,6 +94,11 @@ export const createApp: CreateAppServer = options => {
         }
         app.setError(serializeServerError(error));
         next();
+        runLoadersTrace.setAttribute(
+          SHUVI_SERVER_RUN_LOADERS.attrs.errorType.name,
+          'unexpectedError'
+        );
+        runLoadersTrace.stop();
         return;
       }
 
