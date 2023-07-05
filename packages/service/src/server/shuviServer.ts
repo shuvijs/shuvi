@@ -1,4 +1,5 @@
 import { RequestListener } from 'http';
+import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 import { joinPath } from '@shuvi/utils/string';
 import { IPluginContext } from '../core';
 import { normalizeServerMiddleware } from './serverMiddleware';
@@ -64,7 +65,9 @@ export abstract class ShuviServer implements IShuviServer {
 
     server.use(((req, resp, next) => {
       context.traces.serverRequestTrace
-        .traceChild('SHUVI_SERVER_HANDLE_REQUEST_START')
+        .traceChild(
+          SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.name
+        )
         .stop();
       this._normalizeReq(req);
       this._normalizeResp(resp);

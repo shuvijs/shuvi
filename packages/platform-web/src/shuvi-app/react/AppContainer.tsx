@@ -7,6 +7,10 @@ import ErrorPage from './ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Provider, useSharedModel } from './store';
 import { clientRenderTrace } from '../entry/client/trace';
+import { CLIENT_RENDER } from '@shuvi/shared/constants/trace';
+
+const { SHUVI_NAVIGATION_TRIGGERED, SHUVI_NAVIGATION_DONE, SHUVI_PAGE_READY } =
+  CLIENT_RENDER.events;
 
 function ErrorGuard({ children = null }: React.PropsWithChildren<{}>) {
   const errorState = useSharedModel(errorModelName, errorModel);
@@ -37,23 +41,41 @@ function useTrace() {
   const route = useCurrentRoute();
   let navigationTrace = React.useRef<typeof clientRenderTrace>();
   React.useEffect(() => {
-    clientRenderTrace.traceChild('SHUVI_PAGE_READY').stop();
+    clientRenderTrace.traceChild(SHUVI_PAGE_READY.name).stop();
     router.beforeEach((to, from, next) => {
       navigationTrace.current = clientRenderTrace.traceChild(
-        'SHUVI_NAVIGATION_DONE'
+        SHUVI_NAVIGATION_DONE.name
       );
       const navigationTriggeredTrace = clientRenderTrace.traceChild(
-        'SHUVI_NAVIGATION_TRIGGERED'
+        SHUVI_NAVIGATION_TRIGGERED.name
       );
       const fromPath = `${from.pathname}${from.search}`;
       const toPath = `${to.pathname}${to.search}`;
       const navigationId = uuid();
-      navigationTrace.current.setAttribute('from', fromPath);
-      navigationTrace.current.setAttribute('to', toPath);
-      navigationTrace.current.setAttribute('navigationId', navigationId);
-      navigationTriggeredTrace.setAttribute('from', fromPath);
-      navigationTriggeredTrace.setAttribute('to', toPath);
-      navigationTriggeredTrace.setAttribute('navigationId', navigationId);
+      navigationTrace.current.setAttribute(
+        SHUVI_NAVIGATION_DONE.attrs.from.name,
+        fromPath
+      );
+      navigationTrace.current.setAttribute(
+        SHUVI_NAVIGATION_DONE.attrs.to.name,
+        toPath
+      );
+      navigationTrace.current.setAttribute(
+        SHUVI_NAVIGATION_DONE.attrs.navigationId.name,
+        navigationId
+      );
+      navigationTriggeredTrace.setAttribute(
+        SHUVI_NAVIGATION_TRIGGERED.attrs.from.name,
+        fromPath
+      );
+      navigationTriggeredTrace.setAttribute(
+        SHUVI_NAVIGATION_TRIGGERED.attrs.to.name,
+        toPath
+      );
+      navigationTriggeredTrace.setAttribute(
+        SHUVI_NAVIGATION_TRIGGERED.attrs.navigationId.name,
+        navigationId
+      );
       navigationTriggeredTrace.stop();
       next();
     });

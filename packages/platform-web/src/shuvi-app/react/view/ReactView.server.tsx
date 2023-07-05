@@ -2,6 +2,7 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import { redirect } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
+import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 import { Router } from '@shuvi/router-react';
 import logger from '@shuvi/utils/logger';
 import { IHtmlTag } from '../../../shared';
@@ -11,6 +12,8 @@ import { IReactServerView, IReactAppData } from '../types';
 import { Head } from '../head';
 import { serializeServerError } from '../../helper/serializeServerError';
 import isThirdSite from '../../helper/isThirdSite';
+
+const { SHUVI_SERVER_RENDER_TO_STRING } = SERVER_REQUEST.events;
 
 export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({
@@ -68,13 +71,19 @@ export class ReactServerView implements IReactServerView {
       </Router>
     );
     const renderToStringTrace = serverRequestTrace.traceChild(
-      'SHUVI_SERVER_RENDER_TO_STRING'
+      SHUVI_SERVER_RENDER_TO_STRING.name
     );
     try {
       htmlContent = renderToString(RootApp);
-      renderToStringTrace.setAttribute('error', false);
+      renderToStringTrace.setAttribute(
+        SHUVI_SERVER_RENDER_TO_STRING.attrs.error.name,
+        false
+      );
     } catch (error: any) {
-      renderToStringTrace.setAttribute('error', true);
+      renderToStringTrace.setAttribute(
+        SHUVI_SERVER_RENDER_TO_STRING.attrs.error.name,
+        true
+      );
       if (process.env.NODE_ENV === 'development') {
         logger.error(error.stack);
       }

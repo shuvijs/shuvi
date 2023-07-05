@@ -8,18 +8,21 @@ import {
 } from '@shuvi/app/core/platform';
 import routes from '@shuvi/app/files/routes';
 import { getAppData } from '@shuvi/platform-shared/shared/helper/getAppData';
+import { CLIENT_ENTRY } from '@shuvi/shared/constants/trace';
 import { createApp } from '../../app/client';
 import { clientEntryTrace } from './trace';
 
 const appData = getAppData();
 
-const app = clientEntryTrace.traceChild('SHUVI_CLIENT_CREATE_APP').traceFn(() =>
-  createApp({
-    appComponent: PlatformAppComponent,
-    routes,
-    appData
-  })
-);
+const app = clientEntryTrace
+  .traceChild(CLIENT_ENTRY.events.SHUVI_CLIENT_CREATE_APP.name)
+  .traceFn(() =>
+    createApp({
+      appComponent: PlatformAppComponent,
+      routes,
+      appData
+    })
+  );
 
 const render = async () => {
   const appContainer = document.getElementById(CLIENT_CONTAINER_ID)!;
@@ -31,9 +34,11 @@ const render = async () => {
 };
 
 const run = async () => {
-  const runAppTrace = clientEntryTrace.traceChild('SHUVI_CLIENT_RUN_APP');
+  const runAppTrace = clientEntryTrace.traceChild(
+    CLIENT_ENTRY.events.SHUVI_CLIENT_RUN_APP.name
+  );
   await clientEntryTrace
-    .traceChild('SHUVI_CLIENT_APP_INIT')
+    .traceChild(CLIENT_ENTRY.events.SHUVI_CLIENT_APP_INIT.name)
     .traceAsyncFn(() => app.init());
   await render();
   runAppTrace.stop();

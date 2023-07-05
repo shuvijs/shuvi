@@ -6,9 +6,16 @@ import {
 } from '@shuvi/service';
 import { sendHTML as originalSendHtml } from '@shuvi/service/lib/server/utils';
 import { Response, isRedirect, isText } from '@shuvi/platform-shared/shared';
+import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 import { IHandlePageRequest, RequestContext, ISendHtml } from '../serverHooks';
 import { renderToHTML } from './renderToHTML';
 
+const {
+  SHUVI_SERVER_SEND_HTML_ORIGINAL,
+  SHUVI_SERVER_SEND_HTML_HOOK,
+  SHUVI_SERVER_RENDER_TO_HTML,
+  SHUVI_SERVER_RUN_PAGE_MIDDLEWARE
+} = SERVER_REQUEST.events;
 function createPageHandler(serverPluginContext: IServerPluginContext) {
   const {
     traces: { serverRequestTrace }
@@ -18,7 +25,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
     { req, res }: RequestContext
   ) => {
     const sendHtmlOriginalTrace = serverRequestTrace.traceChild(
-      'SHUVI_SERVER_SEND_HTML_ORIGINAL'
+      SHUVI_SERVER_SEND_HTML_ORIGINAL.name
     );
     originalSendHtml(req, res, html);
     sendHtmlOriginalTrace.stop();
@@ -29,7 +36,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
 
   return async function (req: IncomingMessage, res: ServerResponse) {
     const result = await serverRequestTrace
-      .traceChild('SHUVI_SERVER_RENDER_TO_HTML')
+      .traceChild(SHUVI_SERVER_RENDER_TO_HTML.name)
       .traceAsyncFn(() =>
         renderToHTML({
           req: req as ShuviRequest,
@@ -58,7 +65,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
         traces: { serverRequestTrace }
       } = serverPluginContext;
       const sendHtmlHookTrace = serverRequestTrace.traceChild(
-        'SHUVI_SERVER_SEND_HTML_HOOK'
+        SHUVI_SERVER_SEND_HTML_HOOK.name
       );
       await sendHtml(textResp.data, { req, res });
       sendHtmlHookTrace.stop();
@@ -81,7 +88,7 @@ export async function getPageMiddleware(
       traces: { serverRequestTrace }
     } = api;
     const runPageMiddlewareTrace = serverRequestTrace.traceChild(
-      'SHUVI_SERVER_RUN_PAGE_MIDDLEWARE'
+      SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.name
     );
     if (!pageHandler) {
       if (!pendingPageHandler) {
@@ -93,12 +100,24 @@ export async function getPageMiddleware(
 
     try {
       await pageHandler(req, res);
-      runPageMiddlewareTrace.setAttribute('error', false);
-      runPageMiddlewareTrace.setAttribute('statusCode', res.statusCode);
+      runPageMiddlewareTrace.setAttribute(
+        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.error.name,
+        false
+      );
+      runPageMiddlewareTrace.setAttribute(
+        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.statusCode.name,
+        res.statusCode
+      );
       runPageMiddlewareTrace.stop();
     } catch (error) {
-      runPageMiddlewareTrace.setAttribute('error', true);
-      runPageMiddlewareTrace.setAttribute('statusCode', res.statusCode);
+      runPageMiddlewareTrace.setAttribute(
+        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.error.name,
+        true
+      );
+      runPageMiddlewareTrace.setAttribute(
+        SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.statusCode.name,
+        res.statusCode
+      );
       runPageMiddlewareTrace.stop();
       next(error);
     }
