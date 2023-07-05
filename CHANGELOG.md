@@ -1,3 +1,19 @@
+## [1.0.30](https://github.com/shuvijs/shuvi/compare/v1.0.29...v1.0.30) (2023-07-05)
+
+
+### Bug Fixes
+
+* make cicd stable ([c934ad6](https://github.com/shuvijs/shuvi/commit/c934ad6f15a5e2f15a3a762b7f2ec13c5648c281))
+
+
+### Features
+
+* add metrics data points ([e17b081](https://github.com/shuvijs/shuvi/commit/e17b08154de7604b915d21b2306eac17a56fdc9c))
+* external-internal-libs ([2bfd9a9](https://github.com/shuvijs/shuvi/commit/2bfd9a94d4eefd09b76b9e16cbd4c50b6eaa4b84))
+* trace ([9d70c2e](https://github.com/shuvijs/shuvi/commit/9d70c2e2f98afbe380acf6f52c3517ce9651738e))
+
+
+
 ## [1.0.29](https://github.com/shuvijs/shuvi/compare/v1.0.28...v1.0.29) (2023-06-09)
 
 
