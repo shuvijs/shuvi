@@ -3,27 +3,34 @@
 
 import type { SpanId, Reporter } from '@shuvi/shared/reporter';
 
+export enum SpanStatus {
+  Started,
+  Stopped
+}
+
+const isServer = typeof window === 'undefined';
+const KEY_SERVER_REPORTER = Symbol.for('shuvi_server_reporter');
+
 let count = 0;
 const getId = () => {
   count++;
   return count;
 };
 
-// eslint typescript has a bug with TS enums
-/* eslint-disable no-shadow */
-export enum SpanStatus {
-  Started,
-  Stopped
-}
+let globalReporter: Reporter | undefined = undefined;
 
-export let reporter: Reporter | undefined = undefined;
-
-export function setReporter(r: Reporter) {
-  if (reporter) {
-    throw new Error('Reporter already set !');
+export function setReporter(reporter: Reporter) {
+  if (isServer) {
+    if ((globalThis as any)[KEY_SERVER_REPORTER]) {
+      throw new Error('Reporter already set !');
+    }
+    (globalThis as any)[KEY_SERVER_REPORTER] = reporter;
     return;
   }
-  reporter = r;
+  if (globalReporter) {
+    throw new Error('Reporter already set !');
+  }
+  globalReporter = reporter;
 }
 
 export class Span {
@@ -66,6 +73,9 @@ export class Span {
   // Additionally, ~285 years can be safely represented as microseconds as
   // a float64 in both JSON and JavaScript.
   stop(stopTime?: number) {
+    const reporter = isServer
+      ? (globalThis as any)[KEY_SERVER_REPORTER]
+      : globalReporter;
     if (!reporter) {
       return;
     }
