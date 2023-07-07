@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/router",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -28,7 +28,7 @@
     "node": ">= 16.0.0"
   },
   "dependencies": {
-    "@shuvi/utils": "1.0.31",
+    "@shuvi/utils": "1.0.32",
     "query-string": "6.13.8"
   }
 }

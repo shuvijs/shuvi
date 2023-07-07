@@ -1,3 +1,12 @@
+## [1.0.32](https://github.com/shuvijs/shuvi/compare/v1.0.31...v1.0.32) (2023-07-07)
+
+
+### Bug Fixes
+
+* revert external built-in packages  ([1470111](https://github.com/shuvijs/shuvi/commit/14701117a7c236288db52c413d569f8d9aeb9003))
+
+
+
 ## [1.0.31](https://github.com/shuvijs/shuvi/compare/v1.0.29...v1.0.31) (2023-07-05)
 
 
