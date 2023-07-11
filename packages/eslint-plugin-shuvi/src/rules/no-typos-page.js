@@ -1,8 +1,8 @@
 import { defineRule } from '../utils/define-rule';
 import { THRESHOLD, minDistance } from '../utils/url';
+import { isPage } from '../utils/is-page';
 
 const EXPORT_FUNCTIONS = ['loader'];
-const PAGEREG = /routes\/.*page\.(j|t)sx?$/;
 
 export default defineRule({
   meta: {
@@ -37,7 +37,7 @@ export default defineRule({
     return {
       ExportNamedDeclaration(node) {
         const fileName = context.getFilename();
-        if (!fileName || !PAGEREG.test(fileName)) {
+        if (!fileName || !isPage(fileName)) {
           return;
         }
 
