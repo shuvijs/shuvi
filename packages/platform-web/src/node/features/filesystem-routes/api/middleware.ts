@@ -1,7 +1,10 @@
 import { IServerPluginContext, ShuviRequestHandler } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
 import resources from '@shuvi/service/lib/resources';
+import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 import { apiRouteHandler } from './apiRouteHandler';
+
+const { SHUVI_SERVER_RUN_API_MIDDLEWARE } = SERVER_REQUEST.events;
 
 export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {
   return async function (req, res, next) {
@@ -16,6 +19,10 @@ export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {
       }
     }
     if (tempApiModule) {
+      const { serverRequestTrace } = _ctx.traces;
+      const runApiMiddlewareTrace = serverRequestTrace.traceChild(
+        SHUVI_SERVER_RUN_API_MIDDLEWARE.name
+      );
       try {
         const { config, default: resolver } = tempApiModule;
 
@@ -26,8 +33,18 @@ export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {
           config?.api || { bodyParser: true }
         );
       } catch (error) {
+        runApiMiddlewareTrace.setAttributes({
+          [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: true,
+          [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]:
+            res.statusCode
+        });
         next(error);
       }
+      runApiMiddlewareTrace.setAttributes({
+        [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: false,
+        [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]: res.statusCode
+      });
+      runApiMiddlewareTrace.stop();
     } else {
       next();
     }

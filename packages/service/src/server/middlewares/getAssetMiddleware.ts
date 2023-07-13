@@ -1,12 +1,20 @@
+import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 import { IServerPluginContext } from '../plugin';
 import { ShuviRequestHandler } from '../../server';
 import { CLIENT_OUTPUT_DIR } from '../../constants';
 import { isStaticFileExist, serveStatic } from '../utils';
 
+const { SHUVI_SERVER_HANDLE_REQUEST_START, SHUVI_SERVER_RUN_ASSET_MIDDLEWARE } =
+  SERVER_REQUEST.events;
+
 export const getAssetMiddleware = (
   context: IServerPluginContext
 ): ShuviRequestHandler => {
   return async (req, res, next) => {
+    const { serverRequestTrace } = context.traces;
+    serverRequestTrace
+      .traceChild(SHUVI_SERVER_HANDLE_REQUEST_START.name)
+      .stop();
     const candidatePaths = [];
 
     try {
@@ -34,7 +42,6 @@ export const getAssetMiddleware = (
     } catch (err) {
       return next(err);
     }
-
     if (!candidatePaths.length) {
       return next();
     }
@@ -43,10 +50,20 @@ export const getAssetMiddleware = (
       if (!isStaticFileExist(assetAbsPath)) {
         continue;
       }
+      const runAssetMiddlewareTrace = serverRequestTrace.traceChild(
+        SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.name
+      );
 
       let err = null;
       try {
-        return await serveStatic(req, res, assetAbsPath);
+        await serveStatic(req, res, assetAbsPath);
+        runAssetMiddlewareTrace.setAttributes({
+          [SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.attrs.error.name]: false,
+          [SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.attrs.statusCode.name]:
+            res.statusCode
+        });
+        runAssetMiddlewareTrace.stop();
+        return;
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           error.statusCode = 404;
@@ -55,6 +72,12 @@ export const getAssetMiddleware = (
       }
 
       if (err) {
+        runAssetMiddlewareTrace.setAttributes({
+          [SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.attrs.error.name]: true,
+          [SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.attrs.statusCode.name]:
+            err?.statusCode || res.statusCode
+        });
+        runAssetMiddlewareTrace.stop();
         return next(err);
       }
     }
