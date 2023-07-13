@@ -4,17 +4,13 @@ import { ShuviRequestHandler } from '../../server';
 import { CLIENT_OUTPUT_DIR } from '../../constants';
 import { isStaticFileExist, serveStatic } from '../utils';
 
-const { SHUVI_SERVER_HANDLE_REQUEST_START, SHUVI_SERVER_RUN_ASSET_MIDDLEWARE } =
-  SERVER_REQUEST.events;
+const { SHUVI_SERVER_RUN_ASSET_MIDDLEWARE } = SERVER_REQUEST.events;
 
 export const getAssetMiddleware = (
   context: IServerPluginContext
 ): ShuviRequestHandler => {
   return async (req, res, next) => {
     const { serverRequestTrace } = context.traces;
-    serverRequestTrace
-      .traceChild(SHUVI_SERVER_HANDLE_REQUEST_START.name)
-      .stop();
     const candidatePaths = [];
 
     try {

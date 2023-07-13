@@ -11,6 +11,8 @@ import {
   IRequest,
   IResponse
 } from './serverTypes';
+import { serverRequestTrace } from '../trace';
+import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 
 interface RouteOptions {
   caseSensitive: boolean;
@@ -68,6 +70,9 @@ class RouterImpl implements Router {
   }
 
   handleRequest(req: IRequest, res: IResponse, out: INextFunc) {
+    serverRequestTrace
+      .traceChild(SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.name)
+      .stop();
     let index = 0;
 
     let done: Done = err => out(err);
