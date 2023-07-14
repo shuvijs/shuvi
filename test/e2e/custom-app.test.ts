@@ -13,7 +13,7 @@ describe('custom/app.js', () => {
     await ctx.close();
   });
   afterEach(async () => {
-    await page.close();
+    await page?.close();
   });
   it('should work', async () => {
     page = await ctx.browser.page();

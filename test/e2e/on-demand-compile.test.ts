@@ -24,7 +24,7 @@ describe('On Demand Compile', () => {
     ctx = await launchFixtureAtCurrentProcess('on-demand-compile');
   });
   afterAll(async () => {
-    await page.close();
+    await page?.close();
     await ctx.close();
     (process.env as any).NODE_ENV = originalNodeEnv;
   });
@@ -42,6 +42,7 @@ describe('On Demand Compile', () => {
 
   test('should compile while client navigate', async () => {
     expect(isPageCompiled('a')).toBe(false);
+    expect(page).toBeDefined();
     await page.shuvi.navigate('/a');
     await page.waitForSelector('#a');
   });
