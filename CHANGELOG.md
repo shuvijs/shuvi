@@ -1,3 +1,12 @@
+## [1.0.33](https://github.com/shuvijs/shuvi/compare/v1.0.32...v1.0.33) (2023-07-14)
+
+
+### Features
+
+* add metrics point: SHUVI_SERVER_RUN_ASSET_MIDDLEWARE, SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES and SHUVI_SERVER_RUN_API_MIDDLEWARE ([adeb63e](https://github.com/shuvijs/shuvi/commit/adeb63e25e150e15eaccbdf7c53004fcf926c138))
+
+
+
 ## [1.0.32](https://github.com/shuvijs/shuvi/compare/v1.0.31...v1.0.32) (2023-07-07)
 
 
