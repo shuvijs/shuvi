@@ -38,6 +38,52 @@ export const SERVER_REQUEST = {
       name: 'SHUVI_SERVER_HANDLE_REQUEST_START',
       duration: false
     },
+    SHUVI_SERVER_RUN_ASSET_MIDDLEWARE: {
+      name: 'SHUVI_SERVER_RUN_ASSET_MIDDLEWARE',
+      duration: true,
+      attrs: {
+        error: {
+          name: 'error',
+          type: 'boolean'
+        },
+        statusCode: {
+          name: 'statusCode',
+          type: 'number'
+        }
+      }
+    },
+    SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES: {
+      name: 'SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES',
+      duration: true,
+      attrs: {
+        error: {
+          name: 'error',
+          type: 'boolean'
+        },
+        statusCode: {
+          name: 'statusCode',
+          type: 'number'
+        },
+        headersSent: {
+          name: 'headersSent',
+          type: 'boolean'
+        }
+      }
+    },
+    SHUVI_SERVER_RUN_API_MIDDLEWARE: {
+      name: 'SHUVI_SERVER_RUN_API_MIDDLEWARE',
+      duration: true,
+      attrs: {
+        error: {
+          name: 'error',
+          type: 'boolean'
+        },
+        statusCode: {
+          name: 'statusCode',
+          type: 'number'
+        }
+      }
+    },
     SHUVI_SERVER_RUN_PAGE_MIDDLEWARE: {
       name: 'SHUVI_SERVER_RUN_PAGE_MIDDLEWARE',
       duration: true,

@@ -6,14 +6,10 @@ import {
   HookMap
 } from '@shuvi/hook';
 import { createPluginCreator } from '@shuvi/shared/plugins';
-import {
-  SERVER_CREATE_APP,
-  SERVER_REQUEST
-} from '@shuvi/shared/constants/trace';
-
 import { IPluginContext } from '../core';
 import { CustomServerPluginHooks } from './pluginTypes';
-import { Span, trace } from '../trace';
+import { serverCreateAppTrace, serverRequestTrace } from './trace';
+import { Span } from '../trace';
 
 export * from './pluginTypes';
 
@@ -75,8 +71,8 @@ export const initServerPlugins = (
     {
       serverPluginRunner: manager.runner,
       traces: {
-        serverCreateAppTrace: trace(SERVER_CREATE_APP.name),
-        serverRequestTrace: trace(SERVER_REQUEST.name)
+        serverCreateAppTrace,
+        serverRequestTrace
       }
     },
     pluginContext
