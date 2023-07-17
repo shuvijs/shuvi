@@ -20,7 +20,7 @@ import { serializeServerError } from '../helper/serializeServerError';
 
 const { SHUVI_SERVER_RUN_LOADERS } = SERVER_CREATE_APP.events;
 export const createApp: CreateAppServer = options => {
-  const { req, ssr, serverCreateAppTrace } = options;
+  const { req, ssr } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
@@ -32,6 +32,7 @@ export const createApp: CreateAppServer = options => {
   let app: InternalApplication;
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
+      const { serverCreateAppTrace } = req.traces!;
       const runLoadersTrace = serverCreateAppTrace.traceChild(
         SHUVI_SERVER_RUN_LOADERS.name
       );

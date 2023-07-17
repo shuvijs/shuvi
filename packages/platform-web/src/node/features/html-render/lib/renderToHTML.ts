@@ -13,17 +13,14 @@ export async function renderToHTML({
 }): Promise<Response> {
   let result: Response;
   const renderer = new Renderer({ serverPluginContext });
-  const {
-    traces: { serverCreateAppTrace }
-  } = serverPluginContext;
+  const { serverCreateAppTrace } = req.traces!;
   const { application } = resources.server;
   const app = serverCreateAppTrace
     .traceChild(SERVER_CREATE_APP.events.SHUVI_SERVER_CREATE_APP.name)
     .traceFn(() =>
       application.createApp({
         req,
-        ssr: serverPluginContext.config.ssr,
-        serverCreateAppTrace
+        ssr: serverPluginContext.config.ssr
       })
     );
 

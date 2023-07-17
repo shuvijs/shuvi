@@ -11,7 +11,6 @@ import {
   IRequest,
   IResponse
 } from './serverTypes';
-import { serverRequestTrace } from '../trace';
 import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 
 interface RouteOptions {
@@ -70,6 +69,7 @@ class RouterImpl implements Router {
   }
 
   handleRequest(req: IRequest, res: IResponse, out: INextFunc) {
+    const { serverRequestTrace } = req.traces!;
     serverRequestTrace
       .traceChild(SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.name)
       .stop();

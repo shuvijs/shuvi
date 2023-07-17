@@ -6,7 +6,6 @@ import {
 } from '@shuvi/platform-shared/shared';
 import { ApplicationImpl as _ApplicationImpl } from '@shuvi/platform-shared/shuvi-app/application';
 import type { ShuviRequest } from '@shuvi/service';
-import { Span } from '@shuvi/service/lib/trace';
 
 export interface AppConfig {
   ssr: boolean;
@@ -17,11 +16,7 @@ export type InternalApplication = _ApplicationImpl<AppConfig>;
 export type Application = _Application<AppConfig>;
 
 export interface CreateAppServer {
-  (options: {
-    req: ShuviRequest;
-    ssr: boolean;
-    serverCreateAppTrace: Span;
-  }): InternalApplication;
+  (options: { req: ShuviRequest; ssr: boolean }): InternalApplication;
 }
 
 export interface CreateAppClient {

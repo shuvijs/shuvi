@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponse } from 'http';
 import {
   ShuviRequest,
   ShuviRequestHandler,
@@ -17,13 +17,11 @@ const {
   SHUVI_SERVER_RUN_PAGE_MIDDLEWARE
 } = SERVER_REQUEST.events;
 function createPageHandler(serverPluginContext: IServerPluginContext) {
-  const {
-    traces: { serverRequestTrace }
-  } = serverPluginContext;
   const wrappedSendHtml = async (
     html: string,
     { req, res }: RequestContext
   ) => {
+    const { serverRequestTrace } = req.traces!;
     const sendHtmlOriginalTrace = serverRequestTrace.traceChild(
       SHUVI_SERVER_SEND_HTML_ORIGINAL.name
     );
@@ -34,7 +32,8 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
   let sendHtml: ISendHtml;
   let pendingSendHtml: Promise<ISendHtml>;
 
-  return async function (req: IncomingMessage, res: ServerResponse) {
+  return async function (req: ShuviRequest, res: ServerResponse) {
+    const { serverRequestTrace } = req.traces!;
     const result = await serverRequestTrace
       .traceChild(SHUVI_SERVER_RENDER_TO_HTML.name)
       .traceAsyncFn(() =>
@@ -61,9 +60,6 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
         }
         sendHtml = await pendingSendHtml;
       }
-      const {
-        traces: { serverRequestTrace }
-      } = serverPluginContext;
       const sendHtmlHookTrace = serverRequestTrace.traceChild(
         SHUVI_SERVER_SEND_HTML_HOOK.name
       );
@@ -84,9 +80,7 @@ export async function getPageMiddleware(
   let pendingPageHandler: Promise<IHandlePageRequest>;
 
   return async function (req, res, next) {
-    const {
-      traces: { serverRequestTrace }
-    } = api;
+    const { serverRequestTrace } = req.traces!;
     const runPageMiddlewareTrace = serverRequestTrace.traceChild(
       SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.name
     );

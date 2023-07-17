@@ -8,7 +8,7 @@ export enum SpanStatus {
   Stopped
 }
 
-export interface SpanContext {
+export interface ISpanContext {
   [x: string]: any;
 }
 
@@ -37,12 +37,12 @@ export function setReporter(reporter: Reporter) {
   globalReporter = reporter;
 }
 
-export class Span {
+export class Span<C extends ISpanContext = ISpanContext> {
   private _name: string;
   private _id: SpanId;
   private _parentId?: SpanId;
   private _attrs: { [key: string]: any };
-  private _context: { [key: string]: any };
+  private _context: C;
   private _status: SpanStatus;
   private _now: number;
   private _start: number;
@@ -58,12 +58,12 @@ export class Span {
     parentId?: SpanId;
     startTime?: number;
     attrs?: Record<string, any>;
-    context?: Record<string, any>;
+    context?: C;
   }) {
     this._name = name;
     this._parentId = parentId;
     this._attrs = attrs ? { ...attrs } : {};
-    this._context = attrs ? { ...context } : {};
+    this._context = (context ? { ...context } : {}) as C;
     this._status = SpanStatus.Started;
     this._id = getId();
     const now = Date.now();
@@ -162,11 +162,11 @@ export class Span {
   }
 }
 
-export const trace = (
+export const trace = <C extends ISpanContext = ISpanContext>(
   name: string,
   parentId?: SpanId,
   attrs?: { [key: string]: string },
-  context?: { [key: string]: string }
+  context?: C
 ) => {
   return new Span({ name, parentId, attrs, context });
 };

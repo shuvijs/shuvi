@@ -5,6 +5,8 @@ import logger from '@shuvi/utils/logger';
 import detectPort from 'detect-port';
 import { sendHTML } from '../utils';
 import { getRouter, Router } from './router';
+import { initTrace } from '../trace';
+
 import {
   IResponse,
   IRequest,
@@ -103,6 +105,7 @@ export class Server {
   }
 
   private _handleRequest(req: any, res: any, next?: INextFunc) {
+    req.traces = initTrace(req);
     this._router.handleRequest(
       req,
       res,
@@ -111,6 +114,7 @@ export class Server {
   }
 
   private _finalhandler = (req: IRequest, res: IResponse, error?: any) => {
+    req.traces = null;
     let msg;
 
     // ignore 404 on in-flight response

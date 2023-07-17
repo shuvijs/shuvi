@@ -10,7 +10,7 @@ export const getAssetMiddleware = (
   context: IServerPluginContext
 ): ShuviRequestHandler => {
   return async (req, res, next) => {
-    const { serverRequestTrace } = context.traces;
+    const { serverRequestTrace } = req.traces!;
     const candidatePaths = [];
 
     try {

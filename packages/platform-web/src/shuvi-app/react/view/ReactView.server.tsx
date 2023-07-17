@@ -16,12 +16,7 @@ import isThirdSite from '../../helper/isThirdSite';
 const { SHUVI_SERVER_RENDER_TO_STRING } = SERVER_REQUEST.events;
 
 export class ReactServerView implements IReactServerView {
-  renderApp: IReactServerView['renderApp'] = async ({
-    req,
-    app,
-    manifest,
-    serverRequestTrace
-  }) => {
+  renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
     await Loadable.preloadAll();
 
     const { router, appComponent: AppComponent, setError: setAppError } = app;
@@ -70,6 +65,7 @@ export class ReactServerView implements IReactServerView {
         </AppContainer>
       </Router>
     );
+    const { serverRequestTrace } = req.traces!;
     const renderToStringTrace = serverRequestTrace.traceChild(
       SHUVI_SERVER_RENDER_TO_STRING.name
     );
