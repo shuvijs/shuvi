@@ -6,10 +6,13 @@ import { trace } from '../trace';
 
 export function initTrace(requestId: string) {
   const serverCreateAppTrace = trace(SERVER_CREATE_APP.name);
-  serverCreateAppTrace.setAttribute('requestId', requestId);
+  serverCreateAppTrace.setAttribute(
+    SERVER_CREATE_APP.attrs.requestId,
+    requestId
+  );
 
   const serverRequestTrace = trace(SERVER_REQUEST.name);
-  serverRequestTrace.setAttribute('requestId', requestId);
+  serverRequestTrace.setAttribute(SERVER_REQUEST.attrs.requestId, requestId);
 
   return {
     serverCreateAppTrace,

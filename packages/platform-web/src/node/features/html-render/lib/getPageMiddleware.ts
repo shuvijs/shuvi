@@ -23,7 +23,8 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
   ) => {
     const { serverRequestTrace } = req._traces;
     const sendHtmlOriginalTrace = serverRequestTrace.traceChild(
-      SHUVI_SERVER_SEND_HTML_ORIGINAL.name
+      SHUVI_SERVER_SEND_HTML_ORIGINAL.name,
+      { [SHUVI_SERVER_SEND_HTML_ORIGINAL.attrs.requestId]: req._requestId }
     );
     originalSendHtml(req, res, html);
     sendHtmlOriginalTrace.stop();
@@ -35,7 +36,9 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
   return async function (req: ShuviRequest, res: ServerResponse) {
     const { serverRequestTrace } = req._traces;
     const result = await serverRequestTrace
-      .traceChild(SHUVI_SERVER_RENDER_TO_HTML.name)
+      .traceChild(SHUVI_SERVER_RENDER_TO_HTML.name, {
+        [SHUVI_SERVER_RENDER_TO_HTML.attrs.requestId]: req._requestId
+      })
       .traceAsyncFn(() =>
         renderToHTML({
           req: req as ShuviRequest,
@@ -61,7 +64,8 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
         sendHtml = await pendingSendHtml;
       }
       const sendHtmlHookTrace = serverRequestTrace.traceChild(
-        SHUVI_SERVER_SEND_HTML_HOOK.name
+        SHUVI_SERVER_SEND_HTML_HOOK.name,
+        { [SHUVI_SERVER_SEND_HTML_HOOK.attrs.requestId]: req._requestId }
       );
       await sendHtml(textResp.data, { req, res });
       sendHtmlHookTrace.stop();
@@ -82,7 +86,8 @@ export async function getPageMiddleware(
   return async function (req, res, next) {
     const { serverRequestTrace } = req._traces;
     const runPageMiddlewareTrace = serverRequestTrace.traceChild(
-      SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.name
+      SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.name,
+      { [SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.requestId]: req._requestId }
     );
     if (!pageHandler) {
       if (!pendingPageHandler) {

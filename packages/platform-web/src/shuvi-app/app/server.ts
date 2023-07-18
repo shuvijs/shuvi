@@ -34,7 +34,8 @@ export const createApp: CreateAppServer = options => {
     router.beforeResolve(async (to, from, next) => {
       const { serverCreateAppTrace } = req._traces;
       const runLoadersTrace = serverCreateAppTrace.traceChild(
-        SHUVI_SERVER_RUN_LOADERS.name
+        SHUVI_SERVER_RUN_LOADERS.name,
+        { [SHUVI_SERVER_RUN_LOADERS.attrs.requestId]: req._requestId }
       );
       const pageLoaders = await app.getLoaders();
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
