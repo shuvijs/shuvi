@@ -69,7 +69,7 @@ class RouterImpl implements Router {
   }
 
   handleRequest(req: IRequest, res: IResponse, out: INextFunc) {
-    const { serverRequestTrace } = req.traces!;
+    const { serverRequestTrace } = req._traces;
     serverRequestTrace
       .traceChild(SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.name)
       .stop();

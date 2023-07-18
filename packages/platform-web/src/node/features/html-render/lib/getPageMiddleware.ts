@@ -21,7 +21,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
     html: string,
     { req, res }: RequestContext
   ) => {
-    const { serverRequestTrace } = req.traces!;
+    const { serverRequestTrace } = req._traces;
     const sendHtmlOriginalTrace = serverRequestTrace.traceChild(
       SHUVI_SERVER_SEND_HTML_ORIGINAL.name
     );
@@ -33,7 +33,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
   let pendingSendHtml: Promise<ISendHtml>;
 
   return async function (req: ShuviRequest, res: ServerResponse) {
-    const { serverRequestTrace } = req.traces!;
+    const { serverRequestTrace } = req._traces;
     const result = await serverRequestTrace
       .traceChild(SHUVI_SERVER_RENDER_TO_HTML.name)
       .traceAsyncFn(() =>
@@ -80,7 +80,7 @@ export async function getPageMiddleware(
   let pendingPageHandler: Promise<IHandlePageRequest>;
 
   return async function (req, res, next) {
-    const { serverRequestTrace } = req.traces!;
+    const { serverRequestTrace } = req._traces;
     const runPageMiddlewareTrace = serverRequestTrace.traceChild(
       SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.name
     );

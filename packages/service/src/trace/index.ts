@@ -8,10 +8,6 @@ export enum SpanStatus {
   Stopped
 }
 
-export interface ISpanContext {
-  [x: string]: any;
-}
-
 const isServer = typeof window === 'undefined';
 const KEY_SERVER_REPORTER = Symbol.for('shuvi_server_reporter');
 
@@ -37,12 +33,11 @@ export function setReporter(reporter: Reporter) {
   globalReporter = reporter;
 }
 
-export class Span<C extends ISpanContext = ISpanContext> {
+export class Span {
   private _name: string;
   private _id: SpanId;
   private _parentId?: SpanId;
   private _attrs: { [key: string]: any };
-  private _context: C;
   private _status: SpanStatus;
   private _now: number;
   private _start: number;
@@ -50,20 +45,17 @@ export class Span<C extends ISpanContext = ISpanContext> {
   constructor({
     name,
     parentId,
-    startTime,
     attrs,
-    context
+    startTime
   }: {
     name: string;
     parentId?: SpanId;
     startTime?: number;
     attrs?: Record<string, any>;
-    context?: C;
   }) {
     this._name = name;
     this._parentId = parentId;
     this._attrs = attrs ? { ...attrs } : {};
-    this._context = (context ? { ...context } : {}) as C;
     this._status = SpanStatus.Started;
     this._id = getId();
     const now = Date.now();
@@ -74,10 +66,6 @@ export class Span<C extends ISpanContext = ISpanContext> {
 
   get status() {
     return this._status;
-  }
-
-  get context() {
-    return this._context;
   }
 
   // Durations are reported as microseconds.
@@ -105,18 +93,12 @@ export class Span<C extends ISpanContext = ISpanContext> {
       endTime: end,
       id: this._id,
       parentId: this._parentId,
-      attrs: this._attrs,
-      context: this._context
+      attrs: this._attrs
     });
   }
 
   traceChild(name: string, attrs?: Object) {
-    return new Span({
-      name,
-      parentId: this._id,
-      attrs,
-      context: this._context
-    });
+    return new Span({ name, parentId: this._id, attrs });
   }
 
   manualTraceChild(
@@ -125,13 +107,7 @@ export class Span<C extends ISpanContext = ISpanContext> {
     stopTime: number,
     attrs?: Object
   ) {
-    const span = new Span({
-      name,
-      parentId: this._id,
-      attrs,
-      startTime,
-      context: this._context
-    });
+    const span = new Span({ name, parentId: this._id, attrs, startTime });
     span.stop(stopTime);
   }
 
@@ -162,11 +138,10 @@ export class Span<C extends ISpanContext = ISpanContext> {
   }
 }
 
-export const trace = <C extends ISpanContext = ISpanContext>(
+export const trace = (
   name: string,
   parentId?: SpanId,
-  attrs?: { [key: string]: string },
-  context?: C
+  attrs?: { [key: string]: string }
 ) => {
-  return new Span({ name, parentId, attrs, context });
+  return new Span({ name, parentId, attrs });
 };

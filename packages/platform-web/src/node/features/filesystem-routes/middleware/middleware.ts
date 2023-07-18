@@ -7,7 +7,7 @@ const { SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES } = SERVER_REQUEST.events;
 
 export function middleware(_api: IServerPluginContext): ShuviRequestHandler {
   return async function (req, res, next) {
-    const { serverCreateAppTrace } = req.traces!;
+    const { serverCreateAppTrace } = req._traces;
     const middlewareRoutesTrace = serverCreateAppTrace.traceChild(
       SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES.name
     );

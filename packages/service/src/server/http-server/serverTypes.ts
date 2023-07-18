@@ -7,10 +7,11 @@ export interface IRequest extends IncomingMessage {
   pathname: string;
   query: IQuery;
   params: IParams;
-  traces: {
+  _requestId: string;
+  _traces: {
     serverCreateAppTrace: Span;
     serverRequestTrace: Span;
-  } | null;
+  };
 }
 
 export interface IResponse extends ServerResponse {}

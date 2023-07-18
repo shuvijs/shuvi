@@ -1,5 +1,6 @@
 import * as http from 'http';
 import { parse as parseUrl } from 'url';
+import { v4 as uuidv4 } from 'uuid';
 import { parseQuery } from '@shuvi/router';
 import logger from '@shuvi/utils/logger';
 import detectPort from 'detect-port';
@@ -105,10 +106,9 @@ export class Server {
   }
 
   private _handleRequest(req: any, res: any, next?: INextFunc) {
-    req.traces = initTrace(req);
-    res.on('finish', function finished() {
-      req.traces = null;
-    });
+    const requestId = uuidv4();
+    req._traces = initTrace(requestId);
+    req._requestId = requestId;
     this._router.handleRequest(
       req,
       res,
@@ -117,7 +117,6 @@ export class Server {
   }
 
   private _finalhandler = (req: IRequest, res: IResponse, error?: any) => {
-    req.traces = null;
     let msg;
 
     // ignore 404 on in-flight response

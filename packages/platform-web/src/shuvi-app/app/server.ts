@@ -32,7 +32,7 @@ export const createApp: CreateAppServer = options => {
   let app: InternalApplication;
   if (ssr) {
     router.beforeResolve(async (to, from, next) => {
-      const { serverCreateAppTrace } = req.traces!;
+      const { serverCreateAppTrace } = req._traces;
       const runLoadersTrace = serverCreateAppTrace.traceChild(
         SHUVI_SERVER_RUN_LOADERS.name
       );

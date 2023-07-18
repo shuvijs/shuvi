@@ -65,7 +65,7 @@ export class ReactServerView implements IReactServerView {
         </AppContainer>
       </Router>
     );
-    const { serverRequestTrace } = req.traces!;
+    const { serverRequestTrace } = req._traces;
     const renderToStringTrace = serverRequestTrace.traceChild(
       SHUVI_SERVER_RENDER_TO_STRING.name
     );
