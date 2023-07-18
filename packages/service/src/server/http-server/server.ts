@@ -106,6 +106,9 @@ export class Server {
 
   private _handleRequest(req: any, res: any, next?: INextFunc) {
     req.traces = initTrace(req);
+    res.on('finish', function finished() {
+      req.traces = null;
+    });
     this._router.handleRequest(
       req,
       res,
