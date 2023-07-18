@@ -8,17 +8,11 @@ import {
 import { createPluginCreator } from '@shuvi/shared/plugins';
 import { IPluginContext } from '../core';
 import { CustomServerPluginHooks } from './pluginTypes';
-import { serverCreateAppTrace, serverRequestTrace } from './trace';
-import { Span } from '../trace';
 
 export * from './pluginTypes';
 
 export interface IServerPluginContext extends IPluginContext {
   serverPluginRunner: PluginManager['runner'];
-  traces: {
-    serverCreateAppTrace: Span;
-    serverRequestTrace: Span;
-  };
 }
 
 export type PluginManager = ReturnType<typeof getManager>;
@@ -69,11 +63,7 @@ export const initServerPlugins = (
 ): IServerPluginContext => {
   const serverContext = Object.assign(
     {
-      serverPluginRunner: manager.runner,
-      traces: {
-        serverCreateAppTrace,
-        serverRequestTrace
-      }
+      serverPluginRunner: manager.runner
     },
     pluginContext
   );

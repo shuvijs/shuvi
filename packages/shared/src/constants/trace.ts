@@ -1,4 +1,7 @@
+const requestId = 'requestId';
+
 const runLoadersAttrs = {
+  [requestId]: 'string',
   error: {
     name: 'error',
     type: 'boolean'
@@ -13,14 +16,23 @@ const runLoadersAttrs = {
 /** category SERVER_CREATE_APP */
 export const SERVER_CREATE_APP = {
   name: 'SERVER_CREATE_APP',
+  attrs: {
+    [requestId]: 'string'
+  },
   events: {
     SHUVI_SERVER_CREATE_APP: {
       name: 'SHUVI_SERVER_CREATE_APP',
-      duration: true
+      duration: true,
+      attrs: {
+        [requestId]: 'string'
+      }
     },
     SHUVI_SERVER_APP_INIT: {
       name: 'SHUVI_SERVER_APP_INIT',
-      duration: true
+      duration: true,
+      attrs: {
+        [requestId]: 'string'
+      }
     },
     SHUVI_SERVER_RUN_LOADERS: {
       name: 'SHUVI_SERVER_RUN_LOADERS',
@@ -33,15 +45,22 @@ export const SERVER_CREATE_APP = {
 /** category SERVER_REQUEST */
 export const SERVER_REQUEST = {
   name: 'SERVER_REQUEST',
+  attrs: {
+    [requestId]: 'string'
+  },
   events: {
     SHUVI_SERVER_HANDLE_REQUEST_START: {
       name: 'SHUVI_SERVER_HANDLE_REQUEST_START',
-      duration: false
+      duration: false,
+      attrs: {
+        [requestId]: 'string'
+      }
     },
     SHUVI_SERVER_RUN_ASSET_MIDDLEWARE: {
       name: 'SHUVI_SERVER_RUN_ASSET_MIDDLEWARE',
       duration: true,
       attrs: {
+        [requestId]: 'string',
         error: {
           name: 'error',
           type: 'boolean'
@@ -56,6 +75,7 @@ export const SERVER_REQUEST = {
       name: 'SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES',
       duration: true,
       attrs: {
+        [requestId]: 'string',
         error: {
           name: 'error',
           type: 'boolean'
@@ -74,6 +94,7 @@ export const SERVER_REQUEST = {
       name: 'SHUVI_SERVER_RUN_API_MIDDLEWARE',
       duration: true,
       attrs: {
+        [requestId]: 'string',
         error: {
           name: 'error',
           type: 'boolean'
@@ -88,6 +109,7 @@ export const SERVER_REQUEST = {
       name: 'SHUVI_SERVER_RUN_PAGE_MIDDLEWARE',
       duration: true,
       attrs: {
+        [requestId]: 'string',
         error: {
           name: 'error',
           type: 'boolean'
@@ -102,6 +124,7 @@ export const SERVER_REQUEST = {
       name: 'SHUVI_SERVER_RENDER_TO_STRING',
       duration: true,
       attrs: {
+        [requestId]: 'string',
         error: {
           name: 'error',
           type: 'boolean'
@@ -110,15 +133,24 @@ export const SERVER_REQUEST = {
     },
     SHUVI_SERVER_RENDER_TO_HTML: {
       name: 'SHUVI_SERVER_RENDER_TO_HTML',
-      duration: true
+      duration: true,
+      attrs: {
+        [requestId]: 'string'
+      }
     },
     SHUVI_SERVER_SEND_HTML_HOOK: {
       name: 'SHUVI_SERVER_SEND_HTML_HOOK',
-      duration: true
+      duration: true,
+      attrs: {
+        [requestId]: 'string'
+      }
     },
     SHUVI_SERVER_SEND_HTML_ORIGINAL: {
       name: 'SHUVI_SERVER_SEND_HTML_ORIGINAL',
-      duration: true
+      duration: true,
+      attrs: {
+        [requestId]: 'string'
+      }
     }
   }
 };

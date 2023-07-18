@@ -441,6 +441,7 @@ importers:
       '@types/cross-spawn': 6.0.1
       '@types/detect-port': 1.3.0
       '@types/ejs': 3.0.4
+      '@types/uuid': ^9.0.2
       '@types/ws': 8.2.0
       commander: 5.1.0
       comment-json: 4.2.2
@@ -454,6 +455,7 @@ importers:
       http-proxy-middleware: 1.0.6
       rimraf: 3.0.2
       send: 0.17.1
+      uuid: 9.0.0
       ws: 8.2.3
     dependencies:
       '@babel/code-frame': 7.14.5
@@ -480,6 +482,7 @@ importers:
       http-proxy-middleware: 1.0.6
       rimraf: 3.0.2
       send: 0.17.1
+      uuid: 9.0.0
       ws: 8.2.3
     devDependencies:
       '@babel/types': 7.12.11
@@ -490,6 +493,7 @@ importers:
       '@types/cross-spawn': 6.0.1
       '@types/detect-port': 1.3.0
       '@types/ejs': 3.0.4
+      '@types/uuid': 9.0.2
       '@types/ws': 8.2.0
 
   packages/shared:
@@ -5065,6 +5069,10 @@ packages:
     resolution: {integrity: sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==}
     dev: true
 
+  /@types/uuid/9.0.2:
+    resolution: {integrity: sha512-kNnC1GFBLuhImSnV7w4njQkUiJi0ZXUycu1rUaouPqiKlXkh77JKgdRnTAp1x5eBwcIwbtI+3otwzuIDEuDoxQ==}
+    dev: true
+
   /@types/validate-npm-package-name/3.0.0:
     resolution: {integrity: sha512-iFNNIrEaJH1lbPiyX+O/QyxSbKxrTjdNBVZGckt+iEL9So0hdZNBL68sOfHnt2txuUD8UJXvmKv/1DkgkebgUg==}
     dev: true
@@ -6803,8 +6811,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
-      is-text-path: 1.0.1
       JSONStream: 1.3.5
+      is-text-path: 1.0.1
       lodash: 4.17.21
       meow: 8.1.2
       split2: 3.2.2
@@ -16142,6 +16150,11 @@ packages:
     deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
     hasBin: true
     dev: true
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /v8-compile-cache/2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}

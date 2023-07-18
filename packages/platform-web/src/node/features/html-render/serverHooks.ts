@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponse } from 'http';
 import {
   createAsyncParallelHook,
   createAsyncSeriesHook,
@@ -14,12 +14,12 @@ export interface ModifyHtmlContext {
 }
 
 export type IHandlePageRequest = (
-  req: IncomingMessage,
+  req: ShuviRequest,
   res: ServerResponse
 ) => Promise<void>;
 
 export type RequestContext = {
-  req: IncomingMessage;
+  req: ShuviRequest;
   res: ServerResponse;
 };
 

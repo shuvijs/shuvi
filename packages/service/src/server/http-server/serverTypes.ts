@@ -1,11 +1,17 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { IParams, ParsedQuery as IQuery } from '@shuvi/router';
+import { Span } from '../../trace';
 
 export interface IRequest extends IncomingMessage {
   url: string;
   pathname: string;
   query: IQuery;
   params: IParams;
+  _requestId: string;
+  _traces: {
+    serverCreateAppTrace: Span;
+    serverRequestTrace: Span;
+  };
 }
 
 export interface IResponse extends ServerResponse {}

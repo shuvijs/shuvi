@@ -2,7 +2,6 @@ import type { ShuviRequest } from '@shuvi/service';
 import { Response, IAppData } from '@shuvi/platform-shared/shared';
 import { IManifest } from '../shared';
 import { Application } from './appTypes';
-import { Span } from '@shuvi/service/lib/trace';
 
 export type IRenderViewOptions = {
   app: Application;
@@ -48,7 +47,6 @@ export interface IClientRendererOptions<ExtraAppData = {}>
 export interface IServerRendererOptions extends IRenderOptions {
   req: ShuviRequest;
   manifest: IManifest;
-  serverRequestTrace: Span;
 }
 
 export interface IViewClient<ExtraAppData = {}>

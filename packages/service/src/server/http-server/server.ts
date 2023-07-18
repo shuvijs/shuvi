@@ -1,10 +1,13 @@
 import * as http from 'http';
 import { parse as parseUrl } from 'url';
+import { v4 as uuidv4 } from 'uuid';
 import { parseQuery } from '@shuvi/router';
 import logger from '@shuvi/utils/logger';
 import detectPort from 'detect-port';
 import { sendHTML } from '../utils';
 import { getRouter, Router } from './router';
+import { initTrace } from '../trace';
+
 import {
   IResponse,
   IRequest,
@@ -103,6 +106,9 @@ export class Server {
   }
 
   private _handleRequest(req: any, res: any, next?: INextFunc) {
+    const requestId = uuidv4();
+    req._traces = initTrace(requestId);
+    req._requestId = requestId;
     this._router.handleRequest(
       req,
       res,
