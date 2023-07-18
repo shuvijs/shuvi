@@ -19,9 +19,10 @@ export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {
       }
     }
     if (tempApiModule) {
-      const { serverRequestTrace } = _ctx.traces;
+      const { serverRequestTrace } = req._traces;
       const runApiMiddlewareTrace = serverRequestTrace.traceChild(
-        SHUVI_SERVER_RUN_API_MIDDLEWARE.name
+        SHUVI_SERVER_RUN_API_MIDDLEWARE.name,
+        { [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.requestId]: req._requestId }
       );
       try {
         const { config, default: resolver } = tempApiModule;
