@@ -1,3 +1,12 @@
+## [1.0.34](https://github.com/shuvijs/shuvi/compare/v1.0.33...v1.0.34) (2023-07-19)
+
+
+### Features
+
+* trace add requestId ([7289b7c](https://github.com/shuvijs/shuvi/commit/7289b7c930e6803fe1fceb3d104305174336bb3e))
+
+
+
 ## [1.0.33](https://github.com/shuvijs/shuvi/compare/v1.0.32...v1.0.33) (2023-07-14)
 
 
