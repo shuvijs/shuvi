@@ -68,7 +68,7 @@ export class ReactServerView implements IReactServerView {
     const { serverRequestTrace } = req._traces;
     const renderToStringTrace = serverRequestTrace.traceChild(
       SHUVI_SERVER_RENDER_TO_STRING.name,
-      { [SHUVI_SERVER_RENDER_TO_STRING.attrs.requestId]: req._requestId }
+      { [SHUVI_SERVER_RENDER_TO_STRING.attrs.requestId.name]: req._requestId }
     );
     try {
       htmlContent = renderToString(RootApp);
