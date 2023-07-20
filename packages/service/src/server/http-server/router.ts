@@ -75,7 +75,7 @@ class RouterImpl implements Router {
         SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.name,
         {
           [SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.attrs
-            .requestId]: req._requestId
+            .requestId.name]: req._requestId
         }
       )
       .stop();

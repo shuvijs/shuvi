@@ -48,7 +48,10 @@ export const getAssetMiddleware = (
       }
       const runAssetMiddlewareTrace = serverRequestTrace.traceChild(
         SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.name,
-        { [SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.attrs.requestId]: req._requestId }
+        {
+          [SHUVI_SERVER_RUN_ASSET_MIDDLEWARE.attrs.requestId.name]:
+            req._requestId
+        }
       );
 
       let err = null;
