@@ -17,7 +17,7 @@ export async function renderToHTML({
   const { application } = resources.server;
   const app = serverCreateAppTrace
     .traceChild(SERVER_CREATE_APP.events.SHUVI_SERVER_CREATE_APP.name, {
-      [SERVER_CREATE_APP.events.SHUVI_SERVER_CREATE_APP.attrs.requestId]:
+      [SERVER_CREATE_APP.events.SHUVI_SERVER_CREATE_APP.attrs.requestId.name]:
         req._requestId
     })
     .traceFn(() =>
@@ -30,7 +30,7 @@ export async function renderToHTML({
   try {
     await serverCreateAppTrace
       .traceChild(SERVER_CREATE_APP.events.SHUVI_SERVER_APP_INIT.name, {
-        [SERVER_CREATE_APP.events.SHUVI_SERVER_APP_INIT.attrs.requestId]:
+        [SERVER_CREATE_APP.events.SHUVI_SERVER_APP_INIT.attrs.requestId.name]:
           req._requestId
       })
       .traceAsyncFn(() => app.init());
