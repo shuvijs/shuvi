@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-shared",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -83,16 +83,16 @@
     "node": ">= 16.0.0"
   },
   "dependencies": {
-    "@shuvi/hook": "1.0.34",
+    "@shuvi/hook": "1.0.35",
     "doura": "0.0.11",
-    "@shuvi/router": "1.0.34",
-    "@shuvi/runtime": "1.0.34",
-    "@shuvi/shared": "1.0.34",
-    "@shuvi/toolpack": "1.0.34",
-    "@shuvi/utils": "1.0.34"
+    "@shuvi/router": "1.0.35",
+    "@shuvi/runtime": "1.0.35",
+    "@shuvi/shared": "1.0.35",
+    "@shuvi/toolpack": "1.0.35",
+    "@shuvi/utils": "1.0.35"
   },
   "peerDependencies": {
-    "@shuvi/service": "1.0.34"
+    "@shuvi/service": "1.0.35"
   },
   "devDependencies": {
     "@shuvi/service": "workspace:*",

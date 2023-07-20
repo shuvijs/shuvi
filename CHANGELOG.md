@@ -1,3 +1,7 @@
+## [1.0.35](https://github.com/shuvijs/shuvi/compare/v1.0.34...v1.0.35) (2023-07-20)
+
+
+
 ## [1.0.34](https://github.com/shuvijs/shuvi/compare/v1.0.33...v1.0.34) (2023-07-19)
 
 
