@@ -265,7 +265,7 @@ importers:
       '@shuvi/toolpack': 1.0.35
       '@shuvi/utils': 1.0.35
       '@types/minimatch': 3.0.5
-      doura: 0.0.11
+      doura: 0.0.12
     dependencies:
       '@shuvi/hook': link:../hook
       '@shuvi/router': link:../router
@@ -273,7 +273,7 @@ importers:
       '@shuvi/shared': link:../shared
       '@shuvi/toolpack': link:../toolpack
       '@shuvi/utils': link:../utils
-      doura: 0.0.11
+      doura: 0.0.12
     devDependencies:
       '@shuvi/service': link:../service
       '@types/minimatch': 3.0.5
@@ -299,7 +299,7 @@ importers:
       '@types/react-dom': 18.0.6
       content-type: 1.0.4
       core-js: 3.6.5
-      doura: 0.0.11
+      doura: 0.0.12
       ejs: 3.1.5
       fs-extra: 9.0.1
       memfs: 3.1.2
@@ -309,7 +309,7 @@ importers:
       raw-body: 2.4.1
       react: 18.2.0
       react-dom: 18.2.0
-      react-doura: 0.0.11
+      react-doura: 0.0.12
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0
@@ -327,7 +327,7 @@ importers:
       '@shuvi/utils': link:../utils
       content-type: 1.0.4
       core-js: 3.6.5
-      doura: 0.0.11
+      doura: 0.0.12
       ejs: 3.1.5
       fs-extra: 9.0.1
       node-mocks-http: 1.11.0
@@ -335,7 +335,7 @@ importers:
       raw-body: 2.4.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      react-doura: 0.0.11_vauj4s6auojc2ujkcdo2df4rk4
+      react-doura: 0.0.12_3eytpilmdlziitwwuglzcej7e4
       react-refresh: 0.12.0
       strip-ansi: 6.0.0
       use-sync-external-store: 1.1.0_react@18.2.0
@@ -6811,8 +6811,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
-      is-text-path: 1.0.1
       JSONStream: 1.3.5
+      is-text-path: 1.0.1
       lodash: 4.17.21
       meow: 8.1.2
       split2: 3.2.2
@@ -7684,8 +7684,8 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /doura/0.0.11:
-    resolution: {integrity: sha512-P8nmwyzmmBkWuDpc9369W/JDv3Umwd5+i6PLsMgSc5dlIjHN+/KaZ90hHWmfdJKiFnLnn5roGCe+nORVi5o3Sg==}
+  /doura/0.0.12:
+    resolution: {integrity: sha512-SD8BIjtKyi2631QKWlUMI1MQr9orbMp1F21tbpIgSHWlieIvunIrRp1zBJg7kfCAs37+cL4G1vkRTZ6bmKdxUQ==}
     dev: false
 
   /duplexer/0.1.1:
@@ -14001,10 +14001,10 @@ packages:
       react: 18.2.0
       scheduler: 0.23.0
 
-  /react-doura/0.0.11_vauj4s6auojc2ujkcdo2df4rk4:
-    resolution: {integrity: sha512-IeGardgPr3tXqviKOe1HYf/tucFJBC568T3Rg45p8IOxXyLVlNaNwTASIxwO8wyXYeR0tW0qeimdMxikosjYVQ==}
+  /react-doura/0.0.12_3eytpilmdlziitwwuglzcej7e4:
+    resolution: {integrity: sha512-wF9+x2tKFsxkDCne8pdDJuUFVuEk/BojAq6ya/lUkh4Mx6D4OsrZjVPI0oXWudjlV3kKu7NOVb8oiMwaOY2XWg==}
     peerDependencies:
-      doura: 0.0.11
+      doura: 0.0.12
       react: '>=16.8'
       react-dom: '>=16.8'
     peerDependenciesMeta:
@@ -14013,7 +14013,7 @@ packages:
       react-dom:
         optional: true
     dependencies:
-      doura: 0.0.11
+      doura: 0.0.12
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
