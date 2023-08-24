@@ -1,3 +1,12 @@
+## [1.0.37](https://github.com/shuvijs/shuvi/compare/v1.0.36...v1.0.37) (2023-08-24)
+
+
+### Bug Fixes
+
+* return plain object from useLoaderData ([6eba0c3](https://github.com/shuvijs/shuvi/commit/6eba0c3d197777dc24ed4497b41afb8953971e85))
+
+
+
 ## [1.0.36](https://github.com/shuvijs/shuvi/compare/v1.0.35...v1.0.36) (2023-08-04)
 
 
