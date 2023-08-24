@@ -1,4 +1,4 @@
-import { defineModel } from 'doura';
+import { defineModel, markRaw } from 'doura';
 
 export interface LoaderState {
   dataByRouteId: Record<string, any>;
@@ -14,10 +14,10 @@ export const loaderModel = defineModel({
   state: initState,
   actions: {
     setDatas(newData: Record<string, any>) {
-      this.dataByRouteId = {
+      this.dataByRouteId = markRaw({
         ...this.dataByRouteId,
         ...newData
-      };
+      });
     }
   },
   views: {
