@@ -84,7 +84,7 @@
   },
   "dependencies": {
     "@shuvi/hook": "1.0.36",
-    "doura": "0.0.12",
+    "doura": "0.0.13",
     "@shuvi/router": "1.0.36",
     "@shuvi/runtime": "1.0.36",
     "@shuvi/shared": "1.0.36",
