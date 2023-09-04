@@ -91,9 +91,7 @@ export const createApp: CreateAppServer = options => {
           runLoadersTrace.stop();
           return;
         }
-        if (process.env.NODE_ENV === 'development') {
-          logger.error(error.stack);
-        }
+        logger.error(error.stack);
         app.setError(serializeServerError(error));
         next();
         runLoadersTrace.setAttribute(

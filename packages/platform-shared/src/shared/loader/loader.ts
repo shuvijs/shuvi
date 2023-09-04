@@ -128,7 +128,11 @@ export async function runLoaders(
         res = createJson(value);
       }
     } catch (err) {
-      if (process.env.NODE_ENV === 'development' && !isResponse(err)) {
+      const showError =
+        (typeof window === 'undefined' ||
+          process.env.NODE_ENV === 'development') &&
+        !isResponse(err);
+      if (showError) {
         console.error(
           `error occurs in loader function of route "${match.route.path}"`
         );
