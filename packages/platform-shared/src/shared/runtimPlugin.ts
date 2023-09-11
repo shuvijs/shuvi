@@ -11,11 +11,15 @@ import {
 import { CustomRuntimePluginHooks } from '@shuvi/runtime';
 import { createPluginCreator } from '@shuvi/shared/plugins';
 import { IAppContext } from './applicationTypes';
+import { IRouter } from './routerTypes';
 
 export type AppComponent = unknown;
+export type AppContextCtx = {
+  router: IRouter;
+};
 
 const init = createAsyncParallelHook<void>();
-const appContext = createAsyncSeriesHook<IAppContext>();
+const appContext = createAsyncSeriesHook<IAppContext, AppContextCtx>();
 const appComponent = createAsyncSeriesWaterfallHook<
   AppComponent,
   IAppContext
