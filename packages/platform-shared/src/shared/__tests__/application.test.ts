@@ -1,5 +1,6 @@
 import { ApplicationImpl } from '../application';
 import { createRouter, createMemoryHistory } from '../router';
+import { IPageRouteRecord } from '../routerTypes';
 
 function getApp() {
   const app = new ApplicationImpl({
@@ -13,7 +14,7 @@ function getApp() {
           id: 'test',
           path: '/',
           component: ''
-        }
+        } as IPageRouteRecord
       ]
     }).init()
   });

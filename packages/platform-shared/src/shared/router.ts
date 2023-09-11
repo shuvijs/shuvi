@@ -1,6 +1,4 @@
 export {
-  IRouter,
-  PathRecord,
   matchPathname,
   rankRouteBranches,
   parseQuery,

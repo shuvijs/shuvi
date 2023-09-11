@@ -1,4 +1,4 @@
-import type { IRouter, PathRecord } from '../router';
+import type { IRouter, PathRecord } from '../routerTypes';
 import { getAppData } from './getAppData';
 import { getPublicPath } from './getPublicPath';
 

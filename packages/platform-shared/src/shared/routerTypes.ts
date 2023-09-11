@@ -1,9 +1,16 @@
 import { ParsedQuery, IParams, IRouteRecord } from '@shuvi/router';
+import {
+  IRouter as IRouter_,
+  IRoute,
+  IRouteMatch,
+  PathRecord
+} from '@shuvi/router';
 
-export { IRouter, IRoute, IRouteMatch } from '@shuvi/router';
+export { IRoute, IRouteMatch, PathRecord };
 
 export type IURLQuery = ParsedQuery;
 export type IURLParams = IParams;
+export type IRouter = IRouter_<IPageRouteRecord>;
 
 export interface IPageRouteRecord extends IRouteRecord {
   id: string;
