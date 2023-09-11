@@ -2,6 +2,7 @@ import routes from '@shuvi/app/files/routes';
 import { getRoutes, app as AppComponent } from '@shuvi/app/core/platform';
 import {
   runLoaders,
+  createLoaderContext,
   getRouteMatchesWithInvalidLoader,
   isResponse,
   isRedirect
@@ -39,14 +40,19 @@ export const createApp: CreateAppServer = options => {
       );
       const pageLoaders = await app.getLoaders();
       const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
+      const loaderContext = createLoaderContext({
+        req,
+        pathname: to.pathname,
+        query: to.query,
+        params: to.params,
+        getAppContext: () => app.context
+      });
       try {
-        const loaderResult = await runLoaders(matches, pageLoaders, {
-          req,
-          pathname: to.pathname,
-          query: to.query,
-          params: to.params,
-          getAppContext: () => app.context
-        });
+        const loaderResult = await runLoaders(
+          matches,
+          pageLoaders,
+          loaderContext
+        );
         app.setLoadersData(loaderResult);
         runLoadersTrace.setAttribute(
           SHUVI_SERVER_RUN_LOADERS.attrs.error.name,

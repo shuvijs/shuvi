@@ -3,7 +3,7 @@ import { initPlugins } from './runtimPlugin';
 import { ModelPublicInstance, doura } from 'doura';
 import { ErrorModel, errorModel, errorModelName } from './models/error';
 import { LoaderModel, loaderModel, loaderModelName } from './models/loader';
-import { IRouter, IPageRouteRecord } from './routerTypes';
+import { IRouter } from './routerTypes';
 import {
   Doura,
   Application,
@@ -15,7 +15,7 @@ import {
 } from './applicationTypes';
 
 export class ApplicationImpl<Config extends {} = {}> {
-  private _router: IRouter<IPageRouteRecord>;
+  private _router: IRouter;
   private _appComponent: any;
   private _pluginManager: PluginManager;
   private _context: IAppContext;
@@ -85,8 +85,8 @@ export class ApplicationImpl<Config extends {} = {}> {
   async init() {
     await this._initPlugin();
     await this._initAppContext();
-    await this._initAppComponent();
     this._router.init();
+    await this._initAppComponent();
   }
 
   get store() {

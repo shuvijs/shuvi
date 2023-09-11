@@ -7,7 +7,12 @@ import {
   response,
   isResponse
 } from '../response';
-import { Loader, LoaderContextOptions, LoaderDataRecord } from './types';
+import {
+  Loader,
+  LoaderContextOptions,
+  LoaderDataRecord,
+  IRouteLoaderContext
+} from './types';
 
 interface Result<T> {
   error?: unknown;
@@ -89,10 +94,28 @@ function errorHelper(msg?: string, statusCode: number = 500) {
   throw response(msg, { status: statusCode });
 }
 
+export function createLoaderContext({
+  pathname,
+  query,
+  params,
+  req,
+  getAppContext
+}: LoaderContextOptions): IRouteLoaderContext {
+  return {
+    pathname,
+    params,
+    query,
+    redirect: redirectHelper,
+    error: errorHelper,
+    appContext: getAppContext(),
+    ...(req ? { req } : {})
+  };
+}
+
 export async function runLoaders(
   matches: IRouteMatch<IPageRouteRecord>[],
   loadersByRouteId: Record<string, Loader>,
-  { pathname, query, params, req, getAppContext }: LoaderContextOptions
+  loaderContext: IRouteLoaderContext
 ): Promise<LoaderDataRecord> {
   const loaderDatas: LoaderDataRecord = {};
 
@@ -100,7 +123,6 @@ export async function runLoaders(
     return loaderDatas;
   }
 
-  const appContext = getAppContext();
   const createLoader = (match: IRouteMatch<IPageRouteRecord>) => async () => {
     const loaderFn = loadersByRouteId[match.route.id];
     if (typeof loaderFn !== 'function') {
@@ -109,15 +131,7 @@ export async function runLoaders(
     let res: Response | undefined;
     let error: any;
     try {
-      const value = await loaderFn({
-        pathname,
-        params,
-        query,
-        redirect: redirectHelper,
-        error: errorHelper,
-        appContext,
-        ...(req ? { req } : {})
-      });
+      const value = await loaderFn(loaderContext);
 
       if (value === undefined) {
         error = new Error(

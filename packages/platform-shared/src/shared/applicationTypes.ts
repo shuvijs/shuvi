@@ -1,6 +1,6 @@
 import { Doura } from 'doura';
 import { CustomAppContext } from '@shuvi/runtime';
-import { IRouter, IPageRouteRecord } from './routerTypes';
+import { IRouter } from './routerTypes';
 import { IPluginList } from './runtimPlugin';
 import { Loader } from './loader';
 
@@ -36,7 +36,7 @@ export type IAppState = {
 export interface Application<Config extends {} = {}> {
   readonly config: Config;
   readonly context: IAppContext;
-  readonly router: IRouter<IPageRouteRecord>;
+  readonly router: IRouter;
   readonly appComponent: any;
   readonly store: Doura;
   readonly error: IErrorState['error'];

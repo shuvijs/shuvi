@@ -31,8 +31,8 @@ const builtinRuntimePluginHooks = {
 
 export interface BuiltInRuntimePluginHooks extends HookMap {
   init: typeof init;
-  appComponent: typeof appComponent;
   appContext: typeof appContext;
+  appComponent: typeof appComponent;
   dispose: typeof dispose;
 }
 

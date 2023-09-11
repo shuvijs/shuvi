@@ -2,6 +2,7 @@ import { getRoutes } from '@shuvi/app/core/platform';
 import {
   runPreload,
   runLoaders,
+  createLoaderContext,
   getRouteMatchesWithInvalidLoader,
   isRedirect,
   isResponse,
@@ -85,6 +86,12 @@ export const createApp: CreateAppClient = ({
     const pageLoaders = await app.getLoaders();
     const matches = getRouteMatchesWithInvalidLoader(to, from, pageLoaders);
 
+    const loaderContext = createLoaderContext({
+      pathname: to.pathname,
+      query: to.query,
+      params: to.params,
+      getAppContext: () => app.context
+    });
     try {
       const loaderDatas = await new Promise<LoaderDataRecord>(
         (resolve, reject) => {
@@ -108,12 +115,7 @@ export const createApp: CreateAppClient = ({
             .catch(err => {
               reject(err);
             });
-          runLoaders(matches, pageLoaders, {
-            pathname: to.pathname,
-            query: to.query,
-            params: to.params,
-            getAppContext: () => app.context
-          })
+          runLoaders(matches, pageLoaders, loaderContext)
             .then(_value => {
               value = _value;
               tryResolve();
