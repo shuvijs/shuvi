@@ -1,3 +1,17 @@
+## [1.0.38](https://github.com/shuvijs/shuvi/compare/v1.0.37...v1.0.38) (2023-09-11)
+
+
+### Bug Fixes
+
+* **loader:** always log loader error at server side ([#557](https://github.com/shuvijs/shuvi/issues/557)) ([a1e297b](https://github.com/shuvijs/shuvi/commit/a1e297b0f5bdd185a0721dbae952a21521d40a18))
+
+
+### Features
+
+* pass router to appContext hook ([4e464e9](https://github.com/shuvijs/shuvi/commit/4e464e9d7c6b8e2917b943199bd7248575f40daa))
+
+
+
 ## [1.0.37](https://github.com/shuvijs/shuvi/compare/v1.0.36...v1.0.37) (2023-08-24)
 
 
