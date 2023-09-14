@@ -6,12 +6,22 @@ export default function generateFilesByRoutId(
   routes: IPageRouteRecord[]
 ): Record<string, string[]> {
   let filesByRoutId: Record<string, string[]> = {};
-  const loadable = assetMap.loadble;
-  routes.forEach(({ id, __componentRawRequest__ }) => {
-    if (__componentRawRequest__ && loadable[__componentRawRequest__]) {
-      filesByRoutId[id] = loadable[__componentRawRequest__]!.files;
+
+  const processRoute = (route: IPageRouteRecord) => {
+    const { id, __componentRawRequest__, children } = route;
+
+    // Process the current route
+    if (__componentRawRequest__ && assetMap.loadble[__componentRawRequest__]) {
+      filesByRoutId[id] = assetMap.loadble[__componentRawRequest__]!.files;
     }
-  });
+
+    // Recursively process children
+    if (children) {
+      children.forEach(processRoute);
+    }
+  };
+
+  routes.forEach(processRoute);
 
   return filesByRoutId;
 }

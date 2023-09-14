@@ -16,8 +16,8 @@ declare global {
 
 let ctx: AppCtx;
 let page: Page;
-let withPrefetchHref: string;
-let withoutPrefetchHref: string;
+let withPrefetchHrefs: string[];
+let withoutPrefetchHrefs: string[];
 
 describe('Prefetch Support with SSR', () => {
   beforeAll(async () => {
@@ -34,15 +34,23 @@ describe('Prefetch Support with SSR', () => {
 
     const publicPath = appData.publicPath;
 
+    const preloadedHrefs = await page.$$eval('link[rel="preload"]', links => {
+      return links.map(link => new URL(link.href).pathname);
+    });
+
     const withPrefetchRoutes = await page.shuvi.match(WITH_PREFETCH_LINK);
-    withPrefetchHref = `${publicPath}${
-      filesByRoutId[withPrefetchRoutes[0].route.id]
-    }`;
+    withPrefetchHrefs = withPrefetchRoutes
+      .flatMap((file: any) =>
+        filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
+      )
+      .filter((href: string) => !preloadedHrefs.includes(href));
 
     const withoutPrefetchRoutes = await page.shuvi.match(WITHOUT_PREFETCH_LINK);
-    withoutPrefetchHref = `${publicPath}${
-      filesByRoutId[withoutPrefetchRoutes[0].route.id]
-    }`;
+    withoutPrefetchHrefs = withoutPrefetchRoutes
+      .flatMap((file: any) =>
+        filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
+      )
+      .filter((href: string) => !preloadedHrefs.includes(href));
   });
 
   afterAll(async () => {
@@ -57,13 +65,15 @@ describe('Prefetch Support with SSR', () => {
   });
 
   test('Make sure the prefetch links are correct files', async () => {
-    const { body: withPrefetchBody } = await got.get(ctx.url(withPrefetchHref));
-    expect(withPrefetchBody.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
+    for (const href of withPrefetchHrefs) {
+      const { body: withPrefetchBody } = await got.get(ctx.url(href));
+      expect(withPrefetchBody.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
+    }
 
-    const { body: withoutPrefetchBody } = await got.get(
-      ctx.url(withoutPrefetchHref)
-    );
-    expect(withoutPrefetchBody.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
+    for (const href of withoutPrefetchHrefs) {
+      const { body: withoutPrefetchBody } = await got.get(ctx.url(href));
+      expect(withoutPrefetchBody.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
+    }
   });
 
   test('should prefetch link when visible and prefetch is not set to false', async () => {
@@ -81,9 +91,14 @@ describe('Prefetch Support with SSR', () => {
     );
 
     // should prefetch the with-prefetch link
-    expect(prefetchHrefArray.includes(withPrefetchHref)).toEqual(true);
+    expect(
+      withPrefetchHrefs.every(href => prefetchHrefArray.includes(href))
+    ).toEqual(true);
+
     // should not prefetch the without-prefetch link
-    expect(prefetchHrefArray.includes(withoutPrefetchHref)).toEqual(false);
+    expect(
+      withoutPrefetchHrefs.every(href => !prefetchHrefArray.includes(href))
+    ).toEqual(true);
   });
 
   test('should prefetch when hover the link even if prefetch is set to false', async () => {
@@ -98,7 +113,9 @@ describe('Prefetch Support with SSR', () => {
     );
 
     // should prefetch the without-prefetch link
-    expect(prefetchHrefArray.includes(withoutPrefetchHref)).toEqual(true);
+    expect(
+      withoutPrefetchHrefs.every(href => prefetchHrefArray.includes(href))
+    ).toEqual(true);
   });
 });
 
@@ -117,15 +134,23 @@ describe('Prefetch Support with SPA', () => {
 
     const publicPath = appData.publicPath;
 
+    const preloadedHrefs = await page.$$eval('link[rel="preload"]', links => {
+      return links.map(link => new URL(link.href).pathname);
+    });
+
     const withPrefetchRoutes = await page.shuvi.match(WITH_PREFETCH_LINK);
-    withPrefetchHref = `${publicPath}${
-      filesByRoutId[withPrefetchRoutes[0].route.id]
-    }`;
+    withPrefetchHrefs = withPrefetchRoutes
+      .flatMap((file: any) =>
+        filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
+      )
+      .filter((href: string) => !preloadedHrefs.includes(href));
 
     const withoutPrefetchRoutes = await page.shuvi.match(WITHOUT_PREFETCH_LINK);
-    withoutPrefetchHref = `${publicPath}${
-      filesByRoutId[withoutPrefetchRoutes[0].route.id]
-    }`;
+    withoutPrefetchHrefs = withoutPrefetchRoutes
+      .flatMap((file: any) =>
+        filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
+      )
+      .filter((href: string) => !preloadedHrefs.includes(href));
   });
 
   afterAll(async () => {
@@ -139,16 +164,22 @@ describe('Prefetch Support with SPA', () => {
     );
   });
 
+  // SPA applications lack a preload mechanism, so the top-layout is included during prefetch.
   test('Make sure the prefetch links are correct files', async () => {
-    const { body: withPrefetchBody } = await got.get(ctx.url(withPrefetchHref));
-    expect(withPrefetchBody.search(WITH_PREFETCH_LINK)).not.toEqual(-1);
+    for (const href of withPrefetchHrefs) {
+      const { body: withPrefetchBody } = await got.get(ctx.url(href));
+      const pattern = new RegExp(`${WITH_PREFETCH_LINK}|top-layout`);
+      expect(pattern.test(withPrefetchBody)).toEqual(true);
+    }
 
-    const { body: withoutPrefetchBody } = await got.get(
-      ctx.url(withoutPrefetchHref)
-    );
-    expect(withoutPrefetchBody.search(WITHOUT_PREFETCH_LINK)).not.toEqual(-1);
+    for (const href of withoutPrefetchHrefs) {
+      const { body: withoutPrefetchBody } = await got.get(ctx.url(href));
+      const pattern = new RegExp(`${WITHOUT_PREFETCH_LINK}|top-layout`);
+      expect(pattern.test(withoutPrefetchBody)).toEqual(true);
+    }
   });
 
+  // SPA applications lack a preload mechanism, so the layout is included during prefetch.
   test('should prefetch link when visible and prefetch is not set to false', async () => {
     // scroll to the links
     await page.$eval('#view', (e: Element) => {
@@ -163,10 +194,22 @@ describe('Prefetch Support with SPA', () => {
       'href'
     );
 
+    // Find common elements (top-layout components in this case)
+    const commonHrefs = withPrefetchHrefs.filter(href =>
+      withoutPrefetchHrefs.includes(href)
+    );
+
     // should prefetch the with-prefetch link
-    expect(prefetchHrefArray.includes(withPrefetchHref)).toEqual(true);
+    expect(
+      withPrefetchHrefs.every(href => prefetchHrefArray.includes(href))
+    ).toEqual(true);
+
     // should not prefetch the without-prefetch link
-    expect(prefetchHrefArray.includes(withoutPrefetchHref)).toEqual(false);
+    expect(
+      withoutPrefetchHrefs
+        .filter(href => !commonHrefs.includes(href))
+        .every(href => !prefetchHrefArray.includes(href))
+    ).toEqual(true);
   });
 
   test('should prefetch when hover the link even if prefetch is set to false', async () => {
@@ -181,6 +224,8 @@ describe('Prefetch Support with SPA', () => {
     );
 
     // should prefetch the without-prefetch link
-    expect(prefetchHrefArray.includes(withoutPrefetchHref)).toEqual(true);
+    expect(
+      withoutPrefetchHrefs.every(href => prefetchHrefArray.includes(href))
+    ).toEqual(true);
   });
 });
