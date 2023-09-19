@@ -28,7 +28,7 @@ describe('serializeRoutes', () => {
       __componentRawRequest__: \\"Foo?shuvi-route\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
-        /* webpackChunkName: \\"page-0042\\" */
+        /* webpackChunkName: \\"Foo-0042\\" */
         /* webpackExports: \\"default\\" */
         \\"Foo?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
@@ -38,7 +38,7 @@ describe('serializeRoutes', () => {
       __componentRawRequest__: \\"Foo?shuvi-route\\",
       __componentSource__: \\"Foo\\",
       __import__: () => import(
-        /* webpackChunkName: \\"page-0c46\\" */
+        /* webpackChunkName: \\"Foo-0c46\\" */
         /* webpackExports: \\"default\\" */
         \\"Foo?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
@@ -47,7 +47,7 @@ describe('serializeRoutes', () => {
       __componentRawRequest__: \\"Bar?shuvi-route\\",
       __componentSource__: \\"Bar\\",
       __import__: () => import(
-        /* webpackChunkName: \\"page-f571\\" */
+        /* webpackChunkName: \\"Bar-f571\\" */
         /* webpackExports: \\"default\\" */
         \\"Bar?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Bar?shuvi-route\\")],
@@ -66,7 +66,7 @@ describe('serializeRoutes', () => {
     expect(content).toMatchInlineSnapshot(`
       "[{path: \\"/\\",
       __import__: () => import(
-        /* webpackChunkName: \\"page-0042\\" */
+        /* webpackChunkName: \\"Foo-0042\\" */
         /* webpackExports: \\"default\\" */
         \\"Foo?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
@@ -74,14 +74,14 @@ describe('serializeRoutes', () => {
       },
       {path: \\"/nested\\",
       __import__: () => import(
-        /* webpackChunkName: \\"page-0c46\\" */
+        /* webpackChunkName: \\"Foo-0c46\\" */
         /* webpackExports: \\"default\\" */
         \\"Foo?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Foo?shuvi-route\\")],
       id: \\"0c46\\",
       children: [{path: \\"/a\\",
       __import__: () => import(
-        /* webpackChunkName: \\"page-f571\\" */
+        /* webpackChunkName: \\"Bar-f571\\" */
         /* webpackExports: \\"default\\" */
         \\"Bar?shuvi-route\\"),
       __resolveWeak__: () => [require.resolveWeak(\\"Bar?shuvi-route\\")],

@@ -27,6 +27,7 @@ function prefetchViaDom(href: string, id: string, as: string): Promise<any> {
   return new Promise<void>((res, rej) => {
     const selector = `
         link[rel="prefetch"][href^="${href}"],
+        link[rel="preload"][href^="${href}"],
         script[src^="${href}"]`;
     if (document.querySelector(selector)) {
       return res();

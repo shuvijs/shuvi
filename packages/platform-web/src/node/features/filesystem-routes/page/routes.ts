@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import path from 'path';
 import {
   IPageRouteConfig,
   INormalizedPageRouteConfig
@@ -53,10 +54,11 @@ export function serializeRoutes(
         if (useEmptyComponent) {
           componentRequest = EmptyComponnetPath;
         }
-
+        const fileExtension = path.extname(component!);
+        const fileName = path.basename(component!, fileExtension);
         strRoute += `
 __import__: () => import(
-  /* webpackChunkName: "page-${id}" */
+  /* webpackChunkName: "${fileName}-${id}" */
   /* webpackExports: "default" */
   "${componentRequest}"),
 __resolveWeak__: () => [require.resolveWeak("${componentRequest}")]`.trim();
