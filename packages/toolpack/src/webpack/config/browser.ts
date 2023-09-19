@@ -74,6 +74,8 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
 
   if (dev) {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
+    // disable splitChunks at dev mode to prevent preload error
+    chain.optimization.splitChunks(false as any);
   } else {
     const getDefaultChunkName = (_module: any, chunks: any) => {
       return crypto
