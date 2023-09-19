@@ -1,7 +1,7 @@
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { nodeExternals } from './parts/external';
 import { withStyle } from './parts/style';
-import { addExternals } from './parts/helpers';
+import { addExternals, getDefaultSplitChunksConfig } from './parts/helpers';
 
 export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
   const { dev } = options;
@@ -24,6 +24,10 @@ export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
 
   chain.output.libraryTarget('commonjs2');
   chain.optimization.minimize(false);
+
+  // use default splitChunks config
+  chain.optimization.splitChunks(getDefaultSplitChunksConfig(dev));
+
   addExternals(
     chain,
     nodeExternals({
