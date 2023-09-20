@@ -132,7 +132,6 @@ export function baseWebpackChain({
     emitOnErrors: !dev,
     checkWasmTypes: false,
     nodeEnv: false,
-    splitChunks: false,
     runtimeChunk: undefined,
     minimize: !dev,
     realContentHash: false

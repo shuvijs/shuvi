@@ -4,11 +4,15 @@ import * as path from 'path';
 import { resolve } from '@shuvi/utils/resolve';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
-import { splitChunksFilter, commonChunkFilename } from './parts/helpers';
+import {
+  splitChunksFilter,
+  commonChunkFilename,
+  NODE_MODULES_REGEXP,
+  defaultCacheGroups
+} from './parts/helpers';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/](@shuvi|doura)[\\/]/;
-const NODE_MODULES_REGEXP = /[\\/]node_modules[\\/]/i;
 const FRAMEWORK_REACT_MODULES: {
   test: RegExp;
   issuers?: RegExp[];
@@ -74,6 +78,8 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
 
   if (dev) {
     chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
+    // disable splitChunks at dev mode to prevent preload error
+    chain.optimization.splitChunks(false as any);
   } else {
     const getDefaultChunkName = (_module: any, chunks: any) => {
       return crypto
@@ -93,18 +99,12 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
         default: {
           name: getDefaultChunkName,
           filename: commonChunkFilename({ dev: false }),
-          idHint: '',
-          reuseExistingChunk: true,
-          minChunks: 2,
-          priority: -20
+          ...defaultCacheGroups.default
         },
         defaultVendors: {
           name: getDefaultChunkName,
           filename: commonChunkFilename({ dev: false }),
-          idHint: 'vendors',
-          reuseExistingChunk: true,
-          test: NODE_MODULES_REGEXP,
-          priority: -10
+          ...defaultCacheGroups.defaultVendors
         },
         framework: {
           chunks: 'all',
