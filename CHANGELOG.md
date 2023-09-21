@@ -1,3 +1,17 @@
+## [1.0.39](https://github.com/shuvijs/shuvi/compare/v1.0.38...v1.0.39) (2023-09-21)
+
+
+### Bug Fixes
+
+* **webpack:** use default splitChunks for server bundle ([#560](https://github.com/shuvijs/shuvi/issues/560)) ([94f077c](https://github.com/shuvijs/shuvi/commit/94f077cbc7a163c9dcf441bbfaf472741008c675))
+
+
+### Features
+
+* Update chunk naming rules and fix generateFilesByRoutId bug ([796fca6](https://github.com/shuvijs/shuvi/commit/796fca6a3b76c386baa17d2b517a0496bb241c31))
+
+
+
 ## [1.0.38](https://github.com/shuvijs/shuvi/compare/v1.0.37...v1.0.38) (2023-09-11)
 
 
