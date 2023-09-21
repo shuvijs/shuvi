@@ -221,6 +221,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       onAbort && onAbort();
 
       // fire ready cbs once
+
+      // Note this can fix SPA loader redirect issue
       if (!this._ready) {
         this._ready = true;
         this._readyDefer.resolve();

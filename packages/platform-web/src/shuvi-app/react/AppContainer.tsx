@@ -15,6 +15,7 @@ const { SHUVI_NAVIGATION_TRIGGERED, SHUVI_NAVIGATION_DONE, SHUVI_PAGE_READY } =
 function ErrorGuard({ children = null }: React.PropsWithChildren<{}>) {
   const errorState = useSharedModel(errorModelName, errorModel);
   const { error, hasError } = errorState;
+  console.error('---------errr', error);
   if (hasError) {
     return (
       <ErrorPage

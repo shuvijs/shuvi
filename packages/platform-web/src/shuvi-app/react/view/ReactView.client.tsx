@@ -56,7 +56,8 @@ export class ReactClientView implements IReactClientView {
     } else {
       await router.ready;
       const { matches } = router.current;
-
+      console.warn('--------current path', router.current.pathname);
+      console.warn('--------current matches', matches);
       if (!matches.length) {
         // no handler no matches
         setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
