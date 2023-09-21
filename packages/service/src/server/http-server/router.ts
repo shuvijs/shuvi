@@ -74,6 +74,8 @@ class RouterImpl implements Router {
       .traceChild(
         SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.name,
         {
+          [SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.attrs.url
+            .name]: req.url,
           [SERVER_REQUEST.events.SHUVI_SERVER_HANDLE_REQUEST_START.attrs
             .requestId.name]: req._requestId
         }
