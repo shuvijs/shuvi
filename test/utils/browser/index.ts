@@ -155,7 +155,7 @@ export default class Browser {
 
     const getShuvi = () => page.evaluateHandle('window.__SHUVI');
     page.shuvi = {
-      async navigate(path: string, query: Record<string, any> = {}) {
+      async navigate(path: string, query?: Record<string, any>) {
         const $shuvi = await getShuvi();
         if (query) {
           path = path + '?' + qs.stringify(query);
