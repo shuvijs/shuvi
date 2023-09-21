@@ -288,7 +288,6 @@ describe('Trace', () => {
       const traceData = await page.evaluate(() => {
         return window._reporterData;
       });
-      console.log('-------', traceData);
       expect(traceData).toMatchObject(createClientPageLoadTracesExpectation());
     });
 

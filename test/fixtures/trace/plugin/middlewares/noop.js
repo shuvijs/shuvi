@@ -1,5 +1,3 @@
-export default async (req, res, next) => {
-  console.log('this is a noop middleware, before next');
+export default async (_req, _res, next) => {
   next();
-  console.log('this is a noop middleware, after next');
 };
