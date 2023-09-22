@@ -84,6 +84,7 @@ export async function serveFixtureAtCurrentProcess(
   name: string,
   overrides: ShuviConfig = {}
 ): Promise<AppCtx> {
+  clearDist(name);
   const api = await build({
     cwd: resolveFixture(name),
     config: overrides
@@ -192,15 +193,19 @@ export interface LaunchOptions {
   onStderr?: (error: string) => void;
 }
 
+/** remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect */
+const clearDist = (name: string) => {
+  rimraf.sync(resolveFixture(name, '.shuvi'));
+  rimraf.sync(resolveFixture(name, 'build'));
+};
+
 async function launchFixture(
   name: string,
   configOverrides: ShuviConfig = {},
   { envOverrides = {}, isDev = true, onStdout, onStderr }: LaunchOptions = {}
 ) {
   const projectPath = resolveFixture(name);
-  // remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect
-  rimraf.sync(resolveFixture(name, '.shuvi'));
-  rimraf.sync(resolveFixture(name, 'build'));
+  clearDist(name);
   const port = await findPort();
   const shuviProcess = await launchShuvi(
     projectPath,

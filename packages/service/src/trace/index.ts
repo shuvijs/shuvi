@@ -112,7 +112,7 @@ export class Span {
   }
 
   setAttribute(key: string, value: any) {
-    this._attrs[key] = String(value);
+    this._attrs[key] = value;
   }
 
   setAttributes(attrs: Record<string, any>) {

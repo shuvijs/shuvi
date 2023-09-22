@@ -38,10 +38,11 @@ export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {
       } catch (error) {
         runApiMiddlewareTrace.setAttributes({
           [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: true,
-          [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]:
-            res.statusCode
+          [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]: 500
         });
+        runApiMiddlewareTrace.stop();
         next(error);
+        return;
       }
       runApiMiddlewareTrace.setAttributes({
         [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: false,

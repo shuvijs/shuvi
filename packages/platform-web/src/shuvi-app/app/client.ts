@@ -60,18 +60,15 @@ export const createApp: CreateAppClient = ({
 
   const loadersData = app.getLoadersData();
   const hasHydrateData = Object.keys(loadersData).length > 0;
-  let shouldHydrate = ssr && hasHydrateData;
-  let hasServerError = !!app.error;
+  let shouldHydrate = !!ssr;
 
   router.beforeResolve(async (to, from, next) => {
+    // when hydrating, we will never run loaders, but just use the data from server
     if (shouldHydrate) {
       shouldHydrate = false;
-      app.setLoadersData(loadersData);
-      return next();
-    }
-
-    if (hasServerError) {
-      hasServerError = false;
+      if (hasHydrateData) {
+        app.setLoadersData(loadersData);
+      }
       return next();
     }
 
@@ -168,7 +165,11 @@ export const createApp: CreateAppClient = ({
         runLoadersTrace.stop();
         return;
       }
-
+      runLoadersTrace.setAttribute(
+        SHUVI_CLIENT_RUN_LOADERS.attrs.errorType.name,
+        'unexpectedError'
+      );
+      runLoadersTrace.stop();
       // If loader throws a error, we need to rethrow it
       app.setError({
         message: SHUVI_ERROR.CLIENT_ERROR.message,
@@ -178,11 +179,6 @@ export const createApp: CreateAppClient = ({
       next(() => {
         throw error;
       });
-      runLoadersTrace.setAttribute(
-        SHUVI_CLIENT_RUN_LOADERS.attrs.errorType.name,
-        'unexpectedError'
-      );
-      runLoadersTrace.stop();
       return;
     }
 

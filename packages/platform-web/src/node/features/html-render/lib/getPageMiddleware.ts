@@ -70,7 +70,7 @@ function createPageHandler(serverPluginContext: IServerPluginContext) {
       await sendHtml(textResp.data, { req, res });
       sendHtmlHookTrace.stop();
     } else {
-      // shuold never reach here
+      // should never reach here
       throw new Error('Unexpected reponse type from renderToHTML');
     }
   };
@@ -107,6 +107,7 @@ export async function getPageMiddleware(
       });
       runPageMiddlewareTrace.stop();
     } catch (error) {
+      // should never reach here except for server bundle broken
       runPageMiddlewareTrace.setAttributes({
         [SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.error.name]: true,
         [SHUVI_SERVER_RUN_PAGE_MIDDLEWARE.attrs.statusCode.name]: res.statusCode
