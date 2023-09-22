@@ -5,6 +5,7 @@ import { AppProvider } from './ApplicationContext';
 import ErrorPage from './ErrorPage';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Provider, useSharedModel } from './store';
+import { Trace } from './Trace';
 
 function ErrorGuard({ children = null }: React.PropsWithChildren<{}>) {
   const errorState = useSharedModel(errorModelName, errorModel);
@@ -32,7 +33,9 @@ export default function AppContainer({
     <AppProvider app={app}>
       <ErrorBoundary>
         <Provider store={app.store}>
-          <ErrorGuard>{children}</ErrorGuard>
+          <ErrorGuard>
+            <Trace>{children}</Trace>
+          </ErrorGuard>
         </Provider>
       </ErrorBoundary>
     </AppProvider>

@@ -8,7 +8,6 @@ import Loadable from '../loadable';
 import { IReactClientView } from '../types';
 import { doRender } from './render';
 import { clientEntryTrace } from '../../entry/client/trace';
-import { Trace } from '../Trace';
 
 const headManager = new HeadManager();
 
@@ -68,9 +67,7 @@ export class ReactClientView implements IReactClientView {
       <Router router={router}>
         <AppContainer app={app}>
           <HeadManagerContext.Provider value={headManager.updateHead}>
-            <Trace>
-              <TypedAppComponent />
-            </Trace>
+            <TypedAppComponent />
           </HeadManagerContext.Provider>
         </AppContainer>
       </Router>
