@@ -1,0 +1,7 @@
+{
+  "name": "fixture-trace",
+  "dependencies": {
+    "@shuvi/service": "workspace:*",
+    "shuvi": "workspace:*"
+  }
+}

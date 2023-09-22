@@ -68,6 +68,10 @@ export const SERVER_REQUEST = {
       name: 'SHUVI_SERVER_HANDLE_REQUEST_START',
       duration: false,
       attrs: {
+        url: {
+          name: 'url',
+          type: 'string'
+        },
         requestId: {
           name: requestId,
           type: 'string'

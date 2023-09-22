@@ -1,6 +1,7 @@
 import { IServerPluginContext, ShuviRequestHandler } from '@shuvi/service';
 import { matchPathname } from '@shuvi/router';
 import resources from '@shuvi/service/lib/resources';
+import { SpanStatus } from '@shuvi/service/lib/trace';
 import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 
 const { SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES } = SERVER_REQUEST.events;
@@ -61,7 +62,19 @@ export function middleware(_api: IServerPluginContext): ShuviRequestHandler {
         }
       };
 
-      return await runMiddleware(middlewares[i]);
+      await runMiddleware(middlewares[i]);
+      // if a middleware directly ends the response, the middlewareRoutesTrace will be recorded here
+      if (middlewareRoutesTrace.status === SpanStatus.Started) {
+        middlewareRoutesTrace.setAttributes({
+          [SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES.attrs.error.name]: false,
+          [SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES.attrs.statusCode.name]:
+            res.statusCode,
+          [SHUVI_SERVER_RUN_MIDDLEWARE_ROUTES.attrs.headersSent.name]:
+            res.headersSent
+        });
+        middlewareRoutesTrace.stop();
+      }
+      return;
     } catch (err) {
       /** Catch error from the whole function */
       middlewareRoutesTrace.setAttributes({

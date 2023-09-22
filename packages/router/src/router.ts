@@ -221,7 +221,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       onAbort && onAbort();
 
       // fire ready cbs once
-      if (!this._ready) {
+      if (!this._ready && this._current !== START) {
         this._ready = true;
         this._readyDefer.resolve();
       }
