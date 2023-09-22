@@ -1,3 +1,12 @@
+## [1.0.40](https://github.com/shuvijs/shuvi/compare/v1.0.39...v1.0.40) (2023-09-22)
+
+
+### Bug Fixes
+
+* **trace:** fix trace logic & add e2e test ([#562](https://github.com/shuvijs/shuvi/issues/562)) ([71c0bf1](https://github.com/shuvijs/shuvi/commit/71c0bf1bf2637d92160ee563407fed79ec899c2c))
+
+
+
 ## [1.0.39](https://github.com/shuvijs/shuvi/compare/v1.0.38...v1.0.39) (2023-09-21)
 
 
