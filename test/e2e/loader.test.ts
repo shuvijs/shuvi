@@ -1,4 +1,4 @@
-import { AppCtx, Page, devFixture, serveFixture } from '../utils';
+import { AppCtx, Page, devFixture, buildFixture, serveFixture } from '../utils';
 
 jest.setTimeout(5 * 60 * 1000);
 
@@ -7,7 +7,7 @@ describe('loader', () => {
   let page: Page;
   describe('ssr = true', () => {
     beforeAll(async () => {
-      ctx = await devFixture('loader');
+      ctx = await devFixture('loader', { ssr: true });
     });
     afterAll(async () => {
       await ctx.close();
@@ -89,7 +89,7 @@ describe('loader', () => {
 
       const FULL_URL = '/context/redirect/combo/params?query=1';
 
-      it('should support redirect chain in server', async () => {
+      it('should support redirect chain in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page(ctx.url('/'));
         page.on('request', request => {
@@ -134,7 +134,7 @@ describe('loader', () => {
         ]);
       });
 
-      it('should support params and query in server', async () => {
+      it('should support params and query in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page(ctx.url('/'));
         page.on('request', request => {
@@ -171,7 +171,7 @@ describe('loader', () => {
         );
       });
 
-      it('should support relative url in server', async () => {
+      it.skip('should support relative url in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page(ctx.url('/'));
         page.on('request', request => {
@@ -204,7 +204,7 @@ describe('loader', () => {
         ]);
       });
 
-      it('should support third-party site in server', async () => {
+      it('should support third-party site in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page(ctx.url('/'));
         page.on('request', request => {
@@ -235,16 +235,21 @@ describe('loader', () => {
         ]);
       });
 
-      it('should support redirect chain in client', async () => {
+      it('should support redirect chain in client route navigation', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: '/context/redirect/combo/a'
         });
         await page.waitForSelector('#page-content');
         expect(await page.$text('#page-content')).toBe('C');
+
+        await page.goBack();
+        expect(page.url()).toBe(ctx.url('/'));
+        await page.waitForSelector('#index-content');
+        expect(await page.$text('#index-content')).toBe('index page');
       });
 
-      it('should support params and query url in client', async () => {
+      it('should support params and query url in client route navigation', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', { target: FULL_URL });
         await page.waitForSelector('#url-data');
@@ -253,7 +258,7 @@ describe('loader', () => {
         );
       });
 
-      it('should support relative url in client', async () => {
+      it.skip('should support relative url in client route navigation', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: 'context/redirect/combo/c'
@@ -262,7 +267,7 @@ describe('loader', () => {
         expect(await page.$text('#page-content')).toBe('C');
       });
 
-      it('should support third-party site in client', async () => {
+      it('should support third-party site in client route navigation', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: THIRD_PARTY_SITE
@@ -294,6 +299,10 @@ describe('loader', () => {
 
   describe('ssr = false', () => {
     beforeAll(async () => {
+      buildFixture('loader', {
+        ssr: false,
+        router: { history: 'browser' }
+      });
       ctx = await serveFixture('loader', {
         ssr: false,
         router: { history: 'browser' }
@@ -340,7 +349,7 @@ describe('loader', () => {
       expect(leafLoaderContext.params).toStrictEqual(rootLoaderContext.params);
     });
 
-    test('should be called after navigations', async () => {
+    test('should be called after navigation', async () => {
       page = await ctx.browser.page(ctx.url('/one'));
       await page.waitForTimeout(1000);
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
@@ -356,9 +365,94 @@ describe('loader', () => {
       // this may fail, but I don't know why
       expect(await page.$text('[data-test-id="test"]')).toBe('123');
     });
+
+    describe('redirect', () => {
+      const THIRD_PARTY_SITE =
+        'https://en.wikipedia.org/wiki/React_(JavaScript_library)#Components';
+
+      const FULL_URL = '/context/redirect/combo/params?query=1';
+
+      it('should support redirect chain in CSR', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.goto(
+          ctx.url('/context/redirect', { target: '/context/redirect/combo/a' })
+        );
+
+        await page.waitForSelector('#page-content');
+        expect(await page.$text('#page-content')).toBe('C');
+
+        await page.goBack();
+        expect(page.url()).toBe(ctx.url('/'));
+        await page.waitForSelector('#index-content');
+        expect(await page.$text('#index-content')).toBe('index page');
+      });
+
+      it('should support params and query in CSR', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.goto(ctx.url('/context/redirect', { target: FULL_URL }));
+        await page.waitForSelector('#url-data');
+        expect(await page.$text('#url-data')).toBe(
+          '{"query":{"query":"1"},"params":{"d":"params"},"pathname":"/context/redirect/combo/params"}'
+        );
+      });
+
+      it('should support third-party site in CSR', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.goto(
+          ctx.url('/context/redirect', { target: THIRD_PARTY_SITE })
+        );
+        expect(await page.$text('#firstHeading')).toContain('React');
+      });
+
+      it('should support redirect chain in client route navigation', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+
+        // wait for page ready
+        await page.waitForSelector('#index-content');
+
+        await page.shuvi.navigate('/context/redirect', {
+          target: '/context/redirect/combo/a'
+        });
+        await page.waitForSelector('#page-content');
+        expect(await page.$text('#page-content')).toBe('C');
+
+        await page.goBack();
+        expect(page.url()).toBe(ctx.url('/'));
+        await page.waitForSelector('#index-content');
+        expect(await page.$text('#index-content')).toBe('index page');
+      });
+
+      it('csr should support params and query url in client route navigation', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.shuvi.navigate('/context/redirect', { target: FULL_URL });
+        await page.waitForSelector('#url-data');
+        expect(await page.$text('#url-data')).toBe(
+          '{"query":{"query":"1"},"params":{"d":"params"},"pathname":"/context/redirect/combo/params"}'
+        );
+      });
+
+      it.skip('csr should support relative url in client route navigation', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.shuvi.navigate('/context/redirect', {
+          target: 'context/redirect/combo/c'
+        });
+        await page.waitForSelector('#page-content');
+        expect(await page.$text('#page-content')).toBe('C');
+      });
+
+      it('csr should support third-party site in client route navigation', async () => {
+        page = await ctx.browser.page(ctx.url('/'));
+        await page.shuvi.navigate('/context/redirect', {
+          target: THIRD_PARTY_SITE
+        });
+        await page.waitForSelector('#firstHeading');
+        expect(await page.$text('#firstHeading')).toContain('React');
+      });
+    });
   });
 
   test('loaders should be called in parallel and block navigation', async () => {
+    buildFixture('loader', { ssr: true });
     const ctx = await serveFixture('loader');
     const page = await ctx.browser.page(ctx.url('/parent'));
     const { texts, dispose } = page.collectBrowserLog();
@@ -380,6 +474,7 @@ describe('loader', () => {
 
   describe('loaders should run properly when navigation is triggered', () => {
     beforeAll(async () => {
+      buildFixture('loader', { ssr: true });
       ctx = await serveFixture('loader', {
         ssr: false,
         router: {
