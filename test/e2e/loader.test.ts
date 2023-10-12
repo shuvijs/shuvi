@@ -422,7 +422,7 @@ describe('loader', () => {
         expect(await page.$text('#index-content')).toBe('index page');
       });
 
-      it('csr should support params and query url in client route navigation', async () => {
+      it('should support params and query url in client route navigation', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', { target: FULL_URL });
         await page.waitForSelector('#url-data');
@@ -431,7 +431,7 @@ describe('loader', () => {
         );
       });
 
-      it.skip('csr should support relative url in client route navigation', async () => {
+      it.skip('should support relative url in client route navigation', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: 'context/redirect/combo/c'
@@ -440,7 +440,7 @@ describe('loader', () => {
         expect(await page.$text('#page-content')).toBe('C');
       });
 
-      it('csr should support third-party site in client route navigation', async () => {
+      it('should support third-party site in client route navigation', async () => {
         page = await ctx.browser.page(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: THIRD_PARTY_SITE

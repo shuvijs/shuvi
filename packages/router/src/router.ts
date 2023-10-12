@@ -257,7 +257,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
             const useReplace =
               isReplace ||
               (typeof to === 'object' && to.replace) ||
-              this._current === START;
+              isInitialNavigation;
             const transitionMethod = useReplace ? 'replace' : 'push';
             if (typeof to === 'object') {
               this._history[transitionMethod](to.path as string, {
