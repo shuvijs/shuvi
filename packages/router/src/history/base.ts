@@ -5,6 +5,7 @@ import {
   Location,
   ResolvedPath,
   PathRecord,
+  Path,
   Action
 } from '../types';
 import {
@@ -39,7 +40,7 @@ export const ACTION_REPLACE: Action = 'REPLACE';
 export interface TransitionOptions {
   state?: State;
   action?: Action;
-  redirectedFrom?: PathRecord;
+  redirectedFrom?: Path;
 
   /**
    * skipGuards means this route transition will be straightforwardly executed without any before guard
@@ -55,7 +56,7 @@ export interface TransitionOptions {
 
 export interface PushOptions {
   state?: object | null | undefined;
-  redirectedFrom?: PathRecord;
+  redirectedFrom?: Path;
   skipGuards?: boolean;
 }
 
@@ -66,7 +67,9 @@ export default abstract class BaseHistory {
     to: PathRecord,
     onComplete: Function,
     onAbort?: Function,
-    skipGuards?: boolean
+    skipGuards?: boolean,
+    isReplace?: boolean,
+    redirectedFrom?: Path
   ) => void = () => void 0;
 
   protected _index: number = 0;
@@ -165,7 +168,9 @@ export default abstract class BaseHistory {
         this._updateState(action);
       },
       onAbort,
-      skipGuards
+      skipGuards,
+      action === ACTION_REPLACE,
+      redirectedFrom
     );
   }
 

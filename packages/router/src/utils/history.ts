@@ -4,7 +4,8 @@ import {
   PathRecord,
   State,
   Key,
-  Blocker
+  Blocker,
+  Path
 } from '../types';
 import { readOnly, Events } from './misc';
 import { resolvePath } from './path';
@@ -28,7 +29,7 @@ export function createLocation(
     state = null,
     key,
     redirectedFrom
-  }: { state?: State; key?: Key; redirectedFrom?: PathRecord } = {}
+  }: { state?: State; key?: Key; redirectedFrom?: Path } = {}
 ) {
   return readOnly<Location<any>>({
     ...resolvePath(to),

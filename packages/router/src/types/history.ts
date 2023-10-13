@@ -113,7 +113,7 @@ export interface PartialPath {
  *
  */
 export interface Location<S extends State = State> extends Path {
-  redirectedFrom?: PathRecord;
+  redirectedFrom?: Path;
 
   /**
    * An object of arbitrary data associated with this location.
