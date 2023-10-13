@@ -11,7 +11,8 @@ import {
   NavigationGuardNext,
   Listener,
   NavigationHookContext,
-  IRouteMatch
+  IRouteMatch,
+  Path
 } from './types';
 import { matchRoutes } from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
@@ -185,7 +186,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     to: PathRecord,
     onComplete: Function,
     onAbort?: Function,
-    skipGuards?: boolean
+    skipGuards?: boolean,
+    isReplace?: boolean,
+    redirectedFrom?: Path
   ) {
     const nextRoute = this._getNextRoute(to);
     const current = this._current;
@@ -194,9 +197,12 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
     const routeRedirect = getRedirectFromRoutes(nextMatches);
 
+    const isInitialNavigation = current === START;
     if (routeRedirect) {
-      return this._history.replace(routeRedirect, {
-        redirectedFrom: routeRedirect
+      const transitionMethod =
+        isReplace || isInitialNavigation ? 'replace' : 'push';
+      return this._history[transitionMethod](routeRedirect, {
+        redirectedFrom: redirectedFrom || nextRoute
       });
     }
 
@@ -248,22 +254,21 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
             (typeof to === 'object' && typeof to.path === 'string')
           ) {
             abort();
+            const useReplace =
+              isReplace ||
+              (typeof to === 'object' && to.replace) ||
+              isInitialNavigation;
+            const transitionMethod = useReplace ? 'replace' : 'push';
             if (typeof to === 'object') {
-              if (to.replace) {
-                this._history.replace(to.path as string, {
-                  redirectedFrom: current,
-                  skipGuards: to.skipGuards,
-                  state: to.state
-                });
-              } else {
-                this._history.push(to.path as string, {
-                  redirectedFrom: current,
-                  skipGuards: to.skipGuards,
-                  state: to.state
-                });
-              }
+              this._history[transitionMethod](to.path as string, {
+                redirectedFrom: redirectedFrom || nextRoute,
+                skipGuards: to.skipGuards,
+                state: to.state
+              });
             } else {
-              this._history.push(to, { redirectedFrom: current });
+              this._history[transitionMethod](to, {
+                redirectedFrom: redirectedFrom || nextRoute
+              });
             }
           } else {
             if (isFunction(to)) {
