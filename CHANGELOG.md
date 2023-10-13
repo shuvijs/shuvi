@@ -1,3 +1,12 @@
+## [1.0.42](https://github.com/shuvijs/shuvi/compare/v1.0.41...v1.0.42) (2023-10-13)
+
+
+### Bug Fixes
+
+* fix wrong history when using client side loader redirect ([177742b](https://github.com/shuvijs/shuvi/commit/177742b37b3805e701a4657f0d121ecde29c9af8))
+
+
+
 ## [1.0.41](https://github.com/shuvijs/shuvi/compare/v1.0.39...v1.0.41) (2023-09-22)
 
 
