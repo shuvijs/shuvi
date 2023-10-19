@@ -7,7 +7,7 @@ import {
 import { useStaticModel } from './store';
 
 export const noLoaderMessage =
-  'Warning: no loader found. Please make sure the page component where `useLoaderData` is called has a `loader` export.';
+  'Loader data not found. Please make sure the page component where `useLoaderData` is called has a `loader` export.';
 
 const hasOwn = Object.prototype.hasOwnProperty;
 export const useLoaderData = <T = any>(): T => {

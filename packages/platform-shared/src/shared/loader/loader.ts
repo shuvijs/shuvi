@@ -167,12 +167,11 @@ export async function runLoaders(
     }
 
     const routeId = matches[index].route.id;
-    if (item.result) {
-      loaderDatas[routeId] = item.result.data;
-    } else {
-      // allow return undefined
-      loaderDatas[routeId] = undefined;
-    }
+    invariant(
+      item.result,
+      `loader function of route "${matches[index].route.path}" should return a value`
+    );
+    loaderDatas[routeId] = item.result.data;
   }
 
   return loaderDatas;
