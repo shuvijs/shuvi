@@ -6,9 +6,6 @@ import {
 } from '@shuvi/platform-shared/shared';
 import { useStaticModel } from './store';
 
-export const noLoaderMessage =
-  'Loader data not found. Please make sure the page component where `useLoaderData` is called has a `loader` export.';
-
 const hasOwn = Object.prototype.hasOwnProperty;
 export const useLoaderData = <T = any>(): T => {
   const currentMatch = useMatchedRoute<IPageRouteRecord>();
@@ -19,7 +16,11 @@ export const useLoaderData = <T = any>(): T => {
   const loaderData = useStaticModel(loaderModelName, loaderModel);
 
   if (!hasOwn.call(loaderData.dataByRouteId, id)) {
-    throw Error(noLoaderMessage);
+    throw Error(
+      `Loader data not found for route "${
+        currentMatch.route!.path
+      }". Please make sure the page component where \`useLoaderData\` is called has a \`loader\` export.`
+    );
   }
 
   return loaderData.dataByRouteId[id];
