@@ -1,3 +1,4 @@
+import type { ShuviRequest } from '@shuvi/service';
 import { getManager, PluginManager } from './runtimPlugin';
 import { initPlugins } from './runtimPlugin';
 import { ModelPublicInstance, doura } from 'doura';
@@ -18,6 +19,7 @@ export class ApplicationImpl<Config extends {} = {}> {
   private _router: IRouter;
   private _appComponent: any;
   private _pluginManager: PluginManager;
+  private _request?: ShuviRequest;
   private _context: IAppContext;
   private _config: Config;
   private _store: Doura;
@@ -28,6 +30,7 @@ export class ApplicationImpl<Config extends {} = {}> {
   constructor(options: ApplicationInternalOptions<Config>) {
     this._config = options.config;
     this._router = options.router;
+    this._request = options.request;
     this._context = {} as IAppContext;
     this._store = doura({ initialState: options.initialState });
     this._error = this._store.getModel(errorModelName, errorModel);
@@ -110,7 +113,8 @@ export class ApplicationImpl<Config extends {} = {}> {
 
   private async _initAppContext() {
     await this._pluginManager.runner.appContext(this._context, {
-      router: this._router
+      router: this._router,
+      request: this._request
     });
   }
 

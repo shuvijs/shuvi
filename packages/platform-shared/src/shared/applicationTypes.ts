@@ -1,5 +1,6 @@
 import { Doura } from 'doura';
 import { CustomAppContext } from '@shuvi/runtime';
+import type { ShuviRequest } from '@shuvi/service';
 import { IRouter } from './routerTypes';
 import { IPluginList } from './runtimPlugin';
 import { Loader } from './loader';
@@ -57,6 +58,7 @@ export interface ApplicationInternalOptions<C extends {}> {
   getLoaders: GetLoadersFn;
   initialState?: IAppState;
   plugins?: IPluginList;
+  request?: ShuviRequest;
 }
 
 export type ApplicationlOptions<C extends {}> = Omit<
