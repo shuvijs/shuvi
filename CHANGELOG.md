@@ -1,3 +1,12 @@
+## [1.0.43](https://github.com/shuvijs/shuvi/compare/v1.0.42...v1.0.43) (2023-12-06)
+
+
+### Features
+
+* pass request to appContext hook ([502a248](https://github.com/shuvijs/shuvi/commit/502a248e21b4c93a48190d154c18b0b2eb4fac75))
+
+
+
 ## [1.0.42](https://github.com/shuvijs/shuvi/compare/v1.0.41...v1.0.42) (2023-10-13)
 
 
