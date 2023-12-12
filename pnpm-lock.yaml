@@ -995,6 +995,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
 
+  test/fixtures/basename:
+    dependencies:
+      shuvi:
+        specifier: workspace:*
+        version: link:../../../packages/shuvi
+
   test/fixtures/basic:
     dependencies:
       shuvi:
