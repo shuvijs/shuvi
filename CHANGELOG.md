@@ -1,3 +1,12 @@
+## [1.0.44](https://github.com/shuvijs/shuvi/compare/v1.0.43...v1.0.44) (2023-12-12)
+
+
+### Bug Fixes
+
+* passing request to server app ([7672740](https://github.com/shuvijs/shuvi/commit/76727407702ed6bcee091efea62b0e7d6e12fb4b))
+
+
+
 ## [1.0.43](https://github.com/shuvijs/shuvi/compare/v1.0.42...v1.0.43) (2023-12-06)
 
 
