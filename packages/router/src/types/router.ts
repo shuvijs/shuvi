@@ -94,6 +94,7 @@ export interface IRouter<
 > {
   current: IRoute<RouteRecord>;
   action: History['action'];
+  basename: string;
   push(to: PathRecord, state?: any): void;
   replace(to: PathRecord, state?: any): void;
   go: History['go'];
