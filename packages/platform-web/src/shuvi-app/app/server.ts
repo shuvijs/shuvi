@@ -117,6 +117,7 @@ export const createApp: CreateAppServer = options => {
   app = application({
     AppComponent,
     router,
+    request: req,
     config: {
       ssr
     }
