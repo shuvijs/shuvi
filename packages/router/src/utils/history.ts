@@ -26,13 +26,14 @@ function createKey() {
 export function createLocation(
   to: PathRecord,
   {
+    basename,
     state = null,
     key,
     redirectedFrom
-  }: { state?: State; key?: Key; redirectedFrom?: Path } = {}
+  }: { basename?: string; state?: State; key?: Key; redirectedFrom?: Path } = {}
 ) {
   return readOnly<Location<any>>({
-    ...resolvePath(to),
+    ...resolvePath(to, '/', basename),
     redirectedFrom,
     state,
     key: key || createKey()

@@ -34,17 +34,19 @@ export function parseQuery(queryStr: string) {
   return qs.parse(queryStr);
 }
 
-export function pathToString({
-  pathname = '/',
-  search = '',
-  hash = '',
-  query = {}
-}: PartialPath): string {
+export function pathToString(
+  { pathname = '/', search = '', hash = '', query = {} }: Path,
+  basename?: string
+): string {
   if (!search) {
     const queryString = qs.stringify(query);
     search = queryString ? `?${queryString}` : '';
   }
-  return pathname + search + hash;
+  const pathString = pathname + search + hash;
+  if (basename) {
+    return joinPaths([basename, pathString]);
+  }
+  return pathString;
 }
 
 function resolvePathname(toPathname: string, fromPathname: string): string {
@@ -66,7 +68,11 @@ function resolvePathname(toPathname: string, fromPathname: string): string {
 /**
  * Parses a string URL path into its separate pathname, search, and hash components.
  */
-export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
+export function resolvePath(
+  to: PathRecord,
+  fromPathname = '/',
+  basename?: string
+): Path {
   let parsedPath: Path = {
     pathname: '',
     search: '',
@@ -118,5 +124,25 @@ export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
       )
     : fromPathname;
 
+  if (basename) {
+    parsedPath.pathname = stripBase(parsedPath.pathname, basename);
+  }
+
   return parsedPath;
+}
+
+/**
+ * Strips off the base from the beginning of a location.pathname in a non-case-sensitive way.
+ *
+ * @param pathname - location.pathname
+ * @param base - base to strip off
+ */
+export function stripBase(pathname: string, base: string): string {
+  if (!base || base === '/') return pathname;
+
+  // no base or base is not found at the beginning
+  if (!pathname.toLowerCase().startsWith(base.toLowerCase())) {
+    return '';
+  }
+  return pathname.slice(base.length) || '/';
 }

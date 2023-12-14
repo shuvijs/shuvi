@@ -60,9 +60,19 @@ export interface PushOptions {
   skipGuards?: boolean;
 }
 
+export type BaseHistoryOptions = {
+  basename?: string;
+};
+
 export default abstract class BaseHistory {
   action: Action = ACTION_POP;
   location: Location = createLocation('/');
+  basename: string;
+
+  constructor({ basename = '' }: BaseHistoryOptions = {}) {
+    this.basename = basename;
+  }
+
   doTransition: (
     to: PathRecord,
     onComplete: Function,
@@ -115,7 +125,7 @@ export default abstract class BaseHistory {
     const toPath = resolvePath(to, from);
     return {
       path: toPath,
-      href: pathToString(toPath)
+      href: pathToString(toPath, this.basename)
     };
   }
 

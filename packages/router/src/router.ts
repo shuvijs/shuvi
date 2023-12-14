@@ -16,13 +16,7 @@ import {
 } from './types';
 import { matchRoutes } from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
-import {
-  normalizeBase,
-  joinPaths,
-  createEvents,
-  resolvePath,
-  Events
-} from './utils';
+import { createEvents, resolvePath, Events } from './utils';
 import { isError, isFunction } from './utils/error';
 import { runQueue } from './utils/async';
 import History from './history/base';
@@ -31,7 +25,7 @@ import { getRedirectFromRoutes } from './getRedirectFromRoutes';
 const START: IRoute<any> = {
   matches: [],
   params: {},
-  pathname: '/',
+  pathname: '',
   search: '',
   hash: '',
   key: 'default',
@@ -44,11 +38,9 @@ interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
   routes: RouteRecord[];
   caseSensitive?: boolean;
-  basename?: string;
 }
 
 class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
-  private _basename: string;
   private _history: History;
   private _routes: RouteRecord[];
   private _current: IRoute<RouteRecord>;
@@ -62,8 +54,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _beforeResolves: Events<NavigationGuardHook> = createEvents();
   private _afterEachs: Events<NavigationResolvedHook> = createEvents();
 
-  constructor({ basename = '', history, routes }: IRouterOptions<RouteRecord>) {
-    this._basename = normalizeBase(basename);
+  constructor({ history, routes }: IRouterOptions<RouteRecord>) {
     this._history = history;
     this._routes = createRoutesFromArray(routes);
     this._current = START;
@@ -87,7 +78,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   }
 
   get basename(): string {
-    return this._basename;
+    return this._history.basename;
   }
 
   init = () => {
@@ -140,15 +131,13 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   };
 
   resolve = (to: PathRecord, from?: any): ResolvedPath => {
-    return this._history.resolve(
-      to,
-      from ? joinPaths([this._basename, from]) : this._basename
-    );
+    return this._history.resolve(to, from);
   };
 
   match = (to: PathRecord): Array<IRouteMatch<RouteRecord>> => {
-    const { _routes: routes, _basename: basename } = this;
-    const matches = matchRoutes(routes, to, basename);
+    //console.trace('------match to', to)
+    const { _routes: routes } = this;
+    const matches = matchRoutes(routes, to);
     return matches || [];
   };
 
@@ -326,7 +315,24 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const {
       _history: { location }
     } = this;
+    console.log('------_getCurrent-----location', location);
+
+    /* if (!isValidLocation(location)) {
+      return {
+        matches: [],
+        params: {},
+        pathname: location.pathname || '',
+        search: location.search || '',
+        hash: location.hash || '',
+        query: location.query || {},
+        state: location.state || {},
+        redirected: !!location.redirectedFrom,
+        key: location.key || 'invalid_path'
+      };
+    } */
+
     const matches = this.match(location);
+    console.log('-----matches', matches);
     let params;
     if (matches.length) {
       params = matches[matches.length - 1].params;

@@ -54,8 +54,8 @@ export type Key = string;
  */
 export interface Path {
   /**
-   * A URL pathname, beginning with a /.
-   *
+   * A URL pathname, beginning with a `/`, but without basename part.
+   * If it is a empty string, it means invalid pathname and cannot match any route.
    */
   pathname: Pathname;
 
@@ -135,6 +135,8 @@ export interface Location<S extends State = State> extends Path {
  * A partial Location object that may be missing some properties.
  */
 export interface PartialLocation<S extends State = State> extends PartialPath {
+  redirectedFrom?: Path;
+
   /**
    * An object of arbitrary data associated with this location.
    *

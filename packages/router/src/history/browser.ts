@@ -12,14 +12,20 @@ import {
   addBlocker,
   warning
 } from '../utils';
-import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+import BaseHistory, {
+  PushOptions,
+  ACTION_POP,
+  ACTION_REPLACE,
+  BaseHistoryOptions
+} from './base';
+
+export type BrowserHistoryOptions = BaseHistoryOptions;
 
 export default class BrowserHistory extends BaseHistory {
   private _history: GlobalHistory = window.history;
 
-  constructor() {
-    super();
-
+  constructor({ basename }: BrowserHistoryOptions = {}) {
+    super({ basename });
     [this._index, this.location] = this.getIndexAndLocation();
     if (this._index == null) {
       this._index = 0;
@@ -127,6 +133,7 @@ export default class BrowserHistory extends BaseHistory {
           hash
         },
         {
+          basename: this.basename,
           state: state.usr || null,
           key: state.key || 'default'
         }

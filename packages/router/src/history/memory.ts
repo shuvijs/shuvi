@@ -1,11 +1,5 @@
-import {
-  PathRecord,
-  Location,
-  Blocker,
-  PartialLocation,
-  ResolvedPath
-} from '../types';
-import { createLocation, resolvePath, pathToString, warning } from '../utils';
+import { PathRecord, Location, Blocker, PartialLocation } from '../types';
+import { createLocation, resolvePath, warning } from '../utils';
 import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
 
 function clamp(n: number, lowerBound: number, upperBound: number) {
@@ -21,6 +15,7 @@ export type InitialEntry = string | PartialLocation;
 export type MemoryHistoryOptions = {
   initialEntries?: InitialEntry[];
   initialIndex?: number;
+  basename?: string;
 };
 
 export default class MemoryHistory extends BaseHistory {
@@ -28,16 +23,21 @@ export default class MemoryHistory extends BaseHistory {
 
   constructor({
     initialEntries = ['/'],
-    initialIndex
+    initialIndex,
+    basename = ''
   }: MemoryHistoryOptions = {}) {
-    super();
+    super({ basename });
     this._entries = initialEntries.map(entry => {
-      let location = createLocation({
-        pathname: '/',
-        search: '',
-        hash: '',
-        ...(typeof entry === 'string' ? resolvePath(entry) : entry)
-      });
+      let location = createLocation(
+        {
+          search: '',
+          hash: '',
+          ...(typeof entry === 'string' ? resolvePath(entry) : entry)
+        },
+        {
+          basename: this.basename
+        }
+      );
 
       warning(
         location.pathname.charAt(0) === '/',
@@ -107,6 +107,11 @@ export default class MemoryHistory extends BaseHistory {
       return;
     }
 
+    if (typeof nextLocation.pathname === 'undefined') {
+      warning(true, `nextLocation.pathname is undefined`);
+      return;
+    }
+
     this.transitionTo(nextLocation.pathname, {
       ...nextLocation,
       action: nextAction,
@@ -120,13 +125,13 @@ export default class MemoryHistory extends BaseHistory {
     return this._blockers.push(blocker);
   }
 
-  resolve(to: PathRecord, from?: string): ResolvedPath {
+  /* resolve(to: PathRecord, from?: string): ResolvedPath {
     const toPath = resolvePath(to, from);
     return {
       path: toPath,
       href: pathToString(toPath)
     };
-  }
+  } */
 
   protected getIndexAndLocation(): [number, Location] {
     const index = this._index;

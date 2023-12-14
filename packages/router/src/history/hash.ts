@@ -15,7 +15,12 @@ import {
   pathToString,
   warning
 } from '../utils';
-import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+import BaseHistory, {
+  PushOptions,
+  ACTION_POP,
+  ACTION_REPLACE,
+  BaseHistoryOptions
+} from './base';
 
 function getBaseHref() {
   let base = document.querySelector('base');
@@ -27,22 +32,21 @@ function getBaseHref() {
     href = hashIndex === -1 ? url : url.slice(0, hashIndex);
   }
 
+  console.log('----base href', href);
   return href;
 }
 
-function createHref(to: PathRecord) {
-  return (
-    getBaseHref() +
-    '#' +
-    (typeof to === 'string' ? to : pathToString(resolvePath(to)))
-  );
+function createHref(to: PathRecord, basename?: string) {
+  return getBaseHref() + '#' + pathToString(resolvePath(to), basename);
 }
+
+export type HashHistoryOptions = BaseHistoryOptions;
 
 export default class HashHistory extends BaseHistory {
   private _history: GlobalHistory = window.history;
 
-  constructor() {
-    super();
+  constructor({ basename }: HashHistoryOptions = {}) {
+    super({ basename });
     [this._index, this.location] = this.getIndexAndLocation();
     if (this._index == null) {
       this._index = 0;
@@ -86,7 +90,7 @@ export default class HashHistory extends BaseHistory {
     const toPath = resolvePath(to, from);
     return {
       path: toPath,
-      href: createHref(toPath)
+      href: createHref(toPath, this.basename)
     };
   }
 
@@ -170,6 +174,7 @@ export default class HashHistory extends BaseHistory {
           hash
         },
         {
+          basename: this.basename,
           state: state.usr || null,
           key: state.key || 'default'
         }

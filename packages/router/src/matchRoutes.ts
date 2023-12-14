@@ -115,15 +115,12 @@ export function matchRoutes<T extends IRouteBaseObject>(
     location = resolvePath(location);
   }
 
-  let pathname = location.pathname || '/';
-  if (basename) {
-    let base = basename.replace(/^\/*/, '/').replace(/\/+$/, '');
-    if (pathname.startsWith(base)) {
-      pathname = pathname === base ? '/' : pathname.slice(base.length);
-    } else {
-      // Pathname does not start with the basename, no match.
-      return null;
-    }
+  let pathname = location.pathname;
+
+  // If pathname is empty, it means invalid pathname and cannot match any route.
+  // This only happens when basename is set but url is not start with basename
+  if (!pathname) {
+    return null;
   }
 
   let branches = flattenRoutes(routes);

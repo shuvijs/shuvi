@@ -41,15 +41,14 @@ export const createApp: CreateAppClient = ({
   const { appState, ssr, basename } = appData;
   let history: History;
   if (historyMode === 'hash') {
-    history = createHashHistory();
+    history = createHashHistory({ basename });
   } else {
-    history = createBrowserHistory();
+    history = createBrowserHistory({ basename });
   }
 
   const router = createRouter({
     history,
-    routes: getRoutes(routes),
-    basename
+    routes: getRoutes(routes)
   });
 
   app = application({
