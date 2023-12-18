@@ -23,6 +23,7 @@ import { applyHttpProxyMiddleware } from './middlewares/httpProxyMiddleware';
 import { getAssetMiddleware } from './middlewares/getAssetMiddleware';
 import { ShuviDevServerOptions, ShuviRequestHandler } from './shuviServerTypes';
 import { loadDotenvConfig } from '../config/env';
+import { setupAppConfigMiddleware } from './middlewares/setupAppConfigMiddleware';
 
 export class ShuviDevServer extends ShuviServer {
   private _bundler: Bundler;
@@ -59,6 +60,8 @@ export class ShuviDevServer extends ShuviServer {
 
       next();
     }) as ShuviRequestHandler);
+
+    server.use(setupAppConfigMiddleware(context));
 
     if (this._options.getMiddlewaresBeforeDevMiddlewares) {
       const serverMiddlewaresBeforeDevMiddleware = [

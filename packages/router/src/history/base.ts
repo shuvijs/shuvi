@@ -12,7 +12,8 @@ import {
   createLocation,
   createEvents,
   resolvePath,
-  pathToString
+  pathToString,
+  normalizeBase
 } from '../utils';
 
 /**
@@ -37,6 +38,12 @@ export const ACTION_PUSH: Action = 'PUSH';
  */
 export const ACTION_REPLACE: Action = 'REPLACE';
 
+export type TransitionEvent = {
+  location: Location;
+  state: HistoryState;
+  url: string;
+};
+
 export interface TransitionOptions {
   state?: State;
   action?: Action;
@@ -60,9 +67,19 @@ export interface PushOptions {
   skipGuards?: boolean;
 }
 
+export type BaseHistoryOptions = {
+  basename?: string;
+};
+
 export default abstract class BaseHistory {
   action: Action = ACTION_POP;
   location: Location = createLocation('/');
+  basename: string;
+
+  constructor({ basename = '' }: BaseHistoryOptions = {}) {
+    this.basename = normalizeBase(basename);
+  }
+
   doTransition: (
     to: PathRecord,
     onComplete: Function,
@@ -78,6 +95,8 @@ export default abstract class BaseHistory {
   // ### implemented by sub-classes ###
   // base interface
   protected abstract getIndexAndLocation(): [number /* index */, Location];
+
+  /** setup will be called at `onTransition` and `onAbort` */
   abstract setup(): void;
 
   // history interface
@@ -115,7 +134,7 @@ export default abstract class BaseHistory {
     const toPath = resolvePath(to, from);
     return {
       path: toPath,
-      href: pathToString(toPath)
+      href: pathToString(toPath, this.basename)
     };
   }
 

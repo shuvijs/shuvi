@@ -13,6 +13,12 @@ export async function renderToHTML({
 }): Promise<Response> {
   let result: Response;
   const renderer = new Renderer({ serverPluginContext });
+  const {
+    config: { ssr },
+    appConfig: {
+      router: { basename }
+    }
+  } = serverPluginContext;
   const { serverCreateAppTrace } = req._traces;
   const { application } = resources.server;
   const app = serverCreateAppTrace
@@ -23,7 +29,8 @@ export async function renderToHTML({
     .traceFn(() =>
       application.createApp({
         req,
-        ssr: serverPluginContext.config.ssr
+        ssr,
+        basename
       })
     );
 
@@ -37,7 +44,7 @@ export async function renderToHTML({
     result = await renderer.renderView({
       req,
       app: app.getPublicAPI(),
-      ssr: serverPluginContext.config.ssr
+      ssr
     });
   } finally {
     await app.dispose();

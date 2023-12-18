@@ -1,11 +1,5 @@
-import {
-  PathRecord,
-  Location,
-  Blocker,
-  PartialLocation,
-  ResolvedPath
-} from '../types';
-import { createLocation, resolvePath, pathToString, warning } from '../utils';
+import { PathRecord, Location, Blocker, PartialLocation } from '../types';
+import { createLocation, resolvePath, warning } from '../utils';
 import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
 
 function clamp(n: number, lowerBound: number, upperBound: number) {
@@ -21,6 +15,7 @@ export type InitialEntry = string | PartialLocation;
 export type MemoryHistoryOptions = {
   initialEntries?: InitialEntry[];
   initialIndex?: number;
+  basename?: string;
 };
 
 export default class MemoryHistory extends BaseHistory {
@@ -28,17 +23,20 @@ export default class MemoryHistory extends BaseHistory {
 
   constructor({
     initialEntries = ['/'],
-    initialIndex
+    initialIndex,
+    basename = ''
   }: MemoryHistoryOptions = {}) {
-    super();
+    super({ basename });
     this._entries = initialEntries.map(entry => {
-      let location = createLocation({
-        pathname: '/',
-        search: '',
-        hash: '',
-        ...(typeof entry === 'string' ? resolvePath(entry) : entry)
-      });
-
+      let location = createLocation(
+        {
+          pathname: '/',
+          search: '',
+          hash: '',
+          ...(typeof entry === 'string' ? resolvePath(entry) : entry)
+        },
+        { basename: this.basename }
+      );
       warning(
         location.pathname.charAt(0) === '/',
         `Relative pathnames are not supported in createMemoryHistory({ initialEntries }) (invalid entry: ${JSON.stringify(
@@ -118,14 +116,6 @@ export default class MemoryHistory extends BaseHistory {
 
   block(blocker: Blocker): () => void {
     return this._blockers.push(blocker);
-  }
-
-  resolve(to: PathRecord, from?: string): ResolvedPath {
-    const toPath = resolvePath(to, from);
-    return {
-      path: toPath,
-      href: pathToString(toPath)
-    };
   }
 
   protected getIndexAndLocation(): [number, Location] {

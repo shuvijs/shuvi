@@ -7,6 +7,7 @@ export type IData = {
 
 export type IAppData<Data = {}, appState = any> = {
   ssr: boolean;
+  basename?: string;
   runtimeConfig?: Record<string, string>;
   appState?: appState;
   pageData?: {
