@@ -123,7 +123,9 @@ describe('path matching', () => {
     expect(pickPaths(routes, '/groups/main')).toEqual(['/groups/main']);
     expect(pickPaths(routes, '/groups/123')).toEqual(['/groups/:groupId']);
     expect(pickPaths(routes, '/groups')).toEqual(['/groups']);
-    expect(pickPaths(routes, '/files/some/long/path')).toEqual(['/files/:_other(.*)']);
+    expect(pickPaths(routes, '/files/some/long/path')).toEqual([
+      '/files/:_other(.*)'
+    ]);
     expect(pickPaths(routes, '/files')).toEqual(['/files']);
     expect(pickPaths(routes, '/one/two/three/four/five')).toEqual([
       '/:one/:two/:three/:four/:five'
@@ -192,59 +194,5 @@ describe('path matching', () => {
     ];
 
     expect(pickPaths(routes, '/page')).toEqual(['page']);
-  });
-});
-
-describe('path matching with a basename', () => {
-  let routes = [
-    {
-      path: '/users/:userId',
-      children: [
-        {
-          path: 'subjects',
-          children: [
-            {
-              path: ':courseId'
-            }
-          ]
-        }
-      ]
-    }
-  ];
-
-  test('top-level route', () => {
-    let location = { pathname: '/app/users/michael' };
-    let matches = matchRoutes(routes, location, '/app');
-
-    expect(matches).not.toBeNull();
-    expect(matches).toHaveLength(1);
-    expect(matches).toMatchObject([
-      {
-        pathname: '/users/michael',
-        params: { userId: 'michael' }
-      }
-    ]);
-  });
-
-  test('deeply nested route', () => {
-    let location = { pathname: '/app/users/michael/subjects/react' };
-    let matches = matchRoutes(routes, location, '/app');
-
-    expect(matches).not.toBeNull();
-    expect(matches).toHaveLength(3);
-    expect(matches).toMatchObject([
-      {
-        pathname: '/users/michael',
-        params: { userId: 'michael' }
-      },
-      {
-        pathname: '/users/michael/subjects',
-        params: { userId: 'michael' }
-      },
-      {
-        pathname: '/users/michael/subjects/react',
-        params: { userId: 'michael', courseId: 'react' }
-      }
-    ]);
   });
 });

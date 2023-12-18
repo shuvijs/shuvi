@@ -241,7 +241,7 @@ describe('useHref under a <Routes basename>', () => {
           </Router>
         );
 
-        expect(href).toBe('/app/');
+        expect(href).toBe('/app');
       });
     });
   });
@@ -250,7 +250,7 @@ describe('useHref under a <Routes basename>', () => {
     it('returns the correct href', () => {
       let href;
       function Admin() {
-        href = useHref('../../../dashboard');
+        href = useHref('../../dashboard');
         return <h1>Admin</h1>;
       }
 
@@ -269,7 +269,7 @@ describe('useHref under a <Routes basename>', () => {
         </Router>
       );
 
-      expect(href).toBe('/dashboard');
+      expect(href).toBe('/app/dashboard');
     });
 
     describe('and no additional segments', () => {
@@ -295,7 +295,7 @@ describe('useHref under a <Routes basename>', () => {
           </Router>
         );
 
-        expect(href).toBe('/');
+        expect(href).toBe('/app');
       });
     });
 
@@ -303,7 +303,7 @@ describe('useHref under a <Routes basename>', () => {
       it('returns the correct href', () => {
         let href;
         function Admin() {
-          href = useHref('../../../dashboard');
+          href = useHref('../../dashboard');
           return <h1>Admin</h1>;
         }
 
@@ -322,7 +322,7 @@ describe('useHref under a <Routes basename>', () => {
           </Router>
         );
 
-        expect(href).toBe('/dashboard');
+        expect(href).toBe('/app/dashboard');
       });
     });
 
@@ -330,7 +330,7 @@ describe('useHref under a <Routes basename>', () => {
       it('returns the correct href', () => {
         let href;
         function Admin() {
-          href = useHref('../../../dashboard/');
+          href = useHref('../../dashboard/');
           return <h1>Admin</h1>;
         }
 
@@ -349,7 +349,7 @@ describe('useHref under a <Routes basename>', () => {
           </Router>
         );
 
-        expect(href).toBe('/dashboard/');
+        expect(href).toBe('/app/dashboard/');
       });
     });
   });

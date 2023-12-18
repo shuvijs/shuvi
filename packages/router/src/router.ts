@@ -16,13 +16,7 @@ import {
 } from './types';
 import { matchRoutes } from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
-import {
-  normalizeBase,
-  joinPaths,
-  createEvents,
-  resolvePath,
-  Events
-} from './utils';
+import { createEvents, resolvePath, Events } from './utils';
 import { isError, isFunction } from './utils/error';
 import { runQueue } from './utils/async';
 import History from './history/base';
@@ -44,11 +38,9 @@ interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
   routes: RouteRecord[];
   caseSensitive?: boolean;
-  basename?: string;
 }
 
 class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
-  private _basename: string;
   private _history: History;
   private _routes: RouteRecord[];
   private _current: IRoute<RouteRecord>;
@@ -62,8 +54,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _beforeResolves: Events<NavigationGuardHook> = createEvents();
   private _afterEachs: Events<NavigationResolvedHook> = createEvents();
 
-  constructor({ basename = '', history, routes }: IRouterOptions<RouteRecord>) {
-    this._basename = normalizeBase(basename);
+  constructor({ history, routes }: IRouterOptions<RouteRecord>) {
     this._history = history;
     this._routes = createRoutesFromArray(routes);
     this._current = START;
@@ -86,11 +77,20 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     return this._history.action;
   }
 
+  get basename(): string {
+    return this._history.basename;
+  }
+
   init = () => {
     const setup = () => this._history.setup();
-    this._history.transitionTo(this._getCurrent(), {
+    const current = this._getCurrent();
+    this._history.transitionTo(current, {
       onTransition: setup,
-      onAbort: setup
+      onAbort: setup,
+      // current.redirected means the initial url does not match basename and should redirect
+      // so we just skip all guards
+      // this logic only applies to memory history
+      skipGuards: Boolean(current.redirected)
     });
     return this;
   };
@@ -136,15 +136,12 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   };
 
   resolve = (to: PathRecord, from?: any): ResolvedPath => {
-    return this._history.resolve(
-      to,
-      from ? joinPaths([this._basename, from]) : this._basename
-    );
+    return this._history.resolve(to, from);
   };
 
   match = (to: PathRecord): Array<IRouteMatch<RouteRecord>> => {
-    const { _routes: routes, _basename: basename } = this;
-    const matches = matchRoutes(routes, to, basename);
+    const { _routes: routes } = this;
+    const matches = matchRoutes(routes, to);
     return matches || [];
   };
 
@@ -349,7 +346,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       hash: location.hash,
       query: location.query,
       state: location.state,
-      redirected: !!location.redirectedFrom,
+      redirected: Boolean(location.redirectedFrom) || location.notMatchBasename,
       key: location.key
     };
   }
