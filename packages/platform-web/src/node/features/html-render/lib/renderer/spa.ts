@@ -4,9 +4,13 @@ import { IRenderViewOptions, IHtmlDocument } from './types';
 export class SpaRenderer extends BaseRenderer {
   renderDocument({ req, app }: IRenderViewOptions) {
     const assets = this._getMainAssetTags(req);
+    const {
+      router: { basename }
+    } = this._serverPluginContext.appConfig;
     const appData: AppData = {
       ssr: false,
-      pageData: {}
+      pageData: {},
+      basename
     };
     const document: IHtmlDocument = {
       htmlAttrs: {},

@@ -34,7 +34,8 @@ export class SsrRenderer extends BaseRenderer {
       ...result.appData,
       ssr: true,
       appState: store.getState(),
-      pageData
+      pageData,
+      basename: router.basename
     };
     appData.runtimeConfig = getPublicRuntimeConfig() || {};
 
