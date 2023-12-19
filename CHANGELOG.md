@@ -1,3 +1,13 @@
+## [1.0.45-pre.0](https://github.com/shuvijs/shuvi/compare/v1.0.44...v1.0.45-pre.0) (2023-12-19)
+
+
+### Features
+
+* add basename hook ([6928d9e](https://github.com/shuvijs/shuvi/commit/6928d9e50d3e8ea4d8e20bcd563fda015f1de6c4))
+* **router:** add basename ([43be8bd](https://github.com/shuvijs/shuvi/commit/43be8bde82798f0175bcd6f2e4e1477f51d1aeed))
+
+
+
 ## [1.0.44](https://github.com/shuvijs/shuvi/compare/v1.0.43...v1.0.44) (2023-12-12)
 
 
