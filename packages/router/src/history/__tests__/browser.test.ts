@@ -172,7 +172,7 @@ describe('init with basename', () => {
 
     let current = router.current;
 
-    expect(router.resolve('/').href).toBe('/base');
+    expect(router.resolve('/').href).toBe('/base/');
     expect(current.pathname).toBe('/');
   });
 });

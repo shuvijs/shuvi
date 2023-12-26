@@ -188,7 +188,7 @@ describe('useHref under a <Routes basename>', () => {
         </Router>
       );
 
-      expect(href).toBe('/app');
+      expect(href).toBe('/app/');
     });
 
     describe('when the URL has a trailing slash', () => {
@@ -214,7 +214,7 @@ describe('useHref under a <Routes basename>', () => {
           </Router>
         );
 
-        expect(href).toBe('/app');
+        expect(href).toBe('/app/');
       });
     });
 
@@ -241,7 +241,7 @@ describe('useHref under a <Routes basename>', () => {
           </Router>
         );
 
-        expect(href).toBe('/app');
+        expect(href).toBe('/app/');
       });
     });
   });
@@ -295,7 +295,7 @@ describe('useHref under a <Routes basename>', () => {
           </Router>
         );
 
-        expect(href).toBe('/app');
+        expect(href).toBe('/app/');
       });
     });
 

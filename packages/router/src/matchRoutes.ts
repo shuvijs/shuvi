@@ -6,7 +6,7 @@ import {
   PartialLocation
 } from './types';
 import { matchPathname } from './matchPathname';
-import { joinPaths, resolvePath } from './utils';
+import { joinPaths, normalizeBase, resolvePath, stripBase } from './utils';
 import { tokensToParser, comparePathParserScore } from './pathParserRanker';
 import { tokenizePath } from './pathTokenizer';
 
@@ -108,18 +108,22 @@ function flattenRoutes<T extends IRouteBaseObject>(
 
 export function matchRoutes<T extends IRouteBaseObject>(
   routes: T[],
-  location: string | PartialLocation
+  location: string | PartialLocation,
+  basename = ''
 ): IRouteMatch<T>[] | null {
   if (typeof location === 'string') {
     location = resolvePath(location);
   }
 
-  let pathname = location.pathname;
-
-  // If pathname is empty, it means invalid pathname and cannot match any route.
-  // This only happens when basename is set but url is not start with basename
-  if (!pathname) {
-    return null;
+  let pathname = location.pathname || '/';
+  if (basename) {
+    const normalizedBasename = normalizeBase(basename);
+    const pathnameWithoutBase = stripBase(pathname, normalizedBasename);
+    if (pathnameWithoutBase) {
+      pathname = pathnameWithoutBase;
+    } else {
+      return null;
+    }
   }
 
   let branches = flattenRoutes(routes);

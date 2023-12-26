@@ -48,8 +48,7 @@ export const createApp: CreateAppClient = ({
 
   const router = createRouter({
     history,
-    routes: getRoutes(routes),
-    basename
+    routes: getRoutes(routes)
   });
 
   app = application({

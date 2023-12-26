@@ -29,8 +29,7 @@ export const createApp: CreateAppServer = options => {
   });
   const router = createRouter({
     history,
-    routes: getRoutes(routes),
-    basename
+    routes: getRoutes(routes)
   }) as IRouter;
   let app: InternalApplication;
   if (ssr) {
