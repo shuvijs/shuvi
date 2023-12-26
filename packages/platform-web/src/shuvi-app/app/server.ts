@@ -24,7 +24,8 @@ export const createApp: CreateAppServer = options => {
   const { req, ssr, basename } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
-    initialIndex: 0
+    initialIndex: 0,
+    basename
   });
   const router = createRouter({
     history,
