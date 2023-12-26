@@ -17,7 +17,7 @@ import { IRouter } from './routerTypes';
 export type AppComponent = unknown;
 export type AppContextCtx = {
   router: IRouter;
-  request?: ShuviRequest;
+  req?: ShuviRequest;
 };
 
 const init = createAsyncParallelHook<void>();
