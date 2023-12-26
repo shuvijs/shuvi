@@ -18,9 +18,6 @@ describe.each([false, true])('loader', hasBasename => {
 
   const getUrl = (path: string) => {
     if (hasBasename) {
-      if (path === '/') {
-        return '/base';
-      }
       return '/base' + path;
     } else {
       return path;

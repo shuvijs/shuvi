@@ -22,9 +22,9 @@ describe('Basename Support', () => {
       shuviConfig.router!.history = 'hash';
     }
 
-    let indexUrl = '/base-name';
+    let indexUrl = '/base-name/';
     if (mode === 'SPA Hash') {
-      indexUrl = '/#/base-name';
+      indexUrl = '/#/base-name/';
     }
 
     let aboutUrl = '/base-name/about';
