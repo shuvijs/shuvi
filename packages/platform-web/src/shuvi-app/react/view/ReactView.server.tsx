@@ -47,7 +47,7 @@ export class ReactServerView implements IReactServerView {
         );
       }
       // handle router internal redirect
-      return redirect(pathname);
+      return redirect(router.resolve(router.current).href);
     }
 
     const loadableModules: string[] = [];

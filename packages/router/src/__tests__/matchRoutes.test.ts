@@ -123,7 +123,9 @@ describe('path matching', () => {
     expect(pickPaths(routes, '/groups/main')).toEqual(['/groups/main']);
     expect(pickPaths(routes, '/groups/123')).toEqual(['/groups/:groupId']);
     expect(pickPaths(routes, '/groups')).toEqual(['/groups']);
-    expect(pickPaths(routes, '/files/some/long/path')).toEqual(['/files/:_other(.*)']);
+    expect(pickPaths(routes, '/files/some/long/path')).toEqual([
+      '/files/:_other(.*)'
+    ]);
     expect(pickPaths(routes, '/files')).toEqual(['/files']);
     expect(pickPaths(routes, '/one/two/three/four/five')).toEqual([
       '/:one/:two/:three/:four/:five'

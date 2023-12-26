@@ -8,7 +8,7 @@ import {
   Path
 } from '../types';
 import { readOnly, Events } from './misc';
-import { resolvePath } from './path';
+import { resolvePath, stripBase } from './path';
 
 const BeforeUnloadEventType = 'beforeunload';
 
@@ -26,14 +26,22 @@ function createKey() {
 export function createLocation(
   to: PathRecord,
   {
+    basename,
     state = null,
     key,
     redirectedFrom
-  }: { state?: State; key?: Key; redirectedFrom?: Path } = {}
+  }: { basename?: string; state?: State; key?: Key; redirectedFrom?: Path } = {}
 ) {
+  const resolved = resolvePath(to);
+  const pathnameWithoutBase = stripBase(resolved.pathname, basename || '/');
+  if (pathnameWithoutBase) {
+    resolved.pathname = pathnameWithoutBase;
+  }
+  const notMatchBasename = Boolean(basename) && !pathnameWithoutBase;
   return readOnly<Location<any>>({
-    ...resolvePath(to),
+    ...resolved,
     redirectedFrom,
+    notMatchBasename,
     state,
     key: key || createKey()
   });

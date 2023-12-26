@@ -18,9 +18,8 @@ export function MemoryRouter({
   let routerRef = React.useRef<IRouter>();
   if (routerRef.current == null) {
     routerRef.current = createRouter({
-      basename,
       routes: routes || [],
-      history: createMemoryHistory({ initialEntries, initialIndex })
+      history: createMemoryHistory({ initialEntries, initialIndex, basename })
     }).init();
   }
 

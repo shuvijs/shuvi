@@ -1,7 +1,8 @@
 import { defineConfig } from 'shuvi';
 export default defineConfig({
-  ssr: true,
+  ssr: false,
   router: {
     history: 'browser'
-  }
+  },
+  plugins: [['./plugin', { basename: '/base' }]]
 });

@@ -12,21 +12,41 @@ import {
   addBlocker,
   warning
 } from '../utils';
-import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+import BaseHistory, {
+  PushOptions,
+  ACTION_POP,
+  ACTION_REPLACE,
+  BaseHistoryOptions
+} from './base';
+
+export type BrowserHistoryOptions = BaseHistoryOptions;
 
 export default class BrowserHistory extends BaseHistory {
   private _history: GlobalHistory = window.history;
 
-  constructor() {
-    super();
-
+  constructor({ basename }: BrowserHistoryOptions = {}) {
+    super({ basename });
     [this._index, this.location] = this.getIndexAndLocation();
-    if (this._index == null) {
-      this._index = 0;
+
+    // redirect immediately if
+    // 1. no index
+    // 2. we're not on the right url (redirectedFrom means url not match basename)
+    const { notMatchBasename } = this.location;
+    if (this._index == null || notMatchBasename) {
+      this._index = this._index || 0;
       this._history.replaceState(
         { ...this._history.state, idx: this._index },
-        ''
+        '',
+        notMatchBasename ? this.resolve(this.location).href : undefined
       );
+    }
+    // recalculate location if not match basename
+    if (notMatchBasename) {
+      const state = this._history.state || {};
+      this.location = createLocation(this.location, {
+        state: state.usr || null,
+        key: state.key || 'default'
+      });
     }
   }
 
@@ -127,6 +147,7 @@ export default class BrowserHistory extends BaseHistory {
           hash
         },
         {
+          basename: this.basename,
           state: state.usr || null,
           key: state.key || 'default'
         }

@@ -6,7 +6,7 @@ import {
   PartialLocation
 } from './types';
 import { matchPathname } from './matchPathname';
-import { joinPaths, resolvePath } from './utils';
+import { joinPaths, normalizeBase, resolvePath, stripBase } from './utils';
 import { tokensToParser, comparePathParserScore } from './pathParserRanker';
 import { tokenizePath } from './pathTokenizer';
 
@@ -117,11 +117,11 @@ export function matchRoutes<T extends IRouteBaseObject>(
 
   let pathname = location.pathname || '/';
   if (basename) {
-    let base = basename.replace(/^\/*/, '/').replace(/\/+$/, '');
-    if (pathname.startsWith(base)) {
-      pathname = pathname === base ? '/' : pathname.slice(base.length);
+    const normalizedBasename = normalizeBase(basename);
+    const pathnameWithoutBase = stripBase(pathname, normalizedBasename);
+    if (pathnameWithoutBase) {
+      pathname = pathnameWithoutBase;
     } else {
-      // Pathname does not start with the basename, no match.
       return null;
     }
   }

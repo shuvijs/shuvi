@@ -21,12 +21,16 @@ import BlockPopWithoutListening from './TestSequences/BlockPopWithoutListening.j
 import { IRouter, IRouteRecord } from '../../types';
 import { createRouter } from '../../router';
 
-describe('a hash history', () => {
+describe.each([false, true])('a hash history', hasBasename => {
   let router: IRouter;
   beforeEach(() => {
+    const initialUrl = hasBasename ? '#/base' : '#/';
     // @ts-ignore
-    window.history.replaceState(null, null, '#/');
-    let history = createHashHistory();
+    window.history.replaceState(null, null, initialUrl);
+    let history = hasBasename
+      ? createHashHistory({ basename: '/base' })
+      : createHashHistory();
+
     router = createRouter({
       routes: [] as IRouteRecord[],
       history
@@ -39,25 +43,32 @@ describe('a hash history', () => {
       search: '?the=query',
       hash: '#the-hash'
     });
-
-    expect(href).toEqual('#/the/path?the=query#the-hash');
+    const expectedHref = hasBasename
+      ? '#/base/the/path?the=query#the-hash'
+      : '#/the/path?the=query#the-hash';
+    expect(href).toEqual(expectedHref);
   });
 
   it('knows how to create hrefs from strings', () => {
     const { href } = router.resolve('/the/path?the=query#the-hash');
-    expect(href).toEqual('#/the/path?the=query#the-hash');
+    const expectedHref = hasBasename
+      ? '#/base/the/path?the=query#the-hash'
+      : '#/the/path?the=query#the-hash';
+    expect(href).toEqual(expectedHref);
   });
 
   it('does not encode the generated path', () => {
     const { href: encodedHref } = router.resolve({
       pathname: '/%23abc'
     });
-    expect(encodedHref).toEqual('#/%23abc');
+    const expectedHref = hasBasename ? '#/base/%23abc' : '#/%23abc';
+    expect(encodedHref).toEqual(expectedHref);
 
     const { href: unencodedHref } = router.resolve({
       pathname: '/#abc'
     });
-    expect(unencodedHref).toEqual('#/#abc');
+    const expectedUnencodedHref = hasBasename ? '#/base/#abc' : '#/#abc';
+    expect(unencodedHref).toEqual(expectedUnencodedHref);
   });
 
   describe('the initial location', () => {

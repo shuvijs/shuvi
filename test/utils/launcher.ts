@@ -11,6 +11,7 @@ import { SpawnOptions, ChildProcess } from 'child_process';
 import * as rimraf from 'rimraf';
 import * as path from 'path';
 
+export type { ShuviConfig };
 export interface AppCtx {
   browser: Browser;
   url: (x: string, query?: Record<string, any>) => string;
@@ -191,6 +192,7 @@ export interface LaunchOptions {
   isDev?: boolean;
   onStdout?: (data: string) => void;
   onStderr?: (error: string) => void;
+  basename?: string;
 }
 
 /** remove generated files under '.shuvi' and 'dist' folders to prevent unexpected effect */

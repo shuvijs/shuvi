@@ -15,41 +15,44 @@ import {
   pathToString,
   warning
 } from '../utils';
-import BaseHistory, { PushOptions, ACTION_POP, ACTION_REPLACE } from './base';
+import BaseHistory, {
+  PushOptions,
+  ACTION_POP,
+  ACTION_REPLACE,
+  BaseHistoryOptions
+} from './base';
 
-function getBaseHref() {
-  let base = document.querySelector('base');
-  let href = '';
-
-  if (base && base.getAttribute('href')) {
-    let url = window.location.href;
-    let hashIndex = url.indexOf('#');
-    href = hashIndex === -1 ? url : url.slice(0, hashIndex);
-  }
-
-  return href;
+function createHref(to: PathRecord, basename?: string) {
+  return '#' + pathToString(resolvePath(to), basename);
 }
 
-function createHref(to: PathRecord) {
-  return (
-    getBaseHref() +
-    '#' +
-    (typeof to === 'string' ? to : pathToString(resolvePath(to)))
-  );
-}
+export type HashHistoryOptions = BaseHistoryOptions;
 
 export default class HashHistory extends BaseHistory {
   private _history: GlobalHistory = window.history;
 
-  constructor() {
-    super();
+  constructor({ basename }: HashHistoryOptions = {}) {
+    super({ basename });
     [this._index, this.location] = this.getIndexAndLocation();
-    if (this._index == null) {
-      this._index = 0;
+    // redirect immediately if
+    // 1. no index
+    // 2. we're not on the right url (redirectedFrom means url not match basename)
+    const { notMatchBasename } = this.location;
+    if (this._index == null || notMatchBasename) {
+      this._index = this._index || 0;
       this._history.replaceState(
         { ...this._history.state, idx: this._index },
-        ''
+        '',
+        notMatchBasename ? this.resolve(this.location).href : undefined
       );
+    }
+    // recalculate location if not match basename
+    if (notMatchBasename) {
+      const state = this._history.state || {};
+      this.location = createLocation(this.location, {
+        state: state.usr || null,
+        key: state.key || 'default'
+      });
     }
   }
 
@@ -86,7 +89,7 @@ export default class HashHistory extends BaseHistory {
     const toPath = resolvePath(to, from);
     return {
       path: toPath,
-      href: createHref(toPath)
+      href: createHref(toPath, this.basename)
     };
   }
 
@@ -170,6 +173,7 @@ export default class HashHistory extends BaseHistory {
           hash
         },
         {
+          basename: this.basename,
           state: state.usr || null,
           key: state.key || 'default'
         }

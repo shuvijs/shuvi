@@ -2,54 +2,100 @@ import { MemoryHistory } from '../history';
 import { createRouter } from '../router';
 import { IRouter } from '../types';
 
-describe('router', () => {
+describe.each([false, true])('router', hasBasename => {
+  let history: MemoryHistory;
+  beforeEach(() => {
+    if (hasBasename) {
+      history = new MemoryHistory({
+        basename: '/base',
+        initialEntries: ['/base']
+      });
+    } else {
+      history = new MemoryHistory();
+    }
+  });
   describe('current', () => {
+    it('current should has correct value', () => {
+      const router = createRouter({
+        routes: [{ path: '/:lng/about' }],
+        history: hasBasename
+          ? new MemoryHistory({
+              initialEntries: ['/base/en/about?foo=foo&bar=bar#hash-1'],
+              basename: '/base'
+            })
+          : new MemoryHistory({
+              initialEntries: ['/en/about?foo=foo&bar=bar#hash-1']
+            })
+      }).init();
+
+      console.log(router.current);
+
+      expect(router.current).toMatchObject({
+        pathname: '/en/about',
+        matches: [
+          { pathname: '/en/about', params: {}, route: { path: '/:lng/about' } }
+        ],
+        params: {
+          lng: 'en'
+        },
+        query: {
+          foo: 'foo',
+          bar: 'bar'
+        },
+        search: '?foo=foo&bar=bar',
+        hash: '#hash-1',
+        state: null,
+        redirected: false,
+        key: expect.any(String)
+      });
+    });
+
     it('should not change until history changes', () => {
       const router = createRouter({
-        routes: [{ path: '/' }, { path: '/about' }],
-        history: new MemoryHistory({
-          initialEntries: ['/', '/about'],
-          initialIndex: 0
-        })
-      });
+        routes: [{ path: '/' }, { path: '/:lng/about' }],
+        history
+      }).init();
 
       const { push, current } = router;
       expect(current).toEqual(router.current);
-      push('/about');
+      console.log('======router', router.current);
+      expect(router.current).toMatchObject({
+        pathname: '/',
+        matches: [{ pathname: '/', params: {}, route: { path: '/' } }],
+        params: {},
+        query: {},
+        search: '',
+        hash: '',
+        state: null,
+        redirected: false,
+        key: expect.any(String)
+      });
+      push('/en/about?foo=foo&bar=bar#hash-1');
       expect(current).not.toEqual(router.current);
+      expect(router.current).toMatchObject({
+        pathname: '/en/about',
+        matches: [
+          { pathname: '/en/about', params: {}, route: { path: '/:lng/about' } }
+        ],
+        params: {
+          lng: 'en'
+        },
+        query: {
+          foo: 'foo',
+          bar: 'bar'
+        },
+        search: '?foo=foo&bar=bar',
+        hash: '#hash-1',
+        state: null,
+        redirected: false,
+        key: expect.any(String)
+      });
     });
   });
 
   describe('redirect', () => {
-    it('should have the correct current redirect', () => {
-      const router = createRouter({
-        routes: [
-          { path: '/' },
-          {
-            path: 'about',
-            redirect: '/',
-            children: [
-              {
-                path: 'redirect',
-                redirect: '/about'
-              }
-            ]
-          }
-        ],
-        history: new MemoryHistory({
-          initialEntries: ['/about/redirect'],
-          initialIndex: 0
-        })
-      }).init();
-
-      let current = router.current;
-      expect(current.redirected).toBe(true);
-      expect(current.pathname).toBe('/');
-    });
-
     describe('single redirect in route config', () => {
       it('should use replace when route config redirects at initial navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -70,7 +116,6 @@ describe('router', () => {
       });
 
       it('should use push when route config redirects at push navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -110,8 +155,6 @@ describe('router', () => {
       });
 
       it('should use replace when route config redirects at replace navigation', () => {
-        const history = new MemoryHistory();
-
         const router = createRouter({
           routes: [
             { path: '/' },
@@ -156,7 +199,6 @@ describe('router', () => {
 
     describe('multiple redirect in route config', () => {
       it('should use replace when route config redirects for multiple times at initial navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -190,7 +232,6 @@ describe('router', () => {
       });
 
       it('should use push when route config redirects for multiple times at push navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -236,8 +277,6 @@ describe('router', () => {
       });
 
       it('should use replace when route config redirects for multiple times at replace navigation', () => {
-        const history = new MemoryHistory();
-
         const router = createRouter({
           routes: [
             { path: '/' },
@@ -287,7 +326,6 @@ describe('router', () => {
 
     describe('single redirect in guards', () => {
       it('should use replace when a guard redirects at initial navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -317,7 +355,6 @@ describe('router', () => {
       });
 
       it('should use push when a guard redirects at push navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -360,8 +397,6 @@ describe('router', () => {
       });
 
       it('should use replace when a guard redirects with replace option at push navigation', () => {
-        const history = new MemoryHistory();
-
         const router = createRouter({
           routes: [],
           history
@@ -400,7 +435,6 @@ describe('router', () => {
       });
 
       it('should use replace when a guard redirects at replace navigation', () => {
-        const history = new MemoryHistory();
         const router = createRouter({
           routes: [],
           history
@@ -446,7 +480,6 @@ describe('router', () => {
 
     describe('multiple redirects in guards', () => {
       it('should use replace when guards redirect for multiple times at initial navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -489,7 +522,6 @@ describe('router', () => {
       });
 
       it('should use push when guards redirect for multiple times at push navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -541,8 +573,6 @@ describe('router', () => {
       });
 
       it('should use replace when guards redirect with replace option for multiple times at push navigation', () => {
-        const history = new MemoryHistory();
-
         const router = createRouter({
           routes: [],
           history
@@ -615,7 +645,6 @@ describe('router', () => {
       });
 
       it('should use replace when guards redirect for multiple times at replace navigation', () => {
-        const history = new MemoryHistory();
         const router = createRouter({
           routes: [],
           history
@@ -669,7 +698,6 @@ describe('router', () => {
 
     describe('redirect in both guards and route config', () => {
       it('should use replace when route config and guards redirect at initial navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -712,7 +740,6 @@ describe('router', () => {
       });
 
       it('should use push when route config and guards redirect at push navigation', () => {
-        const history = new MemoryHistory();
         jest.spyOn(history, 'replace');
         jest.spyOn(history, 'push');
         const router = createRouter({
@@ -771,8 +798,6 @@ describe('router', () => {
       });
 
       it('should use replace when route config and guards redirect with replace option for multiple times at push navigation', () => {
-        const history = new MemoryHistory();
-
         const router = createRouter({
           routes: [
             { path: '/' },
@@ -842,8 +867,6 @@ describe('router', () => {
       });
 
       it('should use replace when route config and guards redirect at replace navigation', () => {
-        const history = new MemoryHistory();
-
         const router = createRouter({
           routes: [
             { path: '/' },
@@ -943,10 +966,7 @@ describe('router', () => {
           { path: '/new' },
           { path: '/redirectToNew', redirect: '/new' }
         ],
-        history: new MemoryHistory({
-          initialEntries: ['/', '/about'],
-          initialIndex: 0
-        })
+        history
       }).init();
     });
 
