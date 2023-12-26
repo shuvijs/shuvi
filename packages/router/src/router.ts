@@ -86,6 +86,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     return this._history.action;
   }
 
+  get basename(): string {
+    return this._basename;
+  }
+
   init = () => {
     const setup = () => this._history.setup();
     this._history.transitionTo(this._getCurrent(), {
