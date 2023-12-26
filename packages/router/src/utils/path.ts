@@ -1,5 +1,4 @@
 import * as qs from 'query-string';
-import { inBrowser } from './dom';
 import { PathRecord, PartialPath, Path } from '../types';
 
 export const trimTrailingSlashes = (path: string) => path.replace(/\/+$/, '');
@@ -12,15 +11,7 @@ export const splitPath = (path: string) => normalizeSlashes(path).split('/');
 
 export function normalizeBase(base: string): string {
   if (!base) {
-    if (inBrowser) {
-      // respect <base> tag
-      const baseEl = document.querySelector('base');
-      base = (baseEl && baseEl.getAttribute('href')) || '/';
-      // strip full URL origin
-      base = base.replace(/^https?:\/\/[^\/]+/, '');
-    } else {
-      base = '/';
-    }
+    base = '/';
   }
   // make sure there's the starting slash
   if (base.charAt(0) !== '/') {
@@ -34,17 +25,22 @@ export function parseQuery(queryStr: string) {
   return qs.parse(queryStr);
 }
 
-export function pathToString({
-  pathname = '/',
-  search = '',
-  hash = '',
-  query = {}
-}: PartialPath): string {
+export function pathToString(
+  { pathname = '/', search = '', hash = '', query = {} }: PartialPath,
+  basename?: string
+): string {
   if (!search) {
     const queryString = qs.stringify(query);
     search = queryString ? `?${queryString}` : '';
   }
-  return pathname + search + hash;
+  const pathString = pathname + search + hash;
+  if (basename) {
+    if (pathString === '/') {
+      return basename;
+    }
+    return joinPaths([basename, pathString]);
+  }
+  return pathString;
 }
 
 function resolvePathname(toPathname: string, fromPathname: string): string {
@@ -119,4 +115,20 @@ export function resolvePath(to: PathRecord, fromPathname = '/'): Path {
     : fromPathname;
 
   return parsedPath;
+}
+
+/**
+ * Strips off the base from the beginning of a location.pathname in a non-case-sensitive way.
+ *
+ * @param pathname - location.pathname
+ * @param base - base to strip off
+ */
+export function stripBase(pathname: string, base: string): string | null {
+  if (!base || base === '/') return pathname;
+
+  // no base or base is not found at the beginning
+  if (!pathname.toLowerCase().startsWith(base.toLowerCase())) {
+    return null;
+  }
+  return pathname.slice(base.length) || '/';
 }
