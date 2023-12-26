@@ -21,14 +21,15 @@ import { serializeServerError } from '../helper/serializeServerError';
 
 const { SHUVI_SERVER_RUN_LOADERS } = SERVER_CREATE_APP.events;
 export const createApp: CreateAppServer = options => {
-  const { req, ssr } = options;
+  const { req, ssr, basename } = options;
   const history = createMemoryHistory({
     initialEntries: [(req && req.url) || '/'],
     initialIndex: 0
   });
   const router = createRouter({
     history,
-    routes: getRoutes(routes)
+    routes: getRoutes(routes),
+    basename
   }) as IRouter;
   let app: InternalApplication;
   if (ssr) {

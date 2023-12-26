@@ -16,7 +16,11 @@ export type InternalApplication = _ApplicationImpl<AppConfig>;
 export type Application = _Application<AppConfig>;
 
 export interface CreateAppServer {
-  (options: { req: ShuviRequest; ssr: boolean }): InternalApplication;
+  (options: {
+    req: ShuviRequest;
+    ssr: boolean;
+    basename: string;
+  }): InternalApplication;
 }
 
 export interface CreateAppClient {

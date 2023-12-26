@@ -1,4 +1,5 @@
 import { matchRoutes } from '@shuvi/router';
+import { normalizeBase } from '@shuvi/router/lib/utils';
 import resources from '@shuvi/service/lib/resources';
 import { ShuviRequestHandler, IServerPluginContext } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
@@ -85,8 +86,15 @@ export default class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string): Promise<void> {
+    const {
+      router: { basename }
+    } = this._serverPluginContext.appConfig;
     const matchedRoutes =
-      matchRoutes(resources.server.pageRoutes, pathname) || [];
+      matchRoutes(
+        resources.server.pageRoutes,
+        pathname,
+        normalizeBase(basename)
+      ) || [];
 
     const modulesToActivate = matchedRoutes
       .map(({ route: { __componentRawRequest__ } }) => __componentRawRequest__)

@@ -17,6 +17,9 @@ import {
 export {};
 
 declare module '@shuvi/service/lib/resources' {
+  interface IGetRoutes {
+    (routes: IPageRouteRecord[]): IPageRouteRecord[];
+  }
   export interface IResources {
     server: {
       server: IServerModule;
@@ -27,6 +30,7 @@ declare module '@shuvi/service/lib/resources' {
         createApp: CreateAppServer;
       };
       view: IViewServer;
+      getRoutes: IGetRoutes;
     };
     documentPath: string;
     clientManifest: IManifest;

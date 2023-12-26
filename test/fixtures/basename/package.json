@@ -1,0 +1,6 @@
+{
+  "name": "fixture-basename",
+  "dependencies": {
+    "shuvi": "workspace:*"
+  }
+}
