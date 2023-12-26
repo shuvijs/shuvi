@@ -21,12 +21,15 @@ import BlockPopWithoutListening from './TestSequences/BlockPopWithoutListening.j
 import { createRouter } from '../../router';
 import { IRouter, IRouteRecord } from '../../types';
 
-describe('a browser history', () => {
+describe.each([false, true])('a browser history', hasBasename => {
   let router: IRouter;
   beforeEach(() => {
+    const initialUrl = hasBasename ? '/base/' : '/';
     // @ts-ignore
-    window.history.replaceState(null, null, '/');
-    let history = createBrowserHistory();
+    window.history.replaceState(null, null, initialUrl);
+    let history = hasBasename
+      ? createBrowserHistory({ basename: '/base' })
+      : createBrowserHistory();
     router = createRouter({ routes: [] as IRouteRecord[], history }).init();
   });
 
@@ -37,24 +40,37 @@ describe('a browser history', () => {
       hash: '#the-hash'
     });
 
-    expect(href).toEqual('/the/path?the=query#the-hash');
+    const expectedHref = hasBasename
+      ? '/base/the/path?the=query#the-hash'
+      : '/the/path?the=query#the-hash';
+
+    expect(href).toEqual(expectedHref);
   });
 
   it('knows how to create hrefs from strings', () => {
     const { href } = router.resolve('/the/path?the=query#the-hash');
-    expect(href).toEqual('/the/path?the=query#the-hash');
+
+    const expectedHref = hasBasename
+      ? '/base/the/path?the=query#the-hash'
+      : '/the/path?the=query#the-hash';
+    expect(href).toEqual(expectedHref);
   });
 
   it('does not encode the generated path', () => {
     const { href: encodedHref } = router.resolve({
       pathname: '/%23abc'
     });
-    expect(encodedHref).toEqual('/%23abc');
+
+    const expectedHref = hasBasename ? '/base/%23abc' : '/%23abc';
+
+    expect(encodedHref).toEqual(expectedHref);
 
     const { href: unencodedHref } = router.resolve({
       pathname: '/#abc'
     });
-    expect(unencodedHref).toEqual('/#abc');
+
+    const expectedUnencodedHref = hasBasename ? '/base/#abc' : '/#abc';
+    expect(unencodedHref).toEqual(expectedUnencodedHref);
   });
 
   describe('the initial location', () => {
@@ -139,5 +155,24 @@ describe('a browser history', () => {
     it('receives the next ({ action, location })', done => {
       BlockPopWithoutListening(router, done);
     });
+  });
+});
+
+describe('init with basename', () => {
+  it('should redirect if initial entry does not match base', () => {
+    // @ts-ignore
+    window.history.replaceState(null, null, '/');
+
+    const history = createBrowserHistory({ basename: '/base' });
+
+    const router = createRouter({
+      routes: [],
+      history
+    }).init();
+
+    let current = router.current;
+
+    expect(router.resolve('/').href).toBe('/base/');
+    expect(current.pathname).toBe('/');
   });
 });

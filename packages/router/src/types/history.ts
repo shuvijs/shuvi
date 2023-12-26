@@ -115,6 +115,8 @@ export interface PartialPath {
 export interface Location<S extends State = State> extends Path {
   redirectedFrom?: Path;
 
+  notMatchBasename?: boolean;
+
   /**
    * An object of arbitrary data associated with this location.
    *
@@ -135,6 +137,8 @@ export interface Location<S extends State = State> extends Path {
  * A partial Location object that may be missing some properties.
  */
 export interface PartialLocation<S extends State = State> extends PartialPath {
+  redirectedFrom?: Path;
+
   /**
    * An object of arbitrary data associated with this location.
    *

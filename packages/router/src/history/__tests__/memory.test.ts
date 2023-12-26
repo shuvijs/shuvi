@@ -17,10 +17,12 @@ import BlockPopWithoutListening from './TestSequences/BlockPopWithoutListening.j
 import { createRouter } from '../../router';
 import { IRouter, IRouteRecord } from '../../types';
 
-describe('a memory history', () => {
+describe.each([false, true])('a memory history', hasBasename => {
   let router: IRouter;
   beforeEach(() => {
-    let history = createMemoryHistory();
+    let history = hasBasename
+      ? createMemoryHistory({ basename: '/base', initialEntries: ['/base'] })
+      : createMemoryHistory();
     router = createRouter({
       routes: [] as IRouteRecord[],
       history
@@ -33,25 +35,32 @@ describe('a memory history', () => {
       search: '?the=query',
       hash: '#the-hash'
     });
-
-    expect(href).toEqual('/the/path?the=query#the-hash');
+    const expectedHref = hasBasename
+      ? '/base/the/path?the=query#the-hash'
+      : '/the/path?the=query#the-hash';
+    expect(href).toEqual(expectedHref);
   });
 
   it('knows how to create hrefs from strings', () => {
     const { href } = router.resolve('/the/path?the=query#the-hash');
-    expect(href).toEqual('/the/path?the=query#the-hash');
+    const expectedHref = hasBasename
+      ? '/base/the/path?the=query#the-hash'
+      : '/the/path?the=query#the-hash';
+    expect(href).toEqual(expectedHref);
   });
 
   it('does not encode the generated path', () => {
     const { href: encodedHref } = router.resolve({
       pathname: '/%23abc'
     });
-    expect(encodedHref).toEqual('/%23abc');
+    const expectedHref = hasBasename ? '/base/%23abc' : '/%23abc';
+    expect(encodedHref).toEqual(expectedHref);
 
     const { href: unencodedHref } = router.resolve({
       pathname: '/#abc'
     });
-    expect(unencodedHref).toEqual('/#abc');
+    const expectedUnencodedHref = hasBasename ? '/base/#abc' : '/#abc';
+    expect(unencodedHref).toEqual(expectedUnencodedHref);
   });
 
   describe('the initial location', () => {
@@ -165,5 +174,25 @@ describe('a memory history with some initial entries', () => {
       state: null,
       key: expect.any(String)
     });
+  });
+});
+
+describe('init with basename', () => {
+  it('should redirect if initial entry does not match base', () => {
+    const history = createMemoryHistory({
+      basename: '/base',
+      initialEntries: ['/does-not-match-base']
+    });
+    const router = createRouter({
+      routes: [],
+      history
+    }).init();
+
+    let current = router.current;
+
+    // memoryHistory will not directly redirect, but it will set notMatchBasename to true
+    expect(history.location.notMatchBasename).toBe(true);
+    expect(current.redirected).toBe(true);
+    expect(current.pathname).toBe('/does-not-match-base');
   });
 });

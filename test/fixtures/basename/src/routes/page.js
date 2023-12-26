@@ -8,11 +8,24 @@ export default function Page() {
     <div>
       <div id="index">Index Page</div>
       <div>
-        <Link to="/en">Go to /en</Link>
+        <Link id="link-go-about" to="/about">
+          Go to /about
+        </Link>
       </div>
       <div>
-        <button onClick={goToAbout}>Go to /about</button>
+        <Link id="link-go-list" to="/list">
+          Go to /list
+        </Link>
+      </div>
+      <div>
+        <button id="button-go-about" onClick={goToAbout}>
+          Go to /about
+        </button>
       </div>
     </div>
   );
 }
+
+export const loader = ctx => {
+  return {};
+};

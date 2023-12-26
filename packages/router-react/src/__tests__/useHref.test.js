@@ -235,6 +235,56 @@ describe('useHref', () => {
         expect(href).toBe('/courses/');
       });
     });
+
+    describe('when up to root route, href should always be root /', () => {
+      it('when href has no trailing slash', () => {
+        let href;
+        function AdvancedReact() {
+          href = useHref('..');
+          return <h1>Advanced React</h1>;
+        }
+
+        createTestRenderer(
+          <Router
+            initialEntries={['/courses']}
+            routes={[
+              {
+                path: 'courses',
+                component: AdvancedReact
+              }
+            ]}
+          >
+            <RouterView />
+          </Router>
+        );
+
+        expect(href).toBe('/');
+      });
+
+      it('when href has a trailing slash', () => {
+        let href;
+        function AdvancedReact() {
+          href = useHref('../');
+          return <h1>Advanced React</h1>;
+        }
+
+        createTestRenderer(
+          <Router
+            initialEntries={['/courses']}
+            routes={[
+              {
+                path: 'courses',
+                component: AdvancedReact
+              }
+            ]}
+          >
+            <RouterView />
+          </Router>
+        );
+
+        expect(href).toBe('/');
+      });
+    });
   });
 
   describe('with a to value that has more .. segments than are in the URL', () => {
@@ -275,6 +325,56 @@ describe('useHref', () => {
       );
 
       expect(href).toBe('/courses');
+    });
+
+    describe('when up to root route, href should always be root /', () => {
+      it('when href has no trailing slash', () => {
+        let href;
+        function AdvancedReact() {
+          href = useHref('../..');
+          return <h1>Advanced React</h1>;
+        }
+
+        createTestRenderer(
+          <Router
+            initialEntries={['/courses/some-path']}
+            routes={[
+              {
+                path: 'courses/some-path',
+                component: AdvancedReact
+              }
+            ]}
+          >
+            <RouterView />
+          </Router>
+        );
+
+        expect(href).toBe('/');
+      });
+
+      it('when href has a trailing slash', () => {
+        let href;
+        function AdvancedReact() {
+          href = useHref('../../');
+          return <h1>Advanced React</h1>;
+        }
+
+        createTestRenderer(
+          <Router
+            initialEntries={['/courses/some-path']}
+            routes={[
+              {
+                path: 'courses/some-path',
+                component: AdvancedReact
+              }
+            ]}
+          >
+            <RouterView />
+          </Router>
+        );
+
+        expect(href).toBe('/');
+      });
     });
 
     describe('and no additional segments', () => {
