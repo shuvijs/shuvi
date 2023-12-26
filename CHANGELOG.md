@@ -1,3 +1,18 @@
+## [1.0.45](https://github.com/shuvijs/shuvi/compare/v1.0.44...v1.0.45) (2023-12-26)
+
+
+### Bug Fixes
+
+* rename request to req ([a5be2ad](https://github.com/shuvijs/shuvi/commit/a5be2ad3de1f576499c50e03c7347d009d4d9d68))
+* **router:** basename ([3f301b7](https://github.com/shuvijs/shuvi/commit/3f301b7e4d481537c52939b1c5a4aab4447d1ec5))
+
+
+### Features
+
+* add getAppConfig hook to serverPlugin ([6568a2c](https://github.com/shuvijs/shuvi/commit/6568a2c19d6c6bca309bf19641a917377a83a551))
+
+
+
 ## [1.0.44](https://github.com/shuvijs/shuvi/compare/v1.0.43...v1.0.44) (2023-12-12)
 
 
