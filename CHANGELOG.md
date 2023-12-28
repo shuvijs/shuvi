@@ -1,3 +1,12 @@
+## [1.0.46](https://github.com/shuvijs/shuvi/compare/v1.0.45...v1.0.46) (2023-12-28)
+
+
+### Features
+
+* move setupAppConfigMiddleware to platform-web ([#574](https://github.com/shuvijs/shuvi/issues/574)) ([876d946](https://github.com/shuvijs/shuvi/commit/876d946ce5da7cb5a71fc76aa11066df8ff99a1f))
+
+
+
 ## [1.0.45](https://github.com/shuvijs/shuvi/compare/v1.0.44...v1.0.45) (2023-12-26)
 
 
