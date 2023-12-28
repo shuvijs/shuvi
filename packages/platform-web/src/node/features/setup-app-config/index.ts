@@ -1,10 +1,9 @@
-import { IServerPluginContext } from '../plugin';
-import { ShuviRequestHandler } from '../shuviServerTypes';
+import { IServerPluginContext, ShuviRequestHandler } from '@shuvi/service';
 
-export const setupAppConfigMiddleware = (
+export const getSetupAppConfigMiddleware = (
   context: IServerPluginContext
 ): ShuviRequestHandler => {
-  return async (req, _res, next) => {
+  return (req, _res, next) => {
     const appConfig = context.serverPluginRunner.getAppConfig({ req });
     if (appConfig) {
       if (typeof appConfig.router.basename !== 'string') {

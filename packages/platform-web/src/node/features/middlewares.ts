@@ -4,6 +4,7 @@ import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev/devMidd
 import { OnDemandRouteManager } from './on-demand-compile-page';
 import { getApiMiddleware, getMiddlewareMiddleware } from './filesystem-routes';
 import { getPageMiddleware } from './html-render';
+import { getSetupAppConfigMiddleware } from './setup-app-config';
 
 export const getMiddlewares = async (
   context: IServerPluginContext
@@ -11,6 +12,7 @@ export const getMiddlewares = async (
   return [
     getMiddlewareMiddleware(context),
     getApiMiddleware(context),
+    getSetupAppConfigMiddleware(context),
     await getPageMiddleware(context)
   ].filter(Boolean);
 };

@@ -2,9 +2,10 @@ import { ServerResponse } from 'http';
 import {
   createAsyncParallelHook,
   createAsyncSeriesHook,
-  createAsyncSeriesWaterfallHook
+  createAsyncSeriesWaterfallHook,
+  createSyncBailHook
 } from '@shuvi/hook';
-import { ShuviRequest } from '@shuvi/service';
+import { IServerPluginContext, ShuviRequest } from '@shuvi/service';
 import { IAppContext } from '@shuvi/platform-shared/shared';
 import { IHtmlDocument } from '../html-render';
 
@@ -28,6 +29,12 @@ export type ISendHtml = (
   requestContext: RequestContext
 ) => Promise<void>;
 
+type AppConfigCtx = {
+  req: ShuviRequest;
+};
+
+type AppConfig = IServerPluginContext['appConfig'];
+
 const getPageData = createAsyncParallelHook<
   void,
   IAppContext,
@@ -37,8 +44,11 @@ const handlePageRequest = createAsyncSeriesWaterfallHook<IHandlePageRequest>();
 const modifyHtml = createAsyncSeriesHook<IHtmlDocument, ModifyHtmlContext>();
 const sendHtml = createAsyncSeriesWaterfallHook<ISendHtml>();
 
+export const getAppConfig = createSyncBailHook<void, AppConfigCtx, AppConfig>();
+
 export const extendedHooks = {
   getPageData,
+  getAppConfig,
   handlePageRequest,
   modifyHtml,
   sendHtml

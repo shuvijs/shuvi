@@ -10,6 +10,7 @@ declare global {
   namespace ShuviService {
     interface CustomServerPluginHooks {
       getPageData: typeof extendedHooks.getPageData;
+      getAppConfig: typeof extendedHooks.getAppConfig;
       handlePageRequest: typeof extendedHooks.handlePageRequest;
       modifyHtml: typeof extendedHooks.modifyHtml;
       sendHtml: typeof extendedHooks.sendHtml;
