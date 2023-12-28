@@ -1,7 +1,6 @@
 import {
   createAsyncParallelHook,
   createHookManager,
-  createSyncBailHook,
   IPluginInstance,
   IPluginHandlers,
   HookMap
@@ -9,7 +8,6 @@ import {
 import { createPluginCreator } from '@shuvi/shared/plugins';
 import { IPluginContext } from '../core';
 import { CustomServerPluginHooks } from './pluginTypes';
-import { ShuviRequest } from './shuviServerTypes';
 
 export * from './pluginTypes';
 
@@ -24,25 +22,18 @@ export type PluginRunner = PluginManager['runner'];
 
 const listen = createAsyncParallelHook<{ port: number; hostname?: string }>();
 
-type AppConfigCtx = {
-  req: ShuviRequest;
-};
-
 type AppConfig = {
   router: {
     basename: string;
   };
 };
-const getAppConfig = createSyncBailHook<void, AppConfigCtx, AppConfig>();
 
 const internalHooks = {
-  listen,
-  getAppConfig
+  listen
 };
 
 export interface BuiltInServerPluginHooks extends HookMap {
   listen: typeof listen;
-  getAppConfig: typeof getAppConfig;
 }
 
 export interface ServerPluginHooks
@@ -80,7 +71,7 @@ export const initServerPlugins = (
   const serverContext = Object.assign(
     {
       serverPluginRunner: manager.runner,
-      // default appConfig, can be override by setupAppConfigMiddleware
+      // default appConfig, can be override by `getAppConfig` hook
       appConfig: {
         router: {
           basename: ''
