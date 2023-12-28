@@ -1,13 +1,26 @@
-import { AppCtx, Page, devFixture, check } from '../utils';
+import {
+  AppCtx,
+  Page,
+  devFixture,
+  check,
+  buildFixture,
+  serveFixture,
+  ShuviConfig
+} from '../utils';
 
 let ctx: AppCtx;
 let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('SSR: Runtime Config', () => {
+describe.each([false, true])('SSR: Runtime Config', isProd => {
   beforeAll(async () => {
-    ctx = await devFixture('runtime-config');
+    if (isProd) {
+      buildFixture('runtime-config');
+      ctx = await serveFixture('runtime-config');
+    } else {
+      ctx = await devFixture('runtime-config');
+    }
   });
 
   beforeEach(() => {
@@ -54,14 +67,20 @@ describe('SSR: Runtime Config', () => {
   });
 });
 
-describe('CSR: Runtime Config', () => {
+describe.each([false, true])('CSR: Runtime Config', isProd => {
   beforeAll(async () => {
-    ctx = await devFixture('runtime-config', {
+    const config = {
       ssr: false,
       router: {
         history: 'browser'
       }
-    });
+    } as ShuviConfig;
+    if (isProd) {
+      buildFixture('runtime-config', config);
+      ctx = await serveFixture('runtime-config');
+    } else {
+      ctx = await devFixture('runtime-config', config);
+    }
   });
   afterAll(async () => {
     await ctx.close();
