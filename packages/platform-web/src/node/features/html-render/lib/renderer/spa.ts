@@ -1,3 +1,4 @@
+import { getPublicRuntimeConfig } from '@shuvi/platform-shared/shared/shuvi-singleton-runtimeConfig';
 import { BaseRenderer, AppData } from './base';
 import { IRenderViewOptions, IHtmlDocument } from './types';
 
@@ -10,8 +11,10 @@ export class SpaRenderer extends BaseRenderer {
     const appData: AppData = {
       ssr: false,
       pageData: {},
-      basename
+      basename,
+      runtimeConfig: getPublicRuntimeConfig() || {}
     };
+
     const document: IHtmlDocument = {
       htmlAttrs: {},
       headTags: [...assets.styles],

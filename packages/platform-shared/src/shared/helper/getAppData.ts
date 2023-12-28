@@ -40,7 +40,8 @@ export function getAppData(): IAppData {
       ssr: false,
       pageData: {},
       filesByRoutId: {},
-      publicPath: '/'
+      publicPath: '/',
+      runtimeConfig: {}
     };
   }
 
