@@ -1,6 +1,6 @@
 import { defineConfig } from 'shuvi';
 export default defineConfig({
-  ssr: false,
+  ssr: true,
   router: {
     history: 'browser'
   },
