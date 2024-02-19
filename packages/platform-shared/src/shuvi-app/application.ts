@@ -36,7 +36,11 @@ function getPlugins(runtime: IAppModule, pluginRecords: IPluginRecord) {
     }
   }
 
-  plugins.push([createRuntimePlugin(pluginConstructor)]);
+  plugins.push([
+    createRuntimePlugin(pluginConstructor, {
+      name: 'shuvi-user-app'
+    })
+  ]);
   return plugins;
 }
 
