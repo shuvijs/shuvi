@@ -152,6 +152,7 @@ export const createApp: CreateAppClient = ({
       if (isResponse(error) && error.status >= 400 && error.status < 600) {
         // client error has no status code
         app.setError({
+          code: error.status, // Note: used in the custom Error component (error.tsx props.errorCode)
           message: error.data
         });
         next();
