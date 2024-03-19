@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { renderToString } from 'react-dom/server';
-import { redirect } from '@shuvi/platform-shared/shared';
+import { redirect, response } from '@shuvi/platform-shared/shared';
 import { SHUVI_ERROR } from '@shuvi/shared/constants';
 import { SERVER_REQUEST } from '@shuvi/shared/constants/trace';
 import { Router } from '@shuvi/router-react';
@@ -19,7 +19,12 @@ export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
     await Loadable.preloadAll();
 
-    const { router, appComponent: AppComponent, setError: setAppError } = app;
+    const {
+      router,
+      appComponent: AppComponent,
+      setError: setAppError,
+      error
+    } = app;
     await router.ready;
 
     // todo: move these into renderer
@@ -27,6 +32,10 @@ export class ReactServerView implements IReactServerView {
     // handler no matches
     if (!matches.length) {
       setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
+    }
+
+    if (error && error.fatal) {
+      return response('', { status: error.code, statusText: error.message });
     }
 
     if (redirected) {

@@ -85,13 +85,20 @@ function redirectHelper(to: string, status: number = 302) {
   throw createRedirect(to, status);
 }
 
-function errorHelper(msg?: string, statusCode: number = 500) {
+function errorHelper(
+  msg?: string,
+  statusCode: number = 500,
+  { fatal = false } = {}
+) {
   invariant(
     statusCode >= 400 && statusCode < 600,
     'status code should be 4xx and 5xx'
   );
 
-  throw response(msg, { status: statusCode });
+  throw response(
+    { error: true, fatal: fatal },
+    { status: statusCode, statusText: msg }
+  );
 }
 
 export function createLoaderContext({

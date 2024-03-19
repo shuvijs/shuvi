@@ -119,10 +119,10 @@ if (supportIterator) {
   (Headers.prototype as any)[Symbol.iterator] = Headers.prototype.entries;
 }
 
-export type ResponseType = 'text' | 'json' | 'redirect' | 'plain';
+export type ResponseType = 'text' | 'json' | 'redirect' | 'raw';
 
 export interface Response {
-  readonly data: string;
+  readonly data: any;
   readonly status: number;
   readonly statusText: string;
   readonly headers: Headers;
@@ -158,7 +158,7 @@ export const isText = createTypeCreator('text');
 export const isRedirect = createTypeCreator('redirect');
 
 export function response(data: any, options?: ResponseOptions): Response {
-  return new ResponseImpl(data, 'plain', options);
+  return new ResponseImpl(data, 'raw', options);
 }
 
 export function json(data: any): Response {

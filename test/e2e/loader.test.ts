@@ -346,6 +346,12 @@ describe.each([false, true])('loader', hasBasename => {
         expect(await page.$text('div')).toMatch('random_sdfsf_test_error');
       });
     });
+
+    it('should skip render when facing fatal-error', async () => {
+      page = await ctx.browser.page(ctx.url('/fatal-error'));
+      expect(page.statusCode).toBe(404);
+      expect(await page.$('[data-test-id="root-layout"]')).toBe(null);
+    });
   });
 
   describe('ssr = false', () => {

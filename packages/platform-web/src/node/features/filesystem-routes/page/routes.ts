@@ -17,7 +17,7 @@ const EmptyComponnetPath = resolvePkgFile(
 );
 
 function genRouteId(filepath: string) {
-  return createHash('md4').update(filepath).digest('hex').substr(0, 4);
+  return createHash('shake256').update(filepath).digest('hex').substr(0, 4);
 }
 
 /**

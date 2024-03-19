@@ -24,6 +24,7 @@ export interface IError {
   message?: string;
   source?: ErrorSource;
   error?: Error;
+  fatal?: boolean;
 }
 
 export interface IErrorState {
