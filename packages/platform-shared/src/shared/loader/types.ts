@@ -16,7 +16,7 @@ export type RedirectFunction = (to: string, status?: number) => any;
 export interface ErrorFunction {
   (): any;
   (msg: string): any;
-  (msg: string, statusCode?: number): any;
+  (msg: string, statusCode?: number, options?: { fatal?: boolean }): any;
 }
 
 /**

@@ -90,7 +90,8 @@ export const createApp: CreateAppServer = options => {
         if (isResponse(error) && error.status >= 400 && error.status < 600) {
           app.setError({
             code: error.status,
-            message: error.data
+            message: error.statusText,
+            fatal: error.data.fatal
           });
           next();
           runLoadersTrace.setAttribute(
