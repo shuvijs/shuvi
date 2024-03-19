@@ -1,3 +1,12 @@
+## [1.0.49](https://github.com/shuvijs/shuvi/compare/v1.0.48...v1.0.49) (2024-03-19)
+
+
+### Features
+
+* exit render when running into fatal-error ([f645b2e](https://github.com/shuvijs/shuvi/commit/f645b2ecd3ef6c9b03353d39d30e772af8dd1988))
+
+
+
 ## [1.0.48](https://github.com/shuvijs/shuvi/compare/v1.0.47...v1.0.48) (2024-02-19)
 
 
