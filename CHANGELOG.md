@@ -1,3 +1,12 @@
+## [1.0.50](https://github.com/shuvijs/shuvi/compare/v1.0.49...v1.0.50) (2024-03-20)
+
+
+### Bug Fixes
+
+* ctx.error with fatal options should work with the async loader function ([#580](https://github.com/shuvijs/shuvi/issues/580)) ([1b7d597](https://github.com/shuvijs/shuvi/commit/1b7d5973521d9cdd74db482ed2099e57170150cc))
+
+
+
 ## [1.0.49](https://github.com/shuvijs/shuvi/compare/v1.0.48...v1.0.49) (2024-03-19)
 
 
