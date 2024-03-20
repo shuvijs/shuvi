@@ -49,6 +49,16 @@ configuring for webpack, babel, etc.
 
 Type definitions for shuvi.
 
+## Prerequisites
+
+### Install cargo
+
+```bash
+$ curl https://sh.rustup.rs -sSf | sh
+```
+
+> docs: https://doc.rust-lang.org/cargo/getting-started/installation.html
+
 ## Setting Up a Local Copy
 
 1. Clone the repo with `git clone https://github.com/liximomo/shuvi`

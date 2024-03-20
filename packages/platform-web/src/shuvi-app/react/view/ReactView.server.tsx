@@ -19,12 +19,7 @@ export class ReactServerView implements IReactServerView {
   renderApp: IReactServerView['renderApp'] = async ({ req, app, manifest }) => {
     await Loadable.preloadAll();
 
-    const {
-      router,
-      appComponent: AppComponent,
-      setError: setAppError,
-      error
-    } = app;
+    const { router, appComponent: AppComponent, setError: setAppError } = app;
     await router.ready;
 
     // todo: move these into renderer
@@ -34,8 +29,17 @@ export class ReactServerView implements IReactServerView {
       setAppError(SHUVI_ERROR.PAGE_NOT_FOUND);
     }
 
-    if (error && error.fatal) {
-      return response('', { status: error.code, statusText: error.message });
+    /**
+     * @Note Please note that you should not use `error` directly, please
+     * use `app.error` instead.
+     *    ❌ if (error && error.fatal)
+     *    ✅ if (app.error && app.error.fatal)
+     */
+    if (app.error && app.error.fatal) {
+      return response('', {
+        status: app.error.code,
+        statusText: app.error.message
+      });
     }
 
     if (redirected) {
