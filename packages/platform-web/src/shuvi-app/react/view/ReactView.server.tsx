@@ -94,9 +94,9 @@ export class ReactServerView implements IReactServerView {
         SHUVI_SERVER_RENDER_TO_STRING.attrs.error.name,
         true
       );
-      if (process.env.NODE_ENV === 'development') {
-        logger.error(error.stack);
-      }
+
+      logger.error(error.stack);
+
       setAppError(serializeServerError(error));
       htmlContent = renderToString(RootApp); // Consistency on both server and client side
     } finally {
