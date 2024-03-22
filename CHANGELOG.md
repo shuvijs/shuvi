@@ -1,3 +1,12 @@
+## [1.0.51](https://github.com/shuvijs/shuvi/compare/v1.0.50...v1.0.51) (2024-03-22)
+
+
+### Bug Fixes
+
+* enable console.error for production mode ([#581](https://github.com/shuvijs/shuvi/issues/581)) ([27c6ee8](https://github.com/shuvijs/shuvi/commit/27c6ee8ea6f327e0895d9f244b86ee314a471f35))
+
+
+
 ## [1.0.50](https://github.com/shuvijs/shuvi/compare/v1.0.49...v1.0.50) (2024-03-20)
 
 
