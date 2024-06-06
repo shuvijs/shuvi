@@ -1,4 +1,5 @@
-import { Token, TokenType, TokenCatchAll } from './pathTokenizer';
+import { Token, TokenType, TokenCatchAll, tokenizePath } from './pathTokenizer';
+import { IRouteRecord } from './types';
 
 type PathParams = Record<string, string | string[]>;
 
@@ -128,7 +129,8 @@ const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g;
  */
 export function tokensToParser(
   segments: Array<Token[]>,
-  extraOptions?: _PathParserOptions
+  extraOptions?: _PathParserOptions,
+  branchInfo?: { routes: IRouteRecord[] }
 ): PathParser {
   const options = Object.assign({}, BASE_PATH_PARSER_OPTIONS, extraOptions);
 
@@ -352,6 +354,19 @@ export function tokensToParser(
     }
 
     return path;
+  }
+
+  /**
+   * To make sure the score of pageBranch is always higher priority 
+   * than the layoutRoute.
+   * We append a bonus score if the last route is an empty path.
+   */
+  if (branchInfo?.routes) {
+    const lastRoutePath = branchInfo.routes[branchInfo.routes.length - 1]?.path;
+    if (lastRoutePath === '') {
+      const patchScore = tokensToParser(tokenizePath('/')).score;
+      score.push(...patchScore);
+    }
   }
 
   return {

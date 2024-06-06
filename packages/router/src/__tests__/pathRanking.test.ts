@@ -4,6 +4,42 @@ import { tokensToParser, comparePathParserScore } from '../pathParserRanker';
 
 type PathParserOptions = Parameters<typeof tokensToParser>[1];
 
+const LeafPageRoute = {
+  path: ''
+};
+
+describe('tokensToParser', () => {
+  it('scores is correct', () => {
+    expect(tokensToParser(tokenizePath('/')).score).toStrictEqual([[80]]);
+    expect(tokensToParser(tokenizePath('/home')).score).toStrictEqual([[80]]);
+    expect(tokensToParser(tokenizePath('/:symbol')).score).toStrictEqual([
+      [60]
+    ]);
+    expect(tokensToParser(tokenizePath('/:symbol/calc')).score).toStrictEqual([
+      [60],
+      [80]
+    ]);
+    expect(tokensToParser(tokenizePath('/*')).score).toStrictEqual([[19]]);
+  });
+
+  it('patch score for pageBranch which ends with empty route', () => {
+    expect(
+      tokensToParser(tokenizePath('/home'), {}, { routes: [LeafPageRoute] }).score
+    ).toStrictEqual([[80], [80]]);
+    expect(
+      tokensToParser(tokenizePath('/:symbol'), {}, { routes: [LeafPageRoute] })
+        .score
+    ).toStrictEqual([[60], [80]]);
+    expect(
+      tokensToParser(tokenizePath('/:symbol/calc'), {}, { routes: [LeafPageRoute] })
+        .score
+    ).toStrictEqual([[60], [80], [80]]);
+    expect(
+      tokensToParser(tokenizePath('/*'), {}, { routes: [LeafPageRoute] }).score
+    ).toStrictEqual([[19], [80]]);
+  });
+});
+
 describe('Path ranking', () => {
   describe('comparePathParser', () => {
     function compare(a: number[][], b: number[][]): number {
@@ -239,6 +275,10 @@ describe('Path ranking', () => {
       checkPathOrder([['/:a(\\d+)+', options], '/:rest(.*)']);
       checkPathOrder([['/:a(\\d+)*', options], '/:rest(.*)']);
     });
+  });
+
+  it('catchAll /* should be the last one', () => {
+    checkPathOrder(['/home', '/:symbol/calc', '/*']);
   });
 
   it('handles sub segments', () => {

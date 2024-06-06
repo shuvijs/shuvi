@@ -1,0 +1,6 @@
+{
+  "name": "fixture-catch-all",
+  "dependencies": {
+    "shuvi": "workspace:*"
+  }
+}
