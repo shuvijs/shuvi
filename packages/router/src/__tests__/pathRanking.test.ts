@@ -24,18 +24,32 @@ describe('tokensToParser', () => {
 
   it('patch score for pageBranch which ends with empty route', () => {
     expect(
-      tokensToParser(tokenizePath('/home'), {}, { routes: [LeafPageRoute] }).score
+      tokensToParser(
+        tokenizePath('/home'),
+        {},
+        { routes: [{ path: '/home' }, LeafPageRoute] }
+      ).score
     ).toStrictEqual([[80], [80]]);
     expect(
-      tokensToParser(tokenizePath('/:symbol'), {}, { routes: [LeafPageRoute] })
-        .score
+      tokensToParser(
+        tokenizePath('/:symbol'),
+        {},
+        { routes: [{ path: '/:symbol' }, LeafPageRoute] }
+      ).score
     ).toStrictEqual([[60], [80]]);
     expect(
-      tokensToParser(tokenizePath('/:symbol/calc'), {}, { routes: [LeafPageRoute] })
-        .score
+      tokensToParser(
+        tokenizePath('/:symbol/calc'),
+        {},
+        { routes: [{ path: '/:symbol' }, { path: '/calc' }, LeafPageRoute] }
+      ).score
     ).toStrictEqual([[60], [80], [80]]);
     expect(
-      tokensToParser(tokenizePath('/*'), {}, { routes: [LeafPageRoute] }).score
+      tokensToParser(
+        tokenizePath('/*'),
+        {},
+        { routes: [{ path: '/*' }, LeafPageRoute] }
+      ).score
     ).toStrictEqual([[19], [80]]);
   });
 });
