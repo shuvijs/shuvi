@@ -62,9 +62,9 @@ export function rankRouteBranches<T extends [string, ...any[]]>(
   }
 
   const normalizedPaths = branches.map((branch, index) => {
-    const [path] = branch;
+    const [path, routes] = branch;
     return {
-      ...tokensToParser(tokenizePath(path)),
+      ...tokensToParser(tokenizePath(path), undefined, { routes }),
       path,
       index
     };
@@ -89,7 +89,15 @@ function flattenRoutes<T extends IRouteBaseObject>(
   parentIndexes: number[] = []
 ): IRouteBranch<T>[] {
   routes.forEach((route, index) => {
-    let path = joinPaths([parentPath, route.path]);
+    let path;
+    if (route.path === '') {
+      /**
+       * An empty path is allowed, don't append a slash.
+       */
+      path = parentPath;
+    } else {
+      path = joinPaths([parentPath, route.path]);
+    }
     let routes = parentRoutes.concat(route);
     let indexes = parentIndexes.concat(index);
 
