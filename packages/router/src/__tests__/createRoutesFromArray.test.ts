@@ -47,4 +47,20 @@ describe('createRoutesFromArray', () => {
       { caseSensitive: false, path: '/' }
     ]);
   });
+
+  it('allow children with empty path', () => {
+    expect(
+      createRoutesFromArray([
+        { path: '/' },
+        { path: '/*', children: [{ path: '' }] }
+      ])
+    ).toStrictEqual([
+      { path: '/', caseSensitive: false },
+      {
+        path: '/*',
+        children: [{ path: '', caseSensitive: false }],
+        caseSensitive: false
+      }
+    ]);
+  });
 });

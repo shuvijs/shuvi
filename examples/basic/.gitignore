@@ -10,6 +10,7 @@
 
 # shuvi.js
 /.shuvi/
+build/
 
 # production
 /dist/
