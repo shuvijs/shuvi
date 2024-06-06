@@ -1,4 +1,4 @@
-import { Token, TokenType, TokenCatchAll, tokenizePath } from './pathTokenizer';
+import { Token, TokenType, TokenCatchAll } from './pathTokenizer';
 import { IRouteRecord } from './types';
 
 type PathParams = Record<string, string | string[]>;
@@ -114,7 +114,8 @@ const enum PathScore {
   BonusOptional = -0.8 * _multiplier, // /:w? or /:w*
   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
   BonusStrict = 0.07 * _multiplier, // when options strict: true is passed, as the regex omits \/?
-  BonusCaseSensitive = 0.025 * _multiplier // when options strict: true is passed, as the regex omits \/?
+  BonusCaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+  BonusEmptyStringPath = 0.01 * _multiplier // when the path is an empty string
 }
 
 // Special Regex characters that must be escaped in static tokens
@@ -357,15 +358,14 @@ export function tokensToParser(
   }
 
   /**
-   * To make sure the score of pageBranch is always higher priority 
+   * To make sure the score of pageBranch is always higher priority
    * than the layoutRoute.
    * We append a bonus score if the last route is an empty path.
    */
   if (branchInfo?.routes) {
     const lastRoutePath = branchInfo.routes[branchInfo.routes.length - 1]?.path;
     if (lastRoutePath === '') {
-      const patchScore = tokensToParser(tokenizePath('/')).score;
-      score.push(...patchScore);
+      score.push([PathScore.BonusEmptyStringPath]);
     }
   }
 

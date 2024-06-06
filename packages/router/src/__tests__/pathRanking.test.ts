@@ -29,28 +29,28 @@ describe('tokensToParser', () => {
         {},
         { routes: [{ path: '/home' }, LeafPageRoute] }
       ).score
-    ).toStrictEqual([[80], [80]]);
+    ).toStrictEqual([[80], [0.1]]);
     expect(
       tokensToParser(
         tokenizePath('/:symbol'),
         {},
         { routes: [{ path: '/:symbol' }, LeafPageRoute] }
       ).score
-    ).toStrictEqual([[60], [80]]);
+    ).toStrictEqual([[60], [0.1]]);
     expect(
       tokensToParser(
         tokenizePath('/:symbol/calc'),
         {},
         { routes: [{ path: '/:symbol' }, { path: '/calc' }, LeafPageRoute] }
       ).score
-    ).toStrictEqual([[60], [80], [80]]);
+    ).toStrictEqual([[60], [80], [0.1]]);
     expect(
       tokensToParser(
         tokenizePath('/*'),
         {},
         { routes: [{ path: '/*' }, LeafPageRoute] }
       ).score
-    ).toStrictEqual([[19], [80]]);
+    ).toStrictEqual([[19], [0.1]]);
   });
 });
 
