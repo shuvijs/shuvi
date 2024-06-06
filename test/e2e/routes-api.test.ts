@@ -216,6 +216,12 @@ describe('apiRoutes development', () => {
         body: JSON.stringify(json)
       });
     } catch (error: any) {
+      // node v20 & raw-body would cause ECONNRESET error
+      // wait for 10s to make sure the request stream is completely closed
+      await new Promise<void>((resolve, _) => {
+        setTimeout(() => resolve(), 10 * 1000);
+      });
+
       expect(error.response.statusCode).toEqual(413);
       expect(error.response.body).toContain('Body exceeded 1mb limit');
     }

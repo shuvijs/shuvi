@@ -235,11 +235,16 @@ export function baseWebpackChain({
     .oneOf('media')
     .exclude.merge([/\.(tsx|ts|js|cjs|mjs|jsx)$/, /\.html$/, /\.json$/])
     .end()
-    .use('file-loader')
-    .loader(require.resolve('file-loader'))
-    .options({
-      name: 'static/media/[name].[hash:8].[ext]'
+    // @ts-ignore
+    .type('asset/resource')
+    .set('generator', {
+      filename: 'static/media/[name].[hash:8].[ext]'
     });
+  // .use('file-loader')
+  // .loader(require.resolve('file-loader'))
+  // .options({
+  //   name: 'static/media/[name].[hash:8].[ext]'
+  // });
 
   config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {
