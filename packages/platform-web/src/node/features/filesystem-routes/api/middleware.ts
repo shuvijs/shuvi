@@ -18,39 +18,39 @@ export function middleware(_ctx: IServerPluginContext): ShuviRequestHandler {
         break;
       }
     }
-    if (tempApiModule) {
-      const { serverRequestTrace } = req._traces;
-      const runApiMiddlewareTrace = serverRequestTrace.traceChild(
-        SHUVI_SERVER_RUN_API_MIDDLEWARE.name,
-        {
-          [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.requestId.name]: req._requestId
-        }
-      );
-      try {
-        const { config, default: resolver } = tempApiModule;
+    if (!tempApiModule) {
+      next();
+      return;
+    }
 
-        await apiRouteHandler(
-          req,
-          res,
-          resolver,
-          config?.api || { bodyParser: true }
-        );
-      } catch (error) {
-        runApiMiddlewareTrace.setAttributes({
-          [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: true,
-          [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]: 500
-        });
-        runApiMiddlewareTrace.stop();
-        next(error);
-        return;
+    const { serverRequestTrace } = req._traces;
+    const runApiMiddlewareTrace = serverRequestTrace.traceChild(
+      SHUVI_SERVER_RUN_API_MIDDLEWARE.name,
+      {
+        [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.requestId.name]: req._requestId
       }
+    );
+    try {
+      const { config, default: resolver } = tempApiModule;
+      await apiRouteHandler(
+        req,
+        res,
+        resolver,
+        config?.api || { bodyParser: true }
+      );
+    } catch (error) {
       runApiMiddlewareTrace.setAttributes({
-        [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: false,
-        [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]: res.statusCode
+        [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: true,
+        [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]: 500
       });
       runApiMiddlewareTrace.stop();
-    } else {
-      next();
+      next(error);
+      return;
     }
+    runApiMiddlewareTrace.setAttributes({
+      [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.error.name]: false,
+      [SHUVI_SERVER_RUN_API_MIDDLEWARE.attrs.statusCode.name]: res.statusCode
+    });
+    runApiMiddlewareTrace.stop();
   };
 }

@@ -1,6 +1,6 @@
 import { Stream } from 'stream';
 import * as querystring from 'querystring';
-const getRawBody = require('raw-body');
+import getRawBody from 'raw-body';
 import * as contentType from 'content-type';
 import { ShuviRequest, ShuviResponse } from '@shuvi/service';
 import logger from '@shuvi/utils/logger';
@@ -24,7 +24,7 @@ export async function apiRouteHandler(
     const apiReq: IApiReq = {};
 
     // Parsing of body
-    if (bodyParser && !apiReq.body) {
+    if (bodyParser && !(req as any).body) {
       apiReq.body = await parseBody(
         req,
         bodyParser && bodyParser.sizeLimit ? bodyParser.sizeLimit : '1mb'
