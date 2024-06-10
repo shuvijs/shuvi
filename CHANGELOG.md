@@ -1,3 +1,13 @@
+## [1.0.52](https://github.com/shuvijs/shuvi/compare/v1.0.51...v1.0.52) (2024-06-10)
+
+
+### Bug Fixes
+
+* **router:** allow empty route.path for correct catchAll ranking ([#582](https://github.com/shuvijs/shuvi/issues/582)) ([a106fee](https://github.com/shuvijs/shuvi/commit/a106fee79df9c5d3bb900ff09f21ba6fa483309f))
+* suppport node v18+ ([3dc9806](https://github.com/shuvijs/shuvi/commit/3dc9806a75da382f5a6e3967676fbb70bcdf906e))
+
+
+
 ## [1.0.51](https://github.com/shuvijs/shuvi/compare/v1.0.50...v1.0.51) (2024-03-22)
 
 
