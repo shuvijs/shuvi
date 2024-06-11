@@ -238,7 +238,15 @@ export function baseWebpackChain({
     // @ts-ignore
     .type('asset/resource')
     .set('generator', {
-      filename: 'static/media/[name].[hash:8].[ext]'
+      filename: (pathData: { filename: string }) => {
+        // Check if a string is a base64 data URI
+        if (pathData.filename && isValidBase64DataURL(pathData.filename)) {
+          // Handle base64 string case, [name] is empty
+          return `static/media/base64.[hash:8][ext]`;
+        } else {
+          return `static/media/[name].[hash:8][ext]`;
+        }
+      }
     });
   // .use('file-loader')
   // .loader(require.resolve('file-loader'))
@@ -321,4 +329,31 @@ export function baseWebpackChain({
   }
 
   return config;
+}
+
+function isValidBase64DataURL(input: string): boolean {
+  // Check if input starts with the data URI scheme
+  if (!input.startsWith('data:')) {
+    return false;
+  }
+
+  // Split the data URI into metadata and data parts
+  const parts = input.split(',');
+  if (parts.length !== 2) {
+    return false;
+  }
+
+  const metadata = parts[0];
+  const data = parts[1];
+
+  // Check if the metadata contains 'base64'
+  if (!metadata.includes('base64')) {
+    return false;
+  }
+
+  // Regular expression to validate Base64 string
+  const base64Regex = /^[A-Za-z0-9+/]+[=]{0,2}$/;
+
+  // Validate Base64 data
+  return base64Regex.test(data);
 }
