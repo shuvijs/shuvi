@@ -45,6 +45,47 @@ jest.setTimeout(5 * 60 * 1000);
       ).toBe('0.5');
     });
 
+    test('image should be loaded', async () => {
+      page = await ctx.browser.page();
+
+      const imageStatuses: {
+        url: string;
+        status: number;
+      }[] = [];
+
+      page.on('requestfinished', async request => {
+        const response = request.response();
+        const url = request.url();
+
+        if (!response) return;
+        const status = response.status();
+
+        if (request.resourceType() === 'image') {
+          imageStatuses.push({ url, status });
+        }
+      });
+      page.goto(ctx.url('/css'));
+      // wait for style inserting
+      await page.waitForTimeout(1000);
+      expect(
+        await page.$eval(
+          '#css',
+          (el: Element) => window.getComputedStyle(el).opacity
+        )
+      ).toBe('0.5');
+      console.debug(`imageStatuses`, imageStatuses);
+
+      // http://localhost:60874/static/media/btc.77643ddf.jpeg to be loaded
+      const jpegStatus = imageStatuses.find(({ url }) =>
+        /localhost:\d+\/static\/media\/btc\.[a-z0-9]+\.jpeg/.test(url)
+      )?.status;
+      expect(jpegStatus).toBeTruthy();
+      expect(jpegStatus).not.toEqual(404);
+
+      // no 404
+      expect(imageStatuses.some(({ status }) => status === 404)).toBeFalsy();
+    });
+
     test('should import .sass files', async () => {
       page = await ctx.browser.page(ctx.url('/sass'));
       // wait for style inserting
