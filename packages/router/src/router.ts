@@ -51,6 +51,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
   private _listeners: Events<Listener> = createEvents();
   private _beforeEachs: Events<NavigationGuardHook> = createEvents();
+  private _beforeLoaders: Events<NavigationGuardHook> = createEvents();
   private _beforeResolves: Events<NavigationGuardHook> = createEvents();
   private _afterEachs: Events<NavigationResolvedHook> = createEvents();
 
@@ -125,6 +126,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
   beforeEach = (listener: NavigationGuardHook) => {
     return this._beforeEachs.push(listener);
+  };
+
+  beforeLoader = (listener: NavigationGuardHook) => {
+    return this._beforeLoaders.push(listener);
   };
 
   beforeResolve = (listener: NavigationGuardHook) => {
@@ -208,6 +213,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
       ? ([] as Array<NavigationGuardHook>)
       : ([] as Array<NavigationGuardHook>).concat(
           this._beforeEachs.toArray(),
+          this._beforeLoaders.toArray(),
           this._beforeResolves.toArray()
         );
 
