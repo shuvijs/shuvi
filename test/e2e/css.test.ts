@@ -78,9 +78,9 @@ jest.setTimeout(5 * 60 * 1000);
       // http://localhost:60874/static/media/btc.77643ddf.jpeg to be loaded
       const jpegStatus = imageStatuses.find(({ url }) =>
         /localhost:\d+\/static\/media\/btc\.[a-z0-9]+\.jpeg/.test(url)
-      );
-      expect(jpegStatus?.status).toBeTruthy();
-      expect(jpegStatus?.status).not.toEqual(404);
+      )?.status;
+      expect(jpegStatus).toBeTruthy();
+      expect(jpegStatus).not.toEqual(404);
 
       // no 404
       expect(imageStatuses.some(({ status }) => status === 404)).toBeFalsy();
