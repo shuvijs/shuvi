@@ -235,24 +235,24 @@ export function baseWebpackChain({
     .oneOf('media')
     .exclude.merge([/\.(tsx|ts|js|cjs|mjs|jsx)$/, /\.html$/, /\.json$/])
     .end()
-    // @ts-ignore
-    .type('asset/resource')
-    .set('generator', {
-      filename: (pathData: { filename: string }) => {
-        // Check if a string is a base64 data URI
-        if (pathData.filename && isValidBase64DataURL(pathData.filename)) {
-          // Handle base64 string case, [name] is empty
-          return `static/media/base64.[hash:8][ext]`;
-        } else {
-          return `static/media/[name].[hash:8][ext]`;
-        }
-      }
+    // // @ts-ignore
+    // .type('asset/resource')
+    // .set('generator', {
+    //   filename: (pathData: { filename: string }) => {
+    //     // Check if a string is a base64 data URI
+    //     if (pathData.filename && isValidBase64DataURL(pathData.filename)) {
+    //       // Handle base64 string case, [name] is empty
+    //       return `static/media/base64.[hash:8][ext]`;
+    //     } else {
+    //       return `static/media/[name].[hash:8][ext]`;
+    //     }
+    //   }
+    // });
+    .use('file-loader')
+    .loader(require.resolve('file-loader'))
+    .options({
+      name: 'static/media/[name].[hash:8].[ext]'
     });
-  // .use('file-loader')
-  // .loader(require.resolve('file-loader'))
-  // .options({
-  //   name: 'static/media/[name].[hash:8].[ext]'
-  // });
 
   config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {
