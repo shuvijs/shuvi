@@ -1,12 +1,15 @@
 import React from 'react';
 import { useLoaderData, Loader, Link } from '@shuvi/runtime';
 import { sleep } from '../utils';
+import { url } from '../store';
 
 const Index = () => {
   const data = useLoaderData<LoaderData>();
 
   return (
     <div id="loader-index">
+      <div>Current url</div>
+      <div>{data.url}</div>
       <p>{data.hello}</p>
       <div id="index-content">index page</div>
       <div>
@@ -41,6 +44,7 @@ const Index = () => {
 
 type LoaderData = {
   hello: string;
+  url: string;
 };
 
 export const loader: Loader<LoaderData> = async ctx => {
@@ -48,10 +52,11 @@ export const loader: Loader<LoaderData> = async ctx => {
     (window as any).__LOADER_RUNED__ = true;
   }
 
-  await sleep(100);
+  await sleep(1000);
 
   return {
-    hello: 'world'
+    hello: 'world',
+    url
   };
 };
 
