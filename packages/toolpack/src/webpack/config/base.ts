@@ -331,29 +331,29 @@ export function baseWebpackChain({
   return config;
 }
 
-function isValidBase64DataURL(input: string): boolean {
-  // Check if input starts with the data URI scheme
-  if (!input.startsWith('data:')) {
-    return false;
-  }
+// function isValidBase64DataURL(input: string): boolean {
+//   // Check if input starts with the data URI scheme
+//   if (!input.startsWith('data:')) {
+//     return false;
+//   }
 
-  // Split the data URI into metadata and data parts
-  const parts = input.split(',');
-  if (parts.length !== 2) {
-    return false;
-  }
+//   // Split the data URI into metadata and data parts
+//   const parts = input.split(',');
+//   if (parts.length !== 2) {
+//     return false;
+//   }
 
-  const metadata = parts[0];
-  const data = parts[1];
+//   const metadata = parts[0];
+//   const data = parts[1];
 
-  // Check if the metadata contains 'base64'
-  if (!metadata.includes('base64')) {
-    return false;
-  }
+//   // Check if the metadata contains 'base64'
+//   if (!metadata.includes('base64')) {
+//     return false;
+//   }
 
-  // Regular expression to validate Base64 string
-  const base64Regex = /^[A-Za-z0-9+/]+[=]{0,2}$/;
+//   // Regular expression to validate Base64 string
+//   const base64Regex = /^[A-Za-z0-9+/]+[=]{0,2}$/;
 
-  // Validate Base64 data
-  return base64Regex.test(data);
-}
+//   // Validate Base64 data
+//   return base64Regex.test(data);
+// }
