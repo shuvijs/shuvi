@@ -1,3 +1,12 @@
+## [1.0.53](https://github.com/shuvijs/shuvi/compare/v1.0.52...v1.0.53) (2024-06-13)
+
+
+### Bug Fixes
+
+* **toolpack:** correct the filename of asset/resource ([#583](https://github.com/shuvijs/shuvi/issues/583)) ([7d1f80d](https://github.com/shuvijs/shuvi/commit/7d1f80d2e8bf90410c8535be65632b4338c08541))
+
+
+
 ## [1.0.52](https://github.com/shuvijs/shuvi/compare/v1.0.51...v1.0.52) (2024-06-10)
 
 
