@@ -50,7 +50,7 @@
     "es-module-lexer": "0.10.5",
     "esbuild": "0.14.38",
     "esbuild-loader": "2.19.0",
-    "fork-ts-checker-webpack-plugin": "6.0.8",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
     "fs-extra": "9.0.1",
     "ignore-loader": "0.1.2",
     "loader-utils": "3.0.0",
