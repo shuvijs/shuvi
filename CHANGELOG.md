@@ -1,3 +1,12 @@
+## [1.0.54](https://github.com/shuvijs/shuvi/compare/v1.0.53...v1.0.54) (2024-06-26)
+
+
+### Features
+
+* support TypeScript 5 with type checking during build ([#587](https://github.com/shuvijs/shuvi/issues/587)) ([4568156](https://github.com/shuvijs/shuvi/commit/4568156d4cba1b45ad939042242cc6b0c293ff26))
+
+
+
 ## [1.0.53](https://github.com/shuvijs/shuvi/compare/v1.0.52...v1.0.53) (2024-06-13)
 
 
