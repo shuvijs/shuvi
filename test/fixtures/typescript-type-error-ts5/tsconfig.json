@@ -27,7 +27,8 @@
       "@shuvi/runtime/*": [
         ".shuvi/app/runtime/*"
       ]
-    }
+    },
+    "incremental": true
   },
   "include": [
     ".shuvi/app/shuvi-app.d.ts",
