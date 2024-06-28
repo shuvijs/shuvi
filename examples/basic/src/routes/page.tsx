@@ -1,3 +1,4 @@
+// @ts-ignore
 import styles from './style.css';
 
 const Home = () => {

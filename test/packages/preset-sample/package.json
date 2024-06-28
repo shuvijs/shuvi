@@ -19,9 +19,9 @@
   },
   "types": "lib/index.d.ts",
   "scripts": {
-    "dev": "tsc -p tsconfig.build.json -m commonjs --outDir lib -w",
+    "dev": "tsc -p tsconfig.build.json -w",
     "prebuild": "rimraf lib",
-    "build": "tsc -p tsconfig.build.json -m commonjs --outDir lib"
+    "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@shuvi/service": "workspace:*",

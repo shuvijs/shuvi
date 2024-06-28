@@ -1,7 +1,9 @@
 {
-  "extends": "./tsconfig.build.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "node16",
+    "moduleResolution": "node16",
     "paths": {
       "@shuvi/router-react": ["packages/router-react/src/index"],
       "@shuvi/router": ["packages/router/src/index"],

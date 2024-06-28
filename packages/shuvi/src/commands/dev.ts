@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks';
 import { Command } from 'commander';
 import * as path from 'path';
 import { createShuviServer } from '@shuvi/service';
