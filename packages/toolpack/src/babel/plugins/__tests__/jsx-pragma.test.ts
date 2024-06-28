@@ -42,7 +42,7 @@ describe('jsx-pragma', () => {
     expect(output).toMatch(`__jsx("a",{href:"/"`);
 
     expect(babel(`const a = ()=><a href="/">home</a>`)).toMatchInlineSnapshot(
-      `"import React from\\"react\\";var __jsx=React.createElement;const a=()=>__jsx(\\"a\\",{href:\\"/\\"},\\"home\\");"`
+      `"import React from"react";var __jsx=React.createElement;const a=()=>__jsx("a",{href:"/"},"home");"`
     );
   });
 
@@ -52,7 +52,7 @@ describe('jsx-pragma', () => {
     expect(output).toMatch(`React.Fragment`);
 
     expect(babel(`const a = () => <>hello</>;`)).toMatchInlineSnapshot(
-      `"import React from\\"react\\";var __jsx=React.createElement;const a=()=>__jsx(React.Fragment,null,\\"hello\\");"`
+      `"import React from"react";var __jsx=React.createElement;const a=()=>__jsx(React.Fragment,null,"hello");"`
     );
   });
 
@@ -65,7 +65,7 @@ describe('jsx-pragma', () => {
     );
 
     expect(output).toMatchInlineSnapshot(
-      `"const React=require('react');var __jsx=React.createElement;module.exports=()=>__jsx(\\"div\\",null,\\"test2\\");"`
+      `"const React=require('react');var __jsx=React.createElement;module.exports=()=>__jsx("div",null,"test2");"`
     );
   });
 });
