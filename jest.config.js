@@ -6,20 +6,23 @@ module.exports = {
 
   bail: false,
 
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        jsx: 'react',
-        allowJs: true,
-        target: 'es6',
-        lib: ['esnext'],
-        module: 'commonjs',
-        moduleResolution: 'nodenext',
-        skipLibCheck: true,
-        esModuleInterop: true,
-        noUnusedLocals: false
+  transform: {
+    '^.+\\.[tj]sx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react',
+          allowJs: true,
+          target: 'es6',
+          lib: ['esnext'],
+          module: 'commonjs',
+          moduleResolution: 'nodenext',
+          skipLibCheck: true,
+          esModuleInterop: true,
+          noUnusedLocals: false
+        }
       }
-    }
+    ]
   },
 
   setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],

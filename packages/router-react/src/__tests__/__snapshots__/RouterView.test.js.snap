@@ -13,7 +13,7 @@ exports[`RouterView renders the first route that matches the URL 1`] = `
 `;
 
 exports[`RouterView renders with nested routes 1`] = `
-Array [
+[
   <h1>
     Admin
   </h1>,

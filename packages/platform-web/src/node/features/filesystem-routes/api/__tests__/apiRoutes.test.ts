@@ -19,16 +19,16 @@ describe('serializeApiRoutes', () => {
     expect(serializeApiRoutes(routes)).toMatchInlineSnapshot(`
       "[
       {
-            path: \\"/\\",
-            api: require(\\"Foo\\"),
+            path: "/",
+            api: require("Foo"),
           },
       {
-            path: \\"/nested\\",
-            api: require(\\"Foo\\"),
+            path: "/nested",
+            api: require("Foo"),
           },
       {
-            path: \\"/nested/a\\",
-            api: require(\\"Bar\\"),
+            path: "/nested/a",
+            api: require("Bar"),
           },]"
     `);
   });

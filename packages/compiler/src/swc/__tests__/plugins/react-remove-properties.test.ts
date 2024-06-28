@@ -52,19 +52,19 @@ describe('react remove properties', () => {
     const output = await swc(str);
 
     expect(output).toMatchInlineSnapshot(`
-      "import { jsx as _jsx } from \\"react/jsx-runtime\\";
+      "import { jsx as _jsx } from "react/jsx-runtime";
       export default function Home() {
-          return /*#__PURE__*/ _jsx(\\"div\\", {
-              \\"data-custom\\": \\"1a\\",
-              children: /*#__PURE__*/ _jsx(\\"div\\", {
-                  \\"data-custom\\": \\"2\\",
-                  children: /*#__PURE__*/ _jsx(\\"h1\\", {
+          return /*#__PURE__*/ _jsx("div", {
+              "data-custom": "1a",
+              children: /*#__PURE__*/ _jsx("div", {
+                  "data-custom": "2",
+                  children: /*#__PURE__*/ _jsx("h1", {
                       nested: function() {
-                          return /*#__PURE__*/ _jsx(\\"div\\", {
-                              children: \\"nested\\"
+                          return /*#__PURE__*/ _jsx("div", {
+                              children: "nested"
                           });
                       },
-                      children: \\"Hello World!\\"
+                      children: "Hello World!"
                   })
               })
           });
@@ -77,20 +77,20 @@ describe('react remove properties', () => {
     const output = await swc(str, ['^data-custom']);
 
     expect(output).toMatchInlineSnapshot(`
-      "import { jsx as _jsx } from \\"react/jsx-runtime\\";
+      "import { jsx as _jsx } from "react/jsx-runtime";
       export default function Home() {
-          return /*#__PURE__*/ _jsx(\\"div\\", {
-              \\"data-test-id\\": \\"1\\",
-              children: /*#__PURE__*/ _jsx(\\"div\\", {
-                  children: /*#__PURE__*/ _jsx(\\"h1\\", {
-                      \\"data-testid\\": \\"3\\",
+          return /*#__PURE__*/ _jsx("div", {
+              "data-test-id": "1",
+              children: /*#__PURE__*/ _jsx("div", {
+                  children: /*#__PURE__*/ _jsx("h1", {
+                      "data-testid": "3",
                       nested: function() {
-                          return /*#__PURE__*/ _jsx(\\"div\\", {
-                              \\"data-testid\\": \\"4\\",
-                              children: \\"nested\\"
+                          return /*#__PURE__*/ _jsx("div", {
+                              "data-testid": "4",
+                              children: "nested"
                           });
                       },
-                      children: \\"Hello World!\\"
+                      children: "Hello World!"
                   })
               })
           });

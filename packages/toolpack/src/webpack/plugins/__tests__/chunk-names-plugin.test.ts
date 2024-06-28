@@ -28,14 +28,14 @@ describe('chunk-names-plugin', () => {
       const result = stats!.toJson();
 
       expect(result.assetsByChunkName).toMatchInlineSnapshot(`
-        Object {
-          "framework": Array [
+        {
+          "framework": [
             "framework.js",
           ],
-          "main": Array [
+          "main": [
             "main.js",
           ],
-          "runtime": Array [
+          "runtime": [
             "runtime.js",
           ],
         }
@@ -69,14 +69,14 @@ describe('chunk-names-plugin', () => {
       const result = stats!.toJson();
 
       expect(result.assetsByChunkName).toMatchInlineSnapshot(`
-        Object {
-          "framework": Array [
+        {
+          "framework": [
             "static/chunks/framework.js",
           ],
-          "main": Array [
+          "main": [
             "main.js",
           ],
-          "runtime": Array [
+          "runtime": [
             "runtime.js",
           ],
         }

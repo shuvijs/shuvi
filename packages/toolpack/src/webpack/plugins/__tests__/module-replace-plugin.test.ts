@@ -31,11 +31,11 @@ describe('module-replace-plugin', () => {
         );
         expect(getModuleSource(stats, /module-replace/)).toMatchInlineSnapshot(`
           "import(
-            /* webpackChunkName:\\"sharedOne\\" */
+            /* webpackChunkName:"sharedOne" */
             '../shared/one?_lazy'
           );
           import(
-            /* webpackChunkName:\\"sharedTwo\\" */
+            /* webpackChunkName:"sharedTwo" */
             '../shared/two?_lazy'
           );
           "
