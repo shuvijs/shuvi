@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import webpack from 'webpack';
 import * as path from 'path';
 import { resolve } from '@shuvi/utils/resolve';
+import type { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
 import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
 import { withStyle } from './parts/style';
 import {
@@ -67,12 +68,11 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
           },
           async: dev,
           logger: {
-            infrastructure: 'silent',
-            issues: 'silent',
-            devServer: false
+            log: message => console.log(message),
+            error: message => console.error(message)
           },
           formatter: 'codeframe'
-        }
+        } as ForkTsCheckerWebpackPluginOptions
       ]);
   }
 
