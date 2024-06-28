@@ -16,7 +16,7 @@ describe('optimize-hook-destructuring', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "import { useState } from \\"react\\";
+      "import { useState } from "react";
       var ref = useState(0), count = ref[0], setCount = ref[1];
       "
     `);
@@ -31,7 +31,7 @@ describe('optimize-hook-destructuring', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "import { useState } from \\"react\\";
+      "import { useState } from "react";
       var ref = useState(0), setCount = ref[1];
       "
     `);

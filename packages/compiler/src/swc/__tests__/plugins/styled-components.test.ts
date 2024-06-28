@@ -45,26 +45,26 @@ describe('styled components', () => {
     expect(output).toMatchInlineSnapshot(`
       "import styled from 'styled-components';
       const Test = styled.div.withConfig({
-          componentId: \\"sc-be31d94b-0\\"
+          componentId: "sc-be31d94b-0"
       })\`
             width: 100%;
           \`;
       const Test2 = true ? styled.div.withConfig({
-          componentId: \\"sc-be31d94b-1\\"
+          componentId: "sc-be31d94b-1"
       })\`\` : styled.div.withConfig({
-          componentId: \\"sc-be31d94b-2\\"
+          componentId: "sc-be31d94b-2"
       })\`\`;
       const styles = {
           One: styled.div.withConfig({
-              componentId: \\"sc-be31d94b-3\\"
+              componentId: "sc-be31d94b-3"
           })\`\`
       };
       let Component;
       Component = styled.div.withConfig({
-          componentId: \\"sc-be31d94b-4\\"
+          componentId: "sc-be31d94b-4"
       })\`\`;
       const WrappedComponent = styled(Inner).withConfig({
-          componentId: \\"sc-be31d94b-5\\"
+          componentId: "sc-be31d94b-5"
       })\`\`;
       "
     `);
@@ -87,22 +87,22 @@ describe('styled components', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "import styled from \\"styled-components\\";
+      "import styled from "styled-components";
       const Test = styled.div.withConfig({
-          displayName: \\"noop__Test\\",
-          componentId: \\"sc-162be455-0\\"
+          displayName: "noop__Test",
+          componentId: "sc-162be455-0"
       })\`color: red;\`;
       const before = styled.div.withConfig({
-          displayName: \\"noop__before\\",
-          componentId: \\"sc-162be455-1\\"
+          displayName: "noop__before",
+          componentId: "sc-162be455-1"
       })\`color: blue;\`;
       styled.div.withConfig({
-          displayName: \\"noop\\",
-          componentId: \\"sc-162be455-2\\"
+          displayName: "noop",
+          componentId: "sc-162be455-2"
       })\`\`;
       export default styled.button.withConfig({
-          displayName: \\"noop\\",
-          componentId: \\"sc-162be455-3\\"
+          displayName: "noop",
+          componentId: "sc-162be455-3"
       })\`\`;
       "
     `);
@@ -151,37 +151,37 @@ describe('styled components', () => {
       }
       import styled from 'styled-components';
       const Test = styled.div.withConfig({
-          displayName: \\"Test\\"
+          displayName: "Test"
       })\`
               width: 100%;
             \`;
       const Test2 = styled('div').withConfig({
-          displayName: \\"Test2\\"
+          displayName: "Test2"
       })\`\`;
       const Test3 = true ? styled.div.withConfig({
-          displayName: \\"Test3\\"
+          displayName: "Test3"
       })\`\` : styled.div.withConfig({
-          displayName: \\"Test3\\"
+          displayName: "Test3"
       })\`\`;
       const styles = {
           One: styled.div.withConfig({
-              displayName: \\"One\\"
+              displayName: "One"
           })\`\`
       };
       let Component;
       Component = styled.div.withConfig({
-          displayName: \\"Component\\"
+          displayName: "Component"
       })\`\`;
       const WrappedComponent = styled(Inner).withConfig({
-          displayName: \\"WrappedComponent\\"
+          displayName: "WrappedComponent"
       })\`\`;
       class ClassComponent {
       }
-      _defineProperty(ClassComponent, \\"Child\\", styled.div.withConfig({
-          displayName: \\"Child\\"
+      _defineProperty(ClassComponent, "Child", styled.div.withConfig({
+          displayName: "Child"
       })\`\`);
       var GoodName = BadName = styled.div.withConfig({
-          displayName: \\"GoodName\\"
+          displayName: "GoodName"
       })\`\`;
       "
     `);
@@ -218,26 +218,26 @@ describe('styled components', () => {
     expect(output).toMatchInlineSnapshot(`
       "import styled from '@xstyled/styled-components';
       const Test = styled.div.withConfig({
-          componentId: \\"sc-269e3c80-0\\"
+          componentId: "sc-269e3c80-0"
       })\`
               width: 100%;
             \`;
       const Test2 = true ? styled.div.withConfig({
-          componentId: \\"sc-269e3c80-1\\"
+          componentId: "sc-269e3c80-1"
       })\`\` : styled.div.withConfig({
-          componentId: \\"sc-269e3c80-2\\"
+          componentId: "sc-269e3c80-2"
       })\`\`;
       const styles = {
           One: styled.div.withConfig({
-              componentId: \\"sc-269e3c80-3\\"
+              componentId: "sc-269e3c80-3"
           })\`\`
       };
       let Component;
       Component = styled.div.withConfig({
-          componentId: \\"sc-269e3c80-4\\"
+          componentId: "sc-269e3c80-4"
       })\`\`;
       const WrappedComponent = styled(Inner).withConfig({
-          componentId: \\"sc-269e3c80-5\\"
+          componentId: "sc-269e3c80-5"
       })\`\`;
       "
     `);
@@ -468,32 +468,32 @@ describe('styled components', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "import _styled from \\"styled-components\\";
-      const StaticString = (p)=>/*#__PURE__*/ React.createElement(_StyledP, null, \\"A\\");
-      const StaticTemplate = (p)=>/*#__PURE__*/ React.createElement(_StyledP2, null, \\"A\\");
-      const ObjectProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP3, null, \\"A\\");
+      "import _styled from "styled-components";
+      const StaticString = (p)=>/*#__PURE__*/ React.createElement(_StyledP, null, "A");
+      const StaticTemplate = (p)=>/*#__PURE__*/ React.createElement(_StyledP2, null, "A");
+      const ObjectProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP3, null, "A");
       const NoChildren = (p)=>/*#__PURE__*/ React.createElement(_StyledP4, null);
-      const CssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP5, null, \\"A\\");
+      const CssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP5, null, "A");
       /*
             * Dynamic prop
-            */ const CustomComp = (p)=>/*#__PURE__*/ React.createElement(_StyledParagraph, null, \\"H\\");
+            */ const CustomComp = (p)=>/*#__PURE__*/ React.createElement(_StyledParagraph, null, "H");
       const DynamicProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP6, {
               $_css: props.cssText
-          }, \\"H\\");
+          }, "H");
       const LocalInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP7, {
               $_css2: props.bg
-          }, \\"H\\");
-      const FuncInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP8, null, \\"H\\");
+          }, "H");
+      const FuncInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP8, null, "H");
       const radius = 10;
-      const GlobalInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP9, null, \\"H\\");
+      const GlobalInterpolation = (p)=>/*#__PURE__*/ React.createElement(_StyledP9, null, "H");
       const LocalCssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP10, {
               $_css3: p.color
-          }, \\"A\\");
-      const DynamicCssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP11, null, \\"A\\");
-      const CustomCompWithDot = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost, null, \\"H\\");
-      const NestedCompWithDot = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhostNew, null, \\"H\\");
-      const CustomCompWithDotLowerCase = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost2, null, \\"H\\");
-      const CustomElement = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost3, null, \\"H\\");
+          }, "A");
+      const DynamicCssHelperProp = (p)=>/*#__PURE__*/ React.createElement(_StyledP11, null, "A");
+      const CustomCompWithDot = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost, null, "H");
+      const NestedCompWithDot = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhostNew, null, "H");
+      const CustomCompWithDotLowerCase = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost2, null, "H");
+      const CustomElement = (p)=>/*#__PURE__*/ React.createElement(_StyledButtonGhost3, null, "H");
       /* styled component defined after function it's used in */ const EarlyUsageComponent = (p)=>/*#__PURE__*/ React.createElement(_StyledThing, null);
       const Thing3 = styled.div\`
               color: blue;
@@ -521,31 +521,31 @@ describe('styled components', () => {
           const theme = useTheme();
           return /*#__PURE__*/ React.createElement(_StyledP12, {
               $_css4: theme.colors.red
-          }, \\"H\\");
+          }, "H");
       };
       const ObjectInterpolationCustomComponent = (p)=>{
           const theme = useTheme();
           return /*#__PURE__*/ React.createElement(_StyledThing2, {
               $_css5: theme.colors.red
-          }, \\"H\\");
+          }, "H");
       };
       const ObjectInterpolationInKey = (p)=>{
           const theme = useTheme();
           return /*#__PURE__*/ React.createElement(_StyledThing3, {
               $_css6: theme.breakpoints.md
-          }, \\"H\\");
+          }, "H");
       };
       const ObjectFnInterpolationInKey = (p)=>{
           const theme = useTheme();
           return /*#__PURE__*/ React.createElement(_StyledThing4, {
               $_css7: theme.breakpoints.md()
-          }, \\"H\\");
+          }, "H");
       };
       const ObjectFnSimpleInterpolationInKey = (p)=>{
           const foo = '@media screen and (max-width: 600px)';
           return /*#__PURE__*/ React.createElement(_StyledThing5, {
               $_css8: foo
-          }, \\"H\\");
+          }, "H");
       };
       const ObjectPropMixedInputs = (p)=>{
           const color = 'red';
@@ -554,7 +554,7 @@ describe('styled components', () => {
               $_css10: color,
               $_css11: globalVar,
               $_css12: getAfterValue()
-          }, \\"A\\");
+          }, "A");
       };
       const ObjectPropWithSpread = ()=>{
           const css = {
@@ -569,42 +569,42 @@ describe('styled components', () => {
               } : {}
           });
       };
-      var _StyledP = _styled(\\"p\\")\`flex: 1;\`;
-      var _StyledP2 = _styled(\\"p\\")\`
+      var _StyledP = _styled("p")\`flex: 1;\`;
+      var _StyledP2 = _styled("p")\`
                   flex: 1;
                 \`;
-      var _StyledP3 = _styled(\\"p\\")({
+      var _StyledP3 = _styled("p")({
           color: 'blue'
       });
-      var _StyledP4 = _styled(\\"p\\")\`flex: 1;\`;
-      var _StyledP5 = _styled(\\"p\\")\`
+      var _StyledP4 = _styled("p")\`flex: 1;\`;
+      var _StyledP5 = _styled("p")\`
                   color: blue;
                 \`;
       var _StyledParagraph = _styled(Paragraph)\`flex: 1\`;
-      var _StyledP6 = _styled(\\"p\\")\`\${(p)=>p.$_css}\`;
-      var _StyledP7 = _styled(\\"p\\")\`
+      var _StyledP6 = _styled("p")\`\${(p)=>p.$_css}\`;
+      var _StyledP7 = _styled("p")\`
                   background: \${(p)=>p.$_css2};
                 \`;
-      var _StyledP8 = _styled(\\"p\\")\`
+      var _StyledP8 = _styled("p")\`
                   color: \${(props1)=>props1.theme.a};
                 \`;
-      var _StyledP9 = _styled(\\"p\\")\`
+      var _StyledP9 = _styled("p")\`
                   border-radius: \${radius}px;
                 \`;
-      var _StyledP10 = _styled(\\"p\\")\`
+      var _StyledP10 = _styled("p")\`
                   color: \${(p)=>p.$_css3};
                 \`;
-      var _StyledP11 = _styled(\\"p\\")\`
+      var _StyledP11 = _styled("p")\`
                   color: \${(props1)=>props1.theme.color};
                 \`;
       var _StyledButtonGhost = _styled(Button.Ghost)\`flex: 1\`;
       var _StyledButtonGhostNew = _styled(Button.Ghost.New)\`flex: 1\`;
       var _StyledButtonGhost2 = _styled(button.ghost)\`flex: 1\`;
-      var _StyledButtonGhost3 = _styled(\\"button-ghost\\")\`flex: 1\`;
-      var _StyledP12 = _styled(\\"p\\")((p)=>({
+      var _StyledButtonGhost3 = _styled("button-ghost")\`flex: 1\`;
+      var _StyledP12 = _styled("p")((p)=>({
               color: p.$_css4
           }));
-      var _StyledP13 = _styled(\\"p\\")((p)=>({
+      var _StyledP13 = _styled("p")((p)=>({
               background: p.$_css9,
               color: p.$_css10,
               textAlign: 'left',
@@ -615,7 +615,7 @@ describe('styled components', () => {
                   content: p.$_css12
               }
           }));
-      var _StyledDiv = _styled(\\"div\\")((p)=>({
+      var _StyledDiv = _styled("div")((p)=>({
               ...p.$_css13,
               ...p.$_css14
           }));
@@ -667,20 +667,20 @@ describe('styled components', () => {
               }
             \`;
       const Test = styled.default.div.withConfig({
-          componentId: \\"test-namespace__sc-959815fc-0\\"
+          componentId: "test-namespace__sc-959815fc-0"
       })\`
               color: red;
             \`;
       const before = styled.default.div.withConfig({
-          componentId: \\"test-namespace__sc-959815fc-1\\"
+          componentId: "test-namespace__sc-959815fc-1"
       })\`
               color: blue;
             \`;
       styled.default.div.withConfig({
-          componentId: \\"test-namespace__sc-959815fc-2\\"
+          componentId: "test-namespace__sc-959815fc-2"
       })\`\`;
       export default styled.default.button.withConfig({
-          componentId: \\"test-namespace__sc-959815fc-3\\"
+          componentId: "test-namespace__sc-959815fc-3"
       })\`\`;
       "
     `);
@@ -720,8 +720,8 @@ describe('styled components', () => {
       import { styled } from '@material/ui';
       import s from 'styled-components';
       const Paragraph = s.p.withConfig({
-          displayName: \\"noop__Paragraph\\",
-          componentId: \\"sc-24186fee-0\\"
+          displayName: "noop__Paragraph",
+          componentId: "sc-24186fee-0"
       })\`
               color: green;
             \`;

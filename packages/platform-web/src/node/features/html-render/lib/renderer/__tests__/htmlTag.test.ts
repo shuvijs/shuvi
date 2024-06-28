@@ -8,11 +8,12 @@ describe('htmlTag', () => {
           attrs: {
             lang: '"/><img%20src=defaceurl"> '
           },
+
           innerHTML: '"/><img%20src=defaceurl"> ',
           tagName: 'html'
         })
       ).toMatchInlineSnapshot(
-        `"<html lang=\\"&quot;/&gt;&lt;img%20src=defaceurl&quot;&gt; \\">\\"/><img%20src=defaceurl\\"> </html>"`
+        `"<html lang="&quot;/&gt;&lt;img%20src=defaceurl&quot;&gt; ">"/><img%20src=defaceurl"> </html>"`
       );
     });
   });

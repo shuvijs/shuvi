@@ -62,18 +62,18 @@ describe('shuvi-babel-loader', () => {
     test('should replace typeof window expression nested', async () => {
       const code = await babel('function a(){console.log(typeof window)}');
       expect(code).toMatchInlineSnapshot(
-        `"function a(){console.log(\\"object\\");}"`
+        `"function a(){console.log("object");}"`
       );
     });
 
     test('should replace typeof window expression top level (client)', async () => {
       const code = await babel('typeof window;');
-      expect(code).toMatchInlineSnapshot(`"\\"object\\";"`);
+      expect(code).toMatchInlineSnapshot(`""object";"`);
     });
 
     test('should replace typeof window expression top level (server)', async () => {
       const code = await babel('typeof window;', { isNode: true });
-      expect(code).toMatchInlineSnapshot(`"\\"undefined\\";"`);
+      expect(code).toMatchInlineSnapshot(`""undefined";"`);
     });
 
     test('should replace typeof window expression nested', async () => {
@@ -121,9 +121,7 @@ describe('shuvi-babel-loader', () => {
   describe('syntax', () => {
     test('should support exportDefaultFrom', async () => {
       const code = await babel(`export { default as foo } from "bar"`);
-      expect(code).toMatchInlineSnapshot(
-        `"export{default as foo}from\\"bar\\";"`
-      );
+      expect(code).toMatchInlineSnapshot(`"export{default as foo}from"bar";"`);
     });
 
     test('should not drop unused exports by default', async () => {
@@ -140,7 +138,7 @@ describe('shuvi-babel-loader', () => {
           `import{e as ee,f as ff}from"f";`
       );
       expect(code).toMatchInlineSnapshot(
-        `"import\\"core-js\\";import{foo,bar}from\\"a\\";import baz from\\"b\\";import*as React from\\"react\\";import baz2,{yeet}from\\"c\\";import baz3,{cats}from\\"d\\";import{c,d}from\\"e\\";import{e as ee,f as ff}from\\"f\\";"`
+        `"import"core-js";import{foo,bar}from"a";import baz from"b";import*as React from"react";import baz2,{yeet}from"c";import baz3,{cats}from"d";import{c,d}from"e";import{e as ee,f as ff}from"f";"`
       );
     });
 
@@ -162,7 +160,7 @@ describe('shuvi-babel-loader', () => {
         { resourcePath: pageFile }
       );
       expect(code).toMatchInlineSnapshot(
-        `"import\\"core-js\\";import{foo,bar}from\\"a\\";import baz from\\"b\\";import*as React from\\"react\\";import baz2,{yeet}from\\"c\\";import baz3,{cats}from\\"d\\";import{c,d}from\\"e\\";import{e as ee,f as ff}from\\"f\\";"`
+        `"import"core-js";import{foo,bar}from"a";import baz from"b";import*as React from"react";import baz2,{yeet}from"c";import baz3,{cats}from"d";import{c,d}from"e";import{e as ee,f as ff}from"f";"`
       );
     });
 

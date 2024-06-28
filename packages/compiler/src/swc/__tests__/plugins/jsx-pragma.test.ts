@@ -47,7 +47,7 @@ describe('jsx-pragma', () => {
     expect(output).toMatch(`_jsx(\"a\",{href:\"`);
 
     expect(output).toMatchInlineSnapshot(
-      `"import{jsx as _jsx}from\\"react/jsx-runtime\\";var a=function(){return _jsx(\\"a\\",{href:\\"/\\",children:\\"home\\"})}"`
+      `"import{jsx as _jsx}from"react/jsx-runtime";var a=function(){return _jsx("a",{href:"/",children:"home"})}"`
     );
   });
 
@@ -59,7 +59,7 @@ describe('jsx-pragma', () => {
     );
 
     expect(output).toMatchInlineSnapshot(
-      `"import{jsx as _jsx,Fragment as _Fragment}from\\"react/jsx-runtime\\";var a=function(){return _jsx(_Fragment,{children:\\"hello\\"})}"`
+      `"import{jsx as _jsx,Fragment as _Fragment}from"react/jsx-runtime";var a=function(){return _jsx(_Fragment,{children:"hello"})}"`
     );
   });
 
@@ -72,7 +72,7 @@ describe('jsx-pragma', () => {
     );
 
     expect(output).toMatchInlineSnapshot(
-      `"\\"use strict\\";Object.defineProperty(exports,\\"__esModule\\",{value:true});var _jsxRuntime=require(\\"react/jsx-runtime\\");var React=require(\\"react\\");module.exports=function(){return(0,_jsxRuntime.jsx)(\\"div\\",{children:\\"test2\\"})}"`
+      `""use strict";Object.defineProperty(exports,"__esModule",{value:true});var _jsxRuntime=require("react/jsx-runtime");var React=require("react");module.exports=function(){return(0,_jsxRuntime.jsx)("div",{children:"test2"})}"`
     );
   });
 });

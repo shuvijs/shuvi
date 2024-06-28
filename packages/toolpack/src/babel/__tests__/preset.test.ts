@@ -71,7 +71,7 @@ describe('shuvi/babel', () => {
       expect(output).toMatch(/import'global.css'/);
 
       expect(output).toMatchInlineSnapshot(
-        `"import React from\\"react\\";var __jsx=React.createElement;import{useState}from'react';import styles from\\"a.css?cssmodules\\";import'global.css';const App=()=>{const{0:count,1:setCount}=useState(0);return __jsx(\\"div\\",null,count);};export default App;"`
+        `"import React from"react";var __jsx=React.createElement;import{useState}from'react';import styles from"a.css?cssmodules";import'global.css';const App=()=>{const{0:count,1:setCount}=useState(0);return __jsx("div",null,count);};export default App;"`
       );
     });
 
@@ -132,7 +132,7 @@ describe('shuvi/babel', () => {
       );
 
       expect(output).toMatchInlineSnapshot(
-        `"import React from\\"react\\";var __jsx=React.createElement;import{useState}from'react';import styles from\\"a.css?cssmodules\\";import'global.css';var App=function App(){var _useState=useState(0),count=_useState[0],setCount=_useState[1];return __jsx(\\"div\\",null,count);};export default App;"`
+        `"import React from"react";var __jsx=React.createElement;import{useState}from'react';import styles from"a.css?cssmodules";import'global.css';var App=function App(){var _useState=useState(0),count=_useState[0],setCount=_useState[1];return __jsx("div",null,count);};export default App;"`
       );
     });
 

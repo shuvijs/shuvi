@@ -21,7 +21,7 @@ describe('dynamic-plugin', () => {
     `);
 
     expect(output).toMatchInlineSnapshot(
-      `"import{dynamic}from'@shuvi/runtime';dynamic(()=>import(\\"./component\\"),{webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]});"`
+      `"import{dynamic}from'@shuvi/runtime';dynamic(()=>import("./component"),{webpack:()=>[require.resolveWeak("./component")],modules:["./component"]});"`
     );
   });
 
@@ -51,7 +51,7 @@ describe('dynamic-plugin', () => {
       })
     `);
     expect(output).toMatchInlineSnapshot(
-      `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic({loader:()=>import(\\"./component\\"),webpack:()=>[require.resolveWeak(\\"./component\\")],modules:[\\"./component\\"]});"`
+      `"import React from'react';import{dynamic}from'@shuvi/runtime';dynamic({loader:()=>import("./component"),webpack:()=>[require.resolveWeak("./component")],modules:["./component"]});"`
     );
   });
 
