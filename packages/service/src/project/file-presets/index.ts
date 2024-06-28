@@ -27,8 +27,13 @@ const getAllFiles = (
     } else if (/\.(js|ts)$/.test(file) && !/\.d\.ts$/.test(file)) {
       const options = require(filepath).default;
 
-      if (name.endsWith('.d_ts.ts')) {
-        name = name.replace('.d_ts.ts', '.d.ts');
+      /**
+       * @note
+       * tsc will ignore .d.ts.ts file,
+       * so we need to replace it with .d_ts.ts
+       */
+      if (name.endsWith('.d_ts')) {
+        name = name.replace('.d_ts', '.d.ts');
       }
 
       currentFileList.push(

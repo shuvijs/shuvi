@@ -7,6 +7,7 @@
     "start": "shuvi start"
   },
   "dependencies": {
+    "@shuvi/package-esmodule": "workspace:*",
     "shuvi": "workspace:*"
   },
   "devDependencies": {
