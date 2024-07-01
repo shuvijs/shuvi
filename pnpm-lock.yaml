@@ -263,10 +263,10 @@ importers:
         specifier: 7.14.5
         version: 7.14.5
       '@shuvi/shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../toolpack
       anser:
         specifier: 1.4.9
@@ -339,10 +339,10 @@ importers:
         specifier: ^1.1.3
         version: 1.2.0
       '@shuvi/eslint-plugin-shuvi':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../eslint-plugin-shuvi
       '@shuvi/toolpack':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../toolpack
       '@typescript-eslint/parser':
         specifier: ^5.42.0
@@ -375,10 +375,10 @@ importers:
   packages/eslint-plugin-shuvi:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../router
     devDependencies:
       '@types/eslint':
@@ -393,22 +393,22 @@ importers:
   packages/platform-shared:
     dependencies:
       '@shuvi/hook':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../hook
       '@shuvi/router':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../router
       '@shuvi/runtime':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       doura:
         specifier: 0.0.13
@@ -427,31 +427,31 @@ importers:
         specifier: 12.1.6
         version: 12.1.6(react-refresh@0.12.0)
       '@shuvi/error-overlay':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../error-overlay
       '@shuvi/hook':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../hook
       '@shuvi/platform-shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../router
       '@shuvi/router-react':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../router-react
       '@shuvi/runtime':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       content-type:
         specifier: 1.0.4
@@ -530,10 +530,10 @@ importers:
   packages/reporters:
     dependencies:
       '@shuvi/shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../shared
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       async-retry:
         specifier: 1.3.3
@@ -564,7 +564,7 @@ importers:
   packages/router:
     dependencies:
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       query-string:
         specifier: 6.13.8
@@ -573,13 +573,13 @@ importers:
   packages/router-react:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../router
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       prop-types:
         specifier: ^15.8.1
@@ -613,7 +613,7 @@ importers:
   packages/runtime:
     dependencies:
       '@shuvi/hook':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../hook
 
   packages/service:
@@ -631,28 +631,28 @@ importers:
         specifier: 7.14.7
         version: 7.14.7
       '@shuvi/error-overlay':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../error-overlay
       '@shuvi/hook':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../hook
       '@shuvi/reporters':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../reporters
       '@shuvi/router':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../router
       '@shuvi/runtime':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       commander:
         specifier: 5.1.0
@@ -737,31 +737,31 @@ importers:
   packages/shared:
     dependencies:
       '@shuvi/hook':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../hook
 
   packages/shuvi:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../platform-shared
       '@shuvi/platform-web':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../platform-web
       '@shuvi/reporters':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../reporters
       '@shuvi/service':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../service
       '@shuvi/shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       cli-highlight:
         specifier: ^2.1.9
@@ -837,13 +837,13 @@ importers:
         specifier: 7.12.5
         version: 7.12.5
       '@shuvi/compiler':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../compiler
       '@shuvi/shared':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../shared
       '@shuvi/utils':
-        specifier: 1.0.55
+        specifier: 1.0.56
         version: link:../utils
       '@swc/helpers':
         specifier: 0.4.3

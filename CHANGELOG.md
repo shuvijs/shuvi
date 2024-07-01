@@ -1,3 +1,12 @@
+## [1.0.56](https://github.com/shuvijs/shuvi/compare/v1.0.55...v1.0.56) (2024-07-01)
+
+
+### Features
+
+* add support for npm packages using `{"type": "module"}` ([64ef9e7](https://github.com/shuvijs/shuvi/commit/64ef9e79a43090e368ac104fd6feceec11c0019f))
+
+
+
 ## [1.0.55](https://github.com/shuvijs/shuvi/compare/v1.0.54...v1.0.55) (2024-07-01)
 
 
