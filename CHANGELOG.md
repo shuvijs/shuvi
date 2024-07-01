@@ -1,3 +1,17 @@
+## [1.0.55](https://github.com/shuvijs/shuvi/compare/v1.0.54...v1.0.55) (2024-07-01)
+
+
+### Bug Fixes
+
+* fork-ts-checker-webpack-plugin options breaking changes ([#588](https://github.com/shuvijs/shuvi/issues/588)) ([655b84f](https://github.com/shuvijs/shuvi/commit/655b84f6cbaa32068dcbaaa5ac3d0c49af730735))
+
+
+### Features
+
+* upgrade jest 29 ([#589](https://github.com/shuvijs/shuvi/issues/589)) ([c5e443f](https://github.com/shuvijs/shuvi/commit/c5e443fed2fa72d7760a205541610b72bfbb1490))
+
+
+
 ## [1.0.54](https://github.com/shuvijs/shuvi/compare/v1.0.53...v1.0.54) (2024-06-26)
 
 
