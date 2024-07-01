@@ -4,7 +4,7 @@ import { SpawnSyncReturns } from 'child_process';
 jest.setTimeout(5 * 60 * 1000);
 
 describe('Test build process with ignoreBuildErrors setting', () => {
-  const fixture = 'typescript-type-error';
+  const fixture = 'typescript-type-error-ts4';
 
   test(`build fail without ignoreBuildErrors`, async () => {
     let error = false;

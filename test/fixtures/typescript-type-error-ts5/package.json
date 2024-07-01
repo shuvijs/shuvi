@@ -1,5 +1,5 @@
 {
-  "name": "fixture-typescript-error", 
+  "name": "fixture-typescript-error-ts5", 
   "dependencies": {
     "shuvi": "workspace:*"
   },
@@ -7,6 +7,6 @@
     "@types/node": "18.0.6",
     "@types/react": "18.0.9",
     "@types/react-dom": "18.0.6",
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.2"
   }
 }

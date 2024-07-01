@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.build.cjs.json",
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "outDir": "lib",
+  },
+  "include": ["src"]
+}

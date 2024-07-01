@@ -1,9 +1,8 @@
 {
-  "extends": "../../tsconfig.build.json",
+  "extends": "../../tsconfig.build.cjs.json",
   "compilerOptions": {
     "lib": ["esnext", "DOM"],
     "esModuleInterop": true,
-    "module": "commonjs",
     "rootDir": "./src",
     "outDir": "lib"
   },

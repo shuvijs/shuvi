@@ -20,12 +20,22 @@ const getAllFiles = (
   let currentFileList: FileOptionWithId<any, any>[] = fileList;
   files.forEach((file: string) => {
     const filepath = path.join(dirPath, file);
-    const name = path.join(parent, file.replace(EXT_REGEXP, ''));
+    let name = path.join(parent, file.replace(EXT_REGEXP, ''));
     if (fs.statSync(filepath).isDirectory()) {
       currentFileList = getAllFiles(filepath, name, currentFileList);
       // Match *.ts (source) or *.js (compiled) file, but ignore *.d.ts file
     } else if (/\.(js|ts)$/.test(file) && !/\.d\.ts$/.test(file)) {
       const options = require(filepath).default;
+
+      /**
+       * @note
+       * tsc will ignore .d.ts.ts file,
+       * so we need to replace it with .d_ts.ts
+       */
+      if (name.endsWith('.d_ts')) {
+        name = name.replace('.d_ts', '.d.ts');
+      }
+
       currentFileList.push(
         originalDefineFile({
           ...options,

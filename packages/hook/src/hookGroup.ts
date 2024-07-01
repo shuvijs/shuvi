@@ -136,7 +136,7 @@ export const createHookManager = <HM extends HookMap, C = void>(
         if (!_hookHandlers[hookName]) {
           _hookHandlers[hookName] = [];
         }
-        _hookHandlers[hookName].push(handlers[hookName]);
+        _hookHandlers[hookName]!.push(handlers[hookName]);
       }
     });
   };

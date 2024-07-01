@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.build.cjs.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "lib": ["esnext", "DOM"],
+    "outDir": "lib"
+  },
+  "include": ["src"],
+  "exclude": ["**/__tests__/**"]
+}

@@ -2,10 +2,124 @@ import chalk from '@shuvi/utils/chalk';
 import isEqual from '@shuvi/utils/isEqual';
 import fs from 'fs-extra';
 import * as CommentJson from 'comment-json';
+import semver from 'semver';
 import os from 'os';
 import path from 'path';
+import type { CompilerOptions } from 'typescript';
 import { IPaths } from '../../core/apiTypes';
 import { TypeScriptModule, TsParsedConfig } from './types';
+
+type DesiredCompilerOptionsShape = {
+  [K in keyof CompilerOptions]:
+    | { suggested: any; reason?: string }
+    | {
+        parsedValue?: any;
+        parsedValues?: Array<any>;
+        value: any;
+        reason: string;
+      };
+};
+
+function getDesiredCompilerOptions(
+  ts: typeof import('typescript'),
+  tsOptions?: CompilerOptions
+): DesiredCompilerOptionsShape {
+  const o: DesiredCompilerOptionsShape = {
+    target: {
+      suggested: 'ES2017',
+      reason:
+        'For top-level `await`. Note: Next.js only polyfills for the esmodules target.'
+    },
+    // These are suggested values and will be set when not present in the
+    // tsconfig.json
+    lib: { suggested: ['dom', 'dom.iterable', 'esnext'] },
+    allowJs: { suggested: true },
+    skipLibCheck: { suggested: true },
+    strict: { suggested: false },
+    ...(semver.lt(ts.version, '5.0.0')
+      ? { forceConsistentCasingInFileNames: { suggested: true } }
+      : undefined),
+    noEmit: { suggested: true },
+    ...(semver.gte(ts.version, '4.4.2')
+      ? { incremental: { suggested: true } }
+      : undefined),
+
+    // These values are required and cannot be changed by the user
+    // Keep this in sync with the webpack config
+    // 'parsedValue' matches the output value from ts.parseJsonConfigFileContent()
+    module: {
+      parsedValue: ts.ModuleKind.ESNext,
+      // All of these values work:
+      parsedValues: [
+        semver.gte(ts.version, '5.4.0') && (ts.ModuleKind as any).Preserve,
+        ts.ModuleKind.ES2020,
+        ts.ModuleKind.ESNext,
+        ts.ModuleKind.CommonJS,
+        ts.ModuleKind.AMD,
+        ts.ModuleKind.NodeNext,
+        ts.ModuleKind.Node16
+      ],
+      value: 'esnext',
+      reason: 'for dynamic import() support'
+    },
+    // TODO: Semver check not needed once Next.js repo uses 5.4.
+    ...(semver.gte(ts.version, '5.4.0') &&
+    tsOptions?.module === (ts.ModuleKind as any).Preserve
+      ? {
+          // TypeScript 5.4 introduced `Preserve`. Using `Preserve` implies
+          // - `moduleResolution` is `Bundler`
+          // - `esModuleInterop` is `true`
+          // - `resolveJsonModule` is `true`
+          // This means that if the user is using Preserve, they don't need these options
+        }
+      : {
+          esModuleInterop: {
+            value: true,
+            reason: 'requirement for SWC / babel'
+          },
+          moduleResolution: {
+            // In TypeScript 5.0, `NodeJs` has renamed to `Node10`
+            parsedValue:
+              ts.ModuleResolutionKind.Bundler ??
+              ts.ModuleResolutionKind.NodeNext ??
+              (ts.ModuleResolutionKind as any).Node10 ??
+              ts.ModuleResolutionKind.NodeJs,
+            // All of these values work:
+            parsedValues: [
+              (ts.ModuleResolutionKind as any).Node10 ??
+                ts.ModuleResolutionKind.NodeJs,
+              // only newer TypeScript versions have this field, it
+              // will be filtered for new versions of TypeScript
+              (ts.ModuleResolutionKind as any).Node12,
+              ts.ModuleResolutionKind.Node16,
+              ts.ModuleResolutionKind.NodeNext,
+              ts.ModuleResolutionKind.Bundler
+            ].filter(val => typeof val !== 'undefined'),
+            value: 'node',
+            reason: 'to match webpack resolution'
+          },
+          resolveJsonModule: {
+            value: true,
+            reason: 'to match webpack resolution'
+          }
+        }),
+    ...(tsOptions?.verbatimModuleSyntax === true
+      ? undefined
+      : {
+          isolatedModules: {
+            value: true,
+            reason: 'requirement for SWC / Babel'
+          }
+        }),
+    jsx: {
+      parsedValue: ts.JsxEmit.Preserve,
+      value: 'preserve',
+      reason: 'next.js implements its own optimized jsx transform'
+    }
+  };
+
+  return o;
+}
 
 export async function writeDefaultConfigurations(
   ts: TypeScriptModule,
@@ -14,63 +128,6 @@ export async function writeDefaultConfigurations(
   paths: IPaths,
   isFirstTimeSetup: boolean
 ) {
-  const compilerOptions: any = {
-    // These are suggested values and will be set when not present in the
-    // tsconfig.json
-    // 'parsedValue' matches the output value from ts.parseJsonConfigFileContent()
-    target: {
-      parsedValue: ts.ScriptTarget.ES5,
-      suggested: 'es5'
-    },
-    lib: { suggested: ['dom', 'dom.iterable', 'esnext'] },
-    allowJs: { suggested: true },
-    skipLibCheck: { suggested: true },
-    strict: { suggested: false },
-    forceConsistentCasingInFileNames: { suggested: true },
-    noEmit: { suggested: true },
-    strictNullChecks: { suggested: true },
-    // These values are required and cannot be changed by the user
-    // Keep this in sync with the webpack config
-    esModuleInterop: {
-      value: true,
-      reason: 'requirement for SWC / babel'
-    },
-    noImplicitThis: {
-      value: true,
-      reason: 'requirement for doura'
-    },
-    module: {
-      parsedValue: ts.ModuleKind.ESNext,
-      // All of these values work:
-      parsedValues: [
-        ts.ModuleKind.Node16,
-        ts.ModuleKind.ES2020,
-        ts.ModuleKind.ESNext,
-        ts.ModuleKind.CommonJS,
-        ts.ModuleKind.AMD
-      ],
-      value: 'esnext',
-      reason: 'for dynamic import() support'
-    },
-    moduleResolution: {
-      parsedValue: ts.ModuleResolutionKind.Node16,
-      // All of these values work:
-      parsedValues: [
-        ts.ModuleResolutionKind.NodeJs,
-        ts.ModuleResolutionKind.Node16,
-        ts.ModuleResolutionKind.NodeNext
-      ],
-      value: 'node16',
-      reason: 'to match webpack resolution'
-    },
-    resolveJsonModule: { value: true, reason: 'to match webpack resolution' },
-    isolatedModules: {
-      value: true,
-      reason: 'requirement for SWC / Babel'
-    },
-    jsx: { parsedValue: ts.JsxEmit.Preserve, value: 'preserve' }
-  };
-
   const userTsConfigContent = await fs.readFile(tsConfigPath, {
     encoding: 'utf8'
   });
@@ -83,10 +140,12 @@ export async function writeDefaultConfigurations(
     userTsConfig.compilerOptions = {};
   }
 
+  const desiredCompilerOptions = getDesiredCompilerOptions(ts, tsOptions);
+
   const suggestedActions: string[] = [];
   const requiredActions: string[] = [];
-  for (const optionKey of Object.keys(compilerOptions)) {
-    const check = compilerOptions[optionKey];
+  for (const optionKey of Object.keys(desiredCompilerOptions)) {
+    const check = desiredCompilerOptions[optionKey];
     if ('suggested' in check) {
       if (!(optionKey in tsOptions)) {
         if (!userTsConfig.compilerOptions) {
