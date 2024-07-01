@@ -1,8 +1,7 @@
 {
-  "extends": "../../tsconfig.build.json",
+  "extends": "../../tsconfig.build.cjs.json",
   "compilerOptions": {
     "outDir": "lib",
-    "module": "commonjs",
     "esModuleInterop": true
   },
   "include": ["src"]

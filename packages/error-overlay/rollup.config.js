@@ -31,7 +31,7 @@ export default {
     }),
     resolve({ extensions }),
     ts({
-      tsconfig: path.join('./tsconfig.build.json'),
+      tsconfig: path.join('./tsconfig.build.rollup.json'),
       declaration: false
     }),
     commonjs({ extensions })
