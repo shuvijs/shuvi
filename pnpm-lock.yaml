@@ -266,10 +266,10 @@ importers:
         specifier: 7.14.5
         version: 7.14.5
       '@shuvi/shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../toolpack
       anser:
         specifier: 1.4.9
@@ -342,10 +342,10 @@ importers:
         specifier: ^1.1.3
         version: 1.2.0
       '@shuvi/eslint-plugin-shuvi':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../eslint-plugin-shuvi
       '@shuvi/toolpack':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../toolpack
       '@typescript-eslint/parser':
         specifier: ^5.42.0
@@ -378,10 +378,10 @@ importers:
   packages/eslint-plugin-shuvi:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../router
     devDependencies:
       '@types/eslint':
@@ -396,22 +396,22 @@ importers:
   packages/platform-shared:
     dependencies:
       '@shuvi/hook':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../hook
       '@shuvi/router':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../router
       '@shuvi/runtime':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       doura:
         specifier: 0.0.13
@@ -430,31 +430,31 @@ importers:
         specifier: 12.1.6
         version: 12.1.6(react-refresh@0.12.0)
       '@shuvi/error-overlay':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../error-overlay
       '@shuvi/hook':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../hook
       '@shuvi/platform-shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../router
       '@shuvi/router-react':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../router-react
       '@shuvi/runtime':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       content-type:
         specifier: 1.0.4
@@ -533,10 +533,10 @@ importers:
   packages/reporters:
     dependencies:
       '@shuvi/shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../shared
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       async-retry:
         specifier: 1.3.3
@@ -567,7 +567,7 @@ importers:
   packages/router:
     dependencies:
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       query-string:
         specifier: 6.13.8
@@ -576,13 +576,13 @@ importers:
   packages/router-react:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../router
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       prop-types:
         specifier: ^15.8.1
@@ -616,7 +616,7 @@ importers:
   packages/runtime:
     dependencies:
       '@shuvi/hook':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../hook
 
   packages/service:
@@ -634,28 +634,28 @@ importers:
         specifier: 7.14.7
         version: 7.14.7
       '@shuvi/error-overlay':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../error-overlay
       '@shuvi/hook':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../hook
       '@shuvi/reporters':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../reporters
       '@shuvi/router':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../router
       '@shuvi/runtime':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       commander:
         specifier: 5.1.0
@@ -740,31 +740,31 @@ importers:
   packages/shared:
     dependencies:
       '@shuvi/hook':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../hook
 
   packages/shuvi:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../platform-shared
       '@shuvi/platform-web':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../platform-web
       '@shuvi/reporters':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../reporters
       '@shuvi/service':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../service
       '@shuvi/shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       cli-highlight:
         specifier: ^2.1.9
@@ -840,13 +840,13 @@ importers:
         specifier: 7.12.5
         version: 7.12.5
       '@shuvi/compiler':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../compiler
       '@shuvi/shared':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../shared
       '@shuvi/utils':
-        specifier: 1.0.56
+        specifier: 1.0.57
         version: link:../utils
       '@swc/helpers':
         specifier: 0.4.3
@@ -1385,6 +1385,7 @@ packages:
   /@babel/compat-data@7.16.4:
     resolution: {integrity: sha512-1o/jo7D+kC9ZjHX5v+EHrdjl3PhxMrLSOTGsOdHJ+KL8HCaEK6ehrVL2RS6oHDZp+L7xLirLrPmQtEng769J/Q==}
     engines: {node: '>=6.9.0'}
+    dev: true
 
   /@babel/compat-data@7.24.7:
     resolution: {integrity: sha512-qJzAIcv03PyaWqxRgO4mSU3lihncDT296vnyuE2O8uA4w3UHWI4S3hgeZd1L8W1Bft40w9JxJ2b412iDUFFRhw==}
@@ -1434,6 +1435,7 @@ packages:
       source-map: 0.5.7
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/core@7.24.7:
     resolution: {integrity: sha512-nykK+LEK86ahTkX/3TgauT0ikKoNCfKHEaZYTUVupJdTLzGNvrblu4u6fa7DhZONAltdf8e662t/abY8idrd/g==}
@@ -1583,6 +1585,7 @@ packages:
       '@babel/helper-validator-option': 7.18.6
       browserslist: 4.21.3
       semver: 6.3.1
+    dev: true
 
   /@babel/helper-compilation-targets@7.24.7:
     resolution: {integrity: sha512-ctSdRHBi20qWOfy27RUb4Fhp07KSJ3sXcuSvTrXrc4aG8NSYDo1ici3Vhg9bg69y5bj0Mr1lh0aeEgTvc12rMg==}
@@ -1744,6 +1747,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/types': 7.18.13
+    dev: true
 
   /@babel/helper-module-imports@7.12.5:
     resolution: {integrity: sha512-SR713Ogqg6++uexFRORf/+nPXMmWIn80TALu0uaFb+iQIUoR7bOC7zBWyzBs5b3tBBJXuyD0cRu1F15GyzjOWA==}
@@ -1802,6 +1806,7 @@ packages:
       '@babel/types': 7.18.13
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/helper-module-transforms@7.24.7(@babel/core@7.24.7):
     resolution: {integrity: sha512-1fuJEwIrp+97rM4RWdO+qrRsZlAeL1lQJoPqtCYWv0NL115XM93hIH4CSRln2w52SqvmY5hqdtauB6QFCDiZNQ==}
@@ -1832,6 +1837,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/types': 7.18.13
+    dev: true
 
   /@babel/helper-plugin-utils@7.10.4:
     resolution: {integrity: sha512-O4KCvQA6lLiMU9l2eawBPMf1xPP8xPfB3iEQw150hOVTqj/rfXz0ThTb4HEzqQfs2Bmo5Ay8BzxfzVtBrr9dVg==}
@@ -1869,6 +1875,7 @@ packages:
       '@babel/types': 7.18.13
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/helper-simple-access@7.12.1:
     resolution: {integrity: sha512-OxBp7pMrjVewSSC8fXDFrHrBcJATOOFssZwv16F3/6Xtc138GHybBfPbm9kfiqQHKhYQrlamWILwlDCeyMFEaA==}
@@ -1880,6 +1887,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/types': 7.18.13
+    dev: true
 
   /@babel/helper-simple-access@7.24.7:
     resolution: {integrity: sha512-zBAIvbCMh5Ts+b86r/CjU+4XGYIs+R1j951gxI3KmmxBMhCg4oQMsv6ZXQ64XOm/cvzfU1FmoCyt6+owc5QMYg==}
@@ -1942,6 +1950,7 @@ packages:
   /@babel/helper-validator-option@7.18.6:
     resolution: {integrity: sha512-XO7gESt5ouv/LRJdrVjkShckw6STTaB7l9BrpBaAHDeF5YZT+01PCwmR0SJHnkW6i8OwW/EVWRShfi4j2x+KQw==}
     engines: {node: '>=6.9.0'}
+    dev: true
 
   /@babel/helper-validator-option@7.24.7:
     resolution: {integrity: sha512-yy1/KvjhV/ZCL+SM7hBrvnZJ3ZuT9OuZgIJAGpPEToANvc3iM6iDvBnRjtElWibHU6n8/LPR/EjX9EtIEYO3pw==}
@@ -1976,6 +1985,7 @@ packages:
       '@babel/types': 7.18.13
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/helpers@7.24.7:
     resolution: {integrity: sha512-NlmJJtvcw72yRJRcnCmGvSi+3jDEg8qFu3z0AFoymmzLx5ERVWyzd9kVXr7Th9/8yIJi2Zc6av4Tqz3wFs8QWg==}
@@ -2604,7 +2614,6 @@ packages:
     dependencies:
       '@babel/core': 7.12.10
       '@babel/helper-plugin-utils': 7.18.9
-    dev: true
 
   /@babel/plugin-syntax-jsx@7.18.6(@babel/core@7.16.0):
     resolution: {integrity: sha512-6mmljtAedFGTWu2p/8WIORGwy+61PLgOMPOdazc7YoJ9ZCWUyFy3A6CpPkRKLKD1ToAesxX8KGEViAiLo9N+7Q==}
@@ -2617,6 +2626,7 @@ packages:
     dependencies:
       '@babel/core': 7.16.0
       '@babel/helper-plugin-utils': 7.18.9
+    dev: true
 
   /@babel/plugin-syntax-logical-assignment-operators@7.10.4(@babel/core@7.12.10):
     resolution: {integrity: sha512-d8waShlpFDinQ5MtvGU9xDAOzKH47+FFoney2baFIoMr952hKOLp1HR7VszoZvOsV/4+RRszNY7D17ba0te0ig==}
@@ -4246,6 +4256,7 @@ packages:
     dependencies:
       '@babel/helper-validator-identifier': 7.18.6
       to-fast-properties: 2.0.0
+    dev: true
 
   /@babel/types@7.24.7:
     resolution: {integrity: sha512-XEFXSlxiG5td2EJRe8vOmRbaXVgfcBlszKujvVmWIK/UpywWljQCfzAv3RQCGujWQ1RD4YYWEAqDXfuJiy8f5Q==}
@@ -4274,7 +4285,7 @@ packages:
         optional: true
     dependencies:
       '@babel/helper-module-imports': 7.18.6
-      '@babel/plugin-syntax-jsx': 7.18.6(@babel/core@7.16.0)
+      '@babel/plugin-syntax-jsx': 7.18.6(@babel/core@7.12.10)
       '@babel/runtime': 7.18.9
       '@emotion/hash': 0.9.0
       '@emotion/memoize': 0.8.0
@@ -9903,6 +9914,7 @@ packages:
   /gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
+    dev: true
 
   /get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
