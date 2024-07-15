@@ -1,3 +1,12 @@
+## [1.0.57](https://github.com/shuvijs/shuvi/compare/v1.0.56...v1.0.57) (2024-07-15)
+
+
+### Bug Fixes
+
+* shuvi lint --file should work now ([200942e](https://github.com/shuvijs/shuvi/commit/200942ef4712134d2e5c8154788d65d1e257fa55))
+
+
+
 ## [1.0.56](https://github.com/shuvijs/shuvi/compare/v1.0.55...v1.0.56) (2024-07-01)
 
 
