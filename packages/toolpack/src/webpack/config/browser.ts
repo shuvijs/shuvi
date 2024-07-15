@@ -220,6 +220,7 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
     {
       ...options,
       __BROWSER__: true,
+      'typeof window': JSON.stringify('object'),
       // prevent errof of destructing process.env
       'process.env': JSON.stringify('{}')
     }

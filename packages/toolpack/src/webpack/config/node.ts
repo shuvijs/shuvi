@@ -48,7 +48,8 @@ export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
   chain.plugin('define').tap(([options]) => [
     {
       ...options,
-      __BROWSER__: false
+      __BROWSER__: false,
+      'typeof window': JSON.stringify('undefined')
     }
   ]);
 
