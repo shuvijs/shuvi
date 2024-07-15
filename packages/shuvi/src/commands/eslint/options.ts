@@ -1,14 +1,19 @@
 import { Option } from 'commander';
+import { collectArrayOptions } from '../utils/collectArrayOptions';
 
 export const optionDir = new Option(
   '-d, --dir <dirPath>',
   `Include directory, or directories, to run ESLint`
-).default(['src']);
+)
+  .default([])
+  .argParser(collectArrayOptions);
 
 export const optionFile = new Option(
   '--file <file...>',
   `Include file, or files, to run ESLint`
-).default([]);
+)
+  .default([])
+  .argParser(collectArrayOptions);
 
 export const optionStrict = new Option(
   '--strict',
@@ -33,7 +38,9 @@ export const optionResolvePluginsRelativeTo = new Option(
 export const optionRulesDir = new Option(
   '--rulesDir <path...>',
   `Use additional rules from this directory`
-).default([]);
+)
+  .default([])
+  .argParser(collectArrayOptions);
 
 export const optionFix = new Option(
   '--fix',
