@@ -49,6 +49,9 @@ export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
     {
       ...options,
       __BROWSER__: false,
+      /**
+       * swc.optimizer can't handle `typeof window` correctly for dependencies
+       */
       'typeof window': JSON.stringify('undefined')
     }
   ]);

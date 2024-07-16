@@ -2,6 +2,12 @@ import React from 'react';
 import { RouterView } from '@shuvi/runtime';
 
 export default function Layout() {
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log(`[useEffect] layout useEffect`);
+    }
+  }, []);
+
   return (
     <div
       style={{
