@@ -117,7 +117,11 @@ describe('shuvi/inspect', () => {
     const project = createTestCtx('shuvi-cli');
     const { message } = await project.run('inspect', ['--verbose']);
     expect(message).toMatch(
-      `definitions: { 'process.env.NODE_ENV': '"development"'`
+      `definitions: {
+        'process.env.NODE_ENV': '\"development\"',
+        __BROWSER__: false,
+        'typeof window': '\"undefined\"'
+      }`
     );
 
     const project2 = createTestCtx('shuvi-cli');
@@ -126,7 +130,11 @@ describe('shuvi/inspect', () => {
       '--verbose'
     ]);
     expect(message2).toMatch(
-      `definitions: { 'process.env.NODE_ENV': '"production"'`
+      `definitions: {
+        'process.env.NODE_ENV': '\"production\"',
+        __BROWSER__: false,
+        'typeof window': '\"undefined\"'
+      }`
     );
   });
 });

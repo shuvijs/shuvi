@@ -220,6 +220,10 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
     {
       ...options,
       __BROWSER__: true,
+      /**
+       * swc.optimizer can't handle `typeof window` correctly for dependencies
+       */
+      'typeof window': JSON.stringify('object'),
       // prevent errof of destructing process.env
       'process.env': JSON.stringify('{}')
     }
