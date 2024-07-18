@@ -1033,9 +1033,16 @@ importers:
 
   test/fixtures/basic:
     dependencies:
+      '@shuvi/package-esmodule':
+        specifier: workspace:*
+        version: link:../../../examples/package-esmodule
       shuvi:
         specifier: workspace:*
         version: link:../../../packages/shuvi
+    devDependencies:
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
 
   test/fixtures/catch-all:
     dependencies:

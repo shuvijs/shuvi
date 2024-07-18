@@ -1,6 +1,10 @@
 {
-  "name": "fixture-basic", 
+  "name": "fixture-basic",
   "dependencies": {
-    "shuvi": "workspace:*"
+    "shuvi": "workspace:*",
+    "@shuvi/package-esmodule": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2"
   }
 }
