@@ -5,7 +5,7 @@ jest.setTimeout(5 * 60 * 1000);
 
 const fixtureName = 'basic';
 
-describe(`webpack should remove 'typeof window' dead code.`, () => {
+describe('typeof-window', () => {
   let ctx: AppCtx;
   let page: Page;
 
@@ -20,7 +20,7 @@ describe(`webpack should remove 'typeof window' dead code.`, () => {
     await ctx.close();
   });
 
-  test('should have hash in script resource url', async () => {
+  test(`webpack should remove 'typeof window' dead code.`, async () => {
     expect.assertions(2);
     page = await ctx.browser.page(ctx.url('/esmodule'));
     await page.waitForSelector('#hello');
