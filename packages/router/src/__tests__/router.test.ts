@@ -971,12 +971,39 @@ describe.each([false, true])('router', hasBasename => {
     });
 
     it('should run the navigation flow in sequence', () => {
-      const { push } = router;
+      const { push, beforeEach, beforeLoader, beforeResolve, afterEach } =
+        router;
+
+      let sequence: string[] = [];
+      beforeEach((_to, _from, next) => {
+        sequence.push('beforeEach');
+        next();
+      });
+
+      beforeLoader((_to, _from, next) => {
+        sequence.push('beforeLoader');
+        next();
+      });
+
+      beforeResolve((_to, _from, next) => {
+        sequence.push('beforeResolve');
+        next();
+      });
+
+      afterEach((_to, _from) => {
+        sequence.push('afterEach');
+      });
 
       let current = router.current;
       expect(current).toBe(router.current);
       push('/about');
       expect(current).not.toBe(router.current);
+      expect(sequence).toEqual([
+        'beforeEach',
+        'beforeLoader',
+        'beforeResolve',
+        'afterEach'
+      ]);
     });
 
     it('should abort when guard return false', () => {
