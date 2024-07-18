@@ -1,3 +1,12 @@
+## [1.0.58](https://github.com/shuvijs/shuvi/compare/v1.0.57...v1.0.58) (2024-07-18)
+
+
+### Performance Improvements
+
+* define `'typeof window'` in webpack to eliminate deadcode ([901dd10](https://github.com/shuvijs/shuvi/commit/901dd103e59e3815d329f6c337b8b5150905d55f))
+
+
+
 ## [1.0.57](https://github.com/shuvijs/shuvi/compare/v1.0.56...v1.0.57) (2024-07-15)
 
 
