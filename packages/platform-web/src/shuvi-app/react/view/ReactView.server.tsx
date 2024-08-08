@@ -108,6 +108,21 @@ export class ReactServerView implements IReactServerView {
     const dynamicImportIdSet = new Set<string>();
     const dynamicImportChunkSet = new Set<string>();
     for (const mod of loadableModules) {
+      /**
+       * To optimize the performance,
+       * shuvi only preloads shuvi-routes related resources,
+       * e.g. layout and page.
+       *    src/routes/layout?shuvi-route",
+       *    src/routes/page?shuvi-route",
+       *
+       * For other dynamic imports, let webpack handle it. Developer can use
+       * magic comments to control webpack's preload/prefetch behavior.
+       * @link https://webpack.js.org/api/module-methods/#magic-comments
+       */
+      if (!mod.includes('?shuvi-route')) {
+        continue;
+      }
+
       const manifestItem = loadble[mod];
       if (manifestItem) {
         manifestItem.files.forEach(file => {
