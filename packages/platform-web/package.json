@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/platform-web",
-  "version": "1.0.58",
+  "version": "1.0.59",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -72,15 +72,15 @@
   },
   "dependencies": {
     "@next/react-refresh-utils": "12.1.6",
-    "@shuvi/error-overlay": "1.0.58",
-    "@shuvi/hook": "1.0.58",
-    "@shuvi/platform-shared": "1.0.58",
-    "@shuvi/router": "1.0.58",
-    "@shuvi/router-react": "1.0.58",
-    "@shuvi/runtime": "1.0.58",
-    "@shuvi/shared": "1.0.58",
-    "@shuvi/toolpack": "1.0.58",
-    "@shuvi/utils": "1.0.58",
+    "@shuvi/error-overlay": "1.0.59",
+    "@shuvi/hook": "1.0.59",
+    "@shuvi/platform-shared": "1.0.59",
+    "@shuvi/router": "1.0.59",
+    "@shuvi/router-react": "1.0.59",
+    "@shuvi/runtime": "1.0.59",
+    "@shuvi/shared": "1.0.59",
+    "@shuvi/toolpack": "1.0.59",
+    "@shuvi/utils": "1.0.59",
     "content-type": "1.0.4",
     "core-js": "3.6.5",
     "doura": "0.0.13",
@@ -98,7 +98,7 @@
     "whatwg-fetch": "3.0.0"
   },
   "peerDependencies": {
-    "@shuvi/service": "1.0.58"
+    "@shuvi/service": "1.0.59"
   },
   "devDependencies": {
     "@shuvi/service": "workspace:*",
