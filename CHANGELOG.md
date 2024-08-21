@@ -1,3 +1,12 @@
+## [1.0.59](https://github.com/shuvijs/shuvi/compare/v1.0.58...v1.0.59) (2024-08-21)
+
+
+### Bug Fixes
+
+* remove expired fix ([4a8cc12](https://github.com/shuvijs/shuvi/commit/4a8cc1255b15d6df3c0e07c25fab49295f1d6797))
+
+
+
 ## [1.0.58](https://github.com/shuvijs/shuvi/compare/v1.0.57...v1.0.58) (2024-07-18)
 
 
