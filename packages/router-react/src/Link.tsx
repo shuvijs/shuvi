@@ -34,8 +34,8 @@ function isModifiedEvent(event: React.MouseEvent) {
  * <Link to="/about" a='a' b='b'>About</Link> => <{...rest} a>
  * ```
  */
-export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  function LinkWithRef(
+const BaseLink = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  function BaseLinkWithRef(
     { onClick, replace: replaceProp = false, state, target, to, ...rest },
     ref
   ) {
@@ -72,6 +72,48 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         target={target}
       />
     );
+  }
+);
+
+/**
+ * @NOTE A Link wrapper to improve runtime error UX if `to` is not defined.
+ *
+ * At dev mode: Page crash directly
+ *   -> show "Internal Application Error" page.
+ *
+ * At prod mode: Downgrade fatal error
+ *   1. console.error first without page crash
+ *   2. throw error after click
+ *   3. re-render -> show "Internal Application Error" page
+ */
+export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  function LinkWithRef(props, ref) {
+    const invalidPropTo = typeof props.to === 'undefined';
+    if (invalidPropTo) {
+      console.error(
+        `The prop 'to' is required in '<Link>', but its value is 'undefined'`,
+        JSON.stringify({ props })
+      );
+    }
+
+    const [downgradeError, setDowngradeError] = React.useState(
+      process.env.NODE_ENV === 'production'
+    );
+
+    if (downgradeError && invalidPropTo) {
+      return (
+        <a
+          {...props}
+          onClick={e => {
+            e.preventDefault();
+            setDowngradeError(false);
+          }}
+          ref={ref}
+        />
+      );
+    }
+
+    return <BaseLink {...props} ref={ref} />;
   }
 );
 
