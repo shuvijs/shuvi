@@ -16,7 +16,7 @@ export default function Layout() {
     >
       /home/layout.tsx
       <RouterView />
-      {/* @ts-ignore for test to is undefined */}
+      {/* @ts-expect-error for test "to" is undefined */}
       <Link>go /symbol/calc</Link>
     </div>
   );
