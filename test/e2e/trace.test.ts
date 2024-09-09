@@ -9,8 +9,11 @@ import {
 jest.setTimeout(5 * 60 * 1000);
 
 declare global {
-  var _reporterData: string[];
+  var _reporterData: { attrs?: { url: string } }[];
 }
+declare let window: {
+  _reporterData: { attrs?: { url: string } }[];
+};
 
 describe('Trace', () => {
   const createTraceObject = (traceName: string, attrs?: Object) => {
@@ -139,17 +142,25 @@ describe('Trace', () => {
     });
     test('handle middleware routes that directly end the response', async () => {
       await ctx.browser.page(ctx.url('/'));
-      /**
-       * In CI, there will be unexpected traces points in the _reporterData
-       * that are not related to the test. ("/favicon")
-       * So we need to clear the _reporterData before the test.
-       */
-      global._reporterData = [];
+
+      await ctx.browser.page(ctx.url('/middleware-success'));
       console.log(
         `[debug] middleware-success global._reporterData (${global._reporterData.length})`,
         global._reporterData
       );
-      await ctx.browser.page(ctx.url('/middleware-success'));
+      /**
+       * In CI, there will be unexpected traces points in the _reporterData
+       * that are not related to the test. ("/favicon")
+       * So we need to only keep the traces that are related to the test, keep
+       * the items
+       *    from the item.attrs.url = '/middleware-success'
+       *    to the latest item
+       */
+      global._reporterData = global._reporterData.slice(
+        global._reporterData.findIndex(
+          item => item?.attrs?.url === '/middleware-success'
+        )
+      );
       console.log(
         `[debug] middleware-success global._reporterData (${global._reporterData.length})`,
         global._reporterData
