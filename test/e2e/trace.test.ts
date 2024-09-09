@@ -139,6 +139,7 @@ describe('Trace', () => {
     });
     test('handle middleware routes that directly end the response', async () => {
       await ctx.browser.page(ctx.url('/middleware-success'));
+      console.log(`[Michael] global._reporterData`, global._reporterData);
       expect(global._reporterData).toMatchObject(
         createMiddlewareTracesExpectation()
       );
