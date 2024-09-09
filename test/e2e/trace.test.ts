@@ -138,6 +138,13 @@ describe('Trace', () => {
       expect(global._reporterData).toMatchObject(assetsTracesExpectation);
     });
     test('handle middleware routes that directly end the response', async () => {
+      await ctx.browser.page(ctx.url('/'));
+      /**
+       * In CI, there will be unexpected traces points in the _reporterData
+       * that are not related to the test. ("/favicon")
+       * So we need to clear the _reporterData before the test.
+       */
+      global._reporterData = [];
       await ctx.browser.page(ctx.url('/middleware-success'));
       console.log(`[Michael] global._reporterData`, global._reporterData);
       expect(global._reporterData).toMatchObject(
