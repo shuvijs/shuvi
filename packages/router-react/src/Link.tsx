@@ -83,8 +83,8 @@ const BaseLink = React.forwardRef<HTMLAnchorElement, LinkProps>(
  *
  * Production Mode: Downgrade fatal error
  *   1. console.error without causing an immediate page crash.
- *   2. Only after user clicks <Link>, trigger the error and page re-render.
- *   3. Display the "Internal Application Error" page.
+ *   2. Only after user clicks <Link>, page re-render
+ *      and display the "Internal Application Error" page.
  *
  * @issue https://github.com/shuvijs/shuvi/pull/596
  */

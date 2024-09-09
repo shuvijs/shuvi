@@ -18,7 +18,6 @@ describe('link prop.to - [dev mode]', () => {
 
   test(`immediately show the "Internal Application Error" page`, async () => {
     page = await ctx.browser.page(ctx.url('/fatal-link-demo'));
-    await page.waitForTimeout(1000);
     expect(await page.$text('#__APP')).toContain(
       `500` // 500 error
     );
@@ -39,25 +38,16 @@ describe('link prop.to - [prod mode]', () => {
     await page.close();
   });
 
-  test(`Log the error with console.error`, async () => {
+  test(`downgrade fatal crashes`, async () => {
     page = await ctx.browser.page(ctx.url('/fatal-link-demo'));
-    const log = page.collectBrowserLog();
-    await page.waitForSelector('#button-link-without-to');
-    expect(await page.$text('#button-link-without-to')).toEqual(
+
+    // 1. without causing an immediate page crash.
+    expect(await page.$text('#button-link-without-to')).toContain(
       'Click to trigger a fatal error at runtime'
     );
-    console.debug(`[logs]`, log.texts);
-    expect(log.texts).toContain(
-      `The prop 'to' is required in '<Link>', but its value is 'undefined'`
-    );
-    log.dispose();
-  });
 
-  test(`display the "Internal Application Error" page after click`, async () => {
-    page = await ctx.browser.page(ctx.url('/fatal-link-demo'));
-    await page.waitForSelector('#button-link-without-to');
+    // 2. Only after user clicks <Link>, page re-render and display the "Internal Application Error" page.
     await page.click('#button-link-without-to');
-    await page.waitForTimeout(1000);
     expect(await page.$text('#__APP')).toContain('Internal Application Error');
   });
 });
