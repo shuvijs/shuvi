@@ -5,7 +5,7 @@ let page: Page;
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('link prop.to - dev mode', () => {
+describe('link prop.to - [dev mode]', () => {
   beforeAll(async () => {
     ctx = await devFixture('basic', { ssr: true });
   });
@@ -19,11 +19,16 @@ describe('link prop.to - dev mode', () => {
   test(`immediately show the "Internal Application Error" page`, async () => {
     page = await ctx.browser.page(ctx.url('/fatal-link-demo'));
     await page.waitForTimeout(1000);
-    expect(await page.$text('#__APP')).toContain('Internal Application Error');
+    expect(await page.$text('#__APP')).toContain(
+      `500` // 500 error
+    );
+    expect(await page.$text('#__APP')).toContain(
+      `Cannot read properties of undefined (reading 'pathname')`
+    );
   });
 });
 
-describe('link prop.to - prod mode', () => {
+describe('link prop.to - [prod mode]', () => {
   beforeAll(async () => {
     ctx = await serveFixture('basic', { ssr: true });
   });
@@ -41,6 +46,7 @@ describe('link prop.to - prod mode', () => {
     expect(await page.$text('#button-link-without-to')).toEqual(
       'Click to trigger a fatal error at runtime'
     );
+    console.debug(`[logs]`, log.texts);
     expect(log.texts).toContain(
       `The prop 'to' is required in '<Link>', but its value is 'undefined'`
     );
