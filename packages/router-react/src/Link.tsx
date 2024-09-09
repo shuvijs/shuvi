@@ -76,15 +76,20 @@ const BaseLink = React.forwardRef<HTMLAnchorElement, LinkProps>(
 );
 
 /**
- * @NOTE A Link wrapper to improve runtime error UX if `to` is not defined.
+ * @NOTE Improve Page Stability by Handling Fatal Crashes 致命錯誤降級處理
  *
- * At dev mode: Page crash directly
- *   -> show "Internal Application Error" page.
+ * Development Mode:
+ *   On fatal errors, immediately show the "Internal Application Error" page.
  *
- * At prod mode: Downgrade fatal error
- *   1. console.error first without page crash
- *   2. throw error after click
- *   3. re-render -> show "Internal Application Error" page
+ * Production Mode:: Downgrade fatal error
+ *   1. Log the error with console.error
+ *      without causing an immediate page crash.
+ *   2. Trigger the error and page re-render
+ *      only after user interaction (e.g., button click).
+ *   3. Re-render to display the "Internal Application Error" page
+ *      after the fatal error is thrown.
+ *
+ * @issue https://github.com/shuvijs/shuvi/pull/596
  */
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   function LinkWithRef(props, ref) {

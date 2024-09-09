@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouterView, Link } from '@shuvi/runtime';
+import { RouterView } from '@shuvi/runtime';
 
 export default function Layout() {
   React.useEffect(() => {
@@ -16,8 +16,6 @@ export default function Layout() {
     >
       /home/layout.tsx
       <RouterView />
-      {/* @ts-expect-error for test "to" is undefined */}
-      <Link>go /symbol/calc</Link>
     </div>
   );
 }
