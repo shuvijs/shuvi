@@ -130,6 +130,14 @@ describe('Trace', () => {
     afterAll(async () => {
       await ctx.close();
     });
+    beforeEach(async () => {
+      /**
+       * In CI, there will be unexpected traces points in the _reporterData
+       * that are not related to the test. ("/favicon")
+       * So we need to clear the _reporterData before the test.
+       */
+      global._reporterData = [];
+    });
     afterEach(async () => {
       global._reporterData = [];
     });
@@ -138,15 +146,15 @@ describe('Trace', () => {
       expect(global._reporterData).toMatchObject(assetsTracesExpectation);
     });
     test('handle middleware routes that directly end the response', async () => {
-      await ctx.browser.page(ctx.url('/'));
-      /**
-       * In CI, there will be unexpected traces points in the _reporterData
-       * that are not related to the test. ("/favicon")
-       * So we need to clear the _reporterData before the test.
-       */
-      global._reporterData = [];
+      console.log(
+        `[debug] middleware-success global._reporterData (${global._reporterData.length})`,
+        global._reporterData
+      );
       await ctx.browser.page(ctx.url('/middleware-success'));
-      console.log(`[Michael] global._reporterData`, global._reporterData);
+      console.log(
+        `[debug] middleware-success global._reporterData (${global._reporterData.length})`,
+        global._reporterData
+      );
       expect(global._reporterData).toMatchObject(
         createMiddlewareTracesExpectation()
       );
