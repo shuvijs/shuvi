@@ -1,5 +1,10 @@
 {
   "name": "fixture-trace",
+  "scripts": {
+    "dev": "shuvi dev",
+    "build": "shuvi build",
+    "start": "shuvi serve"
+  },
   "dependencies": {
     "@shuvi/service": "workspace:*",
     "shuvi": "workspace:*"
