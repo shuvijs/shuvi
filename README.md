@@ -1,4 +1,4 @@
-# Shuvi
+# Shuvi test-only
 
 Meta Framework to create applications quickly.
 
