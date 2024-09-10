@@ -135,6 +135,7 @@ describe('Trace', () => {
       await ctx.close();
     });
     beforeEach(async () => {
+      await ctx.browser.page(ctx.url('/'));
       global._reporterData = [];
     });
     afterEach(async () => {
