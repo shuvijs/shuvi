@@ -134,10 +134,6 @@ describe('Trace', () => {
     afterAll(async () => {
       await ctx.close();
     });
-    beforeEach(async () => {
-      await ctx.browser.page(ctx.url('/'));
-      global._reporterData = [];
-    });
     afterEach(async () => {
       global._reporterData = [];
     });
@@ -146,16 +142,23 @@ describe('Trace', () => {
       expect(global._reporterData).toMatchObject(assetsTracesExpectation);
     });
     test('handle middleware routes that directly end the response', async () => {
-      const requestStart = Date.now();
-      console.log(`[debug] requestStart: ${requestStart}`);
+      // const requestStart = Date.now();
       await ctx.browser.page(ctx.url('/middleware-success'));
+      // get startTime if attrs.url = /middleware-success
+      const requestStartTime = global._reporterData.find(
+        data => (data?.attrs as { url?: string })?.url === '/middleware-success'
+      )?.startTime;
+      if (!requestStartTime) {
+        throw new Error('requestStartTime is not found');
+      }
+      console.debug(`[debug] requestStartTime: ${requestStartTime}`);
       console.log(
         `[debug] global._reporterData length: ${global._reporterData.length}`,
         global._reporterData
       );
-      // filter the _reporterData that is before the requestStart
+      // filter the _reporterData that is before the requestStartTime
       global._reporterData = global._reporterData.filter(
-        ({ timestamp }) => timestamp >= requestStart
+        ({ timestamp }) => timestamp >= requestStartTime
       );
       console.log(
         `[debug] global._reporterData after filter length: ${global._reporterData.length}`,
