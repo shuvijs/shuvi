@@ -145,9 +145,19 @@ describe('Trace', () => {
       expect(global._reporterData).toMatchObject(assetsTracesExpectation);
     });
     test('handle middleware routes that directly end the response', async () => {
+      const requestStart = Date.now();
+      console.log(`[debug] requestStart: ${requestStart}`);
       await ctx.browser.page(ctx.url('/middleware-success'));
       console.log(
-        `[debug] middleware-success global._reporterData (${global._reporterData.length})`,
+        `[debug] global._reporterData length: ${global._reporterData.length}`,
+        global._reporterData
+      );
+      // filter the _reporterData that is before the requestStart
+      global._reporterData = global._reporterData.filter(
+        ({ timestamp }) => timestamp >= requestStart
+      );
+      console.log(
+        `[debug] global._reporterData after filter length: ${global._reporterData.length}`,
         global._reporterData
       );
       expect(global._reporterData).toMatchObject(
