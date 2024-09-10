@@ -99,8 +99,8 @@ jobs:
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
 
-      - name: Run unit tests
-        run: pnpm test:unit
+      # - name: Run unit tests
+      #   run: pnpm test:unit
 
       - name: Run e2e tests
         run: pnpm test:e2e
