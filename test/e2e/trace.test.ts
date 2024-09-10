@@ -1,3 +1,4 @@
+import { traceData } from '@shuvi/shared/reporter';
 import {
   AppCtx,
   Page,
@@ -9,8 +10,11 @@ import {
 jest.setTimeout(5 * 60 * 1000);
 
 declare global {
-  var _reporterData: string[];
+  var _reporterData: traceData[];
 }
+declare let window: {
+  _reporterData: traceData[];
+};
 
 describe('Trace', () => {
   const createTraceObject = (traceName: string, attrs?: Object) => {
@@ -135,16 +139,28 @@ describe('Trace', () => {
     });
     test('handle assets', async () => {
       page = await ctx.browser.page(ctx.url('/user.json'));
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/user.json'
+      );
       expect(global._reporterData).toMatchObject(assetsTracesExpectation);
     });
     test('handle middleware routes that directly end the response', async () => {
       await ctx.browser.page(ctx.url('/middleware-success'));
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/middleware-success'
+      );
       expect(global._reporterData).toMatchObject(
         createMiddlewareTracesExpectation()
       );
     });
     test('handle middleware routes that throw an error', async () => {
       await ctx.browser.page(ctx.url('/middleware-error'));
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/middleware-error'
+      );
       expect(global._reporterData).toMatchObject(
         createMiddlewareTracesExpectation({
           error: true,
@@ -154,6 +170,10 @@ describe('Trace', () => {
     });
     test('handle API routes successfully', async () => {
       await ctx.browser.page(ctx.url('/api-success'));
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/api-success'
+      );
       expect(global._reporterData).toMatchObject(
         createApiRouteTracesExpectation()
       );
@@ -161,6 +181,10 @@ describe('Trace', () => {
 
     test('handle API routes that throw an error', async () => {
       await ctx.browser.page(ctx.url('/api-error'));
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/api-error'
+      );
       expect(global._reporterData).toMatchObject(
         createApiRouteTracesExpectation({
           error: true,
@@ -172,12 +196,17 @@ describe('Trace', () => {
       await ctx.browser.page(ctx.url('/'), {
         disableJavaScript: true
       });
+      global._reporterData = filterInvalidTraceData(global._reporterData, '/');
       expect(global._reporterData).toMatchObject(createPageTracesExpectation());
     });
     test('handle page routes with a render error', async () => {
       await ctx.browser.page(ctx.url('/render-error'), {
         disableJavaScript: true
       });
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/render-error'
+      );
       expect(global._reporterData).toMatchObject(
         createPageTracesExpectation({
           SHUVI_SERVER_RENDER_TO_STRING: {
@@ -195,6 +224,10 @@ describe('Trace', () => {
       await ctx.browser.page(ctx.url('/loader-error-userError'), {
         disableJavaScript: true
       });
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/loader-error-userError'
+      );
       expect(global._reporterData).toMatchObject(
         createPageTracesExpectation({
           SHUVI_SERVER_RUN_LOADERS: {
@@ -213,7 +246,10 @@ describe('Trace', () => {
       await ctx.browser.page(ctx.url('/loader-error-redirect-api'), {
         disableJavaScript: true
       });
-
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/loader-error-redirect-api'
+      );
       const traceStack = createPageTracesExpectation({
         SHUVI_SERVER_RUN_LOADERS: {
           error: true,
@@ -239,6 +275,10 @@ describe('Trace', () => {
       await ctx.browser.page(ctx.url('/loader-error-unexpectedError'), {
         disableJavaScript: true
       });
+      global._reporterData = filterInvalidTraceData(
+        global._reporterData,
+        '/loader-error-unexpectedError'
+      );
       expect(global._reporterData).toMatchObject(
         createPageTracesExpectation({
           SHUVI_SERVER_RUN_LOADERS: {
@@ -344,10 +384,12 @@ describe('Trace', () => {
       await clearReporterData();
       await page.shuvi.navigate('/render-error');
       await page.waitForTimeout(1000);
-      const traceData = (await page.evaluate(() => {
+      let traceData = (await page.evaluate(() => {
         return window._reporterData;
-      })) as unknown as ReturnType<typeof createTraceObject>[];
-
+      })) as traceData[];
+      traceData = filterInvalidTraceData(traceData, '/render-error', {
+        type: 'to'
+      });
       expect(traceData).toMatchObject([
         createTraceObject('SHUVI_NAVIGATION_TRIGGERED', {
           from: expect.any(String),
@@ -545,3 +587,37 @@ describe('Trace', () => {
     });
   });
 });
+
+function filterInvalidTraceData(
+  reporterData: traceData[],
+  targetPath: string,
+  options: { type?: 'to' } = {}
+) {
+  let requestStartTime: number | undefined;
+  if (options.type === 'to') {
+    requestStartTime = reporterData.find(
+      data => (data?.attrs as { to?: string })?.to === targetPath
+    )?.startTime;
+  } else {
+    requestStartTime = reporterData.find(
+      data => (data?.attrs as { url?: string })?.url === targetPath
+    )?.startTime;
+  }
+  if (!requestStartTime) {
+    throw new Error(`requestStartTime is not found for ${targetPath}`);
+  }
+  console.debug(`[debug] requestStartTime: ${requestStartTime}`);
+  console.log(
+    `[debug] reporterData length: ${reporterData.length}`,
+    reporterData
+  );
+  // filter the _reporterData that is before the requestStartTime
+  reporterData = reporterData.filter(
+    ({ timestamp }) => timestamp >= requestStartTime
+  );
+  console.log(
+    `[debug] filtered reporterData length: ${reporterData.length}`,
+    reporterData
+  );
+  return reporterData;
+}
