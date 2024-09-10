@@ -1,3 +1,4 @@
+import { traceData } from '@shuvi/shared/reporter';
 import {
   AppCtx,
   Page,
@@ -9,10 +10,10 @@ import {
 jest.setTimeout(5 * 60 * 1000);
 
 declare global {
-  var _reporterData: { attrs?: { url: string } }[];
+  var _reporterData: traceData[];
 }
 declare let window: {
-  _reporterData: { attrs?: { url: string } }[];
+  _reporterData: traceData[];
 };
 
 describe('Trace', () => {
