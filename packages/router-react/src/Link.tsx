@@ -34,8 +34,8 @@ function isModifiedEvent(event: React.MouseEvent) {
  * <Link to="/about" a='a' b='b'>About</Link> => <{...rest} a>
  * ```
  */
-export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  function LinkWithRef(
+const BaseLink = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  function BaseLinkWithRef(
     { onClick, replace: replaceProp = false, state, target, to, ...rest },
     ref
   ) {
@@ -72,6 +72,50 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         target={target}
       />
     );
+  }
+);
+
+/**
+ * @NOTE Improve Page Stability by Handling Fatal Crashes 致命錯誤降級處理
+ *
+ * Development Mode:
+ *   On fatal errors, immediately show the "Internal Application Error" page.
+ *
+ * Production Mode: Downgrade fatal error
+ *   1. console.error without causing an immediate page crash.
+ *   2. Only after user clicks <Link>, page re-render
+ *      and display the "Internal Application Error" page.
+ *
+ * @issue https://github.com/shuvijs/shuvi/pull/596
+ */
+export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  function LinkWithRef(props, ref) {
+    const invalidPropTo = typeof props.to === 'undefined';
+    if (invalidPropTo) {
+      console.error(
+        `The prop 'to' is required in '<Link>', but its value is 'undefined'`,
+        JSON.stringify({ props })
+      );
+    }
+
+    const [downgradeError, setDowngradeError] = React.useState(
+      process.env.NODE_ENV === 'production'
+    );
+
+    if (downgradeError && invalidPropTo) {
+      return (
+        <a
+          {...props}
+          onClick={e => {
+            e.preventDefault();
+            setDowngradeError(false);
+          }}
+          ref={ref}
+        />
+      );
+    }
+
+    return <BaseLink {...props} ref={ref} />;
   }
 );
 
