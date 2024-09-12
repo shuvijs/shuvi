@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "shuvi dev",
     "build": "shuvi build && npm run lint",
-    "start": "shuvi start",
+    "start": "shuvi serve",
     "lint": "shuvi lint"
   },
   "dependencies": {
