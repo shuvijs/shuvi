@@ -1,3 +1,12 @@
+## [1.0.60](https://github.com/shuvijs/shuvi/compare/v1.0.59...v1.0.60) (2024-09-18)
+
+
+### Features
+
+* downgrade fatal crash error for `<Link>` component ([#596](https://github.com/shuvijs/shuvi/issues/596)) ([1205fc5](https://github.com/shuvijs/shuvi/commit/1205fc538e19dc489df13b4ee476d77a4cb74fb6))
+
+
+
 ## [1.0.59](https://github.com/shuvijs/shuvi/compare/v1.0.58...v1.0.59) (2024-08-21)
 
 
