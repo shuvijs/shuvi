@@ -131,12 +131,15 @@ describe('Basename Support', () => {
       page3.goto(ctx.url('/base-name3/'))
     ]);
 
-    // should render index page
-    expect(page1.url()).toBe(ctx.url('/base-name1/'));
-    expect(page1.status()).toBe(200);
-    expect(page2.url()).toBe(ctx.url('/base-name2/'));
-    expect(page2.status()).toBe(200);
-    expect(page3.url()).toBe(ctx.url('/base-name3/'));
-    expect(page3.status()).toBe(200);
+    // should handle requests with different basename concurrently
+    expect([
+      [page1.url(), page1.statusCode],
+      [page2.url(), page2.statusCode],
+      [page3.url(), page3.statusCode]
+    ]).toStrictEqual([
+      [ctx.url('/base-name1/'), 200],
+      [ctx.url('/base-name2/'), 200],
+      [ctx.url('/base-name3/'), 200]
+    ]);
   });
 });
