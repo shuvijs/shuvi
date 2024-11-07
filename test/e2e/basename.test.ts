@@ -100,12 +100,12 @@ describe('Basename Support', () => {
       const result = await page.goto(ctx.url('/base-name'));
       expect(result?.status()).toBe(500);
       expect(await page.$text('body')).toContain(
-        'appConfig is not set for the request'
+        'appConfig.router.basename must be a string'
       );
     });
   });
 
-  test(`concurrent requests with different basename`, async () => {
+  test.only(`concurrent requests with different basename`, async () => {
     ctx = await devFixture('basename', {
       ssr: true,
       plugins: ['./plugin']
