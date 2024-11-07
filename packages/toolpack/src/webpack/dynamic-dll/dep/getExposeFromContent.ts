@@ -42,7 +42,7 @@ export default _;`.trim();
   else {
     const ret = [];
     let hasExports = false;
-    if (exports.includes('default')) {
+    if ((exports as unknown as any[]).includes('default')) {
       ret.push(`import _ from '${libraryPath}';`);
       ret.push(`export default _;`);
       hasExports = true;
@@ -58,7 +58,10 @@ export default _;`.trim();
 
     if (!hasExports) {
       // 只有 __esModule 的全量导出
-      if (exports.includes('__esModule') && exports.length > 1) {
+      if (
+        (exports as unknown as any[]).includes('__esModule') &&
+        exports.length > 1
+      ) {
         ret.push(`import _ from '${libraryPath}';`);
         ret.push(`export default _;`);
         ret.push(`export * from '${libraryPath}';`);

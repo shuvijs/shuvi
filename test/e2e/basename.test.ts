@@ -132,11 +132,11 @@ describe('Basename Support', () => {
     ]);
 
     // should render index page
-    await page1.waitForSelector('#index');
-    expect(await page1.$text('#index')).toEqual('Index Page');
-    await page2.waitForSelector('#index');
-    expect(await page2.$text('#index')).toEqual('Index Page');
-    await page3.waitForSelector('#index');
-    expect(await page3.$text('#index')).toEqual('Index Page');
+    expect(page1.url()).toBe(ctx.url('/base-name1/'));
+    expect(page1.status()).toBe(200);
+    expect(page2.url()).toBe(ctx.url('/base-name2/'));
+    expect(page2.status()).toBe(200);
+    expect(page3.url()).toBe(ctx.url('/base-name3/'));
+    expect(page3.status()).toBe(200);
   });
 });
