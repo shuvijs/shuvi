@@ -125,7 +125,7 @@ describe('Basename Support', () => {
     });
 
     // concurrent requests
-    await Promise.all([
+    const [res1, res2, res3] = await Promise.all([
       page1.goto(ctx.url('/base-name1/')),
       page2.goto(ctx.url('/base-name2/')),
       page3.goto(ctx.url('/base-name3/'))
@@ -133,9 +133,9 @@ describe('Basename Support', () => {
 
     // should handle requests with different basename concurrently
     expect([
-      [page1.url(), page1.statusCode],
-      [page2.url(), page2.statusCode],
-      [page3.url(), page3.statusCode]
+      [page1.url(), res1?.status()],
+      [page2.url(), res2?.status()],
+      [page3.url(), res3?.status()]
     ]).toStrictEqual([
       [ctx.url('/base-name1/'), 200],
       [ctx.url('/base-name2/'), 200],
