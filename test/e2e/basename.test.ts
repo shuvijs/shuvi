@@ -12,7 +12,7 @@ describe('Basename Support', () => {
       router: {
         history: 'browser'
       },
-      plugins: [['./plugin', { basename: '/base-name' }]]
+      plugins: ['./plugin']
     };
     if (mode === 'SPA Browser') {
       shuviConfig.ssr = false;
@@ -41,12 +41,20 @@ describe('Basename Support', () => {
     });
 
     test('index page should redirect to base when basename is set', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': 'base-name'
+      });
+      await page.goto(ctx.url('/'));
       expect(page.url()).toBe(ctx.url(indexUrl));
     });
 
     test('basename should work for route matching', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': 'base-name'
+      });
+      await page.goto(ctx.url('/'));
       await page.waitForSelector('#index');
       expect(await page.$text('#index')).toEqual('Index Page');
 
@@ -60,7 +68,11 @@ describe('Basename Support', () => {
     });
 
     test('basename should work when client navigation', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': 'base-name'
+      });
+      await page.goto(ctx.url('/'));
       await page.waitForSelector('#index');
 
       expect(await page.$text('#index')).toEqual('Index Page');
@@ -82,14 +94,49 @@ describe('Basename Support', () => {
   describe('Basename Verify', () => {
     test('basename must be a string', async () => {
       ctx = await devFixture('basename', {
-        plugins: [['./plugin', { basename: null }]]
+        plugins: ['./plugin']
       });
       page = await ctx.browser.page();
       const result = await page.goto(ctx.url('/base-name'));
       expect(result?.status()).toBe(500);
       expect(await page.$text('body')).toContain(
-        'appConfig.router.basename must be a string'
+        'appConfig is not set for the request'
       );
     });
+  });
+
+  test(`concurrent requests with different basename`, async () => {
+    ctx = await devFixture('basename', {
+      ssr: true,
+      plugins: ['./plugin']
+    });
+    const page1 = await ctx.browser.page();
+    const page2 = await ctx.browser.page();
+    const page3 = await ctx.browser.page();
+
+    page1.setExtraHTTPHeaders({
+      '__shuvi-basename': 'base-name1'
+    });
+    page2.setExtraHTTPHeaders({
+      '__shuvi-basename': 'base-name2'
+    });
+    page3.setExtraHTTPHeaders({
+      '__shuvi-basename': 'base-name3'
+    });
+
+    // concurrent requests
+    await Promise.all([
+      page1.goto(ctx.url('/base-name1/')),
+      page2.goto(ctx.url('/base-name2/')),
+      page3.goto(ctx.url('/base-name3/'))
+    ]);
+
+    // should render index page
+    await page1.waitForSelector('#index');
+    expect(await page1.$text('#index')).toEqual('Index Page');
+    await page2.waitForSelector('#index');
+    expect(await page2.$text('#index')).toEqual('Index Page');
+    await page3.waitForSelector('#index');
+    expect(await page3.$text('#index')).toEqual('Index Page');
   });
 });
