@@ -26,10 +26,6 @@ export default class AppConfigManager {
   public static getAppConfig(req: ShuviRequest): IAppConfigByRequest {
     const appConfig = this._appConfigWeakMap.get(req);
     if (!appConfig) {
-      // throw new Error(
-      //   '[ServerPlugin Hook getAppConfig] appConfig is not set for the request'
-      // );
-
       return this._DEFAULT_APP_CONFIG;
     }
     return appConfig;

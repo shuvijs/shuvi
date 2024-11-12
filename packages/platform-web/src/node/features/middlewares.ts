@@ -25,7 +25,6 @@ export const getMiddlewaresBeforeDevMiddlewares = (
   onDemandRouteManager.devMiddleware = devMiddleware;
 
   return [
-    // getSetupAppConfigMiddleware(context), // set appConfig first
     onDemandRouteManager.getServerMiddleware(), // check page-*.js
     onDemandRouteManager.ensureRoutesMiddleware() // check page request
   ];

@@ -8,7 +8,7 @@ import {
 } from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
-// import AppConfigManager from '../setup-app-config/AppConfigManager';
+import AppConfigManager from '../setup-app-config/AppConfigManager';
 
 function acceptsHtml(
   header: string,
@@ -91,12 +91,12 @@ export default class OnDemandRouteManager {
   }
 
   async ensureRoutes(pathname: string, req: ShuviRequest): Promise<void> {
-    // const { basename } = AppConfigManager.getAppConfig(req).router;
+    const { basename } = AppConfigManager.getAppConfig(req).router;
     const matchedRoutes =
       matchRoutes(
         resources.server.pageRoutes,
         pathname,
-        normalizeBase('') // dev mode always use empty base
+        normalizeBase(basename)
       ) || [];
 
     const modulesToActivate = matchedRoutes

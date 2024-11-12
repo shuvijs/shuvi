@@ -2,26 +2,16 @@ import { ShuviRequest } from '@shuvi/service/lib/server';
 import AppConfigManager from '../AppConfigManager';
 
 describe('AppConfigManager', () => {
-  it('should throw error when req is undefined', () => {
-    const context = {} as { req?: ShuviRequest };
-
-    // expect throw error
-    expect(() => AppConfigManager.getAppConfig(context.req!)).toThrow(
-      /appConfig is not set for the request/
-    );
-  });
-
-  it('should throw error when appConfig is not set for the request', () => {
+  it('should get default appConfig when appConfig is not set for the request', () => {
     const context = {} as { req: ShuviRequest };
     context.req = {
       url: 'http://localhost:3000/test',
       _requestId: 'test'
     } as ShuviRequest;
 
-    // expect throw error
-    expect(() => AppConfigManager.getAppConfig(context.req)).toThrow(
-      /appConfig is not set for the request/
-    );
+    expect(AppConfigManager.getAppConfig(context.req!)).toStrictEqual({
+      router: { basename: '' }
+    });
   });
 
   it('should return appConfig when appConfig is set for the request', () => {
@@ -92,10 +82,10 @@ describe('AppConfigManager', () => {
     // create a new request reference
     context.req = {} as ShuviRequest;
 
-    // expect throw error
-    expect(() => AppConfigManager.getAppConfig(context.req)).toThrow(
-      /appConfig is not set for the request/
-    );
+    // return default appConfig
+    expect(AppConfigManager.getAppConfig(context.req!)).toStrictEqual({
+      router: { basename: '' }
+    });
   });
 
   it(`should handle multiple requests`, () => {
