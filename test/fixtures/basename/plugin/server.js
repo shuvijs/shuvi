@@ -1,6 +1,6 @@
 const { createServerPlugin } = require('shuvi');
 
-module.exports = () =>
+module.exports = (options = { disableBasename: false }) =>
   createServerPlugin({
     getAppConfig: ({ req }) => {
       global._req_url = req.url;
@@ -12,7 +12,7 @@ module.exports = () =>
       const basename = req.headers['__shuvi-basename'] || '';
       const appConfig = {
         router: {
-          basename
+          basename: options.disableBasename ? null : basename
         }
       };
 

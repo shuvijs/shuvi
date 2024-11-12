@@ -63,8 +63,12 @@ describe('Basename Support', () => {
         aboutUrl = '/#/base-name/about';
       }
 
-      page = await ctx.browser.page(ctx.url(aboutUrl));
-      expect(await page.$text('#about')).toEqual('About Page');
+      let page2 = await ctx.browser.page();
+      page2.setExtraHTTPHeaders({
+        '__shuvi-basename': 'base-name'
+      });
+      await page2.goto(ctx.url(aboutUrl));
+      expect(await page2.$text('#about')).toEqual('About Page');
     });
 
     test('basename should work when client navigation', async () => {
@@ -94,9 +98,10 @@ describe('Basename Support', () => {
   describe('Basename Verify', () => {
     test('basename must be a string', async () => {
       ctx = await devFixture('basename', {
-        plugins: ['./plugin']
+        plugins: [['./plugin', { disableBasename: true }]]
       });
       page = await ctx.browser.page();
+
       const result = await page.goto(ctx.url('/base-name'));
       expect(result?.status()).toBe(500);
       expect(await page.$text('body')).toContain(
