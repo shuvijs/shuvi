@@ -3,6 +3,7 @@ import resources from '@shuvi/service/lib/resources';
 import { Response } from '@shuvi/platform-shared/shared';
 import { SERVER_CREATE_APP } from '@shuvi/shared/constants/trace';
 import { Renderer } from './renderer';
+import AppConfigManager from '../../setup-app-config/AppConfigManager';
 
 export async function renderToHTML({
   req,
@@ -14,11 +15,9 @@ export async function renderToHTML({
   let result: Response;
   const renderer = new Renderer({ serverPluginContext });
   const {
-    config: { ssr },
-    appConfig: {
-      router: { basename }
-    }
+    config: { ssr }
   } = serverPluginContext;
+  const { basename } = AppConfigManager.getAppConfig(req).router;
   const { serverCreateAppTrace } = req._traces;
   const { application } = resources.server;
   const app = serverCreateAppTrace

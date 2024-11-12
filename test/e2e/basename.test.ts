@@ -12,7 +12,7 @@ describe('Basename Support', () => {
       router: {
         history: 'browser'
       },
-      plugins: [['./plugin', { basename: '/base-name' }]]
+      plugins: ['./plugin']
     };
     if (mode === 'SPA Browser') {
       shuviConfig.ssr = false;
@@ -41,12 +41,20 @@ describe('Basename Support', () => {
     });
 
     test('index page should redirect to base when basename is set', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': 'base-name'
+      });
+      await page.goto(ctx.url('/'));
       expect(page.url()).toBe(ctx.url(indexUrl));
     });
 
     test('basename should work for route matching', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': 'base-name'
+      });
+      await page.goto(ctx.url('/'));
       await page.waitForSelector('#index');
       expect(await page.$text('#index')).toEqual('Index Page');
 
@@ -60,7 +68,11 @@ describe('Basename Support', () => {
     });
 
     test('basename should work when client navigation', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': 'base-name'
+      });
+      await page.goto(ctx.url('/'));
       await page.waitForSelector('#index');
 
       expect(await page.$text('#index')).toEqual('Index Page');
@@ -82,7 +94,7 @@ describe('Basename Support', () => {
   describe('Basename Verify', () => {
     test('basename must be a string', async () => {
       ctx = await devFixture('basename', {
-        plugins: [['./plugin', { basename: null }]]
+        plugins: ['./plugin']
       });
       page = await ctx.browser.page();
       const result = await page.goto(ctx.url('/base-name'));
@@ -91,5 +103,43 @@ describe('Basename Support', () => {
         'appConfig.router.basename must be a string'
       );
     });
+  });
+
+  test.only(`concurrent requests with different basename`, async () => {
+    ctx = await devFixture('basename', {
+      ssr: true,
+      plugins: ['./plugin']
+    });
+    const page1 = await ctx.browser.page();
+    const page2 = await ctx.browser.page();
+    const page3 = await ctx.browser.page();
+
+    page1.setExtraHTTPHeaders({
+      '__shuvi-basename': 'base-name1'
+    });
+    page2.setExtraHTTPHeaders({
+      '__shuvi-basename': 'base-name2'
+    });
+    page3.setExtraHTTPHeaders({
+      '__shuvi-basename': 'base-name3'
+    });
+
+    // concurrent requests
+    const [res1, res2, res3] = await Promise.all([
+      page1.goto(ctx.url('/base-name1/')),
+      page2.goto(ctx.url('/base-name2/')),
+      page3.goto(ctx.url('/base-name3/'))
+    ]);
+
+    // should handle requests with different basename concurrently
+    expect([
+      [page1.url(), res1?.status()],
+      [page2.url(), res2?.status()],
+      [page3.url(), res3?.status()]
+    ]).toStrictEqual([
+      [ctx.url('/base-name1/'), 200],
+      [ctx.url('/base-name2/'), 200],
+      [ctx.url('/base-name3/'), 200]
+    ]);
   });
 });

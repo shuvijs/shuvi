@@ -36,11 +36,19 @@ describe.each([false, true])('loader', hasBasename => {
       page = await ctx.browser.page(ctx.url('/'), {
         disableJavaScript: true
       });
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/'));
       expect(await page.$text('p')).toBe('world');
     });
 
     test('should not get loader data when hydrating at client side', async () => {
-      page = await ctx.browser.page(ctx.url('/'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/'));
       page.waitForSelector('#loader-index');
       expect(await page.$text('p')).toBe('world');
 
@@ -52,7 +60,11 @@ describe.each([false, true])('loader', hasBasename => {
     });
 
     test('PageComponent should receive context object', async () => {
-      page = await ctx.browser.page(ctx.url('/test?a=2'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/test?a=2'));
       const loaderData = JSON.parse(await page.$text('[data-test-id="foo"]'));
       ['pathname', 'query', 'params', 'redirect', 'appContext', 'req'].forEach(
         key => {
@@ -71,7 +83,11 @@ describe.each([false, true])('loader', hasBasename => {
     });
 
     test('pathname, query, params at loader context object should be same at different layers of route', async () => {
-      page = await ctx.browser.page(ctx.url('/test?a=2'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/test?a=2'));
       await page.waitForSelector('[data-test-id="foo"]');
       const rootLoaderContext = JSON.parse(
         await page.$text('[data-test-id="root-layout"]')
@@ -89,7 +105,11 @@ describe.each([false, true])('loader', hasBasename => {
     });
 
     test('should be called after a client navigation', async () => {
-      page = await ctx.browser.page(ctx.url('/one'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/one'));
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
       expect(await page.$text('[data-test-id="time"]')).toBe('1');
 
@@ -111,6 +131,9 @@ describe.each([false, true])('loader', hasBasename => {
       it('should support redirect chain in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
         page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
         page.on('request', request => {
           request.continue();
         });
@@ -167,7 +190,11 @@ describe.each([false, true])('loader', hasBasename => {
 
       it('should support params and query in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         page.on('request', request => {
           request.continue();
         });
@@ -214,7 +241,11 @@ describe.each([false, true])('loader', hasBasename => {
 
       it.skip('should support relative url in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         page.on('request', request => {
           request.continue();
         });
@@ -247,7 +278,11 @@ describe.each([false, true])('loader', hasBasename => {
 
       it('should support third-party site in SSR', async () => {
         const responses: { url: string; status: number }[] = [];
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         page.on('request', request => {
           request.continue();
         });
@@ -287,7 +322,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support redirect chain in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: '/context/redirect/combo/a'
         });
@@ -301,7 +340,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support params and query url in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', { target: FULL_URL });
         await page.waitForSelector('#url-data');
         expect(await page.$text('#url-data')).toBe(
@@ -310,7 +353,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it.skip('should support relative url in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: 'context/redirect/combo/c'
         });
@@ -319,7 +366,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support third-party site in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: THIRD_PARTY_SITE
         });
@@ -330,7 +381,11 @@ describe.each([false, true])('loader', hasBasename => {
 
     describe('error', () => {
       it('should work in server', async () => {
-        page = await ctx.browser.page(
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(
           ctx.url('/context/error', { message: 'random_sdfsf_test_error' })
         );
         expect(page.statusCode).toBe(500);
@@ -338,7 +393,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should work in client', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/error', {
           message: 'random_sdfsf_test_error'
         });
@@ -348,7 +407,11 @@ describe.each([false, true])('loader', hasBasename => {
     });
 
     it('should skip render when facing fatal-error', async () => {
-      page = await ctx.browser.page(ctx.url('/fatal-error'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/fatal-error'));
       expect(page.statusCode).toBe(404);
       expect(await page.$('[data-test-id="root-layout"]')).toBe(null);
     });
@@ -375,7 +438,11 @@ describe.each([false, true])('loader', hasBasename => {
     });
 
     test('PageComponent should receive context object', async () => {
-      page = await ctx.browser.page(ctx.url('/test?a=2'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/test?a=2'));
       await page.waitForSelector('[data-test-id="foo"]');
       const loaderContext = JSON.parse(
         await page.$text('[data-test-id="foo"]')
@@ -391,7 +458,11 @@ describe.each([false, true])('loader', hasBasename => {
     });
 
     test('pathname, query, params at loader context object should be same at different layers of route', async () => {
-      page = await ctx.browser.page(ctx.url('/test?a=2'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/test?a=2'));
       await page.waitForSelector('[data-test-id="foo"]');
       const rootLoaderContext = JSON.parse(
         await page.$text('[data-test-id="root-layout"]')
@@ -409,7 +480,11 @@ describe.each([false, true])('loader', hasBasename => {
     });
 
     test('should be called after navigation', async () => {
-      page = await ctx.browser.page(ctx.url('/one'));
+      page = await ctx.browser.page();
+      page.setExtraHTTPHeaders({
+        '__shuvi-basename': hasBasename ? '/base' : '/'
+      });
+      await page.goto(ctx.url('/one'));
       await page.waitForTimeout(1000);
       expect(await page.$text('[data-test-id="name"]')).toBe('Page One');
       expect(await page.$text('[data-test-id="time"]')).toBe('1');
@@ -432,7 +507,11 @@ describe.each([false, true])('loader', hasBasename => {
       const FULL_URL = '/context/redirect/combo/params?query=1';
 
       it('should support redirect chain in CSR', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.waitForSelector('#index-content');
         await page.goto(
           ctx.url('/context/redirect', { target: '/context/redirect/combo/a' })
@@ -448,7 +527,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support params and query in CSR', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.waitForSelector('#index-content');
         await page.goto(ctx.url('/context/redirect', { target: FULL_URL }));
         await page.waitForSelector('#url-data');
@@ -458,7 +541,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support third-party site in CSR', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.goto(
           ctx.url('/context/redirect', { target: THIRD_PARTY_SITE })
         );
@@ -466,7 +553,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support redirect chain in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
 
         // wait for page ready
         await page.waitForSelector('#index-content');
@@ -484,7 +575,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support params and query url in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', { target: FULL_URL });
         await page.waitForSelector('#url-data');
         expect(await page.$text('#url-data')).toBe(
@@ -493,7 +588,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it.skip('should support relative url in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: 'context/redirect/combo/c'
         });
@@ -502,7 +601,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       it('should support third-party site in client route navigation', async () => {
-        page = await ctx.browser.page(ctx.url('/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/'));
         await page.shuvi.navigate('/context/redirect', {
           target: THIRD_PARTY_SITE
         });
@@ -513,14 +616,22 @@ describe.each([false, true])('loader', hasBasename => {
 
     describe('loaders should run properly when navigation is triggered', () => {
       test(' when initial rendering, all loaders should run', async () => {
-        page = await ctx.browser.page(ctx.url('/loader-run/foo/a'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/loader-run/foo/a'));
         expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
         expect(await page.$text('[data-test-id="time-foo"]')).toBe('0');
         expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('0');
       });
 
       test('when matching a new route, its loader and all its children loaders should run', async () => {
-        page = await ctx.browser.page(ctx.url('/loader-run/'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/loader-run/'));
         expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
         const { texts, dispose } = page.collectBrowserLog();
         await page.shuvi.navigate('/loader-run/foo/a');
@@ -535,7 +646,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       test('when matching a same dynamic route but different params, its loader and all its children loaders should run', async () => {
-        page = await ctx.browser.page(ctx.url('/loader-run/foo/a'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/loader-run/foo/a'));
         expect(await page.$text('[data-test-id="time-loader-run"]')).toBe('0');
         expect(await page.$text('[data-test-id="time-foo"]')).toBe('0');
         expect(await page.$text('[data-test-id="param"]')).toBe('foo');
@@ -553,7 +668,11 @@ describe.each([false, true])('loader', hasBasename => {
       });
 
       test('the loader of last nested route should always run', async () => {
-        page = await ctx.browser.page(ctx.url('/loader-run/foo/a'));
+        page = await ctx.browser.page();
+        page.setExtraHTTPHeaders({
+          '__shuvi-basename': hasBasename ? '/base' : '/'
+        });
+        await page.goto(ctx.url('/loader-run/foo/a'));
         expect(await page.$text('[data-test-id="time-foo-a"]')).toBe('0');
         const { texts, dispose } = page.collectBrowserLog();
         await page.shuvi.navigate('/loader-run/foo/a', { sss: 123 });
@@ -567,7 +686,11 @@ describe.each([false, true])('loader', hasBasename => {
   test('loaders should be called in parallel and block navigation', async () => {
     buildFixture('loader', { ssr: true, ...baseShuviConfig });
     const ctx = await serveFixture('loader', { ssr: true, ...baseShuviConfig });
-    const page = await ctx.browser.page(ctx.url('/parent'));
+    const page = await ctx.browser.page();
+    page.setExtraHTTPHeaders({
+      '__shuvi-basename': hasBasename ? '/base' : '/'
+    });
+    page.goto(ctx.url('/parent'));
     const { texts, dispose } = page.collectBrowserLog();
     await page.shuvi.navigate('/parent/foo/a');
     await page.waitForTimeout(1000);
