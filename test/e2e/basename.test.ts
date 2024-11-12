@@ -105,7 +105,7 @@ describe('Basename Support', () => {
     });
   });
 
-  test.only(`concurrent requests with different basename`, async () => {
+  test(`concurrent requests with different basename`, async () => {
     ctx = await devFixture('basename', {
       ssr: true,
       plugins: ['./plugin']
