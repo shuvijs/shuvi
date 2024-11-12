@@ -13,7 +13,7 @@ describe.each([false, true])('loader', hasBasename => {
   let ctx: AppCtx;
   let page: Page;
   const baseShuviConfig: ShuviConfig = {
-    plugins: [['./plugin', { basename: hasBasename ? '/base' : '/' }]]
+    plugins: ['./plugin']
   };
 
   const getUrl = (path: string) => {
@@ -24,7 +24,7 @@ describe.each([false, true])('loader', hasBasename => {
     }
   };
 
-  describe('ssr = true', () => {
+  describe(`ssr = true [hasBasename=${hasBasename}]`, () => {
     beforeAll(async () => {
       ctx = await devFixture('loader', { ssr: true, ...baseShuviConfig });
     });
@@ -385,10 +385,10 @@ describe.each([false, true])('loader', hasBasename => {
         page.setExtraHTTPHeaders({
           '__shuvi-basename': hasBasename ? '/base' : '/'
         });
-        await page.goto(
+        const res = await page.goto(
           ctx.url('/context/error', { message: 'random_sdfsf_test_error' })
         );
-        expect(page.statusCode).toBe(500);
+        expect(res?.status()).toBe(500);
         expect(await page.$text('div')).toMatch('random_sdfsf_test_error');
       });
 
@@ -411,13 +411,13 @@ describe.each([false, true])('loader', hasBasename => {
       page.setExtraHTTPHeaders({
         '__shuvi-basename': hasBasename ? '/base' : '/'
       });
-      await page.goto(ctx.url('/fatal-error'));
-      expect(page.statusCode).toBe(404);
+      const res = await page.goto(ctx.url('/fatal-error'));
+      expect(res?.status()).toBe(404);
       expect(await page.$('[data-test-id="root-layout"]')).toBe(null);
     });
   });
 
-  describe('ssr = false', () => {
+  describe(`ssr = false [hasBasename=${hasBasename}]`, () => {
     beforeAll(async () => {
       buildFixture('loader', {
         ssr: false,
@@ -686,11 +686,11 @@ describe.each([false, true])('loader', hasBasename => {
   test('loaders should be called in parallel and block navigation', async () => {
     buildFixture('loader', { ssr: true, ...baseShuviConfig });
     const ctx = await serveFixture('loader', { ssr: true, ...baseShuviConfig });
-    const page = await ctx.browser.page();
+    page = await ctx.browser.page();
     page.setExtraHTTPHeaders({
       '__shuvi-basename': hasBasename ? '/base' : '/'
     });
-    page.goto(ctx.url('/parent'));
+    await page.goto(ctx.url('/parent'));
     const { texts, dispose } = page.collectBrowserLog();
     await page.shuvi.navigate('/parent/foo/a');
     await page.waitForTimeout(1000);

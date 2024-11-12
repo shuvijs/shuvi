@@ -1,5 +1,10 @@
 {
-  "name": "fixture-loader", 
+  "name": "fixture-loader",
+  "scripts": {
+    "dev": "shuvi dev",
+    "build": "shuvi build",
+    "start": "shuvi serve"
+  },
   "dependencies": {
     "shuvi": "workspace:*"
   },
