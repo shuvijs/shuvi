@@ -13,7 +13,6 @@ export * from './pluginTypes';
 
 export interface IServerPluginContext extends IPluginContext {
   serverPluginRunner: PluginManager['runner'];
-  appConfig: AppConfig;
 }
 
 export type PluginManager = ReturnType<typeof getManager>;
@@ -22,7 +21,7 @@ export type PluginRunner = PluginManager['runner'];
 
 const listen = createAsyncParallelHook<{ port: number; hostname?: string }>();
 
-type AppConfig = {
+export type IAppConfigByRequest = {
   router: {
     basename: string;
   };
@@ -70,13 +69,7 @@ export const initServerPlugins = (
 ): IServerPluginContext => {
   const serverContext = Object.assign(
     {
-      serverPluginRunner: manager.runner,
-      // default appConfig, can be override by `getAppConfig` hook
-      appConfig: {
-        router: {
-          basename: ''
-        }
-      }
+      serverPluginRunner: manager.runner
     },
     pluginContext
   );

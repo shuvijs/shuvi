@@ -1,9 +1,14 @@
 import { matchRoutes } from '@shuvi/router';
 import { normalizeBase } from '@shuvi/router/lib/utils';
 import resources from '@shuvi/service/lib/resources';
-import { ShuviRequestHandler, IServerPluginContext } from '@shuvi/service';
+import {
+  ShuviRequestHandler,
+  IServerPluginContext,
+  ShuviRequest
+} from '@shuvi/service';
 import { DevMiddleware } from '@shuvi/service/lib/server/middlewares/dev';
 import ModuleReplacePlugin from '@shuvi/toolpack/lib/webpack/plugins/module-replace-plugin';
+import AppConfigManager from '../setup-app-config/AppConfigManager';
 
 function acceptsHtml(
   header: string,
@@ -77,7 +82,7 @@ export default class OnDemandRouteManager {
 
       let err = null;
       try {
-        await this.ensureRoutes(req.pathname || '/');
+        await this.ensureRoutes(req.pathname || '/', req);
       } catch (error) {
         err = error;
       }
@@ -85,10 +90,8 @@ export default class OnDemandRouteManager {
     };
   }
 
-  async ensureRoutes(pathname: string): Promise<void> {
-    const {
-      router: { basename }
-    } = this._serverPluginContext.appConfig;
+  async ensureRoutes(pathname: string, req: ShuviRequest): Promise<void> {
+    const { basename } = AppConfigManager.getAppConfig(req).router;
     const matchedRoutes =
       matchRoutes(
         resources.server.pageRoutes,

@@ -3,5 +3,5 @@ export default {
   router: {
     history: 'browser'
   },
-  plugins: [['./plugin', { basename: '/base-name' }]]
+  plugins: [['./plugin']]
 };

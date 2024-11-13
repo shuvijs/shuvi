@@ -1,5 +1,10 @@
 {
   "name": "fixture-basename",
+  "scripts": {
+    "dev": "shuvi dev",
+    "build": "shuvi build",
+    "start": "shuvi serve"
+  },
   "dependencies": {
     "shuvi": "workspace:*"
   }

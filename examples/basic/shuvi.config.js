@@ -1,3 +1,4 @@
 export default {
-  publicPath: '/'
+  publicPath: '/',
+  plugins: [['./plugin']]
 };

@@ -1,13 +1,12 @@
 import { getPublicRuntimeConfig } from '@shuvi/platform-shared/shared/shuvi-singleton-runtimeConfig';
 import { BaseRenderer, AppData } from './base';
 import { IRenderViewOptions, IHtmlDocument } from './types';
+import AppConfigManager from '../../../setup-app-config/AppConfigManager';
 
 export class SpaRenderer extends BaseRenderer {
   renderDocument({ req, app }: IRenderViewOptions) {
     const assets = this._getMainAssetTags(req);
-    const {
-      router: { basename }
-    } = this._serverPluginContext.appConfig;
+    const { basename } = AppConfigManager.getAppConfig(req).router;
     const appData: AppData = {
       ssr: false,
       pageData: {},
