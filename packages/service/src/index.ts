@@ -17,6 +17,7 @@ export {
   ServerPluginConstructor,
   ServerPluginInstance,
   IServerMiddleware,
+  IAppConfigByRequest,
   createShuviServer,
   createServerPlugin,
   createServerPluginBefore,

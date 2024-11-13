@@ -1,4 +1,5 @@
 import { IServerPluginContext, ShuviRequestHandler } from '@shuvi/service';
+import AppConfigManager from './AppConfigManager';
 
 export const getSetupAppConfigMiddleware = (
   context: IServerPluginContext
@@ -11,7 +12,7 @@ export const getSetupAppConfigMiddleware = (
           '[ServerPlugin Hook getAppConfig] appConfig.router.basename must be a string'
         );
       }
-      context.appConfig = appConfig;
+      AppConfigManager.setAppConfig(req, appConfig);
     }
     next();
   };

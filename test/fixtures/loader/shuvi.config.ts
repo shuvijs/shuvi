@@ -4,5 +4,5 @@ export default defineConfig({
   router: {
     history: 'browser'
   },
-  plugins: [['./plugin', { basename: '/base' }]]
+  plugins: ['./plugin']
 });
