@@ -1,3 +1,12 @@
+## [1.0.61](https://github.com/shuvijs/shuvi/compare/v1.0.60...v1.0.61) (2024-11-13)
+
+
+### Bug Fixes
+
+* appConfig data race condition during concurrent requests ([c04d158](https://github.com/shuvijs/shuvi/commit/c04d1583ed858bc8e187f4f3ce7ff638444f1555))
+
+
+
 ## [1.0.60](https://github.com/shuvijs/shuvi/compare/v1.0.59...v1.0.60) (2024-09-18)
 
 
