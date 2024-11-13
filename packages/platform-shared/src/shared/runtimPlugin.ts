@@ -14,7 +14,7 @@ import { createPluginCreator } from '@shuvi/shared/plugins';
 import { IAppContext } from './applicationTypes';
 import { IRouter } from './routerTypes';
 
-export type AppComponent = unknown;
+export type AppComponent = any;
 export type AppContextCtx = {
   router: IRouter;
   req?: ShuviRequest;
@@ -75,7 +75,7 @@ export type IAppModule = {
 
 type SerializedPluginOptions = string;
 
-export type IRuntimePluginOptions = Record<string, unknown>;
+export type IRuntimePluginOptions = Record<string, any>;
 
 export type IRuntimePluginWithOptions = (
   ...params: any[]
