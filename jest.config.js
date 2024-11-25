@@ -16,7 +16,7 @@ module.exports = {
           target: 'es6',
           lib: ['esnext'],
           module: 'commonjs',
-          moduleResolution: 'nodenext',
+          moduleResolution: 'bundler',
           skipLibCheck: true,
           esModuleInterop: true,
           noUnusedLocals: false

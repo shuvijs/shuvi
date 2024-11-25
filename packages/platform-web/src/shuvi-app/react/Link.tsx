@@ -10,6 +10,7 @@ import {
   getFilesOfRoute
 } from '@shuvi/platform-shared/shared';
 import useIntersection from './utils/useIntersection';
+import { awaitPageLoadAndIdle } from '@shuvi/utils/idleCallback';
 
 const ABSOLUTE_URL_REGEX = /^[a-zA-Z][a-zA-Z\d+\-.]*?:/;
 const prefetched: { [cacheKey: string]: boolean } = {};
@@ -58,7 +59,10 @@ async function prefetchFn(router: IRouter, to: PathRecord): Promise<void> {
   const canPrefetch: boolean = hasSupportPrefetch();
   await Promise.all(
     canPrefetch
-      ? files.js.map(({ url, id }) => prefetchViaDom(url, id, 'script'))
+      ? files.js.map(async ({ url, id }) => {
+          await awaitPageLoadAndIdle({ remainingTime: 49, timeout: 10 * 1000 });
+          await prefetchViaDom(url, id, 'script');
+        })
       : []
   );
 }
@@ -79,7 +83,12 @@ export const Link = function LinkWithPrefetch({
   const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
   const { router } = React.useContext(RouterContext);
   const setRef = React.useCallback(
-    (el: Element) => {
+    async (el: Element) => {
+      /**
+       * Lazy prefetching to avoid negative performance impact for the first page.
+       */
+      await awaitPageLoadAndIdle({ remainingTime: 49, timeout: 10 * 1000 });
+
       // Before the link getting observed, check if visible state need to be reset
       if (isHrefValid && previousHref.current !== to) {
         resetVisible();
