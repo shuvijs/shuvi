@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { requestIdleCallback, cancelIdleCallback } from './requestIdleCallback';
+import {
+  requestIdleCallback,
+  cancelIdleCallback
+} from '@shuvi/utils/idleCallback';
 
 type UseIntersection = {
   rootRef?: React.RefObject<HTMLElement>;

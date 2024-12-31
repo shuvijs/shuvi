@@ -1,7 +1,6 @@
 import {
   AppCtx,
   Page,
-  devFixture,
   buildFixture,
   serveFixture,
   ShuviConfig
@@ -26,7 +25,14 @@ describe.each([false, true])('loader', hasBasename => {
 
   describe(`ssr = true [hasBasename=${hasBasename}]`, () => {
     beforeAll(async () => {
-      ctx = await devFixture('loader', { ssr: true, ...baseShuviConfig });
+      buildFixture('loader', {
+        ssr: true,
+        ...baseShuviConfig
+      });
+      ctx = await serveFixture('loader', {
+        ssr: true,
+        ...baseShuviConfig
+      });
     });
     afterAll(async () => {
       await ctx.close();
