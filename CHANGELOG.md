@@ -1,3 +1,12 @@
+## [1.0.62](https://github.com/shuvijs/shuvi/compare/v1.0.61...v1.0.62) (2025-01-06)
+
+
+### Performance Improvements
+
+* lazy prefetching to avoid negative performance impact for the first page ([#602](https://github.com/shuvijs/shuvi/issues/602)) ([bcf880f](https://github.com/shuvijs/shuvi/commit/bcf880fe18c7025665cff85de6cd0a3bd9d94407))
+
+
+
 ## [1.0.61](https://github.com/shuvijs/shuvi/compare/v1.0.60...v1.0.61) (2024-11-13)
 
 

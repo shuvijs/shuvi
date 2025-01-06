@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/hook",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "license": "MIT",
   "main": "lib/index.js",
   "module": "esm/index.js",
