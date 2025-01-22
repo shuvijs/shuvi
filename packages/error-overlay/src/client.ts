@@ -73,7 +73,7 @@ function onUnhandledRejection(ev: PromiseRejectionEvent) {
   update();
 }
 
-function startReportingRuntimeErrors({ onError }: { onError: () => void }) {
+function startReportingRuntimeErrors({ onError }: { onError: (ev: ErrorEvent | PromiseRejectionEvent) => void }) {
   if (isRegistered) {
     return;
   }
@@ -86,11 +86,11 @@ function startReportingRuntimeErrors({ onError }: { onError: () => void }) {
   } catch {}
 
   window.addEventListener('error', ev => {
-    onError();
+    onError(ev);
     onUnhandledError(ev);
   });
   window.addEventListener('unhandledrejection', ev => {
-    onError();
+    onError(ev);
     onUnhandledRejection(ev);
   });
 }
