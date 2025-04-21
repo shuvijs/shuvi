@@ -11,7 +11,7 @@ function getSocketProtocol(assetPublicPath: string): string {
     protocol = new URL(assetPublicPath).protocol;
   } catch (_) {}
 
-  return protocol === 'http:' ? 'ws' : 'wss';
+  return protocol === 'https:' ? 'wss' : 'ws';
 }
 
 export function addMessageListener(cb: (event: any) => void) {
@@ -51,14 +51,17 @@ export function connectHMR(options: {
 
   function init() {
     if (source) source.close();
-
-    const { hostname, port } = window.location;
+    let devServer = document?.documentElement?.getAttribute?.('dev-server');
+    if (!devServer) {
+      const { hostname, port } = window.location;
+      devServer = `${hostname}:${port}`;
+    }
     const protocol = getSocketProtocol(options.assetPublicPath);
     const assetPublicPath = options.assetPublicPath
       .replace(/^\/+/, '')
       .replace(/\/+$/, '');
 
-    let url = `${protocol}://${hostname}:${port}${
+    let url = `${protocol}://${devServer}${
       assetPublicPath ? `/${assetPublicPath}` : ''
     }`;
 

@@ -145,6 +145,10 @@ function applyStyles(element: HTMLElement, styles: Object) {
 }
 
 function update() {
+  // chrome-extension does not support inline scripts
+  if (window.location.protocol === 'chrome-extension:') {
+    return;
+  }
   // Loading iframe can be either sync or async depending on the browser.
   if (isLoadingIframe) {
     // Iframe is loading.
