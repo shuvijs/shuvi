@@ -39,7 +39,7 @@ async function devAction(dir: string, options: DevOptions) {
   const { host, port } = options;
   const configFile = options.config && path.resolve(cwd, options.config);
   const config = await getConfigFromCli(options);
-  
+
   process.env.DEV_SERVER = `${host}:${port}`;
   const api = await initShuvi({
     cwd,
