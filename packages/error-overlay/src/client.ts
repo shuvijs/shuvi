@@ -145,8 +145,10 @@ function applyStyles(element: HTMLElement, styles: Object) {
 }
 
 function update() {
-  // chrome-extension does not support inline scripts
-  if (window.location.protocol === 'chrome-extension:') {
+  // extensions does not support inline scripts, error overlay will be blank and block interaction in extensions
+  // so we need to remove it
+  // protocols list of extensions: moz-extension|chrome-extension|extension|safari-extension|safari-web-extension
+  if (window.location.protocol.endsWith('extension:')) {
     return;
   }
   // Loading iframe can be either sync or async depending on the browser.

@@ -1,3 +1,5 @@
+import { getAppData } from '@shuvi/platform-shared/shared';
+
 let source: any;
 const eventCallbacks: ((event: any) => void)[] = [];
 let lastActivity = Date.now();
@@ -10,7 +12,7 @@ function getSocketProtocol(assetPublicPath: string): string {
     // assetPublicPath is a url
     protocol = new URL(assetPublicPath).protocol;
   } catch (_) {}
-
+  // use ws by default
   return protocol === 'https:' ? 'wss' : 'ws';
 }
 
@@ -51,8 +53,10 @@ export function connectHMR(options: {
 
   function init() {
     if (source) source.close();
-    let devServer = document?.documentElement?.getAttribute?.('dev-server');
+
+    let { devServer } = getAppData();
     if (!devServer) {
+      // fallback case
       const { hostname, port } = window.location;
       devServer = `${hostname}:${port}`;
     }

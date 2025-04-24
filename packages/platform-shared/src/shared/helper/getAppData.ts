@@ -15,6 +15,8 @@ export type IAppData<Data = {}, appState = any> = {
   };
   filesByRoutId: Record<string, string[]>;
   publicPath: string;
+  // devServer is only available in dev mode
+  devServer?: string;
 } & {
   [K in keyof Data]: Data[K];
 };
