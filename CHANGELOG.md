@@ -1,3 +1,12 @@
+## [1.0.63](https://github.com/shuvijs/shuvi/compare/v1.0.62...v1.0.63) (2025-04-24)
+
+
+### Features
+
+* dev mode support Chrome Extension ([#604](https://github.com/shuvijs/shuvi/issues/604)) ([d7d4fb9](https://github.com/shuvijs/shuvi/commit/d7d4fb9611891c6826650c03df615fcc19e7a6a2))
+
+
+
 ## [1.0.62](https://github.com/shuvijs/shuvi/compare/v1.0.61...v1.0.62) (2025-01-06)
 
 
