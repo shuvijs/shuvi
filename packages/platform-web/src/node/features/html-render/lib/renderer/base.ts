@@ -123,7 +123,9 @@ export abstract class BaseRenderer {
     const data = JSON.stringify({
       ...appData,
       filesByRoutId: generateFilesByRoutId(resources.clientManifest, routes),
-      publicPath: this._serverPluginContext.assetPublicPath
+      publicPath: this._serverPluginContext.assetPublicPath,
+      // process.env.DEV_SERVER is undefined in production, and the key devServer will be removed
+      devServer: process.env.DEV_SERVER
     });
     return tag(
       'script',
