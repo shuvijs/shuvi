@@ -218,7 +218,7 @@ jobs:
             turbo-${{ github.job }}-canary-${{ matrix.settings.target }}-${{ needs.build.outputs.weekNum }}-
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         if: ${{ !matrix.settings.docker }}
         with:
           node-version: 16
