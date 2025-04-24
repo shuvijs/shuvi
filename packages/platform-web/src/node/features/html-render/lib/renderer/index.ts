@@ -50,10 +50,6 @@ function addEssentialTagsIfMissing(document: IHtmlDocument): IHtmlDocument {
     );
   }
 
-  if (process.env.DEV_SERVER) {
-    document.htmlAttrs['dev-server'] = process.env.DEV_SERVER;
-  }
-
   return document;
 }
 
