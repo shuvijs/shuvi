@@ -8,7 +8,7 @@ import { Loader } from './loader';
 export type Loaders = Record<string, Loader>;
 
 export interface IAppContext extends CustomAppContext {
-  [x: string]: unknown;
+  [x: string]: any;
 }
 
 export type IRerenderConfig = {

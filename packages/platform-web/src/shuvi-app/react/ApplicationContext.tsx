@@ -16,6 +16,6 @@ export function AppProvider({
   );
 }
 
-export function useApp() {
-  return React.useContext(ApplicationContext);
+export function useAppContext() {
+  return React.useContext(ApplicationContext).context;
 }

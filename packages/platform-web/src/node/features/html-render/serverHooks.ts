@@ -36,7 +36,7 @@ type AppConfigCtx = {
 const getPageData = createAsyncParallelHook<
   void,
   IAppContext,
-  Record<string, unknown>
+  Record<string, any>
 >();
 const handlePageRequest = createAsyncSeriesWaterfallHook<IHandlePageRequest>();
 const modifyHtml = createAsyncSeriesHook<IHtmlDocument, ModifyHtmlContext>();
