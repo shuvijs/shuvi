@@ -65,7 +65,12 @@ export default function connect(options: {
   assetPublicPath: string;
 }): HotDevClient {
   startReportingRuntimeErrors({
-    onError: function () {
+    onError: function (ev: ErrorEvent | PromiseRejectionEvent) {
+      const errorOrReason = ev?.error || ev?.reason;
+      if (!errorOrReason || !(errorOrReason instanceof Error) || typeof errorOrReason.stack !== 'string') {
+        // A non-error was thrown, we don't have anything to show.
+        return;
+      }
       hadRuntimeError = true;
     }
   });
