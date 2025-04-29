@@ -110,6 +110,7 @@ export interface IRouter<
 
   listen: (listener: Listener) => RemoveListenerCallback;
   beforeEach: (listener: NavigationGuardHook) => RemoveListenerCallback;
+  beforeLoader: (listener: NavigationGuardHook) => RemoveListenerCallback;
   beforeResolve: (listener: NavigationGuardHook) => RemoveListenerCallback;
   afterEach: (listener: NavigationResolvedHook) => RemoveListenerCallback;
 
