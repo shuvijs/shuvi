@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Development Workflow
+
+## Prerequisites
+
+- **Node.js**: >=16
+- **pnpm**: ^8.9.2
+- **Rust/Cargo**: Required for SWC compiler (install with `curl https://sh.rustup.rs -sSf | sh`)
+
+## Setup Instructions
+
+1. **Install dependencies**: `pnpm i`
+2. **Build packages**: `pnpm build`
+3. **Bootstrap monorepo**: `pnpm bootstrap` (runs automatically after install)
+
+## Common Commands
+
+### Development
+- `pnpm dev` - Start all packages in development mode (parallel)
+- `pnpm shuvi` - Run the Shuvi CLI directly
+- `pnpm shuvi dev <directory>` - Serve a specific directory (e.g., `pnpm shuvi dev test/fixtures/basic`)
+
+### Building & Testing
+- `pnpm build` - Build all packages using Turborepo
+- `pnpm test` - Run all tests (unit + e2e)
+- `pnpm test:unit` - Run unit tests only
+- `pnpm test:e2e` - Run e2e tests only
+- `pnpm jest` - Run Jest directly
+
+### Testing Variants
+- `pnpm test:e2e:express` - Test with Express server
+- `pnpm test:e2e:koa` - Test with Koa server
+
+### Maintenance
+- `pnpm clean` - Clean all node_modules and build artifacts
+- `pnpm release` - Release packages
+- `pnpm changelog` - Generate changelog
+
+## Git Workflow
+
+- **Pre-commit hooks**: Configured with Husky (see [.husky/](mdc:.husky))
+- **Lint-staged**: Automatic formatting on commit
+- **Changesets**: Use `pnpm changeset` for version management
+
+## Documentation
+
+- **Contributing**: See [CONTRIBUTING.md](mdc:CONTRIBUTING.md)
+- **Code Style**: See [CODESTYLE.md](mdc:CODESTYLE.md)
+- **Prettier Config**: [.prettierrc](mdc:.prettierrc)
