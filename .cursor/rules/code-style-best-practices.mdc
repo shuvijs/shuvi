@@ -1,0 +1,85 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Code Style & Best Practices
+
+## Code Formatting
+
+### Prettier Configuration
+- **Config File**: [.prettierrc](mdc:.prettierrc)
+- **Auto-formatting**: Enabled via lint-staged on commit
+- **Supported Files**: `.js`, `.ts`, `.tsx` files
+
+### Editor Configuration
+- **EditorConfig**: [.editorconfig](mdc:.editorconfig) for consistent editor settings
+- **Line Endings**: LF (Unix-style)
+- **Indentation**: 2 spaces
+- **Trim Trailing Whitespace**: Enabled
+
+## TypeScript Configuration
+
+### Base Configuration
+- **Main Config**: [tsconfig.json](mdc:tsconfig.json)
+- **Base Config**: [tsconfig.base.json](mdc:tsconfig.base.json)
+- **Build Configs**: 
+  - [tsconfig.build.cjs.json](mdc:tsconfig.build.cjs.json) - CommonJS builds
+  - [tsconfig.build.esm.json](mdc:tsconfig.build.esm.json) - ES Module builds
+
+### TypeScript Version
+- **Current**: TypeScript 5.5.2
+- **Strict Mode**: Enabled for type safety
+
+## Linting
+
+### ESLint Packages
+- **Config Package**: [packages/eslint-config-shuvi/](mdc:packages/eslint-config-shuvi)
+- **Plugin Package**: [packages/eslint-plugin-shuvi/](mdc:packages/eslint-plugin-shuvi)
+
+## Git Workflow
+
+### Pre-commit Hooks
+Configured via [.husky/](mdc:.husky) with lint-staged:
+- **JavaScript files**: Prettier formatting
+- **TypeScript files**: Prettier formatting with TypeScript parser
+
+### Commit Guidelines
+- Use conventional commit format for changelog generation
+- See [CONTRIBUTING.md](mdc:CONTRIBUTING.md) for detailed guidelines
+
+## Package Management
+
+### Dependencies
+- **Runtime Dependencies**: Keep minimal in individual packages
+- **Peer Dependencies**: Use for React, TypeScript, etc.
+- **Dev Dependencies**: Centralized in root [package.json](mdc:package.json)
+
+### Package Configuration
+- **Package Manager**: pnpm with specific version (8.9.2+)
+- **Workspace**: Defined in [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml)
+- **Node Version**: >=16 required
+
+## Build System
+
+### Turborepo
+- **Config**: [turbo.json](mdc:turbo.json)
+- **Parallel Builds**: Enabled for performance
+- **Build Caching**: Automatic dependency-based caching
+
+### Compilation Targets
+- **CommonJS**: For Node.js compatibility
+- **ES Modules**: For modern bundlers
+- **SWC**: Rust-based compilation for performance
+
+## Documentation Standards
+
+### Code Documentation
+- **Contributing Guide**: [CONTRIBUTING.md](mdc:CONTRIBUTING.md)
+- **Code Style Guide**: [CODESTYLE.md](mdc:CODESTYLE.md)
+- **API Docs**: Generated with TypeDoc
+
+### Comments & Types
+- Use JSDoc comments for public APIs
+- Prefer explicit types over `any`
+- Document complex logic and business rules

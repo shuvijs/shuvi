@@ -1,0 +1,34 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Shuvi Meta-Framework Overview
+
+Shuvi is a meta-framework similar to Next.js that helps create applications quickly with features like automatic transpilation, hot reloading, code splitting, and server-side rendering.
+
+## Project Structure
+
+This is a **monorepo** managed with:
+- **Package Manager**: pnpm (v8.9.2+)
+- **Build Tool**: Turborepo (see [turbo.json](mdc:turbo.json))
+- **Testing**: Jest (see [jest.config.js](mdc:jest.config.js))
+- **TypeScript Config**: Multiple configs for different build targets (see [tsconfig.json](mdc:tsconfig.json), [tsconfig.base.json](mdc:tsconfig.base.json))
+
+## Core Philosophy
+
+**"Write less code, Let shuvi do more"** - The framework aims to minimize boilerplate and maximize developer productivity.
+
+## Key Features
+
+- Automatic transpilation and bundling (webpack + babel)
+- On-demand transpilation with hot code reloading
+- Code splitting for every page
+- Server-Side Rendering (SSR)
+- Support for both Express and Koa servers
+
+## Main Entry Points
+
+- **CLI Tool**: [packages/shuvi/bin/cli.js](mdc:packages/shuvi/bin/cli.js)
+- **Root Package**: [package.json](mdc:package.json)
+- **Workspace Config**: [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml)
