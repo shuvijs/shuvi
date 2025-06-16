@@ -1,6 +1,9 @@
 const path = require('path');
 const fs = require('fs');
-const baseRspackChain = require('./baseRspackChain');
+// const baseRspackChain = require('./baseRspackChain');
+const {
+  baseRspackChain
+} = require('@shuvi/toolpack/lib/webpack/config/base.rspack');
 
 const chain = baseRspackChain({
   dev: true,
