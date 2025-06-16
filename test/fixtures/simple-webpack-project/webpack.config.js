@@ -18,7 +18,7 @@ const chain = baseWebpackChain({
 });
 
 fs.writeFileSync(
-  path.resolve(__dirname, `webpack.raw.js`),
+  path.resolve(__dirname, `.webpack.raw.js`),
   `module.export = ${chain.toString()}`,
   'utf8'
 );
