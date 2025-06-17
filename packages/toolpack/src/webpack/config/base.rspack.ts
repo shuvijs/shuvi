@@ -87,11 +87,37 @@ export function baseRspackChain({
     webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
     hashFunction: 'xxhash64',
     hashDigestLength: 16
+    /**
+     * @original strictModuleExceptionHandling: true,
+     * Rspack 暫不支持 strictModuleExceptionHandling
+     */
+    // strictModuleExceptionHandling: true,
+    // crossOriginLoading: crossOrigin,
   });
 
   config.optimization.merge({
     emitOnErrors: !dev,
+    /**
+     * @original checkWasmTypes: false,
+     * Rspack 暫不支持 checkWasmTypes
+     */
+    // checkWasmTypes: false,
+    /**
+     * @original nodeEnv: false,
+     * Rspack 暫不支持 nodeEnv
+     */
+    // nodeEnv: false,
+    /**
+     * @original runtimeChunk: undefined,
+     * Rspack 暫不支持 runtimeChunk
+     */
+    // runtimeChunk: undefined,
     minimize: !dev
+    /**
+     * @original realContentHash: false,
+     * Rspack 暫不支持 realContentHash
+     */
+    // realContentHash: false
     // Rspack 內建 terser/css-minimizer
   });
 
@@ -142,6 +168,15 @@ export function baseRspackChain({
         '../loaders/route-component-loader'
       )
     }
+    /**
+     * @original Webpack 支持 .use('file-loader')
+     * Rspack 暫不支持 file-loader
+     */
+    // .use('file-loader')
+    // .loader(require.resolve('file-loader'))
+    // .options({
+    //   name: 'static/media/[name].[hash:8].[ext]'
+    // });
   });
 
   config.module.set('strictExportPresence', true);
@@ -246,6 +281,14 @@ export function baseRspackChain({
         }
       });
     }
+    /**
+     * @todo JsConfigPathsPlugin: webpack 版本支持 config.resolve.plugin('jsconfig-paths-plugin').use(JsConfigPathsPlugin, ...)
+     * Rspack 版本暫未支持，待補齊
+     */
+    // config.resolve.plugin('jsconfig-paths-plugin').use(JsConfigPathsPlugin, [
+    //   jsConfig?.compilerOptions.paths || {},
+    //   jsConfig?.resolvedBaseUrl || projectRoot
+    // ]);
   }
 
   if (dev) {
@@ -256,8 +299,17 @@ export function baseRspackChain({
     config.set('infrastructureLogging', {
       level: 'none'
     });
-    // FixWatchingPlugin 如需支持，需自行實現 Rspack 版本
+    /**
+     * @todo FixWatchingPlugin: webpack 版本支持 config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin)
+     * Rspack 版本暫未支持，待補齊
+     */
+    // config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
   } else {
+    /**
+     * @todo HashedModuleIdsPlugin: webpack 版本支持 config.plugin('private/hashed-moduleids-plugin').use(webpack.ids.HashedModuleIdsPlugin)
+     * Rspack 版本暫未支持，待補齊
+     */
+    // config.plugin('private/hashed-moduleids-plugin').use(webpack.ids.HashedModuleIdsPlugin);
     // Rspack 內建 module id hash
   }
 
