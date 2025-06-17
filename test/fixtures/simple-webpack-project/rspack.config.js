@@ -1,11 +1,13 @@
 const path = require('path');
 const fs = require('fs');
-// const baseRspackChain = require('./baseRspackChain');
+// const {
+//   baseRspackChain
+// } = require('@shuvi/toolpack/lib/webpack/config/base.rspack');
 const {
-  baseRspackChain
-} = require('@shuvi/toolpack/lib/webpack/config/base.rspack');
+  createBrowserRspackChain
+} = require('@shuvi/toolpack/lib/webpack/config/browser.rspack');
 
-const chain = baseRspackChain({
+const chain = createBrowserRspackChain({
   dev: true,
   name: 'simple-webpack-project',
   projectRoot: __dirname,

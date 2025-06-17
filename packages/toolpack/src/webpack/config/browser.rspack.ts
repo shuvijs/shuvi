@@ -1,10 +1,15 @@
 import * as crypto from 'crypto';
-import webpack from 'webpack';
+import * as rspack from '@rspack/core';
 import * as path from 'path';
 import { resolve } from '@shuvi/utils/resolve';
-import type { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
-import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
-import { withStyle } from './parts/style';
+import type { TsCheckerRspackPluginOptions } from 'ts-checker-rspack-plugin/lib/plugin-options';
+import { BaseOptions, baseRspackChain } from './base.rspack';
+import RspackChain from 'rspack-chain';
+/**
+ * @unsupported Rspack does not support style-loader directly.
+ * TODO: Use css-loader and mini-css-extract-plugin when available.
+ */
+// import { withStyle } from './parts/style';
 import {
   splitChunksFilter,
   commonChunkFilename,
@@ -30,9 +35,15 @@ const FRAMEWORK_REACT_MODULES: {
   }
 ];
 
-export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
-  const { projectRoot, cacheDir, jsConfig, dev, publicPath } = options;
-  const chain = baseWebpackChain(options);
+export function createBrowserRspackChain(options: BaseOptions): RspackChain {
+  const {
+    projectRoot,
+    cacheDir,
+    jsConfig,
+    dev,
+    publicPath: _publicPath
+  } = options;
+  const chain = baseRspackChain(options);
   const useTypeScript = !!jsConfig?.useTypeScript;
 
   chain.target('web');
@@ -47,10 +58,16 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
     '.wasm'
   ]);
 
+  /**
+   * @unsupported Rspack does not support ForkTsCheckerWebpackPlugin directly.
+   * TODO: Use ts-checker-rspack-plugin or equivalent when available.
+   */
   if (useTypeScript) {
+    // See migration plan for ts-checker-rspack-plugin
+    // https://github.com/rspack-contrib/ts-checker-rspack-plugin
     chain
-      .plugin('private/fork-ts-checker-webpack-plugin')
-      .use(require.resolve('fork-ts-checker-webpack-plugin'), [
+      .plugin('private/ts-checker-rspack-plugin')
+      .use(require('ts-checker-rspack-plugin'), [
         {
           typescript: {
             configFile: path.join(projectRoot, 'tsconfig.json'),
@@ -72,12 +89,16 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
             error: message => console.error(message)
           },
           formatter: 'codeframe'
-        } as ForkTsCheckerWebpackPluginOptions
+        } as TsCheckerRspackPluginOptions
       ]);
   }
 
   if (dev) {
-    chain.plugin('private/hmr-plugin').use(webpack.HotModuleReplacementPlugin);
+    /**
+     * @unsupported Rspack does not support HotModuleReplacementPlugin directly.
+     * HMR is built-in to Rspack dev server.
+     */
+    // chain.plugin('private/hmr-plugin').use(rspack.HotModuleReplacementPlugin);
     // disable splitChunks at dev mode to prevent preload error
     chain.optimization.splitChunks(false as any);
   } else {
@@ -85,7 +106,7 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
       return crypto
         .createHash('sha1')
         .update(
-          chunks.reduce((acc: string, chunk: webpack.Chunk) => {
+          chunks.reduce((acc: string, chunk: rspack.Chunk) => {
             return acc + chunk.name;
           }, '')
         )
@@ -111,10 +132,10 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
           name: 'framework',
           filename: commonChunkFilename({ dev: false }),
           test(
-            module: webpack.Module,
-            { moduleGraph }: { moduleGraph: webpack.ModuleGraph }
+            module: rspack.Module,
+            { moduleGraph }: { moduleGraph: rspack.ModuleGraph }
           ) {
-            const resource: string | null = module.nameForCondition();
+            const resource = module.nameForCondition();
             if (!resource) {
               return false;
             }
@@ -163,26 +184,30 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
               NODE_MODULES_REGEXP.test(module.nameForCondition() || '')
             );
           },
-          name(module: {
-            type: string;
-            libIdent?: Function;
-            updateHash: (hash: crypto.Hash) => void;
-          }): string {
-            const hash = crypto.createHash('sha1');
-            if (module.type === `css/mini-extract`) {
-              module.updateHash(hash);
-            } else {
-              if (!module.libIdent) {
-                throw new Error(
-                  `Encountered unknown module type: ${module.type}. Please open an issue.`
-                );
-              }
+          /**
+           * @unsupported Rspack does not support libIdent directly.
+           */
+          // name(module: {
+          //   type: string;
+          //   libIdent?: Function;
+          //   updateHash: (hash: crypto.Hash) => void;
+          // }): string {
+          //   const hash = crypto.createHash('sha1');
+          //   if (module.type === `css/mini-extract`) {
+          //     module.updateHash(hash);
+          //   } else {
+          //     if (!module.libIdent) {
+          //       throw new Error(
+          //         `Encountered unknown module type: ${module.type}. Please open an issue.`
+          //       );
+          //     }
 
-              hash.update(module.libIdent({ context: options.projectRoot }));
-            }
+          //     hash.update(module.libIdent({ context: options.projectRoot }));
+          //   }
 
-            return hash.digest('hex').substring(0, 8);
-          },
+          //   return hash.digest('hex').substring(0, 8);
+          // },
+          name: 'lib',
           filename: commonChunkFilename({ dev: false }),
           priority: 30,
           minChunks: 1,
@@ -204,36 +229,45 @@ export function createBrowserWebpackChain(options: BaseOptions): WebpackChain {
     vm: require.resolve('vm-browserify')
   });
 
-  chain.plugin('node-buffer-polyfill').use(webpack.ProvidePlugin, [
+  chain.plugin('node-buffer-polyfill').use(rspack.ProvidePlugin, [
     {
       Buffer: ['buffer', 'Buffer']
     }
   ]);
 
-  chain.plugin('node-process-polyfill').use(webpack.ProvidePlugin, [
+  chain.plugin('node-process-polyfill').use(rspack.ProvidePlugin, [
     {
       process: ['process']
     }
   ]);
 
-  chain.plugin('define').tap(([options]) => [
-    {
-      ...options,
-      __BROWSER__: true,
-      /**
-       * swc.optimizer can't handle `typeof window` correctly for dependencies
-       */
-      'typeof window': JSON.stringify('object'),
-      // prevent errof of destructing process.env
-      'process.env': JSON.stringify('{}')
-    }
-  ]);
-
-  return withStyle(chain, {
-    extractCss: !dev,
-    publicPath,
-    lightningCss: options.lightningCss,
-    filename: 'static/css/[contenthash:8].css',
-    chunkFilename: 'static/css/[contenthash:8].chunk.css'
+  chain.plugin('define').tap((args: any[]) => {
+    const [options = {}] = args;
+    return [
+      {
+        ...options,
+        __BROWSER__: true,
+        /**
+         * swc.optimizer can't handle `typeof window` correctly for dependencies
+         */
+        'typeof window': JSON.stringify('object'),
+        // prevent errof of destructing process.env
+        'process.env': JSON.stringify('{}')
+      }
+    ];
   });
+
+  /**
+   * @unsupported Rspack does not support style-loader directly.
+   * TODO: Use css-loader and mini-css-extract-plugin when available.
+   */
+  // return withStyle(chain, {
+  //   extractCss: !dev,
+  //   publicPath,
+  //   lightningCss: options.lightningCss,
+  //   filename: 'static/css/[contenthash:8].css',
+  //   chunkFilename: 'static/css/[contenthash:8].chunk.css'
+  // })
+
+  return chain;
 }
