@@ -1,11 +1,11 @@
 import invariant from '@shuvi/utils/invariant';
-import { WebpackChain } from '../base';
+import { RspackChain } from '../base.rspack';
 import { ExternalsFunction } from '../../types';
 
-const externalsFunctionMap = new WeakMap<WebpackChain, ExternalsFunction[]>();
+const externalsFunctionMap = new WeakMap<RspackChain, ExternalsFunction[]>();
 
-export const checkWebpackExternals = (webpackChain: WebpackChain) => {
-  let externals = webpackChain.get('externals');
+export const checkRspackExternals = (rspackChain: RspackChain) => {
+  let externals = rspackChain.get('externals');
   invariant(
     !externals ||
       (typeof externals === 'function' &&
@@ -14,7 +14,7 @@ export const checkWebpackExternals = (webpackChain: WebpackChain) => {
   );
 };
 
-const initExternalsHelpers = (webpackChain: WebpackChain) => {
+const initExternalsHelpers = (rspackChain: RspackChain) => {
   const externalFns: ExternalsFunction[] = [];
 
   const defaultExternalsFn: ExternalsFunction = (
@@ -46,31 +46,31 @@ const initExternalsHelpers = (webpackChain: WebpackChain) => {
     }
   };
 
-  let externals = webpackChain.get('externals');
+  let externals = rspackChain.get('externals');
   invariant(
     !externals,
-    `webpackChain externals has been set, initWebpackHelpers can't work as expected.`
+    `rspackChain externals has been set, initExternalsHelpers can't work as expected.`
   );
   if (!externals) {
     externals = defaultExternalsFn;
-    webpackChain.externals(externals);
-    externalsFunctionMap.set(webpackChain, externalFns);
+    rspackChain.externals(externals);
+    externalsFunctionMap.set(rspackChain, externalFns);
   }
 };
 
 export const addExternals = (
-  webpackChain: WebpackChain,
+  rspackChain: RspackChain,
   externalFn: ExternalsFunction
 ) => {
-  let externals = webpackChain.get('externals');
+  let externals = rspackChain.get('externals');
 
   if (!externals) {
-    initExternalsHelpers(webpackChain);
+    initExternalsHelpers(rspackChain);
   } else {
-    checkWebpackExternals(webpackChain);
+    checkRspackExternals(rspackChain);
   }
 
-  const externalFns = externalsFunctionMap.get(webpackChain);
+  const externalFns = externalsFunctionMap.get(rspackChain);
   externalFns!.push(externalFn);
 };
 

@@ -1,11 +1,11 @@
-import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
+import { BaseOptions, baseRspackChain, RspackChain } from './base.rspack';
 import { nodeExternals } from './parts/external';
-import { withStyle } from './parts/style';
-import { addExternals, getDefaultSplitChunksConfig } from './parts/helpers';
+import { withStyle } from './parts/style.rspack';
+import { addExternals } from './parts/helpers.rspack';
 
-export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
+export function createNodeRspackChain(options: BaseOptions): RspackChain {
   const { dev } = options;
-  const chain = baseWebpackChain(options);
+  const chain = baseRspackChain(options);
 
   chain.target('node');
   chain.devtool(dev ? 'cheap-module-source-map' : false);
@@ -19,11 +19,15 @@ export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
     '.wasm'
   ]);
 
-  chain.output.libraryTarget('commonjs2');
+  // Rspack uses output.library for node target
+  chain.output.library({ type: 'commonjs2' });
   chain.optimization.minimize(false);
 
-  // use default splitChunks config
-  chain.optimization.splitChunks(getDefaultSplitChunksConfig(dev));
+  /**
+   * Use splitChunks.chunks = 'all' for node/server builds in Rspack.
+   * This is the most compatible and recommended value for Rspack splitChunks.
+   */
+  chain.optimization.splitChunks({ chunks: 'all' });
 
   addExternals(
     chain,
