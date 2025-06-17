@@ -6,6 +6,9 @@ const fs = require('fs');
 const {
   createBrowserRspackChain
 } = require('@shuvi/toolpack/lib/webpack/config/browser.rspack');
+// const {
+//   createNodeRspackChain
+// } = require('@shuvi/toolpack/lib/webpack/config/node.rspack');
 
 const chain = createBrowserRspackChain({
   dev: true,
