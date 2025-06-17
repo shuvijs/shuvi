@@ -1,14 +1,20 @@
-import WebpackChain from 'webpack-chain';
+// @todo rspack: use rspack-chain instead of webpack-chain
+// import WebpackChain from 'webpack-chain';
+import RspackChain from 'rspack-chain';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import TerserPlugin from 'terser-webpack-plugin';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import webpack from 'webpack';
+// @todo rspack: TerserPlugin is not used, use built-in minimizer or SwcJsMinimizerRspackPlugin
+// import TerserPlugin from 'terser-webpack-plugin';
+// @todo rspack: CssMinimizerPlugin is not used, use built-in minimizer or SwcCssMinimizerRspackPlugin
+// import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+// @todo rspack: webpack object is not used, use built-in rspack plugins or builtins config
+// import webpack from 'webpack';
 import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 import * as crypto from 'crypto';
 import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import { CompilerOptions } from '../loaders/shuvi-swc-loader';
+import { DefinePlugin, IgnorePlugin } from '@rspack/core';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
 
@@ -41,27 +47,28 @@ export interface BaseOptions {
   analyze?: boolean;
 }
 
-const terserOptions = {
-  parse: {
-    ecma: 2017 // es8 === 2017
-  },
-  compress: {
-    ecma: 5,
-    // The following two options are known to break valid JavaScript code
-    comparisons: false,
-    inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
-  },
-  mangle: { safari10: true },
-  output: {
-    ecma: 5,
-    safari10: true,
-    comments: false,
-    // Fixes usage of Emoji and certain Regex
-    ascii_only: true
-  }
-};
+// @todo rspack: TerserPlugin is not used, use built-in minimizer or SwcJsMinimizerRspackPlugin
+// const terserOptions = {
+//   parse: {
+//     ecma: 2017 // es8 === 2017
+//   },
+//   compress: {
+//     ecma: 5,
+//     // The following two options are known to break valid JavaScript code
+//     comparisons: false,
+//     inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+//   },
+//   mangle: { safari10: true },
+//   output: {
+//     ecma: 5,
+//     safari10: true,
+//     comments: false,
+//     // Fixes usage of Emoji and certain Regex
+//     ascii_only: true
+//   }
+// };
 
-export { WebpackChain };
+export { RspackChain };
 
 export function getDefineEnv(env: { [x: string]: string | undefined }) {
   return {
@@ -90,7 +97,7 @@ export function getDefineEnv(env: { [x: string]: string | undefined }) {
 const getSimplifiedTargetName = (targetName: string) =>
   targetName.replace(/^shuvi\//, '');
 
-export function baseWebpackChain({
+export function baseRspackChain({
   dev,
   outputDir,
   lightningCss,
@@ -103,8 +110,8 @@ export function baseWebpackChain({
   env = {},
   cacheDir,
   analyze
-}: BaseOptions): WebpackChain {
-  const config = new WebpackChain();
+}: BaseOptions): RspackChain {
+  const config = new RspackChain();
   config.mode(dev ? 'development' : 'production');
   config.bail(!dev);
   config.performance.hints(false);
@@ -118,6 +125,7 @@ export function baseWebpackChain({
     chunkFilename: `static/chunks/${
       dev ? '[name]' : '[name].[contenthash:8]'
     }.js`,
+    // @todo rspack does not support function for hotUpdateChunkFilename, hotUpdateMainFilename, webassemblyModuleFilename, hashFunction, hashDigestLength
     hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
     hotUpdateMainFilename:
       'static/webpack/[runtime].[fullhash].hot-update.json',
@@ -130,6 +138,7 @@ export function baseWebpackChain({
 
   config.optimization.merge({
     emitOnErrors: !dev,
+    // @todo rspack does not support checkWasmTypes, nodeEnv, realContentHash
     checkWasmTypes: false,
     nodeEnv: false,
     runtimeChunk: undefined,
@@ -138,27 +147,15 @@ export function baseWebpackChain({
   });
 
   if (dev) {
+    // @todo rspack does not support usedExports option
     config.optimization.usedExports(false);
   } else {
-    // @ts-ignore
-    config.optimization.minimizer('terser').use(TerserPlugin, [
-      {
-        extractComments: false,
-        parallel: true,
-        terserOptions
-      }
-    ]);
-    config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin, [
-      {
-        // @ts-ignore
-        minify: lightningCss
-          ? CssMinimizerPlugin.lightningCssMinify
-          : CssMinimizerPlugin.cssnanoMinify
-      }
-    ]);
-
+    // @todo rspack: use built-in js/css minimizer, not TerserPlugin or CssMinimizerPlugin
+    // config.optimization.minimizer('terser').use(TerserPlugin, [ ... ]);
+    // config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin, [ ... ]);
     if (analyze) {
       const targetName = getSimplifiedTargetName(name);
+      // @todo rspack: webpack-bundle-analyzer is compatible, but consider using RsdoctorRspackPlugin for advanced analysis
       config
         .plugin('private/bundle-analyzer-plugin')
         .use(BundleAnalyzerPlugin, [
@@ -190,6 +187,7 @@ export function baseWebpackChain({
     path.dirname(require.resolve(`@swc/helpers/package.json`))
   );
 
+  // @todo rspack does not support resolveLoader.alias
   config.resolveLoader.merge({
     alias: [
       'lightningcss-loader',
@@ -207,6 +205,7 @@ export function baseWebpackChain({
 
   // TODO: FIXME: await babel/babel-loader to update to fix this.
   // x-ref: https://github.com/webpack/webpack/issues/11467
+  // @todo rspack does not support .resolve.set('fullySpecified', false)
   config.module
     .rule('webpackPatch')
     .test(/\.m?js/)
@@ -236,8 +235,10 @@ export function baseWebpackChain({
     .exclude.merge([/\.(tsx|ts|js|cjs|mjs|jsx)$/, /\.html$/, /\.json$/])
     .end()
     // @ts-ignore
+    // @todo rspack: asset/resource type is supported, but generator.filename as function is not
     .type('asset/resource')
     .set('generator', {
+      // @todo rspack does not support generator.filename as a function
       filename: (pathData: { filename: string }) => {
         // Check if a string is a base64 data URI
         if (pathData.filename && isValidBase64DataURL(pathData.filename)) {
@@ -254,14 +255,14 @@ export function baseWebpackChain({
   //   name: 'static/media/[name].[hash:8].[ext]'
   // });
 
-  config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
+  config.plugin('private/ignore-plugin').use(IgnorePlugin, [
     {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/
     }
   ]);
 
-  config.plugin('private/define').use(webpack.DefinePlugin, [
+  config.plugin('private/define').use(DefinePlugin, [
     {
       // internal field to identify the plugin config
       __SHUVI_DEFINE_ENV: 'true',
@@ -269,12 +270,13 @@ export function baseWebpackChain({
     }
   ]);
 
-  config.plugin('define').use(webpack.DefinePlugin, [
+  config.plugin('define').use(DefinePlugin, [
     {
       'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
     }
   ]);
 
+  // @todo rspack: cache config only supports boolean, not object
   const getCacheConfig = () => {
     const projectHash = crypto
       .createHash('md5')
@@ -298,12 +300,14 @@ export function baseWebpackChain({
     };
   };
 
+  // @todo rspack: cache only supports boolean, not object
   config.cache(
     typeof process.env.SHUVI_DEV_DISABLE_CACHE !== 'undefined'
       ? false
       : getCacheConfig()
   );
 
+  // @todo rspack: use resolve.tsConfigPath for jsconfig/tsconfig paths
   config.resolve
     .plugin('jsconfig-paths-plugin')
     .use(JsConfigPathsPlugin, [
@@ -312,7 +316,7 @@ export function baseWebpackChain({
     ]);
 
   if (dev) {
-    // For webpack-dev-middleware usage
+    // @todo rspack: watchOptions and infrastructureLogging are not supported
     config.watchOptions({
       aggregateTimeout: 5,
       ignored: ['**/.git/**']
@@ -321,11 +325,13 @@ export function baseWebpackChain({
       level: 'none'
     });
 
+    // @todo rspack: custom plugins like FixWatchingPlugin may not be compatible
     config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
   } else {
-    config
-      .plugin('private/hashed-moduleids-plugin')
-      .use(webpack.ids.HashedModuleIdsPlugin);
+    // @todo rspack: HashedModuleIdsPlugin is not supported, use built-in module id strategies
+    // config
+    //   .plugin('private/hashed-moduleids-plugin')
+    //   .use(webpack.ids.HashedModuleIdsPlugin);
   }
 
   return config;
