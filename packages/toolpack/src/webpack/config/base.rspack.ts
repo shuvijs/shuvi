@@ -238,6 +238,9 @@ export function baseRspackChain({
     .include.merge([...include])
     .end()
     .use('shuvi-swc-loader')
+    /**
+     * @todo use builtin:swc-loader instead of shuvi-swc-loader
+     */
     .loader('@shuvi/shuvi-swc-loader')
     .options({
       isServer: false,
