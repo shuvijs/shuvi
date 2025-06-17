@@ -1,21 +1,34 @@
-import RspackChain from 'rspack-chain';
+import WebpackChain from 'webpack-chain';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import TerserPlugin from 'terser-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import webpack from 'webpack';
 import * as path from 'path';
-import * as crypto from 'crypto';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/constants';
-// Rspack 內建 DefinePlugin、IgnorePlugin、BundleAnalyzerPlugin
-// 但部分插件/loader需根據 rspack 文檔調整
+import FixWatchingPlugin from '../plugins/fix-watching-plugin';
+import * as crypto from 'crypto';
+import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
+import { CompilerOptions } from '../loaders/shuvi-swc-loader';
+
+type TsCompilerOptions = import('typescript').CompilerOptions;
+
+const resolveLocalLoader = (name: string) =>
+  path.join(__dirname, `../loaders/${name}`);
 
 export interface BaseOptions {
   dev: boolean;
   name: string;
   projectRoot: string;
+
   outputDir: string;
   cacheDir: string;
+
+  // src files need to be include
   include: (string | RegExp)[];
   jsConfig?: {
     useTypeScript: boolean;
     typeScriptPath?: string;
-    compilerOptions: any;
+    compilerOptions: TsCompilerOptions;
     resolvedBaseUrl: string;
   };
   target?: string;
@@ -24,11 +37,31 @@ export interface BaseOptions {
     [x: string]: string | undefined;
   };
   lightningCss?: boolean;
-  compiler?: any;
+  compiler?: CompilerOptions;
   analyze?: boolean;
 }
 
-export { RspackChain };
+const terserOptions = {
+  parse: {
+    ecma: 2017 // es8 === 2017
+  },
+  compress: {
+    ecma: 5,
+    // The following two options are known to break valid JavaScript code
+    comparisons: false,
+    inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+  },
+  mangle: { safari10: true },
+  output: {
+    ecma: 5,
+    safari10: true,
+    comments: false,
+    // Fixes usage of Emoji and certain Regex
+    ascii_only: true
+  }
+};
+
+export { WebpackChain };
 
 export function getDefineEnv(env: { [x: string]: string | undefined }) {
   return {
@@ -53,10 +86,11 @@ export function getDefineEnv(env: { [x: string]: string | undefined }) {
   };
 }
 
+/** remove 'shuvi/' of the target name */
 const getSimplifiedTargetName = (targetName: string) =>
   targetName.replace(/^shuvi\//, '');
 
-export function baseRspackChain({
+export function baseWebpackChain({
   dev,
   outputDir,
   lightningCss,
@@ -69,72 +103,75 @@ export function baseRspackChain({
   env = {},
   cacheDir,
   analyze
-}: BaseOptions): RspackChain {
-  const config = new RspackChain();
+}: BaseOptions): WebpackChain {
+  const config = new WebpackChain();
   config.mode(dev ? 'development' : 'production');
+  config.bail(!dev);
+  config.performance.hints(false);
   config.context(projectRoot);
 
   config.output.path(outputDir);
   config.output.merge({
     publicPath,
     filename: `${dev ? '[name]' : '[name].[contenthash:8]'}.js`,
+    // This saves chunks with the name given via `import()`
     chunkFilename: `static/chunks/${
       dev ? '[name]' : '[name].[contenthash:8]'
     }.js`,
     hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
     hotUpdateMainFilename:
       'static/webpack/[runtime].[fullhash].hot-update.json',
+    strictModuleExceptionHandling: true,
+    // crossOriginLoading: crossOrigin,
     webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
     hashFunction: 'xxhash64',
     hashDigestLength: 16
-    /**
-     * @original strictModuleExceptionHandling: true,
-     * Rspack 暫不支持 strictModuleExceptionHandling
-     */
-    // strictModuleExceptionHandling: true,
-    // crossOriginLoading: crossOrigin,
   });
 
   config.optimization.merge({
     emitOnErrors: !dev,
-    /**
-     * @original checkWasmTypes: false,
-     * Rspack 暫不支持 checkWasmTypes
-     */
-    // checkWasmTypes: false,
-    /**
-     * @original nodeEnv: false,
-     * Rspack 暫不支持 nodeEnv
-     */
-    // nodeEnv: false,
-    /**
-     * @original runtimeChunk: undefined,
-     * Rspack 暫不支持 runtimeChunk
-     */
-    // runtimeChunk: undefined,
-    minimize: !dev
-    /**
-     * @original realContentHash: false,
-     * Rspack 暫不支持 realContentHash
-     */
-    // realContentHash: false
-    // Rspack 內建 terser/css-minimizer
+    checkWasmTypes: false,
+    nodeEnv: false,
+    runtimeChunk: undefined,
+    minimize: !dev,
+    realContentHash: false
   });
 
-  if (analyze && !dev) {
-    const targetName = getSimplifiedTargetName(name);
-    config
-      .plugin('bundle-analyzer')
-      .use(require('rspack-plugin-bundle-analyzer').BundleAnalyzerPlugin, [
-        {
-          logLevel: 'warn',
-          openAnalyzer: false,
-          analyzerMode: 'static',
-          reportFilename: `../analyze/${targetName}.html`,
-          generateStatsFile: true,
-          statsFilename: `../analyze/${targetName}-stats.json`
-        }
-      ]);
+  if (dev) {
+    config.optimization.usedExports(false);
+  } else {
+    // @ts-ignore
+    config.optimization.minimizer('terser').use(TerserPlugin, [
+      {
+        extractComments: false,
+        parallel: true,
+        terserOptions
+      }
+    ]);
+    config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin, [
+      {
+        // @ts-ignore
+        minify: lightningCss
+          ? CssMinimizerPlugin.lightningCssMinify
+          : CssMinimizerPlugin.cssnanoMinify
+      }
+    ]);
+
+    if (analyze) {
+      const targetName = getSimplifiedTargetName(name);
+      config
+        .plugin('private/bundle-analyzer-plugin')
+        .use(BundleAnalyzerPlugin, [
+          {
+            logLevel: 'warn',
+            openAnalyzer: false,
+            analyzerMode: 'static',
+            reportFilename: `../analyze/${targetName}.html`,
+            generateStatsFile: true,
+            statsFilename: `../analyze/${targetName}-stats.json`
+          }
+        ]);
+    }
   }
 
   // Support for NODE_PATH
@@ -143,47 +180,35 @@ export function baseRspackChain({
     .filter(p => !!p);
 
   config.resolve.merge({
-    modules: ['node_modules', ...nodePathList]
+    modules: [
+      'node_modules',
+      ...nodePathList // Support for NODE_PATH environment variable
+    ]
   });
   config.resolve.alias.set(
     '@swc/helpers',
     path.dirname(require.resolve(`@swc/helpers/package.json`))
   );
 
-  // loader alias (如 lightningcss-loader, shuvi-swc-loader)
-  // Rspack loader 配置方式略有不同，這裡僅設置 alias 供後續 loader 使用
   config.resolveLoader.merge({
-    alias: {
-      '@shuvi/lightningcss-loader': path.join(
-        __dirname,
-        '../loaders/lightningcss-loader'
-      ),
-      '@shuvi/shuvi-swc-loader': path.join(
-        __dirname,
-        '../loaders/shuvi-swc-loader'
-      ),
-      '@shuvi/empty-loader': path.join(__dirname, '../loaders/empty-loader'),
-      '@shuvi/route-component-loader': path.join(
-        __dirname,
-        '../loaders/route-component-loader'
-      )
-    }
-    /**
-     * @original Webpack 支持 .use('file-loader')
-     * Rspack 暫不支持 file-loader
-     */
-    // .use('file-loader')
-    // .loader(require.resolve('file-loader'))
-    // .options({
-    //   name: 'static/media/[name].[hash:8].[ext]'
-    // });
+    alias: [
+      'lightningcss-loader',
+      'shuvi-swc-loader',
+      'empty-loader',
+      'route-component-loader'
+    ].reduce((alias, loader) => {
+      alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
+      return alias;
+    }, {} as Record<string, string>)
   });
 
   config.module.set('strictExportPresence', true);
   const mainRule = config.module.rule('main');
 
+  // TODO: FIXME: await babel/babel-loader to update to fix this.
+  // x-ref: https://github.com/webpack/webpack/issues/11467
   config.module
-    .rule('rspackPatch')
+    .rule('webpackPatch')
     .test(/\.m?js/)
     .resolve.set('fullySpecified', false);
 
@@ -210,88 +235,84 @@ export function baseRspackChain({
     .oneOf('media')
     .exclude.merge([/\.(tsx|ts|js|cjs|mjs|jsx)$/, /\.html$/, /\.json$/])
     .end()
+    // @ts-ignore
     .type('asset/resource')
     .set('generator', {
       filename: (pathData: { filename: string }) => {
+        // Check if a string is a base64 data URI
         if (pathData.filename && isValidBase64DataURL(pathData.filename)) {
+          // Handle base64 string case, [name] is empty
           return `static/media/base64.[hash:8][ext]`;
         } else {
           return `static/media/[name].[hash:8][ext]`;
         }
       }
     });
+  // .use('file-loader')
+  // .loader(require.resolve('file-loader'))
+  // .options({
+  //   name: 'static/media/[name].[hash:8].[ext]'
+  // });
 
-  config.plugin('ignore-plugin').use(require('@rspack/core').IgnorePlugin, [
+  config.plugin('private/ignore-plugin').use(webpack.IgnorePlugin, [
     {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/
     }
   ]);
 
-  config.plugin('private/define').use(require('@rspack/core').DefinePlugin, [
+  config.plugin('private/define').use(webpack.DefinePlugin, [
     {
+      // internal field to identify the plugin config
       __SHUVI_DEFINE_ENV: 'true',
       ...getDefineEnv(env)
     }
   ]);
 
-  config.plugin('define').use(require('@rspack/core').DefinePlugin, [
+  config.plugin('define').use(webpack.DefinePlugin, [
     {
       'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
     }
   ]);
 
-  // cache config
   const getCacheConfig = () => {
     const projectHash = crypto
       .createHash('md5')
       .update(projectRoot)
       .digest('hex');
+
     const stringifiedEnvs = Object.entries({
       ...getDefineEnv(env)
     }).reduce((prev: string, [key, value]) => {
       return `${prev}|${key}=${value}`;
     }, '');
+
     const PACKAGE_JSON = path.resolve(__dirname, '../../../package.json');
     const SHUVI_VERSION = require(PACKAGE_JSON).version;
+
     return {
-      cacheDirectory: path.join(cacheDir, 'rspack', projectHash),
+      cacheDirectory: path.join(cacheDir, 'webpack', projectHash),
       type: 'filesystem',
       name: `${name.replace(/\//, '-')}-${config.get('mode')}`,
       version: `${SHUVI_VERSION}|${stringifiedEnvs}`
     };
   };
+
   config.cache(
     typeof process.env.SHUVI_DEV_DISABLE_CACHE !== 'undefined'
       ? false
       : getCacheConfig()
   );
 
-  // 路徑 alias 支持
-  if (jsConfig) {
-    // Rspack 目前不支持 webpack-chain 的 plugin 機制，這裡僅設置 alias
-    if (jsConfig.compilerOptions && jsConfig.compilerOptions.paths) {
-      const paths = jsConfig.compilerOptions.paths as Record<string, string[]>;
-      Object.entries(paths).forEach(([alias, pathArr]) => {
-        if (Array.isArray(pathArr) && pathArr.length > 0) {
-          config.resolve.alias.set(
-            alias,
-            path.resolve(jsConfig.resolvedBaseUrl, pathArr[0])
-          );
-        }
-      });
-    }
-    /**
-     * @todo JsConfigPathsPlugin: webpack 版本支持 config.resolve.plugin('jsconfig-paths-plugin').use(JsConfigPathsPlugin, ...)
-     * Rspack 版本暫未支持，待補齊
-     */
-    // config.resolve.plugin('jsconfig-paths-plugin').use(JsConfigPathsPlugin, [
-    //   jsConfig?.compilerOptions.paths || {},
-    //   jsConfig?.resolvedBaseUrl || projectRoot
-    // ]);
-  }
+  config.resolve
+    .plugin('jsconfig-paths-plugin')
+    .use(JsConfigPathsPlugin, [
+      jsConfig?.compilerOptions.paths || {},
+      jsConfig?.resolvedBaseUrl || projectRoot
+    ]);
 
   if (dev) {
+    // For webpack-dev-middleware usage
     config.watchOptions({
       aggregateTimeout: 5,
       ignored: ['**/.git/**']
@@ -299,36 +320,40 @@ export function baseRspackChain({
     config.set('infrastructureLogging', {
       level: 'none'
     });
-    /**
-     * @todo FixWatchingPlugin: webpack 版本支持 config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin)
-     * Rspack 版本暫未支持，待補齊
-     */
-    // config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
+
+    config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
   } else {
-    /**
-     * @todo HashedModuleIdsPlugin: webpack 版本支持 config.plugin('private/hashed-moduleids-plugin').use(webpack.ids.HashedModuleIdsPlugin)
-     * Rspack 版本暫未支持，待補齊
-     */
-    // config.plugin('private/hashed-moduleids-plugin').use(webpack.ids.HashedModuleIdsPlugin);
-    // Rspack 內建 module id hash
+    config
+      .plugin('private/hashed-moduleids-plugin')
+      .use(webpack.ids.HashedModuleIdsPlugin);
   }
 
   return config;
 }
 
 function isValidBase64DataURL(input: string): boolean {
+  // Check if input starts with the data URI scheme
   if (!input.startsWith('data:')) {
     return false;
   }
+
+  // Split the data URI into metadata and data parts
   const parts = input.split(',');
   if (parts.length !== 2) {
     return false;
   }
+
   const metadata = parts[0];
   const data = parts[1];
+
+  // Check if the metadata contains 'base64'
   if (!metadata.includes('base64')) {
     return false;
   }
+
+  // Regular expression to validate Base64 string
   const base64Regex = /^[A-Za-z0-9+/]+[=]{0,2}$/;
+
+  // Validate Base64 data
   return base64Regex.test(data);
 }
