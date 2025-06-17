@@ -1,8 +1,7 @@
 import { DEV_STYLE_ANCHOR_ID } from '@shuvi/shared/constants';
-import { WebpackChain as Config } from '../base';
-import Rule from 'webpack-chain/src/Rule';
-import { LoaderContext } from 'webpack';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { RspackChain as Config } from '../base.rspack';
+import Rule from 'rspack-chain/src/Rule';
+import { rspack, LoaderContext } from '@rspack/core';
 import * as loaderUtils from 'loader-utils';
 import * as path from 'path';
 import { shouldUseRelativeAssetPaths } from './helpers';
@@ -159,7 +158,7 @@ function cssRule({
   if (extractCss) {
     rule
       .use('extract-loader')
-      .loader(MiniCssExtractPlugin.loader)
+      .loader(rspack.CssExtractRspackPlugin.loader)
       .options({
         ...(publicPath && shouldUseRelativeAssetPaths(publicPath)
           ? {
@@ -169,6 +168,10 @@ function cssRule({
           : {})
       });
   } else {
+    /**
+     * @unsupported Rspack does not support style-loader (inserts styles into DOM) in the same way as Webpack.
+     * TODO: Replace with Rspack's recommended approach for injecting styles in development.
+     */
     rule
       .use('style-loader')
       .loader(require.resolve('style-loader'))
@@ -307,7 +310,7 @@ export function withStyle(
   }
 
   if (extractCss) {
-    chain.plugin('mini-css-extract-plugin').use(MiniCssExtractPlugin, [
+    chain.plugin('mini-css-extract-plugin').use(rspack.CssExtractRspackPlugin, [
       {
         filename,
         chunkFilename

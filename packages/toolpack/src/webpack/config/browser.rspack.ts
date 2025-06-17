@@ -5,11 +5,7 @@ import { resolve } from '@shuvi/utils/resolve';
 import type { TsCheckerRspackPluginOptions } from 'ts-checker-rspack-plugin/lib/plugin-options';
 import { BaseOptions, baseRspackChain } from './base.rspack';
 import RspackChain from 'rspack-chain';
-/**
- * @unsupported Rspack does not support style-loader directly.
- * TODO: Use css-loader and mini-css-extract-plugin when available.
- */
-// import { withStyle } from './parts/style';
+import { withStyle } from './parts/style.rspack';
 import {
   splitChunksFilter,
   commonChunkFilename,
@@ -36,13 +32,7 @@ const FRAMEWORK_REACT_MODULES: {
 ];
 
 export function createBrowserRspackChain(options: BaseOptions): RspackChain {
-  const {
-    projectRoot,
-    cacheDir,
-    jsConfig,
-    dev,
-    publicPath: _publicPath
-  } = options;
+  const { projectRoot, cacheDir, jsConfig, dev, publicPath } = options;
   const chain = baseRspackChain(options);
   const useTypeScript = !!jsConfig?.useTypeScript;
 
@@ -257,17 +247,11 @@ export function createBrowserRspackChain(options: BaseOptions): RspackChain {
     ];
   });
 
-  /**
-   * @unsupported Rspack does not support style-loader directly.
-   * TODO: Use css-loader and mini-css-extract-plugin when available.
-   */
-  // return withStyle(chain, {
-  //   extractCss: !dev,
-  //   publicPath,
-  //   lightningCss: options.lightningCss,
-  //   filename: 'static/css/[contenthash:8].css',
-  //   chunkFilename: 'static/css/[contenthash:8].chunk.css'
-  // })
-
-  return chain;
+  return withStyle(chain, {
+    extractCss: !dev,
+    publicPath,
+    lightningCss: options.lightningCss,
+    filename: 'static/css/[contenthash:8].css',
+    chunkFilename: 'static/css/[contenthash:8].chunk.css'
+  });
 }
