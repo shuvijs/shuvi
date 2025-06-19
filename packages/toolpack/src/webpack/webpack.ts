@@ -1,5 +1,5 @@
 import webpack, { Compilation } from 'webpack';
-export { WebpackChain } from './config';
+export { WebpackChain } from './config/base.webpack';
 export { DynamicDll } from './dynamic-dll';
 
 type ChunkGroup = Compilation['chunkGroups'][0];

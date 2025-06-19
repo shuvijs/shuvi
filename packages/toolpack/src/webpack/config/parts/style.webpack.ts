@@ -1,11 +1,11 @@
 import { DEV_STYLE_ANCHOR_ID } from '@shuvi/shared/constants';
-import { WebpackChain as Config } from '../base';
+import { WebpackChain as Config } from '../base.webpack';
 import Rule from 'webpack-chain/src/Rule';
 import { LoaderContext } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import * as loaderUtils from 'loader-utils';
 import * as path from 'path';
-import { shouldUseRelativeAssetPaths } from './helpers';
+import { shouldUseRelativeAssetPaths } from './helpers.webpack';
 
 interface StyleOptions {
   filename: string;

@@ -1,4 +1,4 @@
-import { WebpackChain } from './config';
+import { WebpackChain } from './config/base.webpack';
 export interface IModuleItem {
   id: string;
   name: string;
