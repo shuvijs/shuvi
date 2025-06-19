@@ -1,7 +1,7 @@
 import { codeFrameColumns } from '@babel/code-frame';
 import { StackFrame } from 'stacktrace-parser';
 
-import type webpack from '@shuvi/toolpack/lib/webpack';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
 
 import { getSourcePath } from './getSourcePath';
 import { getModuleById } from './getModuleById';
@@ -27,10 +27,14 @@ export async function createOriginalStackFrame({
   modulePath?: string;
   frame: any;
   errorMessage?: string;
-  compilation?: webpack.Compilation;
+  compilation?: Rspack.Compilation;
 }): Promise<OriginalStackFrameResponse | null> {
   const match = errorMessage?.match(/'([^']+)' module/);
   const moduleNotFound = match && match[1];
+  /**
+   * @unsupported Rspack does not support buildInfo.importLocByPath API in the same way as Webpack.
+   * TODO: Use Rspack's equivalent API when available or implement alternative import location lookup.
+   */
   const result =
     moduleNotFound && compilation
       ? getModuleById(
