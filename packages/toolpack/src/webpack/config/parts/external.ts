@@ -1,5 +1,5 @@
 // import resolve from "resolve";
-import { ExternalsFunction } from '../../types';
+import { ExternalsFunction } from '../../types.rspack';
 
 type Test = string | RegExp;
 
