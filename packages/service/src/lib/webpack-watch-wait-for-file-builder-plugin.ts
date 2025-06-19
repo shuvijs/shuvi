@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Compiler, Plugin } from '@shuvi/toolpack/lib/webpack';
 import { ProjectBuilder } from '../project/projectBuilder';
 import { FileInfo } from '../project/index';
