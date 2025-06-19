@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 import * as rspack from '@rspack/core';
-import * as path from 'path';
+// import * as path from 'path';
 import { resolve } from '@shuvi/utils/resolve';
-import type { TsCheckerRspackPluginOptions } from 'ts-checker-rspack-plugin/lib/plugin-options';
+// import type { TsCheckerRspackPluginOptions } from 'ts-checker-rspack-plugin/lib/plugin-options';
 import { BaseOptions, baseRspackChain } from './base.rspack';
 import RspackChain from 'rspack-chain';
 import { withStyle } from './parts/style.rspack';
@@ -32,7 +32,13 @@ const FRAMEWORK_REACT_MODULES: {
 ];
 
 export function createBrowserRspackChain(options: BaseOptions): RspackChain {
-  const { projectRoot, cacheDir, jsConfig, dev, publicPath } = options;
+  const {
+    projectRoot: _projectRoot,
+    cacheDir: _cacheDir,
+    jsConfig,
+    dev,
+    publicPath
+  } = options;
   const chain = baseRspackChain(options);
   const useTypeScript = !!jsConfig?.useTypeScript;
 
@@ -55,32 +61,32 @@ export function createBrowserRspackChain(options: BaseOptions): RspackChain {
   if (useTypeScript) {
     // See migration plan for ts-checker-rspack-plugin
     // https://github.com/rspack-contrib/ts-checker-rspack-plugin
-    chain
-      .plugin('private/ts-checker-rspack-plugin')
-      .use(require('ts-checker-rspack-plugin'), [
-        {
-          typescript: {
-            configFile: path.join(projectRoot, 'tsconfig.json'),
-            mode: 'write-references',
-            typescriptPath: jsConfig.typeScriptPath,
-            diagnosticOptions: {
-              syntactic: true
-            },
-            configOverwrite: {
-              compilerOptions: {
-                incremental: true,
-                tsBuildInfoFile: path.resolve(cacheDir, 'tsbuildinfo')
-              }
-            }
-          },
-          async: dev,
-          logger: {
-            log: message => console.log(message),
-            error: message => console.error(message)
-          },
-          formatter: 'codeframe'
-        } as TsCheckerRspackPluginOptions
-      ]);
+    // chain
+    //   .plugin('private/ts-checker-rspack-plugin')
+    //   .use(require('ts-checker-rspack-plugin'), [
+    //     {
+    //       typescript: {
+    //         configFile: path.join(projectRoot, 'tsconfig.json'),
+    //         mode: 'write-references',
+    //         typescriptPath: jsConfig.typeScriptPath,
+    //         diagnosticOptions: {
+    //           syntactic: true
+    //         },
+    //         configOverwrite: {
+    //           compilerOptions: {
+    //             incremental: true,
+    //             tsBuildInfoFile: path.resolve(cacheDir, 'tsbuildinfo')
+    //           }
+    //         }
+    //       },
+    //       async: dev,
+    //       logger: {
+    //         log: message => console.log(message),
+    //         error: message => console.error(message)
+    //       },
+    //       formatter: 'codeframe'
+    //     } as TsCheckerRspackPluginOptions
+    //   ]);
   }
 
   if (dev) {

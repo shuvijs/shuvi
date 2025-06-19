@@ -11,7 +11,7 @@ import * as path from 'path';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 // import * as crypto from 'crypto';
-import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
+// import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import { CompilerOptions } from '../loaders/shuvi-swc-loader';
 
 type TsCompilerOptions = import('typescript').CompilerOptions;
@@ -329,12 +329,15 @@ export function baseRspackChain({
     typeof process.env.SHUVI_DEV_DISABLE_CACHE !== 'undefined' ? false : true
   );
 
-  config.resolve
-    .plugin('jsconfig-paths-plugin')
-    .use(JsConfigPathsPlugin, [
-      jsConfig?.compilerOptions.paths || {},
-      jsConfig?.resolvedBaseUrl || projectRoot
-    ]);
+  /**
+   * @unsupported Rspack does not resolve.plugins
+   */
+  // config.resolve
+  //   .plugin('jsconfig-paths-plugin')
+  //   .use(JsConfigPathsPlugin, [
+  //     jsConfig?.compilerOptions.paths || {},
+  //     jsConfig?.resolvedBaseUrl || projectRoot
+  //   ]);
 
   if (dev) {
     // For rspack-dev-middleware usage
