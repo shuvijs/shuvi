@@ -5,8 +5,8 @@ import { IWebpackEntry } from '@shuvi/service/lib/bundler/config';
 import {
   BUNDLER_TARGET_CLIENT,
   BUNDLER_TARGET_SERVER,
-  CLIENT_BUILD_MANIFEST_PATH,
-  SERVER_BUILD_MANIFEST_PATH,
+  // CLIENT_BUILD_MANIFEST_PATH,
+  // SERVER_BUILD_MANIFEST_PATH,
   SERVER_OUTPUT_DIR,
   BUILD_SERVER_FILE_SERVER,
   BUILD_CLIENT_RUNTIME_POLYFILLS,
@@ -19,7 +19,7 @@ import { getVersion } from '../../version';
 import { getMiddlewares } from '../middlewares';
 import generateResource from './lib/generateResource';
 import { buildHtml } from './lib/buildHtml';
-import BuildManifestPlugin from './lib/webpack/build-manifest-plugin';
+// import BuildManifestPlugin from './lib/webpack/build-manifest-plugin';
 import server from './server';
 
 const ENTRY_FLAG = 'shuviEntry';
@@ -58,7 +58,7 @@ export const getPlugin = (
 ): ResolvedPlugin => {
   const core = createPlugin({
     configWebpack: (chain, { webpack, name, mode }, ctx) => {
-      const isDev = mode === 'development';
+      // const isDev = mode === 'development';
       const pkgVersion = getVersion();
       const isServer = name === BUNDLER_TARGET_SERVER;
       const isClient = name === BUNDLER_TARGET_CLIENT;
@@ -80,13 +80,13 @@ export const getPlugin = (
             }
           }
         ]);
-        chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
-          {
-            filename: CLIENT_BUILD_MANIFEST_PATH,
-            modules: true,
-            chunkRequest: isDev
-          }
-        ]);
+        // chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
+        //   {
+        //     filename: CLIENT_BUILD_MANIFEST_PATH,
+        //     modules: true,
+        //     chunkRequest: isDev
+        //   }
+        // ]);
       } else if (isServer) {
         if (!ctx.config.ssr) {
           chain.resolve.alias.set(
@@ -108,13 +108,13 @@ export const getPlugin = (
             ]);
         }
 
-        chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
-          {
-            filename: SERVER_BUILD_MANIFEST_PATH,
-            modules: false,
-            chunkRequest: isDev
-          }
-        ]);
+        // chain.plugin('private/build-manifest').use(BuildManifestPlugin, [
+        //   {
+        //     filename: SERVER_BUILD_MANIFEST_PATH,
+        //     modules: false,
+        //     chunkRequest: isDev
+        //   }
+        // ]);
       }
 
       return chain;
