@@ -2,7 +2,7 @@ import { StackFrame } from 'stacktrace-parser';
 import { IncomingMessage, ServerResponse } from 'http';
 import url from 'url';
 
-import type { webpack } from '@shuvi/toolpack/lib/webpack';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
 import {
   BUNDLER_TARGET_CLIENT,
   BUNDLER_TARGET_SERVER
@@ -21,39 +21,37 @@ export function stackFrameMiddleware(
   buildDefaultDir: string,
   buildServerDir: string
 ) {
-  let clientStats: webpack.Stats | null = null;
-  let serverStats: webpack.Stats | null = null;
+  let clientStats: Rspack.Stats | null = null;
+  let serverStats: Rspack.Stats | null = null;
 
   bundler
     .getSubCompiler(BUNDLER_TARGET_CLIENT)
-    ?.hooks.done.tap(
-      'stackFrameMiddlewareForClient',
-      (stats: webpack.Stats) => {
-        clientStats = stats;
-      }
-    );
+    ?.hooks.done.tap('stackFrameMiddlewareForClient', (stats: Rspack.Stats) => {
+      clientStats = stats;
+    });
 
   bundler
     .getSubCompiler(BUNDLER_TARGET_SERVER)
-    ?.hooks.done.tap(
-      'stackFrameMiddlewareForServer',
-      (stats: webpack.Stats) => {
-        serverStats = stats;
-      }
-    );
+    ?.hooks.done.tap('stackFrameMiddlewareForServer', (stats: Rspack.Stats) => {
+      serverStats = stats;
+    });
 
   const collectSourceMaps = async (
     files: string[],
-    compiler: webpack.Compiler,
-    compilation: webpack.Compilation | undefined,
+    compiler: Rspack.Compiler,
+    compilation: Rspack.Compilation | undefined,
     cache: Map<string, Source | null>,
     buildDir: string
   ): Promise<void> => {
     await Promise.all(
       files.map(async fileName => {
         try {
+          /**
+           * @unsupported Rspack may use different module resolution patterns than webpack-internal:///.
+           * TODO: Update module resolution pattern after confirming Rspack's internal module format.
+           */
           const moduleId = fileName.replace(
-            /^(webpack-internal:\/\/\/|file:\/\/)/,
+            /^(webpack-internal:\/\/\/|file:\/\/|rspack-internal:\/\/\/)/,
             ''
           );
 
@@ -77,7 +75,7 @@ export function stackFrameMiddleware(
   const getStackFrames = async (
     frames: StackFrame[],
     errorMessage: string | undefined,
-    compilation: webpack.Compilation | undefined,
+    compilation: Rspack.Compilation | undefined,
     sourceMap: Map<string, Source | null>,
     buildDir: string
   ): Promise<OriginalStackFrame[]> => {
