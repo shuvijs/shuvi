@@ -17,7 +17,7 @@ import {
   RuntimeService,
   Resources,
   AddRuntimeFileUtils,
-  WebpackChainType
+  RspackChainType
 } from './pluginTypes';
 import { ShuviConfig, IPluginContext, CustomCorePluginHooks } from './apiTypes';
 
@@ -29,7 +29,7 @@ const afterBundlerDone = createAsyncParallelHook<BundlerDoneExtra>();
 const afterBundlerTargetDone =
   createAsyncParallelHook<BundlerTargetDoneExtra>();
 const configWebpack = createAsyncSeriesWaterfallHook<
-  WebpackChainType,
+  RspackChainType,
   ConfigWebpackAssistant
 >();
 const addExtraTarget = createAsyncParallelHook<

@@ -1,10 +1,10 @@
 import { Compiler, Stats, MultiCompiler } from '@shuvi/toolpack/lib/webpack';
 
-import type { webpack } from '@shuvi/toolpack/lib/webpack';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
 
 export type BundlerResult = {
-  errors: webpack.StatsError[];
-  warnings: webpack.StatsError[];
+  errors: Rspack.StatsError[];
+  warnings: Rspack.StatsError[];
 };
 
 function generateStats(result: BundlerResult, stat: Stats): BundlerResult {
