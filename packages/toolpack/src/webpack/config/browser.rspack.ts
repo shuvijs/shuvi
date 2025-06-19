@@ -11,7 +11,7 @@ import {
   commonChunkFilename,
   NODE_MODULES_REGEXP,
   defaultCacheGroups
-} from './parts/helpers';
+} from './parts/helpers.rspack';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/](@shuvi|doura)[\\/]/;
