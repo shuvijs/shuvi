@@ -1,5 +1,5 @@
 import type { StackFrame } from 'stacktrace-parser';
-import type webpack from '@shuvi/toolpack/lib/webpack';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
 import type { Source } from './getSourceById';
 import type { OriginalStackFrame } from '../../view/helpers/stack-frame';
 import { createOriginalStackFrame } from './createOriginalStackFrame';
@@ -12,11 +12,16 @@ export async function getOriginalStackFrame(
   resolveBuildFile: (...paths: string[]) => string,
   buildDir: string,
   errorMessage?: string,
-  compilation?: webpack.Compilation
+  compilation?: Rspack.Compilation
 ): Promise<OriginalStackFrame> {
+  /**
+   * @unsupported Rspack may use different internal URL patterns than webpack-internal:.
+   * TODO: Update URL pattern detection to match Rspack's internal URL format when available.
+   */
   if (
     !(
       frame.file?.startsWith('webpack-internal:') ||
+      frame.file?.startsWith('rspack-internal:') ||
       frame.file?.startsWith('file:')
     )
   ) {
@@ -48,6 +53,11 @@ export async function getOriginalStackFrame(
   if (!frameColumn) {
     frameColumn = null;
   }
+
+  /**
+   * @unsupported Rspack may use different internal URL patterns than webpack-internal:.
+   * TODO: Update URL pattern replacement to match Rspack's internal URL format when available.
+   */
   const originalStackFrameResponse = await createOriginalStackFrame({
     line: frameLine,
     column: frameColumn,
@@ -55,7 +65,10 @@ export async function getOriginalStackFrame(
     frame,
     modulePath: resolveBuildFile(
       buildDir,
-      frame.file.replace(/^(webpack-internal:\/\/\/|file:\/\/)/, '')
+      frame.file.replace(
+        /^(webpack-internal:\/\/\/|rspack-internal:\/\/\/|file:\/\/)/,
+        ''
+      )
     ),
     errorMessage,
     compilation

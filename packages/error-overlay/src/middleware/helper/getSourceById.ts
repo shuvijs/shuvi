@@ -1,7 +1,7 @@
 import { RawSourceMap } from 'source-map';
 import dataUriToBuffer, { MimeBuffer } from 'data-uri-to-buffer';
 import * as path from 'path';
-import type { webpack } from '@shuvi/toolpack/lib/webpack';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
 
 import { getSourceMapUrl } from './getSourceMapUrl';
 import { getModuleById } from './getModuleById';
@@ -10,9 +10,18 @@ export type Source = { map: () => RawSourceMap } | null;
 
 const readFileWrapper = (
   url: string,
-  compiler: webpack.Compiler
+  compiler: Rspack.Compiler
 ): Promise<string | null> => {
   return new Promise(resolve => {
+    /**
+     * @unsupported Rspack may have different outputFileSystem API.
+     * TODO: Verify Rspack's outputFileSystem implementation and update accordingly.
+     */
+    if (!compiler.outputFileSystem) {
+      resolve(null);
+      return;
+    }
+
     compiler.outputFileSystem.readFile(url, (err: any, res: any) => {
       if (err) {
         resolve(null);
@@ -24,7 +33,7 @@ const readFileWrapper = (
 
 async function getRawSourceMap(
   fileUrl: string,
-  compiler: webpack.Compiler
+  compiler: Rspack.Compiler
 ): Promise<RawSourceMap | null> {
   //fetch sourcemap directly first
   const url = fileUrl + '.map';
@@ -78,10 +87,10 @@ async function getRawSourceMap(
 export async function getSourceById(
   isFile: boolean,
   id: string,
-  compiler: webpack.Compiler,
+  compiler: Rspack.Compiler,
   resolveBuildFile: (...paths: string[]) => string,
   buildDir: string,
-  compilation?: webpack.Compilation
+  compilation?: Rspack.Compilation
 ): Promise<Source> {
   if (isFile) {
     const pathName: string = path.isAbsolute(id)
@@ -106,6 +115,10 @@ export async function getSourceById(
     }
 
     const module = getModuleById(id, compilation);
+    /**
+     * @unsupported Rspack does not support codeGenerationResults API in the same way as Webpack.
+     * TODO: Use Rspack's equivalent API when available or implement alternative source extraction.
+     */
     return (
       (module &&
         (compilation as any).codeGenerationResults
