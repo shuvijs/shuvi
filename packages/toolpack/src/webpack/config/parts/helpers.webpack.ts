@@ -1,5 +1,5 @@
 import invariant from '@shuvi/utils/invariant';
-import { WebpackChain } from '../base';
+import { WebpackChain } from '../base.webpack';
 import { ExternalsFunction } from '../../types';
 
 const externalsFunctionMap = new WeakMap<WebpackChain, ExternalsFunction[]>();

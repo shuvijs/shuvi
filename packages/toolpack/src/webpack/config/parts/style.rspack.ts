@@ -4,7 +4,7 @@ import Rule from 'rspack-chain/src/Rule';
 import { rspack, LoaderContext } from '@rspack/core';
 import * as loaderUtils from 'loader-utils';
 import * as path from 'path';
-import { shouldUseRelativeAssetPaths } from './helpers';
+import { shouldUseRelativeAssetPaths } from './helpers.rspack';
 
 interface StyleOptions {
   filename: string;

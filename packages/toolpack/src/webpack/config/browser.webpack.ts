@@ -3,14 +3,14 @@ import webpack from 'webpack';
 import * as path from 'path';
 import { resolve } from '@shuvi/utils/resolve';
 import type { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
-import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
-import { withStyle } from './parts/style';
+import { WebpackChain, baseWebpackChain, BaseOptions } from './base.webpack';
+import { withStyle } from './parts/style.webpack';
 import {
   splitChunksFilter,
   commonChunkFilename,
   NODE_MODULES_REGEXP,
   defaultCacheGroups
-} from './parts/helpers';
+} from './parts/helpers.webpack';
 
 const BIG_LIBRARY_THRESHOLD = 160000; // byte
 const SHUVI_PKGS_REGEX = /[\\/]node_modules[\\/](@shuvi|doura)[\\/]/;

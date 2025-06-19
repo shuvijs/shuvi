@@ -1,7 +1,10 @@
-import { WebpackChain, baseWebpackChain, BaseOptions } from './base';
+import { WebpackChain, baseWebpackChain, BaseOptions } from './base.webpack';
 import { nodeExternals } from './parts/external';
-import { withStyle } from './parts/style';
-import { addExternals, getDefaultSplitChunksConfig } from './parts/helpers';
+import { withStyle } from './parts/style.webpack';
+import {
+  addExternals,
+  getDefaultSplitChunksConfig
+} from './parts/helpers.webpack';
 
 export function createNodeWebpackChain(options: BaseOptions): WebpackChain {
   const { dev } = options;
