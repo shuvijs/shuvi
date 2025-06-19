@@ -28,6 +28,7 @@ export const buildHtml = async ({
     const request = createRequest({
       url: pathname
     });
+    // @ts-expect-error type error caused by adding dependency @rspack/cli
     const response = createResponse<ShuviResponse>({
       eventEmitter: EventEmitter
     });
