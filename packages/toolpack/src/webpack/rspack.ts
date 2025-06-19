@@ -1,6 +1,9 @@
 import { rspack, ChunkGroup } from '@rspack/core';
 export { RspackChain } from './config/base.rspack';
-export { DynamicDll } from './dynamic-dll';
+/**
+ * @todo back to DLL topic later
+ */
+// export { DynamicDll } from './dynamic-dll';
 
 // type ChunkGroup = Compilation['chunkGroups'][0];
 
@@ -264,11 +267,11 @@ export {
    */
   // StatsLoggingEntry,
   StatsModule
-} from /**
- * @unsupported Rspack does not export StatsModuleIssuer.
- * TODO: Remove or replace after Rspack support is available.
- */
-// StatsModuleIssuer,
+  /**
+   * @unsupported Rspack does not export StatsModuleIssuer.
+   * TODO: Remove or replace after Rspack support is available.
+   */
+} from // StatsModuleIssuer,
 /**
  * @unsupported Rspack does not export StatsModuleReason.
  * TODO: Remove or replace after Rspack support is available.
