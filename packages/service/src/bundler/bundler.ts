@@ -1,23 +1,32 @@
-import path from 'path';
+// import path from 'path';
 import { createEvent, RemoveListenerCallback } from '@shuvi/utils/events';
-import ForkTsCheckerWebpackPlugin, {
-  Issue,
-  createCodeFrameFormatter
-} from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
+/**
+ * @unsupported Rspack does not support ForkTsCheckerWebpackPlugin directly.
+ * TODO: Use ts-checker-rspack-plugin or equivalent when available.
+ */
+// import ForkTsCheckerWebpackPlugin, {
+//   Issue,
+//   createCodeFrameFormatter
+// } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import logger from '@shuvi/utils/logger';
 import { inspect } from 'util';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
 import {
-  webpack,
-  WebpackChain,
-  DynamicDll,
-  MultiCompiler as WebapckMultiCompiler,
-  Compiler as WebapckCompiler,
-  resolveWebpackModule
+  rspack,
+  RspackChain,
+  /**
+   * @unsupported DynamicDll is not supported in Rspack.
+   * TODO: Implement DLL support if/when Rspack supports it.
+   */
+  // DynamicDll,
+  MultiCompiler as RspackMultiCompiler,
+  Compiler as RspackCompiler,
+  resolveRspackModule
 } from '@shuvi/toolpack/lib/webpack';
 import {
   addExternals,
-  checkWebpackExternals
+  checkRspackExternals
 } from '@shuvi/toolpack/lib/webpack/config';
 import { BUNDLER_TARGET_CLIENT } from '@shuvi/shared/constants';
 import { Server, ShuviRequestHandler } from '../server';
@@ -49,7 +58,7 @@ const defaultBundleOptions: NormalizedBundlerOptions = {
   ignoreTypeScriptErrors: false
 };
 
-const hasEntry = (chain: WebpackChain) => chain.entryPoints.values().length > 0;
+const hasEntry = (chain: RspackChain) => chain.entryPoints.values().length > 0;
 
 export interface Bundler {
   targets: Target[];
@@ -60,7 +69,7 @@ export interface Bundler {
   onTypeCheckingDone(cb: FinishedCallback): RemoveListenerCallback;
   applyDevMiddlewares(server: Server): void;
 
-  getSubCompiler(name: string): WebapckCompiler | undefined;
+  getSubCompiler(name: string): RspackCompiler | undefined;
   resolveTargetConfig(): Promise<Target[]>;
 }
 
@@ -77,10 +86,10 @@ export interface BundlerEvent {
   'ts-warnings': (warnings: CompilerErr[]) => void;
 }
 
-class WebpackBundler implements Bundler {
+class RspackBundler implements Bundler {
   private _cliContext: IPluginContext;
-  private _compiler!: WebapckMultiCompiler;
-  private _options: NormalizedBundlerOptions;
+  private _compiler!: RspackMultiCompiler;
+  // private _options: NormalizedBundlerOptions;
   private _targets: Target[] = [];
   private _buildEvent = createEvent<FinishedCallback>();
   private _typecheckingEvent = createEvent<FinishedCallback>();
@@ -91,8 +100,8 @@ class WebpackBundler implements Bundler {
   private _startTime: number | null = null;
   private _isCompiling: boolean | null = false;
 
-  constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
-    this._options = options;
+  constructor(__options: NormalizedBundlerOptions, cliContext: IPluginContext) {
+    // this._options = options;
     this._cliContext = cliContext;
   }
 
@@ -101,19 +110,23 @@ class WebpackBundler implements Bundler {
       return;
     }
 
-    let dynamicDll: DynamicDll | undefined;
-    if (this._options.preBundle) {
-      dynamicDll = new DynamicDll({
-        cacheDir: path.join(this._cliContext.paths.cacheDir, 'dll'),
-        rootDir: this._cliContext.paths.rootDir,
-        exclude: [/react-refresh/],
-        resolveWebpackModule(module) {
-          return resolveWebpackModule(module);
-        }
-      });
-      this._devMiddlewares.push(dynamicDll.middleware);
-    }
-    this._compiler = await this._getWebpackCompiler(dynamicDll);
+    /**
+     * @unsupported DynamicDll is not supported in Rspack.
+     * TODO: Implement DLL support if/when Rspack supports it.
+     */
+    // let dynamicDll: DynamicDll | undefined;
+    // if (this._options.preBundle) {
+    //   dynamicDll = new DynamicDll({
+    //     cacheDir: path.join(this._cliContext.paths.cacheDir, 'dll'),
+    //     rootDir: this._cliContext.paths.rootDir,
+    //     exclude: [/react-refresh/],
+    //     resolveWebpackModule(module) {
+    //       return resolveRspackModule(module);
+    //     }
+    //   });
+    //   this._devMiddlewares.push(dynamicDll.middleware);
+    // }
+    this._compiler = await this._getRspackCompiler(/*dynamicDll*/);
 
     this._inited = true;
   }
@@ -122,7 +135,7 @@ class WebpackBundler implements Bundler {
     return this._watching;
   }
 
-  getSubCompiler(name: string): WebapckCompiler | undefined {
+  getSubCompiler(name: string): RspackCompiler | undefined {
     if (!this._compiler) {
       return;
     }
@@ -148,6 +161,7 @@ class WebpackBundler implements Bundler {
     }
 
     this._targets.forEach(({ name }) => {
+      console.debug(`[rspack][watch] setupListenersForTarget ${name}`);
       if (name === BUNDLER_TARGET_CLIENT) {
         this._setupListenersForTarget(name, {
           typeChecking: true
@@ -159,15 +173,25 @@ class WebpackBundler implements Bundler {
       }
     });
 
-    const webpackWatching = this._compiler.watch(
-      this._compiler.compilers.map(
-        childCompiler => childCompiler.options.watchOptions || {}
-      ),
+    /**
+     * TODO
+     */
+    // const webpackWatching = this._compiler.watch(
+    //   this._compiler.compilers.map(
+    //     childCompiler => childCompiler.options.watchOptions || {}
+    //   ),
+    //   () => {
+    //     // do nothing
+    //   }
+    // );
+
+    const rspackWatching = this._compiler.watch(
+      this._compiler.compilers[0].options.watchOptions || {},
       () => {
         // do nothing
       }
     );
-    this._watching.set(webpackWatching);
+    this._watching.set(rspackWatching);
 
     return this._watching;
   }
@@ -175,15 +199,19 @@ class WebpackBundler implements Bundler {
   async build(): Promise<BundlerResult> {
     const compiler = this._compiler;
 
-    if (this._options.ignoreTypeScriptErrors) {
-      logger.info('Skipping validation of types');
-      this._compiler.compilers.forEach(compiler => {
-        ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
-          'afterTypeScriptCheck',
-          (issues: Issue[]) => issues.filter(msg => msg.severity !== 'error')
-        );
-      });
-    }
+    /**
+     * TODO
+     * TypeScript error handling is now handled by ts-checker-rspack-plugin in config, not here
+     */
+    // if (this._options.ignoreTypeScriptErrors) {
+    //   logger.info('Skipping validation of types');
+    //   this._compiler.compilers.forEach(compiler => {
+    //     ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
+    //       'afterTypeScriptCheck',
+    //       (issues: Issue[]) => issues.filter(msg => msg.severity !== 'error')
+    //     );
+    //   });
+    // }
 
     return runCompiler(compiler);
   }
@@ -196,33 +224,32 @@ class WebpackBundler implements Bundler {
     return this._targets;
   }
 
-  private async _getWebpackCompiler(
-    dynamicDll?: DynamicDll | null
-  ): Promise<WebapckMultiCompiler> {
+  private async _getRspackCompiler(/*dynamicDll?: DynamicDll | null*/): Promise<RspackMultiCompiler> {
     if (!this._compiler) {
       this._targets = await this._getTargets();
-      if (dynamicDll) {
-        this._compiler = webpack(
-          this._targets.map(({ config }) => {
-            if (config.target === 'node') {
-              return config;
-            }
-            return dynamicDll.modifyWebpack(config);
-          })
-        );
-      } else {
-        this._compiler = webpack(this._targets.map(t => t.config));
-      }
+      // if (dynamicDll) {
+      //   this._compiler = rspack(
+      //     this._targets.map(({ config }) => {
+      //       if (config.target === 'node') {
+      //         return config;
+      //       }
+      //       return dynamicDll.modifyWebpack(config);
+      //     })
+      //   );
+      // } else {
+      this._compiler = rspack(this._targets.map(t => t.config));
+      // }
 
       let isFirstSuccessfulCompile = true;
 
       this._compiler.hooks.done.tap('done', async stats => {
-        const warnings: webpack.StatsError[] = [];
-        const errors: webpack.StatsError[] = [];
+        const warnings: Rspack.StatsError[] = [];
+        const errors: Rspack.StatsError[] = [];
         this._isCompiling = false;
         let timeMessage = '';
 
         if (this._startTime) {
+          // @ts-ignore exists ts error
           const time = performance.now() - this._startTime;
           this._startTime = 0;
 
@@ -287,57 +314,58 @@ class WebpackBundler implements Bundler {
   ) {
     const compiler = this.getSubCompiler(name)!;
     let isFirstSuccessfulCompile = true;
-    let tsMessagesPromise: Promise<CompilerStats> | undefined;
-    let tsMessagesResolver: (diagnostics: CompilerStats) => void;
+    // let tsMessagesPromise: Promise<CompilerStats> | undefined;
+    // let tsMessagesResolver: (diagnostics: CompilerStats) => void;
     let isInvalid = true;
 
     const _error = (...args: string[]) => logger.error(`[${name}]`, ...args);
     const _warn = (...args: string[]) => logger.warn(`[${name}]`, ...args);
     compiler.hooks.invalid.tap(`invalid`, () => {
-      tsMessagesPromise = undefined;
+      // tsMessagesPromise = undefined;
       isInvalid = true;
     });
 
-    const useTypeScript = !!compiler.options.plugins?.find(
-      plugin => plugin instanceof ForkTsCheckerWebpackPlugin
-    );
-    if (options.typeChecking && useTypeScript) {
-      const typescriptFormatter = createCodeFrameFormatter({});
+    // const useTypeScript = !!compiler.options.plugins?.find(
+    //   plugin => plugin instanceof ForkTsCheckerWebpackPlugin
+    // );
+    // if (options.typeChecking && useTypeScript) {
+    //   const typescriptFormatter = createCodeFrameFormatter({});
 
-      compiler.hooks.beforeCompile.tap('beforeCompile', () => {
-        tsMessagesPromise = new Promise(resolve => {
-          tsMessagesResolver = msgs => resolve(msgs);
-        });
-      });
+    //   compiler.hooks.beforeCompile.tap('beforeCompile', () => {
+    //     tsMessagesPromise = new Promise(resolve => {
+    //       tsMessagesResolver = msgs => resolve(msgs);
+    //     });
+    //   });
 
-      ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
-        'afterTypeScriptCheck',
-        (issues: Issue[]) => {
-          const format = (message: any) => {
-            const file = (message.file || '').replace(/\\/g, '/');
-            const formatted = typescriptFormatter(message);
-            return {
-              message: formatted,
-              moduleName: file
-            };
-          };
-          tsMessagesResolver({
-            errors: issues.filter(msg => msg.severity === 'error').map(format),
-            warnings: issues
-              .filter(msg => msg.severity === 'warning')
-              .map(format)
-          });
-          return issues;
-        }
-      );
-    }
+    //   ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
+    //     'afterTypeScriptCheck',
+    //     (issues: Issue[]) => {
+    //       const format = (message: any) => {
+    //         const file = (message.file || '').replace(/\\/g, '/');
+    //         const formatted = typescriptFormatter(message);
+    //         return {
+    //           message: formatted,
+    //           moduleName: file
+    //         };
+    //       };
+    //       tsMessagesResolver({
+    //         errors: issues.filter(msg => msg.severity === 'error').map(format),
+    //         warnings: issues
+    //           .filter(msg => msg.severity === 'warning')
+    //           .map(format)
+    //       });
+    //       return issues;
+    //     }
+    //   );
+    // }
 
     compiler.hooks.invalid.tap('invalid', () => {
       if (this._startTime === null) {
+        // @ts-ignore exists ts error
         this._startTime = performance.now();
       }
     });
-    // "done" event fires when Webpack has finished recompiling the bundle.
+    // "done" event fires when Rspack has finished recompiling the bundle.
     // Whether or not you have warnings or errors, you will get this event.
     compiler.hooks.done.tap('done', async stats => {
       // if done is triggered without a preceding invalid event, just ignore it
@@ -347,7 +375,7 @@ class WebpackBundler implements Bundler {
       }
       isInvalid = false;
 
-      // We have switched off the default Webpack output in WebpackDevServer
+      // We have switched off the default Rspack output in DevServer
       // options so we are going to "massage" the warnings and errors and present
       // them in a readable focused way.
       // We only construct the warnings and errors for speed:
@@ -392,26 +420,26 @@ class WebpackBundler implements Bundler {
         warnings: statsData.warnings ? statsData.warnings.slice(0, 1) : []
       });
 
-      const typePromise = tsMessagesPromise;
-      if (options.typeChecking && useTypeScript && !hasErrors) {
-        const messages = await tsMessagesPromise;
-        if (typePromise !== tsMessagesPromise) {
-          // a new compilation started so we don't care about this
-          return;
-        }
+      // const typePromise = tsMessagesPromise;
+      // if (options.typeChecking && useTypeScript && !hasErrors) {
+      //   const messages = await tsMessagesPromise;
+      //   if (typePromise !== tsMessagesPromise) {
+      //     // a new compilation started so we don't care about this
+      //     return;
+      //   }
 
-        if (messages) {
-          this._typecheckingEvent.emit({
-            errors: messages.errors ? messages.errors.slice(0, 1) : [],
-            warnings: messages.warnings ? messages.warnings.slice(0, 1) : []
-          });
-        } else {
-          this._typecheckingEvent.emit({
-            errors: [],
-            warnings: []
-          });
-        }
-      }
+      //   if (messages) {
+      //     this._typecheckingEvent.emit({
+      //       errors: messages.errors ? messages.errors.slice(0, 1) : [],
+      //       warnings: messages.warnings ? messages.warnings.slice(0, 1) : []
+      //     });
+      //   } else {
+      //     this._typecheckingEvent.emit({
+      //       errors: [],
+      //       warnings: []
+      //     });
+      //   }
+      // }
     });
   }
 
@@ -438,25 +466,25 @@ class WebpackBundler implements Bundler {
       await this._cliContext.pluginRunner.addExtraTarget({
         createConfig: this._createConfig.bind(this),
         mode: this._cliContext.mode,
-        webpack
+        webpack: rspack
       })
     ).filter(Boolean);
     buildTargets.push(...extraTargets);
 
-    const defaultWebpackHelpers = { addExternals };
+    const defaultRspackHelpers = { addExternals };
     for (const buildTarget of buildTargets) {
       let { chain, name } = buildTarget;
       // modify config by api hooks
       chain = await this._cliContext.pluginRunner.configWebpack(chain, {
         name,
         mode: this._cliContext.mode,
-        helpers: defaultWebpackHelpers,
-        webpack,
+        helpers: defaultRspackHelpers,
+        webpack: rspack,
         resolveWebpackModule(path: string) {
-          return resolveWebpackModule(path);
+          return resolveRspackModule(path);
         }
       });
-      checkWebpackExternals(chain);
+      checkRspackExternals(chain);
       if (hasEntry(chain)) {
         const chainConfig = chain.toConfig();
         logger.debug(`${name} Config`);
@@ -481,7 +509,7 @@ export async function getBundler(ctx: IPluginContext): Promise<Bundler> {
     if (ctx.mode !== 'development') {
       options.preBundle = false;
     }
-    const bundler = new WebpackBundler(options, ctx);
+    const bundler = new RspackBundler(options, ctx);
     await bundler.init();
     return bundler;
   } catch (err: any) {
