@@ -1,6 +1,6 @@
 import invariant from '@shuvi/utils/invariant';
 import { RspackChain } from '../base.rspack';
-import { ExternalsFunction } from '../../types';
+import { ExternalsFunction } from '../../types.rspack';
 
 const externalsFunctionMap = new WeakMap<RspackChain, ExternalsFunction[]>();
 
