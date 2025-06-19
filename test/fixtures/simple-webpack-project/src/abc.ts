@@ -1,6 +1,4 @@
-const greet = name => {
+export const greet = (name: string) => {
   const message = `Hello, ${name}!`;
   console.log(message);
 };
-
-greet('Webpack');

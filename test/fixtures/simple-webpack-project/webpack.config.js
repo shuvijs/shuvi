@@ -17,6 +17,9 @@ const chain = baseWebpackChain({
   env: {}
 });
 
+// Add TypeScript extensions to resolver
+chain.resolve.extensions.merge(['.ts', '.tsx', '.js', '.jsx', '.json']);
+
 fs.writeFileSync(
   path.resolve(__dirname, `.webpack.raw.js`),
   `module.export = ${chain.toString()}`,
