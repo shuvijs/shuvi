@@ -1,28 +1,24 @@
-// @ts-nocheck
 import {
   IModuleItem,
   IManifest,
   BUILD_CLIENT_RUNTIME_POLYFILLS_SYMBOL
 } from '../../../../../shared';
-import {
-  webpack,
-  Compiler,
-  Compilation,
-  sources,
-  Plugin,
-  ChunkGroup,
-  Asset,
-  resolveWebpackModule
-} from '@shuvi/toolpack/lib/webpack';
+import { rspack, sources } from '@shuvi/toolpack/lib/webpack';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
 
-const Entrypoint = resolveWebpackModule('webpack/lib/Entrypoint');
+interface RspackPlugin {
+  apply: (compiler: Rspack.Compiler) => void;
+}
 
 const { RawSource } = sources;
 
+// TODO: Rspack 需要确认 ModuleId 类型定义
+// 当前 Rspack 的模块 ID 类型可能与 webpack 不同
+// 需要根据 Rspack 的实际 API 来定义正确的类型
 type ModuleId = string | number;
 
 /**
- * Default configuration options for BuildManifestPlugin
+ * Default configuration options for RspackBuildManifestPlugin
  */
 const defaultOptions = {
   filename: 'build-manifest.json',
@@ -31,7 +27,7 @@ const defaultOptions = {
 };
 
 /**
- * Configuration options for BuildManifestPlugin
+ * Configuration options for RspackBuildManifestPlugin
  */
 interface Options {
   /** Output filename for the build manifest JSON file */
@@ -60,30 +56,13 @@ function getFileExt(filepath: string): string {
   return match[1];
 }
 
-// function findEntrypointName(chunkGroup: any): string[] {
-//   const entrypoints: any[] = [];
-//   const queue: any[] = [chunkGroup];
-//   while (queue.length) {
-//     const item = queue.shift();
-//     for (const parent of item.getParents()) {
-//       if (parent instanceof Entrypoint) {
-//         entrypoints.push(parent.name);
-//       } else {
-//         queue.push(parent);
-//       }
-//     }
-//   }
-
-//   return entrypoints;
-// }
-
 /**
- * Webpack plugin that generates a build manifest JSON file containing mappings
+ * Rspack plugin that generates a build manifest JSON file containing mappings
  * of entry filenames to their actual output filenames (which may be hashed in production).
  *
- * This plugin is essential for frameworks that need to know the relationship between
- * entry points and their corresponding built assets, especially when assets are
- * hashed for cache busting.
+ * This plugin is adapted from the webpack version to work with Rspack's API.
+ * It provides the same functionality for frameworks that need to know the relationship
+ * between entry points and their corresponding built assets.
  *
  * ## Features
  * - Maps entry points to their output files
@@ -124,12 +103,12 @@ function getFileExt(filepath: string): string {
  *
  * ## Usage Example
  * ```typescript
- * // In webpack configuration
- * const BuildManifestPlugin = require('./build-manifest-plugin');
+ * // In rspack configuration
+ * const RspackBuildManifestPlugin = require('./rspack-build-manifest-plugin');
  *
  * module.exports = {
  *   plugins: [
- *     new BuildManifestPlugin({
+ *     new RspackBuildManifestPlugin({
  *       filename: 'build-manifest.json',
  *       modules: true,
  *       chunkRequest: true
@@ -143,22 +122,28 @@ function getFileExt(filepath: string): string {
  * - **Asset Loading**: Determine which files to load for specific routes
  * - **Cache Management**: Track hashed filenames for cache invalidation
  * - **Code Splitting**: Understand relationships between chunks and their requests
+ *
+ * ## Differences from Webpack Version
+ * - Uses Rspack's API instead of Webpack's
+ * - Simplified module collection (Rspack has different module APIs)
+ * - Adapted to Rspack's chunk and compilation structure
+ * - Some features are marked with TODO comments for future Rspack API support
  */
-export default class BuildManifestPlugin implements Plugin {
+export default class RspackBuildManifestPlugin implements RspackPlugin {
   private _options: Options;
   private _manifest!: IManifest;
 
   /**
-   * Creates a new BuildManifestPlugin instance
+   * Creates a new RspackBuildManifestPlugin instance
    * @param options - Configuration options for the plugin
    *
    * @example
    * ```typescript
    * // Basic usage with default options
-   * new BuildManifestPlugin()
+   * new RspackBuildManifestPlugin()
    *
    * // Custom configuration
-   * new BuildManifestPlugin({
+   * new RspackBuildManifestPlugin({
    *   filename: 'assets-manifest.json',
    *   modules: true,
    *   chunkRequest: true
@@ -174,8 +159,8 @@ export default class BuildManifestPlugin implements Plugin {
 
   /**
    * Creates the build manifest by analyzing compilation assets and chunks
-   * @param compiler - Webpack compiler instance
-   * @param compilation - Webpack compilation instance
+   * @param compiler - Rspack compiler instance
+   * @param compilation - Rspack compilation instance
    * @returns The generated manifest object
    *
    * This method performs the following operations:
@@ -185,7 +170,7 @@ export default class BuildManifestPlugin implements Plugin {
    * 4. Identifies polyfill files
    * 5. Sorts and organizes loadable modules
    */
-  createAssets(compiler: Compiler, compilation: Compilation) {
+  createAssets(compiler: Rspack.Compiler, compilation: Rspack.Compilation) {
     const assetMap = (this._manifest = {
       entries: {},
       bundles: {},
@@ -193,30 +178,33 @@ export default class BuildManifestPlugin implements Plugin {
       loadble: {}
     });
 
-    // Create a map of chunk root modules for efficient lookup
-    const chunkRootModulesMap = new Map<ModuleId, Boolean>();
-    compilation.chunks.forEach(chunk => {
-      const { chunkGraph } = compilation;
-      if (chunkGraph) {
-        chunkGraph.getChunkRootModules(chunk).forEach(module => {
-          const id = chunkGraph.getModuleId(module);
-          if (id !== '') {
-            chunkRootModulesMap.set(id, true);
-          }
-        });
-      }
-    });
+    // TODO: Rspack 需要实现 chunk root modules 映射
+    // Webpack 版本使用 chunkGraph.getChunkRootModules() 来创建映射
+    // Rspack 可能需要使用不同的 API 或等待相关功能支持
+    // const chunkRootModulesMap = new Map<ModuleId, Boolean>();
+    // compilation.chunks.forEach(chunk => {
+    //   const { chunkGraph } = compilation;
+    //   if (chunkGraph) {
+    //     chunkGraph.getChunkRootModules(chunk).forEach(module => {
+    //       const id = chunkGraph.getModuleId(module);
+    //       if (id !== '') {
+    //         chunkRootModulesMap.set(id, true);
+    //       }
+    //     });
+    //   }
+    // });
 
     // Process all chunk groups
     compilation.chunkGroups.forEach(chunkGroup => {
-      if (chunkGroup instanceof Entrypoint) {
+      // Check if this is an entry point
+      if (chunkGroup.isInitial()) {
         this._collectEntries(chunkGroup);
       }
 
-      this._collect(chunkGroup, compiler, compilation, chunkRootModulesMap);
+      this._collect(chunkGroup, compiler, compilation);
     });
 
-    const compilationAssets: Asset[] = compilation.getAssets();
+    const compilationAssets = compilation.getAssets();
 
     // Collect polyfill files
     this._manifest.polyfillFiles = compilationAssets
@@ -240,20 +228,20 @@ export default class BuildManifestPlugin implements Plugin {
   }
 
   /**
-   * Applies the plugin to the webpack compiler
-   * @param compiler - Webpack compiler instance
+   * Applies the plugin to the rspack compiler
+   * @param compiler - Rspack compiler instance
    *
-   * This method hooks into the webpack compilation process to:
+   * This method hooks into the rspack compilation process to:
    * 1. Listen for the 'make' hook to prepare for asset processing
    * 2. Hook into 'processAssets' to generate the manifest file
    * 3. Create the JSON file as a compilation asset
    */
-  apply(compiler: Compiler) {
-    compiler.hooks.make.tap('BuildManifestPlugin', compilation => {
+  apply(compiler: Rspack.Compiler) {
+    compiler.hooks.make.tap('RspackBuildManifestPlugin', compilation => {
       compilation.hooks.processAssets.tap(
         {
-          name: 'BuildManifestPlugin',
-          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+          name: 'RspackBuildManifestPlugin',
+          stage: rspack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
         },
         assets => {
           assets[this._options.filename] = new RawSource(
@@ -272,7 +260,7 @@ export default class BuildManifestPlugin implements Plugin {
    * This method processes entry points and maps them to their output files,
    * filtering out source maps and hot update files.
    */
-  private _collectEntries(entrypoint: ChunkGroup) {
+  private _collectEntries(entrypoint: Rspack.ChunkGroup) {
     for (const chunk of entrypoint.chunks) {
       // If there's no name or no files
       if (!chunk.name || !chunk.files) {
@@ -293,9 +281,8 @@ export default class BuildManifestPlugin implements Plugin {
   /**
    * Collects information from chunk groups including chunks and modules
    * @param chunkGroup - The chunk group to process
-   * @param compiler - Webpack compiler instance
-   * @param compilation - Webpack compilation instance
-   * @param chunkRootModulesMap - Map of chunk root modules for efficient lookup
+   * @param compiler - Rspack compiler instance
+   * @param compilation - Rspack compilation instance
    *
    * This method processes chunk groups to collect:
    * - Chunk information (files, requests)
@@ -303,15 +290,17 @@ export default class BuildManifestPlugin implements Plugin {
    * - Loadable modules and their relationships
    */
   private _collect(
-    chunkGroup: ChunkGroup,
-    compiler: Compiler,
-    compilation: Compilation,
-    chunkRootModulesMap: Map<ModuleId, Boolean>
+    chunkGroup: Rspack.ChunkGroup,
+    compiler: Rspack.Compiler,
+    compilation: Rspack.Compilation
   ): void {
     const collectModules = this._options.modules;
-    chunkGroup.origins.forEach(chunkGroupOrigin => {
+
+    // Rspack chunk groups may have origins with request information
+    const origins = chunkGroup.origins || [];
+    origins.forEach(chunkGroupOrigin => {
       const { request } = chunkGroupOrigin;
-      const ctx = { request, compiler, compilation, chunkRootModulesMap };
+      const ctx = { request: request || '', compiler, compilation };
       chunkGroup.chunks.forEach(chunk => {
         this._collectChunk(chunk, ctx);
         if (collectModules) {
@@ -319,11 +308,25 @@ export default class BuildManifestPlugin implements Plugin {
         }
       });
     });
+
+    // If no origins, still process chunks
+    if (origins.length === 0) {
+      chunkGroup.chunks.forEach(chunk => {
+        this._collectChunk(chunk, { request: '' });
+        if (collectModules) {
+          this._collectChunkModule(chunk, {
+            request: '',
+            compiler,
+            compilation
+          });
+        }
+      });
+    }
   }
 
   /**
    * Collects information from individual chunks
-   * @param chunk - The webpack chunk to process
+   * @param chunk - The rspack chunk to process
    * @param request - The request that generated this chunk
    *
    * This method processes chunks to:
@@ -332,7 +335,7 @@ export default class BuildManifestPlugin implements Plugin {
    * - Filter out source maps and hot update files
    */
   private _collectChunk(
-    chunk: webpack.Chunk,
+    chunk: any,
     {
       request
     }: {
@@ -370,29 +373,26 @@ export default class BuildManifestPlugin implements Plugin {
 
   /**
    * Collects module information from chunks (when modules option is enabled)
-   * @param chunk - The webpack chunk to process
+   * @param chunk - The rspack chunk to process
    * @param request - The request that generated this chunk
-   * @param compiler - Webpack compiler instance
-   * @param compilation - Webpack compilation instance
-   * @param chunkRootModulesMap - Map of chunk root modules
+   * @param compiler - Rspack compiler instance
+   * @param compilation - Rspack compilation instance
    *
    * This method processes chunks to collect:
    * - Loadable module files (JS and CSS)
-   * - Module metadata (ID, name)
+   * - Module metadata (ID, name) - simplified for Rspack
    * - Root modules for code splitting analysis
    */
   private _collectChunkModule(
-    chunk: webpack.Chunk,
+    chunk: any,
     {
       request,
       compiler,
-      compilation,
-      chunkRootModulesMap
+      compilation
     }: {
       request: string;
-      compiler: Compiler;
-      compilation: Compilation;
-      chunkRootModulesMap: Map<ModuleId, Boolean>;
+      compiler: Rspack.Compiler;
+      compilation: Rspack.Compilation;
     }
   ) {
     if (chunk.canBeInitial()) {
@@ -400,6 +400,8 @@ export default class BuildManifestPlugin implements Plugin {
     }
 
     const context = compiler.options.context!;
+
+    // Collect files from chunk
     chunk.files.forEach((file: string) => {
       const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
       const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
@@ -408,31 +410,50 @@ export default class BuildManifestPlugin implements Plugin {
       }
     });
 
-    const { chunkGraph } = compilation;
+    // TODO: Rspack 模块收集需要适配
+    // Webpack 版本使用 chunkGraph.getChunkModulesIterable() 和 chunkRootModulesMap
+    // Rspack 可能需要使用不同的 API 或等待相关功能支持
+    // 当前实现是简化版本，可能需要根据 Rspack 的实际 API 进行调整
+    try {
+      const { chunkGraph } = compilation;
+      if (
+        chunkGraph &&
+        typeof chunkGraph.getChunkModulesIterable === 'function'
+      ) {
+        for (const module of chunkGraph.getChunkModulesIterable(chunk)) {
+          let id = chunkGraph.getModuleId(module);
+          if (!module.type || !module.type.startsWith('javascript')) {
+            continue;
+          }
 
-    if (chunkGraph) {
-      for (const module of chunkGraph.getChunkModulesIterable(chunk)) {
-        let id = chunkGraph.getModuleId(module);
-        if (!module.type.startsWith('javascript')) {
-          continue;
-        }
+          let name = null;
+          if (typeof module.libIdent === 'function') {
+            name = module.libIdent({ context });
+          }
 
-        let name =
-          typeof module.libIdent === 'function'
-            ? module.libIdent({ context })
-            : null;
+          if (!name || name.endsWith('.css')) {
+            continue;
+          }
 
-        if (!name || name.endsWith('.css')) {
-          continue;
-        }
-
-        if (chunkRootModulesMap.has(id)) {
+          // TODO: Rspack 需要实现 chunk root modules 检查
+          // Webpack 版本使用 chunkRootModulesMap.has(id) 来检查是否为根模块
+          // Rspack 可能需要使用不同的方式来判断模块是否为根模块
+          // 当前暂时将所有模块都作为 loadable 模块处理
+          // const isRootModule = chunkRootModulesMap.has(id);
+          // if (isRootModule) {
           this._pushLoadableModules(request, {
             id,
             name
           } as IModuleItem);
+          // }
         }
       }
+    } catch (error) {
+      // Rspack might not have the same module APIs as webpack
+      // This is a fallback for compatibility
+      console.warn(
+        'RspackBuildManifestPlugin: Module collection not fully supported in this Rspack version'
+      );
     }
   }
 
