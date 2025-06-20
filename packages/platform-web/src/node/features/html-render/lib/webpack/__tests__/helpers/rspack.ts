@@ -1,11 +1,11 @@
 import { createFsFromVolume, Volume } from 'memfs';
 import {
-  webpack,
+  rspack,
   Stats,
-  Compiler as WebpackCompiler,
+  Compiler as RspackCompiler,
   Configuration,
   NormalModule
-} from '@shuvi/toolpack/lib/webpack/index.webpack';
+} from '@shuvi/toolpack/lib/webpack/rspack';
 import { resolveFixture } from '../utils';
 
 export interface WatchChainer {
@@ -13,7 +13,7 @@ export interface WatchChainer {
   end(endFn: JestDoneCallback): void;
 }
 
-export type Compiler = Omit<WebpackCompiler, 'watch'> & {
+export type Compiler = Omit<RspackCompiler, 'watch'> & {
   watch(): Promise<Stats>;
   close(cb?: CompileCloseCallback): void;
   forceCompile(): void;
@@ -92,11 +92,11 @@ function waitForCompile(compiler: Compiler, initialCb: CompileDoneCallback) {
 }
 
 export function createCompiler(
-  value: Configuration | WebpackCompiler
+  value: Configuration | RspackCompiler
 ): Compiler {
   let compiler: Compiler;
-  if (!(value instanceof webpack.Compiler)) {
-    compiler = webpack({
+  if (!(value instanceof rspack.Compiler)) {
+    compiler = rspack({
       mode: 'development',
       output: {
         filename: '[name].js',
@@ -109,11 +109,11 @@ export function createCompiler(
     compiler = value as any as Compiler;
   }
 
-  let watching: WebpackCompiler['watching'] | null = null;
+  let watching: RspackCompiler['watching'] | null = null;
   const fs = createFsFromVolume(new Volume());
   compiler.outputFileSystem = fs as any;
 
-  const originWatch = compiler.watch as any as WebpackCompiler['watch'];
+  const originWatch = compiler.watch as any as RspackCompiler['watch'];
   compiler.watch = function () {
     return new Promise<any>((resolve, reject) => {
       watching = originWatch.call(
@@ -155,7 +155,7 @@ export function createCompiler(
 }
 
 export function runCompiler(
-  value: Configuration | WebpackCompiler
+  value: Configuration | RspackCompiler
 ): Promise<Stats> {
   const compiler = createCompiler(value);
   return new Promise<any>((resolve, reject) => {
@@ -171,9 +171,7 @@ export function runCompiler(
   });
 }
 
-export function watchCompiler(
-  value: Configuration | WebpackCompiler
-): Compiler {
+export function watchCompiler(value: Configuration | RspackCompiler): Compiler {
   const compiler = createCompiler(value);
   compiler.watch();
   return compiler;

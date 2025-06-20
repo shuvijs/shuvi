@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   IModuleItem,
   IManifest,
@@ -13,7 +12,7 @@ import {
   ChunkGroup,
   Asset,
   resolveWebpackModule
-} from '@shuvi/toolpack/lib/webpack';
+} from '@shuvi/toolpack/lib/webpack/index.webpack';
 
 const Entrypoint = resolveWebpackModule('webpack/lib/Entrypoint');
 
