@@ -5,7 +5,7 @@ import {
   Compiler as RspackCompiler,
   Configuration,
   NormalModule
-} from '@shuvi/toolpack/lib/webpack/rspack';
+} from '@shuvi/toolpack/lib/webpack';
 import { resolveFixture } from '../utils';
 
 export interface WatchChainer {
