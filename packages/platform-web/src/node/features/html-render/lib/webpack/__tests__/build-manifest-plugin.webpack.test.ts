@@ -160,8 +160,8 @@ describe('BuildManifestPlugin', () => {
             './shared/one': {
               children: [
                 {
-                  id: expect.stringContaining('shared/one.js'),
-                  name: expect.stringContaining('shared/one.js')
+                  id: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/one.js',
+                  name: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/one.js'
                 }
               ],
               files: ['static/chunks/helperOne.js']
@@ -169,8 +169,8 @@ describe('BuildManifestPlugin', () => {
             './shared/two': {
               children: [
                 {
-                  id: expect.stringContaining('shared/two.js'),
-                  name: expect.stringContaining('shared/two.js')
+                  id: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/two.js',
+                  name: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/two.js'
                 }
               ],
               files: ['static/chunks/helperTwo.js']
@@ -225,8 +225,8 @@ describe('BuildManifestPlugin', () => {
             './shared/one': {
               children: [
                 {
-                  id: expect.stringContaining('shared/one.js'),
-                  name: expect.stringContaining('shared/one.js')
+                  id: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/one.js',
+                  name: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/one.js'
                 }
               ],
               files: ['static/chunks/helperOne.js']
@@ -234,8 +234,8 @@ describe('BuildManifestPlugin', () => {
             './shared/two': {
               children: [
                 {
-                  id: expect.stringContaining('shared/two.js'),
-                  name: expect.stringContaining('shared/two.js')
+                  id: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/two.js',
+                  name: './packages/platform-web/src/node/features/html-render/lib/webpack/__tests__/fixtures/manifest/shared/two.js'
                 }
               ],
               files: ['static/chunks/helperTwo.js']
