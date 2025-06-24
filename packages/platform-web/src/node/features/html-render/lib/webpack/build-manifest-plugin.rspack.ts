@@ -12,11 +12,6 @@ interface RspackPlugin {
 
 const { RawSource } = sources;
 
-// TODO: Rspack 需要确认 ModuleId 类型定义
-// 当前 Rspack 的模块 ID 类型可能与 webpack 不同
-// 需要根据 Rspack 的实际 API 来定义正确的类型
-type ModuleId = string | number;
-
 /**
  * Default configuration options for RspackBuildManifestPlugin
  */
