@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { Resolver } from 'webpack';
 import JsConfigPathsPlugin, {
   Pattern,
   hasZeroOrOneAsteriskCharacter,
