@@ -351,15 +351,38 @@ export function baseRspackChain({
 
     config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
   } else {
+    // class PrintModuleIdsPlugin {
+    //   apply(compiler: rspack.Compiler) {
+    //     compiler.hooks.compilation.tap('PrintModuleIdsPlugin', (compilation) => {
+    //       compilation.hooks.processAssets.tap(
+    //         {
+    //           name: 'PrintModuleIdsPlugin',
+    //           // PROCESS_ASSETS_STAGE_ADDITIONS 是比較晚的階段，ID 通常已分配完成
+    //           stage: rspack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+    //         },
+    //         () => {
+    //           for (const module of compilation.modules) {
+    //             const id = compilation.chunkGraph.getModuleId(module);
+    //             if (id != null) {
+    //               console.log('module id:', id, 'request:', (module as any).rawRequest || (module as any).userRequest);
+    //             } else {
+    //               console.log('module id: <null>', 'request:', (module as any).rawRequest || (module as any).userRequest);
+    //             }
+    //           }
+    //         }
+    //       );
+    //     });
+    //   }
+    // }
+    // config.plugin('private/print-module-ids-plugin').use(PrintModuleIdsPlugin);
+
     /**
-     * @todo Rspack does not support HashedModuleIdsPlugin.
-     *
-     * - HashedModuleIdsPlugin: Used in Webpack to create stable module ids for long-term caching. Rspack's module id generation is internal and not pluggable as of now.
-     *
-     * Migration advice: Watch for Rspack to expose a module id hashing plugin or API. If/when available, restore this for improved long-term caching and cache busting.
-     * See: https://github.com/web-infra-dev/rspack/issues/ for updates.
+     * enable deterministic module ids
+     * this is equivalent to webpack's HashedModuleIdsPlugin
      */
-    // config.plugin('private/hashed-moduleids-plugin').use(webpack.ids.HashedModuleIdsPlugin);
+    config.optimization.merge({
+      moduleIds: 'deterministic' // equivalent to webpack's HashedModuleIdsPlugin
+    });
   }
 
   return config;
