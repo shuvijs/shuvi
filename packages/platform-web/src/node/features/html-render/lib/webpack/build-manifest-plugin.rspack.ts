@@ -5,7 +5,6 @@ import {
 } from '../../../../../shared';
 import { rspack, sources } from '@shuvi/toolpack/lib/webpack';
 import * as Rspack from '@shuvi/toolpack/lib/webpack';
-import * as fs from 'fs';
 
 interface RspackPlugin {
   apply: (compiler: Rspack.Compiler) => void;
@@ -16,7 +15,7 @@ const { RawSource } = sources;
 // TODO: Rspack 需要确认 ModuleId 类型定义
 // 当前 Rspack 的模块 ID 类型可能与 webpack 不同
 // 需要根据 Rspack 的实际 API 来定义正确的类型
-type ModuleId = string | number;
+// type ModuleId = string | number;
 
 /**
  * Default configuration options for RspackBuildManifestPlugin
@@ -352,7 +351,8 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       chunkGroup.chunks.forEach(chunk => {
         const rawRequest = this._getFirstRawRequest(compilation, chunk);
         if (rawRequest) {
-          ctx.request = rawRequest;
+          // @TODO lodable support
+          // ctx.request = rawRequest;
         }
         this._collectChunk(chunk, ctx);
         if (collectModules) {
@@ -412,9 +412,6 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       // normal chunk
       if (ext === 'js') {
         if (chunk.isOnlyInitial()) {
-          if (!chunk.name) {
-            throw new Error('Chunk name is required');
-          }
           this._pushBundle({
             name: chunk.name,
             file: normalizedPath
@@ -552,7 +549,13 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
    * // Results in: { bundles: { main: '/static/js/main.abc123.js' } }
    * ```
    */
-  private _pushBundle({ name, file }: { name: string; file: string }) {
+  private _pushBundle({
+    name,
+    file
+  }: {
+    name: string | undefined;
+    file: string;
+  }) {
     if (name) {
       this._manifest.bundles[name] = file;
     }
