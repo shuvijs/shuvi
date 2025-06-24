@@ -5,7 +5,6 @@ import {
 } from '../../../../../shared';
 import { rspack, sources } from '@shuvi/toolpack/lib/webpack';
 import * as Rspack from '@shuvi/toolpack/lib/webpack';
-import * as fs from 'fs';
 
 interface RspackPlugin {
   apply: (compiler: Rspack.Compiler) => void;
@@ -347,7 +346,8 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       chunkGroup.chunks.forEach(chunk => {
         const rawRequest = this._getFirstRawRequest(compilation, chunk);
         if (rawRequest) {
-          ctx.request = rawRequest;
+          // @TODO lodable support
+          // ctx.request = rawRequest;
         }
         this._collectChunk(chunk, ctx);
         if (collectModules) {
@@ -407,9 +407,6 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       // normal chunk
       if (ext === 'js') {
         if (chunk.isOnlyInitial()) {
-          if (!chunk.name) {
-            throw new Error('Chunk name is required');
-          }
           this._pushBundle({
             name: chunk.name,
             file: normalizedPath
@@ -547,7 +544,13 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
    * // Results in: { bundles: { main: '/static/js/main.abc123.js' } }
    * ```
    */
-  private _pushBundle({ name, file }: { name: string; file: string }) {
+  private _pushBundle({
+    name,
+    file
+  }: {
+    name: string | undefined;
+    file: string;
+  }) {
     if (name) {
       this._manifest.bundles[name] = file;
     }

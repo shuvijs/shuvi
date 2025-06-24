@@ -4,7 +4,6 @@ const rspackResolveContext = join(
   dirname(require.resolve('@rspack/core/package.json')),
   '../'
 );
-console.debug(`[rspack][rspackResolveContext] ${rspackResolveContext}`);
 
 export * from './rspack';
 
