@@ -179,6 +179,13 @@ export function watchCompiler(
   return compiler;
 }
 
+/**
+ * get module source from webpack stats
+ *
+ * @param stats webpack stats
+ * @param request module request
+ * @returns module source
+ */
 export function getModuleSource(stats: Stats, request: string | RegExp) {
   let res: any;
   for (const m of stats.compilation.modules) {
