@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { CorePluginConstructor, createPlugin } from '@shuvi/service';
-import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
+// import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
 import { resolveLocal } from '../../../paths';
 import { BUNDLER_TARGET_CLIENT } from '../../../../shared';
 
@@ -92,11 +92,11 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
       }
     ]);
 
-    if (context.mode === 'development') {
-      config
-        .plugin('react-refresh-plugin')
-        .use(ReactRefreshWebpackPlugin, [webpack]);
-    }
+    // if (context.mode === 'development') {
+    //   config
+    //     .plugin('react-refresh-plugin')
+    //     .use(ReactRefreshWebpackPlugin, [webpack]);
+    // }
   }
 
   return config;
