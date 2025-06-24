@@ -5,6 +5,7 @@ import {
 } from '../../../../../shared';
 import { rspack, sources } from '@shuvi/toolpack/lib/webpack';
 import * as Rspack from '@shuvi/toolpack/lib/webpack';
+import * as fs from 'fs';
 
 interface RspackPlugin {
   apply: (compiler: Rspack.Compiler) => void;
@@ -249,6 +250,53 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
   }
 
   /**
+   * Get the raw request of the chunk
+   * @param compilation - Rspack compilation instance
+   * @param chunk - Rspack chunk instance
+   * @returns The raw request of the chunk
+   */
+  private _getFirstRawRequest(
+    compilation: Rspack.Compilation,
+    chunk: Rspack.Chunk
+  ): string | undefined {
+    const modules = compilation.chunkGraph.getChunkModules(chunk);
+    const rawRequests = modules
+      .map(m => {
+        const rawRequest = (m as any).rawRequest;
+        if (rawRequest) {
+          return rawRequest;
+        }
+      })
+      .filter(Boolean);
+    if (rawRequests.length > 1) {
+      console.debug(
+        `[Rspack] chunk="${chunk.name}" rawRequests length > 1: length=${rawRequests.length}`
+      );
+      /**
+       * @rspack-diff
+       * @TODO workaround: because Rspack's behavior is different from webpack
+       * if rawRequests length > 1,
+       * then try to return the sideEffectFree module's rawRequest
+       */
+      const sideEffectFreeModules = modules.filter(m => {
+        const factoryMeta = (m as any).factoryMeta;
+        return factoryMeta && factoryMeta.sideEffectFree === true;
+      });
+      if (sideEffectFreeModules.length) {
+        const rawRequest: string | undefined = (sideEffectFreeModules[0] as any)
+          .rawRequest;
+        console.debug(
+          `[Rspack] chunk="${chunk.name}" try to pick sideEffectFreeModules="${rawRequest}"`
+        );
+        if (rawRequest) {
+          return rawRequest;
+        }
+      }
+    }
+
+    return rawRequests[0] || '';
+  }
+  /**
    * Collects entry point information from chunk groups
    * @param entrypoint - The entry point chunk group to process
    *
@@ -297,6 +345,10 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       const { request } = chunkGroupOrigin;
       const ctx = { request: request || '', compiler, compilation };
       chunkGroup.chunks.forEach(chunk => {
+        const rawRequest = this._getFirstRawRequest(compilation, chunk);
+        if (rawRequest) {
+          ctx.request = rawRequest;
+        }
         this._collectChunk(chunk, ctx);
         if (collectModules) {
           this._collectChunkModule(chunk, ctx);
@@ -307,7 +359,7 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
     // If no origins, still process chunks
     if (origins.length === 0) {
       chunkGroup.chunks.forEach(chunk => {
-        this._collectChunk(chunk, { request: '' });
+        this._collectChunk(chunk, { request: '', compilation, compiler });
         if (collectModules) {
           this._collectChunkModule(chunk, {
             request: '',
@@ -330,17 +382,20 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
    * - Filter out source maps and hot update files
    */
   private _collectChunk(
-    chunk: any,
+    chunk: Rspack.Chunk,
     {
-      request
+      request,
+      compilation,
+      compiler
     }: {
       request: string;
+      compilation: Rspack.Compilation;
+      compiler: Rspack.Compiler;
     }
   ) {
     if (!chunk.files) {
       return;
     }
-
     for (const file of chunk.files) {
       if (/\.map$/.test(file) || /\.hot-update\.js$/.test(file)) {
         continue;
@@ -352,6 +407,9 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       // normal chunk
       if (ext === 'js') {
         if (chunk.isOnlyInitial()) {
+          if (!chunk.name) {
+            throw new Error('Chunk name is required');
+          }
           this._pushBundle({
             name: chunk.name,
             file: normalizedPath
@@ -360,7 +418,7 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
 
         this._pushChunkRequest({
           file: normalizedPath,
-          request
+          request: request
         });
       }
     }
@@ -379,7 +437,7 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
    * - Root modules for code splitting analysis
    */
   private _collectChunkModule(
-    chunk: any,
+    chunk: Rspack.Chunk,
     {
       request,
       compiler,
