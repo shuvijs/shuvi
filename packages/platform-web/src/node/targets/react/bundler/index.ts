@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { CorePluginConstructor, createPlugin } from '@shuvi/service';
-// import ReactRefreshWebpackPlugin from '@next/react-refresh-utils/ReactRefreshWebpackPlugin';
+import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
 import { resolveLocal } from '../../../paths';
 import { BUNDLER_TARGET_CLIENT } from '../../../../shared';
 
@@ -92,11 +92,9 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
       }
     ]);
 
-    // if (context.mode === 'development') {
-    //   config
-    //     .plugin('react-refresh-plugin')
-    //     .use(ReactRefreshWebpackPlugin, [webpack]);
-    // }
+    if (context.mode === 'development') {
+      config.plugin('react-refresh-plugin').use(ReactRefreshPlugin);
+    }
   }
 
   return config;
@@ -104,16 +102,6 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
 
 export default {
   core: createPlugin({
-    configWebpack,
-    addEntryCode(context) {
-      if (context.mode === 'development') {
-        const fastRefreshRuntime = require.resolve(
-          `@next/react-refresh-utils/runtime`
-        );
-        return `import "${fastRefreshRuntime}"`;
-      } else {
-        return '';
-      }
-    }
+    configWebpack
   })
 };
