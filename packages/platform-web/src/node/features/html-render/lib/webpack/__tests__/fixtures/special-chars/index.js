@@ -1,7 +1,7 @@
 // Special characters fixture
 import(
   /* webpackChunkName: "modules_with-spaces" */
-  './modules/with-spaces'
+  './modules/with spaces'
 );
 import(
   /* webpackChunkName: "modules_with-dashes" */
