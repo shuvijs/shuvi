@@ -90,11 +90,7 @@ export function createBrowserRspackChain(options: BaseOptions): RspackChain {
   }
 
   if (dev) {
-    /**
-     * @unsupported Rspack does not support HotModuleReplacementPlugin directly.
-     * HMR is built-in to Rspack dev server.
-     */
-    // chain.plugin('private/hmr-plugin').use(rspack.HotModuleReplacementPlugin);
+    chain.plugin('private/hmr-plugin').use(rspack.HotModuleReplacementPlugin);
     // disable splitChunks at dev mode to prevent preload error
     chain.optimization.splitChunks(false as any);
   } else {
