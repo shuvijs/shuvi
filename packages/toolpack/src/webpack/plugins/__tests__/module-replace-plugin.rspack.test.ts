@@ -1,6 +1,6 @@
-import ModuleReplacePlugin from '../module-replace-plugin';
+import ModuleReplacePlugin from '../module-replace-plugin/plugin.rspack';
 import { resolveFixture } from './utils';
-import { watchCompiler, getModuleSource } from './helpers/webpack';
+import { watchCompiler, getModuleSource } from './helpers/rspack';
 
 jest.setTimeout(5 * 60 * 1000);
 

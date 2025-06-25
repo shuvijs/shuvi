@@ -1,4 +1,5 @@
 import { PitchLoaderDefinitionFunction, LoaderContext } from 'webpack';
+import dynamicLoaderOptionsHack from './dynamic-loader-options-hack';
 
 /**
  * Options passed to the stub loader from the ModuleReplacePlugin
@@ -74,8 +75,14 @@ export const pitch: PitchLoaderDefinitionFunction<ModuleReplaceOption> =
     // Disable caching to ensure fresh module replacement
     this.cacheable(false);
 
+    const dynamicOptions = dynamicLoaderOptionsHack.pop(this.resourcePath);
+
     // Get the replacement module path from loader options
-    const { replacedModule } = this.getOptions() || {};
+    /**
+     * rspack can't get the dynamic options from the loader, so we need to use the dynamicLoaderOptionsHack to get the options
+     */
+    // const { replacedModule } = this.getOptions() || {};
+    const { replacedModule } = dynamicOptions || {};
     let loaders = this.loaders;
 
     // Remove the stub loader itself from the loader chain
