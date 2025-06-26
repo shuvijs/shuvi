@@ -8,7 +8,7 @@ const isDefined = <T>(value: T | undefined): value is T => Boolean(value);
 
 const configWebpack: CorePluginConstructor['configWebpack'] = (
   config,
-  { name, webpack },
+  { name, rspack },
   context
 ) => {
   const resolveUser = (m: string, sub?: string) => {
@@ -84,7 +84,7 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
   );
 
   if (name === BUNDLER_TARGET_CLIENT) {
-    config.plugin('version-env-plugin').use(webpack.DefinePlugin, [
+    config.plugin('version-env-plugin').use(rspack.DefinePlugin, [
       {
         'process.env.__SHUVI__AFTER__REACT__18__': JSON.stringify(
           isReactVersionAfter18()
