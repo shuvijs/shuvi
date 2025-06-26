@@ -16,7 +16,11 @@ export type ExtraTargetAssistant = {
 export type ConfigWebpackAssistant = {
   name: string;
   mode: IServiceMode;
+  /**
+   * @deprecated use rspack instead
+   */
   webpack: typeof rspack;
+  rspack: typeof rspack;
   /**
    * require webpack interal module
    * eg. resolveWebpackModule('webpack/lib/dependencies/ConstDependency')

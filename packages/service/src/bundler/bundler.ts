@@ -479,7 +479,11 @@ class RspackBundler implements Bundler {
         name,
         mode: this._cliContext.mode,
         helpers: defaultRspackHelpers,
+        /**
+         * @deprecated use rspack instead
+         */
         webpack: rspack,
+        rspack,
         resolveWebpackModule(path: string) {
           return resolveRspackModule(path);
         }
