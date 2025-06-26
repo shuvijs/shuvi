@@ -11,7 +11,6 @@ describe('copy-file-plugin', () => {
 
   test('webpack integration', async () => {
     const testFilePath = resolveFixture('temp', 'test-polyfill.js');
-    // const testContent = 'console.log("This is a test file that will be copied by CopyFilePlugin");\nexport const testValue = "test";';
 
     const compiler = runCompiler({
       mode: 'development',
