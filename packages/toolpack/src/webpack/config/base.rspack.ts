@@ -116,7 +116,7 @@ export function baseRspackChain({
   config.bail(!dev);
   config.performance.hints(false);
   config.context(projectRoot);
-  config.devtool('eval');
+  config.devtool(dev ? 'eval' : false);
   config.output.path(outputDir);
   config.output.merge({
     publicPath,

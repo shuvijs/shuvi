@@ -71,7 +71,7 @@
     "node": ">= 16.0.0"
   },
   "dependencies": {
-    "@next/react-refresh-utils": "12.1.6",
+    "@rspack/plugin-react-refresh": "^1.4.3",
     "@shuvi/error-overlay": "1.0.63",
     "@shuvi/hook": "1.0.63",
     "@shuvi/platform-shared": "1.0.63",
