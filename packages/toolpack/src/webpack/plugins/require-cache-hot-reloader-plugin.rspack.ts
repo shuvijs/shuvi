@@ -1,7 +1,6 @@
 // ref: https://github.com/vercel/next.js/blob/canary/packages/next/build/webpack/plugins/nextjs-require-cache-hot-reloader.ts
 
 import * as Rspack from '../../webpack';
-// import { Compiler, Plugin, RuntimeGlobals } from 'webpack';
 import { realpathSync } from 'fs';
 
 /**
