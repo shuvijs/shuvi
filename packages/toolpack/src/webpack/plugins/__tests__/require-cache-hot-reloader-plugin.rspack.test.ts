@@ -1,4 +1,4 @@
-import RequireCacheHotReloader from '../require-cache-hot-reloader-plugin';
+import RequireCacheHotReloader from '../require-cache-hot-reloader-plugin.rspack';
 
 // Mock fs module
 jest.mock('fs', () => ({
