@@ -1,0 +1,27 @@
+[package]
+
+description = "SWC plugin that automatically transforms CSS imports to enable CSS modules"
+
+authors      = { workspace = true }
+edition      = { workspace = true }
+homepage     = { workspace = true }
+license      = { workspace = true }
+name         = "swc_plugin_auto_css_modules"
+publish      = false
+repository   = { workspace = true }
+rust-version = { workspace = true }
+version      = "0.1.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+auto_css_modules_transform = { path = "./transform" }
+serde_json     = { workspace = true }
+swc_common     = { workspace = true, features = ["concurrent"] }
+swc_core       = { workspace = true, features = ["ecma_plugin_transform"] }
+swc_ecma_ast   = { workspace = true }
+swc_ecma_utils = { workspace = true }
+swc_ecma_visit = { workspace = true }
+swc_plugin_macro = { workspace = true }
+tracing        = { workspace = true, features = ["release_max_level_off"] } 
