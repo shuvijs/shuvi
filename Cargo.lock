@@ -73,6 +73,7 @@ name = "auto_css_modules_transform"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "serde_json",
  "swc_atoms",
  "swc_cached",
  "swc_common",
