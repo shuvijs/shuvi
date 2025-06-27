@@ -44,5 +44,8 @@ describe('fixtures', () => {
     'fixtures/disallow-re-export-all-in-page'
   );
 
-  createFixtureTestSuite(fixturesDir, { transform: swc });
+  createFixtureTestSuite(fixturesDir, {
+    transform: swc,
+    forceUpdateOutput: false
+  });
 });

@@ -9,5 +9,8 @@ const swc = async (code: string, options: any = {}) => {
 describe('transform fixtures', () => {
   const fixturesDir = path.join(__dirname, 'fixtures/transform');
 
-  createFixtureTestSuite(fixturesDir, { transform: swc });
+  createFixtureTestSuite(fixturesDir, {
+    transform: swc,
+    forceUpdateOutput: false
+  });
 });
