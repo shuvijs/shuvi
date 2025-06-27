@@ -16,5 +16,8 @@ const swc = async (
 describe('auto-css-modules fixtures', () => {
   const fixturesDir = path.join(__dirname, 'fixtures/auto-css-modules');
 
-  createFixtureTestSuite(fixturesDir, { transform: swc });
+  createFixtureTestSuite(fixturesDir, {
+    transform: swc,
+    forceUpdateOutput: false
+  });
 });
