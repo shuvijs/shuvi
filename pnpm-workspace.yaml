@@ -1,5 +1,6 @@
 packages:
   - 'packages/*'
+  - 'rust-packages/*'
   - 'test/e2e'
   - 'test/fixtures/*'
   - 'test/packages/*'

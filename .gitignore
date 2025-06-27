@@ -34,3 +34,6 @@ test/fixtures/**/build/
 test/fixtures/**/.shuvi/
 examples/**/.shuvi
 examples/**/dist
+
+# swc
+target/
