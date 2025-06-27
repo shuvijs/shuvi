@@ -17,7 +17,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on what we're lookin
 
 Some implementation of shuvi.js are inspired by existing projects, such as next.js and umi.js. Thanks for them.
 
-## SWC Plugins
+## SWC Plugin Development
 
 ### Prerequisites
 
@@ -25,6 +25,7 @@ Some implementation of shuvi.js are inspired by existing projects, such as next.
 rustup install 1.87.0
 rustup override set 1.87.0
 rustup target add wasm32-unknown-unknown
+rustup target add wasm32-wasip1
 cargo check
 cargo build --target wasm32-unknown-unknown --release
 ```
