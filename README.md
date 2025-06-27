@@ -43,3 +43,15 @@ $ pnpm -v
 $ rustc --version
 rustc 1.87.0 (17067e9ac 2025-05-09)
 ```
+
+### Build
+
+```
+pnpm build
+```
+
+### Test
+
+```
+cargo test
+```

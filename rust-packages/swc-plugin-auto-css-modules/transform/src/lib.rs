@@ -13,6 +13,7 @@ pub struct Config {
     /// CSS 模块查询参数标志
     /// 默认为 "cssmodules"
     /// 用于标识应该启用 CSS 模块处理的导入
+    #[serde(rename = "cssModuleFlag")]
     pub css_module_flag: String,
 }
 
@@ -46,16 +47,33 @@ impl AutoCssModulesTransformer {
 
     /// 检查是否为 CSS 文件
     /// 
-    /// 检查给定的文件路径是否具有支持的 CSS 扩展名
+    /// 检查给定的文件路径是否具有支持的 CSS 扩展名（区分大小写）
     fn is_css_file(&self, path: &str) -> bool {
-        CSS_EXTENSIONS.iter().any(|ext| path.ends_with(ext))
+        // 移除查询参数部分
+        let path_without_query = path.split('?').next().unwrap_or(path);
+        CSS_EXTENSIONS.iter().any(|ext| path_without_query.ends_with(ext))
     }
 
     /// 为 CSS 导入添加查询参数
     /// 
     /// 将查询参数添加到 CSS 文件路径以启用 CSS 模块处理
+    /// 如果已有查询参数，则追加新的参数
     fn add_css_module_flag(&self, path: &str) -> String {
-        format!("{}?{}", path, self.css_module_flag)
+        if path.contains('?') {
+            // 如果已有查询参数，追加新的参数
+            format!("{}&{}", path, self.css_module_flag)
+        } else {
+            // 如果没有查询参数，添加新的查询参数
+            format!("{}?{}", path, self.css_module_flag)
+        }
+    }
+
+    /// 检查是否为默认导入模式
+    /// 
+    /// 检查导入声明是否为 `{ default as styles }` 模式
+    fn is_default_import_pattern(&self, import_decl: &ImportDecl) -> bool {
+        import_decl.specifiers.len() == 1 && 
+        matches!(import_decl.specifiers[0], ImportSpecifier::Named(ImportNamedSpecifier { imported: Some(_), .. }))
     }
 
     /// 处理导入声明
@@ -72,12 +90,31 @@ impl AutoCssModulesTransformer {
             return None;
         }
 
+        // 不处理默认导入模式 `{ default as styles }`
+        if self.is_default_import_pattern(import_decl) {
+            return None;
+        }
+
         // 创建新的导入声明，添加查询参数
         let new_src = self.add_css_module_flag(&import_decl.src.value);
+        
+        // 确定原始引号样式
+        let raw_value = if let Some(ref raw) = import_decl.src.raw {
+            // 如果原始字符串有 raw 值，使用相同的引号样式
+            if raw.starts_with('\'') {
+                format!("'{}'", new_src)
+            } else {
+                format!("\"{}\"", new_src)
+            }
+        } else {
+            // 如果没有 raw 值，默认使用单引号（与输入文件保持一致）
+            format!("'{}'", new_src)
+        };
+        
         let new_src_lit = Str {
             span: import_decl.src.span,
             value: Atom::from(new_src),
-            raw: None,
+            raw: Some(Atom::from(raw_value)),
         };
 
         tracing::debug!(
@@ -121,10 +158,24 @@ impl Fold for AutoCssModulesTransformer {
                     // 检查是否为 CSS 文件
                     if self.is_css_file(&str_lit.value) {
                         let new_value = self.add_css_module_flag(&str_lit.value);
+                        
+                        // 确定原始引号样式
+                        let raw_value = if let Some(ref raw) = str_lit.raw {
+                            // 如果原始字符串有 raw 值，使用相同的引号样式
+                            if raw.starts_with('\'') {
+                                format!("'{}'", new_value)
+                            } else {
+                                format!("\"{}\"", new_value)
+                            }
+                        } else {
+                            // 如果没有 raw 值，默认使用单引号
+                            format!("'{}'", new_value)
+                        };
+                        
                         let new_str_lit = Str {
                             span: str_lit.span,
                             value: Atom::from(new_value),
-                            raw: None,
+                            raw: Some(Atom::from(raw_value)),
                         };
 
                         tracing::debug!(

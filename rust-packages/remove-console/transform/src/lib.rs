@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use swc_atoms::Atom;
-use swc_common::{SyntaxContext, DUMMY_SP};
+use swc_common::SyntaxContext;
 use swc_ecma_ast::*;
 use swc_ecma_visit::{fold_pass, noop_fold_type, Fold, FoldWith};
 
@@ -47,7 +47,6 @@ impl RemoveConsole {
         };
 
         // Don't attempt to evaluate computed properties.
-
         if matches!(&member_expr.prop, MemberProp::Computed(..)) {
             return false;
         }
@@ -73,15 +72,56 @@ impl RemoveConsole {
 impl Fold for RemoveConsole {
     noop_fold_type!();
 
-    fn fold_stmt(&mut self, stmt: Stmt) -> Stmt {
-        if let Stmt::Expr(e) = &stmt {
-            if let Expr::Call(c) = &*e.expr {
-                if self.should_remove_call(c) {
-                    return Stmt::Empty(EmptyStmt { span: DUMMY_SP });
+    fn fold_module(&mut self, module: Module) -> Module {
+        let mut items = Vec::new();
+        
+        for item in module.body {
+            match item {
+                ModuleItem::Stmt(Stmt::Expr(expr_stmt)) => {
+                    if let Expr::Call(call_expr) = &*expr_stmt.expr {
+                        if self.should_remove_call(call_expr) {
+                            // Skip this console call
+                            continue;
+                        }
+                    }
+                    items.push(ModuleItem::Stmt(Stmt::Expr(expr_stmt.fold_with(self))));
+                }
+                _ => {
+                    items.push(item.fold_with(self));
                 }
             }
         }
-        stmt.fold_children_with(self)
+        
+        Module {
+            body: items,
+            ..module
+        }
+    }
+
+    fn fold_block_stmt(&mut self, block: BlockStmt) -> BlockStmt {
+        let mut stmts = Vec::new();
+        
+        for stmt in block.stmts {
+            match stmt {
+                Stmt::Expr(expr_stmt) => {
+                    if let Expr::Call(call_expr) = &*expr_stmt.expr {
+                        if self.should_remove_call(call_expr) {
+                            // Skip this console call
+                            continue;
+                        }
+                    }
+                    stmts.push(Stmt::Expr(expr_stmt.fold_with(self)));
+                }
+                _ => {
+                    stmts.push(stmt.fold_with(self));
+                }
+            }
+        }
+        
+        BlockStmt {
+            stmts,
+            ..block
+        }
     }
 }
 

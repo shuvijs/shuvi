@@ -14,6 +14,7 @@ version      = "0.1.0"
 
 [dependencies]
 serde          = { workspace = true, features = ["derive"] }
+serde_json     = { workspace = true }
 swc_atoms      = { workspace = true }
 swc_cached     = { workspace = true }
 swc_common     = { workspace = true }
