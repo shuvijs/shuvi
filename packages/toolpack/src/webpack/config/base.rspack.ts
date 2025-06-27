@@ -8,6 +8,7 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 // import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import * as rspack from '@rspack/core';
 import * as path from 'path';
+import * as fs from 'fs';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
 // import * as crypto from 'crypto';
@@ -329,15 +330,15 @@ export function baseRspackChain({
     typeof process.env.SHUVI_DEV_DISABLE_CACHE !== 'undefined' ? false : true
   );
 
-  /**
-   * @unsupported Rspack does not resolve.plugins
-   */
-  // config.resolve
-  //   .plugin('jsconfig-paths-plugin')
-  //   .use(JsConfigPathsPlugin, [
-  //     jsConfig?.compilerOptions.paths || {},
-  //     jsConfig?.resolvedBaseUrl || projectRoot
-  //   ]);
+  const tsConfigPath = path.join(projectRoot, 'tsconfig.json');
+  const jsConfigPath = path.join(projectRoot, 'jsconfig.json');
+  if (jsConfig?.useTypeScript) {
+    if (fs.existsSync(tsConfigPath)) {
+      config.resolve.tsConfig(tsConfigPath);
+    }
+  } else if (fs.existsSync(jsConfigPath)) {
+    config.resolve.tsConfig(jsConfigPath);
+  }
 
   if (dev) {
     // For rspack-dev-middleware usage
