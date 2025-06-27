@@ -21,6 +21,7 @@
     "shuvi": "node ./packages/shuvi/bin/cli.js",
     "jest": "jest",
     "test": "pnpm test:unit && pnpm test:e2e",
+    "test:compiler": "jest ./packages/compiler --detectOpenHandles && cargo test",
     "test:unit": "jest ./packages --detectOpenHandles",
     "test:e2e": "cross-env BROWSERSLIST_IGNORE_OLD_DATA=true NODE_OPTIONS=--max_old_space_size=8192 jest --filter ./scripts/filter-e2e.js --runInBand --detectOpenHandles",
     "test:e2e:express": "cross-env NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand && NODE_ENV=production NODE_SERVER=EXPRESS jest test/e2e/basic --runInBand",
