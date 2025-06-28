@@ -1,0 +1,456 @@
+import { ApiMeta, Stability } from '@components/ApiMeta';
+
+# 内置 swc-loader
+
+[SWC](https://github.com/swc-project/swc)（Speedy Web Compiler）是基于 Rust 语言编写的高性能 JavaScript 和 TypeScript 转译和压缩工具。SWC 提供与 Babel 和 Terser 相似的能力，在单线程上它比 Babel 快 20 倍，在四核上它比 Babel 快 70 倍。
+
+Rspack 提供了一个内置的 `builtin:swc-loader`，它是 [swc-loader](https://github.com/swc-project/pkgs/tree/main/packages/swc-loader) 的 Rust 版本，旨在提供更优的性能，Loader 的 [选项](https://swc.rs/docs/configuration/compilation) 与 JS 版本的 `swc-loader` 保持一致。
+
+## 示例
+
+如果需要在项目中使用 `builtin:swc-loader`，可以参考下面的示例进行配置。
+
+### TypeScript 转译
+
+比如对 `.ts` 文件进行转译：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: [/node_modules/],
+        loader: 'builtin:swc-loader',
+        options: {
+          jsc: {
+            parser: {
+              syntax: 'typescript',
+            },
+          },
+        },
+        type: 'javascript/auto',
+      },
+    ],
+  },
+};
+```
+
+### JSX 转译
+
+对 React 的 `.jsx` 文件进行转译：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.jsx$/,
+        use: {
+          loader: 'builtin:swc-loader',
+          options: {
+            jsc: {
+              parser: {
+                syntax: 'ecmascript',
+                jsx: true,
+              },
+              transform: {
+                react: {
+                  pragma: 'React.createElement',
+                  pragmaFrag: 'React.Fragment',
+                  throwIfNamespace: true,
+                  development: false,
+                },
+              },
+            },
+          },
+        },
+        type: 'javascript/auto',
+      },
+    ],
+  },
+};
+```
+
+### 语法降级
+
+SWC 提供了 [jsc.target](https://swc.rs/docs/configuration/compilation#jsctarget) 和 [env.targets](https://swc.rs/docs/configuration/compilation#envtargets) 来指定 JavaScript 语法降级的目标。
+
+#### jsc.target
+
+[jsc.target](https://swc.rs/docs/configuration/compilation#jsctarget) 用于指定 ECMA 版本，例如 `es5`，`es2015`，`es2016` 等。
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'builtin:swc-loader',
+          options: {
+            jsc: {
+              target: 'es2015',
+            },
+            // ...other options
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+#### env.targets
+
+[env.targets](https://swc.rs/docs/configuration/compilation#envtargets) 使用 [browserslist](https://github.com/browserslist/browserslist) 的语法来指定浏览器范围，例如：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'builtin:swc-loader',
+          options: {
+            env: {
+              targets: [
+                'chrome >= 87',
+                'edge >= 88',
+                'firefox >= 78',
+                'safari >= 14',
+              ],
+            },
+            // ...other options
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+:::tip
+`jsc.target` 和 `env.targets` 不能同时配置，使用时根据需求选择其中一个即可。
+:::
+
+### Polyfill 注入
+
+当你在项目中使用高版本的 JavaScript 语法和 API 时，为了让编译后的代码能稳定运行在低版本的浏览器中，通常需要完成两部分降级：语法降级和 polyfill 注入。
+
+SWC 支持注入 [core-js](https://github.com/zloirock/core-js) 作为 API polyfill，可以通过 [env.mode](https://swc.rs/docs/configuration/compilation#envmode) 和 [env.coreJs](https://swc.rs/docs/configuration/compilation#envcorejs) 来配置：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules[\\/]core-js/,
+        use: {
+          loader: 'builtin:swc-loader',
+          options: {
+            env: {
+              mode: 'usage',
+              coreJs: '3.26.1',
+              targets: [
+                'chrome >= 87',
+                'edge >= 88',
+                'firefox >= 78',
+                'safari >= 14',
+              ],
+            },
+            isModule: 'unknown',
+            // ...other options
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+注意事项：
+
+- 请确保通过 [exclude](/config/module#ruleexclude) 来排除 `core-js` 包，因为 `core-js` 如果被 SWC 编译，将无法正常工作。
+- 当需要引用非 ES modules 的模块时，需要添加 [isModule: 'unknown'](https://swc.rs/docs/configuration/compilation#ismodule)，以便 SWC 能够正确识别模块类型。
+
+## 类型声明
+
+你可以使用 `@rspack/core` 导出的 `SwcLoaderOptions` 类型来开启类型提示：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'builtin:swc-loader',
+          /** @type {import('@rspack/core').SwcLoaderOptions} */
+          options: {
+            // some options
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+- `rspack.config.ts`:
+
+```ts
+import type { SwcLoaderOptions } from '@rspack/core';
+
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'builtin:swc-loader',
+          options: {
+            // some options
+          } satisfies SwcLoaderOptions,
+        },
+      },
+    ],
+  },
+};
+```
+
+## 选项
+
+下面是部分 SWC 配置以及 Rspack 特有配置的介绍，完整选项请参考 [SWC 配置](https://swc.rs/docs/configuration/swcrc)。
+
+### jsc.experimental.plugins
+
+<ApiMeta stability={Stability.Experimental} />
+
+:::warning
+Wasm 插件和 SWC 的版本存在一定的绑定关系，需要选择和对应 SWC 版本兼容的 Wasm 插件才能正常执行。
+
+详见 [常见问题 - SWC 插件版本不匹配](/errors/swc-plugin-version)。
+:::
+
+Rspack 支持在 `builtin:swc-loader` 里加载 SWC 的 Wasm 插件, 你可以通过如下配置启用 Wasm 插件
+
+```js
+{
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'builtin:swc-loader',
+          options: {
+            jsc: {
+              experimental: {
+                plugins: [
+                  [
+                    '@swc/plugin-remove-console',
+                    {
+                      exclude: ['error'],
+                    },
+                  ],
+                ],
+              },
+            },
+          },
+        },
+      },
+    ];
+  }
+}
+```
+
+这是 Wasm 插件的一个[示例](https://github.com/rspack-contrib/rstack-examples/blob/d4b8aaef9915ed0f540edbe504217c3d1afe8989/rspack/builtin-swc-loader/rspack.config.js#L45)。
+
+#### 设置缓存目录
+
+当你使用 SWC 的 Wasm 插件时，SWC 默认会生成缓存文件在当前项目的 `.swc` 目录下，如果你希望调整该目录，可以修改 `cacheRoot` 配置，如：
+
+```js title="rspack.config.mjs"
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'builtin:swc-loader',
+          options: {
+            jsc: {
+              experimental: {
+                cacheRoot: path.join(__dirname, './node_modules/.cache/swc'),
+              },
+            },
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+### rspackExperiments
+
+Rspack 内置的实验性功能。
+
+### rspackExperiments.import
+
+<ApiMeta stability={Stability.Experimental} />
+
+移植自 [babel-plugin-import](https://github.com/umijs/babel-plugin-import)，配置基本保持一致。
+
+但不能使用函数进行配置，例如 `customName`，`customStyleName` 等，这是因为这些函数必须由 Rust 调用，这种调用会造成一些性能劣化，受到 [modularize_imports](https://crates.io/crates/modularize_imports) 的启发，简单的函数逻辑其实可以通过模版来代替，因此 `customName`，`customStyleName` ，这些配置可以传入字符串作为模版来代替函数，提高性能。
+
+我们以下面代码为例说明:
+
+```ts
+import { MyButton as Btn } from 'foo';
+```
+
+添加以下配置：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        use: 'builtin:swc-loader',
+        options: {
+          // ...
+          rspackExperiments: {
+            import: [
+              {
+                libraryName: 'foo',
+                customName: 'foo/es/{{ member }}',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+其中的 `{{ member }}` 会被替换为相应的引入成员，转换后:
+
+```ts
+import Btn from 'foo/es/MyButton';
+```
+
+可以看出配置 `customName: "foo/es/{{ member }}"` 的效果等同于配置 `` customName: (member) => `foo/es/${member}` ``，但是不会有 Node-API 的调用开销。
+
+这里使用到的模版是 [handlebars](https://handlebarsjs.com)，模版配置中还内置了一些有用的辅助函数，还是以上面的导入语句为例：
+
+配置如下：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        use: 'builtin:swc-loader',
+        options: {
+          // ...
+          rspackExperiments: {
+            import: [
+              {
+                libraryName: 'foo',
+                customName: 'foo/es/{{ kebabCase member }}',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+会转换成下面的结果:
+
+```ts
+import Btn from 'foo/es/my-button';
+```
+
+除了 `kebabCase` 以外还有 `camelCase`、`snakeCase`、`upperCase`、 `lowerCase` 和 `legacyKebabCase`、`legacySnakeCase` 可以使用。
+
+其中 `legacyKebabCase`/`legacySnakeCase` 使用跟 babel-plugin-import@1.13.7 之前的版本相同的转换逻辑。
+
+其他配置可以直接查看 [babel-plugin-import](https://www.npmjs.com/package/babel-plugin-import)。
+
+再以经典的 4 版本的 [ant-design](https://4x.ant.design/) 为例，我们只需要如下配置：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        use: 'builtin:swc-loader',
+        options: {
+          // ...
+          rspackExperiments: {
+            import: [
+              {
+                libraryName: 'antd',
+                style: '{{member}}/style/index.css',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+上面的配置会将 `import { Button } from 'antd';` 转换成
+
+```ts
+import Button from 'antd/es/button';
+import 'antd/es/button/style/index.css';
+```
+
+然后就可以在页面中看到样式文件自动被引入并且生效了。
+
+当然如果你已经配置了对 `less` 的支持，也可以直接使用如下配置：
+
+```js title="rspack.config.mjs"
+export default {
+  module: {
+    rules: [
+      {
+        use: 'builtin:swc-loader',
+        options: {
+          // ...
+          rspackExperiments: {
+            import: [
+              {
+                libraryName: 'antd',
+                style: true,
+              },
+            ],
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+上面的配置会将 `import { Button } from 'antd';` 转换成：
+
+```ts
+import Button from 'antd/es/button';
+import 'antd/es/button/style';
+```
