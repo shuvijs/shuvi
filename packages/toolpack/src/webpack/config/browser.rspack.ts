@@ -211,7 +211,7 @@ export function createBrowserRspackChain(options: BaseOptions): RspackChain {
     });
   }
   // node polyfills
-  chain.resolve.set('fallback', {
+  chain.resolve.fallback.merge({
     buffer: resolve('buffer', {
       includeCoreModules: false
     }),
