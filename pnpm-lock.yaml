@@ -1080,6 +1080,8 @@ importers:
         specifier: ^0.1.3
         version: 0.1.3
 
+  rust-packages/disallow-re-export-all-in-page: {}
+
   rust-packages/noop:
     dependencies:
       '@swc/counter':
