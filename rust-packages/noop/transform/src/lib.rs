@@ -4,7 +4,7 @@ use swc_ecma_ast::*;
 use swc_ecma_visit::{fold_pass, noop_fold_type, Fold, FoldWith};
 
 /// 插件配置结构体
-/// 
+///
 /// 这个结构体定义了插件可以接受的配置参数
 /// 使用 serde 进行序列化/反序列化
 #[derive(Clone, Debug, Deserialize)]
@@ -16,7 +16,7 @@ pub struct Config {
 }
 
 /// Noop 转换器
-/// 
+///
 /// 这是一个不执行任何实际转换的转换器
 /// 主要用于：
 /// 1. 作为 SWC 插件的模板
@@ -46,7 +46,7 @@ impl NoopTransformer {
     }
 
     /// 处理语句
-    /// 
+    ///
     /// 当插件启用时，会打印每个语句的信息
     fn process_statement(&self, stmt: &Stmt) {
         if !self.enabled {
@@ -57,42 +57,55 @@ impl NoopTransformer {
             Stmt::Expr(_expr_stmt) => {
                 println!("📄 Processing expression statement");
             }
-            Stmt::Decl(decl) => {
-                match decl {
-                    Decl::Var(var_decl) => {
-                        println!("📄 Processing variable declaration with {} variables", var_decl.decls.len());
-                    }
-                    Decl::Fn(fn_decl) => {
-                        println!("📄 Processing function declaration: {}", fn_decl.ident.sym);
-                    }
-                    Decl::Class(class_decl) => {
-                        println!("📄 Processing class declaration: {}", class_decl.ident.sym);
-                    }
-                    Decl::TsInterface(ts_interface) => {
-                        println!("📄 Processing TypeScript interface: {}", ts_interface.id.sym);
-                    }
-                    Decl::TsTypeAlias(ts_type_alias) => {
-                        println!("📄 Processing TypeScript type alias: {}", ts_type_alias.id.sym);
-                    }
-                    Decl::TsEnum(ts_enum) => {
-                        println!("📄 Processing TypeScript enum: {}", ts_enum.id.sym);
-                    }
-                    Decl::TsModule(_ts_module) => {
-                        println!("📄 Processing TypeScript module");
-                    }
-                    Decl::Using(_using_decl) => {
-                        println!("📄 Processing using declaration");
-                    }
+            Stmt::Decl(decl) => match decl {
+                Decl::Var(var_decl) => {
+                    println!(
+                        "📄 Processing variable declaration with {} variables",
+                        var_decl.decls.len()
+                    );
                 }
-            }
+                Decl::Fn(fn_decl) => {
+                    println!("📄 Processing function declaration: {}", fn_decl.ident.sym);
+                }
+                Decl::Class(class_decl) => {
+                    println!("📄 Processing class declaration: {}", class_decl.ident.sym);
+                }
+                Decl::TsInterface(ts_interface) => {
+                    println!(
+                        "📄 Processing TypeScript interface: {}",
+                        ts_interface.id.sym
+                    );
+                }
+                Decl::TsTypeAlias(ts_type_alias) => {
+                    println!(
+                        "📄 Processing TypeScript type alias: {}",
+                        ts_type_alias.id.sym
+                    );
+                }
+                Decl::TsEnum(ts_enum) => {
+                    println!("📄 Processing TypeScript enum: {}", ts_enum.id.sym);
+                }
+                Decl::TsModule(_ts_module) => {
+                    println!("📄 Processing TypeScript module");
+                }
+                Decl::Using(_using_decl) => {
+                    println!("📄 Processing using declaration");
+                }
+            },
             Stmt::Block(block_stmt) => {
-                println!("📄 Processing block statement with {} statements", block_stmt.stmts.len());
+                println!(
+                    "📄 Processing block statement with {} statements",
+                    block_stmt.stmts.len()
+                );
             }
             Stmt::If(_if_stmt) => {
                 println!("📄 Processing if statement");
             }
             Stmt::Switch(switch_stmt) => {
-                println!("📄 Processing switch statement with {} cases", switch_stmt.cases.len());
+                println!(
+                    "📄 Processing switch statement with {} cases",
+                    switch_stmt.cases.len()
+                );
             }
             Stmt::For(_for_stmt) => {
                 println!("📄 Processing for statement");
@@ -145,7 +158,7 @@ impl Fold for NoopTransformer {
     noop_fold_type!();
 
     /// 折叠语句
-    /// 
+    ///
     /// 这是主要的处理函数，会遍历所有的语句
     fn fold_stmt(&mut self, stmt: Stmt) -> Stmt {
         // 处理当前语句
@@ -156,7 +169,7 @@ impl Fold for NoopTransformer {
     }
 
     /// 折叠表达式
-    /// 
+    ///
     /// 当插件启用时，会打印表达式信息
     fn fold_expr(&mut self, expr: Expr) -> Expr {
         if self.enabled {
@@ -164,22 +177,20 @@ impl Fold for NoopTransformer {
                 Expr::Ident(ident) => {
                     println!("🔤 Processing identifier: {}", ident.sym);
                 }
-                Expr::Lit(lit) => {
-                    match lit {
-                        Lit::Str(str_lit) => {
-                            println!("🔤 Processing string literal: {}", str_lit.value);
-                        }
-                        Lit::Num(num_lit) => {
-                            println!("🔤 Processing number literal: {}", num_lit.value);
-                        }
-                        Lit::Bool(bool_lit) => {
-                            println!("🔤 Processing boolean literal: {}", bool_lit.value);
-                        }
-                        _ => {
-                            println!("🔤 Processing literal");
-                        }
+                Expr::Lit(lit) => match lit {
+                    Lit::Str(str_lit) => {
+                        println!("🔤 Processing string literal: {}", str_lit.value);
                     }
-                }
+                    Lit::Num(num_lit) => {
+                        println!("🔤 Processing number literal: {}", num_lit.value);
+                    }
+                    Lit::Bool(bool_lit) => {
+                        println!("🔤 Processing boolean literal: {}", bool_lit.value);
+                    }
+                    _ => {
+                        println!("🔤 Processing literal");
+                    }
+                },
                 Expr::Call(_call_expr) => {
                     println!("🔤 Processing function call");
                 }
@@ -198,7 +209,7 @@ impl Fold for NoopTransformer {
 }
 
 /// 创建 noop 转换器
-/// 
+///
 /// 这是插件的主要入口函数
 /// 返回一个实现了 Pass trait 的转换器
 pub fn noop_transform(config: Config, unresolved_ctxt: SyntaxContext) -> impl Pass {
@@ -237,4 +248,4 @@ pub fn noop_transform(config: Config, unresolved_ctxt: SyntaxContext) -> impl Pa
   ]
 }
 ```
-*/ 
+*/

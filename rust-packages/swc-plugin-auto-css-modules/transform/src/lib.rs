@@ -5,7 +5,7 @@ use swc_ecma_ast::*;
 use swc_ecma_visit::{fold_pass, noop_fold_type, Fold, FoldWith};
 
 /// 插件配置结构体
-/// 
+///
 /// 这个结构体定义了插件可以接受的配置参数
 /// 使用 serde 进行序列化/反序列化
 #[derive(Clone, Debug, Deserialize)]
@@ -21,7 +21,7 @@ pub struct Config {
 const CSS_EXTENSIONS: &[&str] = &[".css", ".less", ".scss", ".sass"];
 
 /// Auto CSS Modules 转换器
-/// 
+///
 /// 这个转换器会自动检测 CSS 文件的命名导入并添加查询参数
 /// 以启用 CSS 模块处理
 struct AutoCssModulesTransformer {
@@ -46,16 +46,18 @@ impl AutoCssModulesTransformer {
     }
 
     /// 检查是否为 CSS 文件
-    /// 
+    ///
     /// 检查给定的文件路径是否具有支持的 CSS 扩展名（区分大小写）
     fn is_css_file(&self, path: &str) -> bool {
         // 移除查询参数部分
         let path_without_query = path.split('?').next().unwrap_or(path);
-        CSS_EXTENSIONS.iter().any(|ext| path_without_query.ends_with(ext))
+        CSS_EXTENSIONS
+            .iter()
+            .any(|ext| path_without_query.ends_with(ext))
     }
 
     /// 为 CSS 导入添加查询参数
-    /// 
+    ///
     /// 将查询参数添加到 CSS 文件路径以启用 CSS 模块处理
     /// 如果已有查询参数，则追加新的参数
     fn add_css_module_flag(&self, path: &str) -> String {
@@ -69,15 +71,21 @@ impl AutoCssModulesTransformer {
     }
 
     /// 检查是否为默认导入模式
-    /// 
+    ///
     /// 检查导入声明是否为 `{ default as styles }` 模式
     fn is_default_import_pattern(&self, import_decl: &ImportDecl) -> bool {
-        import_decl.specifiers.len() == 1 && 
-        matches!(import_decl.specifiers[0], ImportSpecifier::Named(ImportNamedSpecifier { imported: Some(_), .. }))
+        import_decl.specifiers.len() == 1
+            && matches!(
+                import_decl.specifiers[0],
+                ImportSpecifier::Named(ImportNamedSpecifier {
+                    imported: Some(_),
+                    ..
+                })
+            )
     }
 
     /// 处理导入声明
-    /// 
+    ///
     /// 检查导入声明是否为 CSS 文件的命名导入，如果是则添加查询参数
     fn process_import_decl(&self, import_decl: &ImportDecl) -> Option<ImportDecl> {
         // 只处理命名导入（有 specifiers 且不是空的）
@@ -97,7 +105,7 @@ impl AutoCssModulesTransformer {
 
         // 创建新的导入声明，添加查询参数
         let new_src = self.add_css_module_flag(&import_decl.src.value);
-        
+
         let new_src_lit = Str {
             span: import_decl.src.span,
             value: Atom::from(new_src),
@@ -122,7 +130,7 @@ impl Fold for AutoCssModulesTransformer {
     noop_fold_type!();
 
     /// 折叠导入声明
-    /// 
+    ///
     /// 这是主要的处理函数，会检查并转换 CSS 导入
     fn fold_import_decl(&mut self, import_decl: ImportDecl) -> ImportDecl {
         // 尝试处理导入声明
@@ -135,7 +143,7 @@ impl Fold for AutoCssModulesTransformer {
     }
 
     /// 折叠动态导入
-    /// 
+    ///
     /// 处理动态导入中的 CSS 文件
     fn fold_call_expr(&mut self, call_expr: CallExpr) -> CallExpr {
         // 检查是否为动态导入
@@ -145,7 +153,7 @@ impl Fold for AutoCssModulesTransformer {
                     // 检查是否为 CSS 文件
                     if self.is_css_file(&str_lit.value) {
                         let new_value = self.add_css_module_flag(&str_lit.value);
-                        
+
                         let new_str_lit = Str {
                             span: str_lit.span,
                             value: Atom::from(new_value),
@@ -176,7 +184,7 @@ impl Fold for AutoCssModulesTransformer {
 }
 
 /// 创建 auto CSS modules 转换器
-/// 
+///
 /// 这是插件的主要入口函数
 /// 返回一个实现了 Pass trait 的转换器
 pub fn auto_css_modules_transform(config: Config, unresolved_ctxt: SyntaxContext) -> impl Pass {

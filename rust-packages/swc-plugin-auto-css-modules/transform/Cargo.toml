@@ -26,5 +26,5 @@ tracing        = { workspace = true }
 swc_ecma_parser             = { workspace = true }
 swc_ecma_transforms_base    = { workspace = true }
 swc_ecma_transforms_testing = { workspace = true }
+tempfile                    = { workspace = true }
 testing                     = { workspace = true }
-tempfile                     = { workspace = true }

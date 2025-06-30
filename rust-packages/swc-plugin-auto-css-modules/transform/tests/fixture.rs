@@ -1,15 +1,13 @@
+use auto_css_modules_transform::{auto_css_modules_transform, Config};
 use std::fs;
 use std::path::PathBuf;
-use auto_css_modules_transform::{auto_css_modules_transform, Config};
 use swc_common::{Mark, SyntaxContext};
 use swc_ecma_parser::{EsSyntax, Syntax};
 use swc_ecma_transforms_base::resolver;
 use swc_ecma_transforms_testing::{test_fixture, FixtureTestConfig};
 
 mod helper;
-use helper::{
-    cleanup_temp_file, read_and_create_temp_file,
-};
+use helper::{cleanup_temp_file, read_and_create_temp_file};
 
 fn syntax() -> Syntax {
     Syntax::Es(EsSyntax {

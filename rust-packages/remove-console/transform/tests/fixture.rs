@@ -1,7 +1,7 @@
 // ============================================================================
 // SWC 插件测试文件 - 详细解释
 // ============================================================================
-// 
+//
 // 这个文件的作用：
 // 1. 测试 remove-console 插件是否能正确移除 JavaScript 代码中的 console 语句
 // 2. 使用 SWC 的测试框架自动运行多个测试用例
@@ -54,9 +54,9 @@ fn syntax() -> Syntax {
     // 类似于 Babel 的 @babel/preset-env
     // 语法: Enum::Variant(Struct { field: value, ..Default::default() })  // Rust 枚举和结构体语法
     Syntax::Es(EsSyntax {
-        jsx: true,  // 启用 JSX 支持（React 语法）
+        jsx: true, // 启用 JSX 支持（React 语法）
         // 类似于 Babel 的 @babel/preset-react
-        
+
         // 语法: ..Default::default()  // Rust 的展开语法，类似于 JavaScript 的 ...defaultConfig
         // 这行代码的意思是：除了 jsx: true 之外，其他所有配置都使用默认值
         // 类似于 JavaScript 中的 { ...defaultConfig, jsx: true }
@@ -80,7 +80,7 @@ fn syntax() -> Syntax {
 fn fixture(input: PathBuf) {
     // input 参数是输入文件的路径
     // 例如：tests/fixture/basic/input.js
-    
+
     // ============================================================================
     // RUST 语法部分 - 路径处理
     // ============================================================================
@@ -92,7 +92,7 @@ fn fixture(input: PathBuf) {
     // input.parent()     - 获取父目录，返回 Option<PathBuf> 类型
     // .unwrap()          - 处理 Option 类型，如果是 None 则 panic，类似于 JavaScript 的 ! 断言
     // .join("output.js") - 拼接路径，类似于 JavaScript 的 path.join()
-    
+
     // ============================================================================
     // SWC 插件规范接口部分 - 测试框架
     // ============================================================================
@@ -100,8 +100,7 @@ fn fixture(input: PathBuf) {
     // test_fixture 是 SWC 提供的测试工具
     // 类似于 Jest 的 expect().toBe() 但更复杂
     test_fixture(
-        syntax(),  // 传入语法配置（如何解析代码）
-        
+        syntax(), // 传入语法配置（如何解析代码）
         // ============================================================================
         // RUST 语法部分 - 闭包
         // ============================================================================
@@ -109,19 +108,20 @@ fn fixture(input: PathBuf) {
         // 这个函数定义了如何转换代码
         // 类似于 Webpack 的 loader 配置或 Babel 的 plugin 配置
         // 语法: &|parameter| { ... }  // Rust 闭包语法，类似于 JavaScript 的 (parameter) => { ... }
-        &|_tr| {   // 这是一个闭包（类似于 JavaScript 的箭头函数）
+        &|_tr| {
+            // 这是一个闭包（类似于 JavaScript 的箭头函数）
             // 语法: _parameter  // Rust 命名约定，下划线前缀表示未使用的参数
             // _tr 参数是转换器上下文，这里没有使用所以用下划线前缀
             // 下划线前缀是 Rust 的命名约定，表示未使用的变量
-            
+
             // ============================================================================
             // SWC 插件规范接口部分 - 标记系统
             // ============================================================================
             // 创建标记（Mark）用于代码转换跟踪
             // Mark 类似于 Git 的 commit hash，用于标识代码的不同状态
-            let unresolved_mark = Mark::new();  // 未解析阶段的标记
-            let top_level_mark = Mark::new();   // 顶层作用域的标记
-            
+            let unresolved_mark = Mark::new(); // 未解析阶段的标记
+            let top_level_mark = Mark::new(); // 顶层作用域的标记
+
             // 变量命名原因：
             // - unresolved_mark: 表示代码还未解析作用域的阶段
             // - top_level_mark: 表示顶层作用域的标记
@@ -129,7 +129,7 @@ fn fixture(input: PathBuf) {
             // 1. 跟踪代码转换的不同阶段
             // 2. 区分不同的作用域
             // 3. 确保变量引用正确解析
-            
+
             // ============================================================================
             // RUST 语法部分 - 元组
             // ============================================================================
@@ -148,7 +148,7 @@ fn fixture(input: PathBuf) {
                 // - unresolved_mark: 未解析阶段的标记
                 // - top_level_mark: 顶层作用域标记
                 // - false: 不使用严格模式
-                
+
                 // ============================================================================
                 // SWC 插件规范接口部分 - 自定义插件
                 // ============================================================================
@@ -161,7 +161,7 @@ fn fixture(input: PathBuf) {
                     remove_console::Config::All(true),
                     // Config::All(true) 表示移除所有 console 方法
                     // 包括 console.log, console.warn, console.error 等
-                    
+
                     // 语法上下文：用于跟踪代码位置和作用域
                     // 语法: Type::method_name().method_chain()  // Rust 方法链调用
                     SyntaxContext::empty().apply_mark(unresolved_mark),
@@ -174,11 +174,9 @@ fn fixture(input: PathBuf) {
             // 2. 再执行 remove_console（移除 console 语句）
             // 类似于 Webpack 的 loader 链：从右到左执行
         },
-        
         // 语法: &variable  // Rust 引用语法，传递变量的引用而不是所有权
-        &input,   // 输入文件路径（要转换的代码）
-        &output,  // 期望的输出文件路径（转换后的代码）
-        
+        &input,  // 输入文件路径（要转换的代码）
+        &output, // 期望的输出文件路径（转换后的代码）
         // ============================================================================
         // SWC 插件规范接口部分 - 测试配置
         // ============================================================================
@@ -186,8 +184,8 @@ fn fixture(input: PathBuf) {
         // 语法: StructType { field: value, ..Default::default() }  // Rust 结构体构造语法
         FixtureTestConfig {
             // 语法: ..Default::default()  // Rust 展开语法，使用默认值填充其他字段
-            ..Default::default()  // 使用默认的测试配置
-            // 类似于 JavaScript 中的 { ...defaultConfig }
+            ..Default::default() // 使用默认的测试配置
+                                 // 类似于 JavaScript 中的 { ...defaultConfig }
         },
     );
     // test_fixture 的工作流程：

@@ -16,12 +16,12 @@ version      = "0.1.0"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-noop_transform = { path = "./transform" }
-serde_json     = { workspace = true }
-swc_common     = { workspace = true, features = ["concurrent"] }
-swc_core       = { workspace = true, features = ["ecma_plugin_transform"] }
-swc_ecma_ast   = { workspace = true }
-swc_ecma_utils = { workspace = true }
-swc_ecma_visit = { workspace = true }
+noop_transform   = { path = "./transform" }
+serde_json       = { workspace = true }
+swc_common       = { workspace = true, features = ["concurrent"] }
+swc_core         = { workspace = true, features = ["ecma_plugin_transform"] }
+swc_ecma_ast     = { workspace = true }
+swc_ecma_utils   = { workspace = true }
+swc_ecma_visit   = { workspace = true }
 swc_plugin_macro = { workspace = true }
-tracing        = { workspace = true, features = ["release_max_level_off"] } 
+tracing          = { workspace = true, features = ["release_max_level_off"] }
