@@ -74,6 +74,7 @@ swc_trace_macro = "2.0.1"
 testing = "14.0.0"
 tracing = "0.1.40"
 widestring = "1.0.2"
+tempfile = "3.8"
 
 # swc_icu_messageformat_parser = { version = "1.0.0", path = "./crates/swc_icu_messageformat_parser" }
 
