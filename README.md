@@ -50,6 +50,8 @@ rustc 1.87.0 (17067e9ac 2025-05-09)
 $ pnpm build
 # Test
 $ pnpm test:compiler
+# rspack test
+$ npx turbo run build --filter rspack-playground
 ```
 
 ## Format
