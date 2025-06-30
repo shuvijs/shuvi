@@ -98,23 +98,10 @@ impl AutoCssModulesTransformer {
         // 创建新的导入声明，添加查询参数
         let new_src = self.add_css_module_flag(&import_decl.src.value);
         
-        // 确定原始引号样式
-        let raw_value = if let Some(ref raw) = import_decl.src.raw {
-            // 如果原始字符串有 raw 值，使用相同的引号样式
-            if raw.starts_with('\'') {
-                format!("'{}'", new_src)
-            } else {
-                format!("\"{}\"", new_src)
-            }
-        } else {
-            // 如果没有 raw 值，默认使用单引号（与输入文件保持一致）
-            format!("'{}'", new_src)
-        };
-        
         let new_src_lit = Str {
             span: import_decl.src.span,
             value: Atom::from(new_src),
-            raw: Some(Atom::from(raw_value)),
+            raw: None, // 让 SWC 自己处理引号格式
         };
 
         tracing::debug!(
@@ -159,23 +146,10 @@ impl Fold for AutoCssModulesTransformer {
                     if self.is_css_file(&str_lit.value) {
                         let new_value = self.add_css_module_flag(&str_lit.value);
                         
-                        // 确定原始引号样式
-                        let raw_value = if let Some(ref raw) = str_lit.raw {
-                            // 如果原始字符串有 raw 值，使用相同的引号样式
-                            if raw.starts_with('\'') {
-                                format!("'{}'", new_value)
-                            } else {
-                                format!("\"{}\"", new_value)
-                            }
-                        } else {
-                            // 如果没有 raw 值，默认使用单引号
-                            format!("'{}'", new_value)
-                        };
-                        
                         let new_str_lit = Str {
                             span: str_lit.span,
                             value: Atom::from(new_value),
-                            raw: Some(Atom::from(raw_value)),
+                            raw: None, // 让 SWC 自己处理引号格式
                         };
 
                         tracing::debug!(
@@ -208,55 +182,3 @@ impl Fold for AutoCssModulesTransformer {
 pub fn auto_css_modules_transform(config: Config, unresolved_ctxt: SyntaxContext) -> impl Pass {
     fold_pass(AutoCssModulesTransformer::new(config, unresolved_ctxt))
 }
-
-/*
-这个 auto CSS modules 插件实现：
-
-1. 配置处理：
-   - 支持自定义 CSS 模块查询参数标志
-   - 默认为 "cssmodules"
-   - 使用 serde 进行配置序列化/反序列化
-
-2. CSS 文件检测：
-   - 支持 .css, .less, .scss, .sass 扩展名
-   - 通过文件路径后缀进行检测
-   - 可扩展支持更多 CSS 预处理器
-
-3. 导入转换：
-   - 只处理命名导入（有 specifiers 的导入）
-   - 忽略副作用导入（没有 specifiers 的导入）
-   - 为 CSS 文件路径添加查询参数
-
-4. 动态导入支持：
-   - 支持 import() 动态导入
-   - 检测字符串字面量中的 CSS 文件路径
-   - 同样添加查询参数
-
-5. 调试信息：
-   - 使用 tracing 输出调试信息
-   - 记录转换前后的文件路径
-   - 便于调试和监控
-
-使用方式：
-```javascript
-// 在 SWC 配置中
-{
-  "plugins": [
-    ["@shuvi/swc-plugin-auto-css-modules", { "cssModuleFlag": "cssmodules" }]
-  ]
-}
-```
-
-转换示例：
-```javascript
-// 输入
-import styles from 'a.css';
-import 'b.css'; // 副作用导入，不会被转换
-import other from 'c.js'; // 非 CSS 文件，不会被转换
-
-// 输出
-import styles from 'a.css?cssmodules';
-import 'b.css'; // 保持不变
-import other from 'c.js'; // 保持不变
-```
-*/ 
