@@ -19,3 +19,5 @@ console.log('CSS Modules styles:', styles);
 console.log('Less styles:', lessStyles);
 console.log('SCSS styles:', scssStyles);
 console.log('Sass styles:', sassStyles);
+
+export * from 'react';

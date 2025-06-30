@@ -1,0 +1,26 @@
+[package]
+authors      = { workspace = true }
+description  = "AST transform for disallowing export * from ... in page files."
+edition      = { workspace = true }
+homepage     = { workspace = true }
+license      = { workspace = true }
+name         = "disallow_re_export_all_in_page_transform"
+repository   = { workspace = true }
+rust-version = { workspace = true }
+version      = "0.1.0"
+
+[dependencies]
+serde          = { workspace = true, features = ["derive"] }
+swc_common     = { workspace = true }
+swc_ecma_ast   = { workspace = true }
+swc_ecma_visit = { workspace = true }
+tracing        = { workspace = true }
+
+[dev-dependencies]
+serde_json                  = { workspace = true }
+swc_ecma_parser             = { workspace = true }
+swc_ecma_transforms_base    = { workspace = true }
+swc_ecma_transforms_react   = { workspace = true }
+swc_ecma_transforms_testing = { workspace = true }
+tempfile                    = { workspace = true }
+testing                     = { workspace = true }

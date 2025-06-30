@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "name": "@shuvi/plugin-disallow-re-export-all-in-page",
+  "version": "0.1.0",
+  "description": "SWC plugin that disallows `export * from ...` in page files",
+  "main": "swc_plugin_disallow_re_export_all_in_page.wasm",
+  "scripts": {
+    "prepack": "pnpm run build",
+    "build": "cargo build --release -p swc_plugin_disallow_re_export_all_in_page --target wasm32-wasip1 && cp ../../target/wasm32-wasip1/release/swc_plugin_disallow_re_export_all_in_page.wasm .",
+    "build:debug": "cargo build -p swc_plugin_disallow_re_export_all_in_page --target wasm32-wasip1 && cp ../../target/wasm32-wasip1/debug/swc_plugin_disallow_re_export_all_in_page.wasm .",
+    "test": "pnpm run build:debug && vitest run --testTimeout=0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "rust-packages/swc-plugin-disallow-re-export-all-in-page"
+  },
+  "bugs": {
+    "url": "https://github.com/shuvijs/shuvi/issues"
+  },
+  "author": "Michael Hsu <evenchange4@gmail.com>",
+  "keywords": [
+    "swc",
+    "plugin",
+    "export",
+    "tree-shaking",
+    "code-splitting"
+  ],
+  "preferUnplugged": true
+} 
