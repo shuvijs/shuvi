@@ -55,7 +55,10 @@ pub fn cleanup_temp_file(temp_file: NamedTempFile) -> Result<(), std::io::Error>
 ///
 /// # Returns
 /// A temporary file with the normalized content
-pub fn read_and_create_temp_file(file_path: &PathBuf, normalize_line_endings: bool) -> NamedTempFile {
+pub fn read_and_create_temp_file(
+    file_path: &PathBuf,
+    normalize_line_endings: bool,
+) -> NamedTempFile {
     let content = fs::read_to_string(file_path).unwrap();
     let normalized_content = normalize_content(&content, normalize_line_endings);
     create_temp_file_with_content(&normalized_content, normalize_line_endings)
