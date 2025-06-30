@@ -11,7 +11,7 @@
   "dependencies": {
     "@shuvi/plugin-remove-console": "workspace:*",
     "@shuvi/plugin-noop": "workspace:*",
-    "@shuvi/swc-plugin-auto-css-modules": "workspace:*"
+    "@shuvi/plugin-auto-css-modules": "workspace:*"
   },
   "devDependencies": {
     "@rspack/cli": "^1.4.0",
