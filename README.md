@@ -54,9 +54,15 @@ $ pnpm test:compiler
 $ npx turbo run build --filter rspack-playground
 ```
 
-## Format
+### Format
 
 ```bash
 $ pnpm format:toml
 $ pnpm format:rust
+```
+
+### one line
+
+```bash
+$ pnpm i && pnpm format:toml && pnpm format:rust && pnpm build && pnpm test:compiler && npx turbo run build --filter rspack-playground
 ```
