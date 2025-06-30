@@ -7,9 +7,9 @@ use swc_core::{
 };
 
 /// SWC 插件的主要入口函数
-/// 
+///
 /// 这是一个 noop 插件，当 enable: true 时会打印信息，但不会对代码做任何修改
-/// 
+///
 /// SWC 插件开发模式：
 /// 1. 使用 #[plugin_transform] 宏标记插件入口函数
 /// 2. 函数签名必须为: (Program, TransformPluginProgramMetadata) -> Program
@@ -67,4 +67,4 @@ SWC 插件开发总结：
 - 如何接受配置参数
 - 如何在不修改代码的情况下添加调试信息
 - 插件的基本结构和模式
-*/ 
+*/

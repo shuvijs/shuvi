@@ -7,10 +7,10 @@ use swc_core::{
 };
 
 /// SWC 插件的主要入口函数
-/// 
+///
 /// 这是一个自动 CSS 模块插件，会自动检测 CSS 文件的命名导入并添加查询参数
 /// 以启用 CSS 模块处理
-/// 
+///
 /// SWC 插件开发模式：
 /// 1. 使用 #[plugin_transform] 宏标记插件入口函数
 /// 2. 函数签名必须为: (Program, TransformPluginProgramMetadata) -> Program
@@ -79,4 +79,4 @@ SWC 插件开发总结：
 - 为 CSS 导入添加查询参数以启用 CSS 模块
 - 支持自定义查询参数标志
 - 只处理命名导入，忽略副作用导入
-*/ 
+*/

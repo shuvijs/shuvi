@@ -51,3 +51,11 @@ $ pnpm build
 # Test
 $ pnpm test:compiler
 ```
+
+
+## Format
+
+```bash
+$ pnpm format:toml
+$ pnpm format:rust
+```

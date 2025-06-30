@@ -1,9 +1,6 @@
 [workspace]
 
-members = [
-  "crates/core",
-  "crates/napi",
-]
+members = ["crates/core", "crates/napi"]
 
 [profile.release]
 lto = true
