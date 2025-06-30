@@ -5,7 +5,7 @@ const removeConsolePluginPath = path.resolve('../../rust-packages/remove-console
 
 const noopPluginPath = path.resolve('../../rust-packages/noop/swc_plugin_noop.wasm');
 
-const autoCssModulesPluginPath = path.resolve('../../rust-packages/swc-plugin-auto-css-modules/swc_plugin_auto_css_modules.wasm');
+const autoCssModulesPluginPath = path.resolve('../../rust-packages/auto-css-modules/swc_plugin_auto_css_modules.wasm');
 
 export default {
   entry: './src/index.ts',

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@shuvi/swc-plugin-auto-css-modules",
+  "name": "@shuvi/plugin-auto-css-modules",
   "version": "0.1.0",
   "description": "SWC plugin that automatically transforms CSS imports to enable CSS modules",
   "main": "swc_plugin_auto_css_modules.wasm",

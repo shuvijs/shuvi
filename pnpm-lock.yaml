@@ -155,15 +155,15 @@ importers:
 
   examples/rspack-playground:
     dependencies:
+      '@shuvi/plugin-auto-css-modules':
+        specifier: workspace:*
+        version: link:../../rust-packages/auto-css-modules
       '@shuvi/plugin-noop':
         specifier: workspace:*
         version: link:../../rust-packages/noop
       '@shuvi/plugin-remove-console':
         specifier: workspace:*
         version: link:../../rust-packages/remove-console
-      '@shuvi/swc-plugin-auto-css-modules':
-        specifier: workspace:*
-        version: link:../../rust-packages/swc-plugin-auto-css-modules
     devDependencies:
       '@rspack/cli':
         specifier: ^1.4.0
@@ -1074,6 +1074,12 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
 
+  rust-packages/auto-css-modules:
+    dependencies:
+      '@swc/counter':
+        specifier: ^0.1.3
+        version: 0.1.3
+
   rust-packages/noop:
     dependencies:
       '@swc/counter':
@@ -1081,12 +1087,6 @@ importers:
         version: 0.1.3
 
   rust-packages/remove-console:
-    dependencies:
-      '@swc/counter':
-        specifier: ^0.1.3
-        version: 0.1.3
-
-  rust-packages/swc-plugin-auto-css-modules:
     dependencies:
       '@swc/counter':
         specifier: ^0.1.3
