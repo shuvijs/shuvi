@@ -236,7 +236,11 @@ async function publishPackage(pkgName, version) {
       ],
       {
         cwd: pkgRoot,
-        stdio: 'pipe'
+        stdio: 'pipe',
+        env: {
+          // This project is configured to use pnpm because /Users/michael/code/shuvi/package.json has a "packageManager" field
+          COREPACK_ENABLE_STRICT: '0'
+        }
       }
     );
     console.log(chalk.green(`Successfully published ${pkgName}@${version}`));

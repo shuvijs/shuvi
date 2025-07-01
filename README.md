@@ -69,6 +69,8 @@ $ pnpm i && pnpm format:toml && pnpm format:rust && pnpm build && pnpm test:comp
 
 ## Release
 
+```bash
+$ pnpm release 2.0.0-dev.1 --skipTests --tag alpha
 ```
-pnpm release 2.0.0-dev.1 --skipTests
-```
+
+[Release.md](./RELEASE.md)
