@@ -1,13 +1,8 @@
-// import path from 'path';
 import { createEvent, RemoveListenerCallback } from '@shuvi/utils/events';
-/**
- * @unsupported Rspack does not support ForkTsCheckerWebpackPlugin directly.
- * TODO: Use ts-checker-rspack-plugin or equivalent when available.
- */
-// import ForkTsCheckerWebpackPlugin, {
-//   Issue,
-//   createCodeFrameFormatter
-// } from '@shuvi/toolpack/lib/utils/forkTsCheckerWebpackPlugin';
+import TsCheckerRspackPlugin, {
+  Issue,
+  createCodeFrameFormatter
+} from '@shuvi/toolpack/lib/utils/tsCheckerRspackPlugin';
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import logger from '@shuvi/utils/logger';
 import { inspect } from 'util';
@@ -89,7 +84,7 @@ export interface BundlerEvent {
 class RspackBundler implements Bundler {
   private _cliContext: IPluginContext;
   private _compiler!: RspackMultiCompiler;
-  // private _options: NormalizedBundlerOptions;
+  private _options: NormalizedBundlerOptions;
   private _targets: Target[] = [];
   private _buildEvent = createEvent<FinishedCallback>();
   private _typecheckingEvent = createEvent<FinishedCallback>();
@@ -100,8 +95,8 @@ class RspackBundler implements Bundler {
   private _startTime: number | null = null;
   private _isCompiling: boolean | null = false;
 
-  constructor(__options: NormalizedBundlerOptions, cliContext: IPluginContext) {
-    // this._options = options;
+  constructor(options: NormalizedBundlerOptions, cliContext: IPluginContext) {
+    this._options = options;
     this._cliContext = cliContext;
   }
 
@@ -199,19 +194,15 @@ class RspackBundler implements Bundler {
   async build(): Promise<BundlerResult> {
     const compiler = this._compiler;
 
-    /**
-     * TODO
-     * TypeScript error handling is now handled by ts-checker-rspack-plugin in config, not here
-     */
-    // if (this._options.ignoreTypeScriptErrors) {
-    //   logger.info('Skipping validation of types');
-    //   this._compiler.compilers.forEach(compiler => {
-    //     ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
-    //       'afterTypeScriptCheck',
-    //       (issues: Issue[]) => issues.filter(msg => msg.severity !== 'error')
-    //     );
-    //   });
-    // }
+    if (this._options.ignoreTypeScriptErrors) {
+      logger.info('Skipping validation of types');
+      this._compiler.compilers.forEach(compiler => {
+        TsCheckerRspackPlugin.getCompilerHooks(compiler).issues.tap(
+          'afterTypeScriptCheck',
+          (issues: Issue[]) => issues.filter(msg => msg.severity !== 'error')
+        );
+      });
+    }
 
     return runCompiler(compiler);
   }
@@ -314,50 +305,50 @@ class RspackBundler implements Bundler {
   ) {
     const compiler = this.getSubCompiler(name)!;
     let isFirstSuccessfulCompile = true;
-    // let tsMessagesPromise: Promise<CompilerStats> | undefined;
-    // let tsMessagesResolver: (diagnostics: CompilerStats) => void;
+    let tsMessagesPromise: Promise<CompilerStats> | undefined;
+    let tsMessagesResolver: (diagnostics: CompilerStats) => void;
     let isInvalid = true;
 
     const _error = (...args: string[]) => logger.error(`[${name}]`, ...args);
     const _warn = (...args: string[]) => logger.warn(`[${name}]`, ...args);
     compiler.hooks.invalid.tap(`invalid`, () => {
-      // tsMessagesPromise = undefined;
+      tsMessagesPromise = undefined;
       isInvalid = true;
     });
 
-    // const useTypeScript = !!compiler.options.plugins?.find(
-    //   plugin => plugin instanceof ForkTsCheckerWebpackPlugin
-    // );
-    // if (options.typeChecking && useTypeScript) {
-    //   const typescriptFormatter = createCodeFrameFormatter({});
+    const useTypeScript = !!compiler.options.plugins?.find(
+      plugin => plugin instanceof TsCheckerRspackPlugin
+    );
+    if (options.typeChecking && useTypeScript) {
+      const typescriptFormatter = createCodeFrameFormatter({});
 
-    //   compiler.hooks.beforeCompile.tap('beforeCompile', () => {
-    //     tsMessagesPromise = new Promise(resolve => {
-    //       tsMessagesResolver = msgs => resolve(msgs);
-    //     });
-    //   });
+      compiler.hooks.beforeCompile.tap('beforeCompile', () => {
+        tsMessagesPromise = new Promise(resolve => {
+          tsMessagesResolver = msgs => resolve(msgs);
+        });
+      });
 
-    //   ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler).issues.tap(
-    //     'afterTypeScriptCheck',
-    //     (issues: Issue[]) => {
-    //       const format = (message: any) => {
-    //         const file = (message.file || '').replace(/\\/g, '/');
-    //         const formatted = typescriptFormatter(message);
-    //         return {
-    //           message: formatted,
-    //           moduleName: file
-    //         };
-    //       };
-    //       tsMessagesResolver({
-    //         errors: issues.filter(msg => msg.severity === 'error').map(format),
-    //         warnings: issues
-    //           .filter(msg => msg.severity === 'warning')
-    //           .map(format)
-    //       });
-    //       return issues;
-    //     }
-    //   );
-    // }
+      TsCheckerRspackPlugin.getCompilerHooks(compiler).issues.tap(
+        'afterTypeScriptCheck',
+        (issues: Issue[]) => {
+          const format = (message: any) => {
+            const file = (message.file || '').replace(/\\/g, '/');
+            const formatted = typescriptFormatter(message);
+            return {
+              message: formatted,
+              moduleName: file
+            };
+          };
+          tsMessagesResolver({
+            errors: issues.filter(msg => msg.severity === 'error').map(format),
+            warnings: issues
+              .filter(msg => msg.severity === 'warning')
+              .map(format)
+          });
+          return issues;
+        }
+      );
+    }
 
     compiler.hooks.invalid.tap('invalid', () => {
       if (this._startTime === null) {
@@ -420,26 +411,26 @@ class RspackBundler implements Bundler {
         warnings: statsData.warnings ? statsData.warnings.slice(0, 1) : []
       });
 
-      // const typePromise = tsMessagesPromise;
-      // if (options.typeChecking && useTypeScript && !hasErrors) {
-      //   const messages = await tsMessagesPromise;
-      //   if (typePromise !== tsMessagesPromise) {
-      //     // a new compilation started so we don't care about this
-      //     return;
-      //   }
+      const typePromise = tsMessagesPromise;
+      if (options.typeChecking && useTypeScript && !hasErrors) {
+        const messages = await tsMessagesPromise;
+        if (typePromise !== tsMessagesPromise) {
+          // a new compilation started so we don't care about this
+          return;
+        }
 
-      //   if (messages) {
-      //     this._typecheckingEvent.emit({
-      //       errors: messages.errors ? messages.errors.slice(0, 1) : [],
-      //       warnings: messages.warnings ? messages.warnings.slice(0, 1) : []
-      //     });
-      //   } else {
-      //     this._typecheckingEvent.emit({
-      //       errors: [],
-      //       warnings: []
-      //     });
-      //   }
-      // }
+        if (messages) {
+          this._typecheckingEvent.emit({
+            errors: messages.errors ? messages.errors.slice(0, 1) : [],
+            warnings: messages.warnings ? messages.warnings.slice(0, 1) : []
+          });
+        } else {
+          this._typecheckingEvent.emit({
+            errors: [],
+            warnings: []
+          });
+        }
+      }
     });
   }
 
