@@ -39,10 +39,9 @@ describe('TypesSript Suppport', () => {
   //   expect(res.body).toStrictEqual('middleware success');
   // });
 
-  // TODO rspack e2e: ForkTsCheckerWebpackPlugin
-  // test('should enable incremental mode', async () => {
-  //   expect(async () => {
-  //     await fse.readFile(resolveFixture('typescript/.shuvi/cache/tsbuildinfo'));
-  //   }).not.toThrow();
-  // });
+  test('should enable incremental mode', async () => {
+    expect(async () => {
+      await fse.readFile(resolveFixture('typescript/.shuvi/cache/tsbuildinfo'));
+    }).not.toThrow();
+  });
 });

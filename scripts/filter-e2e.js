@@ -13,8 +13,6 @@ module.exports = list => {
         // TODO rspack e2e: skip these tests
         if (
           t.includes('webpack-watch-wait-file-builder.test.ts') ||
-          t.includes('typescript-5-buildError.test.ts') ||
-          t.includes('typescript-ingnoreBuildError.test.ts') ||
           t.includes('dll.test.ts') ||
           t.includes('on-demand-compile.test.ts')
         ) {
