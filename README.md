@@ -66,3 +66,9 @@ $ pnpm format:rust
 ```bash
 $ pnpm i && pnpm format:toml && pnpm format:rust && pnpm build && pnpm test:compiler && npx turbo run build --filter rspack-playground
 ```
+
+## Release
+
+```
+pnpm release 2.0.0-dev.1 --skipTests
+```
