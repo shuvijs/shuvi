@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/compiler",
-  "version": "1.0.63",
+  "version": "2.0.0-dev.6",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
