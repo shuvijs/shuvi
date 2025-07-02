@@ -1,6 +1,9 @@
-const path = require('path');
+import * as path from 'path';
+import type { Configuration } from '@rspack/core';
+import { HtmlRspackPlugin } from '@rspack/core';
 
-module.exports = {
+// Use a more flexible type that allows for Rspack's experimental features
+const config: Configuration = {
   entry: './src/index.tsx',
   mode: 'development',
   devtool: 'source-map',
@@ -16,7 +19,7 @@ module.exports = {
     'react/jsx-runtime': 'React'
   },
   plugins: [
-    new (require('@rspack/core').HtmlRspackPlugin)({
+    new HtmlRspackPlugin({
       template: './public/index.html'
     })
   ],
@@ -27,6 +30,11 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
   },
   module: {
+    parser: {
+      'css/module': {
+        namedExports: false
+      }
+    },
     rules: [
       {
         test: /\.(ts|tsx)$/,
@@ -83,21 +91,21 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        type: 'css/auto'
+        type: 'css/module'
       },
       {
         test: /\.less$/,
-        type: 'css/auto',
+        type: 'css/module',
         use: ['less-loader']
       },
       {
         test: /\.scss$/,
-        type: 'css/auto',
+        type: 'css/module',
         use: ['sass-loader']
       },
       {
         test: /\.sass$/,
-        type: 'css/auto',
+        type: 'css/module',
         use: [
           {
             loader: 'sass-loader',
@@ -120,3 +128,5 @@ module.exports = {
     level: 'verbose'
   }
 };
+
+export default config;
