@@ -5,7 +5,7 @@
   "description": "Rspack example with SWC plugin for auto CSS modules",
   "scripts": {
     "dev": "rspack serve",
-    "build": "rspack build --config rspack.config.js",
+    "build": "rspack build --config rspack.config.ts",
     "clean": "rimraf dist .rspack_cache"
   },
   "dependencies": {
@@ -25,9 +25,10 @@
     "rimraf": "^5.0.0",
     "sass": "^1.69.0",
     "sass-loader": "^13.3.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.2"
   },
   "engines": {
     "node": ">=16"
   }
-} 
+}

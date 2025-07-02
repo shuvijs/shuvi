@@ -15,6 +15,9 @@ import lessStyles from './styles/variables.less';
 import scssStyles from './styles/mixins.scss';
 import sassStyles from './styles/utilities.sass';
 
+// Enhanced CSS Modules demonstration
+import moduleStyles from './styles/modules.css';
+
 console.log('Hello, world! log');
 console.error('Hello, world! error');
 
@@ -23,6 +26,7 @@ console.log('CSS Modules styles:', styles);
 console.log('Less styles:', lessStyles);
 console.log('SCSS styles:', scssStyles);
 console.log('Sass styles:', sassStyles);
+console.log('Enhanced CSS Modules styles:', moduleStyles);
 
 export * from './utils';
 
@@ -38,40 +42,69 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Rspack Playground</h1>
-      <p>Welcome to the Rspack example with SWC plugins!</p>
+    <div className={moduleStyles.container}>
+      <h1 className={moduleStyles.title}>Rspack Playground</h1>
+      <p className={moduleStyles.subtitle}>
+        Welcome to the Rspack example with enhanced CSS Modules support!
+      </p>
 
-      <div style={{ margin: '2rem 0' }}>
+      <div className={moduleStyles.demoSection}>
         <h2>Counter: {count}</h2>
         <button
-          className={styles.button}
+          className={`${moduleStyles.button} ${moduleStyles.buttonPrimary}`}
           onClick={handleIncrement}
-          style={{ marginRight: '1rem' }}
         >
           Increment
         </button>
-        <button className={styles.button} onClick={handleDecrement}>
+        <button
+          className={`${moduleStyles.button} ${moduleStyles.buttonSecondary}`}
+          onClick={handleDecrement}
+        >
           Decrement
         </button>
       </div>
 
-      <div style={{ margin: '2rem 0' }}>
+      <div className={moduleStyles.demoSection}>
         <h3>CSS Modules Demo</h3>
-        <p>This button uses CSS modules (check console for style object):</p>
-        <button className={styles.button}>CSS Modules Button</button>
+        <p>This demonstrates CSS Modules with scoped class names:</p>
+        <div className={moduleStyles.card}>
+          <h4 className={moduleStyles.cardTitle}>CSS Modules Features</h4>
+          <ul className={moduleStyles.featureList}>
+            <li className={moduleStyles.featureItem}>
+              Automatic class name scoping
+            </li>
+            <li className={moduleStyles.featureItem}>No naming conflicts</li>
+            <li className={moduleStyles.featureItem}>TypeScript support</li>
+            <li className={moduleStyles.featureItem}>Hot reloading</li>
+          </ul>
+        </div>
+        <button
+          className={`${moduleStyles.button} ${moduleStyles.buttonSuccess}`}
+        >
+          CSS Modules Button
+        </button>
       </div>
 
-      <div style={{ margin: '2rem 0' }}>
+      <div className={moduleStyles.demoSection}>
         <h3>Style Processing Demo</h3>
         <p>This example demonstrates:</p>
-        <ul>
-          <li>CSS Modules transformation</li>
-          <li>Less compilation</li>
-          <li>SCSS compilation</li>
-          <li>Sass compilation</li>
-          <li>Console log removal (except errors)</li>
+        <ul className={moduleStyles.featureList}>
+          <li className={moduleStyles.featureItem}>
+            CSS Modules transformation
+          </li>
+          <li className={moduleStyles.featureItem}>Less compilation</li>
+          <li className={moduleStyles.featureItem}>SCSS compilation</li>
+          <li className={moduleStyles.featureItem}>Sass compilation</li>
+          <li className={moduleStyles.featureItem}>
+            Console log removal (except errors)
+          </li>
         </ul>
+      </div>
+
+      <div className={moduleStyles.demoSection}>
+        <h3>Legacy CSS Modules</h3>
+        <p>Original CSS Modules (from component.css):</p>
+        <button className={styles.button}>Legacy CSS Modules Button</button>
       </div>
     </div>
   );
