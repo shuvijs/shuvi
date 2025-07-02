@@ -1,0 +1,7 @@
+{
+  "isPageFile": true,
+  "pagePickLoader": false,
+  "jsc": {
+    "target": "es2021"
+  }
+} 
