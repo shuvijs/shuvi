@@ -48,10 +48,12 @@ rustc 1.87.0 (17067e9ac 2025-05-09)
 ```bash
 # Build
 $ pnpm build
-# Test
+# Test packages/compiler
 $ pnpm test:compiler
-# rspack test
+# test rspack integration build
 $ npx turbo run build --filter rspack-playground
+# Test rust-packages
+$ pnpm test:rust-packages
 ```
 
 ### Format
@@ -64,7 +66,7 @@ $ pnpm format:rust
 ### one line
 
 ```bash
-$ pnpm i && pnpm format:toml && pnpm format:rust && pnpm build && pnpm test:compiler && npx turbo run build --filter rspack-playground
+$ pnpm i && pnpm format:toml && pnpm format:rust && pnpm build && pnpm test:compiler && pnpm test:rust-packages
 ```
 
 ## Release

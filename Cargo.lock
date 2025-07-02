@@ -922,6 +922,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
+name = "optimize_hook_destructuring_transform"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "swc_atoms",
+ "swc_cached",
+ "swc_common",
+ "swc_ecma_ast",
+ "swc_ecma_parser",
+ "swc_ecma_transforms_base",
+ "swc_ecma_transforms_testing",
+ "swc_ecma_visit",
+ "tempfile",
+ "testing",
+ "tracing",
+]
+
+[[package]]
 name = "outref"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1943,6 +1962,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "swc_plugin_optimize_hook_destructuring"
+version = "0.1.0"
+dependencies = [
+ "optimize_hook_destructuring_transform",
+ "serde_json",
+ "swc_common",
+ "swc_core",
+ "swc_ecma_ast",
+ "swc_ecma_utils",
+ "swc_ecma_visit",
+ "swc_plugin_macro",
+ "tracing",
+]
+
+[[package]]
 name = "swc_plugin_proxy"
 version = "13.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1961,7 +1995,7 @@ dependencies = [
 
 [[package]]
 name = "swc_plugin_remove_console"
-version = "0.19.4"
+version = "0.1.0"
 dependencies = [
  "remove_console",
  "serde_json",
