@@ -1,53 +1,8 @@
-// ============================================================================
-// SWC 插件核心文件 - 詳細解釋
-// ============================================================================
-//
-// 這個文件的作用：
-// 1. 實現一個 SWC 插件，用於移除 JavaScript 代碼中的 console 語句
-// 2. 提供配置選項，可以選擇性地保留某些 console 方法
-// 3. 展示如何編寫 SWC 轉換器（Transformer）
-//
-// 類比 JavaScript 概念：
-// - 類似於 Babel 插件的實現
-// - 類似於 Webpack loader 的轉換邏輯
-// ============================================================================
-
-// ============================================================================
-// RUST 語法部分 - 導入模塊
-// ============================================================================
-// 導入序列化/反序列化庫
-// serde 是 Rust 的序列化框架，類似於 JavaScript 的 JSON.parse/stringify
-// serde = Serialization/Deserialization framework for Rust
-// 語法: use crate::module;  // Rust 的導入語法，類似於 JavaScript 的 import
 use serde::Deserialize;
-// Deserialize: 用於從配置數據自動生成結構體實例
-// Deserialize = 反序列化，將數據格式（如 JSON）轉換為 Rust 結構體
-// 類似於 JavaScript 中的 Object.assign() 或解構賦值
-
-// 導入 SWC 相關模塊
 use swc_atoms::Atom;
-// Atom: SWC 的字符串類型，類似於 JavaScript 的 Symbol 或 interned string
-// Atom = 原子字符串，經過字符串駐留（string interning）優化的字符串類型
-// 用於高效地存儲和比較字符串，避免重複分配內存
-
 use swc_common::SyntaxContext;
-// SyntaxContext: 語法上下文，用於跟蹤變量作用域和引用關係
-// SyntaxContext = 語法上下文，包含語法標記（Syntax Mark）和解析上下文信息
-// 類似於 JavaScript 引擎的作用域分析，用於區分不同作用域中的同名變量
-
 use swc_ecma_ast::*;
-// 導入所有 AST 節點類型
-// AST = Abstract Syntax Tree（抽象語法樹），代碼的樹狀結構表示
-// 類似於 JavaScript 中的 import * as AST from 'ast-types'
-// 包含：Expr（表達式）, Stmt（語句）, Module（模塊）, CallExpr（調用表達式）, MemberExpr（成員表達式）等
-
 use swc_ecma_visit::{fold_pass, noop_fold_type, Fold, FoldWith};
-// SWC 的訪問者模式工具
-// Visitor Pattern（訪問者模式）：一種設計模式，用於遍歷複雜數據結構
-// - Fold: 轉換器特徵（trait），類似於 JavaScript 的接口（Interface）
-// - FoldWith: 自動實現遍歷 AST 的方法，提供默認的遍歷邏輯
-// - fold_pass: 將轉換器包裝為 Pass（轉換過程），使其可以被 SWC 管道處理
-// - noop_fold_type: 宏（Macro），為未實現的方法提供默認實現（no-op = no operation）
 
 // ============================================================================
 // 配置結構體定義
