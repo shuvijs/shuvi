@@ -5,17 +5,21 @@
   "description": "Rspack example with SWC plugin for auto CSS modules",
   "scripts": {
     "dev": "rspack serve",
-    "build": "rspack build --config rspack.config.mjs",
+    "build": "rspack build --config rspack.config.js",
     "clean": "rimraf dist .rspack_cache"
   },
   "dependencies": {
-    "@shuvi/plugin-remove-console": "workspace:*",
+    "@shuvi/plugin-auto-css-modules": "workspace:*",
+    "@shuvi/plugin-disallow-re-export-all-in-page": "workspace:*",
     "@shuvi/plugin-noop": "workspace:*",
-    "@shuvi/plugin-auto-css-modules": "workspace:*"
+    "@shuvi/plugin-optimize-hook-destructuring": "workspace:*",
+    "@shuvi/plugin-remove-console": "workspace:*"
   },
   "devDependencies": {
     "@rspack/cli": "^1.4.0",
     "@rspack/core": "^1.4.0",
+    "@types/react": "18.0.9",
+    "@types/react-dom": "18.0.6",
     "less": "^4.2.0",
     "less-loader": "^11.1.3",
     "rimraf": "^5.0.0",

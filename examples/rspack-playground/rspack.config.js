@@ -1,23 +1,7 @@
-import path from 'path';
+const path = require('path');
 
-const removeConsolePluginPath = path.resolve(
-  '../../rust-packages/remove-console/swc_plugin_remove_console.wasm'
-);
-
-const noopPluginPath = path.resolve(
-  '../../rust-packages/noop/swc_plugin_noop.wasm'
-);
-
-const autoCssModulesPluginPath = path.resolve(
-  '../../rust-packages/auto-css-modules/swc_plugin_auto_css_modules.wasm'
-);
-
-const disallowReExportAllInPagePluginPath = path.resolve(
-  '../../rust-packages/disallow-re-export-all-in-page/swc_plugin_disallow_re_export_all_in_page.wasm'
-);
-
-export default {
-  entry: './src/index.ts',
+module.exports = {
+  entry: './src/index.tsx',
   mode: 'development',
   devtool: 'source-map',
   output: {
@@ -25,6 +9,17 @@ export default {
     filename: '[name].js',
     clean: true
   },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react/jsx-dev-runtime': 'React',
+    'react/jsx-runtime': 'React'
+  },
+  plugins: [
+    new (require('@rspack/core').HtmlRspackPlugin)({
+      template: './public/index.html'
+    })
+  ],
   experiments: {
     css: true
   },
@@ -45,27 +40,41 @@ export default {
               },
               transform: {
                 react: {
-                  runtime: 'automatic'
+                  runtime: 'classic'
                 }
               },
               experimental: {
                 plugins: [
                   [
-                    removeConsolePluginPath,
+                    require.resolve('@shuvi/plugin-remove-console'),
                     {
                       exclude: ['error']
                     }
                   ],
                   [
-                    noopPluginPath,
+                    require.resolve('@shuvi/plugin-noop'),
                     {
                       enable: true
                     }
                   ],
-                  [autoCssModulesPluginPath, { cssModuleFlag: 'cssmodules' }],
-                  [disallowReExportAllInPagePluginPath, {
-                    enabled: false
-                  }]
+                  [
+                    require.resolve('@shuvi/plugin-auto-css-modules'),
+                    { cssModuleFlag: 'cssmodules' }
+                  ],
+                  // TODO default is enabled??
+                  // [
+                  //   require.resolve('@shuvi/plugin-optimize-hook-destructuring'),
+                  //   {
+                  //   }
+                  // ],
+                  [
+                    require.resolve(
+                      '@shuvi/plugin-disallow-re-export-all-in-page'
+                    ),
+                    {
+                      enabled: false
+                    }
+                  ]
                 ]
               }
             }
