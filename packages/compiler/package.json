@@ -27,7 +27,7 @@
     "@napi-rs/triples": "1.1.0"
   },
   "devDependencies": {
-    "@swc/plugin-transform-imports": "^8.0.3",
-    "@rspack/core": "^1.4.0"
+    "@rspack/core": "^1.4.2",
+    "@swc/plugin-transform-imports": "^8.0.3"
   }
 }
