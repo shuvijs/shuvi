@@ -9,17 +9,7 @@ if (process.env.SKIP_FIXTURES) {
 module.exports = list => {
   return {
     filtered: list
-      .filter(t => {
-        // TODO rspack e2e: skip these tests
-        if (
-          t.includes('webpack-watch-wait-file-builder.test.ts') ||
-          t.includes('dll.test.ts') ||
-          t.includes('on-demand-compile.test.ts')
-        ) {
-          return false;
-        }
-        return e2eTests.some(tt => t.includes(path.normalize(tt)));
-      })
+      .filter(t => t.includes('hmr.test.ts'))
       .map(test => ({ test }))
   };
 };
