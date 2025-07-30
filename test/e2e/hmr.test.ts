@@ -103,8 +103,7 @@ describe('Hot Module Reloading', () => {
 
         logs.dispose();
         // not reload
-        // TODO rspack e2e: does old shuvi get same issue?
-        expect(logs.texts.join(',')).toContain('[HMR] connected');
+        expect(logs.texts.join(',')).not.toContain('[HMR] connected');
 
         done = true;
       } finally {
@@ -165,8 +164,7 @@ describe('Hot Module Reloading', () => {
 
         logs.dispose();
         // not reload
-        // TODO rspack e2e: does old shuvi get same issue?
-        expect(logs.texts.join(',')).toContain('[HMR] connected');
+        expect(logs.texts.join(',')).not.toContain('[HMR] connected');
 
         done = true;
       } finally {
