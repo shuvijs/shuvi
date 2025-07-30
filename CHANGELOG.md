@@ -1,3 +1,20 @@
+# [2.0.0-dev.7](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.6...v2.0.0-dev.7) (2025-07-30)
+
+
+### Bug Fixes
+
+* on-demand-compile of development mode ([b5cdffe](https://github.com/shuvijs/shuvi/commit/b5cdffe644576cfb5c25c40904a0c4fd39e0d4d3))
+* **rspack:** ts issue ([935303e](https://github.com/shuvijs/shuvi/commit/935303ecdb85200cb588371b2b7906741b6b0bce))
+
+
+### Features
+
+* **plugin-optimize-hook-destructuring:** and add tests ([9458d1a](https://github.com/shuvijs/shuvi/commit/9458d1a8b264b2e74db377a6bc070d68bc54497e))
+* **rspack:** css modules ([fb3a815](https://github.com/shuvijs/shuvi/commit/fb3a815554893b4d3d4c48287c82bda5952387bb))
+* upgrade @rspack/core 1.4.2 & rspack-chain 1.2.6 ([b18889f](https://github.com/shuvijs/shuvi/commit/b18889f5e59a8942c8f9dab4cbbc041a7ce2b9de))
+
+
+
 # [2.0.0-dev.6](https://github.com/shuvijs/shuvi/compare/v1.0.63...v2.0.0-dev.6) (2025-07-01)
 
 
