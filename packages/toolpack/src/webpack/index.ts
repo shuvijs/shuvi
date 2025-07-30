@@ -19,7 +19,5 @@ export function resolveRspackModule(path: string) {
     );
   }
   const p = require(`${rspackResolveContext}/${path}`);
-  // debug
-  console.debug(`[rspack][resolveRspackModule] ${path} -> ${p}`);
   return p;
 }

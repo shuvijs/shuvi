@@ -268,9 +268,6 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       })
       .filter(Boolean);
     if (rawRequests.length > 1) {
-      console.debug(
-        `[Rspack] chunk="${chunk.name}" rawRequests length > 1: length=${rawRequests.length}`
-      );
       /**
        * @rspack-diff
        * @TODO workaround: because Rspack's behavior is different from webpack
@@ -284,9 +281,6 @@ export default class RspackBuildManifestPlugin implements RspackPlugin {
       if (sideEffectFreeModules.length) {
         const rawRequest: string | undefined = (sideEffectFreeModules[0] as any)
           .rawRequest;
-        console.debug(
-          `[Rspack] chunk="${chunk.name}" try to pick sideEffectFreeModules="${rawRequest}"`
-        );
         if (rawRequest) {
           return rawRequest;
         }
