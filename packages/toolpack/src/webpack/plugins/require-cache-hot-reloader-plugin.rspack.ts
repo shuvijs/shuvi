@@ -33,8 +33,7 @@ export default class RequireCacheHotReloader implements RspackPlugin {
         PLUGIN_NAME,
         (_chunk, runtimeRequirements) => {
           // add this so that the server.js would be emitted after every compilation
-          // @ts-ignore webpack typing bug
-          runtimeRequirements.add(RuntimeGlobals.getFullHash);
+          runtimeRequirements.add(Rspack.RuntimeGlobals.getFullHash);
         }
       );
     });

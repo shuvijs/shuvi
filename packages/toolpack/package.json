@@ -67,7 +67,7 @@
     "postcss-preset-env": "6.7.0",
     "process": "0.11.10",
     "regenerator-runtime": "0.13.9",
-    "rspack-chain": "^1.2.6",
+    "rspack-chain": "1.2.6",
     "sass-loader": "10.1.0",
     "stream-browserify": "3.0.0",
     "style-loader": "2.0.0",
