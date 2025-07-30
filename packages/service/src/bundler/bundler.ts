@@ -156,7 +156,6 @@ class RspackBundler implements Bundler {
     }
 
     this._targets.forEach(({ name }) => {
-      console.debug(`[rspack][watch] setupListenersForTarget ${name}`);
       if (name === BUNDLER_TARGET_CLIENT) {
         this._setupListenersForTarget(name, {
           typeChecking: true
