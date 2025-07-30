@@ -997,7 +997,7 @@ importers:
         specifier: 0.13.9
         version: 0.13.9
       rspack-chain:
-        specifier: ^1.2.6
+        specifier: 1.2.6
         version: 1.2.6
       sass-loader:
         specifier: 10.1.0
@@ -1331,7 +1331,7 @@ importers:
         specifier: 18.0.6
         version: 18.0.6
       rspack-chain:
-        specifier: ^1.2.6
+        specifier: 1.2.6
         version: 1.2.6
       webpack:
         specifier: 5.73.0
