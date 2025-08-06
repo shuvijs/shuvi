@@ -921,8 +921,8 @@ importers:
         specifier: 5.0.2
         version: 5.0.2(postcss@8.4.14)
       postcss-loader:
-        specifier: 4.1.0
-        version: 4.1.0(postcss@8.4.14)(webpack@5.73.0)
+        specifier: 4.3.0
+        version: 4.3.0(postcss@8.4.14)(webpack@5.73.0)
       postcss-preset-env:
         specifier: 6.7.0
         version: 6.7.0
@@ -13737,8 +13737,8 @@ packages:
       yaml: 1.10.2
     dev: true
 
-  /postcss-loader@4.1.0(postcss@8.4.14)(webpack@5.73.0):
-    resolution: {integrity: sha512-vbCkP70F3Q9PIk6d47aBwjqAMI4LfkXCoyxj+7NPNuVIwfTGdzv2KVQes59/RuxMniIgsYQCFSY42P3+ykJfaw==}
+  /postcss-loader@4.3.0(postcss@8.4.14)(webpack@5.73.0):
+    resolution: {integrity: sha512-M/dSoIiNDOo8Rk0mUqoj4kpGq91gcxCfb9PoyZVdZ76/AuhxylHDYZblNE8o+EQ9AMSASeMFEKxZf5aU6wlx1Q==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
       postcss: ^7.0.0 || ^8.0.1
@@ -13748,8 +13748,8 @@ packages:
       klona: 2.0.4
       loader-utils: 2.0.0
       postcss: 8.4.14
-      schema-utils: 3.0.0
-      semver: 7.3.2
+      schema-utils: 3.1.1
+      semver: 7.6.2
       webpack: 5.73.0(esbuild@0.14.38)
     dev: false
 
