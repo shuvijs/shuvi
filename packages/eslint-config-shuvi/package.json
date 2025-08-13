@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-shuvi",
-  "version": "2.0.0-dev.7",
+  "version": "2.0.0-dev.9",
   "description": "ESLint configuration used by Shuvi.",
   "main": "index.js",
   "license": "MIT",
@@ -12,8 +12,8 @@
   "scripts": {},
   "dependencies": {
     "@babel/eslint-parser": "7.18.2",
-    "@shuvi/toolpack": "2.0.0-dev.7",
-    "@shuvi/eslint-plugin-shuvi": "2.0.0-dev.7",
+    "@shuvi/toolpack": "2.0.0-dev.9",
+    "@shuvi/eslint-plugin-shuvi": "2.0.0-dev.9",
     "@rushstack/eslint-patch": "^1.1.3",
     "@typescript-eslint/parser": "^5.42.0",
     "eslint-import-resolver-node": "^0.3.6",
