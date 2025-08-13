@@ -1,3 +1,7 @@
+# [2.0.0-dev.9](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.7...v2.0.0-dev.9) (2025-08-13)
+
+
+
 # [2.0.0-dev.7](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.6...v2.0.0-dev.7) (2025-07-30)
 
 
