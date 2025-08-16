@@ -19,6 +19,13 @@ Some implementation of shuvi.js are inspired by existing projects, such as next.
 
 ## SWC Plugin Development
 
+### Install Rust
+
+```bash
+$ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+$ brew install taplo
+```
+
 ### Prerequisites
 
 ```bash
