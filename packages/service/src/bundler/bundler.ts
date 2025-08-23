@@ -181,8 +181,10 @@ class RspackBundler implements Bundler {
 
     const rspackWatching = this._compiler.watch(
       this._compiler.compilers[0].options.watchOptions || {},
-      () => {
-        // do nothing
+      (error, multiStats) => {
+        if (error) {
+          throw error;
+        }
       }
     );
     this._watching.set(rspackWatching);
