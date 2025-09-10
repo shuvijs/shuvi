@@ -1,3 +1,13 @@
+# [2.0.0-dev.12](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.11...v2.0.0-dev.12) (2025-09-10)
+
+
+### Bug Fixes
+
+* log error and warning in build ([#12](https://github.com/shuvijs/shuvi/issues/12)) ([d43642c](https://github.com/shuvijs/shuvi/commit/d43642c684bcbb9fc78025991d152240b61edb4b))
+* upgrade css-loader to 5.2.7 for loader-utils version to support node >=17 ([#11](https://github.com/shuvijs/shuvi/issues/11)) ([d1d4de7](https://github.com/shuvijs/shuvi/commit/d1d4de7c2618f7773ee7e040e6977f6faa972da8))
+
+
+
 # [2.0.0-dev.11](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.10...v2.0.0-dev.11) (2025-09-02)
 
 
