@@ -10,10 +10,6 @@ module.exports = list => {
   return {
     filtered: list
       .filter(t => {
-        // TODO rspack e2e: skip these tests
-        if (t.includes('dll.test.ts')) {
-          return false;
-        }
         return e2eTests.some(tt => t.includes(path.normalize(tt)));
       })
       .map(test => ({ test }))
