@@ -33,11 +33,7 @@ import {
 import { getDefaultConfig } from './config';
 import { getPaths } from './paths';
 import { getPlugins, resolvePlugin } from './getPlugins';
-/**
- * @unsupported Rspack does not support WebpackWatchWaitForFileBuilderPlugin directly.
- * TODO: Implement equivalent Rspack plugin or use Rspack's built-in watching capabilities.
- */
-// import WebpackWatchWaitForFileBuilderPlugin from '../lib/webpack-watch-wait-for-file-builder-plugin';
+import WebpackWatchWaitForFileBuilderPlugin from '../lib/webpack-watch-wait-for-file-builder-plugin';
 import { loadConfig } from '../config';
 
 const ServiceModes: IServiceMode[] = ['development', 'production'];
@@ -191,29 +187,25 @@ class Api {
       }
     });
 
-    /**
-     * @unsupported Rspack does not support WebpackWatchWaitForFileBuilderPlugin directly.
-     * TODO: Implement equivalent Rspack plugin or use Rspack's built-in watching capabilities.
-     */
-    // const rspackWaitPlugin = createPlugin({
-    //   configRspack: config => {
-    //     if (this.mode === 'development') {
-    //       config
-    //         .plugin('rspack-watch-wait-for-file-builder-plugin')
-    //         .use(RspackWatchWaitForFileBuilderPlugin, [
-    //           {
-    //             onBuildStart: this._projectBuilder.onBuildStart,
-    //             onBuildEnd: this._projectBuilder.onBuildEnd,
-    //             onInvalid: this._projectBuilder.onInvalid,
-    //             isDependency: this._projectBuilder.isDependency
-    //           }
-    //         ]);
-    //     }
+    const webpackWaitPlugin = createPlugin({
+      configWebpack: config => {
+        if (this.mode === 'development') {
+          config
+            .plugin('webpack-watch-wait-for-file-builder-plugin')
+            .use(WebpackWatchWaitForFileBuilderPlugin, [
+              {
+                onBuildStart: this._projectBuilder.onBuildStart,
+                onBuildEnd: this._projectBuilder.onBuildEnd,
+                onInvalid: this._projectBuilder.onInvalid,
+                isDependency: this._projectBuilder.isDependency
+              }
+            ]);
+        }
+        return config;
+      }
+    });
 
-    //     return config;
-    //   }
-    // });
-    usePlugin(addIncludeToSwcLoader /*, rspackWaitPlugin*/);
+    usePlugin(addIncludeToSwcLoader, webpackWaitPlugin);
 
     // 2. init user plugins
     const userPlugins = getPlugins(
