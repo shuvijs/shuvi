@@ -5,9 +5,16 @@ let list = [];
 
 module.exports = createPlugin({
   afterBundlerTargetDone: ({ first, name, stats }, { paths }) => {
-    const { _modules } = stats.compilation;
     if (name.includes('client')) {
-      list = [..._modules.keys()];
+      // For rspack, access modules directly from compilation
+      const modules = stats.compilation.modules;
+      list = [];
+      for (const module of modules) {
+        const id = stats.compilation.chunkGraph.getModuleId(module);
+        if (id != null) {
+          list.push(id);
+        }
+      }
       fs.writeFileSync(
         `${paths.buildDir}/client/modules.json`,
         JSON.stringify(list),

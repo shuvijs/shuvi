@@ -6,15 +6,12 @@ import TsCheckerRspackPlugin, {
 import formatWebpackMessages from '@shuvi/toolpack/lib/utils/formatWebpackMessages';
 import logger from '@shuvi/utils/logger';
 import { inspect } from 'util';
+import * as path from 'path';
 import * as Rspack from '@shuvi/toolpack/lib/webpack';
 import {
   rspack,
   RspackChain,
-  /**
-   * @unsupported DynamicDll is not supported in Rspack.
-   * TODO: Implement DLL support if/when Rspack supports it.
-   */
-  // DynamicDll,
+  RspackDynamicDll,
   MultiCompiler as RspackMultiCompiler,
   Compiler as RspackCompiler,
   resolveRspackModule
@@ -105,23 +102,19 @@ class RspackBundler implements Bundler {
       return;
     }
 
-    /**
-     * @unsupported DynamicDll is not supported in Rspack.
-     * TODO: Implement DLL support if/when Rspack supports it.
-     */
-    // let dynamicDll: DynamicDll | undefined;
-    // if (this._options.preBundle) {
-    //   dynamicDll = new DynamicDll({
-    //     cacheDir: path.join(this._cliContext.paths.cacheDir, 'dll'),
-    //     rootDir: this._cliContext.paths.rootDir,
-    //     exclude: [/react-refresh/],
-    //     resolveWebpackModule(module) {
-    //       return resolveRspackModule(module);
-    //     }
-    //   });
-    //   this._devMiddlewares.push(dynamicDll.middleware);
-    // }
-    this._compiler = await this._getRspackCompiler(/*dynamicDll*/);
+    let dynamicDll: RspackDynamicDll | undefined;
+    if (this._options.preBundle) {
+      dynamicDll = new RspackDynamicDll({
+        cacheDir: path.join(this._cliContext.paths.cacheDir, 'dll'),
+        rootDir: this._cliContext.paths.rootDir,
+        exclude: [/react-refresh/],
+        resolveRspackModule(module) {
+          return resolveRspackModule(module);
+        }
+      });
+      this._devMiddlewares.push(dynamicDll.middleware);
+    }
+    this._compiler = await this._getRspackCompiler(dynamicDll);
 
     this._inited = true;
   }
@@ -216,21 +209,23 @@ class RspackBundler implements Bundler {
     return this._targets;
   }
 
-  private async _getRspackCompiler(/*dynamicDll?: DynamicDll | null*/): Promise<RspackMultiCompiler> {
+  private async _getRspackCompiler(
+    dynamicDll?: RspackDynamicDll | null
+  ): Promise<RspackMultiCompiler> {
     if (!this._compiler) {
       this._targets = await this._getTargets();
-      // if (dynamicDll) {
-      //   this._compiler = rspack(
-      //     this._targets.map(({ config }) => {
-      //       if (config.target === 'node') {
-      //         return config;
-      //       }
-      //       return dynamicDll.modifyWebpack(config);
-      //     })
-      //   );
-      // } else {
-      this._compiler = rspack(this._targets.map(t => t.config));
-      // }
+      if (dynamicDll) {
+        this._compiler = rspack(
+          this._targets.map(({ config }) => {
+            if (config.target === 'node') {
+              return config;
+            }
+            return dynamicDll.modifyRspack(config);
+          })
+        );
+      } else {
+        this._compiler = rspack(this._targets.map(t => t.config));
+      }
 
       let isFirstSuccessfulCompile = true;
 
