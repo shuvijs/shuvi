@@ -1,3 +1,17 @@
+# [2.0.0-dev.13](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.12...v2.0.0-dev.13) (2025-09-16)
+
+
+### Bug Fixes
+
+* integrate webpack-watch-wait-for-file-builder-plugin ([#13](https://github.com/shuvijs/shuvi/issues/13)) ([e60945f](https://github.com/shuvijs/shuvi/commit/e60945ff4273e618121905fd435980d69973ef22))
+
+
+### Features
+
+* rspack dynamic dll ([#14](https://github.com/shuvijs/shuvi/issues/14)) ([f986cb6](https://github.com/shuvijs/shuvi/commit/f986cb694b5175c8196484a92b09a406b202328d))
+
+
+
 # [2.0.0-dev.12](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.11...v2.0.0-dev.12) (2025-09-10)
 
 
