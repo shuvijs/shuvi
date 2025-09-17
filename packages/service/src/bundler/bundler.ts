@@ -256,10 +256,16 @@ class RspackBundler implements Bundler {
           errors.push(...(statsData.errors || []));
         });
         if (warnings.length > 0) {
-          console.warn('warnings', warnings);
+          warnings.forEach(warning => {
+            console.log('warning message', warning.message);
+            console.log('warning file', warning.file);
+          });
         }
         if (errors.length > 0) {
-          console.log('errors', errors);
+          errors.forEach(error => {
+            console.log('error message', error.message);
+            console.log('error file', error.file);
+          });
           process.exit(1);
         }
         const isSuccessful = !warnings.length && !errors.length;
