@@ -176,7 +176,7 @@ class RspackBundler implements Bundler {
       this._compiler.compilers[0].options.watchOptions || {},
       (error, multiStats) => {
         if (error) {
-          throw error;
+          console.error('error', error);
         }
       }
     );
@@ -266,7 +266,9 @@ class RspackBundler implements Bundler {
             console.error('error message', error.message);
             console.error('error file', error.file);
           });
-          process.exit(1);
+          if (process.env.NODE_ENV === 'production') {
+            process.exit(1);
+          }
         }
         const isSuccessful = !warnings.length && !errors.length;
         if (isSuccessful) {
