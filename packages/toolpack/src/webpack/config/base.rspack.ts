@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/constants';
 import FixWatchingPlugin from '../plugins/fix-watching-plugin';
-// import * as crypto from 'crypto';
+import * as crypto from 'crypto';
 // import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
 import { CompilerOptions } from '../loaders/shuvi-swc-loader';
 
@@ -294,41 +294,46 @@ export function baseRspackChain({
     }
   ]);
 
-  // const getCacheConfig = () => {
-  //   const projectHash = crypto
-  //     .createHash('md5')
-  //     .update(projectRoot)
-  //     .digest('hex');
+  const getCacheConfig = () => {
+    const projectHash = crypto
+      .createHash('md5')
+      .update(projectRoot)
+      .digest('hex');
 
-  //   const stringifiedEnvs = Object.entries({
-  //     ...getDefineEnv(env)
-  //   }).reduce((prev: string, [key, value]) => {
-  //     return `${prev}|${key}=${value}`;
-  //   }, '');
+    const stringifiedEnvs = Object.entries({
+      ...getDefineEnv(env)
+    }).reduce((prev: string, [key, value]) => {
+      return `${prev}|${key}=${value}`;
+    }, '');
 
-  //   const PACKAGE_JSON = path.resolve(__dirname, '../../../package.json');
-  //   const SHUVI_VERSION = require(PACKAGE_JSON).version;
+    const PACKAGE_JSON = path.resolve(__dirname, '../../../package.json');
+    const SHUVI_VERSION = require(PACKAGE_JSON).version;
 
-  //   return {
-  //     cacheDirectory: path.join(cacheDir, 'webpack', projectHash),
-  //     type: 'filesystem',
-  //     name: `${name.replace(/\//, '-')}-${config.get('mode')}`,
-  //     version: `${SHUVI_VERSION}|${stringifiedEnvs}`
-  //   };
-  // };
+    return {
+      cacheDirectory: path.join(cacheDir, 'rspack', projectHash),
+      type: 'filesystem',
+      name: `${name.replace(/\//, '-')}-${config.get('mode')}`,
+      version: `${SHUVI_VERSION}|${stringifiedEnvs}`
+    };
+  };
 
-  /**
-   * @unsupported Rspack only supports `cache: boolean`. Object cache config is not supported.
-   * See: https://rspack.dev/config/cache
-   */
-  // config.cache(
-  //   typeof process.env.SHUVI_DEV_DISABLE_CACHE !== 'undefined'
-  //     ? false
-  //     : getCacheConfig()
-  // );
-  config.cache(
-    typeof process.env.SHUVI_DEV_DISABLE_CACHE !== 'undefined' ? false : true
-  );
+  // Enable filesystem cache for Rspack using experiments.cache
+  if (typeof process.env.SHUVI_DEV_DISABLE_CACHE === 'undefined') {
+    const cacheConfig = getCacheConfig();
+    config.cache(true);
+    config.set('experiments', {
+      cache: {
+        type: 'persistent',
+        version: cacheConfig.version,
+        storage: {
+          type: 'filesystem',
+          directory: cacheConfig.cacheDirectory
+        }
+      }
+    });
+  } else {
+    config.cache(false);
+  }
 
   const tsConfigPath = path.join(projectRoot, 'tsconfig.json');
   const jsConfigPath = path.join(projectRoot, 'jsconfig.json');
