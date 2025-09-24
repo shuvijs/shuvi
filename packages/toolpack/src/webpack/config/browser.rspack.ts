@@ -171,30 +171,11 @@ export function createBrowserRspackChain(options: BaseOptions): RspackChain {
               NODE_MODULES_REGEXP.test(module.nameForCondition() || '')
             );
           },
-          /**
-           * @unsupported Rspack does not support libIdent directly.
-           */
-          // name(module: {
-          //   type: string;
-          //   libIdent?: Function;
-          //   updateHash: (hash: crypto.Hash) => void;
-          // }): string {
-          //   const hash = crypto.createHash('sha1');
-          //   if (module.type === `css/mini-extract`) {
-          //     module.updateHash(hash);
-          //   } else {
-          //     if (!module.libIdent) {
-          //       throw new Error(
-          //         `Encountered unknown module type: ${module.type}. Please open an issue.`
-          //       );
-          //     }
-
-          //     hash.update(module.libIdent({ context: options.projectRoot }));
-          //   }
-
-          //   return hash.digest('hex').substring(0, 8);
-          // },
-          name: 'lib',
+          name(module: rspack.Module): string {
+            const hash = crypto.createHash('sha1');           
+            hash.update(module.identifier());
+            return hash.digest('hex').substring(0, 8);
+          },
           filename: commonChunkFilename({ dev: false }),
           priority: 30,
           minChunks: 1,
