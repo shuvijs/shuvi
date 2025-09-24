@@ -1,3 +1,12 @@
+# [2.0.0-dev.17](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.16...v2.0.0-dev.17) (2025-09-24)
+
+
+### Bug Fixes
+
+* use module identifier as hash value in rspack ([#20](https://github.com/shuvijs/shuvi/issues/20)) ([dcb63e3](https://github.com/shuvijs/shuvi/commit/dcb63e31fb7f5a7095a7506dc671821c482334c7))
+
+
+
 # [2.0.0-dev.16](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.15...v2.0.0-dev.16) (2025-09-19)
 
 
