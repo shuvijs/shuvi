@@ -21,6 +21,7 @@ import { isError, isFunction } from './utils/error';
 import { runQueue } from './utils/async';
 import History from './history/base';
 import { getRedirectFromRoutes } from './getRedirectFromRoutes';
+import { matchStaticRoutes } from './matchStaticRoutes';
 
 const START: IRoute<any> = {
   matches: [],
@@ -38,6 +39,8 @@ interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
   routes: RouteRecord[];
   caseSensitive?: boolean;
+  // sometimes all the routes are static, so we can use the static matcher
+  staticMode?: boolean;
 }
 
 class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
@@ -48,16 +51,17 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _cancleHandler: (() => void) | null = null;
   private _ready: boolean = false;
   private _readyDefer: Defer = createDefer<void>();
-
+  private _staticMode: boolean = false;
   private _listeners: Events<Listener> = createEvents();
   private _beforeEachs: Events<NavigationGuardHook> = createEvents();
   private _beforeResolves: Events<NavigationGuardHook> = createEvents();
   private _afterEachs: Events<NavigationResolvedHook> = createEvents();
 
-  constructor({ history, routes }: IRouterOptions<RouteRecord>) {
+  constructor({ history, routes,staticMode }: IRouterOptions<RouteRecord>) {
     this._history = history;
     this._routes = createRoutesFromArray(routes);
     this._current = START;
+    this._staticMode = !!staticMode;
     this._history.doTransition = this._doTransition.bind(this);
   }
 
@@ -141,7 +145,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
   match = (to: PathRecord): Array<IRouteMatch<RouteRecord>> => {
     const { _routes: routes } = this;
-    const matches = matchRoutes(routes, to);
+    const matches = this._staticMode ? matchStaticRoutes(routes, to) : matchRoutes(routes, to);
     return matches || [];
   };
 
