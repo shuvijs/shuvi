@@ -147,23 +147,24 @@ class StaticRouteMatcher<T extends IRouteBaseObject> {
    */
   private buildMatches(routeChain: T[], matchedPathname: string): IRouteMatch<T>[] {
     const matches: IRouteMatch<T>[] = [];
-    let currentPath = '';
+    let currentMatchedPath = '/';
 
     for (let i = 0; i < routeChain.length; i++) {
       const route = routeChain[i];
       
       if (route.path === '') {
-        // Empty path keeps current path
+        // Simulate the exact behavior of matchPathname + joinPaths
+        // When remainingPathname is '/' and path is '', matchPathname returns { pathname: '/' }
+        // Then joinPaths([currentPath, '/']) adds trailing slash
+        currentMatchedPath = joinPaths([currentMatchedPath, '/']);
       } else {
-        currentPath = joinPaths([currentPath, route.path]);
+        // For non-empty path, use the path directly
+        currentMatchedPath = joinPaths([currentMatchedPath, route.path]);
       }
-
-      // For the last route, use the actual matched pathname
-      const pathname = i === routeChain.length - 1 ? matchedPathname : (currentPath || '/');
 
       matches.push({
         route,
-        pathname,
+        pathname: currentMatchedPath,
         params: Object.freeze({}) // Static routes have no parameters
       });
     }
