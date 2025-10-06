@@ -1,0 +1,70 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Testing Guidelines
+
+## Test Configuration
+
+- **Main Config**: [jest.config.js](mdc:jest.config.js)
+- **TypeScript Support**: ts-jest for TypeScript test files
+- **Environment**: jest-environment-jsdom for React components
+
+## Test Structure
+
+### Unit Tests
+Located within each package in the [packages/](mdc:packages) directory.
+
+**Run Command**: `pnpm test:unit`
+- Tests all packages with `--detectOpenHandles`
+- Focus on individual package functionality
+
+### E2E Tests
+Located in [test/](mdc:test) directory.
+
+**Run Commands**:
+- `pnpm test:e2e` - All E2E tests
+- `pnpm test:e2e:express` - Express server tests
+- `pnpm test:e2e:koa` - Koa server tests
+
+**Configuration**:
+- Uses Puppeteer Core (v20.7.4) for browser automation
+- Runs with `--runInBand` for sequential execution
+- Custom filter: [scripts/filter-e2e.js](mdc:scripts/filter-e2e.js)
+
+## Test Environment Variables
+
+- `BROWSERSLIST_IGNORE_OLD_DATA=true` - Ignore outdated browser data
+- `NODE_OPTIONS=--max_old_space_size=8192` - Increase memory for large tests
+- `NODE_SERVER=EXPRESS|KOA` - Switch between server implementations
+- `NODE_ENV=production` - Test production builds
+
+## Testing Best Practices
+
+### Memory Management
+- Tests use `--detectOpenHandles` to catch memory leaks
+- Large memory allocation (`8192MB`) for complex integration tests
+
+### Server Testing
+The framework supports multiple server implementations:
+- **Express**: Traditional Node.js web framework
+- **Koa**: Modern async/await middleware framework
+
+Test both implementations to ensure compatibility.
+
+### Test Fixtures
+Use [test/fixtures/](mdc:test/fixtures) for test applications:
+```bash
+pnpm shuvi dev test/fixtures/basic
+```
+
+## Debugging Tests
+
+### Browser Tests
+- Uses `puppeteer-core` for browser automation
+- Check [test/e2e/](mdc:test/e2e) for browser-specific tests
+
+### Server Tests
+- Both Express and Koa servers are tested
+- Production and development modes are validated

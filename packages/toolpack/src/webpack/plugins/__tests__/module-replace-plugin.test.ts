@@ -23,12 +23,18 @@ describe('module-replace-plugin', () => {
 
     compiler
       .waitForCompile(stats => {
-        expect(getModuleSource(stats, /\.\.\/shared\/one\?_lazy/)).toMatch(
-          `testDummyComponent`
-        );
-        expect(getModuleSource(stats, /\.\.\/shared\/two\?_lazy/)).toMatch(
-          `testDummyComponent`
-        );
+        expect(getModuleSource(stats, /\.\.\/shared\/one\?_lazy/))
+          .toMatchInlineSnapshot(`
+          "import mod from "../testDummyComponent.js"; 
+          export * from "../testDummyComponent.js"
+          export default mod;"
+        `);
+        expect(getModuleSource(stats, /\.\.\/shared\/two\?_lazy/))
+          .toMatchInlineSnapshot(`
+          "import mod from "../testDummyComponent.js"; 
+          export * from "../testDummyComponent.js"
+          export default mod;"
+        `);
         expect(getModuleSource(stats, /module-replace/)).toMatchInlineSnapshot(`
           "import(
             /* webpackChunkName:"sharedOne" */

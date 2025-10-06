@@ -5,6 +5,9 @@
       "dependsOn": ["^dev"],
       "outputs": ["lib/**", "esm/**"]
     },
+    "test": {
+      "dependsOn": ["^test"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "esm/**", "lib/**"]

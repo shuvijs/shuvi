@@ -1,0 +1,425 @@
+import RspackChain from 'rspack-chain';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+/**
+ * @unsupported Rspack does not support TerserPlugin or CssMinimizerPlugin directly.
+ * TODO: Use Rspack's built-in minification or custom plugin when available.
+ */
+// import TerserPlugin from 'terser-webpack-plugin';
+// import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import * as rspack from '@rspack/core';
+import * as path from 'path';
+import * as fs from 'fs';
+import { PUBLIC_ENV_PREFIX } from '@shuvi/shared/constants';
+import FixWatchingPlugin from '../plugins/fix-watching-plugin';
+import * as crypto from 'crypto';
+// import JsConfigPathsPlugin from '../plugins/jsconfig-paths-plugin';
+import { CompilerOptions } from '../loaders/shuvi-swc-loader';
+
+type TsCompilerOptions = import('typescript').CompilerOptions;
+
+const resolveLocalLoader = (name: string) =>
+  path.join(__dirname, `../loaders/${name}`);
+
+export interface BaseOptions {
+  dev: boolean;
+  name: string;
+  projectRoot: string;
+
+  outputDir: string;
+  cacheDir: string;
+
+  // src files need to be include
+  include: (string | RegExp)[];
+  jsConfig?: {
+    useTypeScript: boolean;
+    typeScriptPath?: string;
+    compilerOptions: TsCompilerOptions;
+    resolvedBaseUrl: string;
+  };
+  target?: string;
+  publicPath?: string;
+  env?: {
+    [x: string]: string | undefined;
+  };
+  lightningCss?: boolean;
+  compiler?: CompilerOptions;
+  analyze?: boolean;
+}
+
+/**
+ * @unsupported Rspack does not support TerserPlugin or CssMinimizerPlugin directly.
+ */
+// const terserOptions = {
+//   parse: {
+//     ecma: 2017 // es8 === 2017
+//   },
+//   compress: {
+//     ecma: 5,
+//     // The following two options are known to break valid JavaScript code
+//     comparisons: false,
+//     inline: 2 // https://github.com/zeit/next.js/issues/7178#issuecomment-493048965
+//   },
+//   mangle: { safari10: true },
+//   output: {
+//     ecma: 5,
+//     safari10: true,
+//     comments: false,
+//     // Fixes usage of Emoji and certain Regex
+//     ascii_only: true
+//   }
+// };
+
+export { RspackChain };
+
+export function getDefineEnv(env: { [x: string]: string | undefined }) {
+  return {
+    ...Object.keys(process.env).reduce(
+      (prev: { [key: string]: string }, key: string) => {
+        if (key.startsWith(PUBLIC_ENV_PREFIX)) {
+          prev[`process.env.${key}`] = JSON.stringify(process.env[key]);
+        }
+        return prev;
+      },
+      {}
+    ),
+    ...Object.keys(env).reduce((acc, key) => {
+      if (/^(?:NODE_.+)|^(?:__.+)$/i.test(key)) {
+        throw new Error(`The key "${key}" under "env" is not allowed.`);
+      }
+      return {
+        ...acc,
+        [`process.env.${key}`]: JSON.stringify(env[key])
+      };
+    }, {} as { [key: string]: string })
+  };
+}
+
+/** remove 'shuvi/' of the target name */
+const getSimplifiedTargetName = (targetName: string) =>
+  targetName.replace(/^shuvi\//, '');
+
+export function baseRspackChain({
+  dev,
+  outputDir,
+  lightningCss,
+  compiler,
+  projectRoot,
+  include,
+  jsConfig,
+  name,
+  publicPath = '/',
+  env = {},
+  cacheDir,
+  analyze
+}: BaseOptions): RspackChain {
+  const config = new RspackChain();
+  config.mode(dev ? 'development' : 'production');
+  config.bail(!dev);
+  config.performance.hints(false);
+  config.context(projectRoot);
+  config.devtool(dev ? 'eval' : false);
+  config.output.path(outputDir);
+  config.output.merge({
+    publicPath,
+    filename: `${dev ? '[name]' : '[name].[contenthash:8]'}.js`,
+    // This saves chunks with the name given via `import()`
+    chunkFilename: `static/chunks/${
+      dev ? '[name]' : '[name].[contenthash:8]'
+    }.js`,
+    hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
+    hotUpdateMainFilename:
+      'static/webpack/[runtime].[fullhash].hot-update.json',
+    strictModuleExceptionHandling: true,
+    // crossOriginLoading: crossOrigin,
+    webassemblyModuleFilename: 'static/wasm/[modulehash:8].wasm',
+    hashFunction: 'xxhash64',
+    hashDigestLength: 16
+  });
+
+  config.optimization.merge({
+    emitOnErrors: !dev,
+    /**
+     * The following options are not currently supported by Rspack:
+     *
+     * - checkWasmTypes: Ensures WebAssembly modules have correct types. Rspack does not expose this option (see https://github.com/web-infra-dev/rspack/issues/ for updates).
+     * - nodeEnv: Allows overriding process.env.NODE_ENV for modules. Rspack sets this automatically based on mode and does not allow manual override.
+     * - realContentHash: Ensures content hash is based on the real content. Rspack does not expose this option; its hashing is internal and may differ from Webpack.
+     *
+     * @todo If Rspack exposes these options in the future, restore them for full parity.
+     */
+    // checkWasmTypes: false,
+    // nodeEnv: false,
+    runtimeChunk: undefined,
+    minimize: !dev
+    // realContentHash: false
+  });
+
+  if (dev) {
+    config.optimization.usedExports(false);
+  } else {
+    /**
+     * @todo Rspack does not support TerserPlugin or CssMinimizerPlugin directly.
+     *
+     * - TerserPlugin: Used in Webpack for advanced JS minification. Rspack has built-in minification, but does not allow custom minimizer plugins yet.
+     * - CssMinimizerPlugin: Used for CSS minification. Rspack's CSS minification is built-in and not pluggable as of now.
+     *
+     * Migration advice: Monitor Rspack's plugin API and minimizer support. If/when Rspack allows custom minimizers, these can be restored for advanced/custom minification needs.
+     * See: https://rspack.dev/guide/plugin.html and https://github.com/web-infra-dev/rspack/issues/ for updates.
+     */
+    // config.optimization.minimizer('terser').use(TerserPlugin, [ ... ]);
+    // config.optimization.minimizer('cssMinimizer').use(CssMinimizerPlugin, [ ... ]);
+    const shouldAnalyze = analyze && (
+      name === 'shuvi/client' || 
+      (name === 'shuvi/server' && process.env.ANALYZE_SERVER)
+    );
+    if (shouldAnalyze) {
+      const targetName = getSimplifiedTargetName(name);
+      config
+        .plugin('private/bundle-analyzer-plugin')
+        .use(BundleAnalyzerPlugin, [
+          {
+            logLevel: 'warn',
+            openAnalyzer: false,
+            analyzerMode: 'static',
+            reportFilename: `../analyze/${targetName}.html`,
+            generateStatsFile: true,
+            statsFilename: `../analyze/${targetName}-stats.json`
+          }
+        ]);
+    }
+  }
+
+  // Support for NODE_PATH
+  const nodePathList = (process.env.NODE_PATH || '')
+    .split(process.platform === 'win32' ? ';' : ':')
+    .filter(p => !!p);
+
+  config.resolve.merge({
+    modules: [
+      'node_modules',
+      ...nodePathList // Support for NODE_PATH environment variable
+    ]
+  });
+  config.resolve.alias.set(
+    '@swc/helpers',
+    path.dirname(require.resolve(`@swc/helpers/package.json`))
+  );
+
+  config.resolveLoader.merge({
+    alias: [
+      'lightningcss-loader',
+      'shuvi-swc-loader',
+      'empty-loader',
+      'route-component-loader'
+    ].reduce((alias, loader) => {
+      alias[`@shuvi/${loader}`] = resolveLocalLoader(loader);
+      return alias;
+    }, {} as Record<string, string>)
+  });
+
+  /**
+   * @unsupported Rspack does not support strictExportPresence.
+   * - Unrecognized key(s) in object: 'strictExportPresence' at "module"
+   */
+  // config.module.set('strictExportPresence', true);
+  const mainRule = config.module.rule('main');
+
+  // TODO: FIXME: await babel/babel-loader to update to fix this.
+  // x-ref: https://github.com/webpack/webpack/issues/11467
+  config.module
+    .rule('webpackPatch')
+    .test(/\.m?js/)
+    .resolve.set('fullySpecified', false);
+
+  config.module
+    .rule('private/shuvi-runtime')
+    .test(/\.shuvi[/\\]app[/\\]runtime[/\\]index\.(js|ts)/)
+    .set('sideEffects', false);
+
+  mainRule
+    .oneOf('js')
+    .test(/\.(tsx|ts|js|cjs|mjs|jsx)$/)
+    .include.merge([...include])
+    .end()
+    .use('shuvi-swc-loader')
+    /**
+     * @todo use builtin:swc-loader instead of shuvi-swc-loader
+     */
+    .loader('@shuvi/shuvi-swc-loader')
+    .options({
+      isServer: false,
+      compiler,
+      supportedBrowsers: false,
+      swcCacheDir: path.join(cacheDir, 'swc')
+    });
+
+  mainRule
+    .oneOf('media')
+    .exclude.merge([/\.(tsx|ts|js|cjs|mjs|jsx)$/, /\.html$/, /\.json$/])
+    .end()
+    // @ts-ignore
+    .type('asset/resource')
+    .set('generator', {
+      filename: (pathData: { filename: string }) => {
+        // Check if a string is a base64 data URI
+        if (pathData.filename && isValidBase64DataURL(pathData.filename)) {
+          // Handle base64 string case, [name] is empty
+          return `static/media/base64.[hash:8][ext]`;
+        } else {
+          return `static/media/[name].[hash:8][ext]`;
+        }
+      }
+    });
+  // .use('file-loader')
+  // .loader(require.resolve('file-loader'))
+  // .options({
+  //   name: 'static/media/[name].[hash:8].[ext]'
+  // });
+
+  config.plugin('private/ignore-plugin').use(rspack.IgnorePlugin, [
+    {
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/
+    }
+  ]);
+
+  config.plugin('private/define').use(rspack.DefinePlugin, [
+    {
+      // internal field to identify the plugin config
+      __SHUVI_DEFINE_ENV: 'true',
+      ...getDefineEnv(env)
+    }
+  ]);
+
+  config.plugin('define').use(rspack.DefinePlugin, [
+    {
+      'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production')
+    }
+  ]);
+
+  const getCacheConfig = () => {
+    const projectHash = crypto
+      .createHash('md5')
+      .update(projectRoot)
+      .digest('hex');
+
+    const stringifiedEnvs = Object.entries({
+      ...getDefineEnv(env)
+    }).reduce((prev: string, [key, value]) => {
+      return `${prev}|${key}=${value}`;
+    }, '');
+
+    const PACKAGE_JSON = path.resolve(__dirname, '../../../package.json');
+    const SHUVI_VERSION = require(PACKAGE_JSON).version;
+
+    return {
+      cacheDirectory: path.join(cacheDir, 'rspack', projectHash),
+      type: 'filesystem',
+      name: `${name.replace(/\//, '-')}-${config.get('mode')}`,
+      version: `${SHUVI_VERSION}|${stringifiedEnvs}`
+    };
+  };
+
+  // Enable filesystem cache for Rspack using experiments.cache
+  if (typeof process.env.SHUVI_DEV_DISABLE_CACHE === 'undefined') {
+    const cacheConfig = getCacheConfig();
+    config.cache(true);
+    config.set('experiments', {
+      cache: {
+        type: 'persistent',
+        version: cacheConfig.version,
+        storage: {
+          type: 'filesystem',
+          directory: cacheConfig.cacheDirectory
+        }
+      }
+    });
+  } else {
+    config.cache(false);
+  }
+
+  const tsConfigPath = path.join(projectRoot, 'tsconfig.json');
+  const jsConfigPath = path.join(projectRoot, 'jsconfig.json');
+  if (jsConfig?.useTypeScript) {
+    if (fs.existsSync(tsConfigPath)) {
+      config.resolve.tsConfig(tsConfigPath);
+    }
+  } else if (fs.existsSync(jsConfigPath)) {
+    config.resolve.tsConfig(jsConfigPath);
+  }
+
+  if (dev) {
+    // For rspack-dev-middleware usage
+    config.watchOptions({
+      aggregateTimeout: 5,
+      ignored: ['**/.git/**']
+    });
+    config.set('infrastructureLogging', {
+      level: 'none'
+    });
+
+    config.plugin('private/fix-watching-plugin').use(FixWatchingPlugin);
+  } else {
+    // class PrintModuleIdsPlugin {
+    //   apply(compiler: rspack.Compiler) {
+    //     compiler.hooks.compilation.tap('PrintModuleIdsPlugin', (compilation) => {
+    //       compilation.hooks.processAssets.tap(
+    //         {
+    //           name: 'PrintModuleIdsPlugin',
+    //           // PROCESS_ASSETS_STAGE_ADDITIONS 是比較晚的階段，ID 通常已分配完成
+    //           stage: rspack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+    //         },
+    //         () => {
+    //           for (const module of compilation.modules) {
+    //             const id = compilation.chunkGraph.getModuleId(module);
+    //             if (id != null) {
+    //               console.log('module id:', id, 'request:', (module as any).rawRequest || (module as any).userRequest);
+    //             } else {
+    //               console.log('module id: <null>', 'request:', (module as any).rawRequest || (module as any).userRequest);
+    //             }
+    //           }
+    //         }
+    //       );
+    //     });
+    //   }
+    // }
+    // config.plugin('private/print-module-ids-plugin').use(PrintModuleIdsPlugin);
+
+    /**
+     * enable deterministic module ids
+     * this is equivalent to webpack's HashedModuleIdsPlugin
+     */
+    config.optimization.merge({
+      moduleIds: 'deterministic' // equivalent to webpack's HashedModuleIdsPlugin
+    });
+  }
+
+  return config;
+}
+
+function isValidBase64DataURL(input: string): boolean {
+  // Check if input starts with the data URI scheme
+  if (!input.startsWith('data:')) {
+    return false;
+  }
+
+  // Split the data URI into metadata and data parts
+  const parts = input.split(',');
+  if (parts.length !== 2) {
+    return false;
+  }
+
+  const metadata = parts[0];
+  const data = parts[1];
+
+  // Check if the metadata contains 'base64'
+  if (!metadata.includes('base64')) {
+    return false;
+  }
+
+  // Regular expression to validate Base64 string
+  const base64Regex = /^[A-Za-z0-9+/]+[=]{0,2}$/;
+
+  // Validate Base64 data
+  return base64Regex.test(data);
+}

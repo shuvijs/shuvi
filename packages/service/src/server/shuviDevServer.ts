@@ -204,21 +204,37 @@ export class ShuviDevServer extends ShuviServer {
 
           configs.forEach(({ config }) => {
             if (tsconfigChange) {
-              config.resolve?.plugins?.forEach((plugin: any) => {
-                // look for the JsConfigPathsPlugin and update with the latest paths/baseUrl config
-                if (plugin && plugin.jsConfigPlugin && parseJsConfig) {
-                  const { resolvedBaseUrl, compilerOptions } = parseJsConfig;
+              /**
+               * @unsupported Rspack does not support resolve.plugins array like webpack.
+               * TODO: Handle this after Rspack support is available.
+               * For now, we'll use Rspack's built-in tsConfig support instead.
+               */
+              // config.resolve?.plugins?.forEach((plugin: any) => {
+              //   // look for the JsConfigPathsPlugin and update with the latest paths/baseUrl config
+              //   if (plugin && plugin.jsConfigPlugin && parseJsConfig) {
+              //     const { resolvedBaseUrl, compilerOptions } = parseJsConfig;
 
-                  if (compilerOptions.paths && resolvedBaseUrl) {
-                    Object.keys(plugin.paths).forEach(key => {
-                      delete plugin.paths[key];
-                    });
+              //     if (compilerOptions.paths && resolvedBaseUrl) {
+              //       Object.keys(plugin.paths).forEach(key => {
+              //         delete plugin.paths[key];
+              //       });
 
-                    plugin.paths = { ...compilerOptions.paths };
-                    plugin.resolvedBaseUrl = resolvedBaseUrl;
-                  }
-                }
-              });
+              //       plugin.paths = { ...compilerOptions.paths };
+              //       plugin.resolvedBaseUrl = resolvedBaseUrl;
+              //     }
+              //   }
+              // });
+
+              // Use Rspack's built-in tsConfig support
+              if (parseJsConfig && config.resolve) {
+                /**
+                 * @TODO
+                 * @unsupported Rspack's tsConfig type is not fully compatible with ParsedJsConfig.
+                 * TODO: Update when Rspack provides proper TypeScript configuration support.
+                 */
+                // @ts-expect-error wrong!!
+                config.resolve.tsConfig = parseJsConfig;
+              }
             }
 
             if (envChange) {

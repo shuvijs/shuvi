@@ -1,18 +1,23 @@
 import { join, dirname } from 'path';
 
-const webpackResolveContext = join(
-  dirname(require.resolve('webpack/package.json')),
+const rspackResolveContext = join(
+  dirname(require.resolve('@rspack/core/package.json')),
   '../'
 );
 
-export * from './webpack';
+export * from './rspack';
 
 /**
- * resolve webpack sub module from the same webpack module
+ * resolve rspack sub module from the same rspack module
+ * @unsupported Rspack does not support submodule resolution like Webpack.
+ * TODO: Remove or replace after Rspack support is available.
  */
-export function resolveWebpackModule(path: string) {
-  if (!path.startsWith('webpack/')) {
-    console.error('path need startWith "webpack/" to resolve webpack module');
+export function resolveRspackModule(path: string) {
+  if (!path.startsWith('@rspack/core/')) {
+    console.error(
+      'path need startWith "@rspack/core/" to resolve rspack module'
+    );
   }
-  return require(`${webpackResolveContext}/${path}`);
+  const p = require(`${rspackResolveContext}/${path}`);
+  return p;
 }

@@ -1,0 +1,99 @@
+# Based on .gitignore with additional Cursor-specific patterns
+
+# MAC
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules
+
+# Workspace editors
+.vscode/
+.idea/
+.swc
+.turbo
+
+# Rust build output
+packages/toolpack/src/swc/target
+
+# Build output
+packages/*/dist/
+packages/*/lib/
+packages/*/esm/
+packages/*/umd/
+
+test/packages/*/lib/
+test/packages/*/esm/
+test/packages/*/umd/
+
+test/fixtures/**/dist/
+test/fixtures/**/build/
+test/fixtures/**/.shuvi/
+examples/**/.shuvi
+examples/**/dist
+
+# Additional Cursor-specific ignores
+
+# Lock files (too large for indexing)
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Test coverage and reports
+coverage/
+*.lcov
+.nyc_output
+
+# Temporary files and caches
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+
+# Large generated files
+*.bundle.js
+*.chunk.js
+*.min.js
+*.map
+
+# Documentation build outputs
+docs/build/
+docs/.docusaurus/
+
+# OS generated files
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE files
+*.sublime-project
+*.sublime-workspace
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3

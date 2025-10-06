@@ -14,6 +14,7 @@ node_modules
 .idea/
 .swc
 .turbo
+.cache
 
 # rust build output
 packages/toolpack/src/swc/target
@@ -33,3 +34,6 @@ test/fixtures/**/build/
 test/fixtures/**/.shuvi/
 examples/**/.shuvi
 examples/**/dist
+
+# swc
+target/

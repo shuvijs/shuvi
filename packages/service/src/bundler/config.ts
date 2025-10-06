@@ -1,7 +1,7 @@
 import {
-  WebpackChain,
-  createBrowserWebpackChain,
-  createNodeWebpackChain
+  RspackChain,
+  createBrowserRspackChain,
+  createNodeRspackChain
 } from '@shuvi/toolpack/lib/webpack/config';
 import { CompilerOptions } from '@shuvi/toolpack/lib/webpack/loaders/shuvi-swc-loader';
 import { IPluginContext } from '../core';
@@ -24,9 +24,9 @@ export interface IWebpackConfigOptions {
 export function createWebpackConfig(
   { mode, assetPublicPath, paths, config }: IPluginContext,
   { ...opts }: IWebpackConfigOptions
-): WebpackChain {
+): RspackChain {
   const dev = mode === 'development';
-  let chain: WebpackChain;
+  let chain: RspackChain;
 
   const name = opts.name;
   const projectRoot = paths.rootDir;
@@ -57,7 +57,7 @@ export function createWebpackConfig(
   };
 
   if (opts.node) {
-    chain = createNodeWebpackChain({
+    chain = createNodeRspackChain({
       name,
       dev,
       projectRoot,
@@ -72,7 +72,7 @@ export function createWebpackConfig(
       analyze
     });
   } else {
-    chain = createBrowserWebpackChain({
+    chain = createBrowserRspackChain({
       name,
       dev,
       projectRoot,

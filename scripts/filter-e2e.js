@@ -9,7 +9,9 @@ if (process.env.SKIP_FIXTURES) {
 module.exports = list => {
   return {
     filtered: list
-      .filter(t => e2eTests.some(tt => t.includes(path.normalize(tt))))
+      .filter(t => {
+        return e2eTests.some(tt => t.includes(path.normalize(tt)));
+      })
       .map(test => ({ test }))
   };
 };

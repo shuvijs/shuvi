@@ -19,7 +19,7 @@ import { getVersion } from '../../version';
 import { getMiddlewares } from '../middlewares';
 import generateResource from './lib/generateResource';
 import { buildHtml } from './lib/buildHtml';
-import BuildManifestPlugin from './lib/webpack/build-manifest-plugin';
+import BuildManifestPlugin from './lib/webpack/build-manifest-plugin.rspack';
 import server from './server';
 
 const ENTRY_FLAG = 'shuviEntry';
@@ -57,7 +57,7 @@ export const getPlugin = (
   platformContext: IPlatformContext
 ): ResolvedPlugin => {
   const core = createPlugin({
-    configWebpack: (chain, { webpack, name, mode }, ctx) => {
+    configWebpack: (chain, { rspack, name, mode }, ctx) => {
       const isDev = mode === 'development';
       const pkgVersion = getVersion();
       const isServer = name === BUNDLER_TARGET_SERVER;
@@ -95,7 +95,7 @@ export const getPlugin = (
           );
           chain
             .plugin('replace/ReactView.server')
-            .use(webpack.NormalModuleReplacementPlugin, [
+            .use(rspack.NormalModuleReplacementPlugin, [
               /\.\/ReactView\.server/,
               function (resource) {
                 const { context } = resource;

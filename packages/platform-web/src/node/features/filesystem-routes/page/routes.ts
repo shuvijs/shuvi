@@ -58,8 +58,8 @@ export function serializeRoutes(
         const fileName = path.basename(component!, fileExtension);
         strRoute += `
 __import__: () => import(
-  /* webpackChunkName: "${fileName}-${id}" */
   /* webpackExports: "default" */
+  /* webpackChunkName: "${fileName}-${id}" */
   "${componentRequest}"),
 __resolveWeak__: () => [require.resolveWeak("${componentRequest}")]`.trim();
       } else {

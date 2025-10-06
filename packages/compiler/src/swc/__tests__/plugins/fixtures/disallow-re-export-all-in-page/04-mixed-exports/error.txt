@@ -1,0 +1,1 @@
+Using `export * from '...'` in a page is disallowed. Please use `export { default } from '...'` instead. 

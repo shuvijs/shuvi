@@ -1,3 +1,6 @@
+/**
+ * Unused
+ */
 import { Compiler, HotUpdateChunk } from 'webpack';
 
 // This plugin mirrors webpack 3 `filename` and `chunkfilename` behavior

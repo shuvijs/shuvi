@@ -1,0 +1,7 @@
+讀 @rspack-built-in-swc-loader.md ，完善 @disallow-re-export-all-in-page.md  Rspack Migration 段落
+
+你可以參考 @auto-css-modules.md 的結構
+
+## 要求
+
+完全使用 rspack 提供的能力，而不使用 @shuvi/compiler

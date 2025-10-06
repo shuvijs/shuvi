@@ -1,21 +1,26 @@
 import { RequestListener } from 'http';
-import { WebpackChain } from '@shuvi/toolpack/lib/webpack';
-import { webpack, Configuration } from '@shuvi/toolpack/lib/webpack';
-import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types';
+import { RspackChain } from '@shuvi/toolpack/lib/webpack';
+import * as Rspack from '@shuvi/toolpack/lib/webpack';
+import { rspack, Configuration } from '@shuvi/toolpack/lib/webpack';
+import { IWebpackHelpers } from '@shuvi/toolpack/lib/webpack/types.rspack';
 import { defineFile, FileBuilder } from '../project/index';
 import { IWebpackConfigOptions } from '../bundler/config';
 import { IServiceMode } from './apiTypes';
 
 export type ExtraTargetAssistant = {
-  createConfig(options: IWebpackConfigOptions): WebpackChain;
+  createConfig(options: IWebpackConfigOptions): RspackChain;
   mode: IServiceMode;
-  webpack: typeof webpack;
+  webpack: typeof rspack;
 };
 
 export type ConfigWebpackAssistant = {
   name: string;
   mode: IServiceMode;
-  webpack: typeof webpack;
+  /**
+   * @deprecated use rspack instead
+   */
+  webpack: typeof rspack;
+  rspack: typeof rspack;
   /**
    * require webpack interal module
    * eg. resolveWebpackModule('webpack/lib/dependencies/ConstDependency')
@@ -28,7 +33,7 @@ export type ConfigWebpackAssistant = {
 
 export interface TargetChain {
   name: string;
-  chain: WebpackChain;
+  chain: RspackChain;
 }
 
 export interface Target {
@@ -38,13 +43,13 @@ export interface Target {
 
 export type BundlerDoneExtra = {
   first: boolean;
-  stats: webpack.MultiStats;
+  stats: Rspack.MultiStats;
 };
 
 export type BundlerTargetDoneExtra = {
   first: boolean;
   name: string;
-  stats: webpack.Stats;
+  stats: Rspack.Stats;
 };
 
 export type RuntimeService = {
@@ -60,7 +65,7 @@ export type AddRuntimeFileUtils = {
   getContent: FileBuilder<any>['getContent'];
 };
 
-export interface WebpackChainType extends WebpackChain {}
+export interface RspackChainType extends RspackChain {}
 
 export type AfterBuildOptions = {
   requestHandler: RequestListener;

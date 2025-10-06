@@ -1,0 +1,76 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Package Structure Guide
+
+All packages are located in the [packages/](mdc:packages) directory. This monorepo contains the following key packages:
+
+## Core Framework Packages
+
+### [packages/shuvi/](mdc:packages/shuvi)
+**Main CLI and framework package** - Assembles other packages for setting up development server and building production builds.
+
+### [packages/runtime/](mdc:packages/runtime)
+**Core runtime** - Core runtime components for applications.
+
+### [packages/compiler/](mdc:packages/compiler)
+**Build tooling** - Webpack and Babel configuration and compilation logic.
+
+### [packages/compiler-swc/](mdc:packages/compiler-swc)
+**SWC compiler integration** - Rust-based compiler for faster builds.
+
+## Platform & Router Packages
+
+### [packages/platform-web/](mdc:packages/platform-web)
+**Web platform support** - Web-specific runtime and utilities.
+
+### [packages/platform-shared/](mdc:packages/platform-shared)
+**Shared platform code** - Common platform utilities.
+
+### [packages/router/](mdc:packages/router)
+**Core router** - Framework-agnostic routing logic.
+
+### [packages/router-react/](mdc:packages/router-react)
+**React router integration** - React-specific routing components.
+
+## Development & Tooling
+
+### [packages/create-shuvi/](mdc:packages/create-shuvi)
+**Project scaffolding** - CLI tool for creating new Shuvi projects.
+
+### [packages/eslint-config-shuvi/](mdc:packages/eslint-config-shuvi)
+**ESLint configuration** - Shared ESLint rules and configuration.
+
+### [packages/eslint-plugin-shuvi/](mdc:packages/eslint-plugin-shuvi)
+**ESLint plugin** - Custom ESLint rules for Shuvi projects.
+
+### [packages/error-overlay/](mdc:packages/error-overlay)
+**Development error UI** - Error overlay for development mode.
+
+## Utility Packages
+
+### [packages/shared/](mdc:packages/shared)
+**Shared utilities** - Reusable logic within the project.
+
+### [packages/utils/](mdc:packages/utils)
+**General utilities** - Generally reusable utility functions.
+
+### [packages/service/](mdc:packages/service)
+**Service layer** - Service-related functionality.
+
+### [packages/toolpack/](mdc:packages/toolpack)
+**Build configuration** - Webpack, Babel, and other tooling configurations.
+
+### [packages/hook/](mdc:packages/hook)
+**Hooks system** - Plugin and hook system for extensibility.
+
+### [packages/reporters/](mdc:packages/reporters)
+**Build reporters** - Progress and error reporting during builds.
+
+## Examples & Tests
+
+- **Examples**: [examples/](mdc:examples) - Sample applications demonstrating features
+- **Tests**: [test/](mdc:test) - E2E and integration tests
+- **Scripts**: [scripts/](mdc:scripts) - Build and release automation scripts

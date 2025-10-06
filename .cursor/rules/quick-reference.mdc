@@ -1,0 +1,81 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Quick Reference Guide
+
+## 🚀 Quick Start
+
+```bash
+# Setup
+pnpm i && pnpm build
+
+# Development
+pnpm dev
+
+# Test an example
+pnpm shuvi dev examples/basic
+```
+
+## 📁 Key Directories
+
+| Directory | Purpose | Key Files |
+|-----------|---------|-----------|
+| [packages/shuvi/](mdc:packages/shuvi) | Main CLI & Framework | [bin/cli.js](mdc:packages/shuvi/bin/cli.js) |
+| [packages/runtime/](mdc:packages/runtime) | Core Runtime | Core application runtime |
+| [packages/compiler/](mdc:packages/compiler) | Build System | Webpack/Babel configs |
+| [packages/router/](mdc:packages/router) | Routing | Framework-agnostic router |
+| [test/](mdc:test) | E2E Tests | Integration tests |
+| [examples/](mdc:examples) | Examples | Sample applications |
+
+## ⚡ Essential Commands
+
+| Command | Purpose |
+|---------|---------|
+| `pnpm dev` | Start development mode |
+| `pnpm build` | Build all packages |
+| `pnpm test` | Run all tests |
+| `pnpm shuvi` | Run CLI directly |
+| `pnpm clean` | Clean build artifacts |
+
+## 🔧 Configuration Files
+
+| File | Purpose |
+|------|---------|
+| [package.json](mdc:package.json) | Root package config |
+| [turbo.json](mdc:turbo.json) | Turborepo build config |
+| [jest.config.js](mdc:jest.config.js) | Testing configuration |
+| [tsconfig.json](mdc:tsconfig.json) | TypeScript config |
+| [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml) | Workspace definition |
+
+## 🧪 Testing Quick Reference
+
+```bash
+# Unit tests
+pnpm test:unit
+
+# E2E tests  
+pnpm test:e2e
+
+# Specific server tests
+pnpm test:e2e:express
+pnpm test:e2e:koa
+```
+
+## 📋 Development Checklist
+
+- [ ] Install dependencies: `pnpm i`
+- [ ] Build packages: `pnpm build`  
+- [ ] Run tests: `pnpm test`
+- [ ] Check code style: automatic via lint-staged
+- [ ] Create changeset: `pnpm changeset` (if needed)
+
+## 🎯 Framework Features
+
+- ✅ Server-Side Rendering (SSR)
+- ✅ Hot Module Replacement
+- ✅ Code Splitting
+- ✅ Express & Koa Support
+- ✅ TypeScript Support
+- ✅ SWC Compilation

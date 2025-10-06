@@ -1,0 +1,23 @@
+{
+  "name": "@shuvi/plugin-remove-console",
+  "version": "0.1.0",
+  "description": "SWC plugin for https://www.npmjs.com/package/babel-plugin-remove-console",
+  "main": "swc_plugin_remove_console.wasm",
+  "scripts": {
+    "prepack": "pnpm run build",
+    "build": "cargo build --release -p swc_plugin_remove_console --target wasm32-wasip1 && cp ../../target/wasm32-wasip1/release/swc_plugin_remove_console.wasm .",
+    "build:debug": "cargo build -p swc_plugin_remove_console --target wasm32-wasip1 && cp ../../target/wasm32-wasip1/debug/swc_plugin_remove_console.wasm .",
+    "test": "pnpm run build && echo 'No tests configured for remove-console plugin'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuvijs/shuvi.git",
+    "directory": "packages/remove-console"
+  },
+  "bugs": {
+    "url": "https://github.com/shuvijs/shuvi/issues"
+  },
+  "author": "Michael Hsu <evenchange4@gmail.com>",
+  "keywords": [],
+  "preferUnplugged": true
+}

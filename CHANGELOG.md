@@ -1,3 +1,121 @@
+# [2.0.0-dev.17](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.16...v2.0.0-dev.17) (2025-09-24)
+
+
+### Bug Fixes
+
+* use module identifier as hash value in rspack ([#20](https://github.com/shuvijs/shuvi/issues/20)) ([dcb63e3](https://github.com/shuvijs/shuvi/commit/dcb63e31fb7f5a7095a7506dc671821c482334c7))
+
+
+
+# [2.0.0-dev.16](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.15...v2.0.0-dev.16) (2025-09-19)
+
+
+### Features
+
+* rspack use filesystem cache ([#18](https://github.com/shuvijs/shuvi/issues/18)) ([6fd0cb0](https://github.com/shuvijs/shuvi/commit/6fd0cb0c2da540849e603648694c1fd1e16b95d1))
+
+
+
+# [2.0.0-dev.15](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.14...v2.0.0-dev.15) (2025-09-18)
+
+
+### Bug Fixes
+
+* only exit process in production ([#17](https://github.com/shuvijs/shuvi/issues/17)) ([2b84c28](https://github.com/shuvijs/shuvi/commit/2b84c2825e6d81d8b0d9ec75c133787358332ee4))
+
+
+
+# [2.0.0-dev.14](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.13...v2.0.0-dev.14) (2025-09-18)
+
+
+
+# [2.0.0-dev.13](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.12...v2.0.0-dev.13) (2025-09-16)
+
+
+### Bug Fixes
+
+* integrate webpack-watch-wait-for-file-builder-plugin ([#13](https://github.com/shuvijs/shuvi/issues/13)) ([e60945f](https://github.com/shuvijs/shuvi/commit/e60945ff4273e618121905fd435980d69973ef22))
+
+
+### Features
+
+* rspack dynamic dll ([#14](https://github.com/shuvijs/shuvi/issues/14)) ([f986cb6](https://github.com/shuvijs/shuvi/commit/f986cb694b5175c8196484a92b09a406b202328d))
+
+
+
+# [2.0.0-dev.12](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.11...v2.0.0-dev.12) (2025-09-10)
+
+
+### Bug Fixes
+
+* log error and warning in build ([#12](https://github.com/shuvijs/shuvi/issues/12)) ([d43642c](https://github.com/shuvijs/shuvi/commit/d43642c684bcbb9fc78025991d152240b61edb4b))
+* upgrade css-loader to 5.2.7 for loader-utils version to support node >=17 ([#11](https://github.com/shuvijs/shuvi/issues/11)) ([d1d4de7](https://github.com/shuvijs/shuvi/commit/d1d4de7c2618f7773ee7e040e6977f6faa972da8))
+
+
+
+# [2.0.0-dev.11](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.10...v2.0.0-dev.11) (2025-09-02)
+
+
+### Bug Fixes
+
+* adjust webpack magic comment order to show `${fileName}-${id}` ([#9](https://github.com/shuvijs/shuvi/issues/9)) ([afd2ab3](https://github.com/shuvijs/shuvi/commit/afd2ab304a2d89e0aa3510b6b606de659356ff0b))
+
+
+
+# [2.0.0-dev.10](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.9...v2.0.0-dev.10) (2025-08-23)
+
+
+### Bug Fixes
+
+* stdout error in watch mode ([#8](https://github.com/shuvijs/shuvi/issues/8)) ([dd43e0b](https://github.com/shuvijs/shuvi/commit/dd43e0b66f9256a4fba788ee45f6c77c478272d7))
+
+
+
+# [2.0.0-dev.9](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.7...v2.0.0-dev.9) (2025-08-13)
+
+
+
+# [2.0.0-dev.7](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.6...v2.0.0-dev.7) (2025-07-30)
+
+
+### Bug Fixes
+
+* on-demand-compile of development mode ([b5cdffe](https://github.com/shuvijs/shuvi/commit/b5cdffe644576cfb5c25c40904a0c4fd39e0d4d3))
+* **rspack:** ts issue ([935303e](https://github.com/shuvijs/shuvi/commit/935303ecdb85200cb588371b2b7906741b6b0bce))
+
+
+### Features
+
+* **plugin-optimize-hook-destructuring:** and add tests ([9458d1a](https://github.com/shuvijs/shuvi/commit/9458d1a8b264b2e74db377a6bc070d68bc54497e))
+* **rspack:** css modules ([fb3a815](https://github.com/shuvijs/shuvi/commit/fb3a815554893b4d3d4c48287c82bda5952387bb))
+* upgrade @rspack/core 1.4.2 & rspack-chain 1.2.6 ([b18889f](https://github.com/shuvijs/shuvi/commit/b18889f5e59a8942c8f9dab4cbbc041a7ce2b9de))
+
+
+
+# [2.0.0-dev.6](https://github.com/shuvijs/shuvi/compare/v1.0.63...v2.0.0-dev.6) (2025-07-01)
+
+
+### Bug Fixes
+
+* dev mode ([cc2886e](https://github.com/shuvijs/shuvi/commit/cc2886edeac704b343f8c2604112d876dd9c1575))
+* manifest should return the correct chunkRequest ([9ce44e9](https://github.com/shuvijs/shuvi/commit/9ce44e91525e1fdd7d5d415a07038445d006faac))
+* resolve.fallback ([38e2c11](https://github.com/shuvijs/shuvi/commit/38e2c117ddb288e4555a8e579fb60f5e06538e57))
+* **rspack:** pnpm test:compiler ([2faf58c](https://github.com/shuvijs/shuvi/commit/2faf58c966caff562a9cc2f93d70295035d037e3))
+* set devtool as eval ([e3046a8](https://github.com/shuvijs/shuvi/commit/e3046a8c1bd69053b1c4a9e136b90bbedd91118d))
+
+
+### Features
+
+* **disallow-re-export-all-in-page:** new swc plugin ([d695fbe](https://github.com/shuvijs/shuvi/commit/d695fbecf2d2efbdaf3d93e29e166ec76df92358))
+* integrate ts-checker-rspack-plugin ([99b2e21](https://github.com/shuvijs/shuvi/commit/99b2e212752c89b470e1d89341af9270ce5706e5))
+* **module-replace-plugin:** basic done ([d73b820](https://github.com/shuvijs/shuvi/commit/d73b8201eed9088beb4f7b5ef588683ce9ae50f3))
+* **NormalModuleReplacementPlugin:** and deprecate options.webpack in configWebpack ([e7db4a0](https://github.com/shuvijs/shuvi/commit/e7db4a07bd35c47375a40a4bdb36e2911f619759))
+* **require-cache-hot-reloader-plugin.rspack:** done ([62db9b3](https://github.com/shuvijs/shuvi/commit/62db9b3e234b7fb70a9b068e0667a1196f9457d0))
+* resolve tsConfig ([7d64e24](https://github.com/shuvijs/shuvi/commit/7d64e24717443f012e8f37cfa091243b6b9d5a6a))
+* **swc-plugin:** dev env ready ([8510c78](https://github.com/shuvijs/shuvi/commit/8510c78b16357a5c41aede63923f3c0864173a7e))
+
+
+
 ## [1.0.63](https://github.com/shuvijs/shuvi/compare/v1.0.62...v1.0.63) (2025-04-24)
 
 

@@ -1,0 +1,19 @@
+import styles from './a.css';
+import styles2 from '../a.less';
+import styles3 from '../../a.scss';
+import styles4 from '/a.css';
+import styles5 from '/path/to/a.less';
+import styles6 from 'my.file.css';
+import styles7 from 'my.file.less';
+import styles8 from 'my-file.css';
+import styles9 from 'my_file.scss';
+import styles10 from 'my-file-name.css';
+import styles11 from 'my_file_name.scss';
+import styles12 from 'my.file.name.less';
+import styles13 from '../../../deep/nested/path/styles.css';
+import styles14 from '/very/deep/nested/path/to/styles.scss';
+import styles15 from 'styles1.css';
+import styles16 from 'button-v2.scss';
+import styles17 from 'theme-2023.less';
+
+console.log(styles, styles2, styles3, styles4, styles5, styles6, styles7, styles8, styles9, styles10, styles11, styles12, styles13, styles14, styles15, styles16, styles17);
