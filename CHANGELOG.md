@@ -1,3 +1,17 @@
+# [2.0.0-dev.18](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.17...v2.0.0-dev.18) (2025-10-06)
+
+
+### Features
+
+* only use analyze in client side for optimize ([#19](https://github.com/shuvijs/shuvi/issues/19)) ([bb2ada7](https://github.com/shuvijs/shuvi/commit/bb2ada73fc680b41c7f0fff96fd3712cd2c63401))
+
+
+### Performance Improvements
+
+* add static mode for bmp ([#21](https://github.com/shuvijs/shuvi/issues/21)) ([4277bb0](https://github.com/shuvijs/shuvi/commit/4277bb017f91493a15427744e175670c8fe7a177))
+
+
+
 # [2.0.0-dev.17](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.16...v2.0.0-dev.17) (2025-09-24)
 
 
