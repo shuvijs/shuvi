@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/reporters",
-  "version": "2.0.0-dev.18",
+  "version": "2.0.0-dev.19",
   "author": "liximomo",
   "license": "MIT",
   "main": "lib/index.js",
@@ -13,8 +13,8 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@shuvi/shared": "2.0.0-dev.18",
-    "@shuvi/utils": "2.0.0-dev.18",
+    "@shuvi/shared": "2.0.0-dev.19",
+    "@shuvi/utils": "2.0.0-dev.19",
     "conf": "5.0.0",
     "is-docker": "2.0.0",
     "is-wsl": "2.2.0",
