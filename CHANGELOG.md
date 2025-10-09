@@ -1,3 +1,12 @@
+# [2.0.0-dev.19](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.18...v2.0.0-dev.19) (2025-10-09)
+
+
+### Reverts
+
+* Revert "perf: add static mode for bmp (#21)" ([8efc8c8](https://github.com/shuvijs/shuvi/commit/8efc8c8d85c28c32054bdbc18dbd4d320fa0a718)), closes [#21](https://github.com/shuvijs/shuvi/issues/21)
+
+
+
 # [2.0.0-dev.18](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.17...v2.0.0-dev.18) (2025-10-06)
 
 
