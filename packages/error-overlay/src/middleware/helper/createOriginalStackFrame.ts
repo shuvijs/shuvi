@@ -31,20 +31,31 @@ export async function createOriginalStackFrame({
 }): Promise<OriginalStackFrameResponse | null> {
   const match = errorMessage?.match(/'([^']+)' module/);
   const moduleNotFound = match && match[1];
+
   /**
-   * @unsupported Rspack does not support buildInfo.importLocByPath API in the same way as Webpack.
-   * TODO: Use Rspack's equivalent API when available or implement alternative import location lookup.
+   * Handle module not found errors by attempting to get import location.
+   * Falls back to normal source mapping if buildInfo API is not available or if no module error.
    */
-  const result =
-    moduleNotFound && compilation
-      ? getModuleById(
-          modulePath,
-          compilation!
-        )?.buildInfo?.importLocByPath?.get(moduleNotFound) ?? null
-      : await findOriginalSourcePositionAndContent(source, {
-          line,
-          column
-        });
+  let result = null;
+
+  if (moduleNotFound && compilation) {
+    try {
+      // Try to use buildInfo.importLocByPath if available (Webpack compatibility)
+      const module = getModuleById(modulePath, compilation);
+      result = module?.buildInfo?.importLocByPath?.get(moduleNotFound) ?? null;
+    } catch (e) {
+      // Rspack may not support this API, fall back to source mapping
+      result = null;
+    }
+  }
+
+  // If no module error or buildInfo lookup failed, use source mapping
+  if (!result) {
+    result = await findOriginalSourcePositionAndContent(source, {
+      line,
+      column
+    });
+  }
 
   if (result === null) {
     return null;

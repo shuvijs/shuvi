@@ -47,8 +47,8 @@ export function stackFrameMiddleware(
       files.map(async fileName => {
         try {
           /**
-           * @unsupported Rspack may use different module resolution patterns than webpack-internal:///.
-           * TODO: Update module resolution pattern after confirming Rspack's internal module format.
+           * Strip internal URL prefixes to get module ID.
+           * Handles both Webpack (webpack-internal://) and Rspack (rspack-internal://) URL patterns.
            */
           const moduleId = fileName.replace(
             /^(webpack-internal:\/\/\/|file:\/\/|rspack-internal:\/\/\/)/,
