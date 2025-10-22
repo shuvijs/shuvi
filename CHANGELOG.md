@@ -1,3 +1,12 @@
+# [2.0.0-dev.20](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.19...v2.0.0-dev.20) (2025-10-22)
+
+
+### Features
+
+* improve error-overlay Webpack/Rspack compatibility and test coverage ([#22](https://github.com/shuvijs/shuvi/issues/22)) ([a7bf5a6](https://github.com/shuvijs/shuvi/commit/a7bf5a6d7677049359b566ab9b736036b372c1c5))
+
+
+
 # [2.0.0-dev.19](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.18...v2.0.0-dev.19) (2025-10-09)
 
 
