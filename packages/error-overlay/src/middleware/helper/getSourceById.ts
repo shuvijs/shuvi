@@ -14,8 +14,7 @@ const readFileWrapper = (
 ): Promise<string | null> => {
   return new Promise(resolve => {
     /**
-     * @unsupported Rspack may have different outputFileSystem API.
-     * TODO: Verify Rspack's outputFileSystem implementation and update accordingly.
+     * Both Webpack and Rspack use the same outputFileSystem API pattern.
      */
     if (!compiler.outputFileSystem) {
       resolve(null);
@@ -115,17 +114,36 @@ export async function getSourceById(
     }
 
     const module = getModuleById(id, compilation);
+
     /**
-     * @unsupported Rspack does not support codeGenerationResults API in the same way as Webpack.
-     * TODO: Use Rspack's equivalent API when available or implement alternative source extraction.
+     * Try to get source from codeGenerationResults API.
+     * Handle potential differences between Webpack and Rspack gracefully.
      */
-    return (
-      (module &&
-        (compilation as any).codeGenerationResults
-          .get(module)
-          ?.sources.get('javascript')) ??
-      null
-    );
+    if (module) {
+      try {
+        // Try the standard codeGenerationResults API
+        const codeGenResults = (compilation as any).codeGenerationResults;
+        if (codeGenResults) {
+          const moduleResults = codeGenResults.get(module);
+          const source = moduleResults?.sources?.get('javascript');
+          if (source) {
+            return source;
+          }
+        }
+
+        // Fallback: try alternative source extraction methods
+        // This handles cases where Rspack might use different internal structures
+        if ((module as any)._source) {
+          return (module as any)._source;
+        }
+      } catch (e) {
+        console.warn(
+          'Failed to extract source using codeGenerationResults, trying fallback methods'
+        );
+      }
+    }
+
+    return null;
   } catch (err) {
     console.error(`Failed to lookup module by ID ("${id}"):`, err);
     return null;

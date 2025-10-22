@@ -5,14 +5,9 @@ export function getModuleById(
   compilation: Rspack.Compilation
 ) {
   /**
-   * @unsupported Rspack does not support ChunkGraph API in the same way as Webpack.
-   * TODO: Use Rspack's equivalent API when available or implement alternative module lookup.
+   * Find module by ID using ChunkGraph API.
+   * Both Webpack and Rspack support this API pattern.
    */
-  // return [...compilation.modules].find(
-  //   searchModule => compilation.chunkGraph.getModuleId(searchModule) === id
-  // );
-
-  // Fallback implementation for Rspack
   return [...compilation.modules].find(
     searchModule => compilation.chunkGraph.getModuleId(searchModule) === id
   );

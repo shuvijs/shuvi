@@ -1190,6 +1190,8 @@ importers:
 
   test/fixtures/dynamic: {}
 
+  test/fixtures/error-overlay: {}
+
   test/fixtures/eslint:
     dependencies:
       eslint:

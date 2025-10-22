@@ -15,8 +15,8 @@ export async function getOriginalStackFrame(
   compilation?: Rspack.Compilation
 ): Promise<OriginalStackFrame> {
   /**
-   * @unsupported Rspack may use different internal URL patterns than webpack-internal:.
-   * TODO: Update URL pattern detection to match Rspack's internal URL format when available.
+   * Handle internal module URLs from both Webpack and Rspack.
+   * Rspack uses 'rspack-internal:' prefix, while Webpack uses 'webpack-internal:'.
    */
   if (
     !(
@@ -55,8 +55,8 @@ export async function getOriginalStackFrame(
   }
 
   /**
-   * @unsupported Rspack may use different internal URL patterns than webpack-internal:.
-   * TODO: Update URL pattern replacement to match Rspack's internal URL format when available.
+   * Strip internal URL prefixes to get the actual module path.
+   * Both Webpack and Rspack internal URLs are handled uniformly.
    */
   const originalStackFrameResponse = await createOriginalStackFrame({
     line: frameLine,
