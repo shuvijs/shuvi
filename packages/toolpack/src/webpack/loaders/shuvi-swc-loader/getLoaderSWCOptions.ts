@@ -5,6 +5,7 @@ export interface CompilerOptions {
   useDefineForClassFields?: boolean;
   reactRemoveProperties?: boolean;
   jsxImportSource?: string;
+  jscTarget?: string;
   emotion?:
     | boolean
     | {
@@ -246,7 +247,7 @@ SWCLoaderOptions) {
     };
   } else {
     // Matches default @babel/preset-env behavior
-    (baseOptions.jsc as any).target = 'es5';
+    (baseOptions.jsc as any).target = compiler?.jscTarget || 'es5';
     if (supportedBrowsers && supportedBrowsers.length > 0) {
       (baseOptions as any).env = {
         targets: supportedBrowsers
