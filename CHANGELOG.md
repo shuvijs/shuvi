@@ -1,3 +1,12 @@
+# [2.0.0-dev.21](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.20...v2.0.0-dev.21) (2025-11-05)
+
+
+### Features
+
+* support modify swc jsc.target in loader options ([#23](https://github.com/shuvijs/shuvi/issues/23)) ([c071eb4](https://github.com/shuvijs/shuvi/commit/c071eb46f27d4d1f40fc5f61eebf1d8410a67d8c))
+
+
+
 # [2.0.0-dev.20](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.19...v2.0.0-dev.20) (2025-10-22)
 
 
