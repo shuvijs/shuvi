@@ -60,18 +60,30 @@ export default function useIntersection<T extends Element>({
   }, []);
 
   useEffect(() => {
-    if (!hasIntersectionObserver) {
+    // Only execute when IntersectionObserver is unavailable AND not disabled
+    if (!hasIntersectionObserver && !isDisabled) {
       if (!visible) {
         const idleCallback = requestIdleCallback(() => setVisible(true));
         return () => cancelIdleCallback(idleCallback);
       }
     }
     return () => {};
-  }, [visible]);
+  }, [visible, isDisabled]);
 
   useEffect(() => {
-    if (rootRef) setRoot(rootRef.current);
-  }, [rootRef]);
+    if (rootRef && !isDisabled) setRoot(rootRef.current);
+  }, [rootRef, isDisabled]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (unobserve.current) {
+        unobserve.current();
+        unobserve.current = undefined;
+      }
+    };
+  }, []);
+
   return [setRef, visible, resetVisible];
 }
 

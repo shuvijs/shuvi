@@ -71,7 +71,8 @@ const isAbsoluteUrl = (url: string) => {
   return ABSOLUTE_URL_REGEX.test(url);
 };
 
-export const Link = function LinkWithPrefetch({
+// Internal component with prefetch logic (contains hooks)
+const LinkWithPrefetch = function ({
   to,
   ref,
   prefetch,
@@ -79,23 +80,46 @@ export const Link = function LinkWithPrefetch({
   ...rest
 }: LinkWrapperProps) {
   const isHrefValid = typeof to === 'string' && !isAbsoluteUrl(to);
+  const shouldAutoPrefetch = prefetch !== false;
   const previousHref = React.useRef(to);
-  const [setIntersectionRef, isVisible, resetVisible] = useIntersection({});
+  const isMountedRef = React.useRef(true);
   const { router } = React.useContext(RouterContext);
-  const setRef = React.useCallback(
-    async (el: Element) => {
-      /**
-       * Lazy prefetching to avoid negative performance impact for the first page.
-       */
-      await awaitPageLoadAndIdle({ remainingTime: 49, timeout: 10 * 1000 });
+  const [setIntersectionRef, isVisible, resetVisible] = useIntersection({
+    disabled: !shouldAutoPrefetch
+  });
 
-      // Before the link getting observed, check if visible state need to be reset
-      if (isHrefValid && previousHref.current !== to) {
-        resetVisible();
-        previousHref.current = to;
+  React.useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const setRef = React.useCallback(
+    async (el: HTMLAnchorElement | null) => {
+      // Handle unmount: cleanup IntersectionObserver
+      if (!el) {
+        setIntersectionRef(null);
+        return;
       }
 
-      if (isHrefValid && prefetch !== false) setIntersectionRef(el);
+      if (shouldAutoPrefetch) {
+        /**
+         * Lazy prefetching to avoid negative performance impact for the first page.
+         */
+        await awaitPageLoadAndIdle({ remainingTime: 49, timeout: 10 * 1000 });
+
+        // Check if component is still mounted after async operation
+        if (!isMountedRef.current || !el.isConnected) return;
+
+        // Before the link getting observed, check if visible state need to be reset
+        if (isHrefValid && previousHref.current !== to) {
+          resetVisible();
+          previousHref.current = to;
+        }
+
+        if (isHrefValid) setIntersectionRef(el);
+      }
 
       if (ref) {
         if (typeof ref === 'function') ref(el);
@@ -104,17 +128,15 @@ export const Link = function LinkWithPrefetch({
         }
       }
     },
-    [to, isHrefValid, prefetch, resetVisible, setIntersectionRef, ref]
+    [to, isHrefValid, shouldAutoPrefetch, resetVisible, setIntersectionRef, ref]
   );
 
   React.useEffect(() => {
-    const shouldPrefetch = isHrefValid && prefetch !== false && isVisible;
-    if (shouldPrefetch && !prefetched[to]) {
+    if (shouldAutoPrefetch && isHrefValid && isVisible && !prefetched[to]) {
       prefetchFn(router, to);
       prefetched[to] = true;
     }
-  }, [to, prefetch, isVisible]);
-
+  }, [to, isVisible, isHrefValid, shouldAutoPrefetch]);
   const childProps: {
     ref?: any;
     onMouseEnter: React.MouseEventHandler<HTMLAnchorElement>;
@@ -134,7 +156,24 @@ export const Link = function LinkWithPrefetch({
   return <LinkFromRouterReact to={to} {...rest} {...childProps} />;
 };
 
+// Wrapper component (no hooks, safe to return early)
+export const Link = function ({ prefetch, ...rest }: LinkWrapperProps) {
+  // When prefetch is "none", completely disable all prefetching (auto + hover)
+  if (prefetch === 'none') {
+    return <LinkFromRouterReact {...rest} />;
+  }
+
+  // Otherwise use the full prefetch logic
+  return <LinkWithPrefetch prefetch={prefetch} {...rest} />;
+};
+
 interface LinkWrapperProps extends LinkProps {
-  prefetch?: boolean;
+  /**
+   * Controls link prefetching behavior:
+   * - `undefined` or `true`: Auto prefetch when visible + hover prefetch (default)
+   * - `false`: Disable auto prefetch, only prefetch on hover
+   * - `'none'`: Completely disable all prefetching (no auto, no hover)
+   */
+  prefetch?: boolean | 'none';
   ref?: any;
 }
