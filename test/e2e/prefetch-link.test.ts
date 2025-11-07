@@ -7,6 +7,7 @@ jest.setTimeout(5 * 60 * 1000);
 const FIXTURE = 'prefetch-link';
 const WITH_PREFETCH_LINK = '/foo';
 const WITHOUT_PREFETCH_LINK = '/bar';
+const NO_PREFETCH_LINK = '/baz';
 
 declare global {
   interface Window {
@@ -18,6 +19,7 @@ let ctx: AppCtx;
 let page: Page;
 let withPrefetchHrefs: string[];
 let withoutPrefetchHrefs: string[];
+let noPrefetchHrefs: string[];
 
 describe('Prefetch Support with SSR', () => {
   beforeAll(async () => {
@@ -47,6 +49,13 @@ describe('Prefetch Support with SSR', () => {
 
     const withoutPrefetchRoutes = await page.shuvi.match(WITHOUT_PREFETCH_LINK);
     withoutPrefetchHrefs = withoutPrefetchRoutes
+      .flatMap((file: any) =>
+        filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
+      )
+      .filter((href: string) => !preloadedHrefs.includes(href));
+
+    const noPrefetchRoutes = await page.shuvi.match(NO_PREFETCH_LINK);
+    noPrefetchHrefs = noPrefetchRoutes
       .flatMap((file: any) =>
         filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
       )
@@ -117,6 +126,24 @@ describe('Prefetch Support with SSR', () => {
       withoutPrefetchHrefs.every(href => prefetchHrefArray.includes(href))
     ).toEqual(true);
   });
+
+  test('should NOT prefetch at all when prefetch is set to "none" (even on hover)', async () => {
+    // Try to hover over the no-prefetch link
+    await page.hover('#no-prefetch');
+
+    //Make sure enough time has passed
+    await page.waitForTimeout(1000);
+
+    const prefetchHrefArray = await page.$$attr(
+      'head [rel="prefetch"]',
+      'href'
+    );
+
+    // should NOT prefetch the no-prefetch link
+    expect(
+      noPrefetchHrefs.every(href => !prefetchHrefArray.includes(href))
+    ).toEqual(true);
+  });
 });
 
 describe('Prefetch Support with SPA', () => {
@@ -147,6 +174,13 @@ describe('Prefetch Support with SPA', () => {
 
     const withoutPrefetchRoutes = await page.shuvi.match(WITHOUT_PREFETCH_LINK);
     withoutPrefetchHrefs = withoutPrefetchRoutes
+      .flatMap((file: any) =>
+        filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
+      )
+      .filter((href: string) => !preloadedHrefs.includes(href));
+
+    const noPrefetchRoutes = await page.shuvi.match(NO_PREFETCH_LINK);
+    noPrefetchHrefs = noPrefetchRoutes
       .flatMap((file: any) =>
         filesByRoutId[file.route.id].map((f: string) => `${publicPath}${f}`)
       )

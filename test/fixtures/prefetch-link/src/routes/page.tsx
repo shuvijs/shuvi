@@ -11,7 +11,12 @@ const Index = () => {
       </div>
       <div>
         <Link id="without-prefetch" to="/bar" prefetch={false}>
-          without prefetch
+          without prefetch (hover prefetch enabled)
+        </Link>
+      </div>
+      <div>
+        <Link id="no-prefetch" to="/baz" prefetch="none">
+          no prefetch at all
         </Link>
       </div>
     </div>
