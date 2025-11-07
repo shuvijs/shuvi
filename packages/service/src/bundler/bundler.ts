@@ -255,7 +255,7 @@ class RspackBundler implements Bundler {
           warnings.push(...(statsData.warnings || []));
           errors.push(...(statsData.errors || []));
         });
-        if (warnings.length > 0) {
+        if (warnings.length > 0 && process.env.NODE_ENV === 'production') {
           warnings.forEach(warning => {
             console.warn('warning message', warning.message);
             console.warn('warning file', warning.file);
@@ -270,8 +270,7 @@ class RspackBundler implements Bundler {
             process.exit(1);
           }
         }
-        const isSuccessful = !warnings.length && !errors.length;
-        if (isSuccessful) {
+        if (!errors.length) {
           if (!isFirstSuccessfulCompile) {
             logger.info(
               `Compiled client and server successfully${timeMessage}`
