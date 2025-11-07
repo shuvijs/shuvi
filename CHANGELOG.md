@@ -1,3 +1,17 @@
+# [2.0.0-dev.22](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.21...v2.0.0-dev.22) (2025-11-07)
+
+
+### Bug Fixes
+
+* update compile tips ([#26](https://github.com/shuvijs/shuvi/issues/26)) ([5422992](https://github.com/shuvijs/shuvi/commit/5422992581cc21da0bb6a455738adace13658fa2))
+
+
+### Performance Improvements
+
+* **Link:** fix memory leak and add prefetch="none" to fully disable all prefetching (auto + hover) ([#25](https://github.com/shuvijs/shuvi/issues/25)) ([66589b0](https://github.com/shuvijs/shuvi/commit/66589b00615bc8cc271c6255a1f8cf1cd750fb9b))
+
+
+
 # [2.0.0-dev.21](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.20...v2.0.0-dev.21) (2025-11-05)
 
 

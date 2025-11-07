@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/toolpack",
-  "version": "2.0.0-dev.21",
+  "version": "2.0.0-dev.22",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shuvijs/shuvi.git",
@@ -36,9 +36,9 @@
     "@rspack/cli": "^1.4.2",
     "@rspack/core": "^1.4.2",
     "@rspack/plugin-html": "^0.5.8",
-    "@shuvi/compiler": "2.0.0-dev.21",
-    "@shuvi/shared": "2.0.0-dev.21",
-    "@shuvi/utils": "2.0.0-dev.21",
+    "@shuvi/compiler": "2.0.0-dev.22",
+    "@shuvi/shared": "2.0.0-dev.22",
+    "@shuvi/utils": "2.0.0-dev.22",
     "@swc/helpers": "0.4.3",
     "babel-loader": "8.2.2",
     "babel-plugin-syntax-jsx": "6.18.0",
