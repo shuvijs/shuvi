@@ -72,7 +72,7 @@
     "stream-browserify": "3.0.0",
     "style-loader": "2.0.0",
     "terser-webpack-plugin": "5.2.5",
-    "ts-checker-rspack-plugin": "^1.1.4",
+    "ts-checker-rspack-plugin": "1.1.4",
     "typescript": "5.5.2",
     "vm-browserify": "1.1.2",
     "webpack": "5.73.0",
