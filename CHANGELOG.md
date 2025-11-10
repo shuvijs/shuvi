@@ -1,3 +1,12 @@
+# [2.0.0-dev.23](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.22...v2.0.0-dev.23) (2025-11-10)
+
+
+### Bug Fixes
+
+* lock ts-checker-rspack-plugin version ([#27](https://github.com/shuvijs/shuvi/issues/27)) ([409debd](https://github.com/shuvijs/shuvi/commit/409debd22e966ecf1d37a52876e5e10a4fe62f01))
+
+
+
 # [2.0.0-dev.22](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.21...v2.0.0-dev.22) (2025-11-07)
 
 
