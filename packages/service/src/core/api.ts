@@ -7,7 +7,7 @@ import * as path from 'path';
 import { defineFile, ProjectBuilder, FileOptionWithId } from '../project';
 import { getBundler, Bundler } from '../bundler';
 import { DEFAULT_PUBLIC_PATH } from '../constants';
-import { ServerPluginInstance } from '../server';
+import { ServerPluginInstance, ShuviRequest } from '../server';
 import { _setResourceEnv } from '../resources';
 import { isFatalError } from '../error';
 import {
@@ -163,6 +163,7 @@ class Api {
       phase: this._phase,
       pluginRunner: this._pluginManager.runner,
       assetPublicPath: this.assetPublicPath,
+      getAssetPublicPath: this._getAssetPublicPath.bind(this),
       resolveAppFile: this.resolveAppFile.bind(this),
       resolveUserFile: this.resolveUserFile.bind(this),
       resolveBuildFile: this.resolveBuildFile.bind(this),
@@ -252,13 +253,28 @@ class Api {
   }
 
   get assetPublicPath(): string {
-    let publicPath = this._config.publicPath || DEFAULT_PUBLIC_PATH;
+    const configPublicPath = this._config.publicPath;
+    let publicPath: string;
+
+    if (typeof configPublicPath === 'function') {
+      // 如果是函数，返回默认值，运行时会在 getAssetUrl 中动态计算
+      publicPath = DEFAULT_PUBLIC_PATH;
+    } else {
+      publicPath = configPublicPath || DEFAULT_PUBLIC_PATH;
+    }
 
     if (!publicPath.endsWith('/')) {
       publicPath += '/';
     }
 
     return publicPath;
+  }
+
+  private _getAssetPublicPath(req: ShuviRequest): string {
+    const { publicPath } = this._config;
+    return typeof publicPath === 'function'
+      ? publicPath(req)
+      : this.assetPublicPath;
   }
 
   async buildApp(): Promise<void> {
