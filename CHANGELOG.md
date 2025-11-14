@@ -1,3 +1,12 @@
+# [2.0.0-dev.24](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.23...v2.0.0-dev.24) (2025-11-14)
+
+
+### Features
+
+* support function-based publicPath configuration ([#28](https://github.com/shuvijs/shuvi/issues/28)) ([4943bb8](https://github.com/shuvijs/shuvi/commit/4943bb80854328fc852897f287a3ebf5b242e431))
+
+
+
 # [2.0.0-dev.23](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.22...v2.0.0-dev.23) (2025-11-10)
 
 
