@@ -44,10 +44,13 @@ export abstract class ShuviServer implements IShuviServer {
   private _normalizeReq(req: IRequest) {
     const shuviReq = req as ShuviRequest;
     shuviReq.getAssetUrl = (assetPath: string) => {
-      const fullAssetPath = joinPath(
-        this._serverContext.assetPublicPath,
-        assetPath
-      );
+      const { config } = this._serverContext;
+      const publicPath =
+        typeof config.publicPath === 'function'
+          ? config.publicPath(shuviReq)
+          : this._serverContext.assetPublicPath;
+
+      const fullAssetPath = joinPath(publicPath, assetPath);
 
       return fullAssetPath;
     };

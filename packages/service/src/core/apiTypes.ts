@@ -12,7 +12,8 @@ import {
   IServerPluginContext,
   ServerPluginInstance,
   ServerPluginConstructor,
-  ServerPluginFactory
+  ServerPluginFactory,
+  ShuviRequest
 } from '../server';
 import { DevMiddleware } from '../server/middlewares/dev';
 
@@ -166,7 +167,7 @@ export interface InternalConfig {
   plugins?: IPluginConfig[];
   env: Record<string, string>;
   outputPath: string;
-  publicPath: string;
+  publicPath: string | ((req: ShuviRequest) => string);
   proxy?: IProxyConfig;
   analyze: boolean;
   disposeInactivePage: boolean;
@@ -194,6 +195,7 @@ export interface IPluginContext {
   phase: IServicePhase;
   pluginRunner: PluginRunner;
   assetPublicPath: string;
+  getAssetPublicPath(req: ShuviRequest): string;
   resolveAppFile(...paths: string[]): string;
   resolveUserFile(...paths: string[]): string;
   resolveBuildFile(...paths: string[]): string;
