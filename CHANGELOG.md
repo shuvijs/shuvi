@@ -1,3 +1,12 @@
+# [2.0.0-dev.25](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.24...v2.0.0-dev.25) (2025-12-29)
+
+
+### Features
+
+* inject iterator polyfill ([#29](https://github.com/shuvijs/shuvi/issues/29)) ([f85f3a0](https://github.com/shuvijs/shuvi/commit/f85f3a04a8f18e468c36b1539630ddd709ea19b4))
+
+
+
 # [2.0.0-dev.24](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.23...v2.0.0-dev.24) (2025-11-14)
 
 
