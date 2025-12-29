@@ -52,6 +52,7 @@ import 'core-js/features/url';
 import 'core-js/features/url/to-json';
 import 'core-js/features/weak-map';
 import 'core-js/features/weak-set';
+import 'core-js/features/iterator/index';
 import 'whatwg-fetch';
 
 import assign from 'object-assign';
