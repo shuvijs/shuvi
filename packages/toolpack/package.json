@@ -39,7 +39,7 @@
     "@shuvi/compiler": "2.0.0-dev.25",
     "@shuvi/shared": "2.0.0-dev.25",
     "@shuvi/utils": "2.0.0-dev.25",
-    "@swc/helpers": "0.4.3",
+    "@swc/helpers": "^0.4.37",
     "babel-loader": "8.2.2",
     "babel-plugin-syntax-jsx": "6.18.0",
     "babel-plugin-transform-define": "2.0.0",
