@@ -1,3 +1,12 @@
+# [2.0.0-dev.26](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.25...v2.0.0-dev.26) (2026-01-07)
+
+
+### Features
+
+* unlock @swc/helpers version ([#30](https://github.com/shuvijs/shuvi/issues/30)) ([1a27611](https://github.com/shuvijs/shuvi/commit/1a2761148068b7328516d8c1c919b454fd11415e))
+
+
+
 # [2.0.0-dev.25](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.24...v2.0.0-dev.25) (2025-12-29)
 
 
