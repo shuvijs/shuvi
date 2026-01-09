@@ -28,7 +28,7 @@
   "dependencies": {
     "comment-json": "3.0.3",
     "find-up": "4.1.0",
-    "semver": "7.3.2",
+    "semver": "^7.5.2",
     "cli-select": "1.1.2",
     "@shuvi/platform-shared": "2.0.0-dev.26",
     "@shuvi/platform-web": "2.0.0-dev.26",
