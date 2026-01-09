@@ -1,3 +1,12 @@
+# [2.0.0-dev.27](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.26...v2.0.0-dev.27) (2026-01-09)
+
+
+### Features
+
+* update outdated dependencies ([#31](https://github.com/shuvijs/shuvi/issues/31)) ([4a0819d](https://github.com/shuvijs/shuvi/commit/4a0819da3c8806969cf33e3c1d73771449d732ac))
+
+
+
 # [2.0.0-dev.26](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.25...v2.0.0-dev.26) (2026-01-07)
 
 
