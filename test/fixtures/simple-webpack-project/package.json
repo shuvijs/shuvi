@@ -10,7 +10,6 @@
   "devDependencies": {
     "@rspack/cli": "^1.4.2",
     "@rspack/core": "^1.4.2",
-    "@rspack/plugin-html": "^0.5.8",
     "@rspack/plugin-react-refresh": "^1.4.3",
     "@shuvi/toolpack": "workspace:*",
     "@types/react": "18.0.9",
