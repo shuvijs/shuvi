@@ -1,3 +1,12 @@
+# [2.0.0-dev.28](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.27...v2.0.0-dev.28) (2026-01-16)
+
+
+### Features
+
+* update ejs dependency to ^3.1.7 ([#32](https://github.com/shuvijs/shuvi/issues/32)) ([6db157c](https://github.com/shuvijs/shuvi/commit/6db157cbecbdf2878252f0ac167b30b5bca4dc9d))
+
+
+
 # [2.0.0-dev.27](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.26...v2.0.0-dev.27) (2026-01-09)
 
 
