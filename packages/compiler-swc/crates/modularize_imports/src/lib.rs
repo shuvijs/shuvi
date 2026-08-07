@@ -41,7 +41,7 @@ struct Rewriter<'a> {
 
 impl<'a> Rewriter<'a> {
     fn rewrite(&self, old_decl: &ImportDecl) -> Vec<ImportDecl> {
-        if old_decl.type_only || old_decl.asserts.is_some() {
+        if old_decl.type_only || old_decl.with.is_some() {
             return vec![old_decl.clone()];
         }
 
@@ -88,10 +88,10 @@ impl<'a> Rewriter<'a> {
                     };
                     out.push(ImportDecl {
                         specifiers: vec![specifier],
-                        src: Str::from(new_path.as_ref()),
+                        src: Box::new(Str::from(new_path.as_ref())),
                         span: old_decl.span,
                         type_only: false,
-                        asserts: None,
+                        with: None,
                     });
                 }
                 _ => {

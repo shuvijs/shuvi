@@ -1,6 +1,7 @@
 
   x @shuvi/runtime dynamic requires at least one argument
-   ,-[input.js:3:1]
+   ,-[input.js:2:1]
+ 2 | 
  3 | const DynamicComponent = dynamic();
    :                          ^^^^^^^
    `----

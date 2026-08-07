@@ -7,7 +7,7 @@ use napi::{CallContext, JsObject, Task};
 use once_cell::sync::Lazy;
 use serde::Deserialize;
 use std::{collections::HashMap, path::PathBuf, sync::Arc};
-use swc::{config::SourceMapsConfig, try_with_handler, TransformOutput};
+use swc::{config::SourceMapsConfig, try_with_handler, Compiler, TransformOutput};
 use swc_atoms::JsWord;
 use swc_bundler::{Bundler, ModuleData, ModuleRecord};
 use swc_common::{
@@ -71,8 +71,9 @@ impl Task for BundleTask {
 
                 let comments = self.c.comments().clone();
                 //
+                static GLOBALS: Lazy<swc_common::Globals> = Lazy::new(swc_common::Globals::default);
                 let mut bundler = Bundler::new(
-                    self.c.globals(),
+                    &GLOBALS,
                     self.c.cm.clone(),
                     CustomLoader {
                         cm: self.c.cm.clone(),
@@ -125,6 +126,7 @@ impl Task for BundleTask {
                     Some(&comments),
                     true,
                     false,
+                    "",
                 )?;
 
                 Ok(code)

@@ -143,7 +143,7 @@ impl Fold for ShuviDynamicPatcher {
                             } else {
                                 Box::new(Expr::Arrow(ArrowExpr {
                                     params: vec![],
-                                    body: BlockStmtOrExpr::Expr(Box::new(Expr::Array(ArrayLit {
+                                    body: Box::new(BlockStmtOrExpr::Expr(Box::new(Expr::Array(ArrayLit {
                                         elems: vec![Some(ExprOrSpread {
                                             expr: Box::new(Expr::Call(CallExpr {
                                                 callee: Callee::Expr(Box::new(Expr::Member(
@@ -180,7 +180,7 @@ impl Fold for ShuviDynamicPatcher {
                                             spread: None,
                                         })],
                                         span: DUMMY_SP,
-                                    }))),
+                                    })))),
                                     is_async: false,
                                     is_generator: false,
                                     span: DUMMY_SP,

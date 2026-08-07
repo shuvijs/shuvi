@@ -1,5 +1,5 @@
 [package]
-edition = "2018"
+edition = "2021"
 name    = "shuvi-swc"
 publish = false
 version = "0.0.0"
@@ -22,12 +22,12 @@ regex = "1.5"
 serde = "1"
 serde_json = "1"
 styled_components = { path = "../styled_components" }
-swc = "0.205.0"
-swc_atoms = "0.2.13"
-swc_cached = "0.1.1"
-swc_common = { version = "0.23.0", features = ["concurrent", "sourcemap"] }
-swc_ecma_loader = { version = "0.35.0", features = ["node", "lru"] }
-swc_ecmascript = { version = "0.180.0", features = [
+swc = { version = "0.265.7", default-features = false }
+swc_atoms = "0.5.9"
+swc_cached = "0.3.17"
+swc_common = { version = "0.32.0", features = ["concurrent", "sourcemap"] }
+swc_ecma_loader = { version = "0.44.2", features = ["node", "lru"] }
+swc_ecmascript = { version = "0.233.7", features = [
   "codegen",
   "minifier",
   "optimization",
@@ -45,6 +45,6 @@ wasmer = { version = "2.3.0", optional = true, default-features = false }
 wasmer-wasi = { version = "2.3.0", optional = true, default-features = false }
 
 [dev-dependencies]
-swc_ecma_transforms_testing = "0.99.0"
-testing                     = "0.25.0"
+swc_ecma_transforms_testing = "0.135.2"
+testing                     = "0.34.0"
 walkdir                     = "2.3.2"

@@ -63,12 +63,12 @@ impl Fold for PageLoader {
 
                 new_items.push(ModuleItem::ModuleDecl(ModuleDecl::ExportDecl(ExportDecl {
                     span: DUMMY_SP,
-                    decl: Decl::Var(VarDecl {
+                    decl: Decl::Var(Box::new(VarDecl {
                         span: DUMMY_SP,
                         kind: VarDeclKind::Var,
                         declare: Default::default(),
                         decls: vec![var],
-                    }),
+                    })),
                 })))
             }
         }

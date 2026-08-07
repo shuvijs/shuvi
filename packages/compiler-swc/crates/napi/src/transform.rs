@@ -40,7 +40,7 @@ use std::{
     sync::Arc,
 };
 use swc::{try_with_handler, Compiler, TransformOutput};
-use swc_common::{errors::ColorConfig, FileName};
+use swc_common::{comments::SingleThreadedComments, errors::ColorConfig, FileName, Globals, GLOBALS};
 use swc_ecmascript::transforms::pass::noop;
 
 /// Input to transform
@@ -64,7 +64,8 @@ impl Task for TransformTask {
 
     fn compute(&mut self) -> napi::Result<Self::Output> {
         let res = catch_unwind(AssertUnwindSafe(|| {
-            try_with_handler(
+            let globals = Globals::default();
+            GLOBALS.set(&globals, || try_with_handler(
                 self.c.cm.clone(),
                 swc::HandlerOpts {
                     color: ColorConfig::Never,
@@ -102,24 +103,26 @@ impl Task for TransformTask {
                         let cm = self.c.cm.clone();
                         let file = fm.clone();
 
+                        let comments = SingleThreadedComments::default();
                         self.c.process_js_with_custom_pass(
                             fm,
                             None,
                             handler,
                             &options.swc,
-                            |_, comments| {
+                            comments.clone(),
+                            |_| {
                                 custom_before_pass(
                                     cm,
                                     file,
                                     &options,
-                                    comments.clone(),
+                                    comments,
                                 )
                             },
-                            |_, _| noop(),
+                            |_| noop(),
                         )
                     })
                 },
-            )
+            ))
         }))
         .map_err(|err| {
             if let Some(s) = err.downcast_ref::<String>() {

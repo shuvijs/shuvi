@@ -113,7 +113,7 @@ describe('swc/core', () => {
       expect(output).toMatch(/import\"global\.css\"/);
 
       expect(output).toMatchInlineSnapshot(
-        `"import{jsx as _jsx}from"react/jsx-runtime";import{useState}from"react";import styles from"a.css?cssmodules";import"global.css";const App=()=>{const{0:count,1:setCount}=useState(0);return _jsx("div",{children:count})};export default App"`
+        `"import{jsx as _jsx}from"react/jsx-runtime";import{useState}from"react";import styles from"a.css?cssmodules";import"global.css";const App=()=>{const{0:count,1:setCount}=useState(0);return _jsx("div",{children:count})};export default App;"`
       );
     });
 
@@ -157,14 +157,14 @@ describe('swc/core', () => {
         const code = await swc(`typeof window !== 'undefined';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`""undefined"!=="undefined""`);
+        expect(code).toMatchInlineSnapshot(`""undefined"!=="undefined";"`);
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window !== 'object';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`""undefined"!=="object""`);
+        expect(code).toMatchInlineSnapshot(`""undefined"!=="object";"`);
       });
     });
   });
@@ -248,28 +248,28 @@ describe('swc/core', () => {
         const code = await swc(`typeof window === 'undefined';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`""object"==="undefined""`);
+        expect(code).toMatchInlineSnapshot(`""object"==="undefined";"`);
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window === 'object';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`""object"==="object""`);
+        expect(code).toMatchInlineSnapshot(`""object"==="object";"`);
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window !== 'undefined';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`""object"!=="undefined""`);
+        expect(code).toMatchInlineSnapshot(`""object"!=="undefined";"`);
       });
 
       test('should replace typeof window expression top level', async () => {
         const code = await swc(`typeof window !== 'object';`, {
           isNode
         });
-        expect(code).toMatchInlineSnapshot(`""object"!=="object""`);
+        expect(code).toMatchInlineSnapshot(`""object"!=="object";"`);
       });
     });
   });
@@ -277,7 +277,7 @@ describe('swc/core', () => {
   describe('syntax', () => {
     test('should support exportDefaultFrom', async () => {
       const code = await swc(`export { default as foo } from "bar"`);
-      expect(code).toMatchInlineSnapshot(`"export{default as foo}from"bar""`);
+      expect(code).toMatchInlineSnapshot(`"export{default as foo}from"bar";"`);
     });
 
     test('should not drop unused exports by default', async () => {
@@ -294,7 +294,7 @@ describe('swc/core', () => {
           `import{e as ee,f as ff}from"f";`
       );
       expect(code).toMatchInlineSnapshot(
-        `"import"core-js";import{foo,bar}from"a";import baz from"b";import*as React from"react";import baz2,{yeet}from"c";import baz3,{cats}from"d";import{c,d}from"e";import{e as ee,f as ff}from"f""`
+        `"import"core-js";import{foo,bar}from"a";import baz from"b";import*as React from"react";import baz2,{yeet}from"c";import baz3,{cats}from"d";import{c,d}from"e";import{e as ee,f as ff}from"f";"`
       );
     });
 
@@ -316,7 +316,7 @@ describe('swc/core', () => {
         { filename: pageFile }
       );
       expect(code).toMatchInlineSnapshot(
-        `"import"core-js";import{foo,bar}from"a";import baz from"b";import*as React from"react";import baz2,{yeet}from"c";import baz3,{cats}from"d";import{c,d}from"e";import{e as ee,f as ff}from"f""`
+        `"import"core-js";import{foo,bar}from"a";import baz from"b";import*as React from"react";import baz2,{yeet}from"c";import baz3,{cats}from"d";import{c,d}from"e";import{e as ee,f as ff}from"f";"`
       );
     });
 
@@ -329,7 +329,7 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var hello;export default function(){return(hello===null||hello===void 0?void 0:hello.world)?"something":"nothing"}"`
+        `"var hello;export default function(){var _hello;return((_hello=hello)===null||_hello===void 0?void 0:_hello.world)?"something":"nothing"};"`
       );
     });
 
@@ -342,7 +342,7 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var hello;export default function(){return(hello===null||hello===void 0?void 0:hello.world)?"something":"nothing"}"`
+        `"var hello;export default function(){var _hello;return((_hello=hello)===null||_hello===void 0?void 0:_hello.world)?"something":"nothing"};"`
       );
     });
 
@@ -364,7 +364,7 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var res={status:0,nullVal:null,statusText:""};var _status;var status=(_status=res.status)!==null&&_status!==void 0?_status:999;var _nullVal;var nullVal=(_nullVal=res.nullVal)!==null&&_nullVal!==void 0?_nullVal:"another";var _nullVal1;var statusText=(_nullVal1=res.nullVal)!==null&&_nullVal1!==void 0?_nullVal1:"not found";export default function(){return"hello"}"`
+        `"var res={status:0,nullVal:null,statusText:""};var _res_status;var status=(_res_status=res.status)!==null&&_res_status!==void 0?_res_status:999;var _res_nullVal;var nullVal=(_res_nullVal=res.nullVal)!==null&&_res_nullVal!==void 0?_res_nullVal:"another";var _res_nullVal1;var statusText=(_res_nullVal1=res.nullVal)!==null&&_res_nullVal1!==void 0?_res_nullVal1:"not found";export default function(){return"hello"};"`
       );
     });
 
@@ -386,7 +386,7 @@ describe('swc/core', () => {
         }
       );
       expect(code).toMatchInlineSnapshot(
-        `"var res={status:0,nullVal:null,statusText:""};var _status;var status=(_status=res.status)!==null&&_status!==void 0?_status:999;var _nullVal;var nullVal=(_nullVal=res.nullVal)!==null&&_nullVal!==void 0?_nullVal:"another";var _nullVal1;var statusText=(_nullVal1=res.nullVal)!==null&&_nullVal1!==void 0?_nullVal1:"not found";export default function(){return"hello"}"`
+        `"var res={status:0,nullVal:null,statusText:""};var _res_status;var status=(_res_status=res.status)!==null&&_res_status!==void 0?_res_status:999;var _res_nullVal;var nullVal=(_res_nullVal=res.nullVal)!==null&&_res_nullVal!==void 0?_res_nullVal:"another";var _res_nullVal1;var statusText=(_res_nullVal1=res.nullVal)!==null&&_res_nullVal1!==void 0?_res_nullVal1:"not found";export default function(){return"hello"};"`
       );
     });
   });

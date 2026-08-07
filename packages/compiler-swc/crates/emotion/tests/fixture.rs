@@ -23,6 +23,7 @@ fn shuvi_emotion_fixture(input: PathBuf) {
         ts_syntax(),
         &|tr| {
             let top_level_mark = Mark::fresh(Mark::root());
+            let unresolved_mark = Mark::fresh(Mark::root());
             let jsx = jsx::<SingleThreadedComments>(
                 tr.cm.clone(),
                 Some(tr.comments.as_ref().clone()),
@@ -36,6 +37,7 @@ fn shuvi_emotion_fixture(input: PathBuf) {
                     ..Default::default()
                 },
                 top_level_mark,
+                unresolved_mark,
             );
             chain!(
                 swc_emotion::emotion(
@@ -54,5 +56,6 @@ fn shuvi_emotion_fixture(input: PathBuf) {
         },
         &input,
         &output,
+        Default::default(),
     );
 }

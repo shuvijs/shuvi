@@ -17,7 +17,7 @@ describe('optimize-hook-destructuring', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { useState } from "react";
-      var ref = useState(0), count = ref[0], setCount = ref[1];
+      var _useState = useState(0), count = _useState[0], setCount = _useState[1];
       "
     `);
   });
@@ -32,7 +32,7 @@ describe('optimize-hook-destructuring', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "import { useState } from "react";
-      var ref = useState(0), setCount = ref[1];
+      var _useState = useState(0), setCount = _useState[1];
       "
     `);
   });
