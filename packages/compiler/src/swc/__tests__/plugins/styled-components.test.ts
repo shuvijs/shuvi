@@ -136,7 +136,7 @@ describe('styled components', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "function _defineProperty(obj, key, value) {
+      "function _define_property(obj, key, value) {
           if (key in obj) {
               Object.defineProperty(obj, key, {
                   value: value,
@@ -177,7 +177,7 @@ describe('styled components', () => {
       })\`\`;
       class ClassComponent {
       }
-      _defineProperty(ClassComponent, "Child", styled.div.withConfig({
+      _define_property(ClassComponent, "Child", styled.div.withConfig({
           displayName: "Child"
       })\`\`);
       var GoodName = BadName = styled.div.withConfig({
@@ -703,21 +703,7 @@ describe('styled components', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "function _extends() {
-          _extends = Object.assign || function(target) {
-              for(var i = 1; i < arguments.length; i++){
-                  var source = arguments[i];
-                  for(var key in source){
-                      if (Object.prototype.hasOwnProperty.call(source, key)) {
-                          target[key] = source[key];
-                      }
-                  }
-              }
-              return target;
-          };
-          return _extends.apply(this, arguments);
-      }
-      import { styled } from '@material/ui';
+      "import { styled } from '@material/ui';
       import s from 'styled-components';
       const Paragraph = s.p.withConfig({
           displayName: "noop__Paragraph",
@@ -725,7 +711,7 @@ describe('styled components', () => {
       })\`
               color: green;
             \`;
-      const Foo = (p)=>/*#__PURE__*/ React.createElement(Paragraph, _extends({}, p));
+      const Foo = (p)=>/*#__PURE__*/ React.createElement(Paragraph, p);
       const TestNormal = styled(Foo)({
           color: red
       });

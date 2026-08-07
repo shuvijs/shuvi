@@ -43,7 +43,8 @@ impl Fold for AutoCssModule {
                     &self.css_module_flag
                 };
                 let extra = sign + flag;
-                cloned_decl.src.value = JsWord::from(cloned_decl.src.value.to_string() + &extra);
+                let new_value = format!("{}{}", cloned_decl.src.value, extra);
+                cloned_decl.src.value = JsWord::from(new_value);
                 cloned_decl.src.raw = None;
                 return cloned_decl;
             }

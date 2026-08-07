@@ -68,7 +68,7 @@ describe('react remove properties', () => {
                   })
               })
           });
-      };
+      }
       "
     `);
   });
@@ -94,7 +94,7 @@ describe('react remove properties', () => {
                   })
               })
           });
-      };
+      }
       "
     `);
   });

@@ -1,5 +1,5 @@
-import other from "other";
-const { a  } = other;
+import other from 'other';
+const { a } = other;
 export default function Home() {
-    return __jsx("div", null);
-};
+  return __jsx('div', null);
+}

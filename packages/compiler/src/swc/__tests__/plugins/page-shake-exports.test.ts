@@ -78,7 +78,7 @@ describe('page shake exports', () => {
       export { asKeep as keep4, removeNamed };
       export default function Page() {
           console.log('should be not be remove');
-      };
+      }
       "
     `);
   });

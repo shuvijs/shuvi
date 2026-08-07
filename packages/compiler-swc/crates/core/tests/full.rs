@@ -2,6 +2,7 @@ use shuvi_swc::{custom_before_pass, TransformOptions};
 use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
 use swc::Compiler;
+use swc_common::comments::SingleThreadedComments;
 use swc_ecmascript::{
     parser::{Syntax, TsConfig},
     transforms::pass::noop,
@@ -33,7 +34,7 @@ fn test(input: &Path, minify: bool) {
                     output_path: Some(output.clone()),
 
                     config: swc::config::Config {
-                        is_module: swc::config::IsModule::Bool(true),
+                        is_module: Some(swc::config::IsModule::Bool(true)),
 
                         jsc: swc::config::JscConfig {
                             minify: if minify {
@@ -65,20 +66,22 @@ fn test(input: &Path, minify: bool) {
 
             let options = options.patch(&fm);
 
+            let comments = SingleThreadedComments::default();
             match c.process_js_with_custom_pass(
                 fm.clone(),
                 None,
                 &handler,
                 &options.swc,
-                |_, comments| {
+                comments.clone(),
+                |_| {
                     custom_before_pass(
                         cm.clone(),
                         fm.clone(),
                         &options,
-                        comments.clone(),
+                        comments,
                     )
                 },
-                |_, _| noop(),
+                |_| noop(),
             ) {
                 Ok(v) => {
                     NormalizedOutput::from(v.code)
