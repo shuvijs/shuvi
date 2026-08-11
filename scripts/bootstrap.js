@@ -42,7 +42,7 @@ async function installSWCNative({ force }) {
   console.log(`start build swc node binary`);
 
   var stdout = execSync(
-    'pnpm turbo run build-native --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release',
+    'pnpm turbo run build-native-no-plugin --cache-dir=".turbo" --filter=@shuvi/compiler-swc -- --release',
     { cwd: rootPath }
   ).toString();
 

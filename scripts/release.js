@@ -97,20 +97,20 @@ async function main() {
   step('\nGenerating changelog...');
   await run(`pnpm`, ['changelog']);
 
-  // clean all package
-  step('\nClean all package...');
-  await run(`pnpm`, ['clean']);
-
-  // install all packages and update pnpm-lock.yaml
-  step('\nUpdating lockfile...');
-  await run(`pnpm`, ['install']);
-
-  // build all packages with types
-  step('\nBuilding all packages...');
   if (!skipBuild && !isDryRun) {
+    // clean all package
+    step('\nClean all package...');
+    await run(`pnpm`, ['clean']);
+
+    // install all packages and update pnpm-lock.yaml
+    step('\nUpdating lockfile...');
+    await run(`pnpm`, ['install']);
+
+    // build all packages with types
+    step('\nBuilding all packages...');
     await run('pnpm', ['build']);
   } else {
-    console.log(`(skipped)`);
+    step('\nSkipping clean/install/build...');
   }
 
   // run tests before release
