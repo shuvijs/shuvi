@@ -222,14 +222,10 @@ async function publishPackage(pkgName, version) {
 
   step(`Publishing ${pkgName}...`);
   try {
-    // note: use of yarn is intentional here as we rely on its publishing
-    // behavior.
     await runIfNotDry(
-      'yarn',
+      'npm',
       [
         'publish',
-        '--new-version',
-        version,
         ...(releaseTag ? ['--tag', releaseTag] : []),
         '--access',
         'public'
