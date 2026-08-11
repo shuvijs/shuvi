@@ -178,6 +178,66 @@
 
 
 
+# [2.0.0-dev.30-beta.1](https://github.com/shuvijs/shuvi/compare/v1.0.63...v2.0.0-dev.30-beta.1) (2026-08-11)
+
+
+### Bug Fixes
+
+* adjust webpack magic comment order to show `${fileName}-${id}` ([#9](https://github.com/shuvijs/shuvi/issues/9)) ([2d81401](https://github.com/shuvijs/shuvi/commit/2d814010d5648e0878ae4cd6d0144ab274fbc276))
+* dev mode ([45a745d](https://github.com/shuvijs/shuvi/commit/45a745de4235316f46939144240b066dedb0356b))
+* integrate webpack-watch-wait-for-file-builder-plugin ([#13](https://github.com/shuvijs/shuvi/issues/13)) ([e271330](https://github.com/shuvijs/shuvi/commit/e2713305b9fce12e3c7bb6293dee902f8bd90ff2))
+* lock ts-checker-rspack-plugin version ([#27](https://github.com/shuvijs/shuvi/issues/27)) ([d7de5a8](https://github.com/shuvijs/shuvi/commit/d7de5a89e58a3b51850c39fc7c6fdc68b23ad7e6))
+* log error and warning in build ([#12](https://github.com/shuvijs/shuvi/issues/12)) ([6dcfc21](https://github.com/shuvijs/shuvi/commit/6dcfc21ae8f33509d023952a0ed51471adbca3fc))
+* manifest should return the correct chunkRequest ([8755562](https://github.com/shuvijs/shuvi/commit/8755562494084193a33478a05314ade66d16780a))
+* on-demand-compile of development mode ([9e975bc](https://github.com/shuvijs/shuvi/commit/9e975bc8cd43fb04530fd1ef857f5aa82d5c6305))
+* only exit process in production ([#17](https://github.com/shuvijs/shuvi/issues/17)) ([f822985](https://github.com/shuvijs/shuvi/commit/f822985c4f13ab3294189775a83bf03126255e31))
+* resolve.fallback ([c947098](https://github.com/shuvijs/shuvi/commit/c9470987ba63e40fa4f109ec231fc2582371b345))
+* **rspack:** pnpm test:compiler ([ee01c1c](https://github.com/shuvijs/shuvi/commit/ee01c1c4c0c7d1a6263855fac651101ac0333c7a))
+* **rspack:** ts issue ([3da6f69](https://github.com/shuvijs/shuvi/commit/3da6f69a4739f0cb9e645a7a341a2da4c54f24c1))
+* set devtool as eval ([fe7177b](https://github.com/shuvijs/shuvi/commit/fe7177b5f32d8600a63cdef0d6008017eb82d8eb))
+* stdout error in watch mode ([#8](https://github.com/shuvijs/shuvi/issues/8)) ([6fcc712](https://github.com/shuvijs/shuvi/commit/6fcc7127f2bad4ae3840003e7d1d00ae564184f9))
+* update compile tips ([#26](https://github.com/shuvijs/shuvi/issues/26)) ([7681c91](https://github.com/shuvijs/shuvi/commit/7681c91ccc2c09f984354d6d1da62a622d8c63ae))
+* upgrade css-loader to 5.2.7 for loader-utils version to support node >=17 ([#11](https://github.com/shuvijs/shuvi/issues/11)) ([fb2d578](https://github.com/shuvijs/shuvi/commit/fb2d57839e0b389fb0d6bb29863569ea1cd710e6))
+* use module identifier as hash value in rspack ([#20](https://github.com/shuvijs/shuvi/issues/20)) ([2b3c50e](https://github.com/shuvijs/shuvi/commit/2b3c50e4000ae456627d005cbbccfadfc71059f9))
+
+
+### Features
+
+* **compiler-swc:** upgrade SWC to v1.3.81 for TypeScript satisfies support ([#611](https://github.com/shuvijs/shuvi/issues/611)) ([9de96e9](https://github.com/shuvijs/shuvi/commit/9de96e950a7ae6ff26dd1defd1a832a24f558e67))
+* **disallow-re-export-all-in-page:** new swc plugin ([11ac5e6](https://github.com/shuvijs/shuvi/commit/11ac5e6a8ad787a65810f585c707cec0cf35b9d0))
+* improve error-overlay Webpack/Rspack compatibility and test coverage ([#22](https://github.com/shuvijs/shuvi/issues/22)) ([9f327fd](https://github.com/shuvijs/shuvi/commit/9f327fda3b7504668fc5f79d16b0360568266a2d))
+* inject iterator polyfill ([#29](https://github.com/shuvijs/shuvi/issues/29)) ([ca09fa0](https://github.com/shuvijs/shuvi/commit/ca09fa07755711e27b25e47ba29f0d3feb3dd924))
+* integrate ts-checker-rspack-plugin ([0fdff33](https://github.com/shuvijs/shuvi/commit/0fdff33ee04287c2eafd7cb5cdd57397088c600b))
+* **module-replace-plugin:** basic done ([8fe82ae](https://github.com/shuvijs/shuvi/commit/8fe82aed071704b8ec5423cc594a52c568e4f4af))
+* **NormalModuleReplacementPlugin:** and deprecate options.webpack in configWebpack ([3534388](https://github.com/shuvijs/shuvi/commit/3534388dbb925cddad712b4051ba1388ca4d848e))
+* only use analyze in client side for optimize ([#19](https://github.com/shuvijs/shuvi/issues/19)) ([dc8f992](https://github.com/shuvijs/shuvi/commit/dc8f9923317e8ceaa0f2be873150d9c32f6c00bb))
+* **plugin-optimize-hook-destructuring:** and add tests ([1bd7bea](https://github.com/shuvijs/shuvi/commit/1bd7beaee4a50f6851d634da9973b3a09ce839a5))
+* **require-cache-hot-reloader-plugin.rspack:** done ([7e3483e](https://github.com/shuvijs/shuvi/commit/7e3483e7c960907030dc45ac7d2d5362ceaf89b5))
+* resolve tsConfig ([8d62479](https://github.com/shuvijs/shuvi/commit/8d62479ed7415c02ed07908d5d133065fe3a4b54))
+* rspack dynamic dll ([#14](https://github.com/shuvijs/shuvi/issues/14)) ([c917fe6](https://github.com/shuvijs/shuvi/commit/c917fe60d5763c5ee679f665b94b0a21d7b724f8))
+* rspack use filesystem cache ([#18](https://github.com/shuvijs/shuvi/issues/18)) ([7d9f6a6](https://github.com/shuvijs/shuvi/commit/7d9f6a62699919850b58317e7b5377a13fb88cea))
+* **rspack:** css modules ([d182fed](https://github.com/shuvijs/shuvi/commit/d182fed0829aa7f11bbbef69313ddb9a91c837f6))
+* support function-based publicPath configuration ([#28](https://github.com/shuvijs/shuvi/issues/28)) ([f24d8ed](https://github.com/shuvijs/shuvi/commit/f24d8ed3cda86bc39dfc45ef7c9d8e05f3466364))
+* support modify swc jsc.target in loader options ([#23](https://github.com/shuvijs/shuvi/issues/23)) ([bbeb116](https://github.com/shuvijs/shuvi/commit/bbeb116bf0df956af84b3b1ab517f6703457d182))
+* **swc-plugin:** dev env ready ([7a7a680](https://github.com/shuvijs/shuvi/commit/7a7a6805a85a3f8a4b77d1024548abc2241665df))
+* unlock @swc/helpers version ([#30](https://github.com/shuvijs/shuvi/issues/30)) ([cc2f6e2](https://github.com/shuvijs/shuvi/commit/cc2f6e22838dbf7cfb41d4f3dcaca36b6bdb8e7f))
+* update ejs dependency to ^3.1.7 ([#32](https://github.com/shuvijs/shuvi/issues/32)) ([2b23da6](https://github.com/shuvijs/shuvi/commit/2b23da6846c24e80f49bc780d20130fb11727bb2))
+* update outdated dependencies ([#31](https://github.com/shuvijs/shuvi/issues/31)) ([5ffecef](https://github.com/shuvijs/shuvi/commit/5ffecefde6f25990b8f11d8db3e94c36a254f585))
+* upgrade @rspack/core 1.4.2 & rspack-chain 1.2.6 ([fba77e2](https://github.com/shuvijs/shuvi/commit/fba77e232f135e52542fd4363e53907a535e96ce))
+
+
+### Performance Improvements
+
+* add static mode for bmp ([#21](https://github.com/shuvijs/shuvi/issues/21)) ([2c5ada7](https://github.com/shuvijs/shuvi/commit/2c5ada70504600883241793c8574aca433203ee4))
+* **Link:** fix memory leak and add prefetch="none" to fully disable all prefetching (auto + hover) ([#25](https://github.com/shuvijs/shuvi/issues/25)) ([ad95c2e](https://github.com/shuvijs/shuvi/commit/ad95c2e6ec6e94bfe10f3ab3039e1ce8321a5500))
+
+
+### Reverts
+
+* Revert "perf: add static mode for bmp (#21)" ([73ca03e](https://github.com/shuvijs/shuvi/commit/73ca03e79e7ac6ad08ad9b6f055d28006dac7dd0)), closes [#21](https://github.com/shuvijs/shuvi/issues/21)
+
+
+
 # [2.0.0-dev.28](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.27...v2.0.0-dev.28) (2026-01-16)
 
 
