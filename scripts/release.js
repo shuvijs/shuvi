@@ -205,7 +205,8 @@ async function publishPackage(pkgName, version) {
 
   const pkgPath = path.resolve(pkgRoot, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-  if (pkg.private) {
+  if (pkg.private || !pkg.name.startsWith('@shuvi/')) {
+    console.log(chalk.yellow(`Skipping ${pkg.name} (not in @shuvi scope)`));
     return;
   }
 
