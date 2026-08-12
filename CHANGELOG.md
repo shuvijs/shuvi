@@ -1,3 +1,7 @@
+# [2.0.0-dev.30](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.30-beta.1...v2.0.0-dev.30) (2026-08-12)
+
+
+
 # [2.0.0-dev.30-beta.1](https://github.com/shuvijs/shuvi/compare/v1.0.63...v2.0.0-dev.30-beta.1) (2026-08-11)
 
 
