@@ -227,6 +227,8 @@ async function publishPackage(pkgName, version) {
       'npm',
       [
         'publish',
+        '--registry',
+        'https://registry.npmjs.org/',
         ...(releaseTag ? ['--tag', releaseTag] : []),
         '--access',
         'public'
