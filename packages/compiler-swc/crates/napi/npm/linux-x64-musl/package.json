@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/swc-linux-x64-musl",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.10",
   "os": [
     "linux"
   ],

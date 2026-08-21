@@ -1,34 +1,5 @@
+[target.x86_64-unknown-linux-gnu]
+linker = "x86_64-unknown-linux-gnu-gcc"
 
-[build]
-
-rustdocflags = []
-rustflags    = []
-
-[target.aarch64-apple-darwin]
-rustflags = []
-
-[target.aarch64-unknown-linux-gnu]
-linker    = "aarch64-linux-gnu-gcc"
-rustflags = []
-
-[target.aarch64-unknown-linux-musl]
-linker = "aarch64-linux-musl-gcc"
-rustflags = [
-  "-C",
-  "target-feature=-crt-static",
-  "-C",
-  "link-arg=-lgcc",
-]
-
-[target.armv7-unknown-linux-gnueabihf]
-linker    = "arm-linux-gnueabihf-gcc"
-rustflags = []
-
-[target.aarch64-linux-android]
-rustflags = []
-
-[target.aarch64-pc-windows-msvc]
-rustflags = []
-
-[target.wasm32-unknown-unknown]
-rustflags = []
+[target.x86_64-unknown-linux-musl]
+linker = "x86_64-unknown-linux-musl-gcc"
