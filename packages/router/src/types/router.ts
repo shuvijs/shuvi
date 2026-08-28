@@ -65,7 +65,12 @@ export type IRouteBranch<T = IRouteRecord> = [string, T[], number[]];
 
 export type IPathPattern =
   | string
-  | { path: string; caseSensitive?: boolean; end?: boolean };
+  | {
+      path: string;
+      caseSensitive?: boolean;
+      end?: boolean;
+      strict?: boolean;
+    };
 
 export interface IPathMatch {
   path: string;
@@ -82,6 +87,13 @@ export interface IRoute<RouteRecord extends IRouteRecord = IRouteRecord>
   matches: IRouteMatch<RouteRecord>[];
   redirected?: boolean;
   key: string;
+  /**
+   * Set when strict trailing-slash routing resolves a canonical URL for the
+   * current (non-matching) pathname. Carries the redirect target + status so
+   * the transition layer can issue a redirect instead of falling through to
+   * the not-found page.
+   */
+  redirect?: { path: string; status: number };
   // todo?
   // fullpath: string?
   // href: string?
@@ -95,6 +107,7 @@ export interface IRouter<
   current: IRoute<RouteRecord>;
   action: History['action'];
   basename: string;
+  strictTrailingSlash: boolean;
   push(to: PathRecord, state?: any): void;
   replace(to: PathRecord, state?: any): void;
   go: History['go'];

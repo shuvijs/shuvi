@@ -15,9 +15,10 @@ export async function renderToHTML({
   let result: Response;
   const renderer = new Renderer({ serverPluginContext });
   const {
-    config: { ssr }
+    config: { ssr, router }
   } = serverPluginContext;
   const { basename } = AppConfigManager.getAppConfig(req).router;
+  const strictTrailingSlash = router?.strictTrailingSlash ?? false;
   const { serverCreateAppTrace } = req._traces;
   const { application } = resources.server;
   const app = serverCreateAppTrace
@@ -29,7 +30,8 @@ export async function renderToHTML({
       application.createApp({
         req,
         ssr,
-        basename
+        basename,
+        strictTrailingSlash
       })
     );
 

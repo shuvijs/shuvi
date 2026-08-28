@@ -14,7 +14,10 @@ import {
   IRouteMatch,
   Path
 } from './types';
-import { matchRoutes } from './matchRoutes';
+import {
+  matchRoutes,
+  getTrailingSlashRedirectPath
+} from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
 import { createEvents, resolvePath, Events } from './utils';
 import { isError, isFunction } from './utils/error';
@@ -38,11 +41,19 @@ interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
   history: History;
   routes: RouteRecord[];
   caseSensitive?: boolean;
+  /**
+   * When enabled, path matching treats trailing slashes as significant.
+  * A request whose pathname does not match any route but differs only by a
+  * trailing slash from a route that does match will be redirected (308) to
+  * the canonical URL. Defaults to false (legacy loose matching).
+   */
+  strictTrailingSlash?: boolean;
 }
 
 class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _history: History;
   private _routes: RouteRecord[];
+  private _strictTrailingSlash: boolean;
   private _current: IRoute<RouteRecord>;
   private _pending: PathRecord | null = null;
   private _cancleHandler: (() => void) | null = null;
@@ -54,9 +65,14 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _beforeResolves: Events<NavigationGuardHook> = createEvents();
   private _afterEachs: Events<NavigationResolvedHook> = createEvents();
 
-  constructor({ history, routes }: IRouterOptions<RouteRecord>) {
+  constructor({
+    history,
+    routes,
+    strictTrailingSlash = false
+  }: IRouterOptions<RouteRecord>) {
     this._history = history;
     this._routes = createRoutesFromArray(routes);
+    this._strictTrailingSlash = strictTrailingSlash;
     this._current = START;
     this._history.doTransition = this._doTransition.bind(this);
   }
@@ -79,6 +95,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
 
   get basename(): string {
     return this._history.basename;
+  }
+
+  get strictTrailingSlash(): boolean {
+    return this._strictTrailingSlash;
   }
 
   init = () => {
@@ -140,8 +160,8 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   };
 
   match = (to: PathRecord): Array<IRouteMatch<RouteRecord>> => {
-    const { _routes: routes } = this;
-    const matches = matchRoutes(routes, to);
+    const { _routes: routes, _strictTrailingSlash: strict } = this;
+    const matches = matchRoutes(routes, to, undefined, { strict });
     return matches || [];
   };
 
@@ -200,6 +220,18 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
         isReplace || isInitialNavigation ? 'replace' : 'push';
       return this._history[transitionMethod](routeRedirect, {
         redirectedFrom: redirectedFrom || nextRoute
+      });
+    }
+
+    // Strict trailing-slash routing: redirect to the canonical URL when the
+    // current pathname only differs by a trailing slash from a real route.
+    const trailingSlashRedirect = nextRoute.redirect;
+    if (trailingSlashRedirect) {
+      const transitionMethod =
+        isReplace || isInitialNavigation ? 'replace' : 'push';
+      return this._history[transitionMethod](trailingSlashRedirect.path, {
+        redirectedFrom: redirectedFrom || nextRoute,
+        state: { status: trailingSlashRedirect.status }
       });
     }
 
@@ -355,13 +387,33 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     const matches = this.match(to);
     const params = matches.length ? matches[matches.length - 1].params : {};
     const parsedPath = resolvePath(to);
-    return {
+    const route: IRoute<RouteRecord> = {
       matches,
       params,
       ...parsedPath,
       key: '',
       state: null
     };
+
+    // Strict trailing-slash routing: when the pathname does not match but a
+    // canonical variant (differing only by a trailing slash) does, surface a
+    // redirect so the transition layer can redirect to the canonical URL.
+    if (this._strictTrailingSlash && !matches.length) {
+      const canonical = getTrailingSlashRedirectPath(parsedPath.pathname || '/');
+      if (canonical) {
+        const rematched = matchRoutes(
+          this._routes,
+          { ...parsedPath, pathname: canonical },
+          undefined,
+          { strict: true }
+        );
+        if (rematched && rematched.length) {
+          route.redirect = { path: canonical, status: 308 };
+        }
+      }
+    }
+
+    return route;
   }
 }
 

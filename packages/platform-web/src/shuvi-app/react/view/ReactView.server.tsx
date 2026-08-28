@@ -60,7 +60,14 @@ export class ReactServerView implements IReactServerView {
         );
       }
       // handle router internal redirect
-      return redirect(router.resolve(router.current).href);
+      // handle router internal redirect. A `status` carried in `state` (e.g.
+      // from strict trailing-slash routing) takes precedence; otherwise fall
+      // back to 302 to preserve existing behavior for `route.redirect`.
+      const internalStatus =
+        state && typeof (state as { status?: number }).status === 'number'
+          ? (state as { status: number }).status
+          : 302;
+      return redirect(router.resolve(router.current).href, internalStatus);
     }
 
     const loadableModules: string[] = [];

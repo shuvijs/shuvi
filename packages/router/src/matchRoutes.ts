@@ -17,7 +17,8 @@ export interface IRouteBaseObject<Element = any>
 
 function matchRouteBranch<T extends IRouteBaseObject>(
   branch: IRouteBranch<T>,
-  pathname: string
+  pathname: string,
+  strict = false
 ): IRouteMatch<T>[] | null {
   let routes = branch[1];
   let matchedPathname = '/';
@@ -34,7 +35,8 @@ function matchRouteBranch<T extends IRouteBaseObject>(
       {
         path: route.path,
         caseSensitive: route.caseSensitive,
-        end: i === routes.length - 1
+        end: i === routes.length - 1,
+        strict
       },
       remainingPathname
     );
@@ -114,11 +116,17 @@ function flattenRoutes<T extends IRouteBaseObject>(
   return branches;
 }
 
+export interface IMatchRoutesOptions {
+  strict?: boolean;
+}
+
 export function matchRoutes<T extends IRouteBaseObject>(
   routes: T[],
   location: string | PartialLocation,
-  basename = ''
+  basename = '',
+  options: IMatchRoutesOptions = {}
 ): IRouteMatch<T>[] | null {
+  const { strict = false } = options;
   if (typeof location === 'string') {
     location = resolvePath(location);
   }
@@ -140,8 +148,28 @@ export function matchRoutes<T extends IRouteBaseObject>(
   let matches: IRouteMatch<T>[] | null = null;
   for (let i = 0; matches == null && i < branches.length; ++i) {
     // TODO: Match on search, state too?
-    matches = matchRouteBranch<T>(branches[i], pathname);
+    matches = matchRouteBranch<T>(branches[i], pathname, strict);
   }
 
   return matches;
+}
+
+/**
+ * When strict trailing-slash routing is enabled, a pathname that does not
+ * match any route may be a non-canonical variant (e.g. `/foo/` for a route
+ * declared as `/foo`). This computes the canonical alternative by stripping
+ * a single trailing slash (or adding one when the route is slash-suffixed) and
+ * returns it so the caller can issue a redirect. Returns `null` when the
+ * pathname is already canonical (`/` or no trailing slash to strip).
+ */
+export function getTrailingSlashRedirectPath(pathname: string): string | null {
+  if (pathname === '/' || pathname === '') {
+    return null;
+  }
+  // strip a single trailing slash
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    return pathname.slice(0, -1);
+  }
+  // otherwise the non-canonical variant is the slash-suffixed form
+  return pathname + '/';
 }

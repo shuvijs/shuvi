@@ -40,10 +40,10 @@ export function matchPathname(
     pattern = { path: pattern };
   }
 
-  const { path, caseSensitive = false, end = true } = pattern;
+  const { path, caseSensitive = false, end = true, strict = false } = pattern;
 
   const pathParser = tokensToParser(tokenizePath(path), {
-    strict: false,
+    strict,
     end,
     sensitive: caseSensitive
   });
