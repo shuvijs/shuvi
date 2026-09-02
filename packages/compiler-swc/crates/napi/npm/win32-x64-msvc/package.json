@@ -1,6 +1,6 @@
 {
   "name": "@shuvi/swc-win32-x64-msvc",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.9",
   "os": [
     "win32"
   ],

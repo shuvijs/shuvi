@@ -1,3 +1,12 @@
+# [2.0.0-dev.32](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.31...v2.0.0-dev.32) (2026-09-02)
+
+
+### Features
+
+* **router:** native strict trailing-slash routing with 301 redirect ([#612](https://github.com/shuvijs/shuvi/issues/612)) ([2baa55b](https://github.com/shuvijs/shuvi/commit/2baa55b5fdf7ffb5a87b570a06b45d0e0fe23eec))
+
+
+
 # [2.0.0-dev.31](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.30...v2.0.0-dev.31) (2026-08-21)
 
 
