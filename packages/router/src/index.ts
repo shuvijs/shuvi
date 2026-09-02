@@ -3,7 +3,9 @@ export { matchPathname, matchStringify } from './matchPathname';
 export {
   matchRoutes,
   IRouteBaseObject,
-  rankRouteBranches
+  rankRouteBranches,
+  IMatchRoutesOptions,
+  getTrailingSlashRedirectPath
 } from './matchRoutes';
 
 export {

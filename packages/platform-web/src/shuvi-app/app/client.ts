@@ -38,7 +38,7 @@ export const createApp: CreateAppClient = ({
     return app;
   }
 
-  const { appState, ssr, basename } = appData;
+  const { appState, ssr, basename, strictTrailingSlash = false } = appData;
   let history: History;
   if (historyMode === 'hash') {
     history = createHashHistory({ basename });
@@ -48,7 +48,8 @@ export const createApp: CreateAppClient = ({
 
   const router = createRouter({
     history,
-    routes: getRoutes(routes)
+    routes: getRoutes(routes),
+    strictTrailingSlash
   });
 
   app = application({

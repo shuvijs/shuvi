@@ -92,11 +92,15 @@ export default class OnDemandRouteManager {
 
   async ensureRoutes(pathname: string, req: ShuviRequest): Promise<void> {
     const { basename } = AppConfigManager.getAppConfig(req).router;
+    const { strictTrailingSlash = false } =
+      (this._serverPluginContext.config.router as { strictTrailingSlash?: boolean }) ||
+      {};
     const matchedRoutes =
       matchRoutes(
         resources.server.pageRoutes,
         pathname,
-        normalizeBase(basename)
+        normalizeBase(basename),
+        { strict: strictTrailingSlash }
       ) || [];
 
     const modulesToActivate = matchedRoutes

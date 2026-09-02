@@ -8,6 +8,7 @@ export type IData = {
 export type IAppData<Data = {}, appState = any> = {
   ssr: boolean;
   basename?: string;
+  strictTrailingSlash?: boolean;
   runtimeConfig?: Record<string, string>;
   appState?: appState;
   pageData?: {

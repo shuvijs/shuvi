@@ -24,6 +24,7 @@ const listen = createAsyncParallelHook<{ port: number; hostname?: string }>();
 export type IAppConfigByRequest = {
   router: {
     basename: string;
+    strictTrailingSlash?: boolean;
   };
 };
 

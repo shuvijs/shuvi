@@ -20,6 +20,7 @@ export interface CreateAppServer {
     req: ShuviRequest;
     ssr: boolean;
     basename: string;
+    strictTrailingSlash?: boolean;
   }): InternalApplication;
 }
 

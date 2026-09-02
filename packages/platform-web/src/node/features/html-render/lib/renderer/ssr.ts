@@ -36,6 +36,7 @@ export class SsrRenderer extends BaseRenderer {
       appState: store.getState(),
       pageData,
       basename: router.basename,
+      strictTrailingSlash: router.strictTrailingSlash,
       runtimeConfig: getPublicRuntimeConfig() || {}
     };
 
