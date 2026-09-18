@@ -122,6 +122,23 @@ const enum PathScore {
 const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g;
 
 /**
+ * Whether the pattern built from these segments ends at a separator, with
+ * nothing of its own after it. See its use in `tokensToParser`.
+ */
+function endsAtSeparator(segments: Array<Token[]>): boolean {
+  const last = segments[segments.length - 1];
+  if (!last) {
+    return false;
+  }
+  return (
+    last.length === 0 ||
+    (last.length === 1 &&
+      last[0].type === TokenType.Static &&
+      last[0].value === '')
+  );
+}
+
+/**
  * Creates a path parser from an array of Segments (a segment is an array of Tokens)
  *
  * @param segments - array of segments returned by tokenizePath
@@ -282,7 +299,24 @@ export function tokensToParser(
 
     if (options.end) pattern += '$';
     // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_something_else
-    else if (options.strict) pattern += '(?:/*|$)';
+    //
+    // The assertion is zero-width. A non-end parser belongs to an intermediate
+    // route, and `matchRouteBranch` slices that route's match off the pathname
+    // before running the rest of the branch. Consuming the separator would
+    // leave the child `42` rather than `/42` for `/item/42`, and no child
+    // pattern starts without a slash, so every route under a nested layout
+    // stopped matching, at its canonical url as much as at the slash-suffixed
+    // one. Holding the separator back also keeps the pathname an intermediate
+    // route reports equal to the loose matcher's.
+    //
+    // A param token already appends the same lookahead, for the same reason.
+    //
+    // Except when the pattern stops at a separator with nothing of its own
+    // after it, which is the `/` route (one empty static token) and a path that
+    // is empty or ends in a slash (an empty segment, which the strict branch
+    // above turns into a bare `/`). There the separator is the match, so there
+    // is nothing to hold back.
+    else if (options.strict && !endsAtSeparator(segments)) pattern += '(?=/|$)';
   }
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i');
