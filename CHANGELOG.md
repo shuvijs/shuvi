@@ -1,3 +1,12 @@
+# [2.0.0-dev.33](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.32...v2.0.0-dev.33) (2026-09-18)
+
+
+### Bug Fixes
+
+* **router:** stop strict matching from eating the segment separator ([#613](https://github.com/shuvijs/shuvi/issues/613)) ([2ea063f](https://github.com/shuvijs/shuvi/commit/2ea063f4abc576fd5ca6d3193489d3627bb18889)), closes [#612](https://github.com/shuvijs/shuvi/issues/612)
+
+
+
 # [2.0.0-dev.32](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.31...v2.0.0-dev.32) (2026-09-02)
 
 

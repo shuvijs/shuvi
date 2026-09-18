@@ -28,7 +28,7 @@
     "node": ">= 16.0.0"
   },
   "dependencies": {
-    "@shuvi/utils": "2.0.0-dev.32",
+    "@shuvi/utils": "2.0.0-dev.33",
     "query-string": "6.13.8"
   }
 }
