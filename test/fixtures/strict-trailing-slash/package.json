@@ -1,0 +1,11 @@
+{
+  "name": "fixture-strict-trailing-slash",
+  "scripts": {
+    "dev": "shuvi dev",
+    "build": "shuvi build",
+    "start": "shuvi serve"
+  },
+  "dependencies": {
+    "shuvi": "workspace:*"
+  }
+}

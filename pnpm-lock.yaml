@@ -1314,6 +1314,12 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/shuvi
 
+  test/fixtures/strict-trailing-slash:
+    dependencies:
+      shuvi:
+        specifier: workspace:*
+        version: link:../../../packages/shuvi
+
   test/fixtures/trace:
     dependencies:
       '@shuvi/service':
