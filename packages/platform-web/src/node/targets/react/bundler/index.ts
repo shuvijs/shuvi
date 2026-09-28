@@ -88,6 +88,9 @@ const configWebpack: CorePluginConstructor['configWebpack'] = (
       {
         'process.env.__SHUVI__AFTER__REACT__18__': JSON.stringify(
           isReactVersionAfter18()
+        ),
+        'process.env.__SHUVI__HYDRATE_IN_TRANSITION__': JSON.stringify(
+          Boolean(context.config.hydrateInTransition)
         )
       }
     ]);
