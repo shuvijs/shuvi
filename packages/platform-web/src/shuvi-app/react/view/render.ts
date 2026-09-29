@@ -11,10 +11,21 @@ let doRender: (options: RenderActionParam, callback: () => void) => void;
 
 if (process.env.__SHUVI__AFTER__REACT__18__) {
   const { createRoot, hydrateRoot } = require('react-dom/client');
+  const { startTransition } = require('react');
   let renderRoot: Root;
   doRender = ({ root, appContainer, shouldHydrate }, callback) => {
     if (shouldHydrate) {
-      renderRoot = hydrateRoot(appContainer, root);
+      if (process.env.__SHUVI__HYDRATE_IN_TRANSITION__) {
+        // `hydrateRoot` returns before the work it schedules runs, so the
+        // assignment still happens synchronously here and the branch below can
+        // reuse the root for client-side navigations. Only the lane changes:
+        // a transition lane is not blocking, so the render loop yields.
+        startTransition(() => {
+          renderRoot = hydrateRoot(appContainer, root);
+        });
+      } else {
+        renderRoot = hydrateRoot(appContainer, root);
+      }
       callback?.();
     } else {
       if (!renderRoot) {
