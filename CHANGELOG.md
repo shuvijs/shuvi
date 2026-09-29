@@ -1,3 +1,17 @@
+# [2.0.0-dev.34](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.33...v2.0.0-dev.34) (2026-09-29)
+
+
+### Bug Fixes
+
+* **platform-web:** expose hydrateInTransition on CustomConfig ([480c5ca](https://github.com/shuvijs/shuvi/commit/480c5cafe99ec6ff64ddab2c039825af608f0ff7)), closes [#614](https://github.com/shuvijs/shuvi/issues/614)
+
+
+### Features
+
+* **platform-web:** add `hydrateInTransition` to time-slice initial hydration ([#614](https://github.com/shuvijs/shuvi/issues/614)) ([4da6a10](https://github.com/shuvijs/shuvi/commit/4da6a10f6aa67b0c3458008938cfcde1fe9d7f27))
+
+
+
 # [2.0.0-dev.33](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.32...v2.0.0-dev.33) (2026-09-18)
 
 
