@@ -47,6 +47,7 @@ declare global {
       // apiRoutes?: PlatformWebCustomConfig['apiRoutes'];
       // middlewareRoutes?: PlatformWebCustomConfig['middlewareRoutes'];
       conventionRoutes: PlatformWebCustomConfig['conventionRoutes'];
+      hydrateInTransition?: PlatformWebCustomConfig['hydrateInTransition'];
     }
     interface CustomCorePluginHooks {
       addRoutes: typeof addRoutes;

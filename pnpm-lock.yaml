@@ -210,6 +210,37 @@ importers:
       '@napi-rs/triples':
         specifier: 1.1.0
         version: 1.1.0
+    optionalDependencies:
+      '@shuvi/swc-darwin-arm64':
+        specifier: 1.0.0-rc.10
+        version: 1.0.0-rc.10
+      '@shuvi/swc-darwin-x64':
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
+      '@shuvi/swc-linux-arm-gnueabihf':
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
+      '@shuvi/swc-linux-arm64-gnu':
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
+      '@shuvi/swc-linux-arm64-musl':
+        specifier: 1.0.0-rc.8
+        version: 1.0.0-rc.8
+      '@shuvi/swc-linux-x64-gnu':
+        specifier: 1.0.0-rc.10
+        version: 1.0.0-rc.10
+      '@shuvi/swc-linux-x64-musl':
+        specifier: 1.0.0-rc.10
+        version: 1.0.0-rc.10
+      '@shuvi/swc-win32-arm64-msvc':
+        specifier: 1.0.0-rc.8
+        version: 1.0.0-rc.8
+      '@shuvi/swc-win32-ia32-msvc':
+        specifier: 1.0.0-rc.8
+        version: 1.0.0-rc.8
+      '@shuvi/swc-win32-x64-msvc':
+        specifier: 1.0.0-rc.9
+        version: 1.0.0-rc.9
     devDependencies:
       '@rspack/core':
         specifier: ^1.4.2
@@ -290,10 +321,10 @@ importers:
         specifier: 7.14.5
         version: 7.14.5
       '@shuvi/shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../toolpack
       anser:
         specifier: 1.4.9
@@ -366,10 +397,10 @@ importers:
         specifier: ^1.1.3
         version: 1.2.0
       '@shuvi/eslint-plugin-shuvi':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../eslint-plugin-shuvi
       '@shuvi/toolpack':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../toolpack
       '@typescript-eslint/parser':
         specifier: ^5.42.0
@@ -402,10 +433,10 @@ importers:
   packages/eslint-plugin-shuvi:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../router
     devDependencies:
       '@types/eslint':
@@ -420,29 +451,29 @@ importers:
   packages/platform-shared:
     dependencies:
       '@shuvi/hook':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../hook
       '@shuvi/router':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../router
       '@shuvi/runtime':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       doura:
         specifier: 0.0.13
         version: 0.0.13
     devDependencies:
       '@shuvi/service':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../service
       '@types/minimatch':
         specifier: 3.0.5
@@ -454,31 +485,31 @@ importers:
         specifier: ^1.4.3
         version: 1.4.3(react-refresh@0.12.0)
       '@shuvi/error-overlay':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../error-overlay
       '@shuvi/hook':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../hook
       '@shuvi/platform-shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../router
       '@shuvi/router-react':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../router-react
       '@shuvi/runtime':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       content-type:
         specifier: 1.0.4
@@ -527,7 +558,7 @@ importers:
         version: 3.0.0
     devDependencies:
       '@shuvi/service':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../service
       '@testing-library/react':
         specifier: ^13.2.0
@@ -557,10 +588,10 @@ importers:
   packages/reporters:
     dependencies:
       '@shuvi/shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../shared
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       async-retry:
         specifier: 1.3.3
@@ -591,7 +622,7 @@ importers:
   packages/router:
     dependencies:
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       query-string:
         specifier: 6.13.8
@@ -600,13 +631,13 @@ importers:
   packages/router-react:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../platform-shared
       '@shuvi/router':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../router
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       prop-types:
         specifier: ^15.8.1
@@ -640,7 +671,7 @@ importers:
   packages/runtime:
     dependencies:
       '@shuvi/hook':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../hook
 
   packages/service:
@@ -658,28 +689,28 @@ importers:
         specifier: ^7.23.2
         version: 7.24.7(supports-color@5.5.0)
       '@shuvi/error-overlay':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../error-overlay
       '@shuvi/hook':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../hook
       '@shuvi/reporters':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../reporters
       '@shuvi/router':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../router
       '@shuvi/runtime':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../runtime
       '@shuvi/shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       commander:
         specifier: 5.1.0
@@ -764,31 +795,31 @@ importers:
   packages/shared:
     dependencies:
       '@shuvi/hook':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../hook
 
   packages/shuvi:
     dependencies:
       '@shuvi/platform-shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../platform-shared
       '@shuvi/platform-web':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../platform-web
       '@shuvi/reporters':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../reporters
       '@shuvi/service':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../service
       '@shuvi/shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../shared
       '@shuvi/toolpack':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../toolpack
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       cli-highlight:
         specifier: ^2.1.9
@@ -870,13 +901,13 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2(@swc/helpers@0.4.37)
       '@shuvi/compiler':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../compiler
       '@shuvi/shared':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../shared
       '@shuvi/utils':
-        specifier: 2.0.0-dev.30-beta.1
+        specifier: 2.0.0-dev.33
         version: link:../utils
       '@swc/helpers':
         specifier: ^0.4.37
@@ -5568,6 +5599,96 @@ packages:
       any-observable: 0.3.0(rxjs@6.5.5)
       rxjs: 6.5.5
     dev: true
+
+  /@shuvi/swc-darwin-arm64@1.0.0-rc.10:
+    resolution: {integrity: sha512-+qNxgyiNWoaBCmU+GSkR1uLNgQzFcDhtUdw1sAS3h2UaBerM72nzwE6s1fYZG6UJLkGN0U/N6jWkIo0uaICxlg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-darwin-x64@1.0.0-rc.9:
+    resolution: {integrity: sha512-NQRJ1KttLglVI0hXyFUprXPe98UgjOd74qkV8Yvj9pSGm9uVQwDTfknNM4TVphqneJv+4FC/K3DETlXsGuFuqA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-arm-gnueabihf@1.0.0-rc.9:
+    resolution: {integrity: sha512-byuJjDRAAz3XRR+XkC8Y+wYYNpIWlL7sHjW/C3ke0DpvtkEF4UzbuqIK95IRtMr9MdR/W+uq3J6SH72kpVHkgA==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-arm64-gnu@1.0.0-rc.9:
+    resolution: {integrity: sha512-Z2yUdA9zFMu88f2LVBIpCjfzqIBO3EbO8HuL3nPHFhQL6RMy3jOPfCepHJKv/VkptuVxzxEmmWg5+q0y5WngwQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-arm64-musl@1.0.0-rc.8:
+    resolution: {integrity: sha512-gAYXVApCePt1BjLykptA4DhND2Tp3nvSTdEpxnDVC2l7I/Hb9Vcw8XZo1zcZa8a1Jpd2GlyRW+Jj6ncdM+aKIA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-x64-gnu@1.0.0-rc.10:
+    resolution: {integrity: sha512-a4E3b2TzZpGig4O4/L+6gONReIMCNso9Oed6CjNrNHvRlcZRXjHMiQx59PZQUsbAcqhDWIdTVz0hJQ2BUs943w==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-linux-x64-musl@1.0.0-rc.10:
+    resolution: {integrity: sha512-lzPb6RyS5nHJ1+4shkXsmQ1uOWUzw43Wf0YvDu8KD18qoXVcMvqzcOxKAsMhbbcn2zgitfsjrzL2erJs7AWgdg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-win32-arm64-msvc@1.0.0-rc.8:
+    resolution: {integrity: sha512-D/90+loR7wTbHtsMMsz8cEmNYvrUQ5NclL0aYBs+HA0OcmIW58hvZue3/oT7AbrgQEqyjH+7CL9gQ3azLXKlPw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-win32-ia32-msvc@1.0.0-rc.8:
+    resolution: {integrity: sha512-0CfWFDSAQWaK2O+eeB7w1IhJMrFEOUbLF88N29XNz7U4jS1wgcnWHww/U0zZkAkdsjmb1JaXEq9fIlxktdWXzg==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@shuvi/swc-win32-x64-msvc@1.0.0-rc.9:
+    resolution: {integrity: sha512-rbqRoTxDLisgdLAwcsaWTOvdzNFFppJAtAjc6lSz9o1W/fWsVU35OEv4RCT3OcEGPnLZDVhMelVMHvkpZoHGKg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
