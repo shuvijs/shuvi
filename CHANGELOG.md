@@ -1,3 +1,12 @@
+# [2.0.0-dev.35](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.34...v2.0.0-dev.35) (2026-10-14)
+
+
+### Performance Improvements
+
+* **router:** compile route paths once and reuse ranked branches ([#615](https://github.com/shuvijs/shuvi/issues/615)) ([853f95e](https://github.com/shuvijs/shuvi/commit/853f95ea6c21761e288c69d46b9d1d2c885f4924))
+
+
+
 # [2.0.0-dev.34](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.33...v2.0.0-dev.34) (2026-09-29)
 
 
