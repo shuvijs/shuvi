@@ -231,3 +231,32 @@ describe('router matcher in development', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 });
+
+describe('matchRoutes in development', () => {
+  const env = process.env.NODE_ENV;
+  let matchDevRoutes: typeof matchRoutes;
+
+  beforeAll(() => {
+    (process.env as any).NODE_ENV = 'development';
+    jest.isolateModules(() => {
+      matchDevRoutes = require('../matchRoutes').matchRoutes;
+    });
+  });
+
+  afterAll(() => {
+    (process.env as any).NODE_ENV = env;
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should match the routes as they are on every call, without warning', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const routes: { path: string }[] = [{ path: '/dev-match-a' }];
+    expect(matchDevRoutes(routes, '/dev-match-b')).toBeNull();
+    routes.push({ path: '/dev-match-b' });
+    expect(matchDevRoutes(routes, '/dev-match-b')).toHaveLength(1);
+    expect(warn).not.toHaveBeenCalled();
+  });
+});

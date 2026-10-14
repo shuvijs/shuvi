@@ -391,17 +391,7 @@ export function tokensToParser(
     return path;
   }
 
-  /**
-   * To make sure the score of pageBranch is always higher priority
-   * than the layoutRoute.
-   * We append a bonus score if the last route is an empty path.
-   */
-  if (branchInfo?.routes) {
-    const lastRoutePath = branchInfo.routes[branchInfo.routes.length - 1]?.path;
-    if (lastRoutePath === '') {
-      score.push([PathScore.BonusEmptyStringPath]);
-    }
-  }
+  score = withBranchBonus(score, branchInfo?.routes);
 
   return {
     re,
@@ -438,18 +428,29 @@ export function compilePath(
 }
 
 /**
- * The score of a branch, with the same bonus as `tokensToParser` gives a
- * branch whose last route has an empty path. The cached score is not mutated.
+ * To make sure the score of pageBranch is always higher priority
+ * than the layoutRoute.
+ * We append a bonus score if the last route is an empty path.
+ * Returns a new array rather than changing the given score.
+ */
+function withBranchBonus(
+  score: Array<number[]>,
+  routes?: IRouteRecord[]
+): Array<number[]> {
+  const lastRoutePath = routes?.[routes.length - 1]?.path;
+  return lastRoutePath === ''
+    ? score.concat([[PathScore.BonusEmptyStringPath]])
+    : score;
+}
+
+/**
+ * The score of a branch, without changing the cached score of its path.
  */
 export function getBranchScore(
   path: string,
   routes?: IRouteRecord[]
 ): Array<number[]> {
-  const { score } = compilePath(path);
-  const lastRoutePath = routes?.[routes.length - 1]?.path;
-  return lastRoutePath === ''
-    ? score.concat([[PathScore.BonusEmptyStringPath]])
-    : score;
+  return withBranchBonus(compilePath(path).score, routes);
 }
 
 /**

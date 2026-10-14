@@ -155,9 +155,43 @@ export type RoutesMatcher<T extends IRouteBaseObject> = (
   basename?: string
 ) => IRouteMatch<T>[] | null;
 
+// The branches are only got once the basename has matched, so a route that
+// fails to compile does not throw for a pathname outside the basename.
+function matchBranches<T extends IRouteBaseObject>(
+  getBranches: () => IRouteBranch<T>[],
+  location: string | PartialLocation,
+  basename: string,
+  strict: boolean
+): IRouteMatch<T>[] | null {
+  if (typeof location === 'string') {
+    location = resolvePath(location);
+  }
+
+  let pathname = location.pathname || '/';
+  if (basename) {
+    const normalizedBasename = normalizeBase(basename);
+    const pathnameWithoutBase = stripBase(pathname, normalizedBasename);
+    if (pathnameWithoutBase) {
+      pathname = pathnameWithoutBase;
+    } else {
+      return null;
+    }
+  }
+
+  const branches = getBranches();
+
+  let matches: IRouteMatch<T>[] | null = null;
+  for (let i = 0; matches == null && i < branches.length; ++i) {
+    // TODO: Match on search, state too?
+    matches = matchRouteBranch<T>(branches[i], pathname, strict);
+  }
+
+  return matches;
+}
+
 /**
  * Flattens and ranks the routes once, on the first match, and reuses them for
- * every match after. The routes must not be mutated once matched.
+ * every match after. The routes must not be changed in place once matched.
  */
 export function createRoutesMatcher<T extends IRouteBaseObject>(
   routes: T[],
@@ -168,22 +202,7 @@ export function createRoutesMatcher<T extends IRouteBaseObject>(
   // development only, to warn about routes changed in place after the first match
   let snapshot: unknown[] | undefined;
 
-  return (location, basename = '') => {
-    if (typeof location === 'string') {
-      location = resolvePath(location);
-    }
-
-    let pathname = location.pathname || '/';
-    if (basename) {
-      const normalizedBasename = normalizeBase(basename);
-      const pathnameWithoutBase = stripBase(pathname, normalizedBasename);
-      if (pathnameWithoutBase) {
-        pathname = pathnameWithoutBase;
-      } else {
-        return null;
-      }
-    }
-
+  const getBranches = () => {
     if (!branches) {
       branches = rankRouteBranches(flattenRoutes(routes));
       if (isDev) {
@@ -193,20 +212,16 @@ export function createRoutesMatcher<T extends IRouteBaseObject>(
       warning(
         false,
         `Routes were changed in place after they had been matched. ` +
-          `The change is ignored by matching, ` +
-          `use router.replaceRoutes() to change the routes instead.`
+          `Matching does not fully apply such changes and may return wrong ` +
+          `results, use router.replaceRoutes() to change the routes instead.`
       );
       snapshot = undefined;
     }
-
-    let matches: IRouteMatch<T>[] | null = null;
-    for (let i = 0; matches == null && i < branches.length; ++i) {
-      // TODO: Match on search, state too?
-      matches = matchRouteBranch<T>(branches[i], pathname, strict);
-    }
-
-    return matches;
+    return branches;
   };
+
+  return (location, basename = '') =>
+    matchBranches(getBranches, location, basename, strict);
 }
 
 export function matchRoutes<T extends IRouteBaseObject>(
@@ -215,7 +230,13 @@ export function matchRoutes<T extends IRouteBaseObject>(
   basename = '',
   options: IMatchRoutesOptions = {}
 ): IRouteMatch<T>[] | null {
-  return createRoutesMatcher(routes, options)(location, basename);
+  const { strict = false } = options;
+  return matchBranches(
+    () => rankRouteBranches(flattenRoutes(routes)),
+    location,
+    basename,
+    strict
+  );
 }
 
 /**
