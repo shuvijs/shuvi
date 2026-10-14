@@ -1,4 +1,4 @@
-import { Token, TokenType, TokenCatchAll } from './pathTokenizer';
+import { Token, TokenType, TokenCatchAll, tokenizePath } from './pathTokenizer';
 import { IRouteRecord } from './types';
 
 type PathParams = Record<string, string | string[]>;
@@ -410,6 +410,46 @@ export function tokensToParser(
     parse,
     stringify
   };
+}
+
+// Parsers are cached rather than tokens: tokensToParser mutates the tokens of a
+// catch-all path, so sharing them would leak one call's options into another.
+// Past the limit new paths are compiled without being cached.
+const PATH_PARSER_CACHE_LIMIT = 10000;
+const pathParserCache = new Map<string, PathParser>();
+
+/**
+ * Returns the parser of a path, compiled once per path and options.
+ */
+export function compilePath(
+  path: string,
+  options: PathParserOptions = {}
+): PathParser {
+  const { end = true, strict = false, sensitive = false } = options;
+  const cacheKey = `${+end}${+strict}${+sensitive}${path}`;
+  let parser = pathParserCache.get(cacheKey);
+  if (!parser) {
+    parser = tokensToParser(tokenizePath(path), { end, strict, sensitive });
+    if (pathParserCache.size < PATH_PARSER_CACHE_LIMIT) {
+      pathParserCache.set(cacheKey, parser);
+    }
+  }
+  return parser;
+}
+
+/**
+ * The score of a branch, with the same bonus as `tokensToParser` gives a
+ * branch whose last route has an empty path. The cached score is not mutated.
+ */
+export function getBranchScore(
+  path: string,
+  routes?: IRouteRecord[]
+): Array<number[]> {
+  const { score } = compilePath(path);
+  const lastRoutePath = routes?.[routes.length - 1]?.path;
+  return lastRoutePath === ''
+    ? score.concat([[PathScore.BonusEmptyStringPath]])
+    : score;
 }
 
 /**

@@ -1,6 +1,5 @@
 import { IPathPattern, IPathMatch, IParams } from './types';
-import { PathParserOptions, tokensToParser } from './pathParserRanker';
-import { tokenizePath } from './pathTokenizer';
+import { PathParserOptions, compilePath } from './pathParserRanker';
 
 function safelyDecodeURIComponent(
   value: string[] | string,
@@ -42,7 +41,7 @@ export function matchPathname(
 
   const { path, caseSensitive = false, end = true, strict = false } = pattern;
 
-  const pathParser = tokensToParser(tokenizePath(path), {
+  const pathParser = compilePath(path, {
     strict,
     end,
     sensitive: caseSensitive
@@ -80,7 +79,7 @@ export function matchStringify(
   params: IParams,
   options?: PathParserOptions
 ) {
-  const pathParser = tokensToParser(tokenizePath(path), options);
+  const pathParser = compilePath(path, options);
 
   return pathParser.stringify(params);
 }

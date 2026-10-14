@@ -6,9 +6,19 @@ import {
   PartialLocation
 } from './types';
 import { matchPathname } from './matchPathname';
-import { joinPaths, normalizeBase, resolvePath, stripBase } from './utils';
-import { tokensToParser, comparePathParserScore } from './pathParserRanker';
-import { tokenizePath } from './pathTokenizer';
+import {
+  joinPaths,
+  normalizeBase,
+  resolvePath,
+  stripBase,
+  isDev,
+  warning
+} from './utils';
+import {
+  compilePath,
+  getBranchScore,
+  comparePathParserScore
+} from './pathParserRanker';
 
 export interface IRouteBaseObject<Element = any>
   extends Omit<IRouteRecord<Element>, 'children' | 'element' | 'filepath'> {
@@ -66,8 +76,8 @@ export function rankRouteBranches<T extends [string, ...any[]]>(
   const normalizedPaths = branches.map((branch, index) => {
     const [path, routes] = branch;
     return {
-      ...tokensToParser(tokenizePath(path), undefined, { routes }),
-      path,
+      ...compilePath(path),
+      score: getBranchScore(path, routes),
       index
     };
   });
@@ -120,38 +130,92 @@ export interface IMatchRoutesOptions {
   strict?: boolean;
 }
 
+// Everything matching reads from the routes: each array and its items, and the
+// path, caseSensitive and children of each route.
+function snapshotRoutes(
+  routes: IRouteBaseObject[],
+  snapshot: unknown[] = []
+): unknown[] {
+  snapshot.push(routes, routes.length);
+  routes.forEach(route => {
+    snapshot.push(route, route.path, route.caseSensitive, route.children);
+    if (route.children) {
+      snapshotRoutes(route.children, snapshot);
+    }
+  });
+  return snapshot;
+}
+
+function isSameSnapshot(a: unknown[], b: unknown[]): boolean {
+  return a.length === b.length && a.every((value, i) => value === b[i]);
+}
+
+export type RoutesMatcher<T extends IRouteBaseObject> = (
+  location: string | PartialLocation,
+  basename?: string
+) => IRouteMatch<T>[] | null;
+
+/**
+ * Flattens and ranks the routes once, on the first match, and reuses them for
+ * every match after. The routes must not be mutated once matched.
+ */
+export function createRoutesMatcher<T extends IRouteBaseObject>(
+  routes: T[],
+  options: IMatchRoutesOptions = {}
+): RoutesMatcher<T> {
+  const { strict = false } = options;
+  let branches: IRouteBranch<T>[] | undefined;
+  // development only, to warn about routes changed in place after the first match
+  let snapshot: unknown[] | undefined;
+
+  return (location, basename = '') => {
+    if (typeof location === 'string') {
+      location = resolvePath(location);
+    }
+
+    let pathname = location.pathname || '/';
+    if (basename) {
+      const normalizedBasename = normalizeBase(basename);
+      const pathnameWithoutBase = stripBase(pathname, normalizedBasename);
+      if (pathnameWithoutBase) {
+        pathname = pathnameWithoutBase;
+      } else {
+        return null;
+      }
+    }
+
+    if (!branches) {
+      branches = rankRouteBranches(flattenRoutes(routes));
+      if (isDev) {
+        snapshot = snapshotRoutes(routes);
+      }
+    } else if (snapshot && !isSameSnapshot(snapshot, snapshotRoutes(routes))) {
+      warning(
+        false,
+        `Routes were changed in place after they had been matched. ` +
+          `The change is ignored by matching, ` +
+          `use router.replaceRoutes() to change the routes instead.`
+      );
+      snapshot = undefined;
+    }
+
+    let matches: IRouteMatch<T>[] | null = null;
+    for (let i = 0; matches == null && i < branches.length; ++i) {
+      // TODO: Match on search, state too?
+      matches = matchRouteBranch<T>(branches[i], pathname, strict);
+    }
+
+    return matches;
+  };
+}
+
 export function matchRoutes<T extends IRouteBaseObject>(
   routes: T[],
   location: string | PartialLocation,
   basename = '',
   options: IMatchRoutesOptions = {}
 ): IRouteMatch<T>[] | null {
-  const { strict = false } = options;
-  if (typeof location === 'string') {
-    location = resolvePath(location);
-  }
-
-  let pathname = location.pathname || '/';
-  if (basename) {
-    const normalizedBasename = normalizeBase(basename);
-    const pathnameWithoutBase = stripBase(pathname, normalizedBasename);
-    if (pathnameWithoutBase) {
-      pathname = pathnameWithoutBase;
-    } else {
-      return null;
-    }
-  }
-
-  let branches = flattenRoutes(routes);
-  branches = rankRouteBranches(branches);
-
-  let matches: IRouteMatch<T>[] | null = null;
-  for (let i = 0; matches == null && i < branches.length; ++i) {
-    // TODO: Match on search, state too?
-    matches = matchRouteBranch<T>(branches[i], pathname, strict);
-  }
-
-  return matches;
+  return createRoutesMatcher(routes, options)(location, basename);
 }
 
 /**
