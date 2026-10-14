@@ -1,4 +1,4 @@
-import { Token, TokenType, TokenCatchAll } from './pathTokenizer';
+import { Token, TokenType, TokenCatchAll, tokenizePath } from './pathTokenizer';
 import { IRouteRecord } from './types';
 
 type PathParams = Record<string, string | string[]>;
@@ -391,17 +391,7 @@ export function tokensToParser(
     return path;
   }
 
-  /**
-   * To make sure the score of pageBranch is always higher priority
-   * than the layoutRoute.
-   * We append a bonus score if the last route is an empty path.
-   */
-  if (branchInfo?.routes) {
-    const lastRoutePath = branchInfo.routes[branchInfo.routes.length - 1]?.path;
-    if (lastRoutePath === '') {
-      score.push([PathScore.BonusEmptyStringPath]);
-    }
-  }
+  score = withBranchBonus(score, branchInfo?.routes);
 
   return {
     re,
@@ -410,6 +400,57 @@ export function tokensToParser(
     parse,
     stringify
   };
+}
+
+// Parsers are cached rather than tokens: tokensToParser mutates the tokens of a
+// catch-all path, so sharing them would leak one call's options into another.
+// Past the limit new paths are compiled without being cached.
+const PATH_PARSER_CACHE_LIMIT = 10000;
+const pathParserCache = new Map<string, PathParser>();
+
+/**
+ * Returns the parser of a path, compiled once per path and options.
+ */
+export function compilePath(
+  path: string,
+  options: PathParserOptions = {}
+): PathParser {
+  const { end = true, strict = false, sensitive = false } = options;
+  const cacheKey = `${+end}${+strict}${+sensitive}${path}`;
+  let parser = pathParserCache.get(cacheKey);
+  if (!parser) {
+    parser = tokensToParser(tokenizePath(path), { end, strict, sensitive });
+    if (pathParserCache.size < PATH_PARSER_CACHE_LIMIT) {
+      pathParserCache.set(cacheKey, parser);
+    }
+  }
+  return parser;
+}
+
+/**
+ * To make sure the score of pageBranch is always higher priority
+ * than the layoutRoute.
+ * We append a bonus score if the last route is an empty path.
+ * Returns a new array rather than changing the given score.
+ */
+function withBranchBonus(
+  score: Array<number[]>,
+  routes?: IRouteRecord[]
+): Array<number[]> {
+  const lastRoutePath = routes?.[routes.length - 1]?.path;
+  return lastRoutePath === ''
+    ? score.concat([[PathScore.BonusEmptyStringPath]])
+    : score;
+}
+
+/**
+ * The score of a branch, without changing the cached score of its path.
+ */
+export function getBranchScore(
+  path: string,
+  routes?: IRouteRecord[]
+): Array<number[]> {
+  return withBranchBonus(compilePath(path).score, routes);
 }
 
 /**

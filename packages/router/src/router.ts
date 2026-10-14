@@ -15,8 +15,9 @@ import {
   Path
 } from './types';
 import {
-  matchRoutes,
-  getTrailingSlashRedirectPath
+  createRoutesMatcher,
+  getTrailingSlashRedirectPath,
+  RoutesMatcher
 } from './matchRoutes';
 import { createRoutesFromArray } from './createRoutesFromArray';
 import { createEvents, resolvePath, Events } from './utils';
@@ -53,6 +54,7 @@ interface IRouterOptions<RouteRecord extends IPartialRouteRecord> {
 class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   private _history: History;
   private _routes: RouteRecord[];
+  private _matchRoutes: RoutesMatcher<RouteRecord>;
   private _strictTrailingSlash: boolean;
   private _current: IRoute<RouteRecord>;
   private _pending: PathRecord | null = null;
@@ -73,6 +75,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     this._history = history;
     this._routes = createRoutesFromArray(routes);
     this._strictTrailingSlash = strictTrailingSlash;
+    this._matchRoutes = createRoutesMatcher(this._routes, {
+      strict: strictTrailingSlash
+    });
     this._current = START;
     this._history.doTransition = this._doTransition.bind(this);
   }
@@ -160,9 +165,7 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
   };
 
   match = (to: PathRecord): Array<IRouteMatch<RouteRecord>> => {
-    const { _routes: routes, _strictTrailingSlash: strict } = this;
-    const matches = matchRoutes(routes, to, undefined, { strict });
-    return matches || [];
+    return this._matchRoutes(to) || [];
   };
 
   replaceRoutes = (routes: RouteRecord[]) => {
@@ -181,6 +184,9 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     }
 
     this._routes = createRoutesFromArray(routes);
+    this._matchRoutes = createRoutesMatcher(this._routes, {
+      strict: this._strictTrailingSlash
+    });
     this._current = START;
 
     const setup = () => this._history.setup();
@@ -401,12 +407,10 @@ class Router<RouteRecord extends IRouteRecord> implements IRouter<RouteRecord> {
     if (this._strictTrailingSlash && !matches.length) {
       const canonical = getTrailingSlashRedirectPath(parsedPath.pathname || '/');
       if (canonical) {
-        const rematched = matchRoutes(
-          this._routes,
-          { ...parsedPath, pathname: canonical },
-          undefined,
-          { strict: true }
-        );
+        const rematched = this._matchRoutes({
+          ...parsedPath,
+          pathname: canonical
+        });
         if (rematched && rematched.length) {
           route.redirect = { path: canonical, status: 308 };
         }
