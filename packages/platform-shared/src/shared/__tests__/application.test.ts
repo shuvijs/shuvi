@@ -77,4 +77,37 @@ describe('application', () => {
     await app.dispose();
     expect(fn).toHaveBeenCalled();
   });
+
+  describe('yielding between plugin init and appContext', () => {
+    afterEach(() => {
+      delete (globalThis as any).window;
+    });
+
+    test('yields to pending tasks on the client', async () => {
+      (globalThis as any).window = {};
+      const app = getApp();
+      const order: string[] = [];
+      app.pluginManager.hooks.init.use(() => {
+        setTimeout(() => order.push('task'), 0);
+      });
+      app.pluginManager.hooks.appContext.use(() => {
+        order.push('appContext');
+      });
+      await app.init();
+      expect(order).toEqual(['task', 'appContext']);
+    });
+
+    test('does not yield on the server', async () => {
+      const app = getApp();
+      const order: string[] = [];
+      app.pluginManager.hooks.init.use(() => {
+        setTimeout(() => order.push('task'), 0);
+      });
+      app.pluginManager.hooks.appContext.use(() => {
+        order.push('appContext');
+      });
+      await app.init();
+      expect(order).toEqual(['appContext']);
+    });
+  });
 });

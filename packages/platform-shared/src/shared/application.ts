@@ -15,6 +15,12 @@ import {
   GetLoadersFn
 } from './applicationTypes';
 
+// Splits the client init into separate tasks so input and paint are not blocked.
+const yieldToMain = () =>
+  typeof window === 'undefined'
+    ? Promise.resolve()
+    : new Promise<void>(resolve => setTimeout(resolve, 0));
+
 export class ApplicationImpl<Config extends {} = {}> {
   private _router: IRouter;
   private _appComponent: any;
@@ -87,6 +93,7 @@ export class ApplicationImpl<Config extends {} = {}> {
 
   async init() {
     await this._initPlugin();
+    await yieldToMain();
     await this._initAppContext();
     this._router.init();
     await this._initAppComponent();
