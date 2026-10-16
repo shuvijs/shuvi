@@ -1,3 +1,12 @@
+# [2.0.0-dev.36](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.35...v2.0.0-dev.36) (2026-10-16)
+
+
+### Bug Fixes
+
+* **platform-web:** collect static/common/ chunks into the build manifest ([fb9670f](https://github.com/shuvijs/shuvi/commit/fb9670fc1b5321c19ff1dbd8925ec99dfb406f94))
+
+
+
 # [2.0.0-dev.35](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.34...v2.0.0-dev.35) (2026-10-14)
 
 
