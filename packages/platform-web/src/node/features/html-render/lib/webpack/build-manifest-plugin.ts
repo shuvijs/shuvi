@@ -400,7 +400,8 @@ export default class BuildManifestPlugin implements Plugin {
 
     const context = compiler.options.context!;
     chunk.files.forEach((file: string) => {
-      const isJs = file.match(/\.js$/) && file.match(/^static\/chunks\//);
+      const isJs =
+        file.match(/\.js$/) && file.match(/^static\/(chunks|common)\//);
       const isCss = file.match(/\.css$/) && file.match(/^static\/css\//);
       if (isJs || isCss) {
         this._pushLoadableModules(request, file);

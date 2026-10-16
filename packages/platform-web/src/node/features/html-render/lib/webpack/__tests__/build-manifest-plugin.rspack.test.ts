@@ -394,6 +394,60 @@ describe('BuildManifestPlugin', () => {
 
       compiler.run(done);
     });
+    /**
+     * Should collect async chunks emitted to static/common/ by splitChunks.
+     * Shuvi's cache groups write shared async chunks there; missing them means
+     * the route's SSR preload list is incomplete.
+     */
+    test('should include split chunks emitted to static/common/', done => {
+      expect.assertions(4);
+      const compiler = createCompiler({
+        entry: resolveFixture('common-chunks'),
+        optimization: {
+          runtimeChunk: {
+            name: 'runtime'
+          },
+          splitChunks: {
+            cacheGroups: {
+              shared: {
+                test: /shared\.js$/,
+                name: 'shared',
+                filename: 'static/common/[name].js',
+                chunks: 'async',
+                minSize: 0,
+                enforce: true
+              }
+            }
+          }
+        },
+        plugins: [
+          new BuildManifestPlugin({
+            filename: 'build-manifest.json',
+            modules: true
+          })
+        ]
+      });
+
+      compiler.hooks.emit.tap('test', compilation => {
+        const manifest = JSON.parse(
+          compilation.assets['build-manifest.json'].source().toString()
+        );
+
+        expect(manifest.loadble['./page-a'].files.sort()).toEqual([
+          'static/chunks/pageA.js',
+          'static/common/shared.js'
+        ]);
+        expect(manifest.loadble['./page-b'].files.sort()).toEqual([
+          'static/chunks/pageB.js',
+          'static/common/shared.js'
+        ]);
+        // initial chunks are collected through entries, not loadble
+        expect(manifest.entries.main.js).toEqual(['runtime.js', 'main.js']);
+        expect(Object.keys(manifest.loadble)).toHaveLength(2);
+      });
+
+      compiler.run(done);
+    });
   });
 
   /**
