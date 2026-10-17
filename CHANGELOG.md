@@ -1,3 +1,12 @@
+# [2.0.0-dev.37](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.36...v2.0.0-dev.37) (2026-10-17)
+
+
+### Performance Improvements
+
+* **platform-shared:** yield to main thread between plugin init and appContext ([#616](https://github.com/shuvijs/shuvi/issues/616)) ([e418cf8](https://github.com/shuvijs/shuvi/commit/e418cf88232bc3a5a576ca9604892f51a51f91a0))
+
+
+
 # [2.0.0-dev.36](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.35...v2.0.0-dev.36) (2026-10-16)
 
 
