@@ -81,22 +81,65 @@ describe('application', () => {
   describe('yielding between plugin init and appContext', () => {
     afterEach(() => {
       delete (globalThis as any).window;
+      delete (globalThis as any).scheduler;
       delete process.env.__SHUVI__HYDRATE_IN_TRANSITION__;
+      jest.restoreAllMocks();
     });
 
-    test('yields to pending tasks on the client when hydrateInTransition is on', async () => {
+    test('yields through MessageChannel on the client when hydrateInTransition is on', async () => {
       (globalThis as any).window = {};
       process.env.__SHUVI__HYDRATE_IN_TRANSITION__ = 'true';
+      const RealChannel = (globalThis as any).MessageChannel;
+      const channel = jest.fn(function () {
+        return new RealChannel();
+      });
+      (globalThis as any).MessageChannel = channel;
+      try {
+        const timeout = jest.spyOn(globalThis, 'setTimeout');
+        const app = getApp();
+        const order: string[] = [];
+        app.pluginManager.hooks.appContext.use(() => {
+          order.push('appContext');
+        });
+        await app.init();
+        expect(channel).toHaveBeenCalledTimes(1);
+        expect(timeout).not.toHaveBeenCalled();
+        expect(order).toEqual(['appContext']);
+      } finally {
+        (globalThis as any).MessageChannel = RealChannel;
+      }
+    });
+
+    test('falls back to setTimeout when MessageChannel is unavailable', async () => {
+      (globalThis as any).window = {};
+      process.env.__SHUVI__HYDRATE_IN_TRANSITION__ = 'true';
+      const original = (globalThis as any).MessageChannel;
+      (globalThis as any).MessageChannel = undefined;
+      try {
+        const timeout = jest.spyOn(globalThis, 'setTimeout');
+        const app = getApp();
+        const order: string[] = [];
+        app.pluginManager.hooks.appContext.use(() => {
+          order.push('appContext');
+        });
+        await app.init();
+        expect(timeout).toHaveBeenCalledWith(expect.any(Function), 0);
+        expect(order).toEqual(['appContext']);
+      } finally {
+        (globalThis as any).MessageChannel = original;
+      }
+    });
+
+    test('prefers scheduler.yield when it is available', async () => {
+      (globalThis as any).window = {};
+      process.env.__SHUVI__HYDRATE_IN_TRANSITION__ = 'true';
+      const yieldFn = jest.fn(() => Promise.resolve());
+      (globalThis as any).scheduler = { yield: yieldFn };
+      const channel = jest.spyOn(globalThis as any, 'MessageChannel');
       const app = getApp();
-      const order: string[] = [];
-      app.pluginManager.hooks.init.use(() => {
-        setTimeout(() => order.push('task'), 0);
-      });
-      app.pluginManager.hooks.appContext.use(() => {
-        order.push('appContext');
-      });
       await app.init();
-      expect(order).toEqual(['task', 'appContext']);
+      expect(yieldFn).toHaveBeenCalledTimes(1);
+      expect(channel).not.toHaveBeenCalled();
     });
 
     test('does not yield on the client when hydrateInTransition is off', async () => {
