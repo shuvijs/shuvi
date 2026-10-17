@@ -81,10 +81,12 @@ describe('application', () => {
   describe('yielding between plugin init and appContext', () => {
     afterEach(() => {
       delete (globalThis as any).window;
+      delete process.env.__SHUVI__HYDRATE_IN_TRANSITION__;
     });
 
-    test('yields to pending tasks on the client', async () => {
+    test('yields to pending tasks on the client when hydrateInTransition is on', async () => {
       (globalThis as any).window = {};
+      process.env.__SHUVI__HYDRATE_IN_TRANSITION__ = 'true';
       const app = getApp();
       const order: string[] = [];
       app.pluginManager.hooks.init.use(() => {
@@ -95,6 +97,20 @@ describe('application', () => {
       });
       await app.init();
       expect(order).toEqual(['task', 'appContext']);
+    });
+
+    test('does not yield on the client when hydrateInTransition is off', async () => {
+      (globalThis as any).window = {};
+      const app = getApp();
+      const order: string[] = [];
+      app.pluginManager.hooks.init.use(() => {
+        setTimeout(() => order.push('task'), 0);
+      });
+      app.pluginManager.hooks.appContext.use(() => {
+        order.push('appContext');
+      });
+      await app.init();
+      expect(order).toEqual(['appContext']);
     });
 
     test('does not yield on the server', async () => {

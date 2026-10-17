@@ -16,8 +16,10 @@ import {
 } from './applicationTypes';
 
 // Splits the client init into separate tasks so input and paint are not blocked.
+// Gated by the hydrateInTransition define so it follows the same switch as the
+// transition-based hydration.
 const yieldToMain = () =>
-  typeof window === 'undefined'
+  typeof window === 'undefined' || !process.env.__SHUVI__HYDRATE_IN_TRANSITION__
     ? Promise.resolve()
     : new Promise<void>(resolve => setTimeout(resolve, 0));
 
