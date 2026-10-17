@@ -15,6 +15,34 @@ import {
   GetLoadersFn
 } from './applicationTypes';
 
+// MessageChannel is not clamped like nested setTimeout; scheduler.yield is used where available.
+const yieldToMain = (): Promise<void> => {
+  if (
+    typeof window === 'undefined' ||
+    !process.env.__SHUVI__HYDRATE_IN_TRANSITION__
+  ) {
+    return Promise.resolve();
+  }
+  const scheduler = (
+    globalThis as { scheduler?: { yield?: () => Promise<void> } }
+  ).scheduler;
+  if (scheduler?.yield) {
+    return scheduler.yield();
+  }
+  return new Promise<void>(resolve => {
+    if (typeof MessageChannel === 'undefined') {
+      setTimeout(resolve, 0);
+      return;
+    }
+    const channel = new MessageChannel();
+    channel.port1.onmessage = () => {
+      channel.port1.close();
+      resolve();
+    };
+    channel.port2.postMessage(null);
+  });
+};
+
 export class ApplicationImpl<Config extends {} = {}> {
   private _router: IRouter;
   private _appComponent: any;
@@ -87,6 +115,7 @@ export class ApplicationImpl<Config extends {} = {}> {
 
   async init() {
     await this._initPlugin();
+    await yieldToMain();
     await this._initAppContext();
     this._router.init();
     await this._initAppComponent();
