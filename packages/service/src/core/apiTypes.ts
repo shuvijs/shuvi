@@ -152,6 +152,7 @@ export interface CustomConfig extends ShuviService.CustomConfig {}
 export interface CompilerConfig {
   // general
   removeConsole?: CompilerOptions['removeConsole'];
+  env?: CompilerOptions['env'];
 
   // react
   reactRemoveProperties?: CompilerOptions['reactRemoveProperties'];

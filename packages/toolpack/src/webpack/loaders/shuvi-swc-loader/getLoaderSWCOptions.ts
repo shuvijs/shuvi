@@ -1,3 +1,13 @@
+import type {
+  EnvConfig,
+  JscConfig,
+  JscTarget,
+  Options,
+  ParserConfig,
+  TransformConfig,
+  WasmPlugin
+} from '@swc/types';
+
 type Obj = Record<string, any>;
 
 export interface CompilerOptions {
@@ -5,7 +15,12 @@ export interface CompilerOptions {
   useDefineForClassFields?: boolean;
   reactRemoveProperties?: boolean;
   jsxImportSource?: string;
-  jscTarget?: string;
+  jscTarget?: JscTarget;
+  /**
+   * swc `env` options for client build, e.g. `{ targets, mode: 'usage', coreJs }`.
+   * When set, `jscTarget` is ignored because swc does not allow `env` and `jsc.target` together.
+   */
+  env?: EnvConfig;
   emotion?:
     | boolean
     | {
@@ -53,29 +68,69 @@ export type SWCLoaderOptions = {
   development: boolean;
   minify: boolean | Obj;
   hasReactRefresh: boolean;
-  supportedBrowsers: any[];
+  supportedBrowsers?: string[] | false;
   swcCacheDir: string;
   compiler: CompilerOptions;
 };
 
+// fields accepted by shuvi's swc binding but missing in @swc/types
+type ShuviParserConfig = ParserConfig & { importAssertions?: boolean };
+
+interface ShuviTransformConfig extends TransformConfig {
+  regenerator?: { importPath?: string };
+}
+
+interface ShuviJscConfig extends Omit<JscConfig, 'parser' | 'transform'> {
+  parser?: ShuviParserConfig;
+  transform?: ShuviTransformConfig;
+}
+
+export interface ShuviSWCOptions extends Omit<Options, 'jsc' | 'minify'> {
+  jsc: ShuviJscConfig;
+  minify?: boolean | Obj;
+  isDevelopment?: boolean;
+
+  // shuvi specific
+  isServer?: boolean;
+  isPageFile?: boolean;
+  pagePickLoader?: boolean;
+  cssModuleFlag?: string;
+
+  // advanced
+  removeConsole?: CompilerOptions['removeConsole'];
+  reactRemoveProperties?: CompilerOptions['reactRemoveProperties'];
+  modularizeImports?: CompilerOptions['modularizeImports'];
+
+  // third-party libraries
+  styledComponents?: ReturnType<typeof getStyledComponentsOptions>;
+  emotion?: ReturnType<typeof getEmotionOptions>;
+}
+
 export function getParserOptions({
   filename,
-  compiler,
-  ...rest
+  compiler
 }: {
   filename: string;
-  compiler: Obj;
-}) {
+  compiler: CompilerOptions;
+}): ShuviParserConfig {
   const isTSFile = filename.endsWith('.ts');
   const isTypeScript = isTSFile || filename.endsWith('.tsx');
   const enableDecorators = Boolean(compiler?.experimentalDecorators);
+  // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
+  if (isTypeScript) {
+    return {
+      syntax: 'typescript',
+      dynamicImport: true,
+      decorators: enableDecorators,
+      tsx: !isTSFile,
+      importAssertions: true
+    };
+  }
   return {
-    ...rest,
-    syntax: isTypeScript ? 'typescript' : 'ecmascript',
+    syntax: 'ecmascript',
     dynamicImport: true,
     decorators: enableDecorators,
-    // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
-    [isTypeScript ? 'tsx' : 'jsx']: !isTSFile,
+    jsx: true,
     importAssertions: true
   };
 }
@@ -90,14 +145,14 @@ function getBaseSWCOptions({
   isServer,
   compiler,
   swcCacheDir
-}: Omit<SWCLoaderOptions, 'supportedBrowsers'>) {
+}: Omit<SWCLoaderOptions, 'supportedBrowsers'>): ShuviSWCOptions {
   const parserConfig = getParserOptions({ filename, compiler });
   const enableDecorators = Boolean(compiler?.experimentalDecorators);
   const emitDecoratorMetadata = Boolean(compiler?.emitDecoratorMetadata);
   const useDefineForClassFields = Boolean(compiler?.useDefineForClassFields);
   const plugins = (compiler?.swcPlugins ?? [])
     .filter(Array.isArray)
-    .map(([name, options]: [string, any]) => [require.resolve(name), options]);
+    .map(([name, options]): WasmPlugin => [require.resolve(name), options]);
 
   return {
     isDevelopment: development,
@@ -225,8 +280,8 @@ export default function getLoaderSWCOptions({
   supportedBrowsers,
   swcCacheDir
 }: // This is not passed yet as "paths" resolving is handled by webpack currently.
-SWCLoaderOptions) {
-  let baseOptions = getBaseSWCOptions({
+SWCLoaderOptions): ShuviSWCOptions {
+  const baseOptions = getBaseSWCOptions({
     filename,
     isPageFile,
     pagePickLoader,
@@ -239,19 +294,24 @@ SWCLoaderOptions) {
   });
 
   if (isServer) {
-    (baseOptions as any).env = {
+    baseOptions.env = {
       targets: {
         // Targets the current version of Node.js
         node: process.versions.node
       }
     };
   } else {
-    // Matches default @babel/preset-env behavior
-    (baseOptions.jsc as any).target = compiler?.jscTarget || 'es5';
-    if (supportedBrowsers && supportedBrowsers.length > 0) {
-      (baseOptions as any).env = {
-        targets: supportedBrowsers
-      };
+    const env: EnvConfig | undefined =
+      compiler?.env ??
+      (supportedBrowsers && supportedBrowsers.length > 0
+        ? { targets: supportedBrowsers }
+        : undefined);
+    if (env) {
+      // swc throws "`env` and `jsc.target` cannot be used together"
+      baseOptions.env = env;
+    } else {
+      // Matches default @babel/preset-env behavior
+      baseOptions.jsc.target = compiler?.jscTarget || 'es5';
     }
   }
   return baseOptions;
