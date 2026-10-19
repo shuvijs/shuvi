@@ -1,3 +1,12 @@
+# [2.0.0-dev.38](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.37...v2.0.0-dev.38) (2026-10-19)
+
+
+### Features
+
+* **toolpack:** support `compiler.env` for client swc options ([3636b69](https://github.com/shuvijs/shuvi/commit/3636b693712ab334359d59789db2fcc1124f6ce8))
+
+
+
 # [2.0.0-dev.37](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.36...v2.0.0-dev.37) (2026-10-17)
 
 
