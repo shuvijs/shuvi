@@ -48,5 +48,8 @@ export function getAppData(): IAppData {
     };
   }
 
-  return JSON.parse(el.textContent);
+  // The server writes #__APP_DATA once and it does not change for the life of the page, while
+  // getPageData / getPublicPath / getFilesOfRoute ask for it many times per load, so parse it once.
+  appData = JSON.parse(el.textContent) as IAppData;
+  return appData;
 }
