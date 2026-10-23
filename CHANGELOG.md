@@ -1,3 +1,12 @@
+# [2.0.0-dev.39](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.38...v2.0.0-dev.39) (2026-10-23)
+
+
+### Performance Improvements
+
+* **platform-shared:** parse #__APP_DATA once in getAppData ([#618](https://github.com/shuvijs/shuvi/issues/618)) ([c032aab](https://github.com/shuvijs/shuvi/commit/c032aab53dd433763bebd6608395526449d0a974))
+
+
+
 # [2.0.0-dev.38](https://github.com/shuvijs/shuvi/compare/v2.0.0-dev.37...v2.0.0-dev.38) (2026-10-19)
 
 
